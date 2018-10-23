@@ -2678,8 +2678,8 @@ function build (opts) {
     }
 
     apply (ctx, x, y, width, height) {
-      if (typeof canvasRGBA_ === 'undefined') {
-        svg.log('ERROR: `setStackBlurCanvasRGBA` must be run for blur to work');
+      if (typeof canvasRGBA_ !== 'function') {
+        svg.log('ERROR: The function `setStackBlurCanvasRGBA` must be present for blur to work');
         return;
       }
 

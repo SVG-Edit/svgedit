@@ -6,4 +6,3 @@ test
 build
 grep-jsdoc.js
 lgtm.yml
-Makefile

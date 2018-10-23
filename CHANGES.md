@@ -1,3 +1,13 @@
+# ?
+
+- Refactoring (canvg): Better type-checking on `canvasRGBA_` (but set
+  correctly by default anyways)
+- Refactoring: Avoid redundant use of \*AttributeNS methods with
+  `null` value; just use \*Attribute methods without namespace
+- Docs: CHANGES clarifications
+- Docs: More info on `importLocale` for extensions
+- Build: Remove unused `Makefile`
+
 # 3.0.1
 
 - Fix: Revert fix to have extension `mouseup` events run on "zoom" and
@@ -5,8 +15,6 @@
 - Fix (jgraduate->jpicker): Actually fix issue with color val check when no
   other proper results (equal to "all"); prior fix had not covered
   original intention
-- Refactoring: Avoid redundant use of \*AttributeNS methods with
-  `null` value; just use \*Attribute methods without namespace
 
 # 3.0.0
 
@@ -48,6 +56,7 @@
 
 # 3.0.0-rc.3
 
+- Security fix: Ensure all apostrophes are escaped for `toXml` utility
 - Security fix/Breaking change (Imagelib): Only allow origins within
   `imgLibs` to be accepted for `message` listener
 - Security fix/Breaking change (xdomain): Namespace xdomain file to avoid
@@ -61,16 +70,15 @@
   source without XSS risk (though params should already be XML-safe
   given `encodeURIComponent` and lack of a single quote attribute
   context)
-- Known regression: Remove Openclipart as its site's now setting of
+- Situational regression: Remove Openclipart as its site's now setting of
   `X-Frame-Options` to `"sameorigin"` makes it unusable on our end
-  for our cross-origin uses
+  for our cross-origin uses (even with an attempt to use their API)
 - Breaking change (minor): Change export to check `exportWindowName`
   for filename and change default from `download` to `svg.pdf` to
   distinguish from other downloads
 - Fix: Given lack of support now for dataURI export in Chrome, provide
-  PDF as export (#273 @cuixiping); fixes #124 and #254
+  PDF download as export (#273 @cuixiping); fixes #124 and #254
 - Fix: Polygon/polyline in PDF export (#287 @cuixiping); fixes #280
-- Fix: Ensure all apostrophes are escaped for `toXml` utility
 - Fix: Avoid error if `URL` is not defined (export)
 - Fix: Ensure repeated selection of same file overwrites with that
   file's contents (fix #289)
@@ -80,8 +88,8 @@
 - Fix (image import): Put src after onload to avoid missing event;
   check other width/height properties in case offset is 0; fixes #278
 - Fix (image export): Export in Chrome; fixes #282
-- Fix (Context menus): Avoid showing double shortcuts (#285); add some
-  missing ones
+- Fix (Context menus regression): Avoid showing double shortcuts (#285); add
+  some missing ones
 - Fix (Star extension): Minor: Avoid erring if `inradius` is `NaN`
 - Forward compatibility enhancement: Once IE9 support may be dropped,
   we may post messages as objects, so don't break if objects received
@@ -91,13 +99,13 @@
   SVG-Edit versions before 3, while conditionally using new object-based
   API now (and if we switch exclusively to the object-based API in the
   future, this site will continue to work)
-- Imagelib backward compatibility enhancement: Allow string based API
+- Imagelib backward compatibility regression fix: Allow string based API
   again so as not to break old SVG-Edit which fail at *presence* of
   `namespace` (fixes #274)
 - Refactoring: Avoid passing unused arguments, setting unused variables,
   and making unnecessary checks; avoid useless call to `createSVGMatrix`
 - Refactoring: Avoid useless assignment (courtesty lgtm)
-- Refactoring: Destructuring, ellipsis
+- Refactoring: Destructuring, spread
 - Refactoring (jPicker): Use ES6 templates; avoid unnecessary check
 - Linting (LGTM): Add `lgtm.yml` file (still some remaining items flagged
   but hoping for in-code flagging)
@@ -108,8 +116,8 @@
 - Docs: Contributing file
 - Docs (JSDoc): Missing return value
 - Update (Imagelib): Remove extra (and more outdated) jQuery copy
-- Build: Switch to `terser` plugin with `uglify` plugin not
-  supporting ES6+-capable minifier
+- Build (prerelease change): Switch to `terser` plugin with `uglify`
+  plugin not supporting ES6+-capable minifier
 - npm: Update devDeps
 - npm: Point to official sinon-test package now that ES6 Modules
     support landed
@@ -120,24 +128,23 @@
   Incorporates #147
 - Fix: Ensure shift-key cycling through flyouts works with extension-added
   `includeWith` as well as toolbarbuttons
-- Fix: Apply flyout arrows after extensions callback
-- Fix: Ensure SVG icon of flyout right-arrow is cloned to can be applied to
-  more than one extension
+- Fix: Apply flyout arrows after extensions loaded (avoid race condition)
+- Fix: Ensure SVG icon of flyout right-arrow is cloned so can be applied to
 - Fix: Ensure line tool shows as selected when "L" key command is used
 - Fix: Add images (and references) for fallback (#135)
-- Fix (svgIcons plugin): Race condition
+- Fix (svgIcons plugin regression): Race condition
 - Fix (canvg): Regression for `text` and `tspan` elements as far as
   `captureTextNodes` with canvg (inheriting class had set
   `captureTextNodes` too late)
 - Fix (canvg): Regression on blur
 - Fix (canvg): Avoid errors for `tspan` passed to `getGradient`
+- Fix (regression): Reapply locale strings
 - i18n: picking stroke/fill paint and opacity
 - i18n: Remove eyedropper and imagelib references from main locale (in
   extension locale now)
 - i18n: Add placeholders for `pick_stroke_paint_opacity`,
   `pick_fill_paint_opacity`, `popupWindowBlocked`
 - i18n: Update `saveFromBrowser`
-- i18n: Reapply locale strings
 - Enhancement: Create xdomain file build which works without ES6 Modules
 - Enhancement: Build xdomain files dynamically
 - Optimize: Further image optimizing
@@ -154,6 +161,7 @@
 
 - Security fix: 'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
   'langPath', 'jGraduatePath', and 'jspdfPath' were not being prevented
+  from URL
 - Breaking change: Rename "svgutils.js" to "utilities.js" (make in
   conformity with JSDoc module naming convention)
 - Breaking change: Rename "svgedit.js" to "namespaces.js" (to make clear
@@ -172,33 +180,19 @@
   for consistency
 - Breaking change: Rename `changeSvgContent()` to `changeSVGContent()` for
   consistency
-- Breaking change: Have `exportPDF` resolve with `output` and `outputType`
-  rather than `dataurlstring` (as type may vary)
 - Breaking change: Rename `extensions/mathjax/MathJax.js` to
   `extensions/mathjax/MathJax.min.js`
-- Breaking change: Avoid recent change to have editor ready callbacks
-  return Promises (we're not using and advantageous to keep sequential)
-- Breaking change: Avoid recent addition of locale-side function in
-  ext-imagelib for l10n
 - Breaking change: Change name of `ext-arrows.js` from `Arrows` to `arrows`
   for sake of file path (not localized anyways).
-- Breaking change: Change `addlangData` extension event to `addLangData`
-  for consistency with method name
 - Breaking change: In interests of modularity/removing globals,
   remove `window.svgCanvas` and `svgCanvas.ready` as used by older
   extensions; use `svgEditor.canvas` and `svgEditor.ready` instead
 - Breaking change: Extension now formatted as export (and `this`
   is set to editor, including for `callback`)
 - Breaking change: Locale now formatted as export
-- Breaking change: Moved out remaining modular i18n (imagelib) to own folder
-- Breaking change: Drop `executeAfterLoads` (and getJSPDF/getCanvg)
 - Breaking change: `RGBColor` must accept `new`
-- Breaking change: canvg - `stackBlurCanvasRGBA` must be set now by function
-  (`setStackBlurCanvasRGBA`) rather than global; `canvg` now a named export
 - Breaking change: Avoid passing `canvg`/`buildCanvgCallback` to extensions
   (have them import)
-- Breaking change: Have `readLang`  return lang and data but do not call
-  `setLang`
 - Breaking change: Avoid adding `assignAttributes`, `addSVGElementFromJson`,
   `call`, `copyElem`, `findDefs`, `getElem`, `getId`, `getIntersectionList`,
   `getMouseTarget`, `getNextId`, `getUrlFromAttr`, `hasMatrixTransform`,
@@ -206,10 +200,29 @@
   `recalculateDimensions`, `remapElement`, `removeUnusedDefElems`, `round`,
   `runExtensions`, `sanitizeSvg`, `setGradient` `transformListToTransform`
   (and mistaken `toString` export) to `getPrivateMethods` (passed to
-  extensions) as available as public ones
+  extensions) as available as public ones (on canvas or editor that is
+  available to extensions)
+- Breaking change (prerelease): Avoid recent addition of locale-side
+  function in ext-imagelib for l10n
+- Breaking change (prerelease): Avoid recent change to have editor ready
+  callbacks return Promises (we're not using and advantageous to keep
+  sequential)
+- Breaking change (prerelease): Have `exportPDF` resolve with `output` and
+  `outputType` rather than `dataurlstring` (as type may vary)
+- Breaking change (prerelease): Change `addlangData` extension event to
+  `addLangData`
+  for consistency with method name
+- Breaking change (prerelease): Moved out remaining modular i18n (imagelib)
+  to own folder
+- Breaking change (prerelease): Drop `executeAfterLoads`
+  (and getJSPDF/getCanvg)
+- Breaking change (prerelease): canvg - `stackBlurCanvasRGBA` must be set now
+  by function (`setStackBlurCanvasRGBA`) rather than global (though it imports
+  default now); `canvg` now a named export
 - npm: Add `prepublishOnly` script to ensure building/testing before publish
 - npm: Update devDeps including Rollup, Sinon
-- Fix: Remove redundant (and incorrect) length set. (#256 ; fixes #255)
+- Fix: Remove redundant (and incorrect) length set in
+  `removeFromSelection`. (#256; fixes #255)
 - Fix: Detection of whether to keep ellipse (rx and ry when just created
   are now returning 0 instead of null); also with rectangle/square;
   fixes #262
@@ -291,7 +304,7 @@
 - Refactoring: Remove unneeded `delimiter` from regex escaping utility
 - Refactoring: Clearer variable names
 - Refactoring: Use (non-deprecated) Event constructors
-- Refactoring (minor): variadic args through ellipsis
+- Refactoring (minor): variadic args through spread operator
 - Refactoring (minor): `getIssues` to return codes and strings, lbs
 - Refactoring (minor): Use single quotes in PHP
 - Docs (Code comments): Coding standards within
@@ -304,7 +317,7 @@
   (with formatting) was not preserved, though named links were carried over
   with absolute URLs
 - Docs: Begin deleting `SvgCanvas.md` as ensuring jsdoc has replacements
-- Docs: Add Edtior doc file for help to general users
+- Docs: Add Editor doc file for help to general users
 - Docs: Clarify/simplify install instructions
 - Docs: Generally update/improve docs (fixes #92)
 - Docs: Update links to `latest` path (Avoid needing to update such
@@ -389,7 +402,7 @@
 - Breaking change: Rename `jquery.js` to `jquery.min.js`
 - Breaking change: Remove `scoped` attribute from `style`; it is now
   deprecated and obsolete; also move to head (after other stylesheets)
-- Breaking change: Avoid zoom unless shift key pressed
+- Breaking change: Avoid zoom with scroll unless shift key pressed
 - Fix: i18nize path.js strings and canvas notifications
 - Fix: Attempt i18n for ext-markers
 - Fix: Zoom centered on cursor when scrolled; incorporates
