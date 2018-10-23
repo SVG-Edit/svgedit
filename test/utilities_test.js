@@ -169,7 +169,7 @@ QUnit.test('Test getPathBBox', function (assert) {
   assert.expect(3);
   const doc = utilities.text2xml('<svg></svg>');
   const path = doc.createElementNS(NS.SVG, 'path');
-  path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
+  path.setAttribute('d', 'm0,0l5,0l0,5l-5,0l0,-5z');
   const bb = utilities.getPathBBox(path);
   assert.equal(typeof bb, 'object', 'BBox returned object');
   assert.ok(bb.x && !isNaN(bb.x));
@@ -181,7 +181,7 @@ QUnit.test('Test getPathDFromSegments', function (assert) {
 
   const doc = utilities.text2xml('<svg></svg>');
   const path = doc.createElementNS(NS.SVG, 'path');
-  path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
+  path.setAttribute('d', 'm0,0l5,0l0,5l-5,0l0,-5z');
   let d = getPathDFromSegments([
     ['M', [1, 2]],
     ['Z', []]

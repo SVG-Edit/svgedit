@@ -4370,8 +4370,8 @@ var svgEditorExtension_server_opensave = (function () {
       _createClass(_class46, [{
         key: "apply",
         value: function apply(ctx, x, y, width, height) {
-          if (typeof canvasRGBA_ === 'undefined') {
-            svg.log('ERROR: `setStackBlurCanvasRGBA` must be run for blur to work');
+          if (typeof canvasRGBA_ !== 'function') {
+            svg.log('ERROR: The function `setStackBlurCanvasRGBA` must be present for blur to work');
             return;
           } // Todo: This might not be a problem anymore with out `instanceof` fix
           // StackBlur requires canvas be on document

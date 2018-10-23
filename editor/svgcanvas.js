@@ -1850,10 +1850,10 @@ const mouseDown = function (evt) {
         let delayedStroke;
         if (iswebkit) {
           delayedStroke = function (ele) {
-            const _stroke = ele.getAttributeNS(null, 'stroke');
-            ele.removeAttributeNS(null, 'stroke');
+            const _stroke = ele.getAttribute('stroke');
+            ele.removeAttribute('stroke');
             // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
-            if (_stroke !== null) setTimeout(function () { ele.setAttributeNS(null, 'stroke', _stroke); }, 0);
+            if (_stroke !== null) setTimeout(function () { ele.setAttribute('stroke', _stroke); }, 0);
           };
         }
         mouseTarget.style.vectorEffect = 'non-scaling-stroke';
@@ -2308,8 +2308,8 @@ const mouseMove = function (evt) {
       y2 = xya.y;
     }
 
-    shape.setAttributeNS(null, 'x2', x2);
-    shape.setAttributeNS(null, 'y2', y2);
+    shape.setAttribute('x2', x2);
+    shape.setAttribute('y2', y2);
     break;
   } case 'foreignObject':
     // fall through
@@ -2354,7 +2354,7 @@ const mouseMove = function (evt) {
     if (curConfig.gridSnapping) {
       rad = snapToGrid(rad);
     }
-    shape.setAttributeNS(null, 'r', rad);
+    shape.setAttribute('r', rad);
     break;
   } case 'ellipse': {
     c = $(shape).attr(['cx', 'cy']);
@@ -2365,9 +2365,9 @@ const mouseMove = function (evt) {
       y = snapToGrid(y);
       cy = snapToGrid(cy);
     }
-    shape.setAttributeNS(null, 'rx', Math.abs(x - cx));
+    shape.setAttribute('rx', Math.abs(x - cx));
     const ry = Math.abs(evt.shiftKey ? (x - cx) : (y - cy));
-    shape.setAttributeNS(null, 'ry', ry);
+    shape.setAttribute('ry', ry);
     break;
   }
   case 'fhellipse':
@@ -2380,7 +2380,7 @@ const mouseMove = function (evt) {
   // Fallthrough
   case 'fhpath': {
     // dAttr += + realX + ',' + realY + ' ';
-    // shape.setAttributeNS(null, 'points', dAttr);
+    // shape.setAttribute('points', dAttr);
     end.x = realX; end.y = realY;
     if (controllPoint2.x && controllPoint2.y) {
       for (i = 0; i < STEP_COUNT - 1; i++) {

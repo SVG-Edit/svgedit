@@ -235,7 +235,7 @@ var svgEditorExtension_polygon = (function () {
                           strokeWidth = c.strokeWidth,
                           sides = c.sides,
                           edg = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) / 1.5;
-                      newFO.setAttributeNS(null, 'edge', edg);
+                      newFO.setAttribute('edge', edg);
                       var inradius = edg / 2 * cot(Math.PI / sides);
                       var circumradius = inradius * sec(Math.PI / sides);
                       var points = '';
@@ -248,11 +248,11 @@ var svgEditorExtension_polygon = (function () {
                       } // const poly = newFO.createElementNS(NS.SVG, 'polygon');
 
 
-                      newFO.setAttributeNS(null, 'points', points);
-                      newFO.setAttributeNS(null, 'fill', fill);
-                      newFO.setAttributeNS(null, 'stroke', strokecolor);
-                      newFO.setAttributeNS(null, 'stroke-width', strokeWidth); // newFO.setAttributeNS(null, 'transform', 'rotate(-90)');
-                      // const shape = newFO.getAttributeNS(null, 'shape');
+                      newFO.setAttribute('points', points);
+                      newFO.setAttribute('fill', fill);
+                      newFO.setAttribute('stroke', strokecolor);
+                      newFO.setAttribute('stroke-width', strokeWidth); // newFO.setAttribute('transform', 'rotate(-90)');
+                      // const shape = newFO.getAttribute('shape');
                       // newFO.append(poly);
                       // DrawPoly(cx, cy, sides, edg, orient);
 
@@ -280,7 +280,7 @@ var svgEditorExtension_polygon = (function () {
                     while (i--) {
                       var elem = selElems[i];
 
-                      if (elem && elem.getAttributeNS(null, 'shape') === 'regularPoly') {
+                      if (elem && elem.getAttribute('shape') === 'regularPoly') {
                         if (opts.selectedElement && !opts.multiselected) {
                           $('#polySides').val(elem.getAttribute('sides'));
                           showPanel(true);

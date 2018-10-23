@@ -5,6 +5,8 @@
 - Fix (jgraduate->jpicker): Actually fix issue with color val check when no
   other proper results (equal to "all"); prior fix had not covered
   original intention
+- Refactoring: Avoid redundant use of \*AttributeNS methods with
+  `null` value; just use \*Attribute methods without namespace
 
 # 3.0.0
 

@@ -153,8 +153,8 @@ export default {
           const {cx, cy, fill, strokecolor, strokeWidth, radialshift, point, orient} = c,
             circumradius = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5,
             inradius = circumradius / document.getElementById('starRadiusMulitplier').value;
-          newFO.setAttributeNS(null, 'r', circumradius);
-          newFO.setAttributeNS(null, 'r2', inradius);
+          newFO.setAttribute('r', circumradius);
+          newFO.setAttribute('r2', inradius);
 
           let polyPoints = '';
           for (let s = 0; point >= s; s++) {
@@ -185,11 +185,11 @@ export default {
               polyPoints += x + ',' + y + ' ';
             }
           }
-          newFO.setAttributeNS(null, 'points', polyPoints);
-          newFO.setAttributeNS(null, 'fill', fill);
-          newFO.setAttributeNS(null, 'stroke', strokecolor);
-          newFO.setAttributeNS(null, 'stroke-width', strokeWidth);
-          /* const shape = */ newFO.getAttributeNS(null, 'shape');
+          newFO.setAttribute('points', polyPoints);
+          newFO.setAttribute('fill', fill);
+          newFO.setAttribute('stroke', strokecolor);
+          newFO.setAttribute('stroke-width', strokeWidth);
+          /* const shape = */ newFO.getAttribute('shape');
 
           return {
             started: true
@@ -213,7 +213,7 @@ export default {
         let i = selElems.length;
         while (i--) {
           const elem = selElems[i];
-          if (elem && elem.getAttributeNS(null, 'shape') === 'star') {
+          if (elem && elem.getAttribute('shape') === 'star') {
             if (opts.selectedElement && !opts.multiselected) {
               // $('#starRadiusMulitplier').val(elem.getAttribute('r2'));
               $('#starNumPoints').val(elem.getAttribute('point'));

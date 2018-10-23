@@ -517,7 +517,7 @@ QUnit.test('Test ChangeElementCommand', function (assert) {
   assert.equal(justCalled, 'setHref');
 
   const line = document.createElementNS(NS.SVG, 'line');
-  line.setAttributeNS(null, 'class', 'newClass');
+  line.setAttribute('class', 'newClass');
   change = new history.ChangeElementCommand(line, {class: 'oldClass'});
 
   assert.ok(change.unapply);
@@ -526,10 +526,10 @@ QUnit.test('Test ChangeElementCommand', function (assert) {
   assert.equal(typeof change.apply, typeof function () {});
 
   change.unapply();
-  assert.equal(line.getAttributeNS(null, 'class'), 'oldClass');
+  assert.equal(line.getAttribute('class'), 'oldClass');
 
   change.apply();
-  assert.equal(line.getAttributeNS(null, 'class'), 'newClass');
+  assert.equal(line.getAttribute('class'), 'newClass');
 
   tearDown();
 });

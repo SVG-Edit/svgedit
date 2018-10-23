@@ -288,7 +288,7 @@ export default function ($) {
           const svgroot = document.createElementNS(svgns, 'svg');
           // Per https://www.w3.org/TR/xml-names11/#defaulting, the namespace for
           // attributes should have no value.
-          svgroot.setAttributeNS(null, 'viewBox', [0, 0, iconW, iconH].join(' '));
+          svgroot.setAttribute('viewBox', [0, 0, iconW, iconH].join(' '));
 
           let svg = elem.getElementsByTagNameNS(svgns, 'svg')[0];
 

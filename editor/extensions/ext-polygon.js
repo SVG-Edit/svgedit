@@ -220,7 +220,7 @@ export default {
           let y = opts.mouse_y;
           const {cx, cy, fill, strokecolor, strokeWidth, sides} = c, // {orient} = c,
             edg = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5;
-          newFO.setAttributeNS(null, 'edge', edg);
+          newFO.setAttribute('edge', edg);
 
           const inradius = (edg / 2) * cot(Math.PI / sides);
           const circumradius = inradius * sec(Math.PI / sides);
@@ -234,12 +234,12 @@ export default {
           }
 
           // const poly = newFO.createElementNS(NS.SVG, 'polygon');
-          newFO.setAttributeNS(null, 'points', points);
-          newFO.setAttributeNS(null, 'fill', fill);
-          newFO.setAttributeNS(null, 'stroke', strokecolor);
-          newFO.setAttributeNS(null, 'stroke-width', strokeWidth);
-          // newFO.setAttributeNS(null, 'transform', 'rotate(-90)');
-          // const shape = newFO.getAttributeNS(null, 'shape');
+          newFO.setAttribute('points', points);
+          newFO.setAttribute('fill', fill);
+          newFO.setAttribute('stroke', strokecolor);
+          newFO.setAttribute('stroke-width', strokeWidth);
+          // newFO.setAttribute('transform', 'rotate(-90)');
+          // const shape = newFO.getAttribute('shape');
           // newFO.append(poly);
           // DrawPoly(cx, cy, sides, edg, orient);
           return {
@@ -266,7 +266,7 @@ export default {
         let i = selElems.length;
         while (i--) {
           const elem = selElems[i];
-          if (elem && elem.getAttributeNS(null, 'shape') === 'regularPoly') {
+          if (elem && elem.getAttribute('shape') === 'regularPoly') {
             if (opts.selectedElement && !opts.multiselected) {
               $('#polySides').val(elem.getAttribute('sides'));
 

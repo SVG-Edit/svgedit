@@ -15152,12 +15152,12 @@ function SvgCanvas(container, config) {
 
               if (iswebkit) {
                 delayedStroke = function delayedStroke(ele) {
-                  var _stroke = ele.getAttributeNS(null, 'stroke');
+                  var _stroke = ele.getAttribute('stroke');
 
-                  ele.removeAttributeNS(null, 'stroke'); // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
+                  ele.removeAttribute('stroke'); // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
 
                   if (_stroke !== null) setTimeout(function () {
-                    ele.setAttributeNS(null, 'stroke', _stroke);
+                    ele.setAttribute('stroke', _stroke);
                   }, 0);
                 };
               }
@@ -15683,8 +15683,8 @@ function SvgCanvas(container, config) {
               y2 = xya.y;
             }
 
-            shape.setAttributeNS(null, 'x2', x2);
-            shape.setAttributeNS(null, 'y2', y2);
+            shape.setAttribute('x2', x2);
+            shape.setAttribute('y2', y2);
             break;
           }
 
@@ -15738,7 +15738,7 @@ function SvgCanvas(container, config) {
               rad = snapToGrid(rad);
             }
 
-            shape.setAttributeNS(null, 'r', rad);
+            shape.setAttribute('r', rad);
             break;
           }
 
@@ -15756,9 +15756,9 @@ function SvgCanvas(container, config) {
               cy = snapToGrid(cy);
             }
 
-            shape.setAttributeNS(null, 'rx', Math.abs(x - cx));
+            shape.setAttribute('rx', Math.abs(x - cx));
             var ry = Math.abs(evt.shiftKey ? x - cx : y - cy);
-            shape.setAttributeNS(null, 'ry', ry);
+            shape.setAttribute('ry', ry);
             break;
           }
 
@@ -15775,7 +15775,7 @@ function SvgCanvas(container, config) {
         case 'fhpath':
           {
             // dAttr += + realX + ',' + realY + ' ';
-            // shape.setAttributeNS(null, 'points', dAttr);
+            // shape.setAttribute('points', dAttr);
             end.x = realX;
             end.y = realY;
 
@@ -22001,7 +22001,7 @@ function jqPluginSVGIcons ($) {
           var svgroot = document.createElementNS(svgns, 'svg'); // Per https://www.w3.org/TR/xml-names11/#defaulting, the namespace for
           // attributes should have no value.
 
-          svgroot.setAttributeNS(null, 'viewBox', [0, 0, iconW, iconH].join(' '));
+          svgroot.setAttribute('viewBox', [0, 0, iconW, iconH].join(' '));
           var svg = elem.getElementsByTagNameNS(svgns, 'svg')[0]; // Make flexible by converting width/height to viewBox
 
           var w = svg.getAttribute('width');
