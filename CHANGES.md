@@ -1,4 +1,4 @@
-# ?
+# 3.1.0
 
 - Fix (Embedded editor): (Though embedding cross-origin iframes apparently
   only working now in Chrome if same origin or if https?--at least not
@@ -9,7 +9,7 @@
 - Fix (Embedded editor): Add events only after load is complete and
   svgCanvas is available; also log blocked error objects
 - Enhancement: For anyone visiting the ES6 modules entrance file without ESM
-    support, redirect to non-modular vesion
+    support, redirect to non-modular version
 - Enhancement: For PDF export, switch Chrome by default to "save" `outputType`
 - Refactoring (canvg): Better type-checking on `canvasRGBA_` (but set
   correctly by default anyways)
@@ -18,9 +18,14 @@
 - Refactoring: Display inline styles within a template for readability
   (until we may refactor as class swapping)
 - Refactoring: Line breaks
-- Docs: CHANGES clarifications
-- Docs (JSdoc): Denote optional arguments
+- Refactoring: Reorder path config to group (non-modular-dependent) image
+  paths together (and correct code comment)
+- Docs: CHANGES clarifications/fixes
+- Docs: Versions section (for migrating)
 - Docs: More info on `importLocale` for extensions
+- Docs: Add code comment re: use of `extIconsPath` in Mathjax
+- Docs (JSDoc): Denote optional arguments
+- Docs (JSDoc): Add @this to indicate `ExtensionInitResponse#callback`
 - Build: Add comment not to edit xdomain editor directly
 - Build: Remove unused `Makefile`
 
@@ -146,6 +151,7 @@
   `includeWith` as well as toolbarbuttons
 - Fix: Apply flyout arrows after extensions loaded (avoid race condition)
 - Fix: Ensure SVG icon of flyout right-arrow is cloned so can be applied to
+  more than one extension
 - Fix: Ensure line tool shows as selected when "L" key command is used
 - Fix: Add images (and references) for fallback (#135)
 - Fix (svgIcons plugin regression): Race condition
@@ -177,7 +183,7 @@
 
 - Security fix: 'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
   'langPath', 'jGraduatePath', and 'jspdfPath' were not being prevented
-  from URL
+  from URL setting
 - Breaking change: Rename "svgutils.js" to "utilities.js" (make in
   conformity with JSDoc module naming convention)
 - Breaking change: Rename "svgedit.js" to "namespaces.js" (to make clear
@@ -209,6 +215,8 @@
 - Breaking change: `RGBColor` must accept `new`
 - Breaking change: Avoid passing `canvg`/`buildCanvgCallback` to extensions
   (have them import)
+- Breaking change: Have `readLang` now return a value (lang and data) (as well
+  as `putLocale` which returns a call to it) but do not call `setLang`
 - Breaking change: Avoid adding `assignAttributes`, `addSVGElementFromJson`,
   `call`, `copyElem`, `findDefs`, `getElem`, `getId`, `getIntersectionList`,
   `getMouseTarget`, `getNextId`, `getUrlFromAttr`, `hasMatrixTransform`,
@@ -261,11 +269,11 @@
   type to PNG
 - Fix (extension): Wrong name for moinsave
 - Fix (extension): ForeignObject editor
-- Fix (Embedded API): Cross-domain may fail to even access `origin` or
-  `contentDocument`
+- Fix (Embedded API): Avoid treating as cross-origin if even access to
+  `origin` on `contentDocument` is restricted
 - Fix (Embedded API): Avoid adding URL to iframe src if there are no arguments
 - Fix (Embedded API): Handle origin issues (fixes #173)
-- Fix (Cross-domain usage): Recover from exceptions with `localStorage`
+- Fix (Cross-origin usage): Recover from exceptions with `localStorage`
 - Fix regression (Imagelib): Fix path for non-module version
 - Update: Update WebAppFind per new API changes
 - Enhancement: Link to rawgit/raw.githack for live master demos (fixes #43)
@@ -310,8 +318,8 @@
 - Refactoring: Fix `lang` and `dir` for locales (though not in use
   currently anyways)
 - Refactoring: Provide path config for canvg, jspdf
-- Refactoring: Drop code for extension as function (already requiring export
-  to be an object)
+- Refactoring: Drop code for `callback` as init function (still may be
+  present on *return* from the extension `init` method, however).
 - Refactoring: Object destructuring, `Object.entries`, Object shorthand,
   array extras, more camelCase variable names
 - Refactoring: Add a `Command` base class
@@ -715,7 +723,7 @@ git log 4bb15e0..253b4bf
 - Export to PNG, JPEG, BMP, WEBP (including quality control for JPEG/WEBP)
   for default editor and for the server_opensave extension
 - Added Star, Polygon, and Panning Extensions r2318 r2319 r2333
-- Added non-default extension, ext-xdomain-messaging.js, moving cross-domain
+- Added non-default extension, ext-xdomain-messaging.js, moving cross-origin
   messaging code (as used by the embedded editor) out of core and requiring,
   when the extension IS included, that configuration (an array
   "allowedOrigins") be set in order to allow access by any domain (even
@@ -769,7 +777,7 @@ git log 4bb15e0..253b4bf
   consequent potential loss of arguments or return values.
 - Potentially breaking API changes:
     * Disallowed "extPath", "imgPath", "langPath", and "jGraduatePath"
-      setting via URL and prevent cross-domain/cross-folder extensions
+      setting via URL and prevent cross-origin/cross-folder extensions
       being set by URL (security enhancement)
     * Deprecated "pngsave" option called by setCustomHandlers() in favor
       of "exportImage" (to accommodate export of other image types).
@@ -790,11 +798,11 @@ git log 4bb15e0..253b4bf
       integrity reasons. One must include the `ext-xdomain-messaging.js`
       extension and supply an array configuration item, `allowedOrigins`
       with potential values including: "\*" (to allow all
-      domains--strongly discouraged!), "null" as a string to allow
+      origins--strongly discouraged!), "null" as a string to allow
       `file:///` access, window.location.origin (to allow same domain
       access), or specific trusted origins. The embedded editor works
       without the extension if the main editor is on the same domain,
-      but if cross-domain control is needed, the `allowedOrigins` array
+      but if cross-origin control is needed, the `allowedOrigins` array
       must be supplied by a call to
       `svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]})`
       in the new `config.js` file.

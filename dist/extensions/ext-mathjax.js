@@ -238,6 +238,8 @@ var svgEditorExtension_mathjax = (function () {
                           svgEditor.curConfig.extIconsPath + mathjaxSrcSecure
                         );
                         */
+                        // We use `extIconsPath` here for now as it does not vary with
+                        //  the modular type as does `extPath`
 
                         importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure).then(function () {
                           // When MathJax is loaded get the div where the math will be rendered.

@@ -243,13 +243,13 @@ const callbacks = [],
     no_save_warning: false,
     // PATH CONFIGURATION
     // The following path configuration items are disallowed in the URL (as should any future path configurations)
+    langPath: 'locale/', // Default will be changed if this is a non-modular load
+    extPath: 'extensions/', // Default will be changed if this is a non-modular load
+    canvgPath: 'canvg/', // Default will be changed if this is a non-modular load
+    jspdfPath: 'jspdf/', // Default will be changed if this is a non-modular load
     imgPath: 'images/',
-    langPath: 'locale/', // Default will be changed if this is a modular load
-    extPath: 'extensions/', // Default will be changed if this is a modular load
-    canvgPath: 'canvg/', // Default will be changed if this is a modular load
-    jspdfPath: 'jspdf/', // Default will be changed if this is a modular load
-    extIconsPath: 'extensions/',
     jGraduatePath: 'jgraduate/images/',
+    extIconsPath: 'extensions/',
     // DOCUMENT PROPERTIES
     // Change the following to a preference (already in the Document Properties dialog)?
     dimensions: [640, 480],
@@ -703,8 +703,8 @@ editor.init = function () {
       // ones given potential to interact in undesirable
       // ways with other script resources
       [
-        'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
-        'langPath', 'jGraduatePath', 'jspdfPath'
+        'langPath', 'extPath', 'canvgPath', 'jspdfPath',
+        'imgPath', 'jGraduatePath', 'extIconsPath'
       ].forEach(function (pathConfig) {
         if (urldata[pathConfig]) {
           delete urldata[pathConfig];

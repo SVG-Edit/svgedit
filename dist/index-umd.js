@@ -14300,6 +14300,7 @@
 
     /**
      * @function module:svgcanvas.ExtensionInitResponse#callback
+     * @this module:SVGEditor
      * @param {module:svgcanvas.SvgCanvas#event:ext-callback} arg
      * @returns {undefined}
     */
@@ -27730,17 +27731,17 @@
     no_save_warning: false,
     // PATH CONFIGURATION
     // The following path configuration items are disallowed in the URL (as should any future path configurations)
-    imgPath: 'images/',
     langPath: 'locale/',
-    // Default will be changed if this is a modular load
+    // Default will be changed if this is a non-modular load
     extPath: 'extensions/',
-    // Default will be changed if this is a modular load
+    // Default will be changed if this is a non-modular load
     canvgPath: 'canvg/',
-    // Default will be changed if this is a modular load
+    // Default will be changed if this is a non-modular load
     jspdfPath: 'jspdf/',
-    // Default will be changed if this is a modular load
-    extIconsPath: 'extensions/',
+    // Default will be changed if this is a non-modular load
+    imgPath: 'images/',
     jGraduatePath: 'jgraduate/images/',
+    extIconsPath: 'extensions/',
     // DOCUMENT PROPERTIES
     // Change the following to a preference (already in the Document Properties dialog)?
     dimensions: [640, 480],
@@ -28281,7 +28282,7 @@
         // ways with other script resources
 
 
-        ['extPath', 'imgPath', 'extIconsPath', 'canvgPath', 'langPath', 'jGraduatePath', 'jspdfPath'].forEach(function (pathConfig) {
+        ['langPath', 'extPath', 'canvgPath', 'jspdfPath', 'imgPath', 'jGraduatePath', 'extIconsPath'].forEach(function (pathConfig) {
           if (urldata[pathConfig]) {
             delete urldata[pathConfig];
           }

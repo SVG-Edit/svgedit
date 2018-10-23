@@ -1102,6 +1102,7 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray) 
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#callback
+ * @this module:SVGEditor
  * @param {module:svgcanvas.SvgCanvas#event:ext-callback} arg
  * @returns {undefined}
 */
