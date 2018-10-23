@@ -1,10 +1,20 @@
 # ?
 
+- Fix (Embedded editor): (Though embedding cross-origin iframes apparently
+  only working now in Chrome if same origin or if https?--at least not
+  localhost of different ports), PDF export has been fixed (we download the
+  PDF to workaround data URI limitations in Chrome)
+- Fix (Embedded editor): Avoid using same origin shortcut if there is no
+  global available to use (e.g., if using the modular editor)
+- Fix (Embedded editor): Add events only after load is complete and
+  svgCanvas is available; also log blocked error objects
+- Enhancement: For PDF export, switch Chrome by default to "save" `outputType`
 - Refactoring (canvg): Better type-checking on `canvasRGBA_` (but set
   correctly by default anyways)
 - Refactoring: Avoid redundant use of \*AttributeNS methods with
   `null` value; just use \*Attribute methods without namespace
 - Docs: CHANGES clarifications
+- Docs (JSdoc): Denote optional arguments
 - Docs: More info on `importLocale` for extensions
 - Build: Remove unused `Makefile`
 

@@ -4228,7 +4228,7 @@ editor.init = function () {
         if (!customExportPDF && !chrome) {
           openExportWindow();
         }
-        svgCanvas.exportPDF(exportWindowName, chrome ? 'save' : undefined);
+        svgCanvas.exportPDF(exportWindowName);
       } else {
         if (!customExportImage) {
           openExportWindow();

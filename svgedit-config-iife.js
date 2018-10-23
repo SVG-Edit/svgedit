@@ -17564,15 +17564,17 @@
     * Generates a PDF based on the current image, then calls "exportedPDF" with
     * an object including the string, the data URL, and any issues found
     * @function module:svgcanvas.SvgCanvas#exportPDF
-    * @param {string} exportWindowName Will also be used for the download file name here
+    * @param {string} [exportWindowName] Will also be used for the download file name here
     * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
-    * @param {module:svgcanvas.PDFExportedCallback} cb
+    * @param {module:svgcanvas.PDFExportedCallback} [cb]
     * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
     * @returns {Promise} Resolves to {@link module:svgcanvas.PDFExportedResults}
     */
 
 
-    this.exportPDF = function (exportWindowName, outputType, cb) {
+    this.exportPDF = function (exportWindowName) {
+      var outputType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : isChrome() ? 'save' : undefined;
+      var cb = arguments.length > 2 ? arguments[2] : undefined;
       var that = this;
       return new Promise(
       /*#__PURE__*/
@@ -32144,7 +32146,7 @@
                     openExportWindow();
                   }
 
-                  svgCanvas.exportPDF(exportWindowName, chrome ? 'save' : undefined);
+                  svgCanvas.exportPDF(exportWindowName);
                   _context6.next = 13;
                   break;
 

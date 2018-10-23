@@ -3957,13 +3957,17 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb) {
 * Generates a PDF based on the current image, then calls "exportedPDF" with
 * an object including the string, the data URL, and any issues found
 * @function module:svgcanvas.SvgCanvas#exportPDF
-* @param {string} exportWindowName Will also be used for the download file name here
+* @param {string} [exportWindowName] Will also be used for the download file name here
 * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
-* @param {module:svgcanvas.PDFExportedCallback} cb
+* @param {module:svgcanvas.PDFExportedCallback} [cb]
 * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
 * @returns {Promise} Resolves to {@link module:svgcanvas.PDFExportedResults}
 */
-this.exportPDF = function (exportWindowName, outputType, cb) {
+this.exportPDF = function (
+  exportWindowName,
+  outputType = isChrome() ? 'save' : undefined,
+  cb
+) {
   const that = this;
   return new Promise(async (resolve, reject) => {
     if (!window.jsPDF) {

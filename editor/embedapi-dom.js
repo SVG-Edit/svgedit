@@ -4,6 +4,7 @@
 * @module EmbeddedSVGEditDOM
 */
 import EmbeddedSVGEdit from './embedapi.js';
+import {isChrome} from './browser.js';
 
 const $ = jQuery;
 
@@ -29,7 +30,6 @@ function saveSvg () {
 function exportPNG () {
   svgCanvas.getUIStrings()(function (uiStrings) {
     const str = uiStrings.notification.loadingImage;
-
     const exportWindow = window.open(
       'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
       'svg-edit-exportWindow'
@@ -51,22 +51,20 @@ function exportPDF () {
     return;
     */
 
-    const exportWindow = window.open(
-      'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
-      'svg-edit-exportWindow'
-    );
-    svgCanvas.exportPDF(exportWindow && exportWindow.name);
+    if (isChrome()) {
+      svgCanvas.exportPDF();
+    } else {
+      const exportWindow = window.open(
+        'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
+        'svg-edit-exportWindow'
+      );
+      svgCanvas.exportPDF(exportWindow && exportWindow.name);
+    }
   });
 }
 
-// Add event handlers
-$('#load').click(loadSvg);
-$('#save').click(saveSvg);
-$('#exportPNG').click(exportPNG);
-$('#exportPDF').click(exportPDF);
-
 const frameBase = 'https://raw.githack.com/SVG-Edit/svgedit/master';
-// const frameBase = 'http://localhost:8001';
+// const frameBase = 'http://localhost:8000';
 const framePath = '/editor/xdomain-svg-editor-es.html?extensions=ext-xdomain-messaging.js';
 const iframe = $('<iframe width="900px" height="600px" id="svgedit"></iframe>');
 iframe[0].src = frameBase + framePath +
@@ -81,11 +79,17 @@ iframe[0].addEventListener('load', function () {
   try {
     doc = frame.contentDocument || frame.contentWindow.document;
   } catch (err) {
-    console.log('Blocked from accessing document');
+    console.log('Blocked from accessing document', err);
     return;
   }
   const mainButton = doc.getElementById('main_button');
   mainButton.style.display = 'none';
+
+  // Add event handlers now that `svgCanvas` is ready
+  $('#load').click(loadSvg);
+  $('#save').click(saveSvg);
+  $('#exportPNG').click(exportPNG);
+  $('#exportPDF').click(exportPDF);
 });
 $('body').append(iframe);
 const frame = document.getElementById('svgedit');
