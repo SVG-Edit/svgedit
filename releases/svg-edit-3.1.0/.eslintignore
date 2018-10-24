@@ -1,0 +1,30 @@
+node_modules
+
+dist
+docs/jsdoc
+
+svgedit-config-es.js
+svgedit-config-iife.js
+svgedit-custom.css
+editor/xdomain-svgedit-config-iife.js
+
+# Vendor/minified files
+editor/jquery.min.js
+editor/jquery-ui
+
+# Previously minified though exporting
+editor/jquerybbq
+
+# Previously minified though exporting
+editor/js-hotkeys
+
+editor/jspdf/jspdf.min.js
+editor/jspdf/underscore-min.js
+
+editor/extensions/mathjax
+
+editor/external/*
+!editor/external/dom-polyfill
+editor/external/dom-polyfill/*
+!editor/external/dom-polyfill/dom-polyfill.js
+!editor/external/dynamic-import-polyfill
