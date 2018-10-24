@@ -34,7 +34,7 @@ const filesAndReplacements = [
         '<script src="../dist/dom-polyfill.js"></script>'
       ],
       [
-        '<script nomodule="" src="no-module-support-redirect.js"></script>',
+        '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
         ''
       ]
     ]
@@ -73,7 +73,7 @@ const filesAndReplacements = [
         '<script src="../dist/dom-polyfill.js"></script>'
       ],
       [
-        '<script nomodule="" src="no-module-support-redirect.js"></script>',
+        '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
         ''
       ]
     ]
@@ -96,7 +96,7 @@ const filesAndReplacements = [
         '<script defer="defer" src="../../../dist/extensions/imagelib/openclipart.js"></script>'
       ],
       [
-        '<script nomodule="" src="no-module-support-redirect.js"></script>',
+        '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
         ''
       ]
     ]
@@ -115,7 +115,7 @@ const filesAndReplacements = [
         '<script defer="defer" src="../../../dist/extensions/imagelib/index.js"></script>'
       ],
       [
-        '<script nomodule="" src="no-module-support-redirect.js"></script>',
+        '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
         ''
       ]
     ]
