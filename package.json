@@ -26,8 +26,8 @@
     "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
     "test-no-build": "npm run eslint && npm run build-html && npm run build-config && opn http://localhost:8000/test/all_tests.html && static -p 8000",
     "test-prep": "npm run eslint && npm run build-html && npm run rollup && npm run build-config",
-    "ui-tests": "testcafe chrome test/ui-tests/**/*.js",
-    "test": "npm run test-prep && opn http://localhost:8000/test/all_tests.html && static -p 8000"
+    "test": "testcafe chrome test/ui-tests/**/*.js",
+    "browser-test": "npm run test-prep && opn http://localhost:8000/test/all_tests.html && static -p 8000"
   },
   "repository": {
     "type": "git",

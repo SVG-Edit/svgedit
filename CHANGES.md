@@ -1,3 +1,8 @@
+# ?
+
+- npm: Per convention, switch Node-based (headless browser) testing script to
+    `npm test` and change the browser tests to "browser-test"
+
 # 3.1.0
 
 - Fix (Embedded editor): (Though cross-origin DOM access of iframes apparently
