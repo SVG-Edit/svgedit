@@ -1530,7 +1530,9 @@ editor.init = function () {
     $.confirm = function (msg, cb) { dbox('confirm', msg, cb); };
     $.process_cancel = function (msg, cb) { dbox('process', msg, cb); };
     $.prompt = function (msg, txt, cb) { dbox('prompt', msg, cb, txt); };
-    $.select = function (msg, opts, cb, changeCb, txt, checkbox) { dbox('select', msg, cb, txt, opts, changeCb, checkbox); };
+    $.select = function (msg, opts, cb, changeCb, txt, checkbox) {
+      dbox('select', msg, cb, txt, opts, changeCb, checkbox);
+    };
   }());
 
   const setSelectMode = function () {
@@ -1538,7 +1540,15 @@ editor.init = function () {
     if (curr.length && curr[0].id !== 'tool_select') {
       curr.removeClass('tool_button_current').addClass('tool_button');
       $('#tool_select').addClass('tool_button_current').removeClass('tool_button');
-      $('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
+      $('#styleoverrides').text(`
+        #svgcanvas svg * {
+          cursor: move;
+          pointer-events: all;
+        }
+        #svgcanvas svg {
+          cursor: default;
+        }
+      `);
     }
     svgCanvas.setMode('select');
     workarea.css('cursor', 'auto');
@@ -1811,7 +1821,15 @@ editor.init = function () {
   const clickSelect = editor.clickSelect = function () {
     if (toolButtonClick('#tool_select')) {
       svgCanvas.setMode('select');
-      $('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all}, #svgcanvas svg{cursor:default}');
+      $('#styleoverrides').text(`
+        #svgcanvas svg * {
+          cursor: move;
+          pointer-events: all;
+        }
+        #svgcanvas svg {
+          cursor: default;
+        }
+      `);
     }
   };
 
@@ -2436,7 +2454,9 @@ editor.init = function () {
       $('#selLayerNames').removeAttr('disabled').val(currentLayerName);
 
       // Enable regular menu options
-      canvMenu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
+      canvMenu.enableContextMenuItems(
+        '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back'
+      );
     } else {
       $('#selLayerNames').attr('disabled', 'disabled');
     }
@@ -2446,7 +2466,11 @@ editor.init = function () {
     // Test support
     if (supportsNonSS) { return; }
 
-    const rule = '#workarea.wireframe #svgcontent * { stroke-width: ' + 1 / svgCanvas.getZoom() + 'px; }';
+    const rule = `
+      #workarea.wireframe #svgcontent * {
+        stroke-width: ${1 / svgCanvas.getZoom()}px;
+      }
+    `;
     $('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : '');
   };
 
@@ -3072,7 +3096,8 @@ editor.init = function () {
             '<span id="' + tool.id + '_label">' +
             tool.label + ':</span>' +
             '<input id="' + tool.id + '" title="' + tool.title +
-            '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>';
+            '" size="' + (tool.size || '4') +
+            '" value="' + (tool.defval || '') + '" type="text"/></label>';
 
           // Creates the tool, hides & adds it, returns the select element
 
@@ -3429,7 +3454,8 @@ editor.init = function () {
 
   let str = '<div class="palette_item" data-rgb="none"></div>';
   $.each(palette, function (i, item) {
-    str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
+    str += '<div class="palette_item" style="background-color: ' + item +
+      ';" data-rgb="' + item + '"></div>';
   });
   $('#palette').append(str);
 
@@ -4594,7 +4620,10 @@ editor.init = function () {
   // NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta
   // in Opera and Chrome
   if (isMac() && !window.opera) {
-    const shortcutButtons = ['tool_clear', 'tool_save', 'tool_source', 'tool_undo', 'tool_redo', 'tool_clone'];
+    const shortcutButtons = [
+      'tool_clear', 'tool_save', 'tool_source',
+      'tool_undo', 'tool_redo', 'tool_clone'
+    ];
     let i = shortcutButtons.length;
     while (i--) {
       const button = document.getElementById(shortcutButtons[i]);
@@ -4803,7 +4832,10 @@ editor.init = function () {
         $('#image_save_opts [value=embed]').attr('disabled', 'disabled');
         $('#image_save_opts input').val(['ref']);
         $.pref('img_save', 'ref');
-        $('#image_opt_embed').css('color', '#666').attr('title', uiStrings.notification.featNotSupported);
+        $('#image_opt_embed').css('color', '#666').attr(
+          'title',
+          uiStrings.notification.featNotSupported
+        );
       }
     });
   }, 1000);
@@ -5097,7 +5129,10 @@ editor.init = function () {
   // Prevent browser from erroneously repopulating fields
   $('input,select').attr('autocomplete', 'off');
 
-  const dialogSelectors = ['#tool_source_cancel', '#tool_docprops_cancel', '#tool_prefs_cancel', '.overlay'];
+  const dialogSelectors = [
+    '#tool_source_cancel', '#tool_docprops_cancel',
+    '#tool_prefs_cancel', '.overlay'
+  ];
   /**
    * Associate all button actions as well as non-button keyboard shortcuts
    * @namespace {PlainObject} module:SVGEditor~Actions
@@ -5122,7 +5157,8 @@ editor.init = function () {
     const toolButtons = [
       {sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
       {sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
-      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true], parent: '#tools_line', prepend: true},
+      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true],
+        parent: '#tools_line', prepend: true},
       {sel: '#tool_rect', fn: clickRect, evt: 'mouseup',
         key: ['R', true], parent: '#tools_rect', icon: 'rect'},
       {sel: '#tool_square', fn: clickSquare, evt: 'mouseup',
@@ -5443,15 +5479,31 @@ editor.init = function () {
   });
 
   // init SpinButtons
-  $('#rect_rx').SpinButton({min: 0, max: 1000, stateObj, callback: changeRectRadius});
-  $('#stroke_width').SpinButton({min: 0, max: 99, smallStep: 0.1, stateObj, callback: changeStrokeWidth});
-  $('#angle').SpinButton({min: -180, max: 180, step: 5, stateObj, callback: changeRotationAngle});
-  $('#font_size').SpinButton({min: 0.001, stepfunc: stepFontSize, stateObj, callback: changeFontSize});
-  $('#group_opacity').SpinButton({min: 0, max: 100, step: 5, stateObj, callback: changeOpacity});
-  $('#blur').SpinButton({min: 0, max: 10, step: 0.1, stateObj, callback: changeBlur});
-  $('#zoom').SpinButton({min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, stateObj, callback: changeZoom})
-    // Set default zoom
-    .val(svgCanvas.getZoom() * 100);
+  $('#rect_rx').SpinButton({
+    min: 0, max: 1000, stateObj, callback: changeRectRadius
+  });
+  $('#stroke_width').SpinButton({
+    min: 0, max: 99, smallStep: 0.1, stateObj, callback: changeStrokeWidth
+  });
+  $('#angle').SpinButton({
+    min: -180, max: 180, step: 5, stateObj, callback: changeRotationAngle
+  });
+  $('#font_size').SpinButton({
+    min: 0.001, stepfunc: stepFontSize, stateObj, callback: changeFontSize
+  });
+  $('#group_opacity').SpinButton({
+    min: 0, max: 100, step: 5, stateObj, callback: changeOpacity
+  });
+  $('#blur').SpinButton({
+    min: 0, max: 10, step: 0.1, stateObj, callback: changeBlur
+  });
+  $('#zoom').SpinButton({
+    min: 0.001, max: 10000, step: 50, stepfunc: stepZoom,
+    stateObj, callback: changeZoom
+  // Set default zoom
+  }).val(
+    svgCanvas.getZoom() * 100
+  );
 
   $('#workarea').contextMenu(
     {

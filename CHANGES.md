@@ -13,6 +13,9 @@
   correctly by default anyways)
 - Refactoring: Avoid redundant use of \*AttributeNS methods with
   `null` value; just use \*Attribute methods without namespace
+- Refactoring: Display inline styles within a template for readability
+  (until we may refactor as class swapping)
+- Refactoring: Line breaks
 - Docs: CHANGES clarifications
 - Docs (JSdoc): Denote optional arguments
 - Docs: More info on `importLocale` for extensions

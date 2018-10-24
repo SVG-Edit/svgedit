@@ -29218,7 +29218,7 @@
       if (curr.length && curr[0].id !== 'tool_select') {
         curr.removeClass('tool_button_current').addClass('tool_button');
         $$b('#tool_select').addClass('tool_button_current').removeClass('tool_button');
-        $$b('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all} #svgcanvas svg{cursor:default}');
+        $$b('#styleoverrides').text("\n        #svgcanvas svg * {\n          cursor: move;\n          pointer-events: all;\n        }\n        #svgcanvas svg {\n          cursor: default;\n        }\n      ");
       }
 
       svgCanvas.setMode('select');
@@ -29514,7 +29514,7 @@
     var clickSelect = editor.clickSelect = function () {
       if (toolButtonClick('#tool_select')) {
         svgCanvas.setMode('select');
-        $$b('#styleoverrides').text('#svgcanvas svg *{cursor:move;pointer-events:all}, #svgcanvas svg{cursor:default}');
+        $$b('#styleoverrides').text("\n        #svgcanvas svg * {\n          cursor: move;\n          pointer-events: all;\n        }\n        #svgcanvas svg {\n          cursor: default;\n        }\n      ");
       }
     };
     /**
@@ -30174,7 +30174,7 @@
         return;
       }
 
-      var rule = '#workarea.wireframe #svgcontent * { stroke-width: ' + 1 / svgCanvas.getZoom() + 'px; }';
+      var rule = "\n      #workarea.wireframe #svgcontent * {\n        stroke-width: ".concat(1 / svgCanvas.getZoom(), "px;\n      }\n    ");
       $$b('#wireframe_rules').text(workarea.hasClass('wireframe') ? rule : '');
     };
 
@@ -33803,9 +33803,9 @@
       step: 50,
       stepfunc: stepZoom,
       stateObj: stateObj,
-      callback: changeZoom
-    }) // Set default zoom
-    .val(svgCanvas.getZoom() * 100);
+      callback: changeZoom // Set default zoom
+
+    }).val(svgCanvas.getZoom() * 100);
     $$b('#workarea').contextMenu({
       menu: 'cmenu_canvas',
       inSpeed: 0
