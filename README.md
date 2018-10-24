@@ -92,8 +92,8 @@ incorporating SVGEdit.
 
 ## Recent news
 
-- 2018-10-24 Published 3.1.0 (Embedded editor fixes and redirect on modular
-    page for non-module-support; versions document (for migrating))
+- 2018-10-24 Published 3.1.0 (Redirect on modular page for non-module-support;
+  versions document (for migrating))
 - 2018-10-22 Published 3.0.1 (Revert fix affecting polygon selection)
 - 2018-10-21 Published 3.0.0 (misc. improvements including centering canvas and
   key locale fixes since last RC)

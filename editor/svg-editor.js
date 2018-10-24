@@ -1738,9 +1738,7 @@ editor.init = function () {
   const exportHandler = function (win, data) {
     const {issues, exportWindowName} = data;
 
-    if (exportWindowName) {
-      exportWindow = window.open(Utils.blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
-    }
+    exportWindow = window.open(Utils.blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!exportWindow || exportWindow.closed) {
       $.alert(uiStrings.notification.popupWindowBlocked);

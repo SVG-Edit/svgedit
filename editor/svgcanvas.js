@@ -3871,11 +3871,13 @@ let canvg;
 * @param {Float} [quality] Between 0 and 1
 * @param {string} [exportWindowName]
 * @param {module:svgcanvas.ImageExportedCallback} [cb]
+* @param {PlainObject} [opts]
+* @param {boolean} [opts.avoidEvent]
 * @fires module:svgcanvas.SvgCanvas#event:exported
 * @todo Confirm/fix ICO type
 * @returns {Promise} Resolves to {@link module:svgcanvas.ImageExportedResults}
 */
-this.rasterExport = function (imgType, quality, exportWindowName, cb) {
+this.rasterExport = function (imgType, quality, exportWindowName, cb, opts = {}) {
   const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
   const mimeType = 'image/' + type.toLowerCase();
   const {issues, issueCodes} = getIssues();
@@ -3905,7 +3907,9 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb) {
         datauri, bloburl, svg, issues, issueCodes, type: imgType,
         mimeType, quality, exportWindowName
       };
-      call('exported', obj);
+      if (!opts.avoidEvent) {
+        call('exported', obj);
+      }
       if (cb) {
         cb(obj);
       }

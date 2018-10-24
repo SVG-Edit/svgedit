@@ -30,11 +30,14 @@ function saveSvg () {
 function exportPNG () {
   svgCanvas.getUIStrings()(function (uiStrings) {
     const str = uiStrings.notification.loadingImage;
-    const exportWindow = window.open(
-      'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
-      'svg-edit-exportWindow'
-    );
-    svgCanvas.rasterExport('PNG', null, exportWindow && exportWindow.name);
+    let exportWindow;
+    if (!isChrome()) {
+      exportWindow = window.open(
+        'data:text/html;charset=utf-8,' + encodeURIComponent('<title>' + str + '</title><h1>' + str + '</h1>'),
+        'svg-edit-exportWindow'
+      );
+    }
+    svgCanvas.rasterExport('PNG', null, exportWindow && exportWindow.name)();
   });
 }
 
@@ -52,6 +55,7 @@ function exportPDF () {
     */
 
     if (isChrome()) {
+      // Chrome will open an extra window if we follow the approach below
       svgCanvas.exportPDF();
     } else {
       const exportWindow = window.open(
@@ -64,7 +68,7 @@ function exportPDF () {
 }
 
 const frameBase = 'https://raw.githack.com/SVG-Edit/svgedit/master';
-// const frameBase = 'http://localhost:8000';
+// const frameBase = 'http://localhost:8001';
 const framePath = '/editor/xdomain-svg-editor-es.html?extensions=ext-xdomain-messaging.js';
 const iframe = $('<iframe width="900px" height="600px" id="svgedit"></iframe>');
 iframe[0].src = frameBase + framePath +
@@ -80,10 +84,12 @@ iframe[0].addEventListener('load', function () {
     doc = frame.contentDocument || frame.contentWindow.document;
   } catch (err) {
     console.log('Blocked from accessing document', err);
-    return;
   }
-  const mainButton = doc.getElementById('main_button');
-  mainButton.style.display = 'none';
+  if (doc) {
+    // Todo: Provide a way to get this to occur by `postMessage`
+    const mainButton = doc.getElementById('main_button');
+    mainButton.style.display = 'none';
+  }
 
   // Add event handlers now that `svgCanvas` is ready
   $('#load').click(loadSvg);

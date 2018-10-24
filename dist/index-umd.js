@@ -17423,12 +17423,15 @@
     * @param {Float} [quality] Between 0 and 1
     * @param {string} [exportWindowName]
     * @param {module:svgcanvas.ImageExportedCallback} [cb]
+    * @param {PlainObject} [opts]
+    * @param {boolean} [opts.avoidEvent]
     * @fires module:svgcanvas.SvgCanvas#event:exported
     * @todo Confirm/fix ICO type
     * @returns {Promise} Resolves to {@link module:svgcanvas.ImageExportedResults}
     */
 
     this.rasterExport = function (imgType, quality, exportWindowName, cb) {
+      var opts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
       var type = imgType === 'ICO' ? 'BMP' : imgType || 'PNG';
       var mimeType = 'image/' + type.toLowerCase();
 
@@ -17461,7 +17464,10 @@
                       quality: quality,
                       exportWindowName: exportWindowName
                     };
-                    call('exported', obj);
+
+                    if (!opts.avoidEvent) {
+                      call('exported', obj);
+                    }
 
                     if (cb) {
                       cb(obj);
@@ -29422,10 +29428,7 @@
     var exportHandler = function exportHandler(win, data) {
       var issues = data.issues,
           exportWindowName = data.exportWindowName;
-
-      if (exportWindowName) {
-        exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
-      }
+      exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
       if (!exportWindow || exportWindow.closed) {
         $$b.alert(uiStrings$1.notification.popupWindowBlocked);

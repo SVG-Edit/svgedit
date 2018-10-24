@@ -1,16 +1,21 @@
 # 3.1.0
 
-- Fix (Embedded editor): (Though embedding cross-origin iframes apparently
-  only working now in Chrome if same origin or if https?--at least not
-  localhost of different ports), PDF export has been fixed (we download the
-  PDF to workaround data URI limitations in Chrome)
+- Fix (Embedded editor): (Though cross-origin DOM access of iframes apparently
+  doesn't work now in Chrome or Firefox (which we had been using to disable a
+  button) nor does cross-origin storage access work in Chrome), PDF export has
+  been fixed (we download the PDF to workaround data URI limitations in Chrome)
+  and we avoid opening an extra tab in Chrome PNG export
 - Fix (Embedded editor): Avoid using same origin shortcut if there is no
   global available to use (e.g., if using the modular editor)
 - Fix (Embedded editor): Add events only after load is complete and
   svgCanvas is available; also log blocked error objects
+- Fix: Have export handler, if triggered, always open a window even if no
+  window name was given (needed in Chrome to avoid opening an extra window)
 - Enhancement: For anyone visiting the ES6 modules entrance file without ESM
     support, redirect to non-modular version
 - Enhancement: For PDF export, switch Chrome by default to "save" `outputType`
+- Enhancement: Add `opts` object to `rasterExport` with `avoidEvent` property
+  to avoid calling the `exported` event
 - Refactoring (canvg): Better type-checking on `canvasRGBA_` (but set
   correctly by default anyways)
 - Refactoring: Avoid redundant use of \*AttributeNS methods with
@@ -20,7 +25,8 @@
 - Refactoring: Line breaks
 - Refactoring: Reorder path config to group (non-modular-dependent) image
   paths together (and correct code comment)
-- Docs: CHANGES clarifications/fixes
+- Docs (CHANGES): clarifications/fixes
+- Docs (README): Deemphasize unstable embedded editor fixes
 - Docs: Versions section (for migrating)
 - Docs: More info on `importLocale` for extensions
 - Docs: Add code comment re: use of `extIconsPath` in Mathjax
