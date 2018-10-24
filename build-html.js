@@ -32,6 +32,22 @@ const filesAndReplacements = [
       [
         '<script src="external/dom-polyfill/dom-polyfill.js"></script>',
         '<script src="../dist/dom-polyfill.js"></script>'
+      ],
+      [
+        '<script nomodule="" src="no-module-support-redirect.js"></script>',
+        ''
+      ]
+    ]
+  },
+  // Now that file has copied, we can replace the DOCTYPE in xdomain
+  {
+    input: 'editor/xdomain-svg-editor-es.html',
+    output: 'editor/xdomain-svg-editor-es.html',
+    replacements: [
+      [
+        '<!DOCTYPE html>',
+        `<!DOCTYPE html>
+<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->`
       ]
     ]
   },
@@ -55,6 +71,10 @@ const filesAndReplacements = [
       [
         '<script src="external/dom-polyfill/dom-polyfill.js"></script>',
         '<script src="../dist/dom-polyfill.js"></script>'
+      ],
+      [
+        '<script nomodule="" src="no-module-support-redirect.js"></script>',
+        ''
       ]
     ]
   },
@@ -74,6 +94,10 @@ const filesAndReplacements = [
       [
         '<script type="module" src="openclipart.js"></script>',
         '<script defer="defer" src="../../../dist/extensions/imagelib/openclipart.js"></script>'
+      ],
+      [
+        '<script nomodule="" src="no-module-support-redirect.js"></script>',
+        ''
       ]
     ]
   },
@@ -89,32 +113,35 @@ const filesAndReplacements = [
       [
         '<script type="module" src="index.js"></script>',
         '<script defer="defer" src="../../../dist/extensions/imagelib/index.js"></script>'
+      ],
+      [
+        '<script nomodule="" src="no-module-support-redirect.js"></script>',
+        ''
       ]
     ]
   }
 ];
 
-filesAndReplacements.reduce((p, {input, output, replacements}) => {
-  return p.then(async () => {
-    let data;
-    try {
-      data = await fs.readFile(input, 'utf8');
-    } catch (err) {
-      console.log(`Error reading ${input} file`, err);
-    }
+filesAndReplacements.reduce(async (p, {input, output, replacements}) => {
+  await p;
+  let data;
+  try {
+    data = await fs.readFile(input, 'utf8');
+  } catch (err) {
+    console.log(`Error reading ${input} file`, err);
+  }
 
-    data = replacements.reduce((s, [find, replacement]) => {
-      return s.replace(find, replacement);
-    }, data);
+  data = replacements.reduce((s, [find, replacement]) => {
+    return s.replace(find, replacement);
+  }, data);
 
-    try {
-      await fs.writeFile(output, data);
-    } catch (err) {
-      console.log(`Error writing file: ${err}`, err);
-      return;
-    }
-    console.log(`Completed file ${input} rewriting!`);
-  });
+  try {
+    await fs.writeFile(output, data);
+  } catch (err) {
+    console.log(`Error writing file: ${err}`, err);
+    return;
+  }
+  console.log(`Completed file ${input} rewriting!`);
 }, Promise.resolve()).then(() => {
   console.log('Finished!');
 });

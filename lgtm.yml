@@ -3,5 +3,6 @@ extraction:
     index:
       filters:
         - exclude: "editor/xdomain-svgedit-config-iife.js"
+        - exclude: "editor/no-module-support-redirect.js"
         - exclude: "svgedit-config-iife.js"
         - exclude: "dist"

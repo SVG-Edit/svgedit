@@ -8,6 +8,8 @@
   global available to use (e.g., if using the modular editor)
 - Fix (Embedded editor): Add events only after load is complete and
   svgCanvas is available; also log blocked error objects
+- Enhancement: For anyone visiting the ES6 modules entrance file without ESM
+    support, redirect to non-modular vesion
 - Enhancement: For PDF export, switch Chrome by default to "save" `outputType`
 - Refactoring (canvg): Better type-checking on `canvasRGBA_` (but set
   correctly by default anyways)
@@ -19,6 +21,7 @@
 - Docs: CHANGES clarifications
 - Docs (JSdoc): Denote optional arguments
 - Docs: More info on `importLocale` for extensions
+- Build: Add comment not to edit xdomain editor directly
 - Build: Remove unused `Makefile`
 
 # 3.0.1
