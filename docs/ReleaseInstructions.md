@@ -36,7 +36,11 @@ The above steps can be done on a fork and committed via a pull request.
 
 1. Switch to the `gh-pages` branch with `git checkout gh-pages`.
 1. Run the `build.js` executable (`npm run build` if within the project root
-    directory).
+    directory); **Please note: this script is only available on `gh-pages` and
+    currently assumes that one has the `gh-pages` branch checked out within
+    a folder that is in a sibling directory to a folder named `svgedit` that
+    is on the `master` branch and whose files and version info will be copied
+    over to `gh-pages` in making the "latest" and specific version builds**
 1. Commit these changes with `git commit -m "Updating files for release X.Y.Z"`.
 1. Switch back to the `master` branch with `git checkout master`.
 1. Ensure this step worked by visiting
