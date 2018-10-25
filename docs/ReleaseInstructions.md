@@ -75,3 +75,5 @@ You will need to be a member of the SVG-Edit GitHub group to do this step.
 ## Publish to npm
 
 1. `npm publish`
+
+You will need to be a member of the npm group to do this step.

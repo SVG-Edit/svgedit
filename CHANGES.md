@@ -1,3 +1,7 @@
+# ?
+
+- Docs (ReleaseInstructions): Clarify need for npm permissions to publish
+
 # 3.1.1
 
 - Fix: Save broken on Firefox (since FF version?)
