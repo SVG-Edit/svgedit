@@ -1,5 +1,11 @@
 # ?
 
+- Docs (ReleaseInstructions): Clarify build instructions for release
+- Docs: For clarity, rename `grep-jsdoc.js` to
+  `jsdoc-check-overly-generic-types.js`
+- Docs: Move `GenericCallback` to `typedefs.js` for possible (if unlikely)
+  reuse
+- npm: Update "grep-doc" to "types-doc" for greater clarity
 - npm: Per convention, switch Node-based (headless browser) testing script to
     `npm test` and change the browser tests to "browser-test"
 
