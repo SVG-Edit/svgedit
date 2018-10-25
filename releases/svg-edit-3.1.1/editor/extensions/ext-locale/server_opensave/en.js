@@ -1,0 +1,3 @@
+export default {
+  uploading: 'Uploading...'
+};

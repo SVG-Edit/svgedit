@@ -1,0 +1,20 @@
+{
+  "name": "SVG-edit",
+  "description": "A fast, web-based, Javascript-driven SVG editor that works in any modern browser",
+  "version": "2.6",
+  "app": {
+    "urls": [
+      "*://svg-edit.googlecode.com/svn/tags/stable/"
+    ],
+    "launch": {
+      "web_url": "http://svg-edit.googlecode.com/svn/tags/stable/editor/svg-editor.html"
+    }
+  },
+  "icons": {
+    "128": "icon_128.png"
+  },
+  "permissions": [
+    "unlimitedStorage",
+    "notifications"
+  ]
+}
