@@ -65,8 +65,7 @@ function reduceFalseMatches (file, res) {
   case 'editor/embedapi.js':
     res.line = res.line.filter((line) => {
       return ![
-        '* @param {...*} args Signature dependent on the function',
-        '* @returns {*} Return dependent on the function'
+        '* @param {...*} args Signature dependent on the function'
       ].includes(line);
     });
     break;
@@ -76,7 +75,9 @@ function reduceFalseMatches (file, res) {
         '* @typedef {number} Float',
         '* @typedef {object} ArbitraryObject',
         '* @typedef {object} ArbitraryModule',
-        '* @typedef {*} Any'
+        '* @typedef {*} Any',
+        '* @param {...*} args Signature dependent on the function',
+        '* @returns {*} Return dependent on the function'
       ].includes(line);
     });
     break;

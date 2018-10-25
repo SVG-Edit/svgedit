@@ -11,6 +11,12 @@
 */
 
 /**
+* @callback GenericCallback
+* @param {...*} args Signature dependent on the function
+* @returns {*} Return dependent on the function
+*/
+
+/**
 * This should only be used for objects known to be potentially arbitrary in form.
 * For those whose determination has not yet been made, simply use type `object`
 * (or type `?` if it may also be a primitive).

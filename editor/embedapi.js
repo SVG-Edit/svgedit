@@ -6,13 +6,8 @@
 let cbid = 0;
 
 /**
-* @callback module:EmbeddedSVGEdit.GenericCallback
-* @param {...*} args Signature dependent on the function
-* @returns {*} Return dependent on the function
-*/
-/**
 * @callback module:EmbeddedSVGEdit.CallbackSetter
-* @param {module:EmbeddedSVGEdit.GenericCallback} newCallback Callback to be stored (signature dependent on function)
+* @param {GenericCallback} newCallback Callback to be stored (signature dependent on function)
 * @returns {undefined}
 */
 /**
@@ -339,7 +334,7 @@ class EmbeddedSVGEdit {
   /**
   * @param {string} name
   * @param {ArgumentsArray} args Signature dependent on function
-  * @param {module:EmbeddedSVGEdit.GenericCallback} callback
+  * @param {GenericCallback} callback
   * @returns {Integer}
   */
   send (name, args, callback) {

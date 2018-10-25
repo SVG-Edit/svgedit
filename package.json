@@ -13,7 +13,7 @@
   "scripts": {
     "prepublishOnly": "npm run test-prep",
     "build-config": "rollup -c rollup-config.config.js",
-    "grep-doc": "node grep-jsdoc",
+    "types-doc": "node jsdoc-check-overly-generic-types.js",
     "open-es-allext": "opn http://localhost:8000/editor/svg-editor-es.html?extensions=ext-arrows.js,ext-closepath.js,ext-foreignobject.js,ext-helloworld.js,ext-mathjax.js,ext-php_savefile.js,ext-server_moinsave.js,ext-server_opensave.js,ext-webappfind.js,ext-xdomain-messaging.js",
     "build-doc": "rm -rf docs/jsdoc/*;jsdoc --pedantic -c docs/jsdoc-config.json editor",
     "build-html": "node build-html.js",
