@@ -1,10 +1,15 @@
-# ?
+# 3.1.1
 
+- Fix: Save broken on Firefox (since FF version?)
 - Docs (ReleaseInstructions): Clarify build instructions for release
+- Docs (ReleaseInstructions): Update per new testing; update
+  `grep-doc` -> `types-doc` and indicate current failing status; indicate
+  when `build-doc` will be used; clarify `npm pack`
 - Docs: For clarity, rename `grep-jsdoc.js` to
   `jsdoc-check-overly-generic-types.js`
 - Docs: Move `GenericCallback` to `typedefs.js` for possible (if unlikely)
   reuse
+- Docs: Mention potentially more frequent release schedule
 - npm: Update "grep-doc" to "types-doc" for greater clarity
 - npm: Per convention, switch Node-based (headless browser) testing script to
     `npm test` and change the browser tests to "browser-test"

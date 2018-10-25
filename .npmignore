@@ -4,5 +4,5 @@ test
 
 .github/ISSUE_TEMPLATE/bug_report.md
 build
-grep-jsdoc.js
+jsdoc-check-overly-generic-types.js
 lgtm.yml

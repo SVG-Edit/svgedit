@@ -1702,12 +1702,15 @@ editor.init = function () {
     const a = document.createElement('a');
     a.href = 'data:image/svg+xml;base64,' + Utils.encode64(svg);
     a.download = 'icon.svg';
+    a.style = 'display: none;';
+    document.body.append(a); // Need to append for Firefox
 
     a.click();
 
     // Alert will only appear the first time saved OR the
     //   first time the bug is encountered
     let done = $.pref('save_notice_done');
+
     if (done !== 'all') {
       let note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
       // Check if FF and has <defs/>
