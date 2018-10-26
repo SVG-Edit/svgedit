@@ -1,5 +1,6 @@
 # ?
 
+- Docs (3.0.0): Clarify
 - Docs (ReleaseInstructions): Clarify need for npm permissions to publish
 
 # 3.1.1
