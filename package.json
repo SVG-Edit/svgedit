@@ -53,6 +53,15 @@
     "url": "https://github.com/SVG-Edit/svgedit/issues"
   },
   "homepage": "https://github.com/SVG-Edit/svgedit#readme",
+  "browserslist": [
+      "cover 100%",
+      "last 3 Chrome versions", "last 3 Firefox versions", "last 3 Edge versions",
+      "last 3 Safari versions", "last 3 ios_saf versions", "last 3 Android versions",
+      "last 3 Opera versions", "last 3 IE versions", "last 3 op_mini versions",
+      "last 3 bb versions", "last 3 op_mob versions", "last 3 and_chr versions",
+      "last 3 and_ff versions", "last 3 ie_mob versions", "last 3 and_uc versions",
+      "last 3 Samsung versions"
+  ],
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.1.2",
@@ -60,10 +69,11 @@
     "@babel/preset-env": "^7.1.0",
     "axe-testcafe": "^1.1.0",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
-    "eslint": "5.7.0",
+    "eslint": "5.8.0",
     "eslint-config-standard": "12.0.0",
+    "eslint-plugin-compat": "2.6.2",
     "eslint-plugin-import": "2.14.0",
-    "eslint-plugin-node": "7.0.1",
+    "eslint-plugin-node": "8.0.0",
     "eslint-plugin-promise": "4.0.1",
     "eslint-plugin-qunit": "^4.0.0",
     "eslint-plugin-standard": "4.0.0",
@@ -79,7 +89,7 @@
     "qr-manipulation": "https://github.com/brettz9/qr-manipulation",
     "query-result": "https://github.com/WebReflection/query-result",
     "qunit": "^2.7.1",
-    "remark-cli": "^5.0.0",
+    "remark-cli": "^6.0.0",
     "remark-lint-ordered-list-marker-value": "^1.0.2",
     "rollup": "0.66.6",
     "rollup-plugin-babel": "^4.0.3",
@@ -89,8 +99,8 @@
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^3.0.0",
-    "sinon": "^7.0.0",
+    "sinon": "^7.1.0",
     "sinon-test": "^2.4.0",
-    "testcafe": "^0.22.0"
+    "testcafe": "^0.23.0"
   }
 }

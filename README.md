@@ -38,6 +38,21 @@ For testing the latest version in `master`, you may use
 <iframe src="svgedit/editor/svg-editor.html?extensions=" width="100%" height="100%"></iframe>
 ```
 
+Note that if you want support for the following browsers, you will at least
+need some polyfills.
+
+For Android Browser 4.4.3-4.4.4, you will need at least `fetch`.
+
+For the following, you will need at least `URL`, `Promise`, and `fetch`:
+
+- IE <= 11
+- IE Mobile
+- Opera Mini
+- Blackberry Browser <= 10
+
+And for still older browsers (e.g., IE 8), you will at minimum need a
+`querySelector` polyfill.
+
 ### Integrating SVG-edit into your own npm package
 
 These steps are only needed if you wish to set up your own npm package

@@ -1,12 +1,18 @@
 {
-  "extends": ["standard", "plugin:qunit/recommended", "plugin:testcafe/recommended"],
+  "extends": [
+    "standard", "plugin:compat/recommended",
+    "plugin:qunit/recommended", "plugin:testcafe/recommended"
+  ],
   "parserOptions": {
     "sourceType": "module"
   },
-  "plugins": ["qunit", "testcafe"],
+  "plugins": ["compat", "qunit", "testcafe"],
   "env": {
     "node": false,
     "browser": true
+  },
+  "settings": {
+    "polyfills": ["url", "promises", "fetch", "queryselector"]
   },
   "rules": {
     "semi": [2, "always"],

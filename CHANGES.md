@@ -1,7 +1,13 @@
 # ?
 
+- Linting (ESLint compat): Add eslint-plugin-compat to get browser support
+    warnings
+- Docs (README): Indicate minimal polyfills needed for older browsers
+    (IE <= 11, IE Mobile, Opera Mini, Blackberry Browser <= 10,
+    Android Browser 4.4.3-4.4.4)
 - Docs (3.0.0): Clarify
 - Docs (ReleaseInstructions): Clarify need for npm permissions to publish
+- npm: Update devDeps
 
 # 3.1.1
 
