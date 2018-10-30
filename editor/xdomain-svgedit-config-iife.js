@@ -34736,8 +34736,11 @@
 
 
     var toggleSidePanel = function toggleSidePanel(close) {
+      var dpr = window.devicePixelRatio || 1;
       var w = $$b('#sidepanels').width();
-      var deltaX = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
+      var isOpened = (dpr < 1 ? w : w / dpr) > 2;
+      var zoomAdjustedSidepanelWidth = (dpr < 1 ? 1 : dpr) * SIDEPANEL_OPENWIDTH;
+      var deltaX = (isOpened || close ? 0 : zoomAdjustedSidepanelWidth) - w;
       changeSidePanelWidth(deltaX);
     };
 

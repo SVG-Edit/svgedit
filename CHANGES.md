@@ -1,5 +1,9 @@
 # SVG-Edit CHANGES
 
+# ?
+
+- Fix: Adjust side panel width checking based on device zoom (fixes #298)
+
 # 4.0.0
 
 - Breaking change (storage preference cookies): Namespace the cookie as

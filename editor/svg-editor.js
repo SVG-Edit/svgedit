@@ -5373,8 +5373,11 @@ editor.init = function () {
    * @returns {undefined}
    */
   const toggleSidePanel = function (close) {
+    const dpr = window.devicePixelRatio || 1;
     const w = $('#sidepanels').width();
-    const deltaX = (w > 2 || close ? 2 : SIDEPANEL_OPENWIDTH) - w;
+    const isOpened = (dpr < 1 ? w : w / dpr) > 2;
+    const zoomAdjustedSidepanelWidth = (dpr < 1 ? 1 : dpr) * SIDEPANEL_OPENWIDTH;
+    const deltaX = (isOpened || close ? 0 : zoomAdjustedSidepanelWidth) - w;
     changeSidePanelWidth(deltaX);
   };
 
