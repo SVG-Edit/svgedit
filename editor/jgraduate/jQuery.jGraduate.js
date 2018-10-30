@@ -42,7 +42,9 @@ if (!window.console) {
 }
 
 /**
-* Adds {@link external:jQuery.jGraduate.Paint}, {@link external:jQuery.fn.jGraduateDefaults}, {@link external:jQuery.fn.jGraduate}
+* Adds {@link external:jQuery.jGraduate.Paint},
+* {@link external:jQuery.fn.jGraduateDefaults},
+* {@link external:jQuery.fn.jGraduate}.
 * @function module:jGraduate.jGraduate
 * @param {external:jQuery} $ The jQuery instance to wrap
 * @returns {external:jQuery}

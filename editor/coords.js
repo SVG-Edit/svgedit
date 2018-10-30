@@ -41,13 +41,14 @@ let editorContext_ = null;
 /**
 * @function module:coords.init
 * @param {module:coords.EditorContext} editorContext
+* @returns {undefined}
 */
 export const init = function (editorContext) {
   editorContext_ = editorContext;
 };
 
 /**
- * Applies coordinate changes to an element based on the given matrix
+ * Applies coordinate changes to an element based on the given matrix.
  * @function module:coords.remapElement
  * @implements {module:path.EditorContext#remapElement}
 */

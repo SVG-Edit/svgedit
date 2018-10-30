@@ -60,250 +60,253 @@ const jPicker = function ($) {
 
   /**
   * Encapsulate slider functionality for the ColorMap and ColorBar -
-  * could be useful to use a jQuery UI draggable for this with certain extensions
+  * could be useful to use a jQuery UI draggable for this with certain extensions.
   * @param {external:jQuery} bar
   * @param {module:jPicker.SliderOptions} options
+  * @returns {undefined}
   */
-  function Slider (bar, options) {
-    const $this = this;
-    function fireChangeEvents (context) {
-      for (let i = 0; i < changeEvents.length; i++) {
-        changeEvents[i].call($this, $this, context);
+  class Slider {
+    constructor (bar, options) {
+      const $this = this;
+      function fireChangeEvents (context) {
+        for (let i = 0; i < changeEvents.length; i++) {
+          changeEvents[i].call($this, $this, context);
+        }
       }
-    }
-    // bind the mousedown to the bar not the arrow for quick snapping to the clicked location
-    function mouseDown (e) {
-      const off = bar.offset();
-      offset = {l: off.left | 0, t: off.top | 0};
-      clearTimeout(timeout);
-      // using setTimeout for visual updates - once the style is updated the browser will re-render internally allowing the next Javascript to run
-      timeout = setTimeout(function () {
-        setValuesFromMousePosition.call($this, e);
-      }, 0);
-      // Bind mousemove and mouseup event to the document so it responds when dragged of of the bar - we will unbind these when on mouseup to save processing
-      $(document).bind('mousemove', mouseMove).bind('mouseup', mouseUp);
-      e.preventDefault(); // don't try to select anything or drag the image to the desktop
-    }
-    // set the values as the mouse moves
-    function mouseMove (e) {
-      clearTimeout(timeout);
-      timeout = setTimeout(function () {
-        setValuesFromMousePosition.call($this, e);
-      }, 0);
-      e.stopPropagation();
-      e.preventDefault();
-      return false;
-    }
-    // unbind the document events - they aren't needed when not dragging
-    function mouseUp (e) {
-      $(document).unbind('mouseup', mouseUp).unbind('mousemove', mouseMove);
-      e.stopPropagation();
-      e.preventDefault();
-      return false;
-    }
-    // calculate mouse position and set value within the current range
-    function setValuesFromMousePosition (e) {
-      const barW = bar.w, // local copies for YUI compressor
-        barH = bar.h;
-      let locX = e.pageX - offset.l,
-        locY = e.pageY - offset.t;
-      // keep the arrow within the bounds of the bar
-      if (locX < 0) locX = 0;
-      else if (locX > barW) locX = barW;
-      if (locY < 0) locY = 0;
-      else if (locY > barH) locY = barH;
-      val.call($this, 'xy', {x: ((locX / barW) * rangeX) + minX, y: ((locY / barH) * rangeY) + minY});
-    }
-    function draw () {
-      const
-        barW = bar.w,
-        barH = bar.h,
-        arrowW = arrow.w,
-        arrowH = arrow.h;
-      let arrowOffsetX = 0,
-        arrowOffsetY = 0;
-      setTimeout(function () {
-        if (rangeX > 0) { // range is greater than zero
-          // constrain to bounds
-          if (x === maxX) arrowOffsetX = barW;
-          else arrowOffsetX = ((x / rangeX) * barW) | 0;
+      // bind the mousedown to the bar not the arrow for quick snapping to the clicked location
+      function mouseDown (e) {
+        const off = bar.offset();
+        offset = {l: off.left | 0, t: off.top | 0};
+        clearTimeout(timeout);
+        // using setTimeout for visual updates - once the style is updated the browser will re-render internally allowing the next Javascript to run
+        timeout = setTimeout(function () {
+          setValuesFromMousePosition.call($this, e);
+        }, 0);
+        // Bind mousemove and mouseup event to the document so it responds when dragged of of the bar - we will unbind these when on mouseup to save processing
+        $(document).bind('mousemove', mouseMove).bind('mouseup', mouseUp);
+        e.preventDefault(); // don't try to select anything or drag the image to the desktop
+      }
+      // set the values as the mouse moves
+      function mouseMove (e) {
+        clearTimeout(timeout);
+        timeout = setTimeout(function () {
+          setValuesFromMousePosition.call($this, e);
+        }, 0);
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+      }
+      // unbind the document events - they aren't needed when not dragging
+      function mouseUp (e) {
+        $(document).unbind('mouseup', mouseUp).unbind('mousemove', mouseMove);
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+      }
+      // calculate mouse position and set value within the current range
+      function setValuesFromMousePosition (e) {
+        const barW = bar.w, // local copies for YUI compressor
+          barH = bar.h;
+        let locX = e.pageX - offset.l,
+          locY = e.pageY - offset.t;
+        // keep the arrow within the bounds of the bar
+        if (locX < 0) locX = 0;
+        else if (locX > barW) locX = barW;
+        if (locY < 0) locY = 0;
+        else if (locY > barH) locY = barH;
+        val.call($this, 'xy', {x: ((locX / barW) * rangeX) + minX, y: ((locY / barH) * rangeY) + minY});
+      }
+      function draw () {
+        const
+          barW = bar.w,
+          barH = bar.h,
+          arrowW = arrow.w,
+          arrowH = arrow.h;
+        let arrowOffsetX = 0,
+          arrowOffsetY = 0;
+        setTimeout(function () {
+          if (rangeX > 0) { // range is greater than zero
+            // constrain to bounds
+            if (x === maxX) arrowOffsetX = barW;
+            else arrowOffsetX = ((x / rangeX) * barW) | 0;
+          }
+          if (rangeY > 0) { // range is greater than zero
+            // constrain to bounds
+            if (y === maxY) arrowOffsetY = barH;
+            else arrowOffsetY = ((y / rangeY) * barH) | 0;
+          }
+          // if arrow width is greater than bar width, center arrow and prevent horizontal dragging
+          if (arrowW >= barW) arrowOffsetX = (barW >> 1) - (arrowW >> 1); // number >> 1 - superfast bitwise divide by two and truncate (move bits over one bit discarding lowest)
+          else arrowOffsetX -= arrowW >> 1;
+          // if arrow height is greater than bar height, center arrow and prevent vertical dragging
+          if (arrowH >= barH) arrowOffsetY = (barH >> 1) - (arrowH >> 1);
+          else arrowOffsetY -= arrowH >> 1;
+          // set the arrow position based on these offsets
+          arrow.css({left: arrowOffsetX + 'px', top: arrowOffsetY + 'px'});
+        }, 0);
+      }
+      function val (name, value, context) {
+        const set = value !== undefined;
+        if (!set) {
+          if (name === undefined || name == null) name = 'xy';
+          switch (name.toLowerCase()) {
+          case 'x': return x;
+          case 'y': return y;
+          case 'xy':
+          default: return {x, y};
+          }
         }
-        if (rangeY > 0) { // range is greater than zero
-          // constrain to bounds
-          if (y === maxY) arrowOffsetY = barH;
-          else arrowOffsetY = ((y / rangeY) * barH) | 0;
-        }
-        // if arrow width is greater than bar width, center arrow and prevent horizontal dragging
-        if (arrowW >= barW) arrowOffsetX = (barW >> 1) - (arrowW >> 1); // number >> 1 - superfast bitwise divide by two and truncate (move bits over one bit discarding lowest)
-        else arrowOffsetX -= arrowW >> 1;
-        // if arrow height is greater than bar height, center arrow and prevent vertical dragging
-        if (arrowH >= barH) arrowOffsetY = (barH >> 1) - (arrowH >> 1);
-        else arrowOffsetY -= arrowH >> 1;
-        // set the arrow position based on these offsets
-        arrow.css({left: arrowOffsetX + 'px', top: arrowOffsetY + 'px'});
-      }, 0);
-    }
-    function val (name, value, context) {
-      const set = value !== undefined;
-      if (!set) {
-        if (name === undefined || name == null) name = 'xy';
+        if (context != null && context === $this) return;
+        let changed = false;
+
+        let newX, newY;
+        if (name == null) name = 'xy';
         switch (name.toLowerCase()) {
-        case 'x': return x;
-        case 'y': return y;
+        case 'x':
+          newX = (value && ((value.x && value.x | 0) || value | 0)) || 0;
+          break;
+        case 'y':
+          newY = (value && ((value.y && value.y | 0) || value | 0)) || 0;
+          break;
         case 'xy':
-        default: return {x, y};
+        default:
+          newX = (value && value.x && value.x | 0) || 0;
+          newY = (value && value.y && value.y | 0) || 0;
+          break;
         }
-      }
-      if (context != null && context === $this) return;
-      let changed = false;
-
-      let newX, newY;
-      if (name == null) name = 'xy';
-      switch (name.toLowerCase()) {
-      case 'x':
-        newX = (value && ((value.x && value.x | 0) || value | 0)) || 0;
-        break;
-      case 'y':
-        newY = (value && ((value.y && value.y | 0) || value | 0)) || 0;
-        break;
-      case 'xy':
-      default:
-        newX = (value && value.x && value.x | 0) || 0;
-        newY = (value && value.y && value.y | 0) || 0;
-        break;
-      }
-      if (newX != null) {
-        if (newX < minX) newX = minX;
-        else if (newX > maxX) newX = maxX;
-        if (x !== newX) {
-          x = newX;
-          changed = true;
+        if (newX != null) {
+          if (newX < minX) newX = minX;
+          else if (newX > maxX) newX = maxX;
+          if (x !== newX) {
+            x = newX;
+            changed = true;
+          }
         }
-      }
-      if (newY != null) {
-        if (newY < minY) newY = minY;
-        else if (newY > maxY) newY = maxY;
-        if (y !== newY) {
-          y = newY;
-          changed = true;
+        if (newY != null) {
+          if (newY < minY) newY = minY;
+          else if (newY > maxY) newY = maxY;
+          if (y !== newY) {
+            y = newY;
+            changed = true;
+          }
         }
+        changed && fireChangeEvents.call($this, context || $this);
       }
-      changed && fireChangeEvents.call($this, context || $this);
-    }
-    function range (name, value) {
-      const set = value !== undefined;
-      if (!set) {
-        if (name === undefined || name == null) name = 'all';
+      function range (name, value) {
+        const set = value !== undefined;
+        if (!set) {
+          if (name === undefined || name == null) name = 'all';
+          switch (name.toLowerCase()) {
+          case 'minx': return minX;
+          case 'maxx': return maxX;
+          case 'rangex': return {minX, maxX, rangeX};
+          case 'miny': return minY;
+          case 'maxy': return maxY;
+          case 'rangey': return {minY, maxY, rangeY};
+          case 'all':
+          default: return {minX, maxX, rangeX, minY, maxY, rangeY};
+          }
+        }
+        let // changed = false,
+          newMinX,
+          newMaxX,
+          newMinY,
+          newMaxY;
+        if (name == null) name = 'all';
         switch (name.toLowerCase()) {
-        case 'minx': return minX;
-        case 'maxx': return maxX;
-        case 'rangex': return {minX, maxX, rangeX};
-        case 'miny': return minY;
-        case 'maxy': return maxY;
-        case 'rangey': return {minY, maxY, rangeY};
+        case 'minx':
+          newMinX = (value && ((value.minX && value.minX | 0) || value | 0)) || 0;
+          break;
+        case 'maxx':
+          newMaxX = (value && ((value.maxX && value.maxX | 0) || value | 0)) || 0;
+          break;
+        case 'rangex':
+          newMinX = (value && value.minX && value.minX | 0) || 0;
+          newMaxX = (value && value.maxX && value.maxX | 0) || 0;
+          break;
+        case 'miny':
+          newMinY = (value && ((value.minY && value.minY | 0) || value | 0)) || 0;
+          break;
+        case 'maxy':
+          newMaxY = (value && ((value.maxY && value.maxY | 0) || value | 0)) || 0;
+          break;
+        case 'rangey':
+          newMinY = (value && value.minY && value.minY | 0) || 0;
+          newMaxY = (value && value.maxY && value.maxY | 0) || 0;
+          break;
         case 'all':
-        default: return {minX, maxX, rangeX, minY, maxY, rangeY};
+        default:
+          newMinX = (value && value.minX && value.minX | 0) || 0;
+          newMaxX = (value && value.maxX && value.maxX | 0) || 0;
+          newMinY = (value && value.minY && value.minY | 0) || 0;
+          newMaxY = (value && value.maxY && value.maxY | 0) || 0;
+          break;
+        }
+        if (newMinX != null && minX !== newMinX) {
+          minX = newMinX;
+          rangeX = maxX - minX;
+        }
+        if (newMaxX != null && maxX !== newMaxX) {
+          maxX = newMaxX;
+          rangeX = maxX - minX;
+        }
+        if (newMinY != null && minY !== newMinY) {
+          minY = newMinY;
+          rangeY = maxY - minY;
+        }
+        if (newMaxY != null && maxY !== newMaxY) {
+          maxY = newMaxY;
+          rangeY = maxY - minY;
         }
       }
-      let // changed = false,
-        newMinX,
-        newMaxX,
-        newMinY,
-        newMaxY;
-      if (name == null) name = 'all';
-      switch (name.toLowerCase()) {
-      case 'minx':
-        newMinX = (value && ((value.minX && value.minX | 0) || value | 0)) || 0;
-        break;
-      case 'maxx':
-        newMaxX = (value && ((value.maxX && value.maxX | 0) || value | 0)) || 0;
-        break;
-      case 'rangex':
-        newMinX = (value && value.minX && value.minX | 0) || 0;
-        newMaxX = (value && value.maxX && value.maxX | 0) || 0;
-        break;
-      case 'miny':
-        newMinY = (value && ((value.minY && value.minY | 0) || value | 0)) || 0;
-        break;
-      case 'maxy':
-        newMaxY = (value && ((value.maxY && value.maxY | 0) || value | 0)) || 0;
-        break;
-      case 'rangey':
-        newMinY = (value && value.minY && value.minY | 0) || 0;
-        newMaxY = (value && value.maxY && value.maxY | 0) || 0;
-        break;
-      case 'all':
-      default:
-        newMinX = (value && value.minX && value.minX | 0) || 0;
-        newMaxX = (value && value.maxX && value.maxX | 0) || 0;
-        newMinY = (value && value.minY && value.minY | 0) || 0;
-        newMaxY = (value && value.maxY && value.maxY | 0) || 0;
-        break;
+      function bind (callback) {
+        if (typeof callback === 'function') changeEvents.push(callback);
       }
-      if (newMinX != null && minX !== newMinX) {
-        minX = newMinX;
-        rangeX = maxX - minX;
+      function unbind (callback) {
+        if (typeof callback !== 'function') return;
+        let i;
+        while ((i = changeEvents.includes(callback))) changeEvents.splice(i, 1);
       }
-      if (newMaxX != null && maxX !== newMaxX) {
-        maxX = newMaxX;
-        rangeX = maxX - minX;
+      function destroy () {
+        // unbind all possible events and null objects
+        $(document).unbind('mouseup', mouseUp).unbind('mousemove', mouseMove);
+        bar.unbind('mousedown', mouseDown);
+        bar = null;
+        arrow = null;
+        changeEvents = null;
       }
-      if (newMinY != null && minY !== newMinY) {
-        minY = newMinY;
-        rangeY = maxY - minY;
-      }
-      if (newMaxY != null && maxY !== newMaxY) {
-        maxY = newMaxY;
-        rangeY = maxY - minY;
-      }
-    }
-    function bind (callback) {
-      if (typeof callback === 'function') changeEvents.push(callback);
-    }
-    function unbind (callback) {
-      if (typeof callback !== 'function') return;
-      let i;
-      while ((i = changeEvents.includes(callback))) changeEvents.splice(i, 1);
-    }
-    function destroy () {
-      // unbind all possible events and null objects
-      $(document).unbind('mouseup', mouseUp).unbind('mousemove', mouseMove);
-      bar.unbind('mousedown', mouseDown);
-      bar = null;
-      arrow = null;
-      changeEvents = null;
-    }
-    let offset,
-      timeout,
-      x = 0,
-      y = 0,
-      minX = 0,
-      maxX = 100,
-      rangeX = 100,
-      minY = 0,
-      maxY = 100,
-      rangeY = 100,
-      arrow = bar.find('img:first'), // the arrow image to drag
-      changeEvents = [];
+      let offset,
+        timeout,
+        x = 0,
+        y = 0,
+        minX = 0,
+        maxX = 100,
+        rangeX = 100,
+        minY = 0,
+        maxY = 100,
+        rangeY = 100,
+        arrow = bar.find('img:first'), // the arrow image to drag
+        changeEvents = [];
 
-    $.extend(true, $this, // public properties, methods, and event bindings - these we need to access from other controls
-      {
-        val,
-        range,
-        bind,
-        unbind,
-        destroy
-      }
-    );
-    // initialize this control
-    arrow.src = options.arrow && options.arrow.image;
-    arrow.w = (options.arrow && options.arrow.width) || arrow.width();
-    arrow.h = (options.arrow && options.arrow.height) || arrow.height();
-    bar.w = (options.map && options.map.width) || bar.width();
-    bar.h = (options.map && options.map.height) || bar.height();
-    // bind mousedown event
-    bar.bind('mousedown', mouseDown);
-    bind.call($this, draw);
+      $.extend(true, $this, // public properties, methods, and event bindings - these we need to access from other controls
+        {
+          val,
+          range,
+          bind,
+          unbind,
+          destroy
+        }
+      );
+      // initialize this control
+      arrow.src = options.arrow && options.arrow.image;
+      arrow.w = (options.arrow && options.arrow.width) || arrow.width();
+      arrow.h = (options.arrow && options.arrow.height) || arrow.height();
+      bar.w = (options.map && options.map.width) || bar.width();
+      bar.h = (options.map && options.map.height) || bar.height();
+      // bind mousedown event
+      bar.bind('mousedown', mouseDown);
+      bind.call($this, draw);
+    }
   }
   // controls for all the input elements for the typing in color values
   function ColorValuePicker (picker, color, bindedHex, alphaPrecision) {
@@ -1047,6 +1050,7 @@ const jPicker = function ($) {
        *
        * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode [description]
        * @throws {Error} Invalid mode
+       * @returns {undefined}
        */
       function setColorMode (colorMode) {
         const {active} = color, // local copies for YUI compressor

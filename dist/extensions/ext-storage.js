@@ -135,6 +135,7 @@ var svgEditorExtension_storage = (function () {
       *       content into storage)
       * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
       * 3. Use localStorage (where available) or cookies to set preferences.
+      * @returns {undefined}
       */
 
 
@@ -177,7 +178,7 @@ var svgEditorExtension_storage = (function () {
               }
             }
           }
-        }, false);
+        });
       }
 
       var loaded = false;

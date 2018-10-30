@@ -148,7 +148,8 @@ export default {
 
     /**
     *
-    * @param {Element[]} [elem=selElems] Array of elements
+    * @param {Element[]} [elems=selElems] Array of elements
+    * @returns {undefined}
     */
     function findConnectors (elems = selElems) {
       const connectors = $(svgcontent).find(connSel);

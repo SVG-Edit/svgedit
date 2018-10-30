@@ -254,7 +254,7 @@
     }
   }];
   /**
-   * A class to parse color values
+   * A class to parse color values.
    */
 
   var RGBColor =
@@ -346,7 +346,7 @@
         return '#' + r + g + b;
       }
       /**
-      * help
+      * Offers a bulleted list of help.
       * @returns {HTMLUListElement}
       */
 
@@ -373,7 +373,7 @@
             var listItem = document.createElement('li');
             var listColor = new RGBColor(examples[_i]);
             var exampleDiv = document.createElement('div');
-            exampleDiv.style.cssText = "margin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
+            exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
             exampleDiv.append('test');
             var listItemValue = " ".concat(examples[_i], " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
             listItem.append(exampleDiv, listItemValue);

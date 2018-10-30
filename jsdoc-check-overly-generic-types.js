@@ -20,8 +20,8 @@ let results = await Promise.all(fileMatchPatterns.map(async (fileMatchPattern) =
     {
       // We grab to the end of the line as the `line` result for `find-in-files`
       //  only grabs from the beginning of the file to the end of the match.
-      term: `(@[^{\\n]*{[^}\\n]*(\\bobject|\\barray\\b|function|\\bnumber|\\*)[^}\\n]*}|@.*{}).*`,
-      flags: 'g'
+      term: `(@[^{\\n]*{[^}\\n]*(\\bobject|\\barray\\b|[^.]function|\\bnumber|\\*)[^}\\n]*}|@.*{}).*`,
+      flags: 'gi'
     },
     fileMatchPattern,
     '([^n]|[^i]n|[^m]in|[^.]min).js$'
@@ -73,8 +73,9 @@ function reduceFalseMatches (file, res) {
     res.line = res.line.filter((line) => {
       return ![
         '* @typedef {number} Float',
-        '* @typedef {object} ArbitraryObject',
-        '* @typedef {object} ArbitraryModule',
+        '* @typedef {Object} ArbitraryObject',
+        '* @typedef {Object} ArbitraryModule',
+        '* @typedef {Array} GenericArray',
         '* @typedef {*} Any',
         '* @param {...*} args Signature dependent on the function',
         '* @returns {*} Return dependent on the function'

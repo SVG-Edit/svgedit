@@ -101,6 +101,7 @@ export default {
     *       content into storage)
     * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
     * 3. Use localStorage (where available) or cookies to set preferences.
+    * @returns {undefined}
     */
     function setupBeforeUnloadListener () {
       window.addEventListener('beforeunload', function (e) {
@@ -135,7 +136,7 @@ export default {
             }
           }
         }
-      }, false);
+      });
     }
 
     let loaded = false;

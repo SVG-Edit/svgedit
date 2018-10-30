@@ -86,7 +86,7 @@ var svgEditorExtension_xdomain_messaging = (function () {
           }
 
           e.source.postMessage(JSON.stringify(message), '*');
-        }, false);
+        });
       } catch (err) {
         console.log('Error with xdomain message listener: ' + err);
       }

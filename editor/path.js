@@ -344,7 +344,7 @@ export const getPointFromGrip = function (pt, path) {
 
 /**
 * Requires prior call to `setUiStrings` if `xlink:title`
-*    to be set on the grip
+*    to be set on the grip.
 * @function module:path.addPointGrip
 * @param {Integer} index
 * @param {Integer} x
@@ -409,7 +409,7 @@ export const getGripContainer = function () {
 
 /**
 * Requires prior call to `setUiStrings` if `xlink:title`
-*    to be set on the grip
+*    to be set on the grip.
 * @function module:path.addCtrlGrip
 * @param {string} id
 * @returns {SVGCircleElement}
@@ -533,6 +533,7 @@ export const getControlPoints = function (seg) {
 * @param {Integer} index
 * @param {ArgumentsArray} pts
 * @param {SVGPathElement} elem
+* @returns {undefined}
 */
 export const replacePathSeg = function (type, index, pts, elem) {
   const pth = elem || path.elem;
@@ -616,7 +617,7 @@ export const getSegSelector = function (seg, update) {
  */
 
 /**
-* Takes three points and creates a smoother line based on them
+* Takes three points and creates a smoother line based on them.
 * @function module:path.smoothControlPoints
 * @param {Point} ct1 - Object with x and y values (first control point)
 * @param {Point} ct2 - Object with x and y values (second control point)
@@ -854,6 +855,7 @@ export class Segment {
   /**
    * @param {Integer} newType Possible values set during {@link module:path.init}
    * @param {ArgumentsArray} pts
+   * @returns {undefined}
    */
   setType (newType, pts) {
     replacePathSeg(newType, this.index, pts);
@@ -870,7 +872,7 @@ export class Segment {
 */
 export class Path {
   /**
-  * @param {SVGPathElement}
+  * @param {SVGPathElement} elem
   * @throws {Error} If constructed without a path element
   */
   constructor (elem) {
@@ -887,7 +889,7 @@ export class Path {
   }
 
   /**
-  * Reset path data
+  * Reset path data.
   * @returns {module:path.Path}
   */
   init () {
@@ -1131,7 +1133,7 @@ export class Path {
   }
 
   /**
-  * Move selected points
+  * Move selected points.
   * @param {Integer} dx
   * @param {Integer} dy
   * @returns {undefined}
@@ -1252,7 +1254,7 @@ export class Path {
   }
 
   /**
-  * Update position of all points
+  * Update position of all points.
   * @returns {Path}
   */
   update () {
@@ -1494,7 +1496,7 @@ const pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
   'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
 
 /**
- * Convert a path to one with only absolute or relative values
+ * Convert a path to one with only absolute or relative values.
  * @todo move to pathActions.js
  * @function module:path.convertPath
  * @param {SVGPathElement} path - the path to convert
@@ -1655,11 +1657,11 @@ export const convertPath = function (path, toRel) {
 };
 
 /**
- * TODO: refactor callers in convertPath to use getPathDFromSegments instead of this function.
- * Legacy code refactored from svgcanvas.pathActions.convertPath
+ * TODO: refactor callers in `convertPath` to use `getPathDFromSegments` instead of this function.
+ * Legacy code refactored from `svgcanvas.pathActions.convertPath`.
  * @param {string} letter - path segment command (letter in potentially either case from {@link module:path.pathMap}; see [SVGPathSeg#pathSegTypeAsLetter]{@link https://www.w3.org/TR/SVG/single-page.html#paths-__svg__SVGPathSeg__pathSegTypeAsLetter})
- * @param {Integer[][]} points - x,y points
- * @param {Integer[][]} [morePoints] - x,y points
+ * @param {GenericArray<Integer>[]} points - x,y points
+ * @param {GenericArray<Integer>[]} [morePoints] - x,y points
  * @param {Integer[]} [lastPoint] - x,y point
  * @returns {string}
  */
@@ -1695,7 +1697,7 @@ export const pathActions = (function () {
   /**
   * This function converts a polyline (created by the fh_path tool) into
   * a path element and coverts every three line segments into a single bezier
-  * curve in an attempt to smooth out the free-hand
+  * curve in an attempt to smooth out the free-hand.
   * @function smoothPolylineIntoPath
   * @param {Element} element
   * @returns {Element}
@@ -2215,7 +2217,7 @@ export const pathActions = (function () {
       subpath = false;
     },
     /**
-    * @param {Element} element
+    * @param {Element} elem
     * @fires module:svgcanvas.SvgCanvas#event:selected
     * @returns {undefined}
     */
@@ -2614,6 +2616,7 @@ export const pathActions = (function () {
     */
     smoothPolylineIntoPath,
     /**
+    * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
     * @returns {undefined}
     */
     setSegType (v) {

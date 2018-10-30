@@ -355,7 +355,7 @@ function getImportLocale ({defaultLang, defaultName}) {
 */
 
 /**
-* Store and retrieve preferences
+* Store and retrieve preferences.
 * @param {string} key The preference name to be retrieved or set
 * @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will be made.
 * @returns {string} If val is missing or falsey, the value of the previously stored preference will be returned.
@@ -619,7 +619,7 @@ editor.randomizeIds = function (arg) {
 };
 
 /**
-* Auto-run after a Promise microtask
+* Auto-run after a Promise microtask.
 * @returns {undefined}
 */
 editor.init = function () {
@@ -747,7 +747,7 @@ editor.init = function () {
   })();
 
   /**
-  * Called internally
+  * Called internally.
   * @param {string|Element|external:jQuery} elem
   * @param {string|external:jQuery} iconId
   * @param {Float} forcedSize Not in use
@@ -1789,11 +1789,11 @@ editor.init = function () {
   }
 
   /**
-  * This is a common function used when a tool has been clicked (chosen)
+  * This is a common function used when a tool has been clicked (chosen).
   * It does several common things:
-  * - removes the `tool_button_current` class from whatever tool currently has it
-  * - hides any flyouts
-  * - adds the `tool_button_current` class to the button passed in
+  * - Removes the `tool_button_current` class from whatever tool currently has it.
+  * - Hides any flyouts.
+  * - Adds the `tool_button_current` class to the button passed in.
   * @function module:SVGEDitor.toolButtonClick
   * @param {string|Element} button The DOM element or string selector representing the toolbar button
   * @param {boolean} noHiding Whether not to hide any flyouts
@@ -1835,7 +1835,7 @@ editor.init = function () {
   };
 
   /**
-  * Set a selected image's URL
+  * Set a selected image's URL.
   * @function module:SVGEditor.setImageURL
   * @param {string} url
   * @returns {undefined}
@@ -2771,7 +2771,7 @@ editor.init = function () {
 
   const allHolders = {};
   /**
-   * @param {Object.<string, module:SVGEditor.ToolButton>} holders Key is a selector
+   * @param {GenericObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
    * @returns {undefined}
    */
   const setupFlyouts = function (holders) {
@@ -2800,7 +2800,7 @@ editor.init = function () {
           if (opts.isDefault) { def = i; }
 
           /**
-           * Clicking the icon in flyout should set this set's icon
+           * Clicking the icon in flyout should set this set's icon.
            * @param {Event} ev
            * @returns {undefined}
            */
@@ -4472,7 +4472,7 @@ editor.init = function () {
   };
 
   /**
-  * Save user preferences based on current values in the UI
+  * Save user preferences based on current values in the UI.
   * @function module:SVGEditor.savePreferences
   * @returns {undefined}
   */
@@ -5013,7 +5013,7 @@ editor.init = function () {
   };
 
   /**
-   * If width is non-zero, then fully close it, otherwise fully open it
+   * If width is non-zero, then fully close it; otherwise fully open it.
    * @param {boolean} close Forces the side panel closed
    * @returns {undefined}
    */
@@ -5628,10 +5628,10 @@ editor.init = function () {
       e.returnValue = uiStrings.notification.unsavedChanges; // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
       return uiStrings.notification.unsavedChanges;
     }
-  }, false);
+  });
 
   /**
-  * Expose the uiStrings
+  * Expose the `uiStrings`.
   * @function module:SVGEditor.canvas.getUIStrings
   * @returns {module:SVGEditor.uiStrings}
   */
@@ -5752,10 +5752,10 @@ editor.init = function () {
       }
     };
 
-    workarea[0].addEventListener('dragenter', onDragEnter, false);
-    workarea[0].addEventListener('dragover', onDragOver, false);
-    workarea[0].addEventListener('dragleave', onDragLeave, false);
-    workarea[0].addEventListener('drop', importImage, false);
+    workarea[0].addEventListener('dragenter', onDragEnter);
+    workarea[0].addEventListener('dragover', onDragOver);
+    workarea[0].addEventListener('dragleave', onDragLeave);
+    workarea[0].addEventListener('drop', importImage);
 
     const open = $('<input type="file">').click(function () {
       const f = this;
@@ -5861,9 +5861,9 @@ editor.init = function () {
     */
     {
       /**
-      * Gets an array of results from extensions with a `addLangData` method
+      * Gets an array of results from extensions with a `addLangData` method,
       * returning an object with a `data` property set to its locales (to be
-      * merged with regular locales)
+      * merged with regular locales).
       * @param {string} langParam
       * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
       * @todo Can we forego this in favor of `langReady` (or forego `langReady`)?
@@ -5875,8 +5875,7 @@ editor.init = function () {
           /**
            * @function
            * @type {module:svgcanvas.ExtensionVarBuilder}
-           * @param {string} defaultLang
-           * @param {string} defaultName
+           * @param {string} name
            * @returns {module:svgcanvas.SvgCanvas#event:ext-addLangData}
            */
           (name) => { // We pass in a function as we don't know the extension name here when defining this `addLangData` method
@@ -5908,7 +5907,7 @@ editor.init = function () {
 /**
 * Queues a callback to be invoked when the editor is ready (or
 *   to be invoked immediately if it is already ready--i.e.,
-*   if `svgEditor.runCallbacks` has been run)
+*   if `svgEditor.runCallbacks` has been run).
 * @param {module:SVGEditor.ReadyCallback} cb Callback to be queued to invoke
 * @returns {undefined}
 */
@@ -5942,7 +5941,7 @@ editor.loadFromString = function (str) {
 };
 
 /**
-* Not presently in use
+* Not presently in use.
 * @param {PlainObject} featList
 * @returns {undefined}
 */

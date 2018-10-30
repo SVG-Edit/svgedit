@@ -24,6 +24,27 @@
     "prefer-const": 2,
     "no-extra-semi": 2,
     "quote-props": [2, "as-needed"],
-    "object-curly-spacing": ["error", "never"]
+    "object-curly-spacing": ["error", "never"],
+    "valid-jsdoc": ["off", {
+        "prefer": {
+            "arg": "param",
+            "argument": "param",
+            "return": "returns",
+            "virtual": "abstract"
+        },
+        "preferType": {
+            "Boolean": "boolean",
+            "Number": "number",
+            "String": "string",
+            "object": "Object",
+            "array": "Array"
+        },
+        "requireReturn": true,
+        "requireReturnType": true,
+        "requireParamType": true,
+        "matchDescription": "^([A-Z][\\s\\S]*[.`?!])?$",
+        "requireParamDescription": false,
+        "requireReturnDescription": false
+    }]
   }
 }

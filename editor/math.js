@@ -30,7 +30,7 @@ const svg = document.createElementNS(NS.SVG, 'svg');
 
 /**
  * A (hopefully) quicker function to transform a point by a matrix
- * (this function avoids any DOM calls and just does the math)
+ * (this function avoids any DOM calls and just does the math).
  * @function module:math.transformPoint
  * @param {Float} x - Float representing the x coordinate
  * @param {Float} y - Float representing the y coordinate
@@ -43,7 +43,7 @@ export const transformPoint = function (x, y, m) {
 
 /**
  * Helper function to check if the matrix performs no actual transform
- * (i.e. exists for identity purposes)
+ * (i.e. exists for identity purposes).
  * @function module:math.isIdentity
  * @param {SVGMatrix} m - The matrix object to check
  * @returns {boolean} Indicates whether or not the matrix is 1,0,0,1,0,0
@@ -54,7 +54,7 @@ export const isIdentity = function (m) {
 
 /**
  * This function tries to return a `SVGMatrix` that is the multiplication `m1 * m2`.
- * We also round to zero when it's near zero
+ * We also round to zero when it's near zero.
  * @function module:math.matrixMultiply
  * @param {...SVGMatrix} args - Matrix objects to multiply
  * @returns {SVGMatrix} The matrix object resulting from the calculation
@@ -75,7 +75,7 @@ export const matrixMultiply = function (...args) {
 };
 
 /**
- * See if the given transformlist includes a non-indentity matrix transform
+ * See if the given transformlist includes a non-indentity matrix transform.
  * @function module:math.hasMatrixTransform
  * @param {SVGTransformList} [tlist] - The transformlist to check
  * @returns {boolean} Whether or not a matrix transform was found
@@ -104,7 +104,7 @@ export const hasMatrixTransform = function (tlist) {
 */
 
 /**
- * Transforms a rectangle based on the given matrix
+ * Transforms a rectangle based on the given matrix.
  * @function module:math.transformBox
  * @param {Float} l - Float with the box's left coordinate
  * @param {Float} t - Float with the box's top coordinate
@@ -142,7 +142,7 @@ export const transformBox = function (l, t, w, h, m) {
  * This returns a single matrix Transform for a given Transform List
  * (this is the equivalent of `SVGTransformList.consolidate()` but unlike
  * that method, this one does not modify the actual `SVGTransformList`).
- * This function is very liberal with its `min`, `max` arguments
+ * This function is very liberal with its `min`, `max` arguments.
  * @function module:math.transformListToTransform
  * @param {SVGTransformList} tlist - The transformlist object
  * @param {Integer} [min=0] - Optional integer indicating start transform position
@@ -172,7 +172,7 @@ export const transformListToTransform = function (tlist, min, max) {
 };
 
 /**
- * Get the matrix object for a given element
+ * Get the matrix object for a given element.
  * @function module:math.getMatrix
  * @param {Element} elem - The DOM element to check
  * @returns {SVGMatrix} The matrix object associated with the element's transformlist
@@ -184,11 +184,11 @@ export const getMatrix = function (elem) {
 
 /**
  * Returns a 45 degree angle coordinate associated with the two given
- * coordinates
+ * coordinates.
  * @function module:math.snapToAngle
  * @param {Integer} x1 - First coordinate's x value
- * @param {Integer} x2 - Second coordinate's x value
  * @param {Integer} y1 - First coordinate's y value
+ * @param {Integer} x2 - Second coordinate's x value
  * @param {Integer} y2 - Second coordinate's y value
  * @returns {module:math.AngleCoord45}
 */
@@ -208,7 +208,7 @@ export const snapToAngle = function (x1, y1, x2, y2) {
 };
 
 /**
- * Check if two rectangles (BBoxes objects) intersect each other
+ * Check if two rectangles (BBoxes objects) intersect each other.
  * @function module:math.rectsIntersect
  * @param {SVGRect} r1 - The first BBox-like object
  * @param {SVGRect} r2 - The second BBox-like object

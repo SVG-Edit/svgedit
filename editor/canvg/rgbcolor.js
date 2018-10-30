@@ -189,7 +189,7 @@ const colorDefs = [
 ];
 
 /**
- * A class to parse color values
+ * A class to parse color values.
  */
 export default class RGBColor {
   /**
@@ -253,7 +253,7 @@ export default class RGBColor {
   }
 
   /**
-  * help
+  * Offers a bulleted list of help.
   * @returns {HTMLUListElement}
   */
   getHelpXML () {
@@ -275,8 +275,8 @@ export default class RGBColor {
         const listItem = document.createElement('li');
         const listColor = new RGBColor(examples[i]);
         const exampleDiv = document.createElement('div');
-        exampleDiv.style.cssText =
-`margin: 3px;
+        exampleDiv.style.cssText = `
+margin: 3px;
 border: 1px solid black;
 background: ${listColor.toHex()};
 color: ${listColor.toHex()};`

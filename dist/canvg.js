@@ -397,7 +397,7 @@ var canvg = (function (exports) {
     }
   }];
   /**
-   * A class to parse color values
+   * A class to parse color values.
    */
 
   var RGBColor =
@@ -489,7 +489,7 @@ var canvg = (function (exports) {
         return '#' + r + g + b;
       }
       /**
-      * help
+      * Offers a bulleted list of help.
       * @returns {HTMLUListElement}
       */
 
@@ -516,7 +516,7 @@ var canvg = (function (exports) {
             var listItem = document.createElement('li');
             var listColor = new RGBColor(examples[_i]);
             var exampleDiv = document.createElement('div');
-            exampleDiv.style.cssText = "margin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
+            exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
             exampleDiv.append('test');
             var listItemValue = " ".concat(examples[_i], " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
             listItem.append(exampleDiv, listItemValue);
@@ -862,6 +862,7 @@ var canvg = (function (exports) {
   /**
   * @function module:canvg.setStackBlurCanvasRGBA
   * @param {module:canvg.StackBlurCanvasRGBA} cb Will be passed the canvas ID, x, y, width, height, blurRadius
+  * @returns {undefined}
   */
 
   var setStackBlurCanvasRGBA = function setStackBlurCanvasRGBA(cb) {
@@ -883,7 +884,8 @@ var canvg = (function (exports) {
   */
 
   /**
-  * If called with no arguments, it will replace all `<svg>` elements on the page with `<canvas>` elements
+  * If called with no arguments, it will replace all `<svg>` elements on the page
+  * with `<canvas>` elements.
   * @function module:canvg.canvg
   * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
   * @param {string|XMLDocument} s: svg string, url to svg file, or xml document
@@ -936,7 +938,7 @@ var canvg = (function (exports) {
   };
   /**
   * @param {module:canvg.CanvgOptions} opts
-  * @returns {object}
+  * @returns {Object}
   * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
   */
 

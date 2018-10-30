@@ -49,7 +49,7 @@ export const init = function (editorContext) {
 };
 
 /**
-* Updates a `<clipPath>`s values based on the given translation of an element
+* Updates a `<clipPath>`s values based on the given translation of an element.
 * @function module:recalculate.updateClipPath
 * @param {string} attr - The clip-path attribute value with the clipPath's ID
 * @param {Float} tx - The translation's x value
@@ -69,7 +69,7 @@ export const updateClipPath = function (attr, tx, ty) {
 };
 
 /**
-* Decides the course of action based on the element's transform list
+* Decides the course of action based on the element's transform list.
 * @function module:recalculate.recalculateDimensions
 * @param {Element} selected - The DOM element to recalculate
 * @returns {Command} Undo command object with the resulting change

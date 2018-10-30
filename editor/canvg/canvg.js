@@ -31,6 +31,7 @@ let canvasRGBA_ = canvasRGBA;
 /**
 * @function module:canvg.setStackBlurCanvasRGBA
 * @param {module:canvg.StackBlurCanvasRGBA} cb Will be passed the canvas ID, x, y, width, height, blurRadius
+* @returns {undefined}
 */
 export const setStackBlurCanvasRGBA = (cb) => {
   canvasRGBA_ = cb;
@@ -52,7 +53,8 @@ export const setStackBlurCanvasRGBA = (cb) => {
 */
 
 /**
-* If called with no arguments, it will replace all `<svg>` elements on the page with `<canvas>` elements
+* If called with no arguments, it will replace all `<svg>` elements on the page
+* with `<canvas>` elements.
 * @function module:canvg.canvg
 * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
 * @param {string|XMLDocument} s: svg string, url to svg file, or xml document
@@ -102,7 +104,7 @@ export const canvg = function (target, s, opts) {
 
 /**
 * @param {module:canvg.CanvgOptions} opts
-* @returns {object}
+* @returns {Object}
 * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
 */
 function build (opts) {

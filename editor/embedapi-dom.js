@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
-* Attaches items to DOM for Embedded SVG support
+* Attaches items to DOM for Embedded SVG support.
 * @module EmbeddedSVGEditDOM
 */
 import EmbeddedSVGEdit from './embedapi.js';

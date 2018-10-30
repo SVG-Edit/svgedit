@@ -21,7 +21,7 @@ export const HistoryEventTypes = {
 // const removedElements = {};
 
 /**
-* Base class for commands
+* Base class for commands.
 */
 class Command {
   /**
@@ -97,7 +97,7 @@ class Command {
  */
 
 /**
- * History command for an element that had its DOM position changed
+ * History command for an element that had its DOM position changed.
  * @implements {module:history.HistoryCommand}
  * @param {Element} elem - The DOM element that was moved
  * @param {Element} oldNextSibling - The element's next sibling before it was moved
@@ -119,7 +119,7 @@ export class MoveElementCommand extends Command {
   }
 
   /**
-   * Re-positions the element
+   * Re-positions the element.
    * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {undefined}
@@ -138,7 +138,7 @@ export class MoveElementCommand extends Command {
   }
 
   /**
-   * Positions the element back to its original location
+   * Positions the element back to its original location.
    * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {undefined}
@@ -165,7 +165,7 @@ export class MoveElementCommand extends Command {
 MoveElementCommand.type = MoveElementCommand.prototype.type;
 
 /**
-* History command for an element that was added to the DOM
+* History command for an element that was added to the DOM.
 * @implements {module:history.HistoryCommand}
 *
 * @param {Element} elem - The newly added DOM element
@@ -185,7 +185,7 @@ export class InsertElementCommand extends Command {
   }
 
   /**
-  * Re-inserts the new element
+  * Re-inserts the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -203,7 +203,7 @@ export class InsertElementCommand extends Command {
   }
 
   /**
-  * Removes the element
+  * Removes the element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -231,7 +231,7 @@ export class InsertElementCommand extends Command {
 InsertElementCommand.type = InsertElementCommand.prototype.type;
 
 /**
-* History command for an element removed from the DOM
+* History command for an element removed from the DOM.
 * @implements {module:history.HistoryCommand}
 * @param {Element} elem - The removed DOM element
 * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
@@ -254,7 +254,7 @@ export class RemoveElementCommand extends Command {
   }
 
   /**
-  * Re-removes the new element
+  * Re-removes the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -274,7 +274,7 @@ export class RemoveElementCommand extends Command {
   }
 
   /**
-  * Re-adds the new element
+  * Re-adds the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -343,7 +343,7 @@ export class ChangeElementCommand extends Command {
   }
 
   /**
-  * Performs the stored change action
+  * Performs the stored change action.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {true}
@@ -397,7 +397,7 @@ export class ChangeElementCommand extends Command {
   }
 
   /**
-  * Reverses the stored change action
+  * Reverses the stored change action.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {true}
@@ -464,7 +464,7 @@ ChangeElementCommand.type = ChangeElementCommand.prototype.type;
 // and they both affect the same element, then collapse the two commands into one
 
 /**
-* History command that can contain/execute multiple other commands
+* History command that can contain/execute multiple other commands.
 * @implements {module:history.HistoryCommand}
 */
 export class BatchCommand extends Command {
@@ -482,7 +482,7 @@ export class BatchCommand extends Command {
   }
 
   /**
-  * Runs "apply" on all subcommands
+  * Runs "apply" on all subcommands.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -503,7 +503,7 @@ export class BatchCommand extends Command {
   }
 
   /**
-  * Runs "unapply" on all subcommands
+  * Runs "unapply" on all subcommands.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -523,7 +523,7 @@ export class BatchCommand extends Command {
   }
 
   /**
-  * Iterate through all our subcommands
+  * Iterate through all our subcommands.
   * @returns {Element[]} All the elements we are changing
   */
   elements () {
@@ -540,8 +540,9 @@ export class BatchCommand extends Command {
   }
 
   /**
-  * Adds a given command to the history stack
+  * Adds a given command to the history stack.
   * @param {Command} cmd - The undo command object to add
+  * @returns {undefined}
   */
   addSubCommand (cmd) {
     this.stack.push(cmd);
@@ -575,7 +576,7 @@ export class UndoManager {
   }
 
   /**
-  * Resets the undo stack, effectively clearing the undo/redo history
+  * Resets the undo stack, effectively clearing the undo/redo history.
   * @returns {undefined}
   */
   resetUndoStack () {
@@ -612,7 +613,7 @@ export class UndoManager {
   }
 
   /**
-  * Performs an undo step
+  * Performs an undo step.
   * @returns {undefined}
   */
   undo () {
@@ -623,7 +624,7 @@ export class UndoManager {
   }
 
   /**
-  * Performs a redo step
+  * Performs a redo step.
   * @returns {undefined}
   */
   redo () {
@@ -634,7 +635,7 @@ export class UndoManager {
   }
 
   /**
-  * Adds a command object to the undo history stack
+  * Adds a command object to the undo history stack.
   * @param {Command} cmd - The command object to add
   * @returns {undefined}
   */
@@ -683,7 +684,7 @@ export class UndoManager {
   /**
   * This function returns a `BatchCommand` object which summarizes the
   * change since `beginUndoableChange` was called.  The command can then
-  * be added to the command history
+  * be added to the command history.
   * @returns {BatchCommand} Batch command object with resulting changes
   */
   finishUndoableChange () {

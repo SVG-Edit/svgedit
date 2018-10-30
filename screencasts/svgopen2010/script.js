@@ -124,10 +124,10 @@ Slide.prototype = {
       const _t = this;
       if (canTransition()) {
         const l = function (evt) {
-          elem.parentNode.removeEventListener(transitionEnd, l, false);
+          elem.parentNode.removeEventListener(transitionEnd, l);
           _t._runAutos();
         };
-        elem.parentNode.addEventListener(transitionEnd, l, false);
+        elem.parentNode.addEventListener(transitionEnd, l);
         elem.classList.remove('to-build');
       } else {
         setTimeout(function () {
@@ -161,17 +161,17 @@ const SlideShow = function (slides) {
   this.current = isNaN(this.current) ? 1 : this.current;
   const _t = this;
   doc.addEventListener('keydown',
-    function (e) { _t.handleKeys(e); }, false);
+    function (e) { _t.handleKeys(e); });
   doc.addEventListener('mousewheel',
-    function (e) { _t.handleWheel(e); }, false);
+    function (e) { _t.handleWheel(e); });
   doc.addEventListener('DOMMouseScroll',
-    function (e) { _t.handleWheel(e); }, false);
+    function (e) { _t.handleWheel(e); });
   doc.addEventListener('touchstart',
-    function (e) { _t.handleTouchStart(e); }, false);
+    function (e) { _t.handleTouchStart(e); });
   doc.addEventListener('touchend',
-    function (e) { _t.handleTouchEnd(e); }, false);
+    function (e) { _t.handleTouchEnd(e); });
   window.addEventListener('popstate',
-    function (e) { _t.go(e.state); }, false);
+    function (e) { _t.go(e.state); });
   this._update();
 };
 
@@ -274,10 +274,10 @@ SlideShow.prototype = {
 // Initialize
 /* const slideshow = */ new SlideShow(query('.slide')); // eslint-disable-line no-new
 
-document.querySelector('#toggle-counter').addEventListener('click', toggleCounter, false);
-document.querySelector('#toggle-size').addEventListener('click', toggleSize, false);
-document.querySelector('#toggle-transitions').addEventListener('click', toggleTransitions, false);
-document.querySelector('#toggle-gradients').addEventListener('click', toggleGradients, false);
+document.querySelector('#toggle-counter').addEventListener('click', toggleCounter);
+document.querySelector('#toggle-size').addEventListener('click', toggleSize);
+document.querySelector('#toggle-transitions').addEventListener('click', toggleTransitions);
+document.querySelector('#toggle-gradients').addEventListener('click', toggleGradients);
 
 const counters = document.querySelectorAll('.counter');
 const slides = document.querySelectorAll('.slide');

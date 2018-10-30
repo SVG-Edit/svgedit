@@ -2895,12 +2895,12 @@
   * This fixes `$(...).attr()` to work as expected with SVG elements.
   * Does not currently use `*AttributeNS()` since we rarely need that.
   * Adds {@link external:jQuery.fn.attr}.
-  * See {@link https://api.jquery.com/attr/} for basic documentation of `.attr()`
+  * See {@link https://api.jquery.com/attr/} for basic documentation of `.attr()`.
   *
   * Additional functionality:
   * - When getting attributes, a string that's a number is returned as type number.
   * - If an array is supplied as the first parameter, multiple values are returned
-  *    as an object with values for each given attribute
+  *    as an object with values for each given attribute.
   * @function module:jQueryAttr.jQueryAttr
   * @param {external:jQuery} $ The jQuery object to which to add the plug-in
   * @returns {external:jQuery}
@@ -3399,7 +3399,7 @@
     }
   };
   /**
-  * Returns an object that behaves like a `SVGTransformList` for the given DOM element
+  * Returns an object that behaves like a `SVGTransformList` for the given DOM element.
   * @function module:SVGTransformList.getTransformList
   * @param {Element} elem - DOM element to get a transformlist from
   * @todo The polyfill should have `SVGAnimatedTransformList` and this should use it
@@ -3585,8 +3585,10 @@
     return parseFloat(val).toFixed(digits) - 0;
   };
   /**
-  * Converts the number to given unit or baseUnit
+  * Converts the number to given unit or baseUnit.
   * @function module:units.convertUnit
+  * @param {string|Float} val
+  * @param {"em"|"ex"|"in"|"cm"|"mm"|"pt"|"pc"|"px"|"%"} [unit]
   * @returns {Float}
   */
 
@@ -3642,7 +3644,7 @@
   };
   /**
   * Converts given values to numbers. Attributes must be supplied in
-  * case a percentage is given
+  * case a percentage is given.
   *
   * @function module:units.convertToNum
   * @param {string} attr - Name of the attribute associated with the value
@@ -3680,10 +3682,11 @@
     return num * typeMap_[unit];
   };
   /**
-  * Check if an attribute's value is in a valid format
+  * Check if an attribute's value is in a valid format.
   * @function module:units.isValidUnit
   * @param {string} attr - The name of the attribute associated with the value
   * @param {string} val - The attribute value to check
+  * @param {Element} selectedElement
   * @returns {boolean} Whether the unit is valid
   */
 
@@ -3733,7 +3736,7 @@
   }; // const removedElements = {};
 
   /**
-  * Base class for commands
+  * Base class for commands.
   */
 
   var Command =
@@ -3827,7 +3830,7 @@
    */
 
   /**
-   * History command for an element that had its DOM position changed
+   * History command for an element that had its DOM position changed.
    * @implements {module:history.HistoryCommand}
    * @param {Element} elem - The DOM element that was moved
    * @param {Element} oldNextSibling - The element's next sibling before it was moved
@@ -3862,7 +3865,7 @@
         return 'svgedit.history.MoveElementCommand';
       }
       /**
-       * Re-positions the element
+       * Re-positions the element.
        * @param {module:history.HistoryEventHandler} handler
        * @fires module:history~Command#event:history
        * @returns {undefined}
@@ -3883,7 +3886,7 @@
         }
       }
       /**
-       * Positions the element back to its original location
+       * Positions the element back to its original location.
        * @param {module:history.HistoryEventHandler} handler
        * @fires module:history~Command#event:history
        * @returns {undefined}
@@ -3917,7 +3920,7 @@
   }(Command);
   MoveElementCommand.type = MoveElementCommand.prototype.type;
   /**
-  * History command for an element that was added to the DOM
+  * History command for an element that was added to the DOM.
   * @implements {module:history.HistoryCommand}
   *
   * @param {Element} elem - The newly added DOM element
@@ -3948,7 +3951,7 @@
         return 'svgedit.history.InsertElementCommand';
       }
       /**
-      * Re-inserts the new element
+      * Re-inserts the new element.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
       * @returns {undefined}
@@ -3968,7 +3971,7 @@
         }
       }
       /**
-      * Removes the element
+      * Removes the element.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
       * @returns {undefined}
@@ -4003,7 +4006,7 @@
   }(Command);
   InsertElementCommand.type = InsertElementCommand.prototype.type;
   /**
-  * History command for an element removed from the DOM
+  * History command for an element removed from the DOM.
   * @implements {module:history.HistoryCommand}
   * @param {Element} elem - The removed DOM element
   * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
@@ -4037,7 +4040,7 @@
         return 'svgedit.history.RemoveElementCommand';
       }
       /**
-      * Re-removes the new element
+      * Re-removes the new element.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
       * @returns {undefined}
@@ -4059,7 +4062,7 @@
         }
       }
       /**
-      * Re-adds the new element
+      * Re-adds the new element.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
       * @returns {undefined}
@@ -4152,7 +4155,7 @@
         return 'svgedit.history.ChangeElementCommand';
       }
       /**
-      * Performs the stored change action
+      * Performs the stored change action.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
       * @returns {true}
@@ -4213,7 +4216,7 @@
         return true;
       }
       /**
-      * Reverses the stored change action
+      * Reverses the stored change action.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
       * @returns {true}
@@ -4293,7 +4296,7 @@
   // and they both affect the same element, then collapse the two commands into one
 
   /**
-  * History command that can contain/execute multiple other commands
+  * History command that can contain/execute multiple other commands.
   * @implements {module:history.HistoryCommand}
   */
 
@@ -4322,7 +4325,7 @@
         return 'svgedit.history.BatchCommand';
       }
       /**
-      * Runs "apply" on all subcommands
+      * Runs "apply" on all subcommands.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
       * @returns {undefined}
@@ -4346,7 +4349,7 @@
         }
       }
       /**
-      * Runs "unapply" on all subcommands
+      * Runs "unapply" on all subcommands.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
       * @returns {undefined}
@@ -4368,7 +4371,7 @@
         }
       }
       /**
-      * Iterate through all our subcommands
+      * Iterate through all our subcommands.
       * @returns {Element[]} All the elements we are changing
       */
 
@@ -4392,8 +4395,9 @@
         return elems;
       }
       /**
-      * Adds a given command to the history stack
+      * Adds a given command to the history stack.
       * @param {Command} cmd - The undo command object to add
+      * @returns {undefined}
       */
 
     }, {
@@ -4437,7 +4441,7 @@
       this.undoableChangeStack = [];
     }
     /**
-    * Resets the undo stack, effectively clearing the undo/redo history
+    * Resets the undo stack, effectively clearing the undo/redo history.
     * @returns {undefined}
     */
 
@@ -4485,7 +4489,7 @@
         return this.undoStackPointer < this.undoStack.length ? this.undoStack[this.undoStackPointer].getText() : '';
       }
       /**
-      * Performs an undo step
+      * Performs an undo step.
       * @returns {undefined}
       */
 
@@ -4498,7 +4502,7 @@
         }
       }
       /**
-      * Performs a redo step
+      * Performs a redo step.
       * @returns {undefined}
       */
 
@@ -4511,7 +4515,7 @@
         }
       }
       /**
-      * Adds a command object to the undo history stack
+      * Adds a command object to the undo history stack.
       * @param {Command} cmd - The command object to add
       * @returns {undefined}
       */
@@ -4571,7 +4575,7 @@
       /**
       * This function returns a `BatchCommand` object which summarizes the
       * change since `beginUndoableChange` was called.  The command can then
-      * be added to the command history
+      * be added to the command history.
       * @returns {BatchCommand} Batch command object with resulting changes
       */
 
@@ -4630,7 +4634,7 @@
   var svg$1 = document.createElementNS(NS.SVG, 'svg');
   /**
    * A (hopefully) quicker function to transform a point by a matrix
-   * (this function avoids any DOM calls and just does the math)
+   * (this function avoids any DOM calls and just does the math).
    * @function module:math.transformPoint
    * @param {Float} x - Float representing the x coordinate
    * @param {Float} y - Float representing the y coordinate
@@ -4646,7 +4650,7 @@
   };
   /**
    * Helper function to check if the matrix performs no actual transform
-   * (i.e. exists for identity purposes)
+   * (i.e. exists for identity purposes).
    * @function module:math.isIdentity
    * @param {SVGMatrix} m - The matrix object to check
    * @returns {boolean} Indicates whether or not the matrix is 1,0,0,1,0,0
@@ -4657,7 +4661,7 @@
   };
   /**
    * This function tries to return a `SVGMatrix` that is the multiplication `m1 * m2`.
-   * We also round to zero when it's near zero
+   * We also round to zero when it's near zero.
    * @function module:math.matrixMultiply
    * @param {...SVGMatrix} args - Matrix objects to multiply
    * @returns {SVGMatrix} The matrix object resulting from the calculation
@@ -4729,7 +4733,7 @@
   */
 
   /**
-   * Transforms a rectangle based on the given matrix
+   * Transforms a rectangle based on the given matrix.
    * @function module:math.transformBox
    * @param {Float} l - Float with the box's left coordinate
    * @param {Float} t - Float with the box's top coordinate
@@ -4765,7 +4769,7 @@
    * This returns a single matrix Transform for a given Transform List
    * (this is the equivalent of `SVGTransformList.consolidate()` but unlike
    * that method, this one does not modify the actual `SVGTransformList`).
-   * This function is very liberal with its `min`, `max` arguments
+   * This function is very liberal with its `min`, `max` arguments.
    * @function module:math.transformListToTransform
    * @param {SVGTransformList} tlist - The transformlist object
    * @param {Integer} [min=0] - Optional integer indicating start transform position
@@ -4802,7 +4806,7 @@
     return svg$1.createSVGTransformFromMatrix(m);
   };
   /**
-   * Get the matrix object for a given element
+   * Get the matrix object for a given element.
    * @function module:math.getMatrix
    * @param {Element} elem - The DOM element to check
    * @returns {SVGMatrix} The matrix object associated with the element's transformlist
@@ -4814,11 +4818,11 @@
   };
   /**
    * Returns a 45 degree angle coordinate associated with the two given
-   * coordinates
+   * coordinates.
    * @function module:math.snapToAngle
    * @param {Integer} x1 - First coordinate's x value
-   * @param {Integer} x2 - Second coordinate's x value
    * @param {Integer} y1 - First coordinate's y value
+   * @param {Integer} x2 - Second coordinate's x value
    * @param {Integer} y2 - Second coordinate's y value
    * @returns {module:math.AngleCoord45}
   */
@@ -4838,7 +4842,7 @@
     };
   };
   /**
-   * Check if two rectangles (BBoxes objects) intersect each other
+   * Check if two rectangles (BBoxes objects) intersect each other.
    * @function module:math.rectsIntersect
    * @param {SVGRect} r1 - The first BBox-like object
    * @param {SVGRect} r2 - The second BBox-like object
@@ -5200,7 +5204,7 @@
   };
   /**
   * Requires prior call to `setUiStrings` if `xlink:title`
-  *    to be set on the grip
+  *    to be set on the grip.
   * @function module:path.addPointGrip
   * @param {Integer} index
   * @param {Integer} x
@@ -5270,7 +5274,7 @@
   };
   /**
   * Requires prior call to `setUiStrings` if `xlink:title`
-  *    to be set on the grip
+  *    to be set on the grip.
   * @function module:path.addCtrlGrip
   * @param {string} id
   * @returns {SVGCircleElement}
@@ -5409,6 +5413,7 @@
   * @param {Integer} index
   * @param {ArgumentsArray} pts
   * @param {SVGPathElement} elem
+  * @returns {undefined}
   */
 
   var replacePathSeg = function replacePathSeg(type, index, pts, elem) {
@@ -5501,7 +5506,7 @@
    */
 
   /**
-  * Takes three points and creates a smoother line based on them
+  * Takes three points and creates a smoother line based on them.
   * @function module:path.smoothControlPoints
   * @param {Point} ct1 - Object with x and y values (first control point)
   * @param {Point} ct2 - Object with x and y values (second control point)
@@ -5766,6 +5771,7 @@
       /**
        * @param {Integer} newType Possible values set during {@link module:path.init}
        * @param {ArgumentsArray} pts
+       * @returns {undefined}
        */
 
     }, {
@@ -5790,7 +5796,7 @@
   /*#__PURE__*/
   function () {
     /**
-    * @param {SVGPathElement}
+    * @param {SVGPathElement} elem
     * @throws {Error} If constructed without a path element
     */
     function Path(elem) {
@@ -5807,7 +5813,7 @@
       this.init();
     }
     /**
-    * Reset path data
+    * Reset path data.
     * @returns {module:path.Path}
     */
 
@@ -6090,7 +6096,7 @@
         return this;
       }
       /**
-      * Move selected points
+      * Move selected points.
       * @param {Integer} dx
       * @param {Integer} dy
       * @returns {undefined}
@@ -6232,7 +6238,7 @@
         }
       }
       /**
-      * Update position of all points
+      * Update position of all points.
       * @returns {Path}
       */
 
@@ -6505,7 +6511,7 @@
 
   var pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
   /**
-   * Convert a path to one with only absolute or relative values
+   * Convert a path to one with only absolute or relative values.
    * @todo move to pathActions.js
    * @function module:path.convertPath
    * @param {SVGPathElement} path - the path to convert
@@ -6725,11 +6731,11 @@
     return d;
   };
   /**
-   * TODO: refactor callers in convertPath to use getPathDFromSegments instead of this function.
-   * Legacy code refactored from svgcanvas.pathActions.convertPath
+   * TODO: refactor callers in `convertPath` to use `getPathDFromSegments` instead of this function.
+   * Legacy code refactored from `svgcanvas.pathActions.convertPath`.
    * @param {string} letter - path segment command (letter in potentially either case from {@link module:path.pathMap}; see [SVGPathSeg#pathSegTypeAsLetter]{@link https://www.w3.org/TR/SVG/single-page.html#paths-__svg__SVGPathSeg__pathSegTypeAsLetter})
-   * @param {Integer[][]} points - x,y points
-   * @param {Integer[][]} [morePoints] - x,y points
+   * @param {GenericArray<Integer>[]} points - x,y points
+   * @param {GenericArray<Integer>[]} [morePoints] - x,y points
    * @param {Integer[]} [lastPoint] - x,y point
    * @returns {string}
    */
@@ -6768,7 +6774,7 @@
     /**
     * This function converts a polyline (created by the fh_path tool) into
     * a path element and coverts every three line segments into a single bezier
-    * curve in an attempt to smooth out the free-hand
+    * curve in an attempt to smooth out the free-hand.
     * @function smoothPolylineIntoPath
     * @param {Element} element
     * @returns {Element}
@@ -7301,7 +7307,7 @@
         },
 
         /**
-        * @param {Element} element
+        * @param {Element} elem
         * @fires module:svgcanvas.SvgCanvas#event:selected
         * @returns {undefined}
         */
@@ -7732,6 +7738,7 @@
         smoothPolylineIntoPath: smoothPolylineIntoPath,
 
         /**
+        * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
         * @returns {undefined}
         */
         setSegType: function setSegType(v) {
@@ -7896,7 +7903,7 @@
     svgroot_ = editorContext.getSVGRoot();
   };
   /**
-   * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}
+   * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}.
    * @function module:utilities.dropXMLInteralSubset
    * @param {string} str String to be processed
    * @returns {string} The string with entity declarations in the internal subset removed
@@ -7925,7 +7932,7 @@
   //        also precalculate the size of the array needed.
 
   /**
-  * Converts a string to base64
+  * Converts a string to base64.
   * @function module:utilities.encode64
   * @param {string} input
   * @returns {string} Base64 output
@@ -7969,7 +7976,7 @@
     return output.join('');
   };
   /**
-  * Converts a string from base64
+  * Converts a string from base64.
   * @function module:utilities.decode64
   * @param {string} input Base64-encoded input
   * @returns {string} Decoded output
@@ -8026,7 +8033,7 @@
     return unescape(encodeURIComponent(argString));
   };
   /**
-   * convert dataURL to object URL
+   * Convert dataURL to object URL.
    * @function module:utilities.dataURLToObjectURL
    * @param {string} dataurl
    * @returns {string} object URL or empty string
@@ -8053,7 +8060,7 @@
     return URL.createObjectURL(blob);
   };
   /**
-   * get object URL for a blob object
+   * Get object URL for a blob object.
    * @function module:utilities.createObjectURL
    * @param {Blob} blob A Blob object or File object
    * @returns {string} object URL or empty string
@@ -8081,8 +8088,8 @@
     return createObjectURL(blob);
   }();
   /**
-  * Cross-browser compatible method of converting a string to an XML tree
-  * found this function [here]{@link http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f}
+  * Cross-browser compatible method of converting a string to an XML tree.
+  * Found this function [here]{@link http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f}.
   * @function module:utilities.text2xml
   * @param {string} sXML
   * @throws {Error}
@@ -8149,7 +8156,7 @@
   */
 
   /**
-  * Walks the tree and executes the callback on each element in a top-down fashion
+  * Walks the tree and executes the callback on each element in a top-down fashion.
   * @function module:utilities.walkTree
   * @param {Element} elem - DOM element to traverse
   * @param {module:utilities.TreeWalker} cbFn - Callback function to run on each element
@@ -8167,7 +8174,7 @@
     }
   };
   /**
-  * Walks the tree and executes the callback on each element in a depth-first fashion
+  * Walks the tree and executes the callback on each element in a depth-first fashion.
   * @function module:utilities.walkTreePost
   * @todo FIXME: Shouldn't this be calling walkTreePost?
   * @param {Element} elem - DOM element to traverse
@@ -8226,7 +8233,7 @@
     return elem.getAttributeNS(NS.XLINK, 'href');
   };
   /**
-  * Sets the given element's `xlink:href` value
+  * Sets the given element's `xlink:href` value.
   * @function module:utilities.setHref
   * @param {Element} elem
   * @param {string} val
@@ -8263,7 +8270,7 @@
 
   /**
   * Get correct BBox for a path in Webkit.
-  * Converted from code found [here]{@link http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html}
+  * Converted from code found [here]{@link http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html}.
   * @function module:utilities.getPathBBox
   * @param {SVGPathElement} path - The path DOM element to get the BBox for
   * @returns {module:utilities.BBoxObject} A BBox-like object
@@ -8417,7 +8424,7 @@
   }
   /**
   * Get the given/selected element's bounding box object, convert it to be more
-  * usable when necessary
+  * usable when necessary.
   * @function module:utilities.getBBox
   * @param {Element} elem - Optional DOM element to get the BBox for
   * @returns {module:utilities.BBoxObject} Bounding box object
@@ -8649,7 +8656,7 @@
     return attrs;
   };
   /**
-  * Get the BBox of an element-as-path
+  * Get the BBox of an element-as-path.
   * @function module:utilities.getBBoxOfElementAsPath
   * @param {Element} elem - The DOM element to be probed
   * @param {module:utilities.EditorContext#addSVGElementFromJson} addSVGElementFromJson - Function to add the path element to the current layer. See canvas.addSVGElementFromJson
@@ -8871,7 +8878,7 @@
    */
 
   /**
-  * Get the bounding box for one or more stroked and/or transformed elements
+  * Get the bounding box for one or more stroked and/or transformed elements.
   * @function module:utilities.getStrokedBBox
   * @param {Element[]} elems - Array with DOM elements to check
   * @param {module:utilities.EditorContext#addSVGElementFromJson} addSVGElementFromJson - Function to add the path element to the current layer. See canvas.addSVGElementFromJson
@@ -8942,7 +8949,7 @@
   /**
   * Get all elements that have a BBox (excludes `<defs>`, `<title>`, etc).
   * Note that 0-opacity, off-screen etc elements are still considered "visible"
-  * for this function
+  * for this function.
   * @function module:utilities.getVisibleElements
   * @param {Element} parent - The parent DOM element to search within
   * @returns {Element[]} All "visible" elements.
@@ -8962,7 +8969,7 @@
     return contentElems.reverse();
   };
   /**
-  * Get the bounding box for one or more stroked and/or transformed elements
+  * Get the bounding box for one or more stroked and/or transformed elements.
   * @function module:utilities.getStrokedBBoxDefaultVisible
   * @param {Element[]} elems - Array with DOM elements to check
   * @returns {module:utilities.BBoxObject} A single bounding box object
@@ -9002,7 +9009,7 @@
     return 0.0;
   };
   /**
-  * Get the rotation angle of the given/selected DOM element
+  * Get the rotation angle of the given/selected DOM element.
   * @function module:utilities.getRotationAngle
   * @param {Element} [elem] - DOM element to get the angle for. Default to first of selected elements.
   * @param {boolean} [toRad=false] - When true returns the value in radians rather than degrees
@@ -9016,7 +9023,7 @@
     return getRotationAngleFromTransformList(tlist, toRad);
   };
   /**
-  * Get the reference element associated with the given attribute value
+  * Get the reference element associated with the given attribute value.
   * @function module:utilities.getRefElem
   * @param {string} attrVal - The attribute value as a string
   * @returns {Element} Reference element
@@ -9074,7 +9081,7 @@
     }
   };
   /**
-  * Remove unneeded (default) attributes, makes resulting SVG smaller
+  * Remove unneeded (default) attributes, making resulting SVG smaller.
   * @function module:utilities.cleanupElement
   * @param {Element} element - DOM element to clean up
   * @returns {undefined}
@@ -9110,7 +9117,7 @@
     }
   };
   /**
-  * Round value to for snapping
+  * Round value to for snapping.
   * @function module:utilities.snapToGrid
   * @param {Float} value
   * @returns {Integer}
@@ -9128,7 +9135,7 @@
     return value;
   };
   /**
-  * Escapes special characters in a regular expression
+  * Escapes special characters in a regular expression.
   * @function module:utilities.regexEscape
   * @param {string} str
   * @returns {string}
@@ -9139,7 +9146,7 @@
     return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\-]', 'g'), '\\$&');
   };
   /**
-   * Prevents default browser click behaviour on the given element
+   * Prevents default browser click behaviour on the given element.
    * @function module:utilities.preventClickDefault
    * @param {Element} img - The DOM element to prevent the click on
    * @returns {undefined}
@@ -9156,7 +9163,7 @@
    */
 
   /**
-   * Create a clone of an element, updating its ID and its children's IDs when needed
+   * Create a clone of an element, updating its ID and its children's IDs when needed.
    * @function module:utilities.copyElem
    * @param {Element} el - DOM element to clone
    * @param {module:utilities.GetNextID} getNextId - The getter of the next unique ID.
@@ -9813,7 +9820,7 @@
         return this;
       }
       /**
-       * Add a MoveElementCommand to the history or current batch command
+       * Add a `MoveElementCommand` to the history or current batch command.
        * @param {Element} elem - The DOM element that was moved
        * @param {Element} oldNextSibling - The element's next sibling before it was moved
        * @param {Element} oldParent - The element's parent before it was moved
@@ -9832,7 +9839,7 @@
         return this;
       }
       /**
-       * Add an InsertElementCommand to the history or current batch command
+       * Add an `InsertElementCommand` to the history or current batch command.
        * @param {Element} elem - The DOM element that was added
        * @param {string} [text] - An optional string visible to user related to this change
        * @returns {module:history.HistoryRecordingService}
@@ -9849,7 +9856,7 @@
         return this;
       }
       /**
-       * Add a RemoveElementCommand to the history or current batch command
+       * Add a `RemoveElementCommand` to the history or current batch command.
        * @param {Element} elem - The DOM element that was removed
        * @param {Element} oldNextSibling - The element's next sibling before it was removed
        * @param {Element} oldParent - The element's parent before it was removed
@@ -9868,7 +9875,7 @@
         return this;
       }
       /**
-       * Add a ChangeElementCommand to the history or current batch command
+       * Add a `ChangeElementCommand` to the history or current batch command.
        * @param {Element} elem - The DOM element that was changed
        * @param {module:history.CommandAttributes} attrs - An object with the attributes to be changed and the values they had *before* the change
        * @param {string} [text] - An optional string visible to user related to this change
@@ -9964,7 +9971,7 @@
     return 'Layer ' + i;
   }
   /**
-   * This class encapsulates the concept of a SVG-edit drawing
+   * This class encapsulates the concept of a SVG-edit drawing.
    */
 
 
@@ -10096,7 +10103,7 @@
         this.nonce_ = n;
       }
       /**
-       * Clears any previously set nonce
+       * Clears any previously set nonce.
        * @returns {undefined}
        */
 
@@ -10199,7 +10206,7 @@
         return this.all_layers.length;
       }
       /**
-       * Check if layer with given name already exists
+       * Check if layer with given name already exists.
        * @param {string} name - The layer name to check
        * @returns {boolean}
       */
@@ -10231,6 +10238,7 @@
       }
       /**
        * Get a layer by name.
+       * @param {string} name
        * @returns {SVGGElement} The SVGGElement representing the named layer or null.
        */
 
@@ -10670,7 +10678,7 @@
         }
       }
       /**
-       * Create a clone of an element, updating its ID and its children's IDs when needed
+       * Create a clone of an element, updating its ID and its children's IDs when needed.
        * @param {Element} el - DOM element to clone
        * @returns {Element}
        */
@@ -10789,7 +10797,7 @@
     canvas_ = canvas;
   };
   /**
-  * Updates layer system
+  * Updates layer system.
   * @function module:draw.identifyLayers
   * @returns {undefined}
   */
@@ -11018,7 +11026,7 @@
   };
   /**
   * Return from a group context to the regular kind, make any previously
-  * disabled elements enabled again
+  * disabled elements enabled again.
   * @function module:draw.leaveContext
   * @fires module:svgcanvas.SvgCanvas#event:contextset
   * @returns {undefined}
@@ -11049,7 +11057,7 @@
     canvas_.setCurrentGroup(null);
   };
   /**
-  * Set the current context (for in-group editing)
+  * Set the current context (for in-group editing).
   * @function module:draw.setContext
   * @param {Element} elem
   * @fires module:svgcanvas.SvgCanvas#event:contextset
@@ -11381,13 +11389,14 @@
   /**
   * @function module:coords.init
   * @param {module:coords.EditorContext} editorContext
+  * @returns {undefined}
   */
 
   var init$4 = function init(editorContext) {
     editorContext_$2 = editorContext;
   };
   /**
-   * Applies coordinate changes to an element based on the given matrix
+   * Applies coordinate changes to an element based on the given matrix.
    * @function module:coords.remapElement
    * @implements {module:path.EditorContext#remapElement}
   */
@@ -11772,7 +11781,7 @@
     context_ = editorContext;
   };
   /**
-  * Updates a `<clipPath>`s values based on the given translation of an element
+  * Updates a `<clipPath>`s values based on the given translation of an element.
   * @function module:recalculate.updateClipPath
   * @param {string} attr - The clip-path attribute value with the clipPath's ID
   * @param {Float} tx - The translation's x value
@@ -11790,7 +11799,7 @@
     recalculateDimensions(path);
   };
   /**
-  * Decides the course of action based on the element's transform list
+  * Decides the course of action based on the element's transform list.
   * @function module:recalculate.recalculateDimensions
   * @param {Element} selected - The DOM element to recalculate
   * @returns {Command} Undo command object with the resulting change
@@ -12636,7 +12645,7 @@
 
   var gripRadius = isTouch() ? 10 : 4;
   /**
-  * Private class for DOM element selection boxes
+  * Private class for DOM element selection boxes.
   */
 
   var Selector =
@@ -12690,9 +12699,10 @@
       this.reset(this.selectedElement, bbox);
     }
     /**
-    * Used to reset the id and element that the selector is attached to
+    * Used to reset the id and element that the selector is attached to.
     * @param {Element} e - DOM element associated with this selector
     * @param {module:utilities.BBoxObject} bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
+    * @returns {undefined}
     */
 
 
@@ -12705,8 +12715,9 @@
         this.selectorGroup.setAttribute('display', 'inline');
       }
       /**
-      * Updates cursors for corner grips on rotation so arrows point the right way
+      * Updates cursors for corner grips on rotation so arrows point the right way.
       * @param {Float} angle - Current rotation angle in degrees
+      * @returns {undefined}
       */
 
     }, {
@@ -12737,9 +12748,9 @@
         }
       }
       /**
-      * Show the resize grips of this selector
-      *
+      * Show the resize grips of this selector.
       * @param {boolean} show - Indicates whether grips should be shown or not
+      * @returns {undefined}
       */
 
     }, {
@@ -12756,8 +12767,9 @@
         }
       }
       /**
-      * Updates the selector to match the element's size
+      * Updates the selector to match the element's size.
       * @param {module:utilities.BBoxObject} [bbox] - BBox to use for resize (prevents duplicate getBBox call).
+      * @returns {undefined}
       */
 
     }, {
@@ -12888,7 +12900,7 @@
     return Selector;
   }();
   /**
-  * Manage all selector objects (selection boxes)
+  * Manage all selector objects (selection boxes).
   */
 
   var SelectorManager =
@@ -12922,7 +12934,8 @@
       this.initGroup();
     }
     /**
-    * Resets the parent selector group element
+    * Resets the parent selector group element.
+    * @returns {undefined}
     */
 
 
@@ -13073,9 +13086,10 @@
         return this.selectors[N];
       }
       /**
-      * Removes the selector of the given element (hides selection box)
+      * Removes the selector of the given element (hides selection box).
       *
       * @param {Element} elem - DOM element to remove the selector for
+      * @returns {undefined}
       */
 
     }, {
@@ -13224,7 +13238,7 @@
     window.console.dir = function (str) {};
   }
   /**
-  * The main SvgCanvas class that manages all SVG-related functions
+  * The main SvgCanvas class that manages all SVG-related functions.
   * @memberof module:svgcanvas
   *
   * @borrows module:coords.remapElement as #remapElement
@@ -13323,7 +13337,7 @@
 
     var idprefix = 'svg_';
     /**
-    * Changes the ID prefix to the given value
+    * Changes the ID prefix to the given value.
     * @function module:svgcanvas.SvgCanvas#setIdPrefix
     * @param {string} p - String with the new prefix
     * @returns {undefined}
@@ -13421,7 +13435,7 @@
       return retval;
     };
     /**
-    * This should really be an intersection implementing all rather than a union
+    * This should really be an intersection implementing all rather than a union.
     * @function module:svgcanvas.SvgCanvas#addSVGElementFromJson
     * @implements {module:utilities.EditorContext#addSVGElementFromJson|module:path.EditorContext#addSVGElementFromJson}
     */
@@ -13510,7 +13524,7 @@
     });
     canvas.convertToNum = convertToNum;
     /**
-    * This should really be an intersection implementing all rather than a union
+    * This should really be an intersection implementing all rather than a union.
     * @implements {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
     */
 
@@ -13518,7 +13532,7 @@
       return svgcontent;
     };
     /**
-    * Should really be an intersection with all needing to apply rather than a union
+    * Should really be an intersection with all needing to apply rather than a union.
     * @function module:svgcanvas.SvgCanvas#getSelectedElements
     * @implements {module:utilities.EditorContext#getSelectedElements|module:draw.DrawCanvasInit#getSelectedElements|module:path.EditorContext#getSelectedElements}
     */
@@ -13530,7 +13544,7 @@
 
     var pathActions$$1 = pathActions;
     /**
-    * This should actually be an intersection as all interfaces should be met
+    * This should actually be an intersection as all interfaces should be met.
     * @implements {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
     */
 
@@ -13574,7 +13588,7 @@
     canvas.assignAttributes = assignAttributes;
     this.cleanupElement = cleanupElement;
     /**
-    * This should actually be an intersection not a union as all should apply
+    * This should actually be an intersection not a union as all should apply.
     * @implements {module:coords.EditorContext|module:path.EditorContext}
     */
 
@@ -13690,7 +13704,7 @@
       }
     });
     /**
-    * This should really be an intersection applying to all types rather than a union
+    * This should really be an intersection applying to all types rather than a union.
     * @function module:svgcanvas~addCommandToHistory
     * @implements {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory}
     */
@@ -13699,7 +13713,7 @@
       canvas.undoMgr.addCommandToHistory(cmd);
     };
     /**
-    * This should really be an intersection applying to all types rather than a union
+    * This should really be an intersection applying to all types rather than a union.
     * @function module:svgcanvas.SvgCanvas#getZoom
     * @implements {module:path.EditorContext#getCurrentZoom|module:select.SVGFactory#getCurrentZoom}
     */
@@ -13761,7 +13775,7 @@
       return getCurrentDrawing().getId();
     };
     /**
-    * The "implements" should really be an intersection applying to all types rather than a union
+    * The "implements" should really be an intersection applying to all types rather than a union.
     * @function module:svgcanvas.SvgCanvas#call
     * @implements {module:draw.DrawCanvasInit#call|module:path.EditorContext#call}
     * @param {"selected"|"changed"|"contextset"|"pointsAdded"|"extension_added"|"extensions_added"|"message"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String with the event name
@@ -13777,7 +13791,7 @@
     };
     /**
     * Clears the selection. The 'selected' handler is then optionally called.
-    * This should really be an intersection applying to all types rather than a union
+    * This should really be an intersection applying to all types rather than a union.
     * @function module:svgcanvas.SvgCanvas#clearSelection
     * @implements {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection}
     * @fires module:svgcanvas.SvgCanvas#event:selected
@@ -14005,6 +14019,7 @@
        * @param {SVGCircleElement[]} grips
        * @fires module:svgcanvas.SvgCanvas#event:pointsAdded
        * @fires module:svgcanvas.SvgCanvas#event:selected
+       * @returns {undefined}
        */
       addPtsToSelection: function addPtsToSelection(_ref) {
         var closedSubpath = _ref.closedSubpath,
@@ -14313,7 +14328,7 @@
     */
 
     /**
-    * Add an extension to the editor
+    * Add an extension to the editor.
     * @function module:svgcanvas.SvgCanvas#addExtension
     * @param {string} name - String with the ID of the extension. Used internally; no need for i18n.
     * @param {module:svgcanvas.ExtensionInitCallback} [extInitFunc] - Function supplied by the extension with its data
@@ -14405,7 +14420,7 @@
     * We brute-force `getIntersectionList` for browsers that do not support it (Firefox).
     *
     * Reference:
-    * Firefox does not implement `getIntersectionList()`, see {@link https://bugzilla.mozilla.org/show_bug.cgi?id=501421}
+    * Firefox does not implement `getIntersectionList()`, see {@link https://bugzilla.mozilla.org/show_bug.cgi?id=501421}.
     * @function module:svgcanvas.SvgCanvas#getIntersectionList
     * @param {SVGRect} rect
     * @returns {Element[]|NodeList} Bbox elements
@@ -14486,7 +14501,7 @@
     /**
     * Get all elements that have a BBox (excludes `<defs>`, `<title>`, etc).
     * Note that 0-opacity, off-screen etc elements are still considered "visible"
-    * for this function
+    * for this function.
     * @function module:svgcanvas.SvgCanvas#getVisibleElementsAndBBoxes
     * @param {Element} parent - The parent DOM element to search within
     * @returns {ElementAndBBox[]} An array with objects that include:
@@ -14509,7 +14524,7 @@
       return contentElems.reverse();
     };
     /**
-    * Wrap an SVG element into a group element, mark the group as 'gsvg'
+    * Wrap an SVG element into a group element, mark the group as 'gsvg'.
     * @function module:svgcanvas.SvgCanvas#groupSvgElem
     * @param {Element} elem - SVG element to wrap
     * @returns {undefined}
@@ -14657,7 +14672,7 @@
     */
 
     /**
-    * Attaches a callback function to an event
+    * Attaches a callback function to an event.
     * @function module:svgcanvas.SvgCanvas#bind
     * @param {"changed"|"contextset"|"selected"|"pointsAdded"|"extension_added"|"extensions_added"|"message"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String indicating the name of the event
     * @param {module:svgcanvas.EventHandler} f - The callback function to bind to the event
@@ -14720,7 +14735,7 @@
 
     /**
     * Removes any old rotations if present, prepends a new rotation at the
-    * transformed center
+    * transformed center.
     * @function module:svgcanvas.SvgCanvas#setRotationAngle
     * @param {string|Float} val - The new rotation angle in degrees
     * @param {boolean} preventUndo - Indicates whether the action should be undoable or not
@@ -14781,7 +14796,7 @@
     };
     /**
     * Runs `recalculateDimensions` on the selected elements,
-    * adding the changes to a single batch command
+    * adding the changes to a single batch command.
     * @function module:svgcanvas.SvgCanvas#recalculateAllSelectedDimensions
     * @fires module:svgcanvas.SvgCanvas#event:changed
     * @returns {undefined}
@@ -14809,7 +14824,7 @@
       }
     };
     /**
-     * Debug tool to easily see the current matrix in the browser's console
+     * Debug tool to easily see the current matrix in the browser's console.
      * @function module:svgcanvas~logMatrix
      * @param {SVGMatrix} m The matrix
      * @returns {undefined}
@@ -14828,7 +14843,7 @@
     // TODO: do we need to worry about selectedBBoxes here?
 
     /**
-    * Selects only the given elements, shortcut for clearSelection(); addToSelection()
+    * Selects only the given elements, shortcut for `clearSelection(); addToSelection()`.
     * @function module:svgcanvas.SvgCanvas#selectOnly
     * @param {Element[]} elems - an array of DOM elements to be selected
     * @param {boolean} showGrips - Indicates whether the resize grips should be shown
@@ -14963,10 +14978,11 @@
         };
       };
       /**
+       * Follows these conditions:
        * - When we are in a create mode, the element is added to the canvas but the
        *   action is not recorded until mousing up.
        * - When we are in select mode, select the element, remember the position
-       *   and do nothing else
+       *   and do nothing else.
        * @param {MouseEvent} evt
        * @fires module:svgcanvas.SvgCanvas#event:ext-mouseDown
        * @returns {undefined}
@@ -16738,7 +16754,7 @@
           },
 
           /**
-          * @param {external:MouseEvent}
+          * @param {external:MouseEvent} evt
           * @param {Float} mouseX
           * @param {Float} mouseY
           * @returns {undefined}
@@ -16987,7 +17003,7 @@
       return numRemoved;
     };
     /**
-    * Main function to set up the SVG content for output
+    * Main function to set up the SVG content for output.
     * @function module:svgcanvas.SvgCanvas#svgCanvasToString
     * @returns {string} The SVG image for output
     */
@@ -17040,7 +17056,7 @@
       return output;
     };
     /**
-    * Sub function ran on each SVG element to convert it to a string as desired
+    * Sub function ran on each SVG element to convert it to a string as desired.
     * @function module:svgcanvas.SvgCanvas#svgToString
     * @param {Element} elem - The SVG element to convert
     * @param {Integer} indent - Number of spaces to indent this tag
@@ -17269,7 +17285,7 @@
      */
 
     /**
-    * Converts a given image file to a data URL when possible, then runs a given callback
+    * Converts a given image file to a data URL when possible, then runs a given callback.
     * @function module:svgcanvas.SvgCanvas#embedImage
     * @param {string} src - The path/URL of the image
     * @param {module:svgcanvas.ImageEmbeddedCallback} [callback] - Function to run when image data is found
@@ -17312,7 +17328,7 @@
       });
     };
     /**
-    * Sets a given URL to be a "last good image" URL
+    * Sets a given URL to be a "last good image" URL.
     * @function module:svgcanvas.SvgCanvas#setGoodImage
     * @param {string} val
     * @returns {undefined}
@@ -17323,7 +17339,7 @@
       lastGoodImgUrl = val;
     };
     /**
-    * Does nothing by default, handled by optional widget/extension
+    * Does nothing by default, handled by optional widget/extension.
     * @function module:svgcanvas.SvgCanvas#open
     * @returns {undefined}
     */
@@ -17355,7 +17371,14 @@
       call('saved', str);
     };
     /**
-    * Codes only is useful for locale-independent detection
+    * @typedef {GenericObject} module:svgcanvas.IssuesAndCodes
+    * @property {string[]} issueCodes The locale-independent code names
+    * @property {string[]} issues The localized descriptions
+    */
+
+    /**
+    * Codes only is useful for locale-independent detection.
+    * @returns {module:svgcanvas.IssuesAndCodes}
     */
 
 
@@ -17417,7 +17440,7 @@
     /**
     * Generates a PNG (or JPG, BMP, WEBP) Data URL based on the current image,
     * then calls "exported" with an object including the string, image
-    * information, and any issues found
+    * information, and any issues found.
     * @function module:svgcanvas.SvgCanvas#rasterExport
     * @param {"PNG"|"JPEG"|"BMP"|"WEBP"|"ICO"} [imgType="PNG"]
     * @param {Float} [quality] Between 0 and 1
@@ -17572,7 +17595,7 @@
 
     /**
     * Generates a PDF based on the current image, then calls "exportedPDF" with
-    * an object including the string, the data URL, and any issues found
+    * an object including the string, the data URL, and any issues found.
     * @function module:svgcanvas.SvgCanvas#exportPDF
     * @param {string} [exportWindowName] Will also be used for the download file name here
     * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
@@ -17690,7 +17713,7 @@
     * This function determines whether to use a nonce in the prefix, when
     * generating IDs for future documents in SVG-Edit.
     * If you're controlling SVG-Edit externally, and want randomized IDs, call
-    * this BEFORE calling svgCanvas.setSvgString
+    * this BEFORE calling `svgCanvas.setSvgString`.
     * @function module:svgcanvas.SvgCanvas#randomizeIds
     * @param {boolean} [enableRandomization] If true, adds a nonce to the prefix. Thus
     * `svgCanvas.randomizeIds() <==> svgCanvas.randomizeIds(true)`
@@ -17706,7 +17729,7 @@
       }
     };
     /**
-    * Ensure each element has a unique ID
+    * Ensure each element has a unique ID.
     * @function module:svgcanvas.SvgCanvas#uniquifyElems
     * @param {Element} g - The parent element of the tree to give unique IDs
     * @returns {undefined}
@@ -17820,7 +17843,7 @@
       }
     };
     /**
-    * Assigns reference data for each use element
+    * Assigns reference data for each use element.
     * @function module:svgcanvas.SvgCanvas#setUseData
     * @param {Element} parent
     * @returns {undefined}
@@ -17850,7 +17873,7 @@
       });
     };
     /**
-    * Converts gradients from userSpaceOnUse to objectBoundingBox
+    * Converts gradients from userSpaceOnUse to objectBoundingBox.
     * @function module:svgcanvas.SvgCanvas#convertGradients
     * @param {Element} elem
     * @returns {undefined}
@@ -17934,7 +17957,7 @@
       });
     };
     /**
-    * Converts selected/given `<use>` or child SVG element to a group
+    * Converts selected/given `<use>` or child SVG element to a group.
     * @function module:svgcanvas.SvgCanvas#convertToGroup
     * @param {Element} elem
     * @fires module:svgcanvas.SvgCanvas#event:selected
@@ -18486,7 +18509,7 @@
       return 'svgcanvas.js ($Rev$)';
     };
     /**
-    * Update interface strings with given values
+    * Update interface strings with given values.
     * @function module:svgcanvas.SvgCanvas#setUiStrings
     * @param {module:path.uiStrings} strs - Object with strings (see the [locales API]{@link module:locale.LocaleStrings} and the [tutorial]{@tutorial LocaleDocs})
     * @returns {undefined}
@@ -18498,7 +18521,7 @@
       setUiStrings(strs);
     };
     /**
-    * Update configuration options with given values
+    * Update configuration options with given values.
     * @function module:svgcanvas.SvgCanvas#setConfig
     * @param {module:SVGEditor.Config} opts - Object with options
     * @returns {undefined}
@@ -18534,7 +18557,7 @@
       return '';
     };
     /**
-    * Sets the group/SVG's title content
+    * Sets the group/SVG's title content.
     * @function module:svgcanvas.SvgCanvas#setGroupTitle
     * @param {string} val
     * @todo Combine this with `setDocumentTitle`
@@ -18582,7 +18605,7 @@
     };
     /**
     * Adds/updates a title element for the document with the given name.
-    * This is an undoable action
+    * This is an undoable action.
     * @function module:svgcanvas.SvgCanvas#setDocumentTitle
     * @param {string} newTitle - String with the new title
     * @returns {undefined}
@@ -18621,7 +18644,7 @@
       addCommandToHistory(batchCmd);
     };
     /**
-    * Returns the editor's namespace URL, optionally adding it to the root element
+    * Returns the editor's namespace URL, optionally adding it to the root element.
     * @function module:svgcanvas.SvgCanvas#getEditorNS
     * @param {boolean} [add] - Indicates whether or not to add the namespace value
     * @returns {string} The editor's namespace URL
@@ -18636,10 +18659,10 @@
       return NS.SE;
     };
     /**
-    * Changes the document's dimensions to the given size
+    * Changes the document's dimensions to the given size.
     * @function module:svgcanvas.SvgCanvas#setResolution
     * @param {Float|"fit"} x - Number with the width of the new dimensions in user units.
-    * Can also be the string "fit" to indicate "fit to content"
+    * Can also be the string "fit" to indicate "fit to content".
     * @param {Float} y - Number with the height of the new dimensions in user units.
     * @fires module:svgcanvas.SvgCanvas#event:changed
     * @returns {boolean} Indicates if resolution change was successful.
@@ -18725,7 +18748,7 @@
      */
 
     /**
-    * Sets the zoom level on the canvas-side based on the given value
+    * Sets the zoom level on the canvas-side based on the given value.
     * @function module:svgcanvas.SvgCanvas#setBBoxZoom
     * @param {"selection"|"canvas"|"content"|"layer"|module:SVGEditor.BBoxObjectWithFactor} val - Bounding box object to zoom to or string indicating zoom option. Note: the object value type is defined in `svg-editor.js`
     * @param {Integer} editorW - The editor's workarea box's width
@@ -18888,7 +18911,7 @@
     */
 
     /**
-    * Sets the zoom to the given level
+    * Sets the zoom to the given level.
     * @function module:svgcanvas.SvgCanvas#setZoom
     * @param {Float} zoomLevel - Float indicating the zoom level to change to
     * @fires module:svgcanvas.SvgCanvas#event:ext-zoomChanged
@@ -18922,7 +18945,7 @@
       return currentMode;
     };
     /**
-    * Sets the editor's mode to the given string
+    * Sets the editor's mode to the given string.
     * @function module:svgcanvas.SvgCanvas#setMode
     * @param {string} name - String with the new mode to change to
     * @returns {undefined}
@@ -18955,7 +18978,7 @@
       return curProperties[type];
     };
     /**
-    * Change the current stroke/fill color/gradient value
+    * Change the current stroke/fill color/gradient value.
     * @function module:svgcanvas.SvgCanvas#setColor
     * @param {string} type - String indicating fill or stroke
     * @param {string} val - The value to set the stroke attribute to
@@ -19008,7 +19031,7 @@
       }
     };
     /**
-    * Apply the current gradient to selected element's fill or stroke
+    * Apply the current gradient to selected element's fill or stroke.
     * @function module:svgcanvas.SvgCanvas#setGradient
     * @param {"fill"|"stroke"} type - String indicating "fill" or "stroke" to apply to an element
     * @returns {undefined}
@@ -19038,7 +19061,7 @@
       canvas.setColor(type, 'url(#' + grad.id + ')');
     };
     /**
-    * Check if exact gradient already exists
+    * Check if exact gradient already exists.
     * @function module:svgcanvas~findDuplicateGradient
     * @param {SVGGradientElement} grad - The gradient DOM element to compare to others
     * @returns {SVGGradientElement} The existing gradient if found, `null` if not
@@ -19105,7 +19128,7 @@
       return null;
     };
     /**
-    * Set a color/gradient to a fill/stroke
+    * Set a color/gradient to a fill/stroke.
     * @function module:svgcanvas.SvgCanvas#setPaint
     * @param {"fill"|"stroke"} type - String with "fill" or "stroke"
     * @param {module:jGraduate.jGraduatePaintOptions} paint - The jGraduate paint object to apply
@@ -19163,7 +19186,7 @@
     };
     /**
     * Sets the stroke width for the current selected elements.
-    * When attempting to set a line's width to 0, this changes it to 1 instead
+    * When attempting to set a line's width to 0, this changes it to 1 instead.
     * @function module:svgcanvas.SvgCanvas#setStrokeWidth
     * @param {Float} val - A Float indicating the new stroke width value
     * @fires module:svgcanvas.SvgCanvas#event:changed
@@ -19206,7 +19229,7 @@
       }
     };
     /**
-    * Set the given stroke-related attribute the given value for selected elements
+    * Set the given stroke-related attribute the given value for selected elements.
     * @function module:svgcanvas.SvgCanvas#setStrokeAttr
     * @param {string} attr - String with the attribute name
     * @param {string|Float} val - String or number with the attribute value
@@ -19271,7 +19294,7 @@
 
     this.getOpacity = getOpacity;
     /**
-    * Sets the given opacity to the current selected elements
+    * Sets the given opacity on the current selected elements.
     * @function module:svgcanvas.SvgCanvas#setOpacity
     * @param {string} val
     * @returns {undefined}
@@ -19300,7 +19323,7 @@
       return curShape.stroke_opacity;
     };
     /**
-    * Sets the current fill/stroke opacity
+    * Sets the current fill/stroke opacity.
     * @function module:svgcanvas.SvgCanvas#setPaintOpacity
     * @param {string} type - String with "fill" or "stroke"
     * @param {Float} val - Float with the new opacity value
@@ -19319,7 +19342,7 @@
       }
     };
     /**
-    * Gets the current fill/stroke opacity
+    * Gets the current fill/stroke opacity.
     * @function module:svgcanvas.SvgCanvas#getPaintOpacity
     * @param {"fill"|"stroke"} type - String with "fill" or "stroke"
     * @returns {Float} Fill/stroke opacity
@@ -19330,7 +19353,7 @@
       return type === 'fill' ? this.getFillOpacity() : this.getStrokeOpacity();
     };
     /**
-    * Gets the `stdDeviation` blur value of the given element
+    * Gets the `stdDeviation` blur value of the given element.
     * @function module:svgcanvas.SvgCanvas#getBlur
     * @param {Element} elem - The element to check the blur value for
     * @returns {string} stdDeviation blur attribute value
@@ -19360,7 +19383,7 @@
       var filter = null;
       var filterHidden = false;
       /**
-      * Sets the `stdDeviation` blur value on the selected element without being undoable
+      * Sets the `stdDeviation` blur value on the selected element without being undoable.
       * @function module:svgcanvas.SvgCanvas#setBlurNoUndo
       * @param {Float} val - The new `stdDeviation` value
       * @returns {undefined}
@@ -19404,7 +19427,7 @@
       }
       /**
       * Sets the `x`, `y`, `width`, `height` values of the filter element in order to
-      * make the blur not be clipped. Removes them if not neeeded
+      * make the blur not be clipped. Removes them if not neeeded.
       * @function module:svgcanvas.SvgCanvas#setBlurOffsets
       * @param {Element} filter - The filter DOM element to update
       * @param {Float} stdDev - The standard deviation value on which to base the offset size
@@ -19432,7 +19455,7 @@
         }
       };
       /**
-      * Adds/updates the blur filter to the selected element
+      * Adds/updates the blur filter to the selected element.
       * @function module:svgcanvas.SvgCanvas#setBlur
       * @param {Float} val - Float with the new `stdDeviation` blur value
       * @param {boolean} complete - Whether or not the action should be completed (to add to the undo manager)
@@ -19500,7 +19523,7 @@
       };
     })();
     /**
-    * Check whether selected element is bold or not
+    * Check whether selected element is bold or not.
     * @function module:svgcanvas.SvgCanvas#getBold
     * @returns {boolean} Indicates whether or not element is bold
     */
@@ -19517,7 +19540,7 @@
       return false;
     };
     /**
-    * Make the selected element bold or normal
+    * Make the selected element bold or normal.
     * @function module:svgcanvas.SvgCanvas#setBold
     * @param {boolean} b - Indicates bold (`true`) or normal (`false`)
     * @returns {undefined}
@@ -19536,7 +19559,7 @@
       }
     };
     /**
-    * Check whether selected element is italic or not
+    * Check whether selected element is in italics or not.
     * @function module:svgcanvas.SvgCanvas#getItalic
     * @returns {boolean} Indicates whether or not element is italic
     */
@@ -19552,9 +19575,9 @@
       return false;
     };
     /**
-    * Make the selected element italic or normal
+    * Make the selected element italic or normal.
     * @function module:svgcanvas.SvgCanvas#setItalic
-    * @param {boolean} b - Indicates italic (`true`) or normal (`false`)
+    * @param {boolean} i - Indicates italic (`true`) or normal (`false`)
     * @returns {undefined}
     */
 
@@ -19580,7 +19603,7 @@
       return curText.font_family;
     };
     /**
-    * Set the new font family
+    * Set the new font family.
     * @function module:svgcanvas.SvgCanvas#setFontFamily
     * @param {string} val - String with the new font family
     * @returns {undefined}
@@ -19596,7 +19619,7 @@
       }
     };
     /**
-    * Set the new font color
+    * Set the new font color.
     * @function module:svgcanvas.SvgCanvas#setFontColor
     * @param {string} val - String with the new font color
     * @returns {undefined}
@@ -19626,7 +19649,7 @@
       return curText.font_size;
     };
     /**
-    * Applies the given font size to the selected element
+    * Applies the given font size to the selected element.
     * @function module:svgcanvas.SvgCanvas#setFontSize
     * @param {Float} val - Float with the new font size
     * @returns {undefined}
@@ -19657,7 +19680,7 @@
       return selected.textContent;
     };
     /**
-    * Updates the text element with the given string
+    * Updates the text element with the given string.
     * @function module:svgcanvas.SvgCanvas#setTextContent
     * @param {string} val - String with the new text
     * @returns {undefined}
@@ -19671,7 +19694,7 @@
     };
     /**
     * Sets the new image URL for the selected image element. Updates its size if
-    * a new URL is given
+    * a new URL is given.
     * @function module:svgcanvas.SvgCanvas#setImageURL
     * @param {string} val - String with the image URL/path
     * @fires module:svgcanvas.SvgCanvas#event:changed
@@ -19751,7 +19774,8 @@
       addCommandToHistory(batchCmd);
     };
     /**
-    * Sets the `rx` and `ry` values to the selected `rect` element to change its corner radius
+    * Sets the `rx` and `ry` values to the selected `rect` element
+    * to change its corner radius.
     * @function module:svgcanvas.SvgCanvas#setRectRadius
     * @param {string|Float} val - The new radius
     * @fires module:svgcanvas.SvgCanvas#event:changed
@@ -19777,7 +19801,7 @@
       }
     };
     /**
-    * Wraps the selected element(s) in an anchor element or converts group to one
+    * Wraps the selected element(s) in an anchor element or converts group to one.
     * @function module:svgcanvas.SvgCanvas#makeHyperlink
     * @param {string} url
     * @returns {undefined}
@@ -19813,7 +19837,7 @@
       pathActions$$1.setSegType(newType);
     };
     /**
-    * Convert selected element to a path, or get the BBox of an element-as-path
+    * Convert selected element to a path, or get the BBox of an element-as-path.
     * @function module:svgcanvas.SvgCanvas#convertToPath
     * @todo (codedread): Remove the getBBox argument and split this function into two.
     * @param {Element} elem - The DOM element to be converted
@@ -20007,7 +20031,7 @@
     * subset to this function in the `elems` argument.
     * @function module:svgcanvas.SvgCanvas#changeSelectedAttribute
     * @param {string} attr - String with the attribute name
-    * @param {string|Float} newValue - String or number with the new attribute value
+    * @param {string|Float} val - String or number with the new attribute value
     * @param {Element[]} elems - The DOM elements to apply the change to
     * @returns {undefined}
     */
@@ -20026,7 +20050,7 @@
     };
     /**
     * Removes all selected elements from the DOM and adds the change to the
-    * history stack
+    * history stack.
     * @function module:svgcanvas.SvgCanvas#deleteSelectedElements
     * @fires module:svgcanvas.SvgCanvas#event:changed
     * @returns {undefined}
@@ -20076,7 +20100,7 @@
     };
     /**
     * Removes all selected elements from the DOM and adds the change to the
-    * history stack. Remembers removed elements on the clipboard
+    * history stack. Remembers removed elements on the clipboard.
     * @function module:svgcanvas.SvgCanvas#cutSelectedElements
     * @returns {undefined}
     */
@@ -20087,7 +20111,7 @@
       canvas.deleteSelectedElements();
     };
     /**
-    * Remembers the current selected elements on the clipboard
+    * Remembers the current selected elements on the clipboard.
     * @function module:svgcanvas.SvgCanvas#copySelectedElements
     * @returns {undefined}
     */
@@ -20207,7 +20231,7 @@
       call('changed', pasted);
     };
     /**
-    * Wraps all the selected elements in a group (`g`) element
+    * Wraps all the selected elements in a group (`g`) element.
     * @function module:svgcanvas.SvgCanvas#groupSelectedElements
     * @param {"a"|"g"} [type="g"] - type of element to group into, defaults to `<g>`
     * @param {string} [urlArg]
@@ -20282,7 +20306,7 @@
     };
     /**
     * Pushes all appropriate parent group properties down to its children, then
-    * removes them from the group
+    * removes them from the group.
     * @function module:svgcanvas.SvgCanvas#pushGroupProperties
     * @param {SVGAElement|SVGGElement} g
     * @param {boolean} undoable
@@ -20473,7 +20497,7 @@
     };
     /**
     * Unwraps all the elements in a selected group (`g`) element. This requires
-    * significant recalculations to apply group's transforms, etc. to its children
+    * significant recalculations to apply group's transforms, etc. to its children.
     * @function module:svgcanvas.SvgCanvas#ungroupSelectedElement
     * @returns {undefined}
     */
@@ -20554,7 +20578,7 @@
     };
     /**
     * Repositions the selected element to the bottom in the DOM to appear on top of
-    * other elements
+    * other elements.
     * @function module:svgcanvas.SvgCanvas#moveToTopSelectedElement
     * @fires module:svgcanvas.SvgCanvas#event:changed
     * @returns {undefined}
@@ -20581,7 +20605,7 @@
     };
     /**
     * Repositions the selected element to the top in the DOM to appear under
-    * other elements
+    * other elements.
     * @function module:svgcanvas.SvgCanvas#moveToBottomSelectedElement
     * @fires module:svgcanvas.SvgCanvas#event:changed
     * @returns {undefined}
@@ -20620,7 +20644,7 @@
     };
     /**
     * Moves the select element up or down the stack, based on the visibly
-    * intersecting elements
+    * intersecting elements.
     * @function module:svgcanvas.SvgCanvas#moveUpDownSelected
     * @param {"Up"|"Down"} dir - String that's either 'Up' or 'Down'
     * @fires module:svgcanvas.SvgCanvas#event:changed
@@ -20673,7 +20697,7 @@
       }
     };
     /**
-    * Moves selected elements on the X/Y axis
+    * Moves selected elements on the X/Y axis.
     * @function module:svgcanvas.SvgCanvas#moveSelectedElements
     * @param {Float} dx - Float with the distance to move on the x-axis
     * @param {Float} dy - Float with the distance to move on the y-axis
@@ -20749,7 +20773,7 @@
     };
     /**
     * Create deep DOM copies (clones) of all selected elements and move them slightly
-    * from their originals
+    * from their originals.
     * @function module:svgcanvas.SvgCanvas#cloneSelectedElements
     * @param {Float} x Float with the distance to move on the x-axis
     * @param {Float} y Float with the distance to move on the y-axis
@@ -20800,7 +20824,7 @@
       }
     };
     /**
-    * Aligns selected elements
+    * Aligns selected elements.
     * @function module:svgcanvas.SvgCanvas#alignSelectedElements
     * @param {string} type - String with single character indicating the alignment type
     * @param {"selected"|"largest"|"smallest"|"page"} relativeTo
@@ -20963,7 +20987,7 @@
     */
 
     /**
-    * Updates the editor canvas width/height/position after a zoom has occurred
+    * Updates the editor canvas width/height/position after a zoom has occurred.
     * @function module:svgcanvas.SvgCanvas#updateCanvas
     * @param {Float} w - Float with the new width
     * @param {Float} h - Float with the new height
@@ -21036,7 +21060,7 @@
       };
     };
     /**
-    * Set the background of the editor (NOT the actual document)
+    * Set the background of the editor (NOT the actual document).
     * @function module:svgcanvas.SvgCanvas#setBackground
     * @param {string} color - String with fill color to apply
     * @param {string} url - URL or path to image to use
@@ -21069,7 +21093,7 @@
       }
     };
     /**
-    * Select the next/previous element within the current layer
+    * Select the next/previous element within the current layer.
     * @function module:svgcanvas.SvgCanvas#cycleElement
     * @param {boolean} next - true = next and false = previous element
     * @fires module:svgcanvas.SvgCanvas#event:selected
@@ -21807,6 +21831,7 @@
   /**
    * @function module:jQuerySVGIcons.jQuerySVGIcons
    * @param {external:jQuery} $ Its keys include all icon IDs and the values, the icon as a jQuery object
+   * @returns {external:jQuery} The enhanced jQuery object
   */
   function jqPluginSVGIcons ($) {
     var svgIcons = {};
@@ -21814,27 +21839,28 @@
     /**
     * @function external:jQuery.svgIcons
     * @param {string} file The location of a local SVG or SVGz file
-    * @param {PlainObject} [options]
-    * @param {Float} [options.w] The icon widths
-    * @param {Float} [options.h] The icon heights
-    * @param {PlainObject.<string, string>} [options.fallback] List of raster images with each
+    * @param {PlainObject} [opts]
+    * @param {Float} [opts.w] The icon widths
+    * @param {Float} [opts.h] The icon heights
+    * @param {PlainObject.<string, string>} [opts.fallback] List of raster images with each
       key being the SVG icon ID to replace, and the value the image file name
-    * @param {string} [options.fallback_path] The path to use for all images
+    * @param {string} [opts.fallback_path] The path to use for all images
       listed under "fallback"
-    * @param {boolean} [options.replace] If set to `true`, HTML elements will be replaced by,
+    * @param {boolean} [opts.replace] If set to `true`, HTML elements will be replaced by,
       rather than include the SVG icon.
-    * @param {PlainObject.<string, string>} [options.placement] List with selectors for keys and SVG icon ids
+    * @param {PlainObject.<string, string>} [opts.placement] List with selectors for keys and SVG icon ids
       as values. This provides a custom method of adding icons.
-    * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} [options.resize] List with selectors for keys and numbers
+    * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} [opts.resize] List with selectors for keys and numbers
       as values. This allows an easy way to resize specific icons.
-    * @param {module:jQuerySVGIcons.SVGIconsLoadedCallback} [options.callback] A function to call when all icons have been loaded.
-    * @param {boolean} [options.id_match=true] Automatically attempt to match SVG icon ids with
+    * @param {module:jQuerySVGIcons.SVGIconsLoadedCallback} [opts.callback] A function to call when all icons have been loaded.
+    * @param {boolean} [opts.id_match=true] Automatically attempt to match SVG icon ids with
       corresponding HTML id
-    * @param {boolean} [options.no_img] Prevent attempting to convert the icon into an `<img>`
+    * @param {boolean} [opts.no_img] Prevent attempting to convert the icon into an `<img>`
       element (may be faster, help for browser consistency)
-    * @param {boolean} [options.svgz] Indicate that the file is an SVGZ file, and thus not to
+    * @param {boolean} [opts.svgz] Indicate that the file is an SVGZ file, and thus not to
       parse as XML. SVGZ files add compression benefits, but getting data from
       them fails in Firefox 2 and older.
+    * @returns {undefined}
     */
 
     $.svgIcons = function (file) {
@@ -22288,7 +22314,9 @@
     };
   }
   /**
-  * Adds {@link external:jQuery.jGraduate.Paint}, {@link external:jQuery.fn.jGraduateDefaults}, {@link external:jQuery.fn.jGraduate}
+  * Adds {@link external:jQuery.jGraduate.Paint},
+  * {@link external:jQuery.fn.jGraduateDefaults},
+  * {@link external:jQuery.fn.jGraduate}.
   * @function module:jGraduate.jGraduate
   * @param {external:jQuery} $ The jQuery instance to wrap
   * @returns {external:jQuery}
@@ -23820,7 +23848,7 @@
             }
 
             e.preventDefault();
-          }, false);
+          });
         }
       });
     };
@@ -23863,7 +23891,12 @@
   */
 
   /**
-  * Adds {@link external:jQuery.fn.contextMenu}, {@link external:jQuery.fn.disableContextMenuItems}, {@link external:jQuery.fn.enableContextMenuItems}, {@link external:jQuery.fn.disableContextMenu}, {@link external:jQuery.fn.enableContextMenu}, {@link external:jQuery.fn.destroyContextMenu}
+  * Adds {@link external:jQuery.fn.contextMenu},
+  * {@link external:jQuery.fn.disableContextMenuItems},
+  * {@link external:jQuery.fn.enableContextMenuItems},
+  * {@link external:jQuery.fn.disableContextMenu},
+  * {@link external:jQuery.fn.enableContextMenu},
+  * {@link external:jQuery.fn.destroyContextMenu}.
   * @function module:jQueryContextMenu.jQueryContextMenu
   * @param {external:jQuery} $ The jQuery object to wrap (with `contextMenu`, `disableContextMenuItems`, `enableContextMenuItems`, `disableContextMenu`, `enableContextMenu`, `destroyContextMenu`)
   * @returns {external:jQuery}
@@ -24023,7 +24056,7 @@
       },
 
       /**
-      * Disable context menu items on the fly
+      * Disable context menu items on the fly.
       * @memberof external:jQuery.fn
       * @param {undefined|string} o Comma-separated
       * @returns {external:jQuery}
@@ -24048,7 +24081,7 @@
       },
 
       /**
-      * Enable context menu items on the fly
+      * Enable context menu items on the fly.
       * @memberof external:jQuery.fn
       * @param {undefined|string} o Comma-separated
       * @returns {external:jQuery}
@@ -24073,7 +24106,7 @@
       },
 
       /**
-      * Disable context menu(s)
+      * Disable context menu(s).
       * @memberof external:jQuery.fn
       * @returns {external:jQuery}
       */
@@ -24085,7 +24118,7 @@
       },
 
       /**
-      * Enable context menu(s)
+      * Enable context menu(s).
       * @memberof external:jQuery.fn
       * @returns {external:jQuery}
       */
@@ -24097,7 +24130,7 @@
       },
 
       /**
-      * Destroy context menu(s)
+      * Destroy context menu(s).
       * @memberof external:jQuery.fn
       * @returns {external:jQuery}
       */
@@ -24179,13 +24212,16 @@
 
     /**
     * Encapsulate slider functionality for the ColorMap and ColorBar -
-    * could be useful to use a jQuery UI draggable for this with certain extensions
+    * could be useful to use a jQuery UI draggable for this with certain extensions.
     * @param {external:jQuery} bar
     * @param {module:jPicker.SliderOptions} options
+    * @returns {undefined}
     */
 
 
-    function Slider(bar, options) {
+    var Slider = function Slider(bar, options) {
+      _classCallCheck(this, Slider);
+
       var $this = this;
 
       function fireChangeEvents(context) {
@@ -24502,7 +24538,7 @@
 
       bar.bind('mousedown', mouseDown);
       bind.call($this, draw);
-    } // controls for all the input elements for the typing in color values
+    }; // controls for all the input elements for the typing in color values
 
 
     function ColorValuePicker(picker, color, bindedHex, alphaPrecision) {
@@ -25468,6 +25504,7 @@
          *
          * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode [description]
          * @throws {Error} Invalid mode
+         * @returns {undefined}
          */
 
         function setColorMode(colorMode) {
@@ -27925,7 +27962,7 @@
   */
 
   /**
-  * Store and retrieve preferences
+  * Store and retrieve preferences.
   * @param {string} key The preference name to be retrieved or set
   * @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will be made.
   * @returns {string} If val is missing or falsey, the value of the previously stored preference will be returned.
@@ -28195,7 +28232,7 @@
     return svgCanvas.randomizeIds(arg);
   };
   /**
-  * Auto-run after a Promise microtask
+  * Auto-run after a Promise microtask.
   * @returns {undefined}
   */
 
@@ -28337,7 +28374,7 @@
       setupCurPrefs();
     })();
     /**
-    * Called internally
+    * Called internally.
     * @param {string|Element|external:jQuery} elem
     * @param {string|external:jQuery} iconId
     * @param {Float} forcedSize Not in use
@@ -29480,11 +29517,11 @@
       $$b(opt).addClass('current').siblings().removeClass('current');
     }
     /**
-    * This is a common function used when a tool has been clicked (chosen)
+    * This is a common function used when a tool has been clicked (chosen).
     * It does several common things:
-    * - removes the `tool_button_current` class from whatever tool currently has it
-    * - hides any flyouts
-    * - adds the `tool_button_current` class to the button passed in
+    * - Removes the `tool_button_current` class from whatever tool currently has it.
+    * - Hides any flyouts.
+    * - Adds the `tool_button_current` class to the button passed in.
     * @function module:SVGEDitor.toolButtonClick
     * @param {string|Element} button The DOM element or string selector representing the toolbar button
     * @param {boolean} noHiding Whether not to hide any flyouts
@@ -29528,7 +29565,7 @@
       }
     };
     /**
-    * Set a selected image's URL
+    * Set a selected image's URL.
     * @function module:SVGEditor.setImageURL
     * @param {string} url
     * @returns {undefined}
@@ -30508,7 +30545,7 @@
 
     var allHolders = {};
     /**
-     * @param {Object.<string, module:SVGEditor.ToolButton>} holders Key is a selector
+     * @param {GenericObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
      * @returns {undefined}
      */
 
@@ -30549,7 +30586,7 @@
             def = i;
           }
           /**
-           * Clicking the icon in flyout should set this set's icon
+           * Clicking the icon in flyout should set this set's icon.
            * @param {Event} ev
            * @returns {undefined}
            */
@@ -32407,7 +32444,7 @@
       hideDocProperties();
     };
     /**
-    * Save user preferences based on current values in the UI
+    * Save user preferences based on current values in the UI.
     * @function module:SVGEditor.savePreferences
     * @returns {undefined}
     */
@@ -32987,7 +33024,7 @@
       changeSidePanelWidth(deltaX);
     };
     /**
-     * If width is non-zero, then fully close it, otherwise fully open it
+     * If width is non-zero, then fully close it; otherwise fully open it.
      * @param {boolean} close Forces the side panel closed
      * @returns {undefined}
      */
@@ -33943,9 +33980,9 @@
 
         return uiStrings$1.notification.unsavedChanges;
       }
-    }, false);
+    });
     /**
-    * Expose the uiStrings
+    * Expose the `uiStrings`.
     * @function module:SVGEditor.canvas.getUIStrings
     * @returns {module:SVGEditor.uiStrings}
     */
@@ -34081,10 +34118,10 @@
         }
       };
 
-      workarea[0].addEventListener('dragenter', onDragEnter, false);
-      workarea[0].addEventListener('dragover', onDragOver, false);
-      workarea[0].addEventListener('dragleave', onDragLeave, false);
-      workarea[0].addEventListener('drop', importImage, false);
+      workarea[0].addEventListener('dragenter', onDragEnter);
+      workarea[0].addEventListener('dragover', onDragOver);
+      workarea[0].addEventListener('dragleave', onDragLeave);
+      workarea[0].addEventListener('drop', importImage);
       var open = $$b('<input type="file">').click(function () {
         var f = this;
         editor.openPrep(function (ok) {
@@ -34248,9 +34285,9 @@
     */
     {
       /**
-      * Gets an array of results from extensions with a `addLangData` method
+      * Gets an array of results from extensions with a `addLangData` method,
       * returning an object with a `data` property set to its locales (to be
-      * merged with regular locales)
+      * merged with regular locales).
       * @param {string} langParam
       * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
       * @todo Can we forego this in favor of `langReady` (or forego `langReady`)?
@@ -34261,8 +34298,7 @@
         /**
          * @function
          * @type {module:svgcanvas.ExtensionVarBuilder}
-         * @param {string} defaultLang
-         * @param {string} defaultName
+         * @param {string} name
          * @returns {module:svgcanvas.SvgCanvas#event:ext-addLangData}
          */
         function (name) {
@@ -34295,7 +34331,7 @@
   /**
   * Queues a callback to be invoked when the editor is ready (or
   *   to be invoked immediately if it is already ready--i.e.,
-  *   if `svgEditor.runCallbacks` has been run)
+  *   if `svgEditor.runCallbacks` has been run).
   * @param {module:SVGEditor.ReadyCallback} cb Callback to be queued to invoke
   * @returns {undefined}
   */
@@ -34332,7 +34368,7 @@
     });
   };
   /**
-  * Not presently in use
+  * Not presently in use.
   * @param {PlainObject} featList
   * @returns {undefined}
   */

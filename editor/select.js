@@ -20,7 +20,7 @@ let selectorManager_; // A Singleton
 const gripRadius = isTouch() ? 10 : 4;
 
 /**
-* Private class for DOM element selection boxes
+* Private class for DOM element selection boxes.
 */
 export class Selector {
   /**
@@ -76,9 +76,10 @@ export class Selector {
   }
 
   /**
-  * Used to reset the id and element that the selector is attached to
+  * Used to reset the id and element that the selector is attached to.
   * @param {Element} e - DOM element associated with this selector
   * @param {module:utilities.BBoxObject} bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
+  * @returns {undefined}
   */
   reset (e, bbox) {
     this.locked = true;
@@ -88,8 +89,9 @@ export class Selector {
   }
 
   /**
-  * Updates cursors for corner grips on rotation so arrows point the right way
+  * Updates cursors for corner grips on rotation so arrows point the right way.
   * @param {Float} angle - Current rotation angle in degrees
+  * @returns {undefined}
   */
   updateGripCursors (angle) {
     let dir;
@@ -111,9 +113,9 @@ export class Selector {
   }
 
   /**
-  * Show the resize grips of this selector
-  *
+  * Show the resize grips of this selector.
   * @param {boolean} show - Indicates whether grips should be shown or not
+  * @returns {undefined}
   */
   showGrips (show) {
     const bShow = show ? 'inline' : 'none';
@@ -127,8 +129,9 @@ export class Selector {
   }
 
   /**
-  * Updates the selector to match the element's size
+  * Updates the selector to match the element's size.
   * @param {module:utilities.BBoxObject} [bbox] - BBox to use for resize (prevents duplicate getBBox call).
+  * @returns {undefined}
   */
   resize (bbox) {
     const selectedBox = this.selectorRect,
@@ -261,7 +264,7 @@ export class Selector {
 }
 
 /**
-* Manage all selector objects (selection boxes)
+* Manage all selector objects (selection boxes).
 */
 export class SelectorManager {
   constructor () {
@@ -297,7 +300,8 @@ export class SelectorManager {
   }
 
   /**
-  * Resets the parent selector group element
+  * Resets the parent selector group element.
+  * @returns {undefined}
   */
   initGroup () {
     // remove old selector parent group if it existed
@@ -440,9 +444,10 @@ export class SelectorManager {
   }
 
   /**
-  * Removes the selector of the given element (hides selection box)
+  * Removes the selector of the given element (hides selection box).
   *
   * @param {Element} elem - DOM element to remove the selector for
+  * @returns {undefined}
   */
   releaseSelector (elem) {
     if (elem == null) { return; }

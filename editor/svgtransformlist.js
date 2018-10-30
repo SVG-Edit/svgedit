@@ -337,7 +337,7 @@ export let removeElementFromListMap = function (elem) {
 };
 
 /**
-* Returns an object that behaves like a `SVGTransformList` for the given DOM element
+* Returns an object that behaves like a `SVGTransformList` for the given DOM element.
 * @function module:SVGTransformList.getTransformList
 * @param {Element} elem - DOM element to get a transformlist from
 * @todo The polyfill should have `SVGAnimatedTransformList` and this should use it
@@ -372,7 +372,7 @@ export const getTransformList = function (elem) {
 * @param {Element} elem
 */
 /**
-* For unit-testing
+* Replace `removeElementFromListMap` for unit-testing.
 * @function module:SVGTransformList.changeRemoveElementFromListMap
 * @param {module:SVGTransformList.removeElementFromListMap} cb Passed a single argument `elem`
 * @returns {undefined}

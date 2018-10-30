@@ -8,6 +8,7 @@
  * @param {Float} expected
  * @param {Float} maxDifference (the maximum inclusive difference allowed between the actual and expected numbers)
  * @param {string} [message] Defaults to structured message
+ * @returns {undefined}
  */
 function close (actual, expected, maxDifference, message) {
   const actualDiff = (actual === expected) ? 0 : Math.abs(actual - expected),
@@ -26,6 +27,7 @@ function close (actual, expected, maxDifference, message) {
  * @param {Float} expected
  * @param {Float} maxPercentDifference (the maximum inclusive difference percentage allowed between the actual and expected numbers)
  * @param {string} [message] Defaults to a structured message
+ * @returns {undefined}
  */
 function closePercent (actual, expected, maxPercentDifference, message) {
   let actualDiff, result;
@@ -55,6 +57,7 @@ function closePercent (actual, expected, maxPercentDifference, message) {
  * @param {Float} expected
  * @param {Float} minDifference (the minimum exclusive difference allowed between the actual and expected numbers)
  * @param {string} [message] Defaults to structured message
+ * @returns {undefined}
  */
 function notClose (actual, expected, minDifference, message) {
   const actualDiff = Math.abs(actual - expected),
@@ -73,6 +76,7 @@ function notClose (actual, expected, minDifference, message) {
  * @param {Float} expected
  * @param {Float} minPercentDifference (the minimum exclusive difference percentage allowed between the actual and expected numbers)
  * @param {string} [message] Defaults to a structured message
+ * @returns {undefined}
  */
 function notClosePercent (actual, expected, minPercentDifference, message) {
   let actualDiff, result;

@@ -35,7 +35,12 @@ import {isMac} from '../browser.js';
 */
 
 /**
-* Adds {@link external:jQuery.fn.contextMenu}, {@link external:jQuery.fn.disableContextMenuItems}, {@link external:jQuery.fn.enableContextMenuItems}, {@link external:jQuery.fn.disableContextMenu}, {@link external:jQuery.fn.enableContextMenu}, {@link external:jQuery.fn.destroyContextMenu}
+* Adds {@link external:jQuery.fn.contextMenu},
+* {@link external:jQuery.fn.disableContextMenuItems},
+* {@link external:jQuery.fn.enableContextMenuItems},
+* {@link external:jQuery.fn.disableContextMenu},
+* {@link external:jQuery.fn.enableContextMenu},
+* {@link external:jQuery.fn.destroyContextMenu}.
 * @function module:jQueryContextMenu.jQueryContextMenu
 * @param {external:jQuery} $ The jQuery object to wrap (with `contextMenu`, `disableContextMenuItems`, `enableContextMenuItems`, `disableContextMenu`, `enableContextMenu`, `destroyContextMenu`)
 * @returns {external:jQuery}
@@ -170,7 +175,7 @@ function jQueryContextMenu ($) {
     },
 
     /**
-    * Disable context menu items on the fly
+    * Disable context menu items on the fly.
     * @memberof external:jQuery.fn
     * @param {undefined|string} o Comma-separated
     * @returns {external:jQuery}
@@ -193,7 +198,7 @@ function jQueryContextMenu ($) {
     },
 
     /**
-    * Enable context menu items on the fly
+    * Enable context menu items on the fly.
     * @memberof external:jQuery.fn
     * @param {undefined|string} o Comma-separated
     * @returns {external:jQuery}
@@ -216,7 +221,7 @@ function jQueryContextMenu ($) {
     },
 
     /**
-    * Disable context menu(s)
+    * Disable context menu(s).
     * @memberof external:jQuery.fn
     * @returns {external:jQuery}
     */
@@ -228,7 +233,7 @@ function jQueryContextMenu ($) {
     },
 
     /**
-    * Enable context menu(s)
+    * Enable context menu(s).
     * @memberof external:jQuery.fn
     * @returns {external:jQuery}
     */
@@ -240,7 +245,7 @@ function jQueryContextMenu ($) {
     },
 
     /**
-    * Destroy context menu(s)
+    * Destroy context menu(s).
     * @memberof external:jQuery.fn
     * @returns {external:jQuery}
     */

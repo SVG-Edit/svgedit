@@ -17,7 +17,7 @@ let cbid = 0;
 */
 
 /**
-* @param {string} d
+* @param {string} funcName
 * @returns {module:EmbeddedSVGEdit.CallbackSetGetter}
 */
 function getCallbackSetter (funcName) {
@@ -34,7 +34,7 @@ function getCallbackSetter (funcName) {
 /**
 * Having this separate from messageListener allows us to
 * avoid using JSON parsing (and its limitations) in the case
-* of same domain control
+* of same domain control.
 * @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
 * @param {JSON} data
 * @returns {undefined}
@@ -89,9 +89,9 @@ function getMessageListener (t) {
 }
 
 /**
-* Embedded SVG-edit API
+* Embedded SVG-edit API.
 * General usage:
-- Have an iframe somewhere pointing to a version of svg-edit > r1000
+* - Have an iframe somewhere pointing to a version of svg-edit > r1000.
 * @example
 
 // Initialize the magic with:
@@ -318,7 +318,7 @@ class EmbeddedSVGEdit {
     }
 
     // Older IE may need a polyfill for addEventListener, but so it would for SVG
-    window.addEventListener('message', getMessageListener(this), false);
+    window.addEventListener('message', getMessageListener(this));
     window.addEventListener('keydown', (e) => {
       const {key, keyCode, charCode, which} = e;
       if (e.key === 'Backspace') {

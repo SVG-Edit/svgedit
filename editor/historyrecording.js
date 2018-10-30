@@ -85,7 +85,7 @@ class HistoryRecordingService {
   }
 
   /**
-   * Add a MoveElementCommand to the history or current batch command
+   * Add a `MoveElementCommand` to the history or current batch command.
    * @param {Element} elem - The DOM element that was moved
    * @param {Element} oldNextSibling - The element's next sibling before it was moved
    * @param {Element} oldParent - The element's parent before it was moved
@@ -99,7 +99,7 @@ class HistoryRecordingService {
   }
 
   /**
-   * Add an InsertElementCommand to the history or current batch command
+   * Add an `InsertElementCommand` to the history or current batch command.
    * @param {Element} elem - The DOM element that was added
    * @param {string} [text] - An optional string visible to user related to this change
    * @returns {module:history.HistoryRecordingService}
@@ -111,7 +111,7 @@ class HistoryRecordingService {
   }
 
   /**
-   * Add a RemoveElementCommand to the history or current batch command
+   * Add a `RemoveElementCommand` to the history or current batch command.
    * @param {Element} elem - The DOM element that was removed
    * @param {Element} oldNextSibling - The element's next sibling before it was removed
    * @param {Element} oldParent - The element's parent before it was removed
@@ -125,7 +125,7 @@ class HistoryRecordingService {
   }
 
   /**
-   * Add a ChangeElementCommand to the history or current batch command
+   * Add a `ChangeElementCommand` to the history or current batch command.
    * @param {Element} elem - The DOM element that was changed
    * @param {module:history.CommandAttributes} attrs - An object with the attributes to be changed and the values they had *before* the change
    * @param {string} [text] - An optional string visible to user related to this change

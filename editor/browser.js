@@ -271,7 +271,7 @@ export const supportsNonScalingStroke = () => supportsNonScalingStroke_;
 export const supportsNativeTransformLists = () => supportsNativeSVGTransformLists_;
 
 /**
- * Set `supportsNativeSVGTransformLists_` to `false` (for unit testing)
+ * Set `supportsNativeSVGTransformLists_` to `false` (for unit testing).
  * @function module:browser.disableSupportsNativeTransformLists
  * @returns {undefined}
 */

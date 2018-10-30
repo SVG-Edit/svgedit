@@ -20,10 +20,10 @@
 * This should only be used for objects known to be potentially arbitrary in form.
 * For those whose determination has not yet been made, simply use type `object`
 * (or type `?` if it may also be a primitive).
-* @typedef {object} ArbitraryObject
+* @typedef {Object} ArbitraryObject
 */
 /**
-* @typedef {object} ArbitraryModule
+* @typedef {Object} ArbitraryModule
 */
 /**
 * This should only be used for objects known to be potentially arbitrary in form,

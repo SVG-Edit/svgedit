@@ -8,12 +8,12 @@
 * This fixes `$(...).attr()` to work as expected with SVG elements.
 * Does not currently use `*AttributeNS()` since we rarely need that.
 * Adds {@link external:jQuery.fn.attr}.
-* See {@link https://api.jquery.com/attr/} for basic documentation of `.attr()`
+* See {@link https://api.jquery.com/attr/} for basic documentation of `.attr()`.
 *
 * Additional functionality:
 * - When getting attributes, a string that's a number is returned as type number.
 * - If an array is supplied as the first parameter, multiple values are returned
-*    as an object with values for each given attribute
+*    as an object with values for each given attribute.
 * @function module:jQueryAttr.jQueryAttr
 * @param {external:jQuery} $ The jQuery object to which to add the plug-in
 * @returns {external:jQuery}

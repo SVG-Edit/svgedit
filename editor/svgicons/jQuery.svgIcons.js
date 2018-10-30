@@ -94,6 +94,7 @@ $(function() {
 /**
  * @function module:jQuerySVGIcons.jQuerySVGIcons
  * @param {external:jQuery} $ Its keys include all icon IDs and the values, the icon as a jQuery object
+ * @returns {external:jQuery} The enhanced jQuery object
 */
 export default function ($) {
   const svgIcons = {};
@@ -102,27 +103,28 @@ export default function ($) {
   /**
   * @function external:jQuery.svgIcons
   * @param {string} file The location of a local SVG or SVGz file
-  * @param {PlainObject} [options]
-  * @param {Float} [options.w] The icon widths
-  * @param {Float} [options.h] The icon heights
-  * @param {PlainObject.<string, string>} [options.fallback] List of raster images with each
+  * @param {PlainObject} [opts]
+  * @param {Float} [opts.w] The icon widths
+  * @param {Float} [opts.h] The icon heights
+  * @param {PlainObject.<string, string>} [opts.fallback] List of raster images with each
     key being the SVG icon ID to replace, and the value the image file name
-  * @param {string} [options.fallback_path] The path to use for all images
+  * @param {string} [opts.fallback_path] The path to use for all images
     listed under "fallback"
-  * @param {boolean} [options.replace] If set to `true`, HTML elements will be replaced by,
+  * @param {boolean} [opts.replace] If set to `true`, HTML elements will be replaced by,
     rather than include the SVG icon.
-  * @param {PlainObject.<string, string>} [options.placement] List with selectors for keys and SVG icon ids
+  * @param {PlainObject.<string, string>} [opts.placement] List with selectors for keys and SVG icon ids
     as values. This provides a custom method of adding icons.
-  * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} [options.resize] List with selectors for keys and numbers
+  * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} [opts.resize] List with selectors for keys and numbers
     as values. This allows an easy way to resize specific icons.
-  * @param {module:jQuerySVGIcons.SVGIconsLoadedCallback} [options.callback] A function to call when all icons have been loaded.
-  * @param {boolean} [options.id_match=true] Automatically attempt to match SVG icon ids with
+  * @param {module:jQuerySVGIcons.SVGIconsLoadedCallback} [opts.callback] A function to call when all icons have been loaded.
+  * @param {boolean} [opts.id_match=true] Automatically attempt to match SVG icon ids with
     corresponding HTML id
-  * @param {boolean} [options.no_img] Prevent attempting to convert the icon into an `<img>`
+  * @param {boolean} [opts.no_img] Prevent attempting to convert the icon into an `<img>`
     element (may be faster, help for browser consistency)
-  * @param {boolean} [options.svgz] Indicate that the file is an SVGZ file, and thus not to
+  * @param {boolean} [opts.svgz] Indicate that the file is an SVGZ file, and thus not to
     parse as XML. SVGZ files add compression benefits, but getting data from
     them fails in Firefox 2 and older.
+  * @returns {undefined}
   */
   $.svgIcons = function (file, opts = {}) {
     const svgns = 'http://www.w3.org/2000/svg',

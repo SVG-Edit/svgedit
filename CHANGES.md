@@ -1,10 +1,18 @@
 # ?
 
+- Refactoring: Avoid unnecessary addEventListener `false`; change internal
+  jPicker function to class (used with `new`)
+- Linting (ESLint): Add `valid-jsdoc` rule and make fixes; but turn off for
+  now due to <https://github.com/eslint/eslint/issues/11036> and
+  <https://github.com/eslint/eslint/issues/11037>
 - Linting (ESLint compat): Add eslint-plugin-compat to get browser support
     warnings
 - Docs (README): Indicate minimal polyfills needed for older browsers
     (IE <= 11, IE Mobile, Opera Mini, Blackberry Browser <= 10,
     Android Browser 4.4.3-4.4.4)
+- Docs (JSDoc): Add some Markdown for variables, line breaks; tighten checks
+  for overly generic types (though allow for `.Function` as in
+  `jQuery.Function`) and avoid one previously missed instance
 - Docs (3.0.0): Clarify
 - Docs (ReleaseInstructions): Clarify need for npm permissions to publish
 - npm: Update devDeps

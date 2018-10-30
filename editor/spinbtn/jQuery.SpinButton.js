@@ -314,7 +314,7 @@ export default function ($) {
           }
 
           e.preventDefault();
-        }, false);
+        });
       }
     });
   };

@@ -103,7 +103,7 @@ export const init = function (editorContext) {
 };
 
 /**
- * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}
+ * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}.
  * @function module:utilities.dropXMLInteralSubset
  * @param {string} str String to be processed
  * @returns {string} The string with entity declarations in the internal subset removed
@@ -145,7 +145,7 @@ export const fromXml = function (str) {
 //        also precalculate the size of the array needed.
 
 /**
-* Converts a string to base64
+* Converts a string to base64.
 * @function module:utilities.encode64
 * @param {string} input
 * @returns {string} Base64 output
@@ -188,7 +188,7 @@ export const encode64 = function (input) {
 };
 
 /**
-* Converts a string from base64
+* Converts a string from base64.
 * @function module:utilities.decode64
 * @param {string} input Base64-encoded input
 * @returns {string} Decoded output
@@ -246,7 +246,7 @@ export const encodeUTF8 = function (argString) {
 };
 
 /**
- * convert dataURL to object URL
+ * Convert dataURL to object URL.
  * @function module:utilities.dataURLToObjectURL
  * @param {string} dataurl
  * @returns {string} object URL or empty string
@@ -267,7 +267,7 @@ export const dataURLToObjectURL = function (dataurl) {
 };
 
 /**
- * get object URL for a blob object
+ * Get object URL for a blob object.
  * @function module:utilities.createObjectURL
  * @param {Blob} blob A Blob object or File object
  * @returns {string} object URL or empty string
@@ -291,7 +291,7 @@ export const blankPageObjectURL = (function () {
 })();
 
 /**
-* Converts a string to use XML references (for non-ASCII)
+* Converts a string to use XML references (for non-ASCII).
 * @function module:utilities.convertToXMLReferences
 * @param {string} input
 * @returns {string} Decimal numeric character references
@@ -310,8 +310,8 @@ export const convertToXMLReferences = function (input) {
 };
 
 /**
-* Cross-browser compatible method of converting a string to an XML tree
-* found this function [here]{@link http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f}
+* Cross-browser compatible method of converting a string to an XML tree.
+* Found this function [here]{@link http://groups.google.com/group/jquery-dev/browse_thread/thread/c6d11387c580a77f}.
 * @function module:utilities.text2xml
 * @param {string} sXML
 * @throws {Error}
@@ -364,7 +364,7 @@ export const bboxToObj = function ({x, y, width, height}) {
 */
 
 /**
-* Walks the tree and executes the callback on each element in a top-down fashion
+* Walks the tree and executes the callback on each element in a top-down fashion.
 * @function module:utilities.walkTree
 * @param {Element} elem - DOM element to traverse
 * @param {module:utilities.TreeWalker} cbFn - Callback function to run on each element
@@ -381,7 +381,7 @@ export const walkTree = function (elem, cbFn) {
 };
 
 /**
-* Walks the tree and executes the callback on each element in a depth-first fashion
+* Walks the tree and executes the callback on each element in a depth-first fashion.
 * @function module:utilities.walkTreePost
 * @todo FIXME: Shouldn't this be calling walkTreePost?
 * @param {Element} elem - DOM element to traverse
@@ -435,7 +435,7 @@ export let getHref = function (elem) {
 };
 
 /**
-* Sets the given element's `xlink:href` value
+* Sets the given element's `xlink:href` value.
 * @function module:utilities.setHref
 * @param {Element} elem
 * @param {string} val
@@ -471,7 +471,7 @@ export const findDefs = function () {
 
 /**
 * Get correct BBox for a path in Webkit.
-* Converted from code found [here]{@link http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html}
+* Converted from code found [here]{@link http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html}.
 * @function module:utilities.getPathBBox
 * @param {SVGPathElement} path - The path DOM element to get the BBox for
 * @returns {module:utilities.BBoxObject} A BBox-like object
@@ -595,7 +595,7 @@ function groupBBFix (selected) {
 
 /**
 * Get the given/selected element's bounding box object, convert it to be more
-* usable when necessary
+* usable when necessary.
 * @function module:utilities.getBBox
 * @param {Element} elem - Optional DOM element to get the BBox for
 * @returns {module:utilities.BBoxObject} Bounding box object
@@ -808,7 +808,7 @@ export const getExtraAttributesForConvertToPath = function (elem) {
 };
 
 /**
-* Get the BBox of an element-as-path
+* Get the BBox of an element-as-path.
 * @function module:utilities.getBBoxOfElementAsPath
 * @param {Element} elem - The DOM element to be probed
 * @param {module:utilities.EditorContext#addSVGElementFromJson} addSVGElementFromJson - Function to add the path element to the current layer. See canvas.addSVGElementFromJson
@@ -1027,7 +1027,7 @@ function getStrokeOffsetForBBox (elem) {
  */
 
 /**
-* Get the bounding box for one or more stroked and/or transformed elements
+* Get the bounding box for one or more stroked and/or transformed elements.
 * @function module:utilities.getStrokedBBox
 * @param {Element[]} elems - Array with DOM elements to check
 * @param {module:utilities.EditorContext#addSVGElementFromJson} addSVGElementFromJson - Function to add the path element to the current layer. See canvas.addSVGElementFromJson
@@ -1088,7 +1088,7 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
 /**
 * Get all elements that have a BBox (excludes `<defs>`, `<title>`, etc).
 * Note that 0-opacity, off-screen etc elements are still considered "visible"
-* for this function
+* for this function.
 * @function module:utilities.getVisibleElements
 * @param {Element} parent - The parent DOM element to search within
 * @returns {Element[]} All "visible" elements.
@@ -1108,7 +1108,7 @@ export const getVisibleElements = function (parent) {
 };
 
 /**
-* Get the bounding box for one or more stroked and/or transformed elements
+* Get the bounding box for one or more stroked and/or transformed elements.
 * @function module:utilities.getStrokedBBoxDefaultVisible
 * @param {Element[]} elems - Array with DOM elements to check
 * @returns {module:utilities.BBoxObject} A single bounding box object
@@ -1142,7 +1142,7 @@ export const getRotationAngleFromTransformList = function (tlist, toRad) {
 };
 
 /**
-* Get the rotation angle of the given/selected DOM element
+* Get the rotation angle of the given/selected DOM element.
 * @function module:utilities.getRotationAngle
 * @param {Element} [elem] - DOM element to get the angle for. Default to first of selected elements.
 * @param {boolean} [toRad=false] - When true returns the value in radians rather than degrees
@@ -1156,7 +1156,7 @@ export let getRotationAngle = function (elem, toRad) {
 };
 
 /**
-* Get the reference element associated with the given attribute value
+* Get the reference element associated with the given attribute value.
 * @function module:utilities.getRefElem
 * @param {string} attrVal - The attribute value as a string
 * @returns {Element} Reference element
@@ -1216,7 +1216,7 @@ export const assignAttributes = function (elem, attrs, suspendLength, unitCheck)
 };
 
 /**
-* Remove unneeded (default) attributes, makes resulting SVG smaller
+* Remove unneeded (default) attributes, making resulting SVG smaller.
 * @function module:utilities.cleanupElement
 * @param {Element} element - DOM element to clean up
 * @returns {undefined}
@@ -1251,7 +1251,7 @@ export const cleanupElement = function (element) {
 };
 
 /**
-* Round value to for snapping
+* Round value to for snapping.
 * @function module:utilities.snapToGrid
 * @param {Float} value
 * @returns {Integer}
@@ -1267,7 +1267,7 @@ export const snapToGrid = function (value) {
 };
 
 /**
-* Escapes special characters in a regular expression
+* Escapes special characters in a regular expression.
 * @function module:utilities.regexEscape
 * @param {string} str
 * @returns {string}
@@ -1278,7 +1278,7 @@ export const regexEscape = function (str) {
 };
 
 /**
- * Prevents default browser click behaviour on the given element
+ * Prevents default browser click behaviour on the given element.
  * @function module:utilities.preventClickDefault
  * @param {Element} img - The DOM element to prevent the click on
  * @returns {undefined}
@@ -1292,7 +1292,7 @@ export const preventClickDefault = function (img) {
  * @returns {string} The ID
  */
 /**
- * Create a clone of an element, updating its ID and its children's IDs when needed
+ * Create a clone of an element, updating its ID and its children's IDs when needed.
  * @function module:utilities.copyElem
  * @param {Element} el - DOM element to clone
  * @param {module:utilities.GetNextID} getNextId - The getter of the next unique ID.
@@ -1344,7 +1344,7 @@ export const copyElem = function (el, getNextId) {
 };
 
 /**
-* Unit testing
+* Overwrite methods for unit testing.
 * @function module:utilities.mock
 * @returns {undefined}
 */
