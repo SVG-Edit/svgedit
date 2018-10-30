@@ -76,14 +76,14 @@ export default {
   name: 'helloworld',
   init () {
     return {
-        svgicons: 'extensions/helloworld-icon.xml',
-        buttons: [{...}],
-        mouseDown () {
-            ...
-        },
-        mouseUp (opts) {
-            ...
-        }
+      svgicons: 'extensions/helloworld-icon.xml',
+      buttons: [{ /* ... */ }],
+      mouseDown () {
+        // ...
+      },
+      mouseUp (opts) {
+        // ...
+      }
     };
   }
 };
@@ -149,6 +149,7 @@ const localeStrings = await importSetGlobalDefault(url, {
 });
 
 // Use `localeStrings`
+console.log(localeStrings);
 
 })();
 ```

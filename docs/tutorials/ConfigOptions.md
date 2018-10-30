@@ -136,13 +136,13 @@ As a URL parameter, one can pre-load an SVG file in the following manner:
 
 ```js
 // Data URI
-'?source=' + encodeURIComponent('data:image/svg+xml;utf8,' + /*...*/);
+location.href += '?source=' + encodeURIComponent('data:image/svg+xml;utf8,' + svgText);
 
 // Data URI (base 64):
-'?source=' + encodeURIComponent('data:image/svg+xml;base64,' + /* ... */); // data%3Aimage%2Fsvg%2Bxml%3Bbase64%2C ...
+location.href += '?source=' + encodeURIComponent('data:image/svg+xml;base64,' + svgTextAsBase64); // data%3Aimage%2Fsvg%2Bxml%3Bbase64%2C ...
 
 // Local URL:
-'?url=' + encodeURIComponent('images/logo.svg'); // images%2Flogo.svg
+location.href += '?url=' + encodeURIComponent('images/logo.svg'); // images%2Flogo.svg
 ```
 
 **Note:** There is currently a bug that prevents data URIs ending with

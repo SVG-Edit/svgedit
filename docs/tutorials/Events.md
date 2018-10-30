@@ -8,9 +8,9 @@ the SVG file differently:
 ### Example
 ```js
 svgEditor.setCustomHandlers({
- save (win, data) {
-  // Save svg
- }
+  save (win, data) {
+    // Save svg
+  }
 });
 ```
 
