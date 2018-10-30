@@ -2,13 +2,26 @@
 
 ## 3.2.0
 
-- Refactoring: Avoid unnecessary addEventListener `false`; change internal
+- Refactoring: Avoid unnecessary `addEventListener` `false`; change internal
   jPicker function to class (used with `new`)
-- Linting (ESLint): Add `valid-jsdoc` rule and make fixes; but turn off for
-  now due to <https://github.com/eslint/eslint/issues/11036> and
-  <https://github.com/eslint/eslint/issues/11037>
-- Linting (ESLint compat): Add eslint-plugin-compat to get browser support
+- Linting (ESLint): Add `valid-jsdoc` rule and make fixes, but turn off for
+  now due to <https://github.com/eslint/doctrine/issues/221> and
+  <https://github.com/eslint/doctrine/issues/222>
+- Linting (ESLint compat): Add `eslint-plugin-compat` to get browser support
     warnings
+- Linting (ESLint Markdown JavaScript): Add `eslint-plugin-markdown` with
+  slightly loosened config (`no-undef` and `padded-blocks` off and
+  `no-unused-vars` as a warning)
+- Linting (ESLint JSDoc code comments): Add `eslint-plugin-jsdoc` and apply to
+    JSDoc code comments though disable `jsdoc/valid-types` rule for now due to <https://github.com/Kuniwak/jsdoctypeparser/issues/47> and disable rule
+    `jsdoc/require-param` due to
+    <https://github.com/gajus/eslint-plugin-jsdoc/issues/100>; also of
+    possible interest: <https://github.com/AtomLinter/linter-eslint/issues/1192>,
+    <https://github.com/gajus/eslint-plugin-jsdoc/issues/103>,
+    <https://github.com/eslint/eslint-plugin-markdown/issues/109>,
+    <https://github.com/gajus/eslint-plugin-jsdoc/issues/101>,
+    <https://github.com/gajus/eslint-plugin-jsdoc/issues/99>,
+    <https://github.com/eslint/eslint/issues/11043>
 - Docs (README): Indicate minimal polyfills needed for older browsers
     (IE <= 11, IE Mobile, Opera Mini, Blackberry Browser <= 10,
     Android Browser 4.4.3-4.4.4)

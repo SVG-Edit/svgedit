@@ -6,18 +6,37 @@
   "parserOptions": {
     "sourceType": "module"
   },
-  "plugins": ["compat", "qunit", "testcafe"],
+  "plugins": ["compat", "qunit", "testcafe", "jsdoc", "markdown"],
   "env": {
     "node": false,
     "browser": true
   },
   "settings": {
-    "polyfills": ["url", "promises", "fetch", "queryselector"]
+    "polyfills": ["url", "promises", "fetch", "queryselector"],
+    "jsdoc": {
+      "additionalTagNames": {
+        "customTags": []
+      },
+      "tagNamePreference": {
+          "arg": "param",
+          "return": "returns"
+      },
+      "allowOverrideWithoutParam": true,
+      "allowImplementsWithoutParam": true,
+      "allowAugmentsExtendsWithoutParam": true
+    }
   },
+  "overrides": [{
+    "files": ["**/*.md"],
+    "rules": {
+      "no-undef": ["off"],
+      "no-unused-vars": ["warn"],
+      "padded-blocks": ["off"]
+    }
+  }],
   "rules": {
     "semi": [2, "always"],
     "indent": ["error", 2, {"outerIIFEBody": 0}],
-    "no-tabs": 0,
     "object-property-newline": 0,
     "one-var": 0,
     "no-var": 2,
@@ -25,6 +44,23 @@
     "no-extra-semi": 2,
     "quote-props": [2, "as-needed"],
     "object-curly-spacing": ["error", "never"],
+    "jsdoc/check-param-names": 1,
+    "jsdoc/check-tag-names": 1,
+    "jsdoc/check-types": 1,
+    "jsdoc/newline-after-description": 0,
+    "jsdoc/require-description": 0,
+    "jsdoc/require-description-complete-sentence": 0,
+    "jsdoc/require-example": 0,
+    "jsdoc/require-hyphen-before-param-description": 0,
+    "jsdoc/require-param-description": 0,
+    "jsdoc/require-param": 1,
+    "jsdoc/require-param-name": 1,
+    "jsdoc/require-param-type": 1,
+    "jsdoc/require-returns-description": 0,
+    "jsdoc/require-returns-type": 1,
+
+    "jsdoc/no-undefined-types": ["off"],
+    "jsdoc/valid-types": ["error"],
     "valid-jsdoc": ["off", {
         "prefer": {
             "arg": "param",

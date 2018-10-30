@@ -1346,6 +1346,7 @@ export const copyElem = function (el, getNextId) {
 /**
 * Overwrite methods for unit testing.
 * @function module:utilities.mock
+* @param {PlainObject} mockMethods
 * @returns {undefined}
 */
 export const mock = ({

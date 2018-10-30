@@ -89,27 +89,27 @@ const mockPathActions = {
 
 // Chrome
 // Before Optimization
-//	 Pass1 svgCanvas.getStrokedBBox total ms 4,218, ave ms 41.0,	 min/max 37 51
-//	 Pass2 svgCanvas.getStrokedBBox total ms 4,458, ave ms 43.3,	 min/max 32 63
+//   Pass1 svgCanvas.getStrokedBBox total ms 4,218, ave ms 41.0,   min/max 37 51
+//   Pass2 svgCanvas.getStrokedBBox total ms 4,458, ave ms 43.3,   min/max 32 63
 // Optimized Code
-//	 Pass1 svgCanvas.getStrokedBBox total ms 1,112, ave ms 10.8,	 min/max 9 20
-//	 Pass2 svgCanvas.getStrokedBBox total ms		34, ave ms	0.3,	 min/max 0 20
+//   Pass1 svgCanvas.getStrokedBBox total ms 1,112, ave ms 10.8,   min/max 9 20
+//   Pass2 svgCanvas.getStrokedBBox total ms    34, ave ms  0.3,   min/max 0 20
 
 // Firefox
 // Before Optimization
-//	 Pass1 svgCanvas.getStrokedBBox total ms 3,794, ave ms 36.8,	 min/max 33 48
-//	 Pass2 svgCanvas.getStrokedBBox total ms 4,049, ave ms 39.3,	 min/max 28 53
+//   Pass1 svgCanvas.getStrokedBBox total ms 3,794, ave ms 36.8,   min/max 33 48
+//   Pass2 svgCanvas.getStrokedBBox total ms 4,049, ave ms 39.3,   min/max 28 53
 // Optimized Code
-//	 Pass1 svgCanvas.getStrokedBBox total ms	 104, ave ms 1.0,	 min/max 0 23
-//	 Pass2 svgCanvas.getStrokedBBox total ms		71, ave ms 0.7,	 min/max 0 23
+//   Pass1 svgCanvas.getStrokedBBox total ms   104, ave ms 1.0,   min/max 0 23
+//   Pass2 svgCanvas.getStrokedBBox total ms    71, ave ms 0.7,   min/max 0 23
 
 // Safari
 // Before Optimization
-//	 Pass1 svgCanvas.getStrokedBBox total ms 4,840, ave ms 47.0,	 min/max 45 62
-//	 Pass2 svgCanvas.getStrokedBBox total ms 4,849, ave ms 47.1,	 min/max 34 62
+//   Pass1 svgCanvas.getStrokedBBox total ms 4,840, ave ms 47.0,   min/max 45 62
+//   Pass2 svgCanvas.getStrokedBBox total ms 4,849, ave ms 47.1,   min/max 34 62
 // Optimized Code
-//	 Pass1 svgCanvas.getStrokedBBox total ms		42, ave ms 0.4,	 min/max 0 23
-//	 Pass2 svgCanvas.getStrokedBBox total ms		17, ave ms 0.2,	 min/max 0 23
+//   Pass1 svgCanvas.getStrokedBBox total ms    42, ave ms 0.4,   min/max 0 23
+//   Pass2 svgCanvas.getStrokedBBox total ms    17, ave ms 0.2,   min/max 0 23
 
 QUnit.test('Test svgCanvas.getStrokedBBox() performance with matrix transforms', function (assert) {
   const done = assert.async();

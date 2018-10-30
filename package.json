@@ -18,9 +18,9 @@
     "build-doc": "rm -rf docs/jsdoc/*;jsdoc --pedantic -c docs/jsdoc-config.js editor",
     "build-html": "node build-html.js",
     "compress-images": "imageoptim 'chrome-app/*.png' && imageoptim 'editor/extensions/*.png' && imageoptim 'editor/spinbtn/*.png' && imageoptim 'editor/jgraduate/images/*.{png,gif}' && imageoptim 'editor/images/*.png'",
-    "copy-deps": "cp node_modules/load-stylesheets/dist/index-es.js editor/external/load-stylesheets/index-es.js && cp node_modules/@babel/polyfill/dist/polyfill.min.js editor/external/@babel/polyfill/polyfill.min.js && cp node_modules/@babel/polyfill/dist/polyfill.js editor/external/@babel/polyfill/polyfill.js && cp node_modules/jamilih/dist/jml-es.js editor/external/jamilih/jml-es.js && cp node_modules/query-result/esm/index.js editor/external/query-result/esm/index.js && cp node_modules/qr-manipulation/dist/index-es.js editor/external/qr-manipulation/dist/index-es.js",
+    "copy": "cp node_modules/load-stylesheets/dist/index-es.js editor/external/load-stylesheets/index-es.js && cp node_modules/@babel/polyfill/dist/polyfill.min.js editor/external/@babel/polyfill/polyfill.min.js && cp node_modules/@babel/polyfill/dist/polyfill.js editor/external/@babel/polyfill/polyfill.js && cp node_modules/jamilih/dist/jml-es.js editor/external/jamilih/jml-es.js && cp node_modules/query-result/esm/index.js editor/external/query-result/esm/index.js && cp node_modules/qr-manipulation/dist/index-es.js editor/external/qr-manipulation/dist/index-es.js && cp node_modules/stackblur-canvas/dist/stackblur-es.js editor/external/stackblur-canvas/dist/stackblur-es.js",
     "remark": "remark -q -f .",
-    "eslint": "eslint .",
+    "eslint": "eslint --ext js,md .",
     "rollup": "rollup -c",
     "start-embedded": "echo \"Open file to http://localhost:8000/editor/embedapi.html\" && static -p 8000 | static -p 8001 -H '{\"Access-Control-Allow-Origin\": \"*\"}'",
     "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
@@ -83,6 +83,8 @@
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-compat": "2.6.3",
     "eslint-plugin-import": "2.14.0",
+    "eslint-plugin-jsdoc": "https://github.com/brettz9/eslint-plugin-jsdoc#origin/ArrayPattern",
+    "eslint-plugin-markdown": "^1.0.0-rc.0",
     "eslint-plugin-node": "8.0.0",
     "eslint-plugin-promise": "4.0.1",
     "eslint-plugin-qunit": "^4.0.0",
@@ -111,6 +113,7 @@
     "rollup-plugin-terser": "^3.0.0",
     "sinon": "^7.1.1",
     "sinon-test": "^2.4.0",
+    "stackblur-canvas": "^2.0.0",
     "testcafe": "^0.23.0"
   }
 }

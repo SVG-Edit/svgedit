@@ -324,15 +324,17 @@ function loadSvgString (str, callback) {
 
 /**
  * @function module:SVGEditor~getImportLocale
- * @param {string} defaultLang
- * @param {string} defaultName
+ * @param {PlainObject} defaults
+ * @param {string} defaults.defaultLang
+ * @param {string} defaults.defaultName
  * @returns {module:SVGEditor~ImportLocale}
  */
 function getImportLocale ({defaultLang, defaultName}) {
   /**
    * @function module:SVGEditor~ImportLocale
-   * @param {string} [name] Defaults to `defaultName` of {@link module:SVGEditor~getImportLocale}
-   * @param {string} [lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
+   * @param {PlainObject} localeInfo
+   * @param {string} [localeInfo.name] Defaults to `defaultName` of {@link module:SVGEditor~getImportLocale}
+   * @param {string} [localeInfo.lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
    * @returns {Promise} Resolves to {@link module:locale.LocaleStrings}
    */
   return async function importLocale ({name = defaultName, lang = defaultLang} = {}) {
@@ -2771,7 +2773,7 @@ editor.init = function () {
 
   const allHolders = {};
   /**
-   * @param {GenericObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
+   * @param {PlainObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
    * @returns {undefined}
    */
   const setupFlyouts = function (holders) {
@@ -3440,8 +3442,9 @@ editor.init = function () {
     'updateCanvas',
     /**
      * @param {external:Window} win
-     * @param {false} center
-     * @param {module:math.XYObject} newCtr
+     * @param {PlainObject} centerInfo
+     * @param {false} centerInfo.center
+     * @param {module:math.XYObject} centerInfo.newCtr
      * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
      * @returns {undefined}
      */
@@ -6042,8 +6045,9 @@ editor.ready(() => {
 let extensionsAdded = false;
 const messageQueue = [];
 /**
- * @param {Any} data
- * @param {string} origin
+ * @param {PlainObject} info
+ * @param {Any} info.data
+ * @param {string} info.origin
  * @fires module:svgcanvas.SvgCanvas#event:message
  * @returns {undefined}
  */

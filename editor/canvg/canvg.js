@@ -9,7 +9,7 @@
  */
 
 import RGBColor from './rgbcolor.js';
-import {canvasRGBA} from './StackBlur.js';
+import {canvasRGBA} from '../external/stackblur-canvas/dist/stackblur-es.js';
 
 let canvasRGBA_ = canvasRGBA;
 
@@ -57,7 +57,7 @@ export const setStackBlurCanvasRGBA = (cb) => {
 * with `<canvas>` elements.
 * @function module:canvg.canvg
 * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
-* @param {string|XMLDocument} s: svg string, url to svg file, or xml document
+* @param {string|XMLDocument} s - svg string, url to svg file, or xml document
 * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
 * @returns {Promise} All the function after the first render is completed with dom
 */

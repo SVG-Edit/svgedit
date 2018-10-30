@@ -814,8 +814,9 @@ pathModule.init(
       return rubberBox;
     },
     /**
-     * @param {boolean} closedSubpath
-     * @param {SVGCircleElement[]} grips
+     * @param {PlainObject} ptsInfo
+     * @param {boolean} ptsInfo.closedSubpath
+     * @param {SVGCircleElement[]} ptsInfo.grips
      * @fires module:svgcanvas.SvgCanvas#event:pointsAdded
      * @fires module:svgcanvas.SvgCanvas#event:selected
      * @returns {undefined}
@@ -828,8 +829,9 @@ pathModule.init(
       call('selected', grips);
     },
     /**
-     * @param {ChangeElementCommand} cmd
-     * @param {SVGPathElement} elem
+     * @param {PlainObject} changes
+     * @param {ChangeElementCommand} changes.cmd
+     * @param {SVGPathElement} changes.elem
      * @fires module:svgcanvas.SvgCanvas#event:changed
      * @returns {undefined}
      */
@@ -3809,7 +3811,7 @@ this.save = function (opts) {
 };
 
 /**
-* @typedef {GenericObject} module:svgcanvas.IssuesAndCodes
+* @typedef {PlainObject} module:svgcanvas.IssuesAndCodes
 * @property {string[]} issueCodes The locale-independent code names
 * @property {string[]} issues The localized descriptions
 */

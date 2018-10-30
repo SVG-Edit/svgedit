@@ -4,6 +4,8 @@
 module.exports = {
   plugins: ['plugins/markdown'],
   markdown: {
+    // tags: ['examples']
+    /*
     // "The highlighter function should escape the code block's contents and wrap them in <pre><code> tags"
     highlight (code, language) {
       function ret () {
@@ -11,6 +13,8 @@ module.exports = {
         return '<pre><code>' + code + ' in this language: ' + language + '</code></pre>';
       }
       if (language !== 'js') { // E.g., we have one URL in some tutorial Markdown
+        // Seems to be only for full triple-backticked fences
+        // console.log('lll', code);
         return ret();
       }
 
@@ -48,8 +52,8 @@ module.exports = {
       console.log('\n' + code);
 
       return ret();
-    },
-    tags: []
+    }
+    */
   },
   recurseDepth: 10,
   source: {
@@ -69,15 +73,15 @@ module.exports = {
   },
   templates: {
     cleverLinks: true,
-    monospaceLinks: false,
+    monospaceLinks: false /* ,
     default: {
       layoutFile: 'docs/layout.tmpl'
-    }
+    } */
   },
   opts: {
     recurse: true,
     verbose: true,
-    destination: 'docs/jsdoc',
+    // destination: 'docs/jsdoc',
     tutorials: 'docs/tutorials'
   }
 };

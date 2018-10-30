@@ -132,8 +132,10 @@ const crect = rect.cloneNode(false);
 const retValue = (!crect.getAttribute('x').includes(','));
 if (!retValue) {
   // Todo: i18nize or remove
-  $.alert('NOTE: This version of Opera is known to contain bugs in SVG-edit.\n' +
-	'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.');
+  $.alert(
+    'NOTE: This version of Opera is known to contain bugs in SVG-edit.\n' +
+    'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.'
+  );
 }
 return retValue;
 }());
@@ -152,13 +154,13 @@ rxform.appendItem(t1);
 const r1 = rxform.getItem(0);
 // Todo: Do frame-independent instance checking
 return r1 instanceof SVGTransform && t1 instanceof SVGTransform &&
-	r1.type === t1.type && r1.angle === t1.angle &&
-	r1.matrix.a === t1.matrix.a &&
-	r1.matrix.b === t1.matrix.b &&
-	r1.matrix.c === t1.matrix.c &&
-	r1.matrix.d === t1.matrix.d &&
-	r1.matrix.e === t1.matrix.e &&
-	r1.matrix.f === t1.matrix.f;
+  r1.type === t1.type && r1.angle === t1.angle &&
+  r1.matrix.a === t1.matrix.a &&
+  r1.matrix.b === t1.matrix.b &&
+  r1.matrix.c === t1.matrix.c &&
+  r1.matrix.d === t1.matrix.d &&
+  r1.matrix.e === t1.matrix.e &&
+  r1.matrix.f === t1.matrix.f;
 }());
 
 // Public API

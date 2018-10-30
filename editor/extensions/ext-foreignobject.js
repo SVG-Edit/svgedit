@@ -49,11 +49,10 @@ export default {
     /**
     * This function sets the content of element elt to the input XML.
     * @param {string} xmlString - The XML text
-    * @param {Element} elt - the parent element to append to
     * @returns {boolean} This function returns false if the set was unsuccessful, true otherwise.
     */
     function setForeignString (xmlString) {
-      const elt = selElems[0];
+      const elt = selElems[0]; // The parent `Element` to append to
       try {
         // convert string into XML document
         const newDoc = text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');

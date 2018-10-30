@@ -185,7 +185,6 @@ class Layer {
 
   /**
    * Remove this layer's group from the DOM. No more functions on group can be called after this.
-   * @param {SVGGElement} children - The children to append to this layer.
    * @returns {SVGGElement} The layer SVG group that was just removed.
    */
   removeGroup () {
