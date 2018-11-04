@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-const {ncp} = require('ncp');
+const {copy} = require('fs-extra');
 // ncp.limit = 16;
 const {readFileSync} = require('fs');
+
 const packageJSONString = readFileSync('../svgedit/package.json', {encoding: 'utf-8'});
 const {version} = JSON.parse(packageJSONString);
 
@@ -10,22 +11,28 @@ const opts = {
   filter (name) {
       return !(/(\.git\/|node_modules\/|\.gitignore)/).test(name);
   },
-  // filter: /copyOnlyThese/ or (name) => true/false
-  // transform: (read, write) => { read.pipe(write); }
-  clobber: true, // Overwrites
-  dereference: false, // Follow symlinks
-  stopOnErr: true,
-  // errs: streamInstance // `stopOnErr` must be `false`
+  overwrite: true,
+  dereference: false // Follow symlinks
 };
-ncp('../svgedit', `./releases/${newDir}`, opts, (err) => {
-  if (err) {
-    return console.error(err);
-  }
-  console.log('Copied to releases...');
-  ncp('../svgedit', './releases/latest', opts, (err) => {
-      if (err) {
-          return console.error(err);
-      }
-      console.log('Copied to latest...Done!');
-  });
-});
+
+(async () => {
+
+const targets = [`./releases/${newDir}`, './releases/latest'];
+
+try {
+  await targets.reduce(async (prom, to) => {
+    await prom;
+    console.log(`Writing to ${to}`);
+    return copy('../svgedit', to, opts).then(() => {
+      console.log(`Copied to ${to}...`);
+    })
+  }, []);
+
+} catch (err) {
+  console.log(`Error copying`);
+  return console.error(err);
+}
+
+console.log('Finished copying!');
+
+})();

@@ -1,0 +1,27 @@
+Hello, my name is Jeff Schiller and I'll be giving you a brief introduction to SVG-edit.  In this video, I'll describe what SVG-edit is, what it can do and I'll demonstrate some of its features.
+
+SVG-edit is a new, open-source, lightweight vector graphics editor similar in nature to Adobe Illustrator or Inkscape.  But what's exciting about SVG-edit is that it runs directly in the browser and is powered only by open web technologies such as HTML, CSS, JavaScript and SVG.  SVG-edit runs in any modern browser including Firefox, Opera, Safari and Chrome.
+
+So here is SVG-edit.  What we're looking at is a small collection of tools, a color palette at the bottom and a white canvas on which you can draw your masterpiece.  We'll see that drawing simple shapes is as simple as clicking the tool you want, I'll choose a simple rectangle here, and then dragging and lifting on the canvas.
+
+We can draw many types of shapes: rectangles, circles [draw one large one for sun], ellipses [draw two small ones], lines [draw three for sun radiation], or even freehand drawing [draw a smile].
+
+If we want to move the elements around, we click on the Select Tool and then drag the element to the correct position.  We can click to select one shape or we can drag on the canvas to select multiple shapes.  We can use the resizing grips to change the size of the element to our hearts content.  [arrange sun, beams, eyes, rectangle floor, and text]
+
+If we want to change the interior color of a particular shape, we first select the shape using the Select Tool, and then either click on a palette box or we can click on the Fill Paint box and choose the color we want from the standard picker.  We can also set the opacity or alpha of the paint.
+
+Changing the border color of the shape can be done in a similar manner by using the color picker for the Stroke.  We can also shift-click on the palette to change the stroke color or to clear the Stroke color.  We can also change the thickness of the stroke or the dash-style of the stroke using controls near the bottom of the window.
+
+A simple Text tool is also included [set stroke to None, set fill to Red, then create a text element that says "Vector Graphics are powerful"]
+
+I'd like to talk a bit about the tool panel near the top of the window.  Apart from some standard buttons on the left, which I'll go over in a minute, the rest of the panel is dedicated to context-sensitive tools.  This means that you only see controls on this toolbar for the tool and element you have selected.  For instance, when I select a Text element, I see controls to change the text contents, font family, font size and whether the text should be bold or italic.  If I select a rectangle, I see controls to change the rectangle's position, size and whether the rectangle should have rounded corners.
+
+You may have noticed that some buttons were available in both cases.  These controls manipulate the selected element.  For instance, you can delete an element or move it to the top of the stack.
+
+The final thing I'd like to talk about is the controls on the left.  These controls are always present.  There are the standard Undo/Redo buttons.  And there are the standard New Document or Save Document buttons.  Clicking New will wipe out all existing work.  Clicking Save will open a new tab in the browser containing your document.  You can then save this document to your desktop, publish it to a website or whatever.
+
+One final thing to mention:  because SVG-edit is a web application, it's quite trivial to embed the editor in a web page using nothing more than an HTML iframe element.  Here we see an entry on my blog in which I've done this very thing.
+
+SVG-edit is still in the beginning stages of development, there are a lot of features missing, but I hope this video has given you a sense of SVG-edit's capabilities and its ease of use.
+
+Thanks for watching!
