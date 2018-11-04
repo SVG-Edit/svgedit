@@ -1,4 +1,6 @@
-# ?
+# SVG-Edit CHANGES
+
+## 3.2.0
 
 - Refactoring: Avoid unnecessary addEventListener `false`; change internal
   jPicker function to class (used with `new`)
@@ -15,9 +17,9 @@
   `jQuery.Function`) and avoid one previously missed instance
 - Docs (3.0.0): Clarify
 - Docs (ReleaseInstructions): Clarify need for npm permissions to publish
-- npm: Update devDeps
+- npm: Update devDeps (including some resolving security vulnerabilities)
 
-# 3.1.1
+## 3.1.1
 
 - Fix: Save broken on Firefox (since FF version?)
 - Docs (ReleaseInstructions): Clarify build instructions for release
@@ -33,7 +35,7 @@
 - npm: Per convention, switch Node-based (headless browser) testing script to
     `npm test` and change the browser tests to "browser-test"
 
-# 3.1.0
+## 3.1.0
 
 - Fix (Embedded editor): (Though cross-origin DOM access of iframes apparently
   doesn't work now in Chrome or Firefox (which we had been using to disable a
@@ -70,7 +72,7 @@
 - Build: Add comment not to edit xdomain editor directly
 - Build: Remove unused `Makefile`
 
-# 3.0.1
+## 3.0.1
 
 - Fix: Revert fix to have extension `mouseup` events run on "zoom" and
   "select" modes (#159); breaks polygon selection
@@ -78,7 +80,7 @@
   other proper results (equal to "all"); prior fix had not covered
   original intention
 
-# 3.0.0
+## 3.0.0
 
 - See pre-release version notes below for other changes that are a part
   of 3.0.0
@@ -116,7 +118,7 @@
 - Refactoring: array extra/spread operator
 - npm: Update devDeps
 
-# 3.0.0-rc.3
+## 3.0.0-rc.3
 
 - Security fix: Ensure all apostrophes are escaped for `toXml` utility
 - Security fix/Breaking change (Imagelib): Only allow origins within
@@ -184,7 +186,7 @@
 - npm: Point to official sinon-test package now that ES6 Modules
     support landed
 
-# 3.0.0-rc.2
+## 3.0.0-rc.2
 
 - Fix: Avoid extension `includeWith` button conflicts/redundancies;
   Incorporates #147
@@ -220,7 +222,7 @@
 - Docs: JSDoc for `setupFlyouts`, `Actions`, `toggleSidePanel`; missing for
   ToolbarButton
 
-# 3.0.0-rc.1
+## 3.0.0-rc.1
 
 - Security fix: 'extPath', 'imgPath', 'extIconsPath', 'canvgPath',
   'langPath', 'jGraduatePath', and 'jspdfPath' were not being prevented
@@ -409,7 +411,7 @@
 - Linting (ESLint): Avoid linting jsdoc folder
 - Testing: Use new Sinon
 
-# 3.0.0-alpha.4
+## 3.0.0-alpha.4
 
 - Docs: Convert more docs to JSDoc and add JSDoc script (thanks, tetedacier!)
 - Fix `main` on `package.json` to reference UMD distribution and `module`
@@ -418,7 +420,7 @@
 - Fix (regression): Star tool (radialshift)
 - Fix (regression): Favicon setting
 
-# 3.0.0-alpha.3
+## 3.0.0-alpha.3
 
 - Change: Default to stylesheet above `editor` directory
 - Docs: Installation steps
@@ -439,7 +441,7 @@
 - Demos: Add svgcanvas demo (Neil Fraser)
 - npm: Update devDeps
 
-# 3.0.0-alpha.2
+## 3.0.0-alpha.2
 
 - Licensing: Indicate MIT is license type of rgbcolor and rename
   file to reflect it; rename/add license file name for jgraduate
@@ -604,7 +606,7 @@ also in preparation for future switch to ES6 modules for tests)
   was calling it without `new`; refactored now with sufficient mock data
   to take into account it is a class
 
-# 3.0.0-alpha.1
+## 3.0.0-alpha.1
 
 (Only released on npm for reserving name rather than being intended as a
 testable release; the list below, however, does list the fixes it includes.)
@@ -681,7 +683,7 @@ testable release; the list below, however, does list the fixes it includes.)
 - Build: Provide `package.json` for npm to reserve name (reflecting current
   state of `master`)
 
-# 2.8.1 (Ellipse) - December 2nd, 2015
+## 2.8.1 (Ellipse) - December 2nd, 2015
 
 For a complete list of changes run:
 
@@ -698,7 +700,7 @@ git log 81afaa9..5986f1e
   (<https://github.com/SVG-Edit/svgedit/issues/29>)
 - Fix: Updated translations for "page" and "delete" in 57 locales.
 
-# 2.8 (Ellipse) - November 24th, 2015
+## 2.8 (Ellipse) - November 24th, 2015
 
 For a complete list of changes run:
 
@@ -754,12 +756,12 @@ git log 4bb15e0..253b4bf
       method and the "exported" event to instead be moved to the canvas
       "exportPDF" method and "exportedPDF" event respectively.
 
-# 2.7.1 (applied to 2.7 branch) - April 17, 2014
+## 2.7.1 (applied to 2.7 branch) - April 17, 2014
 
 - Fix important ID situation with embedded API
 - Update functions available to embedded editor
 
-# 2.7 (Deltoid curve) - April 7th, 2014
+## 2.7 (Deltoid curve) - April 7th, 2014
 
 - Export to PNG, JPEG, BMP, WEBP (including quality control for JPEG/WEBP)
   for default editor and for the server_opensave extension
@@ -848,7 +850,7 @@ git log 4bb15e0..253b4bf
       `svgEditor.setConfig({allowedOrigins: [origin1, origin2, etc.]})`
       in the new `config.js` file.
 
-# 2.6 (Cycloid) - January 15th, 2013
+## 2.6 (Cycloid) - January 15th, 2013
 
 - Support for Internet Explorer 9
 - Context menu
@@ -863,7 +865,7 @@ git log 4bb15e0..253b4bf
 - Cut/Copy/Paste
 - full list: <http://code.google.com/p/svg-edit/issues/list?can=1&q=label%3ANeededFor-2.6>
 
-# 2.5 - June 15, 2010
+## 2.5 - June 15, 2010
 
 - Open Local Files (Firefox 3.6+ only)
 - Import SVG into Drawing (Firefox 3.6+ only)
@@ -888,7 +890,7 @@ git log 4bb15e0..253b4bf
 - Inline text editing
 - Line draw snapping with Shift key
 
-# 2.4 - January 11, 2010
+## 2.4 - January 11, 2010
 
 - Zoom
 - Layers
@@ -910,7 +912,7 @@ git log 4bb15e0..253b4bf
 - Text fields for all attributes
 - Title element
 
-# 2.3 - September 08, 2009
+## 2.3 - September 08, 2009
 
 - Align Objects
 - Rotate Objects
@@ -920,7 +922,7 @@ git log 4bb15e0..253b4bf
 - Gradient picking
 - Polygon Mode (Path Editing, Phase 1)
 
-# 2.2 - July 08, 2009
+## 2.2 - July 08, 2009
 
 - Multiselect Mode
 - Undo/Redo Actions
@@ -931,7 +933,7 @@ git log 4bb15e0..253b4bf
 - Resizing of the SVG canvas
 - Upgraded to jPicker 1.0.8
 
-# 2.1 - June 17, 2009
+## 2.1 - June 17, 2009
 
 - tooltips added to all UI elements
 - fix flyout menus
@@ -951,12 +953,12 @@ git log 4bb15e0..253b4bf
 - added keystroke shortcuts for all tools
 - move to top/bottom
 
-# 2.0 - June 03, 2009
+## 2.0 - June 03, 2009
 
 - rewritten SVG-edit, so now it uses OOP
 - draw ellipse, square
 - created HTML interface similar to Inkscape
 
-# 1.0 - February 06, 2009
+## 1.0 - February 06, 2009
 
 - SVG-Edit released

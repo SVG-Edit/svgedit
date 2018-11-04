@@ -248,134 +248,246 @@
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
   }
 
-  var _typeof$1 = typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol" ? function (obj) {
-    return _typeof(obj);
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
-  };
+  function _typeof$1(obj) {
+    if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
+      _typeof$1 = function _typeof$$1(obj) {
+        return _typeof(obj);
+      };
+    } else {
+      _typeof$1 = function _typeof$$1(obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
+      };
+    }
 
-  var classCallCheck = function classCallCheck(instance, Constructor) {
+    return _typeof$1(obj);
+  }
+
+  function _classCallCheck$1(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
     }
-  };
+  }
 
-  var createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
+  function _defineProperties$1(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
     }
+  }
 
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
+  function _createClass$1(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties$1(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties$1(Constructor, staticProps);
+    return Constructor;
+  }
 
-  var get = function get(object, property, receiver) {
-    if (object === null) object = Function.prototype;
-    var desc = Object.getOwnPropertyDescriptor(object, property);
-
-    if (desc === undefined) {
-      var parent = Object.getPrototypeOf(object);
-
-      if (parent === null) {
-        return undefined;
-      } else {
-        return get(parent, property, receiver);
-      }
-    } else if ("value" in desc) {
-      return desc.value;
-    } else {
-      var getter = desc.get;
-
-      if (getter === undefined) {
-        return undefined;
-      }
-
-      return getter.call(receiver);
-    }
-  };
-
-  var inherits = function inherits(subClass, superClass) {
+  function _inherits$1(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + _typeof(superClass));
+      throw new TypeError("Super expression must either be null or a function");
     }
 
     subClass.prototype = Object.create(superClass && superClass.prototype, {
       constructor: {
         value: subClass,
-        enumerable: false,
         writable: true,
         configurable: true
       }
     });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  };
+    if (superClass) _setPrototypeOf$1(subClass, superClass);
+  }
 
-  var possibleConstructorReturn = function possibleConstructorReturn(self, call) {
-    if (!self) {
+  function _getPrototypeOf$1(o) {
+    _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf$$1(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf$1(o);
+  }
+
+  function _setPrototypeOf$1(o, p) {
+    _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf$$1(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf$1(o, p);
+  }
+
+  function isNativeReflectConstruct$1() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function _construct$1(Parent, args, Class) {
+    if (isNativeReflectConstruct$1()) {
+      _construct$1 = Reflect.construct;
+    } else {
+      _construct$1 = function _construct$$1(Parent, args, Class) {
+        var a = [null];
+        a.push.apply(a, args);
+        var Constructor = Function.bind.apply(Parent, a);
+        var instance = new Constructor();
+        if (Class) _setPrototypeOf$1(instance, Class.prototype);
+        return instance;
+      };
+    }
+
+    return _construct$1.apply(null, arguments);
+  }
+
+  function _isNativeFunction$1(fn) {
+    return Function.toString.call(fn).indexOf("[native code]") !== -1;
+  }
+
+  function _wrapNativeSuper$1(Class) {
+    var _cache = typeof Map === "function" ? new Map() : undefined;
+
+    _wrapNativeSuper$1 = function _wrapNativeSuper$$1(Class) {
+      if (Class === null || !_isNativeFunction$1(Class)) return Class;
+
+      if (typeof Class !== "function") {
+        throw new TypeError("Super expression must either be null or a function");
+      }
+
+      if (typeof _cache !== "undefined") {
+        if (_cache.has(Class)) return _cache.get(Class);
+
+        _cache.set(Class, Wrapper);
+      }
+
+      function Wrapper() {
+        return _construct$1(Class, arguments, _getPrototypeOf$1(this).constructor);
+      }
+
+      Wrapper.prototype = Object.create(Class.prototype, {
+        constructor: {
+          value: Wrapper,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
+      });
+      return _setPrototypeOf$1(Wrapper, Class);
+    };
+
+    return _wrapNativeSuper$1(Class);
+  }
+
+  function _assertThisInitialized$1(self) {
+    if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
 
-    return call && (_typeof(call) === "object" || typeof call === "function") ? call : self;
-  };
+    return self;
+  }
 
-  var slicedToArray = function () {
-    function sliceIterator(arr, i) {
-      var _arr = [];
-      var _n = true;
-      var _d = false;
-      var _e = undefined;
-
-      try {
-        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-          _arr.push(_s.value);
-
-          if (i && _arr.length === i) break;
-        }
-      } catch (err) {
-        _d = true;
-        _e = err;
-      } finally {
-        try {
-          if (!_n && _i["return"]) _i["return"]();
-        } finally {
-          if (_d) throw _e;
-        }
-      }
-
-      return _arr;
+  function _possibleConstructorReturn$1(self, call) {
+    if (call && (_typeof(call) === "object" || typeof call === "function")) {
+      return call;
     }
 
-    return function (arr, i) {
-      if (Array.isArray(arr)) {
-        return arr;
-      } else if (Symbol.iterator in Object(arr)) {
-        return sliceIterator(arr, i);
-      } else {
-        throw new TypeError("Invalid attempt to destructure non-iterable instance");
-      }
-    };
-  }();
+    return _assertThisInitialized$1(self);
+  }
 
-  var toConsumableArray = function toConsumableArray(arr) {
+  function _superPropBase$1(object, property) {
+    while (!Object.prototype.hasOwnProperty.call(object, property)) {
+      object = _getPrototypeOf$1(object);
+      if (object === null) break;
+    }
+
+    return object;
+  }
+
+  function _get$1(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) {
+      _get$1 = Reflect.get;
+    } else {
+      _get$1 = function _get$$1(target, property, receiver) {
+        var base = _superPropBase$1(target, property);
+
+        if (!base) return;
+        var desc = Object.getOwnPropertyDescriptor(base, property);
+
+        if (desc.get) {
+          return desc.get.call(receiver);
+        }
+
+        return desc.value;
+      };
+    }
+
+    return _get$1(target, property, receiver || target);
+  }
+
+  function _slicedToArray$1(arr, i) {
+    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _nonIterableRest$1();
+  }
+
+  function _toConsumableArray$1(arr) {
+    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _nonIterableSpread$1();
+  }
+
+  function _arrayWithoutHoles$1(arr) {
     if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
         arr2[i] = arr[i];
       }
 
       return arr2;
-    } else {
-      return Array.from(arr);
     }
-  };
+  }
+
+  function _arrayWithHoles$1(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArray$1(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _iterableToArrayLimit$1(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _nonIterableSpread$1() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
+  function _nonIterableRest$1() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  }
   /*
   Possible todos:
   0. Add XSLT to JML-string stylesheet (or even vice versa)
@@ -579,7 +691,7 @@
       return 'string';
     }
 
-    if ((typeof item === 'undefined' ? 'undefined' : _typeof$1(item)) === 'object') {
+    if (_typeof$1(item) === 'object') {
       if (item === null) {
         return 'null';
       }
@@ -636,11 +748,11 @@
   }
 
   function _optsOrUndefinedJML() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return jml.apply(undefined, toConsumableArray(args[0] === undefined ? args.slice(1) : args));
+    return jml.apply(void 0, _toConsumableArray$1(args[0] === undefined ? args.slice(1) : args));
   }
   /**
   * @private
@@ -673,7 +785,7 @@
   function _childrenToJML(node) {
     return function (childNodeJML, i) {
       var cn = node.childNodes[i];
-      var j = Array.isArray(childNodeJML) ? jml.apply(undefined, toConsumableArray(childNodeJML)) : jml(childNodeJML);
+      var j = Array.isArray(childNodeJML) ? jml.apply(void 0, _toConsumableArray$1(childNodeJML)) : jml(childNodeJML);
       cn.parentNode.replaceChild(j, cn);
     };
   }
@@ -685,7 +797,7 @@
 
   function _appendJML(node) {
     return function (childJML) {
-      node.appendChild(jml.apply(undefined, toConsumableArray(childJML)));
+      node.appendChild(jml.apply(void 0, _toConsumableArray$1(childJML)));
     };
   }
   /**
@@ -699,7 +811,7 @@
       if (typeof childJML === 'string') {
         node.appendChild(doc.createTextNode(childJML));
       } else {
-        node.appendChild(jml.apply(undefined, toConsumableArray(childJML)));
+        node.appendChild(jml.apply(void 0, _toConsumableArray$1(childJML)));
       }
     };
   }
@@ -735,14 +847,14 @@
 
 
   var jml = function jml() {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
       args[_key2] = arguments[_key2];
     }
 
     var elem = doc.createDocumentFragment();
 
     function _checkAtts(atts) {
-      var att = void 0;
+      var att;
 
       for (att in atts) {
         if (!atts.hasOwnProperty(att)) {
@@ -795,7 +907,7 @@
                 if (Array.isArray(template)) {
                   if (_getType(template[0]) === 'object') {
                     // Has attributes
-                    template = jml.apply(undefined, ['template'].concat(toConsumableArray(template), [doc.body]));
+                    template = jml.apply(void 0, ['template'].concat(_toConsumableArray$1(template), [doc.body]));
                   } else {
                     // Array is for the children
                     template = jml('template', template, doc.body);
@@ -846,30 +958,36 @@
                 var def = customizedBuiltIn ? elem.getAttribute('is') : localName;
 
                 if (customElements.get(def)) {
-                  return 'break';
+                  return "break";
                 }
 
                 var getConstructor = function getConstructor(cb) {
                   var baseClass = options && options.extends ? doc.createElement(options.extends).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
-                  return cb ? function (_baseClass) {
-                    inherits(_class, _baseClass);
+                  return cb ?
+                  /*#__PURE__*/
+                  function (_baseClass) {
+                    _inherits$1(_class, _baseClass);
 
                     function _class() {
-                      classCallCheck(this, _class);
+                      var _this;
 
-                      var _this = possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this));
+                      _classCallCheck$1(this, _class);
 
-                      cb.call(_this);
+                      _this = _possibleConstructorReturn$1(this, _getPrototypeOf$1(_class).call(this));
+                      cb.call(_assertThisInitialized$1(_assertThisInitialized$1(_this)));
                       return _this;
                     }
 
                     return _class;
-                  }(baseClass) : function (_baseClass2) {
-                    inherits(_class2, _baseClass2);
+                  }(baseClass) :
+                  /*#__PURE__*/
+                  function (_baseClass2) {
+                    _inherits$1(_class2, _baseClass2);
 
                     function _class2() {
-                      classCallCheck(this, _class2);
-                      return possibleConstructorReturn(this, (_class2.__proto__ || Object.getPrototypeOf(_class2)).apply(this, arguments));
+                      _classCallCheck$1(this, _class2);
+
+                      return _possibleConstructorReturn$1(this, _getPrototypeOf$1(_class2).apply(this, arguments));
                     }
 
                     return _class2;
@@ -882,7 +1000,7 @@
 
                 if (Array.isArray(attVal)) {
                   if (attVal.length <= 2) {
-                    var _attVal = slicedToArray(attVal, 2);
+                    var _attVal = _slicedToArray$1(attVal, 2);
 
                     constructor = _attVal[0];
                     options = _attVal[1];
@@ -895,12 +1013,12 @@
                       prototype = options;
                     }
 
-                    if ((typeof constructor === 'undefined' ? 'undefined' : _typeof$1(constructor)) === 'object') {
+                    if (_typeof$1(constructor) === 'object') {
                       prototype = constructor;
                       constructor = getConstructor();
                     }
                   } else {
-                    var _attVal2 = slicedToArray(attVal, 3);
+                    var _attVal2 = _slicedToArray$1(attVal, 3);
 
                     constructor = _attVal2[0];
                     prototype = _attVal2[1];
@@ -934,15 +1052,15 @@
                 }
 
                 customElements.define(def, constructor, customizedBuiltIn ? options : undefined);
-                return 'break';
+                return "break";
               }();
 
-              if (_ret === 'break') break;
+              if (_ret === "break") break;
             }
 
           case '$symbol':
             {
-              var _attVal3 = slicedToArray(attVal, 2),
+              var _attVal3 = _slicedToArray$1(attVal, 2),
                   symbol = _attVal3[0],
                   func = _attVal3[1];
 
@@ -1151,7 +1269,7 @@
                       prop = startProp + key.replace(hyphenForCamelCase, _upperCase);
                     }
 
-                    if (value === null || (typeof value === 'undefined' ? 'undefined' : _typeof$1(value)) !== 'object') {
+                    if (value === null || _typeof$1(value) !== 'object') {
                       if (value != null) {
                         elem.dataset[prop] = value;
                       }
@@ -1165,7 +1283,7 @@
                 };
 
                 recurse(attVal, '');
-                return 'break'; // Todo: Disable this by default unless configuration explicitly allows (for security)
+                return "break"; // Todo: Disable this by default unless configuration explicitly allows (for security)
               }();
 
               break;
@@ -1210,7 +1328,7 @@
                 break;
               }
 
-              if ((typeof attVal === 'undefined' ? 'undefined' : _typeof$1(attVal)) === 'object') {
+              if (_typeof$1(attVal) === 'object') {
                 for (var _p in attVal) {
                   if (attVal.hasOwnProperty(_p) && attVal[_p] != null) {
                     // Todo: Handle aggregate properties like "border"
@@ -1262,8 +1380,8 @@
     }
 
     var nodes = [];
-    var elStr = void 0;
-    var opts = void 0;
+    var elStr;
+    var opts;
     var isRoot = false;
 
     if (_getType(args[0]) === 'object' && Object.keys(args[0]).some(function (key) {
@@ -1309,11 +1427,10 @@
     var defaultMap = opts && opts.$map && opts.$map.root;
 
     var setMap = function setMap(dataVal) {
-      var map = void 0,
-          obj = void 0; // Boolean indicating use of default map and object
+      var map, obj; // Boolean indicating use of default map and object
 
       if (dataVal === true) {
-        var _defaultMap = slicedToArray(defaultMap, 2);
+        var _defaultMap = _slicedToArray$1(defaultMap, 2);
 
         map = _defaultMap[0];
         obj = _defaultMap[1];
@@ -1367,7 +1484,7 @@
               var procValue = args[++i];
               var val = procValue;
 
-              if ((typeof val === 'undefined' ? 'undefined' : _typeof$1(val)) === 'object') {
+              if (_typeof$1(val) === 'object') {
                 procValue = [];
 
                 for (var p in val) {
@@ -1523,7 +1640,8 @@
           for (var j = 0; j < cl; j++) {
             // Go through children array container to handle elements
             var childContent = child[j];
-            var childContentType = typeof childContent === 'undefined' ? 'undefined' : _typeof$1(childContent);
+
+            var childContentType = _typeof$1(childContent);
 
             if (childContent === undefined) {
               throw String('Parent array:' + JSON.stringify(args) + '; child: ' + child + '; index:' + j);
@@ -1541,7 +1659,7 @@
               default:
                 if (Array.isArray(childContent)) {
                   // Arrays representing child elements
-                  _appendNode(elem, _optsOrUndefinedJML.apply(undefined, [opts].concat(toConsumableArray(childContent))));
+                  _appendNode(elem, _optsOrUndefinedJML.apply(void 0, [opts].concat(_toConsumableArray$1(childContent))));
                 } else if (childContent['#']) {
                   // Fragment
                   _appendNode(elem, _optsOrUndefinedJML(opts, childContent['#']));
@@ -1622,13 +1740,13 @@
       }
     }
 
-    function set$$1(val) {
+    function set(val) {
       parent[parentIdx] = val;
       parentIdx++;
     }
 
     function setChildren() {
-      set$$1([]);
+      set([]);
       parent = parent[parentIdx - 1];
       parentIdx = 0;
     }
@@ -1658,10 +1776,7 @@
         invalidStateError();
       }
 
-      var children = void 0,
-          start = void 0,
-          tmpParent = void 0,
-          tmpParentIdx = void 0;
+      var children, start, tmpParent, tmpParentIdx;
 
       function setTemp() {
         tmpParent = parent;
@@ -1682,7 +1797,7 @@
 
           setChildren(); // Build child array since elements are, except at the top level, encapsulated in arrays
 
-          set$$1(nodeName);
+          set(nodeName);
           start = {};
           var hasNamespaceDeclaration = false;
 
@@ -1699,13 +1814,13 @@
           }
 
           if (node.attributes.length) {
-            set$$1(Array.from(node.attributes).reduce(function (obj, att) {
+            set(Array.from(node.attributes).reduce(function (obj, att) {
               obj[att.name] = att.value; // Attr.nodeName and Attr.nodeValue are deprecated as of DOM4 as Attr no longer inherits from Node, so we can safely use name and value
 
               return obj;
             }, start));
           } else if (hasNamespaceDeclaration) {
-            set$$1(start);
+            set(start);
           }
 
           children = node.childNodes;
@@ -1725,7 +1840,7 @@
 
         case 2:
           // ATTRIBUTE (should only get here if passing in an attribute node)
-          set$$1({
+          set({
             $attribute: [node.namespaceURI, node.name, node.value]
           });
           break;
@@ -1736,7 +1851,7 @@
             return;
           }
 
-          set$$1(node.nodeValue);
+          set(node.nodeValue);
           break;
 
         case 4:
@@ -1745,12 +1860,12 @@
             invalidStateError();
           }
 
-          set$$1(['![', node.nodeValue]);
+          set(['![', node.nodeValue]);
           break;
 
         case 5:
           // ENTITY REFERENCE (probably not used in browsers since already resolved)
-          set$$1(['&', node.nodeName]);
+          set(['&', node.nodeName]);
           break;
 
         case 6:
@@ -1780,7 +1895,7 @@
             }
           }
 
-          set$$1(start);
+          set(start);
           children = node.childNodes;
 
           if (children.length) {
@@ -1813,7 +1928,7 @@
             invalidStateError();
           }
 
-          set$$1(['?', node.target, node.data]); // Todo: Could give option to attempt to convert value back into object if has pseudo-attributes
+          set(['?', node.target, node.data]); // Todo: Could give option to attempt to convert value back into object if has pseudo-attributes
 
           break;
 
@@ -1823,7 +1938,7 @@
             invalidStateError();
           }
 
-          set$$1(['!', node.nodeValue]);
+          set(['!', node.nodeValue]);
           break;
 
         case 9:
@@ -1843,7 +1958,7 @@
             };
           }
 
-          set$$1(docObj); // doc.implementation.createHTMLDocument
+          set(docObj); // doc.implementation.createHTMLDocument
           // Set position to fragment's array children
 
           setObj('$document', 'childNodes');
@@ -1884,7 +1999,7 @@
 
           addExternalID(start.$DOCTYPE, node); // Fit in internal subset along with entities?: probably don't need as these would only differ if from DTD, and we're not rebuilding the DTD
 
-          set$$1(start); // Auto-generate the internalSubset instead? Avoid entities/notations in favor of array to preserve order?
+          set(start); // Auto-generate the internalSubset instead? Avoid entities/notations in favor of array to preserve order?
 
           var entities = node.entities; // Currently deprecated
 
@@ -1915,7 +2030,7 @@
         case 11:
           // DOCUMENT FRAGMENT
           setTemp();
-          set$$1({
+          set({
             '#': []
           }); // Set position to fragment's array children
 
@@ -1936,7 +2051,7 @@
             }
           };
           addExternalID(start.$NOTATION, node);
-          set$$1(start);
+          set(start);
           break;
 
         default:
@@ -1961,12 +2076,12 @@
 
   jml.toDOM = function () {
     // Alias for jml()
-    return jml.apply(undefined, arguments);
+    return jml.apply(void 0, arguments);
   };
 
   jml.toHTML = function () {
     // Todo: Replace this with version of jml() that directly builds a string
-    var ret = jml.apply(undefined, arguments); // Todo: deal with serialization of properties like 'selected', 'checked', 'value', 'defaultValue', 'for', 'dataset', 'on*', 'style'! (i.e., need to build a string ourselves)
+    var ret = jml.apply(void 0, arguments); // Todo: deal with serialization of properties like 'selected', 'checked', 'value', 'defaultValue', 'for', 'dataset', 'on*', 'style'! (i.e., need to build a string ourselves)
 
     return ret.outerHTML;
   };
@@ -1977,7 +2092,7 @@
   };
 
   jml.toXML = function () {
-    var ret = jml.apply(undefined, arguments);
+    var ret = jml.apply(void 0, arguments);
     return new XmlSerializer().serializeToString(ret);
   };
 
@@ -1986,79 +2101,87 @@
     return jml.toXML.apply(jml, arguments);
   };
 
-  var JamilihMap = function (_Map) {
-    inherits(JamilihMap, _Map);
+  var JamilihMap =
+  /*#__PURE__*/
+  function (_Map) {
+    _inherits$1(JamilihMap, _Map);
 
     function JamilihMap() {
-      classCallCheck(this, JamilihMap);
-      return possibleConstructorReturn(this, (JamilihMap.__proto__ || Object.getPrototypeOf(JamilihMap)).apply(this, arguments));
+      _classCallCheck$1(this, JamilihMap);
+
+      return _possibleConstructorReturn$1(this, _getPrototypeOf$1(JamilihMap).apply(this, arguments));
     }
 
-    createClass(JamilihMap, [{
-      key: 'get',
+    _createClass$1(JamilihMap, [{
+      key: "get",
       value: function get$$1(elem) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return get(JamilihMap.prototype.__proto__ || Object.getPrototypeOf(JamilihMap.prototype), 'get', this).call(this, elem);
+        return _get$1(_getPrototypeOf$1(JamilihMap.prototype), "get", this).call(this, elem);
       }
     }, {
-      key: 'set',
-      value: function set$$1(elem, value) {
+      key: "set",
+      value: function set(elem, value) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return get(JamilihMap.prototype.__proto__ || Object.getPrototypeOf(JamilihMap.prototype), 'set', this).call(this, elem, value);
+        return _get$1(_getPrototypeOf$1(JamilihMap.prototype), "set", this).call(this, elem, value);
       }
     }, {
-      key: 'invoke',
+      key: "invoke",
       value: function invoke(elem, methodName) {
-        var _get$$1;
+        var _this$get;
 
         elem = typeof elem === 'string' ? $(elem) : elem;
 
-        for (var _len3 = arguments.length, args = Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
+        for (var _len3 = arguments.length, args = new Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
           args[_key3 - 2] = arguments[_key3];
         }
 
-        return (_get$$1 = this.get(elem))[methodName].apply(_get$$1, [elem].concat(args));
+        return (_this$get = this.get(elem))[methodName].apply(_this$get, [elem].concat(args));
       }
     }]);
-    return JamilihMap;
-  }(Map);
 
-  var JamilihWeakMap = function (_WeakMap) {
-    inherits(JamilihWeakMap, _WeakMap);
+    return JamilihMap;
+  }(_wrapNativeSuper$1(Map));
+
+  var JamilihWeakMap =
+  /*#__PURE__*/
+  function (_WeakMap) {
+    _inherits$1(JamilihWeakMap, _WeakMap);
 
     function JamilihWeakMap() {
-      classCallCheck(this, JamilihWeakMap);
-      return possibleConstructorReturn(this, (JamilihWeakMap.__proto__ || Object.getPrototypeOf(JamilihWeakMap)).apply(this, arguments));
+      _classCallCheck$1(this, JamilihWeakMap);
+
+      return _possibleConstructorReturn$1(this, _getPrototypeOf$1(JamilihWeakMap).apply(this, arguments));
     }
 
-    createClass(JamilihWeakMap, [{
-      key: 'get',
+    _createClass$1(JamilihWeakMap, [{
+      key: "get",
       value: function get$$1(elem) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return get(JamilihWeakMap.prototype.__proto__ || Object.getPrototypeOf(JamilihWeakMap.prototype), 'get', this).call(this, elem);
+        return _get$1(_getPrototypeOf$1(JamilihWeakMap.prototype), "get", this).call(this, elem);
       }
     }, {
-      key: 'set',
-      value: function set$$1(elem, value) {
+      key: "set",
+      value: function set(elem, value) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return get(JamilihWeakMap.prototype.__proto__ || Object.getPrototypeOf(JamilihWeakMap.prototype), 'set', this).call(this, elem, value);
+        return _get$1(_getPrototypeOf$1(JamilihWeakMap.prototype), "set", this).call(this, elem, value);
       }
     }, {
-      key: 'invoke',
+      key: "invoke",
       value: function invoke(elem, methodName) {
-        var _get2;
+        var _this$get2;
 
         elem = typeof elem === 'string' ? $(elem) : elem;
 
-        for (var _len4 = arguments.length, args = Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
+        for (var _len4 = arguments.length, args = new Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
           args[_key4 - 2] = arguments[_key4];
         }
 
-        return (_get2 = this.get(elem))[methodName].apply(_get2, [elem].concat(args));
+        return (_this$get2 = this.get(elem))[methodName].apply(_this$get2, [elem].concat(args));
       }
     }]);
+
     return JamilihWeakMap;
-  }(WeakMap);
+  }(_wrapNativeSuper$1(WeakMap));
 
   jml.Map = JamilihMap;
   jml.WeakMap = JamilihWeakMap;
@@ -2066,11 +2189,11 @@
   jml.weak = function (obj) {
     var map = new JamilihWeakMap();
 
-    for (var _len5 = arguments.length, args = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
+    for (var _len5 = arguments.length, args = new Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
       args[_key5 - 1] = arguments[_key5];
     }
 
-    var elem = jml.apply(undefined, [{
+    var elem = jml.apply(void 0, [{
       $map: [map, obj]
     }].concat(args));
     return [map, elem];
@@ -2079,11 +2202,11 @@
   jml.strong = function (obj) {
     var map = new JamilihMap();
 
-    for (var _len6 = arguments.length, args = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
+    for (var _len6 = arguments.length, args = new Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
       args[_key6 - 1] = arguments[_key6];
     }
 
-    var elem = jml.apply(undefined, [{
+    var elem = jml.apply(void 0, [{
       $map: [map, obj]
     }].concat(args));
     return [map, elem];
@@ -2091,24 +2214,24 @@
 
   jml.symbol = jml.sym = jml.for = function (elem, sym) {
     elem = typeof elem === 'string' ? $(elem) : elem;
-    return elem[(typeof sym === 'undefined' ? 'undefined' : _typeof$1(sym)) === 'symbol' ? sym : Symbol.for(sym)];
+    return elem[_typeof$1(sym) === 'symbol' ? sym : Symbol.for(sym)];
   };
 
   jml.command = function (elem, symOrMap, methodName) {
     elem = typeof elem === 'string' ? $(elem) : elem;
-    var func = void 0;
+    var func;
 
-    for (var _len7 = arguments.length, args = Array(_len7 > 3 ? _len7 - 3 : 0), _key7 = 3; _key7 < _len7; _key7++) {
+    for (var _len7 = arguments.length, args = new Array(_len7 > 3 ? _len7 - 3 : 0), _key7 = 3; _key7 < _len7; _key7++) {
       args[_key7 - 3] = arguments[_key7];
     }
 
-    if (['symbol', 'string'].includes(typeof symOrMap === 'undefined' ? 'undefined' : _typeof$1(symOrMap))) {
+    if (['symbol', 'string'].includes(_typeof$1(symOrMap))) {
       var _func;
 
       func = jml.sym(elem, symOrMap);
 
       if (typeof func === 'function') {
-        return func.apply(undefined, [methodName].concat(args)); // Already has `this` bound to `elem`
+        return func.apply(void 0, [methodName].concat(args)); // Already has `this` bound to `elem`
       }
 
       return (_func = func)[methodName].apply(_func, args);
@@ -2157,7 +2280,7 @@
   };
 
   var body = doc && doc.body;
-  var nbsp = '\xA0'; // Very commonly needed in templates
+  var nbsp = "\xA0"; // Very commonly needed in templates
 
   var LOAD = 'load';
   var DOM_CONTENT_LOADED = 'DOMContentLoaded';
@@ -2374,11 +2497,11 @@
     return _typeof$2(obj);
   }
 
-  function _toConsumableArray$1(arr) {
-    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _nonIterableSpread$1();
+  function _toConsumableArray$2(arr) {
+    return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _nonIterableSpread$2();
   }
 
-  function _arrayWithoutHoles$1(arr) {
+  function _arrayWithoutHoles$2(arr) {
     if (Array.isArray(arr)) {
       for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
         arr2[i] = arr[i];
@@ -2388,11 +2511,11 @@
     }
   }
 
-  function _iterableToArray$1(iter) {
+  function _iterableToArray$2(iter) {
     if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
   }
 
-  function _nonIterableSpread$1() {
+  function _nonIterableSpread$2() {
     throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
 
@@ -2420,7 +2543,7 @@
             case 11:
               {
                 // DOCUMENT_FRAGMENT_NODE
-                return _toConsumableArray$1(content.childNodes).reduce(function (s, node) {
+                return _toConsumableArray$2(content.childNodes).reduce(function (s, node) {
                   return s + convertToString(type, node);
                 }, '');
               }
@@ -2494,7 +2617,7 @@
         default:
           {
             this.forEach(function (node) {
-              node[type].apply(node, _toConsumableArray$1(args.map(function (content, i) {
+              node[type].apply(node, _toConsumableArray$2(args.map(function (content, i) {
                 return convertToDOM(type, content, i === args.length - 1);
               })));
             });

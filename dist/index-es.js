@@ -6728,8 +6728,8 @@ var convertPath = function convertPath(path, toRel) {
  * TODO: refactor callers in `convertPath` to use `getPathDFromSegments` instead of this function.
  * Legacy code refactored from `svgcanvas.pathActions.convertPath`.
  * @param {string} letter - path segment command (letter in potentially either case from {@link module:path.pathMap}; see [SVGPathSeg#pathSegTypeAsLetter]{@link https://www.w3.org/TR/SVG/single-page.html#paths-__svg__SVGPathSeg__pathSegTypeAsLetter})
- * @param {GenericArray<Integer>[]} points - x,y points
- * @param {GenericArray<Integer>[]} [morePoints] - x,y points
+ * @param {GenericArray<GenericArray<Integer>>} points - x,y points
+ * @param {GenericArray<GenericArray<Integer>>} [morePoints] - x,y points
  * @param {Integer[]} [lastPoint] - x,y point
  * @returns {string}
  */
