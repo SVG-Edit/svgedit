@@ -12,6 +12,10 @@ function _typeof(obj) {
   return _typeof(obj);
 }
 
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+}
+
 function _toConsumableArray(arr) {
   return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
 }
@@ -24,15 +28,49 @@ function _arrayWithoutHoles(arr) {
   }
 }
 
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
 function _iterableToArray(iter) {
   if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+function _iterableToArrayLimit(arr, i) {
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+
+  try {
+    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
 }
 
 function _nonIterableSpread() {
   throw new TypeError("Invalid attempt to spread non-iterable instance");
 }
 
-function convertToString(type, content) {
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+}
+
+function convertToString(content, type) {
   switch (_typeof(content)) {
     case 'object':
       {
@@ -57,11 +95,21 @@ function convertToString(type, content) {
             {
               // DOCUMENT_FRAGMENT_NODE
               return _toConsumableArray(content.childNodes).reduce(function (s, node) {
-                return s + convertToString(type, node);
+                return s + convertToString(node, type);
               }, '');
             }
-        } // Todo: array of elements/text nodes (or Jamilih array?), QueryResult objects?
 
+          case undefined:
+            {
+              // Array of nodes, QueryResult objects
+              // if (Array.isArray(content)) {
+              if (typeof content.reduce === 'function') {
+                return content.reduce(function (s, node) {
+                  return s + convertToString(node, type);
+                }, '');
+              }
+            }
+        }
 
         return;
       }
@@ -76,7 +124,7 @@ function convertToString(type, content) {
   }
 }
 
-function convertToDOM(type, content, avoidClone) {
+function convertToDOM(content, type, avoidClone) {
   switch (_typeof(content)) {
     case 'object':
       {
@@ -89,10 +137,21 @@ function convertToDOM(type, content, avoidClone) {
         11 // Document fragment
         ].includes(content.nodeType)) {
           return avoidClone ? content : content.cloneNode(true);
-        } // Todo: array of elements/text nodes (or Jamilih array?), QueryResult objects?
+        }
+
+        if (typeof content.reduce !== 'function') {
+          throw new TypeError('Unrecognized type of object for conversion to DOM');
+        } // Array of nodes, QueryResult objects
 
 
-        return;
+        return avoidClone ? content : content.map(function (node) {
+          if (!node || !node.cloneNode) {
+            // Allows for arrays of HTML strings
+            return convertToDOM(node, type, false);
+          }
+
+          return node.cloneNode(true);
+        });
       }
 
     case 'string':
@@ -129,9 +188,9 @@ function insert(type) {
 
       default:
         {
-          this.forEach(function (node) {
-            node[type].apply(node, _toConsumableArray(args.map(function (content, i) {
-              return convertToDOM(type, content, i === args.length - 1);
+          this.forEach(function (node, i, arr) {
+            node[type].apply(node, _toConsumableArray(args.flatMap(function (content) {
+              return convertToDOM(content, type, i === arr.length - 1);
             })));
           });
           break;
@@ -151,7 +210,7 @@ function insertText(type) {
         {
           this.forEach(function (node, i) {
             var ret = cbOrContent.call(_this2, i, node[type]);
-            node[type] = convertToString(type, ret);
+            node[type] = convertToString(ret, type);
           });
           break;
         }
@@ -159,7 +218,7 @@ function insertText(type) {
       default:
         {
           this.forEach(function (node) {
-            node[type] = convertToString(type, cbOrContent);
+            node[type] = convertToString(cbOrContent, type);
           });
           break;
         }
@@ -175,10 +234,168 @@ var append = insert('append');
 var prepend = insert('prepend');
 var html = insertText('innerHTML');
 var text = insertText('textContent');
+/*
+// Todo:
+export const val = function (valueOrFunc) {
 
-function classManipulation(type) {
+};
+*/
+// Given that these types require a selector engine and
+// in order to avoid the absence of optimization of `document.querySelectorAll`
+// for `:first-child` and different behavior in different contexts,
+// and to avoid making a mutual dependency with query-result,
+// exports of this type accept a QueryResult instance;
+// if selected without a second argument, we do default to
+//  `document.querySelectorAll`, however.
+
+var insertTo = function insertTo(method) {
+  var $ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (sel) {
+    return _toConsumableArray(document.querySelectorAll(sel));
+  };
+  var type = {
+    appendTo: 'append',
+    prependTo: 'prepend',
+    insertAfter: 'after',
+    insertBefore: 'before'
+  }[method] || 'append';
+  return function (target) {
+    var toType = type + 'To';
+    this.forEach(function (node, i, arr) {
+      if (typeof target === 'string' && target.charAt(0) !== '<') {
+        target = $(target);
+      }
+
+      target = Array.isArray(target) ? target : [target];
+      node[type].apply(node, _toConsumableArray(target.flatMap(function (content) {
+        return convertToDOM(content, toType, i === arr.length - 1);
+      })));
+    });
+    return this;
+  };
+}; // Todo: optional `withDataAndEvents` and `deepWithDataAndEvents` arguments?
+
+var clone = function clone() {
+  return this.map(function (node) {
+    // Still a QueryResult with such a map
+    return node.cloneNode(true);
+  });
+};
+var empty = function empty() {
+  this.forEach(function (node) {
+    node.textContent = '';
+  });
+};
+var remove = function remove(selector) {
+  if (selector) {
+    this.forEach(function (node) {
+      if (node.matches(selector)) {
+        // Todo: Use query-result instead?
+        node.remove();
+      }
+    });
+  } else {
+    this.forEach(function (node) {
+      node.remove();
+    });
+  }
+
+  return this;
+};
+/*
+// Todo:
+export const detach = function (selector) {
+  // Should preserve attached data
+  return remove(selector);
+};
+*/
+
+var attr = function attr(attributeNameOrAtts, valueOrCb) {
+  var _this3 = this;
+
+  if (valueOrCb === undefined) {
+    switch (_typeof(attributeNameOrAtts)) {
+      case 'string':
+        {
+          return this[0].hasAttribute(attributeNameOrAtts) ? this[0].getAttribute(attributeNameOrAtts) : undefined;
+        }
+
+      case 'object':
+        {
+          if (attributeNameOrAtts) {
+            this.forEach(function (node, i) {
+              Object.entries(attributeNameOrAtts).forEach(function (_ref) {
+                var _ref2 = _slicedToArray(_ref, 2),
+                    att = _ref2[0],
+                    val = _ref2[1];
+
+                node.setAttribute(att, val);
+              });
+            });
+            return this;
+          }
+        }
+      // Fallthrough
+
+      default:
+        {
+          throw new TypeError('Unexpected type for attribute name: ' + _typeof(attributeNameOrAtts));
+        }
+    }
+  }
+
+  switch (_typeof(valueOrCb)) {
+    case 'function':
+      {
+        this.forEach(function (node, i) {
+          var ret = valueOrCb.call(_this3, i, node.getAttribute(valueOrCb));
+
+          if (ret === null) {
+            node.removeAttribute(attributeNameOrAtts);
+          } else {
+            node.setAttribute(attributeNameOrAtts, ret);
+          }
+        });
+        break;
+      }
+
+    case 'string':
+      {
+        this.forEach(function (node, i) {
+          node.setAttribute(attributeNameOrAtts, valueOrCb);
+        });
+        break;
+      }
+
+    case 'object':
+      {
+        if (!valueOrCb) {
+          // `null`
+          return removeAttr.call(this, attributeNameOrAtts);
+        }
+      }
+    // Fallthrough
+
+    default:
+      {
+        throw new TypeError('Unexpected type for attribute name: ' + _typeof(attributeNameOrAtts));
+      }
+  }
+
+  return this;
+};
+var removeAttr = function removeAttr(attributeName) {
+  if (typeof attributeName !== 'string') {
+    throw new TypeError('Unexpected type for attribute name: ' + _typeof(attributeName));
+  }
+
+  this.forEach(function (node) {
+    node.removeAttribute(attributeName);
+  });
+};
+
+function classAttManipulation(type) {
   return function (cbOrContent) {
-    var _this3 = this;
+    var _this4 = this;
 
     switch (_typeof(cbOrContent)) {
       case 'function':
@@ -186,7 +403,7 @@ function classManipulation(type) {
           this.forEach(function (node, i) {
             var _node$classList;
 
-            var ret = cbOrContent.call(_this3, i, node.className);
+            var ret = cbOrContent.call(_this4, i, node.className);
 
             (_node$classList = node.classList)[type].apply(_node$classList, _toConsumableArray(ret.split(' ')));
           });
@@ -215,15 +432,15 @@ function classManipulation(type) {
   };
 }
 
-var addClass = classManipulation('add');
-var removeClass = classManipulation('remove');
+var addClass = classAttManipulation('add');
+var removeClass = classAttManipulation('remove');
 var hasClass = function hasClass(className) {
   return this.some(function (node) {
     return node.classList.contains(className);
   });
 };
 var toggleClass = function toggleClass(classNameOrCb, state) {
-  var _this4 = this;
+  var _this5 = this;
 
   switch (typeof cbOrContent === "undefined" ? "undefined" : _typeof(cbOrContent)) {
     case 'function':
@@ -232,7 +449,7 @@ var toggleClass = function toggleClass(classNameOrCb, state) {
           this.forEach(function (node, i) {
             var _node$classList3;
 
-            var ret = classNameOrCb.call(_this4, i, node.className, state);
+            var ret = classNameOrCb.call(_this5, i, node.className, state);
 
             (_node$classList3 = node.classList).toggle.apply(_node$classList3, _toConsumableArray(ret.split(' ')).concat([state]));
           });
@@ -240,7 +457,7 @@ var toggleClass = function toggleClass(classNameOrCb, state) {
           this.forEach(function (node, i) {
             var _node$classList4;
 
-            var ret = classNameOrCb.call(_this4, i, node.className, state);
+            var ret = classNameOrCb.call(_this5, i, node.className, state);
 
             (_node$classList4 = node.classList).toggle.apply(_node$classList4, _toConsumableArray(ret.split(' ')));
           });
@@ -275,17 +492,31 @@ var methods = {
   append: append,
   prepend: prepend,
   html: html,
-  text: text
+  text: text,
+  clone: clone,
+  empty: empty,
+  remove: remove,
+  // detach
+  attr: attr,
+  removeAttr: removeAttr,
+  addClass: addClass,
+  hasClass: hasClass,
+  removeClass: removeClass,
+  toggleClass: toggleClass
 };
 
 var manipulation = function manipulation($, jml) {
-  ['after', 'before', 'append', 'prepend', 'html', 'text'].forEach(function (method) {
+  ['after', 'before', 'append', 'prepend', 'html', 'text', 'clone', 'empty', 'remove', // 'detach'
+  'attr', 'removeAttr', 'addClass', 'hasClass', 'removeClass', 'toggleClass'].forEach(function (method) {
     $.extend(method, methods[method]);
+  });
+  ['appendTo', 'prependTo', 'insertAfter', 'insertBefore'].forEach(function (method) {
+    $.extend(method, insertTo(method, $));
   });
 
   if (jml) {
     $.extend('jml', function () {
-      var _this5 = this;
+      var _this6 = this;
 
       for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
         args[_key2] = arguments[_key2];
@@ -297,7 +528,7 @@ var manipulation = function manipulation($, jml) {
         }
 
         var n = jml.apply(void 0, args);
-        return append.call(_this5, n);
+        return append.call(_this6, n);
       });
     });
   }
@@ -305,4 +536,4 @@ var manipulation = function manipulation($, jml) {
   return $;
 };
 
-export { after, before, append, prepend, html, text, addClass, removeClass, hasClass, toggleClass, manipulation };
+export { after, before, append, prepend, html, text, insertTo, clone, empty, remove, attr, removeAttr, addClass, removeClass, hasClass, toggleClass, manipulation };

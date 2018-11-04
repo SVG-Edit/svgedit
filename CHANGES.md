@@ -18,6 +18,8 @@
 - Docs (3.0.0): Clarify
 - Docs (ReleaseInstructions): Clarify need for npm permissions to publish
 - npm: Update devDeps (including some resolving security vulnerabilities)
+- npm: Do a fresh install of all packages and update `package-lock.json`
+  accordingly; update qunit dist
 
 ## 3.1.1
 

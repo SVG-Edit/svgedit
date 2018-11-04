@@ -2282,9 +2282,23 @@
   var body = doc && doc.body;
   var nbsp = "\xA0"; // Very commonly needed in templates
 
-  var LOAD = 'load';
-  var DOM_CONTENT_LOADED = 'DOMContentLoaded';
-
+  /**
+   * ISC License
+   *
+   * Copyright (c) 2018, Andrea Giammarchi, @WebReflection
+   *
+   * Permission to use, copy, modify, and/or distribute this software for any
+   * purpose with or without fee is hereby granted, provided that the above
+   * copyright notice and this permission notice appear in all copies.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+   * REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+   * AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+   * INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+   * LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+   * OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+   * PERFORMANCE OF THIS SOFTWARE.
+   */
   var QueryResult =
   /*#__PURE__*/
   function (_Array) {
@@ -2299,78 +2313,90 @@
     return QueryResult;
   }(_wrapNativeSuper(Array));
 
+  var create = Object.create,
+      defineProperty = Object.defineProperty;
+  var AP = Array.prototype;
+  var DOM_CONTENT_LOADED = 'DOMContentLoaded';
+  var LOAD = 'load';
+  var NO_TRANSPILER_ISSUES = new QueryResult() instanceof QueryResult;
+  var QRP = QueryResult.prototype; // fixes methods returning non QueryResult
+
+  /* istanbul ignore if */
+
+  if (!NO_TRANSPILER_ISSUES) Object.getOwnPropertyNames(AP).forEach(function (name) {
+    var desc = Object.getOwnPropertyDescriptor(AP, name);
+
+    if (typeof desc.value === 'function') {
+      var fn = desc.value;
+
+      desc.value = function () {
+        var result = fn.apply(this, arguments);
+        return result instanceof Array ? patch(result) : result;
+      };
+    }
+
+    defineProperty(QRP, name, desc);
+  }); // fixes badly transpiled classes
+
+  var patch = NO_TRANSPILER_ISSUES ? function (qr) {
+    return qr;
+  } :
+  /* istanbul ignore next */
+  function (qr) {
+    var nqr = create(QRP);
+    push.apply(nqr, slice(qr));
+    return nqr;
+  };
+  var push = AP.push;
+
   var search = function search(list, el) {
     var nodes = [];
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+    var length = list.length;
 
-    try {
-      for (var _iterator = list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var CSS = _step.value;
-        var css = CSS.trim();
+    for (var i = 0; i < length; i++) {
+      var css = list[i].trim();
 
-        if (css.slice(-6) === ':first') {
-          var node = el.querySelector(css.slice(0, -6));
-          if (node) nodes.push(node);
-        } else {
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
-          try {
-            for (var _iterator2 = el.querySelectorAll(css)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var _node = _step2.value;
-              nodes.push(_node);
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-                _iterator2.return();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
-        }
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+      if (css.slice(-6) === ':first') {
+        var node = el.querySelector(css.slice(0, -6));
+        if (node) push.call(nodes, node);
+      } else push.apply(nodes, slice(el.querySelectorAll(css)));
     }
 
     return _construct(QueryResult, nodes);
   };
 
-  var defineProperty = Object.defineProperty;
-  var $$1 = defineProperty(function (CSS) {
+  var slice = NO_TRANSPILER_ISSUES ? patch :
+  /* istanbul ignore next */
+  function (all) {
+    // do not use slice.call(...) due old IE gotcha
+    var nodes = [];
+    var length = all.length;
+
+    for (var i = 0; i < length; i++) {
+      nodes[i] = all[i];
+    }
+
+    return nodes;
+  }; // use function to avoid usage of Symbol.hasInstance
+  // (broken in older browsers anyway)
+
+  var $$1 = function $(CSS) {
     var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
 
     switch (_typeof(CSS)) {
       case 'string':
-        return search(CSS.split(','), parent);
+        return patch(search(CSS.split(','), parent));
 
       case 'object':
-        return _construct(QueryResult, _toConsumableArray('nodeType' in CSS || 'postMessage' in CSS ? [CSS] : CSS));
+        // needed to avoid iterator dance (breaks in older IEs)
+        var nodes = [];
+        var all = 'nodeType' in CSS || 'postMessage' in CSS ? [CSS] : CSS;
+        push.apply(nodes, slice(all));
+        return patch(_construct(QueryResult, nodes));
 
       case 'function':
-        var $parent = $$1(parent);
-        var $window = $$1(parent.defaultView);
+        var $parent = $(parent);
+        var $window = $(parent.defaultView);
         var handler = {
           handleEvent: function handleEvent(event) {
             $parent.off(DOM_CONTENT_LOADED, handler);
@@ -2384,100 +2410,45 @@
         if (rs == 'complete' || rs != 'loading' && !parent.documentElement.doScroll) setTimeout(function () {
           return $parent.dispatch(DOM_CONTENT_LOADED);
         });
-        return $$1;
+        return $;
     }
-  }, Symbol.hasInstance, {
-    value: function value(instance) {
-      return instance instanceof QueryResult;
-    }
-  });
+  };
+
+  $$1.prototype = QRP;
 
   $$1.extend = function (key, value) {
-    return defineProperty(QueryResult.prototype, key, {
+    return defineProperty(QRP, key, {
       configurable: true,
       value: value
     }), $$1;
-  };
+  }; // dropped usage of for-of to avoid broken iteration dance in older IEs
+
 
   $$1.extend('dispatch', function dispatch(type) {
     var init = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var event = new CustomEvent(type, init);
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+    var length = this.length;
 
-    try {
-      for (var _iterator3 = this[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var node = _step3.value;
-        node.dispatchEvent(event);
-      }
-    } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-          _iterator3.return();
-        }
-      } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
-        }
-      }
+    for (var i = 0; i < length; i++) {
+      this[i].dispatchEvent(event);
     }
 
     return this;
   }).extend('off', function off(type, handler) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var _iteratorNormalCompletion4 = true;
-    var _didIteratorError4 = false;
-    var _iteratorError4 = undefined;
+    var length = this.length;
 
-    try {
-      for (var _iterator4 = this[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-        var node = _step4.value;
-        node.removeEventListener(type, handler, options);
-      }
-    } catch (err) {
-      _didIteratorError4 = true;
-      _iteratorError4 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-          _iterator4.return();
-        }
-      } finally {
-        if (_didIteratorError4) {
-          throw _iteratorError4;
-        }
-      }
+    for (var i = 0; i < length; i++) {
+      this[i].removeEventListener(type, handler, options);
     }
 
     return this;
   }).extend('on', function on(type, handler) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var _iteratorNormalCompletion5 = true;
-    var _didIteratorError5 = false;
-    var _iteratorError5 = undefined;
+    var length = this.length;
 
-    try {
-      for (var _iterator5 = this[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-        var node = _step5.value;
-        node.addEventListener(type, handler, options);
-      }
-    } catch (err) {
-      _didIteratorError5 = true;
-      _iteratorError5 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-          _iterator5.return();
-        }
-      } finally {
-        if (_didIteratorError5) {
-          throw _iteratorError5;
-        }
-      }
+    for (var i = 0; i < length; i++) {
+      this[i].addEventListener(type, handler, options);
     }
 
     return this;
@@ -2497,6 +2468,10 @@
     return _typeof$2(obj);
   }
 
+  function _slicedToArray$2(arr, i) {
+    return _arrayWithHoles$2(arr) || _iterableToArrayLimit$2(arr, i) || _nonIterableRest$2();
+  }
+
   function _toConsumableArray$2(arr) {
     return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _nonIterableSpread$2();
   }
@@ -2511,15 +2486,49 @@
     }
   }
 
+  function _arrayWithHoles$2(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
   function _iterableToArray$2(iter) {
     if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _iterableToArrayLimit$2(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
   }
 
   function _nonIterableSpread$2() {
     throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
 
-  function convertToString(type, content) {
+  function _nonIterableRest$2() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  }
+
+  function convertToString(content, type) {
     switch (_typeof$2(content)) {
       case 'object':
         {
@@ -2544,11 +2553,21 @@
               {
                 // DOCUMENT_FRAGMENT_NODE
                 return _toConsumableArray$2(content.childNodes).reduce(function (s, node) {
-                  return s + convertToString(type, node);
+                  return s + convertToString(node, type);
                 }, '');
               }
-          } // Todo: array of elements/text nodes (or Jamilih array?), QueryResult objects?
 
+            case undefined:
+              {
+                // Array of nodes, QueryResult objects
+                // if (Array.isArray(content)) {
+                if (typeof content.reduce === 'function') {
+                  return content.reduce(function (s, node) {
+                    return s + convertToString(node, type);
+                  }, '');
+                }
+              }
+          }
 
           return;
         }
@@ -2563,7 +2582,7 @@
     }
   }
 
-  function convertToDOM(type, content, avoidClone) {
+  function convertToDOM(content, type, avoidClone) {
     switch (_typeof$2(content)) {
       case 'object':
         {
@@ -2576,10 +2595,21 @@
           11 // Document fragment
           ].includes(content.nodeType)) {
             return avoidClone ? content : content.cloneNode(true);
-          } // Todo: array of elements/text nodes (or Jamilih array?), QueryResult objects?
+          }
+
+          if (typeof content.reduce !== 'function') {
+            throw new TypeError('Unrecognized type of object for conversion to DOM');
+          } // Array of nodes, QueryResult objects
 
 
-          return;
+          return avoidClone ? content : content.map(function (node) {
+            if (!node || !node.cloneNode) {
+              // Allows for arrays of HTML strings
+              return convertToDOM(node, type, false);
+            }
+
+            return node.cloneNode(true);
+          });
         }
 
       case 'string':
@@ -2616,9 +2646,9 @@
 
         default:
           {
-            this.forEach(function (node) {
-              node[type].apply(node, _toConsumableArray$2(args.map(function (content, i) {
-                return convertToDOM(type, content, i === args.length - 1);
+            this.forEach(function (node, i, arr) {
+              node[type].apply(node, _toConsumableArray$2(args.flatMap(function (content) {
+                return convertToDOM(content, type, i === arr.length - 1);
               })));
             });
             break;
@@ -2638,7 +2668,7 @@
           {
             this.forEach(function (node, i) {
               var ret = cbOrContent.call(_this2, i, node[type]);
-              node[type] = convertToString(type, ret);
+              node[type] = convertToString(ret, type);
             });
             break;
           }
@@ -2646,7 +2676,7 @@
         default:
           {
             this.forEach(function (node) {
-              node[type] = convertToString(type, cbOrContent);
+              node[type] = convertToString(cbOrContent, type);
             });
             break;
           }
@@ -2662,6 +2692,265 @@
   var prepend = insert('prepend');
   var html = insertText('innerHTML');
   var text = insertText('textContent');
+  /*
+  // Todo:
+  export const val = function (valueOrFunc) {
+
+  };
+  */
+  // Given that these types require a selector engine and
+  // in order to avoid the absence of optimization of `document.querySelectorAll`
+  // for `:first-child` and different behavior in different contexts,
+  // and to avoid making a mutual dependency with query-result,
+  // exports of this type accept a QueryResult instance;
+  // if selected without a second argument, we do default to
+  //  `document.querySelectorAll`, however.
+
+  var insertTo = function insertTo(method) {
+    var $ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (sel) {
+      return _toConsumableArray$2(document.querySelectorAll(sel));
+    };
+    var type = {
+      appendTo: 'append',
+      prependTo: 'prepend',
+      insertAfter: 'after',
+      insertBefore: 'before'
+    }[method] || 'append';
+    return function (target) {
+      var toType = type + 'To';
+      this.forEach(function (node, i, arr) {
+        if (typeof target === 'string' && target.charAt(0) !== '<') {
+          target = $(target);
+        }
+
+        target = Array.isArray(target) ? target : [target];
+        node[type].apply(node, _toConsumableArray$2(target.flatMap(function (content) {
+          return convertToDOM(content, toType, i === arr.length - 1);
+        })));
+      });
+      return this;
+    };
+  }; // Todo: optional `withDataAndEvents` and `deepWithDataAndEvents` arguments?
+
+
+  var clone = function clone() {
+    return this.map(function (node) {
+      // Still a QueryResult with such a map
+      return node.cloneNode(true);
+    });
+  };
+
+  var empty = function empty() {
+    this.forEach(function (node) {
+      node.textContent = '';
+    });
+  };
+
+  var remove = function remove(selector) {
+    if (selector) {
+      this.forEach(function (node) {
+        if (node.matches(selector)) {
+          // Todo: Use query-result instead?
+          node.remove();
+        }
+      });
+    } else {
+      this.forEach(function (node) {
+        node.remove();
+      });
+    }
+
+    return this;
+  };
+  /*
+  // Todo:
+  export const detach = function (selector) {
+    // Should preserve attached data
+    return remove(selector);
+  };
+  */
+
+
+  var attr = function attr(attributeNameOrAtts, valueOrCb) {
+    var _this3 = this;
+
+    if (valueOrCb === undefined) {
+      switch (_typeof$2(attributeNameOrAtts)) {
+        case 'string':
+          {
+            return this[0].hasAttribute(attributeNameOrAtts) ? this[0].getAttribute(attributeNameOrAtts) : undefined;
+          }
+
+        case 'object':
+          {
+            if (attributeNameOrAtts) {
+              this.forEach(function (node, i) {
+                Object.entries(attributeNameOrAtts).forEach(function (_ref) {
+                  var _ref2 = _slicedToArray$2(_ref, 2),
+                      att = _ref2[0],
+                      val = _ref2[1];
+
+                  node.setAttribute(att, val);
+                });
+              });
+              return this;
+            }
+          }
+        // Fallthrough
+
+        default:
+          {
+            throw new TypeError('Unexpected type for attribute name: ' + _typeof$2(attributeNameOrAtts));
+          }
+      }
+    }
+
+    switch (_typeof$2(valueOrCb)) {
+      case 'function':
+        {
+          this.forEach(function (node, i) {
+            var ret = valueOrCb.call(_this3, i, node.getAttribute(valueOrCb));
+
+            if (ret === null) {
+              node.removeAttribute(attributeNameOrAtts);
+            } else {
+              node.setAttribute(attributeNameOrAtts, ret);
+            }
+          });
+          break;
+        }
+
+      case 'string':
+        {
+          this.forEach(function (node, i) {
+            node.setAttribute(attributeNameOrAtts, valueOrCb);
+          });
+          break;
+        }
+
+      case 'object':
+        {
+          if (!valueOrCb) {
+            // `null`
+            return removeAttr.call(this, attributeNameOrAtts);
+          }
+        }
+      // Fallthrough
+
+      default:
+        {
+          throw new TypeError('Unexpected type for attribute name: ' + _typeof$2(attributeNameOrAtts));
+        }
+    }
+
+    return this;
+  };
+
+  var removeAttr = function removeAttr(attributeName) {
+    if (typeof attributeName !== 'string') {
+      throw new TypeError('Unexpected type for attribute name: ' + _typeof$2(attributeName));
+    }
+
+    this.forEach(function (node) {
+      node.removeAttribute(attributeName);
+    });
+  };
+
+  function classAttManipulation(type) {
+    return function (cbOrContent) {
+      var _this4 = this;
+
+      switch (_typeof$2(cbOrContent)) {
+        case 'function':
+          {
+            this.forEach(function (node, i) {
+              var _node$classList;
+
+              var ret = cbOrContent.call(_this4, i, node.className);
+
+              (_node$classList = node.classList)[type].apply(_node$classList, _toConsumableArray$2(ret.split(' ')));
+            });
+            break;
+          }
+
+        default:
+          {
+            if (type === 'remove' && !cbOrContent) {
+              this.forEach(function (node) {
+                node.className = '';
+              });
+              break;
+            }
+
+            this.forEach(function (node) {
+              var _node$classList2;
+
+              (_node$classList2 = node.classList)[type].apply(_node$classList2, _toConsumableArray$2(cbOrContent.split(' ')));
+            });
+            break;
+          }
+      }
+
+      return this;
+    };
+  }
+
+  var addClass = classAttManipulation('add');
+  var removeClass = classAttManipulation('remove');
+
+  var hasClass = function hasClass(className) {
+    return this.some(function (node) {
+      return node.classList.contains(className);
+    });
+  };
+
+  var toggleClass = function toggleClass(classNameOrCb, state) {
+    var _this5 = this;
+
+    switch (typeof cbOrContent === "undefined" ? "undefined" : _typeof$2(cbOrContent)) {
+      case 'function':
+        {
+          if (typeof state === 'boolean') {
+            this.forEach(function (node, i) {
+              var _node$classList3;
+
+              var ret = classNameOrCb.call(_this5, i, node.className, state);
+
+              (_node$classList3 = node.classList).toggle.apply(_node$classList3, _toConsumableArray$2(ret.split(' ')).concat([state]));
+            });
+          } else {
+            this.forEach(function (node, i) {
+              var _node$classList4;
+
+              var ret = classNameOrCb.call(_this5, i, node.className, state);
+
+              (_node$classList4 = node.classList).toggle.apply(_node$classList4, _toConsumableArray$2(ret.split(' ')));
+            });
+          }
+
+          break;
+        }
+
+      case 'string':
+        {
+          if (typeof state === 'boolean') {
+            this.forEach(function (node) {
+              var _node$classList5;
+
+              (_node$classList5 = node.classList).toggle.apply(_node$classList5, _toConsumableArray$2(classNameOrCb.split(' ')).concat([state]));
+            });
+          } else {
+            this.forEach(function (node) {
+              var _node$classList6;
+
+              (_node$classList6 = node.classList).toggle.apply(_node$classList6, _toConsumableArray$2(classNameOrCb.split(' ')));
+            });
+          }
+
+          break;
+        }
+    }
+  };
 
   var methods = {
     after: after,
@@ -2669,17 +2958,31 @@
     append: append,
     prepend: prepend,
     html: html,
-    text: text
+    text: text,
+    clone: clone,
+    empty: empty,
+    remove: remove,
+    // detach
+    attr: attr,
+    removeAttr: removeAttr,
+    addClass: addClass,
+    hasClass: hasClass,
+    removeClass: removeClass,
+    toggleClass: toggleClass
   };
 
   var manipulation = function manipulation($, jml) {
-    ['after', 'before', 'append', 'prepend', 'html', 'text'].forEach(function (method) {
+    ['after', 'before', 'append', 'prepend', 'html', 'text', 'clone', 'empty', 'remove', // 'detach'
+    'attr', 'removeAttr', 'addClass', 'hasClass', 'removeClass', 'toggleClass'].forEach(function (method) {
       $.extend(method, methods[method]);
+    });
+    ['appendTo', 'prependTo', 'insertAfter', 'insertBefore'].forEach(function (method) {
+      $.extend(method, insertTo(method, $));
     });
 
     if (jml) {
       $.extend('jml', function () {
-        var _this5 = this;
+        var _this6 = this;
 
         for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
           args[_key2] = arguments[_key2];
@@ -2691,7 +2994,7 @@
           }
 
           var n = jml.apply(void 0, args);
-          return append.call(_this5, n);
+          return append.call(_this6, n);
         });
       });
     }

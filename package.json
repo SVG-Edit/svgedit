@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/index-umd.js",
   "module": "dist/index-es.js",
@@ -98,7 +98,7 @@
     "promise-fs": "^2.0.1",
     "qr-manipulation": "https://github.com/brettz9/qr-manipulation",
     "query-result": "https://github.com/WebReflection/query-result",
-    "qunit": "^2.7.1",
+    "qunit": "^2.8.0",
     "remark-cli": "^6.0.0",
     "remark-lint-ordered-list-marker-value": "^1.0.2",
     "rollup": "0.66.6",
@@ -109,7 +109,7 @@
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^3.0.0",
-    "sinon": "^7.1.0",
+    "sinon": "^7.1.1",
     "sinon-test": "^2.4.0",
     "testcafe": "^0.23.0"
   }
