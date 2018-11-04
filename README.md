@@ -107,6 +107,7 @@ incorporating SVGEdit.
 
 ## Recent news
 
+- 2018-11-01 Published 3.2.0 (Update qunit to resolve security vulnerability of a dependency)
 - 2018-10-25 Published 3.1.1 (Fix for saving SVG on Firefox)
 - 2018-10-24 Published 3.1.0 (Redirect on modular page for non-module-support;
   versions document (for migrating))
