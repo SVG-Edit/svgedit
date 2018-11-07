@@ -24,7 +24,7 @@ export default {
       * @throws {Error} Unexpected event type
       * @returns {undefined}
       */
-      (win, {data, origin}) => {
+      (win, {data, origin}) => { // eslint-disable-line no-shadow
         // console.log('data, origin', data, origin);
         let type, content;
         try {
@@ -78,17 +78,18 @@ export default {
           if (!pathID) { // Not ready yet as haven't received first payload
             return;
           }
-          window.postMessage({
-            webappfind: {
-              type: saveMessage,
-              pathID,
-              content: svgEditor.canvas.getSvgString()
-            }
-          }, window.location.origin === 'null'
-            // Avoid "null" string error for `file:` protocol (even
-            //  though file protocol not currently supported by add-on)
-            ? '*'
-            : window.location.origin
+          window.postMessage(
+            {
+              webappfind: {
+                type: saveMessage,
+                pathID,
+                content: svgEditor.canvas.getSvgString()
+              }
+            }, window.location.origin === 'null'
+              // Avoid "null" string error for `file:` protocol (even
+              //  though file protocol not currently supported by add-on)
+              ? '*'
+              : window.location.origin
           );
         }
       }

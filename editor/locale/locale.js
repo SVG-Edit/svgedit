@@ -223,7 +223,7 @@ export const readLang = async function (langData) {
     image_width: properties.image_width,
     layer_delete: layers.del,
     layer_down: layers.move_down,
-    layer_new: layers['new'],
+    layer_new: layers.new,
     layer_rename: layers.rename,
     layer_moreopts: common.more_opts,
     layer_up: layers.move_up,

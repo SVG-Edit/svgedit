@@ -73,7 +73,7 @@
  * @param {external:jQuery} $ The jQuery object to which to add the plug-in
  * @returns {external:jQuery}
 */
-export default function ($) {
+export default function jQueryPluginSpinButton ($) {
   if (!$.loadingStylesheets) {
     $.loadingStylesheets = [];
   }

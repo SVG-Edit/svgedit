@@ -67,7 +67,7 @@ export default {
     }
 
     function getOffset (side, line) {
-      const giveOffset = !!line.getAttribute('marker-' + side);
+      const giveOffset = line.getAttribute('marker-' + side);
       // const giveOffset = $(line).data(side+'_off');
 
       // TODO: Make this number (5) be based on marker width/height
@@ -170,7 +170,7 @@ export default {
         ['start', 'end'].forEach(function (pos, i) {
           const key = 'c_' + pos;
           let part = elData(this, key);
-          if (part == null) {
+          if (part === null || part === undefined) { // Does this ever return nullish values?
             part = document.getElementById(
               this.attributes['se:connector'].value.split(' ')[i]
             );
@@ -178,7 +178,7 @@ export default {
             elData(this, pos + '_bb', svgCanvas.getStrokedBBox([part]));
           } else part = document.getElementById(part);
           parts.push(part);
-        }.bind(this));
+        }, this);
 
         for (let i = 0; i < 2; i++) {
           const cElem = parts[i];
@@ -262,15 +262,15 @@ export default {
     (function () {
       const gse = svgCanvas.groupSelectedElements;
 
-      svgCanvas.groupSelectedElements = function () {
+      svgCanvas.groupSelectedElements = function (...args) {
         svgCanvas.removeFromSelection($(connSel).toArray());
-        return gse.apply(this, arguments);
+        return gse.apply(this, args);
       };
 
       const mse = svgCanvas.moveSelectedElements;
 
-      svgCanvas.moveSelectedElements = function () {
-        const cmd = mse.apply(this, arguments);
+      svgCanvas.moveSelectedElements = function (...args) {
+        const cmd = mse.apply(this, args);
         updateConnectors();
         return cmd;
       };
@@ -331,7 +331,7 @@ export default {
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),
-      async addLangData ({lang, importLocale}) {
+      /* async */ addLangData ({lang, importLocale}) {
         return {
           data: strings.langList
         };
@@ -548,8 +548,8 @@ export default {
           const end = elem.getAttribute('marker-end');
           curLine = elem;
           $(elem)
-            .data('start_off', !!start)
-            .data('end_off', !!end);
+            .data('start_off', Boolean(start))
+            .data('end_off', Boolean(end));
 
           if (elem.tagName === 'line' && mid) {
             // Convert to polyline to accept mid-arrow

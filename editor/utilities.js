@@ -8,7 +8,7 @@
  */
 
 import './svgpathseg.js';
-import jqPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import {NS} from './namespaces.js';
 import {getTransformList} from './svgtransformlist.js';
 import {setUnitAttr, getTypeMap} from './units.js';
@@ -22,7 +22,7 @@ import {
 } from './browser.js';
 
 // Constants
-const $ = jqPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 
 // String used to encode base64.
 const KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
@@ -123,7 +123,12 @@ export const dropXMLInteralSubset = (str) => {
 export const toXml = function (str) {
   // &apos; is ok in XML, but not HTML
   // &gt; does not normally need escaping, though it can if within a CDATA expression (and preceded by "]]")
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;'); // Note: `&apos;` is XML only
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;'); // Note: `&apos;` is XML only
 };
 
 /**
@@ -133,9 +138,9 @@ export const toXml = function (str) {
 * @param {string} str - The string to be converted
 * @returns {string} The converted string
 */
-export const fromXml = function (str) {
+export function fromXml (str) {
   return $('<p/>').html(str).text();
-};
+}
 
 // This code was written by Tyler Akins and has been placed in the
 // public domain.  It would be nice if you left this header intact.
@@ -150,30 +155,33 @@ export const fromXml = function (str) {
 * @param {string} input
 * @returns {string} Base64 output
 */
-export const encode64 = function (input) {
+export function encode64 (input) {
   // base64 strings are 4/3 larger than the original string
   input = encodeUTF8(input); // convert non-ASCII characters
   // input = convertToXMLReferences(input);
   if (window.btoa) {
     return window.btoa(input); // Use native if available
   }
-  const output = [];
-  output.length = Math.floor((input.length + 2) / 3) * 4;
+  const output = new Array(Math.floor((input.length + 2) / 3) * 4);
 
-  let i = 0, p = 0;
+  let i = 0,
+    p = 0;
   do {
     const chr1 = input.charCodeAt(i++);
     const chr2 = input.charCodeAt(i++);
     const chr3 = input.charCodeAt(i++);
 
+    /* eslint-disable no-bitwise */
     const enc1 = chr1 >> 2;
     const enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
 
     let enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
     let enc4 = chr3 & 63;
+    /* eslint-enable no-bitwise */
 
     if (isNaN(chr2)) {
-      enc3 = enc4 = 64;
+      enc3 = 64;
+      enc4 = 64;
     } else if (isNaN(chr3)) {
       enc4 = 64;
     }
@@ -185,7 +193,7 @@ export const encode64 = function (input) {
   } while (i < input.length);
 
   return output.join('');
-};
+}
 
 /**
 * Converts a string from base64.
@@ -193,7 +201,7 @@ export const encode64 = function (input) {
 * @param {string} input Base64-encoded input
 * @returns {string} Decoded output
 */
-export const decode64 = function (input) {
+export function decode64 (input) {
   if (window.atob) {
     return decodeUTF8(window.atob(input));
   }
@@ -210,30 +218,32 @@ export const decode64 = function (input) {
     const enc3 = KEYSTR.indexOf(input.charAt(i++));
     const enc4 = KEYSTR.indexOf(input.charAt(i++));
 
+    /* eslint-disable no-bitwise */
     const chr1 = (enc1 << 2) | (enc2 >> 4);
     const chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
     const chr3 = ((enc3 & 3) << 6) | enc4;
+    /* eslint-enable no-bitwise */
 
     output += String.fromCharCode(chr1);
 
     if (enc3 !== 64) {
-      output = output + String.fromCharCode(chr2);
+      output += String.fromCharCode(chr2);
     }
     if (enc4 !== 64) {
-      output = output + String.fromCharCode(chr3);
+      output += String.fromCharCode(chr3);
     }
   } while (i < input.length);
   return decodeUTF8(output);
-};
+}
 
 /**
 * @function module:utilities.decodeUTF8
 * @param {string} argString
 * @returns {string}
 */
-export const decodeUTF8 = function (argString) {
+export function decodeUTF8 (argString) {
   return decodeURIComponent(escape(argString));
-};
+}
 
 // codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
 /**
@@ -255,7 +265,8 @@ export const dataURLToObjectURL = function (dataurl) {
   if (typeof Uint8Array === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) {
     return '';
   }
-  const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+  const arr = dataurl.split(','),
+    mime = arr[0].match(/:(.*?);/)[1],
     bstr = atob(arr[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
@@ -430,7 +441,7 @@ export const getUrlFromAttr = function (attrVal) {
 * @param {Element} elem
 * @returns {string} The given element's `xlink:href` value
 */
-export let getHref = function (elem) {
+export let getHref = function (elem) { // eslint-disable-line import/no-mutable-exports
   return elem.getAttributeNS(NS.XLINK, 'href');
 };
 
@@ -441,7 +452,7 @@ export let getHref = function (elem) {
 * @param {string} val
 * @returns {undefined}
 */
-export let setHref = function (elem, val) {
+export let setHref = function (elem, val) { // eslint-disable-line import/no-mutable-exports
   elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
 };
 
@@ -484,6 +495,15 @@ export const getPathBBox = function (path) {
   const start = seglist.getItem(0);
   let P0 = [start.x, start.y];
 
+  const getCalc = function (j, P1, P2, P3) {
+    return function (t) {
+      return Math.pow(1 - t, 3) * P0[j] +
+        3 * Math.pow(1 - t, 2) * t * P1[j] +
+        3 * (1 - t) * Math.pow(t, 2) * P2[j] +
+        Math.pow(t, 3) * P3[j];
+    };
+  };
+
   for (let i = 0; i < tot; i++) {
     const seg = seglist.getItem(i);
 
@@ -499,21 +519,14 @@ export const getPathBBox = function (path) {
         P3 = [seg.x, seg.y];
 
       for (let j = 0; j < 2; j++) {
-        const calc = function (t) {
-          return Math.pow(1 - t, 3) * P0[j] +
-            3 * Math.pow(1 - t, 2) * t * P1[j] +
-            3 * (1 - t) * Math.pow(t, 2) * P2[j] +
-            Math.pow(t, 3) * P3[j];
-        };
+        const calc = getCalc(j, P1, P2, P3);
 
         const b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
         const a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
         const c = 3 * P1[j] - 3 * P0[j];
 
         if (a === 0) {
-          if (b === 0) {
-            continue;
-          }
+          if (b === 0) { continue; }
           const t = -c / b;
           if (t > 0 && t < 1) {
             bounds[j].push(calc(t));
@@ -612,15 +625,15 @@ export const getBBox = function (elem) {
       selected.textContent = 'a'; // Some character needed for the selector to use.
       ret = selected.getBBox();
       selected.textContent = '';
-    } else {
-      if (selected.getBBox) { ret = selected.getBBox(); }
+    } else if (selected.getBBox) {
+      ret = selected.getBBox();
     }
     break;
   case 'path':
     if (!supportsPathBBox()) {
       ret = getPathBBox(selected);
-    } else {
-      if (selected.getBBox) { ret = selected.getBBox(); }
+    } else if (selected.getBBox) {
+      ret = selected.getBBox();
     }
     break;
   case 'g':
@@ -719,12 +732,13 @@ export const getPathDFromElement = function (elem) {
   let d, a, rx, ry;
   switch (elem.tagName) {
   case 'ellipse':
-  case 'circle':
+  case 'circle': {
     a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
     const {cx, cy} = a;
     ({rx, ry} = a);
     if (elem.tagName === 'circle') {
-      rx = ry = $(elem).attr('r');
+      ry = $(elem).attr('r');
+      rx = ry;
     }
 
     d = getPathDFromSegments([
@@ -736,7 +750,7 @@ export const getPathDFromElement = function (elem) {
       ['Z', []]
     ]);
     break;
-  case 'path':
+  } case 'path':
     d = elem.getAttribute('d');
     break;
   case 'line':
@@ -749,11 +763,13 @@ export const getPathDFromElement = function (elem) {
   case 'polygon':
     d = 'M' + elem.getAttribute('points') + ' Z';
     break;
-  case 'rect':
+  case 'rect': {
     const r = $(elem).attr(['rx', 'ry']);
     ({rx, ry} = r);
     const b = elem.getBBox();
-    const {x, y} = b, w = b.width, h = b.height;
+    const {x, y} = b,
+      w = b.width,
+      h = b.height;
     num = 4 - num; // Why? Because!
 
     if (!rx && !ry) {
@@ -781,7 +797,7 @@ export const getPathDFromElement = function (elem) {
       ]);
     }
     break;
-  default:
+  } default:
     break;
   }
 
@@ -826,11 +842,11 @@ export const getBBoxOfElementAsPath = function (elem, addSVGElementFromJson, pat
     path.setAttribute('transform', eltrans);
   }
 
-  const parent = elem.parentNode;
+  const {parentNode} = elem;
   if (elem.nextSibling) {
     elem.before(path);
   } else {
-    parent.append(path);
+    parentNode.append(path);
   }
 
   const d = getPathDFromElement(elem);
@@ -861,12 +877,12 @@ export const getBBoxOfElementAsPath = function (elem, addSVGElementFromJson, pat
 * @param {module:path.pathActions} pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
 * @param {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection} clearSelection - see [canvas.clearSelection]{@link module:svgcanvas.SvgCanvas#clearSelection}
 * @param {module:path.EditorContext#addToSelection} addToSelection - see [canvas.addToSelection]{@link module:svgcanvas.SvgCanvas#addToSelection}
-* @param {module:history} history - see history module
+* @param {module:history} hstry - see history module
 * @param {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory} addCommandToHistory - see [canvas.addCommandToHistory]{@link module:svgcanvas~addCommandToHistory}
 * @returns {SVGPathElement|null} The converted path element or null if the DOM element was not recognized.
 */
-export const convertToPath = function (elem, attrs, addSVGElementFromJson, pathActions, clearSelection, addToSelection, history, addCommandToHistory) {
-  const batchCmd = new history.BatchCommand('Convert element to Path');
+export const convertToPath = function (elem, attrs, addSVGElementFromJson, pathActions, clearSelection, addToSelection, hstry, addCommandToHistory) {
+  const batchCmd = new hstry.BatchCommand('Convert element to Path');
 
   // Any attribute on the element not covered by the passed-in attributes
   attrs = $.extend({}, attrs, getExtraAttributesForConvertToPath(elem));
@@ -882,11 +898,11 @@ export const convertToPath = function (elem, attrs, addSVGElementFromJson, pathA
   }
 
   const {id} = elem;
-  const parent = elem.parentNode;
+  const {parentNode} = elem;
   if (elem.nextSibling) {
     elem.before(path);
   } else {
-    parent.append(path);
+    parentNode.append(path);
   }
 
   const d = getPathDFromElement(elem);
@@ -939,14 +955,14 @@ export const convertToPath = function (elem, attrs, addSVGElementFromJson, pathA
 * getBBox then apply the angle and any transforms.
 *
 * @param {Float} angle - The rotation angle in degrees
-* @param {boolean} hasMatrixTransform - True if there is a matrix transform
+* @param {boolean} hasAMatrixTransform - True if there is a matrix transform
 * @returns {boolean} True if the bbox can be optimized.
 */
-function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasMatrixTransform) {
+function bBoxCanBeOptimizedOverNativeGetBBox (angle, hasAMatrixTransform) {
   const angleModulo90 = angle % 90;
   const closeTo90 = angleModulo90 < -89.99 || angleModulo90 > 89.99;
   const closeTo0 = angleModulo90 > -0.001 && angleModulo90 < 0.001;
-  return hasMatrixTransform || !(closeTo0 || closeTo90);
+  return hasAMatrixTransform || !(closeTo0 || closeTo90);
 }
 
 /**
@@ -979,13 +995,15 @@ export const getBBoxWithTransform = function (elem, addSVGElementFromJson, pathA
       // TODO: why ellipse and not circle
       const elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
       if (elemNames.includes(elem.tagName)) {
-        bb = goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
+        goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
+        bb = goodBb;
       } else if (elem.tagName === 'rect') {
         // Look for radius
         const rx = elem.getAttribute('rx');
         const ry = elem.getAttribute('ry');
         if (rx || ry) {
-          bb = goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
+          goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
+          bb = goodBb;
         }
       }
     }
@@ -1012,7 +1030,12 @@ export const getBBoxWithTransform = function (elem, addSVGElementFromJson, pathA
   return bb;
 };
 
-// TODO: This is problematic with large stroke-width and, for example, a single horizontal line. The calculated BBox extends way beyond left and right sides.
+/**
+ * @param {Element} elem
+ * @returns {Float}
+ * @todo This is problematic with large stroke-width and, for example, a single
+ * horizontal line. The calculated BBox extends way beyond left and right sides.
+ */
 function getStrokeOffsetForBBox (elem) {
   const sw = elem.getAttribute('stroke-width');
   return (!isNaN(sw) && elem.getAttribute('stroke') !== 'none') ? sw / 2 : 0;
@@ -1090,16 +1113,16 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
 * Note that 0-opacity, off-screen etc elements are still considered "visible"
 * for this function.
 * @function module:utilities.getVisibleElements
-* @param {Element} parent - The parent DOM element to search within
+* @param {Element} parentElement - The parent DOM element to search within
 * @returns {Element[]} All "visible" elements.
 */
-export const getVisibleElements = function (parent) {
-  if (!parent) {
-    parent = $(editorContext_.getSVGContent()).children(); // Prevent layers from being included
+export const getVisibleElements = function (parentElement) {
+  if (!parentElement) {
+    parentElement = $(editorContext_.getSVGContent()).children(); // Prevent layers from being included
   }
 
   const contentElems = [];
-  $(parent).children().each(function (i, elem) {
+  $(parentElement).children().each(function (i, elem) {
     if (elem.getBBox) {
       contentElems.push(elem);
     }
@@ -1148,7 +1171,7 @@ export const getRotationAngleFromTransformList = function (tlist, toRad) {
 * @param {boolean} [toRad=false] - When true returns the value in radians rather than degrees
 * @returns {Float} The angle in degrees or radians
 */
-export let getRotationAngle = function (elem, toRad) {
+export let getRotationAngle = function (elem, toRad) { // eslint-disable-line import/no-mutable-exports
   const selected = elem || editorContext_.getSelectedElements()[0];
   // find the rotation transform (if any) and set it
   const tlist = getTransformList(selected);
@@ -1169,13 +1192,14 @@ export const getRefElem = function (attrVal) {
 * Get a DOM element by ID within the SVG root element.
 * @function module:utilities.getElem
 * @param {string} id - String with the element's new ID
-* @returns {Element}
+* @returns {?Element}
 */
 export const getElem = (supportsSelectors())
   ? function (id) {
     // querySelector lookup
     return svgroot_.querySelector('#' + id);
-  } : supportsXpath()
+  }
+  : supportsXpath()
     ? function (id) {
       // xpath lookup
       return domdoc_.evaluate(
@@ -1183,7 +1207,8 @@ export const getElem = (supportsSelectors())
         domcontainer_,
         function () { return NS.SVG; },
         9,
-        null).singleNodeValue;
+        null
+      ).singleNodeValue;
     }
     : function (id) {
       // jQuery lookup: twice as slow as xpath in FF
@@ -1242,12 +1267,11 @@ export const cleanupElement = function (element) {
     delete defaults.ry;
   }
 
-  for (const attr in defaults) {
-    const val = defaults[attr];
+  Object.entries(defaults).forEach(([attr, val]) => {
     if (element.getAttribute(attr) === String(val)) {
       element.removeAttribute(attr);
     }
-  }
+  });
 };
 
 /**
@@ -1341,6 +1365,15 @@ export const copyElem = function (el, getNextId) {
   }
 
   return newEl;
+};
+
+/**
+ * Whether a value is `null` or `undefined`.
+ * @param {Any} val
+ * @returns {boolean}
+ */
+export const isNullish = (val) => {
+  return val === null || val === undefined;
 };
 
 /**

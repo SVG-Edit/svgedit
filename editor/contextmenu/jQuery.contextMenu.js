@@ -74,8 +74,7 @@ function jQueryContextMenu ($) {
         // Add contextMenu class
         menu.addClass('contextMenu');
         // Simulate a true right click
-        $(this).bind('mousedown', function (e) {
-          const evt = e;
+        $(this).bind('mousedown', function (evt) {
           $(this).mouseup(function (e) {
             const srcElement = $(this);
             srcElement.unbind('mouseup');
@@ -109,8 +108,8 @@ function jQueryContextMenu ($) {
               });
 
               // Keyboard
-              doc.keypress(function (e) {
-                switch (e.keyCode) {
+              doc.keypress(function (ev) {
+                switch (ev.keyCode) {
                 case 38: // up
                   if (!menu.find('LI.hover').length) {
                     menu.find('LI:last').addClass('hover');
@@ -143,7 +142,9 @@ function jQueryContextMenu ($) {
                 $('.contextMenu').hide();
                 // Callback
                 if (callback) {
-                  callback($(this).attr('href').substr(1), $(srcElement), {x: x - offset.left, y: y - offset.top, docX: x, docY: y});
+                  callback($(this).attr('href').substr(1), $(srcElement), {
+                    x: x - offset.left, y: y - offset.top, docX: x, docY: y
+                  });
                 }
                 return false;
               });

@@ -13,14 +13,14 @@ import {importSetGlobalDefault} from './external/dynamic-import-polyfill/importM
 import SvgCanvas from './svgcanvas.js';
 import Layer from './layer.js';
 
-import jqPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
-import jqPluginBBQ from './jquerybbq/jquery.bbq.min.js';
-import jqPluginSVGIcons from './svgicons/jQuery.svgIcons.js';
-import jqPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
-import jqPluginSpinBtn from './spinbtn/jQuery.SpinButton.js';
-import jqPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
-import jqPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
-import jqPluginJPicker from './jgraduate/jQuery.jPicker.js';
+import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
+import jQueryPluginBBQ from './jquerybbq/jquery.bbq.min.js';
+import jQueryPluginSVGIcons from './svgicons/jQuery.svgIcons.js';
+import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
+import jQueryPluginSpinButton from './spinbtn/jQuery.SpinButton.js';
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import jQueryPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
+import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import {
   readLang, putLocale,
   setStrings,
@@ -46,9 +46,9 @@ import loadStylesheets from './external/load-stylesheets/index-es.js';
 const editor = {};
 
 const $ = [
-  jqPluginJSHotkeys, jqPluginBBQ, jqPluginSVGIcons, jqPluginJGraduate,
-  jqPluginSpinBtn, jqPluginSVG, jqPluginContextMenu, jqPluginJPicker
-].reduce(($, cb) => cb($), jQuery);
+  jQueryPluginJSHotkeys, jQueryPluginBBQ, jQueryPluginSVGIcons, jQueryPluginJGraduate,
+  jQueryPluginSpinButton, jQueryPluginSVG, jQueryPluginContextMenu, jQueryPluginJPicker
+].reduce((jq, func) => func(jq), jQuery);
 
 /*
 if (!$.loadingStylesheets) {
@@ -337,11 +337,16 @@ function getImportLocale ({defaultLang, defaultName}) {
    * @param {string} [localeInfo.lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
    * @returns {Promise} Resolves to {@link module:locale.LocaleStrings}
    */
-  return async function importLocale ({name = defaultName, lang = defaultLang} = {}) {
-    async function importLocale (lang) {
-      const url = `${curConfig.extPath}ext-locale/${name}/${lang}.js`;
+  return async function importLocaleDefaulting ({name = defaultName, lang = defaultLang} = {}) {
+    /**
+     *
+     * @param {string} language
+     * @returns {Promise} Resolves to {@link module:locale.LocaleStrings}
+     */
+    function importLocale (language) {
+      const url = `${curConfig.extPath}ext-locale/${name}/${language}.js`;
       return importSetGlobalDefault(url, {
-        global: `svgEditorExtensionLocale_${name}_${lang}`
+        global: `svgEditorExtensionLocale_${name}_${language}`
       });
     }
     try {
@@ -360,7 +365,7 @@ function getImportLocale ({defaultLang, defaultName}) {
 * Store and retrieve preferences.
 * @param {string} key The preference name to be retrieved or set
 * @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will be made.
-* @returns {string} If val is missing or falsey, the value of the previously stored preference will be returned.
+* @returns {string|undefined} If val is missing or falsey, the value of the previously stored preference will be returned.
 * @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
 * @todo Review whether any remaining existing direct references to
 *  getting `curPrefs` can be changed to use `$.pref()` getting to ensure
@@ -377,7 +382,7 @@ $.pref = function (key, val) {
     * @implements {module:SVGEditor.Prefs}
     */
     editor.curPrefs = curPrefs; // Update exported value
-    return;
+    return undefined;
   }
   return (key in curPrefs) ? curPrefs[key] : defaultPrefs[key];
 };
@@ -428,22 +433,20 @@ editor.loadContentAndPrefs = function () {
   }
 
   // LOAD PREFS
-  for (const key in defaultPrefs) {
-    if (defaultPrefs.hasOwnProperty(key)) { // It's our own config, so we don't need to iterate up the prototype chain
-      const storeKey = 'svg-edit-' + key;
-      if (editor.storage) {
-        const val = editor.storage.getItem(storeKey);
-        if (val) {
-          defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
-        }
-      } else if (window.widget) {
-        defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
-      } else {
-        const result = document.cookie.match(new RegExp('(?:^|;\\s*)' + Utils.regexEscape(encodeURIComponent(storeKey)) + '=([^;]+)'));
-        defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
+  Object.keys(defaultPrefs).forEach((key) => {
+    const storeKey = 'svg-edit-' + key;
+    if (editor.storage) {
+      const val = editor.storage.getItem(storeKey);
+      if (val) {
+        defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
       }
+    } else if (window.widget) {
+      defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
+    } else {
+      const result = document.cookie.match(new RegExp('(?:^|;\\s*)' + Utils.regexEscape(encodeURIComponent(storeKey)) + '=([^;]+)'));
+      defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
     }
-  }
+  });
 };
 
 /**
@@ -476,12 +479,12 @@ editor.setConfig = function (opts, cfgCfg) {
     }
   }
   $.each(opts, function (key, val) {
-    if (opts.hasOwnProperty(key)) {
+    if ({}.hasOwnProperty.call(opts, key)) {
       // Only allow prefs defined in defaultPrefs
-      if (defaultPrefs.hasOwnProperty(key)) {
+      if ({}.hasOwnProperty.call(defaultPrefs, key)) {
         if (cfgCfg.overwrite === false && (
           curConfig.preventAllURLConfig ||
-          curPrefs.hasOwnProperty(key)
+          {}.hasOwnProperty.call(curPrefs, key)
         )) {
           return;
         }
@@ -502,30 +505,26 @@ editor.setConfig = function (opts, cfgCfg) {
         }
         curConfig[key] = curConfig[key].concat(val); // We will handle any dupes later
       // Only allow other curConfig if defined in defaultConfig
-      } else if (defaultConfig.hasOwnProperty(key)) {
+      } else if ({}.hasOwnProperty.call(defaultConfig, key)) {
         if (cfgCfg.overwrite === false && (
           curConfig.preventAllURLConfig ||
-          curConfig.hasOwnProperty(key)
+          {}.hasOwnProperty.call(curConfig, key)
         )) {
           return;
         }
         // Potentially overwriting of previously set config
-        if (curConfig.hasOwnProperty(key)) {
+        if ({}.hasOwnProperty.call(curConfig, key)) {
           if (cfgCfg.overwrite === false) {
             return;
           }
           extendOrAdd(curConfig, key, val);
+        } else if (cfgCfg.allowInitialUserOverride === true) {
+          extendOrAdd(defaultConfig, key, val);
+        } else if (defaultConfig[key] && typeof defaultConfig[key] === 'object') {
+          curConfig[key] = {};
+          $.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
         } else {
-          if (cfgCfg.allowInitialUserOverride === true) {
-            extendOrAdd(defaultConfig, key, val);
-          } else {
-            if (defaultConfig[key] && typeof defaultConfig[key] === 'object') {
-              curConfig[key] = {};
-              $.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
-            } else {
-              curConfig[key] = val;
-            }
-          }
+          curConfig[key] = val;
         }
       }
     }
@@ -781,7 +780,7 @@ editor.init = function () {
         curConfig.extensions.map(async (extname) => {
           const extName = extname.match(/^ext-(.+)\.js/);
           if (!extName) { // Ensure URL cannot specify some other unintended file in the extPath
-            return;
+            return undefined;
           }
           const url = curConfig.extPath + extname;
           // Todo: Replace this with `return import(url);` when
@@ -803,12 +802,15 @@ editor.init = function () {
             const importLocale = getImportLocale({defaultLang: langParam, defaultName: name});
             return editor.addExtension(name, (init && init.bind(editor)), importLocale);
           } catch (err) {
-            console.log(err);
-            console.error('Extension failed to load: ' + extname + '; ' + err);
+            // Todo: Add config to alert any errors
+            console.log(err); // eslint-disable-line no-console
+            console.error('Extension failed to load: ' + extname + '; ' + err); // eslint-disable-line no-console
+            return undefined;
           }
         })
       );
-      svgCanvas.bind('extensions_added',
+      svgCanvas.bind(
+        'extensions_added',
         /**
         * @param {external:Window} win
         * @param {module:svgcanvas.SvgCanvas#event:extensions_added} data
@@ -888,8 +890,8 @@ editor.init = function () {
       for (let i = 0; i < 4; i++) {
         const s = sides[i];
         let cur = el.data('orig_margin-' + s);
-        if (cur == null) {
-          cur = parseInt(el.css('margin-' + s), 10);
+        if (Utils.isNullish(cur)) {
+          cur = parseInt(el.css('margin-' + s));
           // Cache the original margin
           el.data('orig_margin-' + s, cur);
         }
@@ -1336,8 +1338,14 @@ editor.init = function () {
         }
       });
 
-      function getStylesheetPriority (stylesheet) {
-        switch (stylesheet) {
+      /**
+       * Since stylesheets may be added out of order, we indicate the desired order
+       *   for defaults and others after them (in an indeterminate order).
+       * @param {string} stylesheetFile
+       * @returns {Integer|PositiveInfinity}
+       */
+      function getStylesheetPriority (stylesheetFile) {
+        switch (stylesheetFile) {
         case 'jgraduate/css/jPicker.css':
           return 1;
         case 'jgraduate/css/jGraduate.css':
@@ -1366,7 +1374,7 @@ editor.init = function () {
           stylesheets.splice(idx, 1, ...$.loadingStylesheets);
         }
       }
-      loadStylesheets(stylesheets, {acceptErrors: ({stylesheetURL, reject, resolve}) => {
+      loadStylesheets(stylesheets, {acceptErrors ({stylesheetURL, reject, resolve}) {
         if ($.loadingStylesheets.includes(stylesheetURL)) {
           reject(new Error(`Missing expected stylesheet: ${stylesheetURL}`));
           return;
@@ -1387,7 +1395,8 @@ editor.init = function () {
     document.getElementById('svgcanvas'),
     curConfig
   );
-  const palette = [ // Todo: Make into configuration item?
+  const palette = [
+      // Todo: Make into configuration item?
       '#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
       '#ff0000', '#ff7f00', '#ffff00', '#7fff00',
       '#00ff00', '#00ff7f', '#00ffff', '#007fff',
@@ -1487,7 +1496,7 @@ editor.init = function () {
             if (checkbox.tooltip) {
               label.attr('title', checkbox.tooltip);
             }
-            chkbx.prop('checked', !!checkbox.checked);
+            chkbx.prop('checked', Boolean(checkbox.checked));
             div.append($('<div>').append(label));
           }
           $.each(opts || [], function (opt, val) {
@@ -1649,7 +1658,7 @@ editor.init = function () {
 
     editingsource = true;
     origSource = svgCanvas.getSvgString();
-    $('#save_output_btns').toggle(!!forSaving);
+    $('#save_output_btns').toggle(Boolean(forSaving));
     $('#tool_source_back').toggle(!forSaving);
     $('#svg_source_textarea').val(origSource);
     $('#svg_source_editor').fadeIn();
@@ -1931,7 +1940,7 @@ editor.init = function () {
 
       // Create multiple canvases when necessary (due to browser limits)
       if (rulerLen >= limit) {
-        ctxArrNum = parseInt(rulerLen / limit, 10) + 1;
+        ctxArrNum = parseInt(rulerLen / limit) + 1;
         ctxArr = [];
         ctxArr[0] = ctx;
         let copy;
@@ -2078,8 +2087,8 @@ editor.init = function () {
 
     const ratio = newCanX / oldCanX;
 
-    const scrollX = w / 2 - wOrig / 2;
-    const scrollY = h / 2 - hOrig / 2;
+    const scrollX = w / 2 - wOrig / 2; // eslint-disable-line no-shadow
+    const scrollY = h / 2 - hOrig / 2; // eslint-disable-line no-shadow
 
     if (!newCtr) {
       const oldDistX = oldCtr.x - oldCanX;
@@ -2127,39 +2136,35 @@ editor.init = function () {
    * @returns {undefined}
    */
   const updateToolButtonState = function () {
-    let index, button;
     const bNoFill = (svgCanvas.getColor('fill') === 'none');
     const bNoStroke = (svgCanvas.getColor('stroke') === 'none');
     const buttonsNeedingStroke = ['#tool_fhpath', '#tool_line'];
     const buttonsNeedingFillAndStroke = ['#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
+
     if (bNoStroke) {
-      for (index in buttonsNeedingStroke) {
-        button = buttonsNeedingStroke[index];
-        if ($(button).hasClass('tool_button_current')) {
+      buttonsNeedingStroke.forEach((btn) => {
+        if ($(btn).hasClass('tool_button_current')) {
           clickSelect();
         }
-        $(button).addClass('disabled');
-      }
+        $(btn).addClass('disabled');
+      });
     } else {
-      for (index in buttonsNeedingStroke) {
-        button = buttonsNeedingStroke[index];
-        $(button).removeClass('disabled');
-      }
+      buttonsNeedingStroke.forEach((btn) => {
+        $(btn).removeClass('disabled');
+      });
     }
 
     if (bNoStroke && bNoFill) {
-      for (index in buttonsNeedingFillAndStroke) {
-        button = buttonsNeedingFillAndStroke[index];
-        if ($(button).hasClass('tool_button_current')) {
+      buttonsNeedingFillAndStroke.forEach((btn) => {
+        if ($(btn).hasClass('tool_button_current')) {
           clickSelect();
         }
-        $(button).addClass('disabled');
-      }
+        $(btn).addClass('disabled');
+      });
     } else {
-      for (index in buttonsNeedingFillAndStroke) {
-        button = buttonsNeedingFillAndStroke[index];
-        $(button).removeClass('disabled');
-      }
+      buttonsNeedingFillAndStroke.forEach((btn) => {
+        $(btn).removeClass('disabled');
+      });
     }
 
     svgCanvas.runExtensions('toolButtonStateUpdate', /** @type {module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate} */ {
@@ -2186,14 +2191,14 @@ editor.init = function () {
   // This function also updates the opacity and id elements that are in the context panel
   const updateToolbar = function () {
     let i, len;
-    if (selectedElement != null) {
+    if (!Utils.isNullish(selectedElement)) {
       switch (selectedElement.tagName) {
       case 'use':
       case 'image':
       case 'foreignObject':
         break;
       case 'g':
-      case 'a':
+      case 'a': {
         // Look for common styles
         const childs = selectedElement.getElementsByTagName('*');
         let gWidth = null;
@@ -2213,7 +2218,7 @@ editor.init = function () {
         paintBox.stroke.update(true);
 
         break;
-      default:
+      } default: {
         paintBox.fill.update(true);
         paintBox.stroke.update(true);
 
@@ -2232,10 +2237,11 @@ editor.init = function () {
           setStrokeOpt($('#linecap_' + attr)[0]);
         }
       }
+      }
     }
 
     // All elements including image and group have opacity
-    if (selectedElement != null) {
+    if (!Utils.isNullish(selectedElement)) {
       const opacPerc = (selectedElement.getAttribute('opacity') || 1.0) * 100;
       $('#group_opacity').val(opacPerc);
       $('#opac_slider').slider('option', 'value', opacPerc);
@@ -2250,7 +2256,7 @@ editor.init = function () {
   const updateContextPanel = function () {
     let elem = selectedElement;
     // If element has just been deleted, consider it null
-    if (elem != null && !elem.parentNode) { elem = null; }
+    if (!Utils.isNullish(elem) && !elem.parentNode) { elem = null; }
     const currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
     const currentMode = svgCanvas.getMode();
     const unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
@@ -2260,7 +2266,7 @@ editor.init = function () {
     $('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,' +
       '#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,' +
       ' #use_panel, #a_panel').hide();
-    if (elem != null) {
+    if (!Utils.isNullish(elem)) {
       const elname = elem.nodeName;
       // If this is a link with no transform and one child, pretend
       // its child is selected
@@ -2436,7 +2442,7 @@ editor.init = function () {
       }
       menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
       menuItems[((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
-    // if (elem != null)
+    // if (!Utils.isNullish(elem))
     } else if (multiselected) {
       $('#multiselected_panel').show();
       menuItems
@@ -2506,9 +2512,9 @@ editor.init = function () {
     }
     const isNode = mode === 'pathedit';
     // if elems[1] is present, then we have more than one element
-    selectedElement = (elems.length === 1 || elems[1] == null ? elems[0] : null);
-    multiselected = (elems.length >= 2 && elems[1] != null);
-    if (selectedElement != null) {
+    selectedElement = (elems.length === 1 || Utils.isNullish(elems[1]) ? elems[0] : null);
+    multiselected = (elems.length >= 2 && !Utils.isNullish(elems[1]));
+    if (!Utils.isNullish(selectedElement)) {
       // unless we're already in always set the mode of the editor to select because
       // upon creation of a text element the editor is switched into
       // select mode and this event fires - we need our UI to be in sync
@@ -2516,7 +2522,7 @@ editor.init = function () {
       if (!isNode) {
         updateToolbar();
       }
-    } // if (elem != null)
+    } // if (!Utils.isNullish(elem))
 
     // Deal with pathedit mode
     togglePathEditMode(isNode, elems);
@@ -2545,7 +2551,7 @@ editor.init = function () {
       return;
     }
 
-    multiselected = (elems.length >= 2 && elems[1] != null);
+    multiselected = (elems.length >= 2 && !Utils.isNullish(elems[1]));
     // Only updating fields for single elements for now
     if (!multiselected) {
       switch (mode) {
@@ -2601,7 +2607,7 @@ editor.init = function () {
         }
       // Update selectedElement if element is no longer part of the image.
       // This occurs for the text elements in Firefox
-      } else if (elem && selectedElement && selectedElement.parentNode == null) {
+      } else if (elem && selectedElement && Utils.isNullish(selectedElement.parentNode)) {
         // || elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
         selectedElement = elem;
       }
@@ -2820,7 +2826,7 @@ editor.init = function () {
                   options = tool;
                 } else {
                   // If flyout is selected, allow shift key to iterate through subitems
-                  i = parseInt(i, 10);
+                  i = parseInt(i);
                   // Use `allHolders` to include both extension `includeWith` and toolbarButtons
                   options = allHolders[opts.parent][i + 1] ||
                     holders[opts.parent][0];
@@ -3048,7 +3054,7 @@ editor.init = function () {
         let html;
         // TODO: Allow support for other types, or adding to existing tool
         switch (tool.type) {
-        case 'tool_button':
+        case 'tool_button': {
           html = '<div class="tool_button">' + tool.id + '</div>';
           const div = $(html).appendTo(panel);
           if (tool.events) {
@@ -3057,7 +3063,7 @@ editor.init = function () {
             });
           }
           break;
-        case 'select':
+        } case 'select': {
           html = '<label' + contId + '>' +
             '<select id="' + tool.id + '">';
           $.each(tool.options, function (val, text) {
@@ -3072,7 +3078,7 @@ editor.init = function () {
             $(sel).bind(evt, func);
           });
           break;
-        case 'button-select':
+        } case 'button-select': {
           html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' +
             '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
 
@@ -3094,7 +3100,7 @@ editor.init = function () {
           });
 
           break;
-        case 'input':
+        } case 'input': {
           html = '<label' + contId + '>' +
             '<span id="' + tool.id + '_label">' +
             tool.label + ':</span>' +
@@ -3117,8 +3123,7 @@ editor.init = function () {
             });
           }
           break;
-
-        default:
+        } default:
           break;
         }
       });
@@ -3503,11 +3508,11 @@ editor.init = function () {
 
   const changeRotationAngle = function (ctl) {
     svgCanvas.setRotationAngle(ctl.value);
-    $('#tool_reorient').toggleClass('disabled', parseInt(ctl.value, 10) === 0);
+    $('#tool_reorient').toggleClass('disabled', parseInt(ctl.value) === 0);
   };
 
   const changeOpacity = function (ctl, val) {
-    if (val == null) { val = ctl.value; }
+    if (Utils.isNullish(val)) { val = ctl.value; }
     $('#group_opacity').val(val);
     if (!ctl || !ctl.handle) {
       $('#opac_slider').slider('option', 'value', val);
@@ -3516,7 +3521,7 @@ editor.init = function () {
   };
 
   const changeBlur = function (ctl, val, noUndo) {
-    if (val == null) { val = ctl.value; }
+    if (Utils.isNullish(val)) { val = ctl.value; }
     $('#blur').val(val);
     let complete = false;
     if (!ctl || !ctl.handle) {
@@ -3862,7 +3867,7 @@ editor.init = function () {
 
   editor.addDropDown('#opacity_dropdown', function () {
     if ($(this).find('div').length) { return; }
-    const perc = parseInt($(this).text().split('%')[0], 10);
+    const perc = parseInt($(this).text().split('%')[0]);
     changeOpacity(false, perc);
   }, true);
 
@@ -3947,7 +3952,7 @@ editor.init = function () {
     };
 
     $('#svg_editor').find('button, select, input:not(#text)').focus(function () {
-      inp = this;
+      inp = this; // eslint-disable-line consistent-this
       uiContext = 'toolbars';
       workarea.mousedown(unfocus);
     }).blur(function () {
@@ -4053,19 +4058,19 @@ editor.init = function () {
   // Delete is a contextual tool that only appears in the ribbon if
   // an element has been selected
   const deleteSelected = function () {
-    if (selectedElement != null || multiselected) {
+    if (!Utils.isNullish(selectedElement) || multiselected) {
       svgCanvas.deleteSelectedElements();
     }
   };
 
   const cutSelected = function () {
-    if (selectedElement != null || multiselected) {
+    if (!Utils.isNullish(selectedElement) || multiselected) {
       svgCanvas.cutSelectedElements();
     }
   };
 
   const copySelected = function () {
-    if (selectedElement != null || multiselected) {
+    if (!Utils.isNullish(selectedElement) || multiselected) {
       svgCanvas.copySelectedElements();
     }
   };
@@ -4078,37 +4083,37 @@ editor.init = function () {
   };
 
   const moveToTopSelected = function () {
-    if (selectedElement != null) {
+    if (!Utils.isNullish(selectedElement)) {
       svgCanvas.moveToTopSelectedElement();
     }
   };
 
   const moveToBottomSelected = function () {
-    if (selectedElement != null) {
+    if (!Utils.isNullish(selectedElement)) {
       svgCanvas.moveToBottomSelectedElement();
     }
   };
 
   const moveUpDownSelected = function (dir) {
-    if (selectedElement != null) {
+    if (!Utils.isNullish(selectedElement)) {
       svgCanvas.moveUpDownSelected(dir);
     }
   };
 
   const convertToPath = function () {
-    if (selectedElement != null) {
+    if (!Utils.isNullish(selectedElement)) {
       svgCanvas.convertToPath();
     }
   };
 
   const reorientPath = function () {
-    if (selectedElement != null) {
+    if (!Utils.isNullish(selectedElement)) {
       path.reorient();
     }
   };
 
   const makeHyperlink = function () {
-    if (selectedElement != null || multiselected) {
+    if (!Utils.isNullish(selectedElement) || multiselected) {
       $.prompt(uiStrings.notification.enterNewLinkURL, 'http://', function (url) {
         if (url) { svgCanvas.makeHyperlink(url); }
       });
@@ -4116,7 +4121,7 @@ editor.init = function () {
   };
 
   const moveSelected = function (dx, dy) {
-    if (selectedElement != null || multiselected) {
+    if (!Utils.isNullish(selectedElement) || multiselected) {
       if (curConfig.gridSnapping) {
         // Use grid snap value regardless of zoom level
         const multi = svgCanvas.getZoom() * curConfig.snappingStep;
@@ -4165,7 +4170,7 @@ editor.init = function () {
   };
 
   const rotateSelected = function (cw, step) {
-    if (selectedElement == null || multiselected) { return; }
+    if (Utils.isNullish(selectedElement) || multiselected) { return; }
     if (!cw) { step *= -1; }
     const angle = parseFloat($('#angle').val()) + step;
     svgCanvas.setRotationAngle(angle);
@@ -4263,7 +4268,7 @@ editor.init = function () {
         if (!customExportImage) {
           openExportWindow();
         }
-        const quality = parseInt($('#image-slider').val(), 10) / 100;
+        const quality = parseInt($('#image-slider').val()) / 100;
         /* const results = */ await svgCanvas.rasterExport(imgType, quality, exportWindowName);
       }
     }, function () {
@@ -4289,6 +4294,7 @@ editor.init = function () {
   };
 
   const clickImport = function () {
+    /* */
   };
 
   const clickUndo = function () {
@@ -4710,12 +4716,13 @@ editor.init = function () {
         fillAttr = (paint[ptype] !== 'none') ? '#' + paint[ptype] : paint[ptype];
         break;
       case 'linearGradient':
-      case 'radialGradient':
+      case 'radialGradient': {
         this.grad.remove();
         this.grad = this.defs.appendChild(paint[ptype]);
         const id = this.grad.id = 'gradbox_' + this.type;
         fillAttr = 'url(#' + id + ')';
         break;
+      }
       }
 
       this.rect.setAttribute('fill', fillAttr);
@@ -4992,8 +4999,8 @@ editor.init = function () {
     const rulerX = $('#ruler_x');
     $('#sidepanels').width('+=' + delta);
     $('#layerpanel').width('+=' + delta);
-    rulerX.css('right', parseInt(rulerX.css('right'), 10) + delta);
-    workarea.css('right', parseInt(workarea.css('right'), 10) + delta);
+    rulerX.css('right', parseInt(rulerX.css('right')) + delta);
+    workarea.css('right', parseInt(workarea.css('right')) + delta);
     svgCanvas.runExtensions('workareaResized');
   };
 
@@ -5337,10 +5344,10 @@ editor.init = function () {
             } else {
               keyval = opts.key;
             }
-            keyval += '';
+            keyval = String(keyval);
 
             const {fn} = opts;
-            $.each(keyval.split('/'), function (i, key) {
+            $.each(keyval.split('/'), function (j, key) {
               $(document).bind('keydown', key, function (e) {
                 fn();
                 if (pd) {
@@ -5369,7 +5376,9 @@ editor.init = function () {
         // Misc additional actions
 
         // Make 'return' keypress trigger the change event
-        $('.attr_changer, #image_url').bind('keydown', 'return',
+        $('.attr_changer, #image_url').bind(
+          'keydown',
+          'return',
           function (evt) {
             $(this).change();
             evt.preventDefault();
@@ -5459,7 +5468,7 @@ editor.init = function () {
       toggleSidePanel();
     }
 
-    $('#rulers').toggle(!!curConfig.showRulers);
+    $('#rulers').toggle(Boolean(curConfig.showRulers));
 
     if (curConfig.showRulers) {
       $('#show_rulers')[0].checked = true;
@@ -5631,6 +5640,7 @@ editor.init = function () {
       e.returnValue = uiStrings.notification.unsavedChanges; // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
       return uiStrings.notification.unsavedChanges;
     }
+    return true;
   });
 
   /**
@@ -5702,8 +5712,8 @@ editor.init = function () {
         let reader;
         if (file.type.includes('svg')) {
           reader = new FileReader();
-          reader.onloadend = function (e) {
-            const newElement = svgCanvas.importSvgString(e.target.result, true);
+          reader.onloadend = function (ev) {
+            const newElement = svgCanvas.importSvgString(ev.target.result, true);
             svgCanvas.ungroupSelectedElement();
             svgCanvas.ungroupSelectedElement();
             svgCanvas.groupSelectedElements();
@@ -5761,7 +5771,7 @@ editor.init = function () {
     workarea[0].addEventListener('drop', importImage);
 
     const open = $('<input type="file">').click(function () {
-      const f = this;
+      const f = this; // eslint-disable-line consistent-this
       editor.openPrep(function (ok) {
         if (!ok) { return; }
         svgCanvas.clear();
@@ -5976,7 +5986,7 @@ editor.loadFromURL = function (url, opts) {
     $.ajax({
       url,
       dataType: 'text',
-      cache: !!cache,
+      cache: Boolean(cache),
       beforeSend () {
         $.process_cancel(uiStrings.notification.loadingImage);
       },
@@ -6051,7 +6061,7 @@ const messageQueue = [];
  * @fires module:svgcanvas.SvgCanvas#event:message
  * @returns {undefined}
  */
-const messageListener = ({data, origin}) => {
+const messageListener = ({data, origin}) => { // eslint-disable-line no-shadow
   // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
   const messageObj = {data, origin};
   if (!extensionsAdded) {

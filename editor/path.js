@@ -18,7 +18,7 @@ import {
 } from './math.js';
 import {
   assignAttributes, getElem, getRotationAngle, getBBox,
-  getRefElem, findDefs, snapToGrid,
+  getRefElem, findDefs, snapToGrid, isNullish,
   getBBox as utilsGetBBox
 } from './utilities.js';
 import {
@@ -77,7 +77,7 @@ export const setLinkControlPoints = function (lcp) {
  * @type {null|module:path.Path}
  * @memberof module:path
 */
-export let path = null;
+export let path = null; // eslint-disable-line import/no-mutable-exports
 
 let editorContext_ = null;
 
@@ -240,8 +240,10 @@ export const init = function (editorContext) {
   editorContext_ = editorContext;
 
   pathFuncs = [0, 'ClosePath'];
-  const pathFuncsStrs = ['Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
-    'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'];
+  const pathFuncsStrs = [
+    'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
+    'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'
+  ];
   $.each(pathFuncsStrs, function (i, s) {
     pathFuncs.push(s + 'Abs');
     pathFuncs.push(s + 'Rel');
@@ -299,14 +301,14 @@ export const ptObjToArr = function (type, segItem) {
 * @returns {module:math.XYObject}
 */
 export const getGripPt = function (seg, altPt) {
-  const {path} = seg;
+  const {path: pth} = seg;
   let out = {
     x: altPt ? altPt.x : seg.item.x,
     y: altPt ? altPt.y : seg.item.y
   };
 
-  if (path.matrix) {
-    const pt = transformPoint(out.x, out.y, path.matrix);
+  if (pth.matrix) {
+    const pt = transformPoint(out.x, out.y, pth.matrix);
     out = pt;
   }
 
@@ -320,17 +322,17 @@ export const getGripPt = function (seg, altPt) {
 /**
 * @function module:path.getPointFromGrip
 * @param {module:math.XYObject} pt
-* @param {module:path.Path} path
+* @param {module:path.Path} pth
 * @returns {module:math.XYObject}
 */
-export const getPointFromGrip = function (pt, path) {
+export const getPointFromGrip = function (pt, pth) {
   const out = {
     x: pt.x,
     y: pt.y
   };
 
-  if (path.matrix) {
-    pt = transformPoint(out.x, out.y, path.imatrix);
+  if (pth.matrix) {
+    pt = transformPoint(out.x, out.y, pth.imatrix);
     out.x = pt.x;
     out.y = pt.y;
   }
@@ -400,8 +402,8 @@ export const addPointGrip = function (index, x, y) {
 export const getGripContainer = function () {
   let c = getElem('pathpointgrip_container');
   if (!c) {
-    const parent = getElem('selectorParentGroup');
-    c = parent.appendChild(document.createElementNS(NS.SVG, 'g'));
+    const parentElement = getElem('selectorParentGroup');
+    c = parentElement.appendChild(document.createElementNS(NS.SVG, 'g'));
     c.id = 'pathpointgrip_container';
   }
   return c;
@@ -539,7 +541,7 @@ export const replacePathSeg = function (type, index, pts, elem) {
   const pth = elem || path.elem;
 
   const func = 'createSVGPathSeg' + pathFuncs[type];
-  const seg = pth[func].apply(pth, pts);
+  const seg = pth[func](...pts);
 
   if (supportsPathReplaceItem()) {
     pth.pathSegList.replaceItem(seg, index);
@@ -600,9 +602,9 @@ export const getSegSelector = function (seg, update) {
 
     const pts = ptObjToArr(seg.type, seg.item); // , true);
     for (let i = 0; i < pts.length; i += 2) {
-      const pt = getGripPt(seg, {x: pts[i], y: pts[i + 1]});
-      pts[i] = pt.x;
-      pts[i + 1] = pt.y;
+      const point = getGripPt(seg, {x: pts[i], y: pts[i + 1]});
+      pts[i] = point.x;
+      pts[i + 1] = point.y;
     }
 
     replacePathSeg(seg.type, 1, pts, segLine);
@@ -691,7 +693,7 @@ export class Segment {
    */
   showCtrlPts (y) {
     for (const i in this.ctrlpts) {
-      if (this.ctrlpts.hasOwnProperty(i)) {
+      if ({}.hasOwnProperty.call(this.ctrlpts, i)) {
         this.ctrlpts[i].setAttribute('display', y ? 'inline' : 'none');
       }
     }
@@ -777,7 +779,8 @@ export class Segment {
     const {item} = this;
 
     const curPts = this.ctrlpts
-      ? [item.x += dx, item.y += dy,
+      ? [
+        item.x += dx, item.y += dy,
         item.x1, item.y1, item.x2 += dx, item.y2 += dy
       ]
       : [item.x += dx, item.y += dy];
@@ -786,16 +789,18 @@ export class Segment {
 
     if (this.next && this.next.ctrlpts) {
       const next = this.next.item;
-      const nextPts = [next.x, next.y,
-        next.x1 += dx, next.y1 += dy, next.x2, next.y2];
+      const nextPts = [
+        next.x, next.y,
+        next.x1 += dx, next.y1 += dy, next.x2, next.y2
+      ];
       replacePathSeg(this.next.type, this.next.index, nextPts);
     }
 
     if (this.mate) {
       // The last point of a closed subpath has a 'mate',
       // which is the 'M' segment of the subpath
-      const {item} = this.mate;
-      const pts = [item.x += dx, item.y += dy];
+      const {item: itm} = this.mate;
+      const pts = [itm.x += dx, itm.y += dy];
       replacePathSeg(this.mate.type, this.mate.index, pts);
       // Has no grip, so does not need 'updating'?
     }
@@ -826,9 +831,11 @@ export class Segment {
     item['x' + anum] = pt.x + (pt.x - this.item['x' + num]);
     item['y' + anum] = pt.y + (pt.y - this.item['y' + num]);
 
-    const pts = [item.x, item.y,
+    const pts = [
+      item.x, item.y,
       item.x1, item.y1,
-      item.x2, item.y2];
+      item.x2, item.y2
+    ];
 
     replacePathSeg(seg.type, seg.index, pts);
     seg.update(true);
@@ -845,8 +852,10 @@ export class Segment {
     item['x' + num] += dx;
     item['y' + num] += dy;
 
-    const pts = [item.x, item.y,
-      item.x1, item.y1, item.x2, item.y2];
+    const pts = [
+      item.x, item.y,
+      item.x1, item.y1, item.x2, item.y2
+    ];
 
     replacePathSeg(this.type, this.index, pts);
     this.update(true);
@@ -883,7 +892,7 @@ export class Path {
     this.elem = elem;
     this.segs = [];
     this.selected_pts = [];
-    path = this;
+    path = this; // eslint-disable-line consistent-this
 
     this.init();
   }
@@ -941,7 +950,7 @@ export class Path {
         seg.next.prev = seg;
         seg.mate = segs[startI];
         seg.addGrip();
-        if (this.first_seg == null) {
+        if (isNullish(this.first_seg)) {
           this.first_seg = seg;
         }
       } else if (!nextSeg) {
@@ -977,7 +986,7 @@ export class Path {
   * @callback module:path.PathEachSegCallback
   * @this module:path.Segment
   * @param {Integer} i The index of the seg being iterated
-  * @returns {boolean} Will stop execution of `eachSeg` if returns `false`
+  * @returns {boolean|undefined} Will stop execution of `eachSeg` if returns `false`
   */
   /**
   * @param {module:path.PathEachSegCallback} fn
@@ -1060,29 +1069,6 @@ export class Path {
     } else {
       list.removeItem(index);
     }
-  }
-
-  /**
-  * @param {Integer} index
-  * @returns {boolean}
-  */
-  subpathIsClosed (index) {
-    let closed = false;
-    // Check if subpath is already open
-    path.eachSeg(function (i) {
-      if (i <= index) { return true; }
-      if (this.type === 2) {
-        // Found M first, so open
-        return false;
-      }
-      if (this.type === 1) {
-        // Found Z first, so closed
-        closed = true;
-        return false;
-      }
-    });
-
-    return closed;
   }
 
   /**
@@ -1235,7 +1221,7 @@ export class Path {
   */
   selectPt (pt, ctrlNum) {
     this.clearSelection();
-    if (pt == null) {
+    if (isNullish(pt)) {
       this.eachSeg(function (i) {
         // 'this' is the segment here.
         if (this.prev) {
@@ -1312,10 +1298,34 @@ export class Path {
       grips[i] = seg.ptgrip;
     }
 
-    const closedSubpath = this.subpathIsClosed(this.selected_pts[0]);
+    const closedSubpath = Path.subpathIsClosed(this.selected_pts[0]);
     editorContext_.addPtsToSelection({grips, closedSubpath});
   }
 }
+
+/**
+* @param {Integer} index
+* @returns {boolean}
+*/
+Path.subpathIsClosed = function (index) {
+  let clsd = false;
+  // Check if subpath is already open
+  path.eachSeg(function (i) {
+    if (i <= index) { return true; }
+    if (this.type === 2) {
+      // Found M first, so open
+      return false;
+    }
+    if (this.type === 1) {
+      // Found Z first, so closed
+      clsd = true;
+      return false;
+    }
+    return true;
+  });
+
+  return clsd;
+};
 
 /**
 * @function module:path.getPath_
@@ -1408,7 +1418,7 @@ export const recalcRotatedPath = function () {
 
     const rvals = getRotVals(seg.x, seg.y),
       points = [rvals.x, rvals.y];
-    if (seg.x1 != null && seg.x2 != null) {
+    if (!isNullish(seg.x1) && !isNullish(seg.x2)) {
       const cVals1 = getRotVals(seg.x1, seg.y1);
       const cVals2 = getRotVals(seg.x2, seg.y2);
       points.splice(points.length, 0, cVals1.x, cVals1.y, cVals2.x, cVals2.y);
@@ -1492,26 +1502,28 @@ export const reorientGrads = function (elem, m) {
 * @name module:path.pathMap
 * @type {GenericArray}
 */
-const pathMap = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
-  'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
+const pathMap = [
+  0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a',
+  'H', 'h', 'V', 'v', 'S', 's', 'T', 't'
+];
 
 /**
  * Convert a path to one with only absolute or relative values.
  * @todo move to pathActions.js
  * @function module:path.convertPath
- * @param {SVGPathElement} path - the path to convert
+ * @param {SVGPathElement} pth - the path to convert
  * @param {boolean} toRel - true of convert to relative
  * @returns {string}
  */
-export const convertPath = function (path, toRel) {
-  const segList = path.pathSegList;
-  const len = segList.numberOfItems;
+export const convertPath = function (pth, toRel) {
+  const {pathSegList} = pth;
+  const len = pathSegList.numberOfItems;
   let curx = 0, cury = 0;
   let d = '';
   let lastM = null;
 
   for (let i = 0; i < len; ++i) {
-    const seg = segList.getItem(i);
+    const seg = pathSegList.getItem(i);
     // if these properties are not in the segment, set them to zero
     let x = seg.x || 0,
       y = seg.y || 0,
@@ -1776,7 +1788,7 @@ export const pathActions = (function () {
     * @param {Element} mouseTarget
     * @param {Float} startX
     * @param {Float} startY
-    * @returns {undefined}
+    * @returns {boolean|undefined}
     */
     mouseDown (evt, mouseTarget, startX, startY) {
       let id;
@@ -1922,7 +1934,7 @@ export const pathActions = (function () {
               editorContext_.getMouseTarget(evt)
             )) {
               // Clicked outside canvas, so don't make point
-              console.log('Clicked outside canvas');
+              // console.log('Clicked outside canvas');
               return false;
             }
 
@@ -1967,11 +1979,11 @@ export const pathActions = (function () {
           // keep = true;
         }
 
-        return;
+        return undefined;
       }
 
       // TODO: Make sure currentPath isn't null at this point
-      if (!path) { return; }
+      if (!path) { return undefined; }
 
       path.storeD();
 
@@ -1979,7 +1991,7 @@ export const pathActions = (function () {
       let curPt;
       if (id.substr(0, 14) === 'pathpointgrip_') {
         // Select this point
-        curPt = path.cur_pt = parseInt(id.substr(14), 10);
+        curPt = path.cur_pt = parseInt(id.substr(14));
         path.dragging = [startX, startY];
         const seg = path.segs[curPt];
 
@@ -2007,7 +2019,7 @@ export const pathActions = (function () {
       // Start selection box
       if (!path.dragging) {
         let rubberBox = editorContext_.getRubberBox();
-        if (rubberBox == null) {
+        if (isNullish(rubberBox)) {
           rubberBox = editorContext_.setRubberBox(
             editorContext_.selectorManager.getRubberBandBox()
           );
@@ -2021,6 +2033,7 @@ export const pathActions = (function () {
           display: 'inline'
         }, 100);
       }
+      return undefined;
     },
     /**
     * @param {Float} mouseX
@@ -2127,7 +2140,7 @@ export const pathActions = (function () {
       } else {
         path.selected_pts = [];
         path.eachSeg(function (i) {
-          const seg = this;
+          const seg = this; // eslint-disable-line consistent-this
           if (!seg.next && !seg.prev) { return; }
 
           // const {item} = seg;
@@ -2151,11 +2164,17 @@ export const pathActions = (function () {
       }
     },
     /**
+     * @typedef module:path.keepElement
+     * @type {PlainObject}
+     * @property {boolean} keep
+     * @property {Element} element
+     */
+    /**
     * @param {Event} evt
     * @param {Element} element
     * @param {Float} mouseX
     * @param {Float} mouseY
-    * @returns {undefined}
+    * @returns {module:path.keepElement|undefined}
     */
     mouseUp (evt, element, mouseX, mouseY) {
       const drawnPath = editorContext_.getDrawnPath();
@@ -2203,6 +2222,7 @@ export const pathActions = (function () {
         pathActions.toSelectMode(evt.target);
       }
       hasMoved = false;
+      return undefined;
     },
     /**
     * @param {Element} element
@@ -2273,8 +2293,8 @@ export const pathActions = (function () {
     reorient () {
       const elem = editorContext_.getSelectedElements()[0];
       if (!elem) { return; }
-      const angle = getRotationAngle(elem);
-      if (angle === 0) { return; }
+      const angl = getRotationAngle(elem);
+      if (angl === 0) { return; }
 
       const batchCmd = new BatchCommand('Reorient path');
       const changes = {
@@ -2321,7 +2341,7 @@ export const pathActions = (function () {
     * @returns {false|undefined}
     */
     resetOrientation (pth) {
-      if (pth == null || pth.nodeName !== 'path') { return false; }
+      if (isNullish(pth) || pth.nodeName !== 'path') { return false; }
       const tlist = getTransformList(pth);
       const m = transformListToTransform(tlist).matrix;
       tlist.clear();
@@ -2357,6 +2377,7 @@ export const pathActions = (function () {
       }
 
       reorientGrads(pth, m);
+      return undefined;
     },
     /**
     * @returns {undefined}
@@ -2449,9 +2470,10 @@ export const pathActions = (function () {
           openPt = false;
           return false;
         }
+        return true;
       });
 
-      if (openPt == null) {
+      if (isNullish(openPt)) {
         // Single path, so close last seg
         openPt = path.segs.length - 1;
       }

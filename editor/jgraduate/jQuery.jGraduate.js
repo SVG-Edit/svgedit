@@ -407,7 +407,8 @@ export default function ($) {
         '<div class="jGraduate_OkCancel">' +
           '<input type="button" id="' + id + '_jGraduate_Ok" class="jGraduate_Ok" value="OK"/>' +
           '<input type="button" id="' + id + '_jGraduate_Cancel" class="jGraduate_Cancel" value="Cancel"/>' +
-        '</div>');
+        '</div>'
+      );
 
       // --------------
       // Set up all the SVG elements (the gradient, stops and rectangle)
@@ -1234,7 +1235,7 @@ export default function ($) {
             const sm = spreadMethodOpt.val();
             curGradient.setAttribute('spreadMethod', sm);
           }
-          showFocus = type === 'rg' && curGradient.getAttribute('fx') != null && !(cx === fx && cy === fy);
+          showFocus = type === 'rg' && curGradient.getAttribute('fx') !== null && !(cx === fx && cy === fy);
           $('#' + id + '_jGraduate_focusCoord').toggle(showFocus);
           if (showFocus) {
             $('#' + id + '_jGraduate_match_ctr')[0].checked = false;

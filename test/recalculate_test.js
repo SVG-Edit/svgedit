@@ -20,6 +20,11 @@ const svg = document.createElementNS(NS.SVG, 'svg');
 svgroot.append(svg);
 
 let elemId = 1;
+
+/**
+ * Initilize modules to set up the tests.
+ * @returns {undefined}
+ */
 function setUp () {
   utilities.init(
     /**
@@ -39,7 +44,7 @@ function setUp () {
       getGridSnapping () { return false; },
       getDrawing () {
         return {
-          getNextId () { return '' + elemId++; }
+          getNextId () { return String(elemId++); }
         };
       }
     }
@@ -51,13 +56,17 @@ function setUp () {
     {
       getSVGRoot () { return svg; },
       getStartTransform () { return ''; },
-      setStartTransform () {}
+      setStartTransform () { /* */ }
     }
   );
 }
 
 let elem;
 
+/**
+ * Initialize for tests and set up `rect` element.
+ * @returns {undefined}
+ */
 function setUpRect () {
   setUp();
   elem = document.createElementNS(NS.SVG, 'rect');
@@ -68,6 +77,10 @@ function setUpRect () {
   svg.append(elem);
 }
 
+/**
+ * Initialize for tests and set up `text` element with `tspan` child.
+ * @returns {undefined}
+ */
 function setUpTextWithTspan () {
   setUp();
   elem = document.createElementNS(NS.SVG, 'text');
@@ -84,6 +97,10 @@ function setUpTextWithTspan () {
   svg.append(elem);
 }
 
+/**
+ * Tear down the tests (empty the svg element).
+ * @returns {undefined}
+ */
 function tearDown () {
   while (svg.hasChildNodes()) {
     svg.firstChild.remove();

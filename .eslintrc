@@ -6,7 +6,7 @@
   "parserOptions": {
     "sourceType": "module"
   },
-  "plugins": ["compat", "qunit", "testcafe", "jsdoc", "markdown"],
+  "plugins": ["compat", "qunit", "testcafe", "jsdoc", "markdown", "import", "node", "promise"],
   "env": {
     "node": false,
     "browser": true
@@ -26,24 +26,296 @@
       "allowAugmentsExtendsWithoutParam": true
     }
   },
-  "overrides": [{
-    "files": ["**/*.md"],
-    "rules": {
-      "no-undef": ["off"],
-      "no-unused-vars": ["warn"],
-      "padded-blocks": ["off"]
+  "overrides": [
+    {
+      "files": ["editor/locale/lang.*.js"],
+      "rules": {
+        "import/no-anonymous-default-export": ["off"]
+      }
+    },
+    {
+      "files": ["editor/extensions/ext-locale/**"],
+      "rules": {
+        "import/no-anonymous-default-export": ["off"]
+      }
+    },
+    {
+      "files": ["editor/extensions/**/ext-*.js"],
+      "rules": {
+        "consistent-this": ["error", "svgEditor"],
+        "import/no-anonymous-default-export": ["off"]
+      }
+    },
+    {
+      "files": [
+        "editor/svgpathseg.js", "editor/touch.js", "editor/typedefs.js",
+        "editor/redirect-on-no-module-support.js",
+        "test/all_tests.js", "screencasts/svgopen2010/script.js",
+        "opera-widget/handlers.js",
+        "firefox-extension/handlers.js",
+        "firefox-extension/content/svg-edit-overlay.js"
+      ],
+      "rules": {
+        "import/unambiguous": ["off"]
+      }
+    },
+    {
+      "files": ["**/*.md"],
+      "rules": {
+        "no-undef": ["off"],
+        "no-unused-vars": ["warn"],
+        "padded-blocks": ["off"],
+        "import/unambiguous": ["off"]
+      }
+    },
+    {
+      "files": ["test/**"],
+      "rules": {
+        "no-console": ["off"]
+      }
+    },
+    {
+      "files": [
+        "docs/jsdoc-config.js", "build-html.js", "jsdoc-check-overly-generic-types.js",
+        "rollup.config.js", "rollup-config.config.js"
+      ],
+      "rules": {
+        "node/no-extraneous-import": ["error"],
+        "node/no-extraneous-require": ["error"],
+        "node/no-missing-import": ["error"],
+        "node/no-missing-require": ["error"],
+        "node/no-unpublished-bin": ["error"],
+        "node/no-unpublished-import": ["error"],
+        "node/no-unpublished-require": ["error"],
+        "node/no-unsupported-features/es-builtins": ["error"],
+        "node/no-unsupported-features/es-syntax": ["error"],
+        "node/no-unsupported-features/node-builtins": ["error"],
+        "node/process-exit-as-throw": ["error"],
+        "node/shebang": ["error"],
+
+        "node/exports-style": ["error", "module.exports"],
+        "node/prefer-global/buffer": ["error", "always"],
+        "node/prefer-global/console": ["error", "always"],
+        "node/prefer-global/process": ["error", "always"],
+        "node/prefer-global/text-decoder": ["error", "always"],
+        "node/prefer-global/text-encoder": ["error", "always"],
+        "node/prefer-global/url-search-params": ["error", "always"],
+        "node/prefer-global/url": ["error", "always"]
+      }
+    },
+    {
+      "files": ["rollup.config.js", "rollup-config.config.js"],
+      "rules": {
+        "node/no-unsupported-features/es-syntax": "off",
+        "node/no-unpublished-import": "off"
+      }
+    },
+    {
+      "files": ["jsdoc-check-overly-generic-types.js", "build-html.js"],
+      "rules": {
+        "import/unambiguous": "off",
+        "import/no-commonjs": "off"
+      }
     }
-  }],
+  ],
   "rules": {
-    "semi": [2, "always"],
+    "array-bracket-newline": ["error", "consistent"],
+    "array-bracket-spacing": ["error"],
+    "array-callback-return": ["error"],
+    "array-element-newline": ["off"],
+    "arrow-body-style": ["off"],
+    "arrow-parens": ["error"],
+    "block-scoped-var": ["error"],
+    "callback-return": ["error"],
+    "class-methods-use-this": ["warn"],
+    "computed-property-spacing": ["error"],
+    "consistent-return": ["error"],
+    "consistent-this": ["warn"],
+    "dot-notation": ["error"],
+    "for-direction": ["error"],
+    "func-name-matching": ["error"],
+    "func-names": ["off"],
+    "func-style": ["off"],
+    "function-paren-newline": ["error", "consistent"],
+    "getter-return": ["error"],
+    "global-require": ["error"],
+    "guard-for-in": ["error"],
+    "id-blacklist": ["off"],
+    "id-length": ["off"],
+    "id-match": ["off"],
+    "implicit-arrow-linebreak": ["error"],
+    "init-declarations": ["off"],
+    "jsx-quotes": ["error"],
+    "line-comment-position": ["off"],
+    "linebreak-style": ["error"],
+    "lines-around-comment": ["off"],
+    "lines-between-class-members": ["off"],
+    "max-classes-per-file": ["off"],
+    "max-depth": ["off"],
+    "max-lines-per-function": ["off"],
+    "max-lines": ["off"],
+    "max-nested-callbacks": ["error"],
+    "max-params": ["off"],
+    "max-statements-per-line": ["off"],
+    "max-statements": ["off"],
+    "multiline-comment-style": ["off"],
+    "multiline-ternary": ["error", "always-multiline"],
+    "newline-after-var": ["off"],
+    "newline-before-return": ["off"],
+    "newline-per-chained-call": ["off"],
+    "no-alert": ["warn"],
+    "no-async-promise-executor": ["error"],
+    "no-await-in-loop": ["error"],
+    "no-bitwise": ["error"],
+    "no-buffer-constructor": ["error"],
+    "no-case-declarations": ["error"],
+    "no-confusing-arrow": ["error"],
+    "no-console": ["warn"],
+    "no-continue": ["off"],
+    "no-div-regex": ["error"],
+    "no-duplicate-imports": ["error"],
+    "no-else-return": ["error"],
+    "no-empty-function": ["warn"],
+    "no-empty": ["error", {"allowEmptyCatch": true}],
+    "no-eq-null": ["error"],
+    "no-extra-label": ["error"],
+    "no-extra-semi": ["error"],
+    "no-implicit-coercion": ["error"],
+    "no-implicit-globals": ["error"],
+    "no-inline-comments": ["off"],
+    "no-invalid-this": ["off"],
+    "no-lonely-if": ["error"],
+    "no-loop-func": ["error"],
+    "no-misleading-character-class": ["error"],
+    "no-mixed-requires": ["error", {"grouping": true, "allowCall": true}],
+    "no-multi-assign": ["off"],
+    "no-negated-condition": ["off"],
+    "no-nested-ternary": ["off"],
+    "no-param-reassign": ["off"],
+    "no-plusplus": ["off"],
+    "no-process-env": ["error"],
+    "no-process-exit": ["error"],
+    "no-prototype-builtins": ["error"],
+    "no-restricted-globals": ["error", {
+        "name": "event",
+        "message": "Use local event parameter instead (preferably as \"e\" or \"ev\")."
+    }, {
+        "name": "fdescribe",
+        "message": "Do not commit fdescribe. Use describe instead."
+    }],
+    "no-restricted-imports": ["off"],
+    "no-restricted-modules": ["off"],
+    "no-restricted-properties": ["error", {
+        "property": "__defineGetter__",
+        "message": "Please use `Object.defineProperty` instead."
+    }],
+    "no-restricted-syntax": ["off"],
+    "no-script-url": ["error"],
+    "no-shadow": ["error", {"builtinGlobals": true, "hoist": "functions", "allow": ["parent", "top", "open", "name", "closed", "start"]}],
+    "no-spaced-func": ["error"],
+    "no-sync": ["error"],
+    "no-ternary": ["off"],
+    "no-undefined": ["off"],
+    "no-underscore-dangle": ["off"],
+    "no-unused-labels": ["error"],
+    "no-useless-concat": ["off"],
+    "no-var": ["error"],
+    "no-void": ["error"],
+    "nonblock-statement-body-position": ["error"],
+    "object-curly-newline": ["off"],
+    "object-shorthand": ["error", "always", {"avoidExplicitReturnArrows": true}],
+    "one-var-declaration-per-line": ["off"],
+    "operator-assignment": ["error"],
+    "padding-line-between-statements": ["off"],
+    "prefer-arrow-callback": ["off"],
+    "prefer-const": ["error"],
+    "prefer-destructuring": ["error", {"object": true}],
+    "prefer-numeric-literals": ["warn"],
+    "prefer-object-spread": ["error"],
+    "prefer-rest-params": ["error"],
+    "prefer-spread": ["error"],
+    "prefer-template": ["off"],
+    "quote-props": ["error", "as-needed"],
+    "radix": ["error", "as-needed"],
+    "require-atomic-updates": ["error"],
+    "require-await": ["error"],
+    "require-jsdoc": ["warn"],
+    "require-yield": ["error"],
+    "semi-style": ["error"],
+    "sort-imports": ["off"],
+    "sort-keys": ["off"],
+    "sort-vars": ["off"],
+    "strict": ["error"],
+    "switch-colon-spacing": ["error"],
+    "vars-on-top": ["warn"],
+    "wrap-regex": ["error"],
+
+    "semi": ["error", "always"],
     "indent": ["error", 2, {"outerIIFEBody": 0}],
-    "object-property-newline": 0,
-    "one-var": 0,
-    "no-var": 2,
-    "prefer-const": 2,
-    "no-extra-semi": 2,
-    "quote-props": [2, "as-needed"],
+    "object-property-newline": ["off"],
+    "one-var": ["off"],
     "object-curly-spacing": ["error", "never"],
+
+    "promise/catch-or-return": "error",
+    "promise/no-return-wrap": "error",
+    "promise/param-names": "error",
+    "promise/always-return": "error",
+    "promise/no-native": "off",
+    "promise/no-nesting": "warn",
+    "promise/no-promise-in-callback": "warn",
+    "promise/no-callback-in-promise": "warn",
+    "promise/avoid-new": "warn",
+    "promise/no-new-statics": "error",
+    "promise/no-return-in-finally": "warn",
+    "promise/valid-params": "warn",
+    "promise/prefer-await-to-then": "error",
+    "promise/prefer-await-to-callbacks": "warn",
+
+    "import/no-unresolved": "error",
+    "import/named": "error",
+    "import/default": "error",
+    "import/namespace": "error",
+    "import/no-restricted-paths": "off",
+    "import/no-absolute-path": "error",
+    "import/no-dynamic-require": "error",
+    "import/no-internal-modules": "off",
+    "import/no-webpack-loader-syntax": "error",
+    "import/no-self-import": "error",
+    "import/no-cycle": "off",
+    "import/no-useless-path-segments": "error",
+    "import/no-relative-parent-imports": "off",
+    "import/export": "error",
+    "import/no-named-as-default": "error",
+    "import/no-named-as-default-member": "error",
+    "import/no-deprecated": "error",
+    "import/no-extraneous-dependencies": "error",
+    "import/no-mutable-exports": "error",
+    "import/unambiguous": "warn",
+    "import/no-commonjs": "error",
+    "import/no-amd": "error",
+    "import/no-nodejs-modules": "off",
+    "import/first": "error",
+    "import/exports-last": "off",
+    "import/no-duplicates": "error",
+    "import/no-namespace": "off",
+    "import/extensions": ["error", "always", {"ignorePackages": true}],
+    "import/order": ["error", {"groups": [
+      "builtin",
+      "external",
+      "internal",
+      ["parent", "sibling", "index"]
+    ]}],
+    "import/newline-after-import": "error",
+    "import/prefer-default-export": "off",
+    "import/max-dependencies": "off",
+    "import/no-unassigned-import": "off",
+    "import/no-named-default": "error",
+    "import/no-default-export": "off",
+    "import/no-named-export": "off",
+    "import/no-anonymous-default-export": "error",
+    "import/group-exports": "off",
+    "import/dynamic-import-chunkname": "off",
+
     "jsdoc/check-param-names": 1,
     "jsdoc/check-tag-names": 1,
     "jsdoc/check-types": 1,
@@ -61,7 +333,7 @@
 
     "jsdoc/no-undefined-types": ["off"],
     "jsdoc/valid-types": ["error"],
-    "valid-jsdoc": ["off", {
+    "valid-jsdoc": ["error", {
         "prefer": {
             "arg": "param",
             "argument": "param",
@@ -81,6 +353,16 @@
         "matchDescription": "^([A-Z][\\s\\S]*[.`?!])?$",
         "requireParamDescription": false,
         "requireReturnDescription": false
+    }],
+    "no-warning-comments": ["off"],
+    "default-case": ["off"],
+    "complexity": ["off"],
+    "require-unicode-regexp": ["off"],
+    "capitalized-comments": ["off"],
+    "no-magic-numbers": ["off"],
+    "max-len": ["off", {
+      "ignoreUrls": true,
+      "ignoreRegExpLiterals": true
     }]
   }
 }

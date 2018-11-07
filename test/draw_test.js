@@ -65,8 +65,7 @@ const currentDrawing_ = new draw.Drawing(svgcontent, idprefix);
 const getCurrentDrawing = function () {
   return currentDrawing_;
 };
-const setCurrentGroup = (cg) => {
-};
+const setCurrentGroup = (cg) => { /* */ };
 draw.init(
   /**
   * @implements {module:draw.DrawCanvasInit}
@@ -77,11 +76,15 @@ draw.init(
   }
 );
 
+/**
+ * @param {module:utilities.SVGElementJSON} jsonMap
+ * @returns {SVGElement}
+ */
 function createSVGElement (jsonMap) {
-  const elem = document.createElementNS(NS.SVG, jsonMap['element']);
-  for (const attr in jsonMap['attr']) {
-    elem.setAttribute(attr, jsonMap['attr'][attr]);
-  }
+  const elem = document.createElementNS(NS.SVG, jsonMap.element);
+  Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+    elem.setAttribute(attr, value);
+  });
   return elem;
 }
 
@@ -143,12 +146,7 @@ const cleanupSVG = function (svgElem) {
   while (svgElem.firstChild) { svgElem.firstChild.remove(); }
 };
 
-QUnit.module('svgedit.draw.Drawing', {
-  beforeEach () {
-  },
-  afterEach () {
-  }
-});
+QUnit.module('svgedit.draw.Drawing');
 
 QUnit.test('Test draw module', function (assert) {
   assert.expect(4);
@@ -157,7 +155,7 @@ QUnit.test('Test draw module', function (assert) {
   assert.equal(typeof draw, typeof {});
 
   assert.ok(draw.Drawing);
-  assert.equal(typeof draw.Drawing, typeof function () {});
+  assert.equal(typeof draw.Drawing, typeof function () { /* */ });
 });
 
 QUnit.test('Test document creation', function (assert) {
@@ -311,7 +309,7 @@ QUnit.test('Test releaseId()', function (assert) {
 QUnit.test('Test getNumLayers', function (assert) {
   assert.expect(3);
   const drawing = new draw.Drawing(svg);
-  assert.equal(typeof drawing.getNumLayers, typeof function () {});
+  assert.equal(typeof drawing.getNumLayers, typeof function () { /* */ });
   assert.equal(drawing.getNumLayers(), 0);
 
   setupSVGWith3Layers(svg);
@@ -329,7 +327,7 @@ QUnit.test('Test hasLayer', function (assert) {
   const drawing = new draw.Drawing(svg);
   drawing.identifyLayers();
 
-  assert.equal(typeof drawing.hasLayer, typeof function () {});
+  assert.equal(typeof drawing.hasLayer, typeof function () { /* */ });
   assert.ok(!drawing.hasLayer('invalid-layer'));
 
   assert.ok(drawing.hasLayer(LAYER3));
@@ -447,7 +445,7 @@ QUnit.test('Test getCurrentLayer()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.getCurrentLayer);
-  assert.equal(typeof drawing.getCurrentLayer, typeof function () {});
+  assert.equal(typeof drawing.getCurrentLayer, typeof function () { /* */ });
   assert.ok(drawing.getCurrentLayer());
   assert.equal(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
 
@@ -462,7 +460,7 @@ QUnit.test('Test setCurrentLayer() and getCurrentLayerName()', function (assert)
   drawing.identifyLayers();
 
   assert.ok(drawing.setCurrentLayer);
-  assert.equal(typeof drawing.setCurrentLayer, typeof function () {});
+  assert.equal(typeof drawing.setCurrentLayer, typeof function () { /* */ });
 
   drawing.setCurrentLayer(LAYER2);
   assert.equal(drawing.getCurrentLayerName(), LAYER2);
@@ -485,7 +483,7 @@ QUnit.test('Test setCurrentLayerName()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.setCurrentLayerName);
-  assert.equal(typeof drawing.setCurrentLayerName, typeof function () {});
+  assert.equal(typeof drawing.setCurrentLayerName, typeof function () { /* */ });
 
   const oldName = drawing.getCurrentLayerName();
   const newName = 'New Name';
@@ -519,7 +517,7 @@ QUnit.test('Test createLayer()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.createLayer);
-  assert.equal(typeof drawing.createLayer, typeof function () {});
+  assert.equal(typeof drawing.createLayer, typeof function () { /* */ });
 
   const NEW_LAYER_NAME = 'Layer A';
   const layerG = drawing.createLayer(NEW_LAYER_NAME, mockHrService);
@@ -553,7 +551,7 @@ QUnit.test('Test mergeLayer()', function (assert) {
   assert.equal(drawing.getCurrentLayer(), layers[2]);
 
   assert.ok(drawing.mergeLayer);
-  assert.equal(typeof drawing.mergeLayer, typeof function () {});
+  assert.equal(typeof drawing.mergeLayer, typeof function () { /* */ });
 
   drawing.mergeLayer(mockHrService);
 
@@ -623,7 +621,7 @@ QUnit.test('Test mergeAllLayers()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.mergeAllLayers);
-  assert.equal(typeof drawing.mergeAllLayers, typeof function () {});
+  assert.equal(typeof drawing.mergeAllLayers, typeof function () { /* */ });
 
   drawing.mergeAllLayers(mockHrService);
 
@@ -661,7 +659,7 @@ QUnit.test('Test cloneLayer()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.cloneLayer);
-  assert.equal(typeof drawing.cloneLayer, typeof function () {});
+  assert.equal(typeof drawing.cloneLayer, typeof function () { /* */ });
 
   const clone = drawing.cloneLayer('clone', mockHrService);
 
@@ -703,7 +701,7 @@ QUnit.test('Test getLayerVisibility()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.getLayerVisibility);
-  assert.equal(typeof drawing.getLayerVisibility, typeof function () {});
+  assert.equal(typeof drawing.getLayerVisibility, typeof function () { /* */ });
   assert.ok(drawing.getLayerVisibility(LAYER1));
   assert.ok(drawing.getLayerVisibility(LAYER2));
   assert.ok(drawing.getLayerVisibility(LAYER3));
@@ -719,7 +717,7 @@ QUnit.test('Test setLayerVisibility()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.setLayerVisibility);
-  assert.equal(typeof drawing.setLayerVisibility, typeof function () {});
+  assert.equal(typeof drawing.setLayerVisibility, typeof function () { /* */ });
 
   drawing.setLayerVisibility(LAYER3, false);
   drawing.setLayerVisibility(LAYER2, true);
@@ -743,7 +741,7 @@ QUnit.test('Test getLayerOpacity()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.getLayerOpacity);
-  assert.equal(typeof drawing.getLayerOpacity, typeof function () {});
+  assert.equal(typeof drawing.getLayerOpacity, typeof function () { /* */ });
   assert.strictEqual(drawing.getLayerOpacity(LAYER1), 1.0);
   assert.strictEqual(drawing.getLayerOpacity(LAYER2), 1.0);
   assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
@@ -759,7 +757,7 @@ QUnit.test('Test setLayerOpacity()', function (assert) {
   drawing.identifyLayers();
 
   assert.ok(drawing.setLayerOpacity);
-  assert.equal(typeof drawing.setLayerOpacity, typeof function () {});
+  assert.equal(typeof drawing.setLayerOpacity, typeof function () { /* */ });
 
   drawing.setLayerOpacity(LAYER1, 0.4);
   drawing.setLayerOpacity(LAYER2, 'invalid-string');
@@ -802,18 +800,18 @@ QUnit.test('Test svgedit.draw.randomizeIds()', function (assert) {
   // Confirm in LET_DOCUMENT_DECIDE mode that the document decides
   // if there is a nonce.
   let drawing = new draw.Drawing(svgN.cloneNode(true));
-  assert.ok(!!drawing.getNonce());
+  assert.ok(drawing.getNonce());
 
   drawing = new draw.Drawing(svg.cloneNode(true));
   assert.ok(!drawing.getNonce());
 
   // Confirm that a nonce is set once we're in ALWAYS_RANDOMIZE mode.
   draw.randomizeIds(true, drawing);
-  assert.ok(!!drawing.getNonce());
+  assert.ok(drawing.getNonce());
 
   // Confirm new drawings in ALWAYS_RANDOMIZE mode have a nonce.
   drawing = new draw.Drawing(svg.cloneNode(true));
-  assert.ok(!!drawing.getNonce());
+  assert.ok(drawing.getNonce());
 
   drawing.clearNonce();
   assert.ok(!drawing.getNonce());
@@ -822,7 +820,7 @@ QUnit.test('Test svgedit.draw.randomizeIds()', function (assert) {
   // but that their se:nonce attribute is left alone.
   draw.randomizeIds(false, drawing);
   assert.ok(!drawing.getNonce());
-  assert.ok(!!drawing.getSvgElem().getAttributeNS(NS.SE, 'nonce'));
+  assert.ok(drawing.getSvgElem().getAttributeNS(NS.SE, 'nonce'));
 
   drawing = new draw.Drawing(svg.cloneNode(true));
   assert.ok(!drawing.getNonce());

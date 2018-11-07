@@ -8,16 +8,17 @@ import babel from 'rollup-plugin-babel';
 import {terser} from 'rollup-plugin-terser';
 import replace from 'rollup-plugin-re';
 
-const {lstatSync, readdirSync} = require('fs');
+const {lstatSync, readdirSync} = require('fs'); // eslint-disable-line import/no-commonjs
+const {join, basename} = require('path'); // eslint-disable-line import/no-commonjs
+
 const localeFiles = readdirSync('editor/locale');
 const extensionFiles = readdirSync('editor/extensions');
-const {join, basename} = require('path');
 
 const isDirectory = (source) => {
   return lstatSync(source).isDirectory();
 };
 const getDirectories = (source) => {
-  return readdirSync(source).map(name => join(source, name)).filter(isDirectory);
+  return readdirSync(source).map((nme) => join(source, nme)).filter(isDirectory);
 };
 const extensionLocaleDirs = getDirectories('editor/extensions/ext-locale');
 const extensionLocaleFiles = [];
@@ -27,6 +28,18 @@ extensionLocaleDirs.forEach((dir) => {
   });
 });
 
+/**
+ * @external RollupConfig
+ * @type {PlainObject}
+ * @see {@link https://rollupjs.org/guide/en#big-list-of-options}
+ */
+
+/**
+ * @param {PlainObject} config
+ * @param {boolean} config.minifying
+ * @param {string} [config.format='umd'} = {}]
+ * @returns {external:RollupConfig}
+ */
 function getRollupObject ({minifying, format = 'umd'} = {}) {
   const nonMinified = {
     input: 'editor/svg-editor.js',
@@ -69,9 +82,7 @@ export default [
         name: `svgEditorExtensionLocale_${basename(dir)}_${lang}`,
         file: `dist/extensions/ext-locale/${basename(dir)}/${file}`
       },
-      plugins: [
-        babel()
-      ]
+      plugins: [babel()]
     };
   }),
   {
@@ -80,9 +91,7 @@ export default [
       format: 'iife',
       file: `dist/redirect-on-lacking-support.js`
     },
-    plugins: [
-      babel()
-    ]
+    plugins: [babel()]
   },
   {
     input: 'editor/jspdf/jspdf.plugin.svgToPdf.js',
@@ -90,9 +99,7 @@ export default [
       format: 'iife',
       file: `dist/jspdf.plugin.svgToPdf.js`
     },
-    plugins: [
-      babel()
-    ]
+    plugins: [babel()]
   },
   {
     input: 'editor/extensions/imagelib/index.js',
@@ -124,9 +131,7 @@ export default [
       format: 'iife',
       file: 'dist/dom-polyfill.js'
     },
-    plugins: [
-      babel()
-    ]
+    plugins: [babel()]
   },
   {
     input: 'editor/canvg/canvg.js',
@@ -135,16 +140,14 @@ export default [
       name: 'canvg',
       file: 'dist/canvg.js'
     },
-    plugins: [
-      babel()
-    ]
+    plugins: [babel()]
   },
   ...localeFiles.map((localeFile) => {
     // lang.*.js
     const localeRegex = /^lang\.([\w-]+?)\.js$/;
     const lang = localeFile.match(localeRegex);
     if (!lang) {
-      return;
+      return undefined;
     }
     return {
       input: 'editor/locale/' + localeFile,
@@ -154,7 +157,8 @@ export default [
         file: 'dist/locale/' + localeFile
       },
       plugins: [
-        babel() // Probably don't need here, but...
+        // Probably don't need here, but...
+        babel()
       ]
     };
   }),
@@ -162,7 +166,7 @@ export default [
     // ext-*.js
     const extensionName = extensionFile.match(/^ext-(.+?)\.js$/);
     if (!extensionName) {
-      return;
+      return undefined;
     }
     return {
       input: 'editor/extensions/' + extensionFile,
@@ -188,10 +192,10 @@ export default [
               // For now, we'll replace with globals
               // We'll still make at least one import: editor/ext-locale/storage/
               `import '../svgpathseg.js';`
-            ].map((test) => {
+            ].map((tst) => {
               return {
                 match: /editor\/extensions/,
-                test,
+                test: tst,
                 replace: ''
               };
             })

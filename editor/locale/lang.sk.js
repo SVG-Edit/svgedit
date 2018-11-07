@@ -206,7 +206,7 @@ export default {
     unsavedChanges: 'Sú tu neuložené zmeny.',
     enterNewLinkURL: 'Zadajte nové URL odkazu (hyperlink)',
     errorLoadingSVG: 'Chyba: Nedajú sa načítať SVG data',
-    URLloadFail: 'Nemožno čítať z URL',
+    URLLoadFail: 'Nemožno čítať z URL',
     retrieving: 'Retrieving \'%s\' ...',
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',

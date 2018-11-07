@@ -11,6 +11,15 @@
 import RGBColor from './rgbcolor.js';
 import {canvasRGBA} from '../external/stackblur-canvas/dist/stackblur-es.js';
 
+/**
+ * Whether a value is `null` or `undefined`.
+ * @param {Any} val
+ * @returns {boolean}
+ */
+const isNullish = (val) => {
+  return val === null || val === undefined;
+};
+
 let canvasRGBA_ = canvasRGBA;
 
 /**
@@ -63,7 +72,7 @@ export const setStackBlurCanvasRGBA = (cb) => {
 */
 export const canvg = function (target, s, opts) {
   // no parameters
-  if (target == null && s == null && opts == null) {
+  if (isNullish(target) && isNullish(s) && isNullish(opts)) {
     const svgTags = document.querySelectorAll('svg');
     return Promise.all([...svgTags].map((svgTag) => {
       const c = document.createElement('canvas');
@@ -82,7 +91,7 @@ export const canvg = function (target, s, opts) {
   }
 
   // store class on canvas
-  if (target.svg != null) target.svg.stop();
+  if (!isNullish(target.svg)) target.svg.stop();
   const svg = build(opts || {});
   // on i.e. 8 for flash canvas, we can't assign the property so check for it
   if (!(target.childNodes.length === 1 && target.childNodes[0].nodeName === 'OBJECT')) {
@@ -113,9 +122,9 @@ function build (opts) {
   svg.FRAMERATE = 30;
   svg.MAX_VIRTUAL_PIXELS = 30000;
 
-  svg.log = function (msg) {};
+  svg.log = function (msg) { /* */ };
   if (svg.opts.log === true && typeof console !== 'undefined') {
-    svg.log = function (msg) { console.log(msg); };
+    svg.log = function (msg) { console.log(msg); }; // eslint-disable-line no-console
   }
 
   // globals
@@ -139,7 +148,7 @@ function build (opts) {
       width () { return this.Current().width; },
       height () { return this.Current().height; },
       ComputeSize (d) {
-        if (d != null && typeof d === 'number') return d;
+        if (!isNullish(d) && typeof d === 'number') return d;
         if (d === 'x') return this.width();
         if (d === 'y') return this.height();
         return Math.sqrt(
@@ -190,13 +199,12 @@ function build (opts) {
     if (window.DOMParser) {
       const parser = new DOMParser();
       return parser.parseFromString(xml, 'text/xml');
-    } else {
-      xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
-      const xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
-      xmlDoc.async = 'false';
-      xmlDoc.loadXML(xml);
-      return xmlDoc;
     }
+    xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
+    const xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
+    xmlDoc.async = 'false';
+    xmlDoc.loadXML(xml);
+    return xmlDoc;
   };
 
   // text extensions
@@ -226,7 +234,7 @@ function build (opts) {
     }
 
     hasValue () {
-      return (this.value != null && this.value !== '');
+      return (!isNullish(this.value) && this.value !== '');
     }
 
     // return the numerical value of the property
@@ -234,8 +242,8 @@ function build (opts) {
       if (!this.hasValue()) return 0;
 
       let n = parseFloat(this.value);
-      if ((this.value + '').match(/%$/)) {
-        n = n / 100.0;
+      if (String(this.value).match(/%$/)) {
+        n /= 100.0;
       }
       return n;
     }
@@ -254,7 +262,7 @@ function build (opts) {
     // augment the current color value with the opacity
     addOpacity (opacityProp) {
       let newValue = this.value;
-      if (opacityProp.value != null && opacityProp.value !== '' && typeof this.value === 'string') { // can only add opacity to colors, not patterns
+      if (!isNullish(opacityProp.value) && opacityProp.value !== '' && typeof this.value === 'string') { // can only add opacity to colors, not patterns
         const color = new RGBColor(this.value);
         if (color.ok) {
           newValue = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + opacityProp.numValue() + ')';
@@ -280,12 +288,12 @@ function build (opts) {
       let def = this.getDefinition();
 
       // gradient
-      if (def != null && def.createGradient) {
+      if (!isNullish(def) && def.createGradient) {
         return def.createGradient(svg.ctx, e, opacityProp);
       }
 
       // pattern
-      if (def != null && def.createPattern) {
+      if (!isNullish(def) && def.createPattern) {
         if (def.getHrefAttribute().hasValue()) {
           const pt = def.attribute('patternTransform');
           def = def.getHrefAttribute().getDefinition();
@@ -312,14 +320,13 @@ function build (opts) {
     }
 
     getUnits () {
-      const s = this.value + '';
-      return s.replace(/[0-9.-]/g, '');
+      return String(this.value).replace(/[0-9.-]/g, '');
     }
 
     // get the length as pixels
     toPixels (viewPort, processPercent) {
       if (!this.hasValue()) return 0;
-      const s = this.value + '';
+      const s = String(this.value);
       if (s.match(/em$/)) return this.numValue() * this.getEM(viewPort);
       if (s.match(/ex$/)) return this.numValue() * this.getEM(viewPort) / 2.0;
       if (s.match(/px$/)) return this.numValue();
@@ -338,7 +345,7 @@ function build (opts) {
     // get the time as milliseconds
     toMilliseconds () {
       if (!this.hasValue()) return 0;
-      const s = this.value + '';
+      const s = String(this.value);
       if (s.match(/s$/)) return this.numValue() * 1000;
       if (s.match(/ms$/)) return this.numValue();
       return this.numValue();
@@ -348,7 +355,7 @@ function build (opts) {
     // get the angle as radians
     toRadians () {
       if (!this.hasValue()) return 0;
-      const s = this.value + '';
+      const s = String(this.value);
       if (s.match(/deg$/)) return this.numValue() * (Math.PI / 180.0);
       if (s.match(/grad$/)) return this.numValue() * (Math.PI / 200.0);
       if (s.match(/rad$/)) return this.numValue();
@@ -368,7 +375,7 @@ function build (opts) {
     Weights: 'normal|bold|bolder|lighter|100|200|300|400|500|600|700|800|900|inherit',
 
     CreateFont (fontStyle, fontVariant, fontWeight, fontSize, fontFamily, inherit) {
-      const f = inherit != null ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
+      const f = !isNullish(inherit) ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
       return {
         fontFamily: fontFamily || f.fontFamily,
         fontSize: fontSize || f.fontSize,
@@ -474,7 +481,7 @@ function build (opts) {
     height () { return this.y2 - this.y1; }
 
     addPoint (x, y) {
-      if (x != null) {
+      if (!isNullish(x)) {
         if (isNaN(this.x1) || isNaN(this.x2)) {
           this.x1 = x;
           this.x2 = x;
@@ -483,7 +490,7 @@ function build (opts) {
         if (x > this.x2) this.x2 = x;
       }
 
-      if (y != null) {
+      if (!isNullish(y)) {
         if (isNaN(this.y1) || isNaN(this.y2)) {
           this.y1 = y;
           this.y2 = y;
@@ -710,7 +717,7 @@ function build (opts) {
     else if (meetOrSlice === 'slice') ctx.scale(scaleMax, scaleMax);
 
     // translate
-    ctx.translate(minX == null ? 0 : -minX, minY == null ? 0 : -minY);
+    ctx.translate(isNullish(minX) ? 0 : -minX, isNullish(minY) ? 0 : -minY);
   };
 
   // elements
@@ -724,7 +731,7 @@ function build (opts) {
       this.attributes = {};
       this.styles = {};
       this.children = [];
-      if (node != null && node.nodeType === 1) { // ELEMENT_NODE
+      if (!isNullish(node) && node.nodeType === 1) { // ELEMENT_NODE
         // add children
         [...node.childNodes].forEach((childNode) => {
           if (childNode.nodeType === 1) {
@@ -749,7 +756,7 @@ function build (opts) {
         });
         // add tag styles
         let styles = svg.Styles[node.nodeName];
-        if (styles != null) {
+        if (!isNullish(styles)) {
           for (const name in styles) {
             this.styles[name] = styles[name];
           }
@@ -760,13 +767,13 @@ function build (opts) {
           const classes = svg.compressSpaces(this.attribute('class').value).split(' ');
           classes.forEach((clss) => {
             styles = svg.Styles['.' + clss];
-            if (styles != null) {
+            if (!isNullish(styles)) {
               for (const name in styles) {
                 this.styles[name] = styles[name];
               }
             }
             styles = svg.Styles[node.nodeName + '.' + clss];
-            if (styles != null) {
+            if (!isNullish(styles)) {
               for (const name in styles) {
                 this.styles[name] = styles[name];
               }
@@ -777,7 +784,7 @@ function build (opts) {
         // add id styles
         if (this.attribute('id').hasValue()) {
           const styles = svg.Styles['#' + this.attribute('id').value];
-          if (styles != null) {
+          if (!isNullish(styles)) {
             for (const name in styles) {
               this.styles[name] = styles[name];
             }
@@ -799,7 +806,7 @@ function build (opts) {
 
         // add id
         if (this.attribute('id').hasValue()) {
-          if (svg.Definitions[this.attribute('id').value] == null) {
+          if (isNullish(svg.Definitions[this.attribute('id').value])) {
             svg.Definitions[this.attribute('id').value] = this;
           }
         }
@@ -809,7 +816,7 @@ function build (opts) {
     // get or create attribute
     attribute (name, createIfNotExists) {
       let a = this.attributes[name];
-      if (a != null) return a;
+      if (!isNullish(a)) return a;
 
       if (createIfNotExists === true) { a = new svg.Property(name, ''); this.attributes[name] = a; }
       return a || svg.EmptyProperty;
@@ -827,19 +834,19 @@ function build (opts) {
     // get or create style, crawls up node tree
     style (name, createIfNotExists, skipAncestors) {
       let s = this.styles[name];
-      if (s != null) return s;
+      if (!isNullish(s)) return s;
 
       const a = this.attribute(name);
-      if (a != null && a.hasValue()) {
+      if (!isNullish(a) && a.hasValue()) {
         this.styles[name] = a; // move up to me to cache
         return a;
       }
 
       if (skipAncestors !== true) {
         const p = this.parent;
-        if (p != null) {
+        if (!isNullish(p)) {
           const ps = p.style(name);
-          if (ps != null && ps.hasValue()) {
+          if (!isNullish(ps) && ps.hasValue()) {
             return ps;
           }
         }
@@ -860,10 +867,10 @@ function build (opts) {
       ctx.save();
       if (this.attribute('mask').hasValue()) { // mask
         const mask = this.attribute('mask').getDefinition();
-        if (mask != null) mask.apply(ctx, this);
+        if (!isNullish(mask)) mask.apply(ctx, this);
       } else if (this.style('filter').hasValue()) { // filter
         const filter = this.style('filter').getDefinition();
-        if (filter != null) filter.apply(ctx, this);
+        if (!isNullish(filter)) filter.apply(ctx, this);
       } else {
         this.setContext(ctx);
         this.renderChildren(ctx);
@@ -903,7 +910,7 @@ function build (opts) {
       // fill
       if (this.style('fill').isUrlDefinition()) {
         const fs = this.style('fill').getFillStyleDefinition(this, this.style('fill-opacity'));
-        if (fs != null) ctx.fillStyle = fs;
+        if (!isNullish(fs)) ctx.fillStyle = fs;
       } else if (this.style('fill').hasValue()) {
         const fillStyle = this.style('fill');
         if (fillStyle.value === 'currentColor') fillStyle.value = this.style('color').value;
@@ -918,7 +925,7 @@ function build (opts) {
       // stroke
       if (this.style('stroke').isUrlDefinition()) {
         const fs = this.style('stroke').getFillStyleDefinition(this, this.style('stroke-opacity'));
-        if (fs != null) ctx.strokeStyle = fs;
+        if (!isNullish(fs)) ctx.strokeStyle = fs;
       } else if (this.style('stroke').hasValue()) {
         const strokeStyle = this.style('stroke');
         if (strokeStyle.value === 'currentColor') strokeStyle.value = this.style('color').value;
@@ -963,7 +970,8 @@ function build (opts) {
           this.style('font-variant').value,
           this.style('font-weight').value,
           this.style('font-size').hasValue() ? this.style('font-size').toPixels() + 'px' : '',
-          this.style('font-family').value).toString();
+          this.style('font-family').value
+        ).toString();
       }
 
       // transform
@@ -975,7 +983,7 @@ function build (opts) {
       // clip
       if (this.style('clip-path', false, true).hasValue()) {
         const clip = this.style('clip-path', false, true).getDefinition();
-        if (clip != null) clip.apply(ctx);
+        if (!isNullish(clip)) clip.apply(ctx);
       }
 
       // opacity
@@ -987,7 +995,7 @@ function build (opts) {
 
   svg.Element.PathElementBase = class extends svg.Element.RenderedElementBase {
     path (ctx) {
-      if (ctx != null) ctx.beginPath();
+      if (!isNullish(ctx)) ctx.beginPath();
       return new svg.BoundingBox();
     }
 
@@ -1004,7 +1012,7 @@ function build (opts) {
       if (ctx.strokeStyle !== '') ctx.stroke();
 
       const markers = this.getMarkers();
-      if (markers != null) {
+      if (!isNullish(markers)) {
         if (this.style('marker-start').isUrlDefinition()) {
           const marker = this.style('marker-start').getDefinition();
           marker.render(ctx, markers[0][0], markers[0][1]);
@@ -1123,7 +1131,7 @@ function build (opts) {
       if (this.attribute('ry').hasValue() && !this.attribute('rx').hasValue()) rx = ry;
       rx = Math.min(rx, width / 2.0);
       ry = Math.min(ry, height / 2.0);
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.moveTo(x + rx, y);
         ctx.lineTo(x + width - rx, y);
@@ -1148,7 +1156,7 @@ function build (opts) {
       const cy = this.attribute('cy').toPixels('y');
       const r = this.attribute('r').toPixels();
 
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2, true);
         ctx.closePath();
@@ -1167,7 +1175,7 @@ function build (opts) {
       const cx = this.attribute('cx').toPixels('x');
       const cy = this.attribute('cy').toPixels('y');
 
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.moveTo(cx, cy - ry);
         ctx.bezierCurveTo(cx + (KAPPA * rx), cy - ry, cx + rx, cy - (KAPPA * ry), cx + rx, cy);
@@ -1186,13 +1194,14 @@ function build (opts) {
     getPoints () {
       return [
         new svg.Point(this.attribute('x1').toPixels('x'), this.attribute('y1').toPixels('y')),
-        new svg.Point(this.attribute('x2').toPixels('x'), this.attribute('y2').toPixels('y'))];
+        new svg.Point(this.attribute('x2').toPixels('x'), this.attribute('y2').toPixels('y'))
+      ];
     }
 
     path (ctx) {
       const points = this.getPoints();
 
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         ctx.lineTo(points[1].x, points[1].y);
@@ -1218,14 +1227,14 @@ function build (opts) {
     path (ctx) {
       const {x, y} = this.points[0];
       const bb = new svg.BoundingBox(x, y);
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.moveTo(x, y);
       }
       for (let i = 1; i < this.points.length; i++) {
         const {x, y} = this.points[i];
         bb.addPoint(x, y);
-        if (ctx != null) ctx.lineTo(x, y);
+        if (!isNullish(ctx)) ctx.lineTo(x, y);
       }
       return bb;
     }
@@ -1244,7 +1253,7 @@ function build (opts) {
   svg.Element.polygon = class extends svg.Element.polyline {
     path (ctx) {
       const bb = super.path(ctx);
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.lineTo(this.points[0].x, this.points[0].y);
         ctx.closePath();
       }
@@ -1289,7 +1298,7 @@ function build (opts) {
 
         isCommandOrEnd () {
           if (this.isEnd()) return true;
-          return this.tokens[this.i + 1].match(/^[A-Za-z]$/) != null;
+          return !isNullish(this.tokens[this.i + 1].match(/^[A-Za-z]$/));
         },
 
         isRelativeCommand () {
@@ -1363,10 +1372,10 @@ function build (opts) {
 
         addMarker (p, from, priorTo) {
           // if the last angle isn't filled in because we didn't have this point yet ...
-          if (priorTo != null && this.angles.length > 0 && this.angles[this.angles.length - 1] == null) {
+          if (!isNullish(priorTo) && this.angles.length > 0 && isNullish(this.angles[this.angles.length - 1])) {
             this.angles[this.angles.length - 1] = this.points[this.points.length - 1].angleTo(priorTo);
           }
-          this.addMarkerAngle(p, from == null ? null : from.angleTo(p));
+          this.addMarkerAngle(p, isNullish(from) ? null : from.angleTo(p));
         },
 
         addMarkerAngle (p, a) {
@@ -1377,9 +1386,9 @@ function build (opts) {
         getMarkerPoints () { return this.points; },
         getMarkerAngles () {
           for (let i = 0; i < this.angles.length; i++) {
-            if (this.angles[i] == null) {
+            if (isNullish(this.angles[i])) {
               for (let j = i + 1; j < this.angles.length; j++) {
-                if (this.angles[j] != null) {
+                if (!isNullish(this.angles[j])) {
                   this.angles[i] = this.angles[j];
                   break;
                 }
@@ -1396,7 +1405,7 @@ function build (opts) {
       pp.reset();
 
       const bb = new svg.BoundingBox();
-      if (ctx != null) ctx.beginPath();
+      if (!isNullish(ctx)) ctx.beginPath();
       while (!pp.isEnd()) {
         pp.nextCommand();
         switch (pp.command) {
@@ -1405,13 +1414,13 @@ function build (opts) {
           const p = pp.getAsCurrentPoint();
           pp.addMarker(p);
           bb.addPoint(p.x, p.y);
-          if (ctx != null) ctx.moveTo(p.x, p.y);
+          if (!isNullish(ctx)) ctx.moveTo(p.x, p.y);
           pp.start = pp.current;
           while (!pp.isCommandOrEnd()) {
             const p = pp.getAsCurrentPoint();
             pp.addMarker(p, pp.start);
             bb.addPoint(p.x, p.y);
-            if (ctx != null) ctx.lineTo(p.x, p.y);
+            if (!isNullish(ctx)) ctx.lineTo(p.x, p.y);
           }
           break;
         case 'L':
@@ -1421,7 +1430,7 @@ function build (opts) {
             const p = pp.getAsCurrentPoint();
             pp.addMarker(p, c);
             bb.addPoint(p.x, p.y);
-            if (ctx != null) ctx.lineTo(p.x, p.y);
+            if (!isNullish(ctx)) ctx.lineTo(p.x, p.y);
           }
           break;
         case 'H':
@@ -1431,7 +1440,7 @@ function build (opts) {
             pp.addMarker(newP, pp.current);
             pp.current = newP;
             bb.addPoint(pp.current.x, pp.current.y);
-            if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+            if (!isNullish(ctx)) ctx.lineTo(pp.current.x, pp.current.y);
           }
           break;
         case 'V':
@@ -1441,7 +1450,7 @@ function build (opts) {
             pp.addMarker(newP, pp.current);
             pp.current = newP;
             bb.addPoint(pp.current.x, pp.current.y);
-            if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+            if (!isNullish(ctx)) ctx.lineTo(pp.current.x, pp.current.y);
           }
           break;
         case 'C':
@@ -1453,7 +1462,7 @@ function build (opts) {
             const cp = pp.getAsCurrentPoint();
             pp.addMarker(cp, cntrl, p1);
             bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
-            if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+            if (!isNullish(ctx)) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
           }
           break;
         case 'S':
@@ -1465,7 +1474,7 @@ function build (opts) {
             const cp = pp.getAsCurrentPoint();
             pp.addMarker(cp, cntrl, p1);
             bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
-            if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+            if (!isNullish(ctx)) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
           }
           break;
         case 'Q':
@@ -1476,7 +1485,7 @@ function build (opts) {
             const cp = pp.getAsCurrentPoint();
             pp.addMarker(cp, cntrl, cntrl);
             bb.addQuadraticCurve(curr.x, curr.y, cntrl.x, cntrl.y, cp.x, cp.y);
-            if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
+            if (!isNullish(ctx)) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
           }
           break;
         case 'T':
@@ -1488,7 +1497,7 @@ function build (opts) {
             const cp = pp.getAsCurrentPoint();
             pp.addMarker(cp, cntrl, cntrl);
             bb.addQuadraticCurve(curr.x, curr.y, cntrl.x, cntrl.y, cp.x, cp.y);
-            if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
+            if (!isNullish(ctx)) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
           }
           break;
         case 'A':
@@ -1560,7 +1569,7 @@ function build (opts) {
             pp.addMarkerAngle(cp, ah - dir * Math.PI);
 
             bb.addPoint(cp.x, cp.y); // TODO: this is too naive, make it better
-            if (ctx != null) {
+            if (!isNullish(ctx)) {
               const r = rx > ry ? rx : ry;
               const sx = rx > ry ? 1 : rx / ry;
               const sy = rx > ry ? ry / rx : 1;
@@ -1577,7 +1586,7 @@ function build (opts) {
           break;
         case 'Z':
         case 'z':
-          if (ctx != null) ctx.closePath();
+          if (!isNullish(ctx)) ctx.closePath();
           pp.current = pp.start;
         }
       }
@@ -1604,10 +1613,10 @@ function build (opts) {
 
       // render me using a temporary svg element
       const tempSvg = new svg.Element.svg();
-      tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-      tempSvg.attributes['width'] = new svg.Property('width', width + 'px');
-      tempSvg.attributes['height'] = new svg.Property('height', height + 'px');
-      tempSvg.attributes['transform'] = new svg.Property('transform', this.attribute('patternTransform').value);
+      tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
+      tempSvg.attributes.width = new svg.Property('width', width + 'px');
+      tempSvg.attributes.height = new svg.Property('height', height + 'px');
+      tempSvg.attributes.transform = new svg.Property('transform', this.attribute('patternTransform').value);
       tempSvg.children = this.children;
 
       const c = document.createElement('canvas');
@@ -1641,13 +1650,13 @@ function build (opts) {
 
       // render me using a temporary svg element
       const tempSvg = new svg.Element.svg();
-      tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-      tempSvg.attributes['refX'] = new svg.Property('refX', this.attribute('refX').value);
-      tempSvg.attributes['refY'] = new svg.Property('refY', this.attribute('refY').value);
-      tempSvg.attributes['width'] = new svg.Property('width', this.attribute('markerWidth').value);
-      tempSvg.attributes['height'] = new svg.Property('height', this.attribute('markerHeight').value);
-      tempSvg.attributes['fill'] = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
-      tempSvg.attributes['stroke'] = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
+      tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
+      tempSvg.attributes.refX = new svg.Property('refX', this.attribute('refX').value);
+      tempSvg.attributes.refY = new svg.Property('refY', this.attribute('refY').value);
+      tempSvg.attributes.width = new svg.Property('width', this.attribute('markerWidth').value);
+      tempSvg.attributes.height = new svg.Property('height', this.attribute('markerHeight').value);
+      tempSvg.attributes.fill = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
+      tempSvg.attributes.stroke = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
       tempSvg.children = this.children;
       tempSvg.render(ctx);
 
@@ -1698,7 +1707,7 @@ function build (opts) {
       };
 
       const g = this.getGradient(ctx, element);
-      if (g == null) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
+      if (isNullish(g)) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
       stopsContainer.stops.forEach(({offset, color}) => {
         g.addColorStop(offset, addParentOpacity(color));
       });
@@ -1708,20 +1717,20 @@ function build (opts) {
         const rootView = svg.ViewPort.viewPorts[0];
 
         const rect = new svg.Element.rect();
-        rect.attributes['x'] = new svg.Property('x', -svg.MAX_VIRTUAL_PIXELS / 3.0);
-        rect.attributes['y'] = new svg.Property('y', -svg.MAX_VIRTUAL_PIXELS / 3.0);
-        rect.attributes['width'] = new svg.Property('width', svg.MAX_VIRTUAL_PIXELS);
-        rect.attributes['height'] = new svg.Property('height', svg.MAX_VIRTUAL_PIXELS);
+        rect.attributes.x = new svg.Property('x', -svg.MAX_VIRTUAL_PIXELS / 3.0);
+        rect.attributes.y = new svg.Property('y', -svg.MAX_VIRTUAL_PIXELS / 3.0);
+        rect.attributes.width = new svg.Property('width', svg.MAX_VIRTUAL_PIXELS);
+        rect.attributes.height = new svg.Property('height', svg.MAX_VIRTUAL_PIXELS);
 
         const group = new svg.Element.g();
-        group.attributes['transform'] = new svg.Property('transform', this.attribute('gradientTransform').value);
+        group.attributes.transform = new svg.Property('transform', this.attribute('gradientTransform').value);
         group.children = [rect];
 
         const tempSvg = new svg.Element.svg();
-        tempSvg.attributes['x'] = new svg.Property('x', 0);
-        tempSvg.attributes['y'] = new svg.Property('y', 0);
-        tempSvg.attributes['width'] = new svg.Property('width', rootView.width);
-        tempSvg.attributes['height'] = new svg.Property('height', rootView.height);
+        tempSvg.attributes.x = new svg.Property('x', 0);
+        tempSvg.attributes.y = new svg.Property('y', 0);
+        tempSvg.attributes.width = new svg.Property('width', rootView.width);
+        tempSvg.attributes.height = new svg.Property('height', rootView.height);
         tempSvg.children = [group];
 
         const c = document.createElement('canvas');
@@ -1867,7 +1876,7 @@ function build (opts) {
 
     update (delta) {
       // set initial value
-      if (this.initialValue == null) {
+      if (isNullish(this.initialValue)) {
         this.initialValue = this.getProperty().value;
         this.initialUnits = this.getProperty().getUnits();
       }
@@ -1949,7 +1958,7 @@ function build (opts) {
         const r = from.r + (to.r - from.r) * p.progress;
         const g = from.g + (to.g - from.g) * p.progress;
         const b = from.b + (to.b - from.b) * p.progress;
-        return 'rgb(' + parseInt(r, 10) + ',' + parseInt(g, 10) + ',' + parseInt(b, 10) + ')';
+        return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')';
       }
       return this.attribute('from').value;
     }
@@ -2048,8 +2057,8 @@ function build (opts) {
       super.setContext(ctx);
 
       let textBaseline = this.style('dominant-baseline').toTextBaseline();
-      if (textBaseline == null) textBaseline = this.style('alignment-baseline').toTextBaseline();
-      if (textBaseline != null) ctx.textBaseline = textBaseline;
+      if (isNullish(textBaseline)) textBaseline = this.style('alignment-baseline').toTextBaseline();
+      if (!isNullish(textBaseline)) ctx.textBaseline = textBaseline;
     }
 
     getBoundingBox () {
@@ -2124,18 +2133,18 @@ function build (opts) {
         if (i > 0 && text[i - 1] !== ' ' && (i === text.length - 1 || text[i + 1] === ' ')) arabicForm = 'initial';
         if (typeof font.glyphs[c] !== 'undefined') {
           glyph = font.glyphs[c][arabicForm];
-          if (glyph == null && font.glyphs[c].type === 'glyph') glyph = font.glyphs[c];
+          if (isNullish(glyph) && font.glyphs[c].type === 'glyph') glyph = font.glyphs[c];
         }
       } else {
         glyph = font.glyphs[c];
       }
-      if (glyph == null) glyph = font.missingGlyph;
+      if (isNullish(glyph)) glyph = font.missingGlyph;
       return glyph;
     }
 
     renderChildren (ctx) {
       const customFont = this.parent.style('font-family').getDefinition();
-      if (customFont != null) {
+      if (!isNullish(customFont)) {
         const fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
         const fontStyle = this.parent.style('font-style').valueOrDefault(svg.Font.Parse(svg.ctx.font).fontStyle);
         let text = this.getText();
@@ -2182,7 +2191,7 @@ function build (opts) {
 
     measureText (ctx) {
       const customFont = this.parent.style('font-family').getDefinition();
-      if (customFont != null) {
+      if (!isNullish(customFont)) {
         const fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
         let measure = 0;
         let text = this.getText();
@@ -2225,7 +2234,8 @@ function build (opts) {
   svg.Element.tref = class extends svg.Element.TextElementBase {
     getText () {
       const element = this.getHrefAttribute().getDefinition();
-      if (element != null) return element.children[0].getText();
+      if (!isNullish(element)) return element.children[0].getText();
+      return undefined;
     }
   };
 
@@ -2290,13 +2300,12 @@ function build (opts) {
         if (svg.opts.useCORS === true) {
           this.img.crossOrigin = 'Anonymous';
         }
-        const self = this;
-        this.img.onload = function () {
-          self.loaded = true;
+        this.img.onload = () => {
+          this.loaded = true;
         };
-        this.img.onerror = function () {
+        this.img.onerror = () => {
           svg.log('ERROR: image "' + href + '" not found');
-          self.loaded = true;
+          this.loaded = true;
         };
         this.img.src = href;
       } else {
@@ -2387,14 +2396,14 @@ function build (opts) {
                 const prop = cssProp.indexOf(':');
                 const name = cssProp.substr(0, prop);
                 const value = cssProp.substr(prop + 1, cssProp.length - prop);
-                if (name != null && value != null) {
+                if (!isNullish(name) && !isNullish(value)) {
                   props[svg.trim(name)] = new svg.Property(svg.trim(name), svg.trim(value));
                 }
               });
               svg.Styles[cssClass] = props;
               if (cssClass === '@font-face') {
                 const fontFamily = props['font-family'].value.replace(/"/g, '');
-                const srcs = props['src'].value.split(',');
+                const srcs = props.src.value.split(',');
                 srcs.forEach((src) => {
                   if (src.includes('format("svg")')) {
                     const urlStart = src.indexOf('url');
@@ -2433,31 +2442,31 @@ function build (opts) {
 
     path (ctx) {
       const {_el: element} = this;
-      if (element != null) element.path(ctx);
+      if (!isNullish(element)) element.path(ctx);
     }
 
     getBoundingBox () {
       const {_el: element} = this;
-      if (element != null) return element.getBoundingBox();
+      if (!isNullish(element)) return element.getBoundingBox();
     }
 
     renderChildren (ctx) {
       const {_el: element} = this;
-      if (element != null) {
+      if (!isNullish(element)) {
         let tempSvg = element;
         if (element.type === 'symbol') {
           // render me using a temporary svg element in symbol cases (https://www.w3.org/TR/SVG/struct.html#UseElement)
           tempSvg = new svg.Element.svg();
           tempSvg.type = 'svg';
-          tempSvg.attributes['viewBox'] = new svg.Property('viewBox', element.attribute('viewBox').value);
-          tempSvg.attributes['preserveAspectRatio'] = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
-          tempSvg.attributes['overflow'] = new svg.Property('overflow', element.attribute('overflow').value);
+          tempSvg.attributes.viewBox = new svg.Property('viewBox', element.attribute('viewBox').value);
+          tempSvg.attributes.preserveAspectRatio = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
+          tempSvg.attributes.overflow = new svg.Property('overflow', element.attribute('overflow').value);
           tempSvg.children = element.children;
         }
         if (tempSvg.type === 'svg') {
           // if symbol or svg, inherit width/height from me
-          if (this.attribute('width').hasValue()) tempSvg.attributes['width'] = new svg.Property('width', this.attribute('width').value);
-          if (this.attribute('height').hasValue()) tempSvg.attributes['height'] = new svg.Property('height', this.attribute('height').value);
+          if (this.attribute('width').hasValue()) tempSvg.attributes.width = new svg.Property('width', this.attribute('width').value);
+          if (this.attribute('height').hasValue()) tempSvg.attributes.height = new svg.Property('height', this.attribute('height').value);
         }
         const oldParent = tempSvg.parent;
         tempSvg.parent = null;
@@ -2762,14 +2771,14 @@ function build (opts) {
     // bind mouse
     if (svg.opts.ignoreMouse !== true) {
       ctx.canvas.onclick = function (e) {
-        const args = e != null
+        const args = !isNullish(e)
           ? [e.clientX, e.clientY]
           : [event.clientX, event.clientY];
         const {x, y} = mapXY(new svg.Point(...args));
         svg.Mouse.onclick(x, y);
       };
       ctx.canvas.onmousemove = function (e) {
-        const args = e != null
+        const args = !isNullish(e)
           ? [e.clientX, e.clientY]
           : [event.clientX, event.clientY];
         const {x, y} = mapXY(new svg.Point(...args));
@@ -2812,17 +2821,17 @@ function build (opts) {
       }
       svg.ViewPort.SetCurrent(cWidth, cHeight);
 
-      if (svg.opts.offsetX != null) {
+      if (!isNullish(svg.opts.offsetX)) {
         e.attribute('x', true).value = svg.opts.offsetX;
       }
-      if (svg.opts.offsetY != null) {
+      if (!isNullish(svg.opts.offsetY)) {
         e.attribute('y', true).value = svg.opts.offsetY;
       }
-      if (svg.opts.scaleWidth != null || svg.opts.scaleHeight != null) {
+      if (!isNullish(svg.opts.scaleWidth) || !isNullish(svg.opts.scaleHeight)) {
         const viewBox = svg.ToNumberArray(e.attribute('viewBox').value);
         let xRatio = null, yRatio = null;
 
-        if (svg.opts.scaleWidth != null) {
+        if (!isNullish(svg.opts.scaleWidth)) {
           if (e.attribute('width').hasValue()) {
             xRatio = e.attribute('width').toPixels('x') / svg.opts.scaleWidth;
           } else if (!isNaN(viewBox[2])) {
@@ -2830,7 +2839,7 @@ function build (opts) {
           }
         }
 
-        if (svg.opts.scaleHeight != null) {
+        if (!isNullish(svg.opts.scaleHeight)) {
           if (e.attribute('height').hasValue()) {
             yRatio = e.attribute('height').toPixels('y') / svg.opts.scaleHeight;
           } else if (!isNaN(viewBox[3])) {
@@ -2838,8 +2847,8 @@ function build (opts) {
           }
         }
 
-        if (xRatio == null) { xRatio = yRatio; }
-        if (yRatio == null) { yRatio = xRatio; }
+        if (isNullish(xRatio)) { xRatio = yRatio; }
+        if (isNullish(yRatio)) { yRatio = xRatio; }
 
         e.attribute('width', true).value = svg.opts.scaleWidth;
         e.attribute('height', true).value = svg.opts.scaleHeight;

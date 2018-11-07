@@ -10,7 +10,7 @@
  * @param {string} [message] Defaults to structured message
  * @returns {undefined}
  */
-function close (actual, expected, maxDifference, message) {
+function close (actual, expected, maxDifference, message) { // eslint-disable-line no-shadow
   const actualDiff = (actual === expected) ? 0 : Math.abs(actual - expected),
     result = actualDiff <= maxDifference;
   message = message || (actual + ' should be within ' + maxDifference + ' (inclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff));
@@ -96,6 +96,10 @@ function notClosePercent (actual, expected, minPercentDifference, message) {
   this.pushResult({result, actual, expected, message});
 }
 
+/**
+ * @param {external:qunit} QUnit
+ * @returns {external:qunit} The same instance passed in after extending
+ */
 export default function extend (QUnit) {
   QUnit.extend(QUnit.assert, {
     close,

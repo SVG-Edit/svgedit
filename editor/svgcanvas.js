@@ -18,7 +18,7 @@
 // Todo: Obtain/adapt latest jsPDF to utilize ES Module for `jsPDF`/avoid global
 
 import './svgpathseg.js';
-import jqPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 
 import * as draw from './draw.js';
 import * as pathModule from './path.js';
@@ -32,9 +32,10 @@ import {
   getBBoxOfElementAsPath, convertToPath, toXml, encode64, decode64,
   dataURLToObjectURL, createObjectURL,
   getVisibleElements, dropXMLInteralSubset,
-  init as utilsInit, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
+  init as utilsInit, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible,
+  isNullish
 } from './utilities.js';
-import * as history from './history.js';
+import * as hstry from './history.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
   getMatrix, snapToAngle, isIdentity, rectsIntersect, transformBox
@@ -60,24 +61,25 @@ import {
 } from './recalculate.js';
 import {
   getSelectorManager,
+  Selector,
   init as selectInit
 } from './select.js';
 
-const $ = jqPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand, BatchCommand, UndoManager, HistoryEventTypes
-} = history;
+} = hstry;
 
 if (!window.console) {
   window.console = {};
-  window.console.log = function (str) {};
-  window.console.dir = function (str) {};
+  window.console.log = function (str) { /* */ };
+  window.console.dir = function (str) { /* */ };
 }
 
 if (window.opera) {
   window.console.log = function (str) { window.opera.postError(str); };
-  window.console.dir = function (str) {};
+  window.console.dir = function (str) { /* */ };
 }
 
 /**
@@ -131,7 +133,7 @@ if (config) {
 // Array with width/height of canvas
 const {dimensions} = curConfig;
 
-const canvas = this;
+const canvas = this; // eslint-disable-line consistent-this
 
 // "document" element associated with the container (same as window.document using default svg-editor.js)
 // NOTE: This is not actually a SVG document, but an HTML document.
@@ -396,7 +398,7 @@ const getSelectedElements = this.getSelectedElems = function () {
   return selectedElements;
 };
 
-const pathActions = pathModule.pathActions;
+const {pathActions} = pathModule;
 
 /**
 * This should actually be an intersection as all interfaces should be met.
@@ -503,8 +505,8 @@ const undoMgr = canvas.undoMgr = new UndoManager({
         }
         if (cmdType === InsertElementCommand.type()) {
           if (isApply) { restoreRefElems(cmd.elem); }
-        } else {
-          if (!isApply) { restoreRefElems(cmd.elem); }
+        } else if (!isApply) {
+          restoreRefElems(cmd.elem);
         }
         if (cmd.elem.tagName === 'use') {
           setUseData(cmd.elem);
@@ -562,7 +564,7 @@ const getCurrentZoom = this.getZoom = function () { return currentZoom; };
 * @implements {module:path.EditorContext#round}
 */
 const round = this.round = function (val) {
-  return parseInt(val * currentZoom, 10) / currentZoom;
+  return parseInt(val * currentZoom) / currentZoom;
 };
 
 selectInit(
@@ -607,12 +609,13 @@ const getId = canvas.getId = function () {
 * @implements {module:draw.DrawCanvasInit#call|module:path.EditorContext#call}
 * @param {"selected"|"changed"|"contextset"|"pointsAdded"|"extension_added"|"extensions_added"|"message"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String with the event name
 * @param {module:svgcanvas.SvgCanvas#event:GenericCanvasEvent} arg - Argument to pass through to the callback function.
-* @returns {undefined}
+* @returns {module:svgcanvas.EventHandlerReturn|undefined}
 */
 const call = function (ev, arg) {
   if (events[ev]) {
     return events[ev](window, arg);
   }
+  return undefined;
 };
 
 /**
@@ -624,7 +627,7 @@ const call = function (ev, arg) {
 */
 const clearSelection = this.clearSelection = function (noCall) {
   selectedElements.forEach((elem) => {
-    if (elem == null) {
+    if (isNullish(elem)) {
       return;
     }
     selectorManager.releaseSelector(elem);
@@ -646,7 +649,7 @@ const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
 
   let j = 0;
   while (j < selectedElements.length) {
-    if (selectedElements[j] == null) {
+    if (isNullish(selectedElements[j])) {
       break;
     }
     ++j;
@@ -692,15 +695,16 @@ const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
 
   selectedElements.sort(function (a, b) {
     if (a && b && a.compareDocumentPosition) {
-      return 3 - (b.compareDocumentPosition(a) & 6);
+      return 3 - (b.compareDocumentPosition(a) & 6); // eslint-disable-line no-bitwise
     }
-    if (a == null) {
+    if (isNullish(a)) {
       return 1;
     }
+    return 0;
   });
 
   // Make sure first elements are not null
-  while (selectedElements[0] == null) {
+  while (isNullish(selectedElements[0])) {
     selectedElements.shift(0);
   }
 };
@@ -717,7 +721,7 @@ const getOpacity = function () {
 * @implements {module:path.EditorContext#getMouseTarget}
 */
 const getMouseTarget = this.getMouseTarget = function (evt) {
-  if (evt == null) {
+  if (isNullish(evt)) {
     return null;
   }
   let mouseTarget = evt.target;
@@ -881,8 +885,7 @@ $(opacAni).attr({
 const restoreRefElems = function (elem) {
   // Look for missing reference elements, restore any found
   const attrs = $(elem).attr(refAttrs);
-  for (const o in attrs) {
-    const val = attrs[o];
+  Object.values(attrs).forEach((val) => {
     if (val && val.startsWith('url(')) {
       const id = getUrlFromAttr(val).substr(1);
       const ref = getElem(id);
@@ -891,7 +894,7 @@ const restoreRefElems = function (elem) {
         delete removedElements[id];
       }
     }
-  }
+  });
 
   const childs = elem.getElementsByTagName('*');
 
@@ -1158,9 +1161,9 @@ this.addExtension = async function (name, extInitFunc, importLocale) {
 
     extensions[name] = extObj;
     return call('extension_added', extObj);
-  } else {
-    console.log('Cannot add extension "' + name + '", an extension by that name already exists.');
   }
+  console.log('Cannot add extension "' + name + '", an extension by that name already exists.');
+  return undefined;
 };
 
 /**
@@ -1176,7 +1179,7 @@ this.addExtension = async function (name, extInitFunc, importLocale) {
 * @returns {Element[]|NodeList} Bbox elements
 */
 const getIntersectionList = this.getIntersectionList = function (rect) {
-  if (rubberBox == null) { return null; }
+  if (isNullish(rubberBox)) { return null; }
 
   const parent = currentGroup || getCurrentDrawing().getCurrentLayer();
 
@@ -1201,14 +1204,14 @@ const getIntersectionList = this.getIntersectionList = function (rect) {
   if (!isIE) {
     if (typeof svgroot.getIntersectionList === 'function') {
       // Offset the bbox of the rubber box by the offset of the svgcontent element.
-      rubberBBox.x += parseInt(svgcontent.getAttribute('x'), 10);
-      rubberBBox.y += parseInt(svgcontent.getAttribute('y'), 10);
+      rubberBBox.x += parseInt(svgcontent.getAttribute('x'));
+      rubberBBox.y += parseInt(svgcontent.getAttribute('y'));
 
       resultList = svgroot.getIntersectionList(rubberBBox, parent);
     }
   }
 
-  if (resultList == null || typeof resultList.item !== 'function') {
+  if (isNullish(resultList) || typeof resultList.item !== 'function') {
     resultList = [];
 
     if (!curBBoxes.length) {
@@ -1386,10 +1389,17 @@ canvas.call = call;
  */
 
 /**
+ * The promise return, if present, resolves to `undefined`
+ *  (`extension_added`, `exported`, `saved`)
+ * @typedef {Promise|undefined} module:svgcanvas.EventHandlerReturn
+*/
+
+/**
 * @callback module:svgcanvas.EventHandler
 * @param {external:Window} win
 * @param {module:svgcanvas.SvgCanvas#event:GenericCanvasEvent} arg
 * @listens module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
+* @returns {module:svgcanvas.EventHandlerReturn}
 */
 
 /**
@@ -1503,7 +1513,7 @@ this.setRotationAngle = function (val, preventUndo) {
   // }
   const selector = selectorManager.requestSelector(selectedElements[0]);
   selector.resize();
-  selector.updateGripCursors(val);
+  Selector.updateGripCursors(val);
 };
 
 /**
@@ -1574,7 +1584,7 @@ const selectOnly = this.selectOnly = function (elems, showGrips) {
 * @returns {undefined}
 */
 /* const removeFromSelection = */ this.removeFromSelection = function (elemsToRemove) {
-  if (selectedElements[0] == null) { return; }
+  if (isNullish(selectedElements[0])) { return; }
   if (!elemsToRemove.length) { return; }
 
   // find every element and remove it from our array copy
@@ -1732,7 +1742,7 @@ const mouseDown = function (evt) {
   // if it is a selector grip, then it must be a single element selected,
   // set the mouseTarget to that and update the mode to rotate/resize
 
-  if (mouseTarget === selectorManager.selectorParentGroup && selectedElements[0] != null) {
+  if (mouseTarget === selectorManager.selectorParentGroup && !isNullish(selectedElements[0])) {
     const grip = evt.target;
     const griptype = elData(grip, 'type');
     // rotating
@@ -1774,7 +1784,7 @@ const mouseDown = function (evt) {
         // insert a dummy transform so if the element(s) are moved it will have
         // a transform to use for its translate
         for (i = 0; i < selectedElements.length; ++i) {
-          if (selectedElements[i] == null) { continue; }
+          if (isNullish(selectedElements[i])) { continue; }
           const slist = getTransformList(selectedElements[i]);
           if (slist.numberOfItems) {
             slist.insertItemBefore(svgroot.createSVGTransform(), 0);
@@ -1786,7 +1796,7 @@ const mouseDown = function (evt) {
     } else if (!rightClick) {
       clearSelection();
       currentMode = 'multiselect';
-      if (rubberBox == null) {
+      if (isNullish(rubberBox)) {
         rubberBox = selectorManager.getRubberBandBox();
       }
       rStartX *= currentZoom;
@@ -1807,7 +1817,7 @@ const mouseDown = function (evt) {
     break;
   case 'zoom':
     started = true;
-    if (rubberBox == null) {
+    if (isNullish(rubberBox)) {
       rubberBox = selectorManager.getRubberBandBox();
     }
     assignAttributes(rubberBox, {
@@ -1818,7 +1828,7 @@ const mouseDown = function (evt) {
       display: 'inline'
     }, 100);
     break;
-  case 'resize':
+  case 'resize': {
     started = true;
     startX = x;
     startY = y;
@@ -1876,7 +1886,7 @@ const mouseDown = function (evt) {
       }
     }
     break;
-  case 'fhellipse':
+  } case 'fhellipse':
   case 'fhrect':
   case 'fhpath':
     start.x = realX;
@@ -1902,7 +1912,7 @@ const mouseDown = function (evt) {
     freehand.miny = realY;
     freehand.maxy = realY;
     break;
-  case 'image':
+  case 'image': {
     started = true;
     const newImage = addSVGElementFromJson({
       element: 'image',
@@ -1919,7 +1929,7 @@ const mouseDown = function (evt) {
     setHref(newImage, lastGoodImgUrl);
     preventClickDefault(newImage);
     break;
-  case 'square':
+  } case 'square':
     // FIXME: once we create the rect, we lose information that this was a square
     // (for resizing purposes this could be important)
     // Fallthrough
@@ -2119,7 +2129,7 @@ const mouseMove = function (evt) {
         len = selectedElements.length;
         for (i = 0; i < len; ++i) {
           selected = selectedElements[i];
-          if (selected == null) { break; }
+          if (isNullish(selected)) { break; }
           // if (i === 0) {
           //   const box = utilsGetBBox(selected);
           //     selectedBBoxes[i].x = box.x + dx;
@@ -2411,9 +2421,8 @@ const mouseMove = function (evt) {
     start = {x: end.x, y: end.y};
     break;
   // update path stretch line coordinates
-  } case 'path': {
-  }
-  // fall through
+} case 'path': { // eslint-disable-line no-empty
+} // fall through
   case 'pathedit': {
     x *= currentZoom;
     y *= currentZoom;
@@ -2545,16 +2554,16 @@ const mouseUp = function (evt) {
   // intentionally fall-through to select here
   case 'resize':
   case 'multiselect':
-    if (rubberBox != null) {
+    if (!isNullish(rubberBox)) {
       rubberBox.setAttribute('display', 'none');
       curBBoxes = [];
     }
     currentMode = 'select';
     // Fallthrough
   case 'select':
-    if (selectedElements[0] != null) {
+    if (!isNullish(selectedElements[0])) {
       // if we only have one selected element
-      if (selectedElements[1] == null) {
+      if (isNullish(selectedElements[1])) {
         // set our current stroke/fill properties to the element's
         const selected = selectedElements[0];
         switch (selected.tagName) {
@@ -2589,7 +2598,7 @@ const mouseUp = function (evt) {
       if (realX !== rStartX || realY !== rStartY) {
         const len = selectedElements.length;
         for (let i = 0; i < len; ++i) {
-          if (selectedElements[i] == null) { break; }
+          if (isNullish(selectedElements[i])) { break; }
           if (!selectedElements[i].firstChild) {
             // Not needed for groups (incorrectly resizes elems), possibly not needed at all?
             selectorManager.requestSelector(selectedElements[i]).resize();
@@ -2598,7 +2607,7 @@ const mouseUp = function (evt) {
       // no change in position/size, so maybe we should move to pathedit
       } else {
         t = evt.target;
-        if (selectedElements[0].nodeName === 'path' && selectedElements[1] == null) {
+        if (selectedElements[0].nodeName === 'path' && isNullish(selectedElements[1])) {
           pathActions.select(selectedElements[0]);
         // if it was a path
         // else, if it was selected and this is a shift-click, remove it from selection
@@ -2622,7 +2631,7 @@ const mouseUp = function (evt) {
     }
     return;
   case 'zoom':
-    if (rubberBox != null) {
+    if (!isNullish(rubberBox)) {
       rubberBox.setAttribute('display', 'none');
     }
     const factor = evt.shiftKey ? 0.5 : 2;
@@ -2774,7 +2783,7 @@ const mouseUp = function (evt) {
     }
   });
 
-  if (!keep && element != null) {
+  if (!keep && !isNullish(element)) {
     getCurrentDrawing().releaseId(getId());
     element.remove();
     element = null;
@@ -2799,7 +2808,7 @@ const mouseUp = function (evt) {
       canvas.setMode('select');
       selectOnly([t], true);
     }
-  } else if (element != null) {
+  } else if (!isNullish(element)) {
     /**
     * @name module:svgcanvas.SvgCanvas#addedNew
     * @type {boolean}
@@ -2936,8 +2945,8 @@ $(container).bind(
 
     // content offset from canvas in screen pixels
     const wOffset = workarea.offset();
-    const wOffsetLeft = wOffset['left'] + rulerwidth;
-    const wOffsetTop = wOffset['top'] + rulerwidth;
+    const wOffsetLeft = wOffset.left + rulerwidth;
+    const wOffsetTop = wOffset.top + rulerwidth;
 
     const delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
     if (!delta) { return; }
@@ -3508,7 +3517,7 @@ const removeUnusedDefElems = this.removeUnusedDefElems = function () {
 */
 this.svgCanvasToString = function () {
   // keep calling it until there are none to remove
-  while (removeUnusedDefElems() > 0) {}
+  while (removeUnusedDefElems() > 0) {} // eslint-disable-line no-empty
 
   pathActions.clear(true);
 
@@ -3572,7 +3581,9 @@ this.svgToString = function (elem, indent) {
     const attrs = Array.from(elem.attributes);
     let i;
     const childs = elem.childNodes;
-    attrs.sort((a, b) => a.name > b.name ? -1 : 1);
+    attrs.sort((a, b) => {
+      return a.name > b.name ? -1 : 1;
+    });
 
     for (i = 0; i < indent; i++) { out.push(' '); }
     out.push('<'); out.push(elem.nodeName);
@@ -3693,14 +3704,14 @@ this.svgToString = function (elem, indent) {
           out.push('\n');
           out.push(this.svgToString(childs.item(i), indent));
           break;
-        case 3: // text node
+        case 3: { // text node
           const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
           if (str !== '') {
             bOneLine = true;
             out.push(String(toXml(str)));
           }
           break;
-        case 4: // cdata node
+        } case 4: // cdata node
           out.push('\n');
           out.push(new Array(indent + 1).join(' '));
           out.push('<![CDATA[');
@@ -4308,8 +4319,8 @@ const convertToGroup = this.convertToGroup = function (elem) {
 
     if (vb) {
       const nums = vb.split(' ');
-      pos.x -= +nums[0];
-      pos.y -= +nums[1];
+      pos.x -= Number(nums[0]);
+      pos.y -= Number(nums[1]);
     }
 
     // Not ideal, but works
@@ -4635,12 +4646,12 @@ this.importSvgString = function (xmlString) {
         // if no explicit viewbox, create one out of the width and height
         vb = innervb ? innervb.split(' ') : [0, 0, innerw, innerh];
       for (j = 0; j < 4; ++j) {
-        vb[j] = +(vb[j]);
+        vb[j] = Number(vb[j]);
       }
 
       // TODO: properly handle preserveAspectRatio
       const // canvasw = +svgcontent.getAttribute('width'),
-        canvash = +svgcontent.getAttribute('height');
+        canvash = Number(svgcontent.getAttribute('height'));
       // imported content should be 1/3 of the canvas on its largest dimension
 
       if (innerh > innerw) {
@@ -4864,12 +4875,13 @@ this.setConfig = function (opts) {
 
 /**
 * @function module:svgcanvas.SvgCanvas#getTitle
-* @param {Element} elem
-* @returns {string|undefined} the current group/SVG's title contents
+* @param {Element} [elem]
+* @returns {string|undefined} the current group/SVG's title contents or
+* `undefined` if no element is passed nd there are no selected elements.
 */
 this.getTitle = function (elem) {
   elem = elem || selectedElements[0];
-  if (!elem) { return; }
+  if (!elem) { return undefined; }
   elem = $(elem).data('gsvg') || $(elem).data('symbol') || elem;
   const childs = elem.childNodes;
   for (let i = 0; i < childs.length; i++) {
@@ -5088,24 +5100,29 @@ this.setBBoxZoom = function (val, editorW, editorH) {
   }
 
   switch (val) {
-  case 'selection':
-    if (!selectedElements[0]) { return; }
-    const selectedElems = $.map(selectedElements, function (n) { if (n) { return n; } });
+  case 'selection': {
+    if (!selectedElements[0]) { return undefined; }
+    const selectedElems = $.map(selectedElements, function (n) {
+      if (n) {
+        return n;
+      }
+      return undefined;
+    });
     bb = getStrokedBBoxDefaultVisible(selectedElems);
     break;
-  case 'canvas':
+  } case 'canvas': {
     const res = getResolution();
     spacer = 0.95;
     bb = {width: res.w, height: res.h, x: 0, y: 0};
     break;
-  case 'content':
+  } case 'content':
     bb = getStrokedBBoxDefaultVisible();
     break;
   case 'layer':
     bb = getStrokedBBoxDefaultVisible(getVisibleElements(getCurrentDrawing().getCurrentLayer()));
     break;
   default:
-    return;
+    return undefined;
   }
   return calcZoom(bb);
 };
@@ -5262,14 +5279,12 @@ this.setColor = function (type, val, preventUndo) {
     if (elem) {
       if (elem.tagName === 'g') {
         walkTree(elem, addNonG);
-      } else {
-        if (type === 'fill') {
-          if (elem.tagName !== 'polyline' && elem.tagName !== 'line') {
-            elems.push(elem);
-          }
-        } else {
+      } else if (type === 'fill') {
+        if (elem.tagName !== 'polyline' && elem.tagName !== 'line') {
           elems.push(elem);
         }
+      } else {
+        elems.push(elem);
       }
     }
   }
@@ -5651,14 +5666,12 @@ canvas.setBlurOffsets = function (filter, stdDev) {
       width: '200%',
       height: '200%'
     }, 100);
-  } else {
-    // Removing these attributes hides text in Chrome (see Issue 579)
-    if (!isWebkit()) {
+  // Removing these attributes hides text in Chrome (see Issue 579)
+  } else if (!isWebkit()) {
       filter.removeAttribute('x');
       filter.removeAttribute('y');
       filter.removeAttribute('width');
       filter.removeAttribute('height');
-    }
   }
 };
 
@@ -5739,8 +5752,8 @@ canvas.setBlur = function (val, complete) {
 this.getBold = function () {
   // should only have one element selected
   const selected = selectedElements[0];
-  if (selected != null && selected.tagName === 'text' &&
-    selectedElements[1] == null) {
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+    isNullish(selectedElements[1])) {
     return (selected.getAttribute('font-weight') === 'bold');
   }
   return false;
@@ -5754,8 +5767,8 @@ this.getBold = function () {
 */
 this.setBold = function (b) {
   const selected = selectedElements[0];
-  if (selected != null && selected.tagName === 'text' &&
-    selectedElements[1] == null) {
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+    isNullish(selectedElements[1])) {
     changeSelectedAttribute('font-weight', b ? 'bold' : 'normal');
   }
   if (!selectedElements[0].textContent) {
@@ -5770,8 +5783,8 @@ this.setBold = function (b) {
 */
 this.getItalic = function () {
   const selected = selectedElements[0];
-  if (selected != null && selected.tagName === 'text' &&
-    selectedElements[1] == null) {
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+    isNullish(selectedElements[1])) {
     return (selected.getAttribute('font-style') === 'italic');
   }
   return false;
@@ -5785,8 +5798,8 @@ this.getItalic = function () {
 */
 this.setItalic = function (i) {
   const selected = selectedElements[0];
-  if (selected != null && selected.tagName === 'text' &&
-    selectedElements[1] == null) {
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+    isNullish(selectedElements[1])) {
     changeSelectedAttribute('font-style', i ? 'italic' : 'normal');
   }
   if (!selectedElements[0].textContent) {
@@ -5863,7 +5876,7 @@ this.setFontSize = function (val) {
 */
 this.getText = function () {
   const selected = selectedElements[0];
-  if (selected == null) { return ''; }
+  if (isNullish(selected)) { return ''; }
   return selected.textContent;
 };
 
@@ -5967,7 +5980,7 @@ this.setLinkURL = function (val) {
 */
 this.setRectRadius = function (val) {
   const selected = selectedElements[0];
-  if (selected != null && selected.tagName === 'rect') {
+  if (!isNullish(selected) && selected.tagName === 'rect') {
     const r = selected.getAttribute('rx');
     if (r !== String(val)) {
       selected.setAttribute('rx', val);
@@ -6023,12 +6036,12 @@ this.setSegType = function (newType) {
 * Otherwise the resulting path element is returned.
 */
 this.convertToPath = function (elem, getBBox) {
-  if (elem == null) {
+  if (isNullish(elem)) {
     const elems = selectedElements;
-    $.each(elems, function (i, elem) {
-      if (elem) { canvas.convertToPath(elem); }
+    $.each(elems, function (i, el) {
+      if (el) { canvas.convertToPath(el); }
     });
-    return;
+    return undefined;
   }
   if (getBBox) {
     return getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
@@ -6047,7 +6060,7 @@ this.convertToPath = function (elem, getBBox) {
     opacity: curShape.opacity,
     visibility: 'hidden'
   };
-  return convertToPath(elem, attrs, addSVGElementFromJson, pathActions, clearSelection, addToSelection, history, addCommandToHistory);
+  return convertToPath(elem, attrs, addSVGElementFromJson, pathActions, clearSelection, addToSelection, hstry, addCommandToHistory);
 };
 
 /**
@@ -6066,11 +6079,11 @@ const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
   elems = elems || selectedElements;
   let i = elems.length;
   const noXYElems = ['g', 'polyline', 'path'];
-  const goodGAttrs = ['transform', 'opacity', 'filter'];
+  // const goodGAttrs = ['transform', 'opacity', 'filter'];
 
   while (i--) {
     let elem = elems[i];
-    if (elem == null) { continue; }
+    if (isNullish(elem)) { continue; }
 
     // Set x,y vals on elements that don't have them
     if ((attr === 'x' || attr === 'y') && noXYElems.includes(elem.tagName)) {
@@ -6082,10 +6095,10 @@ const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
     }
 
     // only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
-    // TODO: FIXME: This doesn't seem right. Where's the body of this if statement?
-    if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
+    // TODO: FIXME: Missing statement body
+    // if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
     let oldval = attr === '#text' ? elem.textContent : elem.getAttribute(attr);
-    if (oldval == null) { oldval = ''; }
+    if (isNullish(oldval)) { oldval = ''; }
     if (oldval !== String(newValue)) {
       if (attr === '#text') {
         // const oldW = utilsGetBBox(elem).width;
@@ -6209,7 +6222,7 @@ this.deleteSelectedElements = function () {
 
   for (let i = 0; i < len; ++i) {
     const selected = selectedElements[i];
-    if (selected == null) { break; }
+    if (isNullish(selected)) { break; }
 
     let parent = selected.parentNode;
     let t = selected;
@@ -6406,7 +6419,7 @@ this.groupSelectedElements = function (type, urlArg) {
   let i = selectedElements.length;
   while (i--) {
     let elem = selectedElements[i];
-    if (elem == null) { continue; }
+    if (isNullish(elem)) { continue; }
 
     if (elem.parentNode.tagName === 'a' && elem.parentNode.childNodes.length === 1) {
       elem = elem.parentNode;
@@ -6690,7 +6703,7 @@ this.ungroupSelectedElement = function () {
 */
 this.moveToTopSelectedElement = function () {
   const [selected] = selectedElements;
-  if (selected != null) {
+  if (!isNullish(selected)) {
     let t = selected;
     const oldParent = t.parentNode;
     const oldNextSibling = t.nextSibling;
@@ -6713,7 +6726,7 @@ this.moveToTopSelectedElement = function () {
 */
 this.moveToBottomSelectedElement = function () {
   const [selected] = selectedElements;
-  if (selected != null) {
+  if (!isNullish(selected)) {
     let t = selected;
     const oldParent = t.parentNode;
     const oldNextSibling = t.nextSibling;
@@ -6759,9 +6772,9 @@ this.moveUpDownSelected = function (dir) {
       if (this === selected) {
         foundCur = true;
       }
-      return;
+      return true;
     }
-    closest = this;
+    closest = this; // eslint-disable-line consistent-this
     return false;
   });
   if (!closest) { return; }
@@ -6799,7 +6812,7 @@ this.moveSelectedElements = function (dx, dy, undoable) {
   let i = selectedElements.length;
   while (i--) {
     const selected = selectedElements[i];
-    if (selected != null) {
+    if (!isNullish(selected)) {
       // if (i === 0) {
       //   selectedBBoxes[0] = utilsGetBBox(selected);
       // }
@@ -6867,7 +6880,7 @@ this.cloneSelectedElements = function (x, y) {
   selectedElements.sort(sortfunction);
   for (i = 0; i < len; ++i) {
     elem = selectedElements[i];
-    if (elem == null) { break; }
+    if (isNullish(elem)) { break; }
   }
   // use slice to quickly get the subset of elements we need
   const copiedElements = selectedElements.slice(0, i);
@@ -6905,7 +6918,7 @@ this.alignSelectedElements = function (type, relativeTo) {
     miny = Number.MAX_VALUE, maxy = Number.MIN_VALUE;
   let curwidth = Number.MIN_VALUE, curheight = Number.MIN_VALUE;
   for (let i = 0; i < len; ++i) {
-    if (selectedElements[i] == null) { break; }
+    if (isNullish(selectedElements[i])) { break; }
     const elem = selectedElements[i];
     bboxes[i] = getStrokedBBoxDefaultVisible([elem]);
 
@@ -6958,7 +6971,7 @@ this.alignSelectedElements = function (type, relativeTo) {
   const dx = new Array(len);
   const dy = new Array(len);
   for (let i = 0; i < len; ++i) {
-    if (selectedElements[i] == null) { break; }
+    if (isNullish(selectedElements[i])) { break; }
     // const elem = selectedElements[i];
     const bbox = bboxes[i];
     dx[i] = 0;
@@ -7118,7 +7131,7 @@ this.cycleElement = function (next) {
   let elem = false;
   const allElems = getVisibleElements(currentGroup || getCurrentDrawing().getCurrentLayer());
   if (!allElems.length) { return; }
-  if (curElem == null) {
+  if (isNullish(curElem)) {
     num = next ? allElems.length - 1 : 0;
     elem = allElems[num];
   } else {

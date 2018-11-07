@@ -16,7 +16,7 @@ export default {
     // https://code.google.com/p/chromium/issues/detail?id=565120.
     if (isChrome()) {
       const verIndex = navigator.userAgent.indexOf('Chrome/') + 7;
-      const chromeVersion = parseInt(navigator.userAgent.substring(verIndex), 10);
+      const chromeVersion = parseInt(navigator.userAgent.substring(verIndex));
       if (chromeVersion < 49) {
         return;
       }

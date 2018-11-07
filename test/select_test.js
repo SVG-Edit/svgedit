@@ -1,6 +1,6 @@
 /* eslint-env qunit */
-import {NS} from '../editor/namespaces.js';
 import * as select from '../editor/select.js';
+import {NS} from '../editor/namespaces.js';
 
 // log function
 QUnit.log((details) => {
@@ -23,16 +23,20 @@ const mockConfig = {
 */
 const mockFactory = {
   createSVGElement (jsonMap) {
-    const elem = document.createElementNS(NS.SVG, jsonMap['element']);
-    for (const attr in jsonMap.attr) {
-      elem.setAttribute(attr, jsonMap.attr[attr]);
-    }
+    const elem = document.createElementNS(NS.SVG, jsonMap.element);
+    Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+      elem.setAttribute(attr, value);
+    });
     return elem;
   },
   svgRoot () { return svgroot; },
   svgContent () { return svgcontent; }
 };
 
+/**
+ * Potentially reusable test set-up.
+ * @returns {undefined}
+ */
 function setUp () {
   svgroot = mockFactory.createSVGElement({
     element: 'svg',
@@ -66,6 +70,10 @@ function setUpWithInit () {
 }
 */
 
+/**
+ * Tear down the test by emptying our sandbox area.
+ * @returns {undefined}
+ */
 function tearDown () {
   while (sandbox.hasChildNodes()) {
     sandbox.firstChild.remove();
@@ -81,10 +89,10 @@ QUnit.test('Test svgedit.select package', function (assert) {
   assert.ok(select.init);
   assert.ok(select.getSelectorManager);
   assert.equal(typeof select, typeof {});
-  assert.equal(typeof select.Selector, typeof function () {});
-  assert.equal(typeof select.SelectorManager, typeof function () {});
-  assert.equal(typeof select.init, typeof function () {});
-  assert.equal(typeof select.getSelectorManager, typeof function () {});
+  assert.equal(typeof select.Selector, typeof function () { /* */ });
+  assert.equal(typeof select.SelectorManager, typeof function () { /* */ });
+  assert.equal(typeof select.init, typeof function () { /* */ });
+  assert.equal(typeof select.getSelectorManager, typeof function () { /* */ });
 });
 
 QUnit.test('Test Selector DOM structure', function (assert) {

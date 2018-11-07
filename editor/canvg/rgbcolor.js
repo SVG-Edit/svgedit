@@ -158,9 +158,9 @@ const colorDefs = [
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
     process (bits) {
       return [
-        parseInt(bits[1], 10),
-        parseInt(bits[2], 10),
-        parseInt(bits[3], 10)
+        parseInt(bits[1]),
+        parseInt(bits[2]),
+        parseInt(bits[3])
       ];
     }
   },
@@ -279,8 +279,7 @@ export default class RGBColor {
 margin: 3px;
 border: 1px solid black;
 background: ${listColor.toHex()};
-color: ${listColor.toHex()};`
-        ;
+color: ${listColor.toHex()};`;
         exampleDiv.append('test');
         const listItemValue = ` ${examples[i]} -> ${listColor.toRGB()} -> ${listColor.toHex()}`;
         listItem.append(exampleDiv, listItemValue);

@@ -205,7 +205,7 @@ export default {
     unsavedChanges: 'Sunt schimbări nesalvate.',
     enterNewLinkURL: 'IntroduAliniere în raport cu ...sceţi noul URL',
     errorLoadingSVG: 'Eroare: Nu se pot încărca datele SVG',
-    URLloadFail: 'Nu se poate încărca de la URL',
+    URLLoadFail: 'Nu se poate încărca de la URL',
     retrieving: 'Retrieving \'%s\' ...',
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',

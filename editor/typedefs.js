@@ -50,3 +50,12 @@
 /**
 * @external Window
 */
+
+/**
+ * @external JamilihArray
+ * @type {GenericArray}
+ * @property {string} 0 Element name
+ * @property {PlainObject<string, string>|JamilihArray} [1] Generally a map from an attribute name to attribute value, but also adds event handlers, etc.
+ * @property {JamilihArray} [2] Children
+ * @see {@link https://github.com/brettz9/jamilih/}
+ */

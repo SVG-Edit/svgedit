@@ -8,6 +8,10 @@ QUnit.log((details) => {
   }
 });
 
+/**
+ * Tear down tests, resetting custom menus.
+ * @returns {undefined}
+ */
 function tearDown () {
   contextmenu.resetCustomMenus();
 }
@@ -39,7 +43,7 @@ QUnit.test('Test svgedit.contextmenu does not add invalid menu item', function (
 QUnit.test('Test svgedit.contextmenu adds valid menu item', function (assert) {
   assert.expect(2);
 
-  const validItem = {id: 'valid', label: 'anicelabel', action () { alert('testing'); }};
+  const validItem = {id: 'valid', label: 'anicelabel', action () { console.log('testing'); }};
   contextmenu.add(validItem);
 
   assert.ok(contextmenu.hasCustomHandler('valid'), 'Valid menu item is added.');
@@ -50,8 +54,8 @@ QUnit.test('Test svgedit.contextmenu adds valid menu item', function (assert) {
 QUnit.test('Test svgedit.contextmenu rejects valid duplicate menu item id', function (assert) {
   assert.expect(1);
 
-  const validItem1 = {id: 'valid', label: 'anicelabel', action () { alert('testing'); }};
-  const validItem2 = {id: 'valid', label: 'anicelabel', action () { alert('testingtwice'); }};
+  const validItem1 = {id: 'valid', label: 'anicelabel', action () { console.log('testing'); }};
+  const validItem2 = {id: 'valid', label: 'anicelabel', action () { console.log('testingtwice'); }};
   contextmenu.add(validItem1);
   contextmenu.add(validItem2);
 

@@ -22,11 +22,11 @@ let cbid = 0;
 */
 function getCallbackSetter (funcName) {
   return function (...args) {
-    const t = this, // New callback
-      cbid = t.send(funcName, args, function () {}); // The callback (currently it's nothing, but will be set later)
+    const that = this, // New callback
+      callbackID = this.send(funcName, args, function () { /* */ }); // The callback (currently it's nothing, but will be set later)
 
     return function (newCallback) {
-      t.callbacks[cbid] = newCallback; // Set callback
+      that.callbacks[callbackID] = newCallback; // Set callback
     };
   };
 }
@@ -39,14 +39,14 @@ function getCallbackSetter (funcName) {
 * @param {JSON} data
 * @returns {undefined}
 */
-function addCallback (t, {result, error, id: cbid}) {
-  if (typeof cbid === 'number' && t.callbacks[cbid]) {
+function addCallback (t, {result, error, id: callbackID}) {
+  if (typeof callbackID === 'number' && t.callbacks[callbackID]) {
     // These should be safe both because we check `cbid` is numeric and
     //   because the calls are from trusted origins
     if (result) {
-      t.callbacks[cbid](result); // lgtm [js/remote-property-injection]
+      t.callbacks[callbackID](result); // lgtm [js/remote-property-injection]
     } else {
-      t.callbacks[cbid](error, 'error'); // lgtm [js/remote-property-injection]
+      t.callbacks[callbackID](error, 'error'); // lgtm [js/remote-property-injection]
     }
   }
 }
@@ -67,7 +67,7 @@ function messageListener (e) {
     e.source !== this.frame.contentWindow ||
     (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin))
   ) {
-    console.log(`The origin ${e.origin} was not whitelisted as an origin from which responses may be received by this ${window.origin} script.`);
+    console.log(`The origin ${e.origin} was not whitelisted as an origin from which responses may be received by this ${window.origin} script.`); // eslint-disable-line no-console
     return;
   }
   addCallback(this, data);
@@ -136,7 +136,7 @@ class EmbeddedSVGEdit {
   *   If supplied, it should probably be the same as svgEditor's allowedOrigins
   */
   constructor (frame, allowedOrigins) {
-    const t = this;
+    const that = this;
     this.allowedOrigins = allowedOrigins || [];
     // Initialize communication
     this.frame = frame;
@@ -326,7 +326,7 @@ class EmbeddedSVGEdit {
         const keyboardEvent = new KeyboardEvent(e.type, {
           key, keyCode, charCode, which
         });
-        t.frame.contentDocument.dispatchEvent(keyboardEvent);
+        that.frame.contentDocument.dispatchEvent(keyboardEvent);
       }
     });
   }
@@ -338,11 +338,11 @@ class EmbeddedSVGEdit {
   * @returns {Integer}
   */
   send (name, args, callback) {
-    const t = this;
+    const that = this;
     cbid++;
 
     this.callbacks[cbid] = callback;
-    setTimeout((function (cbid) {
+    setTimeout((function (callbackID) {
       return function () { // Delay for the callback to be set in case its synchronous
         /*
         * Todo: Handle non-JSON arguments and return values (undefined,
@@ -354,8 +354,8 @@ class EmbeddedSVGEdit {
         // We accept and post strings for the sake of IE9 support
         let sameOriginWithGlobal = false;
         try {
-          sameOriginWithGlobal = window.location.origin === t.frame.contentWindow.location.origin &&
-            t.frame.contentWindow.svgEditor.canvas;
+          sameOriginWithGlobal = window.location.origin === that.frame.contentWindow.location.origin &&
+            that.frame.contentWindow.svgEditor.canvas;
         } catch (err) {}
 
         if (sameOriginWithGlobal) {
@@ -365,17 +365,17 @@ class EmbeddedSVGEdit {
           //  of the current JSON-based communication API (e.g., not passing
           //  callbacks). We might be able to address these shortcomings; see
           //  the todo elsewhere in this file.
-          const message = {id: cbid},
-            {svgEditor: {canvas: svgCanvas}} = t.frame.contentWindow;
+          const message = {id: callbackID},
+            {svgEditor: {canvas: svgCanvas}} = that.frame.contentWindow;
           try {
-            message.result = svgCanvas[name].apply(svgCanvas, args);
+            message.result = svgCanvas[name](...args);
           } catch (err) {
             message.error = err.message;
           }
-          addCallback(t, message);
+          addCallback(that, message);
         } else { // Requires the ext-xdomain-messaging.js extension
-          t.frame.contentWindow.postMessage(JSON.stringify({
-            namespace: 'svgCanvas', id: cbid, name, args
+          that.frame.contentWindow.postMessage(JSON.stringify({
+            namespace: 'svgCanvas', id: callbackID, name, args
           }), '*');
         }
       };

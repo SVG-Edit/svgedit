@@ -6,14 +6,14 @@ import axeCheck from 'axe-testcafe';
 fixture`TestCafe Axe accessibility tests (Editor - no parameters)`
   .page`http://localhost:8000/editor/svg-editor.html`;
 
-test('Editor - no parameters', async t => {
+test('Editor - no parameters', async (t) => {
   await axeCheck(t); // , axeContent, axeOptions: https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#api-name-axerun
 });
 
 fixture`TestCafe Axe accessibility tests (Editor - with all extensions)`
   .page`http://localhost:8000/editor/svg-editor.html?extensions=ext-arrows.js,ext-closepath.js,ext-foreignobject.js,ext-helloworld.js,ext-mathjax.js,ext-php_savefile.js,ext-server_moinsave.js,ext-server_opensave.js,ext-webappfind.js,ext-xdomain-messaging.js`;
 
-test('Editor ES - with all extensions', async t => {
+test('Editor ES - with all extensions', async (t) => {
   await axeCheck(t); // , axeContent, axeOptions: https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#api-name-axerun
 });
 

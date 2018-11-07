@@ -93,9 +93,9 @@ const injectExtendedContextMenuItemIntoDom = function (menuItem) {
 * @returns {undefined}
 */
 export const injectExtendedContextMenuItemsIntoDom = function () {
-  for (const menuItem in contextMenuExtensions) {
-    injectExtendedContextMenuItemIntoDom(contextMenuExtensions[menuItem]);
-  }
+  Object.values(contextMenuExtensions).forEach((menuItem) => {
+    injectExtendedContextMenuItemIntoDom(menuItem);
+  });
 };
 /**
 * @function module:contextmenu.resetCustomMenus

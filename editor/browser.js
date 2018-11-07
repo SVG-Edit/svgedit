@@ -16,7 +16,7 @@ import {NS} from './namespaces.js';
 const $ = jQuery;
 
 const supportsSVG_ = (function () {
-return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
+return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
 }());
 
 /**
@@ -29,7 +29,7 @@ const {userAgent} = navigator;
 const svg = document.createElementNS(NS.SVG, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
-const isOpera_ = !!window.opera;
+const isOpera_ = Boolean(window.opera);
 const isWebkit_ = userAgent.includes('AppleWebKit');
 const isGecko_ = userAgent.includes('Gecko/');
 const isIE_ = userAgent.includes('MSIE');
@@ -39,11 +39,11 @@ const isMac_ = userAgent.includes('Macintosh');
 const isTouch_ = 'ontouchstart' in window;
 
 const supportsSelectors_ = (function () {
-return !!svg.querySelector;
+return Boolean(svg.querySelector);
 }());
 
 const supportsXpath_ = (function () {
-return !!document.evaluate;
+return Boolean(document.evaluate);
 }());
 
 // segList functions (for FF1.5 and 2.0)

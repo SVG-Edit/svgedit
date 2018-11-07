@@ -1,12 +1,21 @@
 import {jml, body, nbsp} from '../../external/jamilih/jml-es.js';
-
 import $ from '../../external/query-result/esm/index.js';
 import {manipulation} from '../../external/qr-manipulation/dist/index-es.js';
+
 manipulation($, jml);
 
 const baseAPIURL = 'https://openclipart.org/search/json/';
 
+/**
+ * Shows results after query submission.
+ * @param {string} url
+ * @returns {undefined}
+ */
 async function processResults (url) {
+  /**
+   * @param {string} query
+   * @returns {external:JamilihArray}
+   */
   function queryLink (query) {
     return ['a', {
       href: 'javascript: void(0);',
@@ -22,7 +31,7 @@ async function processResults (url) {
 
   const r = await fetch(url);
   const json = await r.json();
-  console.log('json', json);
+  // console.log('json', json);
 
   if (!json || json.msg !== 'success') {
     alert('There was a problem downloading the results');
@@ -74,7 +83,7 @@ async function processResults (url) {
           async click (e) {
             e.preventDefault();
             const {value: svgURL, id} = this.dataset;
-            console.log('this', id, svgURL);
+            // console.log('this', id, svgURL);
             const post = (message) => {
               // Todo: Make origin customizable as set by opening window
               // Todo: If dropping IE9, avoid stringifying
@@ -90,7 +99,7 @@ async function processResults (url) {
             });
             const result = await fetch(svgURL);
             const svg = await result.text();
-            console.log('h', svgURL, svg);
+            // console.log('url and svg', svgURL, svg);
             post({
               href: svgURL,
               data: svg

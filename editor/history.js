@@ -5,7 +5,7 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import {getHref, setHref, getRotationAngle} from './utilities.js';
+import {getHref, setHref, getRotationAngle, isNullish} from './utilities.js';
 import {removeElementFromListMap} from './svgtransformlist.js';
 
 /**
@@ -285,9 +285,9 @@ export class RemoveElementCommand extends Command {
     }
 
     removeElementFromListMap(this.elem);
-    if (this.nextSibling == null) {
+    if (isNullish(this.nextSibling)) {
       if (window.console) {
-        console.log('Error: reference element was lost');
+        console.log('Error: reference element was lost'); // eslint-disable-line no-console
       }
     }
     this.parent.insertBefore(this.elem, this.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
@@ -670,7 +670,7 @@ export class UndoManager {
     const oldValues = new Array(i), elements = new Array(i);
     while (i--) {
       const elem = elems[i];
-      if (elem == null) { continue; }
+      if (isNullish(elem)) { continue; }
       elements[i] = elem;
       oldValues[i] = elem.getAttribute(attrName);
     }
@@ -695,7 +695,7 @@ export class UndoManager {
     let i = changeset.elements.length;
     while (i--) {
       const elem = changeset.elements[i];
-      if (elem == null) { continue; }
+      if (isNullish(elem)) { continue; }
       const changes = {};
       changes[attrName] = changeset.oldValues[i];
       if (changes[attrName] !== elem.getAttribute(attrName)) {

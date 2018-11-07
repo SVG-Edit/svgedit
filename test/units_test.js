@@ -8,6 +8,10 @@ QUnit.log((details) => {
   }
 });
 
+/**
+ * Set up tests, supplying mock data.
+ * @returns {undefined}
+ */
 function setUp () {
   units.init(
     /**
@@ -35,7 +39,7 @@ QUnit.test('Test svgedit.units.shortFloat()', function (assert) {
   setUp();
 
   assert.ok(units.shortFloat);
-  assert.equal(typeof units.shortFloat, typeof function () {});
+  assert.equal(typeof units.shortFloat, typeof function () { /* */ });
 
   const {shortFloat} = units;
   assert.equal(shortFloat(0.00000001), 0);
@@ -51,7 +55,7 @@ QUnit.test('Test svgedit.units.isValidUnit()', function (assert) {
   setUp();
 
   assert.ok(units.isValidUnit);
-  assert.equal(typeof units.isValidUnit, typeof function () {});
+  assert.equal(typeof units.isValidUnit, typeof function () { /* */ });
 
   const {isValidUnit} = units;
   assert.ok(isValidUnit('0'));
@@ -79,7 +83,7 @@ QUnit.test('Test svgedit.units.convertUnit()', function (assert) {
   setUp();
 
   assert.ok(units.convertUnit);
-  assert.equal(typeof units.convertUnit, typeof function () {});
+  assert.equal(typeof units.convertUnit, typeof function () { /* */ });
   // cm in default setup
   assert.equal(units.convertUnit(42), 1.1113);
   assert.equal(units.convertUnit(42, 'px'), 42);

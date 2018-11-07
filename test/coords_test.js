@@ -18,6 +18,11 @@ const svg = document.createElementNS(NS.SVG, 'svg');
 svgroot.append(svg);
 
 let elemId = 1;
+
+/**
+ * Set up tests with mock data.
+ * @returns {undefined}
+ */
 function setUp () {
   // Mock out editor context.
   utilities.init(
@@ -38,13 +43,17 @@ function setUp () {
       getGridSnapping () { return false; },
       getDrawing () {
         return {
-          getNextId () { return '' + elemId++; }
+          getNextId () { return String(elemId++); }
         };
       }
     }
   );
 }
 
+/**
+ * Tear down tests, removing elements.
+ * @returns {undefined}
+ */
 function tearDown () {
   while (svg.hasChildNodes()) {
     svg.firstChild.remove();

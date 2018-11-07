@@ -206,7 +206,7 @@ export default {
     unsavedChanges: '存在未保存的修改.',
     enterNewLinkURL: '输入新建链接的URL地址',
     errorLoadingSVG: '错误: 无法加载SVG数据',
-    URLloadFail: '无法从URL中加载',
+    URLLoadFail: '无法从URL中加载',
     retrieving: '检索 \'%s\'...',
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',

@@ -7,6 +7,7 @@
  */
 
 import {NS} from './namespaces.js';
+import {isNullish} from './utilities.js';
 
 const wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
 const hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
@@ -40,7 +41,7 @@ let typeMap_ = {};
  */
 /**
  * @function module:units.ElementContainer#getElement
- * @returns {Element} An element in the container given an id
+ * @returns {?Element} An element in the container given an id
  */
 /**
  * @function module:units.ElementContainer#getHeight
@@ -134,8 +135,7 @@ export const getTypeMap = function () {
 export const shortFloat = function (val) {
   const digits = elementContainer_.getRoundDigits();
   if (!isNaN(val)) {
-    // Note that + converts to Number
-    return +((+val).toFixed(digits));
+    return Number(Number(val).toFixed(digits));
   }
   if (Array.isArray(val)) {
     return shortFloat(val[0]) + ',' + shortFloat(val[1]);
@@ -304,7 +304,7 @@ export const isValidUnit = function (attr, val, selectedElement) {
     // not already present
     try {
       const elem = elementContainer_.getElement(val);
-      result = (elem == null || elem === selectedElement);
+      result = (isNullish(elem) || elem === selectedElement);
     } catch (e) {}
     return result;
   }

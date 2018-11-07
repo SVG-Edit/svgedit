@@ -77,8 +77,8 @@ class HistoryRecordingService {
     if (this.currentBatchCommand_) {
       const batchCommand = this.currentBatchCommand_;
       this.batchCommandStack_.pop();
-      const {length} = this.batchCommandStack_;
-      this.currentBatchCommand_ = length ? this.batchCommandStack_[length - 1] : null;
+      const {length: len} = this.batchCommandStack_;
+      this.currentBatchCommand_ = len ? this.batchCommandStack_[len - 1] : null;
       this.addCommand_(batchCommand);
     }
     return this;
@@ -141,7 +141,7 @@ class HistoryRecordingService {
    * Private function to add a command to the history or current batch command.
    * @private
    * @param {Command} cmd
-   * @returns {module:history.HistoryRecordingService}
+   * @returns {module:history.HistoryRecordingService|undefined}
    */
   addCommand_ (cmd) {
     if (!this.undoManager_) { return this; }
@@ -150,6 +150,7 @@ class HistoryRecordingService {
     } else {
       this.undoManager_.addCommandToHistory(cmd);
     }
+    return undefined;
   }
 }
 /**

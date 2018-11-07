@@ -3,6 +3,7 @@
  * @todo Fork find-in-files to get ignore pattern support
  */
 const fif = require('find-in-files');
+
 (async () => {
 /**
  * @typedef {PlainObject} FileResult
@@ -15,7 +16,7 @@ const fileMatchPatterns = ['editor'];
  * Keys are file name strings
  * @type {Object.<string, FileResult>}
  */
-let results = await Promise.all(fileMatchPatterns.map(async (fileMatchPattern) => {
+let results = await Promise.all(fileMatchPatterns.map((fileMatchPattern) => {
   return fif.find(
     {
       // We grab to the end of the line as the `line` result for `find-in-files`
@@ -46,21 +47,27 @@ Object.entries(results).forEach(([file, res]) => {
   });
   */
 });
-console.log(`${output}\nTotal failures found: ${total}.\n`);
+console.log(`${output}\nTotal failures found: ${total}.\n`); // eslint-disable-line no-console
 
+/**
+ * @external FindInFilesResult
+ * @type {PlainObject}
+ * @property {string[]} matches The matched strings
+ * @property {Integer} count The number of matches
+ * @property {string[]} line The lines that were matched. The docs mistakenly indicate the property is named `lines`; see {@link https://github.com/kaesetoast/find-in-files/pull/19}.
+ */
+
+/**
+ * Eliminates known false matches against overly generic types.
+ * @param {string} file
+ * @param {external:FindInFilesResult} res
+ * @returns {undefined}
+ */
 function reduceFalseMatches (file, res) {
   switch (file) {
   case 'editor/external/jamilih/jml-es.js':
   case 'editor/xdomain-svgedit-config-iife.js': // Ignore
     res.line = [];
-    break;
-  case 'editor/external/dynamic-import-polyfill/importModule.js':
-    res.line = res.line.filter((line) => {
-      return ![
-        '* @returns {*} The return depends on the export of the targeted module.',
-        '* @returns {ArbitraryModule|*} The return depends on the export of the targeted module.'
-      ].includes(line);
-    });
     break;
   case 'editor/embedapi.js':
     res.line = res.line.filter((line) => {

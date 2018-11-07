@@ -21,6 +21,10 @@ QUnit.log((details) => {
 const svgroot = document.querySelector('#svgroot');
 let svgcontent, rect, circle;
 
+/**
+ * Set up tests, adding elements.
+ * @returns {undefined}
+ */
 function setUp () {
   svgcontent = svgroot.appendChild(document.createElementNS(NS.SVG, 'svg'));
   rect = svgcontent.appendChild(document.createElementNS(NS.SVG, 'rect'));
@@ -29,6 +33,10 @@ function setUp () {
   circle.id = 'c';
 }
 
+/**
+ * Tear down tests, emptying SVG root, and resetting list map.
+ * @returns {undefined}
+ */
 function tearDown () {
   transformlist.resetListMap();
   while (svgroot.hasChildNodes()) {
@@ -82,7 +90,7 @@ QUnit.test('Test SVGTransformList.initialize()', function (assert) {
   const t = svgcontent.createSVGTransform();
   assert.ok(t);
   assert.ok(rxform.initialize);
-  assert.equal(typeof rxform.initialize, typeof function () {});
+  assert.equal(typeof rxform.initialize, typeof function () { /* */ });
   rxform.initialize(t);
   assert.equal(rxform.numberOfItems, 1);
   assert.equal(cxform.numberOfItems, 0);
@@ -110,8 +118,8 @@ QUnit.test('Test SVGTransformList.appendItem() and getItem()', function (assert)
 
   assert.ok(rxform.appendItem);
   assert.ok(rxform.getItem);
-  assert.equal(typeof rxform.appendItem, typeof function () {});
-  assert.equal(typeof rxform.getItem, typeof function () {});
+  assert.equal(typeof rxform.appendItem, typeof function () { /* */ });
+  assert.equal(typeof rxform.getItem, typeof function () { /* */ });
 
   rxform.appendItem(t1);
   rxform.appendItem(t2);
@@ -145,7 +153,7 @@ QUnit.test('Test SVGTransformList.removeItem()', function (assert) {
   const t1 = svgcontent.createSVGTransform(),
     t2 = svgcontent.createSVGTransform();
   assert.ok(rxform.removeItem);
-  assert.equal(typeof rxform.removeItem, typeof function () {});
+  assert.equal(typeof rxform.removeItem, typeof function () { /* */ });
   rxform.appendItem(t1);
   rxform.appendItem(t2);
 
@@ -168,7 +176,7 @@ QUnit.test('Test SVGTransformList.replaceItem()', function (assert) {
   const cxform = transformlist.getTransformList(circle);
 
   assert.ok(rxform.replaceItem);
-  assert.equal(typeof rxform.replaceItem, typeof function () {});
+  assert.equal(typeof rxform.replaceItem, typeof function () { /* */ });
 
   const t1 = svgcontent.createSVGTransform(),
     t2 = svgcontent.createSVGTransform(),
@@ -205,7 +213,7 @@ QUnit.test('Test SVGTransformList.insertItemBefore()', function (assert) {
   const cxform = transformlist.getTransformList(circle);
 
   assert.ok(rxform.insertItemBefore);
-  assert.equal(typeof rxform.insertItemBefore, typeof function () {});
+  assert.equal(typeof rxform.insertItemBefore, typeof function () { /* */ });
 
   const t1 = svgcontent.createSVGTransform(),
     t2 = svgcontent.createSVGTransform(),

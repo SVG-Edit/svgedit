@@ -18,7 +18,7 @@
 * @param {external:jQuery} $ The jQuery object to which to add the plug-in
 * @returns {external:jQuery}
 */
-export default function ($) {
+export default function jQueryPluginSVG ($) {
   const proxied = $.fn.attr,
     svgns = 'http://www.w3.org/2000/svg';
   /**
@@ -32,7 +32,7 @@ export default function ($) {
   */
   $.fn.attr = function (key, value) {
     const len = this.length;
-    if (!len) { return proxied.apply(this, arguments); }
+    if (!len) { return proxied.call(this, key, value); }
     for (let i = 0; i < len; ++i) {
       const elem = this[i];
       // set/get SVG attribute
@@ -70,7 +70,7 @@ export default function ($) {
           return attr;
         }
       } else {
-        return proxied.apply(this, arguments);
+        return proxied.call(this, key, value);
       }
     }
     return this;
