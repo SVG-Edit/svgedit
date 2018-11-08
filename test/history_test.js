@@ -317,7 +317,7 @@ QUnit.test('Test MoveElementCommand', function (assert) {
 
   setUp();
 
-  let move = new history.MoveElementCommand(div3, div1, divparent);
+  let move = new hstory.MoveElementCommand(div3, div1, divparent);
   assert.ok(move.unapply);
   assert.ok(move.apply);
   assert.equal(typeof move.unapply, typeof function () { /* */ });

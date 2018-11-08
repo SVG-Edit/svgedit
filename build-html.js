@@ -1,5 +1,5 @@
 /* eslint-env node */
-const fs = require('promise-fs');
+import fs from 'promise-fs';
 
 const filesAndReplacements = [
   {
@@ -122,26 +122,27 @@ const filesAndReplacements = [
   }
 ];
 
-filesAndReplacements.reduce(async (p, {input, output, replacements}) => {
+(async () => {
+await filesAndReplacements.reduce(async (p, {input, output, replacements}) => {
   await p;
   let data;
   try {
     data = await fs.readFile(input, 'utf8');
   } catch (err) {
-    console.log(`Error reading ${input} file`, err);
+    console.log(`Error reading ${input} file`, err); // eslint-disable-line no-console
   }
 
-  data = replacements.reduce((s, [find, replacement]) => {
-    return s.replace(find, replacement);
+  data = replacements.reduce((s, [fnd, replacement]) => {
+    return s.replace(fnd, replacement);
   }, data);
 
   try {
     await fs.writeFile(output, data);
   } catch (err) {
-    console.log(`Error writing file: ${err}`, err);
+    console.log(`Error writing file: ${err}`, err); // eslint-disable-line no-console
     return;
   }
-  console.log(`Completed file ${input} rewriting!`);
-}, Promise.resolve()).then(() => {
-  console.log('Finished!');
-});
+  console.log(`Completed file ${input} rewriting!`); // eslint-disable-line no-console
+}, Promise.resolve());
+console.log('Finished!'); // eslint-disable-line no-console
+})();

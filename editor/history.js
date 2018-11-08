@@ -114,7 +114,7 @@ export class MoveElementCommand extends Command {
     this.newNextSibling = elem.nextSibling;
     this.newParent = elem.parentNode;
   }
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.MoveElementCommand';
   }
 
@@ -180,7 +180,7 @@ export class InsertElementCommand extends Command {
     this.nextSibling = this.elem.nextSibling;
   }
 
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.InsertElementCommand';
   }
 
@@ -249,7 +249,7 @@ export class RemoveElementCommand extends Command {
     // special hack for webkit: remove this element's entry in the svgTransformLists map
     removeElementFromListMap(elem);
   }
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.RemoveElementCommand';
   }
 
@@ -338,7 +338,7 @@ export class ChangeElementCommand extends Command {
       }
     }
   }
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.ChangeElementCommand';
   }
 
@@ -354,26 +354,24 @@ export class ChangeElementCommand extends Command {
     }
 
     let bChangedTransform = false;
-    for (const attr in this.newValues) {
-      if (this.newValues[attr]) {
+    Object.entries(this.newValues).forEach(([attr, value]) => {
+      if (value) {
         if (attr === '#text') {
-          this.elem.textContent = this.newValues[attr];
+          this.elem.textContent = value;
         } else if (attr === '#href') {
-          setHref(this.elem, this.newValues[attr]);
+          setHref(this.elem, value);
         } else {
-          this.elem.setAttribute(attr, this.newValues[attr]);
+          this.elem.setAttribute(attr, value);
         }
+      } else if (attr === '#text') {
+        this.elem.textContent = '';
       } else {
-        if (attr === '#text') {
-          this.elem.textContent = '';
-        } else {
-          this.elem.setAttribute(attr, '');
-          this.elem.removeAttribute(attr);
-        }
+        this.elem.setAttribute(attr, '');
+        this.elem.removeAttribute(attr);
       }
 
       if (attr === 'transform') { bChangedTransform = true; }
-    }
+    });
 
     // relocate rotational transform, if necessary
     if (!bChangedTransform) {
@@ -408,24 +406,22 @@ export class ChangeElementCommand extends Command {
     }
 
     let bChangedTransform = false;
-    for (const attr in this.oldValues) {
-      if (this.oldValues[attr]) {
+    Object.entries(this.oldValues).forEach(([attr, value]) => {
+      if (value) {
         if (attr === '#text') {
-          this.elem.textContent = this.oldValues[attr];
+          this.elem.textContent = value;
         } else if (attr === '#href') {
-          setHref(this.elem, this.oldValues[attr]);
+          setHref(this.elem, value);
         } else {
-          this.elem.setAttribute(attr, this.oldValues[attr]);
+          this.elem.setAttribute(attr, value);
         }
+      } else if (attr === '#text') {
+        this.elem.textContent = '';
       } else {
-        if (attr === '#text') {
-          this.elem.textContent = '';
-        } else {
-          this.elem.removeAttribute(attr);
-        }
+        this.elem.removeAttribute(attr);
       }
       if (attr === 'transform') { bChangedTransform = true; }
-    }
+    });
     // relocate rotational transform, if necessary
     if (!bChangedTransform) {
       const angle = getRotationAngle(this.elem);
@@ -477,7 +473,7 @@ export class BatchCommand extends Command {
     this.stack = [];
   }
 
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.BatchCommand';
   }
 

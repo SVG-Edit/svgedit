@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-overview_window.js
  *
@@ -9,8 +8,7 @@
  */
 export default {
   name: 'overview_window',
-  init ({isChrome, isIE}) {
-    const $ = jQuery;
+  init ({$, isChrome, isIE}) {
     const overviewWindowGlobals = {};
     // Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
     // https://code.google.com/p/chromium/issues/detail?id=565120.
@@ -18,7 +16,7 @@ export default {
       const verIndex = navigator.userAgent.indexOf('Chrome/') + 7;
       const chromeVersion = parseInt(navigator.userAgent.substring(verIndex));
       if (chromeVersion < 49) {
-        return;
+        return undefined;
       }
     }
 

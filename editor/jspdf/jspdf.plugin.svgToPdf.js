@@ -68,8 +68,8 @@ const getLinesOptionsOfPoly = function (node) {
     }
   }
   if (nums.length < 4) {
-    console.log('invalid points attribute:', node);
-    return;
+    console.log('invalid points attribute:', node); // eslint-disable-line no-console
+    return undefined;
   }
   const [x, y] = nums, lines = [];
   for (let i = 2; i < nums.length; i += 2) {
@@ -171,7 +171,7 @@ const svgElementToPdf = function (element, pdf, options) {
       removeAttributes(node, pdfSvgAttr.circle);
       break;
     case 'polygon':
-    case 'polyline':
+    case 'polyline': {
       const linesOptions = getLinesOptionsOfPoly(node);
       if (linesOptions) {
         pdf.lines(
@@ -186,7 +186,7 @@ const svgElementToPdf = function (element, pdf, options) {
       removeAttributes(node, pdfSvgAttr.polygon);
       break;
     // TODO: path
-    case 'text':
+    } case 'text': {
       if (node.hasAttribute('font-family')) {
         switch ((node.getAttribute('font-family') || '').toLowerCase()) {
         case 'serif': pdf.setFont('times'); break;
@@ -219,19 +219,24 @@ const svgElementToPdf = function (element, pdf, options) {
         ? parseInt(node.getAttribute('font-size'))
         : 16;
 
-      const getWidth = (node) => {
+      /**
+       *
+       * @param {Element} elem
+       * @returns {Float}
+       */
+      const getWidth = (elem) => {
         let box;
         try {
-          box = node.getBBox(); // Firefox on MacOS will raise error here
+          box = elem.getBBox(); // Firefox on MacOS will raise error here
         } catch (err) {
           // copy and append to body so that getBBox is available
-          const nodeCopy = node.cloneNode(true);
-          const svg = node.ownerSVGElement.cloneNode(false);
+          const nodeCopy = elem.cloneNode(true);
+          const svg = elem.ownerSVGElement.cloneNode(false);
           svg.appendChild(nodeCopy);
           document.body.appendChild(svg);
           try {
             box = nodeCopy.getBBox();
-          } catch (err) {
+          } catch (error) {
             box = {width: 0};
           }
           document.body.removeChild(svg);
@@ -259,9 +264,9 @@ const svgElementToPdf = function (element, pdf, options) {
       removeAttributes(node, pdfSvgAttr.text);
       break;
     // TODO: image
-    default:
+    } default:
       if (remove) {
-        console.log("can't translate to pdf:", node);
+        console.log("can't translate to pdf:", node); // eslint-disable-line no-console
         node.remove();
       }
     }

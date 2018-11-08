@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-imagelib.js
  *
@@ -9,7 +8,7 @@
  */
 export default {
   name: 'imagelib',
-  async init ({decode64, importLocale, dropXMLInternalSubset}) {
+  async init ({$, decode64, importLocale, dropXMLInternalSubset}) {
     const imagelibStrings = await importLocale();
 
     const modularVersion = !('svgEditor' in window) ||
@@ -18,16 +17,17 @@ export default {
 
     const svgEditor = this;
 
-    const $ = jQuery;
     const {uiStrings, canvas: svgCanvas, curConfig: {extIconsPath}} = svgEditor;
 
     imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(({name, url, description}) => {
       // Todo: Adopt some standard formatting library like `fluent.js` instead
       url = url
         .replace(/\{path\}/g, extIconsPath)
-        .replace(/\{modularVersion\}/g, modularVersion
-          ? (imagelibStrings.moduleEnding || '-es')
-          : ''
+        .replace(
+          /\{modularVersion\}/g,
+          modularVersion
+            ? (imagelibStrings.moduleEnding || '-es')
+            : ''
         );
       return {name, url, description};
     });
@@ -39,10 +39,18 @@ export default {
       }
     });
 
+    /**
+    *
+    * @returns {undefined}
+    */
     function closeBrowser () {
       $('#imgbrowse_holder').hide();
     }
 
+    /**
+    * @param {string} url
+    * @returns {undefined}
+    */
     function importImage (url) {
       const newImage = svgCanvas.addSVGElementFromJson({
         element: 'image',
@@ -68,7 +76,7 @@ export default {
     let preview, submit;
 
     // Receive `postMessage` data
-    window.addEventListener('message', function ({origin, data: response}) {
+    window.addEventListener('message', async function ({origin, data: response}) { // eslint-disable-line no-shadow
       if (!response || !['string', 'object'].includes(typeof response)) {
         // Do nothing
         return;
@@ -84,7 +92,8 @@ export default {
           return;
         }
         if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
-          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`);
+          // Todo: Surface this error to user?
+          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`); // eslint-disable-line no-console
           return;
         }
         const hasName = 'name' in response;
@@ -140,12 +149,11 @@ export default {
         const message = uiStrings.notification.retrieving.replace('%s', name);
 
         if (mode !== 'm') {
-          $.process_cancel(message, function () {
-            transferStopped = true;
-            // Should a message be sent back to the frame?
+          await $.process_cancel(message);
+          transferStopped = true;
+          // Should a message be sent back to the frame?
 
-            $('#dialog_box').hide();
-          });
+          $('#dialog_box').hide();
         } else {
           entry = $('<div>').text(message).data('id', curMeta.id);
           preview.append(entry);
@@ -183,7 +191,7 @@ export default {
         } else {
           pending[id].entry.remove();
         }
-        // $.alert('Unexpected data was returned: ' + response, function() {
+        // await $.alert('Unexpected data was returned: ' + response, function() {
         //   if (mode !== 'm') {
         //     closeBrowser();
         //   } else {
@@ -203,7 +211,7 @@ export default {
         }
         closeBrowser();
         break;
-      case 'm':
+      case 'm': {
         // Import multiple
         multiArr.push([(svgStr ? 'svg' : 'img'), response]);
         curMeta = pending[id];
@@ -265,20 +273,24 @@ export default {
           }
         }
         break;
-      case 'o':
+      } case 'o': {
         // Open
         if (!svgStr) { break; }
-        svgEditor.openPrep(function (ok) {
-          if (!ok) { return; }
-          svgCanvas.clear();
-          svgCanvas.setSvgString(response);
-          // updateCanvas();
-        });
         closeBrowser();
+        const ok = await svgEditor.openPrep();
+        if (!ok) { return; }
+        svgCanvas.clear();
+        svgCanvas.setSvgString(response);
+        // updateCanvas();
         break;
+      }
       }
     }, true);
 
+    /**
+    * @param {boolean} show
+    * @returns {undefined}
+    */
     function toggleMulti (show) {
       $('#lib_framewrap, #imglib_opts').css({right: (show ? 200 : 10)});
       if (!preview) {
@@ -319,6 +331,10 @@ export default {
       submit.toggle(show);
     }
 
+    /**
+    *
+    * @returns {undefined}
+    */
     function showBrowser () {
       let browser = $('#imgbrowse');
       if (!browser.length) {

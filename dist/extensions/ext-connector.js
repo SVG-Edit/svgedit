@@ -37,8 +37,6 @@ var svgEditorExtension_connector = (function () {
     };
   }
 
-  /* globals jQuery */
-
   /**
    * ext-connector.js
    *
@@ -52,11 +50,11 @@ var svgEditorExtension_connector = (function () {
     init: function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(S) {
-        var $, svgEditor, svgCanvas, getElem, svgroot, importLocale, addElem, selManager, connSel, elData, strings, startX, startY, curLine, startElem, endElem, seNs, svgcontent, started, connections, selElems, getBBintersect, getOffset, showPanel, setPoint, updateLine, findConnectors, updateConnectors, init, buttons;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      regeneratorRuntime.mark(function _callee(S) {
+        var svgEditor, svgCanvas, getElem, $, svgroot, importLocale, addElem, selManager, connSel, elData, strings, startX, startY, curLine, startElem, endElem, seNs, svgcontent, started, connections, selElems, getBBintersect, getOffset, showPanel, setPoint, updateLine, findConnectors, updateConnectors, init, buttons;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context.prev = _context.next) {
               case 0:
                 init = function _ref9() {
                   // Make sure all connectors have data set
@@ -133,6 +131,10 @@ var svgEditorExtension_connector = (function () {
 
                   connectors.each(function () {
                     var addThis;
+                    /**
+                    *
+                    * @returns {undefined}
+                    */
 
                     function add() {
                       if (elems.includes(this)) {
@@ -147,14 +149,15 @@ var svgEditorExtension_connector = (function () {
                       var key = 'c_' + pos;
                       var part = elData(this, key);
 
-                      if (part == null) {
+                      if (part === null || part === undefined) {
+                        // Does this ever return nullish values?
                         part = document.getElementById(this.attributes['se:connector'].value.split(' ')[i]);
                         elData(this, 'c_' + pos, part.id);
                         elData(this, pos + '_bb', svgCanvas.getStrokedBBox([part]));
                       } else part = document.getElementById(part);
 
                       parts.push(part);
-                    }.bind(this));
+                    }, this);
 
                     for (var i = 0; i < 2; i++) {
                       var cElem = parts[i];
@@ -257,7 +260,7 @@ var svgEditorExtension_connector = (function () {
                 };
 
                 getOffset = function _ref3(side, line) {
-                  var giveOffset = !!line.getAttribute('marker-' + side); // const giveOffset = $(line).data(side+'_off');
+                  var giveOffset = line.getAttribute('marker-' + side); // const giveOffset = $(line).data(side+'_off');
                   // TODO: Make this number (5) be based on marker width/height
 
                   var size = line.getAttribute('stroke-width') * 5;
@@ -293,17 +296,24 @@ var svgEditorExtension_connector = (function () {
                   };
                 };
 
-                $ = jQuery;
                 svgEditor = this;
                 svgCanvas = svgEditor.canvas;
                 getElem = svgCanvas.getElem;
-                svgroot = S.svgroot, importLocale = S.importLocale, addElem = svgCanvas.addSVGElementFromJson, selManager = S.selectorManager, connSel = '.se_connector', elData = $.data;
-                _context2.next = 15;
+                $ = S.$, svgroot = S.svgroot, importLocale = S.importLocale, addElem = svgCanvas.addSVGElementFromJson, selManager = S.selectorManager, connSel = '.se_connector', elData = $.data;
+                _context.next = 14;
                 return importLocale();
 
-              case 15:
-                strings = _context2.sent;
+              case 14:
+                strings = _context.sent;
                 svgcontent = S.svgcontent, started = false, connections = [], selElems = [];
+                /**
+                 *
+                 * @param {Float} x
+                 * @param {Float} y
+                 * @param {module:utilities.BBoxObject} bb
+                 * @param {Float} offset
+                 * @returns {module:math.XYObject}
+                 */
 
                 // Do once
                 (function () {
@@ -311,19 +321,32 @@ var svgEditorExtension_connector = (function () {
 
                   svgCanvas.groupSelectedElements = function () {
                     svgCanvas.removeFromSelection($(connSel).toArray());
-                    return gse.apply(this, arguments);
+
+                    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+                      args[_key] = arguments[_key];
+                    }
+
+                    return gse.apply(this, args);
                   };
 
                   var mse = svgCanvas.moveSelectedElements;
 
                   svgCanvas.moveSelectedElements = function () {
-                    var cmd = mse.apply(this, arguments);
+                    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                      args[_key2] = arguments[_key2];
+                    }
+
+                    var cmd = mse.apply(this, args);
                     updateConnectors();
                     return cmd;
                   };
 
                   seNs = svgCanvas.getEditorNS();
-                })(); // Do on reset
+                })();
+                /**
+                * Do on reset.
+                * @returns {undefined}
+                */
 
 
                 // $(svgroot).parent().mousemove(function (e) {
@@ -351,38 +374,21 @@ var svgEditorExtension_connector = (function () {
                     }
                   }
                 }];
-                return _context2.abrupt("return", {
+                return _context.abrupt("return", {
                   name: strings.name,
                   svgicons: svgEditor.curConfig.imgPath + 'conn.svg',
                   buttons: strings.buttons.map(function (button, i) {
                     return Object.assign(buttons[i], button);
                   }),
-                  addLangData: function () {
-                    var _addLangData = _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee(_ref) {
-                      var lang, importLocale;
-                      return regeneratorRuntime.wrap(function _callee$(_context) {
-                        while (1) {
-                          switch (_context.prev = _context.next) {
-                            case 0:
-                              lang = _ref.lang, importLocale = _ref.importLocale;
-                              return _context.abrupt("return", {
-                                data: strings.langList
-                              });
 
-                            case 2:
-                            case "end":
-                              return _context.stop();
-                          }
-                        }
-                      }, _callee, this);
-                    }));
-
-                    return function addLangData(_x2) {
-                      return _addLangData.apply(this, arguments);
+                  /* async */
+                  addLangData: function addLangData(_ref) {
+                    var lang = _ref.lang;
+                    // , importLocale: importLoc
+                    return {
+                      data: strings.langList
                     };
-                  }(),
+                  },
                   mouseDown: function mouseDown(opts) {
                     var e = opts.event;
                     startX = opts.start_x;
@@ -392,7 +398,7 @@ var svgEditorExtension_connector = (function () {
 
                     if (mode === 'connector') {
                       if (started) {
-                        return;
+                        return undefined;
                       }
 
                       var mouseTarget = e.target;
@@ -431,6 +437,8 @@ var svgEditorExtension_connector = (function () {
                     if (mode === 'select') {
                       findConnectors();
                     }
+
+                    return undefined;
                   },
                   mouseMove: function mouseMove(opts) {
                     var zoom = svgCanvas.getZoom(); // const e = opts.event;
@@ -476,7 +484,7 @@ var svgEditorExtension_connector = (function () {
                     var mouseTarget = e.target;
 
                     if (svgCanvas.getMode() !== 'connector') {
-                      return;
+                      return undefined;
                     }
 
                     var fo = $(mouseTarget).closest('foreignObject');
@@ -521,6 +529,8 @@ var svgEditorExtension_connector = (function () {
                       if (conn === connStr || conn === altStr) {
                         return true;
                       }
+
+                      return false;
                     });
 
                     if (dupe.length) {
@@ -598,7 +608,7 @@ var svgEditorExtension_connector = (function () {
                       var mid = elem.getAttribute('marker-mid');
                       var end = elem.getAttribute('marker-end');
                       curLine = elem;
-                      $(elem).data('start_off', !!start).data('end_off', !!end);
+                      $(elem).data('start_off', Boolean(start)).data('end_off', Boolean(end));
 
                       if (elem.tagName === 'line' && mid) {
                         // Convert to polyline to accept mid-arrow
@@ -666,12 +676,12 @@ var svgEditorExtension_connector = (function () {
                   }
                 });
 
-              case 20:
+              case 19:
               case "end":
-                return _context2.stop();
+                return _context.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee, this);
       }));
 
       return function init(_x) {

@@ -10,7 +10,7 @@
  * @param {string} [message] Defaults to structured message
  * @returns {undefined}
  */
-function close (actual, expected, maxDifference, message) { // eslint-disable-line no-shadow
+function close (actual, expected, maxDifference, message) {
   const actualDiff = (actual === expected) ? 0 : Math.abs(actual - expected),
     result = actualDiff <= maxDifference;
   message = message || (actual + ' should be within ' + maxDifference + ' (inclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff));
@@ -21,7 +21,7 @@ function close (actual, expected, maxDifference, message) { // eslint-disable-li
  * Checks that the first two arguments are equal, or are numbers close enough to be considered equal
  * based on a specified maximum allowable difference percentage.
  *
- * @example assert.close.percent(155, 150, 3.4);  // Difference is ~3.33%
+ * @example assert.close.percent(155, 150, 3.4); // Difference is ~3.33%
  *
  * @param {Float} actual
  * @param {Float} expected
@@ -70,7 +70,7 @@ function notClose (actual, expected, minDifference, message) {
  * Checks that the first two arguments are numbers with differences greater than the specified
  * minimum difference percentage.
  *
- * @example assert.notClose.percent(156, 150, 3.5);  // Difference is 4.0%
+ * @example assert.notClose.percent(156, 150, 3.5); // Difference is 4.0%
  *
  * @param {Float} actual
  * @param {Float} expected

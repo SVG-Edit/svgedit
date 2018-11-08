@@ -36,8 +36,8 @@ const ns = {
 
 if (!window.console) {
   window.console = {
-    log (str) {},
-    dir (str) {}
+    log (str) { /* */ },
+    dir (str) { /* */ }
   };
 }
 
@@ -49,7 +49,7 @@ if (!window.console) {
 * @param {external:jQuery} $ The jQuery instance to wrap
 * @returns {external:jQuery}
 */
-export default function ($) {
+export default function jQueryPluginJGraduate ($) {
   if (!$.loadingStylesheets) {
     $.loadingStylesheets = [];
   }
@@ -199,21 +199,37 @@ export default function ($) {
 
   const isGecko = navigator.userAgent.includes('Gecko/');
 
+  /**
+  * @typedef {PlainObject.<string, string>} module:jGraduate.Attrs
+  */
+  /**
+  * @param {SVGElement} elem
+  * @param {module:jGraduate.Attrs} attrs
+  * @returns {undefined}
+  */
   function setAttrs (elem, attrs) {
     if (isGecko) {
-      for (const aname in attrs) elem.setAttribute(aname, attrs[aname]);
+      Object.entries(attrs).forEach(([aname, val]) => {
+        elem.setAttribute(aname, val);
+      });
     } else {
-      for (const aname in attrs) {
-        const val = attrs[aname], prop = elem[aname];
+      Object.entries(attrs).forEach(([aname, val]) => {
+        const prop = elem[aname];
         if (prop && prop.constructor === 'SVGLength') {
           prop.baseVal.value = val;
         } else {
           elem.setAttribute(aname, val);
         }
-      }
+      });
     }
   }
 
+  /**
+  * @param {string} name
+  * @param {module:jGraduate.Attrs} attrs
+  * @param {Element} newparent
+  * @returns {SVGElement}
+  */
   function mkElem (name, attrs, newparent) {
     const elem = document.createElementNS(ns.svg, name);
     setAttrs(elem, attrs);
@@ -263,7 +279,7 @@ export default function ($) {
         idref = '#' + $this.attr('id') + ' ';
 
       if (!idref) {
-        alert('Container element must have an id attribute to maintain unique id strings for sub-elements.');
+        /* await */ $.alert('Container element must have an id attribute to maintain unique id strings for sub-elements.');
         return;
       }
 
@@ -485,7 +501,7 @@ export default function ($) {
             mkStop(1, '#' + color, 1);
             break;
 
-          case 'inverse':
+          case 'inverse': {
             // Invert current color for second stop
             let inverted = '';
             for (let i = 0; i < 6; i += 2) {
@@ -496,8 +512,7 @@ export default function ($) {
             }
             mkStop(1, '#' + inverted, 1);
             break;
-
-          case 'white':
+          } case 'white':
             mkStop(1, '#ffffff', 1);
             break;
 
@@ -615,10 +630,23 @@ export default function ($) {
           }).change();
       });
 
-      function mkStop (n, color, opac, sel, stopElem) {
-        const stop = stopElem || mkElem('stop', {'stop-color': color, 'stop-opacity': opac, offset: n}, curGradient);
+      /**
+       *
+       * @param {Float} n
+       * @param {Float|string} colr
+       * @param {Float} opac
+       * @param {boolean} [sel]
+       * @param {SVGStopElement} [stopElem]
+       * @returns {SVGStopElement}
+       */
+      function mkStop (n, colr, opac, sel, stopElem) {
+        const stop = stopElem || mkElem('stop', {
+          'stop-color': colr,
+          'stop-opacity': opac,
+          offset: n
+        }, curGradient);
         if (stopElem) {
-          color = stopElem.getAttribute('stop-color');
+          colr = stopElem.getAttribute('stop-color');
           opac = stopElem.getAttribute('stop-opacity');
           n = stopElem.getAttribute('offset');
         } else {
@@ -636,7 +664,7 @@ export default function ($) {
 
         const path = mkElem('path', {
           d: pickerD,
-          fill: color,
+          fill: colr,
           'fill-opacity': opac,
           transform: 'translate(' + (10 + n * MAX) + ', 26)',
           stroke: '#000',
@@ -652,19 +680,19 @@ export default function ($) {
           return false;
         }).data('stop', stop).data('bg', pathbg).dblclick(function () {
           $('div.jGraduate_LightBox').show();
-          const colorhandle = this;
-          let stopOpacity = +stop.getAttribute('stop-opacity') || 1;
+          const colorhandle = this; // eslint-disable-line consistent-this
+          let stopOpacity = Number(stop.getAttribute('stop-opacity')) || 1;
           let stopColor = stop.getAttribute('stop-color') || 1;
           let thisAlpha = (parseFloat(stopOpacity) * 255).toString(16);
           while (thisAlpha.length < 2) { thisAlpha = '0' + thisAlpha; }
-          color = stopColor.substr(1) + thisAlpha;
+          colr = stopColor.substr(1) + thisAlpha;
           $('#' + id + '_jGraduate_stopPicker').css({left: 100, bottom: 15}).jPicker({
             window: {title: 'Pick the start color and opacity for the gradient'},
             images: {clientPath: $settings.images.clientPath},
-            color: {active: color, alphaSupport: true}
-          }, function (color, arg2) {
-            stopColor = color.val('hex') ? ('#' + color.val('hex')) : 'none';
-            stopOpacity = color.val('a') !== null ? color.val('a') / 256 : 1;
+            color: {active: colr, alphaSupport: true}
+          }, function (clr, arg2) {
+            stopColor = clr.val('hex') ? ('#' + clr.val('hex')) : 'none';
+            stopOpacity = clr.val('a') !== null ? clr.val('a') / 256 : 1;
             colorhandle.setAttribute('fill', stopColor);
             colorhandle.setAttribute('fill-opacity', stopOpacity);
             stop.setAttribute('stop-color', stopColor);
@@ -679,8 +707,8 @@ export default function ($) {
 
         $(curGradient).find('stop').each(function () {
           const curS = $(this);
-          if (+this.getAttribute('offset') > n) {
-            if (!color) {
+          if (Number(this.getAttribute('offset')) > n) {
+            if (!colr) {
               const newcolor = this.getAttribute('stop-color');
               const newopac = this.getAttribute('stop-opacity');
               stop.setAttribute('stop-color', newcolor);
@@ -691,11 +719,16 @@ export default function ($) {
             curS.before(stop);
             return false;
           }
+          return true;
         });
         if (sel) selectStop(path);
         return stop;
       }
 
+      /**
+      *
+      * @returns {undefined}
+      */
       function remStop () {
         delStop.setAttribute('display', 'none');
         const path = $(curStop);
@@ -716,6 +749,10 @@ export default function ($) {
         display: 'none'
       }, undefined); // stopMakerSVG);
 
+      /**
+      * @param {Element} item
+      * @returns {undefined}
+      */
       function selectStop (item) {
         if (curStop) curStop.setAttribute('stroke', '#000');
         item.setAttribute('stroke', 'blue');
@@ -728,6 +765,10 @@ export default function ($) {
 
       let stopOffset;
 
+      /**
+      *
+      * @returns {undefined}
+      */
       function remDrags () {
         $win.unbind('mousemove', dragColor);
         if (delStop.getAttribute('display') !== 'none') {
@@ -740,6 +781,10 @@ export default function ($) {
 
       let cX = cx;
       let cY = cy;
+      /**
+      *
+      * @returns {undefined}
+      */
       function xform () {
         const rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
         if (scaleX === 1 && scaleY === 1) {
@@ -753,6 +798,10 @@ export default function ($) {
         }
       }
 
+      /**
+      * @param {Event} evt
+      * @returns {undefined}
+      */
       function dragColor (evt) {
         let x = evt.pageX - stopOffset.left;
         const y = evt.pageY - stopOffset.top;
@@ -857,26 +906,26 @@ export default function ($) {
         const fracy = y / SIZEY;
 
         const type = draggingCoord.data('coord');
-        const grad = curGradient;
+        const grd = curGradient;
 
         switch (type) {
         case 'start':
           attrInput.x1.val(fracx);
           attrInput.y1.val(fracy);
-          grad.setAttribute('x1', fracx);
-          grad.setAttribute('y1', fracy);
+          grd.setAttribute('x1', fracx);
+          grd.setAttribute('y1', fracy);
           break;
         case 'end':
           attrInput.x2.val(fracx);
           attrInput.y2.val(fracy);
-          grad.setAttribute('x2', fracx);
-          grad.setAttribute('y2', fracy);
+          grd.setAttribute('x2', fracx);
+          grd.setAttribute('y2', fracy);
           break;
         case 'center':
           attrInput.cx.val(fracx);
           attrInput.cy.val(fracy);
-          grad.setAttribute('cx', fracx);
-          grad.setAttribute('cy', fracy);
+          grd.setAttribute('cx', fracx);
+          grd.setAttribute('cy', fracy);
           cX = fracx;
           cY = fracy;
           xform();
@@ -884,8 +933,8 @@ export default function ($) {
         case 'focus':
           attrInput.fx.val(fracx);
           attrInput.fy.val(fracy);
-          grad.setAttribute('fx', fracx);
-          grad.setAttribute('fy', fracy);
+          grd.setAttribute('fx', fracx);
+          grd.setAttribute('fy', fracy);
           xform();
         }
 
@@ -963,19 +1012,19 @@ export default function ($) {
         focusCoord.toggle(showFocus);
         attrInput.fx.val('');
         attrInput.fy.val('');
-        const grad = curGradient;
+        const grd = curGradient;
         if (!showFocus) {
-          lastfx = grad.getAttribute('fx');
-          lastfy = grad.getAttribute('fy');
-          grad.removeAttribute('fx');
-          grad.removeAttribute('fy');
+          lastfx = grd.getAttribute('fx');
+          lastfy = grd.getAttribute('fy');
+          grd.removeAttribute('fx');
+          grd.removeAttribute('fy');
         } else {
-          const fx = lastfx || 0.5;
-          const fy = lastfy || 0.5;
-          grad.setAttribute('fx', fx);
-          grad.setAttribute('fy', fy);
-          attrInput.fx.val(fx);
-          attrInput.fy.val(fy);
+          const fX = lastfx || 0.5;
+          const fY = lastfy || 0.5;
+          grd.setAttribute('fx', fX);
+          grd.setAttribute('fy', fY);
+          attrInput.fx.val(fX);
+          attrInput.fy.val(fY);
         }
       });
 
@@ -993,9 +1042,9 @@ export default function ($) {
       let slider;
 
       const setSlider = function (e) {
-        const {offset} = slider;
+        const {offset: {left}} = slider;
         const div = slider.parent;
-        let x = (e.pageX - offset.left - parseInt(div.css('border-left-width')));
+        let x = (e.pageX - left - parseInt(div.css('border-left-width')));
         if (x > SLIDERW) x = SLIDERW;
         if (x <= 0) x = 0;
         const posx = x - 5;
@@ -1030,7 +1079,7 @@ export default function ($) {
           }
           break;
         case 'angle':
-          x = x - 0.5;
+          x -= 0.5;
           angle = x *= 180;
           xform();
           x /= 100;
@@ -1117,7 +1166,7 @@ export default function ($) {
 
         $(data.input).val(data.val).change(function () {
           const isRad = curType === 'radialGradient';
-          let val = +this.value;
+          let val = Number(this.value);
           let xpos = 0;
           switch (type) {
           case 'radius':
@@ -1195,10 +1244,10 @@ export default function ($) {
           images: {clientPath: $settings.images.clientPath},
           color: {active: color, alphaSupport: true}
         },
-        function (color) {
+        function (clr) {
           $this.paint.type = 'solidColor';
-          $this.paint.alpha = color.val('ahex') ? Math.round((color.val('a') / 255) * 100) : 100;
-          $this.paint.solidColor = color.val('hex') ? color.val('hex') : 'none';
+          $this.paint.alpha = clr.val('ahex') ? Math.round((clr.val('a') / 255) * 100) : 100;
+          $this.paint.solidColor = clr.val('hex') ? clr.val('hex') : 'none';
           $this.paint.radialGradient = null;
           okClicked();
         },

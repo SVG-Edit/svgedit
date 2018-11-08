@@ -89,6 +89,11 @@
   * including the latest spec changes which were implemented in Firefox 43 and
   * Chrome 46.
   */
+
+  /* eslint-disable no-shadow, class-methods-use-this */
+  // Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
+  // Linting: We avoid `class-methods-use-this` as this is a polyfill that must
+  //   follow the conventions
   (function () {
     if (!('SVGPathSeg' in window)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
@@ -1844,7 +1849,7 @@
               return [];
             }
 
-            var owningPathSegList = this;
+            var owningPathSegList = this; // eslint-disable-line consistent-this
 
             var Builder =
             /*#__PURE__*/
@@ -2195,6 +2200,19 @@
 
                     case SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL:
                       {
+                        var points = {
+                          x1: this._parseNumber(),
+                          y1: this._parseNumber(),
+                          x2: this._parseNumber(),
+                          y2: this._parseNumber(),
+                          x: this._parseNumber(),
+                          y: this._parseNumber()
+                        };
+                        return new SVGPathSegCurvetoCubicRel(owningPathSegList, points.x, points.y, points.x1, points.y1, points.x2, points.y2);
+                      }
+
+                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS:
+                      {
                         var _points = {
                           x1: this._parseNumber(),
                           y1: this._parseNumber(),
@@ -2203,23 +2221,21 @@
                           x: this._parseNumber(),
                           y: this._parseNumber()
                         };
-                        return new SVGPathSegCurvetoCubicRel(owningPathSegList, _points.x, _points.y, _points.x1, _points.y1, _points.x2, _points.y2);
+                        return new SVGPathSegCurvetoCubicAbs(owningPathSegList, _points.x, _points.y, _points.x1, _points.y1, _points.x2, _points.y2);
                       }
 
-                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS:
+                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:
                       {
                         var _points2 = {
-                          x1: this._parseNumber(),
-                          y1: this._parseNumber(),
                           x2: this._parseNumber(),
                           y2: this._parseNumber(),
                           x: this._parseNumber(),
                           y: this._parseNumber()
                         };
-                        return new SVGPathSegCurvetoCubicAbs(owningPathSegList, _points2.x, _points2.y, _points2.x1, _points2.y1, _points2.x2, _points2.y2);
+                        return new SVGPathSegCurvetoCubicSmoothRel(owningPathSegList, _points2.x, _points2.y, _points2.x2, _points2.y2);
                       }
 
-                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:
+                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:
                       {
                         var _points3 = {
                           x2: this._parseNumber(),
@@ -2227,21 +2243,21 @@
                           x: this._parseNumber(),
                           y: this._parseNumber()
                         };
-                        return new SVGPathSegCurvetoCubicSmoothRel(owningPathSegList, _points3.x, _points3.y, _points3.x2, _points3.y2);
-                      }
-
-                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:
-                      {
-                        var _points4 = {
-                          x2: this._parseNumber(),
-                          y2: this._parseNumber(),
-                          x: this._parseNumber(),
-                          y: this._parseNumber()
-                        };
-                        return new SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList, _points4.x, _points4.y, _points4.x2, _points4.y2);
+                        return new SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList, _points3.x, _points3.y, _points3.x2, _points3.y2);
                       }
 
                     case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL:
+                      {
+                        var _points4 = {
+                          x1: this._parseNumber(),
+                          y1: this._parseNumber(),
+                          x: this._parseNumber(),
+                          y: this._parseNumber()
+                        };
+                        return new SVGPathSegCurvetoQuadraticRel(owningPathSegList, _points4.x, _points4.y, _points4.x1, _points4.y1);
+                      }
+
+                    case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:
                       {
                         var _points5 = {
                           x1: this._parseNumber(),
@@ -2249,17 +2265,8 @@
                           x: this._parseNumber(),
                           y: this._parseNumber()
                         };
-                        return new SVGPathSegCurvetoQuadraticRel(owningPathSegList, _points5.x, _points5.y, _points5.x1, _points5.y1);
+                        return new SVGPathSegCurvetoQuadraticAbs(owningPathSegList, _points5.x, _points5.y, _points5.x1, _points5.y1);
                       }
-
-                    case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:
-                      var points = {
-                        x1: this._parseNumber(),
-                        y1: this._parseNumber(),
-                        x: this._parseNumber(),
-                        y: this._parseNumber()
-                      };
-                      return new SVGPathSegCurvetoQuadraticAbs(owningPathSegList, points.x, points.y, points.x1, points.y1);
 
                     case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL:
                       return new SVGPathSegCurvetoQuadraticSmoothRel(owningPathSegList, this._parseNumber(), this._parseNumber());
@@ -2416,7 +2423,7 @@
   var $ = jQuery;
 
   var supportsSVG_ = function () {
-    return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
+    return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
   }();
   /**
    * @function module:browser.supportsSvg
@@ -2431,7 +2438,7 @@
       userAgent = _navigator.userAgent;
   var svg = document.createElementNS(NS.SVG, 'svg'); // Note: Browser sniffing should only be used if no other detection method is possible
 
-  var isOpera_ = !!window.opera;
+  var isOpera_ = Boolean(window.opera);
   var isWebkit_ = userAgent.includes('AppleWebKit');
   var isGecko_ = userAgent.includes('Gecko/');
   var isIE_ = userAgent.includes('MSIE');
@@ -2440,11 +2447,11 @@
   var isMac_ = userAgent.includes('Macintosh');
 
   var supportsSelectors_ = function () {
-    return !!svg.querySelector;
+    return Boolean(svg.querySelector);
   }();
 
   var supportsXpath_ = function () {
-    return !!document.evaluate;
+    return Boolean(document.evaluate);
   }(); // segList functions (for FF1.5 and 2.0)
 
 

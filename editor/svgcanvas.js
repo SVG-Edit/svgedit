@@ -19,8 +19,14 @@
 
 import './svgpathseg.js';
 import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
-
-import * as draw from './draw.js';
+import jQueryPluginDBox from './dbox.js';
+import * as draw from './draw.js'; // eslint-disable-line import/no-duplicates
+import { // eslint-disable-line no-duplicate-imports
+  identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
+  setCurrentLayer, renameCurrentLayer, setCurrentLayerPosition,
+  setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
+  leaveContext, setContext
+} from './draw.js'; // eslint-disable-line import/no-duplicates
 import * as pathModule from './path.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from './namespaces.js';
@@ -65,7 +71,7 @@ import {
   init as selectInit
 } from './select.js';
 
-const $ = jQueryPluginSVG(jQuery);
+let $ = jQueryPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand, BatchCommand, UndoManager, HistoryEventTypes
@@ -976,6 +982,9 @@ let
   // Canvas point for the most recent right click
   lastClickPoint = null;
 
+this.runExtension = function (name, action, vars) {
+  return this.runExtensions(action, vars, false, (n) => n === name);
+};
 /**
 * @typedef {module:svgcanvas.ExtensionMouseDownStatus|module:svgcanvas.ExtensionMouseUpStatus|module:svgcanvas.ExtensionIDsUpdatedStatus|module:locale.ExtensionLocaleData[]|undefined} module:svgcanvas.ExtensionStatus
 * @tutorial ExtensionDocs
@@ -983,6 +992,12 @@ let
 /**
 * @callback module:svgcanvas.ExtensionVarBuilder
 * @param {string} name The name of the extension
+* @returns {module:svgcanvas.SvgCanvas#event:ext-addLangData}
+*/
+/**
+* @callback module:svgcanvas.ExtensionNameFilter
+* @param {string} name
+* @returns {boolean}
 */
 /**
 * @todo Consider: Should this return an array by default, so extension results aren't overwritten?
@@ -991,11 +1006,15 @@ let
 * @param {"mouseDown"|"mouseMove"|"mouseUp"|"zoomChanged"|"IDsUpdated"|"canvasUpdated"|"toolButtonStateUpdate"|"selectedChanged"|"elementTransition"|"elementChanged"|"langReady"|"langChanged"|"addLangData"|"onNewDocument"|"workareaResized"} action
 * @param {module:svgcanvas.SvgCanvas#event:ext-mouseDown|module:svgcanvas.SvgCanvas#event:ext-mouseMove|module:svgcanvas.SvgCanvas#event:ext-mouseUp|module:svgcanvas.SvgCanvas#event:ext-zoomChanged|module:svgcanvas.SvgCanvas#event:ext-IDsUpdated|module:svgcanvas.SvgCanvas#event:ext-canvasUpdated|module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate|module:svgcanvas.SvgCanvas#event:ext-selectedChanged|module:svgcanvas.SvgCanvas#event:ext-elementTransition|module:svgcanvas.SvgCanvas#event:ext-elementChanged|module:svgcanvas.SvgCanvas#event:ext-langReady|module:svgcanvas.SvgCanvas#event:ext-langChanged|module:svgcanvas.SvgCanvas#event:ext-addLangData|module:svgcanvas.SvgCanvas#event:ext-onNewDocument|module:svgcanvas.SvgCanvas#event:ext-workareaResized|module:svgcanvas.ExtensionVarBuilder} [vars]
 * @param {boolean} [returnArray]
+* @param {module:svgcanvas.ExtensionNameFilter} nameFilter
 * @returns {GenericArray.<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
 */
-const runExtensions = this.runExtensions = function (action, vars, returnArray) {
+const runExtensions = this.runExtensions = function (action, vars, returnArray, nameFilter) {
   let result = returnArray ? [] : false;
   $.each(extensions, function (name, ext) {
+    if (nameFilter && !nameFilter(name)) {
+      return;
+    }
     if (ext && action in ext) {
       if (typeof vars === 'function') {
         vars = vars(name); // ext, action
@@ -1126,44 +1145,45 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray) 
 * @param {module:svgcanvas.ExtensionInitCallback} [extInitFunc] - Function supplied by the extension with its data
 * @param {module:SVGEditor~ImportLocale} importLocale
 * @fires module:svgcanvas.SvgCanvas#event:extension_added
-* @throws {TypeError} If `extInitFunc` is not a function
+* @throws {TypeError|Error} `TypeError` if `extInitFunc` is not a function, `Error`
+*   if extension of supplied name already exists
 * @returns {Promise} Resolves to `undefined`
 */
 this.addExtension = async function (name, extInitFunc, importLocale) {
   if (typeof extInitFunc !== 'function') {
     throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
   }
-  if (!(name in extensions)) {
-    // Provide private vars/funcs here. Is there a better way to do this?
-    /**
-     * @typedef {module:svgcanvas.PrivateMethods} module:svgcanvas.ExtensionArgumentObject
-     * @property {SVGSVGElement} svgroot See {@link module:svgcanvas~svgroot}
-     * @property {SVGSVGElement} svgcontent See {@link module:svgcanvas~svgcontent}
-     * @property {!(string|Integer)} nonce See {@link module:draw.Drawing#getNonce}
-     * @property {module:select.SelectorManager} selectorManager
-     * @property {module:SVGEditor~ImportLocale} importLocale
-     */
-    /**
-     * @type {module:svgcanvas.ExtensionArgumentObject}
-     * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
-     */
-    const argObj = $.extend(canvas.getPrivateMethods(), {
-      importLocale,
-      svgroot,
-      svgcontent,
-      nonce: getCurrentDrawing().getNonce(),
-      selectorManager
-    });
-    const extObj = await extInitFunc(argObj);
-    if (extObj) {
-      extObj.name = name;
-    }
-
-    extensions[name] = extObj;
-    return call('extension_added', extObj);
+  if (name in extensions) {
+    throw new Error('Cannot add extension "' + name + '", an extension by that name already exists.');
   }
-  console.log('Cannot add extension "' + name + '", an extension by that name already exists.');
-  return undefined;
+  // Provide private vars/funcs here. Is there a better way to do this?
+  /**
+   * @typedef {module:svgcanvas.PrivateMethods} module:svgcanvas.ExtensionArgumentObject
+   * @property {SVGSVGElement} svgroot See {@link module:svgcanvas~svgroot}
+   * @property {SVGSVGElement} svgcontent See {@link module:svgcanvas~svgcontent}
+   * @property {!(string|Integer)} nonce See {@link module:draw.Drawing#getNonce}
+   * @property {module:select.SelectorManager} selectorManager
+   * @property {module:SVGEditor~ImportLocale} importLocale
+   */
+  /**
+   * @type {module:svgcanvas.ExtensionArgumentObject}
+   * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
+   */
+  const argObj = $.extend(canvas.getPrivateMethods(), {
+    $,
+    importLocale,
+    svgroot,
+    svgcontent,
+    nonce: getCurrentDrawing().getNonce(),
+    selectorManager
+  });
+  const extObj = await extInitFunc(argObj);
+  if (extObj) {
+    extObj.name = name;
+  }
+
+  extensions[name] = extObj;
+  return call('extension_added', extObj);
 };
 
 /**
@@ -1188,9 +1208,9 @@ const getIntersectionList = this.getIntersectionList = function (rect) {
     rubberBBox = rubberBox.getBBox();
     const bb = svgcontent.createSVGRect();
 
-    for (const o in rubberBBox) {
+    ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left'].forEach((o) => {
       bb[o] = rubberBBox[o] / currentZoom;
-    }
+    });
     rubberBBox = bb;
   } else {
     rubberBBox = svgcontent.createSVGRect();
@@ -1550,7 +1570,7 @@ const recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions =
  * @returns {undefined}
  */
 const logMatrix = function (m) {
-  console.log([m.a, m.b, m.c, m.d, m.e, m.f]);
+  console.log([m.a, m.b, m.c, m.d, m.e, m.f]); // eslint-disable-line no-console
 };
 
 // Root Current Transformation Matrix in user units
@@ -1757,7 +1777,7 @@ const mouseDown = function (evt) {
   }
 
   startTransform = mouseTarget.getAttribute('transform');
-  let i, strokeW;
+
   const tlist = getTransformList(mouseTarget);
   switch (currentMode) {
   case 'select':
@@ -1783,7 +1803,7 @@ const mouseDown = function (evt) {
       if (!rightClick) {
         // insert a dummy transform so if the element(s) are moved it will have
         // a transform to use for its translate
-        for (i = 0; i < selectedElements.length; ++i) {
+        for (let i = 0; i < selectedElements.length; ++i) {
           if (isNullish(selectedElements[i])) { continue; }
           const slist = getTransformList(selectedElements[i]);
           if (slist.numberOfItems) {
@@ -1876,7 +1896,7 @@ const mouseDown = function (evt) {
 
         const all = mouseTarget.getElementsByTagName('*'),
           len = all.length;
-        for (i = 0; i < len; i++) {
+        for (let i = 0; i < len; i++) {
           if (!all[i].style) { // mathML
             continue;
           }
@@ -1950,9 +1970,9 @@ const mouseDown = function (evt) {
       }
     });
     break;
-  case 'line':
+  case 'line': {
     started = true;
-    strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
+    const strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
     addSVGElementFromJson({
       element: 'line',
       curStyles: true,
@@ -1974,7 +1994,7 @@ const mouseDown = function (evt) {
       }
     });
     break;
-  case 'circle':
+  } case 'circle':
     started = true;
     addSVGElementFromJson({
       element: 'circle',
@@ -2421,8 +2441,8 @@ const mouseMove = function (evt) {
     start = {x: end.x, y: end.y};
     break;
   // update path stretch line coordinates
-} case 'path': { // eslint-disable-line no-empty
-} // fall through
+} case 'path':
+  // fall through
   case 'pathedit': {
     x *= currentZoom;
     y *= currentZoom;
@@ -2623,14 +2643,14 @@ const mouseUp = function (evt) {
         const elem = selectedElements[0];
         if (elem) {
           elem.removeAttribute('style');
-          walkTree(elem, function (elem) {
-            elem.removeAttribute('style');
+          walkTree(elem, function (el) {
+            el.removeAttribute('style');
           });
         }
       }
     }
     return;
-  case 'zoom':
+  case 'zoom': {
     if (!isNullish(rubberBox)) {
       rubberBox.setAttribute('display', 'none');
     }
@@ -2643,7 +2663,7 @@ const mouseUp = function (evt) {
       factor
     });
     return;
-  case 'fhpath':
+  } case 'fhpath': {
     // Check that the path contains at least 2 points; a degenerate one-point path
     // causes problems.
     // Webkit ignores how we set the points attribute with commas and uses space
@@ -2664,7 +2684,7 @@ const mouseUp = function (evt) {
       element = pathActions.smoothPolylineIntoPath(element);
     }
     break;
-  case 'line':
+  } case 'line':
     attrs = $(element).attr(['x1', 'x2', 'y1', 'y2']);
     keep = (attrs.x1 !== attrs.x2 || attrs.y1 !== attrs.y2);
     break;
@@ -2724,7 +2744,7 @@ const mouseUp = function (evt) {
     selectOnly([element]);
     textActions.start(element);
     break;
-  case 'path':
+  case 'path': {
     // set element to null here so that it is not removed nor finalized
     element = null;
     // continue to be set to true so that mouseMove happens
@@ -2734,7 +2754,7 @@ const mouseUp = function (evt) {
     ({element} = res);
     ({keep} = res);
     break;
-  case 'pathedit':
+  } case 'pathedit':
     keep = true;
     element = null;
     pathActions.mouseUp(evt);
@@ -2744,7 +2764,7 @@ const mouseUp = function (evt) {
     element = null;
     textActions.mouseUp(evt, mouseX, mouseY);
     break;
-  case 'rotate':
+  case 'rotate': {
     keep = true;
     element = null;
     currentMode = 'select';
@@ -2756,7 +2776,7 @@ const mouseUp = function (evt) {
     recalculateAllSelectedDimensions();
     call('changed', selectedElements);
     break;
-  default:
+  } default:
     // This could occur in an extension
     break;
   }
@@ -3016,6 +3036,11 @@ let matrix;
 let lastX, lastY;
 let allowDbl;
 
+/**
+ *
+ * @param {Integer} index
+ * @returns {undefined}
+ */
 function setCursor (index) {
   const empty = (textinput.value === '');
   $(textinput).focus();
@@ -3066,6 +3091,13 @@ function setCursor (index) {
   if (selblock) { selblock.setAttribute('d', ''); }
 }
 
+/**
+ *
+ * @param {Integer} start
+ * @param {Integer} end
+ * @param {boolean} skipInput
+ * @returns {undefined}
+ */
 function setSelection (start, end, skipInput) {
   if (start === end) {
     setCursor(end);
@@ -3109,6 +3141,12 @@ function setSelection (start, end, skipInput) {
   });
 }
 
+/**
+ *
+ * @param {Float} mouseX
+ * @param {Float} mouseY
+ * @returns {Integer}
+ */
 function getIndexFromPoint (mouseX, mouseY) {
   // Position cursor here
   const pt = svgroot.createSVGPoint();
@@ -3136,10 +3174,23 @@ function getIndexFromPoint (mouseX, mouseY) {
   return charpos;
 }
 
+/**
+ *
+ * @param {Float} mouseX
+ * @param {Float} mouseY
+ * @returns {undefined}
+ */
 function setCursorFromPoint (mouseX, mouseY) {
   setCursor(getIndexFromPoint(mouseX, mouseY));
 }
 
+/**
+ *
+ * @param {Float} x
+ * @param {Float} y
+ * @param {boolean} apply
+ * @returns {undefined}
+ */
 function setEndSelectionFromPoint (x, y, apply) {
   const i1 = textinput.selectionStart;
   const i2 = getIndexFromPoint(x, y);
@@ -3149,6 +3200,12 @@ function setEndSelectionFromPoint (x, y, apply) {
   setSelection(start, end, !apply);
 }
 
+/**
+ *
+ * @param {Float} xIn
+ * @param {Float} yIn
+ * @returns {module:math.XYObject}
+ */
 function screenToPt (xIn, yIn) {
   const out = {
     x: xIn,
@@ -3167,6 +3224,12 @@ function screenToPt (xIn, yIn) {
   return out;
 }
 
+/**
+ *
+ * @param {Float} xIn
+ * @param {Float} yIn
+ * @returns {module:math.XYObject}
+ */
 function ptToScreen (xIn, yIn) {
   const out = {
     x: xIn,
@@ -3194,11 +3257,21 @@ function hideCursor () {
 }
 */
 
+/**
+ *
+ * @param {Event} evt
+ * @returns {undefined}
+ */
 function selectAll (evt) {
   setSelection(0, curtext.textContent.length);
   $(this).unbind(evt);
 }
 
+/**
+ *
+ * @param {Event} evt
+ * @returns {undefined}
+ */
 function selectWord (evt) {
   if (!allowDbl || !curtext) { return; }
 
@@ -3579,13 +3652,12 @@ this.svgToString = function (elem, indent) {
   if (elem) {
     cleanupElement(elem);
     const attrs = Array.from(elem.attributes);
-    let i;
     const childs = elem.childNodes;
     attrs.sort((a, b) => {
       return a.name > b.name ? -1 : 1;
     });
 
-    for (i = 0; i < indent; i++) { out.push(' '); }
+    for (let i = 0; i < indent; i++) { out.push(' '); }
     out.push('<'); out.push(elem.nodeName);
     if (elem.id === 'svgcontent') {
       // Process root element separately
@@ -3624,15 +3696,15 @@ this.svgToString = function (elem, indent) {
         }
 
         $.each(this.attributes, function (i, attr) {
-          const uri = attr.namespaceURI;
-          if (uri && !nsuris[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml') {
-            nsuris[uri] = true;
-            out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
+          const u = attr.namespaceURI;
+          if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
+            nsuris[u] = true;
+            out.push(' xmlns:' + nsMap[u] + '="' + u + '"');
           }
         });
       });
 
-      i = attrs.length;
+      let i = attrs.length;
       const attrNames = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
       while (i--) {
         const attr = attrs[i];
@@ -3652,10 +3724,10 @@ this.svgToString = function (elem, indent) {
       }
     } else {
       // Skip empty defs
-      if (elem.nodeName === 'defs' && !elem.firstChild) { return; }
+      if (elem.nodeName === 'defs' && !elem.firstChild) { return ''; }
 
       const mozAttrs = ['-moz-math-font-style', '_moz-math-font-style'];
-      for (i = attrs.length - 1; i >= 0; i--) {
+      for (let i = attrs.length - 1; i >= 0; i--) {
         const attr = attrs[i];
         let attrVal = toXml(attr.value);
         // remove bogus attributes added by Gecko
@@ -3697,7 +3769,7 @@ this.svgToString = function (elem, indent) {
       indent++;
       let bOneLine = false;
 
-      for (i = 0; i < childs.length; i++) {
+      for (let i = 0; i < childs.length; i++) {
         const child = childs.item(i);
         switch (child.nodeType) {
         case 1: // element node
@@ -3730,7 +3802,7 @@ this.svgToString = function (elem, indent) {
       indent--;
       if (!bOneLine) {
         out.push('\n');
-        for (i = 0; i < indent; i++) { out.push(' '); }
+        for (let i = 0; i < indent; i++) { out.push(' '); }
       }
       out.push('</'); out.push(elem.nodeName); out.push('>');
     } else {
@@ -3750,11 +3822,11 @@ this.svgToString = function (elem, indent) {
 * Converts a given image file to a data URL when possible, then runs a given callback.
 * @function module:svgcanvas.SvgCanvas#embedImage
 * @param {string} src - The path/URL of the image
-* @param {module:svgcanvas.ImageEmbeddedCallback} [callback] - Function to run when image data is found
 * @returns {Promise} Resolves to Data URL (string|false)
 */
-this.embedImage = function (src, callback) {
-  return new Promise(function (resolve, reject) {
+this.embedImage = function (src) {
+  // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
+  return new Promise(function (resolve, reject) { // eslint-disable-line promise/avoid-new
     // load in the image and once it's loaded, get the dimensions
     $(new Image()).load(function (response, status, xhr) {
       if (status === 'error') {
@@ -3776,7 +3848,6 @@ this.embedImage = function (src, callback) {
         encodableImages[src] = false;
       }
       lastGoodImgUrl = src;
-      if (callback) { callback(encodableImages[src]); }
       resolve(encodableImages[src]);
     }).attr('src', src);
   });
@@ -3798,6 +3869,7 @@ this.setGoodImage = function (val) {
 * @returns {undefined}
 */
 this.open = function () {
+  /* */
 };
 
 /**
@@ -3879,12 +3951,6 @@ let canvg;
 */
 
 /**
- * Function to run when image data is found
- * @callback module:svgcanvas.ImageExportedCallback
- * @param {module:svgcanvas.ImageExportedResults} obj
- * @returns {undefined}
- */
-/**
 * Generates a PNG (or JPG, BMP, WEBP) Data URL based on the current image,
 * then calls "exported" with an object including the string, image
 * information, and any issues found.
@@ -3892,38 +3958,42 @@ let canvg;
 * @param {"PNG"|"JPEG"|"BMP"|"WEBP"|"ICO"} [imgType="PNG"]
 * @param {Float} [quality] Between 0 and 1
 * @param {string} [exportWindowName]
-* @param {module:svgcanvas.ImageExportedCallback} [cb]
 * @param {PlainObject} [opts]
 * @param {boolean} [opts.avoidEvent]
 * @fires module:svgcanvas.SvgCanvas#event:exported
 * @todo Confirm/fix ICO type
 * @returns {Promise} Resolves to {@link module:svgcanvas.ImageExportedResults}
 */
-this.rasterExport = function (imgType, quality, exportWindowName, cb, opts = {}) {
+this.rasterExport = async function (imgType, quality, exportWindowName, opts = {}) {
   const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
   const mimeType = 'image/' + type.toLowerCase();
   const {issues, issueCodes} = getIssues();
   const svg = this.svgCanvasToString();
 
-  return new Promise(async (resolve, reject) => {
-    if (!canvg) {
-      ({canvg} = await importSetGlobal(curConfig.canvgPath + 'canvg.js', {
-        global: 'canvg'
-      }));
-    }
-    if (!$('#export_canvas').length) {
-      $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
-    }
-    const c = $('#export_canvas')[0];
-    c.width = canvas.contentW;
-    c.height = canvas.contentH;
+  if (!canvg) {
+    ({canvg} = await importSetGlobal(curConfig.canvgPath + 'canvg.js', {
+      global: 'canvg'
+    }));
+  }
+  if (!$('#export_canvas').length) {
+    $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+  }
+  const c = $('#export_canvas')[0];
+  c.width = canvas.contentW;
+  c.height = canvas.contentH;
 
-    await canvg(c, svg);
+  await canvg(c, svg);
+  // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
+  return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
     const dataURLType = type.toLowerCase();
     const datauri = quality
       ? c.toDataURL('image/' + dataURLType, quality)
       : c.toDataURL('image/' + dataURLType);
     let bloburl;
+    /**
+     * Called when `bloburl` is available for export.
+     * @returns {undefined}
+     */
     function done () {
       const obj = {
         datauri, bloburl, svg, issues, issueCodes, type: imgType,
@@ -3931,9 +4001,6 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb, opts = {})
       };
       if (!opts.avoidEvent) {
         call('exported', obj);
-      }
-      if (cb) {
-        cb(obj);
       }
       resolve(obj);
     }
@@ -3975,85 +4042,71 @@ this.rasterExport = function (imgType, quality, exportWindowName, cb, opts = {})
 */
 
 /**
- * Function to run when PDF data is found
- * @callback module:svgcanvas.PDFExportedCallback
- * @param {module:svgcanvas.PDFExportedResults} obj
- * @returns {undefined}
- */
-/**
 * Generates a PDF based on the current image, then calls "exportedPDF" with
 * an object including the string, the data URL, and any issues found.
 * @function module:svgcanvas.SvgCanvas#exportPDF
 * @param {string} [exportWindowName] Will also be used for the download file name here
 * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
-* @param {module:svgcanvas.PDFExportedCallback} [cb]
 * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
 * @returns {Promise} Resolves to {@link module:svgcanvas.PDFExportedResults}
 */
-this.exportPDF = function (
+this.exportPDF = async function (
   exportWindowName,
-  outputType = isChrome() ? 'save' : undefined,
-  cb
+  outputType = isChrome() ? 'save' : undefined
 ) {
-  const that = this;
-  return new Promise(async (resolve, reject) => {
-    if (!window.jsPDF) {
-      // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
-      await importScript([
-        // We do not currently have these paths configurable as they are
-        //   currently global-only, so not Rolled-up
-        'jspdf/underscore-min.js',
-        'jspdf/jspdf.min.js'
-      ]);
+  if (!window.jsPDF) {
+    // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
+    await importScript([
+      // We do not currently have these paths configurable as they are
+      //   currently global-only, so not Rolled-up
+      'jspdf/underscore-min.js',
+      'jspdf/jspdf.min.js'
+    ]);
 
-      const modularVersion = !('svgEditor' in window) ||
-        !window.svgEditor ||
-        window.svgEditor.modules !== false;
-      // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
-      await importScript(curConfig.jspdfPath + 'jspdf.plugin.svgToPdf.js', {
-        type: modularVersion
-          ? 'module'
-          : 'text/javascript'
-      });
-      // await importModule('jspdf/jspdf.plugin.svgToPdf.js');
-    }
-
-    const res = getResolution();
-    const orientation = res.w > res.h ? 'landscape' : 'portrait';
-    const unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-
-    // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
-    const doc = jsPDF({
-      orientation,
-      unit,
-      format: [res.w, res.h]
-      // , compressPdf: true
+    const modularVersion = !('svgEditor' in window) ||
+      !window.svgEditor ||
+      window.svgEditor.modules !== false;
+    // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
+    await importScript(curConfig.jspdfPath + 'jspdf.plugin.svgToPdf.js', {
+      type: modularVersion
+        ? 'module'
+        : 'text/javascript'
     });
-    const docTitle = getDocumentTitle();
-    doc.setProperties({
-      title: docTitle /* ,
-      subject: '',
-      author: '',
-      keywords: '',
-      creator: '' */
-    });
-    const {issues, issueCodes} = getIssues();
-    const svg = that.svgCanvasToString();
-    doc.addSVG(svg, 0, 0);
+    // await importModule('jspdf/jspdf.plugin.svgToPdf.js');
+  }
 
-    // doc.output('save'); // Works to open in a new
-    //  window; todo: configure this and other export
-    //  options to optionally work in this manner as
-    //  opposed to opening a new tab
-    outputType = outputType || 'dataurlstring';
-    const obj = {svg, issues, issueCodes, exportWindowName, outputType};
-    obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
-    if (cb) {
-      cb(obj);
-    }
-    resolve(obj);
-    call('exportedPDF', obj);
+  const res = getResolution();
+  const orientation = res.w > res.h ? 'landscape' : 'portrait';
+  const unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
+
+  // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+  const doc = jsPDF({
+    orientation,
+    unit,
+    format: [res.w, res.h]
+    // , compressPdf: true
   });
+  const docTitle = getDocumentTitle();
+  doc.setProperties({
+    title: docTitle /* ,
+    subject: '',
+    author: '',
+    keywords: '',
+    creator: '' */
+  });
+  const {issues, issueCodes} = getIssues();
+  const svg = this.svgCanvasToString();
+  doc.addSVG(svg, 0, 0);
+
+  // doc.output('save'); // Works to open in a new
+  //  window; todo: configure this and other export
+  //  options to optionally work in this manner as
+  //  opposed to opening a new tab
+  outputType = outputType || 'dataurlstring';
+  const obj = {svg, issues, issueCodes, exportWindowName, outputType};
+  obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
+  call('exportedPDF', obj);
+  return obj;
 };
 
 /**
@@ -4218,14 +4271,14 @@ const convertGradients = this.convertGradients = function (elem) {
   }
 
   elems.each(function () {
-    const grad = this;
+    const grad = this; // eslint-disable-line consistent-this
     if ($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
       // TODO: Support more than one element with this ref by duplicating parent grad
-      const elems = $(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
-      if (!elems.length) { return; }
+      const fillStrokeElems = $(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
+      if (!fillStrokeElems.length) { return; }
 
       // get object's bounding box
-      const bb = utilsGetBBox(elems[0]);
+      const bb = utilsGetBBox(fillStrokeElems[0]);
 
       // This will occur if the element is inside a <defs> or a <symbol>,
       // in which we shouldn't need to convert anyway.
@@ -4391,7 +4444,7 @@ const convertToGroup = this.convertToGroup = function (elem) {
       try {
         recalculateDimensions(n);
       } catch (e) {
-        console.log(e);
+        console.log(e); // eslint-disable-line no-console
       }
     });
 
@@ -4409,7 +4462,7 @@ const convertToGroup = this.convertToGroup = function (elem) {
 
     addCommandToHistory(batchCmd);
   } else {
-    console.log('Unexpected element to ungroup:', elem);
+    console.log('Unexpected element to ungroup:', elem); // eslint-disable-line no-console
   }
 };
 
@@ -4467,7 +4520,7 @@ this.setSvgString = function (xmlString, preventUndo) {
 
     // change image href vals if possible
     content.find('image').each(function () {
-      const image = this;
+      const image = this; // eslint-disable-line consistent-this
       preventClickDefault(image);
       const val = getHref(this);
       if (val) {
@@ -4583,7 +4636,7 @@ this.setSvgString = function (xmlString, preventUndo) {
     if (!preventUndo) addCommandToHistory(batchCmd);
     call('changed', [svgcontent]);
   } catch (e) {
-    console.log(e);
+    console.log(e); // eslint-disable-line no-console
     return false;
   }
 
@@ -4714,7 +4767,7 @@ this.importSvgString = function (xmlString) {
     addCommandToHistory(batchCmd);
     call('changed', [svgcontent]);
   } catch (e) {
-    console.log(e);
+    console.log(e); // eslint-disable-line no-console
     return null;
   }
 
@@ -4724,13 +4777,14 @@ this.importSvgString = function (xmlString) {
 
 // Could deprecate, but besides external uses, their usage makes clear that
 //  canvas is a dependency for all of these
-[
-  'identifyLayers', 'createLayer', 'cloneLayer', 'deleteCurrentLayer',
-  'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition',
-  'setLayerVisibility', 'moveSelectedToLayer', 'mergeLayer', 'mergeAllLayers',
-  'leaveContext', 'setContext'
-].forEach((prop) => {
-  canvas[prop] = draw[prop];
+const dr = {
+  identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
+  setCurrentLayer, renameCurrentLayer, setCurrentLayerPosition,
+  setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
+  leaveContext, setContext
+};
+Object.entries(dr).forEach(([prop, propVal]) => {
+  canvas[prop] = propVal;
 });
 draw.init(
   /**
@@ -4860,6 +4914,7 @@ this.getVersion = function () {
 */
 this.setUiStrings = function (strs) {
   Object.assign(uiStrings, strs.notification);
+  $ = jQueryPluginDBox($, strs.common);
   pathModule.setUiStrings(strs);
 };
 
@@ -5080,7 +5135,7 @@ this.getOffset = function () {
 this.setBBoxZoom = function (val, editorW, editorH) {
   let spacer = 0.85;
   let bb;
-  const calcZoom = function (bb) {
+  const calcZoom = function (bb) { // eslint-disable-line no-shadow
     if (!bb) { return false; }
     const wZoom = Math.round((editorW / bb.width) * 100 * spacer) / 100;
     const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100;
@@ -5268,6 +5323,11 @@ this.setColor = function (type, val, preventUndo) {
   curShape[type] = val;
   curProperties[type + '_paint'] = {type: 'solidColor'};
   const elems = [];
+  /**
+   *
+   * @param {Element} e
+   * @returns {undefined}
+   */
   function addNonG (e) {
     if (e.nodeName !== 'g') {
       elems.push(e);
@@ -5348,7 +5408,7 @@ const findDuplicateGradient = function (grad) {
       const ogAttrs = $(og).attr(radAttrs);
 
       let diff = false;
-      $.each(radAttrs, function (i, attr) {
+      $.each(radAttrs, function (j, attr) {
         if (gradAttrs[attr] !== ogAttrs[attr]) { diff = true; }
       });
 
@@ -5451,6 +5511,11 @@ this.setStrokeWidth = function (val) {
   curProperties.stroke_width = val;
 
   const elems = [];
+  /**
+   *
+   * @param {Element} e
+   * @returns {undefined}
+   */
   function addNonG (e) {
     if (e.nodeName !== 'g') {
       elems.push(e);
@@ -5632,7 +5697,7 @@ canvas.setBlurNoUndo = function (val) {
       changeSelectedAttributeNoUndo('filter', 'url(#' + elem.id + '_blur)');
     }
     if (isWebkit()) {
-      console.log('e', elem);
+      // console.log('e', elem); // eslint-disable-line no-console
       elem.removeAttribute('filter');
       elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
     }
@@ -5641,6 +5706,10 @@ canvas.setBlurNoUndo = function (val) {
   }
 };
 
+/**
+ *
+ * @returns {undefined}
+ */
 function finishChange () {
   const bCmd = canvas.undoMgr.finishUndoableChange();
   curCommand.addSubCommand(bCmd);
@@ -5653,14 +5722,14 @@ function finishChange () {
 * Sets the `x`, `y`, `width`, `height` values of the filter element in order to
 * make the blur not be clipped. Removes them if not neeeded.
 * @function module:svgcanvas.SvgCanvas#setBlurOffsets
-* @param {Element} filter - The filter DOM element to update
+* @param {Element} filterElem - The filter DOM element to update
 * @param {Float} stdDev - The standard deviation value on which to base the offset size
 * @returns {undefined}
 */
-canvas.setBlurOffsets = function (filter, stdDev) {
+canvas.setBlurOffsets = function (filterElem, stdDev) {
   if (stdDev > 3) {
     // TODO: Create algorithm here where size is based on expected blur
-    assignAttributes(filter, {
+    assignAttributes(filterElem, {
       x: '-50%',
       y: '-50%',
       width: '200%',
@@ -5668,10 +5737,10 @@ canvas.setBlurOffsets = function (filter, stdDev) {
     }, 100);
   // Removing these attributes hides text in Chrome (see Issue 579)
   } else if (!isWebkit()) {
-      filter.removeAttribute('x');
-      filter.removeAttribute('y');
-      filter.removeAttribute('width');
-      filter.removeAttribute('height');
+      filterElem.removeAttribute('x');
+      filterElem.removeAttribute('y');
+      filterElem.removeAttribute('width');
+      filterElem.removeAttribute('height');
   }
 };
 
@@ -6301,6 +6370,11 @@ this.pasteElements = function (type, x, y) {
   const changedIDs = {};
 
   // Recursively replace IDs and record the changes
+  /**
+   *
+   * @param {module:svgcanvas.SVGAsJSON} elem
+   * @returns {undefined}
+   */
   function checkIDs (elem) {
     if (elem.attr && elem.attr.id) {
       changedIDs[elem.attr.id] = getNextId();
@@ -6442,7 +6516,7 @@ this.groupSelectedElements = function (type, urlArg) {
 * @function module:svgcanvas.SvgCanvas#pushGroupProperties
 * @param {SVGAElement|SVGGElement} g
 * @param {boolean} undoable
-* @returns {undefined}
+* @returns {BatchCommand|undefined}
 */
 const pushGroupProperties = this.pushGroupProperties = function (g, undoable) {
   const children = g.childNodes;
@@ -6621,6 +6695,7 @@ const pushGroupProperties = this.pushGroupProperties = function (g, undoable) {
   if (undoable && !batchCmd.isEmpty()) {
     return batchCmd;
   }
+  return undefined;
 };
 
 /**
@@ -6798,7 +6873,7 @@ this.moveUpDownSelected = function (dir) {
 * @param {Float} dy - Float with the distance to move on the y-axis
 * @param {boolean} undoable - Boolean indicating whether or not the action should be undoable
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {BatchCommand} Batch command for the move
+* @returns {BatchCommand|undefined} Batch command for the move
 */
 this.moveSelectedElements = function (dx, dy, undoable) {
   // if undoable is not sent, default to true
@@ -6859,6 +6934,7 @@ this.moveSelectedElements = function (dx, dy, undoable) {
     call('changed', selectedElements);
     return batchCmd;
   }
+  return undefined;
 };
 
 /**
@@ -6874,8 +6950,14 @@ this.cloneSelectedElements = function (x, y) {
   const batchCmd = new BatchCommand('Clone Elements');
   // find all the elements selected (stop at first null)
   const len = selectedElements.length;
+  /**
+   * Sorts an array numerically and ascending.
+   * @param {Element} a
+   * @param {Element} b
+   * @returns {Integer}
+   */
   function sortfunction (a, b) {
-    return ($(b).index() - $(a).index()); // causes an array to be sorted numerically and ascending
+    return ($(b).index() - $(a).index());
   }
   selectedElements.sort(sortfunction);
   for (i = 0; i < len; ++i) {

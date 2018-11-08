@@ -200,6 +200,12 @@
   }
 
   // http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
+
+  /**
+   *
+   * @param {Event} ev
+   * @returns {undefined}
+   */
   function touchHandler(ev) {
     var changedTouches = ev.changedTouches,
         first = changedTouches[0];
@@ -225,7 +231,8 @@
     var screenX = first.screenX,
         screenY = first.screenY,
         clientX = first.clientX,
-        clientY = first.clientY;
+        clientY = first.clientY; // eslint-disable-line no-shadow
+
     var simulatedEvent = new MouseEvent(type, {
       // Event interface
       bubbles: true,
@@ -318,6 +325,11 @@
   * including the latest spec changes which were implemented in Firefox 43 and
   * Chrome 46.
   */
+
+  /* eslint-disable no-shadow, class-methods-use-this */
+  // Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
+  // Linting: We avoid `class-methods-use-this` as this is a polyfill that must
+  //   follow the conventions
   (function () {
     if (!('SVGPathSeg' in window)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
@@ -2073,7 +2085,7 @@
               return [];
             }
 
-            var owningPathSegList = this;
+            var owningPathSegList = this; // eslint-disable-line consistent-this
 
             var Builder =
             /*#__PURE__*/
@@ -2424,6 +2436,19 @@
 
                     case SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL:
                       {
+                        var points = {
+                          x1: this._parseNumber(),
+                          y1: this._parseNumber(),
+                          x2: this._parseNumber(),
+                          y2: this._parseNumber(),
+                          x: this._parseNumber(),
+                          y: this._parseNumber()
+                        };
+                        return new SVGPathSegCurvetoCubicRel(owningPathSegList, points.x, points.y, points.x1, points.y1, points.x2, points.y2);
+                      }
+
+                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS:
+                      {
                         var _points = {
                           x1: this._parseNumber(),
                           y1: this._parseNumber(),
@@ -2432,23 +2457,21 @@
                           x: this._parseNumber(),
                           y: this._parseNumber()
                         };
-                        return new SVGPathSegCurvetoCubicRel(owningPathSegList, _points.x, _points.y, _points.x1, _points.y1, _points.x2, _points.y2);
+                        return new SVGPathSegCurvetoCubicAbs(owningPathSegList, _points.x, _points.y, _points.x1, _points.y1, _points.x2, _points.y2);
                       }
 
-                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS:
+                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:
                       {
                         var _points2 = {
-                          x1: this._parseNumber(),
-                          y1: this._parseNumber(),
                           x2: this._parseNumber(),
                           y2: this._parseNumber(),
                           x: this._parseNumber(),
                           y: this._parseNumber()
                         };
-                        return new SVGPathSegCurvetoCubicAbs(owningPathSegList, _points2.x, _points2.y, _points2.x1, _points2.y1, _points2.x2, _points2.y2);
+                        return new SVGPathSegCurvetoCubicSmoothRel(owningPathSegList, _points2.x, _points2.y, _points2.x2, _points2.y2);
                       }
 
-                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL:
+                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:
                       {
                         var _points3 = {
                           x2: this._parseNumber(),
@@ -2456,21 +2479,21 @@
                           x: this._parseNumber(),
                           y: this._parseNumber()
                         };
-                        return new SVGPathSegCurvetoCubicSmoothRel(owningPathSegList, _points3.x, _points3.y, _points3.x2, _points3.y2);
-                      }
-
-                    case SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS:
-                      {
-                        var _points4 = {
-                          x2: this._parseNumber(),
-                          y2: this._parseNumber(),
-                          x: this._parseNumber(),
-                          y: this._parseNumber()
-                        };
-                        return new SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList, _points4.x, _points4.y, _points4.x2, _points4.y2);
+                        return new SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList, _points3.x, _points3.y, _points3.x2, _points3.y2);
                       }
 
                     case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL:
+                      {
+                        var _points4 = {
+                          x1: this._parseNumber(),
+                          y1: this._parseNumber(),
+                          x: this._parseNumber(),
+                          y: this._parseNumber()
+                        };
+                        return new SVGPathSegCurvetoQuadraticRel(owningPathSegList, _points4.x, _points4.y, _points4.x1, _points4.y1);
+                      }
+
+                    case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:
                       {
                         var _points5 = {
                           x1: this._parseNumber(),
@@ -2478,17 +2501,8 @@
                           x: this._parseNumber(),
                           y: this._parseNumber()
                         };
-                        return new SVGPathSegCurvetoQuadraticRel(owningPathSegList, _points5.x, _points5.y, _points5.x1, _points5.y1);
+                        return new SVGPathSegCurvetoQuadraticAbs(owningPathSegList, _points5.x, _points5.y, _points5.x1, _points5.y1);
                       }
-
-                    case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:
-                      var points = {
-                        x1: this._parseNumber(),
-                        y1: this._parseNumber(),
-                        x: this._parseNumber(),
-                        y: this._parseNumber()
-                      };
-                      return new SVGPathSegCurvetoQuadraticAbs(owningPathSegList, points.x, points.y, points.x1, points.y1);
 
                     case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL:
                       return new SVGPathSegCurvetoQuadraticSmoothRel(owningPathSegList, this._parseNumber(), this._parseNumber());
@@ -2622,13 +2636,13 @@
   var $ = jQuery;
 
   var supportsSVG_ = function () {
-    return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
+    return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
   }();
   var _navigator = navigator,
       userAgent = _navigator.userAgent;
   var svg = document.createElementNS(NS.SVG, 'svg'); // Note: Browser sniffing should only be used if no other detection method is possible
 
-  var isOpera_ = !!window.opera;
+  var isOpera_ = Boolean(window.opera);
   var isWebkit_ = userAgent.includes('AppleWebKit');
   var isGecko_ = userAgent.includes('Gecko/');
   var isIE_ = userAgent.includes('MSIE');
@@ -2638,11 +2652,11 @@
   var isTouch_ = 'ontouchstart' in window;
 
   var supportsSelectors_ = function () {
-    return !!svg.querySelector;
+    return Boolean(svg.querySelector);
   }();
 
   var supportsXpath_ = function () {
-    return !!document.evaluate;
+    return Boolean(document.evaluate);
   }(); // segList functions (for FF1.5 and 2.0)
 
 
@@ -2905,7 +2919,7 @@
   * @param {external:jQuery} $ The jQuery object to which to add the plug-in
   * @returns {external:jQuery}
   */
-  function jqPluginSVG ($) {
+  function jQueryPluginSVG($) {
     var proxied = $.fn.attr,
         svgns = 'http://www.w3.org/2000/svg';
     /**
@@ -2923,7 +2937,7 @@
       var len = this.length;
 
       if (!len) {
-        return proxied.apply(this, arguments);
+        return proxied.call(this, key, value);
       }
 
       for (var i = 0; i < len; ++i) {
@@ -2974,7 +2988,7 @@
             return _attr;
           }
         } else {
-          return proxied.apply(this, arguments);
+          return proxied.call(this, key, value);
         }
       }
 
@@ -2984,7 +2998,12 @@
     return $;
   }
 
-  var svgroot = document.createElementNS(NS.SVG, 'svg'); // Helper function.
+  var svgroot = document.createElementNS(NS.SVG, 'svg');
+  /**
+   * Helper function to convert `SVGTransform` to a string.
+   * @param {SVGTransform} xform
+   * @returns {string}
+   */
 
   function transformToString(xform) {
     var m = xform.matrix;
@@ -3108,11 +3127,14 @@
   * These methods do not currently raise any exceptions.
   * These methods also do not check that transforms are being inserted.  This is basically
   * implementing as much of SVGTransformList that we need to get the job done.
+  * @implements {module:SVGTransformList.SVGEditTransformList}
   */
 
   var SVGTransformList =
   /*#__PURE__*/
   function () {
+    // eslint-disable-line no-shadow
+
     /**
     * @param {Element} elem
     */
@@ -3183,7 +3205,7 @@
                 values.push(0, 0);
               }
 
-              xform[fname].apply(xform, values);
+              xform[fname].apply(xform, _toConsumableArray(values));
 
               _this._list.appendItem(xform);
             })();
@@ -3195,23 +3217,16 @@
         if (item) {
           // Check if this transform is already in a transformlist, and
           // remove it if so.
-          var found = false;
-
-          for (var id in listMap_) {
-            var tl = listMap_[id];
-
+          Object.values(listMap_).some(function (tl) {
             for (var i = 0, len = tl._xforms.length; i < len; ++i) {
               if (tl._xforms[i] === item) {
-                found = true;
                 tl.removeItem(i);
-                break;
+                return true;
               }
             }
 
-            if (found) {
-              break;
-            }
-          }
+            return false;
+          });
         }
       };
 
@@ -3394,6 +3409,7 @@
    */
 
   var removeElementFromListMap = function removeElementFromListMap(elem) {
+    // eslint-disable-line import/no-mutable-exports
     if (elem.id && listMap_[elem.id]) {
       delete listMap_[elem.id];
     }
@@ -3477,7 +3493,7 @@
 
   /**
    * @function module:units.ElementContainer#getElement
-   * @returns {Element} An element in the container given an id
+   * @returns {?Element} An element in the container given an id
    */
 
   /**
@@ -3574,8 +3590,7 @@
     var digits = elementContainer_.getRoundDigits();
 
     if (!isNaN(val)) {
-      // Note that + converts to Number
-      return +(+val).toFixed(digits);
+      return Number(Number(val).toFixed(digits));
     }
 
     if (Array.isArray(val)) {
@@ -3715,7 +3730,7 @@
 
       try {
         var elem = elementContainer_.getElement(val);
-        result = elem == null || elem === selectedElement;
+        result = isNullish(elem) || elem === selectedElement;
       } catch (e) {}
 
       return result;
@@ -3862,6 +3877,7 @@
     _createClass(MoveElementCommand, [{
       key: "type",
       value: function type() {
+        // eslint-disable-line class-methods-use-this
         return 'svgedit.history.MoveElementCommand';
       }
       /**
@@ -3948,6 +3964,7 @@
     _createClass(InsertElementCommand, [{
       key: "type",
       value: function type() {
+        // eslint-disable-line class-methods-use-this
         return 'svgedit.history.InsertElementCommand';
       }
       /**
@@ -4037,6 +4054,7 @@
     _createClass(RemoveElementCommand, [{
       key: "type",
       value: function type() {
+        // eslint-disable-line class-methods-use-this
         return 'svgedit.history.RemoveElementCommand';
       }
       /**
@@ -4077,9 +4095,9 @@
 
         removeElementFromListMap(this.elem);
 
-        if (this.nextSibling == null) {
+        if (isNullish(this.nextSibling)) {
           if (window.console) {
-            console.log('Error: reference element was lost');
+            console.log('Error: reference element was lost'); // eslint-disable-line no-console
           }
         }
 
@@ -4152,6 +4170,7 @@
     _createClass(ChangeElementCommand, [{
       key: "type",
       value: function type() {
+        // eslint-disable-line class-methods-use-this
         return 'svgedit.history.ChangeElementCommand';
       }
       /**
@@ -4164,35 +4183,38 @@
     }, {
       key: "apply",
       value: function apply(handler) {
+        var _this5 = this;
+
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
         }
 
         var bChangedTransform = false;
+        Object.entries(this.newValues).forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+              attr = _ref2[0],
+              value = _ref2[1];
 
-        for (var attr in this.newValues) {
-          if (this.newValues[attr]) {
+          if (value) {
             if (attr === '#text') {
-              this.elem.textContent = this.newValues[attr];
+              _this5.elem.textContent = value;
             } else if (attr === '#href') {
-              setHref(this.elem, this.newValues[attr]);
+              setHref(_this5.elem, value);
             } else {
-              this.elem.setAttribute(attr, this.newValues[attr]);
+              _this5.elem.setAttribute(attr, value);
             }
+          } else if (attr === '#text') {
+            _this5.elem.textContent = '';
           } else {
-            if (attr === '#text') {
-              this.elem.textContent = '';
-            } else {
-              this.elem.setAttribute(attr, '');
-              this.elem.removeAttribute(attr);
-            }
+            _this5.elem.setAttribute(attr, '');
+
+            _this5.elem.removeAttribute(attr);
           }
 
           if (attr === 'transform') {
             bChangedTransform = true;
           }
-        } // relocate rotational transform, if necessary
-
+        }); // relocate rotational transform, if necessary
 
         if (!bChangedTransform) {
           var angle = getRotationAngle(this.elem);
@@ -4225,34 +4247,36 @@
     }, {
       key: "unapply",
       value: function unapply(handler) {
+        var _this6 = this;
+
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
         }
 
         var bChangedTransform = false;
+        Object.entries(this.oldValues).forEach(function (_ref3) {
+          var _ref4 = _slicedToArray(_ref3, 2),
+              attr = _ref4[0],
+              value = _ref4[1];
 
-        for (var attr in this.oldValues) {
-          if (this.oldValues[attr]) {
+          if (value) {
             if (attr === '#text') {
-              this.elem.textContent = this.oldValues[attr];
+              _this6.elem.textContent = value;
             } else if (attr === '#href') {
-              setHref(this.elem, this.oldValues[attr]);
+              setHref(_this6.elem, value);
             } else {
-              this.elem.setAttribute(attr, this.oldValues[attr]);
+              _this6.elem.setAttribute(attr, value);
             }
+          } else if (attr === '#text') {
+            _this6.elem.textContent = '';
           } else {
-            if (attr === '#text') {
-              this.elem.textContent = '';
-            } else {
-              this.elem.removeAttribute(attr);
-            }
+            _this6.elem.removeAttribute(attr);
           }
 
           if (attr === 'transform') {
             bChangedTransform = true;
           }
-        } // relocate rotational transform, if necessary
-
+        }); // relocate rotational transform, if necessary
 
         if (!bChangedTransform) {
           var angle = getRotationAngle(this.elem);
@@ -4309,19 +4333,20 @@
     * @param {string} [text] - An optional string visible to user related to this change
     */
     function BatchCommand(text) {
-      var _this5;
+      var _this7;
 
       _classCallCheck(this, BatchCommand);
 
-      _this5 = _possibleConstructorReturn(this, _getPrototypeOf(BatchCommand).call(this));
-      _this5.text = text || 'Batch Command';
-      _this5.stack = [];
-      return _this5;
+      _this7 = _possibleConstructorReturn(this, _getPrototypeOf(BatchCommand).call(this));
+      _this7.text = text || 'Batch Command';
+      _this7.stack = [];
+      return _this7;
     }
 
     _createClass(BatchCommand, [{
       key: "type",
       value: function type() {
+        // eslint-disable-line class-methods-use-this
         return 'svgedit.history.BatchCommand';
       }
       /**
@@ -4558,7 +4583,7 @@
         while (i--) {
           var elem = elems[i];
 
-          if (elem == null) {
+          if (isNullish(elem)) {
             continue;
           }
 
@@ -4591,7 +4616,7 @@
         while (i--) {
           var elem = changeset.elements[i];
 
-          if (elem == null) {
+          if (isNullish(elem)) {
             continue;
           }
 
@@ -4611,7 +4636,7 @@
     return UndoManager;
   }();
 
-  var history = /*#__PURE__*/Object.freeze({
+  var hstry = /*#__PURE__*/Object.freeze({
     HistoryEventTypes: HistoryEventTypes,
     MoveElementCommand: MoveElementCommand,
     InsertElementCommand: InsertElementCommand,
@@ -4779,15 +4804,15 @@
   */
 
   var transformListToTransform = function transformListToTransform(tlist, min, max) {
-    if (tlist == null) {
+    if (isNullish(tlist)) {
       // Or should tlist = null have been prevented before this?
       return svg$1.createSVGTransformFromMatrix(svg$1.createSVGMatrix());
     }
 
     min = min || 0;
     max = max || tlist.numberOfItems - 1;
-    min = parseInt(min, 10);
-    max = parseInt(max, 10);
+    min = parseInt(min);
+    max = parseInt(max);
 
     if (min > max) {
       var temp = max;
@@ -4910,7 +4935,8 @@
    * @memberof module:path
   */
 
-  var path = null;
+  var path = null; // eslint-disable-line import/no-mutable-exports
+
   var editorContext_ = null;
   /**
   * @external MouseEvent
@@ -5162,14 +5188,14 @@
   */
 
   var getGripPt = function getGripPt(seg, altPt) {
-    var path = seg.path;
+    var pth = seg.path;
     var out = {
       x: altPt ? altPt.x : seg.item.x,
       y: altPt ? altPt.y : seg.item.y
     };
 
-    if (path.matrix) {
-      var pt = transformPoint(out.x, out.y, path.matrix);
+    if (pth.matrix) {
+      var pt = transformPoint(out.x, out.y, pth.matrix);
       out = pt;
     }
 
@@ -5181,18 +5207,18 @@
   /**
   * @function module:path.getPointFromGrip
   * @param {module:math.XYObject} pt
-  * @param {module:path.Path} path
+  * @param {module:path.Path} pth
   * @returns {module:math.XYObject}
   */
 
-  var getPointFromGrip = function getPointFromGrip(pt, path) {
+  var getPointFromGrip = function getPointFromGrip(pt, pth) {
     var out = {
       x: pt.x,
       y: pt.y
     };
 
-    if (path.matrix) {
-      pt = transformPoint(out.x, out.y, path.imatrix);
+    if (pth.matrix) {
+      pt = transformPoint(out.x, out.y, pth.imatrix);
       out.x = pt.x;
       out.y = pt.y;
     }
@@ -5265,8 +5291,8 @@
     var c = getElem('pathpointgrip_container');
 
     if (!c) {
-      var parent = getElem('selectorParentGroup');
-      c = parent.appendChild(document.createElementNS(NS.SVG, 'g'));
+      var parentElement = getElem('selectorParentGroup');
+      c = parentElement.appendChild(document.createElementNS(NS.SVG, 'g'));
       c.id = 'pathpointgrip_container';
     }
 
@@ -5419,7 +5445,7 @@
   var replacePathSeg = function replacePathSeg(type, index, pts, elem) {
     var pth = elem || path.elem;
     var func = 'createSVGPathSeg' + pathFuncs[type];
-    var seg = pth[func].apply(pth, pts);
+    var seg = pth[func].apply(pth, _toConsumableArray(pts));
 
     if (supportsPathReplaceItem()) {
       pth.pathSegList.replaceItem(seg, index);
@@ -5485,13 +5511,12 @@
       var pts = ptObjToArr(seg.type, seg.item); // , true);
 
       for (var i = 0; i < pts.length; i += 2) {
-        var _pt = getGripPt(seg, {
+        var point = getGripPt(seg, {
           x: pts[i],
           y: pts[i + 1]
         });
-
-        pts[i] = _pt.x;
-        pts[i + 1] = _pt.y;
+        pts[i] = point.x;
+        pts[i + 1] = point.y;
       }
 
       replacePathSeg(seg.type, 1, pts, segLine);
@@ -5592,7 +5617,7 @@
       key: "showCtrlPts",
       value: function showCtrlPts(y) {
         for (var i in this.ctrlpts) {
-          if (this.ctrlpts.hasOwnProperty(i)) {
+          if ({}.hasOwnProperty.call(this.ctrlpts, i)) {
             this.ctrlpts[i].setAttribute('display', y ? 'inline' : 'none');
           }
         }
@@ -5702,8 +5727,8 @@
         if (this.mate) {
           // The last point of a closed subpath has a 'mate',
           // which is the 'M' segment of the subpath
-          var _item = this.mate.item;
-          var pts = [_item.x += dx, _item.y += dy];
+          var itm = this.mate.item;
+          var pts = [itm.x += dx, itm.y += dy];
           replacePathSeg(this.mate.type, this.mate.index, pts); // Has no grip, so does not need 'updating'?
         }
 
@@ -5809,7 +5834,8 @@
       this.elem = elem;
       this.segs = [];
       this.selected_pts = [];
-      path = this;
+      path = this; // eslint-disable-line consistent-this
+
       this.init();
     }
     /**
@@ -5868,7 +5894,7 @@
             seg.mate = segs[startI];
             seg.addGrip();
 
-            if (this.first_seg == null) {
+            if (isNullish(this.first_seg)) {
               this.first_seg = seg;
             }
           } else if (!nextSeg) {
@@ -5905,7 +5931,7 @@
       * @callback module:path.PathEachSegCallback
       * @this module:path.Segment
       * @param {Integer} i The index of the seg being iterated
-      * @returns {boolean} Will stop execution of `eachSeg` if returns `false`
+      * @returns {boolean|undefined} Will stop execution of `eachSeg` if returns `false`
       */
 
       /**
@@ -6001,40 +6027,12 @@
         } else if (!seg.prev) {
           // First node of open path, make next point the M
           // const {item} = seg;
-          var _pt2 = [next.item.x, next.item.y];
-          replacePathSeg(2, seg.next.index, _pt2);
+          var _pt = [next.item.x, next.item.y];
+          replacePathSeg(2, seg.next.index, _pt);
           list.removeItem(index);
         } else {
           list.removeItem(index);
         }
-      }
-      /**
-      * @param {Integer} index
-      * @returns {boolean}
-      */
-
-    }, {
-      key: "subpathIsClosed",
-      value: function subpathIsClosed(index) {
-        var closed = false; // Check if subpath is already open
-
-        path.eachSeg(function (i) {
-          if (i <= index) {
-            return true;
-          }
-
-          if (this.type === 2) {
-            // Found M first, so open
-            return false;
-          }
-
-          if (this.type === 1) {
-            // Found Z first, so closed
-            closed = true;
-            return false;
-          }
-        });
-        return closed;
       }
       /**
       * @param {Integer} index
@@ -6218,7 +6216,7 @@
       value: function selectPt(pt, ctrlNum) {
         this.clearSelection();
 
-        if (pt == null) {
+        if (isNullish(pt)) {
           this.eachSeg(function (i) {
             // 'this' is the segment here.
             if (this.prev) {
@@ -6318,7 +6316,7 @@
           grips[i] = _seg2.ptgrip;
         }
 
-        var closedSubpath = this.subpathIsClosed(this.selected_pts[0]);
+        var closedSubpath = Path.subpathIsClosed(this.selected_pts[0]);
         editorContext_.addPtsToSelection({
           grips: grips,
           closedSubpath: closedSubpath
@@ -6329,10 +6327,39 @@
     return Path;
   }();
   /**
+  * @param {Integer} index
+  * @returns {boolean}
+  */
+
+  Path.subpathIsClosed = function (index) {
+    var clsd = false; // Check if subpath is already open
+
+    path.eachSeg(function (i) {
+      if (i <= index) {
+        return true;
+      }
+
+      if (this.type === 2) {
+        // Found M first, so open
+        return false;
+      }
+
+      if (this.type === 1) {
+        // Found Z first, so closed
+        clsd = true;
+        return false;
+      }
+
+      return true;
+    });
+    return clsd;
+  };
+  /**
   * @function module:path.getPath_
   * @param {SVGPathElement} elem
   * @returns {module:path.Path}
   */
+
 
   var getPath_ = function getPath_(elem) {
     var p = pathData[elem.id];
@@ -6426,7 +6453,7 @@
       var rvals = getRotVals(seg.x, seg.y),
           points = [rvals.x, rvals.y];
 
-      if (seg.x1 != null && seg.x2 != null) {
+      if (!isNullish(seg.x1) && !isNullish(seg.x2)) {
         var cVals1 = getRotVals(seg.x1, seg.y1);
         var cVals2 = getRotVals(seg.x2, seg.y2);
         points.splice(points.length, 0, cVals1.x, cVals1.y, cVals2.x, cVals2.y);
@@ -6514,21 +6541,21 @@
    * Convert a path to one with only absolute or relative values.
    * @todo move to pathActions.js
    * @function module:path.convertPath
-   * @param {SVGPathElement} path - the path to convert
+   * @param {SVGPathElement} pth - the path to convert
    * @param {boolean} toRel - true of convert to relative
    * @returns {string}
    */
 
-  var convertPath = function convertPath(path, toRel) {
-    var segList = path.pathSegList;
-    var len = segList.numberOfItems;
+  var convertPath = function convertPath(pth, toRel) {
+    var pathSegList = pth.pathSegList;
+    var len = pathSegList.numberOfItems;
     var curx = 0,
         cury = 0;
     var d = '';
     var lastM = null;
 
     for (var i = 0; i < len; ++i) {
-      var seg = segList.getItem(i); // if these properties are not in the segment, set them to zero
+      var seg = pathSegList.getItem(i); // if these properties are not in the segment, set them to zero
 
       var x = seg.x || 0,
           y = seg.y || 0,
@@ -6861,7 +6888,7 @@
         * @param {Element} mouseTarget
         * @param {Float} startX
         * @param {Float} startY
-        * @returns {undefined}
+        * @returns {boolean|undefined}
         */
         mouseDown: function mouseDown(evt, mouseTarget, startX, startY) {
           var id;
@@ -7005,7 +7032,7 @@
                 // Checks if current target or parents are #svgcontent
                 if (!$$1.contains(editorContext_.getContainer(), editorContext_.getMouseTarget(evt))) {
                   // Clicked outside canvas, so don't make point
-                  console.log('Clicked outside canvas');
+                  // console.log('Clicked outside canvas');
                   return false;
                 }
 
@@ -7045,12 +7072,12 @@
 
             }
 
-            return;
+            return undefined;
           } // TODO: Make sure currentPath isn't null at this point
 
 
           if (!path) {
-            return;
+            return undefined;
           }
 
           path.storeD();
@@ -7059,7 +7086,7 @@
 
           if (id.substr(0, 14) === 'pathpointgrip_') {
             // Select this point
-            curPt = path.cur_pt = parseInt(id.substr(14), 10);
+            curPt = path.cur_pt = parseInt(id.substr(14));
             path.dragging = [startX, startY];
             var seg = path.segs[curPt]; // only clear selection if shift is not pressed (otherwise, add
             // node to selection)
@@ -7087,7 +7114,7 @@
           if (!path.dragging) {
             var rubberBox = editorContext_.getRubberBox();
 
-            if (rubberBox == null) {
+            if (isNullish(rubberBox)) {
               rubberBox = editorContext_.setRubberBox(editorContext_.selectorManager.getRubberBandBox());
             }
 
@@ -7101,6 +7128,8 @@
               display: 'inline'
             }, 100);
           }
+
+          return undefined;
         },
 
         /**
@@ -7211,7 +7240,7 @@
           } else {
             path.selected_pts = [];
             path.eachSeg(function (i) {
-              var seg = this;
+              var seg = this; // eslint-disable-line consistent-this
 
               if (!seg.next && !seg.prev) {
                 return;
@@ -7238,11 +7267,18 @@
         },
 
         /**
+         * @typedef module:path.keepElement
+         * @type {PlainObject}
+         * @property {boolean} keep
+         * @property {Element} element
+         */
+
+        /**
         * @param {Event} evt
         * @param {Element} element
         * @param {Float} mouseX
         * @param {Float} mouseY
-        * @returns {undefined}
+        * @returns {module:path.keepElement|undefined}
         */
         mouseUp: function mouseUp(evt, element, mouseX, mouseY) {
           var drawnPath = editorContext_.getDrawnPath(); // Create mode
@@ -7291,6 +7327,7 @@
           }
 
           hasMoved = false;
+          return undefined;
         },
 
         /**
@@ -7369,9 +7406,9 @@
             return;
           }
 
-          var angle = getRotationAngle(elem);
+          var angl = getRotationAngle(elem);
 
-          if (angle === 0) {
+          if (angl === 0) {
             return;
           }
 
@@ -7421,7 +7458,7 @@
         * @returns {false|undefined}
         */
         resetOrientation: function resetOrientation(pth) {
-          if (pth == null || pth.nodeName !== 'path') {
+          if (isNullish(pth) || pth.nodeName !== 'path') {
             return false;
           }
 
@@ -7470,6 +7507,7 @@
           }
 
           reorientGrads(pth, m);
+          return undefined;
         },
 
         /**
@@ -7568,9 +7606,11 @@
               openPt = false;
               return false;
             }
+
+            return true;
           });
 
-          if (openPt == null) {
+          if (isNullish(openPt)) {
             // Single path, so close last seg
             openPt = path.segs.length - 1;
           }
@@ -7818,7 +7858,7 @@
     );
   }(); // end pathActions
 
-  var $$2 = jqPluginSVG(jQuery); // String used to encode base64.
+  var $$2 = jQueryPluginSVG(jQuery); // String used to encode base64.
 
   var KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='; // Much faster than running getBBox() every time
 
@@ -7938,7 +7978,7 @@
   * @returns {string} Base64 output
   */
 
-  var encode64 = function encode64(input) {
+  function encode64(input) {
     // base64 strings are 4/3 larger than the original string
     input = encodeUTF8(input); // convert non-ASCII characters
     // input = convertToXMLReferences(input);
@@ -7947,8 +7987,7 @@
       return window.btoa(input); // Use native if available
     }
 
-    var output = [];
-    output.length = Math.floor((input.length + 2) / 3) * 4;
+    var output = new Array(Math.floor((input.length + 2) / 3) * 4);
     var i = 0,
         p = 0;
 
@@ -7956,13 +7995,17 @@
       var chr1 = input.charCodeAt(i++);
       var chr2 = input.charCodeAt(i++);
       var chr3 = input.charCodeAt(i++);
+      /* eslint-disable no-bitwise */
+
       var enc1 = chr1 >> 2;
       var enc2 = (chr1 & 3) << 4 | chr2 >> 4;
       var enc3 = (chr2 & 15) << 2 | chr3 >> 6;
       var enc4 = chr3 & 63;
+      /* eslint-enable no-bitwise */
 
       if (isNaN(chr2)) {
-        enc3 = enc4 = 64;
+        enc3 = 64;
+        enc4 = 64;
       } else if (isNaN(chr3)) {
         enc4 = 64;
       }
@@ -7974,7 +8017,7 @@
     } while (i < input.length);
 
     return output.join('');
-  };
+  }
   /**
   * Converts a string from base64.
   * @function module:utilities.decode64
@@ -7982,7 +8025,7 @@
   * @returns {string} Decoded output
   */
 
-  var decode64 = function decode64(input) {
+  function decode64(input) {
     if (window.atob) {
       return decodeUTF8(window.atob(input));
     } // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
@@ -7997,31 +8040,35 @@
       var enc2 = KEYSTR.indexOf(input.charAt(i++));
       var enc3 = KEYSTR.indexOf(input.charAt(i++));
       var enc4 = KEYSTR.indexOf(input.charAt(i++));
+      /* eslint-disable no-bitwise */
+
       var chr1 = enc1 << 2 | enc2 >> 4;
       var chr2 = (enc2 & 15) << 4 | enc3 >> 2;
       var chr3 = (enc3 & 3) << 6 | enc4;
+      /* eslint-enable no-bitwise */
+
       output += String.fromCharCode(chr1);
 
       if (enc3 !== 64) {
-        output = output + String.fromCharCode(chr2);
+        output += String.fromCharCode(chr2);
       }
 
       if (enc4 !== 64) {
-        output = output + String.fromCharCode(chr3);
+        output += String.fromCharCode(chr3);
       }
     } while (i < input.length);
 
     return decodeUTF8(output);
-  };
+  }
   /**
   * @function module:utilities.decodeUTF8
   * @param {string} argString
   * @returns {string}
   */
 
-  var decodeUTF8 = function decodeUTF8(argString) {
+  function decodeUTF8(argString) {
     return decodeURIComponent(escape(argString));
-  }; // codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
+  } // codedread:does not seem to work with webkit-based browsers on OSX // Brettz9: please test again as function upgraded
 
   /**
   * @function module:utilities.encodeUTF8
@@ -8230,6 +8277,7 @@
   */
 
   var getHref = function getHref(elem) {
+    // eslint-disable-line import/no-mutable-exports
     return elem.getAttributeNS(NS.XLINK, 'href');
   };
   /**
@@ -8241,6 +8289,7 @@
   */
 
   var setHref = function setHref(elem, val) {
+    // eslint-disable-line import/no-mutable-exports
     elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
   };
   /**
@@ -8283,6 +8332,12 @@
     var start = seglist.getItem(0);
     var P0 = [start.x, start.y];
 
+    var getCalc = function getCalc(j, P1, P2, P3) {
+      return function (t) {
+        return Math.pow(1 - t, 3) * P0[j] + 3 * Math.pow(1 - t, 2) * t * P1[j] + 3 * (1 - t) * Math.pow(t, 2) * P2[j] + Math.pow(t, 3) * P3[j];
+      };
+    };
+
     for (var i = 0; i < tot; i++) {
       var seg = seglist.getItem(i);
 
@@ -8295,61 +8350,50 @@
       bounds[1].push(P0[1]);
 
       if (seg.x1) {
-        (function () {
-          var P1 = [seg.x1, seg.y1],
-              P2 = [seg.x2, seg.y2],
-              P3 = [seg.x, seg.y];
+        var P1 = [seg.x1, seg.y1],
+            P2 = [seg.x2, seg.y2],
+            P3 = [seg.x, seg.y];
 
-          var _loop = function _loop(j) {
-            var calc = function calc(t) {
-              return Math.pow(1 - t, 3) * P0[j] + 3 * Math.pow(1 - t, 2) * t * P1[j] + 3 * (1 - t) * Math.pow(t, 2) * P2[j] + Math.pow(t, 3) * P3[j];
-            };
+        for (var j = 0; j < 2; j++) {
+          var calc = getCalc(j, P1, P2, P3);
+          var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
+          var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
+          var c = 3 * P1[j] - 3 * P0[j];
 
-            var b = 6 * P0[j] - 12 * P1[j] + 6 * P2[j];
-            var a = -3 * P0[j] + 9 * P1[j] - 9 * P2[j] + 3 * P3[j];
-            var c = 3 * P1[j] - 3 * P0[j];
-
-            if (a === 0) {
-              if (b === 0) {
-                return "continue";
-              }
-
-              var t = -c / b;
-
-              if (t > 0 && t < 1) {
-                bounds[j].push(calc(t));
-              }
-
-              return "continue";
+          if (a === 0) {
+            if (b === 0) {
+              continue;
             }
 
-            var b2ac = Math.pow(b, 2) - 4 * c * a;
+            var t = -c / b;
 
-            if (b2ac < 0) {
-              return "continue";
+            if (t > 0 && t < 1) {
+              bounds[j].push(calc(t));
             }
 
-            var t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
-
-            if (t1 > 0 && t1 < 1) {
-              bounds[j].push(calc(t1));
-            }
-
-            var t2 = (-b - Math.sqrt(b2ac)) / (2 * a);
-
-            if (t2 > 0 && t2 < 1) {
-              bounds[j].push(calc(t2));
-            }
-          };
-
-          for (var j = 0; j < 2; j++) {
-            var _ret = _loop(j);
-
-            if (_ret === "continue") continue;
+            continue;
           }
 
-          P0 = P3;
-        })();
+          var b2ac = Math.pow(b, 2) - 4 * c * a;
+
+          if (b2ac < 0) {
+            continue;
+          }
+
+          var t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
+
+          if (t1 > 0 && t1 < 1) {
+            bounds[j].push(calc(t1));
+          }
+
+          var t2 = (-b - Math.sqrt(b2ac)) / (2 * a);
+
+          if (t2 > 0 && t2 < 1) {
+            bounds[j].push(calc(t2));
+          }
+        }
+
+        P0 = P3;
       } else {
         bounds[0].push(seg.x);
         bounds[1].push(seg.y);
@@ -8448,10 +8492,8 @@
 
           ret = selected.getBBox();
           selected.textContent = '';
-        } else {
-          if (selected.getBBox) {
-            ret = selected.getBBox();
-          }
+        } else if (selected.getBBox) {
+          ret = selected.getBBox();
         }
 
         break;
@@ -8459,10 +8501,8 @@
       case 'path':
         if (!supportsPathBBox()) {
           ret = getPathBBox(selected);
-        } else {
-          if (selected.getBBox) {
-            ret = selected.getBBox();
-          }
+        } else if (selected.getBBox) {
+          ret = selected.getBBox();
         }
 
         break;
@@ -8577,20 +8617,23 @@
     switch (elem.tagName) {
       case 'ellipse':
       case 'circle':
-        a = $$2(elem).attr(['rx', 'ry', 'cx', 'cy']);
-        var _a = a,
-            cx = _a.cx,
-            cy = _a.cy;
-        var _a2 = a;
-        rx = _a2.rx;
-        ry = _a2.ry;
+        {
+          a = $$2(elem).attr(['rx', 'ry', 'cx', 'cy']);
+          var _a = a,
+              cx = _a.cx,
+              cy = _a.cy;
+          var _a2 = a;
+          rx = _a2.rx;
+          ry = _a2.ry;
 
-        if (elem.tagName === 'circle') {
-          rx = ry = $$2(elem).attr('r');
+          if (elem.tagName === 'circle') {
+            ry = $$2(elem).attr('r');
+            rx = ry;
+          }
+
+          d = getPathDFromSegments([['M', [cx - rx, cy]], ['C', [cx - rx, cy - ry / num, cx - rx / num, cy - ry, cx, cy - ry]], ['C', [cx + rx / num, cy - ry, cx + rx, cy - ry / num, cx + rx, cy]], ['C', [cx + rx, cy + ry / num, cx + rx / num, cy + ry, cx, cy + ry]], ['C', [cx - rx / num, cy + ry, cx - rx, cy + ry / num, cx - rx, cy]], ['Z', []]]);
+          break;
         }
-
-        d = getPathDFromSegments([['M', [cx - rx, cy]], ['C', [cx - rx, cy - ry / num, cx - rx / num, cy - ry, cx, cy - ry]], ['C', [cx + rx / num, cy - ry, cx + rx, cy - ry / num, cx + rx, cy]], ['C', [cx + rx, cy + ry / num, cx + rx / num, cy + ry, cx, cy + ry]], ['C', [cx - rx / num, cy + ry, cx - rx, cy + ry / num, cx - rx, cy]], ['Z', []]]);
-        break;
 
       case 'path':
         d = elem.getAttribute('d');
@@ -8610,24 +8653,26 @@
         break;
 
       case 'rect':
-        var r = $$2(elem).attr(['rx', 'ry']);
-        rx = r.rx;
-        ry = r.ry;
-        var b = elem.getBBox();
-        var x = b.x,
-            y = b.y,
-            w = b.width,
-            h = b.height;
-        num = 4 - num; // Why? Because!
+        {
+          var r = $$2(elem).attr(['rx', 'ry']);
+          rx = r.rx;
+          ry = r.ry;
+          var b = elem.getBBox();
+          var x = b.x,
+              y = b.y,
+              w = b.width,
+              h = b.height;
+          num = 4 - num; // Why? Because!
 
-        if (!rx && !ry) {
-          // Regular rect
-          d = getPathDFromSegments([['M', [x, y]], ['L', [x + w, y]], ['L', [x + w, y + h]], ['L', [x, y + h]], ['L', [x, y]], ['Z', []]]);
-        } else {
-          d = getPathDFromSegments([['M', [x, y + ry]], ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]], ['L', [x + w - rx, y]], ['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]], ['L', [x + w, y + h - ry]], ['C', [x + w, y + h - ry / num, x + w - rx / num, y + h, x + w - rx, y + h]], ['L', [x + rx, y + h]], ['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]], ['L', [x, y + ry]], ['Z', []]]);
+          if (!rx && !ry) {
+            // Regular rect
+            d = getPathDFromSegments([['M', [x, y]], ['L', [x + w, y]], ['L', [x + w, y + h]], ['L', [x, y + h]], ['L', [x, y]], ['Z', []]]);
+          } else {
+            d = getPathDFromSegments([['M', [x, y + ry]], ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]], ['L', [x + w - rx, y]], ['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]], ['L', [x + w, y + h - ry]], ['C', [x + w, y + h - ry / num, x + w - rx / num, y + h, x + w - rx, y + h]], ['L', [x + rx, y + h]], ['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]], ['L', [x, y + ry]], ['Z', []]]);
+          }
+
+          break;
         }
-
-        break;
 
       default:
         break;
@@ -8675,12 +8720,12 @@
       path$$1.setAttribute('transform', eltrans);
     }
 
-    var parent = elem.parentNode;
+    var parentNode = elem.parentNode;
 
     if (elem.nextSibling) {
       elem.before(path$$1);
     } else {
-      parent.append(path$$1);
+      parentNode.append(path$$1);
     }
 
     var d = getPathDFromElement(elem);
@@ -8712,13 +8757,13 @@
   * @param {module:path.pathActions} pathActions - If a transform exists, pathActions.resetOrientation() is used. See: canvas.pathActions.
   * @param {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection} clearSelection - see [canvas.clearSelection]{@link module:svgcanvas.SvgCanvas#clearSelection}
   * @param {module:path.EditorContext#addToSelection} addToSelection - see [canvas.addToSelection]{@link module:svgcanvas.SvgCanvas#addToSelection}
-  * @param {module:history} history - see history module
+  * @param {module:history} hstry - see history module
   * @param {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory} addCommandToHistory - see [canvas.addCommandToHistory]{@link module:svgcanvas~addCommandToHistory}
   * @returns {SVGPathElement|null} The converted path element or null if the DOM element was not recognized.
   */
 
-  var convertToPath = function convertToPath(elem, attrs, addSVGElementFromJson, pathActions$$1, clearSelection, addToSelection, history, addCommandToHistory) {
-    var batchCmd = new history.BatchCommand('Convert element to Path'); // Any attribute on the element not covered by the passed-in attributes
+  var convertToPath = function convertToPath(elem, attrs, addSVGElementFromJson, pathActions$$1, clearSelection, addToSelection, hstry, addCommandToHistory) {
+    var batchCmd = new hstry.BatchCommand('Convert element to Path'); // Any attribute on the element not covered by the passed-in attributes
 
     attrs = $$2.extend({}, attrs, getExtraAttributesForConvertToPath(elem));
     var path$$1 = addSVGElementFromJson({
@@ -8732,12 +8777,12 @@
     }
 
     var id = elem.id;
-    var parent = elem.parentNode;
+    var parentNode = elem.parentNode;
 
     if (elem.nextSibling) {
       elem.before(path$$1);
     } else {
-      parent.append(path$$1);
+      parentNode.append(path$$1);
     }
 
     var d = getPathDFromElement(elem);
@@ -8755,8 +8800,8 @@
       }
 
       var nextSibling = elem.nextSibling;
-      batchCmd.addSubCommand(new history.RemoveElementCommand(elem, nextSibling, parent));
-      batchCmd.addSubCommand(new history.InsertElementCommand(path$$1));
+      batchCmd.addSubCommand(new hstry.RemoveElementCommand(elem, nextSibling, parent));
+      batchCmd.addSubCommand(new hstry.InsertElementCommand(path$$1));
       clearSelection();
       elem.remove();
       path$$1.setAttribute('id', id);
@@ -8787,15 +8832,15 @@
   * getBBox then apply the angle and any transforms.
   *
   * @param {Float} angle - The rotation angle in degrees
-  * @param {boolean} hasMatrixTransform - True if there is a matrix transform
+  * @param {boolean} hasAMatrixTransform - True if there is a matrix transform
   * @returns {boolean} True if the bbox can be optimized.
   */
 
-  function bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixTransform$$1) {
+  function bBoxCanBeOptimizedOverNativeGetBBox(angle, hasAMatrixTransform) {
     var angleModulo90 = angle % 90;
     var closeTo90 = angleModulo90 < -89.99 || angleModulo90 > 89.99;
     var closeTo0 = angleModulo90 > -0.001 && angleModulo90 < 0.001;
-    return hasMatrixTransform$$1 || !(closeTo0 || closeTo90);
+    return hasAMatrixTransform || !(closeTo0 || closeTo90);
   }
   /**
   * Get bounding box that includes any transforms.
@@ -8830,14 +8875,16 @@
         var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
 
         if (elemNames.includes(elem.tagName)) {
-          bb = goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+          goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+          bb = goodBb;
         } else if (elem.tagName === 'rect') {
           // Look for radius
           var rx = elem.getAttribute('rx');
           var ry = elem.getAttribute('ry');
 
           if (rx || ry) {
-            bb = goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+            goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+            bb = goodBb;
           }
         }
       }
@@ -8863,7 +8910,13 @@
     }
 
     return bb;
-  }; // TODO: This is problematic with large stroke-width and, for example, a single horizontal line. The calculated BBox extends way beyond left and right sides.
+  };
+  /**
+   * @param {Element} elem
+   * @returns {Float}
+   * @todo This is problematic with large stroke-width and, for example, a single
+   * horizontal line. The calculated BBox extends way beyond left and right sides.
+   */
 
   function getStrokeOffsetForBBox(elem) {
     var sw = elem.getAttribute('stroke-width');
@@ -8951,17 +9004,17 @@
   * Note that 0-opacity, off-screen etc elements are still considered "visible"
   * for this function.
   * @function module:utilities.getVisibleElements
-  * @param {Element} parent - The parent DOM element to search within
+  * @param {Element} parentElement - The parent DOM element to search within
   * @returns {Element[]} All "visible" elements.
   */
 
-  var getVisibleElements = function getVisibleElements(parent) {
-    if (!parent) {
-      parent = $$2(editorContext_$1.getSVGContent()).children(); // Prevent layers from being included
+  var getVisibleElements = function getVisibleElements(parentElement) {
+    if (!parentElement) {
+      parentElement = $$2(editorContext_$1.getSVGContent()).children(); // Prevent layers from being included
     }
 
     var contentElems = [];
-    $$2(parent).children().each(function (i, elem) {
+    $$2(parentElement).children().each(function (i, elem) {
       if (elem.getBBox) {
         contentElems.push(elem);
       }
@@ -9017,6 +9070,7 @@
   */
 
   var getRotationAngle = function getRotationAngle(elem, toRad) {
+    // eslint-disable-line import/no-mutable-exports
     var selected = elem || editorContext_$1.getSelectedElements()[0]; // find the rotation transform (if any) and set it
 
     var tlist = getTransformList(selected);
@@ -9036,7 +9090,7 @@
   * Get a DOM element by ID within the SVG root element.
   * @function module:utilities.getElem
   * @param {string} id - String with the element's new ID
-  * @returns {Element}
+  * @returns {?Element}
   */
 
   var getElem = supportsSelectors() ? function (id) {
@@ -9108,13 +9162,15 @@
       delete defaults.ry;
     }
 
-    for (var attr in defaults) {
-      var val = defaults[attr];
+    Object.entries(defaults).forEach(function (_ref4) {
+      var _ref5 = _slicedToArray(_ref4, 2),
+          attr = _ref5[0],
+          val = _ref5[1];
 
       if (element.getAttribute(attr) === String(val)) {
         element.removeAttribute(attr);
       }
-    }
+    });
   };
   /**
   * Round value to for snapping.
@@ -9217,6 +9273,15 @@
 
     return newEl;
   };
+  /**
+   * Whether a value is `null` or `undefined`.
+   * @param {Any} val
+   * @returns {boolean}
+   */
+
+  var isNullish = function isNullish(val) {
+    return val === null || val === undefined;
+  };
 
   /* globals jQuery */
 
@@ -9270,9 +9335,9 @@
 
 
   var injectExtendedContextMenuItemsIntoDom = function injectExtendedContextMenuItemsIntoDom() {
-    for (var menuItem in contextMenuExtensions) {
-      injectExtendedContextMenuItemIntoDom(contextMenuExtensions[menuItem]);
-    }
+    Object.values(contextMenuExtensions).forEach(function (menuItem) {
+      injectExtendedContextMenuItemIntoDom(menuItem);
+    });
   };
 
   // MIT License
@@ -9281,12 +9346,25 @@
   /**
    * @module importModule
    */
+
+  /**
+   * Converts a possible relative URL into an absolute one.
+   * @param {string} url
+   * @returns {string}
+   */
   function toAbsoluteURL(url) {
     var a = document.createElement('a');
     a.setAttribute('href', url); // <a href="hoge.html">
 
     return a.cloneNode(false).href; // -> "http://example.com/hoge.html"
   }
+  /**
+   * Add any of the whitelisted attributes to the script tag.
+   * @param {HTMLScriptElement} script
+   * @param {PlainObject.<string, string>} atts
+   * @returns {undefined}
+   */
+
 
   function addScriptAtts(script, atts) {
     ['id', 'class', 'type'].forEach(function (prop) {
@@ -9304,83 +9382,72 @@
 
   /**
   * @function module:importModule.importSetGlobalDefault
-  * @param {string} url
+  * @param {string|string[]} url
   * @param {module:importModule.ImportConfig} config
-  * @returns {*} The return depends on the export of the targeted module.
+  * @returns {Promise} The value to which it resolves depends on the export of the targeted module.
   */
 
 
-  function importSetGlobalDefault(_x, _x2) {
-    return _importSetGlobalDefault.apply(this, arguments);
+  function importSetGlobalDefault(url, config) {
+    return importSetGlobal(url, _extends({}, config, {
+      returnDefault: true
+    }));
   }
   /**
   * @function module:importModule.importSetGlobal
-  * @param {string} url
+  * @param {string|string[]} url
   * @param {module:importModule.ImportConfig} config
-  * @returns {ArbitraryModule|*} The return depends on the export of the targeted module.
+  * @returns {Promise} The promise resolves to either an `ArbitraryModule` or
+  *   any other value depends on the export of the targeted module.
   */
 
-  function _importSetGlobalDefault() {
-    _importSetGlobalDefault = _asyncToGenerator(
+  function importSetGlobal(_x, _x2) {
+    return _importSetGlobal.apply(this, arguments);
+  }
+  /**
+   *
+   * @author Brett Zamir (other items are from `dynamic-import-polyfill`)
+   * @param {string|string[]} url
+   * @param {PlainObject} [atts={}]
+   * @returns {Promise} Resolves to `undefined` or rejects with an `Error` upon a
+   *   script loading error
+   */
+
+  function _importSetGlobal() {
+    _importSetGlobal = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee(url, config) {
+    regeneratorRuntime.mark(function _callee(url, _ref) {
+      var glob, returnDefault, modularVersion;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              return _context.abrupt("return", importSetGlobal(url, _extends({}, config, {
-                returnDefault: true
-              })));
+              glob = _ref.global, returnDefault = _ref.returnDefault;
+              // Todo: Replace calls to this function with `import()` when supported
+              modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
 
-            case 1:
+              if (!modularVersion) {
+                _context.next = 4;
+                break;
+              }
+
+              return _context.abrupt("return", importModule(url, undefined, {
+                returnDefault: returnDefault
+              }));
+
+            case 4:
+              _context.next = 6;
+              return importScript(url);
+
+            case 6:
+              return _context.abrupt("return", window[glob]);
+
+            case 7:
             case "end":
               return _context.stop();
           }
         }
       }, _callee, this);
-    }));
-    return _importSetGlobalDefault.apply(this, arguments);
-  }
-
-  function importSetGlobal(_x3, _x4) {
-    return _importSetGlobal.apply(this, arguments);
-  } // Addition by Brett
-
-  function _importSetGlobal() {
-    _importSetGlobal = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee2(url, _ref) {
-      var global, returnDefault, modularVersion;
-      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              global = _ref.global, returnDefault = _ref.returnDefault;
-              // Todo: Replace calls to this function with `import()` when supported
-              modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
-
-              if (!modularVersion) {
-                _context2.next = 4;
-                break;
-              }
-
-              return _context2.abrupt("return", importModule(url, undefined, {
-                returnDefault: returnDefault
-              }));
-
-            case 4:
-              _context2.next = 6;
-              return importScript(url);
-
-            case 6:
-              return _context2.abrupt("return", window[global]);
-
-            case 7:
-            case "end":
-              return _context2.stop();
-          }
-        }
-      }, _callee2, this);
     }));
     return _importSetGlobal.apply(this, arguments);
   }
@@ -9395,6 +9462,7 @@
     }
 
     return new Promise(function (resolve, reject) {
+      // eslint-disable-line promise/avoid-new
       var script = document.createElement('script');
 
       var destructor = function destructor() {
@@ -9421,6 +9489,16 @@
       document.head.append(script);
     });
   }
+  /**
+   *
+   * @param {string|string[]} url
+   * @param {PlainObject} [atts={}]
+   * @param {PlainObject} opts
+   * @param {boolean} [opts.returnDefault=false} = {}]
+   * @returns {Promise} Resolves to value of loading module or rejects with
+   *   `Error` upon a script loading error.
+   */
+
   function importModule(url) {
     var atts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -9435,6 +9513,7 @@
     }
 
     return new Promise(function (resolve, reject) {
+      // eslint-disable-line promise/avoid-new
       var vector = '$importModule$' + Math.random().toString(32).slice(2);
       var script = document.createElement('script');
 
@@ -9470,6 +9549,202 @@
       script.src = URL.createObjectURL(blob);
       document.head.append(script);
     });
+  }
+
+  /**
+   * @module jQueryPluginDBox
+   */
+
+  /**
+  * @param {external:jQuery} $
+  * @param {PlainObject} [strings]
+  * @param {PlainObject} [strings.ok]
+  * @param {PlainObject} [strings.cancel]
+  * @returns {external:jQuery}
+  */
+  function jQueryPluginDBox($) {
+    var strings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+      ok: 'Ok',
+      cancel: 'Cancel'
+    };
+    // This sets up alternative dialog boxes. They mostly work the same way as
+    // their UI counterparts, expect instead of returning the result, a callback
+    // needs to be included that returns the result as its first parameter.
+    // In the future we may want to add additional types of dialog boxes, since
+    // they should be easy to handle this way.
+    $('#dialog_container').draggable({
+      cancel: '#dialog_content, #dialog_buttons *',
+      containment: 'window'
+    }).css('position', 'absolute');
+    var box = $('#dialog_box'),
+        btnHolder = $('#dialog_buttons'),
+        dialogContent = $('#dialog_content');
+    /**
+    * Resolves to `false` (if cancelled), for prompts and selects
+    * without checkboxes, it resolves to the value of the form control. For other
+    * types without checkboxes, it resolves to `true`. For checkboxes, it resolves
+    * to an object with the `response` key containing the same value as the previous
+    * mentioned (string or `true`) and a `checked` (boolean) property.
+    * @typedef {Promise} module:jQueryPluginDBox.PromiseResult
+    */
+
+    /**
+    * @typedef {PlainObject} module:jQueryPluginDBox.SelectOption
+    * @property {string} text
+    * @property {string} value
+    */
+
+    /**
+    * @typedef {PlainObject} module:jQueryPluginDBox.CheckboxInfo
+    * @property {string} label Label for the checkbox
+    * @property {string} value Value of the checkbox
+    * @property {string} tooltip Tooltip on the checkbox label
+    * @property {boolean} checked Whether the checkbox is checked by default
+    */
+
+    /**
+     * Triggered upon a change of value for the select pull-down.
+     * @callback module:jQueryPluginDBox.SelectChangeListener
+     * @returns {undefined}
+     */
+
+    /**
+    * @param {"alert"|"prompt"|"select"|"process"} type
+    * @param {string} msg
+    * @param {string} [defaultVal]
+    * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
+    * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
+    * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
+    * @returns {jQueryPluginDBox.PromiseResult}
+    */
+
+    function dbox(type, msg, defaultVal, opts, changeListener, checkbox) {
+      dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>').toggleClass('prompt', type === 'prompt');
+      btnHolder.empty();
+      var ok = $('<input type="button" value="' + strings.ok + '">').appendTo(btnHolder);
+      return new Promise(function (resolve, reject) {
+        // eslint-disable-line promise/avoid-new
+        if (type !== 'alert') {
+          $('<input type="button" value="' + strings.cancel + '">').appendTo(btnHolder).click(function () {
+            box.hide();
+            resolve(false);
+          });
+        }
+
+        var ctrl, chkbx;
+
+        if (type === 'prompt') {
+          ctrl = $('<input type="text">').prependTo(btnHolder);
+          ctrl.val(defaultVal || '');
+          ctrl.bind('keydown', 'return', function () {
+            ok.click();
+          });
+        } else if (type === 'select') {
+          var div = $('<div style="text-align:center;">');
+          ctrl = $('<select>').appendTo(div);
+
+          if (checkbox) {
+            var label = $('<label>').text(checkbox.label);
+            chkbx = $('<input type="checkbox">').appendTo(label);
+            chkbx.val(checkbox.value);
+
+            if (checkbox.tooltip) {
+              label.attr('title', checkbox.tooltip);
+            }
+
+            chkbx.prop('checked', Boolean(checkbox.checked));
+            div.append($('<div>').append(label));
+          }
+
+          $.each(opts || [], function (opt, val) {
+            if (_typeof(val) === 'object') {
+              ctrl.append($('<option>').val(val.value).html(val.text));
+            } else {
+              ctrl.append($('<option>').html(val));
+            }
+          });
+          dialogContent.append(div);
+
+          if (defaultVal) {
+            ctrl.val(defaultVal);
+          }
+
+          if (changeListener) {
+            ctrl.bind('change', 'return', changeListener);
+          }
+
+          ctrl.bind('keydown', 'return', function () {
+            ok.click();
+          });
+        } else if (type === 'process') {
+          ok.hide();
+        }
+
+        box.show();
+        ok.click(function () {
+          box.hide();
+          var response = type === 'prompt' || type === 'select' ? ctrl.val() : true;
+
+          if (chkbx) {
+            resolve({
+              response: response,
+              checked: chkbx.prop('checked')
+            });
+            return;
+          }
+
+          resolve(response);
+        }).focus();
+
+        if (type === 'prompt' || type === 'select') {
+          ctrl.focus();
+        }
+      });
+    }
+    /**
+    * @param {string} msg Message to alert
+    * @returns {jQueryPluginDBox.PromiseResult}
+    */
+
+
+    $.alert = function (msg) {
+      return dbox('alert', msg);
+    };
+    /**
+    * @param {string} msg Message for which to ask confirmation
+    * @returns {jQueryPluginDBox.PromiseResult}
+    */
+
+
+    $.confirm = function (msg) {
+      return dbox('confirm', msg);
+    };
+    /**
+    * @param {string} msg Message to indicate upon cancelable indicator
+    * @returns {jQueryPluginDBox.PromiseResult}
+    */
+
+
+    $.process_cancel = function (msg) {
+      return dbox('process', msg);
+    };
+    /**
+    * @param {string} msg Message to accompany the prompt
+    * @param {string} [defaultText=''] The default text to show for the prompt
+    * @returns {jQueryPluginDBox.PromiseResult}
+    */
+
+
+    $.prompt = function (msg) {
+      var defaultText = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      return dbox('prompt', msg, defaultText);
+    };
+
+    $.select = function (msg, opts, changeListener, txt, checkbox) {
+      return dbox('select', msg, txt, opts, changeListener, checkbox);
+    };
+
+    return $;
   }
 
   var $$4 = jQuery;
@@ -9600,7 +9875,7 @@
       value: function getOpacity() {
         var opacity = this.group_.getAttribute('opacity');
 
-        if (opacity === null || opacity === undefined) {
+        if (isNullish(opacity)) {
           return 1;
         }
 
@@ -9685,7 +9960,6 @@
       }
       /**
        * Remove this layer's group from the DOM. No more functions on group can be called after this.
-       * @param {SVGGElement} children - The children to append to this layer.
        * @returns {SVGGElement} The layer SVG group that was just removed.
        */
 
@@ -9722,7 +9996,7 @@
   function addLayerClass(elem) {
     var classes = elem.getAttribute('class');
 
-    if (classes === null || classes === undefined || !classes.length) {
+    if (isNullish(classes) || !classes.length) {
       elem.setAttribute('class', Layer.CLASS_NAME);
     } else if (!Layer.CLASS_REGEX.test(classes)) {
       elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME);
@@ -9812,8 +10086,8 @@
         if (this.currentBatchCommand_) {
           var batchCommand = this.currentBatchCommand_;
           this.batchCommandStack_.pop();
-          var length = this.batchCommandStack_.length;
-          this.currentBatchCommand_ = length ? this.batchCommandStack_[length - 1] : null;
+          var len = this.batchCommandStack_.length;
+          this.currentBatchCommand_ = len ? this.batchCommandStack_[len - 1] : null;
           this.addCommand_(batchCommand);
         }
 
@@ -9896,7 +10170,7 @@
        * Private function to add a command to the history or current batch command.
        * @private
        * @param {Command} cmd
-       * @returns {module:history.HistoryRecordingService}
+       * @returns {module:history.HistoryRecordingService|undefined}
        */
 
     }, {
@@ -9911,6 +10185,8 @@
         } else {
           this.undoManager_.addCommandToHistory(cmd);
         }
+
+        return undefined;
       }
     }]);
 
@@ -10049,7 +10325,7 @@
       var n = this.svgElem_.getAttributeNS(NS.SE, 'nonce'); // If already set in the DOM, use the nonce throughout the document
       // else, if randomizeIds(true) has been called, create and set the nonce.
 
-      if (!!n && randIds !== RandomizeModes.NEVER_RANDOMIZE) {
+      if (n && randIds !== RandomizeModes.NEVER_RANDOMIZE) {
         this.nonce_ = n;
       } else if (randIds === RandomizeModes.ALWAYS_RANDOMIZE) {
         this.setNonce(Math.floor(Math.random() * 100001));
@@ -10184,7 +10460,7 @@
         } // extract the obj_num of this id
 
 
-        var num = parseInt(id.substr(front.length), 10); // if we didn't get a positive number or we already released this number
+        var num = parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
         // then return false.
 
         if (typeof num !== 'number' || num <= 0 || this.releasedNums.includes(num)) {
@@ -10686,10 +10962,10 @@
     }, {
       key: "copyElem",
       value: function copyElem$$1(el) {
-        var self = this;
+        var that = this;
 
         var getNextIdClosure = function getNextIdClosure() {
-          return self.getNextId();
+          return that.getNextId();
         };
 
         return copyElem(el, getNextIdClosure);
@@ -11086,26 +11362,6 @@
     canvas_.call('contextset', canvas_.getCurrentGroup());
   };
 
-  var draw = /*#__PURE__*/Object.freeze({
-    Drawing: Drawing,
-    randomizeIds: randomizeIds,
-    init: init$3,
-    identifyLayers: identifyLayers,
-    createLayer: createLayer,
-    cloneLayer: cloneLayer,
-    deleteCurrentLayer: deleteCurrentLayer,
-    setCurrentLayer: setCurrentLayer,
-    renameCurrentLayer: renameCurrentLayer,
-    setCurrentLayerPosition: setCurrentLayerPosition,
-    setLayerVisibility: setLayerVisibility,
-    moveSelectedToLayer: moveSelectedToLayer,
-    mergeLayer: mergeLayer,
-    mergeAllLayers: mergeAllLayers,
-    leaveContext: leaveContext,
-    setContext: setContext,
-    Layer: Layer
-  });
-
   var REVERSE_NS = getReverseNS(); // this defines which elements and attributes that we support
 
   var svgWhiteList_ = {
@@ -11247,7 +11503,7 @@
         var attrNsURI = attr.namespaceURI; // Check that an attribute with the correct localName in the correct namespace is on
         // our whitelist or is a namespace declaration for one of our allowed namespaces
 
-        if (!(allowedAttrsNS.hasOwnProperty(attrLocalName) && attrNsURI === allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS) && !(attrNsURI === NS.XMLNS && REVERSE_NS[attr.value])) {
+        if (!({}.hasOwnProperty.call(allowedAttrsNS, attrLocalName) && attrNsURI === allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS) && !(attrNsURI === NS.XMLNS && REVERSE_NS[attr.value])) {
           // TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
           // Bypassing the whitelist to allow se: prefixes.
           // Is there a more appropriate way to do this?
@@ -11264,9 +11520,11 @@
             case 'transform':
             case 'gradientTransform':
             case 'patternTransform':
-              var val = attr.value.replace(/(\d)-/g, '$1 -');
-              node.setAttribute(attrName, val);
-              break;
+              {
+                var val = attr.value.replace(/(\d)-/g, '$1 -');
+                node.setAttribute(attrName, val);
+                break;
+              }
           }
         } // For the style attribute, rewrite it in terms of XML presentational attributes
 
@@ -11362,7 +11620,6 @@
     }
   };
 
-  /* globals jQuery */
   var $$6 = jQuery; // this is how we map paths to our preferred relative segment types
 
   var pathMap$1 = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
@@ -11414,9 +11671,13 @@
         doSnapping = editorContext_$2.getGridSnapping() && selected.parentNode.parentNode.localName === 'svg',
         finishUp = function finishUp() {
       if (doSnapping) {
-        for (var o in changes) {
-          changes[o] = snapToGrid(changes[o]);
-        }
+        Object.entries(changes).forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+              o = _ref2[0],
+              value = _ref2[1];
+
+          changes[o] = snapToGrid(value);
+        });
       }
 
       assignAttributes(selected, changes, 1000, true);
@@ -11730,7 +11991,7 @@
 
               case 10:
                 // absolute elliptical arc (A)
-                dstr += _seg2.r1 + ',' + _seg2.r2 + ' ' + _seg2.angle + ' ' + +_seg2.largeArcFlag + ' ' + +_seg2.sweepFlag + ' ' + _seg2.x + ',' + _seg2.y + ' ';
+                dstr += _seg2.r1 + ',' + _seg2.r2 + ' ' + _seg2.angle + ' ' + Number(_seg2.largeArcFlag) + ' ' + Number(_seg2.sweepFlag) + ' ' + _seg2.x + ',' + _seg2.y + ' ';
                 break;
 
               case 17: // relative smooth cubic (s)
@@ -11749,7 +12010,7 @@
   };
 
   /* globals jQuery */
-  var $$7 = jqPluginSVG(jQuery);
+  var $$7 = jQueryPluginSVG(jQuery);
   var context_;
   /**
   * @interface module:recalculate.EditorContext
@@ -11806,7 +12067,7 @@
   */
 
   var recalculateDimensions = function recalculateDimensions(selected) {
-    if (selected == null) {
+    if (isNullish(selected)) {
       return null;
     } // Firefox Issue - 1081
 
@@ -11992,7 +12253,7 @@
     // make a copy of initial values and include the transform
 
 
-    if (initial == null) {
+    if (isNullish(initial)) {
       initial = $$7.extend(true, {}, changes);
       $$7.each(initial, function (attr, val) {
         initial[attr] = convertToNum(attr, val);
@@ -12598,7 +12859,8 @@
         // Therefore, [Tr] = [M_inv][Rnew_inv][Rold][M]
 
       } else if (_operation === 3 && _angle) {
-        var _m6 = transformListToTransform(tlist).matrix;
+        var _transformListToTrans = transformListToTransform(tlist),
+            matrix = _transformListToTrans.matrix;
 
         var _roldt = svgroot.createSVGTransform();
 
@@ -12612,9 +12874,9 @@
 
         var _rnewInv = _rnew.matrix.inverse();
 
-        var _mInv2 = _m6.inverse();
+        var _mInv2 = matrix.inverse();
 
-        var _extrat = matrixMultiply(_mInv2, _rnewInv, _rold, _m6);
+        var _extrat = matrixMultiply(_mInv2, _rnewInv, _rold, matrix);
 
         remapElement(selected, changes, _extrat);
 
@@ -12715,39 +12977,6 @@
         this.selectorGroup.setAttribute('display', 'inline');
       }
       /**
-      * Updates cursors for corner grips on rotation so arrows point the right way.
-      * @param {Float} angle - Current rotation angle in degrees
-      * @returns {undefined}
-      */
-
-    }, {
-      key: "updateGripCursors",
-      value: function updateGripCursors(angle) {
-        var dir;
-        var dirArr = [];
-        var steps = Math.round(angle / 45);
-
-        if (steps < 0) {
-          steps += 8;
-        }
-
-        for (dir in selectorManager_.selectorGrips) {
-          dirArr.push(dir);
-        }
-
-        while (steps > 0) {
-          dirArr.push(dirArr.shift());
-          steps--;
-        }
-
-        var i = 0;
-
-        for (dir in selectorManager_.selectorGrips) {
-          selectorManager_.selectorGrips[dir].setAttribute('style', 'cursor:' + dirArr[i] + '-resize');
-          i++;
-        }
-      }
-      /**
       * Show the resize grips of this selector.
       * @param {boolean} show - Indicates whether grips should be shown or not
       * @returns {undefined}
@@ -12763,7 +12992,7 @@
 
         if (elem && show) {
           this.selectorGroup.append(selectorManager_.selectorGripsGroup);
-          this.updateGripCursors(getRotationAngle(elem));
+          Selector.updateGripCursors(getRotationAngle(elem));
         }
       }
       /**
@@ -12880,13 +13109,14 @@
           e: [nbax + nbaw, nbay + nbah / 2],
           s: [nbax + nbaw / 2, nbay + nbah]
         };
+        Object.entries(this.gripCoords).forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+              dir = _ref2[0],
+              coords = _ref2[1];
 
-        for (var dir in this.gripCoords) {
-          var coords = this.gripCoords[dir];
           selectedGrips[dir].setAttribute('cx', coords[0]);
           selectedGrips[dir].setAttribute('cy', coords[1]);
-        } // we want to go 20 pixels in the negative transformed y direction, ignoring scale
-
+        }); // we want to go 20 pixels in the negative transformed y direction, ignoring scale
 
         mgr.rotateGripConnector.setAttribute('x1', nbax + nbaw / 2);
         mgr.rotateGripConnector.setAttribute('y1', nbay);
@@ -12900,8 +13130,32 @@
     return Selector;
   }();
   /**
+  * Updates cursors for corner grips on rotation so arrows point the right way.
+  * @param {Float} angle - Current rotation angle in degrees
+  * @returns {undefined}
+  */
+
+  Selector.updateGripCursors = function (angle) {
+    var dirArr = Object.keys(selectorManager_.selectorGrips);
+    var steps = Math.round(angle / 45);
+
+    if (steps < 0) {
+      steps += 8;
+    }
+
+    while (steps > 0) {
+      dirArr.push(dirArr.shift());
+      steps--;
+    }
+
+    Object.values(selectorManager_.selectorGrips).forEach(function (gripElement, i) {
+      gripElement.setAttribute('style', 'cursor:' + dirArr[i] + '-resize');
+    });
+  };
+  /**
   * Manage all selector objects (selection boxes).
   */
+
 
   var SelectorManager =
   /*#__PURE__*/
@@ -12942,6 +13196,8 @@
     _createClass(SelectorManager, [{
       key: "initGroup",
       value: function initGroup() {
+        var _this = this;
+
         // remove old selector parent group if it existed
         if (this.selectorParentGroup && this.selectorParentGroup.parentNode) {
           this.selectorParentGroup.remove();
@@ -12966,7 +13222,7 @@
         this.selectors = [];
         this.rubberBandBox = null; // add the corner grips
 
-        for (var dir in this.selectorGrips) {
+        Object.keys(this.selectorGrips).forEach(function (dir) {
           var grip = svgFactory_.createSVGElement({
             element: 'circle',
             attr: {
@@ -12984,9 +13240,8 @@
           });
           $$8.data(grip, 'dir', dir);
           $$8.data(grip, 'type', 'resize');
-          this.selectorGrips[dir] = this.selectorGripsGroup.appendChild(grip);
-        } // add rotator elems
-
+          _this.selectorGrips[dir] = _this.selectorGripsGroup.appendChild(grip);
+        }); // add rotator elems
 
         this.rotateGripConnector = this.selectorGripsGroup.appendChild(svgFactory_.createSVGElement({
           element: 'line',
@@ -13059,7 +13314,7 @@
     }, {
       key: "requestSelector",
       value: function requestSelector(elem, bbox) {
-        if (elem == null) {
+        if (isNullish(elem)) {
           return null;
         }
 
@@ -13095,7 +13350,7 @@
     }, {
       key: "releaseSelector",
       value: function releaseSelector(elem) {
-        if (elem == null) {
+        if (isNullish(elem)) {
           return;
         }
 
@@ -13104,7 +13359,7 @@
 
         if (!sel.locked) {
           // TODO(codedread): Ensure this exists in this module.
-          console.log('WARNING! selector was released but was already unlocked');
+          console.log('WARNING! selector was released but was already unlocked'); // eslint-disable-line no-console
         }
 
         for (var i = 0; i < N; ++i) {
@@ -13213,7 +13468,7 @@
     return selectorManager_;
   };
 
-  var $$9 = jqPluginSVG(jQuery);
+  var $$9 = jQueryPluginSVG(jQuery);
   var MoveElementCommand$1 = MoveElementCommand,
       InsertElementCommand$1 = InsertElementCommand,
       RemoveElementCommand$1 = RemoveElementCommand,
@@ -13225,9 +13480,13 @@
   if (!window.console) {
     window.console = {};
 
-    window.console.log = function (str) {};
+    window.console.log = function (str) {
+      /* */
+    };
 
-    window.console.dir = function (str) {};
+    window.console.dir = function (str) {
+      /* */
+    };
   }
 
   if (window.opera) {
@@ -13235,7 +13494,9 @@
       window.opera.postError(str);
     };
 
-    window.console.dir = function (str) {};
+    window.console.dir = function (str) {
+      /* */
+    };
   }
   /**
   * The main SvgCanvas class that manages all SVG-related functions.
@@ -13289,7 +13550,8 @@
 
 
     var dimensions = curConfig.dimensions;
-    var canvas = this; // "document" element associated with the container (same as window.document using default svg-editor.js)
+    var canvas = this; // eslint-disable-line consistent-this
+    // "document" element associated with the container (same as window.document using default svg-editor.js)
     // NOTE: This is not actually a SVG document, but an HTML document.
 
     var svgdoc = container.ownerDocument; // This is a container for the document being edited, not the document itself.
@@ -13665,10 +13927,8 @@
               if (isApply) {
                 restoreRefElems(cmd.elem);
               }
-            } else {
-              if (!isApply) {
-                restoreRefElems(cmd.elem);
-              }
+            } else if (!isApply) {
+              restoreRefElems(cmd.elem);
             }
 
             if (cmd.elem.tagName === 'use') {
@@ -13730,7 +13990,7 @@
 
 
     var round = this.round = function (val) {
-      return parseInt(val * currentZoom, 10) / currentZoom;
+      return parseInt(val * currentZoom) / currentZoom;
     };
 
     init$6(curConfig,
@@ -13780,7 +14040,7 @@
     * @implements {module:draw.DrawCanvasInit#call|module:path.EditorContext#call}
     * @param {"selected"|"changed"|"contextset"|"pointsAdded"|"extension_added"|"extensions_added"|"message"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String with the event name
     * @param {module:svgcanvas.SvgCanvas#event:GenericCanvasEvent} arg - Argument to pass through to the callback function.
-    * @returns {undefined}
+    * @returns {module:svgcanvas.EventHandlerReturn|undefined}
     */
 
 
@@ -13788,6 +14048,8 @@
       if (events[ev]) {
         return events[ev](window, arg);
       }
+
+      return undefined;
     };
     /**
     * Clears the selection. The 'selected' handler is then optionally called.
@@ -13800,7 +14062,7 @@
 
     var clearSelection = this.clearSelection = function (noCall) {
       selectedElements.forEach(function (elem) {
-        if (elem == null) {
+        if (isNullish(elem)) {
           return;
         }
 
@@ -13829,7 +14091,7 @@
       var j = 0;
 
       while (j < selectedElements.length) {
-        if (selectedElements[j] == null) {
+        if (isNullish(selectedElements[j])) {
           break;
         }
 
@@ -13883,15 +14145,17 @@
 
       selectedElements.sort(function (a, b) {
         if (a && b && a.compareDocumentPosition) {
-          return 3 - (b.compareDocumentPosition(a) & 6);
+          return 3 - (b.compareDocumentPosition(a) & 6); // eslint-disable-line no-bitwise
         }
 
-        if (a == null) {
+        if (isNullish(a)) {
           return 1;
         }
+
+        return 0;
       }); // Make sure first elements are not null
 
-      while (selectedElements[0] == null) {
+      while (isNullish(selectedElements[0])) {
         selectedElements.shift(0);
       }
     };
@@ -13910,7 +14174,7 @@
 
 
     var getMouseTarget = this.getMouseTarget = function (evt) {
-      if (evt == null) {
+      if (isNullish(evt)) {
         return null;
       }
 
@@ -14015,8 +14279,9 @@
       },
 
       /**
-       * @param {boolean} closedSubpath
-       * @param {SVGCircleElement[]} grips
+       * @param {PlainObject} ptsInfo
+       * @param {boolean} ptsInfo.closedSubpath
+       * @param {SVGCircleElement[]} ptsInfo.grips
        * @fires module:svgcanvas.SvgCanvas#event:pointsAdded
        * @fires module:svgcanvas.SvgCanvas#event:selected
        * @returns {undefined}
@@ -14035,8 +14300,9 @@
       },
 
       /**
-       * @param {ChangeElementCommand} cmd
-       * @param {SVGPathElement} elem
+       * @param {PlainObject} changes
+       * @param {ChangeElementCommand} changes.cmd
+       * @param {SVGPathElement} changes.elem
        * @fires module:svgcanvas.SvgCanvas#event:changed
        * @returns {undefined}
        */
@@ -14083,10 +14349,7 @@
     var restoreRefElems = function restoreRefElems(elem) {
       // Look for missing reference elements, restore any found
       var attrs = $$9(elem).attr(refAttrs);
-
-      for (var o in attrs) {
-        var val = attrs[o];
-
+      Object.values(attrs).forEach(function (val) {
         if (val && val.startsWith('url(')) {
           var id = getUrlFromAttr(val).substr(1);
           var ref = getElem(id);
@@ -14096,8 +14359,7 @@
             delete removedElements[id];
           }
         }
-      }
-
+      });
       var childs = elem.getElementsByTagName('*');
 
       if (childs.length) {
@@ -14162,6 +14424,12 @@
     curBBoxes = [],
         // Canvas point for the most recent right click
     lastClickPoint = null;
+
+    this.runExtension = function (name, action, vars) {
+      return this.runExtensions(action, vars, false, function (n) {
+        return n === name;
+      });
+    };
     /**
     * @typedef {module:svgcanvas.ExtensionMouseDownStatus|module:svgcanvas.ExtensionMouseUpStatus|module:svgcanvas.ExtensionIDsUpdatedStatus|module:locale.ExtensionLocaleData[]|undefined} module:svgcanvas.ExtensionStatus
     * @tutorial ExtensionDocs
@@ -14170,6 +14438,13 @@
     /**
     * @callback module:svgcanvas.ExtensionVarBuilder
     * @param {string} name The name of the extension
+    * @returns {module:svgcanvas.SvgCanvas#event:ext-addLangData}
+    */
+
+    /**
+    * @callback module:svgcanvas.ExtensionNameFilter
+    * @param {string} name
+    * @returns {boolean}
     */
 
     /**
@@ -14179,12 +14454,18 @@
     * @param {"mouseDown"|"mouseMove"|"mouseUp"|"zoomChanged"|"IDsUpdated"|"canvasUpdated"|"toolButtonStateUpdate"|"selectedChanged"|"elementTransition"|"elementChanged"|"langReady"|"langChanged"|"addLangData"|"onNewDocument"|"workareaResized"} action
     * @param {module:svgcanvas.SvgCanvas#event:ext-mouseDown|module:svgcanvas.SvgCanvas#event:ext-mouseMove|module:svgcanvas.SvgCanvas#event:ext-mouseUp|module:svgcanvas.SvgCanvas#event:ext-zoomChanged|module:svgcanvas.SvgCanvas#event:ext-IDsUpdated|module:svgcanvas.SvgCanvas#event:ext-canvasUpdated|module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate|module:svgcanvas.SvgCanvas#event:ext-selectedChanged|module:svgcanvas.SvgCanvas#event:ext-elementTransition|module:svgcanvas.SvgCanvas#event:ext-elementChanged|module:svgcanvas.SvgCanvas#event:ext-langReady|module:svgcanvas.SvgCanvas#event:ext-langChanged|module:svgcanvas.SvgCanvas#event:ext-addLangData|module:svgcanvas.SvgCanvas#event:ext-onNewDocument|module:svgcanvas.SvgCanvas#event:ext-workareaResized|module:svgcanvas.ExtensionVarBuilder} [vars]
     * @param {boolean} [returnArray]
+    * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
     * @returns {GenericArray.<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
     */
 
-    var runExtensions = this.runExtensions = function (action, vars, returnArray) {
+
+    var runExtensions = this.runExtensions = function (action, vars, returnArray, nameFilter) {
       var result = returnArray ? [] : false;
       $$9.each(extensions, function (name, ext) {
+        if (nameFilter && !nameFilter(name)) {
+          return;
+        }
+
         if (ext && action in ext) {
           if (typeof vars === 'function') {
             vars = vars(name); // ext, action
@@ -14334,7 +14615,8 @@
     * @param {module:svgcanvas.ExtensionInitCallback} [extInitFunc] - Function supplied by the extension with its data
     * @param {module:SVGEditor~ImportLocale} importLocale
     * @fires module:svgcanvas.SvgCanvas#event:extension_added
-    * @throws {TypeError} If `extInitFunc` is not a function
+    * @throws {TypeError|Error} `TypeError` if `extInitFunc` is not a function, `Error`
+    *   if extension of supplied name already exists
     * @returns {Promise} Resolves to `undefined`
     */
 
@@ -14358,11 +14640,14 @@
                 throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
 
               case 2:
-                if (name in extensions) {
-                  _context.next = 12;
+                if (!(name in extensions)) {
+                  _context.next = 4;
                   break;
                 }
 
+                throw new Error('Cannot add extension "' + name + '", an extension by that name already exists.');
+
+              case 4:
                 // Provide private vars/funcs here. Is there a better way to do this?
 
                 /**
@@ -14379,16 +14664,17 @@
                  * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
                  */
                 argObj = $$9.extend(canvas.getPrivateMethods(), {
+                  $: $$9,
                   importLocale: importLocale,
                   svgroot: svgroot,
                   svgcontent: svgcontent,
                   nonce: getCurrentDrawing().getNonce(),
                   selectorManager: selectorManager
                 });
-                _context.next = 6;
+                _context.next = 7;
                 return extInitFunc(argObj);
 
-              case 6:
+              case 7:
                 extObj = _context.sent;
 
                 if (extObj) {
@@ -14398,10 +14684,7 @@
                 extensions[name] = extObj;
                 return _context.abrupt("return", call('extension_added', extObj));
 
-              case 12:
-                console.log('Cannot add extension "' + name + '", an extension by that name already exists.');
-
-              case 13:
+              case 11:
               case "end":
                 return _context.stop();
             }
@@ -14428,7 +14711,7 @@
 
 
     var getIntersectionList = this.getIntersectionList = function (rect) {
-      if (rubberBox == null) {
+      if (isNullish(rubberBox)) {
         return null;
       }
 
@@ -14438,11 +14721,9 @@
       if (!rect) {
         rubberBBox = rubberBox.getBBox();
         var bb = svgcontent.createSVGRect();
-
-        for (var o in rubberBBox) {
+        ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left'].forEach(function (o) {
           bb[o] = rubberBBox[o] / currentZoom;
-        }
-
+        });
         rubberBBox = bb;
       } else {
         rubberBBox = svgcontent.createSVGRect();
@@ -14457,13 +14738,13 @@
       if (!isIE) {
         if (typeof svgroot.getIntersectionList === 'function') {
           // Offset the bbox of the rubber box by the offset of the svgcontent element.
-          rubberBBox.x += parseInt(svgcontent.getAttribute('x'), 10);
-          rubberBBox.y += parseInt(svgcontent.getAttribute('y'), 10);
+          rubberBBox.x += parseInt(svgcontent.getAttribute('x'));
+          rubberBBox.y += parseInt(svgcontent.getAttribute('y'));
           resultList = svgroot.getIntersectionList(rubberBBox, parent);
         }
       }
 
-      if (resultList == null || typeof resultList.item !== 'function') {
+      if (isNullish(resultList) || typeof resultList.item !== 'function') {
         resultList = [];
 
         if (!curBBoxes.length) {
@@ -14665,10 +14946,17 @@
      */
 
     /**
+     * The promise return, if present, resolves to `undefined`
+     *  (`extension_added`, `exported`, `saved`)
+     * @typedef {Promise|undefined} module:svgcanvas.EventHandlerReturn
+    */
+
+    /**
     * @callback module:svgcanvas.EventHandler
     * @param {external:Window} win
     * @param {module:svgcanvas.SvgCanvas#event:GenericCanvasEvent} arg
     * @listens module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
+    * @returns {module:svgcanvas.EventHandlerReturn}
     */
 
     /**
@@ -14792,7 +15080,7 @@
 
       var selector = selectorManager.requestSelector(selectedElements[0]);
       selector.resize();
-      selector.updateGripCursors(val);
+      Selector.updateGripCursors(val);
     };
     /**
     * Runs `recalculateDimensions` on the selected elements,
@@ -14832,7 +15120,7 @@
 
 
     var logMatrix = function logMatrix(m) {
-      console.log([m.a, m.b, m.c, m.d, m.e, m.f]);
+      console.log([m.a, m.b, m.c, m.d, m.e, m.f]); // eslint-disable-line no-console
     }; // Root Current Transformation Matrix in user units
 
 
@@ -14867,7 +15155,7 @@
 
 
     this.removeFromSelection = function (elemsToRemove) {
-      if (selectedElements[0] == null) {
+      if (isNullish(selectedElements[0])) {
         return;
       }
 
@@ -15039,7 +15327,7 @@
         // set the mouseTarget to that and update the mode to rotate/resize
 
 
-        if (mouseTarget === selectorManager.selectorParentGroup && selectedElements[0] != null) {
+        if (mouseTarget === selectorManager.selectorParentGroup && !isNullish(selectedElements[0])) {
           var grip = evt.target;
           var griptype = elData(grip, 'type'); // rotating
 
@@ -15054,7 +15342,6 @@
         }
 
         startTransform = mouseTarget.getAttribute('transform');
-        var i, strokeW;
         var tlist = getTransformList(mouseTarget);
 
         switch (currentMode) {
@@ -15085,8 +15372,8 @@
               if (!rightClick) {
                 // insert a dummy transform so if the element(s) are moved it will have
                 // a transform to use for its translate
-                for (i = 0; i < selectedElements.length; ++i) {
-                  if (selectedElements[i] == null) {
+                for (var i = 0; i < selectedElements.length; ++i) {
+                  if (isNullish(selectedElements[i])) {
                     continue;
                   }
 
@@ -15103,7 +15390,7 @@
               clearSelection();
               currentMode = 'multiselect';
 
-              if (rubberBox == null) {
+              if (isNullish(rubberBox)) {
                 rubberBox = selectorManager.getRubberBandBox();
               }
 
@@ -15127,7 +15414,7 @@
           case 'zoom':
             started = true;
 
-            if (rubberBox == null) {
+            if (isNullish(rubberBox)) {
               rubberBox = selectorManager.getRubberBandBox();
             }
 
@@ -15141,75 +15428,77 @@
             break;
 
           case 'resize':
-            started = true;
-            startX = x;
-            startY = y; // Getting the BBox from the selection box, since we know we
-            // want to orient around it
+            {
+              started = true;
+              startX = x;
+              startY = y; // Getting the BBox from the selection box, since we know we
+              // want to orient around it
 
-            initBbox = getBBox($$9('#selectedBox0')[0]);
-            var bb = {};
-            $$9.each(initBbox, function (key, val) {
-              bb[key] = val / currentZoom;
-            });
-            initBbox = bb; // append three dummy transforms to the tlist so that
-            // we can translate,scale,translate in mousemove
+              initBbox = getBBox($$9('#selectedBox0')[0]);
+              var bb = {};
+              $$9.each(initBbox, function (key, val) {
+                bb[key] = val / currentZoom;
+              });
+              initBbox = bb; // append three dummy transforms to the tlist so that
+              // we can translate,scale,translate in mousemove
 
-            var pos = getRotationAngle(mouseTarget) ? 1 : 0;
+              var pos = getRotationAngle(mouseTarget) ? 1 : 0;
 
-            if (hasMatrixTransform(tlist)) {
-              tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
-              tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
-              tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
-            } else {
-              tlist.appendItem(svgroot.createSVGTransform());
-              tlist.appendItem(svgroot.createSVGTransform());
-              tlist.appendItem(svgroot.createSVGTransform());
+              if (hasMatrixTransform(tlist)) {
+                tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+                tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+                tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
+              } else {
+                tlist.appendItem(svgroot.createSVGTransform());
+                tlist.appendItem(svgroot.createSVGTransform());
+                tlist.appendItem(svgroot.createSVGTransform());
 
-              if (supportsNonScalingStroke()) {
-                // Handle crash for newer Chrome and Safari 6 (Mobile and Desktop):
-                // https://code.google.com/p/svg-edit/issues/detail?id=904
-                // Chromium issue: https://code.google.com/p/chromium/issues/detail?id=114625
-                // TODO: Remove this workaround once vendor fixes the issue
-                var iswebkit = isWebkit();
-                var delayedStroke;
-
-                if (iswebkit) {
-                  delayedStroke = function delayedStroke(ele) {
-                    var _stroke = ele.getAttribute('stroke');
-
-                    ele.removeAttribute('stroke'); // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
-
-                    if (_stroke !== null) setTimeout(function () {
-                      ele.setAttribute('stroke', _stroke);
-                    }, 0);
-                  };
-                }
-
-                mouseTarget.style.vectorEffect = 'non-scaling-stroke';
-
-                if (iswebkit) {
-                  delayedStroke(mouseTarget);
-                }
-
-                var all = mouseTarget.getElementsByTagName('*'),
-                    len = all.length;
-
-                for (i = 0; i < len; i++) {
-                  if (!all[i].style) {
-                    // mathML
-                    continue;
-                  }
-
-                  all[i].style.vectorEffect = 'non-scaling-stroke';
+                if (supportsNonScalingStroke()) {
+                  // Handle crash for newer Chrome and Safari 6 (Mobile and Desktop):
+                  // https://code.google.com/p/svg-edit/issues/detail?id=904
+                  // Chromium issue: https://code.google.com/p/chromium/issues/detail?id=114625
+                  // TODO: Remove this workaround once vendor fixes the issue
+                  var iswebkit = isWebkit();
+                  var delayedStroke;
 
                   if (iswebkit) {
-                    delayedStroke(all[i]);
+                    delayedStroke = function delayedStroke(ele) {
+                      var _stroke = ele.getAttribute('stroke');
+
+                      ele.removeAttribute('stroke'); // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
+
+                      if (_stroke !== null) setTimeout(function () {
+                        ele.setAttribute('stroke', _stroke);
+                      }, 0);
+                    };
+                  }
+
+                  mouseTarget.style.vectorEffect = 'non-scaling-stroke';
+
+                  if (iswebkit) {
+                    delayedStroke(mouseTarget);
+                  }
+
+                  var all = mouseTarget.getElementsByTagName('*'),
+                      len = all.length;
+
+                  for (var _i2 = 0; _i2 < len; _i2++) {
+                    if (!all[_i2].style) {
+                      // mathML
+                      continue;
+                    }
+
+                    all[_i2].style.vectorEffect = 'non-scaling-stroke';
+
+                    if (iswebkit) {
+                      delayedStroke(all[_i2]);
+                    }
                   }
                 }
               }
-            }
 
-            break;
+              break;
+            }
 
           case 'fhellipse':
           case 'fhrect':
@@ -15239,22 +15528,24 @@
             break;
 
           case 'image':
-            started = true;
-            var newImage = addSVGElementFromJson({
-              element: 'image',
-              attr: {
-                x: x,
-                y: y,
-                width: 0,
-                height: 0,
-                id: getNextId(),
-                opacity: curShape.opacity / 2,
-                style: 'pointer-events:inherit'
-              }
-            });
-            setHref(newImage, lastGoodImgUrl);
-            preventClickDefault(newImage);
-            break;
+            {
+              started = true;
+              var newImage = addSVGElementFromJson({
+                element: 'image',
+                attr: {
+                  x: x,
+                  y: y,
+                  width: 0,
+                  height: 0,
+                  id: getNextId(),
+                  opacity: curShape.opacity / 2,
+                  style: 'pointer-events:inherit'
+                }
+              });
+              setHref(newImage, lastGoodImgUrl);
+              preventClickDefault(newImage);
+              break;
+            }
 
           case 'square': // FIXME: once we create the rect, we lose information that this was a square
           // (for resizing purposes this could be important)
@@ -15279,29 +15570,31 @@
             break;
 
           case 'line':
-            started = true;
-            strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
-            addSVGElementFromJson({
-              element: 'line',
-              curStyles: true,
-              attr: {
-                x1: x,
-                y1: y,
-                x2: x,
-                y2: y,
-                id: getNextId(),
-                stroke: curShape.stroke,
-                'stroke-width': strokeW,
-                'stroke-dasharray': curShape.stroke_dasharray,
-                'stroke-linejoin': curShape.stroke_linejoin,
-                'stroke-linecap': curShape.stroke_linecap,
-                'stroke-opacity': curShape.stroke_opacity,
-                fill: 'none',
-                opacity: curShape.opacity / 2,
-                style: 'pointer-events:none'
-              }
-            });
-            break;
+            {
+              started = true;
+              var strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
+              addSVGElementFromJson({
+                element: 'line',
+                curStyles: true,
+                attr: {
+                  x1: x,
+                  y1: y,
+                  x2: x,
+                  y2: y,
+                  id: getNextId(),
+                  stroke: curShape.stroke,
+                  'stroke-width': strokeW,
+                  'stroke-dasharray': curShape.stroke_dasharray,
+                  'stroke-linejoin': curShape.stroke_linejoin,
+                  'stroke-linecap': curShape.stroke_linecap,
+                  'stroke-opacity': curShape.stroke_opacity,
+                  fill: 'none',
+                  opacity: curShape.opacity / 2,
+                  style: 'pointer-events:none'
+                }
+              });
+              break;
+            }
 
           case 'circle':
             started = true;
@@ -15485,7 +15778,7 @@
                   for (i = 0; i < len; ++i) {
                     selected = selectedElements[i];
 
-                    if (selected == null) {
+                    if (isNullish(selected)) {
                       break;
                     } // if (i === 0) {
                     //   const box = utilsGetBBox(selected);
@@ -15837,9 +16130,7 @@
               break; // update path stretch line coordinates
             }
 
-          case 'path':
-
-          // fall through
+          case 'path': // fall through
 
           case 'pathedit':
             {
@@ -15996,7 +16287,7 @@
           // intentionally fall-through to select here
           case 'resize':
           case 'multiselect':
-            if (rubberBox != null) {
+            if (!isNullish(rubberBox)) {
               rubberBox.setAttribute('display', 'none');
               curBBoxes = [];
             }
@@ -16005,9 +16296,9 @@
           // Fallthrough
 
           case 'select':
-            if (selectedElements[0] != null) {
+            if (!isNullish(selectedElements[0])) {
               // if we only have one selected element
-              if (selectedElements[1] == null) {
+              if (isNullish(selectedElements[1])) {
                 // set our current stroke/fill properties to the element's
                 var selected = selectedElements[0];
 
@@ -16045,7 +16336,7 @@
                 var len = selectedElements.length;
 
                 for (var i = 0; i < len; ++i) {
-                  if (selectedElements[i] == null) {
+                  if (isNullish(selectedElements[i])) {
                     break;
                   }
 
@@ -16058,7 +16349,7 @@
               } else {
                 t = evt.target;
 
-                if (selectedElements[0].nodeName === 'path' && selectedElements[1] == null) {
+                if (selectedElements[0].nodeName === 'path' && isNullish(selectedElements[1])) {
                   pathActions$$1.select(selectedElements[0]); // if it was a path
                   // else, if it was selected and this is a shift-click, remove it from selection
                 } else if (evt.shiftKey) {
@@ -16075,8 +16366,8 @@
 
                 if (elem) {
                   elem.removeAttribute('style');
-                  walkTree(elem, function (elem) {
-                    elem.removeAttribute('style');
+                  walkTree(elem, function (el) {
+                    el.removeAttribute('style');
                   });
                 }
               }
@@ -16085,56 +16376,60 @@
             return;
 
           case 'zoom':
-            if (rubberBox != null) {
-              rubberBox.setAttribute('display', 'none');
-            }
+            {
+              if (!isNullish(rubberBox)) {
+                rubberBox.setAttribute('display', 'none');
+              }
 
-            var factor = evt.shiftKey ? 0.5 : 2;
-            call('zoomed', {
-              x: Math.min(rStartX, realX),
-              y: Math.min(rStartY, realY),
-              width: Math.abs(realX - rStartX),
-              height: Math.abs(realY - rStartY),
-              factor: factor
-            });
-            return;
+              var factor = evt.shiftKey ? 0.5 : 2;
+              call('zoomed', {
+                x: Math.min(rStartX, realX),
+                y: Math.min(rStartY, realY),
+                width: Math.abs(realX - rStartX),
+                height: Math.abs(realY - rStartY),
+                factor: factor
+              });
+              return;
+            }
 
           case 'fhpath':
-            // Check that the path contains at least 2 points; a degenerate one-point path
-            // causes problems.
-            // Webkit ignores how we set the points attribute with commas and uses space
-            // to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
-            sumDistance = 0;
-            controllPoint2 = {
-              x: 0,
-              y: 0
-            };
-            controllPoint1 = {
-              x: 0,
-              y: 0
-            };
-            start = {
-              x: 0,
-              y: 0
-            };
-            end = {
-              x: 0,
-              y: 0
-            };
-            var coords = element.getAttribute('points');
-            var commaIndex = coords.indexOf(',');
+            {
+              // Check that the path contains at least 2 points; a degenerate one-point path
+              // causes problems.
+              // Webkit ignores how we set the points attribute with commas and uses space
+              // to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
+              sumDistance = 0;
+              controllPoint2 = {
+                x: 0,
+                y: 0
+              };
+              controllPoint1 = {
+                x: 0,
+                y: 0
+              };
+              start = {
+                x: 0,
+                y: 0
+              };
+              end = {
+                x: 0,
+                y: 0
+              };
+              var coords = element.getAttribute('points');
+              var commaIndex = coords.indexOf(',');
 
-            if (commaIndex >= 0) {
-              keep = coords.indexOf(',', commaIndex + 1) >= 0;
-            } else {
-              keep = coords.indexOf(' ', coords.indexOf(' ') + 1) >= 0;
+              if (commaIndex >= 0) {
+                keep = coords.indexOf(',', commaIndex + 1) >= 0;
+              } else {
+                keep = coords.indexOf(' ', coords.indexOf(' ') + 1) >= 0;
+              }
+
+              if (keep) {
+                element = pathActions$$1.smoothPolylineIntoPath(element);
+              }
+
+              break;
             }
-
-            if (keep) {
-              element = pathActions$$1.smoothPolylineIntoPath(element);
-            }
-
-            break;
 
           case 'line':
             attrs = $$9(element).attr(['x1', 'x2', 'y1', 'y2']);
@@ -16204,14 +16499,16 @@
             break;
 
           case 'path':
-            // set element to null here so that it is not removed nor finalized
-            element = null; // continue to be set to true so that mouseMove happens
+            {
+              // set element to null here so that it is not removed nor finalized
+              element = null; // continue to be set to true so that mouseMove happens
 
-            started = true;
-            var res = pathActions$$1.mouseUp(evt, element, mouseX, mouseY);
-            element = res.element;
-            keep = res.keep;
-            break;
+              started = true;
+              var res = pathActions$$1.mouseUp(evt, element, mouseX, mouseY);
+              element = res.element;
+              keep = res.keep;
+              break;
+            }
 
           case 'pathedit':
             keep = true;
@@ -16226,19 +16523,21 @@
             break;
 
           case 'rotate':
-            keep = true;
-            element = null;
-            currentMode = 'select';
-            var batchCmd = canvas.undoMgr.finishUndoableChange();
+            {
+              keep = true;
+              element = null;
+              currentMode = 'select';
+              var batchCmd = canvas.undoMgr.finishUndoableChange();
 
-            if (!batchCmd.isEmpty()) {
-              addCommandToHistory(batchCmd);
-            } // perform recalculation to weed out any stray identity transforms that might get stuck
+              if (!batchCmd.isEmpty()) {
+                addCommandToHistory(batchCmd);
+              } // perform recalculation to weed out any stray identity transforms that might get stuck
 
 
-            recalculateAllSelectedDimensions();
-            call('changed', selectedElements);
-            break;
+              recalculateAllSelectedDimensions();
+              call('changed', selectedElements);
+              break;
+            }
 
           default:
             // This could occur in an extension
@@ -16269,7 +16568,7 @@
           }
         });
 
-        if (!keep && element != null) {
+        if (!keep && !isNullish(element)) {
           getCurrentDrawing().releaseId(getId());
           element.remove();
           element = null;
@@ -16289,7 +16588,7 @@
             canvas.setMode('select');
             selectOnly([t], true);
           }
-        } else if (element != null) {
+        } else if (!isNullish(element)) {
           /**
           * @name module:svgcanvas.SvgCanvas#addedNew
           * @type {boolean}
@@ -16421,8 +16720,8 @@
         var workareaViewH = editorH * rootSctm.d; // content offset from canvas in screen pixels
 
         var wOffset = workarea.offset();
-        var wOffsetLeft = wOffset['left'] + rulerwidth;
-        var wOffsetTop = wOffset['top'] + rulerwidth;
+        var wOffsetLeft = wOffset.left + rulerwidth;
+        var wOffsetTop = wOffset.top + rulerwidth;
         var delta = evt.wheelDelta ? evt.wheelDelta : evt.detail ? -evt.detail : 0;
 
         if (!delta) {
@@ -16494,6 +16793,11 @@
       var matrix;
       var lastX, lastY;
       var allowDbl;
+      /**
+       *
+       * @param {Integer} index
+       * @returns {undefined}
+       */
 
       function setCursor(index) {
         var empty = textinput.value === '';
@@ -16551,6 +16855,14 @@
           selblock.setAttribute('d', '');
         }
       }
+      /**
+       *
+       * @param {Integer} start
+       * @param {Integer} end
+       * @param {boolean} skipInput
+       * @returns {undefined}
+       */
+
 
       function setSelection(start, end, skipInput) {
         if (start === end) {
@@ -16588,6 +16900,13 @@
           display: 'inline'
         });
       }
+      /**
+       *
+       * @param {Float} mouseX
+       * @param {Float} mouseY
+       * @returns {Integer}
+       */
+
 
       function getIndexFromPoint(mouseX, mouseY) {
         // Position cursor here
@@ -16622,10 +16941,25 @@
 
         return charpos;
       }
+      /**
+       *
+       * @param {Float} mouseX
+       * @param {Float} mouseY
+       * @returns {undefined}
+       */
+
 
       function setCursorFromPoint(mouseX, mouseY) {
         setCursor(getIndexFromPoint(mouseX, mouseY));
       }
+      /**
+       *
+       * @param {Float} x
+       * @param {Float} y
+       * @param {boolean} apply
+       * @returns {undefined}
+       */
+
 
       function setEndSelectionFromPoint(x, y, apply) {
         var i1 = textinput.selectionStart;
@@ -16634,6 +16968,13 @@
         var end = Math.max(i1, i2);
         setSelection(start, end, !apply);
       }
+      /**
+       *
+       * @param {Float} xIn
+       * @param {Float} yIn
+       * @returns {module:math.XYObject}
+       */
+
 
       function screenToPt(xIn, yIn) {
         var out = {
@@ -16651,6 +16992,13 @@
 
         return out;
       }
+      /**
+       *
+       * @param {Float} xIn
+       * @param {Float} yIn
+       * @returns {module:math.XYObject}
+       */
+
 
       function ptToScreen(xIn, yIn) {
         var out = {
@@ -16677,11 +17025,23 @@
       }
       */
 
+      /**
+       *
+       * @param {Event} evt
+       * @returns {undefined}
+       */
+
 
       function selectAll(evt) {
         setSelection(0, curtext.textContent.length);
         $$9(this).unbind(evt);
       }
+      /**
+       *
+       * @param {Event} evt
+       * @returns {undefined}
+       */
+
 
       function selectWord(evt) {
         if (!allowDbl || !curtext) {
@@ -17011,7 +17371,8 @@
 
     this.svgCanvasToString = function () {
       // keep calling it until there are none to remove
-      while (removeUnusedDefElems() > 0) {}
+      while (removeUnusedDefElems() > 0) {} // eslint-disable-line no-empty
+
 
       pathActions$$1.clear(true); // Keep SVG-Edit comment on top
 
@@ -17072,13 +17433,12 @@
       if (elem) {
         cleanupElement(elem);
         var attrs = Array.from(elem.attributes);
-        var i;
         var childs = elem.childNodes;
         attrs.sort(function (a, b) {
           return a.name > b.name ? -1 : 1;
         });
 
-        for (i = 0; i < indent; i++) {
+        for (var i = 0; i < indent; i++) {
           out.push(' ');
         }
 
@@ -17119,19 +17479,19 @@
             }
 
             $$9.each(this.attributes, function (i, attr) {
-              var uri = attr.namespaceURI;
+              var u = attr.namespaceURI;
 
-              if (uri && !nsuris[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml') {
-                nsuris[uri] = true;
-                out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
+              if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
+                nsuris[u] = true;
+                out.push(' xmlns:' + nsMap[u] + '="' + u + '"');
               }
             });
           });
-          i = attrs.length;
+          var _i3 = attrs.length;
           var attrNames = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
 
-          while (i--) {
-            var attr = attrs[i];
+          while (_i3--) {
+            var attr = attrs[_i3];
             var attrVal = toXml(attr.value); // Namespaces have already been dealt with, so skip
 
             if (attr.nodeName.startsWith('xmlns:')) {
@@ -17152,13 +17512,13 @@
         } else {
           // Skip empty defs
           if (elem.nodeName === 'defs' && !elem.firstChild) {
-            return;
+            return '';
           }
 
           var mozAttrs = ['-moz-math-font-style', '_moz-math-font-style'];
 
-          for (i = attrs.length - 1; i >= 0; i--) {
-            var _attr = attrs[i];
+          for (var _i4 = attrs.length - 1; _i4 >= 0; _i4--) {
+            var _attr = attrs[_i4];
 
             var _attrVal = toXml(_attr.value); // remove bogus attributes added by Gecko
 
@@ -17214,26 +17574,28 @@
           indent++;
           var bOneLine = false;
 
-          for (i = 0; i < childs.length; i++) {
-            var child = childs.item(i);
+          for (var _i5 = 0; _i5 < childs.length; _i5++) {
+            var child = childs.item(_i5);
 
             switch (child.nodeType) {
               case 1:
                 // element node
                 out.push('\n');
-                out.push(this.svgToString(childs.item(i), indent));
+                out.push(this.svgToString(childs.item(_i5), indent));
                 break;
 
               case 3:
-                // text node
-                var str = child.nodeValue.replace(/^\s+|\s+$/g, '');
+                {
+                  // text node
+                  var str = child.nodeValue.replace(/^\s+|\s+$/g, '');
 
-                if (str !== '') {
-                  bOneLine = true;
-                  out.push(String(toXml(str)));
+                  if (str !== '') {
+                    bOneLine = true;
+                    out.push(String(toXml(str)));
+                  }
+
+                  break;
                 }
-
-                break;
 
               case 4:
                 // cdata node
@@ -17261,7 +17623,7 @@
           if (!bOneLine) {
             out.push('\n');
 
-            for (i = 0; i < indent; i++) {
+            for (var _i6 = 0; _i6 < indent; _i6++) {
               out.push(' ');
             }
           }
@@ -17288,13 +17650,14 @@
     * Converts a given image file to a data URL when possible, then runs a given callback.
     * @function module:svgcanvas.SvgCanvas#embedImage
     * @param {string} src - The path/URL of the image
-    * @param {module:svgcanvas.ImageEmbeddedCallback} [callback] - Function to run when image data is found
     * @returns {Promise} Resolves to Data URL (string|false)
     */
 
 
-    this.embedImage = function (src, callback) {
+    this.embedImage = function (src) {
+      // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
       return new Promise(function (resolve, reject) {
+        // eslint-disable-line promise/avoid-new
         // load in the image and once it's loaded, get the dimensions
         $$9(new Image()).load(function (response, status, xhr) {
           if (status === 'error') {
@@ -17318,11 +17681,6 @@
           }
 
           lastGoodImgUrl = src;
-
-          if (callback) {
-            callback(encodableImages[src]);
-          }
-
           resolve(encodableImages[src]);
         }).attr('src', src);
       });
@@ -17345,7 +17703,9 @@
     */
 
 
-    this.open = function () {};
+    this.open = function () {
+      /* */
+    };
     /**
     * Serializes the current drawing into SVG XML text and passes it to the 'saved' handler.
     * This function also includes the XML prolog. Clients of the `SvgCanvas` bind their save
@@ -17371,7 +17731,7 @@
       call('saved', str);
     };
     /**
-    * @typedef {GenericObject} module:svgcanvas.IssuesAndCodes
+    * @typedef {PlainObject} module:svgcanvas.IssuesAndCodes
     * @property {string[]} issueCodes The locale-independent code names
     * @property {string[]} issues The localized descriptions
     */
@@ -17431,13 +17791,6 @@
     */
 
     /**
-     * Function to run when image data is found
-     * @callback module:svgcanvas.ImageExportedCallback
-     * @param {module:svgcanvas.ImageExportedResults} obj
-     * @returns {undefined}
-     */
-
-    /**
     * Generates a PNG (or JPG, BMP, WEBP) Data URL based on the current image,
     * then calls "exported" with an object including the string, image
     * information, and any issues found.
@@ -17445,7 +17798,6 @@
     * @param {"PNG"|"JPEG"|"BMP"|"WEBP"|"ICO"} [imgType="PNG"]
     * @param {Float} [quality] Between 0 and 1
     * @param {string} [exportWindowName]
-    * @param {module:svgcanvas.ImageExportedCallback} [cb]
     * @param {PlainObject} [opts]
     * @param {boolean} [opts.avoidEvent]
     * @fires module:svgcanvas.SvgCanvas#event:exported
@@ -17453,29 +17805,72 @@
     * @returns {Promise} Resolves to {@link module:svgcanvas.ImageExportedResults}
     */
 
-    this.rasterExport = function (imgType, quality, exportWindowName, cb) {
-      var opts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
-      var type = imgType === 'ICO' ? 'BMP' : imgType || 'PNG';
-      var mimeType = 'image/' + type.toLowerCase();
-
-      var _getIssues = getIssues(),
-          issues = _getIssues.issues,
-          issueCodes = _getIssues.issueCodes;
-
-      var svg = this.svgCanvasToString();
-      return new Promise(
+    this.rasterExport =
+    /*#__PURE__*/
+    function () {
+      var _ref4 = _asyncToGenerator(
       /*#__PURE__*/
-      function () {
-        var _ref4 = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee2(resolve, reject) {
-          var _ref5, c, dataURLType, datauri, bloburl, done;
+      regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
+        var opts,
+            type,
+            mimeType,
+            _getIssues,
+            issues,
+            issueCodes,
+            svg,
+            _ref5,
+            c,
+            _args2 = arguments;
 
-          return regeneratorRuntime.wrap(function _callee2$(_context2) {
-            while (1) {
-              switch (_context2.prev = _context2.next) {
-                case 0:
-                  done = function _ref6() {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                opts = _args2.length > 3 && _args2[3] !== undefined ? _args2[3] : {};
+                type = imgType === 'ICO' ? 'BMP' : imgType || 'PNG';
+                mimeType = 'image/' + type.toLowerCase();
+                _getIssues = getIssues(), issues = _getIssues.issues, issueCodes = _getIssues.issueCodes;
+                svg = this.svgCanvasToString();
+
+                if (canvg) {
+                  _context2.next = 10;
+                  break;
+                }
+
+                _context2.next = 8;
+                return importSetGlobal(curConfig.canvgPath + 'canvg.js', {
+                  global: 'canvg'
+                });
+
+              case 8:
+                _ref5 = _context2.sent;
+                canvg = _ref5.canvg;
+
+              case 10:
+                if (!$$9('#export_canvas').length) {
+                  $$9('<canvas>', {
+                    id: 'export_canvas'
+                  }).hide().appendTo('body');
+                }
+
+                c = $$9('#export_canvas')[0];
+                c.width = canvas.contentW;
+                c.height = canvas.contentH;
+                _context2.next = 16;
+                return canvg(c, svg);
+
+              case 16:
+                return _context2.abrupt("return", new Promise(function (resolve, reject) {
+                  // eslint-disable-line promise/avoid-new
+                  var dataURLType = type.toLowerCase();
+                  var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
+                  var bloburl;
+                  /**
+                   * Called when `bloburl` is available for export.
+                   * @returns {undefined}
+                   */
+
+                  function done() {
                     var obj = {
                       datauri: datauri,
                       bloburl: bloburl,
@@ -17492,72 +17887,33 @@
                       call('exported', obj);
                     }
 
-                    if (cb) {
-                      cb(obj);
-                    }
-
                     resolve(obj);
-                  };
-
-                  if (canvg) {
-                    _context2.next = 6;
-                    break;
                   }
 
-                  _context2.next = 4;
-                  return importSetGlobal(curConfig.canvgPath + 'canvg.js', {
-                    global: 'canvg'
-                  });
-
-                case 4:
-                  _ref5 = _context2.sent;
-                  canvg = _ref5.canvg;
-
-                case 6:
-                  if (!$$9('#export_canvas').length) {
-                    $$9('<canvas>', {
-                      id: 'export_canvas'
-                    }).hide().appendTo('body');
+                  if (c.toBlob) {
+                    c.toBlob(function (blob) {
+                      bloburl = createObjectURL(blob);
+                      done();
+                    }, mimeType, quality);
+                    return;
                   }
 
-                  c = $$9('#export_canvas')[0];
-                  c.width = canvas.contentW;
-                  c.height = canvas.contentH;
-                  _context2.next = 12;
-                  return canvg(c, svg);
-
-                case 12:
-                  dataURLType = type.toLowerCase();
-                  datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
-
-                  if (!c.toBlob) {
-                    _context2.next = 17;
-                    break;
-                  }
-
-                  c.toBlob(function (blob) {
-                    bloburl = createObjectURL(blob);
-                    done();
-                  }, mimeType, quality);
-                  return _context2.abrupt("return");
-
-                case 17:
                   bloburl = dataURLToObjectURL(datauri);
                   done();
+                }));
 
-                case 19:
-                case "end":
-                  return _context2.stop();
-              }
+              case 17:
+              case "end":
+                return _context2.stop();
             }
-          }, _callee2, this);
-        }));
+          }
+        }, _callee2, this);
+      }));
 
-        return function (_x4, _x5) {
-          return _ref4.apply(this, arguments);
-        };
-      }());
-    };
+      return function (_x4, _x5, _x6) {
+        return _ref4.apply(this, arguments);
+      };
+    }();
     /**
      * @external jsPDF
      */
@@ -17587,117 +17943,113 @@
     */
 
     /**
-     * Function to run when PDF data is found
-     * @callback module:svgcanvas.PDFExportedCallback
-     * @param {module:svgcanvas.PDFExportedResults} obj
-     * @returns {undefined}
-     */
-
-    /**
     * Generates a PDF based on the current image, then calls "exportedPDF" with
     * an object including the string, the data URL, and any issues found.
     * @function module:svgcanvas.SvgCanvas#exportPDF
     * @param {string} [exportWindowName] Will also be used for the download file name here
     * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
-    * @param {module:svgcanvas.PDFExportedCallback} [cb]
     * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
     * @returns {Promise} Resolves to {@link module:svgcanvas.PDFExportedResults}
     */
 
 
-    this.exportPDF = function (exportWindowName) {
-      var outputType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : isChrome() ? 'save' : undefined;
-      var cb = arguments.length > 2 ? arguments[2] : undefined;
-      var that = this;
-      return new Promise(
+    this.exportPDF =
+    /*#__PURE__*/
+    function () {
+      var _ref6 = _asyncToGenerator(
       /*#__PURE__*/
-      function () {
-        var _ref7 = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee3(resolve, reject) {
-          var modularVersion, res, orientation, unit, doc, docTitle, _getIssues2, issues, issueCodes, svg, obj;
+      regeneratorRuntime.mark(function _callee3(exportWindowName) {
+        var outputType,
+            modularVersion,
+            res,
+            orientation,
+            unit,
+            doc,
+            docTitle,
+            _getIssues2,
+            issues,
+            issueCodes,
+            svg,
+            obj,
+            _args3 = arguments;
 
-          return regeneratorRuntime.wrap(function _callee3$(_context3) {
-            while (1) {
-              switch (_context3.prev = _context3.next) {
-                case 0:
-                  if (window.jsPDF) {
-                    _context3.next = 6;
-                    break;
-                  }
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                outputType = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : isChrome() ? 'save' : undefined;
 
-                  _context3.next = 3;
-                  return importScript([// We do not currently have these paths configurable as they are
-                  //   currently global-only, so not Rolled-up
-                  'jspdf/underscore-min.js', 'jspdf/jspdf.min.js']);
+                if (window.jsPDF) {
+                  _context3.next = 7;
+                  break;
+                }
 
-                case 3:
-                  modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false; // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
+                _context3.next = 4;
+                return importScript([// We do not currently have these paths configurable as they are
+                //   currently global-only, so not Rolled-up
+                'jspdf/underscore-min.js', 'jspdf/jspdf.min.js']);
 
-                  _context3.next = 6;
-                  return importScript(curConfig.jspdfPath + 'jspdf.plugin.svgToPdf.js', {
-                    type: modularVersion ? 'module' : 'text/javascript'
-                  });
+              case 4:
+                modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false; // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
 
-                case 6:
-                  res = getResolution();
-                  orientation = res.w > res.h ? 'landscape' : 'portrait';
-                  unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-                  // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+                _context3.next = 7;
+                return importScript(curConfig.jspdfPath + 'jspdf.plugin.svgToPdf.js', {
+                  type: modularVersion ? 'module' : 'text/javascript'
+                });
 
-                  doc = jsPDF({
-                    orientation: orientation,
-                    unit: unit,
-                    format: [res.w, res.h] // , compressPdf: true
+              case 7:
+                res = getResolution();
+                orientation = res.w > res.h ? 'landscape' : 'portrait';
+                unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
+                // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
 
-                  });
-                  docTitle = getDocumentTitle();
-                  doc.setProperties({
-                    title: docTitle
-                    /* ,
-                    subject: '',
-                    author: '',
-                    keywords: '',
-                    creator: '' */
+                doc = jsPDF({
+                  orientation: orientation,
+                  unit: unit,
+                  format: [res.w, res.h] // , compressPdf: true
 
-                  });
-                  _getIssues2 = getIssues(), issues = _getIssues2.issues, issueCodes = _getIssues2.issueCodes;
-                  svg = that.svgCanvasToString();
-                  doc.addSVG(svg, 0, 0); // doc.output('save'); // Works to open in a new
-                  //  window; todo: configure this and other export
-                  //  options to optionally work in this manner as
-                  //  opposed to opening a new tab
+                });
+                docTitle = getDocumentTitle();
+                doc.setProperties({
+                  title: docTitle
+                  /* ,
+                  subject: '',
+                  author: '',
+                  keywords: '',
+                  creator: '' */
 
-                  outputType = outputType || 'dataurlstring';
-                  obj = {
-                    svg: svg,
-                    issues: issues,
-                    issueCodes: issueCodes,
-                    exportWindowName: exportWindowName,
-                    outputType: outputType
-                  };
-                  obj.output = doc.output(outputType, outputType === 'save' ? exportWindowName || 'svg.pdf' : undefined);
+                });
+                _getIssues2 = getIssues(), issues = _getIssues2.issues, issueCodes = _getIssues2.issueCodes;
+                svg = this.svgCanvasToString();
+                doc.addSVG(svg, 0, 0); // doc.output('save'); // Works to open in a new
+                //  window; todo: configure this and other export
+                //  options to optionally work in this manner as
+                //  opposed to opening a new tab
 
-                  if (cb) {
-                    cb(obj);
-                  }
+                outputType = outputType || 'dataurlstring';
+                obj = {
+                  svg: svg,
+                  issues: issues,
+                  issueCodes: issueCodes,
+                  exportWindowName: exportWindowName,
+                  outputType: outputType
+                };
+                obj.output = doc.output(outputType, outputType === 'save' ? exportWindowName || 'svg.pdf' : undefined);
+                call('exportedPDF', obj);
+                return _context3.abrupt("return", obj);
 
-                  resolve(obj);
-                  call('exportedPDF', obj);
-
-                case 21:
-                case "end":
-                  return _context3.stop();
-              }
+              case 21:
+              case "end":
+                return _context3.stop();
             }
-          }, _callee3, this);
-        }));
+          }
+        }, _callee3, this);
+      }));
 
-        return function (_x6, _x7) {
-          return _ref7.apply(this, arguments);
-        };
-      }());
-    };
+      return function (_x7) {
+        return _ref6.apply(this, arguments);
+      };
+    }();
     /**
     * Returns the current drawing as raw SVG XML text.
     * @function module:svgcanvas.SvgCanvas#getSvgString
@@ -17891,18 +18243,18 @@
       }
 
       elems.each(function () {
-        var grad = this;
+        var grad = this; // eslint-disable-line consistent-this
 
         if ($$9(grad).attr('gradientUnits') === 'userSpaceOnUse') {
           // TODO: Support more than one element with this ref by duplicating parent grad
-          var _elems = $$9(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
+          var fillStrokeElems = $$9(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
 
-          if (!_elems.length) {
+          if (!fillStrokeElems.length) {
             return;
           } // get object's bounding box
 
 
-          var bb = getBBox(_elems[0]); // This will occur if the element is inside a <defs> or a <symbol>,
+          var bb = getBBox(fillStrokeElems[0]); // This will occur if the element is inside a <defs> or a <symbol>,
           // in which we shouldn't need to convert anyway.
 
           if (!bb) {
@@ -17994,8 +18346,8 @@
 
         if (vb) {
           var nums = vb.split(' ');
-          pos.x -= +nums[0];
-          pos.y -= +nums[1];
+          pos.x -= Number(nums[0]);
+          pos.y -= Number(nums[1]);
         } // Not ideal, but works
 
 
@@ -18061,7 +18413,7 @@
           try {
             recalculateDimensions(n);
           } catch (e) {
-            console.log(e);
+            console.log(e); // eslint-disable-line no-console
           }
         }); // Give ID for any visible element missing one
 
@@ -18079,7 +18431,7 @@
 
         addCommandToHistory(batchCmd);
       } else {
-        console.log('Unexpected element to ungroup:', elem);
+        console.log('Unexpected element to ungroup:', elem); // eslint-disable-line no-console
       }
     };
     /**
@@ -18135,7 +18487,8 @@
 
 
         content.find('image').each(function () {
-          var image = this;
+          var image = this; // eslint-disable-line consistent-this
+
           preventClickDefault(image);
           var val = getHref(this);
 
@@ -18249,7 +18602,8 @@
         if (!preventUndo) addCommandToHistory(batchCmd);
         call('changed', [svgcontent]);
       } catch (e) {
-        console.log(e);
+        console.log(e); // eslint-disable-line no-console
+
         return false;
       }
 
@@ -18312,12 +18666,12 @@
           vb = innervb ? innervb.split(' ') : [0, 0, innerw, innerh];
 
           for (j = 0; j < 4; ++j) {
-            vb[j] = +vb[j];
+            vb[j] = Number(vb[j]);
           } // TODO: properly handle preserveAspectRatio
 
 
           var // canvasw = +svgcontent.getAttribute('width'),
-          canvash = +svgcontent.getAttribute('height'); // imported content should be 1/3 of the canvas on its largest dimension
+          canvash = Number(svgcontent.getAttribute('height')); // imported content should be 1/3 of the canvas on its largest dimension
 
           if (innerh > innerw) {
             ts = 'scale(' + canvash / 3 / vb[3] + ')';
@@ -18376,7 +18730,8 @@
         addCommandToHistory(batchCmd);
         call('changed', [svgcontent]);
       } catch (e) {
-        console.log(e);
+        console.log(e); // eslint-disable-line no-console
+
         return null;
       } // we want to return the element so we can automatically select it
 
@@ -18386,8 +18741,27 @@
     //  canvas is a dependency for all of these
 
 
-    ['identifyLayers', 'createLayer', 'cloneLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility', 'moveSelectedToLayer', 'mergeLayer', 'mergeAllLayers', 'leaveContext', 'setContext'].forEach(function (prop) {
-      canvas[prop] = draw[prop];
+    var dr = {
+      identifyLayers: identifyLayers,
+      createLayer: createLayer,
+      cloneLayer: cloneLayer,
+      deleteCurrentLayer: deleteCurrentLayer,
+      setCurrentLayer: setCurrentLayer,
+      renameCurrentLayer: renameCurrentLayer,
+      setCurrentLayerPosition: setCurrentLayerPosition,
+      setLayerVisibility: setLayerVisibility,
+      moveSelectedToLayer: moveSelectedToLayer,
+      mergeLayer: mergeLayer,
+      mergeAllLayers: mergeAllLayers,
+      leaveContext: leaveContext,
+      setContext: setContext
+    };
+    Object.entries(dr).forEach(function (_ref7) {
+      var _ref8 = _slicedToArray(_ref7, 2),
+          prop = _ref8[0],
+          propVal = _ref8[1];
+
+      canvas[prop] = propVal;
     });
     init$3(
     /**
@@ -18518,6 +18892,7 @@
 
     this.setUiStrings = function (strs) {
       Object.assign(uiStrings, strs.notification);
+      $$9 = jQueryPluginDBox($$9, strs.common);
       setUiStrings(strs);
     };
     /**
@@ -18533,8 +18908,9 @@
     };
     /**
     * @function module:svgcanvas.SvgCanvas#getTitle
-    * @param {Element} elem
-    * @returns {string|undefined} the current group/SVG's title contents
+    * @param {Element} [elem]
+    * @returns {string|undefined} the current group/SVG's title contents or
+    * `undefined` if no element is passed nd there are no selected elements.
     */
 
 
@@ -18542,7 +18918,7 @@
       elem = elem || selectedElements[0];
 
       if (!elem) {
-        return;
+        return undefined;
       }
 
       elem = $$9(elem).data('gsvg') || $$9(elem).data('symbol') || elem;
@@ -18762,6 +19138,7 @@
       var bb;
 
       var calcZoom = function calcZoom(bb) {
+        // eslint-disable-line no-shadow
         if (!bb) {
           return false;
         }
@@ -18793,28 +19170,34 @@
 
       switch (val) {
         case 'selection':
-          if (!selectedElements[0]) {
-            return;
+          {
+            if (!selectedElements[0]) {
+              return undefined;
+            }
+
+            var selectedElems = $$9.map(selectedElements, function (n) {
+              if (n) {
+                return n;
+              }
+
+              return undefined;
+            });
+            bb = getStrokedBBoxDefaultVisible(selectedElems);
+            break;
           }
 
-          var selectedElems = $$9.map(selectedElements, function (n) {
-            if (n) {
-              return n;
-            }
-          });
-          bb = getStrokedBBoxDefaultVisible(selectedElems);
-          break;
-
         case 'canvas':
-          var res = getResolution();
-          spacer = 0.95;
-          bb = {
-            width: res.w,
-            height: res.h,
-            x: 0,
-            y: 0
-          };
-          break;
+          {
+            var res = getResolution();
+            spacer = 0.95;
+            bb = {
+              width: res.w,
+              height: res.h,
+              x: 0,
+              y: 0
+            };
+            break;
+          }
 
         case 'content':
           bb = getStrokedBBoxDefaultVisible();
@@ -18825,7 +19208,7 @@
           break;
 
         default:
-          return;
+          return undefined;
       }
 
       return calcZoom(bb);
@@ -18994,6 +19377,11 @@
         type: 'solidColor'
       };
       var elems = [];
+      /**
+       *
+       * @param {Element} e
+       * @returns {undefined}
+       */
 
       function addNonG(e) {
         if (e.nodeName !== 'g') {
@@ -19009,14 +19397,12 @@
         if (elem) {
           if (elem.tagName === 'g') {
             walkTree(elem, addNonG);
-          } else {
-            if (type === 'fill') {
-              if (elem.tagName !== 'polyline' && elem.tagName !== 'line') {
-                elems.push(elem);
-              }
-            } else {
+          } else if (type === 'fill') {
+            if (elem.tagName !== 'polyline' && elem.tagName !== 'line') {
               elems.push(elem);
             }
+          } else {
+            elems.push(elem);
           }
         }
       }
@@ -19086,7 +19472,7 @@
             var gradAttrs = $$9(grad).attr(radAttrs);
             var ogAttrs = $$9(og).attr(radAttrs);
             var diff = false;
-            $$9.each(radAttrs, function (i, attr) {
+            $$9.each(radAttrs, function (j, attr) {
               if (gradAttrs[attr] !== ogAttrs[attr]) {
                 diff = true;
               }
@@ -19202,6 +19588,11 @@
 
       curProperties.stroke_width = val;
       var elems = [];
+      /**
+       *
+       * @param {Element} e
+       * @returns {undefined}
+       */
 
       function addNonG(e) {
         if (e.nodeName !== 'g') {
@@ -19408,7 +19799,7 @@
           }
 
           if (isWebkit()) {
-            console.log('e', elem);
+            // console.log('e', elem); // eslint-disable-line no-console
             elem.removeAttribute('filter');
             elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
           }
@@ -19417,6 +19808,11 @@
           canvas.setBlurOffsets(filter, val);
         }
       };
+      /**
+       *
+       * @returns {undefined}
+       */
+
 
       function finishChange() {
         var bCmd = canvas.undoMgr.finishUndoableChange();
@@ -19429,29 +19825,26 @@
       * Sets the `x`, `y`, `width`, `height` values of the filter element in order to
       * make the blur not be clipped. Removes them if not neeeded.
       * @function module:svgcanvas.SvgCanvas#setBlurOffsets
-      * @param {Element} filter - The filter DOM element to update
+      * @param {Element} filterElem - The filter DOM element to update
       * @param {Float} stdDev - The standard deviation value on which to base the offset size
       * @returns {undefined}
       */
 
 
-      canvas.setBlurOffsets = function (filter, stdDev) {
+      canvas.setBlurOffsets = function (filterElem, stdDev) {
         if (stdDev > 3) {
           // TODO: Create algorithm here where size is based on expected blur
-          assignAttributes(filter, {
+          assignAttributes(filterElem, {
             x: '-50%',
             y: '-50%',
             width: '200%',
             height: '200%'
-          }, 100);
-        } else {
-          // Removing these attributes hides text in Chrome (see Issue 579)
-          if (!isWebkit()) {
-            filter.removeAttribute('x');
-            filter.removeAttribute('y');
-            filter.removeAttribute('width');
-            filter.removeAttribute('height');
-          }
+          }, 100); // Removing these attributes hides text in Chrome (see Issue 579)
+        } else if (!isWebkit()) {
+          filterElem.removeAttribute('x');
+          filterElem.removeAttribute('y');
+          filterElem.removeAttribute('width');
+          filterElem.removeAttribute('height');
         }
       };
       /**
@@ -19533,7 +19926,7 @@
       // should only have one element selected
       var selected = selectedElements[0];
 
-      if (selected != null && selected.tagName === 'text' && selectedElements[1] == null) {
+      if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
         return selected.getAttribute('font-weight') === 'bold';
       }
 
@@ -19550,7 +19943,7 @@
     this.setBold = function (b) {
       var selected = selectedElements[0];
 
-      if (selected != null && selected.tagName === 'text' && selectedElements[1] == null) {
+      if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
         changeSelectedAttribute('font-weight', b ? 'bold' : 'normal');
       }
 
@@ -19568,7 +19961,7 @@
     this.getItalic = function () {
       var selected = selectedElements[0];
 
-      if (selected != null && selected.tagName === 'text' && selectedElements[1] == null) {
+      if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
         return selected.getAttribute('font-style') === 'italic';
       }
 
@@ -19585,7 +19978,7 @@
     this.setItalic = function (i) {
       var selected = selectedElements[0];
 
-      if (selected != null && selected.tagName === 'text' && selectedElements[1] == null) {
+      if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
         changeSelectedAttribute('font-style', i ? 'italic' : 'normal');
       }
 
@@ -19673,7 +20066,7 @@
     this.getText = function () {
       var selected = selectedElements[0];
 
-      if (selected == null) {
+      if (isNullish(selected)) {
         return '';
       }
 
@@ -19786,7 +20179,7 @@
     this.setRectRadius = function (val) {
       var selected = selectedElements[0];
 
-      if (selected != null && selected.tagName === 'rect') {
+      if (!isNullish(selected) && selected.tagName === 'rect') {
         var r = selected.getAttribute('rx');
 
         if (r !== String(val)) {
@@ -19848,14 +20241,14 @@
 
 
     this.convertToPath = function (elem, getBBox$$1) {
-      if (elem == null) {
+      if (isNullish(elem)) {
         var elems = selectedElements;
-        $$9.each(elems, function (i, elem) {
-          if (elem) {
-            canvas.convertToPath(elem);
+        $$9.each(elems, function (i, el) {
+          if (el) {
+            canvas.convertToPath(el);
           }
         });
-        return;
+        return undefined;
       }
 
       if (getBBox$$1) {
@@ -19876,7 +20269,7 @@
         opacity: curShape.opacity,
         visibility: 'hidden'
       };
-      return convertToPath(elem, attrs, addSVGElementFromJson, pathActions$$1, clearSelection, addToSelection, history, addCommandToHistory);
+      return convertToPath(elem, attrs, addSVGElementFromJson, pathActions$$1, clearSelection, addToSelection, hstry, addCommandToHistory);
     };
     /**
     * This function makes the changes to the elements. It does not add the change
@@ -19896,13 +20289,12 @@
 
       elems = elems || selectedElements;
       var i = elems.length;
-      var noXYElems = ['g', 'polyline', 'path'];
-      var goodGAttrs = ['transform', 'opacity', 'filter'];
+      var noXYElems = ['g', 'polyline', 'path']; // const goodGAttrs = ['transform', 'opacity', 'filter'];
 
       var _loop = function _loop() {
         var elem = elems[i];
 
-        if (elem == null) {
+        if (isNullish(elem)) {
           return "continue";
         } // Set x,y vals on elements that don't have them
 
@@ -19914,14 +20306,13 @@
           canvas.moveSelectedElements(diffX * currentZoom, diffY * currentZoom, true);
           return "continue";
         } // only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
-        // TODO: FIXME: This doesn't seem right. Where's the body of this if statement?
+        // TODO: FIXME: Missing statement body
+        // if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
 
-
-        if (elem.tagName === 'g' && goodGAttrs.includes(attr)) ;
 
         var oldval = attr === '#text' ? elem.textContent : elem.getAttribute(attr);
 
-        if (oldval == null) {
+        if (isNullish(oldval)) {
           oldval = '';
         }
 
@@ -20065,7 +20456,7 @@
       for (var i = 0; i < len; ++i) {
         var selected = selectedElements[i];
 
-        if (selected == null) {
+        if (isNullish(selected)) {
           break;
         }
 
@@ -20154,6 +20545,12 @@
        */
 
       var changedIDs = {}; // Recursively replace IDs and record the changes
+
+      /**
+       *
+       * @param {module:svgcanvas.SVGAsJSON} elem
+       * @returns {undefined}
+       */
 
       function checkIDs(elem) {
         if (elem.attr && elem.attr.id) {
@@ -20283,7 +20680,7 @@
       while (i--) {
         var elem = selectedElements[i];
 
-        if (elem == null) {
+        if (isNullish(elem)) {
           continue;
         }
 
@@ -20310,7 +20707,7 @@
     * @function module:svgcanvas.SvgCanvas#pushGroupProperties
     * @param {SVGAElement|SVGGElement} g
     * @param {boolean} undoable
-    * @returns {undefined}
+    * @returns {BatchCommand|undefined}
     */
 
 
@@ -20494,6 +20891,8 @@
       if (undoable && !batchCmd.isEmpty()) {
         return batchCmd;
       }
+
+      return undefined;
     };
     /**
     * Unwraps all the elements in a selected group (`g`) element. This requires
@@ -20590,7 +20989,7 @@
           _selectedElements2 = _slicedToArray(_selectedElements, 1),
           selected = _selectedElements2[0];
 
-      if (selected != null) {
+      if (!isNullish(selected)) {
         var t = selected;
         var oldParent = t.parentNode;
         var oldNextSibling = t.nextSibling;
@@ -20617,7 +21016,7 @@
           _selectedElements4 = _slicedToArray(_selectedElements3, 1),
           selected = _selectedElements4[0];
 
-      if (selected != null) {
+      if (!isNullish(selected)) {
         var t = selected;
         var oldParent = t.parentNode;
         var oldNextSibling = t.nextSibling;
@@ -20674,10 +21073,11 @@
             foundCur = true;
           }
 
-          return;
+          return true;
         }
 
-        closest = this;
+        closest = this; // eslint-disable-line consistent-this
+
         return false;
       });
 
@@ -20703,7 +21103,7 @@
     * @param {Float} dy - Float with the distance to move on the y-axis
     * @param {boolean} undoable - Boolean indicating whether or not the action should be undoable
     * @fires module:svgcanvas.SvgCanvas#event:changed
-    * @returns {BatchCommand} Batch command for the move
+    * @returns {BatchCommand|undefined} Batch command for the move
     */
 
 
@@ -20722,7 +21122,7 @@
       while (i--) {
         var selected = selectedElements[i];
 
-        if (selected != null) {
+        if (!isNullish(selected)) {
           // if (i === 0) {
           //   selectedBBoxes[0] = utilsGetBBox(selected);
           // }
@@ -20770,6 +21170,8 @@
         call('changed', selectedElements);
         return batchCmd;
       }
+
+      return undefined;
     };
     /**
     * Create deep DOM copies (clones) of all selected elements and move them slightly
@@ -20786,9 +21188,15 @@
       var batchCmd = new BatchCommand$1('Clone Elements'); // find all the elements selected (stop at first null)
 
       var len = selectedElements.length;
+      /**
+       * Sorts an array numerically and ascending.
+       * @param {Element} a
+       * @param {Element} b
+       * @returns {Integer}
+       */
 
       function sortfunction(a, b) {
-        return $$9(b).index() - $$9(a).index(); // causes an array to be sorted numerically and ascending
+        return $$9(b).index() - $$9(a).index();
       }
 
       selectedElements.sort(sortfunction);
@@ -20796,7 +21204,7 @@
       for (i = 0; i < len; ++i) {
         elem = selectedElements[i];
 
-        if (elem == null) {
+        if (isNullish(elem)) {
           break;
         }
       } // use slice to quickly get the subset of elements we need
@@ -20849,7 +21257,7 @@
           curheight = Number.MIN_VALUE;
 
       for (var i = 0; i < len; ++i) {
-        if (selectedElements[i] == null) {
+        if (isNullish(selectedElements[i])) {
           break;
         }
 
@@ -20914,45 +21322,45 @@
       var dx = new Array(len);
       var dy = new Array(len);
 
-      for (var _i2 = 0; _i2 < len; ++_i2) {
-        if (selectedElements[_i2] == null) {
+      for (var _i7 = 0; _i7 < len; ++_i7) {
+        if (isNullish(selectedElements[_i7])) {
           break;
         } // const elem = selectedElements[i];
 
 
-        var bbox = bboxes[_i2];
-        dx[_i2] = 0;
-        dy[_i2] = 0;
+        var bbox = bboxes[_i7];
+        dx[_i7] = 0;
+        dy[_i7] = 0;
 
         switch (type) {
           case 'l':
             // left (horizontal)
-            dx[_i2] = minx - bbox.x;
+            dx[_i7] = minx - bbox.x;
             break;
 
           case 'c':
             // center (horizontal)
-            dx[_i2] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
+            dx[_i7] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
             break;
 
           case 'r':
             // right (horizontal)
-            dx[_i2] = maxx - (bbox.x + bbox.width);
+            dx[_i7] = maxx - (bbox.x + bbox.width);
             break;
 
           case 't':
             // top (vertical)
-            dy[_i2] = miny - bbox.y;
+            dy[_i7] = miny - bbox.y;
             break;
 
           case 'm':
             // middle (vertical)
-            dy[_i2] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
+            dy[_i7] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
             break;
 
           case 'b':
             // bottom (vertical)
-            dy[_i2] = maxy - (bbox.y + bbox.height);
+            dy[_i7] = maxy - (bbox.y + bbox.height);
             break;
         }
       }
@@ -21111,7 +21519,7 @@
         return;
       }
 
-      if (curElem == null) {
+      if (isNullish(curElem)) {
         num = next ? allElems.length - 1 : 0;
         elem = allElems[num];
       } else {
@@ -21233,7 +21641,7 @@
    * Binny V A, http://www.openjs.com/scripts/events/keyboard_shortcuts/
   */
   // We *do* want to allow the escape key within textareas (and possibly tab too), so add the condition `n.which !== 27`
-  function jqPluginJSHotkeys (b) {
+  function jQueryPluginJSHotkeys (b) {
     b.hotkeys = {
       version: "0.8",
       specialKeys: {
@@ -21385,7 +21793,7 @@
    * http://benalman.com/about/license/
    */
   // For sake of modules, added this wrapping export and changed `this` to `window`
-  function jqPluginBBQ (jQuery) {
+  function jQueryPluginBBQ (jQuery) {
     (function ($, p) {
       var i,
           m = Array.prototype.slice,
@@ -21735,6 +22143,7 @@
     return jQuery;
   }
 
+  // Todo: Move to own module (and have it import a modular base64 encoder)
   /**
    * SVG Icon Loader 2.0
    *
@@ -21833,17 +22242,23 @@
    * @param {external:jQuery} $ Its keys include all icon IDs and the values, the icon as a jQuery object
    * @returns {external:jQuery} The enhanced jQuery object
   */
-  function jqPluginSVGIcons ($) {
+
+  function jQueryPluginSVGIcons($) {
     var svgIcons = {};
     var fixIDs;
+    /**
+     * List of raster images with each
+     * key being the SVG icon ID to replace, and the value the image file name
+     * @typedef {PlainObject.<string, string>} external:jQuery.svgIcons.Fallback
+    */
+
     /**
     * @function external:jQuery.svgIcons
     * @param {string} file The location of a local SVG or SVGz file
     * @param {PlainObject} [opts]
     * @param {Float} [opts.w] The icon widths
     * @param {Float} [opts.h] The icon heights
-    * @param {PlainObject.<string, string>} [opts.fallback] List of raster images with each
-      key being the SVG icon ID to replace, and the value the image file name
+    * @param {external:jQuery.svgIcons.Fallback} [opts.fallback]
     * @param {string} [opts.fallback_path] The path to use for all images
       listed under "fallback"
     * @param {boolean} [opts.replace] If set to `true`, HTML elements will be replaced by,
@@ -21875,7 +22290,7 @@
           iconsMade = false,
           dataLoaded = false,
           loadAttempts = 0;
-      var isOpera = !!window.opera,
+      var isOpera = Boolean(window.opera),
           // ua = navigator.userAgent,
       // isSafari = (ua.includes('Safari/') && !ua.includes('Chrome/')),
       dataPre = 'data:image/svg+xml;charset=utf-8;base64,';
@@ -21913,24 +22328,29 @@
               $(function () {
                 useFallback();
               });
-            } else {
-              if (err.responseText) {
-                svgdoc = parser.parseFromString(err.responseText, 'text/xml');
+            } else if (err.responseText) {
+              svgdoc = parser.parseFromString(err.responseText, 'text/xml');
 
-                if (!svgdoc.childNodes.length) {
-                  $(useFallback);
-                }
-
-                $(function () {
-                  getIcons('ajax');
-                });
-              } else {
+              if (!svgdoc.childNodes.length) {
                 $(useFallback);
               }
+
+              $(function () {
+                getIcons('ajax');
+              });
+            } else {
+              $(useFallback);
             }
           }
         });
       }
+      /**
+       *
+       * @param {"ajax"|0|undefined} evt
+       * @param {boolean} [noWait]
+       * @returns {undefined}
+       */
+
 
       function getIcons(evt, noWait) {
         if (evt !== 'ajax') {
@@ -21978,6 +22398,15 @@
           }, 500);
         }
       }
+      /**
+       *
+       * @param {external:jQuery} target
+       * @param {external:jQuery} icon A wrapped `defs` or Image
+       * @param {string} id SVG icon ID
+       * @param {string} setID
+       * @returns {undefined}
+       */
+
 
       function setIcon(target, icon, id, setID) {
         if (isOpera) icon.css('visibility', 'hidden');
@@ -21999,6 +22428,11 @@
       }
 
       var holder;
+      /**
+       * @param {external:jQuery} icon A wrapped `defs` or Image
+       * @param {string} id SVG icon ID
+       * @returns {undefined}
+       */
 
       function addIcon(icon, id) {
         if (opts.id_match === undefined || opts.id_match !== false) {
@@ -22007,8 +22441,17 @@
 
         svgIcons[id] = icon;
       }
+      /**
+       *
+       * @param {boolean} [toImage]
+       * @param {external:jQuery.svgIcons.Fallback} [fallback]
+       * @returns {undefined}
+       */
 
-      function makeIcons(toImage, fallback) {
+
+      function makeIcons() {
+        var toImage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        var fallback = arguments.length > 1 ? arguments[1] : undefined;
         if (iconsMade) return;
         if (opts.no_img) toImage = false;
         var tempHolder;
@@ -22111,7 +22554,7 @@
 
         if (isOpera) {
           idElems = defs.find('*').filter(function () {
-            return !!this.id;
+            return Boolean(this.id);
           });
         } else {
           idElems = defs.find('[id]');
@@ -22161,51 +22604,23 @@
         });
         return svgEl;
       };
+      /**
+       * @returns {undefined}
+       */
+
 
       function useFallback() {
         if (file.includes('.svgz')) {
           var regFile = file.replace('.svgz', '.svg');
 
           if (window.console) {
-            console.log('.svgz failed, trying with .svg');
+            console.log('.svgz failed, trying with .svg'); // eslint-disable-line no-console
           }
 
           $.svgIcons(regFile, opts);
         } else if (opts.fallback) {
           makeIcons(false, opts.fallback);
         }
-      }
-
-      function encode64(input) {
-        // base64 strings are 4/3 larger than the original string
-        if (window.btoa) return window.btoa(input);
-        var _keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-        var output = new Array(Math.floor((input.length + 2) / 3) * 4);
-        var i = 0,
-            p = 0;
-
-        do {
-          var chr1 = input.charCodeAt(i++);
-          var chr2 = input.charCodeAt(i++);
-          var chr3 = input.charCodeAt(i++);
-          var enc1 = chr1 >> 2;
-          var enc2 = (chr1 & 3) << 4 | chr2 >> 4;
-          var enc3 = (chr2 & 15) << 2 | chr3 >> 6;
-          var enc4 = chr3 & 63;
-
-          if (isNaN(chr2)) {
-            enc3 = enc4 = 64;
-          } else if (isNaN(chr3)) {
-            enc4 = 64;
-          }
-
-          output[p++] = _keyStr.charAt(enc1);
-          output[p++] = _keyStr.charAt(enc2);
-          output[p++] = _keyStr.charAt(enc3);
-          output[p++] = _keyStr.charAt(enc4);
-        } while (i < input.length);
-
-        return output.join('');
       }
     };
     /**
@@ -22309,8 +22724,12 @@
 
   if (!window.console) {
     window.console = {
-      log: function log(str) {},
-      dir: function dir(str) {}
+      log: function log(str) {
+        /* */
+      },
+      dir: function dir(str) {
+        /* */
+      }
     };
   }
   /**
@@ -22323,7 +22742,7 @@
   */
 
 
-  function jqPluginJGraduate ($) {
+  function jQueryPluginJGraduate($) {
     if (!$.loadingStylesheets) {
       $.loadingStylesheets = [];
     }
@@ -22489,25 +22908,48 @@
 
     };
     var isGecko = navigator.userAgent.includes('Gecko/');
+    /**
+    * @typedef {PlainObject.<string, string>} module:jGraduate.Attrs
+    */
+
+    /**
+    * @param {SVGElement} elem
+    * @param {module:jGraduate.Attrs} attrs
+    * @returns {undefined}
+    */
 
     function setAttrs(elem, attrs) {
       if (isGecko) {
-        for (var aname in attrs) {
-          elem.setAttribute(aname, attrs[aname]);
-        }
+        Object.entries(attrs).forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+              aname = _ref2[0],
+              val = _ref2[1];
+
+          elem.setAttribute(aname, val);
+        });
       } else {
-        for (var _aname in attrs) {
-          var val = attrs[_aname],
-              prop = elem[_aname];
+        Object.entries(attrs).forEach(function (_ref3) {
+          var _ref4 = _slicedToArray(_ref3, 2),
+              aname = _ref4[0],
+              val = _ref4[1];
+
+          var prop = elem[aname];
 
           if (prop && prop.constructor === 'SVGLength') {
             prop.baseVal.value = val;
           } else {
-            elem.setAttribute(_aname, val);
+            elem.setAttribute(aname, val);
           }
-        }
+        });
       }
     }
+    /**
+    * @param {string} name
+    * @param {module:jGraduate.Attrs} attrs
+    * @param {Element} newparent
+    * @returns {SVGElement}
+    */
+
 
     function mkElem(name, attrs, newparent) {
       var elem = document.createElementNS(ns.svg, name);
@@ -22563,7 +23005,8 @@
             idref = '#' + $this.attr('id') + ' ';
 
         if (!idref) {
-          alert('Container element must have an id attribute to maintain unique id strings for sub-elements.');
+          /* await */
+          $.alert('Container element must have an id attribute to maintain unique id strings for sub-elements.');
           return;
         }
 
@@ -22689,18 +23132,20 @@
                 break;
 
               case 'inverse':
-                // Invert current color for second stop
-                var inverted = '';
+                {
+                  // Invert current color for second stop
+                  var inverted = '';
 
-                for (var i = 0; i < 6; i += 2) {
-                  // const ch = color.substr(i, 2);
-                  var inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
-                  if (inv.length < 2) inv = 0 + inv;
-                  inverted += inv;
+                  for (var i = 0; i < 6; i += 2) {
+                    // const ch = color.substr(i, 2);
+                    var inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
+                    if (inv.length < 2) inv = 0 + inv;
+                    inverted += inv;
+                  }
+
+                  mkStop(1, '#' + inverted, 1);
+                  break;
                 }
-
-                mkStop(1, '#' + inverted, 1);
-                break;
 
               case 'white':
                 mkStop(1, '#ffffff', 1);
@@ -22803,16 +23248,25 @@
             $elem.css(cssName, this.value * MAX);
           }).change();
         });
+        /**
+         *
+         * @param {Float} n
+         * @param {Float|string} colr
+         * @param {Float} opac
+         * @param {boolean} [sel]
+         * @param {SVGStopElement} [stopElem]
+         * @returns {SVGStopElement}
+         */
 
-        function mkStop(n, color, opac, sel, stopElem) {
+        function mkStop(n, colr, opac, sel, stopElem) {
           var stop = stopElem || mkElem('stop', {
-            'stop-color': color,
+            'stop-color': colr,
             'stop-opacity': opac,
             offset: n
           }, curGradient);
 
           if (stopElem) {
-            color = stopElem.getAttribute('stop-color');
+            colr = stopElem.getAttribute('stop-color');
             opac = stopElem.getAttribute('stop-opacity');
             n = stopElem.getAttribute('offset');
           } else {
@@ -22828,7 +23282,7 @@
           }, stopGroup);
           var path = mkElem('path', {
             d: pickerD,
-            fill: color,
+            fill: colr,
             'fill-opacity': opac,
             transform: 'translate(' + (10 + n * MAX) + ', 26)',
             stroke: '#000',
@@ -22843,8 +23297,9 @@
             return false;
           }).data('stop', stop).data('bg', pathbg).dblclick(function () {
             $('div.jGraduate_LightBox').show();
-            var colorhandle = this;
-            var stopOpacity = +stop.getAttribute('stop-opacity') || 1;
+            var colorhandle = this; // eslint-disable-line consistent-this
+
+            var stopOpacity = Number(stop.getAttribute('stop-opacity')) || 1;
             var stopColor = stop.getAttribute('stop-color') || 1;
             var thisAlpha = (parseFloat(stopOpacity) * 255).toString(16);
 
@@ -22852,7 +23307,7 @@
               thisAlpha = '0' + thisAlpha;
             }
 
-            color = stopColor.substr(1) + thisAlpha;
+            colr = stopColor.substr(1) + thisAlpha;
             $('#' + id + '_jGraduate_stopPicker').css({
               left: 100,
               bottom: 15
@@ -22864,12 +23319,12 @@
                 clientPath: $settings.images.clientPath
               },
               color: {
-                active: color,
+                active: colr,
                 alphaSupport: true
               }
-            }, function (color, arg2) {
-              stopColor = color.val('hex') ? '#' + color.val('hex') : 'none';
-              stopOpacity = color.val('a') !== null ? color.val('a') / 256 : 1;
+            }, function (clr, arg2) {
+              stopColor = clr.val('hex') ? '#' + clr.val('hex') : 'none';
+              stopOpacity = clr.val('a') !== null ? clr.val('a') / 256 : 1;
               colorhandle.setAttribute('fill', stopColor);
               colorhandle.setAttribute('fill-opacity', stopOpacity);
               stop.setAttribute('stop-color', stopColor);
@@ -22884,8 +23339,8 @@
           $(curGradient).find('stop').each(function () {
             var curS = $(this);
 
-            if (+this.getAttribute('offset') > n) {
-              if (!color) {
+            if (Number(this.getAttribute('offset')) > n) {
+              if (!colr) {
                 var newcolor = this.getAttribute('stop-color');
                 var newopac = this.getAttribute('stop-opacity');
                 stop.setAttribute('stop-color', newcolor);
@@ -22897,10 +23352,17 @@
               curS.before(stop);
               return false;
             }
+
+            return true;
           });
           if (sel) selectStop(path);
           return stop;
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function remStop() {
           delStop.setAttribute('display', 'none');
@@ -22920,6 +23382,11 @@
           display: 'none'
         }, undefined); // stopMakerSVG);
 
+        /**
+        * @param {Element} item
+        * @returns {undefined}
+        */
+
         function selectStop(item) {
           if (curStop) curStop.setAttribute('stroke', '#000');
           item.setAttribute('stroke', 'blue');
@@ -22930,6 +23397,10 @@
         }
 
         var stopOffset;
+        /**
+        *
+        * @returns {undefined}
+        */
 
         function remDrags() {
           $win.unbind('mousemove', dragColor);
@@ -22946,6 +23417,10 @@
             angle = 0;
         var cX = cx;
         var cY = cy;
+        /**
+        *
+        * @returns {undefined}
+        */
 
         function xform() {
           var rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
@@ -22958,6 +23433,11 @@
             curGradient.setAttribute('gradientTransform', rot + 'translate(' + x + ',' + y + ') scale(' + scaleX + ',' + scaleY + ')'); // $('#ang').removeClass('dis');
           }
         }
+        /**
+        * @param {Event} evt
+        * @returns {undefined}
+        */
+
 
         function dragColor(evt) {
           var x = evt.pageX - stopOffset.left;
@@ -23045,28 +23525,28 @@
           var fracx = x / SIZEX;
           var fracy = y / SIZEY;
           var type = draggingCoord.data('coord');
-          var grad = curGradient;
+          var grd = curGradient;
 
           switch (type) {
             case 'start':
               attrInput.x1.val(fracx);
               attrInput.y1.val(fracy);
-              grad.setAttribute('x1', fracx);
-              grad.setAttribute('y1', fracy);
+              grd.setAttribute('x1', fracx);
+              grd.setAttribute('y1', fracy);
               break;
 
             case 'end':
               attrInput.x2.val(fracx);
               attrInput.y2.val(fracy);
-              grad.setAttribute('x2', fracx);
-              grad.setAttribute('y2', fracy);
+              grd.setAttribute('x2', fracx);
+              grd.setAttribute('y2', fracy);
               break;
 
             case 'center':
               attrInput.cx.val(fracx);
               attrInput.cy.val(fracy);
-              grad.setAttribute('cx', fracx);
-              grad.setAttribute('cy', fracy);
+              grd.setAttribute('cx', fracx);
+              grd.setAttribute('cy', fracy);
               cX = fracx;
               cY = fracy;
               xform();
@@ -23075,8 +23555,8 @@
             case 'focus':
               attrInput.fx.val(fracx);
               attrInput.fy.val(fracy);
-              grad.setAttribute('fx', fracx);
-              grad.setAttribute('fy', fracy);
+              grd.setAttribute('fx', fracx);
+              grd.setAttribute('fy', fracy);
               xform();
           }
 
@@ -23146,22 +23626,20 @@
           focusCoord.toggle(showFocus);
           attrInput.fx.val('');
           attrInput.fy.val('');
-          var grad = curGradient;
+          var grd = curGradient;
 
           if (!showFocus) {
-            lastfx = grad.getAttribute('fx');
-            lastfy = grad.getAttribute('fy');
-            grad.removeAttribute('fx');
-            grad.removeAttribute('fy');
+            lastfx = grd.getAttribute('fx');
+            lastfy = grd.getAttribute('fy');
+            grd.removeAttribute('fx');
+            grd.removeAttribute('fy');
           } else {
-            var _fx = lastfx || 0.5;
-
-            var _fy = lastfy || 0.5;
-
-            grad.setAttribute('fx', _fx);
-            grad.setAttribute('fy', _fy);
-            attrInput.fx.val(_fx);
-            attrInput.fy.val(_fy);
+            var fX = lastfx || 0.5;
+            var fY = lastfy || 0.5;
+            grd.setAttribute('fx', fX);
+            grd.setAttribute('fy', fY);
+            attrInput.fx.val(fX);
+            attrInput.fy.val(fY);
           }
         });
         stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
@@ -23180,9 +23658,9 @@
 
         var setSlider = function setSlider(e) {
           var _slider = slider,
-              offset = _slider.offset;
+              left = _slider.offset.left;
           var div = slider.parent;
-          var x = e.pageX - offset.left - parseInt(div.css('border-left-width'));
+          var x = e.pageX - left - parseInt(div.css('border-left-width'));
           if (x > SLIDERW) x = SLIDERW;
           if (x <= 0) x = 0;
           var posx = x - 5;
@@ -23226,7 +23704,7 @@
               break;
 
             case 'angle':
-              x = x - 0.5;
+              x -= 0.5;
               angle = x *= 180;
               xform();
               x /= 100;
@@ -23318,7 +23796,7 @@
           });
           $(data.input).val(data.val).change(function () {
             var isRad = curType === 'radialGradient';
-            var val = +this.value;
+            var val = Number(this.value);
             var xpos = 0;
 
             switch (type) {
@@ -23416,10 +23894,10 @@
             active: color,
             alphaSupport: true
           }
-        }, function (color) {
+        }, function (clr) {
           $this.paint.type = 'solidColor';
-          $this.paint.alpha = color.val('ahex') ? Math.round(color.val('a') / 255 * 100) : 100;
-          $this.paint.solidColor = color.val('hex') ? color.val('hex') : 'none';
+          $this.paint.alpha = clr.val('ahex') ? Math.round(clr.val('a') / 255 * 100) : 100;
+          $this.paint.solidColor = clr.val('hex') ? clr.val('hex') : 'none';
           $this.paint.radialGradient = null;
           okClicked();
         }, null, function () {
@@ -23453,7 +23931,7 @@
               curGradient.setAttribute('spreadMethod', sm);
             }
 
-            showFocus = type === 'rg' && curGradient.getAttribute('fx') != null && !(cx === fx && cy === fy);
+            showFocus = type === 'rg' && curGradient.getAttribute('fx') !== null && !(cx === fx && cy === fy);
             $('#' + id + '_jGraduate_focusCoord').toggle(showFocus);
 
             if (showFocus) {
@@ -23569,7 +24047,7 @@
    * @param {external:jQuery} $ The jQuery object to which to add the plug-in
    * @returns {external:jQuery}
   */
-  function jqPluginSpinBtn ($) {
+  function jQueryPluginSpinButton($) {
     if (!$.loadingStylesheets) {
       $.loadingStylesheets = [];
     }
@@ -23582,12 +24060,14 @@
     /**
     * @callback module:jQuerySpinButton.StepCallback
     * @param {external:jQuery} thisArg Value of `this`
+    * @param {Float} i Value to adjust
+    * @returns {Float}
     */
 
     /**
     * @callback module:jQuerySpinButton.ValueCallback
-    * @param {external:jQuery} thisArg Value of `this`
-    * @param {Float} value Value that was changed
+    * @param {external:jQuery.fn.SpinButton} thisArg Spin Button; check its `value` to see how it was changed.
+    * @returns {undefined}
     */
 
     /**
@@ -23595,7 +24075,7 @@
      * @property {Float} min Set lower limit
      * @property {Float} max Set upper limit.
      * @property {Float} step Set increment size.
-     * @property {module:jQuerySpinButton.StepCallback} stepfunc Custom function to run when changing a value; called with `this` of object and the value to adjust
+     * @property {module:jQuerySpinButton.StepCallback} stepfunc Custom function to run when changing a value; called with `this` of object and the value to adjust and returns a float.
      * @property {module:jQuerySpinButton.ValueCallback} callback Called after value adjusted (with `this` of object)
      * @property {Float} smallStep Set shift-click increment size.
      * @property {PlainObject} stateObj Object to allow passing in live-updating scale
@@ -23618,6 +24098,12 @@
 
     $.fn.SpinButton = function (cfg) {
       cfg = cfg || {};
+      /**
+       *
+       * @param {Element} el
+       * @param {"offsetLeft"|"offsetTop"} prop
+       * @returns {Integer}
+       */
 
       function coord(el, prop) {
         var b = document.body;
@@ -23876,7 +24362,7 @@
    *
   */
   /**
-  * @callback module:jQueryContextMenu.jQueryContextMenuCallback
+  * @callback module:jQueryContextMenu.jQueryContextMenuListener
   * @param {string} href The `href` value after the first character (for bypassing an initial `#`)
   * @param {external:jQuery} srcElement The wrapped jQuery srcElement
   * @param {{x: Float, y: Float, docX: Float, docY: Float}} coords
@@ -23909,10 +24395,10 @@
       /**
       * @memberof external:jQuery.fn
       * @param {module:jQueryContextMenu.jQueryContextMenuConfig} o
-      * @param {module:jQueryContextMenu.jQueryContextMenuCallback} callback
+      * @param {module:jQueryContextMenu.jQueryContextMenuListener} listener
       * @returns {external:jQuery}
       */
-      contextMenu: function contextMenu(o, callback) {
+      contextMenu: function contextMenu(o, listener) {
         // Defaults
         if (o.menu === undefined) return false;
         if (o.inSpeed === undefined) o.inSpeed = 150;
@@ -23928,102 +24414,104 @@
 
           menu.addClass('contextMenu'); // Simulate a true right click
 
-          $(this).bind('mousedown', function (e) {
-            var evt = e;
+          $(this).bind('mousedown', function (evt) {
             $(this).mouseup(function (e) {
               var srcElement = $(this);
               srcElement.unbind('mouseup');
 
-              if (evt.button === 2 || o.allowLeft || evt.ctrlKey && isMac()) {
-                e.stopPropagation(); // Hide context menus that may be showing
-
-                $('.contextMenu').hide(); // Get this context menu
-
-                if (el.hasClass('disabled')) return false; // Detect mouse position
-
-                var x = e.pageX,
-                    y = e.pageY;
-                var xOff = win.width() - menu.width(),
-                    yOff = win.height() - menu.height();
-                if (x > xOff - 15) x = xOff - 15;
-                if (y > yOff - 30) y = yOff - 30; // 30 is needed to prevent scrollbars in FF
-                // Show the menu
-
-                doc.unbind('click');
-                menu.css({
-                  top: y,
-                  left: x
-                }).fadeIn(o.inSpeed); // Hover events
-
-                menu.find('A').mouseover(function () {
-                  menu.find('LI.hover').removeClass('hover');
-                  $(this).parent().addClass('hover');
-                }).mouseout(function () {
-                  menu.find('LI.hover').removeClass('hover');
-                }); // Keyboard
-
-                doc.keypress(function (e) {
-                  switch (e.keyCode) {
-                    case 38:
-                      // up
-                      if (!menu.find('LI.hover').length) {
-                        menu.find('LI:last').addClass('hover');
-                      } else {
-                        menu.find('LI.hover').removeClass('hover').prevAll('LI:not(.disabled)').eq(0).addClass('hover');
-                        if (!menu.find('LI.hover').length) menu.find('LI:last').addClass('hover');
-                      }
-
-                      break;
-
-                    case 40:
-                      // down
-                      if (!menu.find('LI.hover').length) {
-                        menu.find('LI:first').addClass('hover');
-                      } else {
-                        menu.find('LI.hover').removeClass('hover').nextAll('LI:not(.disabled)').eq(0).addClass('hover');
-                        if (!menu.find('LI.hover').length) menu.find('LI:first').addClass('hover');
-                      }
-
-                      break;
-
-                    case 13:
-                      // enter
-                      menu.find('LI.hover A').trigger('click');
-                      break;
-
-                    case 27:
-                      // esc
-                      doc.trigger('click');
-                      break;
-                  }
-                }); // When items are selected
-
-                menu.find('A').unbind('mouseup');
-                menu.find('LI:not(.disabled) A').mouseup(function () {
-                  doc.unbind('click').unbind('keypress');
-                  $('.contextMenu').hide(); // Callback
-
-                  if (callback) {
-                    callback($(this).attr('href').substr(1), $(srcElement), {
-                      x: x - offset.left,
-                      y: y - offset.top,
-                      docX: x,
-                      docY: y
-                    });
-                  }
-
-                  return false;
-                }); // Hide bindings
-
-                setTimeout(function () {
-                  // Delay for Mozilla
-                  doc.click(function () {
-                    doc.unbind('click').unbind('keypress');
-                    menu.fadeOut(o.outSpeed);
-                    return false;
-                  });
-                }, 0);
+              if (!(evt.button === 2 || o.allowLeft || evt.ctrlKey && isMac())) {
+                return undefined;
               }
+
+              e.stopPropagation(); // Hide context menus that may be showing
+
+              $('.contextMenu').hide(); // Get this context menu
+
+              if (el.hasClass('disabled')) return false; // Detect mouse position
+
+              var x = e.pageX,
+                  y = e.pageY;
+              var xOff = win.width() - menu.width(),
+                  yOff = win.height() - menu.height();
+              if (x > xOff - 15) x = xOff - 15;
+              if (y > yOff - 30) y = yOff - 30; // 30 is needed to prevent scrollbars in FF
+              // Show the menu
+
+              doc.unbind('click');
+              menu.css({
+                top: y,
+                left: x
+              }).fadeIn(o.inSpeed); // Hover events
+
+              menu.find('A').mouseover(function () {
+                menu.find('LI.hover').removeClass('hover');
+                $(this).parent().addClass('hover');
+              }).mouseout(function () {
+                menu.find('LI.hover').removeClass('hover');
+              }); // Keyboard
+
+              doc.keypress(function (ev) {
+                switch (ev.keyCode) {
+                  case 38:
+                    // up
+                    if (!menu.find('LI.hover').length) {
+                      menu.find('LI:last').addClass('hover');
+                    } else {
+                      menu.find('LI.hover').removeClass('hover').prevAll('LI:not(.disabled)').eq(0).addClass('hover');
+                      if (!menu.find('LI.hover').length) menu.find('LI:last').addClass('hover');
+                    }
+
+                    break;
+
+                  case 40:
+                    // down
+                    if (!menu.find('LI.hover').length) {
+                      menu.find('LI:first').addClass('hover');
+                    } else {
+                      menu.find('LI.hover').removeClass('hover').nextAll('LI:not(.disabled)').eq(0).addClass('hover');
+                      if (!menu.find('LI.hover').length) menu.find('LI:first').addClass('hover');
+                    }
+
+                    break;
+
+                  case 13:
+                    // enter
+                    menu.find('LI.hover A').trigger('click');
+                    break;
+
+                  case 27:
+                    // esc
+                    doc.trigger('click');
+                    break;
+                }
+              }); // When items are selected
+
+              menu.find('A').unbind('mouseup');
+              menu.find('LI:not(.disabled) A').mouseup(function () {
+                doc.unbind('click').unbind('keypress');
+                $('.contextMenu').hide();
+
+                if (listener) {
+                  listener($(this).attr('href').substr(1), $(srcElement), {
+                    x: x - offset.left,
+                    y: y - offset.top,
+                    docX: x,
+                    docY: y
+                  });
+                }
+
+                return false;
+              }); // Hide bindings
+
+              setTimeout(function () {
+                // Delay for Mozilla
+                doc.click(function () {
+                  doc.unbind('click').unbind('keypress');
+                  menu.fadeOut(o.outSpeed);
+                  return false;
+                });
+              }, 0);
+              return undefined;
             });
           }); // Disable text selection
 
@@ -24178,6 +24666,16 @@
     return Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
   }
   /**
+   * Whether a value is `null` or `undefined`.
+   * @param {Any} val
+   * @returns {boolean}
+   */
+
+
+  var isNullish$1 = function isNullish(val) {
+    return val === null || val === undefined;
+  };
+  /**
   * @function module:jPicker.jPicker
   * @param {external:jQuery} $ The jQuery object to wrap (with {@link external:jQuery.loadingStylesheets}, {@link external:jQuery.fn.$.fn.jPicker}, {@link external:jQuery.fn.$.fn.jPicker.defaults})
   * @returns {external:jQuery}
@@ -24213,6 +24711,7 @@
     /**
     * Encapsulate slider functionality for the ColorMap and ColorBar -
     * could be useful to use a jQuery UI draggable for this with certain extensions.
+    * @memberof module:jPicker
     * @param {external:jQuery} bar
     * @param {module:jPicker.SliderOptions} options
     * @returns {undefined}
@@ -24222,13 +24721,23 @@
     var Slider = function Slider(bar, options) {
       _classCallCheck(this, Slider);
 
-      var $this = this;
+      var that = this;
+      /**
+       * Fire events on the supplied `context`
+       * @param {module:jPicker.JPickerInit} context
+       * @returns {undefined}
+       */
 
       function fireChangeEvents(context) {
-        for (var i = 0; i < changeEvents.length; i++) {
-          changeEvents[i].call($this, $this, context);
-        }
-      } // bind the mousedown to the bar not the arrow for quick snapping to the clicked location
+        changeEvents.forEach(function (changeEvent) {
+          changeEvent.call(that, that, context);
+        });
+      }
+      /**
+       * Bind the mousedown to the bar not the arrow for quick snapping to the clicked location.
+       * @param {external:jQuery.Event} e
+       * @returns {undefined}
+       */
 
 
       function mouseDown(e) {
@@ -24236,27 +24745,38 @@
         offset = {
           l: off.left | 0,
           t: off.top | 0
-        };
+        }; // eslint-disable-line no-bitwise
+
         clearTimeout(timeout); // using setTimeout for visual updates - once the style is updated the browser will re-render internally allowing the next Javascript to run
 
         timeout = setTimeout(function () {
-          setValuesFromMousePosition.call($this, e);
+          setValuesFromMousePosition.call(that, e);
         }, 0); // Bind mousemove and mouseup event to the document so it responds when dragged of of the bar - we will unbind these when on mouseup to save processing
 
         $(document).bind('mousemove', mouseMove).bind('mouseup', mouseUp);
         e.preventDefault(); // don't try to select anything or drag the image to the desktop
-      } // set the values as the mouse moves
+      }
+      /**
+       * Set the values as the mouse moves.
+       * @param {external:jQuery.Event} e
+       * @returns {false}
+       */
 
 
       function mouseMove(e) {
         clearTimeout(timeout);
         timeout = setTimeout(function () {
-          setValuesFromMousePosition.call($this, e);
+          setValuesFromMousePosition.call(that, e);
         }, 0);
         e.stopPropagation();
         e.preventDefault();
         return false;
-      } // unbind the document events - they aren't needed when not dragging
+      }
+      /**
+       * Unbind the document events - they aren't needed when not dragging.
+       * @param {external:jQuery.Event} e
+       * @returns {false}
+       */
 
 
       function mouseUp(e) {
@@ -24264,7 +24784,12 @@
         e.stopPropagation();
         e.preventDefault();
         return false;
-      } // calculate mouse position and set value within the current range
+      }
+      /**
+       * Calculate mouse position and set value within the current range.
+       * @param {Event} e
+       * @returns {undefined}
+       */
 
 
       function setValuesFromMousePosition(e) {
@@ -24276,11 +24801,16 @@
 
         if (locX < 0) locX = 0;else if (locX > barW) locX = barW;
         if (locY < 0) locY = 0;else if (locY > barH) locY = barH;
-        val.call($this, 'xy', {
+        val.call(that, 'xy', {
           x: locX / barW * rangeX + minX,
           y: locY / barH * rangeY + minY
         });
       }
+      /**
+       *
+       * @returns {undefined}
+       */
+
 
       function draw() {
         var barW = bar.w,
@@ -24290,6 +24820,7 @@
         var arrowOffsetX = 0,
             arrowOffsetY = 0;
         setTimeout(function () {
+          /* eslint-disable no-bitwise */
           if (rangeX > 0) {
             // range is greater than zero
             // constrain to bounds
@@ -24312,14 +24843,23 @@
             left: arrowOffsetX + 'px',
             top: arrowOffsetY + 'px'
           });
-        }, 0);
+          /* eslint no-bitwise: ["error"] */
+        });
       }
+      /**
+       * Get or set a value.
+       * @param {?("xy"|"x"|"y")} name
+       * @param {module:math.XYObject} value
+       * @param {module:jPicker.Slider} context
+       * @returns {module:math.XYObject|Float|undefined}
+       */
+
 
       function val(name, value, context) {
         var set = value !== undefined;
 
         if (!set) {
-          if (name === undefined || name == null) name = 'xy';
+          if (isNullish$1(name)) name = 'xy';
 
           switch (name.toLowerCase()) {
             case 'x':
@@ -24337,10 +24877,10 @@
           }
         }
 
-        if (context != null && context === $this) return;
+        if (!isNullish$1(context) && context === that) return undefined;
         var changed = false;
         var newX, newY;
-        if (name == null) name = 'xy';
+        if (isNullish$1(name)) name = 'xy';
 
         switch (name.toLowerCase()) {
           case 'x':
@@ -24358,7 +24898,7 @@
             break;
         }
 
-        if (newX != null) {
+        if (!isNullish$1(newX)) {
           if (newX < minX) newX = minX;else if (newX > maxX) newX = maxX;
 
           if (x !== newX) {
@@ -24367,7 +24907,7 @@
           }
         }
 
-        if (newY != null) {
+        if (!isNullish$1(newY)) {
           if (newY < minY) newY = minY;else if (newY > maxY) newY = maxY;
 
           if (y !== newY) {
@@ -24376,14 +24916,40 @@
           }
         }
 
-        changed && fireChangeEvents.call($this, context || $this);
+        changed && fireChangeEvents.call(that, context || that);
+        return undefined;
       }
+      /**
+      * @typedef {PlainObject} module:jPicker.MinMaxRangeX
+      * @property {Float} minX
+      * @property {Float} maxX
+      * @property {Float} rangeX
+      */
+
+      /**
+      * @typedef {PlainObject} module:jPicker.MinMaxRangeY
+      * @property {Float} minY
+      * @property {Float} maxY
+      * @property {Float} rangeY
+      */
+
+      /**
+      * @typedef {module:jPicker.MinMaxRangeY|module:jPicker.MinMaxRangeX} module:jPicker.MinMaxRangeXY
+      */
+
+      /**
+       *
+       * @param {"minx"|"maxx"|"rangex"|"miny"|"maxy"|"rangey"|"all"} name
+       * @param {module:jPicker.MinMaxRangeXY} value
+       * @returns {module:jPicker.MinMaxRangeXY|module:jPicker.MinMaxRangeX|module:jPicker.MinMaxRangeY|undefined}
+       */
+
 
       function range(name, value) {
         var set = value !== undefined;
 
         if (!set) {
-          if (name === undefined || name == null) name = 'all';
+          if (isNullish$1(name)) name = 'all';
 
           switch (name.toLowerCase()) {
             case 'minx':
@@ -24427,7 +24993,8 @@
 
         var // changed = false,
         newMinX, newMaxX, newMinY, newMaxY;
-        if (name == null) name = 'all';
+        if (isNullish$1(name)) name = 'all';
+        /* eslint-disable no-bitwise */
 
         switch (name.toLowerCase()) {
           case 'minx':
@@ -24464,33 +25031,49 @@
             newMaxY = value && value.maxY && value.maxY | 0 || 0;
             break;
         }
+        /* eslint no-bitwise: ["error"] */
 
-        if (newMinX != null && minX !== newMinX) {
+
+        if (!isNullish$1(newMinX) && minX !== newMinX) {
           minX = newMinX;
           rangeX = maxX - minX;
         }
 
-        if (newMaxX != null && maxX !== newMaxX) {
+        if (!isNullish$1(newMaxX) && maxX !== newMaxX) {
           maxX = newMaxX;
           rangeX = maxX - minX;
         }
 
-        if (newMinY != null && minY !== newMinY) {
+        if (!isNullish$1(newMinY) && minY !== newMinY) {
           minY = newMinY;
           rangeY = maxY - minY;
         }
 
-        if (newMaxY != null && maxY !== newMaxY) {
+        if (!isNullish$1(newMaxY) && maxY !== newMaxY) {
           maxY = newMaxY;
           rangeY = maxY - minY;
         }
+
+        return undefined;
       }
+      /**
+      * @param {GenericCallback} callback
+      * @returns {undefined}
+      */
+
 
       function bind(callback) {
+        // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback === 'function') changeEvents.push(callback);
       }
+      /**
+      * @param {GenericCallback} callback
+      * @returns {undefined}
+      */
+
 
       function unbind(callback) {
+        // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback !== 'function') return;
         var i;
 
@@ -24498,6 +25081,11 @@
           changeEvents.splice(i, 1);
         }
       }
+      /**
+      *
+      * @returns {undefined}
+      */
+
 
       function destroy() {
         // unbind all possible events and null objects
@@ -24521,8 +25109,9 @@
           arrow = bar.find('img:first'),
           // the arrow image to drag
       changeEvents = [];
-      $.extend(true, $this, // public properties, methods, and event bindings - these we need to access from other controls
-      {
+      $.extend(true, // public properties, methods, and event bindings - these we need
+      //   to access from other controls
+      that, {
         val: val,
         range: range,
         bind: bind,
@@ -24537,29 +25126,45 @@
       bar.h = options.map && options.map.height || bar.height(); // bind mousedown event
 
       bar.bind('mousedown', mouseDown);
-      bind.call($this, draw);
-    }; // controls for all the input elements for the typing in color values
+      bind.call(that, draw);
+    };
+    /**
+     * Controls for all the input elements for the typing in color values.
+     * @param {external:jQuery} picker
+     * @param {external:jQuery.jPicker.Color} color
+     * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
+     * @param {Float} alphaPrecision
+     * @constructor
+     */
 
 
-    function ColorValuePicker(picker, color, bindedHex, alphaPrecision) {
-      var $this = this; // private properties and methods
+    var ColorValuePicker = function ColorValuePicker(picker, color, bindedHex, alphaPrecision) {
+      _classCallCheck(this, ColorValuePicker);
+
+      var that = this; // private properties and methods
 
       var inputs = picker.find('td.Text input'); // input box key down - use arrows to alter color
 
+      /**
+       *
+       * @param {Event} e
+       * @returns {Event|false|undefined}
+       */
+
       function keyDown(e) {
-        if (e.target.value === '' && e.target !== hex.get(0) && (bindedHex != null && e.target !== bindedHex.get(0) || bindedHex == null)) return;
+        if (e.target.value === '' && e.target !== hex.get(0) && (!isNullish$1(bindedHex) && e.target !== bindedHex.get(0) || isNullish$1(bindedHex))) return undefined;
         if (!validateKey(e)) return e;
 
         switch (e.target) {
           case red.get(0):
             switch (e.keyCode) {
               case 38:
-                red.val(setValueInRange.call($this, (red.val() << 0) + 1, 0, 255));
+                red.val(setValueInRange.call(that, (red.val() << 0) + 1, 0, 255));
                 color.val('r', red.val(), e.target);
                 return false;
 
               case 40:
-                red.val(setValueInRange.call($this, (red.val() << 0) - 1, 0, 255));
+                red.val(setValueInRange.call(that, (red.val() << 0) - 1, 0, 255));
                 color.val('r', red.val(), e.target);
                 return false;
             }
@@ -24569,12 +25174,12 @@
           case green.get(0):
             switch (e.keyCode) {
               case 38:
-                green.val(setValueInRange.call($this, (green.val() << 0) + 1, 0, 255));
+                green.val(setValueInRange.call(that, (green.val() << 0) + 1, 0, 255));
                 color.val('g', green.val(), e.target);
                 return false;
 
               case 40:
-                green.val(setValueInRange.call($this, (green.val() << 0) - 1, 0, 255));
+                green.val(setValueInRange.call(that, (green.val() << 0) - 1, 0, 255));
                 color.val('g', green.val(), e.target);
                 return false;
             }
@@ -24584,12 +25189,12 @@
           case blue.get(0):
             switch (e.keyCode) {
               case 38:
-                blue.val(setValueInRange.call($this, (blue.val() << 0) + 1, 0, 255));
+                blue.val(setValueInRange.call(that, (blue.val() << 0) + 1, 0, 255));
                 color.val('b', blue.val(), e.target);
                 return false;
 
               case 40:
-                blue.val(setValueInRange.call($this, (blue.val() << 0) - 1, 0, 255));
+                blue.val(setValueInRange.call(that, (blue.val() << 0) - 1, 0, 255));
                 color.val('b', blue.val(), e.target);
                 return false;
             }
@@ -24599,12 +25204,12 @@
           case alpha && alpha.get(0):
             switch (e.keyCode) {
               case 38:
-                alpha.val(setValueInRange.call($this, parseFloat(alpha.val()) + 1, 0, 100));
+                alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) + 1, 0, 100));
                 color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
                 return false;
 
               case 40:
-                alpha.val(setValueInRange.call($this, parseFloat(alpha.val()) - 1, 0, 100));
+                alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) - 1, 0, 100));
                 color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
                 return false;
             }
@@ -24614,12 +25219,12 @@
           case hue.get(0):
             switch (e.keyCode) {
               case 38:
-                hue.val(setValueInRange.call($this, (hue.val() << 0) + 1, 0, 360));
+                hue.val(setValueInRange.call(that, (hue.val() << 0) + 1, 0, 360));
                 color.val('h', hue.val(), e.target);
                 return false;
 
               case 40:
-                hue.val(setValueInRange.call($this, (hue.val() << 0) - 1, 0, 360));
+                hue.val(setValueInRange.call(that, (hue.val() << 0) - 1, 0, 360));
                 color.val('h', hue.val(), e.target);
                 return false;
             }
@@ -24629,12 +25234,12 @@
           case saturation.get(0):
             switch (e.keyCode) {
               case 38:
-                saturation.val(setValueInRange.call($this, (saturation.val() << 0) + 1, 0, 100));
+                saturation.val(setValueInRange.call(that, (saturation.val() << 0) + 1, 0, 100));
                 color.val('s', saturation.val(), e.target);
                 return false;
 
               case 40:
-                saturation.val(setValueInRange.call($this, (saturation.val() << 0) - 1, 0, 100));
+                saturation.val(setValueInRange.call(that, (saturation.val() << 0) - 1, 0, 100));
                 color.val('s', saturation.val(), e.target);
                 return false;
             }
@@ -24644,58 +25249,66 @@
           case value.get(0):
             switch (e.keyCode) {
               case 38:
-                value.val(setValueInRange.call($this, (value.val() << 0) + 1, 0, 100));
+                value.val(setValueInRange.call(that, (value.val() << 0) + 1, 0, 100));
                 color.val('v', value.val(), e.target);
                 return false;
 
               case 40:
-                value.val(setValueInRange.call($this, (value.val() << 0) - 1, 0, 100));
+                value.val(setValueInRange.call(that, (value.val() << 0) - 1, 0, 100));
                 color.val('v', value.val(), e.target);
                 return false;
             }
 
             break;
         }
+
+        return undefined;
       } // input box key up - validate value and set color
+
+      /**
+      * @param {Event} e
+      * @returns {Event|undefined}
+      * @todo Why is this returning an event?
+      */
 
 
       function keyUp(e) {
-        if (e.target.value === '' && e.target !== hex.get(0) && (bindedHex != null && e.target !== bindedHex.get(0) || bindedHex == null)) return;
+        if (e.target.value === '' && e.target !== hex.get(0) && (!isNullish$1(bindedHex) && e.target !== bindedHex.get(0) || isNullish$1(bindedHex))) return undefined;
         if (!validateKey(e)) return e;
 
         switch (e.target) {
           case red.get(0):
-            red.val(setValueInRange.call($this, red.val(), 0, 255));
+            red.val(setValueInRange.call(that, red.val(), 0, 255));
             color.val('r', red.val(), e.target);
             break;
 
           case green.get(0):
-            green.val(setValueInRange.call($this, green.val(), 0, 255));
+            green.val(setValueInRange.call(that, green.val(), 0, 255));
             color.val('g', green.val(), e.target);
             break;
 
           case blue.get(0):
-            blue.val(setValueInRange.call($this, blue.val(), 0, 255));
+            blue.val(setValueInRange.call(that, blue.val(), 0, 255));
             color.val('b', blue.val(), e.target);
             break;
 
           case alpha && alpha.get(0):
-            alpha.val(setValueInRange.call($this, alpha.val(), 0, 100));
+            alpha.val(setValueInRange.call(that, alpha.val(), 0, 100));
             color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
             break;
 
           case hue.get(0):
-            hue.val(setValueInRange.call($this, hue.val(), 0, 360));
+            hue.val(setValueInRange.call(that, hue.val(), 0, 360));
             color.val('h', hue.val(), e.target);
             break;
 
           case saturation.get(0):
-            saturation.val(setValueInRange.call($this, saturation.val(), 0, 100));
+            saturation.val(setValueInRange.call(that, saturation.val(), 0, 100));
             color.val('s', saturation.val(), e.target);
             break;
 
           case value.get(0):
-            value.val(setValueInRange.call($this, value.val(), 0, 100));
+            value.val(setValueInRange.call(that, value.val(), 0, 100));
             color.val('v', value.val(), e.target);
             break;
 
@@ -24713,14 +25326,21 @@
 
           case ahex && ahex.get(0):
             ahex.val(ahex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 2));
-            color.val('a', ahex.val() != null ? parseInt(ahex.val(), 16) : null, e.target);
+            color.val('a', !isNullish$1(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
             break;
         }
+
+        return undefined;
       } // input box blur - reset to original if value empty
+
+      /**
+      * @param {Event} e
+      * @returns {undefined}
+      */
 
 
       function blur(e) {
-        if (color.val() != null) {
+        if (!isNullish$1(color.val())) {
           switch (e.target) {
             case red.get(0):
               red.val(color.val('r'));
@@ -24762,6 +25382,11 @@
           }
         }
       }
+      /**
+      * @param {Event} e
+      * @returns {boolean}
+      */
+
 
       function validateKey(e) {
         switch (e.keyCode) {
@@ -24778,7 +25403,14 @@
         }
 
         return true;
-      } // constrain value within range
+      }
+      /**
+      * Constrain value within range.
+      * @param {Float|string} value
+      * @param {Float} min
+      * @param {Float} max
+      * @returns {Float|string} Returns a number or numeric string
+      */
 
 
       function setValueInRange(value, min, max) {
@@ -24787,23 +25419,33 @@
         if (value < min) return min;
         return value;
       }
+      /**
+      * @param {external:jQuery} ui
+      * @param {Element} context
+      * @returns {undefined}
+      */
+
 
       function colorChanged(ui, context) {
         var all = ui.val('all');
-        if (context !== red.get(0)) red.val(all != null ? all.r : '');
-        if (context !== green.get(0)) green.val(all != null ? all.g : '');
-        if (context !== blue.get(0)) blue.val(all != null ? all.b : '');
-        if (alpha && context !== alpha.get(0)) alpha.val(all != null ? toFixedNumeric(all.a * 100 / 255, alphaPrecision) : '');
-        if (context !== hue.get(0)) hue.val(all != null ? all.h : '');
-        if (context !== saturation.get(0)) saturation.val(all != null ? all.s : '');
-        if (context !== value.get(0)) value.val(all != null ? all.v : '');
-        if (context !== hex.get(0) && (bindedHex && context !== bindedHex.get(0) || !bindedHex)) hex.val(all != null ? all.hex : '');
-        if (bindedHex && context !== bindedHex.get(0) && context !== hex.get(0)) bindedHex.val(all != null ? all.hex : '');
-        if (ahex && context !== ahex.get(0)) ahex.val(all != null ? all.ahex.substring(6) : '');
+        if (context !== red.get(0)) red.val(!isNullish$1(all) ? all.r : '');
+        if (context !== green.get(0)) green.val(!isNullish$1(all) ? all.g : '');
+        if (context !== blue.get(0)) blue.val(!isNullish$1(all) ? all.b : '');
+        if (alpha && context !== alpha.get(0)) alpha.val(!isNullish$1(all) ? toFixedNumeric(all.a * 100 / 255, alphaPrecision) : '');
+        if (context !== hue.get(0)) hue.val(!isNullish$1(all) ? all.h : '');
+        if (context !== saturation.get(0)) saturation.val(!isNullish$1(all) ? all.s : '');
+        if (context !== value.get(0)) value.val(!isNullish$1(all) ? all.v : '');
+        if (context !== hex.get(0) && (bindedHex && context !== bindedHex.get(0) || !bindedHex)) hex.val(!isNullish$1(all) ? all.hex : '');
+        if (bindedHex && context !== bindedHex.get(0) && context !== hex.get(0)) bindedHex.val(!isNullish$1(all) ? all.hex : '');
+        if (ahex && context !== ahex.get(0)) ahex.val(!isNullish$1(all) ? all.ahex.substring(6) : '');
       }
+      /**
+      * Unbind all events and null objects.
+      * @returns {undefined}
+      */
+
 
       function destroy() {
-        // unbind all events and null objects
         red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).unbind('keyup', keyUp).unbind('blur', blur);
         red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).unbind('keydown', keyDown);
         color.unbind(colorChanged);
@@ -24827,25 +25469,25 @@
           value = inputs.eq(2),
           hex = inputs.eq(inputs.length > 7 ? 7 : 6),
           ahex = inputs.length > 7 ? inputs.eq(8) : null;
-      $.extend(true, $this, {
+      $.extend(true, that, {
         // public properties and methods
         destroy: destroy
       });
       red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).bind('keyup', keyUp).bind('blur', blur);
       red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).bind('keydown', keyDown);
       color.bind(colorChanged);
-    }
+    };
     /**
     * @typedef {PlainObject} module:jPicker.JPickerInit
-    * @property {Integer} a
-    * @property {Integer} b
-    * @property {Integer} g
-    * @property {Integer} h
-    * @property {Integer} r
-    * @property {Integer} s
-    * @property {Integer} v
-    * @property {string} hex
-    * @property {string} ahex
+    * @property {Integer} [a]
+    * @property {Integer} [b]
+    * @property {Integer} [g]
+    * @property {Integer} [h]
+    * @property {Integer} [r]
+    * @property {Integer} [s]
+    * @property {Integer} [v]
+    * @property {string} [hex]
+    * @property {string} [ahex]
     */
 
     /**
@@ -24875,13 +25517,26 @@
       * @param {module:jPicker.JPickerInit} init
       */
       Color: function Color(init) {
-        var $this = this;
+        // eslint-disable-line object-shorthand
+        var that = this;
+        /**
+         *
+         * @param {module:jPicker.Slider} context
+         * @returns {undefined}
+         */
 
         function fireChangeEvents(context) {
           for (var i = 0; i < changeEvents.length; i++) {
-            changeEvents[i].call($this, $this, context);
+            changeEvents[i].call(that, that, context);
           }
         }
+        /**
+         * @param {string|"ahex"|"hex"|"all"|""|null|undefined} name String composed of letters "r", "g", "b", "a", "h", "s", and/or "v"
+         * @param {module:jPicker.RGBA|module:jPicker.JPickerInit|string} [value]
+         * @param {external:jQuery.jPicker.Color} context
+         * @returns {module:jPicker.JPickerInit|string|null|undefined}
+         */
+
 
         function val(name, value, context) {
           // Kind of ugly
@@ -24889,8 +25544,9 @@
           if (set && value.ahex === '') value.ahex = '00000000';
 
           if (!set) {
-            if (name === undefined || name == null || name === '') name = 'all';
-            if (r == null) return null;
+            var ret;
+            if (isNullish$1(name) || name === '') name = 'all';
+            if (isNullish$1(r)) return null;
 
             switch (name.toLowerCase()) {
               case 'ahex':
@@ -24913,261 +25569,281 @@
                   h: h,
                   s: s,
                   v: v,
-                  hex: val.call($this, 'hex'),
-                  ahex: val.call($this, 'ahex')
+                  hex: val.call(that, 'hex'),
+                  ahex: val.call(that, 'ahex')
                 };
 
               default:
-                var ret = {};
-                var nameLength = name.length;
+                {
+                  ret = {};
+                  var nameLength = name.length;
 
-                for (var i = 0; i < nameLength; i++) {
-                  switch (name.charAt(i)) {
-                    case 'r':
-                      if (nameLength === 1) ret = r;else ret.r = r;
-                      break;
+                  _toConsumableArray(name).forEach(function (ch) {
+                    switch (ch) {
+                      case 'r':
+                        if (nameLength === 1) ret = r;else ret.r = r;
+                        break;
 
-                    case 'g':
-                      if (nameLength === 1) ret = g;else ret.g = g;
-                      break;
+                      case 'g':
+                        if (nameLength === 1) ret = g;else ret.g = g;
+                        break;
 
-                    case 'b':
-                      if (nameLength === 1) ret = b;else ret.b = b;
-                      break;
+                      case 'b':
+                        if (nameLength === 1) ret = b;else ret.b = b;
+                        break;
 
-                    case 'a':
-                      if (nameLength === 1) ret = a;else ret.a = a;
-                      break;
+                      case 'a':
+                        if (nameLength === 1) ret = a;else ret.a = a;
+                        break;
 
-                    case 'h':
-                      if (nameLength === 1) ret = h;else ret.h = h;
-                      break;
+                      case 'h':
+                        if (nameLength === 1) ret = h;else ret.h = h;
+                        break;
 
-                    case 's':
-                      if (nameLength === 1) ret = s;else ret.s = s;
-                      break;
+                      case 's':
+                        if (nameLength === 1) ret = s;else ret.s = s;
+                        break;
 
-                    case 'v':
-                      if (nameLength === 1) ret = v;else ret.v = v;
-                      break;
-                  }
+                      case 'v':
+                        if (nameLength === 1) ret = v;else ret.v = v;
+                        break;
+                    }
+                  });
                 }
-
-                return _typeof(ret) === 'object' && !Object.keys(ret).length ? val.call($this, 'all') : ret;
             }
+
+            return _typeof(ret) === 'object' && !Object.keys(ret).length ? val.call(that, 'all') : ret;
           }
 
-          if (context != null && context === $this) return;
-          if (name == null) name = '';
+          if (!isNullish$1(context) && context === that) return undefined;
+          if (isNullish$1(name)) name = '';
           var changed = false;
 
-          if (value == null) {
-            if (r != null) {
+          if (isNullish$1(value)) {
+            if (!isNullish$1(r)) {
               r = null;
               changed = true;
             }
 
-            if (g != null) {
+            if (!isNullish$1(g)) {
               g = null;
               changed = true;
             }
 
-            if (b != null) {
+            if (!isNullish$1(b)) {
               b = null;
               changed = true;
             }
 
-            if (a != null) {
+            if (!isNullish$1(a)) {
               a = null;
               changed = true;
             }
 
-            if (h != null) {
+            if (!isNullish$1(h)) {
               h = null;
               changed = true;
             }
 
-            if (s != null) {
+            if (!isNullish$1(s)) {
               s = null;
               changed = true;
             }
 
-            if (v != null) {
+            if (!isNullish$1(v)) {
               v = null;
               changed = true;
             }
 
-            changed && fireChangeEvents.call($this, context || $this);
-            return;
+            changed && fireChangeEvents.call(that, context || that);
+            return undefined;
           }
 
           switch (name.toLowerCase()) {
             case 'ahex':
             case 'hex':
-              var _ret = ColorMethods.hexToRgba(value && (value.ahex || value.hex) || value || 'none');
+              {
+                var _ret = ColorMethods.hexToRgba(value && (value.ahex || value.hex) || value || 'none');
 
-              val.call($this, 'rgba', {
-                r: _ret.r,
-                g: _ret.g,
-                b: _ret.b,
-                a: name === 'ahex' ? _ret.a : a != null ? a : 255
-              }, context);
-              break;
+                val.call(that, 'rgba', {
+                  r: _ret.r,
+                  g: _ret.g,
+                  b: _ret.b,
+                  a: name === 'ahex' ? _ret.a : !isNullish$1(a) ? a : 255
+                }, context);
+                break;
+              }
 
             default:
-              if (value && (value.ahex != null || value.hex != null)) {
-                val.call($this, 'ahex', value.ahex || value.hex || '00000000', context);
-                return;
-              }
-
-              var newV = {};
-              var rgb = false,
-                  hsv = false;
-              if (value.r !== undefined && !name.includes('r')) name += 'r';
-              if (value.g !== undefined && !name.includes('g')) name += 'g';
-              if (value.b !== undefined && !name.includes('b')) name += 'b';
-              if (value.a !== undefined && !name.includes('a')) name += 'a';
-              if (value.h !== undefined && !name.includes('h')) name += 'h';
-              if (value.s !== undefined && !name.includes('s')) name += 's';
-              if (value.v !== undefined && !name.includes('v')) name += 'v';
-
-              for (var _i = 0; _i < name.length; _i++) {
-                switch (name.charAt(_i)) {
-                  case 'r':
-                    if (hsv) continue;
-                    rgb = true;
-                    newV.r = value.r && value.r | 0 || value | 0 || 0;
-                    if (newV.r < 0) newV.r = 0;else if (newV.r > 255) newV.r = 255;
-
-                    if (r !== newV.r) {
-                      r = newV.r;
-                      changed = true;
-                    }
-
-                    break;
-
-                  case 'g':
-                    if (hsv) continue;
-                    rgb = true;
-                    newV.g = value && value.g && value.g | 0 || value && value | 0 || 0;
-                    if (newV.g < 0) newV.g = 0;else if (newV.g > 255) newV.g = 255;
-
-                    if (g !== newV.g) {
-                      g = newV.g;
-                      changed = true;
-                    }
-
-                    break;
-
-                  case 'b':
-                    if (hsv) continue;
-                    rgb = true;
-                    newV.b = value && value.b && value.b | 0 || value && value | 0 || 0;
-                    if (newV.b < 0) newV.b = 0;else if (newV.b > 255) newV.b = 255;
-
-                    if (b !== newV.b) {
-                      b = newV.b;
-                      changed = true;
-                    }
-
-                    break;
-
-                  case 'a':
-                    newV.a = value && value.a != null ? value.a | 0 : value | 0;
-                    if (newV.a < 0) newV.a = 0;else if (newV.a > 255) newV.a = 255;
-
-                    if (a !== newV.a) {
-                      a = newV.a;
-                      changed = true;
-                    }
-
-                    break;
-
-                  case 'h':
-                    if (rgb) continue;
-                    hsv = true;
-                    newV.h = value && value.h && value.h | 0 || value && value | 0 || 0;
-                    if (newV.h < 0) newV.h = 0;else if (newV.h > 360) newV.h = 360;
-
-                    if (h !== newV.h) {
-                      h = newV.h;
-                      changed = true;
-                    }
-
-                    break;
-
-                  case 's':
-                    if (rgb) continue;
-                    hsv = true;
-                    newV.s = value.s != null ? value.s | 0 : value | 0;
-                    if (newV.s < 0) newV.s = 0;else if (newV.s > 100) newV.s = 100;
-
-                    if (s !== newV.s) {
-                      s = newV.s;
-                      changed = true;
-                    }
-
-                    break;
-
-                  case 'v':
-                    if (rgb) continue;
-                    hsv = true;
-                    newV.v = value.v != null ? value.v | 0 : value | 0;
-                    if (newV.v < 0) newV.v = 0;else if (newV.v > 100) newV.v = 100;
-
-                    if (v !== newV.v) {
-                      v = newV.v;
-                      changed = true;
-                    }
-
-                    break;
-                }
-              }
-
-              if (changed) {
-                if (rgb) {
-                  r = r || 0;
-                  g = g || 0;
-                  b = b || 0;
-
-                  var _ret2 = ColorMethods.rgbToHsv({
-                    r: r,
-                    g: g,
-                    b: b
-                  });
-
-                  h = _ret2.h;
-                  s = _ret2.s;
-                  v = _ret2.v;
-                } else if (hsv) {
-                  h = h || 0;
-                  s = s != null ? s : 100;
-                  v = v != null ? v : 100;
-
-                  var _ret3 = ColorMethods.hsvToRgb({
-                    h: h,
-                    s: s,
-                    v: v
-                  });
-
-                  r = _ret3.r;
-                  g = _ret3.g;
-                  b = _ret3.b;
+              {
+                if (value && (!isNullish$1(value.ahex) || !isNullish$1(value.hex))) {
+                  val.call(that, 'ahex', value.ahex || value.hex || '00000000', context);
+                  return undefined;
                 }
 
-                a = a != null ? a : 255;
-                fireChangeEvents.call($this, context || $this);
-              }
+                var newV = {};
+                var rgb = false,
+                    hsv = false;
+                if (value.r !== undefined && !name.includes('r')) name += 'r';
+                if (value.g !== undefined && !name.includes('g')) name += 'g';
+                if (value.b !== undefined && !name.includes('b')) name += 'b';
+                if (value.a !== undefined && !name.includes('a')) name += 'a';
+                if (value.h !== undefined && !name.includes('h')) name += 'h';
+                if (value.s !== undefined && !name.includes('s')) name += 's';
+                if (value.v !== undefined && !name.includes('v')) name += 'v';
 
-              break;
+                _toConsumableArray(name).forEach(function (ch) {
+                  switch (ch) {
+                    case 'r':
+                      if (hsv) return;
+                      rgb = true;
+                      newV.r = value.r && value.r | 0 || value | 0 || 0;
+                      if (newV.r < 0) newV.r = 0;else if (newV.r > 255) newV.r = 255;
+
+                      if (r !== newV.r) {
+                        r = newV.r;
+                        changed = true;
+                      }
+
+                      break;
+
+                    case 'g':
+                      if (hsv) return;
+                      rgb = true;
+                      newV.g = value && value.g && value.g | 0 || value && value | 0 || 0;
+                      if (newV.g < 0) newV.g = 0;else if (newV.g > 255) newV.g = 255;
+
+                      if (g !== newV.g) {
+                        g = newV.g;
+                        changed = true;
+                      }
+
+                      break;
+
+                    case 'b':
+                      if (hsv) return;
+                      rgb = true;
+                      newV.b = value && value.b && value.b | 0 || value && value | 0 || 0;
+                      if (newV.b < 0) newV.b = 0;else if (newV.b > 255) newV.b = 255;
+
+                      if (b !== newV.b) {
+                        b = newV.b;
+                        changed = true;
+                      }
+
+                      break;
+
+                    case 'a':
+                      newV.a = value && !isNullish$1(value.a) ? value.a | 0 : value | 0;
+                      if (newV.a < 0) newV.a = 0;else if (newV.a > 255) newV.a = 255;
+
+                      if (a !== newV.a) {
+                        a = newV.a;
+                        changed = true;
+                      }
+
+                      break;
+
+                    case 'h':
+                      if (rgb) return;
+                      hsv = true;
+                      newV.h = value && value.h && value.h | 0 || value && value | 0 || 0;
+                      if (newV.h < 0) newV.h = 0;else if (newV.h > 360) newV.h = 360;
+
+                      if (h !== newV.h) {
+                        h = newV.h;
+                        changed = true;
+                      }
+
+                      break;
+
+                    case 's':
+                      if (rgb) return;
+                      hsv = true;
+                      newV.s = !isNullish$1(value.s) ? value.s | 0 : value | 0;
+                      if (newV.s < 0) newV.s = 0;else if (newV.s > 100) newV.s = 100;
+
+                      if (s !== newV.s) {
+                        s = newV.s;
+                        changed = true;
+                      }
+
+                      break;
+
+                    case 'v':
+                      if (rgb) return;
+                      hsv = true;
+                      newV.v = !isNullish$1(value.v) ? value.v | 0 : value | 0;
+                      if (newV.v < 0) newV.v = 0;else if (newV.v > 100) newV.v = 100;
+
+                      if (v !== newV.v) {
+                        v = newV.v;
+                        changed = true;
+                      }
+
+                      break;
+                  }
+                });
+
+                if (changed) {
+                  if (rgb) {
+                    r = r || 0;
+                    g = g || 0;
+                    b = b || 0;
+
+                    var _ret2 = ColorMethods.rgbToHsv({
+                      r: r,
+                      g: g,
+                      b: b
+                    });
+
+                    h = _ret2.h;
+                    s = _ret2.s;
+                    v = _ret2.v;
+                  } else if (hsv) {
+                    h = h || 0;
+                    s = !isNullish$1(s) ? s : 100;
+                    v = !isNullish$1(v) ? v : 100;
+
+                    var _ret3 = ColorMethods.hsvToRgb({
+                      h: h,
+                      s: s,
+                      v: v
+                    });
+
+                    r = _ret3.r;
+                    g = _ret3.g;
+                    b = _ret3.b;
+                  }
+
+                  a = !isNullish$1(a) ? a : 255;
+                  fireChangeEvents.call(that, context || that);
+                }
+
+                break;
+              }
           }
+
+          return undefined;
         }
+        /**
+        * @param {GenericCallback} callback
+        * @returns {undefined}
+        */
+
 
         function bind(callback) {
+          // eslint-disable-line promise/prefer-await-to-callbacks
           if (typeof callback === 'function') changeEvents.push(callback);
         }
+        /**
+        * @param {GenericCallback} callback
+        * @returns {undefined}
+        */
+
 
         function unbind(callback) {
+          // eslint-disable-line promise/prefer-await-to-callbacks
           if (typeof callback !== 'function') return;
           var i;
 
@@ -25175,6 +25851,11 @@
             changeEvents.splice(i, 1);
           }
         }
+        /**
+        * Unset `changeEvents`
+        * @returns {undefined}
+        */
+
 
         function destroy() {
           changeEvents = null;
@@ -25188,7 +25869,7 @@
             s,
             v,
             changeEvents = [];
-        $.extend(true, $this, {
+        $.extend(true, that, {
           // public properties and methods
           val: val,
           bind: bind,
@@ -25197,16 +25878,16 @@
         });
 
         if (init) {
-          if (init.ahex != null) {
+          if (!isNullish$1(init.ahex)) {
             val('ahex', init);
-          } else if (init.hex != null) {
-            val((init.a != null ? 'a' : '') + 'hex', init.a != null ? {
+          } else if (!isNullish$1(init.hex)) {
+            val((!isNullish$1(init.a) ? 'a' : '') + 'hex', !isNullish$1(init.a) ? {
               ahex: init.hex + ColorMethods.intToHex(init.a)
             } : init);
-          } else if (init.r != null && init.g != null && init.b != null) {
-            val('rgb' + (init.a != null ? 'a' : ''), init);
-          } else if (init.h != null && init.s != null && init.v != null) {
-            val('hsv' + (init.a != null ? 'a' : ''), init);
+          } else if (!isNullish$1(init.r) && !isNullish$1(init.g) && !isNullish$1(init.b)) {
+            val('rgb' + (!isNullish$1(init.a) ? 'a' : ''), init);
+          } else if (!isNullish$1(init.h) && !isNullish$1(init.s) && !isNullish$1(init.v)) {
+            val('hsv' + (!isNullish$1(init.a) ? 'a' : ''), init);
           }
         }
       },
@@ -25381,8 +26062,8 @@
           } else {
             if (h === 360) h = 0;
             h /= 60;
-            s = s / 100;
-            v = v / 100;
+            s /= 100;
+            v /= 100;
             var i = h | 0,
                 f = h - i,
                 p = v * (1 - s),
@@ -25447,52 +26128,76 @@
      */
 
     /**
+    * Will be bound to active {@link jQuery.jPicker.Color}
+    * @callback module:jPicker.LiveCallback
+    * @param {external:jQuery} ui
+    * @param {Element} context
+    * @returns {undefined}
+    */
+
+    /**
+    * @callback module:jPicker.CommitCallback
+    * @param {external:jQuery.jPicker.Color} activeColor
+    * @param {external:jQuery} okButton
+    * @returns {undefined} Return value not used.
+    */
+
+    /**
+     * @callback module:jPicker.CancelCallback
+     * @param {external:jQuery.jPicker.Color} activeColor
+     * @param {external:jQuery} cancelButton
+     * @returns {undefined} Return value not used.
+     */
+
+    /**
     * While it would seem this should specify the name `jPicker` for JSDoc, that doesn't
     *   get us treated as a function as well as a namespace (even with `@function name`),
     *   so we use an approach to add a redundant `$.fn.` in the name.
     * @namespace
     * @memberof external:jQuery.fn
     * @param {external:jQuery.fn.jPickerOptions} options
+    * @param {module:jPicker.CommitCallback} [commitCallback]
+    * @param {module:jPicker.LiveCallback} [liveCallback]
+    * @param {module:jPicker.CancelCallback} [cancelCallback]
     * @returns {external:jQuery}
     */
 
-    $.fn.jPicker = function (options) {
-      var $arguments = arguments;
+    $.fn.jPicker = function (options, commitCallback, liveCallback, cancelCallback) {
       return this.each(function () {
-        var $this = this,
+        var that = this,
             settings = $.extend(true, {}, $.fn.jPicker.defaults, options); // local copies for YUI compressor
 
-        if ($($this).get(0).nodeName.toLowerCase() === 'input') {
+        if ($(that).get(0).nodeName.toLowerCase() === 'input') {
           // Add color picker icon if binding to an input element and bind the events to the input
           $.extend(true, settings, {
             window: {
               bindToInput: true,
               expandable: true,
-              input: $($this)
+              input: $(that)
             }
           });
 
-          if ($($this).val() === '') {
+          if ($(that).val() === '') {
             settings.color.active = new Color({
               hex: null
             });
             settings.color.current = new Color({
               hex: null
             });
-          } else if (ColorMethods.validateHex($($this).val())) {
+          } else if (ColorMethods.validateHex($(that).val())) {
             settings.color.active = new Color({
-              hex: $($this).val(),
+              hex: $(that).val(),
               a: settings.color.active.val('a')
             });
             settings.color.current = new Color({
-              hex: $($this).val(),
+              hex: $(that).val(),
               a: settings.color.active.val('a')
             });
           }
         }
 
         if (settings.window.expandable) {
-          $($this).after('<span class="jPicker"><span class="Icon"><span class="Color">&nbsp;</span><span class="Alpha">&nbsp;</span><span class="Image" title="Click To Open Color Picker">&nbsp;</span><span class="Container">&nbsp;</span></span></span>');
+          $(that).after('<span class="jPicker"><span class="Icon"><span class="Color">&nbsp;</span><span class="Alpha">&nbsp;</span><span class="Image" title="Click To Open Color Picker">&nbsp;</span><span class="Container">&nbsp;</span></span></span>');
         } else {
           settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
         }
@@ -25502,7 +26207,7 @@
 
         /**
          *
-         * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode [description]
+         * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode
          * @throws {Error} Invalid mode
          * @returns {undefined}
          */
@@ -25516,22 +26221,22 @@
           switch (colorMode) {
             case 'h':
               setTimeout(function () {
-                setBG.call($this, colorMapDiv, 'transparent');
-                setImgLoc.call($this, colorMapL1, 0);
-                setAlpha.call($this, colorMapL1, 100);
-                setImgLoc.call($this, colorMapL2, 260);
-                setAlpha.call($this, colorMapL2, 100);
-                setBG.call($this, colorBarDiv, 'transparent');
-                setImgLoc.call($this, colorBarL1, 0);
-                setAlpha.call($this, colorBarL1, 100);
-                setImgLoc.call($this, colorBarL2, 260);
-                setAlpha.call($this, colorBarL2, 100);
-                setImgLoc.call($this, colorBarL3, 260);
-                setAlpha.call($this, colorBarL3, 100);
-                setImgLoc.call($this, colorBarL4, 260);
-                setAlpha.call($this, colorBarL4, 100);
-                setImgLoc.call($this, colorBarL6, 260);
-                setAlpha.call($this, colorBarL6, 100);
+                setBG.call(that, colorMapDiv, 'transparent');
+                setImgLoc.call(that, colorMapL1, 0);
+                setAlpha.call(that, colorMapL1, 100);
+                setImgLoc.call(that, colorMapL2, 260);
+                setAlpha.call(that, colorMapL2, 100);
+                setBG.call(that, colorBarDiv, 'transparent');
+                setImgLoc.call(that, colorBarL1, 0);
+                setAlpha.call(that, colorBarL1, 100);
+                setImgLoc.call(that, colorBarL2, 260);
+                setAlpha.call(that, colorBarL2, 100);
+                setImgLoc.call(that, colorBarL3, 260);
+                setAlpha.call(that, colorBarL3, 100);
+                setImgLoc.call(that, colorBarL4, 260);
+                setAlpha.call(that, colorBarL4, 100);
+                setImgLoc.call(that, colorBarL6, 260);
+                setAlpha.call(that, colorBarL6, 100);
               }, 0);
               colorMap.range('all', {
                 minX: 0,
@@ -25543,7 +26248,7 @@
                 minY: 0,
                 maxY: 360
               });
-              if (active.val('ahex') == null) break;
+              if (isNullish$1(active.val('ahex'))) break;
               colorMap.val('xy', {
                 x: active.val('s'),
                 y: 100 - active.val('v')
@@ -25553,13 +26258,13 @@
 
             case 's':
               setTimeout(function () {
-                setBG.call($this, colorMapDiv, 'transparent');
-                setImgLoc.call($this, colorMapL1, -260);
-                setImgLoc.call($this, colorMapL2, -520);
-                setImgLoc.call($this, colorBarL1, -260);
-                setImgLoc.call($this, colorBarL2, -520);
-                setImgLoc.call($this, colorBarL6, 260);
-                setAlpha.call($this, colorBarL6, 100);
+                setBG.call(that, colorMapDiv, 'transparent');
+                setImgLoc.call(that, colorMapL1, -260);
+                setImgLoc.call(that, colorMapL2, -520);
+                setImgLoc.call(that, colorBarL1, -260);
+                setImgLoc.call(that, colorBarL2, -520);
+                setImgLoc.call(that, colorBarL6, 260);
+                setAlpha.call(that, colorBarL6, 100);
               }, 0);
               colorMap.range('all', {
                 minX: 0,
@@ -25571,7 +26276,7 @@
                 minY: 0,
                 maxY: 100
               });
-              if (active.val('ahex') == null) break;
+              if (isNullish$1(active.val('ahex'))) break;
               colorMap.val('xy', {
                 x: active.val('h'),
                 y: 100 - active.val('v')
@@ -25581,15 +26286,15 @@
 
             case 'v':
               setTimeout(function () {
-                setBG.call($this, colorMapDiv, '000000');
-                setImgLoc.call($this, colorMapL1, -780);
-                setImgLoc.call($this, colorMapL2, 260);
-                setBG.call($this, colorBarDiv, hex);
-                setImgLoc.call($this, colorBarL1, -520);
-                setImgLoc.call($this, colorBarL2, 260);
-                setAlpha.call($this, colorBarL2, 100);
-                setImgLoc.call($this, colorBarL6, 260);
-                setAlpha.call($this, colorBarL6, 100);
+                setBG.call(that, colorMapDiv, '000000');
+                setImgLoc.call(that, colorMapL1, -780);
+                setImgLoc.call(that, colorMapL2, 260);
+                setBG.call(that, colorBarDiv, hex);
+                setImgLoc.call(that, colorBarL1, -520);
+                setImgLoc.call(that, colorBarL2, 260);
+                setAlpha.call(that, colorBarL2, 100);
+                setImgLoc.call(that, colorBarL6, 260);
+                setAlpha.call(that, colorBarL6, 100);
               }, 0);
               colorMap.range('all', {
                 minX: 0,
@@ -25601,7 +26306,7 @@
                 minY: 0,
                 maxY: 100
               });
-              if (active.val('ahex') == null) break;
+              if (isNullish$1(active.val('ahex'))) break;
               colorMap.val('xy', {
                 x: active.val('h'),
                 y: 100 - active.val('s')
@@ -25622,7 +26327,7 @@
                 minY: 0,
                 maxY: 255
               });
-              if (active.val('ahex') == null) break;
+              if (isNullish$1(active.val('ahex'))) break;
               colorMap.val('xy', {
                 x: active.val('b'),
                 y: 255 - active.val('g')
@@ -25643,7 +26348,7 @@
                 minY: 0,
                 maxY: 255
               });
-              if (active.val('ahex') == null) break;
+              if (isNullish$1(active.val('ahex'))) break;
               colorMap.val('xy', {
                 x: active.val('b'),
                 y: 255 - active.val('r')
@@ -25664,7 +26369,7 @@
                 minY: 0,
                 maxY: 255
               });
-              if (active.val('ahex') == null) break;
+              if (isNullish$1(active.val('ahex'))) break;
               colorMap.val('xy', {
                 x: active.val('r'),
                 y: 255 - active.val('g')
@@ -25674,14 +26379,14 @@
 
             case 'a':
               setTimeout(function () {
-                setBG.call($this, colorMapDiv, 'transparent');
-                setImgLoc.call($this, colorMapL1, -260);
-                setImgLoc.call($this, colorMapL2, -520);
-                setImgLoc.call($this, colorBarL1, 260);
-                setImgLoc.call($this, colorBarL2, 260);
-                setAlpha.call($this, colorBarL2, 100);
-                setImgLoc.call($this, colorBarL6, 0);
-                setAlpha.call($this, colorBarL6, 100);
+                setBG.call(that, colorMapDiv, 'transparent');
+                setImgLoc.call(that, colorMapL1, -260);
+                setImgLoc.call(that, colorMapL2, -520);
+                setImgLoc.call(that, colorBarL1, 260);
+                setImgLoc.call(that, colorBarL2, 260);
+                setAlpha.call(that, colorBarL2, 100);
+                setImgLoc.call(that, colorBarL6, 0);
+                setAlpha.call(that, colorBarL6, 100);
               }, 0);
               colorMap.range('all', {
                 minX: 0,
@@ -25693,7 +26398,7 @@
                 minY: 0,
                 maxY: 255
               });
-              if (active.val('ahex') == null) break;
+              if (isNullish$1(active.val('ahex'))) break;
               colorMap.val('xy', {
                 x: active.val('h'),
                 y: 100 - active.val('v')
@@ -25713,12 +26418,12 @@
             case 'v':
             case 'a':
               setTimeout(function () {
-                setAlpha.call($this, colorMapL1, 100);
-                setAlpha.call($this, colorBarL1, 100);
-                setImgLoc.call($this, colorBarL3, 260);
-                setAlpha.call($this, colorBarL3, 100);
-                setImgLoc.call($this, colorBarL4, 260);
-                setAlpha.call($this, colorBarL4, 100);
+                setAlpha.call(that, colorMapL1, 100);
+                setAlpha.call(that, colorBarL1, 100);
+                setImgLoc.call(that, colorBarL3, 260);
+                setAlpha.call(that, colorBarL3, 100);
+                setImgLoc.call(that, colorBarL4, 260);
+                setAlpha.call(that, colorBarL4, 100);
               }, 0);
               break;
 
@@ -25726,40 +26431,52 @@
             case 'g':
             case 'b':
               setTimeout(function () {
-                setBG.call($this, colorMapDiv, 'transparent');
-                setBG.call($this, colorBarDiv, 'transparent');
-                setAlpha.call($this, colorBarL1, 100);
-                setAlpha.call($this, colorMapL1, 100);
-                setImgLoc.call($this, colorMapL1, rgbMap);
-                setImgLoc.call($this, colorMapL2, rgbMap - 260);
-                setImgLoc.call($this, colorBarL1, rgbBar - 780);
-                setImgLoc.call($this, colorBarL2, rgbBar - 520);
-                setImgLoc.call($this, colorBarL3, rgbBar);
-                setImgLoc.call($this, colorBarL4, rgbBar - 260);
-                setImgLoc.call($this, colorBarL6, 260);
-                setAlpha.call($this, colorBarL6, 100);
+                setBG.call(that, colorMapDiv, 'transparent');
+                setBG.call(that, colorBarDiv, 'transparent');
+                setAlpha.call(that, colorBarL1, 100);
+                setAlpha.call(that, colorMapL1, 100);
+                setImgLoc.call(that, colorMapL1, rgbMap);
+                setImgLoc.call(that, colorMapL2, rgbMap - 260);
+                setImgLoc.call(that, colorBarL1, rgbBar - 780);
+                setImgLoc.call(that, colorBarL2, rgbBar - 520);
+                setImgLoc.call(that, colorBarL3, rgbBar);
+                setImgLoc.call(that, colorBarL4, rgbBar - 260);
+                setImgLoc.call(that, colorBarL6, 260);
+                setAlpha.call(that, colorBarL6, 100);
               }, 0);
               break;
           }
 
-          if (active.val('ahex') == null) return;
-          activeColorChanged.call($this, active);
-        } // Update color when user changes text values
+          if (isNullish$1(active.val('ahex'))) return;
+          activeColorChanged.call(that, active);
+        }
+        /**
+         * Update color when user changes text values.
+         * @param {external:jQuery} ui
+         * @param {?module:jPicker.Slider} context
+         * @returns {undefined}
+        */
 
 
         function activeColorChanged(ui, context) {
-          if (context == null || context !== colorBar && context !== colorMap) positionMapAndBarArrows.call($this, ui, context);
+          if (isNullish$1(context) || context !== colorBar && context !== colorMap) positionMapAndBarArrows.call(that, ui, context);
           setTimeout(function () {
-            updatePreview.call($this, ui);
-            updateMapVisuals.call($this, ui);
-            updateBarVisuals.call($this, ui);
+            updatePreview.call(that, ui);
+            updateMapVisuals.call(that, ui);
+            updateBarVisuals.call(that, ui);
           }, 0);
-        } // user has dragged the ColorMap pointer
+        }
+        /**
+         * User has dragged the ColorMap pointer.
+         * @param {external:jQuery} ui
+         * @param {?module:jPicker.Slider} context
+         * @returns {undefined}
+        */
 
 
         function mapValueChanged(ui, context) {
           var active = color.active;
-          if (context !== colorMap && active.val() == null) return;
+          if (context !== colorMap && isNullish$1(active.val())) return;
           var xy = ui.val('all');
 
           switch (settings.color.mode) {
@@ -25806,12 +26523,18 @@
               }, context);
               break;
           }
-        } // user has dragged the ColorBar slider
+        }
+        /**
+         * User has dragged the ColorBar slider.
+         * @param {external:jQuery} ui
+         * @param {?module:jPicker.Slider} context
+         * @returns {undefined}
+        */
 
 
         function colorBarValueChanged(ui, context) {
           var active = color.active;
-          if (context !== colorBar && active.val() == null) return;
+          if (context !== colorBar && isNullish$1(active.val())) return;
 
           switch (settings.color.mode) {
             case 'h':
@@ -25854,60 +26577,79 @@
               active.val('a', 255 - ui.val('y'), context);
               break;
           }
-        } // position map and bar arrows to match current color
+        }
+        /**
+         * Position map and bar arrows to match current color.
+         * @param {external:jQuery} ui
+         * @param {?module:jPicker.Slider} context
+         * @returns {undefined}
+        */
 
 
         function positionMapAndBarArrows(ui, context) {
           if (context !== colorMap) {
             switch (settings.color.mode) {
               case 'h':
-                var sv = ui.val('sv');
-                colorMap.val('xy', {
-                  x: sv != null ? sv.s : 100,
-                  y: 100 - (sv != null ? sv.v : 100)
-                }, context);
-                break;
+                {
+                  var sv = ui.val('sv');
+                  colorMap.val('xy', {
+                    x: !isNullish$1(sv) ? sv.s : 100,
+                    y: 100 - (!isNullish$1(sv) ? sv.v : 100)
+                  }, context);
+                  break;
+                }
 
-              case 's':
+              case 's': // Fall through
+
               case 'a':
-                var hv = ui.val('hv');
-                colorMap.val('xy', {
-                  x: hv && hv.h || 0,
-                  y: 100 - (hv != null ? hv.v : 100)
-                }, context);
-                break;
+                {
+                  var hv = ui.val('hv');
+                  colorMap.val('xy', {
+                    x: hv && hv.h || 0,
+                    y: 100 - (!isNullish$1(hv) ? hv.v : 100)
+                  }, context);
+                  break;
+                }
 
               case 'v':
-                var hs = ui.val('hs');
-                colorMap.val('xy', {
-                  x: hs && hs.h || 0,
-                  y: 100 - (hs != null ? hs.s : 100)
-                }, context);
-                break;
+                {
+                  var hs = ui.val('hs');
+                  colorMap.val('xy', {
+                    x: hs && hs.h || 0,
+                    y: 100 - (!isNullish$1(hs) ? hs.s : 100)
+                  }, context);
+                  break;
+                }
 
               case 'r':
-                var bg = ui.val('bg');
-                colorMap.val('xy', {
-                  x: bg && bg.b || 0,
-                  y: 255 - (bg && bg.g || 0)
-                }, context);
-                break;
+                {
+                  var bg = ui.val('bg');
+                  colorMap.val('xy', {
+                    x: bg && bg.b || 0,
+                    y: 255 - (bg && bg.g || 0)
+                  }, context);
+                  break;
+                }
 
               case 'g':
-                var br = ui.val('br');
-                colorMap.val('xy', {
-                  x: br && br.b || 0,
-                  y: 255 - (br && br.r || 0)
-                }, context);
-                break;
+                {
+                  var br = ui.val('br');
+                  colorMap.val('xy', {
+                    x: br && br.b || 0,
+                    y: 255 - (br && br.r || 0)
+                  }, context);
+                  break;
+                }
 
               case 'b':
-                var rg = ui.val('rg');
-                colorMap.val('xy', {
-                  x: rg && rg.r || 0,
-                  y: 255 - (rg && rg.g || 0)
-                }, context);
-                break;
+                {
+                  var rg = ui.val('rg');
+                  colorMap.val('xy', {
+                    x: rg && rg.r || 0,
+                    y: 255 - (rg && rg.g || 0)
+                  }, context);
+                  break;
+                }
             }
           }
 
@@ -25918,14 +26660,18 @@
                 break;
 
               case 's':
-                var s = ui.val('s');
-                colorBar.val('y', 100 - (s != null ? s : 100), context);
-                break;
+                {
+                  var s = ui.val('s');
+                  colorBar.val('y', 100 - (!isNullish$1(s) ? s : 100), context);
+                  break;
+                }
 
               case 'v':
-                var v = ui.val('v');
-                colorBar.val('y', 100 - (v != null ? v : 100), context);
-                break;
+                {
+                  var v = ui.val('v');
+                  colorBar.val('y', 100 - (!isNullish$1(v) ? v : 100), context);
+                  break;
+                }
 
               case 'r':
                 colorBar.val('y', 255 - (ui.val('r') || 0), context);
@@ -25940,12 +26686,19 @@
                 break;
 
               case 'a':
-                var a = ui.val('a');
-                colorBar.val('y', 255 - (a != null ? a : 255), context);
-                break;
+                {
+                  var a = ui.val('a');
+                  colorBar.val('y', 255 - (!isNullish$1(a) ? a : 255), context);
+                  break;
+                }
             }
           }
         }
+        /**
+        * @param {external:jQuery} ui
+        * @returns {undefined}
+        */
+
 
         function updatePreview(ui) {
           try {
@@ -25953,14 +26706,19 @@
             activePreview.css({
               backgroundColor: all && '#' + all.hex || 'transparent'
             });
-            setAlpha.call($this, activePreview, all && toFixedNumeric(all.a * 100 / 255, 4) || 0);
+            setAlpha.call(that, activePreview, all && toFixedNumeric(all.a * 100 / 255, 4) || 0);
           } catch (e) {}
         }
+        /**
+        * @param {external:jQuery} ui
+        * @returns {undefined}
+        */
+
 
         function updateMapVisuals(ui) {
           switch (settings.color.mode) {
             case 'h':
-              setBG.call($this, colorMapDiv, new Color({
+              setBG.call(that, colorMapDiv, new Color({
                 h: ui.val('h') || 0,
                 s: 100,
                 v: 100
@@ -25969,104 +26727,133 @@
 
             case 's':
             case 'a':
-              var s = ui.val('s');
-              setAlpha.call($this, colorMapL2, 100 - (s != null ? s : 100));
-              break;
+              {
+                var s = ui.val('s');
+                setAlpha.call(that, colorMapL2, 100 - (!isNullish$1(s) ? s : 100));
+                break;
+              }
 
             case 'v':
-              var v = ui.val('v');
-              setAlpha.call($this, colorMapL1, v != null ? v : 100);
-              break;
+              {
+                var v = ui.val('v');
+                setAlpha.call(that, colorMapL1, !isNullish$1(v) ? v : 100);
+                break;
+              }
 
             case 'r':
-              setAlpha.call($this, colorMapL2, toFixedNumeric((ui.val('r') || 0) / 255 * 100, 4));
+              setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('r') || 0) / 255 * 100, 4));
               break;
 
             case 'g':
-              setAlpha.call($this, colorMapL2, toFixedNumeric((ui.val('g') || 0) / 255 * 100, 4));
+              setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('g') || 0) / 255 * 100, 4));
               break;
 
             case 'b':
-              setAlpha.call($this, colorMapL2, toFixedNumeric((ui.val('b') || 0) / 255 * 100));
+              setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('b') || 0) / 255 * 100));
               break;
           }
 
           var a = ui.val('a');
-          setAlpha.call($this, colorMapL3, toFixedNumeric((255 - (a || 0)) * 100 / 255, 4));
+          setAlpha.call(that, colorMapL3, toFixedNumeric((255 - (a || 0)) * 100 / 255, 4));
         }
+        /**
+        * @param {external:jQuery} ui
+        * @returns {undefined}
+        */
+
 
         function updateBarVisuals(ui) {
           switch (settings.color.mode) {
             case 'h':
-              var a = ui.val('a');
-              setAlpha.call($this, colorBarL5, toFixedNumeric((255 - (a || 0)) * 100 / 255, 4));
-              break;
+              {
+                var a = ui.val('a');
+                setAlpha.call(that, colorBarL5, toFixedNumeric((255 - (a || 0)) * 100 / 255, 4));
+                break;
+              }
 
             case 's':
-              var hva = ui.val('hva'),
-                  saturatedColor = new Color({
-                h: hva && hva.h || 0,
-                s: 100,
-                v: hva != null ? hva.v : 100
-              });
-              setBG.call($this, colorBarDiv, saturatedColor.val('hex'));
-              setAlpha.call($this, colorBarL2, 100 - (hva != null ? hva.v : 100));
-              setAlpha.call($this, colorBarL5, toFixedNumeric((255 - (hva && hva.a || 0)) * 100 / 255, 4));
-              break;
+              {
+                var hva = ui.val('hva'),
+                    saturatedColor = new Color({
+                  h: hva && hva.h || 0,
+                  s: 100,
+                  v: !isNullish$1(hva) ? hva.v : 100
+                });
+                setBG.call(that, colorBarDiv, saturatedColor.val('hex'));
+                setAlpha.call(that, colorBarL2, 100 - (!isNullish$1(hva) ? hva.v : 100));
+                setAlpha.call(that, colorBarL5, toFixedNumeric((255 - (hva && hva.a || 0)) * 100 / 255, 4));
+                break;
+              }
 
             case 'v':
-              var hsa = ui.val('hsa'),
-                  valueColor = new Color({
-                h: hsa && hsa.h || 0,
-                s: hsa != null ? hsa.s : 100,
-                v: 100
-              });
-              setBG.call($this, colorBarDiv, valueColor.val('hex'));
-              setAlpha.call($this, colorBarL5, toFixedNumeric((255 - (hsa && hsa.a || 0)) * 100 / 255, 4));
-              break;
+              {
+                var hsa = ui.val('hsa'),
+                    valueColor = new Color({
+                  h: hsa && hsa.h || 0,
+                  s: !isNullish$1(hsa) ? hsa.s : 100,
+                  v: 100
+                });
+                setBG.call(that, colorBarDiv, valueColor.val('hex'));
+                setAlpha.call(that, colorBarL5, toFixedNumeric((255 - (hsa && hsa.a || 0)) * 100 / 255, 4));
+                break;
+              }
 
             case 'r':
             case 'g':
             case 'b':
-              var rgba = ui.val('rgba');
-              var hValue = 0,
-                  vValue = 0;
+              {
+                var rgba = ui.val('rgba');
+                var hValue = 0,
+                    vValue = 0;
 
-              if (settings.color.mode === 'r') {
-                hValue = rgba && rgba.b || 0;
-                vValue = rgba && rgba.g || 0;
-              } else if (settings.color.mode === 'g') {
-                hValue = rgba && rgba.b || 0;
-                vValue = rgba && rgba.r || 0;
-              } else if (settings.color.mode === 'b') {
-                hValue = rgba && rgba.r || 0;
-                vValue = rgba && rgba.g || 0;
+                if (settings.color.mode === 'r') {
+                  hValue = rgba && rgba.b || 0;
+                  vValue = rgba && rgba.g || 0;
+                } else if (settings.color.mode === 'g') {
+                  hValue = rgba && rgba.b || 0;
+                  vValue = rgba && rgba.r || 0;
+                } else if (settings.color.mode === 'b') {
+                  hValue = rgba && rgba.r || 0;
+                  vValue = rgba && rgba.g || 0;
+                }
+
+                var middle = vValue > hValue ? hValue : vValue;
+                setAlpha.call(that, colorBarL2, hValue > vValue ? toFixedNumeric((hValue - vValue) / (255 - vValue) * 100, 4) : 0);
+                setAlpha.call(that, colorBarL3, vValue > hValue ? toFixedNumeric((vValue - hValue) / (255 - hValue) * 100, 4) : 0);
+                setAlpha.call(that, colorBarL4, toFixedNumeric(middle / 255 * 100, 4));
+                setAlpha.call(that, colorBarL5, toFixedNumeric((255 - (rgba && rgba.a || 0)) * 100 / 255, 4));
+                break;
               }
-
-              var middle = vValue > hValue ? hValue : vValue;
-              setAlpha.call($this, colorBarL2, hValue > vValue ? toFixedNumeric((hValue - vValue) / (255 - vValue) * 100, 4) : 0);
-              setAlpha.call($this, colorBarL3, vValue > hValue ? toFixedNumeric((vValue - hValue) / (255 - hValue) * 100, 4) : 0);
-              setAlpha.call($this, colorBarL4, toFixedNumeric(middle / 255 * 100, 4));
-              setAlpha.call($this, colorBarL5, toFixedNumeric((255 - (rgba && rgba.a || 0)) * 100 / 255, 4));
-              break;
 
             case 'a':
               {
                 var _a = ui.val('a');
 
-                setBG.call($this, colorBarDiv, ui.val('hex') || '000000');
-                setAlpha.call($this, colorBarL5, _a != null ? 0 : 100);
-                setAlpha.call($this, colorBarL6, _a != null ? 100 : 0);
+                setBG.call(that, colorBarDiv, ui.val('hex') || '000000');
+                setAlpha.call(that, colorBarL5, !isNullish$1(_a) ? 0 : 100);
+                setAlpha.call(that, colorBarL6, !isNullish$1(_a) ? 100 : 0);
                 break;
               }
           }
         }
+        /**
+        * @param {external:jQuery} el
+        * @param {string} [c="transparent"]
+        * @returns {undefined}
+        */
+
 
         function setBG(el, c) {
           el.css({
             backgroundColor: c && c.length === 6 && '#' + c || 'transparent'
           });
         }
+        /**
+        * @param {external:jQuery} img
+        * @param {string} src The image source
+        * @returns {undefined}
+        */
+
 
         function setImg(img, src) {
           if (isLessThanIE7 && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
@@ -26079,12 +26866,24 @@
             backgroundImage: 'url(\'' + src + '\')'
           });
         }
+        /**
+        * @param {external:jQuery} img
+        * @param {Float} y
+        * @returns {undefined}
+        */
+
 
         function setImgLoc(img, y) {
           img.css({
             top: y + 'px'
           });
         }
+        /**
+        * @param {external:jQuery} obj
+        * @param {Float} alpha
+        * @returns {undefined}
+        */
+
 
         function setAlpha(obj, alpha) {
           obj.css({
@@ -26095,7 +26894,7 @@
             if (isLessThanIE7) {
               var src = obj.attr('pngSrc');
 
-              if (src != null && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
+              if (!isNullish$1(src) && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
                 obj.css({
                   filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')'
                 });
@@ -26109,7 +26908,7 @@
             if (isLessThanIE7) {
               var _src = obj.attr('pngSrc');
 
-              if (_src != null && (_src.includes('AlphaBar.png') || _src.includes('Bars.png') || _src.includes('Maps.png'))) {
+              if (!isNullish$1(_src) && (_src.includes('AlphaBar.png') || _src.includes('Bars.png') || _src.includes('Maps.png'))) {
                 obj.css({
                   filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + _src + '\', sizingMethod=\'scale\')'
                 });
@@ -26120,66 +26919,114 @@
               opacity: ''
             });
           }
-        } // revert color to original color when opened
+        }
+        /**
+        * Revert color to original color when opened.
+        * @returns {undefined}
+        */
 
 
         function revertColor() {
           color.active.val('ahex', color.current.val('ahex'));
-        } // commit the color changes
+        }
+        /**
+        * Commit the color changes.
+        * @returns {undefined}
+        */
 
 
         function commitColor() {
           color.current.val('ahex', color.active.val('ahex'));
         }
+        /**
+        * @param {Event} e
+        * @returns {undefined}
+        */
+
 
         function radioClicked(e) {
           $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
-          setColorMode.call($this, e.target.value);
+          setColorMode.call(that, e.target.value);
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function currentClicked() {
-          revertColor.call($this);
+          revertColor.call(that);
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function cancelClicked() {
-          revertColor.call($this);
-          settings.window.expandable && hide.call($this);
-          typeof cancelCallback === 'function' && cancelCallback.call($this, color.active, cancelButton);
+          revertColor.call(that);
+          settings.window.expandable && hide.call(that);
+          typeof cancelCallback === 'function' && cancelCallback.call(that, color.active, cancelButton);
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function okClicked() {
-          commitColor.call($this);
-          settings.window.expandable && hide.call($this);
-          typeof commitCallback === 'function' && commitCallback.call($this, color.active, okButton);
+          commitColor.call(that);
+          settings.window.expandable && hide.call(that);
+          typeof commitCallback === 'function' && commitCallback.call(that, color.active, okButton);
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function iconImageClicked() {
-          show.call($this);
+          show.call(that);
         }
+        /**
+        * @param {external:jQuery} ui
+        * @returns {undefined}
+        */
 
-        function currentColorChanged(ui, context) {
+
+        function currentColorChanged(ui) {
           var hex = ui.val('hex');
           currentPreview.css({
             backgroundColor: hex && '#' + hex || 'transparent'
           });
-          setAlpha.call($this, currentPreview, toFixedNumeric((ui.val('a') || 0) * 100 / 255, 4));
+          setAlpha.call(that, currentPreview, toFixedNumeric((ui.val('a') || 0) * 100 / 255, 4));
         }
+        /**
+        * @param {external:jQuery} ui
+        * @returns {undefined}
+        */
 
-        function expandableColorChanged(ui, context) {
+
+        function expandableColorChanged(ui) {
           var hex = ui.val('hex');
           var va = ui.val('va');
           iconColor.css({
             backgroundColor: hex && '#' + hex || 'transparent'
           });
-          setAlpha.call($this, iconAlpha, toFixedNumeric((255 - (va && va.a || 0)) * 100 / 255, 4));
+          setAlpha.call(that, iconAlpha, toFixedNumeric((255 - (va && va.a || 0)) * 100 / 255, 4));
 
           if (settings.window.bindToInput && settings.window.updateInputColor) {
             settings.window.input.css({
               backgroundColor: hex && '#' + hex || 'transparent',
-              color: va == null || va.v > 75 ? '#000000' : '#ffffff'
+              color: isNullish$1(va) || va.v > 75 ? '#000000' : '#ffffff'
             });
           }
         }
+        /**
+        * @param {Event} e
+        * @returns {undefined}
+        */
+
 
         function moveBarMouseDown(e) {
           // const {element} = settings.window, // local copies for YUI compressor
@@ -26192,20 +27039,34 @@
           $(document).bind('mousemove', documentMouseMove).bind('mouseup', documentMouseUp);
           e.preventDefault(); // prevent attempted dragging of the column
         }
+        /**
+        * @param {Event} e
+        * @returns {false}
+        */
+
 
         function documentMouseMove(e) {
           container.css({
             left: elementStartX - (pageStartX - e.pageX) + 'px',
             top: elementStartY - (pageStartY - e.pageY) + 'px'
           });
-          if (settings.window.expandable && !$.support.boxModel) container.prev().css({
-            left: container.css('left'),
-            top: container.css('top')
-          });
+
+          if (settings.window.expandable && !$.support.boxModel) {
+            container.prev().css({
+              left: container.css('left'),
+              top: container.css('top')
+            });
+          }
+
           e.stopPropagation();
           e.preventDefault();
           return false;
         }
+        /**
+        * @param {Event} e
+        * @returns {false}
+        */
+
 
         function documentMouseUp(e) {
           $(document).unbind('mousemove', documentMouseMove).unbind('mouseup', documentMouseUp);
@@ -26213,6 +27074,11 @@
           e.preventDefault();
           return false;
         }
+        /**
+        * @param {Event} e
+        * @returns {false}
+        */
+
 
         function quickPickClicked(e) {
           e.preventDefault();
@@ -26220,9 +27086,18 @@
           color.active.val('ahex', $(this).attr('title') || null, e.target);
           return false;
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function show() {
           color.current.val('ahex', color.active.val('ahex'));
+          /**
+          *
+          * @returns {undefined}
+          */
 
           function attachIFrame() {
             if (!settings.window.expandable || $.support.boxModel) return;
@@ -26262,8 +27137,17 @@
               break;
           }
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function hide() {
+          /**
+          *
+          * @returns {undefined}
+          */
           function removeIFrame() {
             if (settings.window.expandable) container.css({
               zIndex: 10
@@ -26287,23 +27171,29 @@
               break;
           }
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function initialize() {
           var win = settings.window,
-              popup = win.expandable ? $($this).next().find('.Container:first') : null;
-          container = win.expandable ? $('<div/>') : $($this);
+              popup = win.expandable ? $(that).next().find('.Container:first') : null;
+          container = win.expandable ? $('<div/>') : $(that);
           container.addClass('jPicker Container');
           if (win.expandable) container.hide();
 
-          container.get(0).onselectstart = function (event) {
-            if (event.target.nodeName.toLowerCase() !== 'input') return false;
+          container.get(0).onselectstart = function (e) {
+            if (e.target.nodeName.toLowerCase() !== 'input') return false;
+            return true;
           }; // inject html source code - we are using a single table for this control - I know tables are considered bad, but it takes care of equal height columns and
           // this control really is tabular data, so I believe it is the right move
 
 
           var all = color.active.val('all');
           if (win.alphaPrecision < 0) win.alphaPrecision = 0;else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
-          var controlHtml = "<table class=\"jPicker\" cellpadding=\"0\" cellspacing=\"0\">\n          <tbody>\n            ".concat(win.expandable ? "<tr><td class=\"Move\" colspan=\"5\">&nbsp;</td></tr>" : '', "\n            <tr>\n              <td rowspan=\"9\"><h2 class=\"Title\">").concat(win.title || localization.text.title, "</h2><div class=\"Map\"><span class=\"Map1\">&nbsp;</span><span class=\"Map2\">&nbsp;</span><span class=\"Map3\">&nbsp;</span><img src=\"").concat(images.clientPath + images.colorMap.arrow.file, "\" class=\"Arrow\"/></div></td>\n              <td rowspan=\"9\"><div class=\"Bar\"><span class=\"Map1\">&nbsp;</span><span class=\"Map2\">&nbsp;</span><span class=\"Map3\">&nbsp;</span><span class=\"Map4\">&nbsp;</span><span class=\"Map5\">&nbsp;</span><span class=\"Map6\">&nbsp;</span><img src=\"").concat(images.clientPath + images.colorBar.arrow.file, "\" class=\"Arrow\"/></div></td>\n              <td colspan=\"2\" class=\"Preview\">").concat(localization.text.newColor, "<div><span class=\"Active\" title=\"").concat(localization.tooltips.colors.newColor, "\">&nbsp;</span><span class=\"Current\" title=\"").concat(localization.tooltips.colors.currentColor, "\">&nbsp;</span></div>").concat(localization.text.currentColor, "</td>\n              <td rowspan=\"9\" class=\"Button\"><input type=\"button\" class=\"Ok\" value=\"").concat(localization.text.ok, "\" title=\"").concat(localization.tooltips.buttons.ok, "\"/><input type=\"button\" class=\"Cancel\" value=\"").concat(localization.text.cancel, "\" title=\"").concat(localization.tooltips.buttons.cancel, "\"/><hr/><div class=\"Grid\">&nbsp;</div></td>\n            </tr>\n            <tr class=\"Hue\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.hue.radio, "\"><input type=\"radio\" value=\"h\"").concat(settings.color.mode === 'h' ? ' checked="checked"' : '', "/>H:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(all != null ? all.h : '', "\" title=\"").concat(localization.tooltips.hue.textbox, "\"/>&nbsp;&deg;</td>\n            </tr>\n            <tr class=\"Saturation\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.saturation.radio, "\"><input type=\"radio\" value=\"s\"").concat(settings.color.mode === 's' ? ' checked="checked"' : '', "/>S:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(all != null ? all.s : '', "\" title=\"").concat(localization.tooltips.saturation.textbox, "\"/>&nbsp;%</td>\n            </tr>\n            <tr class=\"Value\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.value.radio, "\"><input type=\"radio\" value=\"v\"").concat(settings.color.mode === 'v' ? ' checked="checked"' : '', "/>V:</label><br/><br/></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(all != null ? all.v : '', "\" title=\"").concat(localization.tooltips.value.textbox, "\"/>&nbsp;%<br/><br/></td>\n            </tr>\n            <tr class=\"Red\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.red.radio, "\"><input type=\"radio\" value=\"r\"").concat(settings.color.mode === 'r' ? ' checked="checked"' : '', "/>R:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(all != null ? all.r : '', "\" title=\"").concat(localization.tooltips.red.textbox, "\"/></td>\n            </tr>\n            <tr class=\"Green\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.green.radio, "\"><input type=\"radio\" value=\"g\"").concat(settings.color.mode === 'g' ? ' checked="checked"' : '', "/>G:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(all != null ? all.g : '', "\" title=\"").concat(localization.tooltips.green.textbox, "\"/></td>\n            </tr>\n            <tr class=\"Blue\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.blue.radio, "\"><input type=\"radio\" value=\"b\"").concat(settings.color.mode === 'b' ? ' checked="checked"' : '', "/>B:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(all != null ? all.b : '', "\" title=\"").concat(localization.tooltips.blue.textbox, "\"/></td>\n            </tr>\n            <tr class=\"Alpha\">\n              <td class=\"Radio\">").concat(win.alphaSupport ? "<label title=\"".concat(localization.tooltips.alpha.radio, "\"><input type=\"radio\" value=\"a\"").concat(settings.color.mode === 'a' ? ' checked="checked"' : '', "/>A:</label>") : '&nbsp;', "</td>\n              <td class=\"Text\">").concat(win.alphaSupport ? "<input type=\"text\" maxlength=\"".concat(3 + win.alphaPrecision, "\" value=\"").concat(all != null ? toFixedNumeric(all.a * 100 / 255, win.alphaPrecision) : '', "\" title=\"").concat(localization.tooltips.alpha.textbox, "\"/>&nbsp;%") : '&nbsp;', "</td>\n            </tr>\n            <tr class=\"Hex\">\n              <td colspan=\"2\" class=\"Text\"><label title=\"").concat(localization.tooltips.hex.textbox, "\">#:<input type=\"text\" maxlength=\"6\" class=\"Hex\" value=\"").concat(all != null ? all.hex : '', "\"/></label>").concat(win.alphaSupport ? "<input type=\"text\" maxlength=\"2\" class=\"AHex\" value=\"".concat(all != null ? all.ahex.substring(6) : '', "\" title=\"").concat(localization.tooltips.hex.alpha, "\"/></td>") : '&nbsp;', "\n            </tr>\n          </tbody></table>");
+          var controlHtml = "<table class=\"jPicker\" cellpadding=\"0\" cellspacing=\"0\">\n          <tbody>\n            ".concat(win.expandable ? "<tr><td class=\"Move\" colspan=\"5\">&nbsp;</td></tr>" : '', "\n            <tr>\n              <td rowspan=\"9\"><h2 class=\"Title\">").concat(win.title || localization.text.title, "</h2><div class=\"Map\"><span class=\"Map1\">&nbsp;</span><span class=\"Map2\">&nbsp;</span><span class=\"Map3\">&nbsp;</span><img src=\"").concat(images.clientPath + images.colorMap.arrow.file, "\" class=\"Arrow\"/></div></td>\n              <td rowspan=\"9\"><div class=\"Bar\"><span class=\"Map1\">&nbsp;</span><span class=\"Map2\">&nbsp;</span><span class=\"Map3\">&nbsp;</span><span class=\"Map4\">&nbsp;</span><span class=\"Map5\">&nbsp;</span><span class=\"Map6\">&nbsp;</span><img src=\"").concat(images.clientPath + images.colorBar.arrow.file, "\" class=\"Arrow\"/></div></td>\n              <td colspan=\"2\" class=\"Preview\">").concat(localization.text.newColor, "<div><span class=\"Active\" title=\"").concat(localization.tooltips.colors.newColor, "\">&nbsp;</span><span class=\"Current\" title=\"").concat(localization.tooltips.colors.currentColor, "\">&nbsp;</span></div>").concat(localization.text.currentColor, "</td>\n              <td rowspan=\"9\" class=\"Button\"><input type=\"button\" class=\"Ok\" value=\"").concat(localization.text.ok, "\" title=\"").concat(localization.tooltips.buttons.ok, "\"/><input type=\"button\" class=\"Cancel\" value=\"").concat(localization.text.cancel, "\" title=\"").concat(localization.tooltips.buttons.cancel, "\"/><hr/><div class=\"Grid\">&nbsp;</div></td>\n            </tr>\n            <tr class=\"Hue\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.hue.radio, "\"><input type=\"radio\" value=\"h\"").concat(settings.color.mode === 'h' ? ' checked="checked"' : '', "/>H:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(!isNullish$1(all) ? all.h : '', "\" title=\"").concat(localization.tooltips.hue.textbox, "\"/>&nbsp;&deg;</td>\n            </tr>\n            <tr class=\"Saturation\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.saturation.radio, "\"><input type=\"radio\" value=\"s\"").concat(settings.color.mode === 's' ? ' checked="checked"' : '', "/>S:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(!isNullish$1(all) ? all.s : '', "\" title=\"").concat(localization.tooltips.saturation.textbox, "\"/>&nbsp;%</td>\n            </tr>\n            <tr class=\"Value\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.value.radio, "\"><input type=\"radio\" value=\"v\"").concat(settings.color.mode === 'v' ? ' checked="checked"' : '', "/>V:</label><br/><br/></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(!isNullish$1(all) ? all.v : '', "\" title=\"").concat(localization.tooltips.value.textbox, "\"/>&nbsp;%<br/><br/></td>\n            </tr>\n            <tr class=\"Red\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.red.radio, "\"><input type=\"radio\" value=\"r\"").concat(settings.color.mode === 'r' ? ' checked="checked"' : '', "/>R:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(!isNullish$1(all) ? all.r : '', "\" title=\"").concat(localization.tooltips.red.textbox, "\"/></td>\n            </tr>\n            <tr class=\"Green\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.green.radio, "\"><input type=\"radio\" value=\"g\"").concat(settings.color.mode === 'g' ? ' checked="checked"' : '', "/>G:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(!isNullish$1(all) ? all.g : '', "\" title=\"").concat(localization.tooltips.green.textbox, "\"/></td>\n            </tr>\n            <tr class=\"Blue\">\n              <td class=\"Radio\"><label title=\"").concat(localization.tooltips.blue.radio, "\"><input type=\"radio\" value=\"b\"").concat(settings.color.mode === 'b' ? ' checked="checked"' : '', "/>B:</label></td>\n              <td class=\"Text\"><input type=\"text\" maxlength=\"3\" value=\"").concat(!isNullish$1(all) ? all.b : '', "\" title=\"").concat(localization.tooltips.blue.textbox, "\"/></td>\n            </tr>\n            <tr class=\"Alpha\">\n              <td class=\"Radio\">").concat(win.alphaSupport ? "<label title=\"".concat(localization.tooltips.alpha.radio, "\"><input type=\"radio\" value=\"a\"").concat(settings.color.mode === 'a' ? ' checked="checked"' : '', "/>A:</label>") : '&nbsp;', "</td>\n              <td class=\"Text\">").concat(win.alphaSupport ? "<input type=\"text\" maxlength=\"".concat(3 + win.alphaPrecision, "\" value=\"").concat(!isNullish$1(all) ? toFixedNumeric(all.a * 100 / 255, win.alphaPrecision) : '', "\" title=\"").concat(localization.tooltips.alpha.textbox, "\"/>&nbsp;%") : '&nbsp;', "</td>\n            </tr>\n            <tr class=\"Hex\">\n              <td colspan=\"2\" class=\"Text\"><label title=\"").concat(localization.tooltips.hex.textbox, "\">#:<input type=\"text\" maxlength=\"6\" class=\"Hex\" value=\"").concat(!isNullish$1(all) ? all.hex : '', "\"/></label>").concat(win.alphaSupport ? "<input type=\"text\" maxlength=\"2\" class=\"AHex\" value=\"".concat(!isNullish$1(all) ? all.ahex.substring(6) : '', "\" title=\"").concat(localization.tooltips.hex.alpha, "\"/></td>") : '&nbsp;', "\n            </tr>\n          </tbody></table>");
 
           if (win.expandable) {
             container.html(controlHtml);
@@ -26329,7 +27219,7 @@
               top: win.position.y === 'top' ? popup.offset().top - 312 + 'px' : win.position.y === 'center' ? popup.offset().top - 156 + 'px' : win.position.y === 'bottom' ? popup.offset().top + 25 + 'px' : popup.offset().top + parseInt(win.position.y) + 'px'
             });
           } else {
-            container = $($this);
+            container = $(that);
             container.html(controlHtml);
           } // initialize the objects to the source code just injected
 
@@ -26374,7 +27264,7 @@
           });
           colorBar.bind(colorBarValueChanged);
           colorPicker = new ColorValuePicker(tbody, color.active, win.expandable && win.bindToInput ? win.input : null, win.alphaPrecision);
-          var hex = all != null ? all.hex : null,
+          var hex = !isNullish$1(all) ? all.hex : null,
               preview = tbody.find('.Preview'),
               button = tbody.find('.Button');
           activePreview = preview.find('.Active:first').css({
@@ -26383,21 +27273,21 @@
           currentPreview = preview.find('.Current:first').css({
             backgroundColor: hex && '#' + hex || 'transparent'
           }).bind('click', currentClicked);
-          setAlpha.call($this, currentPreview, toFixedNumeric(color.current.val('a') * 100 / 255, 4));
+          setAlpha.call(that, currentPreview, toFixedNumeric(color.current.val('a') * 100 / 255, 4));
           okButton = button.find('.Ok:first').bind('click', okClicked);
           cancelButton = button.find('.Cancel:first').bind('click', cancelClicked);
           grid = button.find('.Grid:first');
           setTimeout(function () {
-            setImg.call($this, colorMapL1, images.clientPath + 'Maps.png');
-            setImg.call($this, colorMapL2, images.clientPath + 'Maps.png');
-            setImg.call($this, colorMapL3, images.clientPath + 'map-opacity.png');
-            setImg.call($this, colorBarL1, images.clientPath + 'Bars.png');
-            setImg.call($this, colorBarL2, images.clientPath + 'Bars.png');
-            setImg.call($this, colorBarL3, images.clientPath + 'Bars.png');
-            setImg.call($this, colorBarL4, images.clientPath + 'Bars.png');
-            setImg.call($this, colorBarL5, images.clientPath + 'bar-opacity.png');
-            setImg.call($this, colorBarL6, images.clientPath + 'AlphaBar.png');
-            setImg.call($this, preview.find('div:first'), images.clientPath + 'preview-opacity.png');
+            setImg.call(that, colorMapL1, images.clientPath + 'Maps.png');
+            setImg.call(that, colorMapL2, images.clientPath + 'Maps.png');
+            setImg.call(that, colorMapL3, images.clientPath + 'map-opacity.png');
+            setImg.call(that, colorBarL1, images.clientPath + 'Bars.png');
+            setImg.call(that, colorBarL2, images.clientPath + 'Bars.png');
+            setImg.call(that, colorBarL3, images.clientPath + 'Bars.png');
+            setImg.call(that, colorBarL4, images.clientPath + 'Bars.png');
+            setImg.call(that, colorBarL5, images.clientPath + 'bar-opacity.png');
+            setImg.call(that, colorBarL6, images.clientPath + 'AlphaBar.png');
+            setImg.call(that, preview.find('div:first'), images.clientPath + 'preview-opacity.png');
           }, 0);
           tbody.find('td.Radio input').bind('click', radioClicked); // initialize quick list
 
@@ -26409,47 +27299,55 @@
               if (_typeof(color.quickList[i]).toString().toLowerCase() === 'string') color.quickList[i] = new Color({
                 hex: color.quickList[i]
               });
-              var alpha = color.quickList[i].val('a');
-              var ahex = color.quickList[i].val('ahex');
-              if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
+
+              var _alpha = color.quickList[i].val('a');
+
+              var _ahex = color.quickList[i].val('ahex');
+
+              if (!win.alphaSupport && _ahex) _ahex = _ahex.substring(0, 6) + 'ff';
               var quickHex = color.quickList[i].val('hex');
-              if (!ahex) ahex = '00000000';
-              html += '<span class="QuickColor"' + (' title="#' + ahex + '"') + ' style="background-color:' + (quickHex && '#' + quickHex || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + toFixedNumeric(alpha / 255, 4) + ';filter:Alpha(opacity=' + toFixedNumeric(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
+              if (!_ahex) _ahex = '00000000';
+              html += '<span class="QuickColor"' + (' title="#' + _ahex + '"') + ' style="background-color:' + (quickHex && '#' + quickHex || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && _alpha && _alpha < 255 ? ';opacity:' + toFixedNumeric(_alpha / 255, 4) + ';filter:Alpha(opacity=' + toFixedNumeric(_alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
             }
 
-            setImg.call($this, grid, images.clientPath + 'bar-opacity.png');
+            setImg.call(that, grid, images.clientPath + 'bar-opacity.png');
             grid.html(html);
             grid.find('.QuickColor').click(quickPickClicked);
           }
 
-          setColorMode.call($this, settings.color.mode);
+          setColorMode.call(that, settings.color.mode);
           color.active.bind(activeColorChanged);
           typeof liveCallback === 'function' && color.active.bind(liveCallback);
           color.current.bind(currentColorChanged); // bind to input
 
           if (win.expandable) {
-            $this.icon = popup.parents('.Icon:first');
-            iconColor = $this.icon.find('.Color:first').css({
+            that.icon = popup.parents('.Icon:first');
+            iconColor = that.icon.find('.Color:first').css({
               backgroundColor: hex && '#' + hex || 'transparent'
             });
-            iconAlpha = $this.icon.find('.Alpha:first');
-            setImg.call($this, iconAlpha, images.clientPath + 'bar-opacity.png');
-            setAlpha.call($this, iconAlpha, toFixedNumeric((255 - (all != null ? all.a : 0)) * 100 / 255, 4));
-            iconImage = $this.icon.find('.Image:first').css({
+            iconAlpha = that.icon.find('.Alpha:first');
+            setImg.call(that, iconAlpha, images.clientPath + 'bar-opacity.png');
+            setAlpha.call(that, iconAlpha, toFixedNumeric((255 - (!isNullish$1(all) ? all.a : 0)) * 100 / 255, 4));
+            iconImage = that.icon.find('.Image:first').css({
               backgroundImage: 'url(\'' + images.clientPath + images.picker.file + '\')'
             }).bind('click', iconImageClicked);
 
             if (win.bindToInput && win.updateInputColor) {
               win.input.css({
                 backgroundColor: hex && '#' + hex || 'transparent',
-                color: all == null || all.v > 75 ? '#000000' : '#ffffff'
+                color: isNullish$1(all) || all.v > 75 ? '#000000' : '#ffffff'
               });
             }
 
             moveBar = tbody.find('.Move:first').bind('mousedown', moveBarMouseDown);
             color.active.bind(expandableColorChanged);
-          } else show.call($this);
+          } else show.call(that);
         }
+        /**
+        *
+        * @returns {undefined}
+        */
+
 
         function destroy() {
           container.find('td.Radio input').unbind('click', radioClicked);
@@ -26460,7 +27358,7 @@
           if (settings.window.expandable) {
             iconImage.unbind('click', iconImageClicked);
             moveBar.unbind('mousedown', moveBarMouseDown);
-            $this.icon = null;
+            that.icon = null;
           }
 
           container.find('.QuickColor').unbind('click', quickPickClicked);
@@ -26492,7 +27390,7 @@
           container.html('');
 
           for (var i = 0; i < List.length; i++) {
-            if (List[i] === $this) {
+            if (List[i] === that) {
               List.splice(i, 1);
             }
           }
@@ -26514,6 +27412,19 @@
           }),
           quickList: settings.color.quickList
         };
+
+        if (typeof commitCallback !== 'function') {
+          commitCallback = null;
+        }
+
+        if (typeof liveCallback !== 'function') {
+          liveCallback = null;
+        }
+
+        if (typeof cancelCallback !== 'function') {
+          cancelCallback = null;
+        }
+
         var elementStartX = null,
             // Used to record the starting css positions for dragging the control
         elementStartY = null,
@@ -26550,12 +27461,9 @@
             // iconAlpha for popup icon
         iconImage = null,
             // iconImage popup icon
-        moveBar = null,
-            // drag bar
-        commitCallback = typeof $arguments[1] === 'function' ? $arguments[1] : null,
-            liveCallback = typeof $arguments[2] === 'function' ? $arguments[2] : null,
-            cancelCallback = typeof $arguments[3] === 'function' ? $arguments[3] : null;
-        $.extend(true, $this, {
+        moveBar = null; // drag bar
+
+        $.extend(true, that, {
           // public properties, methods, and callbacks
           commitCallback: commitCallback,
           // commitCallback function can be overridden to return the selected color to a method you specify when the user clicks "OK"
@@ -26569,9 +27477,9 @@
           destroy: destroy // destroys this control entirely, removing all events and objects, and removing itself from the List
 
         });
-        List.push($this);
+        List.push(that);
         setTimeout(function () {
-          initialize.call($this);
+          initialize.call(that);
         }, 0);
       });
     };
@@ -26616,6 +27524,9 @@
     * @property {Float} window.alphaPrecision Set decimal precision for alpha percentage display - hex codes do
     * not map directly to percentage integers - range 0-2
     * @property {boolean} window.updateInputColor Set to `false` to prevent binded input colors from changing
+    * @property {boolean} [window.bindToInput] Added by `$.fn.jPicker`
+    * @property {boolean} [window.expandable] Added by `$.fn.jPicker`
+    * @property {external:jQuery} [window.input] Added by `$.fn.jPicker`
     * @property {PlainObject} color
     * @property {"h"|"s"|"v"|"r"|"g"|"b"|"a"} color.mode Symbols stand for "h" (hue), "s" (saturation), "v" (value), "r" (red), "g" (green), "b" (blue), "a" (alpha)
     * @property {Color|string} color.active Strings are HEX values (e.g. #ffc000) WITH OR WITHOUT the "#" prefix
@@ -27072,7 +27983,7 @@
           val = _ref2[1];
 
       if (!val) {
-        console.log(sel);
+        console.log(sel); // eslint-disable-line no-console
       }
 
       if (ids) {
@@ -27091,6 +28002,8 @@
                 node.textContent = val;
                 return true;
               }
+
+              return false;
             });
 
             break;
@@ -27100,7 +28013,7 @@
             break;
         }
       } else {
-        console.log('Missing: ' + sel);
+        console.log('Missing element for localization: ' + sel); // eslint-disable-line no-console
       }
     });
   };
@@ -27173,7 +28086,7 @@
                 break;
               }
 
-              return _context.abrupt("return");
+              return _context.abrupt("return", undefined);
 
             case 6:
               _langData = langData, tools = _langData.tools, properties = _langData.properties, config = _langData.config, layers = _langData.layers, common = _langData.common, ui = _langData.ui;
@@ -27261,7 +28174,7 @@
                 image_width: properties.image_width,
                 layer_delete: layers.del,
                 layer_down: layers.move_down,
-                layer_new: layers['new'],
+                layer_new: layers.new,
                 layer_rename: layers.rename,
                 layer_moreopts: common.more_opts,
                 layer_up: layers.move_up,
@@ -27395,7 +28308,8 @@
                   }
                 }
 
-                console.log('Lang: ' + langParam); // Set to English if language is not in list of good langs
+                console.log('Lang: ' + langParam); // eslint-disable-line no-console
+                // Set to English if language is not in list of good langs
 
                 if (!goodLangs.includes(langParam) && langParam !== 'test') {
                   langParam = 'en';
@@ -27563,8 +28477,8 @@
   */
 
   var editor = {};
-  var $$b = [jqPluginJSHotkeys, jqPluginBBQ, jqPluginSVGIcons, jqPluginJGraduate, jqPluginSpinBtn, jqPluginSVG, jQueryContextMenu, jPicker].reduce(function ($, cb) {
-    return cb($);
+  var $$b = [jQueryPluginJSHotkeys, jQueryPluginBBQ, jQueryPluginSVGIcons, jQueryPluginJGraduate, jQueryPluginSpinButton, jQueryPluginSVG, jQueryContextMenu, jPicker].reduce(function (jq, func) {
+    return func(jq);
   }, jQuery);
   /*
   if (!$.loadingStylesheets) {
@@ -27852,26 +28766,76 @@
     */
     allowedOrigins: []
   };
+  /**
+   *
+   * @param {string} str SVG string
+   * @param {PlainObject} [opts={}]
+   * @param {boolean} [opts.noAlert]
+   * @throws {Error} Upon failure to load SVG
+   * @returns {Promise} Resolves to undefined upon success (or if `noAlert` is
+   *   falsey, though only until after the `alert` is closed); rejects if SVG
+   *   loading fails and `noAlert` is truthy.
+   */
 
-  function loadSvgString(str, callback) {
-    var success = svgCanvas.setSvgString(str) !== false;
-    callback = callback || $$b.noop;
-
-    if (success) {
-      callback(true); // eslint-disable-line standard/no-callback-literal
-    } else {
-      $$b.alert(uiStrings$1.notification.errorLoadingSVG, function () {
-        callback(false); // eslint-disable-line standard/no-callback-literal
-      });
-    }
+  function loadSvgString(_x) {
+    return _loadSvgString.apply(this, arguments);
   }
   /**
    * @function module:SVGEditor~getImportLocale
-   * @param {string} defaultLang
-   * @param {string} defaultName
+   * @param {PlainObject} defaults
+   * @param {string} defaults.defaultLang
+   * @param {string} defaults.defaultName
    * @returns {module:SVGEditor~ImportLocale}
    */
 
+
+  function _loadSvgString() {
+    _loadSvgString = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee23(str) {
+      var _ref45,
+          noAlert,
+          success,
+          _args23 = arguments;
+
+      return regeneratorRuntime.wrap(function _callee23$(_context23) {
+        while (1) {
+          switch (_context23.prev = _context23.next) {
+            case 0:
+              _ref45 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref45.noAlert;
+              success = svgCanvas.setSvgString(str) !== false;
+
+              if (!success) {
+                _context23.next = 4;
+                break;
+              }
+
+              return _context23.abrupt("return");
+
+            case 4:
+              if (noAlert) {
+                _context23.next = 8;
+                break;
+              }
+
+              _context23.next = 7;
+              return $$b.alert(uiStrings$1.notification.errorLoadingSVG);
+
+            case 7:
+              return _context23.abrupt("return");
+
+            case 8:
+              throw new Error('Error loading SVG');
+
+            case 9:
+            case "end":
+              return _context23.stop();
+          }
+        }
+      }, _callee23, this);
+    }));
+    return _loadSvgString.apply(this, arguments);
+  }
 
   function getImportLocale(_ref) {
     var defaultLang = _ref.defaultLang,
@@ -27879,80 +28843,59 @@
 
     /**
      * @function module:SVGEditor~ImportLocale
-     * @param {string} [name] Defaults to `defaultName` of {@link module:SVGEditor~getImportLocale}
-     * @param {string} [lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
+     * @param {PlainObject} localeInfo
+     * @param {string} [localeInfo.name] Defaults to `defaultName` of {@link module:SVGEditor~getImportLocale}
+     * @param {string} [localeInfo.lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
      * @returns {Promise} Resolves to {@link module:locale.LocaleStrings}
      */
     return (
       /*#__PURE__*/
       function () {
-        var _importLocale = _asyncToGenerator(
+        var _importLocaleDefaulting = _asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee2() {
+        regeneratorRuntime.mark(function _callee() {
           var _ref2,
               _ref2$name,
               name,
               _ref2$lang,
               lang,
               importLocale,
-              _importLocale2,
-              _args2 = arguments;
+              _args = arguments;
 
-          return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
-              switch (_context2.prev = _context2.next) {
+              switch (_context.prev = _context.next) {
                 case 0:
-                  _importLocale2 = function _ref4() {
-                    _importLocale2 = _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee(lang) {
-                      var url;
-                      return regeneratorRuntime.wrap(function _callee$(_context) {
-                        while (1) {
-                          switch (_context.prev = _context.next) {
-                            case 0:
-                              url = "".concat(curConfig.extPath, "ext-locale/").concat(name, "/").concat(lang, ".js");
-                              return _context.abrupt("return", importSetGlobalDefault(url, {
-                                global: "svgEditorExtensionLocale_".concat(name, "_").concat(lang)
-                              }));
-
-                            case 2:
-                            case "end":
-                              return _context.stop();
-                          }
-                        }
-                      }, _callee, this);
-                    }));
-                    return _importLocale2.apply(this, arguments);
+                  importLocale = function _ref3(language) {
+                    var url = "".concat(curConfig.extPath, "ext-locale/").concat(name, "/").concat(language, ".js");
+                    return importSetGlobalDefault(url, {
+                      global: "svgEditorExtensionLocale_".concat(name, "_").concat(language)
+                    });
                   };
 
-                  importLocale = function _ref3(_x) {
-                    return _importLocale2.apply(this, arguments);
-                  };
-
-                  _ref2 = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : {}, _ref2$name = _ref2.name, name = _ref2$name === void 0 ? defaultName : _ref2$name, _ref2$lang = _ref2.lang, lang = _ref2$lang === void 0 ? defaultLang : _ref2$lang;
-                  _context2.prev = 3;
-                  _context2.next = 6;
+                  _ref2 = _args.length > 0 && _args[0] !== undefined ? _args[0] : {}, _ref2$name = _ref2.name, name = _ref2$name === void 0 ? defaultName : _ref2$name, _ref2$lang = _ref2.lang, lang = _ref2$lang === void 0 ? defaultLang : _ref2$lang;
+                  _context.prev = 2;
+                  _context.next = 5;
                   return importLocale(lang);
 
-                case 6:
-                  return _context2.abrupt("return", _context2.sent);
+                case 5:
+                  return _context.abrupt("return", _context.sent);
 
-                case 9:
-                  _context2.prev = 9;
-                  _context2.t0 = _context2["catch"](3);
-                  return _context2.abrupt("return", importLocale('en'));
+                case 8:
+                  _context.prev = 8;
+                  _context.t0 = _context["catch"](2);
+                  return _context.abrupt("return", importLocale('en'));
 
-                case 12:
+                case 11:
                 case "end":
-                  return _context2.stop();
+                  return _context.stop();
               }
             }
-          }, _callee2, this, [[3, 9]]);
+          }, _callee, this, [[2, 8]]);
         }));
 
-        return function importLocale() {
-          return _importLocale.apply(this, arguments);
+        return function importLocaleDefaulting() {
+          return _importLocaleDefaulting.apply(this, arguments);
         };
       }()
     );
@@ -27965,7 +28908,7 @@
   * Store and retrieve preferences.
   * @param {string} key The preference name to be retrieved or set
   * @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will be made.
-  * @returns {string} If val is missing or falsey, the value of the previously stored preference will be returned.
+  * @returns {string|undefined} If val is missing or falsey, the value of the previously stored preference will be returned.
   * @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
   * @todo Review whether any remaining existing direct references to
   *  getting `curPrefs` can be changed to use `$.pref()` getting to ensure
@@ -27986,7 +28929,7 @@
 
       editor.curPrefs = curPrefs; // Update exported value
 
-      return;
+      return undefined;
     }
 
     return key in curPrefs ? curPrefs[key] : defaultPrefs[key];
@@ -28016,13 +28959,13 @@
   */
 
   editor.loadContentAndPrefs = function () {
-    if (!curConfig.forceStorage && (curConfig.noStorageOnLoad || !document.cookie.match(/(?:^|;\s*)store=(?:prefsAndContent|prefsOnly)/))) {
+    if (!curConfig.forceStorage && (curConfig.noStorageOnLoad || !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/))) {
       return;
     } // LOAD CONTENT
 
 
     if (editor.storage && ( // Cookies do not have enough available memory to hold large documents
-    curConfig.forceStorage || !curConfig.noStorageOnLoad && document.cookie.match(/(?:^|;\s*)store=prefsAndContent/))) {
+    curConfig.forceStorage || !curConfig.noStorageOnLoad && document.cookie.match(/(?:^|;\s*)svgeditstorestore=prefsAndContent/))) {
       var name = 'svgedit-' + curConfig.canvasName;
       var cached = editor.storage.getItem(name);
 
@@ -28032,25 +28975,22 @@
     } // LOAD PREFS
 
 
-    for (var key in defaultPrefs) {
-      if (defaultPrefs.hasOwnProperty(key)) {
-        // It's our own config, so we don't need to iterate up the prototype chain
-        var storeKey = 'svg-edit-' + key;
+    Object.keys(defaultPrefs).forEach(function (key) {
+      var storeKey = 'svg-edit-' + key;
 
-        if (editor.storage) {
-          var val = editor.storage.getItem(storeKey);
+      if (editor.storage) {
+        var val = editor.storage.getItem(storeKey);
 
-          if (val) {
-            defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
-          }
-        } else if (window.widget) {
-          defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
-        } else {
-          var result = document.cookie.match(new RegExp('(?:^|;\\s*)' + regexEscape(encodeURIComponent(storeKey)) + '=([^;]+)'));
-          defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
+        if (val) {
+          defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
         }
+      } else if (window.widget) {
+        defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
+      } else {
+        var result = document.cookie.match(new RegExp('(?:^|;\\s*)' + regexEscape(encodeURIComponent(storeKey)) + '=([^;]+)'));
+        defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
       }
-    }
+    });
   };
   /**
   * Allows setting of preferences or configuration (including extensions).
@@ -28076,6 +29016,13 @@
 
   editor.setConfig = function (opts, cfgCfg) {
     cfgCfg = cfgCfg || {};
+    /**
+     *
+     * @param {module:SVGEditor.Config|module:SVGEditor.Prefs} cfgObj
+     * @param {string} key
+     * @param {Any} val See {@link module:SVGEditor.Config} or {@link module:SVGEditor.Prefs}
+     * @returns {undefined}
+     */
 
     function extendOrAdd(cfgObj, key, val) {
       if (cfgObj[key] && _typeof(cfgObj[key]) === 'object') {
@@ -28086,10 +29033,10 @@
     }
 
     $$b.each(opts, function (key, val) {
-      if (opts.hasOwnProperty(key)) {
+      if ({}.hasOwnProperty.call(opts, key)) {
         // Only allow prefs defined in defaultPrefs
-        if (defaultPrefs.hasOwnProperty(key)) {
-          if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || curPrefs.hasOwnProperty(key))) {
+        if ({}.hasOwnProperty.call(defaultPrefs, key)) {
+          if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || {}.hasOwnProperty.call(curPrefs, key))) {
             return;
           }
 
@@ -28105,29 +29052,25 @@
 
           curConfig[key] = curConfig[key].concat(val); // We will handle any dupes later
           // Only allow other curConfig if defined in defaultConfig
-        } else if (defaultConfig.hasOwnProperty(key)) {
-          if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || curConfig.hasOwnProperty(key))) {
+        } else if ({}.hasOwnProperty.call(defaultConfig, key)) {
+          if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || {}.hasOwnProperty.call(curConfig, key))) {
             return;
           } // Potentially overwriting of previously set config
 
 
-          if (curConfig.hasOwnProperty(key)) {
+          if ({}.hasOwnProperty.call(curConfig, key)) {
             if (cfgCfg.overwrite === false) {
               return;
             }
 
             extendOrAdd(curConfig, key, val);
+          } else if (cfgCfg.allowInitialUserOverride === true) {
+            extendOrAdd(defaultConfig, key, val);
+          } else if (defaultConfig[key] && _typeof(defaultConfig[key]) === 'object') {
+            curConfig[key] = {};
+            $$b.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
           } else {
-            if (cfgCfg.allowInitialUserOverride === true) {
-              extendOrAdd(defaultConfig, key, val);
-            } else {
-              if (defaultConfig[key] && _typeof(defaultConfig[key]) === 'object') {
-                curConfig[key] = {};
-                $$b.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
-              } else {
-                curConfig[key] = val;
-              }
-            }
+            curConfig[key] = val;
           }
         }
       }
@@ -28275,6 +29218,10 @@
     $$b('#lang_select option').each(function () {
       goodLangs.push(this.value);
     });
+    /**
+     * Sets up current preferences based on defaults.
+     * @returns {undefined}
+     */
 
     function setupCurPrefs() {
       curPrefs = $$b.extend(true, {}, defaultPrefs, curPrefs); // Now safe to merge with priority for curPrefs in the event any are already set
@@ -28282,6 +29229,11 @@
 
       editor.curPrefs = curPrefs;
     }
+    /**
+     * Sets up current config based on defaults.
+     * @returns {undefined}
+     */
+
 
     function setupCurConfig() {
       curConfig = $$b.extend(true, {}, defaultConfig, curConfig); // Now safe to merge with priority for curConfig in the event any are already set
@@ -28386,7 +29338,9 @@
       var icon = typeof iconId === 'string' ? $$b.getSvgIcon(iconId, true) : iconId.clone();
 
       if (!icon) {
-        console.log('NOTE: Icon image missing: ' + iconId);
+        // Todo: Investigate why this still occurs in some cases
+        console.log('NOTE: Icon image missing: ' + iconId); // eslint-disable-line no-console
+
         return;
       }
 
@@ -28404,48 +29358,53 @@
     var extAndLocaleFunc =
     /*#__PURE__*/
     function () {
-      var _ref5 = _asyncToGenerator(
+      var _ref4 = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee4() {
-        var _ref6, langParam, langData;
+      regeneratorRuntime.mark(function _callee3() {
+        var _ref5, langParam, langData, _uiStrings$common, ok, cancel;
 
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                _context4.next = 2;
+                _context3.next = 2;
                 return editor.putLocale(null, goodLangs, curConfig);
 
               case 2:
-                _ref6 = _context4.sent;
-                langParam = _ref6.langParam;
-                langData = _ref6.langData;
-                _context4.next = 7;
+                _ref5 = _context3.sent;
+                langParam = _ref5.langParam;
+                langData = _ref5.langData;
+                _context3.next = 7;
                 return setLang(langParam, langData);
 
               case 7:
-                _context4.prev = 7;
-                _context4.next = 10;
+                _uiStrings$common = uiStrings$1.common, ok = _uiStrings$common.ok, cancel = _uiStrings$common.cancel;
+                jQueryPluginDBox($$b, {
+                  ok: ok,
+                  cancel: cancel
+                });
+                _context3.prev = 9;
+                _context3.next = 12;
                 return Promise.all(curConfig.extensions.map(
                 /*#__PURE__*/
                 function () {
-                  var _ref7 = _asyncToGenerator(
+                  var _ref6 = _asyncToGenerator(
                   /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee3(extname) {
+                  regeneratorRuntime.mark(function _callee2(extname) {
                     var extName, url, imported, _imported$name, name, init$$1, importLocale;
 
-                    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
                       while (1) {
-                        switch (_context3.prev = _context3.next) {
+                        switch (_context2.prev = _context2.next) {
                           case 0:
                             extName = extname.match(/^ext-(.+)\.js/);
 
                             if (extName) {
-                              _context3.next = 3;
+                              _context2.next = 3;
                               break;
                             }
 
-                            return _context3.abrupt("return");
+                            return _context2.abrupt("return", undefined);
 
                           case 3:
                             url = curConfig.extPath + extname; // Todo: Replace this with `return import(url);` when
@@ -28458,41 +29417,48 @@
                              * @property {module:svgcanvas.ExtensionInitCallback} [init]
                              */
 
-                            _context3.prev = 4;
-                            _context3.next = 7;
+                            _context2.prev = 4;
+                            _context2.next = 7;
                             return importSetGlobalDefault(url, {
                               global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
                             });
 
                           case 7:
-                            imported = _context3.sent;
+                            imported = _context2.sent;
                             _imported$name = imported.name, name = _imported$name === void 0 ? extName[1] : _imported$name, init$$1 = imported.init;
                             importLocale = getImportLocale({
                               defaultLang: langParam,
                               defaultName: name
                             });
-                            return _context3.abrupt("return", editor.addExtension(name, init$$1 && init$$1.bind(editor), importLocale));
+                            return _context2.abrupt("return", editor.addExtension(name, init$$1 && init$$1.bind(editor), {
+                              $: $$b,
+                              importLocale: importLocale
+                            }));
 
                           case 13:
-                            _context3.prev = 13;
-                            _context3.t0 = _context3["catch"](4);
-                            console.log(_context3.t0);
-                            console.error('Extension failed to load: ' + extname + '; ' + _context3.t0);
+                            _context2.prev = 13;
+                            _context2.t0 = _context2["catch"](4);
+                            // Todo: Add config to alert any errors
+                            console.log(_context2.t0); // eslint-disable-line no-console
 
-                          case 17:
+                            console.error('Extension failed to load: ' + extname + '; ' + _context2.t0); // eslint-disable-line no-console
+
+                            return _context2.abrupt("return", undefined);
+
+                          case 18:
                           case "end":
-                            return _context3.stop();
+                            return _context2.stop();
                         }
                       }
-                    }, _callee3, this, [[4, 13]]);
+                    }, _callee2, this, [[4, 13]]);
                   }));
 
                   return function (_x2) {
-                    return _ref7.apply(this, arguments);
+                    return _ref6.apply(this, arguments);
                   };
                 }()));
 
-              case 10:
+              case 12:
                 svgCanvas.bind('extensions_added',
                 /**
                 * @param {external:Window} win
@@ -28522,30 +29488,35 @@
                   });
                 });
                 svgCanvas.call('extensions_added');
-                _context4.next = 17;
+                _context3.next = 19;
                 break;
 
-              case 14:
-                _context4.prev = 14;
-                _context4.t0 = _context4["catch"](7);
-                console.log(_context4.t0);
+              case 16:
+                _context3.prev = 16;
+                _context3.t0 = _context3["catch"](9);
+                // Todo: Report errors through the UI
+                console.log(_context3.t0); // eslint-disable-line no-console
 
-              case 17:
+              case 19:
               case "end":
-                return _context4.stop();
+                return _context3.stop();
             }
           }
-        }, _callee4, this, [[7, 14]]);
+        }, _callee3, this, [[9, 16]]);
       }));
 
       return function extAndLocaleFunc() {
-        return _ref5.apply(this, arguments);
+        return _ref4.apply(this, arguments);
       };
     }();
 
     var stateObj = {
       tool_scale: editor.tool_scale
     };
+    /**
+    *
+    * @returns {undefined}
+    */
 
     var setFlyoutPositions = function setFlyoutPositions() {
       $$b('.tools_flyout').each(function () {
@@ -28562,6 +29533,10 @@
         });
       });
     };
+    /**
+    * @type {string}
+    */
+
 
     var uaPrefix = function () {
       var regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
@@ -28586,6 +29561,12 @@
 
       return '';
     }();
+    /**
+    * @param {external:jQuery} elems
+    * @param {Float} scale
+    * @returns {undefined}
+    */
+
 
     var scaleElements = function scaleElements(elems, scale) {
       // const prefix = '-' + uaPrefix.toLowerCase() + '-'; // Currently unused
@@ -28601,8 +29582,8 @@
           var s = sides[i];
           var cur = el.data('orig_margin-' + s);
 
-          if (cur == null) {
-            cur = parseInt(el.css('margin-' + s), 10); // Cache the original margin
+          if (isNullish(cur)) {
+            cur = parseInt(el.css('margin-' + s)); // Cache the original margin
 
             el.data('orig_margin-' + s, cur);
           }
@@ -28998,95 +29979,122 @@
         '.stroke_tool div div .svg_icon': 20,
         '#tools_bottom label .svg_icon': 18
       },
-      callback: function callback(icons) {
-        $$b('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
-          $$b(this).parent().prepend(this);
-        });
-        var tleft = $$b('#tools_left');
-        var minHeight;
+      callback: function () {
+        var _callback = _asyncToGenerator(
+        /*#__PURE__*/
+        regeneratorRuntime.mark(function _callee4(icons) {
+          var tleft, minHeight, size, getStylesheetPriority, stylesheets, idx, _stylesheets;
 
-        if (tleft.length) {
-          minHeight = tleft.offset().top + tleft.outerHeight();
-        }
+          return regeneratorRuntime.wrap(function _callee4$(_context4) {
+            while (1) {
+              switch (_context4.prev = _context4.next) {
+                case 0:
+                  getStylesheetPriority = function _ref8(stylesheetFile) {
+                    switch (stylesheetFile) {
+                      case 'jgraduate/css/jPicker.css':
+                        return 1;
 
-        var size = $$b.pref('iconsize');
-        editor.setIconSize(size || ($$b(window).height() < minHeight ? 's' : 'm')); // Look for any missing flyout icons from plugins
+                      case 'jgraduate/css/jGraduate.css':
+                        return 2;
 
-        $$b('.tools_flyout').each(function () {
-          var shower = $$b('#' + this.id + '_show');
-          var sel = shower.attr('data-curopt'); // Check if there's an icon here
+                      case 'svg-editor.css':
+                        return 3;
 
-          if (!shower.children('svg, img').length) {
-            var clone = $$b(sel).children().clone();
+                      case 'spinbtn/jQuery.SpinButton.css':
+                        return 4;
 
-            if (clone.length) {
-              clone[0].removeAttribute('style'); // Needed for Opera
+                      default:
+                        return Infinity;
+                    }
+                  };
 
-              shower.append(clone);
+                  $$b('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
+                    $$b(this).parent().prepend(this);
+                  });
+                  tleft = $$b('#tools_left');
+
+                  if (tleft.length) {
+                    minHeight = tleft.offset().top + tleft.outerHeight();
+                  }
+
+                  size = $$b.pref('iconsize');
+                  editor.setIconSize(size || ($$b(window).height() < minHeight ? 's' : 'm')); // Look for any missing flyout icons from plugins
+
+                  $$b('.tools_flyout').each(function () {
+                    var shower = $$b('#' + this.id + '_show');
+                    var sel = shower.attr('data-curopt'); // Check if there's an icon here
+
+                    if (!shower.children('svg, img').length) {
+                      var clone = $$b(sel).children().clone();
+
+                      if (clone.length) {
+                        clone[0].removeAttribute('style'); // Needed for Opera
+
+                        shower.append(clone);
+                      }
+                    }
+                  });
+                  /**
+                   * Since stylesheets may be added out of order, we indicate the desired order
+                   *   for defaults and others after them (in an indeterminate order).
+                   * @param {string} stylesheetFile
+                   * @returns {Integer|PositiveInfinity}
+                   */
+
+                  stylesheets = $$b.loadingStylesheets.sort(function (a, b) {
+                    var priorityA = getStylesheetPriority(a);
+                    var priorityB = getStylesheetPriority(b);
+
+                    if (priorityA === priorityB) {
+                      return 0;
+                    }
+
+                    return priorityA > priorityB;
+                  });
+
+                  if (curConfig.stylesheets.length) {
+                    // Ensure a copy with unique items
+                    stylesheets = _toConsumableArray(new Set(curConfig.stylesheets));
+                    idx = stylesheets.indexOf('@default');
+
+                    if (idx > -1) {
+                      (_stylesheets = stylesheets).splice.apply(_stylesheets, [idx, 1].concat(_toConsumableArray($$b.loadingStylesheets)));
+                    }
+                  }
+
+                  _context4.next = 11;
+                  return loadStylesheets(stylesheets, {
+                    acceptErrors: function acceptErrors(_ref7) {
+                      var stylesheetURL = _ref7.stylesheetURL,
+                          reject = _ref7.reject,
+                          resolve = _ref7.resolve;
+
+                      if ($$b.loadingStylesheets.includes(stylesheetURL)) {
+                        reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
+                        return;
+                      }
+
+                      resolve();
+                    }
+                  });
+
+                case 11:
+                  $$b('#svg_container')[0].style.visibility = 'visible';
+                  _context4.next = 14;
+                  return editor.runCallbacks();
+
+                case 14:
+                case "end":
+                  return _context4.stop();
+              }
             }
-          }
-        });
+          }, _callee4, this);
+        }));
 
-        function getStylesheetPriority(stylesheet) {
-          switch (stylesheet) {
-            case 'jgraduate/css/jPicker.css':
-              return 1;
-
-            case 'jgraduate/css/jGraduate.css':
-              return 2;
-
-            case 'svg-editor.css':
-              return 3;
-
-            case 'spinbtn/jQuery.SpinButton.css':
-              return 4;
-
-            default:
-              return Infinity;
-          }
-        }
-
-        var stylesheets = $$b.loadingStylesheets.sort(function (a, b) {
-          var priorityA = getStylesheetPriority(a);
-          var priorityB = getStylesheetPriority(b);
-
-          if (priorityA === priorityB) {
-            return 0;
-          }
-
-          return priorityA > priorityB;
-        });
-
-        if (curConfig.stylesheets.length) {
-          // Ensure a copy with unique items
-          stylesheets = _toConsumableArray(new Set(curConfig.stylesheets));
-          var idx = stylesheets.indexOf('@default');
-
-          if (idx > -1) {
-            var _stylesheets;
-
-            (_stylesheets = stylesheets).splice.apply(_stylesheets, [idx, 1].concat(_toConsumableArray($$b.loadingStylesheets)));
-          }
-        }
-
-        loadStylesheets(stylesheets, {
-          acceptErrors: function acceptErrors(_ref8) {
-            var stylesheetURL = _ref8.stylesheetURL,
-                reject = _ref8.reject,
-                resolve = _ref8.resolve;
-
-            if ($$b.loadingStylesheets.includes(stylesheetURL)) {
-              reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
-              return;
-            }
-
-            resolve();
-          }
-        }).then(function () {
-          $$b('#svg_container')[0].style.visibility = 'visible';
-          editor.runCallbacks();
-        });
-      }
+        return function callback(_x3) {
+          return _callback.apply(this, arguments);
+        };
+      }()
     });
     /**
     * @name module:SVGEditor.canvas
@@ -29139,125 +30147,12 @@
           w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
         } catch (e) {}
       }
-    })(); // This sets up alternative dialog boxes. They mostly work the same way as
-    // their UI counterparts, expect instead of returning the result, a callback
-    // needs to be included that returns the result as its first parameter.
-    // In the future we may want to add additional types of dialog boxes, since
-    // they should be easy to handle this way.
-
-
-    (function () {
-      $$b('#dialog_container').draggable({
-        cancel: '#dialog_content, #dialog_buttons *',
-        containment: 'window'
-      }).css('position', 'absolute');
-
-      var box = $$b('#dialog_box'),
-          btnHolder = $$b('#dialog_buttons'),
-          dialogContent = $$b('#dialog_content'),
-          dbox = function dbox(type, msg, callback, defaultVal, opts, changeCb, checkbox) {
-        dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>').toggleClass('prompt', type === 'prompt');
-        btnHolder.empty();
-        var ok = $$b('<input type="button" value="' + uiStrings$1.common.ok + '">').appendTo(btnHolder);
-
-        if (type !== 'alert') {
-          $$b('<input type="button" value="' + uiStrings$1.common.cancel + '">').appendTo(btnHolder).click(function () {
-            box.hide();
-
-            if (callback) {
-              callback(false); // eslint-disable-line standard/no-callback-literal
-            }
-          });
-        }
-
-        var ctrl, chkbx;
-
-        if (type === 'prompt') {
-          ctrl = $$b('<input type="text">').prependTo(btnHolder);
-          ctrl.val(defaultVal || '');
-          ctrl.bind('keydown', 'return', function () {
-            ok.click();
-          });
-        } else if (type === 'select') {
-          var div = $$b('<div style="text-align:center;">');
-          ctrl = $$b('<select>').appendTo(div);
-
-          if (checkbox) {
-            var label = $$b('<label>').text(checkbox.label);
-            chkbx = $$b('<input type="checkbox">').appendTo(label);
-            chkbx.val(checkbox.value);
-
-            if (checkbox.tooltip) {
-              label.attr('title', checkbox.tooltip);
-            }
-
-            chkbx.prop('checked', !!checkbox.checked);
-            div.append($$b('<div>').append(label));
-          }
-
-          $$b.each(opts || [], function (opt, val) {
-            if (_typeof(val) === 'object') {
-              ctrl.append($$b('<option>').val(val.value).html(val.text));
-            } else {
-              ctrl.append($$b('<option>').html(val));
-            }
-          });
-          dialogContent.append(div);
-
-          if (defaultVal) {
-            ctrl.val(defaultVal);
-          }
-
-          if (changeCb) {
-            ctrl.bind('change', 'return', changeCb);
-          }
-
-          ctrl.bind('keydown', 'return', function () {
-            ok.click();
-          });
-        } else if (type === 'process') {
-          ok.hide();
-        }
-
-        box.show();
-        ok.click(function () {
-          box.hide();
-          var resp = type === 'prompt' || type === 'select' ? ctrl.val() : true;
-
-          if (callback) {
-            if (chkbx) {
-              callback(resp, chkbx.prop('checked'));
-            } else {
-              callback(resp);
-            }
-          }
-        }).focus();
-
-        if (type === 'prompt' || type === 'select') {
-          ctrl.focus();
-        }
-      };
-
-      $$b.alert = function (msg, cb) {
-        dbox('alert', msg, cb);
-      };
-
-      $$b.confirm = function (msg, cb) {
-        dbox('confirm', msg, cb);
-      };
-
-      $$b.process_cancel = function (msg, cb) {
-        dbox('process', msg, cb);
-      };
-
-      $$b.prompt = function (msg, txt, cb) {
-        dbox('prompt', msg, cb, txt);
-      };
-
-      $$b.select = function (msg, opts, cb, changeCb, txt, checkbox) {
-        dbox('select', msg, cb, txt, opts, changeCb, checkbox);
-      };
     })();
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var setSelectMode = function setSelectMode() {
       var curr = $$b('.tool_button_current');
@@ -29283,8 +30178,13 @@
       rIntervals.push(i);
       rIntervals.push(2 * i);
       rIntervals.push(5 * i);
-    } // This function highlights the layer passed in (by fading out the other layers)
-    // if no layer is passed in, this function restores the other layers
+    }
+    /**
+     * This function highlights the layer passed in (by fading out the other layers).
+     * If no layer is passed in, this function restores the other layers
+     * @param {string} [layerNameToHighlight]
+     * @returns {undefined}
+    */
 
 
     var toggleHighlightLayer = function toggleHighlightLayer(layerNameToHighlight) {
@@ -29297,17 +30197,22 @@
       }
 
       if (layerNameToHighlight) {
-        for (i = 0; i < numLayers; ++i) {
-          if (curNames[i] !== layerNameToHighlight) {
-            svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 0.5);
+        curNames.forEach(function (curName) {
+          if (curName !== layerNameToHighlight) {
+            svgCanvas.getCurrentDrawing().setLayerOpacity(curName, 0.5);
           }
-        }
+        });
       } else {
-        for (i = 0; i < numLayers; ++i) {
-          svgCanvas.getCurrentDrawing().setLayerOpacity(curNames[i], 1.0);
-        }
+        curNames.forEach(function (curName) {
+          svgCanvas.getCurrentDrawing().setLayerOpacity(curName, 1.0);
+        });
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var populateLayers = function populateLayers() {
       svgCanvas.clearSelection();
@@ -29364,6 +30269,11 @@
 
     var editingsource = false;
     var origSource = '';
+    /**
+    * @param {Event} [e] Not used.
+    * @param {boolean} forSaving
+    * @returns {undefined}
+    */
 
     var showSourceEditor = function showSourceEditor(e, forSaving) {
       if (editingsource) {
@@ -29372,7 +30282,7 @@
 
       editingsource = true;
       origSource = svgCanvas.getSvgString();
-      $$b('#save_output_btns').toggle(!!forSaving);
+      $$b('#save_output_btns').toggle(Boolean(forSaving));
       $$b('#tool_source_back').toggle(!forSaving);
       $$b('#svg_source_textarea').val(origSource);
       $$b('#svg_source_editor').fadeIn();
@@ -29381,6 +30291,11 @@
 
     var selectedElement = null;
     var multiselected = false;
+    /**
+    * @param {boolean} editmode
+    * @param {module:svgcanvas.SvgCanvas#event:selected} elems
+    * @returns {undefined}
+    */
 
     var togglePathEditMode = function togglePathEditMode(editmode, elems) {
       $$b('#path_node_panel').toggle(editmode);
@@ -29453,7 +30368,7 @@
         }
 
         if (done !== 'part') {
-          alert(note);
+          $$b.alert(note);
         }
       }
     };
@@ -29471,6 +30386,7 @@
       exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
       if (!exportWindow || exportWindow.closed) {
+        /* await */
         $$b.alert(uiStrings$1.notification.popupWindowBlocked);
         return;
       }
@@ -29492,6 +30408,11 @@
         exportWindow.alert(note);
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var operaRepaint = function operaRepaint() {
       // Repaints canvas in Opera. Needed for stroke-dasharray change as well as fill change
@@ -29501,12 +30422,21 @@
 
       $$b('<p/>').hide().appendTo('body').remove();
     };
+    /**
+     *
+     * @param {Element} opt
+     * @param {boolean} changeElem
+     * @returns {undefined}
+     */
+
 
     function setStrokeOpt(opt, changeElem) {
       var id = opt.id;
       var bits = id.split('_');
-      var pre = bits[0];
-      var val = bits[1];
+
+      var _bits = _slicedToArray(bits, 2),
+          pre = _bits[0],
+          val = _bits[1];
 
       if (changeElem) {
         svgCanvas.setStrokeAttr('stroke-' + pre, val);
@@ -29595,6 +30525,13 @@
         $$b('#change_image_url').hide();
       }
     };
+    /**
+     *
+     * @param {string} color
+     * @param {string} url
+     * @returns {undefined}
+     */
+
 
     function setBackground(color, url) {
       // if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) { return; }
@@ -29603,27 +30540,73 @@
 
       svgCanvas.setBackground(color, url);
     }
+    /**
+     * @param {PlainObject} [opts={}]
+     * @param {boolean} [opts.cancelDeletes=false}]
+     * @returns {Promise} Resolves to `undefined`
+     */
+
 
     function promptImgURL() {
-      var _ref9 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref9$cancelDeletes = _ref9.cancelDeletes,
-          cancelDeletes = _ref9$cancelDeletes === void 0 ? false : _ref9$cancelDeletes;
+      return _promptImgURL.apply(this, arguments);
+    }
+    /**
+    * @param {Element} elem
+    * @returns {undefined}
+    */
 
-      var curhref = svgCanvas.getHref(selectedElement);
-      curhref = curhref.startsWith('data:') ? '' : curhref;
-      $$b.prompt(uiStrings$1.notification.enterNewImgURL, curhref, function (url) {
-        if (url) {
-          setImageURL(url);
-        } else if (cancelDeletes) {
-          svgCanvas.deleteSelectedElements();
-        }
-      });
+
+    function _promptImgURL() {
+      _promptImgURL = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee18() {
+        var _ref31,
+            _ref31$cancelDeletes,
+            cancelDeletes,
+            curhref,
+            url,
+            _args18 = arguments;
+
+        return regeneratorRuntime.wrap(function _callee18$(_context18) {
+          while (1) {
+            switch (_context18.prev = _context18.next) {
+              case 0:
+                _ref31 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref31$cancelDeletes = _ref31.cancelDeletes, cancelDeletes = _ref31$cancelDeletes === void 0 ? false : _ref31$cancelDeletes;
+                curhref = svgCanvas.getHref(selectedElement);
+                curhref = curhref.startsWith('data:') ? '' : curhref;
+                _context18.next = 5;
+                return $$b.prompt(uiStrings$1.notification.enterNewImgURL, curhref);
+
+              case 5:
+                url = _context18.sent;
+
+                if (url) {
+                  setImageURL(url);
+                } else if (cancelDeletes) {
+                  svgCanvas.deleteSelectedElements();
+                }
+
+              case 7:
+              case "end":
+                return _context18.stop();
+            }
+          }
+        }, _callee18, this);
+      }));
+      return _promptImgURL.apply(this, arguments);
     }
 
     var setInputWidth = function setInputWidth(elem) {
       var w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
       $$b(elem).width(w);
     };
+    /**
+     *
+     * @param {HTMLDivElement} [scanvas]
+     * @param {Float} [zoom]
+     * @returns {undefined}
+     */
+
 
     function updateRulers(scanvas, zoom) {
       if (!zoom) {
@@ -29665,7 +30648,7 @@
         $hcanv.siblings().remove(); // Create multiple canvases when necessary (due to browser limits)
 
         if (rulerLen >= limit) {
-          ctxArrNum = parseInt(rulerLen / limit, 10) + 1;
+          ctxArrNum = parseInt(rulerLen / limit) + 1;
           ctxArr = [];
           ctxArr[0] = ctx;
           var copy = void 0;
@@ -29819,8 +30802,9 @@
       var newCanX = w / 2;
       var offset = svgCanvas.updateCanvas(w, h);
       var ratio = newCanX / oldCanX;
-      var scrollX = w / 2 - wOrig / 2;
-      var scrollY = h / 2 - hOrig / 2;
+      var scrollX = w / 2 - wOrig / 2; // eslint-disable-line no-shadow
+
+      var scrollY = h / 2 - hOrig / 2; // eslint-disable-line no-shadow
 
       if (!newCtr) {
         var oldDistX = oldCtr.x - oldCanX;
@@ -29868,44 +30852,37 @@
 
 
     var updateToolButtonState = function updateToolButtonState() {
-      var index, button;
       var bNoFill = svgCanvas.getColor('fill') === 'none';
       var bNoStroke = svgCanvas.getColor('stroke') === 'none';
       var buttonsNeedingStroke = ['#tool_fhpath', '#tool_line'];
       var buttonsNeedingFillAndStroke = ['#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
 
       if (bNoStroke) {
-        for (index in buttonsNeedingStroke) {
-          button = buttonsNeedingStroke[index];
-
-          if ($$b(button).hasClass('tool_button_current')) {
+        buttonsNeedingStroke.forEach(function (btn) {
+          if ($$b(btn).hasClass('tool_button_current')) {
             clickSelect();
           }
 
-          $$b(button).addClass('disabled');
-        }
+          $$b(btn).addClass('disabled');
+        });
       } else {
-        for (index in buttonsNeedingStroke) {
-          button = buttonsNeedingStroke[index];
-          $$b(button).removeClass('disabled');
-        }
+        buttonsNeedingStroke.forEach(function (btn) {
+          $$b(btn).removeClass('disabled');
+        });
       }
 
       if (bNoStroke && bNoFill) {
-        for (index in buttonsNeedingFillAndStroke) {
-          button = buttonsNeedingFillAndStroke[index];
-
-          if ($$b(button).hasClass('tool_button_current')) {
+        buttonsNeedingFillAndStroke.forEach(function (btn) {
+          if ($$b(btn).hasClass('tool_button_current')) {
             clickSelect();
           }
 
-          $$b(button).addClass('disabled');
-        }
+          $$b(btn).addClass('disabled');
+        });
       } else {
-        for (index in buttonsNeedingFillAndStroke) {
-          button = buttonsNeedingFillAndStroke[index];
-          $$b(button).removeClass('disabled');
-        }
+        buttonsNeedingFillAndStroke.forEach(function (btn) {
+          $$b(btn).removeClass('disabled');
+        });
       }
 
       svgCanvas.runExtensions('toolButtonStateUpdate',
@@ -29926,14 +30903,19 @@
         shower.toggleClass('disabled', !hasEnabled);
       });
       operaRepaint();
-    }; // Updates the toolbar (colors, opacity, etc) based on the selected element
-    // This function also updates the opacity and id elements that are in the context panel
+    };
+    /**
+    * Updates the toolbar (colors, opacity, etc) based on the selected element.
+    * This function also updates the opacity and id elements that are in the
+    * context panel.
+    * @returns {undefined}
+    */
 
 
     var updateToolbar = function updateToolbar() {
       var i, len;
 
-      if (selectedElement != null) {
+      if (!isNullish(selectedElement)) {
         switch (selectedElement.tagName) {
           case 'use':
           case 'image':
@@ -29942,47 +30924,50 @@
 
           case 'g':
           case 'a':
-            // Look for common styles
-            var childs = selectedElement.getElementsByTagName('*');
-            var gWidth = null;
+            {
+              // Look for common styles
+              var childs = selectedElement.getElementsByTagName('*');
+              var gWidth = null;
 
-            for (i = 0, len = childs.length; i < len; i++) {
-              var swidth = childs[i].getAttribute('stroke-width');
+              for (i = 0, len = childs.length; i < len; i++) {
+                var swidth = childs[i].getAttribute('stroke-width');
 
-              if (i === 0) {
-                gWidth = swidth;
-              } else if (gWidth !== swidth) {
-                gWidth = null;
+                if (i === 0) {
+                  gWidth = swidth;
+                } else if (gWidth !== swidth) {
+                  gWidth = null;
+                }
               }
-            }
 
-            $$b('#stroke_width').val(gWidth === null ? '' : gWidth);
-            paintBox.fill.update(true);
-            paintBox.stroke.update(true);
-            break;
+              $$b('#stroke_width').val(gWidth === null ? '' : gWidth);
+              paintBox.fill.update(true);
+              paintBox.stroke.update(true);
+              break;
+            }
 
           default:
-            paintBox.fill.update(true);
-            paintBox.stroke.update(true);
-            $$b('#stroke_width').val(selectedElement.getAttribute('stroke-width') || 1);
-            $$b('#stroke_style').val(selectedElement.getAttribute('stroke-dasharray') || 'none');
-            var attr = selectedElement.getAttribute('stroke-linejoin') || 'miter';
+            {
+              paintBox.fill.update(true);
+              paintBox.stroke.update(true);
+              $$b('#stroke_width').val(selectedElement.getAttribute('stroke-width') || 1);
+              $$b('#stroke_style').val(selectedElement.getAttribute('stroke-dasharray') || 'none');
+              var attr = selectedElement.getAttribute('stroke-linejoin') || 'miter';
 
-            if ($$b('#linejoin_' + attr).length) {
-              setStrokeOpt($$b('#linejoin_' + attr)[0]);
+              if ($$b('#linejoin_' + attr).length) {
+                setStrokeOpt($$b('#linejoin_' + attr)[0]);
+              }
+
+              attr = selectedElement.getAttribute('stroke-linecap') || 'butt';
+
+              if ($$b('#linecap_' + attr).length) {
+                setStrokeOpt($$b('#linecap_' + attr)[0]);
+              }
             }
-
-            attr = selectedElement.getAttribute('stroke-linecap') || 'butt';
-
-            if ($$b('#linecap_' + attr).length) {
-              setStrokeOpt($$b('#linecap_' + attr)[0]);
-            }
-
         }
       } // All elements including image and group have opacity
 
 
-      if (selectedElement != null) {
+      if (!isNullish(selectedElement)) {
         var opacPerc = (selectedElement.getAttribute('opacity') || 1.0) * 100;
         $$b('#group_opacity').val(opacPerc);
         $$b('#opac_slider').slider('option', 'value', opacPerc);
@@ -29991,13 +30976,17 @@
       }
 
       updateToolButtonState();
-    }; // updates the context panel tools based on the selected element
+    };
+    /**
+    * Updates the context panel tools based on the selected element.
+    * @returns {undefined}
+    */
 
 
     var updateContextPanel = function updateContextPanel() {
       var elem = selectedElement; // If element has just been deleted, consider it null
 
-      if (elem != null && !elem.parentNode) {
+      if (!isNullish(elem) && !elem.parentNode) {
         elem = null;
       }
 
@@ -30009,7 +30998,7 @@
       var menuItems = $$b('#cmenu_canvas li');
       $$b('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,' + '#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,' + ' #use_panel, #a_panel').hide();
 
-      if (elem != null) {
+      if (!isNullish(elem)) {
         var elname = elem.nodeName; // If this is a link with no transform and one child, pretend
         // its child is selected
         // if (elname === 'a') { // && !$(elem).attr('transform')) {
@@ -30026,6 +31015,7 @@
           if (elname === 'image' && svgCanvas.getMode() === 'image') {
             // Prompt for URL if not a data URL
             if (!svgCanvas.getHref(elem).startsWith('data:')) {
+              /* await */
               promptImgURL({
                 cancelDeletes: true
               });
@@ -30192,7 +31182,7 @@
         }
 
         menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
-        menuItems[(tagName === 'g' || !multiselected ? 'dis' : 'en') + 'ableContextMenuItems']('#group'); // if (elem != null)
+        menuItems[(tagName === 'g' || !multiselected ? 'dis' : 'en') + 'ableContextMenuItems']('#group'); // if (!Utils.isNullish(elem))
       } else if (multiselected) {
         $$b('#multiselected_panel').show();
         menuItems.enableContextMenuItems('#group').disableContextMenuItems('#ungroup');
@@ -30214,6 +31204,11 @@
         $$b('#selLayerNames').attr('disabled', 'disabled');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var updateWireFrame = function updateWireFrame() {
       // Test support
@@ -30226,6 +31221,10 @@
     };
 
     var curContext = '';
+    /**
+    * @param {string} [title=svgCanvas.getDocumentTitle()]
+    * @returns {undefined}
+    */
 
     var updateTitle = function updateTitle(title) {
       title = title || svgCanvas.getDocumentTitle();
@@ -30256,17 +31255,17 @@
 
       var isNode = mode === 'pathedit'; // if elems[1] is present, then we have more than one element
 
-      selectedElement = elems.length === 1 || elems[1] == null ? elems[0] : null;
-      multiselected = elems.length >= 2 && elems[1] != null;
+      selectedElement = elems.length === 1 || isNullish(elems[1]) ? elems[0] : null;
+      multiselected = elems.length >= 2 && !isNullish(elems[1]);
 
-      if (selectedElement != null) {
+      if (!isNullish(selectedElement)) {
         // unless we're already in always set the mode of the editor to select because
         // upon creation of a text element the editor is switched into
         // select mode and this event fires - we need our UI to be in sync
         if (!isNode) {
           updateToolbar();
         }
-      } // if (elem != null)
+      } // if (!Utils.isNullish(elem))
       // Deal with pathedit mode
 
 
@@ -30299,19 +31298,21 @@
         return;
       }
 
-      multiselected = elems.length >= 2 && elems[1] != null; // Only updating fields for single elements for now
+      multiselected = elems.length >= 2 && !isNullish(elems[1]); // Only updating fields for single elements for now
 
       if (!multiselected) {
         switch (mode) {
           case 'rotate':
-            var ang = svgCanvas.getRotationAngle(elem);
-            $$b('#angle').val(ang);
-            $$b('#tool_reorient').toggleClass('disabled', ang === 0);
-            break;
-          // TODO: Update values that change on move/resize, etc
-          // case 'select':
-          // case 'resize':
-          //   break;
+            {
+              var ang = svgCanvas.getRotationAngle(elem);
+              $$b('#angle').val(ang);
+              $$b('#tool_reorient').toggleClass('disabled', ang === 0);
+              break; // TODO: Update values that change on move/resize, etc
+              // } case 'select': {
+              // } case 'resize': {
+              //   break;
+              // }
+            }
         }
       }
 
@@ -30360,7 +31361,7 @@
           } // Update selectedElement if element is no longer part of the image.
           // This occurs for the text elements in Firefox
 
-        } else if (elem && selectedElement && selectedElement.parentNode == null) {
+        } else if (elem && selectedElement && isNullish(selectedElement.parentNode)) {
           // || elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
           selectedElement = elem;
         }
@@ -30454,6 +31455,10 @@
 
       zoomDone();
     };
+    /**
+    * @implements {module:jQuerySpinButton.ValueCallback}
+    */
+
 
     var changeZoom = function changeZoom(ctl) {
       var zoomlevel = ctl.value / 100;
@@ -30516,9 +31521,13 @@
         curContext = null;
       }
 
-      $$b('#cur_context_panel').toggle(!!context).html(linkStr);
+      $$b('#cur_context_panel').toggle(Boolean(context)).html(linkStr);
       updateTitle();
-    }; // Makes sure the current selected paint is available to work with
+    };
+    /**
+    * Makes sure the current selected paint is available to work with.
+    * @returns {undefined}
+    */
 
 
     var prepPaints = function prepPaints() {
@@ -30527,6 +31536,10 @@
     };
 
     var flyoutFuncs = {};
+    /**
+    *
+    * @returns {undefined}
+    */
 
     var setFlyoutTitles = function setFlyoutTitles() {
       $$b('.tools_flyout').each(function () {
@@ -30545,7 +31558,7 @@
 
     var allHolders = {};
     /**
-     * @param {GenericObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
+     * @param {PlainObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
      * @returns {undefined}
      */
 
@@ -30568,10 +31581,10 @@
           // Get this button's options
           var idSel = '#' + this.getAttribute('id');
 
-          var _Object$entries$find = Object.entries(btnOpts).find(function (_ref10) {
-            var _ref11 = _slicedToArray(_ref10, 2),
-                i = _ref11[0],
-                sel = _ref11[1].sel;
+          var _Object$entries$find = Object.entries(btnOpts).find(function (_ref9) {
+            var _ref10 = _slicedToArray(_ref9, 2),
+                _ = _ref10[0],
+                sel = _ref10[1].sel;
 
             return sel === idSel;
           }),
@@ -30598,22 +31611,22 @@
             if (ev.type === 'keydown') {
               var flyoutIsSelected = $$b(options.parent + '_show').hasClass('tool_button_current');
               var currentOperation = $$b(options.parent + '_show').attr('data-curopt');
-              Object.entries(holders[opts.parent]).some(function (_ref12) {
-                var _ref13 = _slicedToArray(_ref12, 2),
-                    i = _ref13[0],
-                    tool = _ref13[1];
+              Object.entries(holders[opts.parent]).some(function (_ref11) {
+                var _ref12 = _slicedToArray(_ref11, 2),
+                    j = _ref12[0],
+                    tool = _ref12[1];
 
                 if (tool.sel !== currentOperation) {
-                  return;
+                  return false;
                 }
 
                 if (!ev.shiftKey || !flyoutIsSelected) {
                   options = tool;
                 } else {
                   // If flyout is selected, allow shift key to iterate through subitems
-                  i = parseInt(i, 10); // Use `allHolders` to include both extension `includeWith` and toolbarButtons
+                  j = parseInt(j); // Use `allHolders` to include both extension `includeWith` and toolbarButtons
 
-                  options = allHolders[opts.parent][i + 1] || holders[opts.parent][0];
+                  options = allHolders[opts.parent][j + 1] || holders[opts.parent][0];
                 }
 
                 return true;
@@ -30640,6 +31653,8 @@
             icon[0].setAttribute('height', shower.height());
             shower.children(':not(.flyout_arrow_horiz)').remove();
             shower.append(icon).attr('data-curopt', options.sel); // This sets the current mode
+
+            return true;
           };
 
           $$b(this).mouseup(flyoutAction);
@@ -30647,6 +31662,8 @@
           if (opts.key) {
             $$b(document).bind('keydown', opts.key[0] + ' shift+' + opts.key[0], flyoutAction);
           }
+
+          return true;
         });
 
         if (def) {
@@ -30681,6 +31698,7 @@
             holder.data('shown_popop', true);
           }, time);
           evt.preventDefault();
+          return true;
         }).mouseup(function (evt) {
           clearTimeout(timer);
           var opt = $$b(this).attr('data-curopt'); // Is library and popped up, so do nothing
@@ -30698,6 +31716,12 @@
       setFlyoutTitles();
       setFlyoutPositions();
     };
+    /**
+    * @param {string} id
+    * @param {external:jQuery} child
+    * @returns {undefined}
+    */
+
 
     var makeFlyoutHolder = function makeFlyoutHolder(id, child) {
       var div = $$b('<div>', {
@@ -30705,16 +31729,27 @@
         id: id
       }).appendTo('#svg_editor').append(child);
       return div;
-    }; // TODO: Combine this with addDropDown or find other way to optimize
+    };
+    /**
+    * @param {string} elemSel
+    * @param {string} listSel
+    * @param {external:jQuery.Function} callback
+    * @param {PlainObject} opts
+    * @param {boolean} opts.dropUp
+    * @param {boolean} opts.seticon
+    * @param {boolean} opts.multiclick
+    * @todo Combine this with `addDropDown` or find other way to optimize.
+    * @returns {undefined}
+    */
 
 
-    var addAltDropDown = function addAltDropDown(elem, list, callback, opts) {
-      var button = $$b(elem);
+    var addAltDropDown = function addAltDropDown(elemSel, listSel, callback, opts) {
+      var button = $$b(elemSel);
       var dropUp = opts.dropUp;
-      list = $$b(list);
+      var list = $$b(listSel);
 
       if (dropUp) {
-        $$b(elem).addClass('dropup');
+        $$b(elemSel).addClass('dropup');
       }
 
       list.find('li').bind('mouseup', function () {
@@ -30723,7 +31758,11 @@
           $$b(this).addClass('current').siblings().removeClass('current');
         }
 
-        callback.apply(this, arguments);
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+
+        callback.apply.apply(callback, [this].concat(args));
       });
       var onButton = false;
       $$b(window).mouseup(function (evt) {
@@ -30782,13 +31821,13 @@
      * @param {external:Window} win
      * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
      * @listens module:svgcanvas.SvgCanvas#event:extension_added
-     * @returns {Promise} Resolves to `undefined`
+     * @returns {Promise|undefined} Resolves to `undefined`
      */
 
     var extAdded =
     /*#__PURE__*/
     function () {
-      var _ref14 = _asyncToGenerator(
+      var _ref13 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee5(win, ext) {
         var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, placementObj, holders;
@@ -30796,7 +31835,7 @@
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                prepResize = function _ref15() {
+                prepResize = function _ref14() {
                   if (resizeTimer) {
                     clearTimeout(resizeTimer);
                     resizeTimer = null;
@@ -30815,7 +31854,7 @@
                   break;
                 }
 
-                return _context5.abrupt("return");
+                return _context5.abrupt("return", undefined);
 
               case 3:
                 cbCalled = false;
@@ -30852,6 +31891,10 @@
                 extsPreLang.push(ext);
 
               case 14:
+                /**
+                *
+                * @returns {undefined}
+                */
                 runCallback = function runCallback() {
                   if (ext.callback && !cbCalled) {
                     cbCalled = true;
@@ -30892,69 +31935,77 @@
 
                     switch (tool.type) {
                       case 'tool_button':
-                        html = '<div class="tool_button">' + tool.id + '</div>';
-                        var div = $$b(html).appendTo(panel);
+                        {
+                          html = '<div class="tool_button">' + tool.id + '</div>';
+                          var div = $$b(html).appendTo(panel);
 
-                        if (tool.events) {
-                          $$b.each(tool.events, function (evt, func) {
-                            $$b(div).bind(evt, func);
-                          });
+                          if (tool.events) {
+                            $$b.each(tool.events, function (evt, func) {
+                              $$b(div).bind(evt, func);
+                            });
+                          }
+
+                          break;
                         }
-
-                        break;
 
                       case 'select':
-                        html = '<label' + contId + '>' + '<select id="' + tool.id + '">';
-                        $$b.each(tool.options, function (val, text) {
-                          var sel = val === tool.defval ? ' selected' : '';
-                          html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
-                        });
-                        html += '</select></label>'; // Creates the tool, hides & adds it, returns the select element
+                        {
+                          html = '<label' + contId + '>' + '<select id="' + tool.id + '">';
+                          $$b.each(tool.options, function (val, text) {
+                            var sel = val === tool.defval ? ' selected' : '';
+                            html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
+                          });
+                          html += '</select></label>'; // Creates the tool, hides & adds it, returns the select element
 
-                        var sel = $$b(html).appendTo(panel).find('select');
-                        $$b.each(tool.events, function (evt, func) {
-                          $$b(sel).bind(evt, func);
-                        });
-                        break;
+                          var sel = $$b(html).appendTo(panel).find('select');
+                          $$b.each(tool.events, function (evt, func) {
+                            $$b(sel).bind(evt, func);
+                          });
+                          break;
+                        }
 
                       case 'button-select':
-                        html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' + '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
-                        var list = $$b('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
+                        {
+                          html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' + '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+                          var list = $$b('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
 
-                        if (tool.colnum) {
-                          list.addClass('optcols' + tool.colnum);
-                        } // Creates the tool, hides & adds it, returns the select element
+                          if (tool.colnum) {
+                            list.addClass('optcols' + tool.colnum);
+                          } // Creates the tool, hides & adds it, returns the select element
 
-                        /* const dropdown = */
+                          /* const dropdown = */
 
 
-                        $$b(html).appendTo(panel).children();
-                        btnSelects.push({
-                          elem: '#' + tool.id,
-                          list: '#' + tool.id + '_opts',
-                          title: tool.title,
-                          callback: tool.events.change,
-                          cur: '#cur_' + tool.id
-                        });
-                        break;
+                          $$b(html).appendTo(panel).children();
+                          btnSelects.push({
+                            elem: '#' + tool.id,
+                            list: '#' + tool.id + '_opts',
+                            title: tool.title,
+                            callback: tool.events.change,
+                            cur: '#cur_' + tool.id
+                          });
+                          break;
+                        }
 
                       case 'input':
-                        html = '<label' + contId + '>' + '<span id="' + tool.id + '_label">' + tool.label + ':</span>' + '<input id="' + tool.id + '" title="' + tool.title + '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>'; // Creates the tool, hides & adds it, returns the select element
-                        // Add to given tool.panel
+                        {
+                          html = '<label' + contId + '>' + '<span id="' + tool.id + '_label">' + tool.label + ':</span>' + '<input id="' + tool.id + '" title="' + tool.title + '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>'; // Creates the tool, hides & adds it, returns the select element
+                          // Add to given tool.panel
 
-                        var inp = $$b(html).appendTo(panel).find('input');
+                          var inp = $$b(html).appendTo(panel).find('input');
 
-                        if (tool.spindata) {
-                          inp.SpinButton(tool.spindata);
+                          if (tool.spindata) {
+                            inp.SpinButton(tool.spindata);
+                          }
+
+                          if (tool.events) {
+                            $$b.each(tool.events, function (evt, func) {
+                              inp.bind(evt, func);
+                            });
+                          }
+
+                          break;
                         }
-
-                        if (tool.events) {
-                          $$b.each(tool.events, function (evt, func) {
-                            inp.bind(evt, func);
-                          });
-                        }
-
-                        break;
 
                       default:
                         break;
@@ -31228,6 +32279,7 @@
                 }
 
                 return _context5.abrupt("return", new Promise(function (resolve, reject) {
+                  // eslint-disable-line promise/avoid-new
                   $$b.svgIcons(svgicons, {
                     w: 24,
                     h: 24,
@@ -31259,10 +32311,17 @@
         }, _callee5, this);
       }));
 
-      return function extAdded(_x3, _x4) {
-        return _ref14.apply(this, arguments);
+      return function extAdded(_x4, _x5) {
+        return _ref13.apply(this, arguments);
       };
     }();
+    /**
+    * @param {string} color
+    * @param {Float} opac
+    * @param {string} type
+    * @returns {module:jGraduate~Paint}
+    */
+
 
     var getPaint = function getPaint(color, opac, type) {
       // update the editor's fill paint
@@ -31310,6 +32369,7 @@
       }
 
       if (!exportWindow || exportWindow.closed) {
+        /* await */
         $$b.alert(uiStrings$1.notification.popupWindowBlocked);
         return;
       }
@@ -31321,14 +32381,15 @@
     svgCanvas.bind('updateCanvas',
     /**
      * @param {external:Window} win
-     * @param {false} center
-     * @param {module:math.XYObject} newCtr
+     * @param {PlainObject} centerInfo
+     * @param {false} centerInfo.center
+     * @param {module:math.XYObject} centerInfo.newCtr
      * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
      * @returns {undefined}
      */
-    function (win, _ref16) {
-      var center = _ref16.center,
-          newCtr = _ref16.newCtr;
+    function (win, _ref15) {
+      var center = _ref15.center,
+          newCtr = _ref15.newCtr;
       updateCanvas(center, newCtr);
     });
     svgCanvas.bind('contextset', contextChanged);
@@ -31359,14 +32420,25 @@
     });
     setBackground($$b.pref('bkgd_color'), $$b.pref('bkgd_url'));
     $$b('#image_save_opts input').val([$$b.pref('img_save')]);
+    /**
+    * @implements {module:jQuerySpinButton.ValueCallback}
+    */
 
     var changeRectRadius = function changeRectRadius(ctl) {
       svgCanvas.setRectRadius(ctl.value);
     };
+    /**
+    * @implements {module:jQuerySpinButton.ValueCallback}
+    */
+
 
     var changeFontSize = function changeFontSize(ctl) {
       svgCanvas.setFontSize(ctl.value);
     };
+    /**
+    * @implements {module:jQuerySpinButton.ValueCallback}
+    */
+
 
     var changeStrokeWidth = function changeStrokeWidth(ctl) {
       var val = ctl.value;
@@ -31377,14 +32449,24 @@
 
       svgCanvas.setStrokeWidth(val);
     };
+    /**
+    * @implements {module:jQuerySpinButton.ValueCallback}
+    */
+
 
     var changeRotationAngle = function changeRotationAngle(ctl) {
       svgCanvas.setRotationAngle(ctl.value);
-      $$b('#tool_reorient').toggleClass('disabled', parseInt(ctl.value, 10) === 0);
+      $$b('#tool_reorient').toggleClass('disabled', parseInt(ctl.value) === 0);
     };
+    /**
+    * @param {external:jQuery.fn.SpinButton} ctl Spin Button
+    * @param {string} [val=ctl.value]
+    * @returns {undefined}
+    */
+
 
     var changeOpacity = function changeOpacity(ctl, val) {
-      if (val == null) {
+      if (isNullish(val)) {
         val = ctl.value;
       }
 
@@ -31396,9 +32478,16 @@
 
       svgCanvas.setOpacity(val / 100);
     };
+    /**
+    * @param {external:jQuery.fn.SpinButton} ctl Spin Button
+    * @param {string} [val=ctl.value]
+    * @param {boolean} noUndo
+    * @returns {undefined}
+    */
+
 
     var changeBlur = function changeBlur(ctl, val, noUndo) {
-      if (val == null) {
+      if (isNullish(val)) {
         val = ctl.value;
       }
 
@@ -31431,29 +32520,72 @@
     }); // fired when user wants to move elements to another layer
 
     var promptMoveLayerOnce = false;
-    $$b('#selLayerNames').change(function () {
-      var destLayer = this.options[this.selectedIndex].value;
-      var confirmStr = uiStrings$1.notification.QmoveElemsToLayer.replace('%s', destLayer);
+    $$b('#selLayerNames').change(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee6() {
+      var destLayer, confirmStr, moveToLayer, ok;
+      return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        while (1) {
+          switch (_context6.prev = _context6.next) {
+            case 0:
+              destLayer = this.options[this.selectedIndex].value;
+              confirmStr = uiStrings$1.notification.QmoveElemsToLayer.replace('%s', destLayer);
+              /**
+              * @param {boolean} ok
+              * @returns {undefined}
+              */
 
-      var moveToLayer = function moveToLayer(ok) {
-        if (!ok) {
-          return;
+              moveToLayer = function moveToLayer(ok) {
+                if (!ok) {
+                  return;
+                }
+
+                promptMoveLayerOnce = true;
+                svgCanvas.moveSelectedToLayer(destLayer);
+                svgCanvas.clearSelection();
+                populateLayers();
+              };
+
+              if (!destLayer) {
+                _context6.next = 14;
+                break;
+              }
+
+              if (!promptMoveLayerOnce) {
+                _context6.next = 8;
+                break;
+              }
+
+              moveToLayer(true);
+              _context6.next = 14;
+              break;
+
+            case 8:
+              _context6.next = 10;
+              return $$b.confirm(confirmStr);
+
+            case 10:
+              ok = _context6.sent;
+
+              if (ok) {
+                _context6.next = 13;
+                break;
+              }
+
+              return _context6.abrupt("return");
+
+            case 13:
+              moveToLayer(true);
+
+            case 14:
+            case "end":
+              return _context6.stop();
+          }
         }
-
-        promptMoveLayerOnce = true;
-        svgCanvas.moveSelectedToLayer(destLayer);
-        svgCanvas.clearSelection();
-        populateLayers();
-      };
-
-      if (destLayer) {
-        if (promptMoveLayerOnce) {
-          moveToLayer(true);
-        } else {
-          $$b.confirm(confirmStr, moveToLayer);
-        }
-      }
-    });
+      }, _callee6, this);
+    })));
     $$b('#font_family').change(function () {
       svgCanvas.setFontFamily(this.value);
     });
@@ -31482,8 +32614,10 @@
       var valid = isValidUnit(attr, val, selectedElement);
 
       if (!valid) {
-        $$b.alert(uiStrings$1.notification.invalidAttrValGiven);
         this.value = selectedElement.getAttribute(attr);
+        /* await */
+
+        $$b.alert(uiStrings$1.notification.invalidAttrValGiven);
         return false;
       }
 
@@ -31512,6 +32646,7 @@
       }
 
       this.blur();
+      return true;
     }); // Prevent selection of elements when shift-clicking
 
     $$b('#palette').mouseover(function () {
@@ -31558,7 +32693,7 @@
           keypan = false;
       $$b('#svgcanvas').bind('mousemove mouseup', function (evt) {
         if (panning === false) {
-          return;
+          return true;
         }
 
         wArea.scrollLeft -= evt.clientX - lastX;
@@ -31578,6 +32713,8 @@
           lastY = evt.clientY;
           return false;
         }
+
+        return true;
       });
       $$b(window).mouseup(function () {
         panning = false;
@@ -31762,7 +32899,7 @@
         return;
       }
 
-      var perc = parseInt($$b(this).text().split('%')[0], 10);
+      var perc = parseInt($$b(this).text().split('%')[0]);
       changeOpacity(false, perc);
     }, true); // For slider usage, see: http://jqueryui.com/demos/slider/
 
@@ -31840,13 +32977,18 @@
 
     (function () {
       var inp;
+      /**
+      *
+      * @returns {undefined}
+      */
 
       var unfocus = function unfocus() {
         $$b(inp).blur();
       };
 
       $$b('#svg_editor').find('button, select, input:not(#text)').focus(function () {
-        inp = this;
+        inp = this; // eslint-disable-line consistent-this
+
         uiContext = 'toolbars';
         workarea.mousedown(unfocus);
       }).blur(function () {
@@ -31858,60 +33000,110 @@
         }
       });
     })();
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickFHPath = function clickFHPath() {
       if (toolButtonClick('#tool_fhpath')) {
         svgCanvas.setMode('fhpath');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickLine = function clickLine() {
       if (toolButtonClick('#tool_line')) {
         svgCanvas.setMode('line');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickSquare = function clickSquare() {
       if (toolButtonClick('#tool_square')) {
         svgCanvas.setMode('square');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickRect = function clickRect() {
       if (toolButtonClick('#tool_rect')) {
         svgCanvas.setMode('rect');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickFHRect = function clickFHRect() {
       if (toolButtonClick('#tool_fhrect')) {
         svgCanvas.setMode('fhrect');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickCircle = function clickCircle() {
       if (toolButtonClick('#tool_circle')) {
         svgCanvas.setMode('circle');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickEllipse = function clickEllipse() {
       if (toolButtonClick('#tool_ellipse')) {
         svgCanvas.setMode('ellipse');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickFHEllipse = function clickFHEllipse() {
       if (toolButtonClick('#tool_fhellipse')) {
         svgCanvas.setMode('fhellipse');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickImage = function clickImage() {
       if (toolButtonClick('#tool_image')) {
         svgCanvas.setMode('image');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickZoom = function clickZoom() {
       if (toolButtonClick('#tool_zoom')) {
@@ -31919,6 +33111,11 @@
         workarea.css('cursor', zoomInIcon);
       }
     };
+    /**
+    * @param {Float} multiplier
+    * @returns {undefined}
+    */
+
 
     var zoomImage = function zoomImage(multiplier) {
       var res = svgCanvas.getResolution();
@@ -31929,6 +33126,11 @@
       zoomDone();
       updateCanvas(true);
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var dblclickZoom = function dblclickZoom() {
       if (toolButtonClick('#tool_zoom')) {
@@ -31936,38 +33138,67 @@
         setSelectMode();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickText = function clickText() {
       if (toolButtonClick('#tool_text')) {
         svgCanvas.setMode('text');
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickPath = function clickPath() {
       if (toolButtonClick('#tool_path')) {
         svgCanvas.setMode('path');
       }
-    }; // Delete is a contextual tool that only appears in the ribbon if
-    // an element has been selected
+    };
+    /**
+    * Delete is a contextual tool that only appears in the ribbon if
+    * an element has been selected.
+    * @returns {undefined}
+    */
 
 
     var deleteSelected = function deleteSelected() {
-      if (selectedElement != null || multiselected) {
+      if (!isNullish(selectedElement) || multiselected) {
         svgCanvas.deleteSelectedElements();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var cutSelected = function cutSelected() {
-      if (selectedElement != null || multiselected) {
+      if (!isNullish(selectedElement) || multiselected) {
         svgCanvas.cutSelectedElements();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var copySelected = function copySelected() {
-      if (selectedElement != null || multiselected) {
+      if (!isNullish(selectedElement) || multiselected) {
         svgCanvas.copySelectedElements();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var pasteInCenter = function pasteInCenter() {
       var zoom = svgCanvas.getZoom();
@@ -31975,49 +33206,114 @@
       var y = (workarea[0].scrollTop + workarea.height() / 2) / zoom - svgCanvas.contentH;
       svgCanvas.pasteElements('point', x, y);
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var moveToTopSelected = function moveToTopSelected() {
-      if (selectedElement != null) {
+      if (!isNullish(selectedElement)) {
         svgCanvas.moveToTopSelectedElement();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var moveToBottomSelected = function moveToBottomSelected() {
-      if (selectedElement != null) {
+      if (!isNullish(selectedElement)) {
         svgCanvas.moveToBottomSelectedElement();
       }
     };
+    /**
+    * @param {"Up"|"Down"} dir
+    * @returns {undefined}
+    */
+
 
     var moveUpDownSelected = function moveUpDownSelected(dir) {
-      if (selectedElement != null) {
+      if (!isNullish(selectedElement)) {
         svgCanvas.moveUpDownSelected(dir);
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var convertToPath$$1 = function convertToPath$$1() {
-      if (selectedElement != null) {
+      if (!isNullish(selectedElement)) {
         svgCanvas.convertToPath();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var reorientPath = function reorientPath() {
-      if (selectedElement != null) {
+      if (!isNullish(selectedElement)) {
         path.reorient();
       }
     };
+    /**
+    *
+    * @returns {Promise} Resolves to `undefined`
+    */
 
-    var makeHyperlink = function makeHyperlink() {
-      if (selectedElement != null || multiselected) {
-        $$b.prompt(uiStrings$1.notification.enterNewLinkURL, 'http://', function (url) {
-          if (url) {
-            svgCanvas.makeHyperlink(url);
+
+    var makeHyperlink =
+    /*#__PURE__*/
+    function () {
+      var _ref17 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee7() {
+        var url;
+        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                if (!(!isNullish(selectedElement) || multiselected)) {
+                  _context7.next = 5;
+                  break;
+                }
+
+                _context7.next = 3;
+                return $$b.prompt(uiStrings$1.notification.enterNewLinkURL, 'http://');
+
+              case 3:
+                url = _context7.sent;
+
+                if (url) {
+                  svgCanvas.makeHyperlink(url);
+                }
+
+              case 5:
+              case "end":
+                return _context7.stop();
+            }
           }
-        });
-      }
-    };
+        }, _callee7, this);
+      }));
+
+      return function makeHyperlink() {
+        return _ref17.apply(this, arguments);
+      };
+    }();
+    /**
+    * @param {Float} dx
+    * @param {Float} dy
+    * @returns {undefined}
+    */
+
 
     var moveSelected = function moveSelected(dx, dy) {
-      if (selectedElement != null || multiselected) {
+      if (!isNullish(selectedElement) || multiselected) {
         if (curConfig.gridSnapping) {
           // Use grid snap value regardless of zoom level
           var multi = svgCanvas.getZoom() * curConfig.snappingStep;
@@ -32028,24 +33324,44 @@
         svgCanvas.moveSelectedElements(dx, dy);
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var linkControlPoints = function linkControlPoints() {
       $$b('#tool_node_link').toggleClass('push_button_pressed tool_button');
       var linked = $$b('#tool_node_link').hasClass('push_button_pressed');
       path.linkControlPoints(linked);
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clonePathNode = function clonePathNode() {
       if (path.getNodePoint()) {
         path.clonePathNode();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var deletePathNode = function deletePathNode() {
       if (path.getNodePoint()) {
         path.deletePathNode();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var addSubPath = function addSubPath() {
       var button = $$b('#tool_add_subpath');
@@ -32053,21 +33369,42 @@
       button.toggleClass('push_button_pressed tool_button');
       path.addSubPath(sp);
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var opencloseSubPath = function opencloseSubPath() {
       path.opencloseSubPath();
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var selectNext = function selectNext() {
       svgCanvas.cycleElement(1);
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var selectPrev = function selectPrev() {
       svgCanvas.cycleElement(0);
     };
+    /**
+    * @param {0|1} cw
+    * @param {Integer} step
+    * @returns {undefined}
+    */
+
 
     var rotateSelected = function rotateSelected(cw, step) {
-      if (selectedElement == null || multiselected) {
+      if (isNullish(selectedElement) || multiselected) {
         return;
       }
 
@@ -32081,43 +33418,86 @@
     };
     /**
      * @fires module:svgcanvas.SvgCanvas#event:ext-onNewDocument
-     * @returns {undefined}
+     * @returns {Promise} Resolves to `undefined`
      */
 
 
-    var clickClear = function clickClear() {
-      var _curConfig$dimensions = _slicedToArray(curConfig.dimensions, 2),
-          x = _curConfig$dimensions[0],
-          y = _curConfig$dimensions[1];
+    var clickClear =
+    /*#__PURE__*/
+    function () {
+      var _ref18 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee8() {
+        var _curConfig$dimensions, x, y, ok;
 
-      $$b.confirm(uiStrings$1.notification.QwantToClear, function (ok) {
-        if (!ok) {
-          return;
-        }
+        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _curConfig$dimensions = _slicedToArray(curConfig.dimensions, 2), x = _curConfig$dimensions[0], y = _curConfig$dimensions[1];
+                _context8.next = 3;
+                return $$b.confirm(uiStrings$1.notification.QwantToClear);
 
-        setSelectMode();
-        svgCanvas.clear();
-        svgCanvas.setResolution(x, y);
-        updateCanvas(true);
-        zoomImage();
-        populateLayers();
-        updateContextPanel();
-        prepPaints();
-        svgCanvas.runExtensions('onNewDocument');
-      });
-    };
+              case 3:
+                ok = _context8.sent;
+
+                if (ok) {
+                  _context8.next = 6;
+                  break;
+                }
+
+                return _context8.abrupt("return");
+
+              case 6:
+                setSelectMode();
+                svgCanvas.clear();
+                svgCanvas.setResolution(x, y);
+                updateCanvas(true);
+                zoomImage();
+                populateLayers();
+                updateContextPanel();
+                prepPaints();
+                svgCanvas.runExtensions('onNewDocument');
+
+              case 15:
+              case "end":
+                return _context8.stop();
+            }
+          }
+        }, _callee8, this);
+      }));
+
+      return function clickClear() {
+        return _ref18.apply(this, arguments);
+      };
+    }();
+    /**
+    *
+    * @returns {false}
+    */
+
 
     var clickBold = function clickBold() {
       svgCanvas.setBold(!svgCanvas.getBold());
       updateContextPanel();
       return false;
     };
+    /**
+    *
+    * @returns {false}
+    */
+
 
     var clickItalic = function clickItalic() {
       svgCanvas.setItalic(!svgCanvas.getItalic());
       updateContextPanel();
       return false;
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickSave = function clickSave() {
       // In the future, more options can be provided here
@@ -32129,117 +33509,141 @@
     };
 
     var loadingURL;
+    /**
+    *
+    * @returns {Promise} Resolves to `undefined`
+    */
 
-    var clickExport = function clickExport() {
-      $$b.select('Select an image type for export: ', [// See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
-      // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
-      'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'],
+    var clickExport =
+    /*#__PURE__*/
+    function () {
+      var _ref19 = _asyncToGenerator(
       /*#__PURE__*/
-      function () {
-        var _ref17 = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee6(imgType) {
-          var exportWindowName, openExportWindow, chrome, quality;
-          return regeneratorRuntime.wrap(function _callee6$(_context6) {
-            while (1) {
-              switch (_context6.prev = _context6.next) {
-                case 0:
-                  openExportWindow = function _ref18() {
-                    var str = uiStrings$1.notification.loadingImage;
+      regeneratorRuntime.mark(function _callee9() {
+        var imgType, exportWindowName, openExportWindow, chrome, quality;
+        return regeneratorRuntime.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                openExportWindow = function _ref20() {
+                  var loadingImage = uiStrings$1.notification.loadingImage;
 
-                    if (curConfig.exportWindowType === 'new') {
-                      editor.exportWindowCt++;
-                    }
+                  if (curConfig.exportWindowType === 'new') {
+                    editor.exportWindowCt++;
+                  }
 
-                    exportWindowName = curConfig.canvasName + editor.exportWindowCt;
-                    var popHTML, popURL;
+                  exportWindowName = curConfig.canvasName + editor.exportWindowCt;
+                  var popHTML, popURL;
 
-                    if (loadingURL) {
-                      popURL = loadingURL;
+                  if (loadingURL) {
+                    popURL = loadingURL;
+                  } else {
+                    popHTML = "<!DOCTYPE html><html>\n          <head>\n            <meta charset=\"utf-8\">\n            <title>".concat(loadingImage, "</title>\n          </head>\n          <body><h1>").concat(loadingImage, "</h1></body>\n        <html>");
+
+                    if (typeof URL !== 'undefined' && URL.createObjectURL) {
+                      var blob = new Blob([popHTML], {
+                        type: 'text/html'
+                      });
+                      popURL = URL.createObjectURL(blob);
                     } else {
-                      popHTML = "<!DOCTYPE html><html>\n            <head>\n              <meta charset=\"utf-8\">\n              <title>".concat(str, "</title>\n            </head>\n            <body><h1>").concat(str, "</h1></body>\n          <html>");
-
-                      if (typeof URL !== 'undefined' && URL.createObjectURL) {
-                        var blob = new Blob([popHTML], {
-                          type: 'text/html'
-                        });
-                        popURL = URL.createObjectURL(blob);
-                      } else {
-                        popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
-                      }
-
-                      loadingURL = popURL;
+                      popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
                     }
 
-                    exportWindow = window.open(popURL, exportWindowName);
-                  };
-
-                  if (imgType) {
-                    _context6.next = 3;
-                    break;
+                    loadingURL = popURL;
                   }
 
-                  return _context6.abrupt("return");
+                  exportWindow = window.open(popURL, exportWindowName);
+                };
 
-                case 3:
-                  chrome = isChrome();
+                _context9.next = 3;
+                return $$b.select('Select an image type for export: ', [// See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
+                // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
+                'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'], function () {
+                  var sel = $$b(this);
 
-                  if (!(imgType === 'PDF')) {
-                    _context6.next = 9;
-                    break;
+                  if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
+                    if (!$$b('#image-slider').length) {
+                      $$b("<div><label>".concat(uiStrings$1.ui.quality, "\n              <input id=\"image-slider\"\n                type=\"range\" min=\"1\" max=\"100\" value=\"92\" />\n            </label></div>")).appendTo(sel.parent());
+                    }
+                  } else {
+                    $$b('#image-slider').parent().remove();
                   }
+                });
 
-                  if (!customExportPDF && !chrome) {
-                    openExportWindow();
-                  }
+              case 3:
+                imgType = _context9.sent;
 
-                  svgCanvas.exportPDF(exportWindowName);
-                  _context6.next = 13;
+                if (imgType) {
+                  _context9.next = 6;
                   break;
+                }
 
-                case 9:
-                  if (!customExportImage) {
-                    openExportWindow();
-                  }
+                return _context9.abrupt("return");
 
-                  quality = parseInt($$b('#image-slider').val(), 10) / 100;
-                  /* const results = */
+              case 6:
+                chrome = isChrome();
 
-                  _context6.next = 13;
-                  return svgCanvas.rasterExport(imgType, quality, exportWindowName);
+                if (!(imgType === 'PDF')) {
+                  _context9.next = 12;
+                  break;
+                }
 
-                case 13:
-                case "end":
-                  return _context6.stop();
-              }
+                if (!customExportPDF && !chrome) {
+                  openExportWindow();
+                }
+
+                svgCanvas.exportPDF(exportWindowName);
+                _context9.next = 16;
+                break;
+
+              case 12:
+                if (!customExportImage) {
+                  openExportWindow();
+                }
+
+                quality = parseInt($$b('#image-slider').val()) / 100;
+                /* const results = */
+
+                _context9.next = 16;
+                return svgCanvas.rasterExport(imgType, quality, exportWindowName);
+
+              case 16:
+              case "end":
+                return _context9.stop();
             }
-          }, _callee6, this);
-        }));
-
-        return function (_x5) {
-          return _ref17.apply(this, arguments);
-        };
-      }(), function () {
-        var sel = $$b(this);
-
-        if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
-          if (!$$b('#image-slider').length) {
-            $$b("<div><label>".concat(uiStrings$1.ui.quality, "\n              <input id=\"image-slider\"\n                type=\"range\" min=\"1\" max=\"100\" value=\"92\" />\n            </label></div>")).appendTo(sel.parent());
           }
-        } else {
-          $$b('#image-slider').parent().remove();
-        }
-      });
-    }; // by default, svgCanvas.open() is a no-op.
-    // it is up to an extension mechanism (opera widget, etc)
-    // to call setCustomHandlers() which will make it do something
+        }, _callee9, this);
+      }));
+
+      return function clickExport() {
+        return _ref19.apply(this, arguments);
+      };
+    }();
+    /**
+     * By default, svgCanvas.open() is a no-op. It is up to an extension
+     *  mechanism (opera widget, etc.) to call `setCustomHandlers()` which
+     *  will make it do something.
+     * @returns {undefined}
+     */
 
 
     var clickOpen = function clickOpen() {
       svgCanvas.open();
     };
+    /**
+    *
+    * @returns {undefined}
+    */
 
-    var clickImport = function clickImport() {};
+
+    var clickImport = function clickImport() {
+      /* */
+    };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickUndo = function clickUndo() {
       if (undoMgr.getUndoStackSize() > 0) {
@@ -32247,6 +33651,11 @@
         populateLayers();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickRedo = function clickRedo() {
       if (undoMgr.getRedoStackSize() > 0) {
@@ -32254,6 +33663,11 @@
         populateLayers();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickGroup = function clickGroup() {
       // group
@@ -32263,15 +33677,30 @@
         svgCanvas.ungroupSelectedElement();
       }
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickClone = function clickClone() {
       svgCanvas.cloneSelectedElements(20, 20);
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickAlign = function clickAlign() {
       var letter = this.id.replace('tool_align', '').charAt(0);
       svgCanvas.alignSelectedElements(letter, $$b('#align_relative_to').val());
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var clickWireframe = function clickWireframe() {
       $$b('#tool_wireframe').toggleClass('push_button_pressed tool_button');
@@ -32299,6 +33728,10 @@
     }).css('position', 'absolute');
     var docprops = false;
     var preferences = false;
+    /**
+    *
+    * @returns {undefined}
+    */
 
     var showDocProperties = function showDocProperties() {
       if (docprops) {
@@ -32321,6 +33754,11 @@
       $$b('#canvas_title').val(svgCanvas.getDocumentTitle());
       $$b('#svg_docprops').show();
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var showPreferences = function showPreferences() {
       if (preferences) {
@@ -32330,8 +33768,6 @@
       preferences = true;
       $$b('#main_menu').hide(); // Update background color with current one
 
-      var blocks = $$b('#bg_blocks div');
-      var curBg = 'cur_background';
       var canvasBg = curPrefs.bkgd_color;
       var url = $$b.pref('bkgd_url');
       blocks.each(function () {
@@ -32357,41 +33793,94 @@
       $$b('#grid_color').attr('value', curConfig.gridColor);
       $$b('#svg_prefs').show();
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var hideSourceEditor = function hideSourceEditor() {
       $$b('#svg_source_editor').hide();
       editingsource = false;
       $$b('#svg_source_textarea').blur();
     };
+    /**
+    *
+    * @returns {Promise} Resolves to `undefined`
+    */
 
-    var saveSourceEditor = function saveSourceEditor() {
-      if (!editingsource) {
-        return;
-      }
 
-      var saveChanges = function saveChanges() {
-        svgCanvas.clearSelection();
-        hideSourceEditor();
-        zoomImage();
-        populateLayers();
-        updateTitle();
-        prepPaints();
-      };
+    var saveSourceEditor =
+    /*#__PURE__*/
+    function () {
+      var _ref21 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee10() {
+        var saveChanges, ok;
+        return regeneratorRuntime.wrap(function _callee10$(_context10) {
+          while (1) {
+            switch (_context10.prev = _context10.next) {
+              case 0:
+                if (editingsource) {
+                  _context10.next = 2;
+                  break;
+                }
 
-      if (!svgCanvas.setSvgString($$b('#svg_source_textarea').val())) {
-        $$b.confirm(uiStrings$1.notification.QerrorsRevertToSource, function (ok) {
-          if (!ok) {
-            return false;
+                return _context10.abrupt("return");
+
+              case 2:
+                saveChanges = function saveChanges() {
+                  svgCanvas.clearSelection();
+                  hideSourceEditor();
+                  zoomImage();
+                  populateLayers();
+                  updateTitle();
+                  prepPaints();
+                };
+
+                if (svgCanvas.setSvgString($$b('#svg_source_textarea').val())) {
+                  _context10.next = 11;
+                  break;
+                }
+
+                _context10.next = 6;
+                return $$b.confirm(uiStrings$1.notification.QerrorsRevertToSource);
+
+              case 6:
+                ok = _context10.sent;
+
+                if (ok) {
+                  _context10.next = 9;
+                  break;
+                }
+
+                return _context10.abrupt("return");
+
+              case 9:
+                saveChanges();
+                return _context10.abrupt("return");
+
+              case 11:
+                saveChanges();
+                setSelectMode();
+
+              case 13:
+              case "end":
+                return _context10.stop();
+            }
           }
+        }, _callee10, this);
+      }));
 
-          saveChanges();
-        });
-      } else {
-        saveChanges();
-      }
+      return function saveSourceEditor() {
+        return _ref21.apply(this, arguments);
+      };
+    }();
+    /**
+    *
+    * @returns {undefined}
+    */
 
-      setSelectMode();
-    };
 
     var hideDocProperties = function hideDocProperties() {
       $$b('#svg_docprops').hide();
@@ -32400,11 +33889,21 @@
       $$b('#image_save_opts input').val([$$b.pref('img_save')]);
       docprops = false;
     };
+    /**
+    *
+    * @returns {undefined}
+    */
+
 
     var hidePreferences = function hidePreferences() {
       $$b('#svg_prefs').hide();
       preferences = false;
     };
+    /**
+    *
+    * @returns {boolean} Whether there were problems saving the document properties
+    */
+
 
     var saveDocProperties = function saveDocProperties() {
       // set title
@@ -32418,22 +33917,27 @@
           h = height.val();
 
       if (w !== 'fit' && !isValidUnit('width', w)) {
-        $$b.alert(uiStrings$1.notification.invalidAttrValGiven);
         width.parent().addClass('error');
+        /* await */
+
+        $$b.alert(uiStrings$1.notification.invalidAttrValGiven);
         return false;
       }
 
       width.parent().removeClass('error');
 
       if (h !== 'fit' && !isValidUnit('height', h)) {
-        $$b.alert(uiStrings$1.notification.invalidAttrValGiven);
         height.parent().addClass('error');
+        /* await */
+
+        $$b.alert(uiStrings$1.notification.invalidAttrValGiven);
         return false;
       }
 
       height.parent().removeClass('error');
 
       if (!svgCanvas.setResolution(w, h)) {
+        /* await */
         $$b.alert(uiStrings$1.notification.noContentToFitTo);
         return false;
       } // Set image save option
@@ -32442,6 +33946,7 @@
       $$b.pref('img_save', $$b('#image_save_opts :checked').val());
       updateCanvas();
       hideDocProperties();
+      return true;
     };
     /**
     * Save user preferences based on current values in the UI.
@@ -32454,12 +33959,12 @@
     /*#__PURE__*/
     _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee7() {
-      var color, lang, _ref20, langParam, langData;
+    regeneratorRuntime.mark(function _callee11() {
+      var color, lang, _ref23, langParam, langData;
 
-      return regeneratorRuntime.wrap(function _callee7$(_context7) {
+      return regeneratorRuntime.wrap(function _callee11$(_context11) {
         while (1) {
-          switch (_context7.prev = _context7.next) {
+          switch (_context11.prev = _context11.next) {
             case 0:
               // Set background
               color = $$b('#bg_blocks div.cur_background').css('background-color') || '#FFF';
@@ -32468,18 +33973,18 @@
               lang = $$b('#lang_select').val();
 
               if (!(lang !== $$b.pref('lang'))) {
-                _context7.next = 11;
+                _context11.next = 11;
                 break;
               }
 
-              _context7.next = 6;
+              _context11.next = 6;
               return editor.putLocale(lang, goodLangs, curConfig);
 
             case 6:
-              _ref20 = _context7.sent;
-              langParam = _ref20.langParam;
-              langData = _ref20.langData;
-              _context7.next = 11;
+              _ref23 = _context11.sent;
+              langParam = _ref23.langParam;
+              langData = _ref23.langData;
+              _context11.next = 11;
               return setLang(langParam, langData);
 
             case 11:
@@ -32503,43 +34008,95 @@
 
             case 22:
             case "end":
-              return _context7.stop();
+              return _context11.stop();
           }
         }
-      }, _callee7, this);
+      }, _callee11, this);
     }));
 
     var resetScrollPos = $$b.noop;
+    /**
+    *
+    * @returns {Promise} Resolves to `undefined`
+    */
 
-    var cancelOverlays = function cancelOverlays() {
-      $$b('#dialog_box').hide();
+    var cancelOverlays =
+    /*#__PURE__*/
+    function () {
+      var _ref24 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee12() {
+        var ok;
+        return regeneratorRuntime.wrap(function _callee12$(_context12) {
+          while (1) {
+            switch (_context12.prev = _context12.next) {
+              case 0:
+                $$b('#dialog_box').hide();
 
-      if (!editingsource && !docprops && !preferences) {
-        if (curContext) {
-          svgCanvas.leaveContext();
-        }
+                if (!(!editingsource && !docprops && !preferences)) {
+                  _context12.next = 4;
+                  break;
+                }
 
-        return;
-      }
+                if (curContext) {
+                  svgCanvas.leaveContext();
+                }
 
-      if (editingsource) {
-        if (origSource !== $$b('#svg_source_textarea').val()) {
-          $$b.confirm(uiStrings$1.notification.QignoreSourceChanges, function (ok) {
-            if (ok) {
-              hideSourceEditor();
+                return _context12.abrupt("return");
+
+              case 4:
+                if (!editingsource) {
+                  _context12.next = 15;
+                  break;
+                }
+
+                if (!(origSource !== $$b('#svg_source_textarea').val())) {
+                  _context12.next = 12;
+                  break;
+                }
+
+                _context12.next = 8;
+                return $$b.confirm(uiStrings$1.notification.QignoreSourceChanges);
+
+              case 8:
+                ok = _context12.sent;
+
+                if (ok) {
+                  hideSourceEditor();
+                }
+
+                _context12.next = 13;
+                break;
+
+              case 12:
+                hideSourceEditor();
+
+              case 13:
+                _context12.next = 16;
+                break;
+
+              case 15:
+                if (docprops) {
+                  hideDocProperties();
+                } else if (preferences) {
+                  hidePreferences();
+                }
+
+              case 16:
+                resetScrollPos();
+
+              case 17:
+              case "end":
+                return _context12.stop();
             }
-          });
-        } else {
-          hideSourceEditor();
-        }
-      } else if (docprops) {
-        hideDocProperties();
-      } else if (preferences) {
-        hidePreferences();
-      }
+          }
+        }, _callee12, this);
+      }));
 
-      resetScrollPos();
-    };
+      return function cancelOverlays() {
+        return _ref24.apply(this, arguments);
+      };
+    }();
 
     var winWh = {
       width: $$b(window).width(),
@@ -32562,9 +34119,13 @@
       editor.ready(function () {
         // TODO: Find better way to detect when to do this to minimize
         // flickering effect
-        setTimeout(function () {
-          resetScrollPos();
-        }, 500);
+        return new Promise(function (resolve, reject) {
+          // eslint-disable-line promise/avoid-new
+          setTimeout(function () {
+            resetScrollPos();
+            resolve();
+          }, 500);
+        });
       });
       workarea.scroll(function () {
         curScrollPos = {
@@ -32593,6 +34154,7 @@
       }
     });
     $$b('#url_notice').click(function () {
+      /* await */
       $$b.alert(this.title);
     });
     $$b('#change_image_url').click(promptImgURL); // added these event handlers for all the push buttons so they
@@ -32635,8 +34197,13 @@
           button.title = [title.substr(0, index), 'Cmd+', title.substr(index + 5)].join('');
         }
       }
-    } // TODO: go back to the color boxes having white background-color and then setting
-    //  background-image to none.png (otherwise partially transparent gradients look weird)
+    }
+    /**
+    * @param {external:jQuery} elem
+    * @todo Go back to the color boxes having white background-color and then setting
+    *  background-image to none.png (otherwise partially transparent gradients look weird)
+    * @returns {undefined}
+    */
 
 
     var colorPicker = function colorPicker(elem) {
@@ -32671,131 +34238,149 @@
       });
     };
 
-    var PaintBox = function PaintBox(container, type) {
-      var paintColor, paintOpacity;
-      var cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke']; // set up gradients to be used for the buttons
+    var PaintBox =
+    /*#__PURE__*/
+    function () {
+      function PaintBox(container, type) {
+        _classCallCheck(this, PaintBox);
 
-      var svgdocbox = new DOMParser().parseFromString("<svg xmlns=\"http://www.w3.org/2000/svg\">\n        <rect width=\"16.5\" height=\"16.5\"\n          fill=\"#".concat(cur.color, "\" opacity=\"").concat(cur.opacity, "\"/>\n        <defs><linearGradient id=\"gradbox_\"/></defs>\n      </svg>"), 'text/xml');
-      var docElem = svgdocbox.documentElement;
-      docElem = $$b(container)[0].appendChild(document.importNode(docElem, true));
-      docElem.setAttribute('width', 16.5);
-      this.rect = docElem.firstElementChild;
-      this.defs = docElem.getElementsByTagName('defs')[0];
-      this.grad = this.defs.firstElementChild;
-      this.paint = new $$b.jGraduate.Paint({
-        solidColor: cur.color
-      });
-      this.type = type;
+        var cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke']; // set up gradients to be used for the buttons
 
-      this.setPaint = function (paint, apply) {
-        this.paint = paint;
-        var ptype = paint.type;
-        var opac = paint.alpha / 100;
-        var fillAttr = 'none';
+        var svgdocbox = new DOMParser().parseFromString("<svg xmlns=\"http://www.w3.org/2000/svg\">\n          <rect width=\"16.5\" height=\"16.5\"\n            fill=\"#".concat(cur.color, "\" opacity=\"").concat(cur.opacity, "\"/>\n          <defs><linearGradient id=\"gradbox_\"/></defs>\n        </svg>"), 'text/xml');
+        var docElem = svgdocbox.documentElement;
+        docElem = $$b(container)[0].appendChild(document.importNode(docElem, true));
+        docElem.setAttribute('width', 16.5);
+        this.rect = docElem.firstElementChild;
+        this.defs = docElem.getElementsByTagName('defs')[0];
+        this.grad = this.defs.firstElementChild;
+        this.paint = new $$b.jGraduate.Paint({
+          solidColor: cur.color
+        });
+        this.type = type;
+      }
 
-        switch (ptype) {
-          case 'solidColor':
-            fillAttr = paint[ptype] !== 'none' ? '#' + paint[ptype] : paint[ptype];
-            break;
+      _createClass(PaintBox, [{
+        key: "setPaint",
+        value: function setPaint(paint, apply) {
+          this.paint = paint;
+          var ptype = paint.type;
+          var opac = paint.alpha / 100;
+          var fillAttr = 'none';
 
-          case 'linearGradient':
-          case 'radialGradient':
-            this.grad.remove();
-            this.grad = this.defs.appendChild(paint[ptype]);
-            var id = this.grad.id = 'gradbox_' + this.type;
-            fillAttr = 'url(#' + id + ')';
-            break;
-        }
-
-        this.rect.setAttribute('fill', fillAttr);
-        this.rect.setAttribute('opacity', opac);
-
-        if (apply) {
-          svgCanvas.setColor(this.type, paintColor, true);
-          svgCanvas.setPaintOpacity(this.type, paintOpacity, true);
-        }
-      };
-
-      this.update = function (apply) {
-        if (!selectedElement) {
-          return;
-        }
-
-        var type = this.type;
-
-        switch (selectedElement.tagName) {
-          case 'use':
-          case 'image':
-          case 'foreignObject':
-            // These elements don't have fill or stroke, so don't change
-            // the current value
-            return;
-
-          case 'g':
-          case 'a':
-            {
-              var childs = selectedElement.getElementsByTagName('*');
-              var gPaint = null;
-
-              for (var _i3 = 0, len = childs.length; _i3 < len; _i3++) {
-                var elem = childs[_i3];
-                var p = elem.getAttribute(type);
-
-                if (_i3 === 0) {
-                  gPaint = p;
-                } else if (gPaint !== p) {
-                  gPaint = null;
-                  break;
-                }
-              }
-
-              if (gPaint === null) {
-                // No common color, don't update anything
-                paintColor = null;
-                return;
-              }
-
-              paintColor = gPaint;
-              paintOpacity = 1;
+          switch (ptype) {
+            case 'solidColor':
+              fillAttr = paint[ptype] !== 'none' ? '#' + paint[ptype] : paint[ptype];
               break;
-            }
 
-          default:
-            paintOpacity = parseFloat(selectedElement.getAttribute(type + '-opacity'));
+            case 'linearGradient':
+            case 'radialGradient':
+              {
+                this.grad.remove();
+                this.grad = this.defs.appendChild(paint[ptype]);
+                var id = this.grad.id = 'gradbox_' + this.type;
+                fillAttr = 'url(#' + id + ')';
+                break;
+              }
+          }
 
-            if (isNaN(paintOpacity)) {
-              paintOpacity = 1.0;
-            }
+          this.rect.setAttribute('fill', fillAttr);
+          this.rect.setAttribute('opacity', opac);
 
-            var defColor = type === 'fill' ? 'black' : 'none';
-            paintColor = selectedElement.getAttribute(type) || defColor;
+          if (apply) {
+            svgCanvas.setColor(this.type, this._paintColor, true);
+            svgCanvas.setPaintOpacity(this.type, this._paintOpacity, true);
+          }
         }
+      }, {
+        key: "update",
+        value: function update(apply) {
+          if (!selectedElement) {
+            return;
+          }
 
-        if (apply) {
-          svgCanvas.setColor(type, paintColor, true);
-          svgCanvas.setPaintOpacity(type, paintOpacity, true);
+          var type = this.type;
+
+          switch (selectedElement.tagName) {
+            case 'use':
+            case 'image':
+            case 'foreignObject':
+              // These elements don't have fill or stroke, so don't change
+              // the current value
+              return;
+
+            case 'g':
+            case 'a':
+              {
+                var childs = selectedElement.getElementsByTagName('*');
+                var gPaint = null;
+
+                for (var _i3 = 0, len = childs.length; _i3 < len; _i3++) {
+                  var elem = childs[_i3];
+                  var p = elem.getAttribute(type);
+
+                  if (_i3 === 0) {
+                    gPaint = p;
+                  } else if (gPaint !== p) {
+                    gPaint = null;
+                    break;
+                  }
+                }
+
+                if (gPaint === null) {
+                  // No common color, don't update anything
+                  this._paintColor = null;
+                  return;
+                }
+
+                this._paintColor = gPaint;
+                this._paintOpacity = 1;
+                break;
+              }
+
+            default:
+              {
+                this._paintOpacity = parseFloat(selectedElement.getAttribute(type + '-opacity'));
+
+                if (isNaN(this._paintOpacity)) {
+                  this._paintOpacity = 1.0;
+                }
+
+                var defColor = type === 'fill' ? 'black' : 'none';
+                this._paintColor = selectedElement.getAttribute(type) || defColor;
+              }
+          }
+
+          if (apply) {
+            svgCanvas.setColor(type, this._paintColor, true);
+            svgCanvas.setPaintOpacity(type, this._paintOpacity, true);
+          }
+
+          this._paintOpacity *= 100;
+          var paint = getPaint(this._paintColor, this._paintOpacity, type); // update the rect inside #fill_color/#stroke_color
+
+          this.setPaint(paint);
         }
+      }, {
+        key: "prep",
+        value: function prep() {
+          var ptype = this.paint.type;
 
-        paintOpacity *= 100;
-        var paint = getPaint(paintColor, paintOpacity, type); // update the rect inside #fill_color/#stroke_color
-
-        this.setPaint(paint);
-      };
-
-      this.prep = function () {
-        var ptype = this.paint.type;
-
-        switch (ptype) {
-          case 'linearGradient':
-          case 'radialGradient':
-            var paint = new $$b.jGraduate.Paint({
-              copy: this.paint
-            });
-            svgCanvas.setPaint(type, paint);
-            break;
+          switch (ptype) {
+            case 'linearGradient':
+            case 'radialGradient':
+              {
+                var paint = new $$b.jGraduate.Paint({
+                  copy: this.paint
+                });
+                svgCanvas.setPaint(this.type, paint);
+                break;
+              }
+          }
         }
-      };
-    };
+      }]);
+
+      return PaintBox;
+    }();
 
     paintBox.fill = new PaintBox('#fill_color', 'fill');
     paintBox.stroke = new PaintBox('#stroke_color', 'stroke');
@@ -32878,29 +34463,61 @@
       $$b(this).removeClass('push_button_pressed').addClass('push_button');
     }); // ask for a layer name
 
-    $$b('#layer_new').click(function () {
-      var uniqName,
-          i = svgCanvas.getCurrentDrawing().getNumLayers();
+    $$b('#layer_new').click(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee13() {
+      var uniqName, i, newName;
+      return regeneratorRuntime.wrap(function _callee13$(_context13) {
+        while (1) {
+          switch (_context13.prev = _context13.next) {
+            case 0:
+              i = svgCanvas.getCurrentDrawing().getNumLayers();
 
-      do {
-        uniqName = uiStrings$1.layers.layer + ' ' + ++i;
-      } while (svgCanvas.getCurrentDrawing().hasLayer(uniqName));
+              do {
+                uniqName = uiStrings$1.layers.layer + ' ' + ++i;
+              } while (svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 
-      $$b.prompt(uiStrings$1.notification.enterUniqueLayerName, uniqName, function (newName) {
-        if (!newName) {
-          return;
+              _context13.next = 4;
+              return $$b.prompt(uiStrings$1.notification.enterUniqueLayerName, uniqName);
+
+            case 4:
+              newName = _context13.sent;
+
+              if (newName) {
+                _context13.next = 7;
+                break;
+              }
+
+              return _context13.abrupt("return");
+
+            case 7:
+              if (!svgCanvas.getCurrentDrawing().hasLayer(newName)) {
+                _context13.next = 10;
+                break;
+              }
+
+              /* await */
+              $$b.alert(uiStrings$1.notification.dupeLayerName);
+              return _context13.abrupt("return");
+
+            case 10:
+              svgCanvas.createLayer(newName);
+              updateContextPanel();
+              populateLayers();
+
+            case 13:
+            case "end":
+              return _context13.stop();
+          }
         }
-
-        if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-          $$b.alert(uiStrings$1.notification.dupeLayerName);
-          return;
-        }
-
-        svgCanvas.createLayer(newName);
-        updateContextPanel();
-        populateLayers();
-      });
-    });
+      }, _callee13, this);
+    })));
+    /**
+     *
+     * @returns {undefined}
+     */
 
     function deleteLayer() {
       if (svgCanvas.deleteCurrentLayer()) {
@@ -32913,23 +34530,67 @@
         $$b('#layerlist tr.layer:first').addClass('layersel');
       }
     }
+    /**
+     *
+     * @returns {undefined}
+     */
+
 
     function cloneLayer() {
-      var name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
-      $$b.prompt(uiStrings$1.notification.enterUniqueLayerName, name, function (newName) {
-        if (!newName) {
-          return;
-        }
+      return _cloneLayer.apply(this, arguments);
+    }
+    /**
+     *
+     * @returns {undefined}
+     */
 
-        if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-          $$b.alert(uiStrings$1.notification.dupeLayerName);
-          return;
-        }
 
-        svgCanvas.cloneLayer(newName);
-        updateContextPanel();
-        populateLayers();
-      });
+    function _cloneLayer() {
+      _cloneLayer = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee19() {
+        var name, newName;
+        return regeneratorRuntime.wrap(function _callee19$(_context19) {
+          while (1) {
+            switch (_context19.prev = _context19.next) {
+              case 0:
+                name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
+                _context19.next = 3;
+                return $$b.prompt(uiStrings$1.notification.enterUniqueLayerName, name);
+
+              case 3:
+                newName = _context19.sent;
+
+                if (newName) {
+                  _context19.next = 6;
+                  break;
+                }
+
+                return _context19.abrupt("return");
+
+              case 6:
+                if (!svgCanvas.getCurrentDrawing().hasLayer(newName)) {
+                  _context19.next = 9;
+                  break;
+                }
+
+                /* await */
+                $$b.alert(uiStrings$1.notification.dupeLayerName);
+                return _context19.abrupt("return");
+
+              case 9:
+                svgCanvas.cloneLayer(newName);
+                updateContextPanel();
+                populateLayers();
+
+              case 12:
+              case "end":
+                return _context19.stop();
+            }
+          }
+        }, _callee19, this);
+      }));
+      return _cloneLayer.apply(this, arguments);
     }
 
     function mergeLayer() {
@@ -32941,6 +34602,11 @@
       updateContextPanel();
       populateLayers();
     }
+    /**
+     * @param {Integer} pos
+     * @returns {undefined}
+     */
+
 
     function moveLayer(pos) {
       var total = svgCanvas.getCurrentDrawing().getNumLayers();
@@ -32960,23 +34626,52 @@
     $$b('#layer_down').click(function () {
       moveLayer(1);
     });
-    $$b('#layer_rename').click(function () {
-      // const curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
-      var oldName = $$b('#layerlist tr.layersel td.layername').text();
-      $$b.prompt(uiStrings$1.notification.enterNewLayerName, '', function (newName) {
-        if (!newName) {
-          return;
-        }
+    $$b('#layer_rename').click(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee14() {
+      var oldName, newName;
+      return regeneratorRuntime.wrap(function _callee14$(_context14) {
+        while (1) {
+          switch (_context14.prev = _context14.next) {
+            case 0:
+              // const curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
+              oldName = $$b('#layerlist tr.layersel td.layername').text();
+              _context14.next = 3;
+              return $$b.prompt(uiStrings$1.notification.enterNewLayerName, '');
 
-        if (oldName === newName || svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-          $$b.alert(uiStrings$1.notification.layerHasThatName);
-          return;
-        }
+            case 3:
+              newName = _context14.sent;
 
-        svgCanvas.renameCurrentLayer(newName);
-        populateLayers();
-      });
-    });
+              if (newName) {
+                _context14.next = 6;
+                break;
+              }
+
+              return _context14.abrupt("return");
+
+            case 6:
+              if (!(oldName === newName || svgCanvas.getCurrentDrawing().hasLayer(newName))) {
+                _context14.next = 9;
+                break;
+              }
+
+              /* await */
+              $$b.alert(uiStrings$1.notification.layerHasThatName);
+              return _context14.abrupt("return");
+
+            case 9:
+              svgCanvas.renameCurrentLayer(newName);
+              populateLayers();
+
+            case 11:
+            case "end":
+              return _context14.stop();
+          }
+        }
+      }, _callee14, this);
+    })));
     var SIDEPANEL_MAXWIDTH = 300;
     var SIDEPANEL_OPENWIDTH = 150;
     var sidedrag = -1,
@@ -32992,10 +34687,15 @@
       var rulerX = $$b('#ruler_x');
       $$b('#sidepanels').width('+=' + delta);
       $$b('#layerpanel').width('+=' + delta);
-      rulerX.css('right', parseInt(rulerX.css('right'), 10) + delta);
-      workarea.css('right', parseInt(workarea.css('right'), 10) + delta);
+      rulerX.css('right', parseInt(rulerX.css('right')) + delta);
+      workarea.css('right', parseInt(workarea.css('right')) + delta);
       svgCanvas.runExtensions('workareaResized');
     };
+    /**
+    * @param {Event} evt
+    * @returns {undefined}
+    */
+
 
     var resizeSidePanel = function resizeSidePanel(evt) {
       if (!allowmove) {
@@ -33068,6 +34768,9 @@
     };
 
     $$b(window).bind('load resize', centerCanvas);
+    /**
+     * @implements {module:jQuerySpinButton.StepCallback}
+     */
 
     function stepFontSize(elem, step) {
       var origVal = Number(elem.value);
@@ -33096,6 +34799,10 @@
 
       return sugVal;
     }
+    /**
+     * @implements {module:jQuerySpinButton.StepCallback}
+     */
+
 
     function stepZoom(elem, step) {
       var origVal = Number(elem.value);
@@ -33658,9 +35365,9 @@
                 keyval = opts.key;
               }
 
-              keyval += '';
+              keyval = String(keyval);
               var fn = opts.fn;
-              $$b.each(keyval.split('/'), function (i, key) {
+              $$b.each(keyval.split('/'), function (j, key) {
                 $$b(document).bind('keydown', key, function (e) {
                   fn();
 
@@ -33682,6 +35389,8 @@
                 }
               }
             }
+
+            return true;
           }); // Setup flyouts
 
           setupFlyouts(flyouts); // Misc additional actions
@@ -33781,7 +35490,7 @@
         toggleSidePanel();
       }
 
-      $$b('#rulers').toggle(!!curConfig.showRulers);
+      $$b('#rulers').toggle(Boolean(curConfig.showRulers));
 
       if (curConfig.showRulers) {
         $$b('#show_rulers')[0].checked = true;
@@ -33911,10 +35620,18 @@
           break;
       }
     });
+    /**
+    * Implements {@see module:jQueryContextMenu.jQueryContextMenuListener}
+    * @param {"dupe"|"delete"|"merge_down"|"merge_all"} action
+    * @param {external:jQuery} el
+    * @param {{x: Float, y: Float, docX: Float, docY: Float}} pos
+    * @returns {undefined}
+    */
 
     var lmenuFunc = function lmenuFunc(action, el, pos) {
       switch (action) {
         case 'dupe':
+          /* await */
           cloneLayer();
           break;
 
@@ -33948,6 +35665,9 @@
     });
     $$b('#cmenu_canvas li').disableContextMenu();
     canvMenu.enableContextMenuItems('#delete,#cut,#copy');
+    /**
+     * @returns {undefined}
+     */
 
     function enableOrDisableClipboard() {
       var svgeditClipboard;
@@ -33980,6 +35700,8 @@
 
         return uiStrings$1.notification.unsavedChanges;
       }
+
+      return true;
     });
     /**
     * Expose the `uiStrings`.
@@ -33991,36 +35713,48 @@
       return uiStrings$1;
     };
     /**
-    * @callback module:SVGEditor.OpenPrepCallback
-    * @param {boolean} noChanges
-    * @returns {undefined}
-    */
-
-    /**
-    * @param {module:SVGEditor.OpenPrepCallback} func Confirmation dialog callback
-    * @returns {undefined}
+    * @returns {Promise} Resolves to boolean indicating `true` if there were no changes
+    *  and `false` after the user confirms.
     */
 
 
-    editor.openPrep = function (func) {
+    editor.openPrep = function () {
       $$b('#main_menu').hide();
 
       if (undoMgr.getUndoStackSize() === 0) {
-        func(true);
-      } else {
-        $$b.confirm(uiStrings$1.notification.QwantToOpen, func);
+        return true;
       }
+
+      return $$b.confirm(uiStrings$1.notification.QwantToOpen);
     };
+    /**
+     *
+     * @param {Event} e
+     * @returns {undefined}
+     */
+
 
     function onDragEnter(e) {
       e.stopPropagation();
       e.preventDefault(); // and indicator should be displayed here, such as "drop files here"
     }
+    /**
+     *
+     * @param {Event} e
+     * @returns {undefined}
+     */
+
 
     function onDragOver(e) {
       e.stopPropagation();
       e.preventDefault();
     }
+    /**
+     *
+     * @param {Event} e
+     * @returns {undefined}
+     */
+
 
     function onDragLeave(e) {
       e.stopPropagation();
@@ -34032,6 +35766,10 @@
 
 
     if (window.FileReader) {
+      /**
+      * @param {Event} e
+      * @returns {undefined}
+      */
       var importImage = function importImage(e) {
         $$b.process_cancel(uiStrings$1.notification.loadingImage);
         e.stopPropagation();
@@ -34049,72 +35787,79 @@
         else */
 
 
-        if (file.type.includes('image')) {
-          // Detected an image
-          // svg handling
-          var reader;
+        if (!file.type.includes('image')) {
+          return;
+        } // Detected an image
+        // svg handling
 
-          if (file.type.includes('svg')) {
-            reader = new FileReader();
 
-            reader.onloadend = function (e) {
-              var newElement = svgCanvas.importSvgString(e.target.result, true);
-              svgCanvas.ungroupSelectedElement();
-              svgCanvas.ungroupSelectedElement();
-              svgCanvas.groupSelectedElements();
+        var reader;
+
+        if (file.type.includes('svg')) {
+          reader = new FileReader();
+
+          reader.onloadend = function (ev) {
+            var newElement = svgCanvas.importSvgString(ev.target.result, true);
+            svgCanvas.ungroupSelectedElement();
+            svgCanvas.ungroupSelectedElement();
+            svgCanvas.groupSelectedElements();
+            svgCanvas.alignSelectedElements('m', 'page');
+            svgCanvas.alignSelectedElements('c', 'page'); // highlight imported element, otherwise we get strange empty selectbox
+
+            svgCanvas.selectOnly([newElement]);
+            $$b('#dialog_box').hide();
+          };
+
+          reader.readAsText(file);
+        } else {
+          // bitmap handling
+          reader = new FileReader();
+
+          reader.onloadend = function (_ref27) {
+            var result = _ref27.target.result;
+
+            /**
+            * Insert the new image until we know its dimensions
+            * @param {Float} width
+            * @param {Float} height
+            * @returns {undefined}
+            */
+            var insertNewImage = function insertNewImage(width, height) {
+              var newImage = svgCanvas.addSVGElementFromJson({
+                element: 'image',
+                attr: {
+                  x: 0,
+                  y: 0,
+                  width: width,
+                  height: height,
+                  id: svgCanvas.getNextId(),
+                  style: 'pointer-events:inherit'
+                }
+              });
+              svgCanvas.setHref(newImage, result);
+              svgCanvas.selectOnly([newImage]);
               svgCanvas.alignSelectedElements('m', 'page');
-              svgCanvas.alignSelectedElements('c', 'page'); // highlight imported element, otherwise we get strange empty selectbox
-
-              svgCanvas.selectOnly([newElement]);
+              svgCanvas.alignSelectedElements('c', 'page');
+              updateContextPanel();
               $$b('#dialog_box').hide();
+            }; // create dummy img so we know the default dimensions
+
+
+            var imgWidth = 100;
+            var imgHeight = 100;
+            var img = new Image();
+            img.style.opacity = 0;
+
+            img.onload = function () {
+              imgWidth = img.offsetWidth || img.naturalWidth || img.width;
+              imgHeight = img.offsetHeight || img.naturalHeight || img.height;
+              insertNewImage(imgWidth, imgHeight);
             };
 
-            reader.readAsText(file);
-          } else {
-            // bitmap handling
-            reader = new FileReader();
+            img.src = result;
+          };
 
-            reader.onloadend = function (_ref21) {
-              var result = _ref21.target.result;
-
-              // let's insert the new image until we know its dimensions
-              var insertNewImage = function insertNewImage(width, height) {
-                var newImage = svgCanvas.addSVGElementFromJson({
-                  element: 'image',
-                  attr: {
-                    x: 0,
-                    y: 0,
-                    width: width,
-                    height: height,
-                    id: svgCanvas.getNextId(),
-                    style: 'pointer-events:inherit'
-                  }
-                });
-                svgCanvas.setHref(newImage, result);
-                svgCanvas.selectOnly([newImage]);
-                svgCanvas.alignSelectedElements('m', 'page');
-                svgCanvas.alignSelectedElements('c', 'page');
-                updateContextPanel();
-                $$b('#dialog_box').hide();
-              }; // create dummy img so we know the default dimensions
-
-
-              var imgWidth = 100;
-              var imgHeight = 100;
-              var img = new Image();
-              img.style.opacity = 0;
-
-              img.onload = function () {
-                imgWidth = img.offsetWidth || img.naturalWidth || img.width;
-                imgHeight = img.offsetHeight || img.naturalHeight || img.height;
-                insertNewImage(imgWidth, imgHeight);
-              };
-
-              img.src = result;
-            };
-
-            reader.readAsDataURL(file);
-          }
+          reader.readAsDataURL(file);
         }
       };
 
@@ -34122,28 +35867,75 @@
       workarea[0].addEventListener('dragover', onDragOver);
       workarea[0].addEventListener('dragleave', onDragLeave);
       workarea[0].addEventListener('drop', importImage);
-      var open = $$b('<input type="file">').click(function () {
-        var f = this;
-        editor.openPrep(function (ok) {
-          if (!ok) {
-            return;
+      var open = $$b('<input type="file">').click(
+      /*#__PURE__*/
+      _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee16() {
+        var ok, reader;
+        return regeneratorRuntime.wrap(function _callee16$(_context16) {
+          while (1) {
+            switch (_context16.prev = _context16.next) {
+              case 0:
+                _context16.next = 2;
+                return editor.openPrep();
+
+              case 2:
+                ok = _context16.sent;
+
+                if (ok) {
+                  _context16.next = 5;
+                  break;
+                }
+
+                return _context16.abrupt("return");
+
+              case 5:
+                svgCanvas.clear();
+
+                if (this.files.length === 1) {
+                  $$b.process_cancel(uiStrings$1.notification.loadingImage);
+                  reader = new FileReader();
+
+                  reader.onloadend =
+                  /*#__PURE__*/
+                  function () {
+                    var _ref29 = _asyncToGenerator(
+                    /*#__PURE__*/
+                    regeneratorRuntime.mark(function _callee15(e) {
+                      return regeneratorRuntime.wrap(function _callee15$(_context15) {
+                        while (1) {
+                          switch (_context15.prev = _context15.next) {
+                            case 0:
+                              _context15.next = 2;
+                              return loadSvgString(e.target.result);
+
+                            case 2:
+                              updateCanvas();
+
+                            case 3:
+                            case "end":
+                              return _context15.stop();
+                          }
+                        }
+                      }, _callee15, this);
+                    }));
+
+                    return function (_x6) {
+                      return _ref29.apply(this, arguments);
+                    };
+                  }();
+
+                  reader.readAsText(this.files[0]);
+                }
+
+              case 7:
+              case "end":
+                return _context16.stop();
+            }
           }
-
-          svgCanvas.clear();
-
-          if (f.files.length === 1) {
-            $$b.process_cancel(uiStrings$1.notification.loadingImage);
-            var reader = new FileReader();
-
-            reader.onloadend = function (e) {
-              loadSvgString(e.target.result);
-              updateCanvas();
-            };
-
-            reader.readAsText(f.files[0]);
-          }
-        });
-      });
+        }, _callee16, this);
+      })));
       $$b('#tool_open').show().prepend(open);
       var imgImport = $$b('<input type="file">').change(importImage);
       $$b('#tool_import').show().prepend(imgImport);
@@ -34166,24 +35958,26 @@
     var setLang = editor.setLang =
     /*#__PURE__*/
     function () {
-      var _ref22 = _asyncToGenerator(
+      var _ref30 = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee8(lang, allStrings) {
-        var oldLayerName, renameLayer, ext, elems;
-        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+      regeneratorRuntime.mark(function _callee17(lang, allStrings) {
+        var _this = this;
+
+        var oldLayerName, renameLayer, elems;
+        return regeneratorRuntime.wrap(function _callee17$(_context17) {
           while (1) {
-            switch (_context8.prev = _context8.next) {
+            switch (_context17.prev = _context17.next) {
               case 0:
                 editor.langChanged = true;
                 $$b.pref('lang', lang);
                 $$b('#lang_select').val(lang);
 
                 if (allStrings) {
-                  _context8.next = 5;
+                  _context17.next = 5;
                   break;
                 }
 
-                return _context8.abrupt("return");
+                return _context17.abrupt("return");
 
               case 5:
                 $$b.extend(uiStrings$1, allStrings); // const notif = allStrings.notification; // Currently unused
@@ -34201,39 +35995,31 @@
 
 
                 if (!extsPreLang.length) {
-                  _context8.next = 21;
+                  _context17.next = 17;
                   break;
                 }
 
-              case 12:
-                if (!extsPreLang.length) {
-                  _context8.next = 19;
-                  break;
-                }
+                _context17.next = 14;
+                return Promise.all(extsPreLang.map(function (ext) {
+                  loadedExtensionNames.push(ext.name);
+                  return ext.langReady({
+                    lang: lang,
+                    uiStrings: uiStrings$1,
+                    importLocale: getImportLocale({
+                      defaultLang: lang,
+                      defaultName: ext.name
+                    })
+                  });
+                }));
 
-                ext = extsPreLang.shift();
-                loadedExtensionNames.push(ext.name);
-                _context8.next = 17;
-                return ext.langReady({
-                  lang: lang,
-                  uiStrings: uiStrings$1,
-                  importLocale: getImportLocale({
-                    defaultLang: lang,
-                    defaultName: ext.name
-                  })
-                });
+              case 14:
+                extsPreLang.length = 0;
+                _context17.next = 18;
+                break;
 
               case 17:
-                _context8.next = 12;
-                break;
-
-              case 19:
-                _context8.next = 22;
-                break;
-
-              case 21:
                 loadedExtensionNames.forEach(function (loadedExtensionName) {
-                  svgCanvas.runExtensions('langReady',
+                  _this.runExtension(loadedExtensionName, 'langReady',
                   /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */
                   {
                     lang: lang,
@@ -34245,7 +36031,7 @@
                   });
                 });
 
-              case 22:
+              case 18:
                 svgCanvas.runExtensions('langChanged',
                 /** @type {module:svgcanvas.SvgCanvas#event:ext-langChanged} */
                 lang); // Update flyout tooltips
@@ -34266,16 +36052,16 @@
                   $$b('#tool_pos' + this.id.substr(10))[0].title = this.title;
                 });
 
-              case 27:
+              case 23:
               case "end":
-                return _context8.stop();
+                return _context17.stop();
             }
           }
-        }, _callee8, this);
+        }, _callee17, this);
       }));
 
-      return function (_x6, _x7) {
-        return _ref22.apply(this, arguments);
+      return function (_x7, _x8) {
+        return _ref30.apply(this, arguments);
       };
     }();
 
@@ -34325,47 +36111,134 @@
   };
   /**
   * @callback module:SVGEditor.ReadyCallback
-  * @returns {undefined}
+  * @returns {Promise|undefined}
   */
 
   /**
   * Queues a callback to be invoked when the editor is ready (or
   *   to be invoked immediately if it is already ready--i.e.,
-  *   if `svgEditor.runCallbacks` has been run).
+  *   if `runCallbacks` has been run).
   * @param {module:SVGEditor.ReadyCallback} cb Callback to be queued to invoke
-  * @returns {undefined}
+  * @returns {Promise} Resolves when all callbacks, including the supplied have resolved
   */
 
 
   editor.ready = function (cb) {
-    if (!isReady) {
-      callbacks.push(cb);
-    } else {
-      cb();
-    }
+    // eslint-disable-line promise/prefer-await-to-callbacks
+    return new Promise(function (resolve, reject) {
+      // eslint-disable-line promise/avoid-new
+      if (isReady) {
+        resolve(cb()); // eslint-disable-line callback-return, promise/prefer-await-to-callbacks
+
+        return;
+      }
+
+      callbacks.push([cb, resolve, reject]);
+    });
   };
   /**
   * Invokes the callbacks previous set by `svgEditor.ready`
-  * @returns {undefined}
+  * @returns {Promise} Resolves to `undefined` if all callbacks succeeded and rejects otherwise
   */
 
 
-  editor.runCallbacks = function () {
-    callbacks.forEach(function (cb) {
-      cb();
-    });
-    isReady = true;
-  };
+  editor.runCallbacks =
+  /*#__PURE__*/
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee20() {
+    return regeneratorRuntime.wrap(function _callee20$(_context20) {
+      while (1) {
+        switch (_context20.prev = _context20.next) {
+          case 0:
+            _context20.prev = 0;
+            _context20.next = 3;
+            return Promise.all(callbacks.map(function (_ref33) {
+              var _ref34 = _slicedToArray(_ref33, 1),
+                  cb = _ref34[0];
+
+              return cb(); // eslint-disable-line promise/prefer-await-to-callbacks
+            }));
+
+          case 3:
+            _context20.next = 9;
+            break;
+
+          case 5:
+            _context20.prev = 5;
+            _context20.t0 = _context20["catch"](0);
+            callbacks.forEach(function (_ref35) {
+              var _ref36 = _slicedToArray(_ref35, 3),
+                  reject = _ref36[2];
+
+              reject();
+            });
+            throw _context20.t0;
+
+          case 9:
+            callbacks.forEach(function (_ref37) {
+              var _ref38 = _slicedToArray(_ref37, 2),
+                  resolve = _ref38[1];
+
+              resolve();
+            });
+            isReady = true;
+
+          case 11:
+          case "end":
+            return _context20.stop();
+        }
+      }
+    }, _callee20, this, [[0, 5]]);
+  }));
   /**
   * @param {string} str The SVG string to load
-  * @returns {undefined}
+  * @param {PlainObject} [opts={}]
+  * @param {boolean} [opts.noAlert=false] Option to avoid alert to user and instead get rejected promise
+  * @returns {Promise}
   */
 
-
   editor.loadFromString = function (str) {
-    editor.ready(function () {
-      loadSvgString(str);
-    });
+    var _ref39 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref39.noAlert;
+
+    editor.ready(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee21() {
+      return regeneratorRuntime.wrap(function _callee21$(_context21) {
+        while (1) {
+          switch (_context21.prev = _context21.next) {
+            case 0:
+              _context21.prev = 0;
+              _context21.next = 3;
+              return loadSvgString(str, {
+                noAlert: noAlert
+              });
+
+            case 3:
+              _context21.next = 9;
+              break;
+
+            case 5:
+              _context21.prev = 5;
+              _context21.t0 = _context21["catch"](0);
+
+              if (!noAlert) {
+                _context21.next = 9;
+                break;
+              }
+
+              throw _context21.t0;
+
+            case 9:
+            case "end":
+              return _context21.stop();
+          }
+        }
+      }, _callee21, this, [[0, 5]]);
+    })));
   };
   /**
   * Not presently in use.
@@ -34387,52 +36260,70 @@
 
   /**
   * @param {string} url URL from which to load an SVG string via Ajax
-  * @param {PlainObject} [opts] May contain properties: `cache`, `callback`
-  * @param {boolean} opts.cache
-  * @param {module:SVGEditor.URLLoadCallback} opts.callback Invoked with `true` or `false` depending on success
-  * @returns {undefined}
+  * @param {PlainObject} [opts={}] May contain properties: `cache`, `callback`
+  * @param {boolean} [opts.cache]
+  * @param {boolean} [opts.noAlert]
+  * @returns {Promise} Resolves to `undefined` or rejects upon bad loading of
+  *   the SVG (or upon failure to parse the loaded string) when `noAlert` is
+  *   enabled
   */
 
 
-  editor.loadFromURL = function (url, opts) {
-    if (!opts) {
-      opts = {};
-    }
+  editor.loadFromURL = function (url) {
+    var _ref41 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        cache = _ref41.cache,
+        noAlert = _ref41.noAlert;
 
-    var _opts = opts,
-        cache = _opts.cache,
-        cb = _opts.callback;
-    editor.ready(function () {
-      $$b.ajax({
-        url: url,
-        dataType: 'text',
-        cache: !!cache,
-        beforeSend: function beforeSend() {
-          $$b.process_cancel(uiStrings$1.notification.loadingImage);
-        },
-        success: function success(str) {
-          loadSvgString(str, cb);
-        },
-        error: function error(xhr, stat, err) {
-          if (xhr.status !== 404 && xhr.responseText) {
-            loadSvgString(xhr.responseText, cb);
-          } else {
-            $$b.alert(uiStrings$1.notification.URLloadFail + ': \n' + err, cb);
+    return editor.ready(function () {
+      return new Promise(function (resolve, reject) {
+        // eslint-disable-line promise/avoid-new
+        $$b.ajax({
+          url: url,
+          dataType: 'text',
+          cache: Boolean(cache),
+          beforeSend: function beforeSend() {
+            $$b.process_cancel(uiStrings$1.notification.loadingImage);
+          },
+          success: function success(str) {
+            resolve(loadSvgString(str, {
+              noAlert: noAlert
+            }));
+          },
+          error: function error(xhr, stat, err) {
+            if (xhr.status !== 404 && xhr.responseText) {
+              resolve(loadSvgString(xhr.responseText, {
+                noAlert: noAlert
+              }));
+              return;
+            }
+
+            if (noAlert) {
+              reject(new Error('URLLoadFail'));
+              return;
+            }
+
+            $$b.alert(uiStrings$1.notification.URLLoadFail + ': \n' + err);
+            resolve();
+          },
+          complete: function complete() {
+            $$b('#dialog_box').hide();
           }
-        },
-        complete: function complete() {
-          $$b('#dialog_box').hide();
-        }
+        });
       });
     });
   };
   /**
   * @param {string} str The Data URI to base64-decode (if relevant) and load
-  * @returns {undefined}
+  * @param {PlainObject} [opts={}]
+  * @param {boolean} [opts.noAlert]
+  * @returns {Promise} Resolves to `undefined` and rejects if loading SVG string fails and `noAlert` is enabled
   */
 
 
   editor.loadFromDataURI = function (str) {
+    var _ref42 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref42.noAlert;
+
     editor.ready(function () {
       var base64 = false;
       var pre = str.match(/^data:image\/svg\+xml;base64,/);
@@ -34448,7 +36339,9 @@
       }
 
       var src = str.slice(pre.length);
-      loadSvgString(base64 ? decode64(src) : decodeURIComponent(src));
+      return loadSvgString(base64 ? decode64(src) : decodeURIComponent(src), {
+        noAlert: noAlert
+      });
     });
   };
   /**
@@ -34479,15 +36372,17 @@
   var extensionsAdded = false;
   var messageQueue = [];
   /**
-   * @param {Any} data
-   * @param {string} origin
+   * @param {PlainObject} info
+   * @param {Any} info.data
+   * @param {string} info.origin
    * @fires module:svgcanvas.SvgCanvas#event:message
    * @returns {undefined}
    */
 
-  var messageListener = function messageListener(_ref23) {
-    var data = _ref23.data,
-        origin = _ref23.origin;
+  var messageListener = function messageListener(_ref43) {
+    var data = _ref43.data,
+        origin = _ref43.origin;
+    // eslint-disable-line no-shadow
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = {
       data: data,
@@ -34506,10 +36401,34 @@
   window.addEventListener('message', messageListener); // Run init once DOM is loaded
   // jQuery(editor.init);
 
-  Promise.resolve().then(function () {
-    // We wait a micro-task to let the svgEditor variable be defined for module checks
-    editor.init();
-  });
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee22() {
+    return regeneratorRuntime.wrap(function _callee22$(_context22) {
+      while (1) {
+        switch (_context22.prev = _context22.next) {
+          case 0:
+            _context22.prev = 0;
+            _context22.next = 3;
+            return Promise.resolve();
+
+          case 3:
+            editor.init();
+            _context22.next = 9;
+            break;
+
+          case 6:
+            _context22.prev = 6;
+            _context22.t0 = _context22["catch"](0);
+            console.error(_context22.t0); // eslint-disable-line no-console
+
+          case 9:
+          case "end":
+            return _context22.stop();
+        }
+      }
+    }, _callee22, this, [[0, 6]]);
+  }))();
 
   return editor;
 

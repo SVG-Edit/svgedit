@@ -1,5 +1,15 @@
 // From https://github.com/inexorabletash/polyfill/blob/master/dom.js
 
+/**
+ * @module DOMPolyfill
+ */
+
+/**
+ *
+ * @param {Node} o
+ * @param {module:DOMPolyfill~ParentNode|module:DOMPolyfill~ChildNode} ps
+ * @returns {undefined}
+ */
 function mixin (o, ps) {
   if (!o) return;
   Object.keys(ps).forEach((p) => {
@@ -17,6 +27,11 @@ function mixin (o, ps) {
   });
 }
 
+/**
+ *
+ * @param {Node[]} nodes
+ * @returns {Node}
+ */
 function convertNodesIntoANode (nodes) {
   nodes = nodes.map((node) => {
     return !(node instanceof Node) ? document.createTextNode(node) : node;

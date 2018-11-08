@@ -30,14 +30,20 @@ QUnit.test('Test svgedit.contextmenu package', function (assert) {
 QUnit.test('Test svgedit.contextmenu does not add invalid menu item', function (assert) {
   assert.expect(3);
 
-  contextmenu.add({id: 'justanid'});
-  assert.ok(!contextmenu.hasCustomHandler('justanid'), 'menu item with just an id is invalid');
+  assert.throws(
+    () => contextmenu.add({id: 'justanid'}),
+    'menu item with just an id is invalid'
+  );
 
-  contextmenu.add({id: 'idandlabel', label: 'anicelabel'});
-  assert.ok(!contextmenu.hasCustomHandler('idandlabel'), 'menu item with just an id and label is invalid');
+  assert.throws(
+    () => contextmenu.add({id: 'idandlabel', label: 'anicelabel'}),
+    'menu item with just an id and label is invalid'
+  );
 
-  contextmenu.add({id: 'idandlabel', label: 'anicelabel', action: 'notafunction'});
-  assert.ok(!contextmenu.hasCustomHandler('idandlabel'), 'menu item with action that is not a function is invalid');
+  assert.throws(
+    () => contextmenu.add({id: 'idandlabel', label: 'anicelabel', action: 'notafunction'}),
+    'menu item with action that is not a function is invalid'
+  );
 });
 
 QUnit.test('Test svgedit.contextmenu adds valid menu item', function (assert) {
@@ -57,8 +63,11 @@ QUnit.test('Test svgedit.contextmenu rejects valid duplicate menu item id', func
   const validItem1 = {id: 'valid', label: 'anicelabel', action () { console.log('testing'); }};
   const validItem2 = {id: 'valid', label: 'anicelabel', action () { console.log('testingtwice'); }};
   contextmenu.add(validItem1);
-  contextmenu.add(validItem2);
 
-  assert.equal(contextmenu.getCustomHandler('valid'), validItem1.action, 'duplicate menu item is rejected.');
+  assert.throws(
+    () => contextmenu.add(validItem2),
+    'duplicate menu item is rejected.'
+  );
+
   tearDown();
 });

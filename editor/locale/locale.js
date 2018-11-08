@@ -39,7 +39,9 @@ export const setStrings = function (type, obj, ids) {
   // Root element to look for element from
   const parent = $('#svg_editor').parent();
   Object.entries(obj).forEach(([sel, val]) => {
-    if (!val) { console.log(sel); }
+    if (!val) {
+      console.log(sel); // eslint-disable-line no-console
+    }
 
     if (ids) { sel = '#' + sel; }
     const $elem = parent.find(sel);
@@ -53,6 +55,7 @@ export const setStrings = function (type, obj, ids) {
             node.textContent = val;
             return true;
           }
+          return false;
         });
         break;
 
@@ -61,7 +64,7 @@ export const setStrings = function (type, obj, ids) {
         break;
       }
     } else {
-      console.log('Missing: ' + sel);
+      console.log('Missing element for localization: ' + sel); // eslint-disable-line no-console
     }
   });
 };
@@ -114,7 +117,7 @@ export const readLang = async function (langData) {
   });
 
   // Old locale file, do nothing for now.
-  if (!langData.tools) { return; }
+  if (!langData.tools) { return undefined; }
 
   const {
     tools,
@@ -331,7 +334,7 @@ export const putLocale = async function (givenParam, goodLangs, conf) {
       }
     }
 
-    console.log('Lang: ' + langParam);
+    console.log('Lang: ' + langParam); // eslint-disable-line no-console
 
     // Set to English if language is not in list of good langs
     if (!goodLangs.includes(langParam) && langParam !== 'test') {

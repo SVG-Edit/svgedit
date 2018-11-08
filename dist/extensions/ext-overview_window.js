@@ -1,8 +1,6 @@
 var svgEditorExtension_overview_window = (function () {
   'use strict';
 
-  /* globals jQuery */
-
   /**
    * ext-overview_window.js
    *
@@ -14,18 +12,18 @@ var svgEditorExtension_overview_window = (function () {
   var extOverview_window = {
     name: 'overview_window',
     init: function init(_ref) {
-      var isChrome = _ref.isChrome,
+      var $ = _ref.$,
+          isChrome = _ref.isChrome,
           isIE = _ref.isIE;
-      var $ = jQuery;
       var overviewWindowGlobals = {}; // Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
       // https://code.google.com/p/chromium/issues/detail?id=565120.
 
       if (isChrome()) {
         var verIndex = navigator.userAgent.indexOf('Chrome/') + 7;
-        var chromeVersion = parseInt(navigator.userAgent.substring(verIndex), 10);
+        var chromeVersion = parseInt(navigator.userAgent.substring(verIndex));
 
         if (chromeVersion < 49) {
-          return;
+          return undefined;
         }
       } // Define and insert the base html element.
 

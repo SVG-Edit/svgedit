@@ -36,6 +36,7 @@ export default {
           svgEditor.setPanning(true);
           return {started: true};
         }
+        return undefined;
       },
       mouseUp () {
         if (svgCanvas.getMode() === 'ext-panning') {
@@ -45,6 +46,7 @@ export default {
             element: null
           };
         }
+        return undefined;
       }
     };
   }

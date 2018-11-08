@@ -65,7 +65,8 @@ var svgEditorExtension_xdomain_messaging = (function () {
           var allowedOrigins = svgEditor.curConfig.allowedOrigins;
 
           if (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin)) {
-            console.log("Origin ".concat(e.origin, " not whitelisted for posting to ").concat(window.origin));
+            console.log("Origin ".concat(e.origin, " not whitelisted for posting to ").concat(window.origin)); // eslint-disable-line no-console
+
             return;
           }
 
@@ -88,7 +89,7 @@ var svgEditorExtension_xdomain_messaging = (function () {
           e.source.postMessage(JSON.stringify(message), '*');
         });
       } catch (err) {
-        console.log('Error with xdomain message listener: ' + err);
+        console.log('Error with xdomain message listener: ' + err); // eslint-disable-line no-console
       }
     }
   };

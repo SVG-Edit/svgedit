@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-closepath.js
  *
@@ -13,9 +12,8 @@ import '../svgpathseg.js';
 // The button toggles whether the path is open or closed
 export default {
   name: 'closepath',
-  async init ({importLocale}) {
+  async init ({importLocale, $}) {
     const strings = await importLocale();
-    const $ = jQuery;
     const svgEditor = this;
     let selElems;
     const updateButton = function (path) {

@@ -7,7 +7,7 @@
 
 export default {
   name: 'webappfind',
-  async init ({importLocale}) {
+  async init ({importLocale, $}) {
     const strings = await importLocale();
     const svgEditor = this;
     const saveMessage = 'save',
@@ -48,7 +48,7 @@ export default {
           } */
           break;
         case 'save-end':
-          alert(`save complete for pathID ${pathID}!`);
+          $.alert(`save complete for pathID ${pathID}!`);
           break;
         default:
           throw new Error('Unexpected WebAppFind event type');

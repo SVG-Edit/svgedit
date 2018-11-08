@@ -6,6 +6,8 @@ manipulation($, jml);
 
 const baseAPIURL = 'https://openclipart.org/search/json/';
 
+const jsVoid = 'javascript: void(0);'; // eslint-disable-line no-script-url
+
 /**
  * Shows results after query submission.
  * @param {string} url
@@ -18,7 +20,7 @@ async function processResults (url) {
    */
   function queryLink (query) {
     return ['a', {
-      href: 'javascript: void(0);',
+      href: jsVoid,
       dataset: {value: query},
       $on: {click (e) {
         e.preventDefault();
@@ -34,7 +36,8 @@ async function processResults (url) {
   // console.log('json', json);
 
   if (!json || json.msg !== 'success') {
-    alert('There was a problem downloading the results');
+    // Todo: This could use a generic alert library instead
+    alert('There was a problem downloading the results'); // eslint-disable-line no-alert
     return;
   }
   const {payload, info: {
@@ -82,8 +85,8 @@ async function processResults (url) {
         ['button', {style: 'margin-right: 8px; border: 2px solid black;', dataset: {id, value: svgURL}, $on: {
           async click (e) {
             e.preventDefault();
-            const {value: svgURL, id} = this.dataset;
-            // console.log('this', id, svgURL);
+            const {value: svgurl} = this.dataset;
+            // console.log('this', id, svgurl);
             const post = (message) => {
               // Todo: Make origin customizable as set by opening window
               // Todo: If dropping IE9, avoid stringifying
@@ -95,13 +98,13 @@ async function processResults (url) {
             // Send metadata (also indicates file is about to be sent)
             post({
               name: title,
-              id: svgURL
+              id: svgurl
             });
-            const result = await fetch(svgURL);
+            const result = await fetch(svgurl);
             const svg = await result.text();
-            // console.log('url and svg', svgURL, svg);
+            // console.log('url and svg', svgurl, svg);
             post({
-              href: svgURL,
+              href: svgurl,
               data: svg
             });
           }
@@ -117,7 +120,7 @@ async function processResults (url) {
         ['span', [
           '(ID: ',
           ['a', {
-            href: 'javascript: void(0);',
+            href: jsVoid,
             dataset: {value: id},
             $on: {
               click (e) {
@@ -172,7 +175,7 @@ async function processResults (url) {
       ? ''
       : ['span', [
         ['a', {
-          href: 'javascript: void(0);',
+          href: jsVoid,
           $on: {
             click (e) {
               e.preventDefault();
@@ -188,7 +191,7 @@ async function processResults (url) {
       ? ''
       : ['span', [
         ['a', {
-          href: 'javascript: void(0);',
+          href: jsVoid,
           $on: {
             click (e) {
               e.preventDefault();
@@ -204,7 +207,7 @@ async function processResults (url) {
       ? ''
       : ['span', [
         ['a', {
-          href: 'javascript: void(0);',
+          href: jsVoid,
           $on: {
             click (e) {
               e.preventDefault();
@@ -220,7 +223,7 @@ async function processResults (url) {
       ? ''
       : ['span', [
         ['a', {
-          href: 'javascript: void(0);',
+          href: jsVoid,
           $on: {
             click (e) {
               e.preventDefault();

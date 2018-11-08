@@ -37,7 +37,43 @@ var svgEditorExtension_shapes = (function () {
     };
   }
 
-  /* globals jQuery */
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  }
 
   /**
    * ext-shapes.js
@@ -53,12 +89,12 @@ var svgEditorExtension_shapes = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(_ref) {
-        var importLocale, strings, svgEditor, $, canv, svgroot, lastBBox, categories, library, modeId, startClientPos, currentD, curShapeId, curShape, startX, startY, curLib, loadIcons, makeButtons, loadLibrary, buttons;
+        var $, importLocale, strings, svgEditor, canv, svgroot, lastBBox, categories, library, modeId, startClientPos, currentD, curShapeId, curShape, startX, startY, curLib, loadIcons, makeButtons, loadLibrary, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                loadLibrary = function _ref4(catId) {
+                loadLibrary = function _ref8(catId) {
                   var lib = library[catId];
 
                   if (!lib) {
@@ -84,7 +120,7 @@ var svgEditorExtension_shapes = (function () {
                   loadIcons();
                 };
 
-                makeButtons = function _ref3(cat, shapes) {
+                makeButtons = function _ref7(cat, shapes) {
                   var size = curLib.size || 300;
                   var fill = curLib.fill || false;
                   var off = size * 0.05;
@@ -97,10 +133,11 @@ var svgEditorExtension_shapes = (function () {
                   shapeIcon.documentElement.setAttribute('height', height);
                   var svgElem = $(document.importNode(shapeIcon.documentElement, true));
                   var data = shapes.data;
-                  curLib.buttons = [];
+                  curLib.buttons = Object.entries(data).map(function (_ref2) {
+                    var _ref3 = _slicedToArray(_ref2, 2),
+                        id = _ref3[0],
+                        pathD = _ref3[1];
 
-                  for (var id in data) {
-                    var pathD = data[id];
                     var icon = svgElem.clone();
                     icon.find('path').attr('d', pathD);
                     var iconBtn = icon.wrap('<div class="tool_button">').parent().attr({
@@ -108,22 +145,21 @@ var svgEditorExtension_shapes = (function () {
                       title: id
                     }); // Store for later use
 
-                    curLib.buttons.push(iconBtn[0]);
-                  }
+                    return iconBtn[0];
+                  });
                 };
 
-                loadIcons = function _ref2() {
+                loadIcons = function _ref6() {
                   $('#shape_buttons').empty().append(curLib.buttons);
                 };
 
-                importLocale = _ref.importLocale;
+                $ = _ref.$, importLocale = _ref.importLocale;
                 _context.next = 6;
                 return importLocale();
 
               case 6:
                 strings = _context.sent;
                 svgEditor = this;
-                $ = jQuery;
                 canv = svgEditor.canvas;
                 svgroot = canv.getRootElem();
                 lastBBox = {}; // This populates the category list
@@ -167,6 +203,11 @@ var svgEditorExtension_shapes = (function () {
                 modeId = 'shapelib';
                 startClientPos = {};
                 curLib = library.basic;
+                /**
+                *
+                * @returns {undefined}
+                */
+
                 buttons = [{
                   id: 'tool_shapelib',
                   icon: svgEditor.curConfig.extIconsPath + 'shapes.png',
@@ -185,7 +226,7 @@ var svgEditorExtension_shapes = (function () {
                     return Object.assign(buttons[i], button);
                   }),
                   callback: function callback() {
-                    $('<style>').text('#shape_buttons {' + 'overflow: auto;' + 'width: 180px;' + 'max-height: 300px;' + 'display: table-cell;' + 'vertical-align: middle;' + '}' + '#shape_cats {' + 'min-width: 110px;' + 'display: table-cell;' + 'vertical-align: middle;' + 'height: 300px;' + '}' + '#shape_cats > div {' + 'line-height: 1em;' + 'padding: .5em;' + 'border:1px solid #B0B0B0;' + 'background: #E8E8E8;' + 'margin-bottom: -1px;' + '}' + '#shape_cats div:hover {' + 'background: #FFFFCC;' + '}' + '#shape_cats div.current {' + 'font-weight: bold;' + '}').appendTo('head');
+                    $('<style>').text("\n          #shape_buttons {\n            overflow: auto;\n            width: 180px;\n            max-height: 300px;\n            display: table-cell;\n            vertical-align: middle;\n          }\n          #shape_cats {\n            min-width: 110px;\n            display: table-cell;\n            vertical-align: middle;\n            height: 300px;\n          }\n          #shape_cats > div {\n            line-height: 1em;\n            padding: .5em;\n            border:1px solid #B0B0B0;\n            background: #E8E8E8;\n            margin-bottom: -1px;\n          }\n          #shape_cats div:hover {\n            background: #FFFFCC;\n          }\n          #shape_cats div.current {\n            font-weight: bold;\n          }\n        ").appendTo('head');
                     var btnDiv = $('<div id="shape_buttons">');
                     $('#tools_shapelib > *').wrapAll(btnDiv);
                     var shower = $('#tools_shapelib_show');
@@ -233,18 +274,20 @@ var svgEditorExtension_shapes = (function () {
                     }); // Now add shape categories from locale
 
                     var cats = {};
+                    Object.entries(categories).forEach(function (_ref4) {
+                      var _ref5 = _slicedToArray(_ref4, 2),
+                          o = _ref5[0],
+                          categoryName = _ref5[1];
 
-                    for (var o in categories) {
-                      cats['#shape_cats [data-cat="' + o + '"]'] = categories[o];
-                    }
-
+                      cats['#shape_cats [data-cat="' + o + '"]'] = categoryName;
+                    });
                     this.setStrings('content', cats);
                   },
                   mouseDown: function mouseDown(opts) {
                     var mode = canv.getMode();
 
                     if (mode !== modeId) {
-                      return;
+                      return undefined;
                     }
 
                     startX = opts.start_x;
@@ -349,7 +392,7 @@ var svgEditorExtension_shapes = (function () {
                     var mode = canv.getMode();
 
                     if (mode !== modeId) {
-                      return;
+                      return undefined;
                     }
 
                     var keepObject = opts.event.clientX !== startClientPos.x && opts.event.clientY !== startClientPos.y;
@@ -361,7 +404,7 @@ var svgEditorExtension_shapes = (function () {
                   }
                 });
 
-              case 19:
+              case 18:
               case "end":
                 return _context.stop();
             }

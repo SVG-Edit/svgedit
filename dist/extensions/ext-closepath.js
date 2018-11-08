@@ -37,8 +37,6 @@ var svgEditorExtension_closepath = (function () {
     };
   }
 
-  /* globals jQuery */
-
   /**
    * ext-closepath.js
    *
@@ -55,18 +53,17 @@ var svgEditorExtension_closepath = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(_ref) {
-        var importLocale, strings, $, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
+        var importLocale, $, strings, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                importLocale = _ref.importLocale;
+                importLocale = _ref.importLocale, $ = _ref.$;
                 _context.next = 3;
                 return importLocale();
 
               case 3:
                 strings = _context.sent;
-                $ = jQuery;
                 svgEditor = this;
 
                 updateButton = function updateButton(path) {
@@ -157,7 +154,7 @@ var svgEditorExtension_closepath = (function () {
                   }
                 });
 
-              case 11:
+              case 10:
               case "end":
                 return _context.stop();
             }

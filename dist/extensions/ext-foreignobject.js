@@ -37,8 +37,6 @@ var svgEditorExtension_foreignobject = (function () {
     };
   }
 
-  /* globals jQuery */
-
   /**
    * ext-foreignobject.js
    *
@@ -52,18 +50,18 @@ var svgEditorExtension_foreignobject = (function () {
     init: function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
-        var svgEditor, text2xml, NS, importLocale, $, svgCanvas, svgdoc, strings, properlySourceSizeTextArea, showPanel, toggleSourceButtons, selElems, started, newFO, editingforeign, setForeignString, showForeignEditor, setAttr, buttons, contextTools;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+      regeneratorRuntime.mark(function _callee2(S) {
+        var svgEditor, $, text2xml, NS, importLocale, svgCanvas, svgdoc, strings, properlySourceSizeTextArea, showPanel, toggleSourceButtons, selElems, started, newFO, editingforeign, setForeignString, showForeignEditor, setAttr, buttons, contextTools;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                setAttr = function _ref5(attr, val) {
+                setAttr = function _ref6(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
                   svgCanvas.call('changed', selElems);
                 };
 
-                showForeignEditor = function _ref4() {
+                showForeignEditor = function _ref5() {
                   var elt = selElems[0];
 
                   if (!elt || editingforeign) {
@@ -80,8 +78,8 @@ var svgEditorExtension_foreignobject = (function () {
                   $('#svg_source_textarea').focus();
                 };
 
-                setForeignString = function _ref3(xmlString) {
-                  var elt = selElems[0];
+                setForeignString = function _ref4(xmlString) {
+                  var elt = selElems[0]; // The parent `Element` to append to
 
                   try {
                     // convert string into XML document
@@ -92,19 +90,21 @@ var svgEditorExtension_foreignobject = (function () {
                     svgCanvas.call('changed', [elt]);
                     svgCanvas.clearSelection();
                   } catch (e) {
-                    console.log(e);
+                    // Todo: Surface error to user
+                    console.log(e); // eslint-disable-line no-console
+
                     return false;
                   }
 
                   return true;
                 };
 
-                toggleSourceButtons = function _ref2(on) {
+                toggleSourceButtons = function _ref3(on) {
                   $('#tool_source_save, #tool_source_cancel').toggle(!on);
                   $('#foreign_save, #foreign_cancel').toggle(on);
                 };
 
-                showPanel = function _ref(on) {
+                showPanel = function _ref2(on) {
                   var fcRules = $('#fc_rules');
 
                   if (!fcRules.length) {
@@ -116,27 +116,30 @@ var svgEditorExtension_foreignobject = (function () {
                 };
 
                 svgEditor = this;
-                text2xml = S.text2xml, NS = S.NS, importLocale = S.importLocale;
-                $ = jQuery;
+                $ = S.$, text2xml = S.text2xml, NS = S.NS, importLocale = S.importLocale;
                 svgCanvas = svgEditor.canvas;
                 svgdoc = S.svgroot.parentNode.ownerDocument;
-                _context.next = 12;
+                _context2.next = 11;
                 return importLocale();
 
-              case 12:
-                strings = _context.sent;
+              case 11:
+                strings = _context2.sent;
 
                 properlySourceSizeTextArea = function properlySourceSizeTextArea() {
                   // TODO: remove magic numbers here and get values from CSS
                   var height = $('#svg_source_container').height() - 80;
                   $('#svg_source_textarea').css('height', height);
                 };
+                /**
+                * @param {boolean} on
+                * @returns {undefined}
+                */
+
 
                 editingforeign = false;
                 /**
                 * This function sets the content of element elt to the input XML.
                 * @param {string} xmlString - The XML text
-                * @param {Element} elt - the parent element to append to
                 * @returns {boolean} This function returns false if the set was unsuccessful, true otherwise.
                 */
 
@@ -191,7 +194,7 @@ var svgEditorExtension_foreignobject = (function () {
                     }
                   }
                 }];
-                return _context.abrupt("return", {
+                return _context2.abrupt("return", {
                   name: strings.name,
                   svgicons: svgEditor.curConfig.extIconsPath + 'foreignobject-icons.xml',
                   buttons: strings.buttons.map(function (button, i) {
@@ -215,24 +218,57 @@ var svgEditorExtension_foreignobject = (function () {
                       // Create source save/cancel buttons
 
                       /* const save = */
-                      $('#tool_source_save').clone().hide().attr('id', 'foreign_save').unbind().appendTo('#tool_source_back').click(function () {
-                        if (!editingforeign) {
-                          return;
-                        }
+                      $('#tool_source_save').clone().hide().attr('id', 'foreign_save').unbind().appendTo('#tool_source_back').click(
+                      /*#__PURE__*/
+                      _asyncToGenerator(
+                      /*#__PURE__*/
+                      regeneratorRuntime.mark(function _callee() {
+                        var ok;
+                        return regeneratorRuntime.wrap(function _callee$(_context) {
+                          while (1) {
+                            switch (_context.prev = _context.next) {
+                              case 0:
+                                if (editingforeign) {
+                                  _context.next = 2;
+                                  break;
+                                }
 
-                        if (!setForeignString($('#svg_source_textarea').val())) {
-                          $.confirm('Errors found. Revert to original?', function (ok) {
-                            if (!ok) {
-                              return false;
+                                return _context.abrupt("return");
+
+                              case 2:
+                                if (setForeignString($('#svg_source_textarea').val())) {
+                                  _context.next = 11;
+                                  break;
+                                }
+
+                                _context.next = 5;
+                                return $.confirm('Errors found. Revert to original?');
+
+                              case 5:
+                                ok = _context.sent;
+
+                                if (ok) {
+                                  _context.next = 8;
+                                  break;
+                                }
+
+                                return _context.abrupt("return");
+
+                              case 8:
+                                endChanges();
+                                _context.next = 12;
+                                break;
+
+                              case 11:
+                                endChanges();
+
+                              case 12:
+                              case "end":
+                                return _context.stop();
                             }
-
-                            endChanges();
-                          });
-                        } else {
-                          endChanges();
-                        } // setSelectMode();
-
-                      });
+                          }
+                        }, _callee, this);
+                      })));
                       /* const cancel = */
 
                       $('#tool_source_cancel').clone().hide().attr('id', 'foreign_cancel').unbind().appendTo('#tool_source_back').click(function () {
@@ -242,49 +278,53 @@ var svgEditorExtension_foreignobject = (function () {
                   },
                   mouseDown: function mouseDown(opts) {
                     // const e = opts.event;
-                    if (svgCanvas.getMode() === 'foreign') {
-                      started = true;
-                      newFO = svgCanvas.addSVGElementFromJson({
-                        element: 'foreignObject',
-                        attr: {
-                          x: opts.start_x,
-                          y: opts.start_y,
-                          id: svgCanvas.getNextId(),
-                          'font-size': 16,
-                          // cur_text.font_size,
-                          width: '48',
-                          height: '20',
-                          style: 'pointer-events:inherit'
-                        }
-                      });
-                      var m = svgdoc.createElementNS(NS.MATH, 'math');
-                      m.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
-                      m.setAttribute('display', 'inline');
-                      var mi = svgdoc.createElementNS(NS.MATH, 'mi');
-                      mi.setAttribute('mathvariant', 'normal');
-                      mi.textContent = "\u03A6";
-                      var mo = svgdoc.createElementNS(NS.MATH, 'mo');
-                      mo.textContent = "\u222A";
-                      var mi2 = svgdoc.createElementNS(NS.MATH, 'mi');
-                      mi2.textContent = "\u2133";
-                      m.append(mi, mo, mi2);
-                      newFO.append(m);
-                      return {
-                        started: true
-                      };
+                    if (svgCanvas.getMode() !== 'foreign') {
+                      return undefined;
                     }
+
+                    started = true;
+                    newFO = svgCanvas.addSVGElementFromJson({
+                      element: 'foreignObject',
+                      attr: {
+                        x: opts.start_x,
+                        y: opts.start_y,
+                        id: svgCanvas.getNextId(),
+                        'font-size': 16,
+                        // cur_text.font_size,
+                        width: '48',
+                        height: '20',
+                        style: 'pointer-events:inherit'
+                      }
+                    });
+                    var m = svgdoc.createElementNS(NS.MATH, 'math');
+                    m.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
+                    m.setAttribute('display', 'inline');
+                    var mi = svgdoc.createElementNS(NS.MATH, 'mi');
+                    mi.setAttribute('mathvariant', 'normal');
+                    mi.textContent = "\u03A6";
+                    var mo = svgdoc.createElementNS(NS.MATH, 'mo');
+                    mo.textContent = "\u222A";
+                    var mi2 = svgdoc.createElementNS(NS.MATH, 'mi');
+                    mi2.textContent = "\u2133";
+                    m.append(mi, mo, mi2);
+                    newFO.append(m);
+                    return {
+                      started: true
+                    };
                   },
                   mouseUp: function mouseUp(opts) {
                     // const e = opts.event;
-                    if (svgCanvas.getMode() === 'foreign' && started) {
-                      var attrs = $(newFO).attr(['width', 'height']);
-                      var keep = attrs.width !== '0' || attrs.height !== '0';
-                      svgCanvas.addToSelection([newFO], true);
-                      return {
-                        keep: keep,
-                        element: newFO
-                      };
+                    if (svgCanvas.getMode() !== 'foreign' || !started) {
+                      return undefined;
                     }
+
+                    var attrs = $(newFO).attr(['width', 'height']);
+                    var keep = attrs.width !== '0' || attrs.height !== '0';
+                    svgCanvas.addToSelection([newFO], true);
+                    return {
+                      keep: keep,
+                      element: newFO
+                    };
                   },
                   selectedChanged: function selectedChanged(opts) {
                     // Use this to update the current selected elements
@@ -311,12 +351,12 @@ var svgEditorExtension_foreignobject = (function () {
                   elementChanged: function elementChanged(opts) {}
                 });
 
-              case 18:
+              case 17:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this);
+        }, _callee2, this);
       }));
 
       return function init(_x) {

@@ -52,7 +52,7 @@ export function importSetGlobalDefault (url, config) {
 * @returns {Promise} The promise resolves to either an `ArbitraryModule` or
 *   any other value depends on the export of the targeted module.
 */
-export async function importSetGlobal (url, {global, returnDefault}) {
+export async function importSetGlobal (url, {global: glob, returnDefault}) {
   // Todo: Replace calls to this function with `import()` when supported
   const modularVersion = !('svgEditor' in window) ||
     !window.svgEditor ||
@@ -61,13 +61,13 @@ export async function importSetGlobal (url, {global, returnDefault}) {
     return importModule(url, undefined, {returnDefault});
   }
   await importScript(url);
-  return window[global];
+  return window[glob];
 }
 /**
  *
  * @author Brett Zamir (other items are from `dynamic-import-polyfill`)
  * @param {string|string[]} url
- * @param {Object} [atts={}]
+ * @param {PlainObject} [atts={}]
  * @returns {Promise} Resolves to `undefined` or rejects with an `Error` upon a
  *   script loading error
  */
@@ -104,7 +104,7 @@ export function importScript (url, atts = {}) {
 /**
  *
  * @param {string|string[]} url
- * @param {Object} [atts={}]
+ * @param {PlainObject} [atts={}]
  * @param {PlainObject} opts
  * @param {boolean} [opts.returnDefault=false} = {}]
  * @returns {Promise} Resolves to value of loading module or rejects with

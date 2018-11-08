@@ -70,6 +70,7 @@ const jPicker = function ($) {
   /**
   * Encapsulate slider functionality for the ColorMap and ColorBar -
   * could be useful to use a jQuery UI draggable for this with certain extensions.
+  * @memberof module:jPicker
   * @param {external:jQuery} bar
   * @param {module:jPicker.SliderOptions} options
   * @returns {undefined}
@@ -130,7 +131,12 @@ const jPicker = function ($) {
         e.preventDefault();
         return false;
       }
-      // calculate mouse position and set value within the current range
+
+      /**
+       * Calculate mouse position and set value within the current range.
+       * @param {Event} e
+       * @returns {undefined}
+       */
       function setValuesFromMousePosition (e) {
         const barW = bar.w, // local copies for YUI compressor
           barH = bar.h;
@@ -141,8 +147,15 @@ const jPicker = function ($) {
         else if (locX > barW) locX = barW;
         if (locY < 0) locY = 0;
         else if (locY > barH) locY = barH;
-        val.call(that, 'xy', {x: ((locX / barW) * rangeX) + minX, y: ((locY / barH) * rangeY) + minY});
+        val.call(that, 'xy', {
+          x: ((locX / barW) * rangeX) + minX,
+          y: ((locY / barH) * rangeY) + minY
+        });
       }
+      /**
+       *
+       * @returns {undefined}
+       */
       function draw () {
         const
           barW = bar.w,
@@ -174,6 +187,14 @@ const jPicker = function ($) {
           /* eslint no-bitwise: ["error"] */
         });
       }
+
+      /**
+       * Get or set a value.
+       * @param {?("xy"|"x"|"y")} name
+       * @param {module:math.XYObject} value
+       * @param {module:jPicker.Slider} context
+       * @returns {module:math.XYObject|Float|undefined}
+       */
       function val (name, value, context) {
         const set = value !== undefined;
         if (!set) {
@@ -185,7 +206,7 @@ const jPicker = function ($) {
           default: return {x, y};
           }
         }
-        if (!isNullish(context) && context === that) return;
+        if (!isNullish(context) && context === that) return undefined;
         let changed = false;
 
         let newX, newY;
@@ -220,7 +241,31 @@ const jPicker = function ($) {
           }
         }
         changed && fireChangeEvents.call(that, context || that);
+        return undefined;
       }
+
+      /**
+      * @typedef {PlainObject} module:jPicker.MinMaxRangeX
+      * @property {Float} minX
+      * @property {Float} maxX
+      * @property {Float} rangeX
+      */
+      /**
+      * @typedef {PlainObject} module:jPicker.MinMaxRangeY
+      * @property {Float} minY
+      * @property {Float} maxY
+      * @property {Float} rangeY
+      */
+      /**
+      * @typedef {module:jPicker.MinMaxRangeY|module:jPicker.MinMaxRangeX} module:jPicker.MinMaxRangeXY
+      */
+
+      /**
+       *
+       * @param {"minx"|"maxx"|"rangex"|"miny"|"maxy"|"rangey"|"all"} name
+       * @param {module:jPicker.MinMaxRangeXY} value
+       * @returns {module:jPicker.MinMaxRangeXY|module:jPicker.MinMaxRangeX|module:jPicker.MinMaxRangeY|undefined}
+       */
       function range (name, value) {
         const set = value !== undefined;
         if (!set) {
@@ -290,15 +335,28 @@ const jPicker = function ($) {
           maxY = newMaxY;
           rangeY = maxY - minY;
         }
+        return undefined;
       }
-      function bind (callback) {
+      /**
+      * @param {GenericCallback} callback
+      * @returns {undefined}
+      */
+      function bind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback === 'function') changeEvents.push(callback);
       }
-      function unbind (callback) {
+      /**
+      * @param {GenericCallback} callback
+      * @returns {undefined}
+      */
+      function unbind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback !== 'function') return;
         let i;
         while ((i = changeEvents.includes(callback))) changeEvents.splice(i, 1);
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function destroy () {
         // unbind all possible events and null objects
         $(document).unbind('mouseup', mouseUp).unbind('mousemove', mouseMove);
@@ -344,238 +402,283 @@ const jPicker = function ($) {
       bind.call(that, draw);
     }
   }
-  // controls for all the input elements for the typing in color values
-  function ColorValuePicker (picker, color, bindedHex, alphaPrecision) {
-    const that = this; // private properties and methods
-    const inputs = picker.find('td.Text input');
-    // input box key down - use arrows to alter color
-    function keyDown (e) {
-      if (e.target.value === '' && e.target !== hex.get(0) && ((!isNullish(bindedHex) && e.target !== bindedHex.get(0)) || isNullish(bindedHex))) return;
-      if (!validateKey(e)) return e;
-      switch (e.target) {
-      case red.get(0):
-        switch (e.keyCode) {
-        case 38:
-          red.val(setValueInRange.call(that, (red.val() << 0) + 1, 0, 255));
-          color.val('r', red.val(), e.target);
-          return false;
-        case 40:
-          red.val(setValueInRange.call(that, (red.val() << 0) - 1, 0, 255));
-          color.val('r', red.val(), e.target);
-          return false;
-        }
-        break;
-      case green.get(0):
-        switch (e.keyCode) {
-        case 38:
-          green.val(setValueInRange.call(that, (green.val() << 0) + 1, 0, 255));
-          color.val('g', green.val(), e.target);
-          return false;
-        case 40:
-          green.val(setValueInRange.call(that, (green.val() << 0) - 1, 0, 255));
-          color.val('g', green.val(), e.target);
-          return false;
-        }
-        break;
-      case blue.get(0):
-        switch (e.keyCode) {
-        case 38:
-          blue.val(setValueInRange.call(that, (blue.val() << 0) + 1, 0, 255));
-          color.val('b', blue.val(), e.target);
-          return false;
-        case 40:
-          blue.val(setValueInRange.call(that, (blue.val() << 0) - 1, 0, 255));
-          color.val('b', blue.val(), e.target);
-          return false;
-        }
-        break;
-      case alpha && alpha.get(0):
-        switch (e.keyCode) {
-        case 38:
-          alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) + 1, 0, 100));
-          color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
-          return false;
-        case 40:
-          alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) - 1, 0, 100));
-          color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
-          return false;
-        }
-        break;
-      case hue.get(0):
-        switch (e.keyCode) {
-        case 38:
-          hue.val(setValueInRange.call(that, (hue.val() << 0) + 1, 0, 360));
-          color.val('h', hue.val(), e.target);
-          return false;
-        case 40:
-          hue.val(setValueInRange.call(that, (hue.val() << 0) - 1, 0, 360));
-          color.val('h', hue.val(), e.target);
-          return false;
-        }
-        break;
-      case saturation.get(0):
-        switch (e.keyCode) {
-        case 38:
-          saturation.val(setValueInRange.call(that, (saturation.val() << 0) + 1, 0, 100));
-          color.val('s', saturation.val(), e.target);
-          return false;
-        case 40:
-          saturation.val(setValueInRange.call(that, (saturation.val() << 0) - 1, 0, 100));
-          color.val('s', saturation.val(), e.target);
-          return false;
-        }
-        break;
-      case value.get(0):
-        switch (e.keyCode) {
-        case 38:
-          value.val(setValueInRange.call(that, (value.val() << 0) + 1, 0, 100));
-          color.val('v', value.val(), e.target);
-          return false;
-        case 40:
-          value.val(setValueInRange.call(that, (value.val() << 0) - 1, 0, 100));
-          color.val('v', value.val(), e.target);
-          return false;
-        }
-        break;
-      }
-    }
-    // input box key up - validate value and set color
-    function keyUp (e) {
-      if (e.target.value === '' && e.target !== hex.get(0) &&
-        ((!isNullish(bindedHex) && e.target !== bindedHex.get(0)) ||
-        isNullish(bindedHex))) return;
-      if (!validateKey(e)) return e;
-      switch (e.target) {
-      case red.get(0):
-        red.val(setValueInRange.call(that, red.val(), 0, 255));
-        color.val('r', red.val(), e.target);
-        break;
-      case green.get(0):
-        green.val(setValueInRange.call(that, green.val(), 0, 255));
-        color.val('g', green.val(), e.target);
-        break;
-      case blue.get(0):
-        blue.val(setValueInRange.call(that, blue.val(), 0, 255));
-        color.val('b', blue.val(), e.target);
-        break;
-      case alpha && alpha.get(0):
-        alpha.val(setValueInRange.call(that, alpha.val(), 0, 100));
-        color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
-        break;
-      case hue.get(0):
-        hue.val(setValueInRange.call(that, hue.val(), 0, 360));
-        color.val('h', hue.val(), e.target);
-        break;
-      case saturation.get(0):
-        saturation.val(setValueInRange.call(that, saturation.val(), 0, 100));
-        color.val('s', saturation.val(), e.target);
-        break;
-      case value.get(0):
-        value.val(setValueInRange.call(that, value.val(), 0, 100));
-        color.val('v', value.val(), e.target);
-        break;
-      case hex.get(0):
-        hex.val(hex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
-        bindedHex && bindedHex.val(hex.val());
-        color.val('hex', hex.val() !== '' ? hex.val() : null, e.target);
-        break;
-      case bindedHex && bindedHex.get(0):
-        bindedHex.val(bindedHex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
-        hex.val(bindedHex.val());
-        color.val('hex', bindedHex.val() !== '' ? bindedHex.val() : null, e.target);
-        break;
-      case ahex && ahex.get(0):
-        ahex.val(ahex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 2));
-        color.val('a', !isNullish(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
-        break;
-      }
-    }
-    // input box blur - reset to original if value empty
-    function blur (e) {
-      if (!isNullish(color.val())) {
+
+  /**
+   * Controls for all the input elements for the typing in color values.
+   * @param {external:jQuery} picker
+   * @param {external:jQuery.jPicker.Color} color
+   * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
+   * @param {Float} alphaPrecision
+   * @constructor
+   */
+  class ColorValuePicker {
+    constructor (picker, color, bindedHex, alphaPrecision) {
+      const that = this; // private properties and methods
+      const inputs = picker.find('td.Text input');
+      // input box key down - use arrows to alter color
+      /**
+       *
+       * @param {Event} e
+       * @returns {Event|false|undefined}
+       */
+      function keyDown (e) {
+        if (e.target.value === '' && e.target !== hex.get(0) && ((!isNullish(bindedHex) && e.target !== bindedHex.get(0)) || isNullish(bindedHex))) return undefined;
+        if (!validateKey(e)) return e;
         switch (e.target) {
-        case red.get(0): red.val(color.val('r')); break;
-        case green.get(0): green.val(color.val('g')); break;
-        case blue.get(0): blue.val(color.val('b')); break;
-        case alpha && alpha.get(0): alpha.val(toFixedNumeric((color.val('a') * 100) / 255, alphaPrecision)); break;
-        case hue.get(0): hue.val(color.val('h')); break;
-        case saturation.get(0): saturation.val(color.val('s')); break;
-        case value.get(0): value.val(color.val('v')); break;
-        case hex.get(0):
-        case bindedHex && bindedHex.get(0):
-          hex.val(color.val('hex'));
-          bindedHex && bindedHex.val(color.val('hex'));
+        case red.get(0):
+          switch (e.keyCode) {
+          case 38:
+            red.val(setValueInRange.call(that, (red.val() << 0) + 1, 0, 255));
+            color.val('r', red.val(), e.target);
+            return false;
+          case 40:
+            red.val(setValueInRange.call(that, (red.val() << 0) - 1, 0, 255));
+            color.val('r', red.val(), e.target);
+            return false;
+          }
           break;
-        case ahex && ahex.get(0): ahex.val(color.val('ahex').substring(6)); break;
+        case green.get(0):
+          switch (e.keyCode) {
+          case 38:
+            green.val(setValueInRange.call(that, (green.val() << 0) + 1, 0, 255));
+            color.val('g', green.val(), e.target);
+            return false;
+          case 40:
+            green.val(setValueInRange.call(that, (green.val() << 0) - 1, 0, 255));
+            color.val('g', green.val(), e.target);
+            return false;
+          }
+          break;
+        case blue.get(0):
+          switch (e.keyCode) {
+          case 38:
+            blue.val(setValueInRange.call(that, (blue.val() << 0) + 1, 0, 255));
+            color.val('b', blue.val(), e.target);
+            return false;
+          case 40:
+            blue.val(setValueInRange.call(that, (blue.val() << 0) - 1, 0, 255));
+            color.val('b', blue.val(), e.target);
+            return false;
+          }
+          break;
+        case alpha && alpha.get(0):
+          switch (e.keyCode) {
+          case 38:
+            alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) + 1, 0, 100));
+            color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
+            return false;
+          case 40:
+            alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) - 1, 0, 100));
+            color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
+            return false;
+          }
+          break;
+        case hue.get(0):
+          switch (e.keyCode) {
+          case 38:
+            hue.val(setValueInRange.call(that, (hue.val() << 0) + 1, 0, 360));
+            color.val('h', hue.val(), e.target);
+            return false;
+          case 40:
+            hue.val(setValueInRange.call(that, (hue.val() << 0) - 1, 0, 360));
+            color.val('h', hue.val(), e.target);
+            return false;
+          }
+          break;
+        case saturation.get(0):
+          switch (e.keyCode) {
+          case 38:
+            saturation.val(setValueInRange.call(that, (saturation.val() << 0) + 1, 0, 100));
+            color.val('s', saturation.val(), e.target);
+            return false;
+          case 40:
+            saturation.val(setValueInRange.call(that, (saturation.val() << 0) - 1, 0, 100));
+            color.val('s', saturation.val(), e.target);
+            return false;
+          }
+          break;
+        case value.get(0):
+          switch (e.keyCode) {
+          case 38:
+            value.val(setValueInRange.call(that, (value.val() << 0) + 1, 0, 100));
+            color.val('v', value.val(), e.target);
+            return false;
+          case 40:
+            value.val(setValueInRange.call(that, (value.val() << 0) - 1, 0, 100));
+            color.val('v', value.val(), e.target);
+            return false;
+          }
+          break;
+        }
+        return undefined;
+      }
+      // input box key up - validate value and set color
+      /**
+      * @param {Event} e
+      * @returns {Event|undefined}
+      * @todo Why is this returning an event?
+      */
+      function keyUp (e) {
+        if (e.target.value === '' && e.target !== hex.get(0) &&
+          ((!isNullish(bindedHex) && e.target !== bindedHex.get(0)) ||
+          isNullish(bindedHex))) return undefined;
+        if (!validateKey(e)) return e;
+        switch (e.target) {
+        case red.get(0):
+          red.val(setValueInRange.call(that, red.val(), 0, 255));
+          color.val('r', red.val(), e.target);
+          break;
+        case green.get(0):
+          green.val(setValueInRange.call(that, green.val(), 0, 255));
+          color.val('g', green.val(), e.target);
+          break;
+        case blue.get(0):
+          blue.val(setValueInRange.call(that, blue.val(), 0, 255));
+          color.val('b', blue.val(), e.target);
+          break;
+        case alpha && alpha.get(0):
+          alpha.val(setValueInRange.call(that, alpha.val(), 0, 100));
+          color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
+          break;
+        case hue.get(0):
+          hue.val(setValueInRange.call(that, hue.val(), 0, 360));
+          color.val('h', hue.val(), e.target);
+          break;
+        case saturation.get(0):
+          saturation.val(setValueInRange.call(that, saturation.val(), 0, 100));
+          color.val('s', saturation.val(), e.target);
+          break;
+        case value.get(0):
+          value.val(setValueInRange.call(that, value.val(), 0, 100));
+          color.val('v', value.val(), e.target);
+          break;
+        case hex.get(0):
+          hex.val(hex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
+          bindedHex && bindedHex.val(hex.val());
+          color.val('hex', hex.val() !== '' ? hex.val() : null, e.target);
+          break;
+        case bindedHex && bindedHex.get(0):
+          bindedHex.val(bindedHex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
+          hex.val(bindedHex.val());
+          color.val('hex', bindedHex.val() !== '' ? bindedHex.val() : null, e.target);
+          break;
+        case ahex && ahex.get(0):
+          ahex.val(ahex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 2));
+          color.val('a', !isNullish(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
+          break;
+        }
+        return undefined;
+      }
+      // input box blur - reset to original if value empty
+      /**
+      * @param {Event} e
+      * @returns {undefined}
+      */
+      function blur (e) {
+        if (!isNullish(color.val())) {
+          switch (e.target) {
+          case red.get(0): red.val(color.val('r')); break;
+          case green.get(0): green.val(color.val('g')); break;
+          case blue.get(0): blue.val(color.val('b')); break;
+          case alpha && alpha.get(0): alpha.val(toFixedNumeric((color.val('a') * 100) / 255, alphaPrecision)); break;
+          case hue.get(0): hue.val(color.val('h')); break;
+          case saturation.get(0): saturation.val(color.val('s')); break;
+          case value.get(0): value.val(color.val('v')); break;
+          case hex.get(0):
+          case bindedHex && bindedHex.get(0):
+            hex.val(color.val('hex'));
+            bindedHex && bindedHex.val(color.val('hex'));
+            break;
+          case ahex && ahex.get(0): ahex.val(color.val('ahex').substring(6)); break;
+          }
         }
       }
-    }
-    function validateKey (e) {
-      switch (e.keyCode) {
-      case 9:
-      case 16:
-      case 29:
-      case 37:
-      case 39:
-        return false;
-      case 'c'.charCodeAt():
-      case 'v'.charCodeAt():
-        if (e.ctrlKey) return false;
+      /**
+      * @param {Event} e
+      * @returns {boolean}
+      */
+      function validateKey (e) {
+        switch (e.keyCode) {
+        case 9:
+        case 16:
+        case 29:
+        case 37:
+        case 39:
+          return false;
+        case 'c'.charCodeAt():
+        case 'v'.charCodeAt():
+          if (e.ctrlKey) return false;
+        }
+        return true;
       }
-      return true;
+
+      /**
+      * Constrain value within range.
+      * @param {Float|string} value
+      * @param {Float} min
+      * @param {Float} max
+      * @returns {Float|string} Returns a number or numeric string
+      */
+      function setValueInRange (value, min, max) {
+        if (value === '' || isNaN(value)) return min;
+        if (value > max) return max;
+        if (value < min) return min;
+        return value;
+      }
+      /**
+      * @param {external:jQuery} ui
+      * @param {Element} context
+      * @returns {undefined}
+      */
+      function colorChanged (ui, context) {
+        const all = ui.val('all');
+        if (context !== red.get(0)) red.val(!isNullish(all) ? all.r : '');
+        if (context !== green.get(0)) green.val(!isNullish(all) ? all.g : '');
+        if (context !== blue.get(0)) blue.val(!isNullish(all) ? all.b : '');
+        if (alpha && context !== alpha.get(0)) alpha.val(!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, alphaPrecision) : '');
+        if (context !== hue.get(0)) hue.val(!isNullish(all) ? all.h : '');
+        if (context !== saturation.get(0)) saturation.val(!isNullish(all) ? all.s : '');
+        if (context !== value.get(0)) value.val(!isNullish(all) ? all.v : '');
+        if (context !== hex.get(0) && ((bindedHex && context !== bindedHex.get(0)) || !bindedHex)) hex.val(!isNullish(all) ? all.hex : '');
+        if (bindedHex && context !== bindedHex.get(0) && context !== hex.get(0)) bindedHex.val(!isNullish(all) ? all.hex : '');
+        if (ahex && context !== ahex.get(0)) ahex.val(!isNullish(all) ? all.ahex.substring(6) : '');
+      }
+      /**
+      * Unbind all events and null objects.
+      * @returns {undefined}
+      */
+      function destroy () {
+        red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).unbind('keyup', keyUp).unbind('blur', blur);
+        red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).unbind('keydown', keyDown);
+        color.unbind(colorChanged);
+        red = null;
+        green = null;
+        blue = null;
+        alpha = null;
+        hue = null;
+        saturation = null;
+        value = null;
+        hex = null;
+        ahex = null;
+      }
+      let
+        red = inputs.eq(3),
+        green = inputs.eq(4),
+        blue = inputs.eq(5),
+        alpha = inputs.length > 7 ? inputs.eq(6) : null,
+        hue = inputs.eq(0),
+        saturation = inputs.eq(1),
+        value = inputs.eq(2),
+        hex = inputs.eq(inputs.length > 7 ? 7 : 6),
+        ahex = inputs.length > 7 ? inputs.eq(8) : null;
+      $.extend(true, that, {
+        // public properties and methods
+        destroy
+      });
+      red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).bind('keyup', keyUp).bind('blur', blur);
+      red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).bind('keydown', keyDown);
+      color.bind(colorChanged);
     }
-    // constrain value within range
-    function setValueInRange (value, min, max) {
-      if (value === '' || isNaN(value)) return min;
-      if (value > max) return max;
-      if (value < min) return min;
-      return value;
-    }
-    function colorChanged (ui, context) {
-      const all = ui.val('all');
-      if (context !== red.get(0)) red.val(!isNullish(all) ? all.r : '');
-      if (context !== green.get(0)) green.val(!isNullish(all) ? all.g : '');
-      if (context !== blue.get(0)) blue.val(!isNullish(all) ? all.b : '');
-      if (alpha && context !== alpha.get(0)) alpha.val(!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, alphaPrecision) : '');
-      if (context !== hue.get(0)) hue.val(!isNullish(all) ? all.h : '');
-      if (context !== saturation.get(0)) saturation.val(!isNullish(all) ? all.s : '');
-      if (context !== value.get(0)) value.val(!isNullish(all) ? all.v : '');
-      if (context !== hex.get(0) && ((bindedHex && context !== bindedHex.get(0)) || !bindedHex)) hex.val(!isNullish(all) ? all.hex : '');
-      if (bindedHex && context !== bindedHex.get(0) && context !== hex.get(0)) bindedHex.val(!isNullish(all) ? all.hex : '');
-      if (ahex && context !== ahex.get(0)) ahex.val(!isNullish(all) ? all.ahex.substring(6) : '');
-    }
-    function destroy () {
-      // unbind all events and null objects
-      red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).unbind('keyup', keyUp).unbind('blur', blur);
-      red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).unbind('keydown', keyDown);
-      color.unbind(colorChanged);
-      red = null;
-      green = null;
-      blue = null;
-      alpha = null;
-      hue = null;
-      saturation = null;
-      value = null;
-      hex = null;
-      ahex = null;
-    }
-    let
-      red = inputs.eq(3),
-      green = inputs.eq(4),
-      blue = inputs.eq(5),
-      alpha = inputs.length > 7 ? inputs.eq(6) : null,
-      hue = inputs.eq(0),
-      saturation = inputs.eq(1),
-      value = inputs.eq(2),
-      hex = inputs.eq(inputs.length > 7 ? 7 : 6),
-      ahex = inputs.length > 7 ? inputs.eq(8) : null;
-    $.extend(true, that, {
-      // public properties and methods
-      destroy
-    });
-    red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).bind('keyup', keyUp).bind('blur', blur);
-    red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).bind('keydown', keyDown);
-    color.bind(colorChanged);
   }
 
   /**
@@ -612,27 +715,44 @@ const jPicker = function ($) {
     * @memberof external:jQuery.jPicker
     * @param {module:jPicker.JPickerInit} init
     */
-    Color: function (init) {
+    Color: function (init) { // eslint-disable-line object-shorthand
       const that = this;
+      /**
+       *
+       * @param {module:jPicker.Slider} context
+       * @returns {undefined}
+       */
       function fireChangeEvents (context) {
         for (let i = 0; i < changeEvents.length; i++) changeEvents[i].call(that, that, context);
       }
+
+      /**
+       * @param {string|"ahex"|"hex"|"all"|""|null|undefined} name String composed of letters "r", "g", "b", "a", "h", "s", and/or "v"
+       * @param {module:jPicker.RGBA|module:jPicker.JPickerInit|string} [value]
+       * @param {external:jQuery.jPicker.Color} context
+       * @returns {module:jPicker.JPickerInit|string|null|undefined}
+       */
       function val (name, value, context) {
         // Kind of ugly
         const set = Boolean(value);
         if (set && value.ahex === '') value.ahex = '00000000';
         if (!set) {
+          let ret;
           if (isNullish(name) || name === '') name = 'all';
           if (isNullish(r)) return null;
           switch (name.toLowerCase()) {
           case 'ahex': return ColorMethods.rgbaToHex({r, g, b, a});
           case 'hex': return val('ahex').substring(0, 6);
-          case 'all': return {r, g, b, a, h, s, v, hex: val.call(that, 'hex'), ahex: val.call(that, 'ahex')};
-          default:
-            let ret = {};
+          case 'all': return {
+            r, g, b, a, h, s, v,
+            hex: val.call(that, 'hex'),
+            ahex: val.call(that, 'ahex')
+          };
+          default: {
+            ret = {};
             const nameLength = name.length;
-            for (let i = 0; i < nameLength; i++) {
-              switch (name.charAt(i)) {
+            [...name].forEach((ch) => {
+              switch (ch) {
               case 'r':
                 if (nameLength === 1) ret = r;
                 else ret.r = r;
@@ -662,13 +782,14 @@ const jPicker = function ($) {
                 else ret.v = v;
                 break;
               }
-            }
-            return typeof ret === 'object' && !Object.keys(ret).length
-              ? val.call(that, 'all')
-              : ret;
+            });
           }
+          }
+          return typeof ret === 'object' && !Object.keys(ret).length
+            ? val.call(that, 'all')
+            : ret;
         }
-        if (!isNullish(context) && context === that) return;
+        if (!isNullish(context) && context === that) return undefined;
         if (isNullish(name)) name = '';
 
         let changed = false;
@@ -702,18 +823,27 @@ const jPicker = function ($) {
             changed = true;
           }
           changed && fireChangeEvents.call(that, context || that);
-          return;
+          return undefined;
         }
         switch (name.toLowerCase()) {
         case 'ahex':
         case 'hex': {
           const ret = ColorMethods.hexToRgba((value && (value.ahex || value.hex)) || value || 'none');
-          val.call(that, 'rgba', {r: ret.r, g: ret.g, b: ret.b, a: name === 'ahex' ? ret.a : !isNullish(a) ? a : 255}, context);
+          val.call(that, 'rgba', {
+            r: ret.r,
+            g: ret.g,
+            b: ret.b,
+            a: name === 'ahex'
+              ? ret.a
+              : !isNullish(a)
+                ? a
+                : 255
+          }, context);
           break;
         } default: {
           if (value && (!isNullish(value.ahex) || !isNullish(value.hex))) {
             val.call(that, 'ahex', value.ahex || value.hex || '00000000', context);
-            return;
+            return undefined;
           }
           const newV = {};
           let rgb = false, hsv = false;
@@ -724,10 +854,10 @@ const jPicker = function ($) {
           if (value.h !== undefined && !name.includes('h')) name += 'h';
           if (value.s !== undefined && !name.includes('s')) name += 's';
           if (value.v !== undefined && !name.includes('v')) name += 'v';
-          for (let i = 0; i < name.length; i++) {
-            switch (name.charAt(i)) {
+          [...name].forEach((ch) => {
+            switch (ch) {
             case 'r':
-              if (hsv) continue;
+              if (hsv) return;
               rgb = true;
               newV.r = (value.r && value.r | 0) || (value | 0) || 0;
               if (newV.r < 0) newV.r = 0;
@@ -738,7 +868,7 @@ const jPicker = function ($) {
               }
               break;
             case 'g':
-              if (hsv) continue;
+              if (hsv) return;
               rgb = true;
               newV.g = (value && value.g && value.g | 0) || (value && value | 0) || 0;
               if (newV.g < 0) newV.g = 0;
@@ -749,7 +879,7 @@ const jPicker = function ($) {
               }
               break;
             case 'b':
-              if (hsv) continue;
+              if (hsv) return;
               rgb = true;
               newV.b = (value && value.b && value.b | 0) || (value && value | 0) || 0;
               if (newV.b < 0) newV.b = 0;
@@ -769,7 +899,7 @@ const jPicker = function ($) {
               }
               break;
             case 'h':
-              if (rgb) continue;
+              if (rgb) return;
               hsv = true;
               newV.h = (value && value.h && value.h | 0) || (value && value | 0) || 0;
               if (newV.h < 0) newV.h = 0;
@@ -780,7 +910,7 @@ const jPicker = function ($) {
               }
               break;
             case 's':
-              if (rgb) continue;
+              if (rgb) return;
               hsv = true;
               newV.s = !isNullish(value.s) ? value.s | 0 : value | 0;
               if (newV.s < 0) newV.s = 0;
@@ -791,7 +921,7 @@ const jPicker = function ($) {
               }
               break;
             case 'v':
-              if (rgb) continue;
+              if (rgb) return;
               hsv = true;
               newV.v = !isNullish(value.v) ? value.v | 0 : value | 0;
               if (newV.v < 0) newV.v = 0;
@@ -802,7 +932,7 @@ const jPicker = function ($) {
               }
               break;
             }
-          }
+          });
           if (changed) {
             if (rgb) {
               r = r || 0;
@@ -823,17 +953,30 @@ const jPicker = function ($) {
           break;
         }
         }
+        return undefined;
       }
-      function bind (callback) {
+      /**
+      * @param {GenericCallback} callback
+      * @returns {undefined}
+      */
+      function bind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback === 'function') changeEvents.push(callback);
       }
-      function unbind (callback) {
+      /**
+      * @param {GenericCallback} callback
+      * @returns {undefined}
+      */
+      function unbind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback !== 'function') return;
         let i;
         while ((i = changeEvents.includes(callback))) {
           changeEvents.splice(i, 1);
         }
       }
+      /**
+      * Unset `changeEvents`
+      * @returns {undefined}
+      */
       function destroy () {
         changeEvents = null;
       }
@@ -1047,6 +1190,26 @@ const jPicker = function ($) {
    * @function external:jQuery.fn.jPicker
    * @see {@link external:jQuery.fn.$.fn.jPicker}
    */
+
+  /**
+  * Will be bound to active {@link jQuery.jPicker.Color}
+  * @callback module:jPicker.LiveCallback
+  * @param {external:jQuery} ui
+  * @param {Element} context
+  * @returns {undefined}
+  */
+  /**
+  * @callback module:jPicker.CommitCallback
+  * @param {external:jQuery.jPicker.Color} activeColor
+  * @param {external:jQuery} okButton
+  * @returns {undefined} Return value not used.
+  */
+  /**
+   * @callback module:jPicker.CancelCallback
+   * @param {external:jQuery.jPicker.Color} activeColor
+   * @param {external:jQuery} cancelButton
+   * @returns {undefined} Return value not used.
+   */
   /**
   * While it would seem this should specify the name `jPicker` for JSDoc, that doesn't
   *   get us treated as a function as well as a namespace (even with `@function name`),
@@ -1054,9 +1217,9 @@ const jPicker = function ($) {
   * @namespace
   * @memberof external:jQuery.fn
   * @param {external:jQuery.fn.jPickerOptions} options
-  * @param {function} [commitCallback]
-  * @param {function} [liveCallback]
-  * @param {function} [cancelCallback]
+  * @param {module:jPicker.CommitCallback} [commitCallback]
+  * @param {module:jPicker.LiveCallback} [liveCallback]
+  * @param {module:jPicker.CancelCallback} [cancelCallback]
   * @returns {external:jQuery}
   */
   $.fn.jPicker = function (options, commitCallback, liveCallback, cancelCallback) {
@@ -1088,7 +1251,7 @@ const jPicker = function ($) {
       // set color mode and update visuals for the new color mode
       /**
        *
-       * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode [description]
+       * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode
        * @throws {Error} Invalid mode
        * @returns {undefined}
        */
@@ -1242,7 +1405,12 @@ const jPicker = function ($) {
         if (isNullish(active.val('ahex'))) return;
         activeColorChanged.call(that, active);
       }
-      // Update color when user changes text values
+      /**
+       * Update color when user changes text values.
+       * @param {external:jQuery} ui
+       * @param {?module:jPicker.Slider} context
+       * @returns {undefined}
+      */
       function activeColorChanged (ui, context) {
         if (isNullish(context) || (context !== colorBar && context !== colorMap)) positionMapAndBarArrows.call(that, ui, context);
         setTimeout(function () {
@@ -1251,7 +1419,13 @@ const jPicker = function ($) {
           updateBarVisuals.call(that, ui);
         }, 0);
       }
-      // user has dragged the ColorMap pointer
+
+      /**
+       * User has dragged the ColorMap pointer.
+       * @param {external:jQuery} ui
+       * @param {?module:jPicker.Slider} context
+       * @returns {undefined}
+      */
       function mapValueChanged (ui, context) {
         const {active} = color;
         if (context !== colorMap && isNullish(active.val())) return;
@@ -1278,7 +1452,13 @@ const jPicker = function ($) {
           break;
         }
       }
-      // user has dragged the ColorBar slider
+
+      /**
+       * User has dragged the ColorBar slider.
+       * @param {external:jQuery} ui
+       * @param {?module:jPicker.Slider} context
+       * @returns {undefined}
+      */
       function colorBarValueChanged (ui, context) {
         const {active} = color;
         if (context !== colorBar && isNullish(active.val())) return;
@@ -1306,7 +1486,13 @@ const jPicker = function ($) {
           break;
         }
       }
-      // position map and bar arrows to match current color
+
+      /**
+       * Position map and bar arrows to match current color.
+       * @param {external:jQuery} ui
+       * @param {?module:jPicker.Slider} context
+       * @returns {undefined}
+      */
       function positionMapAndBarArrows (ui, context) {
         if (context !== colorMap) {
           switch (settings.color.mode) {
@@ -1314,8 +1500,7 @@ const jPicker = function ($) {
             const sv = ui.val('sv');
             colorMap.val('xy', {x: !isNullish(sv) ? sv.s : 100, y: 100 - (!isNullish(sv) ? sv.v : 100)}, context);
             break;
-          } case 's': { // eslint-disable-line no-empty
-          }
+          } case 's':
           // Fall through
           case 'a': {
             const hv = ui.val('hv');
@@ -1370,6 +1555,10 @@ const jPicker = function ($) {
           }
         }
       }
+      /**
+      * @param {external:jQuery} ui
+      * @returns {undefined}
+      */
       function updatePreview (ui) {
         try {
           const all = ui.val('all');
@@ -1377,6 +1566,10 @@ const jPicker = function ($) {
           setAlpha.call(that, activePreview, (all && toFixedNumeric((all.a * 100) / 255, 4)) || 0);
         } catch (e) { }
       }
+      /**
+      * @param {external:jQuery} ui
+      * @returns {undefined}
+      */
       function updateMapVisuals (ui) {
         switch (settings.color.mode) {
         case 'h':
@@ -1404,6 +1597,10 @@ const jPicker = function ($) {
         const a = ui.val('a');
         setAlpha.call(that, colorMapL3, toFixedNumeric(((255 - (a || 0)) * 100) / 255, 4));
       }
+      /**
+      * @param {external:jQuery} ui
+      * @returns {undefined}
+      */
       function updateBarVisuals (ui) {
         switch (settings.color.mode) {
         case 'h': {
@@ -1453,18 +1650,39 @@ const jPicker = function ($) {
         }
         }
       }
+      /**
+      * @param {external:jQuery} el
+      * @param {string} [c="transparent"]
+      * @returns {undefined}
+      */
       function setBG (el, c) {
         el.css({backgroundColor: (c && c.length === 6 && '#' + c) || 'transparent'});
       }
+
+      /**
+      * @param {external:jQuery} img
+      * @param {string} src The image source
+      * @returns {undefined}
+      */
       function setImg (img, src) {
         if (isLessThanIE7 && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
           img.attr('pngSrc', src);
           img.css({backgroundImage: 'none', filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')'});
         } else img.css({backgroundImage: 'url(\'' + src + '\')'});
       }
+      /**
+      * @param {external:jQuery} img
+      * @param {Float} y
+      * @returns {undefined}
+      */
       function setImgLoc (img, y) {
         img.css({top: y + 'px'});
       }
+      /**
+      * @param {external:jQuery} obj
+      * @param {Float} alpha
+      * @returns {undefined}
+      */
       function setAlpha (obj, alpha) {
         obj.css({visibility: alpha > 0 ? 'visible' : 'hidden'});
         if (alpha > 0 && alpha < 100) {
@@ -1473,7 +1691,10 @@ const jPicker = function ($) {
             if (!isNullish(src) && (
               src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
             )) {
-              obj.css({filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')'});
+              obj.css({
+                filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
+                  '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')'
+              });
             } else obj.css({opacity: toFixedNumeric(alpha / 100, 4)});
           } else obj.css({opacity: toFixedNumeric(alpha / 100, 4)});
         } else if (alpha === 0 || alpha === 100) {
@@ -1482,45 +1703,83 @@ const jPicker = function ($) {
             if (!isNullish(src) && (
               src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
             )) {
-              obj.css({filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')'});
+              obj.css({
+                filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
+                '\', sizingMethod=\'scale\')'
+              });
             } else obj.css({opacity: ''});
           } else obj.css({opacity: ''});
         }
       }
-      // revert color to original color when opened
+
+      /**
+      * Revert color to original color when opened.
+      * @returns {undefined}
+      */
       function revertColor () {
         color.active.val('ahex', color.current.val('ahex'));
       }
-      // commit the color changes
+      /**
+      * Commit the color changes.
+      * @returns {undefined}
+      */
       function commitColor () {
         color.current.val('ahex', color.active.val('ahex'));
       }
+      /**
+      * @param {Event} e
+      * @returns {undefined}
+      */
       function radioClicked (e) {
         $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
         setColorMode.call(that, e.target.value);
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function currentClicked () {
         revertColor.call(that);
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function cancelClicked () {
         revertColor.call(that);
         settings.window.expandable && hide.call(that);
         typeof cancelCallback === 'function' && cancelCallback.call(that, color.active, cancelButton);
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function okClicked () {
         commitColor.call(that);
         settings.window.expandable && hide.call(that);
         typeof commitCallback === 'function' && commitCallback.call(that, color.active, okButton);
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function iconImageClicked () {
         show.call(that);
       }
-      function currentColorChanged (ui, context) {
+      /**
+      * @param {external:jQuery} ui
+      * @returns {undefined}
+      */
+      function currentColorChanged (ui) {
         const hex = ui.val('hex');
         currentPreview.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
         setAlpha.call(that, currentPreview, toFixedNumeric(((ui.val('a') || 0) * 100) / 255, 4));
       }
-      function expandableColorChanged (ui, context) {
+      /**
+      * @param {external:jQuery} ui
+      * @returns {undefined}
+      */
+      function expandableColorChanged (ui) {
         const hex = ui.val('hex');
         const va = ui.val('va');
         iconColor.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
@@ -1532,6 +1791,10 @@ const jPicker = function ($) {
           });
         }
       }
+      /**
+      * @param {Event} e
+      * @returns {undefined}
+      */
       function moveBarMouseDown (e) {
         // const {element} = settings.window, // local copies for YUI compressor
         //     {page} = settings.window;
@@ -1543,32 +1806,67 @@ const jPicker = function ($) {
         $(document).bind('mousemove', documentMouseMove).bind('mouseup', documentMouseUp);
         e.preventDefault(); // prevent attempted dragging of the column
       }
+      /**
+      * @param {Event} e
+      * @returns {false}
+      */
       function documentMouseMove (e) {
-        container.css({left: elementStartX - (pageStartX - e.pageX) + 'px', top: elementStartY - (pageStartY - e.pageY) + 'px'});
-        if (settings.window.expandable && !$.support.boxModel) container.prev().css({left: container.css('left'), top: container.css('top')});
+        container.css({
+          left: elementStartX - (pageStartX - e.pageX) + 'px',
+          top: elementStartY - (pageStartY - e.pageY) + 'px'
+        });
+        if (settings.window.expandable && !$.support.boxModel) {
+          container.prev().css({
+            left: container.css('left'),
+            top: container.css('top')
+          });
+        }
         e.stopPropagation();
         e.preventDefault();
         return false;
       }
+      /**
+      * @param {Event} e
+      * @returns {false}
+      */
       function documentMouseUp (e) {
         $(document).unbind('mousemove', documentMouseMove).unbind('mouseup', documentMouseUp);
         e.stopPropagation();
         e.preventDefault();
         return false;
       }
+      /**
+      * @param {Event} e
+      * @returns {false}
+      */
       function quickPickClicked (e) {
         e.preventDefault();
         e.stopPropagation();
         color.active.val('ahex', $(this).attr('title') || null, e.target);
         return false;
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function show () {
         color.current.val('ahex', color.active.val('ahex'));
+        /**
+        *
+        * @returns {undefined}
+        */
         function attachIFrame () {
           if (!settings.window.expandable || $.support.boxModel) return;
           const table = container.find('table:first');
           container.before('<iframe/>');
-          container.prev().css({width: table.width(), height: container.height(), opacity: 0, position: 'absolute', left: container.css('left'), top: container.css('top')});
+          container.prev().css({
+            width: table.width(),
+            height: container.height(),
+            opacity: 0,
+            position: 'absolute',
+            left: container.css('left'),
+            top: container.css('top')
+          });
         }
         if (settings.window.expandable) {
           $(document.body).children('div.jPicker.Container').css({zIndex: 10});
@@ -1587,7 +1885,15 @@ const jPicker = function ($) {
           break;
         }
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function hide () {
+        /**
+        *
+        * @returns {undefined}
+        */
         function removeIFrame () {
           if (settings.window.expandable) container.css({zIndex: 10});
           if (!settings.window.expandable || $.support.boxModel) return;
@@ -1606,13 +1912,20 @@ const jPicker = function ($) {
           break;
         }
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function initialize () {
         const win = settings.window,
           popup = win.expandable ? $(that).next().find('.Container:first') : null;
         container = win.expandable ? $('<div/>') : $(that);
         container.addClass('jPicker Container');
         if (win.expandable) container.hide();
-        container.get(0).onselectstart = function (e) { if (e.target.nodeName.toLowerCase() !== 'input') return false; };
+        container.get(0).onselectstart = function (e) {
+          if (e.target.nodeName.toLowerCase() !== 'input') return false;
+          return true;
+        };
         // inject html source code - we are using a single table for this control - I know tables are considered bad, but it takes care of equal height columns and
         // this control really is tabular data, so I believe it is the right move
         const all = color.active.val('all');
@@ -1747,7 +2060,8 @@ const jPicker = function ($) {
         colorPicker = new ColorValuePicker(
           tbody,
           color.active,
-          win.expandable && win.bindToInput ? win.input : null, win.alphaPrecision
+          win.expandable && win.bindToInput ? win.input : null,
+          win.alphaPrecision
         );
         const hex = !isNullish(all) ? all.hex : null,
           preview = tbody.find('.Preview'),
@@ -1812,6 +2126,10 @@ const jPicker = function ($) {
           color.active.bind(expandableColorChanged);
         } else show.call(that);
       }
+      /**
+      *
+      * @returns {undefined}
+      */
       function destroy () {
         container.find('td.Radio input').unbind('click', radioClicked);
         currentPreview.unbind('click', currentClicked);
@@ -1972,6 +2290,9 @@ const jPicker = function ($) {
   * @property {Float} window.alphaPrecision Set decimal precision for alpha percentage display - hex codes do
   * not map directly to percentage integers - range 0-2
   * @property {boolean} window.updateInputColor Set to `false` to prevent binded input colors from changing
+  * @property {boolean} [window.bindToInput] Added by `$.fn.jPicker`
+  * @property {boolean} [window.expandable] Added by `$.fn.jPicker`
+  * @property {external:jQuery} [window.input] Added by `$.fn.jPicker`
   * @property {PlainObject} color
   * @property {"h"|"s"|"v"|"r"|"g"|"b"|"a"} color.mode Symbols stand for "h" (hue), "s" (saturation), "v" (value), "r" (red), "g" (green), "b" (blue), "a" (alpha)
   * @property {Color|string} color.active Strings are HEX values (e.g. #ffc000) WITH OR WITHOUT the "#" prefix

@@ -20,7 +20,7 @@
 import {isMac} from '../browser.js';
 
 /**
-* @callback module:jQueryContextMenu.jQueryContextMenuCallback
+* @callback module:jQueryContextMenu.jQueryContextMenuListener
 * @param {string} href The `href` value after the first character (for bypassing an initial `#`)
 * @param {external:jQuery} srcElement The wrapped jQuery srcElement
 * @param {{x: Float, y: Float, docX: Float, docY: Float}} coords
@@ -53,10 +53,10 @@ function jQueryContextMenu ($) {
     /**
     * @memberof external:jQuery.fn
     * @param {module:jQueryContextMenu.jQueryContextMenuConfig} o
-    * @param {module:jQueryContextMenu.jQueryContextMenuCallback} callback
+    * @param {module:jQueryContextMenu.jQueryContextMenuListener} listener
     * @returns {external:jQuery}
     */
-    contextMenu (o, callback) {
+    contextMenu (o, listener) {
       // Defaults
       if (o.menu === undefined) return false;
       if (o.inSpeed === undefined) o.inSpeed = 150;
@@ -78,86 +78,88 @@ function jQueryContextMenu ($) {
           $(this).mouseup(function (e) {
             const srcElement = $(this);
             srcElement.unbind('mouseup');
-            if (evt.button === 2 || o.allowLeft ||
-              (evt.ctrlKey && isMac())) {
-              e.stopPropagation();
-              // Hide context menus that may be showing
+
+            if (!(evt.button === 2 || o.allowLeft ||
+              (evt.ctrlKey && isMac()))) {
+              return undefined;
+            }
+            e.stopPropagation();
+            // Hide context menus that may be showing
+            $('.contextMenu').hide();
+            // Get this context menu
+
+            if (el.hasClass('disabled')) return false;
+
+            // Detect mouse position
+            let x = e.pageX, y = e.pageY;
+
+            const xOff = win.width() - menu.width(),
+              yOff = win.height() - menu.height();
+
+            if (x > xOff - 15) x = xOff - 15;
+            if (y > yOff - 30) y = yOff - 30; // 30 is needed to prevent scrollbars in FF
+
+            // Show the menu
+            doc.unbind('click');
+            menu.css({top: y, left: x}).fadeIn(o.inSpeed);
+            // Hover events
+            menu.find('A').mouseover(function () {
+              menu.find('LI.hover').removeClass('hover');
+              $(this).parent().addClass('hover');
+            }).mouseout(function () {
+              menu.find('LI.hover').removeClass('hover');
+            });
+
+            // Keyboard
+            doc.keypress(function (ev) {
+              switch (ev.keyCode) {
+              case 38: // up
+                if (!menu.find('LI.hover').length) {
+                  menu.find('LI:last').addClass('hover');
+                } else {
+                  menu.find('LI.hover').removeClass('hover').prevAll('LI:not(.disabled)').eq(0).addClass('hover');
+                  if (!menu.find('LI.hover').length) menu.find('LI:last').addClass('hover');
+                }
+                break;
+              case 40: // down
+                if (!menu.find('LI.hover').length) {
+                  menu.find('LI:first').addClass('hover');
+                } else {
+                  menu.find('LI.hover').removeClass('hover').nextAll('LI:not(.disabled)').eq(0).addClass('hover');
+                  if (!menu.find('LI.hover').length) menu.find('LI:first').addClass('hover');
+                }
+                break;
+              case 13: // enter
+                menu.find('LI.hover A').trigger('click');
+                break;
+              case 27: // esc
+                doc.trigger('click');
+                break;
+              }
+            });
+
+            // When items are selected
+            menu.find('A').unbind('mouseup');
+            menu.find('LI:not(.disabled) A').mouseup(function () {
+              doc.unbind('click').unbind('keypress');
               $('.contextMenu').hide();
-              // Get this context menu
+              if (listener) {
+                listener($(this).attr('href').substr(1), $(srcElement), {
+                  x: x - offset.left, y: y - offset.top, docX: x, docY: y
+                });
+              }
+              return false;
+            });
 
-              if (el.hasClass('disabled')) return false;
-
-              // Detect mouse position
-              let x = e.pageX, y = e.pageY;
-
-              const xOff = win.width() - menu.width(),
-                yOff = win.height() - menu.height();
-
-              if (x > xOff - 15) x = xOff - 15;
-              if (y > yOff - 30) y = yOff - 30; // 30 is needed to prevent scrollbars in FF
-
-              // Show the menu
-              doc.unbind('click');
-              menu.css({top: y, left: x}).fadeIn(o.inSpeed);
-              // Hover events
-              menu.find('A').mouseover(function () {
-                menu.find('LI.hover').removeClass('hover');
-                $(this).parent().addClass('hover');
-              }).mouseout(function () {
-                menu.find('LI.hover').removeClass('hover');
-              });
-
-              // Keyboard
-              doc.keypress(function (ev) {
-                switch (ev.keyCode) {
-                case 38: // up
-                  if (!menu.find('LI.hover').length) {
-                    menu.find('LI:last').addClass('hover');
-                  } else {
-                    menu.find('LI.hover').removeClass('hover').prevAll('LI:not(.disabled)').eq(0).addClass('hover');
-                    if (!menu.find('LI.hover').length) menu.find('LI:last').addClass('hover');
-                  }
-                  break;
-                case 40: // down
-                  if (!menu.find('LI.hover').length) {
-                    menu.find('LI:first').addClass('hover');
-                  } else {
-                    menu.find('LI.hover').removeClass('hover').nextAll('LI:not(.disabled)').eq(0).addClass('hover');
-                    if (!menu.find('LI.hover').length) menu.find('LI:first').addClass('hover');
-                  }
-                  break;
-                case 13: // enter
-                  menu.find('LI.hover A').trigger('click');
-                  break;
-                case 27: // esc
-                  doc.trigger('click');
-                  break;
-                }
-              });
-
-              // When items are selected
-              menu.find('A').unbind('mouseup');
-              menu.find('LI:not(.disabled) A').mouseup(function () {
+            // Hide bindings
+            setTimeout(function () { // Delay for Mozilla
+              doc.click(function () {
                 doc.unbind('click').unbind('keypress');
-                $('.contextMenu').hide();
-                // Callback
-                if (callback) {
-                  callback($(this).attr('href').substr(1), $(srcElement), {
-                    x: x - offset.left, y: y - offset.top, docX: x, docY: y
-                  });
-                }
+                menu.fadeOut(o.outSpeed);
                 return false;
               });
-
-              // Hide bindings
-              setTimeout(function () { // Delay for Mozilla
-                doc.click(function () {
-                  doc.unbind('click').unbind('keypress');
-                  menu.fadeOut(o.outSpeed);
-                  return false;
-                });
-              }, 0);
-            }
+            }, 0);
+            return undefined;
           });
         });
 

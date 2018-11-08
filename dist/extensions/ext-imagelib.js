@@ -51,8 +51,6 @@ var svgEditorExtension_imagelib = (function () {
     };
   }
 
-  /* globals jQuery */
-
   /**
    * ext-imagelib.js
    *
@@ -66,13 +64,13 @@ var svgEditorExtension_imagelib = (function () {
     init: function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
-        var decode64, importLocale, dropXMLInternalSubset, imagelibStrings, modularVersion, svgEditor, $, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, toggleMulti, showBrowser, buttons;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+      regeneratorRuntime.mark(function _callee2(_ref) {
+        var $, decode64, importLocale, dropXMLInternalSubset, imagelibStrings, modularVersion, svgEditor, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, toggleMulti, showBrowser, buttons;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                showBrowser = function _ref9() {
+                showBrowser = function _ref10() {
                   var browser = $('#imgbrowse');
 
                   if (!browser.length) {
@@ -128,10 +126,10 @@ var svgEditorExtension_imagelib = (function () {
                     });
                     cancel.prepend($.getSvgIcon('cancel', true));
                     back.prepend($.getSvgIcon('tool_imagelib', true));
-                    imagelibStrings.imgLibs.forEach(function (_ref5) {
-                      var name = _ref5.name,
-                          url = _ref5.url,
-                          description = _ref5.description;
+                    imagelibStrings.imgLibs.forEach(function (_ref6) {
+                      var name = _ref6.name,
+                          url = _ref6.url,
+                          description = _ref6.description;
                       $('<li>').appendTo(libOpts).text(name).on('click touchend', function () {
                         frame.attr('src', url).show();
                         header.text(name);
@@ -144,7 +142,7 @@ var svgEditorExtension_imagelib = (function () {
                   }
                 };
 
-                toggleMulti = function _ref8(show) {
+                toggleMulti = function _ref9(show) {
                   $('#lib_framewrap, #imglib_opts').css({
                     right: show ? 200 : 10
                   });
@@ -186,7 +184,7 @@ var svgEditorExtension_imagelib = (function () {
                   submit.toggle(show);
                 };
 
-                importImage = function _ref7(url) {
+                importImage = function _ref8(url) {
                   var newImage = svgCanvas.addSVGElementFromJson({
                     element: 'image',
                     attr: {
@@ -203,19 +201,18 @@ var svgEditorExtension_imagelib = (function () {
                   svgCanvas.setImageURL(url);
                 };
 
-                closeBrowser = function _ref6() {
+                closeBrowser = function _ref7() {
                   $('#imgbrowse_holder').hide();
                 };
 
-                decode64 = _ref.decode64, importLocale = _ref.importLocale, dropXMLInternalSubset = _ref.dropXMLInternalSubset;
-                _context.next = 7;
+                $ = _ref.$, decode64 = _ref.decode64, importLocale = _ref.importLocale, dropXMLInternalSubset = _ref.dropXMLInternalSubset;
+                _context2.next = 7;
                 return importLocale();
 
               case 7:
-                imagelibStrings = _context.sent;
+                imagelibStrings = _context2.sent;
                 modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
                 svgEditor = this;
-                $ = jQuery;
                 uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas, extIconsPath = svgEditor.curConfig.extIconsPath;
                 imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(function (_ref2) {
                   var name = _ref2.name,
@@ -238,233 +235,316 @@ var svgEditorExtension_imagelib = (function () {
                     return location.origin;
                   }
                 });
+                /**
+                *
+                * @returns {undefined}
+                */
+
                 pending = {};
                 mode = 's';
                 multiArr = [];
                 transferStopped = false;
                 // Receive `postMessage` data
-                window.addEventListener('message', function (_ref4) {
-                  var origin = _ref4.origin,
-                      response = _ref4.data;
+                window.addEventListener('message',
+                /*#__PURE__*/
+                function () {
+                  var _ref5 = _asyncToGenerator(
+                  /*#__PURE__*/
+                  regeneratorRuntime.mark(function _callee(_ref4) {
+                    var origin, response, id, type, hasName, hasHref, char1, secondpos, entry, curMeta, svgStr, imgStr, name, message, pre, src, title, xml, ok;
+                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            origin = _ref4.origin, response = _ref4.data;
 
-                  if (!response || !['string', 'object'].includes(_typeof(response))) {
-                    // Do nothing
-                    return;
-                  }
+                            if (!(!response || !['string', 'object'].includes(_typeof(response)))) {
+                              _context.next = 3;
+                              break;
+                            }
 
-                  var id;
-                  var type;
+                            return _context.abrupt("return");
 
-                  try {
-                    // Todo: This block can be removed (and the above check changed to
-                    //   insist on an object) if embedAPI moves away from a string to
-                    //   an object (if IE9 support not needed)
-                    response = _typeof(response) === 'object' ? response : JSON.parse(response);
+                          case 3:
+                            _context.prev = 3;
+                            // Todo: This block can be removed (and the above check changed to
+                            //   insist on an object) if embedAPI moves away from a string to
+                            //   an object (if IE9 support not needed)
+                            response = _typeof(response) === 'object' ? response : JSON.parse(response);
 
-                    if (response.namespace !== 'imagelib') {
-                      return;
-                    }
+                            if (!(response.namespace !== 'imagelib')) {
+                              _context.next = 7;
+                              break;
+                            }
 
-                    if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
-                      console.log("Origin ".concat(origin, " not whitelisted for posting to ").concat(window.origin));
-                      return;
-                    }
+                            return _context.abrupt("return");
 
-                    var hasName = 'name' in response;
-                    var hasHref = 'href' in response;
+                          case 7:
+                            if (!(!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin))) {
+                              _context.next = 10;
+                              break;
+                            }
 
-                    if (!hasName && transferStopped) {
-                      transferStopped = false;
-                      return;
-                    }
+                            // Todo: Surface this error to user?
+                            console.log("Origin ".concat(origin, " not whitelisted for posting to ").concat(window.origin)); // eslint-disable-line no-console
 
-                    if (hasHref) {
-                      id = response.href;
-                      response = response.data;
-                    } // Hide possible transfer dialog box
+                            return _context.abrupt("return");
+
+                          case 10:
+                            hasName = 'name' in response;
+                            hasHref = 'href' in response;
+
+                            if (!(!hasName && transferStopped)) {
+                              _context.next = 15;
+                              break;
+                            }
+
+                            transferStopped = false;
+                            return _context.abrupt("return");
+
+                          case 15:
+                            if (hasHref) {
+                              id = response.href;
+                              response = response.data;
+                            } // Hide possible transfer dialog box
 
 
-                    $('#dialog_box').hide();
-                    type = hasName ? 'meta' : response.charAt(0);
-                  } catch (e) {
-                    // This block is for backward compatibility (for IAN and Openclipart);
-                    //   should otherwise return
-                    if (typeof response === 'string') {
-                      var char1 = response.charAt(0);
+                            $('#dialog_box').hide();
+                            type = hasName ? 'meta' : response.charAt(0);
+                            _context.next = 28;
+                            break;
 
-                      if (char1 !== '{' && transferStopped) {
-                        transferStopped = false;
-                        return;
-                      }
+                          case 20:
+                            _context.prev = 20;
+                            _context.t0 = _context["catch"](3);
 
-                      if (char1 === '|') {
-                        var secondpos = response.indexOf('|', 1);
-                        id = response.substr(1, secondpos - 1);
-                        response = response.substr(secondpos + 1);
-                        type = response.charAt(0);
-                      }
-                    }
-                  }
+                            if (!(typeof response === 'string')) {
+                              _context.next = 28;
+                              break;
+                            }
 
-                  var entry, curMeta, svgStr, imgStr;
+                            char1 = response.charAt(0);
 
-                  switch (type) {
-                    case 'meta':
-                      {
-                        // Metadata
-                        transferStopped = false;
-                        curMeta = response; // Should be safe to add dynamic property as passed metadata
+                            if (!(char1 !== '{' && transferStopped)) {
+                              _context.next = 27;
+                              break;
+                            }
 
-                        pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
+                            transferStopped = false;
+                            return _context.abrupt("return");
 
-                        var name = curMeta.name || 'file';
-                        var message = uiStrings.notification.retrieving.replace('%s', name);
+                          case 27:
+                            if (char1 === '|') {
+                              secondpos = response.indexOf('|', 1);
+                              id = response.substr(1, secondpos - 1);
+                              response = response.substr(secondpos + 1);
+                              type = response.charAt(0);
+                            }
 
-                        if (mode !== 'm') {
-                          $.process_cancel(message, function () {
+                          case 28:
+                            _context.t1 = type;
+                            _context.next = _context.t1 === 'meta' ? 31 : _context.t1 === '<' ? 47 : _context.t1 === 'd' ? 49 : 60;
+                            break;
+
+                          case 31:
+                            // Metadata
+                            transferStopped = false;
+                            curMeta = response; // Should be safe to add dynamic property as passed metadata
+
+                            pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
+
+                            name = curMeta.name || 'file';
+                            message = uiStrings.notification.retrieving.replace('%s', name);
+
+                            if (!(mode !== 'm')) {
+                              _context.next = 43;
+                              break;
+                            }
+
+                            _context.next = 39;
+                            return $.process_cancel(message);
+
+                          case 39:
                             transferStopped = true; // Should a message be sent back to the frame?
 
                             $('#dialog_box').hide();
-                          });
-                        } else {
-                          entry = $('<div>').text(message).data('id', curMeta.id);
-                          preview.append(entry);
-                          curMeta.entry = entry;
-                        }
+                            _context.next = 46;
+                            break;
 
-                        return;
-                      }
+                          case 43:
+                            entry = $('<div>').text(message).data('id', curMeta.id);
+                            preview.append(entry);
+                            curMeta.entry = entry;
 
-                    case '<':
-                      svgStr = true;
-                      break;
+                          case 46:
+                            return _context.abrupt("return");
 
-                    case 'd':
-                      {
-                        if (response.startsWith('data:image/svg+xml')) {
-                          var pre = 'data:image/svg+xml;base64,';
-                          var src = response.substring(pre.length);
-                          response = decode64(src);
-                          svgStr = true;
-                          break;
-                        } else if (response.startsWith('data:image/')) {
-                          imgStr = true;
-                          break;
-                        }
-                      }
-                    // Else fall through
+                          case 47:
+                            svgStr = true;
+                            return _context.abrupt("break", 62);
 
-                    default:
-                      // TODO: See if there's a way to base64 encode the binary data stream
-                      // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
-                      // Assume it's raw image data
-                      // importImage(str);
-                      // Don't give warning as postMessage may have been used by something else
-                      if (mode !== 'm') {
-                        closeBrowser();
-                      } else {
-                        pending[id].entry.remove();
-                      } // $.alert('Unexpected data was returned: ' + response, function() {
-                      //   if (mode !== 'm') {
-                      //     closeBrowser();
-                      //   } else {
-                      //     pending[id].entry.remove();
-                      //   }
-                      // });
+                          case 49:
+                            if (!response.startsWith('data:image/svg+xml')) {
+                              _context.next = 57;
+                              break;
+                            }
+
+                            pre = 'data:image/svg+xml;base64,';
+                            src = response.substring(pre.length);
+                            response = decode64(src);
+                            svgStr = true;
+                            return _context.abrupt("break", 62);
+
+                          case 57:
+                            if (!response.startsWith('data:image/')) {
+                              _context.next = 60;
+                              break;
+                            }
+
+                            imgStr = true;
+                            return _context.abrupt("break", 62);
+
+                          case 60:
+                            // TODO: See if there's a way to base64 encode the binary data stream
+                            // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
+                            // Assume it's raw image data
+                            // importImage(str);
+                            // Don't give warning as postMessage may have been used by something else
+                            if (mode !== 'm') {
+                              closeBrowser();
+                            } else {
+                              pending[id].entry.remove();
+                            } // await $.alert('Unexpected data was returned: ' + response, function() {
+                            //   if (mode !== 'm') {
+                            //     closeBrowser();
+                            //   } else {
+                            //     pending[id].entry.remove();
+                            //   }
+                            // });
 
 
-                      return;
-                  }
+                            return _context.abrupt("return");
 
-                  switch (mode) {
-                    case 's':
-                      // Import one
-                      if (svgStr) {
-                        svgCanvas.importSvgString(response);
-                      } else if (imgStr) {
-                        importImage(response);
-                      }
+                          case 62:
+                            _context.t2 = mode;
+                            _context.next = _context.t2 === 's' ? 65 : _context.t2 === 'm' ? 68 : _context.t2 === 'o' ? 72 : 83;
+                            break;
 
-                      closeBrowser();
-                      break;
+                          case 65:
+                            // Import one
+                            if (svgStr) {
+                              svgCanvas.importSvgString(response);
+                            } else if (imgStr) {
+                              importImage(response);
+                            }
 
-                    case 'm':
-                      // Import multiple
-                      multiArr.push([svgStr ? 'svg' : 'img', response]);
-                      curMeta = pending[id];
-                      var title;
+                            closeBrowser();
+                            return _context.abrupt("break", 83);
 
-                      if (svgStr) {
-                        if (curMeta && curMeta.name) {
-                          title = curMeta.name;
-                        } else {
-                          // Try to find a title
-                          // `dropXMLInternalSubset` is to help prevent the billion laughs attack
-                          var xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
+                          case 68:
+                            // Import multiple
+                            multiArr.push([svgStr ? 'svg' : 'img', response]);
+                            curMeta = pending[id];
 
-                          title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
-                        }
-
-                        if (curMeta) {
-                          preview.children().each(function () {
-                            if ($(this).data('id') === id) {
-                              if (curMeta.preview_url) {
-                                $(this).html($('<span>').append($('<img>').attr('src', curMeta.preview_url), document.createTextNode(title)));
+                            if (svgStr) {
+                              if (curMeta && curMeta.name) {
+                                title = curMeta.name;
                               } else {
-                                $(this).text(title);
+                                // Try to find a title
+                                // `dropXMLInternalSubset` is to help prevent the billion laughs attack
+                                xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
+
+                                title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
                               }
 
-                              submit.removeAttr('disabled');
-                            }
-                          });
-                        } else {
-                          preview.append($('<div>').text(title));
-                          submit.removeAttr('disabled');
-                        }
-                      } else {
-                        if (curMeta && curMeta.preview_url) {
-                          title = curMeta.name || '';
-                        }
+                              if (curMeta) {
+                                preview.children().each(function () {
+                                  if ($(this).data('id') === id) {
+                                    if (curMeta.preview_url) {
+                                      $(this).html($('<span>').append($('<img>').attr('src', curMeta.preview_url), document.createTextNode(title)));
+                                    } else {
+                                      $(this).text(title);
+                                    }
 
-                        if (curMeta && curMeta.preview_url) {
-                          entry = $('<span>').append($('<img>').attr('src', curMeta.preview_url), document.createTextNode(title));
-                        } else {
-                          entry = $('<img>').attr('src', response);
-                        }
+                                    submit.removeAttr('disabled');
+                                  }
+                                });
+                              } else {
+                                preview.append($('<div>').text(title));
+                                submit.removeAttr('disabled');
+                              }
+                            } else {
+                              if (curMeta && curMeta.preview_url) {
+                                title = curMeta.name || '';
+                              }
 
-                        if (curMeta) {
-                          preview.children().each(function () {
-                            if ($(this).data('id') === id) {
-                              $(this).html(entry);
-                              submit.removeAttr('disabled');
+                              if (curMeta && curMeta.preview_url) {
+                                entry = $('<span>').append($('<img>').attr('src', curMeta.preview_url), document.createTextNode(title));
+                              } else {
+                                entry = $('<img>').attr('src', response);
+                              }
+
+                              if (curMeta) {
+                                preview.children().each(function () {
+                                  if ($(this).data('id') === id) {
+                                    $(this).html(entry);
+                                    submit.removeAttr('disabled');
+                                  }
+                                });
+                              } else {
+                                preview.append($('<div>').append(entry));
+                                submit.removeAttr('disabled');
+                              }
                             }
-                          });
-                        } else {
-                          preview.append($('<div>').append(entry));
-                          submit.removeAttr('disabled');
+
+                            return _context.abrupt("break", 83);
+
+                          case 72:
+                            if (svgStr) {
+                              _context.next = 74;
+                              break;
+                            }
+
+                            return _context.abrupt("break", 83);
+
+                          case 74:
+                            closeBrowser();
+                            _context.next = 77;
+                            return svgEditor.openPrep();
+
+                          case 77:
+                            ok = _context.sent;
+
+                            if (ok) {
+                              _context.next = 80;
+                              break;
+                            }
+
+                            return _context.abrupt("return");
+
+                          case 80:
+                            svgCanvas.clear();
+                            svgCanvas.setSvgString(response); // updateCanvas();
+
+                            return _context.abrupt("break", 83);
+
+                          case 83:
+                          case "end":
+                            return _context.stop();
                         }
                       }
+                    }, _callee, this, [[3, 20]]);
+                  }));
 
-                      break;
+                  return function (_x2) {
+                    return _ref5.apply(this, arguments);
+                  };
+                }(), true);
+                /**
+                * @param {boolean} show
+                * @returns {undefined}
+                */
 
-                    case 'o':
-                      // Open
-                      if (!svgStr) {
-                        break;
-                      }
-
-                      svgEditor.openPrep(function (ok) {
-                        if (!ok) {
-                          return;
-                        }
-
-                        svgCanvas.clear();
-                        svgCanvas.setSvgString(response); // updateCanvas();
-                      });
-                      closeBrowser();
-                      break;
-                  }
-                }, true);
                 buttons = [{
                   id: 'tool_imagelib',
                   type: 'app_menu',
@@ -475,7 +555,7 @@ var svgEditorExtension_imagelib = (function () {
                     mouseup: showBrowser
                   }
                 }];
-                return _context.abrupt("return", {
+                return _context2.abrupt("return", {
                   svgicons: extIconsPath + 'ext-imagelib.xml',
                   buttons: imagelibStrings.buttons.map(function (button, i) {
                     return Object.assign(buttons[i], button);
@@ -485,12 +565,12 @@ var svgEditorExtension_imagelib = (function () {
                   }
                 });
 
-              case 21:
+              case 20:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this);
+        }, _callee2, this);
       }));
 
       return function init(_x) {

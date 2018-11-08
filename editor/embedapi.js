@@ -334,10 +334,10 @@ class EmbeddedSVGEdit {
   /**
   * @param {string} name
   * @param {ArgumentsArray} args Signature dependent on function
-  * @param {GenericCallback} callback
+  * @param {GenericCallback} callback (This may be better than a promise in case adding an event.)
   * @returns {Integer}
   */
-  send (name, args, callback) {
+  send (name, args, callback) { // eslint-disable-line promise/prefer-await-to-callbacks
     const that = this;
     cbid++;
 

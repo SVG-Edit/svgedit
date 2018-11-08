@@ -2,6 +2,17 @@
   'use strict';
 
   // From https://github.com/inexorabletash/polyfill/blob/master/dom.js
+
+  /**
+   * @module DOMPolyfill
+   */
+
+  /**
+   *
+   * @param {Node} o
+   * @param {module:DOMPolyfill~ParentNode|module:DOMPolyfill~ChildNode} ps
+   * @returns {undefined}
+   */
   function mixin(o, ps) {
     if (!o) return;
     Object.keys(ps).forEach(function (p) {
@@ -17,6 +28,12 @@
       }
     });
   }
+  /**
+   *
+   * @param {Node[]} nodes
+   * @returns {Node}
+   */
+
 
   function convertNodesIntoANode(nodes) {
     nodes = nodes.map(function (node) {

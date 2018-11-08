@@ -91,6 +91,8 @@ var svgEditorExtension_panning = (function () {
                         started: true
                       };
                     }
+
+                    return undefined;
                   },
                   mouseUp: function mouseUp() {
                     if (svgCanvas.getMode() === 'ext-panning') {
@@ -100,6 +102,8 @@ var svgEditorExtension_panning = (function () {
                         element: null
                       };
                     }
+
+                    return undefined;
                   }
                 });
 

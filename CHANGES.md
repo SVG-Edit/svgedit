@@ -1,5 +1,62 @@
 # SVG-Edit CHANGES
 
+# 4.0.0
+
+- Breaking change (storage preference cookies): Namespace the cookie as
+  "svgeditstore" instead of just "store"
+- Breaking change: `loadSvgString` now returns a `Promise` rather than
+  accepting a callback.
+- Breaking change: Treat callbacks to `editor.ready` as Promises, only
+  resolving after all resolve. May require no changes unless for timing.
+- Breaking change: Make `editor.runCallbacks` return a `Promise` which
+  resolves upon all callbacks resolving.
+- Breaking change: Require `npx` (used with `babel-node`) to allow Node files
+  for HTML building and JSDoc type checking to be expressed as ESM.
+- Breaking change: `addExtension` now throws upon a repeated attempt to
+  add an already-added extension
+- Breaking change (API): Remove `svgCanvas.rasterExport` fourth (callback)
+  argument, collapsing fifth (options) to fourth
+- Breaking change (API): Remove `svgCanvas.exportPDF` third (callback)
+  argument
+- Breaking change (API): `editor/contextmenu.js` `add` now throws instead
+  of giving a console error only upon detecting a bad menuitem or
+  preexisting context menu
+- Breaking change (API): Remove `svgCanvas.embedImage` second (callback)
+  argument
+- Breaking change (API): Make `getHelpXML` a class instead of instance method
+  of `RGBColor`
+- Breaking change (internal API): Refactor `dbox` (and
+  `alert`/`confirm`/`process`/`prompt`/`select`) to avoid a callback argument
+  in favor of returning a Promise
+- Breaking internal API change: `updateGripCursor` moved to be class method
+  of Selector rather than instance method
+- Breaking internal API change: `subpathIsClosed` moved to be class method
+  of `Path` rather than instance method
+- Fix: Avoid running in extension `langReady` multiple times or serially
+- Enhancement (API): Add `svgCanvas.runExtension` to run just one extension and
+  add `nameFilter` callback to `runExtensions`
+- Enhancement (API): Supply `$` (our wrapped jQuery) to extensions so can use
+  its plugins, e.g., dbox with its `alert`
+- Enhancement: Use alert dialog in place of `alert` in webappfind
+- Enhancement: `editor.ready` now returns a Promise resolving when all
+  callbacks have resolved
+- Enhancement: Allow `noAlert` option as part of second argument to
+  `loadSvgString` (and `loadFromURL` and `loadFromDataURI`) to avoid UI
+  alert (and trigger promise rejection)
+- Enhancement: Make `dbox` as a separate module for alert, prompt, etc. dialogs
+- Optimization: Recompress images (imageoptim-cli updated)
+- Refactoring: Internal `PaintBox` as class; other misc. tweaks; no bitwise
+  in canvg
+- Refactoring: Reuse utilities base64 encoder for SVG icons plugin
+- Linting (ESLint): Further linting changes (for editor); rename
+  `.eslintrc` -> `.eslintrc.js` per recommendation and to more transparently
+  allow comments; apply new strict `eslint-config-ash-nazg` rules.
+- Linting (ESLint): Stricter rules (or switch to warning)
+- Docs (JSDoc): Fix return of the `mouseUp` (can also be an object) and
+  `mouseDown` (may also be a boolean) of `pathActions`; other JSDoc
+  additions/improvements
+- npm: Update devDeps
+
 ## 3.2.0
 
 - Refactoring: Avoid unnecessary `addEventListener` `false`; change internal
@@ -21,7 +78,9 @@
     <https://github.com/eslint/eslint-plugin-markdown/issues/109>,
     <https://github.com/gajus/eslint-plugin-jsdoc/issues/101>,
     <https://github.com/gajus/eslint-plugin-jsdoc/issues/99>,
-    <https://github.com/eslint/eslint/issues/11043>
+    <https://github.com/eslint/eslint/issues/11043>; NOTE:
+    if we need to tap into Markdown within JSDoc, see <https://github.com/jsdoc3/jsdoc#b21427343c7294bbf1f14c718a390f3e955e37cb>
+    for commit not present in npm.
 - Docs (README): Indicate minimal polyfills needed for older browsers
     (IE <= 11, IE Mobile, Opera Mini, Blackberry Browser <= 10,
     Android Browser 4.4.3-4.4.4)

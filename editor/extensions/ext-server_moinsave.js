@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-server_moinsave.js
  *
@@ -12,10 +11,9 @@ import {canvg} from '../canvg/canvg.js';
 
 export default {
   name: 'server_moinsave',
-  async init ({encode64, importLocale}) {
+  async init ({$, encode64, importLocale}) {
     const strings = await importLocale();
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     const saveSvgAction = '/+modify';
 
@@ -48,7 +46,7 @@ export default {
           .append('<input type="hidden" name="contenttype" value="application/x-svgdraw">')
           .appendTo('body')
           .submit().remove();
-        alert(strings.saved);
+        $.alert(strings.saved);
         top.window.location = '/' + name;
       }
     });

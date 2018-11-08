@@ -37,8 +37,6 @@ var svgEditorExtension_markers = (function () {
     };
   }
 
-  /* globals jQuery */
-
   /**
    * ext-markers.js
    *
@@ -74,13 +72,14 @@ var svgEditorExtension_markers = (function () {
     init: function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(S) {
-        var strings, svgEditor, $, svgCanvas, addElem, mtypes, markerPrefix, idPrefix, markerTypes, getLinked, setIcon, selElems, showPanel, addMarker, convertline, setMarker, colorChanged, updateReferences, triggerTextEntry, showTextPrompt, setArrowFromButton, getTitle, buildButtonList, contextTools;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      regeneratorRuntime.mark(function _callee3(S) {
+        var strings, svgEditor, $, svgCanvas, addElem, mtypes, markerPrefix, idPrefix, markerTypes, getLinked, setIcon, selElems, showPanel, addMarker, convertline, setMarker, colorChanged, updateReferences, triggerTextEntry, showTextPrompt, _showTextPrompt, setArrowFromButton, _setArrowFromButton, getTitle, buildButtonList, contextTools;
+
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                buildButtonList = function _ref14(lang) {
+                buildButtonList = function _ref16() {
                   var buttons = []; // const i = 0;
 
                   /*
@@ -131,42 +130,95 @@ var svgEditorExtension_markers = (function () {
                   return buttons;
                 };
 
-                getTitle = function _ref13(id) {
+                getTitle = function _ref15(id) {
                   var langList = strings.langList;
-                  var item = langList.find(function (item) {
-                    return item.id === id;
+                  var item = langList.find(function (itm) {
+                    return itm.id === id;
                   });
                   return item ? item.title : id;
                 };
 
-                setArrowFromButton = function _ref12(obj) {
-                  var parts = this.id.split('_');
-                  var pos = parts[1];
-                  var val = parts[2];
+                _setArrowFromButton = function _ref14() {
+                  _setArrowFromButton = _asyncToGenerator(
+                  /*#__PURE__*/
+                  regeneratorRuntime.mark(function _callee2(ev) {
+                    var parts, pos, val;
+                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                      while (1) {
+                        switch (_context2.prev = _context2.next) {
+                          case 0:
+                            parts = this.id.split('_');
+                            pos = parts[1];
+                            val = parts[2];
 
-                  if (parts[3]) {
-                    val += '_' + parts[3];
-                  }
+                            if (parts[3]) {
+                              val += '_' + parts[3];
+                            }
 
-                  if (val !== 'textmarker') {
-                    triggerTextEntry(pos, '\\' + val);
-                  } else {
-                    showTextPrompt(pos);
-                  }
+                            if (!(val !== 'textmarker')) {
+                              _context2.next = 8;
+                              break;
+                            }
+
+                            triggerTextEntry(pos, '\\' + val);
+                            _context2.next = 10;
+                            break;
+
+                          case 8:
+                            _context2.next = 10;
+                            return showTextPrompt(pos);
+
+                          case 10:
+                          case "end":
+                            return _context2.stop();
+                        }
+                      }
+                    }, _callee2, this);
+                  }));
+                  return _setArrowFromButton.apply(this, arguments);
                 };
 
-                showTextPrompt = function _ref11(pos) {
-                  var def = $('#' + pos + '_marker').val();
+                setArrowFromButton = function _ref13(_x3) {
+                  return _setArrowFromButton.apply(this, arguments);
+                };
 
-                  if (def.substr(0, 1) === '\\') {
-                    def = '';
-                  }
+                _showTextPrompt = function _ref12() {
+                  _showTextPrompt = _asyncToGenerator(
+                  /*#__PURE__*/
+                  regeneratorRuntime.mark(function _callee(pos) {
+                    var def, txt;
+                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            def = $('#' + pos + '_marker').val();
 
-                  $.prompt('Enter text for ' + pos + ' marker', def, function (txt) {
-                    if (txt) {
-                      triggerTextEntry(pos, txt);
-                    }
-                  });
+                            if (def.substr(0, 1) === '\\') {
+                              def = '';
+                            }
+
+                            _context.next = 4;
+                            return $.prompt('Enter text for ' + pos + ' marker', def);
+
+                          case 4:
+                            txt = _context.sent;
+
+                            if (txt) {
+                              triggerTextEntry(pos, txt);
+                            }
+
+                          case 6:
+                          case "end":
+                            return _context.stop();
+                        }
+                      }
+                    }, _callee, this);
+                  }));
+                  return _showTextPrompt.apply(this, arguments);
+                };
+
+                showTextPrompt = function _ref11(_x2) {
+                  return _showTextPrompt.apply(this, arguments);
                 };
 
                 triggerTextEntry = function _ref10(pos, val) {
@@ -333,11 +385,11 @@ var svgEditorExtension_markers = (function () {
                   var marker = svgCanvas.getElem(id);
 
                   if (marker) {
-                    return;
+                    return undefined;
                   }
 
                   if (val === '' || val === '\\nomarker') {
-                    return;
+                    return undefined;
                   }
 
                   var el = selElems[0];
@@ -360,7 +412,7 @@ var svgEditorExtension_markers = (function () {
                   }
 
                   if (!markerTypes[seType]) {
-                    return;
+                    return undefined;
                   } // an unknown type!
                   // create a generic marker
 
@@ -492,13 +544,13 @@ var svgEditorExtension_markers = (function () {
                   return svgCanvas.getElem(m[1]);
                 };
 
-                _context2.next = 15;
+                _context3.next = 17;
                 return S.importLocale();
 
-              case 15:
-                strings = _context2.sent;
+              case 17:
+                strings = _context3.sent;
                 svgEditor = this;
-                $ = jQuery;
+                $ = S.$;
                 svgCanvas = svgEditor.canvas;
                 addElem = svgCanvas.addSVGElementFromJson;
                 mtypes = ['start', 'mid', 'end'];
@@ -647,38 +699,21 @@ var svgEditorExtension_markers = (function () {
                     change: setArrowFromButton
                   }
                 }];
-                return _context2.abrupt("return", {
+                return _context3.abrupt("return", {
                   name: strings.name,
                   svgicons: svgEditor.curConfig.extIconsPath + 'markers-icons.xml',
                   callback: function callback() {
                     $('#marker_panel').addClass('toolset').hide();
                   },
-                  addLangData: function () {
-                    var _addLangData = _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee(_ref) {
-                      var importLocale, lang;
-                      return regeneratorRuntime.wrap(function _callee$(_context) {
-                        while (1) {
-                          switch (_context.prev = _context.next) {
-                            case 0:
-                              importLocale = _ref.importLocale, lang = _ref.lang;
-                              return _context.abrupt("return", {
-                                data: strings.langList
-                              });
 
-                            case 2:
-                            case "end":
-                              return _context.stop();
-                          }
-                        }
-                      }, _callee, this);
-                    }));
-
-                    return function addLangData(_x2) {
-                      return _addLangData.apply(this, arguments);
+                  /* async */
+                  addLangData: function addLangData(_ref) {
+                    var importLocale = _ref.importLocale,
+                        lang = _ref.lang;
+                    return {
+                      data: strings.langList
                     };
-                  }(),
+                  },
                   selectedChanged: function selectedChanged(opts) {
                     // Use this to update the current selected elements
                     // console.log('selectChanged',opts);
@@ -716,12 +751,12 @@ var svgEditorExtension_markers = (function () {
                   })
                 });
 
-              case 27:
+              case 29:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       return function init(_x) {

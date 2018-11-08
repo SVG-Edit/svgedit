@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-star.js
  *
@@ -10,10 +9,9 @@ export default {
   name: 'star',
   async init (S) {
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
 
-    const {importLocale} = S; // {svgcontent},
+    const {$, importLocale} = S; // {svgcontent},
     let
       selElems,
       // editingitex = false,
@@ -25,6 +23,12 @@ export default {
       // undoCommand = 'Not image',
       // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
     const strings = await importLocale();
+
+    /**
+     *
+     * @param {boolean} on
+     * @returns {undefined}
+     */
     function showPanel (on) {
       let fcRules = $('#fc_rules');
       if (!fcRules.length) {
@@ -40,6 +44,12 @@ export default {
     }
     */
 
+    /**
+     *
+     * @param {string} attr
+     * @param {string|Float} val
+     * @returns {undefined}
+     */
     function setAttr (attr, val) {
       svgCanvas.changeSelectedAttribute(attr, val);
       svgCanvas.call('changed', selElems);
@@ -140,10 +150,11 @@ export default {
             started: true
           };
         }
+        return undefined;
       },
       mouseMove (opts) {
         if (!started) {
-          return;
+          return undefined;
         }
         if (svgCanvas.getMode() === 'star') {
           const c = $(newFO).attr(['cx', 'cy', 'point', 'orient', 'fill', 'strokecolor', 'strokeWidth', 'radialshift']);
@@ -195,6 +206,7 @@ export default {
             started: true
           };
         }
+        return undefined;
       },
       mouseUp () {
         if (svgCanvas.getMode() === 'star') {
@@ -205,6 +217,7 @@ export default {
             element: newFO
           };
         }
+        return undefined;
       },
       selectedChanged (opts) {
         // Use this to update the current selected elements

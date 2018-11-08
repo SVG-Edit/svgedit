@@ -380,20 +380,38 @@ var canvg = (function (exports) {
   var colorDefs = [{
     re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
-    process: function process(bits) {
-      return [parseInt(bits[1], 10), parseInt(bits[2], 10), parseInt(bits[3], 10)];
+    process: function process(_) {
+      for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        bits[_key - 1] = arguments[_key];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b);
+      });
     }
   }, {
     re: /^(\w{2})(\w{2})(\w{2})$/,
     example: ['#00ff00', '336699'],
-    process: function process(bits) {
-      return [parseInt(bits[1], 16), parseInt(bits[2], 16), parseInt(bits[3], 16)];
+    process: function process(_) {
+      for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        bits[_key2 - 1] = arguments[_key2];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b, 16);
+      });
     }
   }, {
     re: /^(\w{1})(\w{1})(\w{1})$/,
     example: ['#fb0', 'f0f'],
-    process: function process(bits) {
-      return [parseInt(bits[1] + bits[1], 16), parseInt(bits[2] + bits[2], 16), parseInt(bits[3] + bits[3], 16)];
+    process: function process(_) {
+      for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+        bits[_key3 - 1] = arguments[_key3];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b + b, 16);
+      });
     }
   }];
   /**
@@ -407,6 +425,8 @@ var canvg = (function (exports) {
     * @param {string} colorString
     */
     function RGBColor(colorString) {
+      var _this = this;
+
       _classCallCheck(this, RGBColor);
 
       this.ok = false; // strip any leading #
@@ -426,9 +446,9 @@ var canvg = (function (exports) {
       // search through the definitions to find a match
 
 
-      for (var i = 0; i < colorDefs.length; i++) {
-        var re = colorDefs[i].re;
-        var processor = colorDefs[i].process;
+      colorDefs.forEach(function (_ref) {
+        var re = _ref.re,
+            processor = _ref.process;
         var bits = re.exec(colorString);
 
         if (bits) {
@@ -438,15 +458,14 @@ var canvg = (function (exports) {
               g = _processor2[1],
               b = _processor2[2];
 
-          Object.assign(this, {
+          Object.assign(_this, {
             r: r,
             g: g,
             b: b
           });
-          this.ok = true;
+          _this.ok = true;
         }
-      } // validate/cleanup values
-
+      }, this); // validate/cleanup values
 
       this.r = this.r < 0 || isNaN(this.r) ? 0 : this.r > 255 ? 255 : this.r;
       this.g = this.g < 0 || isNaN(this.g) ? 0 : this.g > 255 ? 255 : this.g;
@@ -488,88 +507,74 @@ var canvg = (function (exports) {
 
         return '#' + r + g + b;
       }
-      /**
-      * Offers a bulleted list of help.
-      * @returns {HTMLUListElement}
-      */
-
-    }, {
-      key: "getHelpXML",
-      value: function getHelpXML() {
-        var examples = []; // add regexps
-
-        for (var i = 0; i < colorDefs.length; i++) {
-          var example = colorDefs[i].example;
-
-          for (var j = 0; j < example.length; j++) {
-            examples[examples.length] = example[j];
-          }
-        } // add type-in colors
-
-
-        examples.push.apply(examples, _toConsumableArray(Object.keys(simpleColors)));
-        var xml = document.createElement('ul');
-        xml.setAttribute('id', 'rgbcolor-examples');
-
-        for (var _i = 0; _i < examples.length; _i++) {
-          try {
-            var listItem = document.createElement('li');
-            var listColor = new RGBColor(examples[_i]);
-            var exampleDiv = document.createElement('div');
-            exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
-            exampleDiv.append('test');
-            var listItemValue = " ".concat(examples[_i], " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
-            listItem.append(exampleDiv, listItemValue);
-            xml.append(listItem);
-          } catch (e) {}
-        }
-
-        return xml;
-      }
     }]);
 
     return RGBColor;
   }();
 
+  RGBColor.getHelpXML = function () {
+    var examples = _toConsumableArray(colorDefs.flatMap(function (_ref2) {
+      var example = _ref2.example;
+      return example;
+    })).concat(_toConsumableArray(Object.keys(simpleColors)));
+
+    var xml = document.createElement('ul');
+    xml.setAttribute('id', 'rgbcolor-examples');
+    xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
+      try {
+        var listItem = document.createElement('li');
+        var listColor = new RGBColor(example);
+        var exampleDiv = document.createElement('div');
+        exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
+        exampleDiv.append('test');
+        var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
+        listItem.append(exampleDiv, listItemValue);
+        return listItem;
+      } catch (e) {
+        return '';
+      }
+    })));
+    return xml;
+  };
+
   /**
   * StackBlur - a fast almost Gaussian Blur For Canvas
-
-  In case you find this class useful - especially in commercial projects -
-  I am not totally unhappy for a small donation to my PayPal account
-  mario@quasimondo.de
-
-  Or support me on flattr:
-  https://flattr.com/thing/72791/StackBlur-a-fast-almost-Gaussian-Blur-Effect-for-CanvasJavascript
-
+  *
+  * In case you find this class useful - especially in commercial projects -
+  * I am not totally unhappy for a small donation to my PayPal account
+  * mario@quasimondo.de
+  *
+  * Or support me on flattr:
+  * {@link https://flattr.com/thing/72791/StackBlur-a-fast-almost-Gaussian-Blur-Effect-for-CanvasJavascript}
   * @module StackBlur
   * @version 0.5
   * @author Mario Klingemann
-  Contact: mario@quasimondo.com
-  Website: http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
-  Twitter: @quasimondo
-
+  * Contact: mario@quasimondo.com
+  * Website: {@link http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html}
+  * Twitter: @quasimondo
+  *
   * @copyright (c) 2010 Mario Klingemann
-
-  Permission is hereby granted, free of charge, to any person
-  obtaining a copy of this software and associated documentation
-  files (the "Software"), to deal in the Software without
-  restriction, including without limitation the rights to use,
-  copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following
-  conditions:
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-  OTHER DEALINGS IN THE SOFTWARE.
+  *
+  * Permission is hereby granted, free of charge, to any person
+  * obtaining a copy of this software and associated documentation
+  * files (the "Software"), to deal in the Software without
+  * restriction, including without limitation the rights to use,
+  * copy, modify, merge, publish, distribute, sublicense, and/or sell
+  * copies of the Software, and to permit persons to whom the
+  * Software is furnished to do so, subject to the following
+  * conditions:
+  *
+  * The above copyright notice and this permission notice shall be
+  * included in all copies or substantial portions of the Software.
+  *
+  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+  * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  * OTHER DEALINGS IN THE SOFTWARE.
   */
   var mulTable = [512, 512, 456, 512, 328, 456, 335, 512, 405, 328, 271, 456, 388, 335, 292, 512, 454, 405, 364, 328, 298, 271, 496, 456, 420, 388, 360, 335, 312, 292, 273, 512, 482, 454, 428, 405, 383, 364, 345, 328, 312, 298, 284, 271, 259, 496, 475, 456, 437, 420, 404, 388, 374, 360, 347, 335, 323, 312, 302, 292, 282, 273, 265, 512, 497, 482, 468, 454, 441, 428, 417, 405, 394, 383, 373, 364, 354, 345, 337, 328, 320, 312, 305, 298, 291, 284, 278, 271, 265, 259, 507, 496, 485, 475, 465, 456, 446, 437, 428, 420, 412, 404, 396, 388, 381, 374, 367, 360, 354, 347, 341, 335, 329, 323, 318, 312, 307, 302, 297, 292, 287, 282, 278, 273, 269, 265, 261, 512, 505, 497, 489, 482, 475, 468, 461, 454, 447, 441, 435, 428, 422, 417, 411, 405, 399, 394, 389, 383, 378, 373, 368, 364, 359, 354, 350, 345, 341, 337, 332, 328, 324, 320, 316, 312, 309, 305, 301, 298, 294, 291, 287, 284, 281, 278, 274, 271, 268, 265, 262, 259, 257, 507, 501, 496, 491, 485, 480, 475, 470, 465, 460, 456, 451, 446, 442, 437, 433, 428, 424, 420, 416, 412, 408, 404, 400, 396, 392, 388, 385, 381, 377, 374, 370, 367, 363, 360, 357, 354, 350, 347, 344, 341, 338, 335, 332, 329, 326, 323, 320, 318, 315, 312, 310, 307, 304, 302, 299, 297, 294, 292, 289, 287, 285, 282, 280, 278, 275, 273, 271, 269, 267, 265, 263, 261, 259];
   var shgTable = [9, 11, 12, 13, 13, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
@@ -843,31 +848,20 @@ var canvg = (function (exports) {
     this.next = null;
   };
 
-  var canvasRGBA_ = processCanvasRGBA;
   /**
-  * @callback module:canvg.StackBlurCanvasRGBA
-  * @param {string} id
-  * @param {Float} x
-  * @param {Float} y
-  * @param {Float} width
-  * @param {Float} height
-  * @param {Float} blurRadius
-  */
+   * Whether a value is `null` or `undefined`.
+   * @param {Any} val
+   * @returns {boolean}
+   */
 
+  var isNullish = function isNullish(val) {
+    return val === null || val === undefined;
+  };
   /**
   * @callback module:canvg.ForceRedraw
   * @returns {boolean}
   */
 
-  /**
-  * @function module:canvg.setStackBlurCanvasRGBA
-  * @param {module:canvg.StackBlurCanvasRGBA} cb Will be passed the canvas ID, x, y, width, height, blurRadius
-  * @returns {undefined}
-  */
-
-  var setStackBlurCanvasRGBA = function setStackBlurCanvasRGBA(cb) {
-    canvasRGBA_ = cb;
-  };
   /**
   * @typedef {PlainObject} module:canvg.CanvgOptions
   * @property {boolean} opts.ignoreMouse true => ignore mouse events
@@ -888,14 +882,15 @@ var canvg = (function (exports) {
   * with `<canvas>` elements.
   * @function module:canvg.canvg
   * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
-  * @param {string|XMLDocument} s: svg string, url to svg file, or xml document
+  * @param {string|XMLDocument} s - svg string, url to svg file, or xml document
   * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
   * @returns {Promise} All the function after the first render is completed with dom
   */
 
+
   var canvg = function canvg(target, s, opts) {
     // no parameters
-    if (target == null && s == null && opts == null) {
+    if (isNullish(target) && isNullish(s) && isNullish(opts)) {
       var svgTags = document.querySelectorAll('svg');
       return Promise.all(_toConsumableArray(svgTags).map(function (svgTag) {
         var c = document.createElement('canvas');
@@ -914,7 +909,7 @@ var canvg = (function (exports) {
     } // store class on canvas
 
 
-    if (target.svg != null) target.svg.stop();
+    if (!isNullish(target.svg)) target.svg.stop();
     var svg = build(opts || {}); // on i.e. 8 for flash canvas, we can't assign the property so check for it
 
     if (!(target.childNodes.length === 1 && target.childNodes[0].nodeName === 'OBJECT')) {
@@ -949,12 +944,15 @@ var canvg = (function (exports) {
     svg.FRAMERATE = 30;
     svg.MAX_VIRTUAL_PIXELS = 30000;
 
-    svg.log = function (msg) {};
+    svg.log = function (msg) {
+      /* */
+    };
 
     if (svg.opts.log === true && typeof console !== 'undefined') {
       svg.log = function (msg) {
         console.log(msg);
-      };
+      }; // eslint-disable-line no-console
+
     } // globals
 
 
@@ -995,7 +993,7 @@ var canvg = (function (exports) {
           return this.Current().height;
         },
         ComputeSize: function ComputeSize(d) {
-          if (d != null && typeof d === 'number') return d;
+          if (!isNullish(d) && typeof d === 'number') return d;
           if (d === 'x') return this.width();
           if (d === 'y') return this.height();
           return Math.sqrt(Math.pow(this.width(), 2) + Math.pow(this.height(), 2)) / Math.sqrt(2);
@@ -1020,6 +1018,7 @@ var canvg = (function (exports) {
     svg.compressSpaces = function (s) {
       return s.replace(/[\s\r\t\n]+/gm, ' ');
     }; // ajax
+    // Todo: Replace with `fetch` and polyfill
 
 
     svg.ajax = function (url, asynch) {
@@ -1027,6 +1026,7 @@ var canvg = (function (exports) {
 
       if (asynch) {
         return new Promise(function (resolve, reject) {
+          // eslint-disable-line promise/avoid-new
           var req = AJAX.open('GET', url, true);
           req.addEventListener('load', function () {
             resolve(AJAX.responseText);
@@ -1045,13 +1045,13 @@ var canvg = (function (exports) {
       if (window.DOMParser) {
         var parser = new DOMParser();
         return parser.parseFromString(xml, 'text/xml');
-      } else {
-        xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
-        var xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
-        xmlDoc.async = 'false';
-        xmlDoc.loadXML(xml);
-        return xmlDoc;
       }
+
+      xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
+      var xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
+      xmlDoc.async = 'false';
+      xmlDoc.loadXML(xml);
+      return xmlDoc;
     }; // text extensions
     // get the text baseline
 
@@ -1088,7 +1088,7 @@ var canvg = (function (exports) {
       }, {
         key: "hasValue",
         value: function hasValue() {
-          return this.value != null && this.value !== '';
+          return !isNullish(this.value) && this.value !== '';
         } // return the numerical value of the property
 
       }, {
@@ -1097,8 +1097,8 @@ var canvg = (function (exports) {
           if (!this.hasValue()) return 0;
           var n = parseFloat(this.value);
 
-          if ((this.value + '').match(/%$/)) {
-            n = n / 100.0;
+          if (String(this.value).match(/%$/)) {
+            n /= 100.0;
           }
 
           return n;
@@ -1122,7 +1122,7 @@ var canvg = (function (exports) {
         value: function addOpacity(opacityProp) {
           var newValue = this.value;
 
-          if (opacityProp.value != null && opacityProp.value !== '' && typeof this.value === 'string') {
+          if (!isNullish(opacityProp.value) && opacityProp.value !== '' && typeof this.value === 'string') {
             // can only add opacity to colors, not patterns
             var color = new RGBColor(this.value);
 
@@ -1160,12 +1160,12 @@ var canvg = (function (exports) {
         value: function getFillStyleDefinition(e, opacityProp) {
           var def = this.getDefinition(); // gradient
 
-          if (def != null && def.createGradient) {
+          if (!isNullish(def) && def.createGradient) {
             return def.createGradient(svg.ctx, e, opacityProp);
           } // pattern
 
 
-          if (def != null && def.createPattern) {
+          if (!isNullish(def) && def.createPattern) {
             if (def.getHrefAttribute().hasValue()) {
               var pt = def.attribute('patternTransform');
               def = def.getHrefAttribute().getDefinition();
@@ -1197,15 +1197,14 @@ var canvg = (function (exports) {
       }, {
         key: "getUnits",
         value: function getUnits() {
-          var s = this.value + '';
-          return s.replace(/[0-9.-]/g, '');
+          return String(this.value).replace(/[0-9.-]/g, '');
         } // get the length as pixels
 
       }, {
         key: "toPixels",
         value: function toPixels(viewPort, processPercent) {
           if (!this.hasValue()) return 0;
-          var s = this.value + '';
+          var s = String(this.value);
           if (s.match(/em$/)) return this.numValue() * this.getEM(viewPort);
           if (s.match(/ex$/)) return this.numValue() * this.getEM(viewPort) / 2.0;
           if (s.match(/px$/)) return this.numValue();
@@ -1225,7 +1224,7 @@ var canvg = (function (exports) {
         key: "toMilliseconds",
         value: function toMilliseconds() {
           if (!this.hasValue()) return 0;
-          var s = this.value + '';
+          var s = String(this.value);
           if (s.match(/s$/)) return this.numValue() * 1000;
           if (s.match(/ms$/)) return this.numValue();
           return this.numValue();
@@ -1236,7 +1235,7 @@ var canvg = (function (exports) {
         key: "toRadians",
         value: function toRadians() {
           if (!this.hasValue()) return 0;
-          var s = this.value + '';
+          var s = String(this.value);
           if (s.match(/deg$/)) return this.numValue() * (Math.PI / 180.0);
           if (s.match(/grad$/)) return this.numValue() * (Math.PI / 200.0);
           if (s.match(/rad$/)) return this.numValue();
@@ -1259,7 +1258,7 @@ var canvg = (function (exports) {
       Variants: 'normal|small-caps|inherit',
       Weights: 'normal|bold|bolder|lighter|100|200|300|400|500|600|700|800|900|inherit',
       CreateFont: function CreateFont(fontStyle, fontVariant, fontWeight, fontSize, fontFamily, inherit) {
-        var f = inherit != null ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
+        var f = !isNullish(inherit) ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
         return {
           fontFamily: fontFamily || f.fontFamily,
           fontSize: fontSize || f.fontSize,
@@ -1275,7 +1274,7 @@ var canvg = (function (exports) {
         var _this = this;
 
         var f = {};
-        var d = svg.trim(svg.compressSpaces(s || '')).split(' ');
+        var ds = svg.trim(svg.compressSpaces(s || '')).split(' ');
         var set = {
           fontSize: false,
           fontStyle: false,
@@ -1283,7 +1282,7 @@ var canvg = (function (exports) {
           fontVariant: false
         };
         var ff = '';
-        d.forEach(function (d) {
+        ds.forEach(function (d) {
           if (!set.fontStyle && _this.Styles.includes(d)) {
             if (d !== 'inherit') {
               f.fontStyle = d;
@@ -1308,10 +1307,8 @@ var canvg = (function (exports) {
             }
 
             set.fontStyle = set.fontVariant = set.fontWeight = set.fontSize = true;
-          } else {
-            if (d !== 'inherit') {
-              ff += d;
-            }
+          } else if (d !== 'inherit') {
+            ff += d;
           }
         });
 
@@ -1325,8 +1322,8 @@ var canvg = (function (exports) {
 
     svg.ToNumberArray = function (s) {
       var a = svg.trim(svg.compressSpaces((s || '').replace(/,/g, ' '))).split(' ');
-      return a.map(function (a) {
-        return parseFloat(a);
+      return a.map(function (_a) {
+        return parseFloat(_a);
       });
     };
 
@@ -1413,7 +1410,7 @@ var canvg = (function (exports) {
       }, {
         key: "addPoint",
         value: function addPoint(x, y) {
-          if (x != null) {
+          if (!isNullish(x)) {
             if (isNaN(this.x1) || isNaN(this.x2)) {
               this.x1 = x;
               this.x2 = x;
@@ -1423,7 +1420,7 @@ var canvg = (function (exports) {
             if (x > this.x2) this.x2 = x;
           }
 
-          if (y != null) {
+          if (!isNullish(y)) {
             if (isNaN(this.y1) || isNaN(this.y2)) {
               this.y1 = y;
               this.y2 = y;
@@ -1577,9 +1574,10 @@ var canvg = (function (exports) {
             };
 
             this.applyToPoint = function (p) {
-              var a = this.angle.toRadians();
+              var _a = this.angle.toRadians();
+
               p.applyTransform([1, 0, 0, 1, this.p.x || 0.0, this.p.y || 0.0]);
-              p.applyTransform([Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), 0, 0]);
+              p.applyTransform([Math.cos(_a), Math.sin(_a), -Math.sin(_a), Math.cos(_a), 0, 0]);
               p.applyTransform([1, 0, 0, 1, -this.p.x || 0.0, -this.p.y || 0.0]);
             };
           },
@@ -1745,7 +1743,7 @@ var canvg = (function (exports) {
 
       if (align === 'none') ctx.scale(scaleX, scaleY);else if (meetOrSlice === 'meet') ctx.scale(scaleMin, scaleMin);else if (meetOrSlice === 'slice') ctx.scale(scaleMax, scaleMax); // translate
 
-      ctx.translate(minX == null ? 0 : -minX, minY == null ? 0 : -minY);
+      ctx.translate(isNullish(minX) ? 0 : -minX, isNullish(minY) ? 0 : -minY);
     }; // elements
 
 
@@ -1760,13 +1758,14 @@ var canvg = (function (exports) {
 
         _classCallCheck(this, _class4);
 
-        this.captureTextNodes = arguments[1]; // Argument from inheriting class
+        // Argument from inheriting class
+        this.captureTextNodes = arguments[1]; // eslint-disable-line prefer-rest-params
 
         this.attributes = {};
         this.styles = {};
         this.children = [];
 
-        if (node != null && node.nodeType === 1) {
+        if (!isNullish(node) && node.nodeType === 1) {
           // ELEMENT_NODE
           // add children
           _toConsumableArray(node.childNodes).forEach(function (childNode) {
@@ -1795,10 +1794,14 @@ var canvg = (function (exports) {
 
           var styles = svg.Styles[node.nodeName];
 
-          if (styles != null) {
-            for (var name in styles) {
-              this.styles[name] = styles[name];
-            }
+          if (!isNullish(styles)) {
+            Object.entries(styles).forEach(function (_ref2) {
+              var _ref3 = _slicedToArray(_ref2, 2),
+                  name = _ref3[0],
+                  styleValue = _ref3[1];
+
+              _this7.styles[name] = styleValue;
+            });
           } // add class styles
 
 
@@ -1807,18 +1810,26 @@ var canvg = (function (exports) {
             classes.forEach(function (clss) {
               styles = svg.Styles['.' + clss];
 
-              if (styles != null) {
-                for (var _name in styles) {
-                  _this7.styles[_name] = styles[_name];
-                }
+              if (!isNullish(styles)) {
+                Object.entries(styles).forEach(function (_ref4) {
+                  var _ref5 = _slicedToArray(_ref4, 2),
+                      name = _ref5[0],
+                      styleValue = _ref5[1];
+
+                  _this7.styles[name] = styleValue;
+                });
               }
 
               styles = svg.Styles[node.nodeName + '.' + clss];
 
-              if (styles != null) {
-                for (var _name2 in styles) {
-                  _this7.styles[_name2] = styles[_name2];
-                }
+              if (!isNullish(styles)) {
+                Object.entries(styles).forEach(function (_ref6) {
+                  var _ref7 = _slicedToArray(_ref6, 2),
+                      name = _ref7[0],
+                      styleValue = _ref7[1];
+
+                  _this7.styles[name] = styleValue;
+                });
               }
             });
           } // add id styles
@@ -1827,10 +1838,14 @@ var canvg = (function (exports) {
           if (this.attribute('id').hasValue()) {
             var _styles = svg.Styles['#' + this.attribute('id').value];
 
-            if (_styles != null) {
-              for (var _name3 in _styles) {
-                this.styles[_name3] = _styles[_name3];
-              }
+            if (!isNullish(_styles)) {
+              Object.entries(_styles).forEach(function (_ref8) {
+                var _ref9 = _slicedToArray(_ref8, 2),
+                    name = _ref9[0],
+                    styleValue = _ref9[1];
+
+                _this7.styles[name] = styleValue;
+              });
             }
           } // add inline styles
 
@@ -1841,19 +1856,19 @@ var canvg = (function (exports) {
             _styles2.forEach(function (style) {
               if (svg.trim(style) !== '') {
                 var _style$split = style.split(':'),
-                    _name4 = _style$split.name,
+                    name = _style$split.name,
                     value = _style$split.value;
 
-                _name4 = svg.trim(_name4);
+                name = svg.trim(name);
                 value = svg.trim(value);
-                _this7.styles[_name4] = new svg.Property(_name4, value);
+                _this7.styles[name] = new svg.Property(name, value);
               }
             });
           } // add id
 
 
           if (this.attribute('id').hasValue()) {
-            if (svg.Definitions[this.attribute('id').value] == null) {
+            if (isNullish(svg.Definitions[this.attribute('id').value])) {
               svg.Definitions[this.attribute('id').value] = this;
             }
           }
@@ -1865,7 +1880,7 @@ var canvg = (function (exports) {
         key: "attribute",
         value: function attribute(name, createIfNotExists) {
           var a = this.attributes[name];
-          if (a != null) return a;
+          if (!isNullish(a)) return a;
 
           if (createIfNotExists === true) {
             a = new svg.Property(name, '');
@@ -1890,10 +1905,10 @@ var canvg = (function (exports) {
         key: "style",
         value: function style(name, createIfNotExists, skipAncestors) {
           var s = this.styles[name];
-          if (s != null) return s;
+          if (!isNullish(s)) return s;
           var a = this.attribute(name);
 
-          if (a != null && a.hasValue()) {
+          if (!isNullish(a) && a.hasValue()) {
             this.styles[name] = a; // move up to me to cache
 
             return a;
@@ -1902,10 +1917,10 @@ var canvg = (function (exports) {
           if (skipAncestors !== true) {
             var p = this.parent;
 
-            if (p != null) {
+            if (!isNullish(p)) {
               var ps = p.style(name);
 
-              if (ps != null && ps.hasValue()) {
+              if (!isNullish(ps) && ps.hasValue()) {
                 return ps;
               }
             }
@@ -1931,11 +1946,11 @@ var canvg = (function (exports) {
           if (this.attribute('mask').hasValue()) {
             // mask
             var mask = this.attribute('mask').getDefinition();
-            if (mask != null) mask.apply(ctx, this);
+            if (!isNullish(mask)) mask.apply(ctx, this);
           } else if (this.style('filter').hasValue()) {
             // filter
             var filter = this.style('filter').getDefinition();
-            if (filter != null) filter.apply(ctx, this);
+            if (!isNullish(filter)) filter.apply(ctx, this);
           } else {
             this.setContext(ctx);
             this.renderChildren(ctx);
@@ -1994,7 +2009,7 @@ var canvg = (function (exports) {
           // fill
           if (this.style('fill').isUrlDefinition()) {
             var fs = this.style('fill').getFillStyleDefinition(this, this.style('fill-opacity'));
-            if (fs != null) ctx.fillStyle = fs;
+            if (!isNullish(fs)) ctx.fillStyle = fs;
           } else if (this.style('fill').hasValue()) {
             var fillStyle = this.style('fill');
             if (fillStyle.value === 'currentColor') fillStyle.value = this.style('color').value;
@@ -2012,7 +2027,7 @@ var canvg = (function (exports) {
           if (this.style('stroke').isUrlDefinition()) {
             var _fs = this.style('stroke').getFillStyleDefinition(this, this.style('stroke-opacity'));
 
-            if (_fs != null) ctx.strokeStyle = _fs;
+            if (!isNullish(_fs)) ctx.strokeStyle = _fs;
           } else if (this.style('stroke').hasValue()) {
             var strokeStyle = this.style('stroke');
             if (strokeStyle.value === 'currentColor') strokeStyle.value = this.style('color').value;
@@ -2071,7 +2086,7 @@ var canvg = (function (exports) {
 
           if (this.style('clip-path', false, true).hasValue()) {
             var clip = this.style('clip-path', false, true).getDefinition();
-            if (clip != null) clip.apply(ctx);
+            if (!isNullish(clip)) clip.apply(ctx);
           } // opacity
 
 
@@ -2098,7 +2113,7 @@ var canvg = (function (exports) {
       _createClass(_class6, [{
         key: "path",
         value: function path(ctx) {
-          if (ctx != null) ctx.beginPath();
+          if (!isNullish(ctx)) ctx.beginPath();
           return new svg.BoundingBox();
         }
       }, {
@@ -2118,7 +2133,7 @@ var canvg = (function (exports) {
           if (ctx.strokeStyle !== '') ctx.stroke();
           var markers = this.getMarkers();
 
-          if (markers != null) {
+          if (!isNullish(markers)) {
             if (this.style('marker-start').isUrlDefinition()) {
               var marker = this.style('marker-start').getDefinition();
               marker.render(ctx, markers[0][0], markers[0][1]);
@@ -2263,7 +2278,7 @@ var canvg = (function (exports) {
           rx = Math.min(rx, width / 2.0);
           ry = Math.min(ry, height / 2.0);
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.moveTo(x + rx, y);
             ctx.lineTo(x + width - rx, y);
@@ -2303,7 +2318,7 @@ var canvg = (function (exports) {
           var cy = this.attribute('cy').toPixels('y');
           var r = this.attribute('r').toPixels();
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2, true);
             ctx.closePath();
@@ -2338,7 +2353,7 @@ var canvg = (function (exports) {
           var cx = this.attribute('cx').toPixels('x');
           var cy = this.attribute('cy').toPixels('y');
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.moveTo(cx, cy - ry);
             ctx.bezierCurveTo(cx + KAPPA * rx, cy - ry, cx + rx, cy - KAPPA * ry, cx + rx, cy);
@@ -2377,7 +2392,7 @@ var canvg = (function (exports) {
         value: function path(ctx) {
           var points = this.getPoints();
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
             ctx.lineTo(points[1].x, points[1].y);
@@ -2421,7 +2436,7 @@ var canvg = (function (exports) {
               y = _this$points$.y;
           var bb = new svg.BoundingBox(x, y);
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.moveTo(x, y);
           }
@@ -2431,7 +2446,7 @@ var canvg = (function (exports) {
                 _x = _this$points$i.x,
                 _y = _this$points$i.y;
             bb.addPoint(_x, _y);
-            if (ctx != null) ctx.lineTo(_x, _y);
+            if (!isNullish(ctx)) ctx.lineTo(_x, _y);
           }
 
           return bb;
@@ -2470,7 +2485,7 @@ var canvg = (function (exports) {
         value: function path(ctx) {
           var bb = _get(_getPrototypeOf(_class13.prototype), "path", this).call(this, ctx);
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.lineTo(this.points[0].x, this.points[0].y);
             ctx.closePath();
           }
@@ -2526,7 +2541,7 @@ var canvg = (function (exports) {
           },
           isCommandOrEnd: function isCommandOrEnd() {
             if (this.isEnd()) return true;
-            return this.tokens[this.i + 1].match(/^[A-Za-z]$/) != null;
+            return !isNullish(this.tokens[this.i + 1].match(/^[A-Za-z]$/));
           },
           isRelativeCommand: function isRelativeCommand() {
             switch (this.command) {
@@ -2589,11 +2604,11 @@ var canvg = (function (exports) {
           },
           addMarker: function addMarker(p, from, priorTo) {
             // if the last angle isn't filled in because we didn't have this point yet ...
-            if (priorTo != null && this.angles.length > 0 && this.angles[this.angles.length - 1] == null) {
+            if (!isNullish(priorTo) && this.angles.length > 0 && isNullish(this.angles[this.angles.length - 1])) {
               this.angles[this.angles.length - 1] = this.points[this.points.length - 1].angleTo(priorTo);
             }
 
-            this.addMarkerAngle(p, from == null ? null : from.angleTo(p));
+            this.addMarkerAngle(p, isNullish(from) ? null : from.angleTo(p));
           },
           addMarkerAngle: function addMarkerAngle(p, a) {
             this.points.push(p);
@@ -2604,9 +2619,9 @@ var canvg = (function (exports) {
           },
           getMarkerAngles: function getMarkerAngles() {
             for (var i = 0; i < this.angles.length; i++) {
-              if (this.angles[i] == null) {
+              if (isNullish(this.angles[i])) {
                 for (var j = i + 1; j < this.angles.length; j++) {
-                  if (this.angles[j] != null) {
+                  if (!isNullish(this.angles[j])) {
                     this.angles[i] = this.angles[j];
                     break;
                   }
@@ -2626,7 +2641,7 @@ var canvg = (function (exports) {
           var pp = this.PathParser;
           pp.reset();
           var bb = new svg.BoundingBox();
-          if (ctx != null) ctx.beginPath();
+          if (!isNullish(ctx)) ctx.beginPath();
 
           while (!pp.isEnd()) {
             pp.nextCommand();
@@ -2634,21 +2649,23 @@ var canvg = (function (exports) {
             switch (pp.command) {
               case 'M':
               case 'm':
-                var p = pp.getAsCurrentPoint();
-                pp.addMarker(p);
-                bb.addPoint(p.x, p.y);
-                if (ctx != null) ctx.moveTo(p.x, p.y);
-                pp.start = pp.current;
+                {
+                  var p = pp.getAsCurrentPoint();
+                  pp.addMarker(p);
+                  bb.addPoint(p.x, p.y);
+                  if (!isNullish(ctx)) ctx.moveTo(p.x, p.y);
+                  pp.start = pp.current;
 
-                while (!pp.isCommandOrEnd()) {
-                  var _p = pp.getAsCurrentPoint();
+                  while (!pp.isCommandOrEnd()) {
+                    var _p = pp.getAsCurrentPoint();
 
-                  pp.addMarker(_p, pp.start);
-                  bb.addPoint(_p.x, _p.y);
-                  if (ctx != null) ctx.lineTo(_p.x, _p.y);
+                    pp.addMarker(_p, pp.start);
+                    bb.addPoint(_p.x, _p.y);
+                    if (!isNullish(ctx)) ctx.lineTo(_p.x, _p.y);
+                  }
+
+                  break;
                 }
-
-                break;
 
               case 'L':
               case 'l':
@@ -2659,7 +2676,7 @@ var canvg = (function (exports) {
 
                   pp.addMarker(_p2, c);
                   bb.addPoint(_p2.x, _p2.y);
-                  if (ctx != null) ctx.lineTo(_p2.x, _p2.y);
+                  if (!isNullish(ctx)) ctx.lineTo(_p2.x, _p2.y);
                 }
 
                 break;
@@ -2671,7 +2688,7 @@ var canvg = (function (exports) {
                   pp.addMarker(newP, pp.current);
                   pp.current = newP;
                   bb.addPoint(pp.current.x, pp.current.y);
-                  if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+                  if (!isNullish(ctx)) ctx.lineTo(pp.current.x, pp.current.y);
                 }
 
                 break;
@@ -2684,7 +2701,7 @@ var canvg = (function (exports) {
                   pp.addMarker(_newP, pp.current);
                   pp.current = _newP;
                   bb.addPoint(pp.current.x, pp.current.y);
-                  if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+                  if (!isNullish(ctx)) ctx.lineTo(pp.current.x, pp.current.y);
                 }
 
                 break;
@@ -2698,7 +2715,7 @@ var canvg = (function (exports) {
                   var cp = pp.getAsCurrentPoint();
                   pp.addMarker(cp, cntrl, p1);
                   bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
-                  if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+                  if (!isNullish(ctx)) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
                 }
 
                 break;
@@ -2716,7 +2733,7 @@ var canvg = (function (exports) {
 
                   pp.addMarker(_cp, _cntrl, _p3);
                   bb.addBezierCurve(_curr.x, _curr.y, _p3.x, _p3.y, _cntrl.x, _cntrl.y, _cp.x, _cp.y);
-                  if (ctx != null) ctx.bezierCurveTo(_p3.x, _p3.y, _cntrl.x, _cntrl.y, _cp.x, _cp.y);
+                  if (!isNullish(ctx)) ctx.bezierCurveTo(_p3.x, _p3.y, _cntrl.x, _cntrl.y, _cp.x, _cp.y);
                 }
 
                 break;
@@ -2732,7 +2749,7 @@ var canvg = (function (exports) {
 
                   pp.addMarker(_cp2, _cntrl2, _cntrl2);
                   bb.addQuadraticCurve(_curr2.x, _curr2.y, _cntrl2.x, _cntrl2.y, _cp2.x, _cp2.y);
-                  if (ctx != null) ctx.quadraticCurveTo(_cntrl2.x, _cntrl2.y, _cp2.x, _cp2.y);
+                  if (!isNullish(ctx)) ctx.quadraticCurveTo(_cntrl2.x, _cntrl2.y, _cp2.x, _cp2.y);
                 }
 
                 break;
@@ -2750,7 +2767,7 @@ var canvg = (function (exports) {
 
                   pp.addMarker(_cp3, _cntrl3, _cntrl3);
                   bb.addQuadraticCurve(_curr3.x, _curr3.y, _cntrl3.x, _cntrl3.y, _cp3.x, _cp3.y);
-                  if (ctx != null) ctx.quadraticCurveTo(_cntrl3.x, _cntrl3.y, _cp3.x, _cp3.y);
+                  if (!isNullish(ctx)) ctx.quadraticCurveTo(_cntrl3.x, _cntrl3.y, _cp3.x, _cp3.y);
                 }
 
                 break;
@@ -2814,7 +2831,7 @@ var canvg = (function (exports) {
                   pp.addMarkerAngle(cp, ah - dir * Math.PI);
                   bb.addPoint(cp.x, cp.y); // TODO: this is too naive, make it better
 
-                  if (ctx != null) {
+                  if (!isNullish(ctx)) {
                     var _r = rx > ry ? rx : ry;
 
                     var sx = rx > ry ? 1 : rx / ry;
@@ -2837,7 +2854,7 @@ var canvg = (function (exports) {
 
               case 'Z':
               case 'z':
-                if (ctx != null) ctx.closePath();
+                if (!isNullish(ctx)) ctx.closePath();
                 pp.current = pp.start;
             }
           }
@@ -2878,10 +2895,10 @@ var canvg = (function (exports) {
           var height = this.attribute('height').toPixels('y', true); // render me using a temporary svg element
 
           var tempSvg = new svg.Element.svg();
-          tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-          tempSvg.attributes['width'] = new svg.Property('width', width + 'px');
-          tempSvg.attributes['height'] = new svg.Property('height', height + 'px');
-          tempSvg.attributes['transform'] = new svg.Property('transform', this.attribute('patternTransform').value);
+          tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
+          tempSvg.attributes.width = new svg.Property('width', width + 'px');
+          tempSvg.attributes.height = new svg.Property('height', height + 'px');
+          tempSvg.attributes.transform = new svg.Property('transform', this.attribute('patternTransform').value);
           tempSvg.children = this.children;
           var c = document.createElement('canvas');
           c.width = width;
@@ -2931,13 +2948,13 @@ var canvg = (function (exports) {
           ctx.save(); // render me using a temporary svg element
 
           var tempSvg = new svg.Element.svg();
-          tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-          tempSvg.attributes['refX'] = new svg.Property('refX', this.attribute('refX').value);
-          tempSvg.attributes['refY'] = new svg.Property('refY', this.attribute('refY').value);
-          tempSvg.attributes['width'] = new svg.Property('width', this.attribute('markerWidth').value);
-          tempSvg.attributes['height'] = new svg.Property('height', this.attribute('markerHeight').value);
-          tempSvg.attributes['fill'] = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
-          tempSvg.attributes['stroke'] = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
+          tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
+          tempSvg.attributes.refX = new svg.Property('refX', this.attribute('refX').value);
+          tempSvg.attributes.refY = new svg.Property('refY', this.attribute('refY').value);
+          tempSvg.attributes.width = new svg.Property('width', this.attribute('markerWidth').value);
+          tempSvg.attributes.height = new svg.Property('height', this.attribute('markerHeight').value);
+          tempSvg.attributes.fill = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
+          tempSvg.attributes.stroke = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
           tempSvg.children = this.children;
           tempSvg.render(ctx);
           ctx.restore();
@@ -3014,10 +3031,10 @@ var canvg = (function (exports) {
           };
 
           var g = this.getGradient(ctx, element);
-          if (g == null) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
-          stopsContainer.stops.forEach(function (_ref2) {
-            var offset = _ref2.offset,
-                color = _ref2.color;
+          if (isNullish(g)) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
+          stopsContainer.stops.forEach(function (_ref10) {
+            var offset = _ref10.offset,
+                color = _ref10.color;
             g.addColorStop(offset, addParentOpacity(color));
           });
 
@@ -3025,18 +3042,18 @@ var canvg = (function (exports) {
             // render as transformed pattern on temporary canvas
             var rootView = svg.ViewPort.viewPorts[0];
             var rect = new svg.Element.rect();
-            rect.attributes['x'] = new svg.Property('x', -svg.MAX_VIRTUAL_PIXELS / 3.0);
-            rect.attributes['y'] = new svg.Property('y', -svg.MAX_VIRTUAL_PIXELS / 3.0);
-            rect.attributes['width'] = new svg.Property('width', svg.MAX_VIRTUAL_PIXELS);
-            rect.attributes['height'] = new svg.Property('height', svg.MAX_VIRTUAL_PIXELS);
+            rect.attributes.x = new svg.Property('x', -svg.MAX_VIRTUAL_PIXELS / 3.0);
+            rect.attributes.y = new svg.Property('y', -svg.MAX_VIRTUAL_PIXELS / 3.0);
+            rect.attributes.width = new svg.Property('width', svg.MAX_VIRTUAL_PIXELS);
+            rect.attributes.height = new svg.Property('height', svg.MAX_VIRTUAL_PIXELS);
             var group = new svg.Element.g();
-            group.attributes['transform'] = new svg.Property('transform', this.attribute('gradientTransform').value);
+            group.attributes.transform = new svg.Property('transform', this.attribute('gradientTransform').value);
             group.children = [rect];
             var tempSvg = new svg.Element.svg();
-            tempSvg.attributes['x'] = new svg.Property('x', 0);
-            tempSvg.attributes['y'] = new svg.Property('y', 0);
-            tempSvg.attributes['width'] = new svg.Property('width', rootView.width);
-            tempSvg.attributes['height'] = new svg.Property('height', rootView.height);
+            tempSvg.attributes.x = new svg.Property('x', 0);
+            tempSvg.attributes.y = new svg.Property('y', 0);
+            tempSvg.attributes.width = new svg.Property('width', rootView.width);
+            tempSvg.attributes.height = new svg.Property('height', rootView.height);
             tempSvg.children = [group];
             var c = document.createElement('canvas');
             c.width = rootView.width;
@@ -3209,7 +3226,7 @@ var canvg = (function (exports) {
         key: "update",
         value: function update(delta) {
           // set initial value
-          if (this.initialValue == null) {
+          if (isNullish(this.initialValue)) {
             this.initialValue = this.getProperty().value;
             this.initialUnits = this.getProperty().getUnits();
           } // if we're past the end time
@@ -3327,7 +3344,7 @@ var canvg = (function (exports) {
             var r = from.r + (to.r - from.r) * p.progress;
             var g = from.g + (to.g - from.g) * p.progress;
             var b = from.b + (to.b - from.b) * p.progress;
-            return 'rgb(' + parseInt(r, 10) + ',' + parseInt(g, 10) + ',' + parseInt(b, 10) + ')';
+            return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')';
           }
 
           return this.attribute('from').value;
@@ -3496,8 +3513,8 @@ var canvg = (function (exports) {
           _get(_getPrototypeOf(_class30.prototype), "setContext", this).call(this, ctx);
 
           var textBaseline = this.style('dominant-baseline').toTextBaseline();
-          if (textBaseline == null) textBaseline = this.style('alignment-baseline').toTextBaseline();
-          if (textBaseline != null) ctx.textBaseline = textBaseline;
+          if (isNullish(textBaseline)) textBaseline = this.style('alignment-baseline').toTextBaseline();
+          if (!isNullish(textBaseline)) ctx.textBaseline = textBaseline;
         }
       }, {
         key: "getBoundingBox",
@@ -3567,8 +3584,8 @@ var canvg = (function (exports) {
           this.y = child.y;
           child.render(ctx);
 
-          for (var _i = 0; _i < child.children.length; _i++) {
-            this.renderChild(ctx, child, _i);
+          for (var j = 0; j < child.children.length; j++) {
+            this.renderChild(ctx, child, j);
           }
         }
       }]);
@@ -3602,13 +3619,13 @@ var canvg = (function (exports) {
 
             if (typeof font.glyphs[c] !== 'undefined') {
               glyph = font.glyphs[c][arabicForm];
-              if (glyph == null && font.glyphs[c].type === 'glyph') glyph = font.glyphs[c];
+              if (isNullish(glyph) && font.glyphs[c].type === 'glyph') glyph = font.glyphs[c];
             }
           } else {
             glyph = font.glyphs[c];
           }
 
-          if (glyph == null) glyph = font.missingGlyph;
+          if (isNullish(glyph)) glyph = font.missingGlyph;
           return glyph;
         }
       }, {
@@ -3616,7 +3633,7 @@ var canvg = (function (exports) {
         value: function renderChildren(ctx) {
           var customFont = this.parent.style('font-family').getDefinition();
 
-          if (customFont != null) {
+          if (!isNullish(customFont)) {
             var fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
             var fontStyle = this.parent.style('font-style').valueOrDefault(svg.Font.Parse(svg.ctx.font).fontStyle);
             var text = this.getText();
@@ -3667,7 +3684,7 @@ var canvg = (function (exports) {
         value: function measureText(ctx) {
           var customFont = this.parent.style('font-family').getDefinition();
 
-          if (customFont != null) {
+          if (!isNullish(customFont)) {
             var fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
             var measure = 0;
             var text = this.getText();
@@ -3744,7 +3761,8 @@ var canvg = (function (exports) {
         key: "getText",
         value: function getText() {
           var element = this.getHrefAttribute().getDefinition();
-          if (element != null) return element.children[0].getText();
+          if (!isNullish(element)) return element.children[0].getText();
+          return undefined;
         }
       }]);
 
@@ -3843,22 +3861,25 @@ var canvg = (function (exports) {
             _this20.img.crossOrigin = 'Anonymous';
           }
 
-          var self = _assertThisInitialized(_assertThisInitialized(_this20));
-
           _this20.img.onload = function () {
-            self.loaded = true;
+            _this20.loaded = true;
           };
 
           _this20.img.onerror = function () {
             svg.log('ERROR: image "' + href + '" not found');
-            self.loaded = true;
+            _this20.loaded = true;
           };
 
           _this20.img.src = href;
         } else {
           svg.ajax(href, true).then(function (img) {
+            // eslint-disable-line promise/prefer-await-to-then, promise/always-return
             _this20.img = img;
             _this20.loaded = true;
+          }).catch(function (err) {
+            // eslint-disable-line promise/prefer-await-to-callbacks
+            _this20.erred = true;
+            console.error('Ajax error for canvg', err); // eslint-disable-line no-console
           });
         }
 
@@ -3961,8 +3982,8 @@ var canvg = (function (exports) {
 
         var css = '';
 
-        _toConsumableArray(node.childNodes).forEach(function (_ref3) {
-          var nodeValue = _ref3.nodeValue;
+        _toConsumableArray(node.childNodes).forEach(function (_ref11) {
+          var nodeValue = _ref11.nodeValue;
           css += nodeValue;
         });
 
@@ -3990,7 +4011,7 @@ var canvg = (function (exports) {
                   var name = cssProp.substr(0, prop);
                   var value = cssProp.substr(prop + 1, cssProp.length - prop);
 
-                  if (name != null && value != null) {
+                  if (!isNullish(name) && !isNullish(value)) {
                     props[svg.trim(name)] = new svg.Property(svg.trim(name), svg.trim(value));
                   }
                 });
@@ -3998,7 +4019,7 @@ var canvg = (function (exports) {
 
                 if (cssClass === '@font-face') {
                   var fontFamily = props['font-family'].value.replace(/"/g, '');
-                  var srcs = props['src'].value.split(',');
+                  var srcs = props.src.value.split(',');
                   srcs.forEach(function (src) {
                     if (src.includes('format("svg")')) {
                       var urlStart = src.indexOf('url');
@@ -4053,36 +4074,37 @@ var canvg = (function (exports) {
         key: "path",
         value: function path(ctx) {
           var element = this._el;
-          if (element != null) element.path(ctx);
+          if (!isNullish(element)) element.path(ctx);
         }
       }, {
         key: "getBoundingBox",
         value: function getBoundingBox() {
           var element = this._el;
-          if (element != null) return element.getBoundingBox();
+          if (!isNullish(element)) return element.getBoundingBox();
+          return undefined;
         }
       }, {
         key: "renderChildren",
         value: function renderChildren(ctx) {
           var element = this._el;
 
-          if (element != null) {
+          if (!isNullish(element)) {
             var tempSvg = element;
 
             if (element.type === 'symbol') {
               // render me using a temporary svg element in symbol cases (https://www.w3.org/TR/SVG/struct.html#UseElement)
               tempSvg = new svg.Element.svg();
               tempSvg.type = 'svg';
-              tempSvg.attributes['viewBox'] = new svg.Property('viewBox', element.attribute('viewBox').value);
-              tempSvg.attributes['preserveAspectRatio'] = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
-              tempSvg.attributes['overflow'] = new svg.Property('overflow', element.attribute('overflow').value);
+              tempSvg.attributes.viewBox = new svg.Property('viewBox', element.attribute('viewBox').value);
+              tempSvg.attributes.preserveAspectRatio = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
+              tempSvg.attributes.overflow = new svg.Property('overflow', element.attribute('overflow').value);
               tempSvg.children = element.children;
             }
 
             if (tempSvg.type === 'svg') {
               // if symbol or svg, inherit width/height from me
-              if (this.attribute('width').hasValue()) tempSvg.attributes['width'] = new svg.Property('width', this.attribute('width').value);
-              if (this.attribute('height').hasValue()) tempSvg.attributes['height'] = new svg.Property('height', this.attribute('height').value);
+              if (this.attribute('width').hasValue()) tempSvg.attributes.width = new svg.Property('width', this.attribute('width').value);
+              if (this.attribute('height').hasValue()) tempSvg.attributes.height = new svg.Property('height', this.attribute('height').value);
             }
 
             var oldParent = tempSvg.parent;
@@ -4294,10 +4316,31 @@ var canvg = (function (exports) {
 
       return _class44;
     }(svg.Element.ElementBase);
+    /**
+    * @param {Uint8ClampedArray} img
+    * @param {Integer} x
+    * @param {Integer} y
+    * @param {Float} width
+    * @param {Float} height
+    * @param {Integer} rgba
+    * @returns {undefined}
+    */
+
 
     function imGet(img, x, y, width, height, rgba) {
       return img[y * width * 4 + x * 4 + rgba];
     }
+    /**
+    * @param {Uint8ClampedArray} img
+    * @param {Integer} x
+    * @param {Integer} y
+    * @param {Float} width
+    * @param {Float} height
+    * @param {Integer} rgba
+    * @param {Float} val
+    * @returns {undefined}
+    */
+
 
     function imSet(img, x, y, width, height, rgba, val) {
       img[y * width * 4 + x * 4 + rgba] = val;
@@ -4319,19 +4362,23 @@ var canvg = (function (exports) {
         switch (_this23.attribute('type').valueOrDefault('matrix')) {
           // https://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
           case 'saturate':
-            var s = matrix[0];
-            matrix = [0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0, 0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s, 0, 0, 0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1];
-            break;
+            {
+              var s = matrix[0];
+              matrix = [0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0, 0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s, 0, 0, 0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1];
+              break;
+            }
 
           case 'hueRotate':
-            var a = matrix[0] * Math.PI / 180.0;
+            {
+              var a = matrix[0] * Math.PI / 180.0;
 
-            var c = function c(m1, m2, m3) {
-              return m1 + Math.cos(a) * m2 + Math.sin(a) * m3;
-            };
+              var c = function c(m1, m2, m3) {
+                return m1 + Math.cos(a) * m2 + Math.sin(a) * m3;
+              };
 
-            matrix = [c(0.213, 0.787, -0.213), c(0.715, -0.715, -0.715), c(0.072, -0.072, 0.928), 0, 0, c(0.213, -0.213, 0.143), c(0.715, 0.285, 0.140), c(0.072, -0.072, -0.283), 0, 0, c(0.213, -0.213, -0.787), c(0.715, -0.715, 0.715), c(0.072, 0.928, 0.072), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1];
-            break;
+              matrix = [c(0.213, 0.787, -0.213), c(0.715, -0.715, -0.715), c(0.072, -0.072, 0.928), 0, 0, c(0.213, -0.213, 0.143), c(0.715, 0.285, 0.140), c(0.072, -0.072, -0.283), 0, 0, c(0.213, -0.213, -0.787), c(0.715, -0.715, 0.715), c(0.072, 0.928, 0.072), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1];
+              break;
+            }
 
           case 'luminanceToAlpha':
             matrix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2125, 0.7154, 0.0721, 0, 0, 0, 0, 0, 0, 1];
@@ -4355,16 +4402,16 @@ var canvg = (function (exports) {
 
           var srcData = ctx.getImageData(0, 0, width, height);
 
-          for (var _y2 = 0; _y2 < height; _y2++) {
-            for (var _x2 = 0; _x2 < width; _x2++) {
-              var r = imGet(srcData.data, _x2, _y2, width, height, 0);
-              var g = imGet(srcData.data, _x2, _y2, width, height, 1);
-              var b = imGet(srcData.data, _x2, _y2, width, height, 2);
-              var a = imGet(srcData.data, _x2, _y2, width, height, 3);
-              imSet(srcData.data, _x2, _y2, width, height, 0, m(0, r) + m(1, g) + m(2, b) + m(3, a) + m(4, 1));
-              imSet(srcData.data, _x2, _y2, width, height, 1, m(5, r) + m(6, g) + m(7, b) + m(8, a) + m(9, 1));
-              imSet(srcData.data, _x2, _y2, width, height, 2, m(10, r) + m(11, g) + m(12, b) + m(13, a) + m(14, 1));
-              imSet(srcData.data, _x2, _y2, width, height, 3, m(15, r) + m(16, g) + m(17, b) + m(18, a) + m(19, 1));
+          for (var _y = 0; _y < height; _y++) {
+            for (var _x = 0; _x < width; _x++) {
+              var r = imGet(srcData.data, _x, _y, width, height, 0);
+              var g = imGet(srcData.data, _x, _y, width, height, 1);
+              var b = imGet(srcData.data, _x, _y, width, height, 2);
+              var a = imGet(srcData.data, _x, _y, width, height, 3);
+              imSet(srcData.data, _x, _y, width, height, 0, m(0, r) + m(1, g) + m(2, b) + m(3, a) + m(4, 1));
+              imSet(srcData.data, _x, _y, width, height, 1, m(5, r) + m(6, g) + m(7, b) + m(8, a) + m(9, 1));
+              imSet(srcData.data, _x, _y, width, height, 2, m(10, r) + m(11, g) + m(12, b) + m(13, a) + m(14, 1));
+              imSet(srcData.data, _x, _y, width, height, 3, m(15, r) + m(16, g) + m(17, b) + m(18, a) + m(19, 1));
             }
           }
 
@@ -4395,17 +4442,12 @@ var canvg = (function (exports) {
       _createClass(_class46, [{
         key: "apply",
         value: function apply(ctx, x, y, width, height) {
-          if (typeof canvasRGBA_ !== 'function') {
-            svg.log('ERROR: The function `setStackBlurCanvasRGBA` must be present for blur to work');
-            return;
-          } // Todo: This might not be a problem anymore with out `instanceof` fix
+          // Todo: This might not be a problem anymore with out `instanceof` fix
           // StackBlur requires canvas be on document
-
-
           ctx.canvas.id = svg.UniqueId();
           ctx.canvas.style.display = 'none';
           document.body.append(ctx.canvas);
-          canvasRGBA_(ctx.canvas, x, y, width, height, this.blurRadius);
+          processCanvasRGBA(ctx.canvas, x, y, width, height, this.blurRadius);
           ctx.canvas.remove();
         }
       }]);
@@ -4482,7 +4524,7 @@ var canvg = (function (exports) {
     svg.load =
     /*#__PURE__*/
     function () {
-      var _ref4 = _asyncToGenerator(
+      var _ref12 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(ctx, url) {
         var dom;
@@ -4505,8 +4547,8 @@ var canvg = (function (exports) {
         }, _callee, this);
       }));
 
-      return function (_x3, _x4) {
-        return _ref4.apply(this, arguments);
+      return function (_x2, _x3) {
+        return _ref12.apply(this, arguments);
       };
     }(); // load from xml
 
@@ -4536,7 +4578,7 @@ var canvg = (function (exports) {
 
       if (svg.opts.ignoreMouse !== true) {
         ctx.canvas.onclick = function (e) {
-          var args = e != null ? [e.clientX, e.clientY] : [event.clientX, event.clientY];
+          var args = !isNullish(e) ? [e.clientX, e.clientY] : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
 
           var _mapXY = mapXY(_construct(svg.Point, args)),
               x = _mapXY.x,
@@ -4546,7 +4588,7 @@ var canvg = (function (exports) {
         };
 
         ctx.canvas.onmousemove = function (e) {
-          var args = e != null ? [e.clientX, e.clientY] : [event.clientX, event.clientY];
+          var args = !isNullish(e) ? [e.clientX, e.clientY] : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
 
           var _mapXY2 = mapXY(_construct(svg.Point, args)),
               x = _mapXY2.x,
@@ -4591,20 +4633,20 @@ var canvg = (function (exports) {
 
         svg.ViewPort.SetCurrent(cWidth, cHeight);
 
-        if (svg.opts.offsetX != null) {
+        if (!isNullish(svg.opts.offsetX)) {
           e.attribute('x', true).value = svg.opts.offsetX;
         }
 
-        if (svg.opts.offsetY != null) {
+        if (!isNullish(svg.opts.offsetY)) {
           e.attribute('y', true).value = svg.opts.offsetY;
         }
 
-        if (svg.opts.scaleWidth != null || svg.opts.scaleHeight != null) {
+        if (!isNullish(svg.opts.scaleWidth) || !isNullish(svg.opts.scaleHeight)) {
           var viewBox = svg.ToNumberArray(e.attribute('viewBox').value);
           var xRatio = null,
               yRatio = null;
 
-          if (svg.opts.scaleWidth != null) {
+          if (!isNullish(svg.opts.scaleWidth)) {
             if (e.attribute('width').hasValue()) {
               xRatio = e.attribute('width').toPixels('x') / svg.opts.scaleWidth;
             } else if (!isNaN(viewBox[2])) {
@@ -4612,7 +4654,7 @@ var canvg = (function (exports) {
             }
           }
 
-          if (svg.opts.scaleHeight != null) {
+          if (!isNullish(svg.opts.scaleHeight)) {
             if (e.attribute('height').hasValue()) {
               yRatio = e.attribute('height').toPixels('y') / svg.opts.scaleHeight;
             } else if (!isNaN(viewBox[3])) {
@@ -4620,11 +4662,11 @@ var canvg = (function (exports) {
             }
           }
 
-          if (xRatio == null) {
+          if (isNullish(xRatio)) {
             xRatio = yRatio;
           }
 
-          if (yRatio == null) {
+          if (isNullish(yRatio)) {
             yRatio = xRatio;
           }
 
@@ -4658,13 +4700,14 @@ var canvg = (function (exports) {
 
 
         if (svg.opts.ignoreMouse !== true) {
-          needUpdate = needUpdate | svg.Mouse.hasEvents();
+          needUpdate = needUpdate || svg.Mouse.hasEvents();
         } // need update from animations?
 
 
         if (svg.opts.ignoreAnimation !== true) {
           svg.Animations.forEach(function (animation) {
-            needUpdate = needUpdate | animation.update(1000 / svg.FRAMERATE);
+            var needAnimationUpdate = animation.update(1000 / svg.FRAMERATE);
+            needUpdate = needUpdate || needAnimationUpdate;
           });
         } // need update from redraw?
 
@@ -4680,8 +4723,10 @@ var canvg = (function (exports) {
           draw(res);
           svg.Mouse.runEvents(); // run and clear our events
         }
-      }, 1000 / svg.FRAMERATE);
+      }, 1000 / svg.FRAMERATE); // Todo: Replace with an image loading Promise utility?
+
       return new Promise(function (resolve, reject) {
+        // eslint-disable-line promise/avoid-new
         if (svg.ImagesLoaded()) {
           waitingForImages = false;
           draw(resolve);
@@ -4727,9 +4772,9 @@ var canvg = (function (exports) {
       checkPath: function checkPath(element, ctx) {
         var _this26 = this;
 
-        this.events.forEach(function (_ref5, i) {
-          var x = _ref5.x,
-              y = _ref5.y;
+        this.events.forEach(function (_ref13, i) {
+          var x = _ref13.x,
+              y = _ref13.y;
 
           if (ctx.isPointInPath && ctx.isPointInPath(x, y)) {
             _this26.eventElements[i] = element;
@@ -4739,9 +4784,9 @@ var canvg = (function (exports) {
       checkBoundingBox: function checkBoundingBox(element, bb) {
         var _this27 = this;
 
-        this.events.forEach(function (_ref6, i) {
-          var x = _ref6.x,
-              y = _ref6.y;
+        this.events.forEach(function (_ref14, i) {
+          var x = _ref14.x,
+              y = _ref14.y;
 
           if (bb.isPointInBox(x, y)) {
             _this27.eventElements[i] = element;
@@ -4783,7 +4828,6 @@ var canvg = (function (exports) {
     };
   }
 
-  exports.setStackBlurCanvasRGBA = setStackBlurCanvasRGBA;
   exports.canvg = canvg;
 
   return exports;

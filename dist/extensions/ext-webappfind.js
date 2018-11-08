@@ -49,12 +49,12 @@ var svgEditorExtension_webappfind = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(_ref) {
-        var importLocale, strings, svgEditor, saveMessage, readMessage, excludedMessages, pathID, buttons;
+        var importLocale, $, strings, svgEditor, saveMessage, readMessage, excludedMessages, pathID, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                importLocale = _ref.importLocale;
+                importLocale = _ref.importLocale, $ = _ref.$;
                 _context.next = 3;
                 return importLocale();
 
@@ -73,6 +73,7 @@ var svgEditorExtension_webappfind = (function () {
                 function (win, _ref2) {
                   var data = _ref2.data,
                       origin = _ref2.origin;
+                  // eslint-disable-line no-shadow
                   // console.log('data, origin', data, origin);
                   var type, content;
 
@@ -103,7 +104,7 @@ var svgEditorExtension_webappfind = (function () {
                       break;
 
                     case 'save-end':
-                      alert("save complete for pathID ".concat(pathID, "!"));
+                      $.alert("save complete for pathID ".concat(pathID, "!"));
                       break;
 
                     default:

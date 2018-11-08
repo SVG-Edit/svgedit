@@ -75,8 +75,6 @@ var svgEditorExtension_helloworld = (function () {
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
   }
 
-  /* globals jQuery */
-
   /**
    * ext-helloworld.js
    *
@@ -97,19 +95,18 @@ var svgEditorExtension_helloworld = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(_ref) {
-        var importLocale, strings, svgEditor, $, svgCanvas;
+        var $, importLocale, strings, svgEditor, svgCanvas;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                importLocale = _ref.importLocale;
+                $ = _ref.$, importLocale = _ref.importLocale;
                 _context.next = 3;
                 return importLocale();
 
               case 3:
                 strings = _context.sent;
                 svgEditor = this;
-                $ = jQuery;
                 svgCanvas = svgEditor.canvas;
                 return _context.abrupt("return", {
                   name: strings.name,
@@ -148,6 +145,8 @@ var svgEditorExtension_helloworld = (function () {
                         started: true
                       };
                     }
+
+                    return undefined;
                   },
                   // This is triggered from anywhere, but "started" must have been set
                   // to true (see above). Note that "opts" is an object with event info
@@ -173,7 +172,7 @@ var svgEditorExtension_helloworld = (function () {
                   }
                 });
 
-              case 8:
+              case 7:
               case "end":
                 return _context.stop();
             }

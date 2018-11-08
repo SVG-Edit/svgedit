@@ -920,8 +920,8 @@ export const convertToPath = function (elem, attrs, addSVGElementFromJson, pathA
     }
 
     const {nextSibling} = elem;
-    batchCmd.addSubCommand(new history.RemoveElementCommand(elem, nextSibling, parent));
-    batchCmd.addSubCommand(new history.InsertElementCommand(path));
+    batchCmd.addSubCommand(new hstry.RemoveElementCommand(elem, nextSibling, parent));
+    batchCmd.addSubCommand(new hstry.InsertElementCommand(path));
 
     clearSelection();
     elem.remove();

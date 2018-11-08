@@ -37,8 +37,6 @@ var svgEditorExtension_star = (function () {
     };
   }
 
-  /* globals jQuery */
-
   /**
    * ext-star.js
    *
@@ -52,7 +50,7 @@ var svgEditorExtension_star = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(S) {
-        var svgEditor, $, svgCanvas, importLocale, selElems, started, newFO, strings, showPanel, setAttr, buttons, contextTools;
+        var svgEditor, svgCanvas, $, importLocale, selElems, started, newFO, strings, showPanel, setAttr, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -74,14 +72,13 @@ var svgEditorExtension_star = (function () {
                 };
 
                 svgEditor = this;
-                $ = jQuery;
                 svgCanvas = svgEditor.canvas;
-                importLocale = S.importLocale; // {svgcontent},
+                $ = S.$, importLocale = S.importLocale; // {svgcontent},
 
-                _context.next = 8;
+                _context.next = 7;
                 return importLocale();
 
-              case 8:
+              case 7:
                 strings = _context.sent;
 
                 /*
@@ -175,10 +172,12 @@ var svgEditorExtension_star = (function () {
                         started: true
                       };
                     }
+
+                    return undefined;
                   },
                   mouseMove: function mouseMove(opts) {
                     if (!started) {
-                      return;
+                      return undefined;
                     }
 
                     if (svgCanvas.getMode() === 'star') {
@@ -239,6 +238,8 @@ var svgEditorExtension_star = (function () {
                         started: true
                       };
                     }
+
+                    return undefined;
                   },
                   mouseUp: function mouseUp() {
                     if (svgCanvas.getMode() === 'star') {
@@ -249,6 +250,8 @@ var svgEditorExtension_star = (function () {
                         element: newFO
                       };
                     }
+
+                    return undefined;
                   },
                   selectedChanged: function selectedChanged(opts) {
                     // Use this to update the current selected elements
@@ -275,7 +278,7 @@ var svgEditorExtension_star = (function () {
                   elementChanged: function elementChanged(opts) {}
                 });
 
-              case 12:
+              case 11:
               case "end":
                 return _context.stop();
             }

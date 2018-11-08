@@ -3004,6 +3004,13 @@
 
   manipulation($$1, jml);
   var baseAPIURL = 'https://openclipart.org/search/json/';
+  var jsVoid = 'javascript: void(0);'; // eslint-disable-line no-script-url
+
+  /**
+   * Shows results after query submission.
+   * @param {string} url
+   * @returns {undefined}
+   */
 
   function processResults(_x) {
     return _processResults.apply(this, arguments);
@@ -3021,7 +3028,7 @@
             case 0:
               queryLink = function _ref4(query) {
                 return ['a', {
-                  href: 'javascript: void(0);',
+                  href: jsVoid,
                   dataset: {
                     value: query
                   },
@@ -3046,17 +3053,18 @@
 
             case 6:
               json = _context3.sent;
-              console.log('json', json);
 
               if (!(!json || json.msg !== 'success')) {
-                _context3.next = 11;
+                _context3.next = 10;
                 break;
               }
 
-              alert('There was a problem downloading the results');
+              // Todo: This could use a generic alert library instead
+              alert('There was a problem downloading the results'); // eslint-disable-line no-alert
+
               return _context3.abrupt("return");
 
-            case 11:
+            case 10:
               payload = json.payload, _json$info = json.info, numResults = _json$info.results, pages = _json$info.pages, currentPage = _json$info.current_page; // $('#page')[0].value = currentPage;
               // $('#page')[0].max = pages;
               // Unused properties:
@@ -3093,15 +3101,13 @@
                       var _click = _asyncToGenerator(
                       /*#__PURE__*/
                       regeneratorRuntime.mark(function _callee2(e) {
-                        var _this$dataset, svgURL, id, post, result, svg;
-
+                        var svgurl, post, result, svg;
                         return regeneratorRuntime.wrap(function _callee2$(_context2) {
                           while (1) {
                             switch (_context2.prev = _context2.next) {
                               case 0:
                                 e.preventDefault();
-                                _this$dataset = this.dataset, svgURL = _this$dataset.value, id = _this$dataset.id;
-                                console.log('this', id, svgURL);
+                                svgurl = this.dataset.value; // console.log('this', id, svgurl);
 
                                 post = function post(message) {
                                   // Todo: Make origin customizable as set by opening window
@@ -3114,25 +3120,25 @@
 
                                 post({
                                   name: title,
-                                  id: svgURL
+                                  id: svgurl
                                 });
-                                _context2.next = 7;
-                                return fetch(svgURL);
+                                _context2.next = 6;
+                                return fetch(svgurl);
 
-                              case 7:
+                              case 6:
                                 result = _context2.sent;
-                                _context2.next = 10;
+                                _context2.next = 9;
                                 return result.text();
 
-                              case 10:
+                              case 9:
                                 svg = _context2.sent;
-                                console.log('h', svgURL, svg);
+                                // console.log('url and svg', svgurl, svg);
                                 post({
-                                  href: svgURL,
+                                  href: svgurl,
                                   data: svg
                                 });
 
-                              case 13:
+                              case 11:
                               case "end":
                                 return _context2.stop();
                             }
@@ -3151,7 +3157,7 @@
                   src: svgURL,
                   style: "width: ".concat(imgHW, "; height: ").concat(imgHW, ";")
                 }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
-                  href: 'javascript: void(0);',
+                  href: jsVoid,
                   dataset: {
                     value: id
                   },
@@ -3170,7 +3176,7 @@
                   return ['span', [' ', queryLink(tag)]];
                 })))];
               })), [['br'], ['br'], currentPage === 1 || pages <= 2 ? '' : ['span', [['a', {
-                href: 'javascript: void(0);',
+                href: jsVoid,
                 $on: {
                   click: function click(e) {
                     e.preventDefault();
@@ -3179,7 +3185,7 @@
                   }
                 }
               }, ['First']], ' ']], currentPage === 1 ? '' : ['span', [['a', {
-                href: 'javascript: void(0);',
+                href: jsVoid,
                 $on: {
                   click: function click(e) {
                     e.preventDefault();
@@ -3188,7 +3194,7 @@
                   }
                 }
               }, ['Prev']], ' ']], currentPage === pages ? '' : ['span', [['a', {
-                href: 'javascript: void(0);',
+                href: jsVoid,
                 $on: {
                   click: function click(e) {
                     e.preventDefault();
@@ -3197,7 +3203,7 @@
                   }
                 }
               }, ['Next']], ' ']], currentPage === pages || pages <= 2 ? '' : ['span', [['a', {
-                href: 'javascript: void(0);',
+                href: jsVoid,
                 $on: {
                   click: function click(e) {
                     e.preventDefault();
@@ -3207,7 +3213,7 @@
                 }
               }, ['Last']], ' ']]]));
 
-            case 14:
+            case 13:
             case "end":
               return _context3.stop();
           }

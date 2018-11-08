@@ -237,20 +237,38 @@
   var colorDefs = [{
     re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
-    process: function process(bits) {
-      return [parseInt(bits[1], 10), parseInt(bits[2], 10), parseInt(bits[3], 10)];
+    process: function process(_) {
+      for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        bits[_key - 1] = arguments[_key];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b);
+      });
     }
   }, {
     re: /^(\w{2})(\w{2})(\w{2})$/,
     example: ['#00ff00', '336699'],
-    process: function process(bits) {
-      return [parseInt(bits[1], 16), parseInt(bits[2], 16), parseInt(bits[3], 16)];
+    process: function process(_) {
+      for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        bits[_key2 - 1] = arguments[_key2];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b, 16);
+      });
     }
   }, {
     re: /^(\w{1})(\w{1})(\w{1})$/,
     example: ['#fb0', 'f0f'],
-    process: function process(bits) {
-      return [parseInt(bits[1] + bits[1], 16), parseInt(bits[2] + bits[2], 16), parseInt(bits[3] + bits[3], 16)];
+    process: function process(_) {
+      for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+        bits[_key3 - 1] = arguments[_key3];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b + b, 16);
+      });
     }
   }];
   /**
@@ -264,6 +282,8 @@
     * @param {string} colorString
     */
     function RGBColor(colorString) {
+      var _this = this;
+
       _classCallCheck(this, RGBColor);
 
       this.ok = false; // strip any leading #
@@ -283,9 +303,9 @@
       // search through the definitions to find a match
 
 
-      for (var i = 0; i < colorDefs.length; i++) {
-        var re = colorDefs[i].re;
-        var processor = colorDefs[i].process;
+      colorDefs.forEach(function (_ref) {
+        var re = _ref.re,
+            processor = _ref.process;
         var bits = re.exec(colorString);
 
         if (bits) {
@@ -295,15 +315,14 @@
               g = _processor2[1],
               b = _processor2[2];
 
-          Object.assign(this, {
+          Object.assign(_this, {
             r: r,
             g: g,
             b: b
           });
-          this.ok = true;
+          _this.ok = true;
         }
-      } // validate/cleanup values
-
+      }, this); // validate/cleanup values
 
       this.r = this.r < 0 || isNaN(this.r) ? 0 : this.r > 255 ? 255 : this.r;
       this.g = this.g < 0 || isNaN(this.g) ? 0 : this.g > 255 ? 255 : this.g;
@@ -345,48 +364,35 @@
 
         return '#' + r + g + b;
       }
-      /**
-      * Offers a bulleted list of help.
-      * @returns {HTMLUListElement}
-      */
-
-    }, {
-      key: "getHelpXML",
-      value: function getHelpXML() {
-        var examples = []; // add regexps
-
-        for (var i = 0; i < colorDefs.length; i++) {
-          var example = colorDefs[i].example;
-
-          for (var j = 0; j < example.length; j++) {
-            examples[examples.length] = example[j];
-          }
-        } // add type-in colors
-
-
-        examples.push.apply(examples, _toConsumableArray(Object.keys(simpleColors)));
-        var xml = document.createElement('ul');
-        xml.setAttribute('id', 'rgbcolor-examples');
-
-        for (var _i = 0; _i < examples.length; _i++) {
-          try {
-            var listItem = document.createElement('li');
-            var listColor = new RGBColor(examples[_i]);
-            var exampleDiv = document.createElement('div');
-            exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
-            exampleDiv.append('test');
-            var listItemValue = " ".concat(examples[_i], " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
-            listItem.append(exampleDiv, listItemValue);
-            xml.append(listItem);
-          } catch (e) {}
-        }
-
-        return xml;
-      }
     }]);
 
     return RGBColor;
   }();
+
+  RGBColor.getHelpXML = function () {
+    var examples = _toConsumableArray(colorDefs.flatMap(function (_ref2) {
+      var example = _ref2.example;
+      return example;
+    })).concat(_toConsumableArray(Object.keys(simpleColors)));
+
+    var xml = document.createElement('ul');
+    xml.setAttribute('id', 'rgbcolor-examples');
+    xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
+      try {
+        var listItem = document.createElement('li');
+        var listColor = new RGBColor(example);
+        var exampleDiv = document.createElement('div');
+        exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
+        exampleDiv.append('test');
+        var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
+        listItem.append(exampleDiv, listItemValue);
+        return listItem;
+      } catch (e) {
+        return '';
+      }
+    })));
+    return xml;
+  };
 
   var jsPDFAPI = jsPDF.API;
   var pdfSvgAttr = {
@@ -437,8 +443,9 @@
     }
 
     if (nums.length < 4) {
-      console.log('invalid points attribute:', node);
-      return;
+      console.log('invalid points attribute:', node); // eslint-disable-line no-console
+
+      return undefined;
     }
 
     var _nums = nums,
@@ -491,7 +498,7 @@
         }
 
         if (attributeIsNotEmpty(node, 'stroke-width')) {
-          pdf.setLineWidth(k * parseInt(node.getAttribute('stroke-width'), 10));
+          pdf.setLineWidth(k * parseInt(node.getAttribute('stroke-width')));
         }
 
         var strokeColor = node.getAttribute('stroke');
@@ -525,142 +532,150 @@
           break;
 
         case 'line':
-          pdf.line(k * parseInt(node.getAttribute('x1'), 10), k * parseInt(node.getAttribute('y1'), 10), k * parseInt(node.getAttribute('x2'), 10), k * parseInt(node.getAttribute('y2'), 10));
+          pdf.line(k * parseInt(node.getAttribute('x1')), k * parseInt(node.getAttribute('y1')), k * parseInt(node.getAttribute('x2')), k * parseInt(node.getAttribute('y2')));
           removeAttributes(node, pdfSvgAttr.line);
           break;
 
         case 'rect':
-          pdf.rect(k * parseInt(node.getAttribute('x'), 10), k * parseInt(node.getAttribute('y'), 10), k * parseInt(node.getAttribute('width'), 10), k * parseInt(node.getAttribute('height'), 10), colorMode);
+          pdf.rect(k * parseInt(node.getAttribute('x')), k * parseInt(node.getAttribute('y')), k * parseInt(node.getAttribute('width')), k * parseInt(node.getAttribute('height')), colorMode);
           removeAttributes(node, pdfSvgAttr.rect);
           break;
 
         case 'ellipse':
-          pdf.ellipse(k * parseInt(node.getAttribute('cx'), 10), k * parseInt(node.getAttribute('cy'), 10), k * parseInt(node.getAttribute('rx'), 10), k * parseInt(node.getAttribute('ry'), 10), colorMode);
+          pdf.ellipse(k * parseInt(node.getAttribute('cx')), k * parseInt(node.getAttribute('cy')), k * parseInt(node.getAttribute('rx')), k * parseInt(node.getAttribute('ry')), colorMode);
           removeAttributes(node, pdfSvgAttr.ellipse);
           break;
 
         case 'circle':
-          pdf.circle(k * parseInt(node.getAttribute('cx'), 10), k * parseInt(node.getAttribute('cy'), 10), k * parseInt(node.getAttribute('r'), 10), colorMode);
+          pdf.circle(k * parseInt(node.getAttribute('cx')), k * parseInt(node.getAttribute('cy')), k * parseInt(node.getAttribute('r')), colorMode);
           removeAttributes(node, pdfSvgAttr.circle);
           break;
 
         case 'polygon':
         case 'polyline':
-          var linesOptions = getLinesOptionsOfPoly(node);
+          {
+            var linesOptions = getLinesOptionsOfPoly(node);
 
-          if (linesOptions) {
-            pdf.lines(linesOptions.lines, k * linesOptions.x, k * linesOptions.y, [k, k], colorMode, tag === 'polygon' // polygon is closed, polyline is not closed
-            );
+            if (linesOptions) {
+              pdf.lines(linesOptions.lines, k * linesOptions.x, k * linesOptions.y, [k, k], colorMode, tag === 'polygon' // polygon is closed, polyline is not closed
+              );
+            }
+
+            removeAttributes(node, pdfSvgAttr.polygon);
+            break; // TODO: path
           }
-
-          removeAttributes(node, pdfSvgAttr.polygon);
-          break;
-        // TODO: path
 
         case 'text':
-          if (node.hasAttribute('font-family')) {
-            switch ((node.getAttribute('font-family') || '').toLowerCase()) {
-              case 'serif':
-                pdf.setFont('times');
-                break;
+          {
+            if (node.hasAttribute('font-family')) {
+              switch ((node.getAttribute('font-family') || '').toLowerCase()) {
+                case 'serif':
+                  pdf.setFont('times');
+                  break;
 
-              case 'monospace':
-                pdf.setFont('courier');
-                break;
+                case 'monospace':
+                  pdf.setFont('courier');
+                  break;
 
-              default:
-                node.setAttribute('font-family', 'sans-serif');
-                pdf.setFont('helvetica');
+                default:
+                  node.setAttribute('font-family', 'sans-serif');
+                  pdf.setFont('helvetica');
+              }
             }
-          }
 
-          if (hasFillColor) {
-            pdf.setTextColor(fillRGB.r, fillRGB.g, fillRGB.b);
-          }
-
-          var fontType = '';
-
-          if (node.hasAttribute('font-weight')) {
-            if (node.getAttribute('font-weight') === 'bold') {
-              fontType = 'bold';
-            } else {
-              node.removeAttribute('font-weight');
+            if (hasFillColor) {
+              pdf.setTextColor(fillRGB.r, fillRGB.g, fillRGB.b);
             }
-          }
 
-          if (node.hasAttribute('font-style')) {
-            if (node.getAttribute('font-style') === 'italic') {
-              fontType += 'italic';
-            } else {
-              node.removeAttribute('font-style');
+            var fontType = '';
+
+            if (node.hasAttribute('font-weight')) {
+              if (node.getAttribute('font-weight') === 'bold') {
+                fontType = 'bold';
+              } else {
+                node.removeAttribute('font-weight');
+              }
             }
-          }
 
-          pdf.setFontType(fontType);
-          var pdfFontSize = node.hasAttribute('font-size') ? parseInt(node.getAttribute('font-size'), 10) : 16;
+            if (node.hasAttribute('font-style')) {
+              if (node.getAttribute('font-style') === 'italic') {
+                fontType += 'italic';
+              } else {
+                node.removeAttribute('font-style');
+              }
+            }
 
-          var getWidth = function getWidth(node) {
-            var box;
+            pdf.setFontType(fontType);
+            var pdfFontSize = node.hasAttribute('font-size') ? parseInt(node.getAttribute('font-size')) : 16;
+            /**
+             *
+             * @param {Element} elem
+             * @returns {Float}
+             */
 
-            try {
-              box = node.getBBox(); // Firefox on MacOS will raise error here
-            } catch (err) {
-              // copy and append to body so that getBBox is available
-              var nodeCopy = node.cloneNode(true);
-              var svg = node.ownerSVGElement.cloneNode(false);
-              svg.appendChild(nodeCopy);
-              document.body.appendChild(svg);
+            var getWidth = function getWidth(elem) {
+              var box;
 
               try {
-                box = nodeCopy.getBBox();
+                box = elem.getBBox(); // Firefox on MacOS will raise error here
               } catch (err) {
-                box = {
-                  width: 0
-                };
+                // copy and append to body so that getBBox is available
+                var nodeCopy = elem.cloneNode(true);
+                var svg = elem.ownerSVGElement.cloneNode(false);
+                svg.appendChild(nodeCopy);
+                document.body.appendChild(svg);
+
+                try {
+                  box = nodeCopy.getBBox();
+                } catch (error) {
+                  box = {
+                    width: 0
+                  };
+                }
+
+                document.body.removeChild(svg);
               }
 
-              document.body.removeChild(svg);
-            }
-
-            return box.width;
-          }; // FIXME: use more accurate positioning!!
+              return box.width;
+            }; // FIXME: use more accurate positioning!!
 
 
-          var x,
-              y,
-              xOffset = 0;
+            var x,
+                y,
+                xOffset = 0;
 
-          if (node.hasAttribute('text-anchor')) {
-            switch (node.getAttribute('text-anchor')) {
-              case 'end':
-                xOffset = getWidth(node);
-                break;
+            if (node.hasAttribute('text-anchor')) {
+              switch (node.getAttribute('text-anchor')) {
+                case 'end':
+                  xOffset = getWidth(node);
+                  break;
 
-              case 'middle':
-                xOffset = getWidth(node) / 2;
-                break;
+                case 'middle':
+                  xOffset = getWidth(node) / 2;
+                  break;
 
-              case 'start':
-                break;
+                case 'start':
+                  break;
 
-              case 'default':
-                node.setAttribute('text-anchor', 'start');
-                break;
-            }
+                case 'default':
+                  node.setAttribute('text-anchor', 'start');
+                  break;
+              }
 
-            x = parseInt(node.getAttribute('x'), 10) - xOffset;
-            y = parseInt(node.getAttribute('y'), 10);
-          } // console.log('fontSize:', pdfFontSize, 'text:', node.textContent);
+              x = parseInt(node.getAttribute('x')) - xOffset;
+              y = parseInt(node.getAttribute('y'));
+            } // console.log('fontSize:', pdfFontSize, 'text:', node.textContent);
 
 
-          pdf.setFontSize(pdfFontSize).text(k * x, k * y, node.textContent);
-          removeAttributes(node, pdfSvgAttr.text);
-          break;
-        // TODO: image
+            pdf.setFontSize(pdfFontSize).text(k * x, k * y, node.textContent);
+            removeAttributes(node, pdfSvgAttr.text);
+            break; // TODO: image
+          }
 
         default:
           if (remove) {
-            console.log("can't translate to pdf:", node);
+            console.log("can't translate to pdf:", node); // eslint-disable-line no-console
+
             node.remove();
           }
 

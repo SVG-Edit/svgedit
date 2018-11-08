@@ -37,6 +37,14 @@ var svgEditorExtension_mathjax = (function () {
     };
   }
 
+  /**
+   * Add any of the whitelisted attributes to the script tag.
+   * @param {HTMLScriptElement} script
+   * @param {PlainObject.<string, string>} atts
+   * @returns {undefined}
+   */
+
+
   function addScriptAtts(script, atts) {
     ['id', 'class', 'type'].forEach(function (prop) {
       if (prop in atts) {
@@ -55,6 +63,7 @@ var svgEditorExtension_mathjax = (function () {
     }
 
     return new Promise(function (resolve, reject) {
+      // eslint-disable-line promise/avoid-new
       var script = document.createElement('script');
 
       var destructor = function destructor() {
@@ -87,11 +96,11 @@ var svgEditorExtension_mathjax = (function () {
     init: function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
-        var importLocale, strings, svgEditor, $, svgCanvas, mathjaxSrcSecure, uiStrings, math, locationX, locationY, mathjaxLoaded, saveMath, buttons;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+      regeneratorRuntime.mark(function _callee2(_ref) {
+        var $, importLocale, strings, svgEditor, svgCanvas, mathjaxSrcSecure, uiStrings, math, locationX, locationY, mathjaxLoaded, saveMath, buttons;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 saveMath = function _ref2() {
                   var code = $('#mathjax_code_textarea').val(); // displaystyle to force MathJax NOT to use the inline style. Because it is
@@ -145,14 +154,13 @@ var svgEditorExtension_mathjax = (function () {
                   });
                 };
 
-                importLocale = _ref.importLocale;
-                _context.next = 4;
+                $ = _ref.$, importLocale = _ref.importLocale;
+                _context2.next = 4;
                 return importLocale();
 
               case 4:
-                strings = _context.sent;
+                strings = _context2.sent;
                 svgEditor = this;
-                $ = jQuery;
                 svgCanvas = svgEditor.canvas; // Configuration of the MathJax extention.
                 // This will be added to the head tag before MathJax is loaded.
 
@@ -182,7 +190,8 @@ var svgEditorExtension_mathjax = (function () {
                 // Had been on https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js
                 // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js
                 mathjaxSrcSecure = 'mathjax/MathJax.min.js?config=TeX-AMS-MML_SVG.js', uiStrings = svgEditor.uiStrings;
-                mathjaxLoaded = false; // TODO: Implement language support. Move these uiStrings to the locale files and the code to the langReady callback.
+                mathjaxLoaded = false; // TODO: Implement language support. Move these uiStrings to the locale files and
+                //   the code to the langReady callback. Also i18nize alert and HTML below
 
                 $.extend(uiStrings, {
                   mathjax: {
@@ -193,74 +202,110 @@ var svgEditorExtension_mathjax = (function () {
                     title: 'Mathematics code editor'
                   }
                 });
+                /**
+                 *
+                 * @returns {undefined}
+                 */
+
                 buttons = [{
                   id: 'tool_mathjax',
                   type: 'mode',
                   icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
                   events: {
-                    click: function click() {
-                      // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
-                      // From this point on it is very probable that it will be needed, so load it.
-                      if (mathjaxLoaded === false) {
-                        $('<div id="mathjax">' + '<!-- Here is where MathJax creates the math -->' + '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' + '$${}$$' + '</div>' + '<div id="mathjax_overlay"></div>' + '<div id="mathjax_container">' + '<div id="tool_mathjax_back" class="toolbar_button">' + '<button id="tool_mathjax_save">OK</button>' + '<button id="tool_mathjax_cancel">Cancel</button>' + '</div>' + '<fieldset>' + '<legend id="mathjax_legend">Mathematics Editor</legend>' + '<label>' + '<span id="mathjax_explication">Please type your mathematics in ' + '<a href="https://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX</a> code.</span></label>' + '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' + '</fieldset>' + '</div>' + '</div>').insertAfter('#svg_prefs').hide(); // Make the MathEditor draggable.
+                    click: function () {
+                      var _click = _asyncToGenerator(
+                      /*#__PURE__*/
+                      regeneratorRuntime.mark(function _callee() {
+                        return regeneratorRuntime.wrap(function _callee$(_context) {
+                          while (1) {
+                            switch (_context.prev = _context.next) {
+                              case 0:
+                                // Set the mode.
+                                svgCanvas.setMode('mathjax'); // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
+                                // From this point on it is very probable that it will be needed, so load it.
 
-                        $('#mathjax_container').draggable({
-                          cancel: 'button,fieldset',
-                          containment: 'window'
-                        }); // Add functionality and picture to cancel button.
+                                if (!(mathjaxLoaded === false)) {
+                                  _context.next = 17;
+                                  break;
+                                }
 
-                        $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true)).on('click touched', function () {
-                          $('#mathjax').hide();
-                        }); // Add functionality and picture to the save button.
+                                $('<div id="mathjax">' + '<!-- Here is where MathJax creates the math -->' + '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' + '$${}$$' + '</div>' + '<div id="mathjax_overlay"></div>' + '<div id="mathjax_container">' + '<div id="tool_mathjax_back" class="toolbar_button">' + '<button id="tool_mathjax_save">OK</button>' + '<button id="tool_mathjax_cancel">Cancel</button>' + '</div>' + '<fieldset>' + '<legend id="mathjax_legend">Mathematics Editor</legend>' + '<label>' + '<span id="mathjax_explication">Please type your mathematics in ' + '<a href="https://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX</a> code.</span></label>' + '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' + '</fieldset>' + '</div>' + '</div>').insertAfter('#svg_prefs').hide(); // Make the MathEditor draggable.
 
-                        $('#tool_mathjax_save').prepend($.getSvgIcon('ok', true)).on('click touched', function () {
-                          saveMath();
-                          $('#mathjax').hide();
-                        }); // MathJax preprocessing has to ignore most of the page.
+                                $('#mathjax_container').draggable({
+                                  cancel: 'button,fieldset',
+                                  containment: 'window'
+                                }); // Add functionality and picture to cancel button.
 
-                        $('body').addClass('tex2jax_ignore'); // Now get (and run) the MathJax Library.
-                        // Todo: insert script with modules once widely supported
-                        //   and if MathJax (and its `TeX-AMS-MML_SVG.js` dependency) ends up
-                        //   providing an ES6 module export: https://github.com/mathjax/MathJax/issues/1998
+                                $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true)).on('click touched', function () {
+                                  $('#mathjax').hide();
+                                }); // Add functionality and picture to the save button.
 
-                        /*
-                        const modularVersion = !('svgEditor' in window) ||
-                          !window.svgEditor ||
-                          window.svgEditor.modules !== false;
-                        // Add as second argument to `importScript`
-                        {
-                          type: modularVersion
-                            ? 'module' // Make this the default when widely supported
-                            : 'text/javascript'
-                        }
-                        // If only using modules, just use this:
-                        const {default: MathJax} = await importModule( // or `import()` when widely supported
-                          svgEditor.curConfig.extIconsPath + mathjaxSrcSecure
-                        );
-                        */
-                        // We use `extIconsPath` here for now as it does not vary with
-                        //  the modular type as does `extPath`
+                                $('#tool_mathjax_save').prepend($.getSvgIcon('ok', true)).on('click touched', function () {
+                                  saveMath();
+                                  $('#mathjax').hide();
+                                }); // MathJax preprocessing has to ignore most of the page.
 
-                        importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure).then(function () {
-                          // When MathJax is loaded get the div where the math will be rendered.
-                          MathJax.Hub.queue.Push(function () {
-                            math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
-                            console.log(math);
-                            mathjaxLoaded = true;
-                            console.log('MathJax Loaded');
-                          });
-                        }).catch(function () {
-                          console.log('Failed loadeing MathJax.');
-                          $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
-                        });
-                      } // Set the mode.
+                                $('body').addClass('tex2jax_ignore'); // Now get (and run) the MathJax Library.
+                                // Todo: insert script with modules once widely supported
+                                //   and if MathJax (and its `TeX-AMS-MML_SVG.js` dependency) ends up
+                                //   providing an ES6 module export: https://github.com/mathjax/MathJax/issues/1998
 
+                                /*
+                                const modularVersion = !('svgEditor' in window) ||
+                                  !window.svgEditor ||
+                                  window.svgEditor.modules !== false;
+                                // Add as second argument to `importScript`
+                                {
+                                  type: modularVersion
+                                    ? 'module' // Make this the default when widely supported
+                                    : 'text/javascript'
+                                }
+                                // If only using modules, just use this:
+                                const {default: MathJax} = await importModule( // or `import()` when widely supported
+                                  svgEditor.curConfig.extIconsPath + mathjaxSrcSecure
+                                );
+                                */
+                                // We use `extIconsPath` here for now as it does not vary with
+                                //  the modular type as does `extPath`
 
-                      svgCanvas.setMode('mathjax');
-                    }
+                                _context.prev = 7;
+                                _context.next = 10;
+                                return importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure);
+
+                              case 10:
+                                // When MathJax is loaded get the div where the math will be rendered.
+                                MathJax.Hub.queue.Push(function () {
+                                  math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
+                                  console.log(math); // eslint-disable-line no-console
+
+                                  mathjaxLoaded = true;
+                                  console.log('MathJax Loaded'); // eslint-disable-line no-console
+                                });
+                                _context.next = 17;
+                                break;
+
+                              case 13:
+                                _context.prev = 13;
+                                _context.t0 = _context["catch"](7);
+                                console.log('Failed loading MathJax.'); // eslint-disable-line no-console
+
+                                $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
+
+                              case 17:
+                              case "end":
+                                return _context.stop();
+                            }
+                          }
+                        }, _callee, this, [[7, 13]]);
+                      }));
+
+                      return function click() {
+                        return _click.apply(this, arguments);
+                      };
+                    }()
                   }
                 }];
-                return _context.abrupt("return", {
+                return _context2.abrupt("return", {
                   name: strings.name,
                   svgicons: svgEditor.curConfig.extIconsPath + 'mathjax-icons.xml',
                   buttons: strings.buttons.map(function (button, i) {
@@ -272,6 +317,8 @@ var svgEditorExtension_mathjax = (function () {
                         started: true
                       };
                     }
+
+                    return undefined;
                   },
                   mouseUp: function mouseUp(opts) {
                     if (svgCanvas.getMode() === 'mathjax') {
@@ -285,6 +332,8 @@ var svgEditorExtension_mathjax = (function () {
                         started: false
                       }; // Otherwise the last selected object dissapears.
                     }
+
+                    return undefined;
                   },
                   callback: function callback() {
                     $('<style>').text('#mathjax fieldset{' + 'padding: 5px;' + 'margin: 5px;' + 'border: 1px solid #DDD;' + '}' + '#mathjax label{' + 'display: block;' + 'margin: .5em;' + '}' + '#mathjax legend {' + 'max-width:195px;' + '}' + '#mathjax_overlay {' + 'position: absolute;' + 'top: 0;' + 'left: 0;' + 'right: 0;' + 'bottom: 0;' + 'background-color: black;' + 'opacity: 0.6;' + 'z-index: 20000;' + '}' + '#mathjax_container {' + 'position: absolute;' + 'top: 50px;' + 'padding: 10px;' + 'background-color: #B0B0B0;' + 'border: 1px outset #777;' + 'opacity: 1.0;' + 'font-family: Verdana, Helvetica, sans-serif;' + 'font-size: .8em;' + 'z-index: 20001;' + '}' + '#tool_mathjax_back {' + 'margin-left: 1em;' + 'overflow: auto;' + '}' + '#mathjax_legend{' + 'font-weight: bold;' + 'font-size:1.1em;' + '}' + '#mathjax_code_textarea {\\n' + 'margin: 5px .7em;' + 'overflow: hidden;' + 'width: 416px;' + 'display: block;' + 'height: 100px;' + '}').appendTo('head'); // Add the MathJax configuration.
@@ -292,12 +341,12 @@ var svgEditorExtension_mathjax = (function () {
                   }
                 });
 
-              case 13:
+              case 12:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this);
+        }, _callee2, this);
       }));
 
       return function init(_x) {

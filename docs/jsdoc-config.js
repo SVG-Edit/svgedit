@@ -81,7 +81,7 @@ module.exports = {
   opts: {
     recurse: true,
     verbose: true,
-    // destination: 'docs/jsdoc',
+    destination: 'docs/jsdoc',
     tutorials: 'docs/tutorials'
   }
 };

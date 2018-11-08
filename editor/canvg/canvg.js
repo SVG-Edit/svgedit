@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* eslint-disable new-cap, class-methods-use-this */
 // Todo: Compare with latest canvg (add any improvements of ours) and add full JSDocs (denoting links to standard APIs and which are custom): https://github.com/canvg/canvg
 /**
  * canvg.js - Javascript SVG parser and renderer on Canvas
@@ -20,31 +20,10 @@ const isNullish = (val) => {
   return val === null || val === undefined;
 };
 
-let canvasRGBA_ = canvasRGBA;
-
-/**
-* @callback module:canvg.StackBlurCanvasRGBA
-* @param {string} id
-* @param {Float} x
-* @param {Float} y
-* @param {Float} width
-* @param {Float} height
-* @param {Float} blurRadius
-*/
-
 /**
 * @callback module:canvg.ForceRedraw
 * @returns {boolean}
 */
-
-/**
-* @function module:canvg.setStackBlurCanvasRGBA
-* @param {module:canvg.StackBlurCanvasRGBA} cb Will be passed the canvas ID, x, y, width, height, blurRadius
-* @returns {undefined}
-*/
-export const setStackBlurCanvasRGBA = (cb) => {
-  canvasRGBA_ = cb;
-};
 
 /**
 * @typedef {PlainObject} module:canvg.CanvgOptions
@@ -175,12 +154,13 @@ function build (opts) {
   };
 
   // ajax
+  // Todo: Replace with `fetch` and polyfill
   svg.ajax = function (url, asynch) {
     const AJAX = window.XMLHttpRequest
       ? new XMLHttpRequest()
       : new window.ActiveXObject('Microsoft.XMLHTTP');
     if (asynch) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
         const req = AJAX.open('GET', url, true);
         req.addEventListener('load', () => {
           resolve(AJAX.responseText);
@@ -393,12 +373,12 @@ function build (opts) {
 
     Parse (s) {
       const f = {};
-      const d = svg.trim(svg.compressSpaces(s || '')).split(' ');
+      const ds = svg.trim(svg.compressSpaces(s || '')).split(' ');
       const set = {
         fontSize: false, fontStyle: false, fontWeight: false, fontVariant: false
       };
       let ff = '';
-      d.forEach((d) => {
+      ds.forEach((d) => {
         if (!set.fontStyle && this.Styles.includes(d)) {
           if (d !== 'inherit') {
             f.fontStyle = d;
@@ -419,8 +399,8 @@ function build (opts) {
             f.fontSize = d.split('/')[0];
           }
           set.fontStyle = set.fontVariant = set.fontWeight = set.fontSize = true;
-        } else {
-          if (d !== 'inherit') { ff += d; }
+        } else if (d !== 'inherit') {
+          ff += d;
         }
       });
       if (ff !== '') { f.fontFamily = ff; }
@@ -431,7 +411,7 @@ function build (opts) {
   // points and paths
   svg.ToNumberArray = function (s) {
     const a = svg.trim(svg.compressSpaces((s || '').replace(/,/g, ' '))).split(' ');
-    return a.map((a) => parseFloat(a));
+    return a.map((_a) => parseFloat(_a));
   };
   svg.Point = class {
     constructor (x, y) {
@@ -598,9 +578,9 @@ function build (opts) {
               ctx.translate(-this.cx, -this.cy);
             };
             this.applyToPoint = function (p) {
-              const a = this.angle.toRadians();
+              const _a = this.angle.toRadians();
               p.applyTransform([1, 0, 0, 1, this.p.x || 0.0, this.p.y || 0.0]);
-              p.applyTransform([Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), 0, 0]);
+              p.applyTransform([Math.cos(_a), Math.sin(_a), -Math.sin(_a), Math.cos(_a), 0, 0]);
               p.applyTransform([1, 0, 0, 1, -this.p.x || 0.0, -this.p.y || 0.0]);
             };
           }
@@ -727,7 +707,8 @@ function build (opts) {
 
   svg.Element.ElementBase = class {
     constructor (node) {
-      this.captureTextNodes = arguments[1]; // Argument from inheriting class
+      // Argument from inheriting class
+      this.captureTextNodes = arguments[1]; // eslint-disable-line prefer-rest-params
       this.attributes = {};
       this.styles = {};
       this.children = [];
@@ -757,9 +738,9 @@ function build (opts) {
         // add tag styles
         let styles = svg.Styles[node.nodeName];
         if (!isNullish(styles)) {
-          for (const name in styles) {
-            this.styles[name] = styles[name];
-          }
+          Object.entries(styles).forEach(([name, styleValue]) => {
+            this.styles[name] = styleValue;
+          });
         }
 
         // add class styles
@@ -768,33 +749,33 @@ function build (opts) {
           classes.forEach((clss) => {
             styles = svg.Styles['.' + clss];
             if (!isNullish(styles)) {
-              for (const name in styles) {
-                this.styles[name] = styles[name];
-              }
+              Object.entries(styles).forEach(([name, styleValue]) => {
+                this.styles[name] = styleValue;
+              });
             }
             styles = svg.Styles[node.nodeName + '.' + clss];
             if (!isNullish(styles)) {
-              for (const name in styles) {
-                this.styles[name] = styles[name];
-              }
+              Object.entries(styles).forEach(([name, styleValue]) => {
+                this.styles[name] = styleValue;
+              });
             }
           });
         }
 
         // add id styles
         if (this.attribute('id').hasValue()) {
-          const styles = svg.Styles['#' + this.attribute('id').value];
-          if (!isNullish(styles)) {
-            for (const name in styles) {
-              this.styles[name] = styles[name];
-            }
+          const _styles = svg.Styles['#' + this.attribute('id').value];
+          if (!isNullish(_styles)) {
+            Object.entries(_styles).forEach(([name, styleValue]) => {
+              this.styles[name] = styleValue;
+            });
           }
         }
 
         // add inline styles
         if (this.attribute('style').hasValue()) {
-          const styles = this.attribute('style').value.split(';');
-          styles.forEach((style) => {
+          const _styles = this.attribute('style').value.split(';');
+          _styles.forEach((style) => {
             if (svg.trim(style) !== '') {
               let {name, value} = style.split(':');
               name = svg.trim(name);
@@ -1232,9 +1213,9 @@ function build (opts) {
         ctx.moveTo(x, y);
       }
       for (let i = 1; i < this.points.length; i++) {
-        const {x, y} = this.points[i];
-        bb.addPoint(x, y);
-        if (!isNullish(ctx)) ctx.lineTo(x, y);
+        const {x: _x, y: _y} = this.points[i];
+        bb.addPoint(_x, _y);
+        if (!isNullish(ctx)) ctx.lineTo(_x, _y);
       }
       return bb;
     }
@@ -1410,20 +1391,20 @@ function build (opts) {
         pp.nextCommand();
         switch (pp.command) {
         case 'M':
-        case 'm':
+        case 'm': {
           const p = pp.getAsCurrentPoint();
           pp.addMarker(p);
           bb.addPoint(p.x, p.y);
           if (!isNullish(ctx)) ctx.moveTo(p.x, p.y);
           pp.start = pp.current;
           while (!pp.isCommandOrEnd()) {
-            const p = pp.getAsCurrentPoint();
-            pp.addMarker(p, pp.start);
-            bb.addPoint(p.x, p.y);
-            if (!isNullish(ctx)) ctx.lineTo(p.x, p.y);
+            const _p = pp.getAsCurrentPoint();
+            pp.addMarker(_p, pp.start);
+            bb.addPoint(_p.x, _p.y);
+            if (!isNullish(ctx)) ctx.lineTo(_p.x, _p.y);
           }
           break;
-        case 'L':
+        } case 'L':
         case 'l':
           while (!pp.isCommandOrEnd()) {
             const c = pp.current;
@@ -1570,14 +1551,14 @@ function build (opts) {
 
             bb.addPoint(cp.x, cp.y); // TODO: this is too naive, make it better
             if (!isNullish(ctx)) {
-              const r = rx > ry ? rx : ry;
+              const _r = rx > ry ? rx : ry;
               const sx = rx > ry ? 1 : rx / ry;
               const sy = rx > ry ? ry / rx : 1;
 
               ctx.translate(centp.x, centp.y);
               ctx.rotate(xAxisRotation);
               ctx.scale(sx, sy);
-              ctx.arc(0, 0, r, a1, a1 + ad, 1 - sweepFlag);
+              ctx.arc(0, 0, _r, a1, a1 + ad, 1 - sweepFlag);
               ctx.scale(1 / sx, 1 / sy);
               ctx.rotate(-xAxisRotation);
               ctx.translate(-centp.x, -centp.y);
@@ -2115,8 +2096,8 @@ function build (opts) {
 
       child.render(ctx);
 
-      for (let i = 0; i < child.children.length; i++) {
-        this.renderChild(ctx, child, i);
+      for (let j = 0; j < child.children.length; j++) {
+        this.renderChild(ctx, child, j);
       }
     }
   };
@@ -2309,9 +2290,12 @@ function build (opts) {
         };
         this.img.src = href;
       } else {
-        svg.ajax(href, true).then((img) => {
+        svg.ajax(href, true).then((img) => { // eslint-disable-line promise/prefer-await-to-then, promise/always-return
           this.img = img;
           this.loaded = true;
+        }).catch((err) => { // eslint-disable-line promise/prefer-await-to-callbacks
+          this.erred = true;
+          console.error('Ajax error for canvg', err); // eslint-disable-line no-console
         });
       }
     }
@@ -2448,6 +2432,7 @@ function build (opts) {
     getBoundingBox () {
       const {_el: element} = this;
       if (!isNullish(element)) return element.getBoundingBox();
+      return undefined;
     }
 
     renderChildren (ctx) {
@@ -2605,10 +2590,29 @@ function build (opts) {
     }
   };
 
+  /**
+  * @param {Uint8ClampedArray} img
+  * @param {Integer} x
+  * @param {Integer} y
+  * @param {Float} width
+  * @param {Float} height
+  * @param {Integer} rgba
+  * @returns {undefined}
+  */
   function imGet (img, x, y, width, height, rgba) {
     return img[y * width * 4 + x * 4 + rgba];
   }
 
+  /**
+  * @param {Uint8ClampedArray} img
+  * @param {Integer} x
+  * @param {Integer} y
+  * @param {Float} width
+  * @param {Float} height
+  * @param {Integer} rgba
+  * @param {Float} val
+  * @returns {undefined}
+  */
   function imSet (img, x, y, width, height, rgba, val) {
     img[y * width * 4 + x * 4 + rgba] = val;
   }
@@ -2619,7 +2623,7 @@ function build (opts) {
 
       let matrix = svg.ToNumberArray(this.attribute('values').value);
       switch (this.attribute('type').valueOrDefault('matrix')) { // https://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
-      case 'saturate':
+      case 'saturate': {
         const s = matrix[0];
         matrix = [
           0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0,
@@ -2629,7 +2633,7 @@ function build (opts) {
           0, 0, 0, 0, 1
         ];
         break;
-      case 'hueRotate':
+      } case 'hueRotate': {
         const a = matrix[0] * Math.PI / 180.0;
         const c = function (m1, m2, m3) {
           return m1 + Math.cos(a) * m2 + Math.sin(a) * m3;
@@ -2642,7 +2646,7 @@ function build (opts) {
           0, 0, 0, 0, 1
         ];
         break;
-      case 'luminanceToAlpha':
+      } case 'luminanceToAlpha':
         matrix = [
           0, 0, 0, 0, 0,
           0, 0, 0, 0, 0,
@@ -2663,16 +2667,16 @@ function build (opts) {
       const {_m: m} = this;
       // assuming x==0 && y==0 for now
       const srcData = ctx.getImageData(0, 0, width, height);
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const r = imGet(srcData.data, x, y, width, height, 0);
-          const g = imGet(srcData.data, x, y, width, height, 1);
-          const b = imGet(srcData.data, x, y, width, height, 2);
-          const a = imGet(srcData.data, x, y, width, height, 3);
-          imSet(srcData.data, x, y, width, height, 0, m(0, r) + m(1, g) + m(2, b) + m(3, a) + m(4, 1));
-          imSet(srcData.data, x, y, width, height, 1, m(5, r) + m(6, g) + m(7, b) + m(8, a) + m(9, 1));
-          imSet(srcData.data, x, y, width, height, 2, m(10, r) + m(11, g) + m(12, b) + m(13, a) + m(14, 1));
-          imSet(srcData.data, x, y, width, height, 3, m(15, r) + m(16, g) + m(17, b) + m(18, a) + m(19, 1));
+      for (let _y = 0; _y < height; _y++) {
+        for (let _x = 0; _x < width; _x++) {
+          const r = imGet(srcData.data, _x, _y, width, height, 0);
+          const g = imGet(srcData.data, _x, _y, width, height, 1);
+          const b = imGet(srcData.data, _x, _y, width, height, 2);
+          const a = imGet(srcData.data, _x, _y, width, height, 3);
+          imSet(srcData.data, _x, _y, width, height, 0, m(0, r) + m(1, g) + m(2, b) + m(3, a) + m(4, 1));
+          imSet(srcData.data, _x, _y, width, height, 1, m(5, r) + m(6, g) + m(7, b) + m(8, a) + m(9, 1));
+          imSet(srcData.data, _x, _y, width, height, 2, m(10, r) + m(11, g) + m(12, b) + m(13, a) + m(14, 1));
+          imSet(srcData.data, _x, _y, width, height, 3, m(15, r) + m(16, g) + m(17, b) + m(18, a) + m(19, 1));
         }
       }
       ctx.clearRect(0, 0, width, height);
@@ -2689,17 +2693,12 @@ function build (opts) {
     }
 
     apply (ctx, x, y, width, height) {
-      if (typeof canvasRGBA_ !== 'function') {
-        svg.log('ERROR: The function `setStackBlurCanvasRGBA` must be present for blur to work');
-        return;
-      }
-
       // Todo: This might not be a problem anymore with out `instanceof` fix
       // StackBlur requires canvas be on document
       ctx.canvas.id = svg.UniqueId();
       ctx.canvas.style.display = 'none';
       document.body.append(ctx.canvas);
-      canvasRGBA_(ctx.canvas, x, y, width, height, this.blurRadius);
+      canvasRGBA(ctx.canvas, x, y, width, height, this.blurRadius);
       ctx.canvas.remove();
     }
   };
@@ -2773,14 +2772,14 @@ function build (opts) {
       ctx.canvas.onclick = function (e) {
         const args = !isNullish(e)
           ? [e.clientX, e.clientY]
-          : [event.clientX, event.clientY];
+          : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
         const {x, y} = mapXY(new svg.Point(...args));
         svg.Mouse.onclick(x, y);
       };
       ctx.canvas.onmousemove = function (e) {
         const args = !isNullish(e)
           ? [e.clientX, e.clientY]
-          : [event.clientX, event.clientY];
+          : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
         const {x, y} = mapXY(new svg.Point(...args));
         svg.Mouse.onmousemove(x, y);
       };
@@ -2878,13 +2877,14 @@ function build (opts) {
 
       // need update from mouse events?
       if (svg.opts.ignoreMouse !== true) {
-        needUpdate = needUpdate | svg.Mouse.hasEvents();
+        needUpdate = needUpdate || svg.Mouse.hasEvents();
       }
 
       // need update from animations?
       if (svg.opts.ignoreAnimation !== true) {
         svg.Animations.forEach((animation) => {
-          needUpdate = needUpdate | animation.update(1000 / svg.FRAMERATE);
+          const needAnimationUpdate = animation.update(1000 / svg.FRAMERATE);
+          needUpdate = needUpdate || needAnimationUpdate;
         });
       }
 
@@ -2901,7 +2901,8 @@ function build (opts) {
         svg.Mouse.runEvents(); // run and clear our events
       }
     }, 1000 / svg.FRAMERATE);
-    return new Promise((resolve, reject) => {
+    // Todo: Replace with an image loading Promise utility?
+    return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
       if (svg.ImagesLoaded()) {
         waitingForImages = false;
         draw(resolve);

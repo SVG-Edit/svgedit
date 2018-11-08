@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-markers.js
  *
@@ -34,7 +33,7 @@ export default {
   async init (S) {
     const strings = await S.importLocale();
     const svgEditor = this;
-    const $ = jQuery;
+    const {$} = S;
     const svgCanvas = svgEditor.canvas;
     const // {svgcontent} = S,
       addElem = svgCanvas.addSVGElementFromJson;
@@ -94,6 +93,12 @@ export default {
       return svgCanvas.getElem(m[1]);
     }
 
+    /**
+     *
+     * @param {"start"|"mid"|"end"} pos
+     * @param {string} id
+     * @returns {undefined}
+     */
     function setIcon (pos, id) {
       if (id.substr(0, 1) !== '\\') { id = '\\textmarker'; }
       const ci = '#' + idPrefix + pos + '_' + id.substr(1);
@@ -102,8 +107,12 @@ export default {
     }
 
     let selElems;
-    // toggles context tool panel off/on
-    // sets the controls with the selected element's settings
+    /**
+     * Toggles context tool panel off/on. Sets the controls with the
+     *   selected element's settings.
+     * @param {boolean} on
+     * @returns {undefined}
+    */
     function showPanel (on) {
       $('#marker_panel').toggle(on);
 
@@ -135,15 +144,20 @@ export default {
       }
     }
 
+    /**
+    * @param {string} id
+    * @param {""|"\\nomarker"|"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} val
+    * @returns {undefined}
+    */
     function addMarker (id, val) {
       const txtBoxBg = '#ffffff';
       const txtBoxBorder = 'none';
       const txtBoxStrokeWidth = 0;
 
       let marker = svgCanvas.getElem(id);
-      if (marker) { return; }
+      if (marker) { return undefined; }
 
-      if (val === '' || val === '\\nomarker') { return; }
+      if (val === '' || val === '\\nomarker') { return undefined; }
 
       const el = selElems[0];
       const color = el.getAttribute('stroke');
@@ -161,7 +175,7 @@ export default {
         seType = val.substr(1);
       } else { seType = 'textmarker'; }
 
-      if (!markerTypes[seType]) { return; } // an unknown type!
+      if (!markerTypes[seType]) { return undefined; } // an unknown type!
 
       // create a generic marker
       marker = addElem({
@@ -233,6 +247,10 @@ export default {
       return marker;
     }
 
+    /**
+    * @param {Element} elem
+    * @returns {SVGPolylineElement}
+    */
     function convertline (elem) {
       // this routine came from the connectors extension
       // it is needed because midpoint markers don't work with line elements
@@ -275,6 +293,10 @@ export default {
       return pline;
     }
 
+    /**
+    *
+    * @returns {undefined}
+    */
     function setMarker () {
       const poslist = {start_marker: 'start', mid_marker: 'mid', end_marker: 'end'};
       const pos = poslist[this.id];
@@ -301,8 +323,12 @@ export default {
       setIcon(pos, val);
     }
 
-    // called when the main system modifies an object
-    // this routine changes the associated markers to be the same color
+    /**
+     * Called when the main system modifies an object. This routine changes
+     *   the associated markers to be the same color.
+     * @param {Element} elem
+     * @returns {undefined}
+    */
     function colorChanged (elem) {
       const color = elem.getAttribute('stroke');
 
@@ -319,8 +345,12 @@ export default {
       });
     }
 
-    // called when the main system creates or modifies an object
-    // primary purpose is create new markers for cloned objects
+    /**
+    * Called when the main system creates or modifies an object.
+    * Its primary purpose is to create new markers for cloned objects.
+    * @param {Element} el
+    * @returns {undefined}
+    */
     function updateReferences (el) {
       $.each(mtypes, function (i, pos) {
         const id = markerPrefix + pos + '_' + el.id;
@@ -343,6 +373,11 @@ export default {
     }
 
     // simulate a change event a text box that stores the current element's marker type
+    /**
+    * @param {"start"|"mid"|"end"} pos
+    * @param {string} val
+    * @returns {undefined}
+    */
     function triggerTextEntry (pos, val) {
       $('#' + pos + '_marker').val(val);
       $('#' + pos + '_marker').change();
@@ -351,12 +386,17 @@ export default {
       // else {txtbox.show();}
     }
 
-    function showTextPrompt (pos) {
+    /**
+    * @param {"start"|"mid"|"end"} pos
+    * @returns {Promise} Resolves to `undefined`
+    */
+    async function showTextPrompt (pos) {
       let def = $('#' + pos + '_marker').val();
       if (def.substr(0, 1) === '\\') { def = ''; }
-      $.prompt('Enter text for ' + pos + ' marker', def, function (txt) {
-        if (txt) { triggerTextEntry(pos, txt); }
-      });
+      const txt = await $.prompt('Enter text for ' + pos + ' marker', def);
+      if (txt) {
+        triggerTextEntry(pos, txt);
+      }
     }
 
     /*
@@ -372,18 +412,23 @@ export default {
       case 'dimension':
         triggerTextEntry('start','\\leftarrow');
         triggerTextEntry('end','\\rightarrow');
-        showTextPrompt('mid');
+        await showTextPrompt('mid');
         break;
       case 'label':
         triggerTextEntry('mid','\\nomarker');
         triggerTextEntry('end','\\rightarrow');
-        showTextPrompt('start');
+        await showTextPrompt('start');
         break;
       }
     }
     */
+
     // callback function for a toolbar button click
-    function setArrowFromButton (obj) {
+    /**
+    * @param {Event} ev
+    * @returns {Promise} Resolves to `undefined`
+    */
+    async function setArrowFromButton (ev) {
       const parts = this.id.split('_');
       const pos = parts[1];
       let val = parts[2];
@@ -392,20 +437,27 @@ export default {
       if (val !== 'textmarker') {
         triggerTextEntry(pos, '\\' + val);
       } else {
-        showTextPrompt(pos);
+        await showTextPrompt(pos);
       }
     }
 
+    /**
+    * @param {"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} id
+    * @returns {undefined}
+    */
     function getTitle (id) {
       const {langList} = strings;
-      const item = langList.find((item) => {
-        return item.id === id;
+      const item = langList.find((itm) => {
+        return itm.id === id;
       });
       return item ? item.title : id;
     }
 
-    // build the toolbar button array from the marker definitions
-    function buildButtonList (lang) {
+    /**
+    * Build the toolbar button array from the marker definitions.
+    * @returns {module:SVGEditor.Button[]}
+    */
+    function buildButtonList () {
       const buttons = [];
       // const i = 0;
       /*
@@ -500,7 +552,7 @@ export default {
       callback () {
         $('#marker_panel').addClass('toolset').hide();
       },
-      async addLangData ({importLocale, lang}) {
+      /* async */ addLangData ({importLocale, lang}) {
         return {data: strings.langList};
       },
       selectedChanged (opts) {

@@ -37,8 +37,6 @@ var svgEditorExtension_eyedropper = (function () {
     };
   }
 
-  /* globals jQuery */
-
   /**
    * ext-eyedropper.js
    *
@@ -94,8 +92,7 @@ var svgEditorExtension_eyedropper = (function () {
               case 3:
                 strings = _context.sent;
                 svgEditor = this;
-                $ = jQuery;
-                ChangeElementCommand = S.ChangeElementCommand, svgCanvas = svgEditor.canvas, addToHistory = function addToHistory(cmd) {
+                $ = S.$, ChangeElementCommand = S.ChangeElementCommand, svgCanvas = svgEditor.canvas, addToHistory = function addToHistory(cmd) {
                   svgCanvas.undoMgr.addCommandToHistory(cmd);
                 }, currentStyle = {
                   fillPaint: 'red',
@@ -108,6 +105,12 @@ var svgEditorExtension_eyedropper = (function () {
                   strokeLinecap: 'butt',
                   strokeLinejoin: 'miter'
                 };
+                /**
+                 *
+                 * @param {module:svgcanvas.SvgCanvas#event:ext-selectedChanged|module:svgcanvas.SvgCanvas#event:ext-elementChanged} opts
+                 * @returns {undefined}
+                 */
+
                 buttons = [{
                   id: 'tool_eyedropper',
                   icon: svgEditor.curConfig.extIconsPath + 'eyedropper.png',
@@ -184,7 +187,7 @@ var svgEditorExtension_eyedropper = (function () {
                   }
                 });
 
-              case 9:
+              case 8:
               case "end":
                 return _context.stop();
             }
