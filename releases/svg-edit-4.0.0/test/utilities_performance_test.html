@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Performance Unit Tests for utilities.js</title>
+
+  <link rel="icon" type="image/png" href="../editor/images/logo.png"/>
+  <link rel="stylesheet" href="../node_modules/qunit/qunit/qunit.css"/>
+  <style id="styleoverrides" media="screen">
+  #svgcanvas svg * {
+    cursor: move;
+    pointer-events: all
+  }
+  #svgcanvas svg {
+    cursor: default
+  }
+  </style>
+  <script src="../editor/jquery.min.js"></script>
+  <script src="../node_modules/qunit/qunit/qunit.js"></script>
+  <script type="module" src="utilities_performance_test.js"></script>
+</head>
+<body>
+  <h1 id="qunit-header">Performance Unit Tests for utilities.js</h1>
+  <h2 id="qunit-banner"></h2>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+
+  <div id="svg_editor">
+    <div id="workarea" style="cursor: auto; overflow: scroll; line-height: 12px; right: 100px;">
+
+      <!-- Must include this thumbnail view to see some of the performance issues -->
+      <svg id="overviewMiniView" width="150" height="112.5" x="0" y="0" viewBox="100 100 1000 1000" style="float: right;"
+           xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <use x="0" y="0" xlink:href="#svgroot"></use>
+      </svg>
+
+
+      <div id="svgcanvas" style="position: relative; width: 1000px; height: 1000px;">
+        <svg id="svgroot" xmlns="http://www.w3.org/2000/svg" xlinkns="http://www.w3.org/1999/xlink" width="1000" height="1000" x="640" y="480" overflow="visible">
+          <defs><filter id="canvashadow" filterUnits="objectBoundingBox"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"></feGaussianBlur><feOffset in="blur" dx="5" dy="5" result="offsetBlur"></feOffset><feMerge><feMergeNode in="offsetBlur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter><pattern id="gridpattern" patternUnits="userSpaceOnUse" x="0" y="0" width="100" height="100"><image x="0" y="0" width="100" height="100"></image></pattern></defs>
+          <svg id="canvasBackground" width="1000" height="200" x="10" y="10" overflow="none" style="pointer-events:none"><rect width="100%" height="100%" x="0" y="0" stroke="#000" fill="#000" style="pointer-events:none"></rect><svg id="canvasGrid" width="100%" height="100%" x="0" y="0" overflow="visible" display="none" style="display: inline;"><rect width="100%" height="100%" x="0" y="0" stroke-width="0" stroke="none" fill="url(#gridpattern)" style="pointer-events: none; display:visible;"></rect></svg></svg>
+          <animate attributeName="opacity" begin="indefinite" dur="1" fill="freeze"></animate>
+
+          <svg id="svgcontent" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 480" overflow="visible" width="1000" height="200" x="100" y="20">
+
+            <g id="layer1">
+              <title>Layer 1</title>
+
+              <g id="svg_group_with_matrix_transform" transform="matrix(0.5, 0, 0, 0.5, 10, 10)">
+                <svg id="svg_2" x="100" y="0" class="symbol" preserveAspectRatio="xMaxYMax">
+                  <g id="svg_3">
+                    <rect id="svg_4" x="0" y="0" width="20" height="20" fill="#00FF00"></rect>
+                  </g>
+                  <g id="svg_5" display="none">
+                    <rect id="svg_6" x="0" y="0" width="20" height="20" fill="#A40000"></rect>
+                  </g>
+                </svg>
+              </g>
+              <text id="svg_text_with_matrix_transform" transform="matrix(0.433735, 0, 0, 0.433735, 2, 4)" xml:space="preserve" text-anchor="middle" font-family="serif" font-size="24" y="0" x="61" stroke="#999999" fill="#999999">Some text</text>
+
+            </g>
+            <g>
+              <title>Layer 2</title>
+            </g>
+
+          </svg>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

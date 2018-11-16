@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: extensions/ext-server_opensave.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: extensions/ext-server_opensave.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ext-server_opensave.js
+ *
+ * @license MIT
+ *
+ * @copyright 2010 Alexis Deveria
+ *
+ */
+import {canvg} from '../canvg/canvg.js';
+
+export default {
+  name: 'server_opensave',
+  async init ({$, decode64, encode64, importLocale}) {
+    const strings = await importLocale();
+    const svgEditor = this;
+    const svgCanvas = svgEditor.canvas;
+    /**
+     *
+     * @returns {string}
+     */
+    function getFileNameFromTitle () {
+      const title = svgCanvas.getDocumentTitle();
+      // We convert (to underscore) only those disallowed Win7 file name characters
+      return title.trim().replace(/[/\\:*?"&lt;>|]/g, '_');
+    }
+    /**
+     * Escapes XML predefined entities for quoted attributes.
+     * @param {string} str
+     * @returns {string}
+     */
+    function xhtmlEscape (str) {
+      return str.replace(/&amp;(?!amp;)/g, '&amp;amp;').replace(/"/g, '&amp;quot;').replace(/&lt;/g, '&amp;lt;'); // &lt; is actually disallowed above anyways
+    }
+
+    /**
+     *
+     * @param {string} [filename='image']
+     * @param {string} suffix To add to file name
+     * @param {string} uri
+     * @returns {boolean}
+     */
+    function clientDownloadSupport (filename, suffix, uri) {
+      const support = $('&lt;a>')[0].download === '';
+      let a;
+      if (support) {
+        a = $('&lt;a>hidden&lt;/a>').attr({
+          download: (filename || 'image') + suffix,
+          href: uri
+        }).css('display', 'none').appendTo('body');
+        a[0].click();
+        return true;
+      }
+      return false;
+    }
+    const
+      saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php',
+      saveImgAction = svgEditor.curConfig.extPath + 'filesave.php';
+      // Create upload target (hidden iframe)
+
+    let cancelled = false;
+
+    $('&lt;iframe name="output_frame" src="#"/>').hide().appendTo('body');
+    svgEditor.setCustomHandlers({
+      save (win, data) {
+        const svg = '&lt;?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
+          filename = getFileNameFromTitle();
+
+        if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + encode64(svg))) {
+          return;
+        }
+
+        $('&lt;form>').attr({
+          method: 'post',
+          action: saveSvgAction,
+          target: 'output_frame'
+        }).append('&lt;input type="hidden" name="output_svg" value="' + xhtmlEscape(svg) + '">')
+          .append('&lt;input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
+          .appendTo('body')
+          .submit().remove();
+      },
+      exportPDF (win, data) {
+        const filename = getFileNameFromTitle(),
+          datauri = data.output;
+        if (clientDownloadSupport(filename, '.pdf', datauri)) {
+          return;
+        }
+        $('&lt;form>').attr({
+          method: 'post',
+          action: saveImgAction,
+          target: 'output_frame'
+        }).append('&lt;input type="hidden" name="output_img" value="' + datauri + '">')
+          .append('&lt;input type="hidden" name="mime" value="application/pdf">')
+          .append('&lt;input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
+          .appendTo('body')
+          .submit().remove();
+      },
+      // Todo: Integrate this extension with a new built-in exportWindowType, "download"
+      async exportImage (win, data) {
+        const {issues, mimeType, quality} = data;
+
+        if (!$('#export_canvas').length) {
+          $('&lt;canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+        }
+        const c = $('#export_canvas')[0];
+
+        c.width = svgCanvas.contentW;
+        c.height = svgCanvas.contentH;
+        await canvg(c, data.svg);
+        const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
+        // {uiStrings} = svgEditor;
+
+        // Check if there are issues
+        let pre, note = '';
+        if (issues.length) {
+          pre = '\n \u2022 ';
+          note += ('\n\n' + pre + issues.join(pre));
+        }
+
+        if (note.length) {
+          await $.alert(note);
+        }
+
+        const filename = getFileNameFromTitle();
+        const suffix = '.' + data.type.toLowerCase();
+
+        if (clientDownloadSupport(filename, suffix, datauri)) {
+          return;
+        }
+
+        $('&lt;form>').attr({
+          method: 'post',
+          action: saveImgAction,
+          target: 'output_frame'
+        }).append('&lt;input type="hidden" name="output_img" value="' + datauri + '">')
+          .append('&lt;input type="hidden" name="mime" value="' + mimeType + '">')
+          .append('&lt;input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
+          .appendTo('body')
+          .submit().remove();
+      }
+    });
+
+    // Do nothing if client support is found
+    if (window.FileReader) { return; }
+
+    // Change these to appropriate script file
+    const openSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=load_svg';
+    const importSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_svg';
+    const importImgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_img';
+
+    // Set up function for PHP uploader to use
+    svgEditor.processFile = function (str64, type) {
+      let xmlstr;
+      if (cancelled) {
+        cancelled = false;
+        return;
+      }
+
+      $('#dialog_box').hide();
+
+      if (type !== 'import_img') {
+        xmlstr = decode64(str64);
+      }
+
+      switch (type) {
+      case 'load_svg':
+        svgCanvas.clear();
+        svgCanvas.setSvgString(xmlstr);
+        svgEditor.updateCanvas();
+        break;
+      case 'import_svg':
+        svgCanvas.importSvgString(xmlstr);
+        svgEditor.updateCanvas();
+        break;
+      case 'import_img':
+        svgCanvas.setGoodImage(str64);
+        break;
+      }
+    };
+
+    // Create upload form
+    const openSvgForm = $('&lt;form>');
+    openSvgForm.attr({
+      enctype: 'multipart/form-data',
+      method: 'post',
+      action: openSvgAction,
+      target: 'output_frame'
+    });
+
+    // Create import form
+    const importSvgForm = openSvgForm.clone().attr('action', importSvgAction);
+
+    // Create image form
+    const importImgForm = openSvgForm.clone().attr('action', importImgAction);
+
+    // It appears necessary to rebuild this input every time a file is
+    // selected so the same file can be picked and the change event can fire.
+
+    /**
+     *
+     * @param {external:jQuery} form
+     * @returns {undefined}
+     */
+    function rebuildInput (form) {
+      form.empty();
+      const inp = $('&lt;input type="file" name="svg_file">').appendTo(form);
+
+      /**
+       * Submit the form, empty its contents for reuse and show
+       *   uploading message.
+       * @returns {undefined}
+       */
+      async function submit () {
+        // This submits the form, which returns the file data using `svgEditor.processFile()`
+        form.submit();
+
+        rebuildInput(form);
+        await $.process_cancel(strings.uploading);
+        cancelled = true;
+        $('#dialog_box').hide();
+      }
+
+      if (form[0] === openSvgForm[0]) {
+        inp.change(async function () {
+          // This takes care of the "are you sure" dialog box
+          const ok = await svgEditor.openPrep();
+          if (!ok) {
+            rebuildInput(form);
+            return;
+          }
+          await submit();
+        });
+      } else {
+        inp.change(async function () {
+          // This submits the form, which returns the file data using svgEditor.processFile()
+          await submit();
+        });
+      }
+    }
+
+    // Create the input elements
+    rebuildInput(openSvgForm);
+    rebuildInput(importSvgForm);
+    rebuildInput(importImgForm);
+
+    // Add forms to buttons
+    $('#tool_open').show().prepend(openSvgForm);
+    $('#tool_import').show().prepend(importSvgForm);
+    $('#tool_image').prepend(importImgForm);
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-DOMPolyfill.html">DOMPolyfill</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQueryPluginDBox.html">jQueryPluginDBox</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-JamilihArray.html">JamilihArray</a></li><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-jPicker.Slider.html">Slider</a></li><li><a href="module-jPicker-ColorValuePicker.html">ColorValuePicker</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-StackBlur-BlurStack.html">BlurStack</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li><li><a href="QueryResult.html">QueryResult</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-Actions.html">Actions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_addEvent">_addEvent</a></li><li><a href="global.html#_applyAnyStylesheet">_applyAnyStylesheet</a></li><li><a href="global.html#_createSafeReference">_createSafeReference</a></li><li><a href="global.html#_getHTMLNodeName">_getHTMLNodeName</a></li><li><a href="global.html#_upperCase">_upperCase</a></li><li><a href="global.html#jml">jml</a></li><li><a href="global.html#processResults">processResults</a></li><li><a href="global.html#touchHandler">touchHandler</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 16 2018 13:34:24 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

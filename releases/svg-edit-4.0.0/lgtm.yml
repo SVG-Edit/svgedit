@@ -1,0 +1,8 @@
+extraction:
+  javascript:
+    index:
+      filters:
+        - exclude: "editor/xdomain-svgedit-config-iife.js"
+        - exclude: "editor/redirect-on-no-module-support.js"
+        - exclude: "svgedit-config-iife.js"
+        - exclude: "dist"

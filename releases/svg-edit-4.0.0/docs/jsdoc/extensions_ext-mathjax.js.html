@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: extensions/ext-mathjax.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: extensions/ext-mathjax.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* globals MathJax */
+/**
+ * ext-mathjax.js
+ *
+ * @license Apache
+ *
+ * @copyright 2013 Jo Segaert
+ *
+ */
+// Todo: Wait for Mathjax 3.0 to get ES Module/avoid global
+import {importScript} from '../external/dynamic-import-polyfill/importModule.js';
+
+export default {
+  name: 'mathjax',
+  async init ({$, importLocale}) {
+    const strings = await importLocale();
+    const svgEditor = this;
+    const svgCanvas = svgEditor.canvas;
+
+    // Configuration of the MathJax extention.
+
+    // This will be added to the head tag before MathJax is loaded.
+    const /* mathjaxConfiguration = `&lt;script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          extensions: ['tex2jax.js'],
+          jax: ['input/TeX', 'output/SVG'],
+          showProcessingMessages: true,
+          showMathMenu: false,
+          showMathMenuMSIE: false,
+          errorSettings: {
+            message: ['[Math Processing Error]'],
+            style: {color: '#CC0000', 'font-style': 'italic'}
+          },
+          elements: [],
+            tex2jax: {
+            ignoreClass: 'tex2jax_ignore2', processClass: 'tex2jax_process2',
+          },
+          TeX: {
+            extensions: ['AMSmath.js', 'AMSsymbols.js', 'noErrors.js', 'noUndefined.js']
+          },
+          SVG: {
+          }
+      });
+      &lt;/script>`, */
+      // mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+      // Had been on https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js
+      // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js
+      mathjaxSrcSecure = 'mathjax/MathJax.min.js?config=TeX-AMS-MML_SVG.js',
+      {uiStrings} = svgEditor;
+    let
+      math,
+      locationX,
+      locationY,
+      mathjaxLoaded = false;
+
+    // TODO: Implement language support. Move these uiStrings to the locale files and
+    //   the code to the langReady callback. Also i18nize alert and HTML below
+    $.extend(uiStrings, {
+      mathjax: {
+        embed_svg: 'Save as mathematics',
+        embed_mathml: 'Save as figure',
+        svg_save_warning: 'The math will be transformed into a figure is manipulatable like everything else. You will not be able to manipulate the TeX-code anymore. ',
+        mathml_save_warning: 'Advised. The math will be saved as a figure.',
+        title: 'Mathematics code editor'
+      }
+    });
+
+    /**
+     *
+     * @returns {undefined}
+     */
+    function saveMath () {
+      const code = $('#mathjax_code_textarea').val();
+      // displaystyle to force MathJax NOT to use the inline style. Because it is
+      // less fancy!
+      MathJax.Hub.queue.Push(['Text', math, '\\displaystyle{' + code + '}']);
+
+      /*
+       * The MathJax library doesn't want to bloat your webpage so it creates
+       * every symbol (glymph) you need only once. These are saved in a `&lt;svg>` on
+       * the top of your html document, just under the body tag. Each glymph has
+       * its unique id and is saved as a `&lt;path>` in the `&lt;defs>` tag of the `&lt;svg>`
+       *
+       * Then when the symbols are needed in the rest of your html document they
+       * are refferd to by a `&lt;use>` tag.
+       * Because of bug 1076 we can't just grab the defs tag on the top and add it
+       * to your formula's `&lt;svg>` and copy the lot. So we have to replace each
+       * `&lt;use>` tag by its `&lt;path>`.
+       */
+      MathJax.Hub.queue.Push(
+        function () {
+          const mathjaxMath = $('.MathJax_SVG');
+          const svg = $(mathjaxMath.html());
+          svg.find('use').each(function () {
+            // TODO: find a less pragmatic and more elegant solution to this.
+            const id = $(this).attr('href')
+              ? $(this).attr('href').slice(1) // Works in Chrome.
+              : $(this).attr('xlink:href').slice(1); // Works in Firefox.
+            const glymph = $('#' + id).clone().removeAttr('id');
+            const x = $(this).attr('x');
+            const y = $(this).attr('y');
+            const transform = $(this).attr('transform');
+            if (transform &amp;&amp; (x || y)) {
+              glymph.attr('transform', transform + ' translate(' + x + ',' + y + ')');
+            } else if (transform) {
+              glymph.attr('transform', transform);
+            } else if (x || y) {
+              glymph.attr('transform', 'translate(' + x + ',' + y + ')');
+            }
+            $(this).replaceWith(glymph);
+          });
+          // Remove the style tag because it interferes with SVG-Edit.
+          svg.removeAttr('style');
+          svg.attr('xmlns', 'http://www.w3.org/2000/svg');
+          svgCanvas.importSvgString($('&lt;div>').append(svg.clone()).html(), true);
+          svgCanvas.ungroupSelectedElement();
+          // TODO: To undo the adding of the Formula you now have to undo twice.
+          // This should only be once!
+          svgCanvas.moveSelectedElements(locationX, locationY, true);
+        }
+      );
+    }
+
+    const buttons = [{
+      id: 'tool_mathjax',
+      type: 'mode',
+      icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
+      events: {
+        async click () {
+          // Set the mode.
+          svgCanvas.setMode('mathjax');
+
+          // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
+          // From this point on it is very probable that it will be needed, so load it.
+          if (mathjaxLoaded === false) {
+            $(
+              '&lt;div id="mathjax">' +
+              '&lt;!-- Here is where MathJax creates the math -->' +
+                '&lt;div id="mathjax_creator" class="tex2jax_process" style="display:none">' +
+                  '$${}$$' +
+                '&lt;/div>' +
+                '&lt;div id="mathjax_overlay">&lt;/div>' +
+                '&lt;div id="mathjax_container">' +
+                  '&lt;div id="tool_mathjax_back" class="toolbar_button">' +
+                    '&lt;button id="tool_mathjax_save">OK&lt;/button>' +
+                    '&lt;button id="tool_mathjax_cancel">Cancel&lt;/button>' +
+                  '&lt;/div>' +
+                  '&lt;fieldset>' +
+                    '&lt;legend id="mathjax_legend">Mathematics Editor&lt;/legend>' +
+                    '&lt;label>' +
+                      '&lt;span id="mathjax_explication">Please type your mathematics in ' +
+                      '&lt;a href="https://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX&lt;/a> code.&lt;/span>&lt;/label>' +
+                    '&lt;textarea id="mathjax_code_textarea" spellcheck="false">&lt;/textarea>' +
+                  '&lt;/fieldset>' +
+                '&lt;/div>' +
+              '&lt;/div>'
+            ).insertAfter('#svg_prefs').hide();
+
+            // Make the MathEditor draggable.
+            $('#mathjax_container').draggable({
+              cancel: 'button,fieldset',
+              containment: 'window'
+            });
+
+            // Add functionality and picture to cancel button.
+            $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true))
+              .on('click touched', function () {
+                $('#mathjax').hide();
+              });
+
+            // Add functionality and picture to the save button.
+            $('#tool_mathjax_save').prepend($.getSvgIcon('ok', true))
+              .on('click touched', function () {
+                saveMath();
+                $('#mathjax').hide();
+              });
+
+            // MathJax preprocessing has to ignore most of the page.
+            $('body').addClass('tex2jax_ignore');
+
+            // Now get (and run) the MathJax Library.
+            // Todo: insert script with modules once widely supported
+            //   and if MathJax (and its `TeX-AMS-MML_SVG.js` dependency) ends up
+            //   providing an ES6 module export: https://github.com/mathjax/MathJax/issues/1998
+            /*
+            const modularVersion = !('svgEditor' in window) ||
+              !window.svgEditor ||
+              window.svgEditor.modules !== false;
+            // Add as second argument to `importScript`
+            {
+              type: modularVersion
+                ? 'module' // Make this the default when widely supported
+                : 'text/javascript'
+            }
+            // If only using modules, just use this:
+            const {default: MathJax} = await importModule( // or `import()` when widely supported
+              svgEditor.curConfig.extIconsPath + mathjaxSrcSecure
+            );
+            */
+            // We use `extIconsPath` here for now as it does not vary with
+            //  the modular type as does `extPath`
+            try {
+              await importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure);
+              // When MathJax is loaded get the div where the math will be rendered.
+              MathJax.Hub.queue.Push(function () {
+                math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
+                console.log(math); // eslint-disable-line no-console
+                mathjaxLoaded = true;
+                console.log('MathJax Loaded'); // eslint-disable-line no-console
+              });
+            } catch (e) {
+              console.log('Failed loading MathJax.'); // eslint-disable-line no-console
+              $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
+            }
+          }
+        }
+      }
+    }];
+
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.extIconsPath + 'mathjax-icons.xml',
+      buttons: strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      }),
+
+      mouseDown () {
+        if (svgCanvas.getMode() === 'mathjax') {
+          return {started: true};
+        }
+        return undefined;
+      },
+      mouseUp (opts) {
+        if (svgCanvas.getMode() === 'mathjax') {
+          // Get the coordinates from your mouse.
+          const zoom = svgCanvas.getZoom();
+          // Get the actual coordinate by dividing by the zoom value
+          locationX = opts.mouse_x / zoom;
+          locationY = opts.mouse_y / zoom;
+
+          $('#mathjax').show();
+          return {started: false}; // Otherwise the last selected object dissapears.
+        }
+        return undefined;
+      },
+      callback () {
+        $('&lt;style>').text(
+          '#mathjax fieldset{' +
+            'padding: 5px;' +
+            'margin: 5px;' +
+            'border: 1px solid #DDD;' +
+          '}' +
+          '#mathjax label{' +
+            'display: block;' +
+            'margin: .5em;' +
+          '}' +
+          '#mathjax legend {' +
+            'max-width:195px;' +
+          '}' +
+          '#mathjax_overlay {' +
+            'position: absolute;' +
+            'top: 0;' +
+            'left: 0;' +
+            'right: 0;' +
+            'bottom: 0;' +
+            'background-color: black;' +
+            'opacity: 0.6;' +
+            'z-index: 20000;' +
+          '}' +
+          '#mathjax_container {' +
+            'position: absolute;' +
+            'top: 50px;' +
+            'padding: 10px;' +
+            'background-color: #B0B0B0;' +
+            'border: 1px outset #777;' +
+            'opacity: 1.0;' +
+            'font-family: Verdana, Helvetica, sans-serif;' +
+            'font-size: .8em;' +
+            'z-index: 20001;' +
+          '}' +
+          '#tool_mathjax_back {' +
+            'margin-left: 1em;' +
+            'overflow: auto;' +
+          '}' +
+          '#mathjax_legend{' +
+            'font-weight: bold;' +
+            'font-size:1.1em;' +
+          '}' +
+          '#mathjax_code_textarea {\\n' +
+            'margin: 5px .7em;' +
+            'overflow: hidden;' +
+            'width: 416px;' +
+            'display: block;' +
+            'height: 100px;' +
+          '}'
+        ).appendTo('head');
+
+        // Add the MathJax configuration.
+        // $(mathjaxConfiguration).appendTo('head');
+      }
+    };
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-DOMPolyfill.html">DOMPolyfill</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQueryPluginDBox.html">jQueryPluginDBox</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-JamilihArray.html">JamilihArray</a></li><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-jPicker.Slider.html">Slider</a></li><li><a href="module-jPicker-ColorValuePicker.html">ColorValuePicker</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-StackBlur-BlurStack.html">BlurStack</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li><li><a href="QueryResult.html">QueryResult</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-Actions.html">Actions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_addEvent">_addEvent</a></li><li><a href="global.html#_applyAnyStylesheet">_applyAnyStylesheet</a></li><li><a href="global.html#_createSafeReference">_createSafeReference</a></li><li><a href="global.html#_getHTMLNodeName">_getHTMLNodeName</a></li><li><a href="global.html#_upperCase">_upperCase</a></li><li><a href="global.html#jml">jml</a></li><li><a href="global.html#processResults">processResults</a></li><li><a href="global.html#touchHandler">touchHandler</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 16 2018 13:34:24 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
