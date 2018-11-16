@@ -309,7 +309,7 @@
         var bits = re.exec(colorString);
 
         if (bits) {
-          var _processor = processor(bits),
+          var _processor = processor.apply(void 0, _toConsumableArray(bits)),
               _processor2 = _slicedToArray(_processor, 3),
               r = _processor2[0],
               g = _processor2[1],

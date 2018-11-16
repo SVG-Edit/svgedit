@@ -1,8 +1,9 @@
 # SVG-Edit CHANGES
 
-# ?
+# 4.0.1
 
 - Fix: Adjust side panel width checking based on device zoom (fixes #298)
+- Fix (regression): RGBColor
 
 # 4.0.0
 

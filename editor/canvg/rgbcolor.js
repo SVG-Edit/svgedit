@@ -206,7 +206,7 @@ export default class RGBColor {
     colorDefs.forEach(({re, process: processor}) => {
       const bits = re.exec(colorString);
       if (bits) {
-        const [r, g, b] = processor(bits);
+        const [r, g, b] = processor(...bits);
         Object.assign(this, {r, g, b});
         this.ok = true;
       }
