@@ -1,0 +1,21 @@
+#svg-edit-statusbar-button {
+  list-style-image: url("chrome://svg-edit/content/editor/images/logo.png");
+  display: -moz-box;
+  /*-moz-image-region: rect(16px, 16px, 32px, 0px);*/
+  padding-left: 0px;
+  padding-right: 0px;
+  width: 16px;
+  height: 16px;
+
+}
+
+#svg-edit-statusbar-button[state="active"] { 
+  list-style-image: url("chrome://svg-edit/content/editor/images/logo.png");
+  -moz-image-region: rect(32px, 16px, 48px, 0px);
+}
+
+#svg-edit-statusbar-button[state="error"] {
+  list-style-image: url("chrome://svg-edit/content/editor/images/logo.png");
+  -moz-image-region: rect(0px, 16px, 16px, 0px);
+}
+

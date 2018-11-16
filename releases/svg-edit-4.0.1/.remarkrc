@@ -1,0 +1,5 @@
+{
+  "plugins": {
+    "lint-ordered-list-marker-value": "one"
+  }
+}
