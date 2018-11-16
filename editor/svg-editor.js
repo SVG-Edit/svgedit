@@ -435,7 +435,7 @@ editor.loadContentAndPrefs = function () {
   if (editor.storage && // Cookies do not have enough available memory to hold large documents
     (curConfig.forceStorage ||
       (!curConfig.noStorageOnLoad &&
-        document.cookie.match(/(?:^|;\s*)svgeditstorestore=prefsAndContent/))
+        document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/))
     )
   ) {
     const name = 'svgedit-' + curConfig.canvasName;

@@ -14603,11 +14603,17 @@ function SvgCanvas(container, config) {
   */
 
   /**
+  * @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
+  * @param {external:jQuery} initArgs.$
+  * @param {module:SVGEditor~ImportLocale} initArgs.importLocale
+  */
+
+  /**
   * Add an extension to the editor.
   * @function module:svgcanvas.SvgCanvas#addExtension
   * @param {string} name - String with the ID of the extension. Used internally; no need for i18n.
   * @param {module:svgcanvas.ExtensionInitCallback} [extInitFunc] - Function supplied by the extension with its data
-  * @param {module:SVGEditor~ImportLocale} importLocale
+  * @param {module:svgcanvas.ExtensionInitArgs} initArgs
   * @fires module:svgcanvas.SvgCanvas#event:extension_added
   * @throws {TypeError|Error} `TypeError` if `extInitFunc` is not a function, `Error`
   *   if extension of supplied name already exists
@@ -14618,30 +14624,32 @@ function SvgCanvas(container, config) {
   this.addExtension =
   /*#__PURE__*/
   function () {
-    var _ref3 = _asyncToGenerator(
+    var _ref4 = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee(name, extInitFunc, importLocale) {
-      var argObj, extObj;
+    regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref3) {
+      var jq, importLocale, argObj, extObj;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
+              jq = _ref3.$, importLocale = _ref3.importLocale;
+
               if (!(typeof extInitFunc !== 'function')) {
-                _context.next = 2;
+                _context.next = 3;
                 break;
               }
 
               throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
 
-            case 2:
+            case 3:
               if (!(name in extensions)) {
-                _context.next = 4;
+                _context.next = 5;
                 break;
               }
 
               throw new Error('Cannot add extension "' + name + '", an extension by that name already exists.');
 
-            case 4:
+            case 5:
               // Provide private vars/funcs here. Is there a better way to do this?
 
               /**
@@ -14658,17 +14666,17 @@ function SvgCanvas(container, config) {
                * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
                */
               argObj = $$9.extend(canvas.getPrivateMethods(), {
-                $: $$9,
+                $: jq,
                 importLocale: importLocale,
                 svgroot: svgroot,
                 svgcontent: svgcontent,
                 nonce: getCurrentDrawing().getNonce(),
                 selectorManager: selectorManager
               });
-              _context.next = 7;
+              _context.next = 8;
               return extInitFunc(argObj);
 
-            case 7:
+            case 8:
               extObj = _context.sent;
 
               if (extObj) {
@@ -14678,7 +14686,7 @@ function SvgCanvas(container, config) {
               extensions[name] = extObj;
               return _context.abrupt("return", call('extension_added', extObj));
 
-            case 11:
+            case 12:
             case "end":
               return _context.stop();
           }
@@ -14687,7 +14695,7 @@ function SvgCanvas(container, config) {
     }));
 
     return function (_x, _x2, _x3) {
-      return _ref3.apply(this, arguments);
+      return _ref4.apply(this, arguments);
     };
   }();
   /**
@@ -17802,7 +17810,7 @@ function SvgCanvas(container, config) {
   this.rasterExport =
   /*#__PURE__*/
   function () {
-    var _ref4 = _asyncToGenerator(
+    var _ref5 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
       var opts,
@@ -17812,7 +17820,7 @@ function SvgCanvas(container, config) {
           issues,
           issueCodes,
           svg,
-          _ref5,
+          _ref6,
           c,
           _args2 = arguments;
 
@@ -17837,8 +17845,8 @@ function SvgCanvas(container, config) {
               });
 
             case 8:
-              _ref5 = _context2.sent;
-              canvg = _ref5.canvg;
+              _ref6 = _context2.sent;
+              canvg = _ref6.canvg;
 
             case 10:
               if (!$$9('#export_canvas').length) {
@@ -17905,7 +17913,7 @@ function SvgCanvas(container, config) {
     }));
 
     return function (_x4, _x5, _x6) {
-      return _ref4.apply(this, arguments);
+      return _ref5.apply(this, arguments);
     };
   }();
   /**
@@ -17950,7 +17958,7 @@ function SvgCanvas(container, config) {
   this.exportPDF =
   /*#__PURE__*/
   function () {
-    var _ref6 = _asyncToGenerator(
+    var _ref7 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee3(exportWindowName) {
       var outputType,
@@ -18041,7 +18049,7 @@ function SvgCanvas(container, config) {
     }));
 
     return function (_x7) {
-      return _ref6.apply(this, arguments);
+      return _ref7.apply(this, arguments);
     };
   }();
   /**
@@ -18750,10 +18758,10 @@ function SvgCanvas(container, config) {
     leaveContext: leaveContext,
     setContext: setContext
   };
-  Object.entries(dr).forEach(function (_ref7) {
-    var _ref8 = _slicedToArray(_ref7, 2),
-        prop = _ref8[0],
-        propVal = _ref8[1];
+  Object.entries(dr).forEach(function (_ref8) {
+    var _ref9 = _slicedToArray(_ref8, 2),
+        prop = _ref9[0],
+        propVal = _ref9[1];
 
     canvas[prop] = propVal;
   });
@@ -28959,7 +28967,7 @@ editor.loadContentAndPrefs = function () {
 
 
   if (editor.storage && ( // Cookies do not have enough available memory to hold large documents
-  curConfig.forceStorage || !curConfig.noStorageOnLoad && document.cookie.match(/(?:^|;\s*)svgeditstorestore=prefsAndContent/))) {
+  curConfig.forceStorage || !curConfig.noStorageOnLoad && document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/))) {
     var name = 'svgedit-' + curConfig.canvasName;
     var cached = editor.storage.getItem(name);
 
@@ -36341,13 +36349,13 @@ editor.loadFromDataURI = function (str) {
 /**
  * @param {string} name Used internally; no need for i18n.
  * @param {module:svgcanvas.ExtensionInitCallback} init Config to be invoked on this module
- * @param {module:SVGEditor~ImportLocale} importLocale Importer defaulting to pth with current extension name and locale
+ * @param {module:svgcanvas.ExtensionInitArgs} initArgs
  * @throws {Error} If called too early
  * @returns {Promise} Resolves to `undefined`
 */
 
 
-editor.addExtension = function (name, init$$1, importLocale) {
+editor.addExtension = function (name, init$$1, initArgs) {
   // Note that we don't want this on editor.ready since some extensions
   // may want to run before then (like server_opensave).
   // $(function () {
@@ -36355,7 +36363,7 @@ editor.addExtension = function (name, init$$1, importLocale) {
     throw new Error('Extension added too early');
   }
 
-  return svgCanvas.addExtension.call(this, name, init$$1, importLocale); // });
+  return svgCanvas.addExtension.call(this, name, init$$1, initArgs); // });
 }; // Defer injection to wait out initial menu processing. This probably goes
 //    away once all context menu behavior is brought to context menu.
 
