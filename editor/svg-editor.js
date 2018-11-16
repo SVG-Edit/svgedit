@@ -6441,18 +6441,18 @@ editor.loadFromDataURI = function (str, {noAlert} = {}) {
 /**
  * @param {string} name Used internally; no need for i18n.
  * @param {module:svgcanvas.ExtensionInitCallback} init Config to be invoked on this module
- * @param {module:SVGEditor~ImportLocale} importLocale Importer defaulting to pth with current extension name and locale
+ * @param {module:svgcanvas.ExtensionInitArgs} initArgs
  * @throws {Error} If called too early
  * @returns {Promise} Resolves to `undefined`
 */
-editor.addExtension = function (name, init, importLocale) {
+editor.addExtension = function (name, init, initArgs) {
   // Note that we don't want this on editor.ready since some extensions
   // may want to run before then (like server_opensave).
   // $(function () {
   if (!svgCanvas) {
     throw new Error('Extension added too early');
   }
-  return svgCanvas.addExtension.call(this, name, init, importLocale);
+  return svgCanvas.addExtension.call(this, name, init, initArgs);
   // });
 };
 

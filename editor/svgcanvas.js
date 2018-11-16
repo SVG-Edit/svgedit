@@ -1139,17 +1139,22 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 * @returns {Promise} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
 */
 /**
+* @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
+* @param {external:jQuery} initArgs.$
+* @param {module:SVGEditor~ImportLocale} initArgs.importLocale
+*/
+/**
 * Add an extension to the editor.
 * @function module:svgcanvas.SvgCanvas#addExtension
 * @param {string} name - String with the ID of the extension. Used internally; no need for i18n.
 * @param {module:svgcanvas.ExtensionInitCallback} [extInitFunc] - Function supplied by the extension with its data
-* @param {module:SVGEditor~ImportLocale} importLocale
+* @param {module:svgcanvas.ExtensionInitArgs} initArgs
 * @fires module:svgcanvas.SvgCanvas#event:extension_added
 * @throws {TypeError|Error} `TypeError` if `extInitFunc` is not a function, `Error`
 *   if extension of supplied name already exists
 * @returns {Promise} Resolves to `undefined`
 */
-this.addExtension = async function (name, extInitFunc, importLocale) {
+this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
   if (typeof extInitFunc !== 'function') {
     throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
   }
@@ -1170,7 +1175,7 @@ this.addExtension = async function (name, extInitFunc, importLocale) {
    * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
    */
   const argObj = $.extend(canvas.getPrivateMethods(), {
-    $,
+    $: jq,
     importLocale,
     svgroot,
     svgcontent,
