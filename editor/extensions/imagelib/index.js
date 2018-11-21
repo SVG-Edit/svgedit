@@ -20,7 +20,7 @@ $('a').click(function () {
   });
   if (!href.includes('.svg')) {
     const img = new Image();
-    img.onload = function () {
+    img.addEventListener('load', function () {
       const canvas = document.createElement('canvas');
       canvas.width = this.width;
       canvas.height = this.height;
@@ -37,7 +37,7 @@ $('a').click(function () {
         data = '';
       }
       post({href, data});
-    };
+    });
     img.src = href;
   } else {
     // Do ajax request for image's href value

@@ -1097,7 +1097,7 @@ var canvg = (function (exports) {
           if (!this.hasValue()) return 0;
           var n = parseFloat(this.value);
 
-          if (String(this.value).match(/%$/)) {
+          if (String(this.value).endsWith('%')) {
             n /= 100.0;
           }
 
@@ -1205,15 +1205,15 @@ var canvg = (function (exports) {
         value: function toPixels(viewPort, processPercent) {
           if (!this.hasValue()) return 0;
           var s = String(this.value);
-          if (s.match(/em$/)) return this.numValue() * this.getEM(viewPort);
-          if (s.match(/ex$/)) return this.numValue() * this.getEM(viewPort) / 2.0;
-          if (s.match(/px$/)) return this.numValue();
-          if (s.match(/pt$/)) return this.numValue() * this.getDPI(viewPort) * (1.0 / 72.0);
-          if (s.match(/pc$/)) return this.numValue() * 15;
-          if (s.match(/cm$/)) return this.numValue() * this.getDPI(viewPort) / 2.54;
-          if (s.match(/mm$/)) return this.numValue() * this.getDPI(viewPort) / 25.4;
-          if (s.match(/in$/)) return this.numValue() * this.getDPI(viewPort);
-          if (s.match(/%$/)) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
+          if (s.endsWith('em')) return this.numValue() * this.getEM(viewPort);
+          if (s.endsWith('ex')) return this.numValue() * this.getEM(viewPort) / 2.0;
+          if (s.endsWith('px')) return this.numValue();
+          if (s.endsWith('pt')) return this.numValue() * this.getDPI(viewPort) * (1.0 / 72.0);
+          if (s.endsWith('pc')) return this.numValue() * 15;
+          if (s.endsWith('cm')) return this.numValue() * this.getDPI(viewPort) / 2.54;
+          if (s.endsWith('mm')) return this.numValue() * this.getDPI(viewPort) / 25.4;
+          if (s.endsWith('in')) return this.numValue() * this.getDPI(viewPort);
+          if (s.endsWith('%')) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
           var n = this.numValue();
           if (processPercent && n < 1.0) return n * svg.ViewPort.ComputeSize(viewPort);
           return n;
@@ -1225,8 +1225,8 @@ var canvg = (function (exports) {
         value: function toMilliseconds() {
           if (!this.hasValue()) return 0;
           var s = String(this.value);
-          if (s.match(/s$/)) return this.numValue() * 1000;
-          if (s.match(/ms$/)) return this.numValue();
+          if (s.endsWith('ms')) return this.numValue();
+          if (s.endsWith('s')) return this.numValue() * 1000;
           return this.numValue();
         } // angle extensions
         // get the angle as radians
@@ -1236,9 +1236,9 @@ var canvg = (function (exports) {
         value: function toRadians() {
           if (!this.hasValue()) return 0;
           var s = String(this.value);
-          if (s.match(/deg$/)) return this.numValue() * (Math.PI / 180.0);
-          if (s.match(/grad$/)) return this.numValue() * (Math.PI / 200.0);
-          if (s.match(/rad$/)) return this.numValue();
+          if (s.endsWith('deg')) return this.numValue() * (Math.PI / 180.0);
+          if (s.endsWith('grad')) return this.numValue() * (Math.PI / 200.0);
+          if (s.endsWith('rad')) return this.numValue();
           return this.numValue() * (Math.PI / 180.0);
         }
       }, {
@@ -1734,10 +1734,10 @@ var canvg = (function (exports) {
         ctx.translate(-scaleMin * refX.toPixels('x'), -scaleMin * refY.toPixels('y'));
       } else {
         // align
-        if (align.match(/^xMid/) && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
-        if (align.match(/YMid$/) && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
-        if (align.match(/^xMax/) && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width - desiredWidth, 0);
-        if (align.match(/YMax$/) && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height - desiredHeight);
+        if (align.startsWith('xMid') && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
+        if (align.endsWith('YMid') && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
+        if (align.startsWith('xMax') && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width - desiredWidth, 0);
+        if (align.endsWith('YMax') && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height - desiredHeight);
       } // scale
 
 
@@ -1893,7 +1893,7 @@ var canvg = (function (exports) {
         key: "getHrefAttribute",
         value: function getHrefAttribute() {
           for (var a in this.attributes) {
-            if (a.match(/:href$/)) {
+            if (a.endsWith(':href')) {
               return this.attributes[a];
             }
           }
@@ -2516,9 +2516,9 @@ var canvg = (function (exports) {
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm, '$1 $2') // separate commands from points
         .replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from points
-        .replace(/([0-9])([+-])/gm, '$1 $2') // separate digits when no comma
-        .replace(/(\.[0-9]*)(\.)/gm, '$1 $2') // separate digits when no comma
-        .replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm, '$1 $3 $4 '); // shorthand elliptical arc path syntax
+        .replace(/(\d)([+-])/gm, '$1 $2') // separate digits when no comma
+        .replace(/(\.\d*)(\.)/gm, '$1 $2') // separate digits when no comma
+        .replace(/([Aa](\s+\d+)(\s+\d+)(\s+\d+))\s+([01])\s*([01])/gm, '$1 $5 $6 '); // shorthand elliptical arc path syntax
 
 
         d = svg.compressSpaces(d); // compress multiple spaces
@@ -3861,14 +3861,14 @@ var canvg = (function (exports) {
             _this20.img.crossOrigin = 'Anonymous';
           }
 
-          _this20.img.onload = function () {
+          _this20.img.addEventListener('load', function () {
             _this20.loaded = true;
-          };
+          });
 
-          _this20.img.onerror = function () {
+          _this20.img.addEventListener('error', function () {
             svg.log('ERROR: image "' + href + '" not found');
             _this20.loaded = true;
-          };
+          });
 
           _this20.img.src = href;
         } else {
@@ -4577,7 +4577,7 @@ var canvg = (function (exports) {
 
 
       if (svg.opts.ignoreMouse !== true) {
-        ctx.canvas.onclick = function (e) {
+        ctx.canvas.addEventListener('click', function (e) {
           var args = !isNullish(e) ? [e.clientX, e.clientY] : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
 
           var _mapXY = mapXY(_construct(svg.Point, args)),
@@ -4585,9 +4585,8 @@ var canvg = (function (exports) {
               y = _mapXY.y;
 
           svg.Mouse.onclick(x, y);
-        };
-
-        ctx.canvas.onmousemove = function (e) {
+        });
+        ctx.canvas.addEventListener('mousemove', function (e) {
           var args = !isNullish(e) ? [e.clientX, e.clientY] : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
 
           var _mapXY2 = mapXY(_construct(svg.Point, args)),
@@ -4595,7 +4594,7 @@ var canvg = (function (exports) {
               y = _mapXY2.y;
 
           svg.Mouse.onmousemove(x, y);
-        };
+        });
       }
 
       var e = svg.CreateElement(dom.documentElement);

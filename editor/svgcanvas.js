@@ -1,4 +1,4 @@
-/* eslint-disable indent */
+/* eslint-disable indent, unicorn/no-fn-reference-in-iterator */
 /* globals jQuery, jsPDF */
 /**
  * Numerous tools for working with the editor's "canvas"
@@ -3656,7 +3656,7 @@ this.svgToString = function (elem, indent) {
 
   if (elem) {
     cleanupElement(elem);
-    const attrs = Array.from(elem.attributes);
+    const attrs = [...elem.attributes];
     const childs = elem.childNodes;
     attrs.sort((a, b) => {
       return a.name > b.name ? -1 : 1;

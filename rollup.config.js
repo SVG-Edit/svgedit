@@ -18,7 +18,7 @@ const isDirectory = (source) => {
   return lstatSync(source).isDirectory();
 };
 const getDirectories = (source) => {
-  return readdirSync(source).map((nme) => join(source, nme)).filter(isDirectory);
+  return readdirSync(source).map((nme) => join(source, nme)).filter((i) => isDirectory(i));
 };
 const extensionLocaleDirs = getDirectories('editor/extensions/ext-locale');
 const extensionLocaleFiles = [];

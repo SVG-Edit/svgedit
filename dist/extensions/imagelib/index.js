@@ -43,8 +43,7 @@
 
     if (!href.includes('.svg')) {
       var img = new Image();
-
-      img.onload = function () {
+      img.addEventListener('load', function () {
         var canvas = document.createElement('canvas');
         canvas.width = this.width;
         canvas.height = this.height; // load the raster image into the canvas
@@ -67,8 +66,7 @@
           href: href,
           data: data
         });
-      };
-
+      });
       img.src = href;
     } else {
       // Do ajax request for image's href value

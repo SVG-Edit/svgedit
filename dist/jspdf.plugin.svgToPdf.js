@@ -428,14 +428,16 @@
     });
   };
 
-  var numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE][+-]?\d+)?/g;
+  var numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE]\d+|[eE][+-]\d+)?/g;
 
   var getLinesOptionsOfPoly = function getLinesOptionsOfPoly(node) {
     var nums = node.getAttribute('points');
     nums = nums && nums.match(numRgx) || [];
 
     if (nums && nums.length) {
-      nums = nums.map(Number);
+      nums = nums.map(function (n) {
+        return Number(n);
+      });
 
       if (nums.length % 2) {
         nums.length--;

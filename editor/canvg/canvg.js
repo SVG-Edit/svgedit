@@ -131,7 +131,7 @@ function build (opts) {
         if (d === 'x') return this.width();
         if (d === 'y') return this.height();
         return Math.sqrt(
-          Math.pow(this.width(), 2) + Math.pow(this.height(), 2)
+          (this.width() ** 2) + (this.height() ** 2)
         ) / Math.sqrt(2);
       }
     };
@@ -222,7 +222,7 @@ function build (opts) {
       if (!this.hasValue()) return 0;
 
       let n = parseFloat(this.value);
-      if (String(this.value).match(/%$/)) {
+      if (String(this.value).endsWith('%')) {
         n /= 100.0;
       }
       return n;
@@ -307,15 +307,15 @@ function build (opts) {
     toPixels (viewPort, processPercent) {
       if (!this.hasValue()) return 0;
       const s = String(this.value);
-      if (s.match(/em$/)) return this.numValue() * this.getEM(viewPort);
-      if (s.match(/ex$/)) return this.numValue() * this.getEM(viewPort) / 2.0;
-      if (s.match(/px$/)) return this.numValue();
-      if (s.match(/pt$/)) return this.numValue() * this.getDPI(viewPort) * (1.0 / 72.0);
-      if (s.match(/pc$/)) return this.numValue() * 15;
-      if (s.match(/cm$/)) return this.numValue() * this.getDPI(viewPort) / 2.54;
-      if (s.match(/mm$/)) return this.numValue() * this.getDPI(viewPort) / 25.4;
-      if (s.match(/in$/)) return this.numValue() * this.getDPI(viewPort);
-      if (s.match(/%$/)) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
+      if (s.endsWith('em')) return this.numValue() * this.getEM(viewPort);
+      if (s.endsWith('ex')) return this.numValue() * this.getEM(viewPort) / 2.0;
+      if (s.endsWith('px')) return this.numValue();
+      if (s.endsWith('pt')) return this.numValue() * this.getDPI(viewPort) * (1.0 / 72.0);
+      if (s.endsWith('pc')) return this.numValue() * 15;
+      if (s.endsWith('cm')) return this.numValue() * this.getDPI(viewPort) / 2.54;
+      if (s.endsWith('mm')) return this.numValue() * this.getDPI(viewPort) / 25.4;
+      if (s.endsWith('in')) return this.numValue() * this.getDPI(viewPort);
+      if (s.endsWith('%')) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
       const n = this.numValue();
       if (processPercent && n < 1.0) return n * svg.ViewPort.ComputeSize(viewPort);
       return n;
@@ -326,8 +326,8 @@ function build (opts) {
     toMilliseconds () {
       if (!this.hasValue()) return 0;
       const s = String(this.value);
-      if (s.match(/s$/)) return this.numValue() * 1000;
-      if (s.match(/ms$/)) return this.numValue();
+      if (s.endsWith('ms')) return this.numValue();
+      if (s.endsWith('s')) return this.numValue() * 1000;
       return this.numValue();
     }
 
@@ -336,9 +336,9 @@ function build (opts) {
     toRadians () {
       if (!this.hasValue()) return 0;
       const s = String(this.value);
-      if (s.match(/deg$/)) return this.numValue() * (Math.PI / 180.0);
-      if (s.match(/grad$/)) return this.numValue() * (Math.PI / 200.0);
-      if (s.match(/rad$/)) return this.numValue();
+      if (s.endsWith('deg')) return this.numValue() * (Math.PI / 180.0);
+      if (s.endsWith('grad')) return this.numValue() * (Math.PI / 200.0);
+      if (s.endsWith('rad')) return this.numValue();
       return this.numValue() * (Math.PI / 180.0);
     }
 
@@ -503,10 +503,10 @@ function build (opts) {
 
       for (let i = 0; i <= 1; i++) {
         const f = function (t) {
-          return Math.pow(1 - t, 3) * p0[i] +
-          3 * Math.pow(1 - t, 2) * t * p1[i] +
-          3 * (1 - t) * Math.pow(t, 2) * p2[i] +
-          Math.pow(t, 3) * p3[i];
+          return ((1 - t) ** 3) * p0[i] +
+          3 * ((1 - t) ** 2) * t * p1[i] +
+          3 * (1 - t) * (t ** 2) * p2[i] +
+          (t ** 3) * p3[i];
         };
 
         const b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
@@ -523,7 +523,7 @@ function build (opts) {
           continue;
         }
 
-        const b2ac = Math.pow(b, 2) - 4 * c * a;
+        const b2ac = (b ** 2) - 4 * c * a;
         if (b2ac < 0) continue;
         const t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
         if (t1 > 0 && t1 < 1) {
@@ -685,10 +685,10 @@ function build (opts) {
       ctx.translate(-scaleMin * refX.toPixels('x'), -scaleMin * refY.toPixels('y'));
     } else {
       // align
-      if (align.match(/^xMid/) && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
-      if (align.match(/YMid$/) && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
-      if (align.match(/^xMax/) && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width - desiredWidth, 0);
-      if (align.match(/YMax$/) && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height - desiredHeight);
+      if (align.startsWith('xMid') && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
+      if (align.endsWith('YMid') && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
+      if (align.startsWith('xMax') && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width - desiredWidth, 0);
+      if (align.endsWith('YMax') && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height - desiredHeight);
     }
 
     // scale
@@ -805,7 +805,7 @@ function build (opts) {
 
     getHrefAttribute () {
       for (const a in this.attributes) {
-        if (a.match(/:href$/)) {
+        if (a.endsWith(':href')) {
           return this.attributes[a];
         }
       }
@@ -1254,9 +1254,9 @@ function build (opts) {
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm, '$1 $2') // separate commands from points
         .replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from points
-        .replace(/([0-9])([+-])/gm, '$1 $2') // separate digits when no comma
-        .replace(/(\.[0-9]*)(\.)/gm, '$1 $2') // separate digits when no comma
-        .replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm, '$1 $3 $4 '); // shorthand elliptical arc path syntax
+        .replace(/(\d)([+-])/gm, '$1 $2') // separate digits when no comma
+        .replace(/(\.\d*)(\.)/gm, '$1 $2') // separate digits when no comma
+        .replace(/([Aa](\s+\d+)(\s+\d+)(\s+\d+))\s+([01])\s*([01])/gm, '$1 $5 $6 '); // shorthand elliptical arc path syntax
       d = svg.compressSpaces(d); // compress multiple spaces
       d = svg.trim(d);
       this.PathParser = {
@@ -1501,15 +1501,15 @@ function build (opts) {
               -Math.sin(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.cos(xAxisRotation) * (curr.y - cp.y) / 2.0
             );
             // adjust radii
-            const l = Math.pow(currp.x, 2) / Math.pow(rx, 2) + Math.pow(currp.y, 2) / Math.pow(ry, 2);
+            const l = (currp.x ** 2) / (rx ** 2) + (currp.y ** 2) / (ry ** 2);
             if (l > 1) {
               rx *= Math.sqrt(l);
               ry *= Math.sqrt(l);
             }
             // cx', cy'
             let s = (largeArcFlag === sweepFlag ? -1 : 1) * Math.sqrt(
-              ((Math.pow(rx, 2) * Math.pow(ry, 2)) - (Math.pow(rx, 2) * Math.pow(currp.y, 2)) - (Math.pow(ry, 2) * Math.pow(currp.x, 2))) /
-              (Math.pow(rx, 2) * Math.pow(currp.y, 2) + Math.pow(ry, 2) * Math.pow(currp.x, 2))
+              (((rx ** 2) * (ry ** 2)) - ((rx ** 2) * (currp.y ** 2)) - ((ry ** 2) * (currp.x ** 2))) /
+              ((rx ** 2) * (currp.y ** 2) + (ry ** 2) * (currp.x ** 2))
             );
             if (isNaN(s)) s = 0;
             const cpp = new svg.Point(s * rx * currp.y / ry, s * -ry * currp.x / rx);
@@ -1520,7 +1520,7 @@ function build (opts) {
             );
             // vector magnitude
             const m = function (v) {
-              return Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2));
+              return Math.sqrt((v[0] ** 2) + (v[1] ** 2));
             };
             // ratio between two vectors
             const r = function (u, v) {
@@ -2281,13 +2281,13 @@ function build (opts) {
         if (svg.opts.useCORS === true) {
           this.img.crossOrigin = 'Anonymous';
         }
-        this.img.onload = () => {
+        this.img.addEventListener('load', () => {
           this.loaded = true;
-        };
-        this.img.onerror = () => {
+        });
+        this.img.addEventListener('error', () => {
           svg.log('ERROR: image "' + href + '" not found');
           this.loaded = true;
-        };
+        });
         this.img.src = href;
       } else {
         svg.ajax(href, true).then((img) => { // eslint-disable-line promise/prefer-await-to-then, promise/always-return
@@ -2769,20 +2769,20 @@ function build (opts) {
 
     // bind mouse
     if (svg.opts.ignoreMouse !== true) {
-      ctx.canvas.onclick = function (e) {
+      ctx.canvas.addEventListener('click', function (e) {
         const args = !isNullish(e)
           ? [e.clientX, e.clientY]
           : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
         const {x, y} = mapXY(new svg.Point(...args));
         svg.Mouse.onclick(x, y);
-      };
-      ctx.canvas.onmousemove = function (e) {
+      });
+      ctx.canvas.addEventListener('mousemove', function (e) {
         const args = !isNullish(e)
           ? [e.clientX, e.clientY]
           : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
         const {x, y} = mapXY(new svg.Point(...args));
         svg.Mouse.onmousemove(x, y);
-      };
+      });
     }
 
     const e = svg.CreateElement(dom.documentElement);

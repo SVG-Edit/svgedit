@@ -26,7 +26,7 @@
 */
 function toFixedNumeric (value, precision) {
   if (precision === undefined) precision = 0;
-  return Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
+  return Math.round(value * (10 ** precision)) / (10 ** precision);
 }
 
 /**

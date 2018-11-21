@@ -804,7 +804,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
           number *= sign;
 
           if (exponent) {
-            number *= Math.pow(10, expsign * exponent);
+            number *= 10 ** (expsign * exponent);
           }
 
           if (startIndex === this._currentIndex) {

@@ -1052,7 +1052,7 @@ export default function jQueryPluginJGraduate ($) {
 
         switch (slider.type) {
         case 'radius':
-          x = Math.pow(x * 2, 2.5);
+          x = (x * 2) ** 2.5;
           if (x > 0.98 && x < 1.02) x = 1;
           if (x <= 0.01) x = 0.01;
           curGradient.setAttribute('r', x);
@@ -1171,7 +1171,7 @@ export default function jQueryPluginJGraduate ($) {
           switch (type) {
           case 'radius':
             if (isRad) curGradient.setAttribute('r', val / 100);
-            xpos = (Math.pow(val / 100, 1 / 2.5) / 2) * SLIDERW;
+            xpos = (((val / 100) ** (1 / 2.5)) / 2) * SLIDERW;
             break;
 
           case 'opacity':

@@ -79,22 +79,32 @@ export function importScript (url, atts = {}) {
   }
   return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
     const script = document.createElement('script');
+    /**
+     *
+     * @returns {undefined}
+     */
+    function scriptOnError () {
+      reject(new Error(`Failed to import: ${url}`));
+      destructor();
+    }
+    /**
+     *
+     * @returns {undefined}
+     */
+    function scriptOnLoad () {
+      resolve();
+      destructor();
+    }
     const destructor = () => {
-      script.onerror = null;
-      script.onload = null;
+      script.removeEventListener('error', scriptOnError);
+      script.removeEventListener('load', scriptOnLoad);
       script.remove();
       script.src = '';
     };
     script.defer = 'defer';
     addScriptAtts(script, atts);
-    script.onerror = () => {
-      reject(new Error(`Failed to import: ${url}`));
-      destructor();
-    };
-    script.onload = () => {
-      resolve();
-      destructor();
-    };
+    script.addEventListener('error', scriptOnError);
+    script.addEventListener('load', scriptOnLoad);
     script.src = url;
 
     document.head.append(script);
@@ -119,10 +129,26 @@ export function importModule (url, atts = {}, {returnDefault = false} = {}) {
   return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
     const vector = '$importModule$' + Math.random().toString(32).slice(2);
     const script = document.createElement('script');
+    /**
+     *
+     * @returns {undefined}
+     */
+    function scriptOnError () {
+      reject(new Error(`Failed to import: ${url}`));
+      destructor();
+    }
+    /**
+     *
+     * @returns {undefined}
+     */
+    function scriptOnLoad () {
+      resolve(window[vector]);
+      destructor();
+    }
     const destructor = () => {
       delete window[vector];
-      script.onerror = null;
-      script.onload = null;
+      script.removeEventListener('error', scriptOnError);
+      script.removeEventListener('load', scriptOnLoad);
       script.remove();
       URL.revokeObjectURL(script.src);
       script.src = '';
@@ -130,14 +156,8 @@ export function importModule (url, atts = {}, {returnDefault = false} = {}) {
     addScriptAtts(script, atts);
     script.defer = 'defer';
     script.type = 'module';
-    script.onerror = () => {
-      reject(new Error(`Failed to import: ${url}`));
-      destructor();
-    };
-    script.onload = () => {
-      resolve(window[vector]);
-      destructor();
-    };
+    script.addEventListener('error', scriptOnError);
+    script.addEventListener('load', scriptOnLoad);
     const absURL = toAbsoluteURL(url);
     const loader = `import * as m from '${absURL.replace(/'/g, "\\'")}'; window.${vector} = ${returnDefault ? 'm.default || ' : ''}m;`; // export Module
     const blob = new Blob([loader], {type: 'text/javascript'});

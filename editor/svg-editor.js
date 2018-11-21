@@ -6138,11 +6138,11 @@ editor.init = function () {
           let imgHeight = 100;
           const img = new Image();
           img.style.opacity = 0;
-          img.onload = function () {
+          img.addEventListener('load', function () {
             imgWidth = img.offsetWidth || img.naturalWidth || img.width;
             imgHeight = img.offsetHeight || img.naturalHeight || img.height;
             insertNewImage(imgWidth, imgHeight);
-          };
+          });
           img.src = result;
         };
         reader.readAsDataURL(file);
@@ -6431,7 +6431,7 @@ editor.loadFromDataURI = function (str, {noAlert} = {}) {
     if (pre) {
       base64 = true;
     } else {
-      pre = str.match(/^data:image\/svg\+xml(?:;(?:utf8)?)?,/);
+      pre = str.match(/^data:image\/svg\+xml(?:;|;utf8)?,/);
     }
     if (pre) {
       pre = pre[0];

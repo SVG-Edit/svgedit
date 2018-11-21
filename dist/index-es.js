@@ -8328,7 +8328,7 @@ var getPathBBox = function getPathBBox(path$$1) {
 
   var getCalc = function getCalc(j, P1, P2, P3) {
     return function (t) {
-      return Math.pow(1 - t, 3) * P0[j] + 3 * Math.pow(1 - t, 2) * t * P1[j] + 3 * (1 - t) * Math.pow(t, 2) * P2[j] + Math.pow(t, 3) * P3[j];
+      return 1 - Math.pow(t, 3) * P0[j] + 3 * 1 - Math.pow(t, 2) * t * P1[j] + 3 * (1 - t) * Math.pow(t, 2) * P2[j] + Math.pow(t, 3) * P3[j];
     };
   };
 
@@ -9458,27 +9458,37 @@ function importScript(url) {
   return new Promise(function (resolve, reject) {
     // eslint-disable-line promise/avoid-new
     var script = document.createElement('script');
+    /**
+     *
+     * @returns {undefined}
+     */
+
+    function scriptOnError() {
+      reject(new Error("Failed to import: ".concat(url)));
+      destructor();
+    }
+    /**
+     *
+     * @returns {undefined}
+     */
+
+
+    function scriptOnLoad() {
+      resolve();
+      destructor();
+    }
 
     var destructor = function destructor() {
-      script.onerror = null;
-      script.onload = null;
+      script.removeEventListener('error', scriptOnError);
+      script.removeEventListener('load', scriptOnLoad);
       script.remove();
       script.src = '';
     };
 
     script.defer = 'defer';
     addScriptAtts(script, atts);
-
-    script.onerror = function () {
-      reject(new Error("Failed to import: ".concat(url)));
-      destructor();
-    };
-
-    script.onload = function () {
-      resolve();
-      destructor();
-    };
-
+    script.addEventListener('error', scriptOnError);
+    script.addEventListener('load', scriptOnLoad);
     script.src = url;
     document.head.append(script);
   });
@@ -9510,11 +9520,30 @@ function importModule(url) {
     // eslint-disable-line promise/avoid-new
     var vector = '$importModule$' + Math.random().toString(32).slice(2);
     var script = document.createElement('script');
+    /**
+     *
+     * @returns {undefined}
+     */
+
+    function scriptOnError() {
+      reject(new Error("Failed to import: ".concat(url)));
+      destructor();
+    }
+    /**
+     *
+     * @returns {undefined}
+     */
+
+
+    function scriptOnLoad() {
+      resolve(window[vector]);
+      destructor();
+    }
 
     var destructor = function destructor() {
       delete window[vector];
-      script.onerror = null;
-      script.onload = null;
+      script.removeEventListener('error', scriptOnError);
+      script.removeEventListener('load', scriptOnLoad);
       script.remove();
       URL.revokeObjectURL(script.src);
       script.src = '';
@@ -9523,17 +9552,8 @@ function importModule(url) {
     addScriptAtts(script, atts);
     script.defer = 'defer';
     script.type = 'module';
-
-    script.onerror = function () {
-      reject(new Error("Failed to import: ".concat(url)));
-      destructor();
-    };
-
-    script.onload = function () {
-      resolve(window[vector]);
-      destructor();
-    };
-
+    script.addEventListener('error', scriptOnError);
+    script.addEventListener('load', scriptOnLoad);
     var absURL = toAbsoluteURL(url);
     var loader = "import * as m from '".concat(absURL.replace(/'/g, "\\'"), "'; window.").concat(vector, " = ").concat(returnDefault ? 'm.default || ' : '', "m;"); // export Module
 
@@ -17434,7 +17454,9 @@ function SvgCanvas(container, config) {
 
     if (elem) {
       cleanupElement(elem);
-      var attrs = Array.from(elem.attributes);
+
+      var attrs = _toConsumableArray(elem.attributes);
+
       var childs = elem.childNodes;
       attrs.sort(function (a, b) {
         return a.name > b.name ? -1 : 1;
@@ -35854,13 +35876,11 @@ editor.init = function () {
           var imgHeight = 100;
           var img = new Image();
           img.style.opacity = 0;
-
-          img.onload = function () {
+          img.addEventListener('load', function () {
             imgWidth = img.offsetWidth || img.naturalWidth || img.width;
             imgHeight = img.offsetHeight || img.naturalHeight || img.height;
             insertNewImage(imgWidth, imgHeight);
-          };
-
+          });
           img.src = result;
         };
 
@@ -36336,7 +36356,7 @@ editor.loadFromDataURI = function (str) {
     if (pre) {
       base64 = true;
     } else {
-      pre = str.match(/^data:image\/svg\+xml(?:;(?:utf8)?)?,/);
+      pre = str.match(/^data:image\/svg\+xml(?:;|;utf8)?,/);
     }
 
     if (pre) {

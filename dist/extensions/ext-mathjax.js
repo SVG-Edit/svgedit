@@ -65,27 +65,37 @@ var svgEditorExtension_mathjax = (function () {
     return new Promise(function (resolve, reject) {
       // eslint-disable-line promise/avoid-new
       var script = document.createElement('script');
+      /**
+       *
+       * @returns {undefined}
+       */
+
+      function scriptOnError() {
+        reject(new Error("Failed to import: ".concat(url)));
+        destructor();
+      }
+      /**
+       *
+       * @returns {undefined}
+       */
+
+
+      function scriptOnLoad() {
+        resolve();
+        destructor();
+      }
 
       var destructor = function destructor() {
-        script.onerror = null;
-        script.onload = null;
+        script.removeEventListener('error', scriptOnError);
+        script.removeEventListener('load', scriptOnLoad);
         script.remove();
         script.src = '';
       };
 
       script.defer = 'defer';
       addScriptAtts(script, atts);
-
-      script.onerror = function () {
-        reject(new Error("Failed to import: ".concat(url)));
-        destructor();
-      };
-
-      script.onload = function () {
-        resolve();
-        destructor();
-      };
-
+      script.addEventListener('error', scriptOnError);
+      script.addEventListener('load', scriptOnLoad);
       script.src = url;
       document.head.append(script);
     });
