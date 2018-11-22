@@ -1,5 +1,9 @@
 # SVG-Edit CHANGES
 
+# ?
+
+- Enhancement: Add svgcanvas distributions
+
 # 4.0.1
 
 - Fix: Adjust side panel width checking based on device zoom (fixes #298)

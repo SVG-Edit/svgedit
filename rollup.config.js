@@ -73,6 +73,23 @@ export default [
   getRollupObject({minifying: true, format: 'es'}),
   getRollupObject({minifying: false, format: 'es'}),
   // **/
+  ...[true, false].map((min) => {
+    return {
+      input: 'editor/svgcanvas.js',
+      output: {
+        format: 'iife',
+        sourcemap: min,
+        name: 'SvgCanvas',
+        file: `dist/svgcanvas-iife${min ? '.min' : ''}.js`
+      },
+      plugins: [
+        babel({
+          plugins: ['transform-object-rest-spread']
+        }),
+        min ? terser() : null
+      ]
+    };
+  }),
   ...extensionLocaleFiles.map(([dir, file]) => {
     const lang = file.replace(/\.js$/, '').replace(/-/g, '_');
     return {
