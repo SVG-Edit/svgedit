@@ -3,6 +3,7 @@
 # ?
 
 - Enhancement: Add svgcanvas distributions
+- Update: Bump StackBlur version
 
 # 4.0.1
 
