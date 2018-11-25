@@ -1,6 +1,20 @@
 var svgEditorExtension_server_moinsave = (function () {
   'use strict';
 
+  function _typeof(obj) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
   function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
     try {
       var info = gen[key](arg);
@@ -584,7 +598,7 @@ var svgEditorExtension_server_moinsave = (function () {
    * @param {Integer} topY
    * @param {Integer} width
    * @param {Integer} height
-   * @throws {Error}
+   * @throws {Error|TypeError}
    * @returns {ImageData} See {@link https://html.spec.whatwg.org/multipage/canvas.html#imagedata}
    */
 
@@ -594,8 +608,8 @@ var svgEditorExtension_server_moinsave = (function () {
       canvas = document.getElementById(canvas);
     }
 
-    if (!canvas || !('getContext' in canvas)) {
-      return;
+    if (!canvas || _typeof(canvas) !== 'object' || !('getContext' in canvas)) {
+      throw new TypeError('Expecting canvas with `getContext` method in processCanvasRGB(A) calls!');
     }
 
     var context = canvas.getContext('2d');

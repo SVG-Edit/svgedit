@@ -120,7 +120,7 @@
     "rollup-plugin-terser": "^3.0.0",
     "sinon": "^7.1.1",
     "sinon-test": "^2.4.0",
-    "stackblur-canvas": "^2.0.0",
+    "stackblur-canvas": "^2.1.0",
     "testcafe": "^0.23.2"
   }
 }
