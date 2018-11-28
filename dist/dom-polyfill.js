@@ -1,6 +1,20 @@
 (function () {
   'use strict';
 
+  function _typeof(obj) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
   // From https://github.com/inexorabletash/polyfill/blob/master/dom.js
 
   /**
@@ -37,7 +51,8 @@
 
   function convertNodesIntoANode(nodes) {
     nodes = nodes.map(function (node) {
-      return !(node instanceof Node) ? document.createTextNode(node) : node;
+      var isNode = node && _typeof(node) === 'object' && 'nodeType' in node;
+      return isNode ? node : document.createTextNode(node);
     });
 
     if (nodes.length === 1) {

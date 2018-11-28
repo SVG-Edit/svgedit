@@ -152,8 +152,11 @@ const rxform = rect.transform.baseVal;
 const t1 = svg.createSVGTransform();
 rxform.appendItem(t1);
 const r1 = rxform.getItem(0);
-// Todo: Do frame-independent instance checking
-return r1 instanceof SVGTransform && t1 instanceof SVGTransform &&
+const isSVGTransform = (o) => {
+  // https://developer.mozilla.org/en-US/docs/Web/API/SVGTransform
+  return o && typeof o === 'object' && typeof o.setMatrix === 'function' && 'angle' in o;
+};
+return isSVGTransform(r1) && isSVGTransform(t1) &&
   r1.type === t1.type && r1.angle === t1.angle &&
   r1.matrix.a === t1.matrix.a &&
   r1.matrix.b === t1.matrix.b &&

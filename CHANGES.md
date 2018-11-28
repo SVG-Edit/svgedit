@@ -2,8 +2,13 @@
 
 # ?
 
+- Fix: Avoid cross-frame unsafe `instanceof`
 - Enhancement: Add svgcanvas distributions
-- Update: Bump StackBlur version
+- Demo: Rename import to match named dist export
+- Linting (ESLint): Prefer `addEventListener`, exponentiation operator,
+    avoiding catastrophic regexes, prefer spread, prefer
+    `startsWith`/`endsWith`, no fn ref in iterator
+- npm: Update devDeps
 
 # 4.0.1
 

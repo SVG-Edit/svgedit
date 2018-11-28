@@ -84,7 +84,7 @@
     "axe-testcafe": "^1.1.0",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
     "eslint": "5.9.0",
-    "eslint-config-ash-nazg": "0.1.1",
+    "eslint-config-ash-nazg": "0.2.0",
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-compat": "2.6.3",
     "eslint-plugin-import": "2.14.0",

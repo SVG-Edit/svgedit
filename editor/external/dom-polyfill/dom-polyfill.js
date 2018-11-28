@@ -34,7 +34,8 @@ function mixin (o, ps) {
  */
 function convertNodesIntoANode (nodes) {
   nodes = nodes.map((node) => {
-    return !(node instanceof Node) ? document.createTextNode(node) : node;
+    const isNode = node && typeof node === 'object' && 'nodeType' in node;
+    return isNode ? node : document.createTextNode(node);
   });
   if (nodes.length === 1) {
     return nodes[0];
