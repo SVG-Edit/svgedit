@@ -107,6 +107,7 @@ incorporating SVGEdit.
 
 ## Recent news
 
+- 2018-11-29 Published 4.0.2 (Fix for hyphenated locales, svgcanvas distributions)
 - 2018-11-16 Published 4.0.0/4.0.1 (Move to Promise-based APIs)
 - 2018-11-01 Published 3.2.0 (Update qunit to resolve security vulnerability of a dependency)
 - 2018-10-25 Published 3.1.1 (Fix for saving SVG on Firefox)

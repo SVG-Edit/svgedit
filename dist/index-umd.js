@@ -28903,7 +28903,7 @@
                   importLocale = function _ref3(language) {
                     var url = "".concat(curConfig.extPath, "ext-locale/").concat(name, "/").concat(language, ".js");
                     return importSetGlobalDefault(url, {
-                      global: "svgEditorExtensionLocale_".concat(name, "_").concat(language)
+                      global: "svgEditorExtensionLocale_".concat(name, "_").concat(language.replace(/-/g, '_'))
                     });
                   };
 

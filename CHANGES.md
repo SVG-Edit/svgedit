@@ -1,6 +1,6 @@
 # SVG-Edit CHANGES
 
-# ?
+# 4.1.0
 
 - Fix: Avoid cross-frame unsafe `instanceof`
 - Enhancement: Add svgcanvas distributions

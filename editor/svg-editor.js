@@ -359,7 +359,7 @@ function getImportLocale ({defaultLang, defaultName}) {
     function importLocale (language) {
       const url = `${curConfig.extPath}ext-locale/${name}/${language}.js`;
       return importSetGlobalDefault(url, {
-        global: `svgEditorExtensionLocale_${name}_${language}`
+        global: `svgEditorExtensionLocale_${name}_${language.replace(/-/g, '_')}`
       });
     }
     try {
