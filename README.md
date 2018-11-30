@@ -10,6 +10,14 @@
 SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
 works in any modern browser.
 
+## Help wanted
+
+While we have made some recent releases to SVG-edit for bug fixes,
+refactoring and documentation to make the codebase more maintainable, the
+core developers responsible for the bulk of the drawing features are no
+longer active with the project, so we would love others familiar with SVG
+to join the project.
+
 ## Demo
 
 ### [Try SVG-edit here](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
