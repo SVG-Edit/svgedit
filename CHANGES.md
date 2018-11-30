@@ -1,6 +1,12 @@
 # SVG-Edit CHANGES
 
-# 4.1.0
+# ?
+
+- l10n: Add Chinese (simplified) extension locales (Thanks, @enlove!)
+- Linting (ESLint): Avoid reporting `no-console`
+- Refactoring: Avoid Firefox console errors with hidden iframe
+
+## 4.1.0
 
 - Fix: Avoid cross-frame unsafe `instanceof`
 - Enhancement: Add svgcanvas distributions
@@ -10,12 +16,12 @@
     `startsWith`/`endsWith`, no fn ref in iterator
 - npm: Update devDeps
 
-# 4.0.1
+## 4.0.1
 
 - Fix: Adjust side panel width checking based on device zoom (fixes #298)
 - Fix (regression): RGBColor
 
-# 4.0.0
+## 4.0.0
 
 - Breaking change (storage preference cookies): Namespace the cookie as
   "svgeditstore" instead of just "store"

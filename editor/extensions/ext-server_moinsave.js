@@ -18,7 +18,9 @@ export default {
     const saveSvgAction = '/+modify';
 
     // Create upload target (hidden iframe)
-    /* const target = */ $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
+    //  Hiding by size instead of display to avoid FF console errors
+    //    with `getBBox` in browser.js `supportsPathBBox_`)
+    /* const target = */ $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
 
     svgEditor.setCustomHandlers({
       async save (win, data) {
