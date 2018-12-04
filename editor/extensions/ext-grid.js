@@ -34,7 +34,7 @@ export default {
       display: 'none'
     });
     canvBG.append(canvasGrid);
-
+    const gridDefs = svgdoc.createElementNS(NS.SVG, 'defs');
     // grid-pattern
     const gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern');
     assignAttributes(gridPattern, {
@@ -54,7 +54,8 @@ export default {
       height: 100
     });
     gridPattern.append(gridimg);
-    $('#svgroot defs').append(gridPattern);
+    gridDefs.append(gridPattern);
+    $('#canvasGrid').append(gridDefs);
 
     // grid-box
     const gridBox = svgdoc.createElementNS(NS.SVG, 'rect');
