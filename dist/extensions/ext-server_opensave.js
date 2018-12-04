@@ -4993,8 +4993,10 @@ var svgEditorExtension_server_opensave = (function () {
 
                 saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php', saveImgAction = svgEditor.curConfig.extPath + 'filesave.php'; // Create upload target (hidden iframe)
 
-                cancelled = false;
-                $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
+                cancelled = false; //  Hiding by size instead of display to avoid FF console errors
+                //    with `getBBox` in browser.js `supportsPathBBox_`)
+
+                $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function save(win, data) {
                     var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
@@ -5094,9 +5096,11 @@ var svgEditorExtension_server_opensave = (function () {
                       }, _callee, this);
                     }));
 
-                    return function exportImage(_x2, _x3) {
+                    function exportImage(_x2, _x3) {
                       return _exportImage.apply(this, arguments);
-                    };
+                    }
+
+                    return exportImage;
                   }()
                 }); // Do nothing if client support is found
 
@@ -5182,9 +5186,11 @@ var svgEditorExtension_server_opensave = (function () {
         }, _callee5, this);
       }));
 
-      return function init(_x) {
+      function init(_x) {
         return _init.apply(this, arguments);
-      };
+      }
+
+      return init;
     }()
   };
 

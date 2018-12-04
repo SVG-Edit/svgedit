@@ -352,9 +352,11 @@ var svgEditorExtension_arrows = (function () {
                       }, _callee, this);
                     }));
 
-                    return function addLangData(_x2) {
+                    function addLangData(_x2) {
                       return _addLangData.apply(this, arguments);
-                    };
+                    }
+
+                    return addLangData;
                   }(),
                   selectedChanged: function selectedChanged(opts) {
                     // Use this to update the current selected elements
@@ -397,9 +399,11 @@ var svgEditorExtension_arrows = (function () {
         }, _callee2, this);
       }));
 
-      return function init(_x) {
+      function init(_x) {
         return _init.apply(this, arguments);
-      };
+      }
+
+      return init;
     }()
   };
 

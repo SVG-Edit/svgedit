@@ -144,7 +144,6 @@ module.exports = {
     complexity: ["off"],
     "default-case": ["off"],
     "require-unicode-regexp": ["off"],
-    "no-console": ["off"],
     "no-magic-numbers": ["off"],
     "no-warning-comments": ["off"],
     "max-len": ["off", {

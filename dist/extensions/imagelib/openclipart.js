@@ -3146,9 +3146,11 @@
                         }, _callee2, this);
                       }));
 
-                      return function click(_x2) {
+                      function click(_x2) {
                         return _click.apply(this, arguments);
-                      };
+                      }
+
+                      return click;
                     }()
                   }
                 }, [// If we wanted interactive versions despite security risk:
@@ -3254,9 +3256,11 @@
           }, _callee, this);
         }));
 
-        return function $submit() {
+        function $submit() {
           return _$submit.apply(this, arguments);
-        };
+        }
+
+        return $submit;
       }()
     },
     $on: {

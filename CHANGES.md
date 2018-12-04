@@ -2,8 +2,8 @@
 
 # ?
 
-- l10n: Add Chinese (simplified) extension locales (Thanks, @enlove!)
-- Linting (ESLint): Avoid reporting `no-console`
+- Fix: Problem with retaining lines with grid mode (@NeiroNx)
+- l10n: Add Chinese (simplified) extension locales (@enlove)
 - Refactoring: Avoid Firefox console errors with hidden iframe
 
 ## 4.1.0

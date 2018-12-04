@@ -309,9 +309,11 @@ var svgEditorExtension_mathjax = (function () {
                         }, _callee, this, [[7, 13]]);
                       }));
 
-                      return function click() {
+                      function click() {
                         return _click.apply(this, arguments);
-                      };
+                      }
+
+                      return click;
                     }()
                   }
                 }];
@@ -359,9 +361,11 @@ var svgEditorExtension_mathjax = (function () {
         }, _callee2, this);
       }));
 
-      return function init(_x) {
+      function init(_x) {
         return _init.apply(this, arguments);
-      };
+      }
+
+      return init;
     }()
   };
 

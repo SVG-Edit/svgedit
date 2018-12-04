@@ -759,9 +759,11 @@ var svgEditorExtension_markers = (function () {
         }, _callee3, this);
       }));
 
-      return function init(_x) {
+      function init(_x) {
         return _init.apply(this, arguments);
-      };
+      }
+
+      return init;
     }()
   };
 

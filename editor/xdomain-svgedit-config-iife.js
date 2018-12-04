@@ -28925,9 +28925,11 @@
           }, _callee, this, [[2, 8]]);
         }));
 
-        return function importLocaleDefaulting() {
+        function importLocaleDefaulting() {
           return _importLocaleDefaulting.apply(this, arguments);
-        };
+        }
+
+        return importLocaleDefaulting;
       }()
     );
   }
@@ -30122,9 +30124,11 @@
           }, _callee4, this);
         }));
 
-        return function callback(_x3) {
+        function callback(_x3) {
           return _callback.apply(this, arguments);
-        };
+        }
+
+        return callback;
       }()
     });
     /**

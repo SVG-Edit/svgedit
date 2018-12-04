@@ -573,9 +573,11 @@ var svgEditorExtension_imagelib = (function () {
         }, _callee2, this);
       }));
 
-      return function init(_x) {
+      function init(_x) {
         return _init.apply(this, arguments);
-      };
+      }
+
+      return init;
     }()
   };
 

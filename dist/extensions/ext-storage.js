@@ -415,9 +415,11 @@ var svgEditorExtension_storage = (function () {
             }, _callee, this);
           }));
 
-          return function langReady(_x) {
+          function langReady(_x) {
             return _langReady.apply(this, arguments);
-          };
+          }
+
+          return langReady;
         }()
       };
     }

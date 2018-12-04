@@ -4861,10 +4861,12 @@ var svgEditorExtension_server_moinsave = (function () {
                 svgEditor = this;
                 svgCanvas = svgEditor.canvas;
                 saveSvgAction = '/+modify'; // Create upload target (hidden iframe)
+                //  Hiding by size instead of display to avoid FF console errors
+                //    with `getBBox` in browser.js `supportsPathBBox_`)
 
                 /* const target = */
 
-                $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
+                $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function () {
                     var _save = _asyncToGenerator(
@@ -4915,9 +4917,11 @@ var svgEditorExtension_server_moinsave = (function () {
                       }, _callee, this);
                     }));
 
-                    return function save(_x2, _x3) {
+                    function save(_x2, _x3) {
                       return _save.apply(this, arguments);
-                    };
+                    }
+
+                    return save;
                   }()
                 });
 
@@ -4929,9 +4933,11 @@ var svgEditorExtension_server_moinsave = (function () {
         }, _callee2, this);
       }));
 
-      return function init(_x) {
+      function init(_x) {
         return _init.apply(this, arguments);
-      };
+      }
+
+      return init;
     }()
   };
 

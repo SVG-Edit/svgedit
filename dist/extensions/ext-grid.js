@@ -140,8 +140,9 @@ var svgEditorExtension_grid = (function () {
                   overflow: 'visible',
                   display: 'none'
                 });
-                canvBG.append(canvasGrid); // grid-pattern
-                gridDefs = svgdoc.createElementNS(NS.SVG, 'defs');
+                canvBG.append(canvasGrid);
+                gridDefs = svgdoc.createElementNS(NS.SVG, 'defs'); // grid-pattern
+
                 gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern');
                 assignAttributes(gridPattern, {
                   id: 'gridpattern',
@@ -212,7 +213,7 @@ var svgEditorExtension_grid = (function () {
                   })
                 });
 
-              case 25:
+              case 27:
               case "end":
                 return _context.stop();
             }
@@ -220,9 +221,11 @@ var svgEditorExtension_grid = (function () {
         }, _callee, this);
       }));
 
-      return function init(_x) {
+      function init(_x) {
         return _init.apply(this, arguments);
-      };
+      }
+
+      return init;
     }()
   };
 
