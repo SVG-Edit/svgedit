@@ -51,7 +51,7 @@ var svgEditorExtension_grid = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee(_ref) {
-        var $, NS, getTypeMap, importLocale, strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
+        var $, NS, getTypeMap, importLocale, strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridDefs, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -141,7 +141,7 @@ var svgEditorExtension_grid = (function () {
                   display: 'none'
                 });
                 canvBG.append(canvasGrid); // grid-pattern
-
+                gridDefs = svgdoc.createElementNS(NS.SVG, 'defs');
                 gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern');
                 assignAttributes(gridPattern, {
                   id: 'gridpattern',
@@ -161,7 +161,8 @@ var svgEditorExtension_grid = (function () {
                   height: 100
                 });
                 gridPattern.append(gridimg);
-                $('#svgroot defs').append(gridPattern); // grid-box
+                gridDefs.append(gridPattern);
+                $('#canvasGrid').append(gridDefs); // grid-box
 
                 gridBox = svgdoc.createElementNS(NS.SVG, 'rect');
                 assignAttributes(gridBox, {
