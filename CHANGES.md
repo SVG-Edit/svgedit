@@ -1,10 +1,12 @@
 # SVG-Edit CHANGES
 
-# ?
+# 4.2.0
 
 - Fix: Problem with retaining lines with grid mode (@NeiroNx)
 - l10n: Add Chinese (simplified) extension locales (@enlove)
+- l10n: Add Russian translation to some strings (@NeiroNx)
 - Refactoring: Avoid Firefox console errors with hidden iframe
+- npm: Update devDeps
 
 ## 4.1.0
 
