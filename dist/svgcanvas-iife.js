@@ -14539,7 +14539,7 @@ var SvgCanvas = (function () {
 
       var resultList = null;
 
-      if (!isIE) {
+      if (!isIE()) {
         if (typeof svgroot.getIntersectionList === 'function') {
           // Offset the bbox of the rubber box by the offset of the svgcontent element.
           rubberBBox.x += parseInt(svgcontent.getAttribute('x'));

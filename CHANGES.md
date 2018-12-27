@@ -1,6 +1,11 @@
 # SVG-Edit CHANGES
 
-# 4.2.0
+## ?
+
+- Optimization fix: Properly run code conditionally on browser check;
+    fixes #312 (@ianli-sc)
+
+## 4.2.0
 
 - Fix: Problem with retaining lines with grid mode (@NeiroNx)
 - l10n: Add Chinese (simplified) extension locales (@enlove)
