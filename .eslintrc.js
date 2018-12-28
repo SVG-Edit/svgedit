@@ -140,12 +140,8 @@ module.exports = {
   rules: {
     // Override these `ash-nazg/sauron` rules which are difficult for us
     //   to apply at this time
-    "capitalized-comments": ["off"],
-    complexity: ["off"],
     "default-case": ["off"],
     "require-unicode-regexp": ["off"],
-    "no-magic-numbers": ["off"],
-    "no-warning-comments": ["off"],
     "max-len": ["off", {
       ignoreUrls: true,
       ignoreRegExpLiterals: true
