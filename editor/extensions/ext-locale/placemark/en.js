@@ -1,5 +1,5 @@
 export default {
-  name: 'star',
+  name: 'placemark',
   langList: [
     {id: 'nomarker', title: 'No Marker'},
     {id: 'leftarrow', title: 'Left Arrow'},

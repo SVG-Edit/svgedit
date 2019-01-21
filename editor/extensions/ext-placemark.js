@@ -79,14 +79,39 @@ export default {
     }
 
     /**
-     *
-     * @param {string} attr
-     * @param {string|Float} val
+     * Called when text is changed
+     * @param {string} txt
      * @returns {undefined}
      */
-    function setAttr (attr, val) {
-      svgCanvas.changeSelectedAttribute(attr, val);
-      svgCanvas.call('changed', selElems);
+    function updateText(txt){
+      const items = txt.split(";");
+      selElems.forEach((elem)=>{
+        if (elem && elem.getAttribute('class').indexOf('placemark')!=-1) {
+          $(elem).children().each((n,i)=>{
+            const type = i.id.split("_");
+            if(type[2]=="txt")$(i).text(items[type[3]]);
+          });
+        }
+      });
+    }
+    /**
+     * Called when font is changed
+     * @param {string} font
+     * @returns {undefined}
+     */
+    function updateFont(font){
+      font = font.split(" ");
+      const fontSize = parseInt(font.pop());
+      font = font.join(" ")
+      selElems.forEach((elem)=>{
+        if (elem && elem.getAttribute('class').indexOf('placemark')!=-1) {
+          let txt = [];
+          $(elem).children().each((n,i)=>{
+            const type = i.id.split("_");
+            if(type[2]=="txt")$(i).attr({"font-family":font,"font-size":fontSize});
+          });
+        }
+      });
     }
     /**
     * @param {string} id
@@ -170,12 +195,13 @@ export default {
     /**
      * Called when the main system modifies an object. This routine changes
      *   the associated markers to be the same color.
-     * @param {Element} elem
+     * @param {Element} el
      * @returns {undefined}
     */
-    function colorChanged (elem) {
-      const color = elem.getAttribute('stroke');
-      const marker = getLinked(elem, 'marker-start');
+    function colorChanged (el) {
+      const color = el.getAttribute('stroke');
+      const marker = getLinked(el, 'marker-start');
+      console.log(marker);
       if (!marker) { return; }
       if (!marker.attributes.class) { return; } // not created by this extension
       const ch = marker.lastElementChild;
@@ -193,7 +219,7 @@ export default {
     * @returns {undefined}
     */
     function updateReferences (el) {
-        const id = placemark_marker_ + el.id;
+        const id = "placemark_marker_" + el.id;
         const markerName = 'marker-start';
         const marker = getLinked(el, markerName);
         if (!marker || !marker.attributes.class) { return; } // not created by this extension
@@ -283,18 +309,18 @@ export default {
       defval: '',
       events: {
         change () {
-          //setAttr('text', this.value);
+          updateText(this.value);
         }
       }
     }, {
       type: 'input',
       panel: 'placemark_panel',
       id: 'placemarkFont',
-      size: 10,
+      size: 7,
       defval: 'Arial 10',
       events: {
         change () {
-          //setAttr('untext', this.value);
+          updateFont(this.value);
         }
       }
     }
@@ -350,7 +376,7 @@ export default {
                         "stroke-linecap":"round",
                         x1: x0,
                         y1: y0+(fontSize+6)*n,
-                        x2: x0+i.length*fontSize*0.6+fontSize,
+                        x2: x0+i.length*fontSize*0.5+fontSize,
                         y2: y0+(fontSize+6)*n,
                     }
                 });
@@ -388,10 +414,12 @@ export default {
             element: 'g',
             attr: {
               id: id,
-              shape: 'placemark',
+              "class": "placemark",
               fontSize:fontSize,
               maxlen:maxlen,
               lines:items.length,
+              x:opts.start_x,
+              y:opts.start_y,
               px:opts.start_x,
               py:opts.start_y,
             },
@@ -408,19 +436,23 @@ export default {
         if (!started) {
           return undefined;
         }
-        console.log()
         if (svgCanvas.getMode() === 'placemark') {
-          const scale = 1/svgCanvas.getZoom();
-          let x = opts.mouse_x*scale;
-          let y = opts.mouse_y*scale;
+          const sc = 1/svgCanvas.getZoom();
+          let x = opts.mouse_x*sc;
+          let y = opts.mouse_y*sc;
+          /*if(svgCanvas.getSnapToGrid()){
+              //TODO: Snap to gird.
+          }*/
           const {fontSize,maxlen,lines,px,py} = $(newPM).attr(['fontSize','maxlen','lines','px','py']);
+          $(newPM).attr({"x":x,"y":y});
           $(newPM).children().each((n,i)=>{
               const type = i.id.split("_");
-              const y0 = y+(fontSize+6)*type[3],x0 = x+maxlen*fontSize*0.6+fontSize;
-              const nx = (x<px)?x0:x;
+              const y0 = y+(fontSize+6)*type[3],x0 = x+maxlen*fontSize*0.5+fontSize;
+              const nx = (x+(x0-x)/2 < px)?x0:x;
+              const ny = (y+((fontSize+6)*(lines-1))/2 < py)?y+(fontSize+6)*(lines-1):y;
               if(type[2]=="pline"){
                   i.setAttribute("x2",nx);
-                  i.setAttribute("y2",y);
+                  i.setAttribute("y2",ny);
                   
               }
               if(type[2]=="tline"){
@@ -448,10 +480,9 @@ export default {
       },
       mouseUp () {
         if (svgCanvas.getMode() === 'placemark') {
-          /*const attrs = $(newFO).attr(['r']);
-          // svgCanvas.addToSelection([newFO], true);*/
+          const {x,y,px,py} = $(newPM).attr(['x','y','px','py'])
           return {
-            keep: true,
+            keep: (x!=px&&y!=py),
             element: newPM
           };
         }
@@ -460,26 +491,30 @@ export default {
       selectedChanged (opts) {
         // Use this to update the current selected elements
         selElems = opts.elems;
-
-        let i = selElems.length;
-        while (i--) {
-          const elem = selElems[i];
-          if (elem && elem.getAttribute('shape') === 'placemark') {
-            if (opts.selectedElement && !opts.multiselected) {
-              // $('#starRadiusMulitplier').val(elem.getAttribute('r2'));
-              $('#starNumPoints').val(elem.getAttribute('point'));
-              $('#radialShift').val(elem.getAttribute('radialshift'));
-              showPanel(true);
-            } else {
-              showPanel(false);
-            }
+        selElems.forEach((elem)=>{
+          if (elem && elem.getAttribute('class').indexOf('placemark')!=-1) {
+            let txt = [];
+            $(elem).children().each((n,i)=>{
+              const type = i.id.split("_");
+              if(type[2]=="txt"){
+                  $('#placemarkFont').val(i.getAttribute("font-family")+' '+i.getAttribute("font-size"));
+                  txt.push($(i).text());
+              }
+            });
+            $('#placemarkText').val(txt.join(";"));
+            showPanel(true);
           } else {
             showPanel(false);
           }
-        }
+        });
       },
       elementChanged (opts) {
-        // const elem = opts.elems[0];
+        opts.elems.forEach((elem)=>{
+          if (elem.id.indexOf("pline_0")!=-1) {//need update marker of pline_0
+            colorChanged(elem);
+            updateReferences(elem);
+          }
+       });
       }
     };
   }
