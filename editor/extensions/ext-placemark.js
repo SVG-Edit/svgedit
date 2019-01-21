@@ -105,7 +105,6 @@ export default {
       font = font.join(" ")
       selElems.forEach((elem)=>{
         if (elem && elem.getAttribute('class').indexOf('placemark')!=-1) {
-          let txt = [];
           $(elem).children().each((n,i)=>{
             const type = i.id.split("_");
             if(type[2]=="txt")$(i).attr({"font-family":font,"font-size":fontSize});
@@ -231,7 +230,6 @@ export default {
             const val = $('#placemark_marker').attr('value') || 'leftarrow';
             addMarker(id, val);
             svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
-            if (el.tagName === 'line' && pos === 'mid') { el = convertline(el); }
             svgCanvas.call('changed', selElems);
           }
         }
@@ -336,10 +334,8 @@ export default {
         // const endChanges = function(){};
       },
       mouseDown (opts) {
-        const rgb = svgCanvas.getColor('fill');
-        // const ccRgbEl = rgb.substring(1, rgb.length);
+        //const rgb = svgCanvas.getColor('fill');
         const sRgb = svgCanvas.getColor('stroke');
-        // const ccSRgbEl = sRgb.substring(1, rgb.length);
         const sWidth = svgCanvas.getStrokeWidth();
 
         if (svgCanvas.getMode() === 'placemark') {
@@ -437,12 +433,8 @@ export default {
           return undefined;
         }
         if (svgCanvas.getMode() === 'placemark') {
-          const sc = 1/svgCanvas.getZoom();
-          let x = opts.mouse_x*sc;
-          let y = opts.mouse_y*sc;
-          /*if(svgCanvas.getSnapToGrid()){
-              //TODO: Snap to gird.
-          }*/
+          let x = opts.mouse_x/svgCanvas.getZoom();
+          let y = opts.mouse_y/svgCanvas.getZoom();
           const {fontSize,maxlen,lines,px,py} = $(newPM).attr(['fontSize','maxlen','lines','px','py']);
           $(newPM).attr({"x":x,"y":y});
           $(newPM).children().each((n,i)=>{
