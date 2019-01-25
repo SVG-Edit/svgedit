@@ -4416,6 +4416,9 @@ editor.init = function () {
    * @returns {Promise} Resolves to `undefined`
    */
   const clickClear = async function () {
+    if (curConfig.dimensions[Symbol.iterator] != 'function') {
+      curConfig.dimensions = [curConfig.dimensions[0],curConfig.dimensions[1]]
+    }
     const [x, y] = curConfig.dimensions;
     const ok = await $.confirm(uiStrings.notification.QwantToClear);
     if (!ok) {
