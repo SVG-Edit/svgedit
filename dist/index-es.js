@@ -29104,7 +29104,7 @@ editor.setConfig = function (opts, cfgCfg) {
         } else if (cfgCfg.allowInitialUserOverride === true) {
           extendOrAdd(defaultConfig, key, val);
         } else if (defaultConfig[key] && _typeof(defaultConfig[key]) === 'object') {
-          curConfig[key] = {};
+          curConfig[key] = Array.isArray(defaultConfig[key]) ? [] : {};
           $$b.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
         } else {
           curConfig[key] = val;
