@@ -44,14 +44,13 @@ export default {
       mcircle:
         {element: 'circle', attr: {r: 30, cx: 50, cy: 50}},
       triangle:
-        {element: 'path', attr: {d: 'M10,80 L50,20 L80,80 Z'}},
+        {element: 'path', attr: {d: 'M10,80 L50,20 L80,80 Z'}}
     };
 
     // duplicate shapes to support unfilled (open) marker types with an _o suffix
     ['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'].forEach((v) => {
       markerTypes[v + '_o'] = markerTypes[v];
     });
-
 
     /**
      *
@@ -79,35 +78,39 @@ export default {
     }
 
     /**
-     * Called when text is changed
+     * Called when text is changed.
      * @param {string} txt
      * @returns {undefined}
      */
-    function updateText(txt){
-      const items = txt.split(";");
-      selElems.forEach((elem)=>{
-        if (elem && elem.getAttribute('class').indexOf('placemark')!=-1) {
-          $(elem).children().each((n,i)=>{
-            const type = i.id.split("_");
-            if(type[2]=="txt")$(i).text(items[type[3]]);
+    function updateText (txt) {
+      const items = txt.split(';');
+      selElems.forEach((elem) => {
+        if (elem && elem.getAttribute('class').includes('placemark')) {
+          $(elem).children().each((_, i) => {
+            const [, , type, n] = i.id.split('_');
+            if (type === 'txt') {
+              $(i).text(items[n]);
+            }
           });
         }
       });
     }
     /**
-     * Called when font is changed
+     * Called when font is changed.
      * @param {string} font
      * @returns {undefined}
      */
-    function updateFont(font){
-      font = font.split(" ");
+    function updateFont (font) {
+      font = font.split(' ');
       const fontSize = parseInt(font.pop());
-      font = font.join(" ")
-      selElems.forEach((elem)=>{
-        if (elem && elem.getAttribute('class').indexOf('placemark')!=-1) {
-          $(elem).children().each((n,i)=>{
-            const type = i.id.split("_");
-            if(type[2]=="txt")$(i).attr({"font-family":font,"font-size":fontSize});
+      font = font.join(' ');
+      selElems.forEach((elem) => {
+        if (elem && elem.getAttribute('class').includes('placemark')) {
+          $(elem).children().each((_, i) => {
+            const [, , type] = i.id.split('_');
+            if (type === 'txt') {
+              $(i).attr({'font-family': font, 'font-size': fontSize});
+            }
           });
         }
       });
@@ -120,25 +123,25 @@ export default {
     function addMarker (id, val) {
       let marker = svgCanvas.getElem(id);
       if (marker) { return undefined; }
-      //console.log(id);
+      // console.log(id);
       if (val === '' || val === 'nomarker') { return undefined; }
       const color = svgCanvas.getColor('stroke');
       // NOTE: Safari didn't like a negative value in viewBox
       // so we use a standardized 0 0 100 100
       // with 50 50 being mapped to the marker position
-      const scale = 2;//parseFloat($('#marker_size').val());
+      const scale = 2;// parseFloat($('#marker_size').val());
       const strokeWidth = 10;
       let refX = 50;
-      let refY = 50;
-      let viewBox = '0 0 100 100';
-      let markerWidth = 5*scale;
-      let markerHeight = 5*scale;
-      let seType = val;
+      const refY = 50;
+      const viewBox = '0 0 100 100';
+      const markerWidth = 5 * scale;
+      const markerHeight = 5 * scale;
+      const seType = val;
 
       if (!markerTypes[seType]) { return undefined; } // an unknown type!
-      //positional markers(arrows) at end of line
-      if (seType.includes('left'))refX=0;
-      if (seType.includes('right'))refX=100;
+      // positional markers(arrows) at end of line
+      if (seType.includes('left')) refX = 0;
+      if (seType.includes('right')) refX = 100;
 
       // create a generic marker
       marker = addElem({
@@ -154,8 +157,8 @@ export default {
 
       const mel = addElem(markerTypes[seType]);
       const fillcolor = (seType.substr(-2) === '_o')
-          ? 'none'
-          : color;
+        ? 'none'
+        : color;
 
       mel.setAttribute('fill', fillcolor);
       mel.setAttribute('stroke', color);
@@ -172,7 +175,8 @@ export default {
       return marker;
     }
     /**
-    *
+    * @param {Element} el
+    * @param {string} val
     * @returns {undefined}
     */
     function setMarker (el, val) {
@@ -200,7 +204,7 @@ export default {
     function colorChanged (el) {
       const color = el.getAttribute('stroke');
       const marker = getLinked(el, 'marker-start');
-      console.log(marker);
+      // console.log(marker);
       if (!marker) { return; }
       if (!marker.attributes.class) { return; } // not created by this extension
       const ch = marker.lastElementChild;
@@ -218,31 +222,31 @@ export default {
     * @returns {undefined}
     */
     function updateReferences (el) {
-        const id = "placemark_marker_" + el.id;
-        const markerName = 'marker-start';
-        const marker = getLinked(el, markerName);
-        if (!marker || !marker.attributes.class) { return; } // not created by this extension
-        const url = el.getAttribute(markerName);
-        if (url) {
-          const len = el.id.length;
-          const linkid = url.substr(-len - 1, len);
-          if (el.id !== linkid) {
-            const val = $('#placemark_marker').attr('value') || 'leftarrow';
-            addMarker(id, val);
-            svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
-            svgCanvas.call('changed', selElems);
-          }
+      const id = 'placemark_marker_' + el.id;
+      const markerName = 'marker-start';
+      const marker = getLinked(el, markerName);
+      if (!marker || !marker.attributes.class) { return; } // not created by this extension
+      const url = el.getAttribute(markerName);
+      if (url) {
+        const len = el.id.length;
+        const linkid = url.substr(-len - 1, len);
+        if (el.id !== linkid) {
+          const val = $('#placemark_marker').attr('value') || 'leftarrow';
+          addMarker(id, val);
+          svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
+          svgCanvas.call('changed', selElems);
         }
+      }
     }
     /**
     * @param {Event} ev
     * @returns {Promise} Resolves to `undefined`
     */
-    async function setArrowFromButton (ev) {
+    function setArrowFromButton (ev) {
       const parts = this.id.split('_');
       let val = parts[2];
       if (parts[3]) { val += '_' + parts[3]; }
-      $("#placemark_marker").attr("value",val);
+      $('#placemark_marker').attr('value', val);
     }
 
     /**
@@ -259,6 +263,7 @@ export default {
 
     /**
     * Build the toolbar button array from the marker definitions.
+    * @param {module:SVGEditor.Button[]} buttons
     * @returns {module:SVGEditor.Button[]}
     */
     function addMarkerButtons (buttons) {
@@ -273,7 +278,7 @@ export default {
           events: {click: setArrowFromButton},
           panel: 'placemark_panel',
           list: 'placemark_marker',
-          isDefault: id=='leftarrow'
+          isDefault: id === 'leftarrow'
         });
       });
       return buttons;
@@ -292,136 +297,146 @@ export default {
       }
     }];
     const contextTools = [
-    {
+      {
         type: 'button-select',
         panel: 'placemark_panel',
         id: 'placemark_marker',
         colnum: 3,
         events: {change: setArrowFromButton}
-    },
-    {
-      type: 'input',
-      panel: 'placemark_panel',
-      id: 'placemarkText',
-      size: 20,
-      defval: '',
-      events: {
-        change () {
-          updateText(this.value);
+      },
+      {
+        type: 'input',
+        panel: 'placemark_panel',
+        id: 'placemarkText',
+        size: 20,
+        defval: '',
+        events: {
+          change () {
+            updateText(this.value);
+          }
+        }
+      }, {
+        type: 'input',
+        panel: 'placemark_panel',
+        id: 'placemarkFont',
+        size: 7,
+        defval: 'Arial 10',
+        events: {
+          change () {
+            updateFont(this.value);
+          }
         }
       }
-    }, {
-      type: 'input',
-      panel: 'placemark_panel',
-      id: 'placemarkFont',
-      size: 7,
-      defval: 'Arial 10',
-      events: {
-        change () {
-          updateFont(this.value);
-        }
-      }
-    }
     ];
 
     return {
       name: strings.name,
       svgicons: svgEditor.curConfig.extIconsPath + 'placemark-icons.xml',
-      buttons: addMarkerButtons(strings.buttons.map((button, i)=> Object.assign(buttons[i], button))),
-      context_tools: strings.contextTools.map((contextTool, i) => Object.assign(contextTools[i], contextTool)),
+      buttons: addMarkerButtons(strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      })),
+      context_tools: strings.contextTools.map((contextTool, i) => {
+        return Object.assign(contextTools[i], contextTool);
+      }),
       callback () {
         $('#placemark_panel').hide();
         // const endChanges = function(){};
       },
       mouseDown (opts) {
-        //const rgb = svgCanvas.getColor('fill');
+        // const rgb = svgCanvas.getColor('fill');
         const sRgb = svgCanvas.getColor('stroke');
         const sWidth = svgCanvas.getStrokeWidth();
 
         if (svgCanvas.getMode() === 'placemark') {
           started = true;
           const id = svgCanvas.getNextId();
-          const items = $('#placemarkText').val().split(";");
-          let font = $('#placemarkFont').val().split(" ");
+          const items = $('#placemarkText').val().split(';');
+          let font = $('#placemarkFont').val().split(' ');
           const fontSize = parseInt(font.pop());
-          font = font.join(" ")
-          let x0 = opts.start_x+10, y0 = opts.start_y+10,maxlen=0;
-          let children = [{
-                    element:'line',
-                    attr:{
-                        id: id+'_pline_0',
-                        fill:"none",
-                        stroke: sRgb,
-                        "stroke-width": sWidth,
-                        "stroke-linecap":"round",
-                        x1: opts.start_x,
-                        y1: opts.start_y,
-                        x2: x0,
-                        y2: y0,
-                    }
-                }];
-          items.forEach((i,n)=>{
-              maxlen=Math.max(maxlen,i.length)
-              children.push({
-                    element:'line',
-                    attr:{
-                        id: id+'_tline_'+n,
-                        fill:"none",
-                        stroke: sRgb,
-                        "stroke-width": sWidth,
-                        "stroke-linecap":"round",
-                        x1: x0,
-                        y1: y0+(fontSize+6)*n,
-                        x2: x0+i.length*fontSize*0.5+fontSize,
-                        y2: y0+(fontSize+6)*n,
-                    }
-                });
-              children.push({
-                    element:'text',
-                    attr:{
-                        id: id+'_txt_'+n,
-                        fill: sRgb,
-                        stroke: "none",
-                        "stroke-width": 0,
-                        x: x0+3,
-                        y: y0-3+(fontSize+6)*n,
-                        "font-family":font,
-                        "font-size":fontSize,
-                        "text-anchor":"start",
-                    },
-                    children:[i]
-                })
+          font = font.join(' ');
+          const x0 = opts.start_x + 10, y0 = opts.start_y + 10;
+          let maxlen = 0;
+          const children = [{
+            element: 'line',
+            attr: {
+              id: id + '_pline_0',
+              fill: 'none',
+              stroke: sRgb,
+              'stroke-width': sWidth,
+              'stroke-linecap': 'round',
+              x1: opts.start_x,
+              y1: opts.start_y,
+              x2: x0,
+              y2: y0
+            }
+          }];
+          items.forEach((i, n) => {
+            maxlen = Math.max(maxlen, i.length);
+            children.push({
+              element: 'line',
+              attr: {
+                id: id + '_tline_' + n,
+                fill: 'none',
+                stroke: sRgb,
+                'stroke-width': sWidth,
+                'stroke-linecap': 'round',
+                x1: x0,
+                y1: y0 + (fontSize + 6) * n,
+                x2: x0 + i.length * fontSize * 0.5 + fontSize,
+                y2: y0 + (fontSize + 6) * n
+              }
+            });
+            children.push({
+              element: 'text',
+              attr: {
+                id: id + '_txt_' + n,
+                fill: sRgb,
+                stroke: 'none',
+                'stroke-width': 0,
+                x: x0 + 3,
+                y: y0 - 3 + (fontSize + 6) * n,
+                'font-family': font,
+                'font-size': fontSize,
+                'text-anchor': 'start'
+              },
+              children: [i]
+            });
           });
-          if(items.length>0)children.push({
-                    element:'line',
-                    attr:{
-                        id: id+'_vline_0',
-                        fill:"none",
-                        stroke: sRgb,
-                        "stroke-width": sWidth,
-                        "stroke-linecap":"round",
-                        x1: x0,
-                        y1: y0,
-                        x2: x0,
-                        y2: y0+(fontSize+6)*(items.length-1),
-                    }
-                });
+          if (items.length > 0) {
+            children.push({
+              element: 'line',
+              attr: {
+                id: id + '_vline_0',
+                fill: 'none',
+                stroke: sRgb,
+                'stroke-width': sWidth,
+                'stroke-linecap': 'round',
+                x1: x0,
+                y1: y0,
+                x2: x0,
+                y2: y0 + (fontSize + 6) * (items.length - 1)
+              }
+            });
+          }
           newPM = svgCanvas.addSVGElementFromJson({
             element: 'g',
             attr: {
-              id: id,
-              "class": "placemark",
-              fontSize:fontSize,
-              maxlen:maxlen,
-              lines:items.length,
-              x:opts.start_x,
-              y:opts.start_y,
-              px:opts.start_x,
-              py:opts.start_y,
+              id,
+              class: 'placemark',
+              fontSize,
+              maxlen,
+              lines: items.length,
+              x: opts.start_x,
+              y: opts.start_y,
+              px: opts.start_x,
+              py: opts.start_y
             },
-            children: children,
+            children
           });
-          setMarker(newPM.firstChild,$('#placemark_marker').attr('value') || 'leftarrow');
+          setMarker(
+            newPM.firstElementChild,
+            $('#placemark_marker').attr('value') || 'leftarrow'
+          );
           return {
             started: true
           };
@@ -433,36 +448,40 @@ export default {
           return undefined;
         }
         if (svgCanvas.getMode() === 'placemark') {
-          let x = opts.mouse_x/svgCanvas.getZoom();
-          let y = opts.mouse_y/svgCanvas.getZoom();
-          const {fontSize,maxlen,lines,px,py} = $(newPM).attr(['fontSize','maxlen','lines','px','py']);
-          $(newPM).attr({"x":x,"y":y});
-          $(newPM).children().each((n,i)=>{
-              const type = i.id.split("_");
-              const y0 = y+(fontSize+6)*type[3],x0 = x+maxlen*fontSize*0.5+fontSize;
-              const nx = (x+(x0-x)/2 < px)?x0:x;
-              const ny = (y+((fontSize+6)*(lines-1))/2 < py)?y+(fontSize+6)*(lines-1):y;
-              if(type[2]=="pline"){
-                  i.setAttribute("x2",nx);
-                  i.setAttribute("y2",ny);
-                  
-              }
-              if(type[2]=="tline"){
-                  i.setAttribute("x1",x);
-                  i.setAttribute("y1",y0);
-                  i.setAttribute("x2",x0);
-                  i.setAttribute("y2",y0);
-              }
-              if(type[2]=="vline"){
-                  i.setAttribute("x1",nx);
-                  i.setAttribute("y1",y);
-                  i.setAttribute("x2",nx);
-                  i.setAttribute("y2",y+(fontSize+6)*(lines-1));
-              }
-              if(type[2]=="txt"){
-                  i.setAttribute("x",x+fontSize/2);
-                  i.setAttribute("y",y0-3);
-              }
+          const x = opts.mouse_x / svgCanvas.getZoom();
+          const y = opts.mouse_y / svgCanvas.getZoom();
+          const {fontSize, maxlen, lines, px, py} = $(newPM).attr(
+            ['fontSize', 'maxlen', 'lines', 'px', 'py']
+          );
+          $(newPM).attr({x, y});
+          $(newPM).children().each((_, i) => {
+            const [, , type, n] = i.id.split('_');
+            const y0 = y + (fontSize + 6) * n,
+              x0 = x + maxlen * fontSize * 0.5 + fontSize;
+            const nx = (x + (x0 - x) / 2 < px) ? x0 : x;
+            const ny = (y + ((fontSize + 6) * (lines - 1)) / 2 < py)
+              ? y + (fontSize + 6) * (lines - 1)
+              : y;
+            if (type === 'pline') {
+              i.setAttribute('x2', nx);
+              i.setAttribute('y2', ny);
+            }
+            if (type === 'tline') {
+              i.setAttribute('x1', x);
+              i.setAttribute('y1', y0);
+              i.setAttribute('x2', x0);
+              i.setAttribute('y2', y0);
+            }
+            if (type === 'vline') {
+              i.setAttribute('x1', nx);
+              i.setAttribute('y1', y);
+              i.setAttribute('x2', nx);
+              i.setAttribute('y2', y + (fontSize + 6) * (lines - 1));
+            }
+            if (type === 'txt') {
+              i.setAttribute('x', x + fontSize / 2);
+              i.setAttribute('y', y0 - 3);
+            }
           });
           return {
             started: true
@@ -472,9 +491,9 @@ export default {
       },
       mouseUp () {
         if (svgCanvas.getMode() === 'placemark') {
-          const {x,y,px,py} = $(newPM).attr(['x','y','px','py'])
+          const {x, y, px, py} = $(newPM).attr(['x', 'y', 'px', 'py']);
           return {
-            keep: (x!=px&&y!=py),
+            keep: (x != px && y != py), // eslint-disable-line eqeqeq
             element: newPM
           };
         }
@@ -483,17 +502,19 @@ export default {
       selectedChanged (opts) {
         // Use this to update the current selected elements
         selElems = opts.elems;
-        selElems.forEach((elem)=>{
-          if (elem && elem.getAttribute('class').indexOf('placemark')!=-1) {
-            let txt = [];
-            $(elem).children().each((n,i)=>{
-              const type = i.id.split("_");
-              if(type[2]=="txt"){
-                  $('#placemarkFont').val(i.getAttribute("font-family")+' '+i.getAttribute("font-size"));
-                  txt.push($(i).text());
+        selElems.forEach((elem) => {
+          if (elem && elem.getAttribute('class').includes('placemark')) {
+            const txt = [];
+            $(elem).children().each((n, i) => {
+              const [, , type] = i.id.split('_');
+              if (type === 'txt') {
+                $('#placemarkFont').val(
+                  i.getAttribute('font-family') + ' ' + i.getAttribute('font-size')
+                );
+                txt.push($(i).text());
               }
             });
-            $('#placemarkText').val(txt.join(";"));
+            $('#placemarkText').val(txt.join(';'));
             showPanel(true);
           } else {
             showPanel(false);
@@ -501,12 +522,12 @@ export default {
         });
       },
       elementChanged (opts) {
-        opts.elems.forEach((elem)=>{
-          if (elem.id.indexOf("pline_0")!=-1) {//need update marker of pline_0
+        opts.elems.forEach((elem) => {
+          if (elem.id.includes('pline_0')) { // need update marker of pline_0
             colorChanged(elem);
             updateReferences(elem);
           }
-       });
+        });
       }
     };
   }

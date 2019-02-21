@@ -4,6 +4,7 @@
 
 - Optimization fix: Properly run code conditionally on browser check;
     fixes #312 (@ianli-sc)
+- Enhancement: Add CAD Placemark extension (@NeiroNx)
 
 ## 4.2.0
 
