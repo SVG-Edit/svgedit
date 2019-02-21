@@ -52,3 +52,4 @@ export default [
     plugins
   }
 ];
+/* eslint-enable import/no-anonymous-default-export */

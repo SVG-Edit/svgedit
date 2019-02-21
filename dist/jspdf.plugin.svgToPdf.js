@@ -370,11 +370,10 @@
   }();
 
   RGBColor.getHelpXML = function () {
-    var examples = _toConsumableArray(colorDefs.flatMap(function (_ref2) {
+    var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
       var example = _ref2.example;
       return example;
-    })).concat(_toConsumableArray(Object.keys(simpleColors)));
-
+    })), _toConsumableArray(Object.keys(simpleColors)));
     var xml = document.createElement('ul');
     xml.setAttribute('id', 'rgbcolor-examples');
     xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
@@ -428,7 +427,7 @@
     });
   };
 
-  var numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE]\d+|[eE][+-]\d+)?/g;
+  var numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE]\d+|[eE][+-]\d+|)/g;
 
   var getLinesOptionsOfPoly = function getLinesOptionsOfPoly(node) {
     var nums = node.getAttribute('points');

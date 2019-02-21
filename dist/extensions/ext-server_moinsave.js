@@ -527,11 +527,10 @@ var svgEditorExtension_server_moinsave = (function () {
   }();
 
   RGBColor.getHelpXML = function () {
-    var examples = _toConsumableArray(colorDefs.flatMap(function (_ref2) {
+    var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
       var example = _ref2.example;
       return example;
-    })).concat(_toConsumableArray(Object.keys(simpleColors)));
-
+    })), _toConsumableArray(Object.keys(simpleColors)));
     var xml = document.createElement('ul');
     xml.setAttribute('id', 'rgbcolor-examples');
     xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
@@ -553,11 +552,11 @@ var svgEditorExtension_server_moinsave = (function () {
 
   function _typeof$1(obj) {
     if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
-      _typeof$1 = function _typeof$$1(obj) {
+      _typeof$1 = function _typeof$1(obj) {
         return _typeof(obj);
       };
     } else {
-      _typeof$1 = function _typeof$$1(obj) {
+      _typeof$1 = function _typeof$1(obj) {
         return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
       };
     }
@@ -3225,7 +3224,7 @@ var svgEditorExtension_server_moinsave = (function () {
         _classCallCheck(this, _class22);
 
         _this12 = _possibleConstructorReturn(this, _getPrototypeOf(_class22).call(this, node));
-        svg.Animations.push(_assertThisInitialized(_assertThisInitialized(_this12)));
+        svg.Animations.push(_assertThisInitialized(_this12));
         _this12.duration = 0.0;
         _this12.begin = _this12.attribute('begin').toMilliseconds();
         _this12.maxDuration = _this12.begin + _this12.attribute('dur').toMilliseconds();
@@ -3443,7 +3442,7 @@ var svgEditorExtension_server_moinsave = (function () {
             _this13.fontFace = child;
 
             if (child.style('font-family').hasValue()) {
-              svg.Definitions[child.style('font-family').value] = _assertThisInitialized(_assertThisInitialized(_this13));
+              svg.Definitions[child.style('font-family').value] = _assertThisInitialized(_this13);
             }
           } else if (child.type === 'missing-glyph') {
             _this13.missingGlyph = child;
@@ -3886,7 +3885,7 @@ var svgEditorExtension_server_moinsave = (function () {
         }
 
         _this20._isSvg = href.match(/\.svg$/);
-        svg.Images.push(_assertThisInitialized(_assertThisInitialized(_this20)));
+        svg.Images.push(_assertThisInitialized(_this20));
         _this20.loaded = false;
 
         if (!_this20._isSvg) {
@@ -4020,12 +4019,13 @@ var svgEditorExtension_server_moinsave = (function () {
         _toConsumableArray(node.childNodes).forEach(function (_ref11) {
           var nodeValue = _ref11.nodeValue;
           css += nodeValue;
-        });
+        }); // remove comments
 
-        css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // remove comments
 
-        css = svg.compressSpaces(css); // replace whitespace
+        css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
+        // replace whitespace
 
+        css = svg.compressSpaces(css);
         var cssDefs = css.split('}');
         cssDefs.forEach(function (cssDef) {
           if (svg.trim(cssDef) !== '') {

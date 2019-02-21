@@ -5181,7 +5181,7 @@ var SvgCanvas = (function () {
   * @returns {undefined}
   */
 
-  var init$1 = function init$$1(editorContext) {
+  var init$1 = function init(editorContext) {
     editorContext_ = editorContext;
     pathFuncs = [0, 'ClosePath'];
     var pathFuncsStrs = ['Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc', 'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'];
@@ -5906,7 +5906,7 @@ var SvgCanvas = (function () {
 
     _createClass(Path, [{
       key: "init",
-      value: function init$$1() {
+      value: function init() {
         // Hide all grips, etc
         // fixed, needed to work on all found elements, not just first
         $$1(getGripContainer()).find('*').each(function () {
@@ -7996,7 +7996,7 @@ var SvgCanvas = (function () {
   * @returns {undefined}
   */
 
-  var init$2 = function init$$1(editorContext) {
+  var init$2 = function init(editorContext) {
     editorContext_$1 = editorContext;
     domdoc_ = editorContext.getDOMDocument();
     domcontainer_ = editorContext.getDOMContainer();
@@ -8385,8 +8385,8 @@ var SvgCanvas = (function () {
   * @returns {module:utilities.BBoxObject} A BBox-like object
   */
 
-  var getPathBBox = function getPathBBox(path$$1) {
-    var seglist = path$$1.pathSegList;
+  var getPathBBox = function getPathBBox(path) {
+    var seglist = path.pathSegList;
     var tot = seglist.numberOfItems;
     var bounds = [[], []];
     var start = seglist.getItem(0);
@@ -8769,43 +8769,43 @@ var SvgCanvas = (function () {
   * @returns {DOMRect|false} The resulting path's bounding box object.
   */
 
-  var getBBoxOfElementAsPath = function getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1) {
-    var path$$1 = addSVGElementFromJson({
+  var getBBoxOfElementAsPath = function getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions) {
+    var path = addSVGElementFromJson({
       element: 'path',
       attr: getExtraAttributesForConvertToPath(elem)
     });
     var eltrans = elem.getAttribute('transform');
 
     if (eltrans) {
-      path$$1.setAttribute('transform', eltrans);
+      path.setAttribute('transform', eltrans);
     }
 
     var parentNode = elem.parentNode;
 
     if (elem.nextSibling) {
-      elem.before(path$$1);
+      elem.before(path);
     } else {
-      parentNode.append(path$$1);
+      parentNode.append(path);
     }
 
     var d = getPathDFromElement(elem);
 
     if (d) {
-      path$$1.setAttribute('d', d);
+      path.setAttribute('d', d);
     } else {
-      path$$1.remove();
+      path.remove();
     } // Get the correct BBox of the new path, then discard it
 
 
-    pathActions$$1.resetOrientation(path$$1);
+    pathActions.resetOrientation(path);
     var bb = false;
 
     try {
-      bb = path$$1.getBBox();
+      bb = path.getBBox();
     } catch (e) {// Firefox fails
     }
 
-    path$$1.remove();
+    path.remove();
     return bb;
   };
   /**
@@ -8822,57 +8822,57 @@ var SvgCanvas = (function () {
   * @returns {SVGPathElement|null} The converted path element or null if the DOM element was not recognized.
   */
 
-  var convertToPath = function convertToPath(elem, attrs, addSVGElementFromJson, pathActions$$1, clearSelection, addToSelection, hstry, addCommandToHistory) {
+  var convertToPath = function convertToPath(elem, attrs, addSVGElementFromJson, pathActions, clearSelection, addToSelection, hstry, addCommandToHistory) {
     var batchCmd = new hstry.BatchCommand('Convert element to Path'); // Any attribute on the element not covered by the passed-in attributes
 
     attrs = $$2.extend({}, attrs, getExtraAttributesForConvertToPath(elem));
-    var path$$1 = addSVGElementFromJson({
+    var path = addSVGElementFromJson({
       element: 'path',
       attr: attrs
     });
     var eltrans = elem.getAttribute('transform');
 
     if (eltrans) {
-      path$$1.setAttribute('transform', eltrans);
+      path.setAttribute('transform', eltrans);
     }
 
     var id = elem.id;
     var parentNode = elem.parentNode;
 
     if (elem.nextSibling) {
-      elem.before(path$$1);
+      elem.before(path);
     } else {
-      parentNode.append(path$$1);
+      parentNode.append(path);
     }
 
     var d = getPathDFromElement(elem);
 
     if (d) {
-      path$$1.setAttribute('d', d); // Replace the current element with the converted one
+      path.setAttribute('d', d); // Replace the current element with the converted one
       // Reorient if it has a matrix
 
       if (eltrans) {
-        var tlist = getTransformList(path$$1);
+        var tlist = getTransformList(path);
 
         if (hasMatrixTransform(tlist)) {
-          pathActions$$1.resetOrientation(path$$1);
+          pathActions.resetOrientation(path);
         }
       }
 
       var nextSibling = elem.nextSibling;
       batchCmd.addSubCommand(new hstry.RemoveElementCommand(elem, nextSibling, parent));
-      batchCmd.addSubCommand(new hstry.InsertElementCommand(path$$1));
+      batchCmd.addSubCommand(new hstry.InsertElementCommand(path));
       clearSelection();
       elem.remove();
-      path$$1.setAttribute('id', id);
-      path$$1.removeAttribute('visibility');
-      addToSelection([path$$1], true);
+      path.setAttribute('id', id);
+      path.removeAttribute('visibility');
+      addToSelection([path], true);
       addCommandToHistory(batchCmd);
-      return path$$1;
+      return path;
     } // the elem.tagName was not recognized, so no "d" attribute. Remove it, so we've haven't changed anything.
 
 
-    path$$1.remove();
+    path.remove();
     return null;
   };
   /**
@@ -8912,7 +8912,7 @@ var SvgCanvas = (function () {
   */
 
 
-  var getBBoxWithTransform = function getBBoxWithTransform(elem, addSVGElementFromJson, pathActions$$1) {
+  var getBBoxWithTransform = function getBBoxWithTransform(elem, addSVGElementFromJson, pathActions) {
     // TODO: Fix issue with rotated groups. Currently they work
     // fine in FF, but not in other browsers (same problem mentioned
     // in Issue 339 comment #2).
@@ -8935,7 +8935,7 @@ var SvgCanvas = (function () {
         var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
 
         if (elemNames.includes(elem.tagName)) {
-          goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+          goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
           bb = goodBb;
         } else if (elem.tagName === 'rect') {
           // Look for radius
@@ -8943,7 +8943,7 @@ var SvgCanvas = (function () {
           var ry = elem.getAttribute('ry');
 
           if (rx || ry) {
-            goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+            goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
             bb = goodBb;
           }
         }
@@ -9000,7 +9000,7 @@ var SvgCanvas = (function () {
   */
 
 
-  var getStrokedBBox = function getStrokedBBox(elems, addSVGElementFromJson, pathActions$$1) {
+  var getStrokedBBox = function getStrokedBBox(elems, addSVGElementFromJson, pathActions) {
     if (!elems || !elems.length) {
       return false;
     }
@@ -9015,7 +9015,7 @@ var SvgCanvas = (function () {
         return;
       }
 
-      fullBb = getBBoxWithTransform(this, addSVGElementFromJson, pathActions$$1);
+      fullBb = getBBoxWithTransform(this, addSVGElementFromJson, pathActions);
     }); // This shouldn't ever happen...
 
     if (fullBb === undefined) {
@@ -9037,7 +9037,7 @@ var SvgCanvas = (function () {
       maxY += offset;
     } else {
       $$2.each(elems, function (i, elem) {
-        var curBb = getBBoxWithTransform(elem, addSVGElementFromJson, pathActions$$1);
+        var curBb = getBBoxWithTransform(elem, addSVGElementFromJson, pathActions);
 
         if (curBb) {
           var _offset = getStrokeOffsetForBBox(elem);
@@ -10546,7 +10546,7 @@ var SvgCanvas = (function () {
 
     }, {
       key: "copyElem",
-      value: function copyElem$$1(el) {
+      value: function copyElem$1(el) {
         var that = this;
 
         var getNextIdClosure = function getNextIdClosure() {
@@ -10947,7 +10947,13 @@ var SvgCanvas = (function () {
     canvas_.call('contextset', canvas_.getCurrentGroup());
   };
 
-  var REVERSE_NS = getReverseNS(); // this defines which elements and attributes that we support
+  var REVERSE_NS = getReverseNS(); // Todo: Split out into core attributes, presentation attributes, etc. so consistent
+
+  /**
+   * This defines which elements and attributes that we support (or at least
+   * don't remove)
+   * @type {PlainObject}
+   */
 
   var svgWhiteList_ = {
     // SVG Elements
@@ -10959,6 +10965,7 @@ var SvgCanvas = (function () {
     desc: [],
     ellipse: ['class', 'clip-path', 'clip-rule', 'cx', 'cy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'id', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform'],
     feGaussianBlur: ['class', 'color-interpolation-filters', 'id', 'requiredFeatures', 'stdDeviation'],
+    feMorphology: ['class', 'in', 'operator', 'radius'],
     filter: ['class', 'color-interpolation-filters', 'filterRes', 'filterUnits', 'height', 'id', 'primitiveUnits', 'requiredFeatures', 'width', 'x', 'xlink:href', 'y'],
     foreignObject: ['class', 'font-size', 'height', 'id', 'opacity', 'requiredFeatures', 'style', 'transform', 'width', 'x', 'y'],
     g: ['class', 'clip-path', 'clip-rule', 'id', 'display', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor'],
@@ -11834,7 +11841,7 @@ var SvgCanvas = (function () {
   * @returns {undefined}
   */
 
-  var init$5 = function init$$1(editorContext) {
+  var init$5 = function init(editorContext) {
     context_ = editorContext;
   };
   /**
@@ -12149,6 +12156,7 @@ var SvgCanvas = (function () {
 
             var angle = getRotationAngle(child);
             oldStartTransform = context_.getStartTransform();
+            var childxforms = [];
             context_.setStartTransform(child.getAttribute('transform'));
 
             if (angle || hasMatrixTransform(childTlist)) {
@@ -12156,6 +12164,7 @@ var SvgCanvas = (function () {
               e2t.setMatrix(matrixMultiply(tm, sm, tmn, _m));
               childTlist.clear();
               childTlist.appendItem(e2t);
+              childxforms.push(e2t); // if not rotated or skewed, push the [T][S][-T] down to the child
             } else {
               // update the transform list with translate,scale,translate
               // slide the [T][S][-T] from the front to the back
@@ -12180,6 +12189,9 @@ var SvgCanvas = (function () {
               childTlist.appendItem(translateBack);
               childTlist.appendItem(scale);
               childTlist.appendItem(translateOrigin);
+              childxforms.push(translateBack);
+              childxforms.push(scale);
+              childxforms.push(translateOrigin); // logMatrix(translateBack.matrix);
               // logMatrix(scale.matrix);
             } // not rotated
 
@@ -13600,7 +13612,7 @@ var SvgCanvas = (function () {
       return selectedElements;
     };
 
-    var pathActions$$1 = pathActions;
+    var pathActions$1 = pathActions;
     /**
     * This should actually be an intersection as all interfaces should be met.
     * @implements {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
@@ -13615,7 +13627,7 @@ var SvgCanvas = (function () {
     * @implements {module:utilities.EditorContext}
     */
     {
-      pathActions: pathActions$$1,
+      pathActions: pathActions$1,
       // Ok since not modifying
       getSVGContent: getSVGContent,
       addSVGElementFromJson: addSVGElementFromJson,
@@ -14031,13 +14043,13 @@ var SvgCanvas = (function () {
     */
 
 
-    canvas.pathActions = pathActions$$1;
+    canvas.pathActions = pathActions$1;
     /**
     * @implements {module:path.EditorContext#resetD}
     */
 
     function resetD(p) {
-      p.setAttribute('d', pathActions$$1.convertPath(p));
+      p.setAttribute('d', pathActions$1.convertPath(p));
     }
 
     init$1(
@@ -14086,8 +14098,8 @@ var SvgCanvas = (function () {
         var closedSubpath = _ref.closedSubpath,
             grips = _ref.grips;
         // TODO: Correct this:
-        pathActions$$1.canDeleteNodes = true;
-        pathActions$$1.closed_subpath = closedSubpath;
+        pathActions$1.canDeleteNodes = true;
+        pathActions$1.closed_subpath = closedSubpath;
         call('pointsAdded', {
           closedSubpath: closedSubpath,
           grips: grips
@@ -14789,9 +14801,9 @@ var SvgCanvas = (function () {
 
       var paths = _toConsumableArray(newDoc.getElementsByTagNameNS(NS.SVG, 'path'));
 
-      paths.forEach(function (path$$1) {
-        path$$1.setAttribute('d', pathActions$$1.convertPath(path$$1));
-        pathActions$$1.fixEnd(path$$1);
+      paths.forEach(function (path) {
+        path.setAttribute('d', pathActions$1.convertPath(path));
+        pathActions$1.fixEnd(path);
       });
     };
     /**
@@ -15169,7 +15181,7 @@ var SvgCanvas = (function () {
 
                 addToSelection([mouseTarget]);
                 justSelected = mouseTarget;
-                pathActions$$1.clear();
+                pathActions$1.clear();
               } // else if it's a path, go into pathedit mode in mouseup
 
 
@@ -15267,12 +15279,11 @@ var SvgCanvas = (function () {
 
                   if (iswebkit) {
                     delayedStroke = function delayedStroke(ele) {
-                      var _stroke = ele.getAttribute('stroke');
-
+                      var stroke_ = ele.getAttribute('stroke');
                       ele.removeAttribute('stroke'); // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
 
-                      if (_stroke !== null) setTimeout(function () {
-                        ele.setAttribute('stroke', _stroke);
+                      if (stroke_ !== null) setTimeout(function () {
+                        ele.setAttribute('stroke', stroke_);
                       }, 0);
                     };
                   }
@@ -15459,7 +15470,7 @@ var SvgCanvas = (function () {
           case 'pathedit':
             startX *= currentZoom;
             startY *= currentZoom;
-            pathActions$$1.mouseDown(evt, mouseTarget, startX, startY);
+            pathActions$1.mouseDown(evt, mouseTarget, startX, startY);
             started = true;
             break;
 
@@ -15949,12 +15960,12 @@ var SvgCanvas = (function () {
               }
 
               if (evt.shiftKey) {
-                var path$$1 = path;
+                var path$1 = path;
                 var x1, y1;
 
-                if (path$$1) {
-                  x1 = path$$1.dragging ? path$$1.dragging[0] : startX;
-                  y1 = path$$1.dragging ? path$$1.dragging[1] : startY;
+                if (path$1) {
+                  x1 = path$1.dragging ? path$1.dragging[0] : startX;
+                  y1 = path$1.dragging ? path$1.dragging[1] : startY;
                 } else {
                   x1 = startX;
                   y1 = startY;
@@ -15977,7 +15988,7 @@ var SvgCanvas = (function () {
                 }, 100);
               }
 
-              pathActions$$1.mouseMove(x, y);
+              pathActions$1.mouseMove(x, y);
               break;
             }
 
@@ -16154,7 +16165,7 @@ var SvgCanvas = (function () {
                 t = evt.target;
 
                 if (selectedElements[0].nodeName === 'path' && isNullish(selectedElements[1])) {
-                  pathActions$$1.select(selectedElements[0]); // if it was a path
+                  pathActions$1.select(selectedElements[0]); // if it was a path
                   // else, if it was selected and this is a shift-click, remove it from selection
                 } else if (evt.shiftKey) {
                   if (tempJustSelected !== t) {
@@ -16229,7 +16240,7 @@ var SvgCanvas = (function () {
               }
 
               if (keep) {
-                element = pathActions$$1.smoothPolylineIntoPath(element);
+                element = pathActions$1.smoothPolylineIntoPath(element);
               }
 
               break;
@@ -16308,7 +16319,7 @@ var SvgCanvas = (function () {
               element = null; // continue to be set to true so that mouseMove happens
 
               started = true;
-              var res = pathActions$$1.mouseUp(evt, element, mouseX, mouseY);
+              var res = pathActions$1.mouseUp(evt, element, mouseX, mouseY);
               element = res.element;
               keep = res.keep;
               break;
@@ -16317,7 +16328,7 @@ var SvgCanvas = (function () {
           case 'pathedit':
             keep = true;
             element = null;
-            pathActions$$1.mouseUp(evt);
+            pathActions$1.mouseUp(evt);
             break;
 
           case 'textedit':
@@ -16428,7 +16439,7 @@ var SvgCanvas = (function () {
             cleanupElement(element);
 
             if (currentMode === 'path') {
-              pathActions$$1.toEditMode(element);
+              pathActions$1.toEditMode(element);
             } else if (curConfig.selectNew) {
               selectOnly([element], true);
             } // we create the insert command that is stored on the stack
@@ -17035,7 +17046,7 @@ var SvgCanvas = (function () {
           * @param {Element} inputElem Not in use
           * @returns {undefined}
           */
-          init: function init$$1(inputElem) {
+          init: function init(inputElem) {
             if (!curtext) {
               return;
             }
@@ -17178,7 +17189,7 @@ var SvgCanvas = (function () {
       while (removeUnusedDefElems() > 0) {} // eslint-disable-line no-empty
 
 
-      pathActions$$1.clear(true); // Keep SVG-Edit comment on top
+      pathActions$1.clear(true); // Keep SVG-Edit comment on top
 
       $$8.each(svgcontent.childNodes, function (i, node) {
         if (i && node.nodeType === 8 && node.data.includes('Created with')) {
@@ -17345,7 +17356,7 @@ var SvgCanvas = (function () {
               out.push(' ');
 
               if (_attr.localName === 'd') {
-                _attrVal = pathActions$$1.convertPath(elem, true);
+                _attrVal = pathActions$1.convertPath(elem, true);
               }
 
               if (!isNaN(_attrVal)) {
@@ -18574,7 +18585,7 @@ var SvgCanvas = (function () {
     * @implements {module:draw.DrawCanvasInit}
     */
     {
-      pathActions: pathActions$$1,
+      pathActions: pathActions$1,
       getCurrentGroup: function getCurrentGroup() {
         return currentGroup;
       },
@@ -18610,7 +18621,7 @@ var SvgCanvas = (function () {
     */
 
     this.clear = function () {
-      pathActions$$1.clear();
+      pathActions$1.clear();
       clearSelection(); // clear the svgcontent node
 
       canvas.clearSvgContentElement(); // create new document
@@ -18628,7 +18639,7 @@ var SvgCanvas = (function () {
     }; // Alias function
 
 
-    this.linkControlPoints = pathActions$$1.linkControlPoints;
+    this.linkControlPoints = pathActions$1.linkControlPoints;
     /**
     * @function module:svgcanvas.SvgCanvas#getContentElem
     * @returns {Element} The content DOM element
@@ -19119,7 +19130,7 @@ var SvgCanvas = (function () {
 
         selectorManager.requestSelector(elem).resize();
       });
-      pathActions$$1.zoomChange();
+      pathActions$1.zoomChange();
       runExtensions('zoomChanged',
       /** @type {module:svgcanvas.SvgCanvas#event:ext-zoomChanged} */
       zoomLevel);
@@ -19142,7 +19153,7 @@ var SvgCanvas = (function () {
 
 
     this.setMode = function (name) {
-      pathActions$$1.clear(true);
+      pathActions$1.clear(true);
       textActions.clear();
       curProperties = selectedElements[0] && selectedElements[0].nodeName === 'text' ? curText : curShape;
       currentMode = name;
@@ -20033,7 +20044,7 @@ var SvgCanvas = (function () {
 
 
     this.setSegType = function (newType) {
-      pathActions$$1.setSegType(newType);
+      pathActions$1.setSegType(newType);
     };
     /**
     * Convert selected element to a path, or get the BBox of an element-as-path.
@@ -20046,7 +20057,7 @@ var SvgCanvas = (function () {
     */
 
 
-    this.convertToPath = function (elem, getBBox$$1) {
+    this.convertToPath = function (elem, getBBox) {
       if (isNullish(elem)) {
         var elems = selectedElements;
         $$8.each(elems, function (i, el) {
@@ -20057,8 +20068,8 @@ var SvgCanvas = (function () {
         return undefined;
       }
 
-      if (getBBox$$1) {
-        return getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+      if (getBBox) {
+        return getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$1);
       } // TODO: Why is this applying attributes from curShape, then inside utilities.convertToPath it's pulling addition attributes from elem?
       // TODO: If convertToPath is called with one elem, curShape and elem are probably the same; but calling with multiple is a bug or cool feature.
 
@@ -20075,7 +20086,7 @@ var SvgCanvas = (function () {
         opacity: curShape.opacity,
         visibility: 'hidden'
       };
-      return convertToPath(elem, attrs, addSVGElementFromJson, pathActions$$1, clearSelection, addToSelection, hstry, addCommandToHistory);
+      return convertToPath(elem, attrs, addSVGElementFromJson, pathActions$1, clearSelection, addToSelection, hstry, addCommandToHistory);
     };
     /**
     * This function makes the changes to the elements. It does not add the change
@@ -20090,7 +20101,7 @@ var SvgCanvas = (function () {
     var changeSelectedAttributeNoUndo = function changeSelectedAttributeNoUndo(attr, newValue, elems) {
       if (currentMode === 'pathedit') {
         // Editing node
-        pathActions$$1.moveNode(attr, newValue);
+        pathActions$1.moveNode(attr, newValue);
       }
 
       elems = elems || selectedElements;

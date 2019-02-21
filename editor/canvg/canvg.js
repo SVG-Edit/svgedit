@@ -1,4 +1,4 @@
-/* eslint-disable new-cap, class-methods-use-this */
+/* eslint-disable new-cap, class-methods-use-this, @mysticatea/no-use-ignored-vars */
 // Todo: Compare with latest canvg (add any improvements of ours) and add full JSDocs (denoting links to standard APIs and which are custom): https://github.com/canvg/canvg
 /**
  * canvg.js - Javascript SVG parser and renderer on Canvas
@@ -2364,8 +2364,10 @@ function build (opts) {
       [...node.childNodes].forEach(({nodeValue}) => {
         css += nodeValue;
       });
-      css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // remove comments
-      css = svg.compressSpaces(css); // replace whitespace
+      // remove comments
+      css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
+      // replace whitespace
+      css = svg.compressSpaces(css);
       const cssDefs = css.split('}');
       cssDefs.forEach((cssDef) => {
         if (svg.trim(cssDef) !== '') {

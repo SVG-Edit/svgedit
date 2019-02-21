@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 /**
  * jPicker (Adapted from version 1.1.6)
  *
@@ -96,7 +97,7 @@ const jPicker = function ($) {
        */
       function mouseDown (e) {
         const off = bar.offset();
-        offset = {l: off.left | 0, t: off.top | 0}; // eslint-disable-line no-bitwise
+        offset = {l: off.left | 0, t: off.top | 0};
         clearTimeout(timeout);
         // using setTimeout for visual updates - once the style is updated the browser will re-render internally allowing the next Javascript to run
         timeout = setTimeout(function () {
@@ -165,7 +166,6 @@ const jPicker = function ($) {
         let arrowOffsetX = 0,
           arrowOffsetY = 0;
         setTimeout(function () {
-          /* eslint-disable no-bitwise */
           if (rangeX > 0) { // range is greater than zero
             // constrain to bounds
             if (x === maxX) arrowOffsetX = barW;
@@ -184,7 +184,6 @@ const jPicker = function ($) {
           else arrowOffsetY -= arrowH >> 1;
           // set the arrow position based on these offsets
           arrow.css({left: arrowOffsetX + 'px', top: arrowOffsetY + 'px'});
-          /* eslint no-bitwise: ["error"] */
         });
       }
 
@@ -287,7 +286,6 @@ const jPicker = function ($) {
           newMinY,
           newMaxY;
         if (isNullish(name)) name = 'all';
-        /* eslint-disable no-bitwise */
         switch (name.toLowerCase()) {
         case 'minx':
           newMinX = (value && ((value.minX && value.minX | 0) || value | 0)) || 0;
@@ -318,7 +316,6 @@ const jPicker = function ($) {
           break;
         }
 
-        /* eslint no-bitwise: ["error"] */
         if (!isNullish(newMinX) && minX !== newMinX) {
           minX = newMinX;
           rangeX = maxX - minX;

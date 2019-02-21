@@ -5119,7 +5119,7 @@ var editorContext_ = null;
 * @returns {undefined}
 */
 
-var init$1 = function init$$1(editorContext) {
+var init$1 = function init(editorContext) {
   editorContext_ = editorContext;
   pathFuncs = [0, 'ClosePath'];
   var pathFuncsStrs = ['Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc', 'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'];
@@ -5844,7 +5844,7 @@ function () {
 
   _createClass(Path, [{
     key: "init",
-    value: function init$$1() {
+    value: function init() {
       // Hide all grips, etc
       // fixed, needed to work on all found elements, not just first
       $$1(getGripContainer()).find('*').each(function () {
@@ -7934,7 +7934,7 @@ var svgroot_ = null;
 * @returns {undefined}
 */
 
-var init$2 = function init$$1(editorContext) {
+var init$2 = function init(editorContext) {
   editorContext_$1 = editorContext;
   domdoc_ = editorContext.getDOMDocument();
   domcontainer_ = editorContext.getDOMContainer();
@@ -8323,8 +8323,8 @@ var findDefs = function findDefs() {
 * @returns {module:utilities.BBoxObject} A BBox-like object
 */
 
-var getPathBBox = function getPathBBox(path$$1) {
-  var seglist = path$$1.pathSegList;
+var getPathBBox = function getPathBBox(path) {
+  var seglist = path.pathSegList;
   var tot = seglist.numberOfItems;
   var bounds = [[], []];
   var start = seglist.getItem(0);
@@ -8707,43 +8707,43 @@ var getExtraAttributesForConvertToPath = function getExtraAttributesForConvertTo
 * @returns {DOMRect|false} The resulting path's bounding box object.
 */
 
-var getBBoxOfElementAsPath = function getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1) {
-  var path$$1 = addSVGElementFromJson({
+var getBBoxOfElementAsPath = function getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions) {
+  var path = addSVGElementFromJson({
     element: 'path',
     attr: getExtraAttributesForConvertToPath(elem)
   });
   var eltrans = elem.getAttribute('transform');
 
   if (eltrans) {
-    path$$1.setAttribute('transform', eltrans);
+    path.setAttribute('transform', eltrans);
   }
 
   var parentNode = elem.parentNode;
 
   if (elem.nextSibling) {
-    elem.before(path$$1);
+    elem.before(path);
   } else {
-    parentNode.append(path$$1);
+    parentNode.append(path);
   }
 
   var d = getPathDFromElement(elem);
 
   if (d) {
-    path$$1.setAttribute('d', d);
+    path.setAttribute('d', d);
   } else {
-    path$$1.remove();
+    path.remove();
   } // Get the correct BBox of the new path, then discard it
 
 
-  pathActions$$1.resetOrientation(path$$1);
+  pathActions.resetOrientation(path);
   var bb = false;
 
   try {
-    bb = path$$1.getBBox();
+    bb = path.getBBox();
   } catch (e) {// Firefox fails
   }
 
-  path$$1.remove();
+  path.remove();
   return bb;
 };
 /**
@@ -8760,57 +8760,57 @@ var getBBoxOfElementAsPath = function getBBoxOfElementAsPath(elem, addSVGElement
 * @returns {SVGPathElement|null} The converted path element or null if the DOM element was not recognized.
 */
 
-var convertToPath = function convertToPath(elem, attrs, addSVGElementFromJson, pathActions$$1, clearSelection, addToSelection, hstry, addCommandToHistory) {
+var convertToPath = function convertToPath(elem, attrs, addSVGElementFromJson, pathActions, clearSelection, addToSelection, hstry, addCommandToHistory) {
   var batchCmd = new hstry.BatchCommand('Convert element to Path'); // Any attribute on the element not covered by the passed-in attributes
 
   attrs = $$2.extend({}, attrs, getExtraAttributesForConvertToPath(elem));
-  var path$$1 = addSVGElementFromJson({
+  var path = addSVGElementFromJson({
     element: 'path',
     attr: attrs
   });
   var eltrans = elem.getAttribute('transform');
 
   if (eltrans) {
-    path$$1.setAttribute('transform', eltrans);
+    path.setAttribute('transform', eltrans);
   }
 
   var id = elem.id;
   var parentNode = elem.parentNode;
 
   if (elem.nextSibling) {
-    elem.before(path$$1);
+    elem.before(path);
   } else {
-    parentNode.append(path$$1);
+    parentNode.append(path);
   }
 
   var d = getPathDFromElement(elem);
 
   if (d) {
-    path$$1.setAttribute('d', d); // Replace the current element with the converted one
+    path.setAttribute('d', d); // Replace the current element with the converted one
     // Reorient if it has a matrix
 
     if (eltrans) {
-      var tlist = getTransformList(path$$1);
+      var tlist = getTransformList(path);
 
       if (hasMatrixTransform(tlist)) {
-        pathActions$$1.resetOrientation(path$$1);
+        pathActions.resetOrientation(path);
       }
     }
 
     var nextSibling = elem.nextSibling;
     batchCmd.addSubCommand(new hstry.RemoveElementCommand(elem, nextSibling, parent));
-    batchCmd.addSubCommand(new hstry.InsertElementCommand(path$$1));
+    batchCmd.addSubCommand(new hstry.InsertElementCommand(path));
     clearSelection();
     elem.remove();
-    path$$1.setAttribute('id', id);
-    path$$1.removeAttribute('visibility');
-    addToSelection([path$$1], true);
+    path.setAttribute('id', id);
+    path.removeAttribute('visibility');
+    addToSelection([path], true);
     addCommandToHistory(batchCmd);
-    return path$$1;
+    return path;
   } // the elem.tagName was not recognized, so no "d" attribute. Remove it, so we've haven't changed anything.
 
 
-  path$$1.remove();
+  path.remove();
   return null;
 };
 /**
@@ -8850,7 +8850,7 @@ function bBoxCanBeOptimizedOverNativeGetBBox(angle, hasAMatrixTransform) {
 */
 
 
-var getBBoxWithTransform = function getBBoxWithTransform(elem, addSVGElementFromJson, pathActions$$1) {
+var getBBoxWithTransform = function getBBoxWithTransform(elem, addSVGElementFromJson, pathActions) {
   // TODO: Fix issue with rotated groups. Currently they work
   // fine in FF, but not in other browsers (same problem mentioned
   // in Issue 339 comment #2).
@@ -8873,7 +8873,7 @@ var getBBoxWithTransform = function getBBoxWithTransform(elem, addSVGElementFrom
       var elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
 
       if (elemNames.includes(elem.tagName)) {
-        goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+        goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
         bb = goodBb;
       } else if (elem.tagName === 'rect') {
         // Look for radius
@@ -8881,7 +8881,7 @@ var getBBoxWithTransform = function getBBoxWithTransform(elem, addSVGElementFrom
         var ry = elem.getAttribute('ry');
 
         if (rx || ry) {
-          goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+          goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
           bb = goodBb;
         }
       }
@@ -8938,7 +8938,7 @@ function getStrokeOffsetForBBox(elem) {
 */
 
 
-var getStrokedBBox = function getStrokedBBox(elems, addSVGElementFromJson, pathActions$$1) {
+var getStrokedBBox = function getStrokedBBox(elems, addSVGElementFromJson, pathActions) {
   if (!elems || !elems.length) {
     return false;
   }
@@ -8953,7 +8953,7 @@ var getStrokedBBox = function getStrokedBBox(elems, addSVGElementFromJson, pathA
       return;
     }
 
-    fullBb = getBBoxWithTransform(this, addSVGElementFromJson, pathActions$$1);
+    fullBb = getBBoxWithTransform(this, addSVGElementFromJson, pathActions);
   }); // This shouldn't ever happen...
 
   if (fullBb === undefined) {
@@ -8975,7 +8975,7 @@ var getStrokedBBox = function getStrokedBBox(elems, addSVGElementFromJson, pathA
     maxY += offset;
   } else {
     $$2.each(elems, function (i, elem) {
-      var curBb = getBBoxWithTransform(elem, addSVGElementFromJson, pathActions$$1);
+      var curBb = getBBoxWithTransform(elem, addSVGElementFromJson, pathActions);
 
       if (curBb) {
         var _offset = getStrokeOffsetForBBox(elem);
@@ -10979,7 +10979,7 @@ function () {
 
   }, {
     key: "copyElem",
-    value: function copyElem$$1(el) {
+    value: function copyElem$1(el) {
       var that = this;
 
       var getNextIdClosure = function getNextIdClosure() {
@@ -11380,7 +11380,13 @@ var setContext = function setContext(elem) {
   canvas_.call('contextset', canvas_.getCurrentGroup());
 };
 
-var REVERSE_NS = getReverseNS(); // this defines which elements and attributes that we support
+var REVERSE_NS = getReverseNS(); // Todo: Split out into core attributes, presentation attributes, etc. so consistent
+
+/**
+ * This defines which elements and attributes that we support (or at least
+ * don't remove)
+ * @type {PlainObject}
+ */
 
 var svgWhiteList_ = {
   // SVG Elements
@@ -11392,6 +11398,7 @@ var svgWhiteList_ = {
   desc: [],
   ellipse: ['class', 'clip-path', 'clip-rule', 'cx', 'cy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'id', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform'],
   feGaussianBlur: ['class', 'color-interpolation-filters', 'id', 'requiredFeatures', 'stdDeviation'],
+  feMorphology: ['class', 'in', 'operator', 'radius'],
   filter: ['class', 'color-interpolation-filters', 'filterRes', 'filterUnits', 'height', 'id', 'primitiveUnits', 'requiredFeatures', 'width', 'x', 'xlink:href', 'y'],
   foreignObject: ['class', 'font-size', 'height', 'id', 'opacity', 'requiredFeatures', 'style', 'transform', 'width', 'x', 'y'],
   g: ['class', 'clip-path', 'clip-rule', 'id', 'display', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor'],
@@ -12056,7 +12063,7 @@ var context_;
 * @returns {undefined}
 */
 
-var init$5 = function init$$1(editorContext) {
+var init$5 = function init(editorContext) {
   context_ = editorContext;
 };
 /**
@@ -12371,6 +12378,7 @@ var recalculateDimensions = function recalculateDimensions(selected) {
 
           var angle = getRotationAngle(child);
           oldStartTransform = context_.getStartTransform();
+          var childxforms = [];
           context_.setStartTransform(child.getAttribute('transform'));
 
           if (angle || hasMatrixTransform(childTlist)) {
@@ -12378,6 +12386,7 @@ var recalculateDimensions = function recalculateDimensions(selected) {
             e2t.setMatrix(matrixMultiply(tm, sm, tmn, _m));
             childTlist.clear();
             childTlist.appendItem(e2t);
+            childxforms.push(e2t); // if not rotated or skewed, push the [T][S][-T] down to the child
           } else {
             // update the transform list with translate,scale,translate
             // slide the [T][S][-T] from the front to the back
@@ -12402,6 +12411,9 @@ var recalculateDimensions = function recalculateDimensions(selected) {
             childTlist.appendItem(translateBack);
             childTlist.appendItem(scale);
             childTlist.appendItem(translateOrigin);
+            childxforms.push(translateBack);
+            childxforms.push(scale);
+            childxforms.push(translateOrigin); // logMatrix(translateBack.matrix);
             // logMatrix(scale.matrix);
           } // not rotated
 
@@ -13822,7 +13834,7 @@ function SvgCanvas(container, config) {
     return selectedElements;
   };
 
-  var pathActions$$1 = pathActions;
+  var pathActions$1 = pathActions;
   /**
   * This should actually be an intersection as all interfaces should be met.
   * @implements {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
@@ -13837,7 +13849,7 @@ function SvgCanvas(container, config) {
   * @implements {module:utilities.EditorContext}
   */
   {
-    pathActions: pathActions$$1,
+    pathActions: pathActions$1,
     // Ok since not modifying
     getSVGContent: getSVGContent,
     addSVGElementFromJson: addSVGElementFromJson,
@@ -14253,13 +14265,13 @@ function SvgCanvas(container, config) {
   */
 
 
-  canvas.pathActions = pathActions$$1;
+  canvas.pathActions = pathActions$1;
   /**
   * @implements {module:path.EditorContext#resetD}
   */
 
   function resetD(p) {
-    p.setAttribute('d', pathActions$$1.convertPath(p));
+    p.setAttribute('d', pathActions$1.convertPath(p));
   }
 
   init$1(
@@ -14308,8 +14320,8 @@ function SvgCanvas(container, config) {
       var closedSubpath = _ref.closedSubpath,
           grips = _ref.grips;
       // TODO: Correct this:
-      pathActions$$1.canDeleteNodes = true;
-      pathActions$$1.closed_subpath = closedSubpath;
+      pathActions$1.canDeleteNodes = true;
+      pathActions$1.closed_subpath = closedSubpath;
       call('pointsAdded', {
         closedSubpath: closedSubpath,
         grips: grips
@@ -15011,9 +15023,9 @@ function SvgCanvas(container, config) {
 
     var paths = _toConsumableArray(newDoc.getElementsByTagNameNS(NS.SVG, 'path'));
 
-    paths.forEach(function (path$$1) {
-      path$$1.setAttribute('d', pathActions$$1.convertPath(path$$1));
-      pathActions$$1.fixEnd(path$$1);
+    paths.forEach(function (path) {
+      path.setAttribute('d', pathActions$1.convertPath(path));
+      pathActions$1.fixEnd(path);
     });
   };
   /**
@@ -15391,7 +15403,7 @@ function SvgCanvas(container, config) {
 
               addToSelection([mouseTarget]);
               justSelected = mouseTarget;
-              pathActions$$1.clear();
+              pathActions$1.clear();
             } // else if it's a path, go into pathedit mode in mouseup
 
 
@@ -15489,12 +15501,11 @@ function SvgCanvas(container, config) {
 
                 if (iswebkit) {
                   delayedStroke = function delayedStroke(ele) {
-                    var _stroke = ele.getAttribute('stroke');
-
+                    var stroke_ = ele.getAttribute('stroke');
                     ele.removeAttribute('stroke'); // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
 
-                    if (_stroke !== null) setTimeout(function () {
-                      ele.setAttribute('stroke', _stroke);
+                    if (stroke_ !== null) setTimeout(function () {
+                      ele.setAttribute('stroke', stroke_);
                     }, 0);
                   };
                 }
@@ -15681,7 +15692,7 @@ function SvgCanvas(container, config) {
         case 'pathedit':
           startX *= currentZoom;
           startY *= currentZoom;
-          pathActions$$1.mouseDown(evt, mouseTarget, startX, startY);
+          pathActions$1.mouseDown(evt, mouseTarget, startX, startY);
           started = true;
           break;
 
@@ -16171,12 +16182,12 @@ function SvgCanvas(container, config) {
             }
 
             if (evt.shiftKey) {
-              var path$$1 = path;
+              var path$1 = path;
               var x1, y1;
 
-              if (path$$1) {
-                x1 = path$$1.dragging ? path$$1.dragging[0] : startX;
-                y1 = path$$1.dragging ? path$$1.dragging[1] : startY;
+              if (path$1) {
+                x1 = path$1.dragging ? path$1.dragging[0] : startX;
+                y1 = path$1.dragging ? path$1.dragging[1] : startY;
               } else {
                 x1 = startX;
                 y1 = startY;
@@ -16199,7 +16210,7 @@ function SvgCanvas(container, config) {
               }, 100);
             }
 
-            pathActions$$1.mouseMove(x, y);
+            pathActions$1.mouseMove(x, y);
             break;
           }
 
@@ -16376,7 +16387,7 @@ function SvgCanvas(container, config) {
               t = evt.target;
 
               if (selectedElements[0].nodeName === 'path' && isNullish(selectedElements[1])) {
-                pathActions$$1.select(selectedElements[0]); // if it was a path
+                pathActions$1.select(selectedElements[0]); // if it was a path
                 // else, if it was selected and this is a shift-click, remove it from selection
               } else if (evt.shiftKey) {
                 if (tempJustSelected !== t) {
@@ -16451,7 +16462,7 @@ function SvgCanvas(container, config) {
             }
 
             if (keep) {
-              element = pathActions$$1.smoothPolylineIntoPath(element);
+              element = pathActions$1.smoothPolylineIntoPath(element);
             }
 
             break;
@@ -16530,7 +16541,7 @@ function SvgCanvas(container, config) {
             element = null; // continue to be set to true so that mouseMove happens
 
             started = true;
-            var res = pathActions$$1.mouseUp(evt, element, mouseX, mouseY);
+            var res = pathActions$1.mouseUp(evt, element, mouseX, mouseY);
             element = res.element;
             keep = res.keep;
             break;
@@ -16539,7 +16550,7 @@ function SvgCanvas(container, config) {
         case 'pathedit':
           keep = true;
           element = null;
-          pathActions$$1.mouseUp(evt);
+          pathActions$1.mouseUp(evt);
           break;
 
         case 'textedit':
@@ -16650,7 +16661,7 @@ function SvgCanvas(container, config) {
           cleanupElement(element);
 
           if (currentMode === 'path') {
-            pathActions$$1.toEditMode(element);
+            pathActions$1.toEditMode(element);
           } else if (curConfig.selectNew) {
             selectOnly([element], true);
           } // we create the insert command that is stored on the stack
@@ -17257,7 +17268,7 @@ function SvgCanvas(container, config) {
         * @param {Element} inputElem Not in use
         * @returns {undefined}
         */
-        init: function init$$1(inputElem) {
+        init: function init(inputElem) {
           if (!curtext) {
             return;
           }
@@ -17400,7 +17411,7 @@ function SvgCanvas(container, config) {
     while (removeUnusedDefElems() > 0) {} // eslint-disable-line no-empty
 
 
-    pathActions$$1.clear(true); // Keep SVG-Edit comment on top
+    pathActions$1.clear(true); // Keep SVG-Edit comment on top
 
     $$9.each(svgcontent.childNodes, function (i, node) {
       if (i && node.nodeType === 8 && node.data.includes('Created with')) {
@@ -17567,7 +17578,7 @@ function SvgCanvas(container, config) {
             out.push(' ');
 
             if (_attr.localName === 'd') {
-              _attrVal = pathActions$$1.convertPath(elem, true);
+              _attrVal = pathActions$1.convertPath(elem, true);
             }
 
             if (!isNaN(_attrVal)) {
@@ -18796,7 +18807,7 @@ function SvgCanvas(container, config) {
   * @implements {module:draw.DrawCanvasInit}
   */
   {
-    pathActions: pathActions$$1,
+    pathActions: pathActions$1,
     getCurrentGroup: function getCurrentGroup() {
       return currentGroup;
     },
@@ -18832,7 +18843,7 @@ function SvgCanvas(container, config) {
   */
 
   this.clear = function () {
-    pathActions$$1.clear();
+    pathActions$1.clear();
     clearSelection(); // clear the svgcontent node
 
     canvas.clearSvgContentElement(); // create new document
@@ -18850,7 +18861,7 @@ function SvgCanvas(container, config) {
   }; // Alias function
 
 
-  this.linkControlPoints = pathActions$$1.linkControlPoints;
+  this.linkControlPoints = pathActions$1.linkControlPoints;
   /**
   * @function module:svgcanvas.SvgCanvas#getContentElem
   * @returns {Element} The content DOM element
@@ -19341,7 +19352,7 @@ function SvgCanvas(container, config) {
 
       selectorManager.requestSelector(elem).resize();
     });
-    pathActions$$1.zoomChange();
+    pathActions$1.zoomChange();
     runExtensions('zoomChanged',
     /** @type {module:svgcanvas.SvgCanvas#event:ext-zoomChanged} */
     zoomLevel);
@@ -19364,7 +19375,7 @@ function SvgCanvas(container, config) {
 
 
   this.setMode = function (name) {
-    pathActions$$1.clear(true);
+    pathActions$1.clear(true);
     textActions.clear();
     curProperties = selectedElements[0] && selectedElements[0].nodeName === 'text' ? curText : curShape;
     currentMode = name;
@@ -20255,7 +20266,7 @@ function SvgCanvas(container, config) {
 
 
   this.setSegType = function (newType) {
-    pathActions$$1.setSegType(newType);
+    pathActions$1.setSegType(newType);
   };
   /**
   * Convert selected element to a path, or get the BBox of an element-as-path.
@@ -20268,7 +20279,7 @@ function SvgCanvas(container, config) {
   */
 
 
-  this.convertToPath = function (elem, getBBox$$1) {
+  this.convertToPath = function (elem, getBBox) {
     if (isNullish(elem)) {
       var elems = selectedElements;
       $$9.each(elems, function (i, el) {
@@ -20279,8 +20290,8 @@ function SvgCanvas(container, config) {
       return undefined;
     }
 
-    if (getBBox$$1) {
-      return getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$$1);
+    if (getBBox) {
+      return getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions$1);
     } // TODO: Why is this applying attributes from curShape, then inside utilities.convertToPath it's pulling addition attributes from elem?
     // TODO: If convertToPath is called with one elem, curShape and elem are probably the same; but calling with multiple is a bug or cool feature.
 
@@ -20297,7 +20308,7 @@ function SvgCanvas(container, config) {
       opacity: curShape.opacity,
       visibility: 'hidden'
     };
-    return convertToPath(elem, attrs, addSVGElementFromJson, pathActions$$1, clearSelection, addToSelection, hstry, addCommandToHistory);
+    return convertToPath(elem, attrs, addSVGElementFromJson, pathActions$1, clearSelection, addToSelection, hstry, addCommandToHistory);
   };
   /**
   * This function makes the changes to the elements. It does not add the change
@@ -20312,7 +20323,7 @@ function SvgCanvas(container, config) {
   var changeSelectedAttributeNoUndo = function changeSelectedAttributeNoUndo(attr, newValue, elems) {
     if (currentMode === 'pathedit') {
       // Editing node
-      pathActions$$1.moveNode(attr, newValue);
+      pathActions$1.moveNode(attr, newValue);
     }
 
     elems = elems || selectedElements;
@@ -24662,6 +24673,8 @@ function jQueryContextMenu($) {
   return $;
 }
 
+/* eslint-disable no-bitwise */
+
 /**
  * jPicker (Adapted from version 1.1.6)
  *
@@ -24773,8 +24786,7 @@ var jPicker = function jPicker($) {
       offset = {
         l: off.left | 0,
         t: off.top | 0
-      }; // eslint-disable-line no-bitwise
-
+      };
       clearTimeout(timeout); // using setTimeout for visual updates - once the style is updated the browser will re-render internally allowing the next Javascript to run
 
       timeout = setTimeout(function () {
@@ -24848,7 +24860,6 @@ var jPicker = function jPicker($) {
       var arrowOffsetX = 0,
           arrowOffsetY = 0;
       setTimeout(function () {
-        /* eslint-disable no-bitwise */
         if (rangeX > 0) {
           // range is greater than zero
           // constrain to bounds
@@ -24871,7 +24882,6 @@ var jPicker = function jPicker($) {
           left: arrowOffsetX + 'px',
           top: arrowOffsetY + 'px'
         });
-        /* eslint no-bitwise: ["error"] */
       });
     }
     /**
@@ -25022,7 +25032,6 @@ var jPicker = function jPicker($) {
       var // changed = false,
       newMinX, newMaxX, newMinY, newMaxY;
       if (isNullish$1(name)) name = 'all';
-      /* eslint-disable no-bitwise */
 
       switch (name.toLowerCase()) {
         case 'minx':
@@ -25059,8 +25068,6 @@ var jPicker = function jPicker($) {
           newMaxY = value && value.maxY && value.maxY | 0 || 0;
           break;
       }
-      /* eslint no-bitwise: ["error"] */
-
 
       if (!isNullish$1(newMinX) && minX !== newMinX) {
         minX = newMinX;
@@ -29421,7 +29428,7 @@ editor.init = function () {
                 var _ref6 = _asyncToGenerator(
                 /*#__PURE__*/
                 regeneratorRuntime.mark(function _callee2(extname) {
-                  var extName, url, imported, _imported$name, name, init$$1, importLocale;
+                  var extName, url, imported, _imported$name, name, init, importLocale;
 
                   return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
@@ -29455,12 +29462,12 @@ editor.init = function () {
 
                         case 7:
                           imported = _context2.sent;
-                          _imported$name = imported.name, name = _imported$name === void 0 ? extName[1] : _imported$name, init$$1 = imported.init;
+                          _imported$name = imported.name, name = _imported$name === void 0 ? extName[1] : _imported$name, init = imported.init;
                           importLocale = getImportLocale({
                             defaultLang: langParam,
                             defaultName: name
                           });
-                          return _context2.abrupt("return", editor.addExtension(name, init$$1 && init$$1.bind(editor), {
+                          return _context2.abrupt("return", editor.addExtension(name, init && init.bind(editor), {
                             $: $$b,
                             importLocale: importLocale
                           }));
@@ -33277,7 +33284,7 @@ editor.init = function () {
   */
 
 
-  var convertToPath$$1 = function convertToPath$$1() {
+  var convertToPath = function convertToPath() {
     if (!isNullish(selectedElement)) {
       svgCanvas.convertToPath();
     }
@@ -35113,7 +35120,7 @@ editor.init = function () {
       key: 'ctrl+shift+['
     }, {
       sel: '#tool_topath',
-      fn: convertToPath$$1,
+      fn: convertToPath,
       evt: 'click'
     }, {
       sel: '#tool_make_link,#tool_make_link_multi',
@@ -36386,7 +36393,7 @@ editor.loadFromDataURI = function (str) {
 */
 
 
-editor.addExtension = function (name, init$$1, initArgs) {
+editor.addExtension = function (name, init, initArgs) {
   // Note that we don't want this on editor.ready since some extensions
   // may want to run before then (like server_opensave).
   // $(function () {
@@ -36394,7 +36401,7 @@ editor.addExtension = function (name, init$$1, initArgs) {
     throw new Error('Extension added too early');
   }
 
-  return svgCanvas.addExtension.call(this, name, init$$1, initArgs); // });
+  return svgCanvas.addExtension.call(this, name, init, initArgs); // });
 }; // Defer injection to wait out initial menu processing. This probably goes
 //    away once all context menu behavior is brought to context menu.
 

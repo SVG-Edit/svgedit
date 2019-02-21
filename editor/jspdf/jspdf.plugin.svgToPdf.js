@@ -57,7 +57,7 @@ const removeAttributes = function (node, attributes) {
   });
 };
 
-const numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE]\d+|[eE][+-]\d+)?/g;
+const numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE]\d+|[eE][+-]\d+|)/g;
 const getLinesOptionsOfPoly = function (node) {
   let nums = node.getAttribute('points');
   nums = (nums && nums.match(numRgx)) || [];

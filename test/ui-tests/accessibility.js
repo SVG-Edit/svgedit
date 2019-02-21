@@ -41,3 +41,4 @@ test('Embedded - no parameters', async t => {
   await axeCheck(t); // , axeContent, axeOptions: https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#api-name-axerun
 });
 */
+/* eslint-enable qunit/no-commented-tests */

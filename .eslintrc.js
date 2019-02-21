@@ -12,7 +12,7 @@ module.exports = {
     browser: true
   },
   settings: {
-    polyfills: ["url", "promises", "fetch", "queryselector"],
+    polyfills: ["url", "promises", "fetch", "queryselector", "object-values"],
     jsdoc: {
       additionalTagNames: {
         // In case we need to extend
@@ -145,6 +145,8 @@ module.exports = {
     "max-len": ["off", {
       ignoreUrls: true,
       ignoreRegExpLiterals: true
-    }]
+    }],
+    "unicorn/prefer-query-selector": ["off"],
+    "unicorn/prefer-node-append": ["off"]
   }
 };

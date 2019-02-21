@@ -1890,10 +1890,10 @@ const mouseDown = function (evt) {
         let delayedStroke;
         if (iswebkit) {
           delayedStroke = function (ele) {
-            const _stroke = ele.getAttribute('stroke');
+            const stroke_ = ele.getAttribute('stroke');
             ele.removeAttribute('stroke');
             // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
-            if (_stroke !== null) setTimeout(function () { ele.setAttribute('stroke', _stroke); }, 0);
+            if (stroke_ !== null) setTimeout(function () { ele.setAttribute('stroke', stroke_); }, 0);
           };
         }
         mouseTarget.style.vectorEffect = 'non-scaling-stroke';
