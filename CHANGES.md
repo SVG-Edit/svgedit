@@ -2,8 +2,8 @@
 
 ## ?
 
-- Fix: Ensure extension with no `placement` is added to end;
-    fixes #326 (@sjernigan)
+- Fix: Extension with no `placement` to be added to end;
+    for #326 (@sjernigan)
 - Optimization fix: Properly run code conditionally on browser check;
     fixes #312 (@ianli-sc)
 - Enhancement: Add CAD Placemark extension (@NeiroNx)
