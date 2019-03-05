@@ -29426,8 +29426,10 @@
                   ok: ok,
                   cancel: cancel
                 });
-                _context3.prev = 9;
-                _context3.next = 12;
+                setIcons(); // Wait for dbox as needed for i18n
+
+                _context3.prev = 10;
+                _context3.next = 13;
                 return Promise.all(curConfig.extensions.map(
                 /*#__PURE__*/
                 function () {
@@ -29501,7 +29503,7 @@
                   };
                 }()));
 
-              case 12:
+              case 13:
                 svgCanvas.bind('extensions_added',
                 /**
                 * @param {external:Window} win
@@ -29531,21 +29533,21 @@
                   });
                 });
                 svgCanvas.call('extensions_added');
-                _context3.next = 19;
+                _context3.next = 20;
                 break;
 
-              case 16:
-                _context3.prev = 16;
-                _context3.t0 = _context3["catch"](9);
+              case 17:
+                _context3.prev = 17;
+                _context3.t0 = _context3["catch"](10);
                 // Todo: Report errors through the UI
                 console.log(_context3.t0); // eslint-disable-line no-console
 
-              case 19:
+              case 20:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, this, [[9, 16]]);
+        }, _callee3, this, [[10, 17]]);
       }));
 
       return function extAndLocaleFunc() {
@@ -29852,299 +29854,306 @@
 
       setFlyoutPositions();
     };
+    /**
+     * Setup SVG icons
+     */
 
-    $$b.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
-      w: 24,
-      h: 24,
-      id_match: false,
-      no_img: !isWebkit(),
-      // Opera & Firefox 4 gives odd behavior w/images
-      fallback_path: curConfig.imgPath,
-      fallback: {
-        logo: 'logo.png',
-        select: 'select.png',
-        select_node: 'select_node.png',
-        square: 'square.png',
-        rect: 'rect.png',
-        fh_rect: 'freehand-square.png',
-        circle: 'circle.png',
-        ellipse: 'ellipse.png',
-        fh_ellipse: 'freehand-circle.png',
-        pencil: 'fhpath.png',
-        pen: 'line.png',
-        text: 'text.png',
-        path: 'path.png',
-        add_subpath: 'add_subpath.png',
-        close_path: 'closepath.png',
-        open_path: 'openpath.png',
-        image: 'image.png',
-        zoom: 'zoom.png',
-        arrow_right: 'flyouth.png',
-        arrow_right_big: 'arrow_right_big.png',
-        arrow_down: 'dropdown.gif',
-        fill: 'fill.png',
-        stroke: 'stroke.png',
-        opacity: 'opacity.png',
-        new_image: 'clear.png',
-        save: 'save.png',
-        export: 'export.png',
-        open: 'open.png',
-        import: 'import.png',
-        docprops: 'document-properties.png',
-        source: 'source.png',
-        wireframe: 'wireframe.png',
-        undo: 'undo.png',
-        redo: 'redo.png',
-        clone: 'clone.png',
-        delete: 'delete.png',
-        go_up: 'go-up.png',
-        go_down: 'go-down.png',
-        context_menu: 'context_menu.png',
-        move_bottom: 'move_bottom.png',
-        move_top: 'move_top.png',
-        to_path: 'to_path.png',
-        link_controls: 'link_controls.png',
-        reorient: 'reorient.png',
-        group_elements: 'shape_group_elements.png',
-        ungroup: 'shape_ungroup.png',
-        unlink_use: 'unlink_use.png',
-        width: 'width.png',
-        height: 'height.png',
-        c_radius: 'c_radius.png',
-        angle: 'angle.png',
-        blur: 'blur.png',
-        fontsize: 'fontsize.png',
-        align: 'align.png',
-        align_left: 'align-left.png',
-        align_center: 'align-center.png',
-        align_right: 'align-right.png',
-        align_top: 'align-top.png',
-        align_middle: 'align-middle.png',
-        align_bottom: 'align-bottom.png',
-        linecap_butt: 'linecap_butt.png',
-        linecap_square: 'linecap_square.png',
-        linecap_round: 'linecap_round.png',
-        linejoin_miter: 'linejoin_miter.png',
-        linejoin_bevel: 'linejoin_bevel.png',
-        linejoin_round: 'linejoin_round.png',
-        eye: 'eye.png',
-        no_color: 'no_color.png',
-        ok: 'save.png',
-        cancel: 'cancel.png',
-        warning: 'warning.png',
-        node_delete: 'node_delete.png',
-        node_clone: 'node_clone.png',
-        globe_link: 'globe_link.png'
-      },
-      placement: {
-        '#logo': 'logo',
-        '#tool_clear div,#layer_new': 'new_image',
-        '#tool_save div': 'save',
-        '#tool_export div': 'export',
-        '#tool_open div div': 'open',
-        '#tool_import div div': 'import',
-        '#tool_source': 'source',
-        '#tool_docprops > div': 'docprops',
-        '#tool_wireframe': 'wireframe',
-        '#tool_undo': 'undo',
-        '#tool_redo': 'redo',
-        '#tool_select': 'select',
-        '#tool_fhpath': 'pencil',
-        '#tool_line': 'pen',
-        '#tool_rect,#tools_rect_show': 'rect',
-        '#tool_square': 'square',
-        '#tool_fhrect': 'fh_rect',
-        '#tool_ellipse,#tools_ellipse_show': 'ellipse',
-        '#tool_circle': 'circle',
-        '#tool_fhellipse': 'fh_ellipse',
-        '#tool_path': 'path',
-        '#tool_text,#layer_rename': 'text',
-        '#tool_image': 'image',
-        '#tool_zoom': 'zoom',
-        '#tool_clone,#tool_clone_multi': 'clone',
-        '#tool_node_clone': 'node_clone',
-        '#layer_delete,#tool_delete,#tool_delete_multi': 'delete',
-        '#tool_node_delete': 'node_delete',
-        '#tool_add_subpath': 'add_subpath',
-        '#tool_openclose_path': 'open_path',
-        '#tool_move_top': 'move_top',
-        '#tool_move_bottom': 'move_bottom',
-        '#tool_topath': 'to_path',
-        '#tool_node_link': 'link_controls',
-        '#tool_reorient': 'reorient',
-        '#tool_group_elements': 'group_elements',
-        '#tool_ungroup': 'ungroup',
-        '#tool_unlink_use': 'unlink_use',
-        '#tool_alignleft, #tool_posleft': 'align_left',
-        '#tool_aligncenter, #tool_poscenter': 'align_center',
-        '#tool_alignright, #tool_posright': 'align_right',
-        '#tool_aligntop, #tool_postop': 'align_top',
-        '#tool_alignmiddle, #tool_posmiddle': 'align_middle',
-        '#tool_alignbottom, #tool_posbottom': 'align_bottom',
-        '#cur_position': 'align',
-        '#linecap_butt,#cur_linecap': 'linecap_butt',
-        '#linecap_round': 'linecap_round',
-        '#linecap_square': 'linecap_square',
-        '#linejoin_miter,#cur_linejoin': 'linejoin_miter',
-        '#linejoin_round': 'linejoin_round',
-        '#linejoin_bevel': 'linejoin_bevel',
-        '#url_notice': 'warning',
-        '#layer_up': 'go_up',
-        '#layer_down': 'go_down',
-        '#layer_moreopts': 'context_menu',
-        '#layerlist td.layervis': 'eye',
-        '#tool_source_save,#tool_docprops_save,#tool_prefs_save': 'ok',
-        '#tool_source_cancel,#tool_docprops_cancel,#tool_prefs_cancel': 'cancel',
-        '#rwidthLabel, #iwidthLabel': 'width',
-        '#rheightLabel, #iheightLabel': 'height',
-        '#cornerRadiusLabel span': 'c_radius',
-        '#angleLabel': 'angle',
-        '#linkLabel,#tool_make_link,#tool_make_link_multi': 'globe_link',
-        '#zoomLabel': 'zoom',
-        '#tool_fill label': 'fill',
-        '#tool_stroke .icon_label': 'stroke',
-        '#group_opacityLabel': 'opacity',
-        '#blurLabel': 'blur',
-        '#font_sizeLabel': 'fontsize',
-        '.flyout_arrow_horiz': 'arrow_right',
-        '.dropdown button, #main_button .dropdown': 'arrow_down',
-        '#palette .palette_item:first, #fill_bg, #stroke_bg': 'no_color'
-      },
-      resize: {
-        '#logo .svg_icon': 28,
-        '.flyout_arrow_horiz .svg_icon': 5,
-        '.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
-        '.dropdown button .svg_icon': 7,
-        '#main_button .dropdown .svg_icon': 9,
-        '.palette_item:first .svg_icon': 15,
-        '#fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
-        '.toolbar_button button .svg_icon': 16,
-        '.stroke_tool div div .svg_icon': 20,
-        '#tools_bottom label .svg_icon': 18
-      },
-      callback: function () {
-        var _callback = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee4(icons) {
-          var tleft, minHeight, size, getStylesheetPriority, stylesheets, idx, _stylesheets;
 
-          return regeneratorRuntime.wrap(function _callee4$(_context4) {
-            while (1) {
-              switch (_context4.prev = _context4.next) {
-                case 0:
-                  getStylesheetPriority = function _ref8(stylesheetFile) {
-                    switch (stylesheetFile) {
-                      case 'jgraduate/css/jPicker.css':
-                        return 1;
+    function setIcons() {
+      $$b.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
+        w: 24,
+        h: 24,
+        id_match: false,
+        no_img: !isWebkit(),
+        // Opera & Firefox 4 gives odd behavior w/images
+        fallback_path: curConfig.imgPath,
+        fallback: {
+          logo: 'logo.png',
+          select: 'select.png',
+          select_node: 'select_node.png',
+          square: 'square.png',
+          rect: 'rect.png',
+          fh_rect: 'freehand-square.png',
+          circle: 'circle.png',
+          ellipse: 'ellipse.png',
+          fh_ellipse: 'freehand-circle.png',
+          pencil: 'fhpath.png',
+          pen: 'line.png',
+          text: 'text.png',
+          path: 'path.png',
+          add_subpath: 'add_subpath.png',
+          close_path: 'closepath.png',
+          open_path: 'openpath.png',
+          image: 'image.png',
+          zoom: 'zoom.png',
+          arrow_right: 'flyouth.png',
+          arrow_right_big: 'arrow_right_big.png',
+          arrow_down: 'dropdown.gif',
+          fill: 'fill.png',
+          stroke: 'stroke.png',
+          opacity: 'opacity.png',
+          new_image: 'clear.png',
+          save: 'save.png',
+          export: 'export.png',
+          open: 'open.png',
+          import: 'import.png',
+          docprops: 'document-properties.png',
+          source: 'source.png',
+          wireframe: 'wireframe.png',
+          undo: 'undo.png',
+          redo: 'redo.png',
+          clone: 'clone.png',
+          delete: 'delete.png',
+          go_up: 'go-up.png',
+          go_down: 'go-down.png',
+          context_menu: 'context_menu.png',
+          move_bottom: 'move_bottom.png',
+          move_top: 'move_top.png',
+          to_path: 'to_path.png',
+          link_controls: 'link_controls.png',
+          reorient: 'reorient.png',
+          group_elements: 'shape_group_elements.png',
+          ungroup: 'shape_ungroup.png',
+          unlink_use: 'unlink_use.png',
+          width: 'width.png',
+          height: 'height.png',
+          c_radius: 'c_radius.png',
+          angle: 'angle.png',
+          blur: 'blur.png',
+          fontsize: 'fontsize.png',
+          align: 'align.png',
+          align_left: 'align-left.png',
+          align_center: 'align-center.png',
+          align_right: 'align-right.png',
+          align_top: 'align-top.png',
+          align_middle: 'align-middle.png',
+          align_bottom: 'align-bottom.png',
+          linecap_butt: 'linecap_butt.png',
+          linecap_square: 'linecap_square.png',
+          linecap_round: 'linecap_round.png',
+          linejoin_miter: 'linejoin_miter.png',
+          linejoin_bevel: 'linejoin_bevel.png',
+          linejoin_round: 'linejoin_round.png',
+          eye: 'eye.png',
+          no_color: 'no_color.png',
+          ok: 'save.png',
+          cancel: 'cancel.png',
+          warning: 'warning.png',
+          node_delete: 'node_delete.png',
+          node_clone: 'node_clone.png',
+          globe_link: 'globe_link.png'
+        },
+        placement: {
+          '#logo': 'logo',
+          '#tool_clear div,#layer_new': 'new_image',
+          '#tool_save div': 'save',
+          '#tool_export div': 'export',
+          '#tool_open div div': 'open',
+          '#tool_import div div': 'import',
+          '#tool_source': 'source',
+          '#tool_docprops > div': 'docprops',
+          '#tool_wireframe': 'wireframe',
+          '#tool_undo': 'undo',
+          '#tool_redo': 'redo',
+          '#tool_select': 'select',
+          '#tool_fhpath': 'pencil',
+          '#tool_line': 'pen',
+          '#tool_rect,#tools_rect_show': 'rect',
+          '#tool_square': 'square',
+          '#tool_fhrect': 'fh_rect',
+          '#tool_ellipse,#tools_ellipse_show': 'ellipse',
+          '#tool_circle': 'circle',
+          '#tool_fhellipse': 'fh_ellipse',
+          '#tool_path': 'path',
+          '#tool_text,#layer_rename': 'text',
+          '#tool_image': 'image',
+          '#tool_zoom': 'zoom',
+          '#tool_clone,#tool_clone_multi': 'clone',
+          '#tool_node_clone': 'node_clone',
+          '#layer_delete,#tool_delete,#tool_delete_multi': 'delete',
+          '#tool_node_delete': 'node_delete',
+          '#tool_add_subpath': 'add_subpath',
+          '#tool_openclose_path': 'open_path',
+          '#tool_move_top': 'move_top',
+          '#tool_move_bottom': 'move_bottom',
+          '#tool_topath': 'to_path',
+          '#tool_node_link': 'link_controls',
+          '#tool_reorient': 'reorient',
+          '#tool_group_elements': 'group_elements',
+          '#tool_ungroup': 'ungroup',
+          '#tool_unlink_use': 'unlink_use',
+          '#tool_alignleft, #tool_posleft': 'align_left',
+          '#tool_aligncenter, #tool_poscenter': 'align_center',
+          '#tool_alignright, #tool_posright': 'align_right',
+          '#tool_aligntop, #tool_postop': 'align_top',
+          '#tool_alignmiddle, #tool_posmiddle': 'align_middle',
+          '#tool_alignbottom, #tool_posbottom': 'align_bottom',
+          '#cur_position': 'align',
+          '#linecap_butt,#cur_linecap': 'linecap_butt',
+          '#linecap_round': 'linecap_round',
+          '#linecap_square': 'linecap_square',
+          '#linejoin_miter,#cur_linejoin': 'linejoin_miter',
+          '#linejoin_round': 'linejoin_round',
+          '#linejoin_bevel': 'linejoin_bevel',
+          '#url_notice': 'warning',
+          '#layer_up': 'go_up',
+          '#layer_down': 'go_down',
+          '#layer_moreopts': 'context_menu',
+          '#layerlist td.layervis': 'eye',
+          '#tool_source_save,#tool_docprops_save,#tool_prefs_save': 'ok',
+          '#tool_source_cancel,#tool_docprops_cancel,#tool_prefs_cancel': 'cancel',
+          '#rwidthLabel, #iwidthLabel': 'width',
+          '#rheightLabel, #iheightLabel': 'height',
+          '#cornerRadiusLabel span': 'c_radius',
+          '#angleLabel': 'angle',
+          '#linkLabel,#tool_make_link,#tool_make_link_multi': 'globe_link',
+          '#zoomLabel': 'zoom',
+          '#tool_fill label': 'fill',
+          '#tool_stroke .icon_label': 'stroke',
+          '#group_opacityLabel': 'opacity',
+          '#blurLabel': 'blur',
+          '#font_sizeLabel': 'fontsize',
+          '.flyout_arrow_horiz': 'arrow_right',
+          '.dropdown button, #main_button .dropdown': 'arrow_down',
+          '#palette .palette_item:first, #fill_bg, #stroke_bg': 'no_color'
+        },
+        resize: {
+          '#logo .svg_icon': 28,
+          '.flyout_arrow_horiz .svg_icon': 5,
+          '.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
+          '.dropdown button .svg_icon': 7,
+          '#main_button .dropdown .svg_icon': 9,
+          '.palette_item:first .svg_icon': 15,
+          '#fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
+          '.toolbar_button button .svg_icon': 16,
+          '.stroke_tool div div .svg_icon': 20,
+          '#tools_bottom label .svg_icon': 18
+        },
+        callback: function () {
+          var _callback = _asyncToGenerator(
+          /*#__PURE__*/
+          regeneratorRuntime.mark(function _callee4(icons) {
+            var tleft, minHeight, size, getStylesheetPriority, stylesheets, idx, _stylesheets;
 
-                      case 'jgraduate/css/jGraduate.css':
-                        return 2;
+            return regeneratorRuntime.wrap(function _callee4$(_context4) {
+              while (1) {
+                switch (_context4.prev = _context4.next) {
+                  case 0:
+                    getStylesheetPriority = function _ref8(stylesheetFile) {
+                      switch (stylesheetFile) {
+                        case 'jgraduate/css/jPicker.css':
+                          return 1;
 
-                      case 'svg-editor.css':
-                        return 3;
+                        case 'jgraduate/css/jGraduate.css':
+                          return 2;
 
-                      case 'spinbtn/jQuery.SpinButton.css':
-                        return 4;
+                        case 'svg-editor.css':
+                          return 3;
 
-                      default:
-                        return Infinity;
-                    }
-                  };
+                        case 'spinbtn/jQuery.SpinButton.css':
+                          return 4;
 
-                  $$b('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
-                    $$b(this).parent().prepend(this);
-                  });
-                  tleft = $$b('#tools_left');
-
-                  if (tleft.length) {
-                    minHeight = tleft.offset().top + tleft.outerHeight();
-                  }
-
-                  size = $$b.pref('iconsize');
-                  editor.setIconSize(size || ($$b(window).height() < minHeight ? 's' : 'm')); // Look for any missing flyout icons from plugins
-
-                  $$b('.tools_flyout').each(function () {
-                    var shower = $$b('#' + this.id + '_show');
-                    var sel = shower.attr('data-curopt'); // Check if there's an icon here
-
-                    if (!shower.children('svg, img').length) {
-                      var clone = $$b(sel).children().clone();
-
-                      if (clone.length) {
-                        clone[0].removeAttribute('style'); // Needed for Opera
-
-                        shower.append(clone);
+                        default:
+                          return Infinity;
                       }
-                    }
-                  });
-                  /**
-                   * Since stylesheets may be added out of order, we indicate the desired order
-                   *   for defaults and others after them (in an indeterminate order).
-                   * @param {string} stylesheetFile
-                   * @returns {Integer|PositiveInfinity}
-                   */
+                    };
 
-                  stylesheets = $$b.loadingStylesheets.sort(function (a, b) {
-                    var priorityA = getStylesheetPriority(a);
-                    var priorityB = getStylesheetPriority(b);
+                    $$b('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
+                      $$b(this).parent().prepend(this);
+                    });
+                    tleft = $$b('#tools_left');
 
-                    if (priorityA === priorityB) {
-                      return 0;
+                    if (tleft.length) {
+                      minHeight = tleft.offset().top + tleft.outerHeight();
                     }
 
-                    return priorityA > priorityB;
-                  });
+                    size = $$b.pref('iconsize');
+                    editor.setIconSize(size || ($$b(window).height() < minHeight ? 's' : 'm')); // Look for any missing flyout icons from plugins
 
-                  if (curConfig.stylesheets.length) {
-                    // Ensure a copy with unique items
-                    stylesheets = _toConsumableArray(new Set(curConfig.stylesheets));
-                    idx = stylesheets.indexOf('@default');
+                    $$b('.tools_flyout').each(function () {
+                      var shower = $$b('#' + this.id + '_show');
+                      var sel = shower.attr('data-curopt'); // Check if there's an icon here
 
-                    if (idx > -1) {
-                      (_stylesheets = stylesheets).splice.apply(_stylesheets, [idx, 1].concat(_toConsumableArray($$b.loadingStylesheets)));
-                    }
-                  }
+                      if (!shower.children('svg, img').length) {
+                        var clone = $$b(sel).children().clone();
 
-                  _context4.next = 11;
-                  return loadStylesheets(stylesheets, {
-                    acceptErrors: function acceptErrors(_ref7) {
-                      var stylesheetURL = _ref7.stylesheetURL,
-                          reject = _ref7.reject,
-                          resolve = _ref7.resolve;
+                        if (clone.length) {
+                          clone[0].removeAttribute('style'); // Needed for Opera
 
-                      if ($$b.loadingStylesheets.includes(stylesheetURL)) {
-                        reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
-                        return;
+                          shower.append(clone);
+                        }
+                      }
+                    });
+                    /**
+                     * Since stylesheets may be added out of order, we indicate the desired order
+                     *   for defaults and others after them (in an indeterminate order).
+                     * @param {string} stylesheetFile
+                     * @returns {Integer|PositiveInfinity}
+                     */
+
+                    stylesheets = $$b.loadingStylesheets.sort(function (a, b) {
+                      var priorityA = getStylesheetPriority(a);
+                      var priorityB = getStylesheetPriority(b);
+
+                      if (priorityA === priorityB) {
+                        return 0;
                       }
 
-                      resolve();
+                      return priorityA > priorityB;
+                    });
+
+                    if (curConfig.stylesheets.length) {
+                      // Ensure a copy with unique items
+                      stylesheets = _toConsumableArray(new Set(curConfig.stylesheets));
+                      idx = stylesheets.indexOf('@default');
+
+                      if (idx > -1) {
+                        (_stylesheets = stylesheets).splice.apply(_stylesheets, [idx, 1].concat(_toConsumableArray($$b.loadingStylesheets)));
+                      }
                     }
-                  });
 
-                case 11:
-                  $$b('#svg_container')[0].style.visibility = 'visible';
-                  _context4.next = 14;
-                  return editor.runCallbacks();
+                    _context4.next = 11;
+                    return loadStylesheets(stylesheets, {
+                      acceptErrors: function acceptErrors(_ref7) {
+                        var stylesheetURL = _ref7.stylesheetURL,
+                            reject = _ref7.reject,
+                            resolve = _ref7.resolve;
 
-                case 14:
-                case "end":
-                  return _context4.stop();
+                        if ($$b.loadingStylesheets.includes(stylesheetURL)) {
+                          reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
+                          return;
+                        }
+
+                        resolve();
+                      }
+                    });
+
+                  case 11:
+                    $$b('#svg_container')[0].style.visibility = 'visible';
+                    _context4.next = 14;
+                    return editor.runCallbacks();
+
+                  case 14:
+                  case "end":
+                    return _context4.stop();
+                }
               }
-            }
-          }, _callee4, this);
-        }));
+            }, _callee4, this);
+          }));
 
-        function callback(_x3) {
-          return _callback.apply(this, arguments);
-        }
+          function callback(_x3) {
+            return _callback.apply(this, arguments);
+          }
 
-        return callback;
-      }()
-    });
+          return callback;
+        }()
+      });
+    }
     /**
     * @name module:SVGEditor.canvas
     * @type {module:svgcanvas.SvgCanvas}
     */
+
 
     editor.canvas = svgCanvas = new SvgCanvas(document.getElementById('svgcanvas'), curConfig);
     var palette = [// Todo: Make into configuration item?
@@ -36151,7 +36160,9 @@
     if (document.location.protocol === 'file:') {
       setTimeout(extAndLocaleFunc, 100);
     } else {
-      // Returns a promise (if we wanted to fire 'extensions-loaded' event, potentially useful to hide interface as some extension locales are only available after this)
+      // Returns a promise (if we wanted to fire 'extensions-loaded' event,
+      //   potentially useful to hide interface as some extension locales
+      //   are only available after this)
       extAndLocaleFunc();
     }
   };

@@ -2,6 +2,7 @@
 
 ## ?
 
+- Fix: Delay icon setting until locales available (fixes #323)
 - Fix: Extension with no `placement` to be added to end;
     for #326 (@sjernigan)
 - Optimization fix: Properly run code conditionally on browser check;
