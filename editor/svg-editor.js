@@ -3273,7 +3273,7 @@ editor.init = function () {
             if ($(parent).children().eq(btn.position).length) {
               $(parent).children().eq(btn.position).before(button);
             } else {
-              $(parent).children().last().before(button);
+              $(parent).children().last().after(button);
             }
           } else {
             button.appendTo(parent);

@@ -32151,7 +32151,7 @@ editor.init = function () {
                     if ($$b(parent).children().eq(btn.position).length) {
                       $$b(parent).children().eq(btn.position).before(button);
                     } else {
-                      $$b(parent).children().last().before(button);
+                      $$b(parent).children().last().after(button);
                     }
                   } else {
                     button.appendTo(parent);
