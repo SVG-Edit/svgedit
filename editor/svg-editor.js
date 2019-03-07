@@ -126,7 +126,7 @@ const callbacks = [],
     * Will default to 's' if the window height is smaller than the minimum height and
     * 'm' otherwise
     */
-    iconsize: '',
+    iconsize: 'm',
     bkgd_color: '#FFF',
     bkgd_url: '',
     // DOCUMENT PROPERTIES (DIALOG)
