@@ -1,36 +1,42 @@
 var svgEditorExtension_star = (function () {
   'use strict';
 
-  var asyncToGenerator = function (fn) {
-    return function () {
-      var gen = fn.apply(this, arguments);
-      return new Promise(function (resolve, reject) {
-        function step(key, arg) {
-          try {
-            var info = gen[key](arg);
-            var value = info.value;
-          } catch (error) {
-            reject(error);
-            return;
-          }
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
 
-          if (info.done) {
-            resolve(value);
-          } else {
-            return Promise.resolve(value).then(function (value) {
-              step("next", value);
-            }, function (err) {
-              step("throw", err);
-            });
-          }
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
         }
 
-        return step("next");
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
       });
     };
-  };
+  }
 
-  /* globals jQuery */
   /**
    * ext-star.js
    *
@@ -41,43 +47,39 @@ var svgEditorExtension_star = (function () {
   var extStar = {
     name: 'star',
     init: function () {
-      var _ref = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(S) {
-        var svgEditor, $, svgCanvas, importLocale, selElems, started, newFO, strings, showPanel, setAttr, buttons, contextTools;
+      var _init = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee(S) {
+        var svgEditor, svgCanvas, $, importLocale, selElems, started, newFO, strings, showPanel, setAttr, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                setAttr = function setAttr(attr, val) {
+                setAttr = function _ref2(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
                   svgCanvas.call('changed', selElems);
                 };
 
-                showPanel = function showPanel(on) {
+                showPanel = function _ref(on) {
                   var fcRules = $('#fc_rules');
+
                   if (!fcRules.length) {
                     fcRules = $('<style id="fc_rules"></style>').appendTo('head');
                   }
+
                   fcRules.text(!on ? '' : ' #tool_topath { display: none !important; }');
                   $('#star_panel').toggle(on);
                 };
 
                 svgEditor = this;
-                $ = jQuery;
                 svgCanvas = svgEditor.canvas;
-                importLocale = S.importLocale; // {svgcontent},
+                $ = S.$, importLocale = S.importLocale; // {svgcontent},
 
-                selElems = void 0, started = void 0, newFO = void 0;
-                // edg = 0,
-                // newFOG, newFOGParent, newDef, newImageName, newMaskID,
-                // undoCommand = 'Not image',
-                // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
-
-                _context.next = 9;
+                _context.next = 7;
                 return importLocale();
 
-              case 9:
+              case 7:
                 strings = _context.sent;
-
 
                 /*
                 function cot(n){
@@ -128,7 +130,7 @@ var svgEditorExtension_star = (function () {
                     }
                   }
                 }];
-                return _context.abrupt('return', {
+                return _context.abrupt("return", {
                   name: strings.name,
                   svgicons: svgEditor.curConfig.extIconsPath + 'star-icons.svg',
                   buttons: strings.buttons.map(function (button, i) {
@@ -138,19 +140,17 @@ var svgEditorExtension_star = (function () {
                     return Object.assign(contextTools[i], contextTool);
                   }),
                   callback: function callback() {
-                    $('#star_panel').hide();
-                    // const endChanges = function(){};
+                    $('#star_panel').hide(); // const endChanges = function(){};
                   },
                   mouseDown: function mouseDown(opts) {
-                    var rgb = svgCanvas.getColor('fill');
-                    // const ccRgbEl = rgb.substring(1, rgb.length);
-                    var sRgb = svgCanvas.getColor('stroke');
-                    // const ccSRgbEl = sRgb.substring(1, rgb.length);
+                    var rgb = svgCanvas.getColor('fill'); // const ccRgbEl = rgb.substring(1, rgb.length);
+
+                    var sRgb = svgCanvas.getColor('stroke'); // const ccSRgbEl = sRgb.substring(1, rgb.length);
+
                     var sWidth = svgCanvas.getStrokeWidth();
 
                     if (svgCanvas.getMode() === 'star') {
                       started = true;
-
                       newFO = svgCanvas.addSVGElementFromJson({
                         element: 'polygon',
                         attr: {
@@ -172,14 +172,16 @@ var svgEditorExtension_star = (function () {
                         started: true
                       };
                     }
+
+                    return undefined;
                   },
                   mouseMove: function mouseMove(opts) {
                     if (!started) {
-                      return;
+                      return undefined;
                     }
+
                     if (svgCanvas.getMode() === 'star') {
                       var c = $(newFO).attr(['cx', 'cy', 'point', 'orient', 'fill', 'strokecolor', 'strokeWidth', 'radialshift']);
-
                       var x = opts.mouse_x;
                       var y = opts.mouse_y;
                       var cx = c.cx,
@@ -192,13 +194,13 @@ var svgEditorExtension_star = (function () {
                           orient = c.orient,
                           circumradius = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) / 1.5,
                           inradius = circumradius / document.getElementById('starRadiusMulitplier').value;
-
-                      newFO.setAttributeNS(null, 'r', circumradius);
-                      newFO.setAttributeNS(null, 'r2', inradius);
-
+                      newFO.setAttribute('r', circumradius);
+                      newFO.setAttribute('r2', inradius);
                       var polyPoints = '';
+
                       for (var s = 0; point >= s; s++) {
                         var angle = 2.0 * Math.PI * (s / point);
+
                         if (orient === 'point') {
                           angle -= Math.PI / 2;
                         } else if (orient === 'edge') {
@@ -207,53 +209,59 @@ var svgEditorExtension_star = (function () {
 
                         x = circumradius * Math.cos(angle) + cx;
                         y = circumradius * Math.sin(angle) + cy;
-
                         polyPoints += x + ',' + y + ' ';
 
-                        if (inradius != null) {
+                        if (!isNaN(inradius)) {
                           angle = 2.0 * Math.PI * (s / point) + Math.PI / point;
+
                           if (orient === 'point') {
                             angle -= Math.PI / 2;
                           } else if (orient === 'edge') {
                             angle = angle + Math.PI / point - Math.PI / 2;
                           }
-                          angle += radialshift;
 
+                          angle += radialshift;
                           x = inradius * Math.cos(angle) + cx;
                           y = inradius * Math.sin(angle) + cy;
-
                           polyPoints += x + ',' + y + ' ';
                         }
                       }
-                      newFO.setAttributeNS(null, 'points', polyPoints);
-                      newFO.setAttributeNS(null, 'fill', fill);
-                      newFO.setAttributeNS(null, 'stroke', strokecolor);
-                      newFO.setAttributeNS(null, 'stroke-width', strokeWidth);
-                      /* const shape = */newFO.getAttributeNS(null, 'shape');
 
+                      newFO.setAttribute('points', polyPoints);
+                      newFO.setAttribute('fill', fill);
+                      newFO.setAttribute('stroke', strokecolor);
+                      newFO.setAttribute('stroke-width', strokeWidth);
+                      /* const shape = */
+
+                      newFO.getAttribute('shape');
                       return {
                         started: true
                       };
                     }
+
+                    return undefined;
                   },
                   mouseUp: function mouseUp() {
                     if (svgCanvas.getMode() === 'star') {
-                      var attrs = $(newFO).attr(['r']);
-                      // svgCanvas.addToSelection([newFO], true);
+                      var attrs = $(newFO).attr(['r']); // svgCanvas.addToSelection([newFO], true);
+
                       return {
                         keep: attrs.r !== '0',
                         element: newFO
                       };
                     }
+
+                    return undefined;
                   },
                   selectedChanged: function selectedChanged(opts) {
                     // Use this to update the current selected elements
                     selElems = opts.elems;
-
                     var i = selElems.length;
+
                     while (i--) {
                       var elem = selElems[i];
-                      if (elem && elem.getAttributeNS(null, 'shape') === 'star') {
+
+                      if (elem && elem.getAttribute('shape') === 'star') {
                         if (opts.selectedElement && !opts.multiselected) {
                           // $('#starRadiusMulitplier').val(elem.getAttribute('r2'));
                           $('#starNumPoints').val(elem.getAttribute('point'));
@@ -267,13 +275,11 @@ var svgEditorExtension_star = (function () {
                       }
                     }
                   },
-                  elementChanged: function elementChanged(opts) {
-                    // const elem = opts.elems[0];
-                  }
+                  elementChanged: function elementChanged(opts) {}
                 });
 
-              case 13:
-              case 'end':
+              case 11:
+              case "end":
                 return _context.stop();
             }
           }
@@ -281,7 +287,7 @@ var svgEditorExtension_star = (function () {
       }));
 
       function init(_x) {
-        return _ref.apply(this, arguments);
+        return _init.apply(this, arguments);
       }
 
       return init;

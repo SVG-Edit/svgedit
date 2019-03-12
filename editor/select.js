@@ -8,7 +8,7 @@
  */
 
 import {isTouch, isWebkit} from './browser.js'; // , isOpera
-import {getRotationAngle, getBBox, getStrokedBBox} from './utilities.js';
+import {getRotationAngle, getBBox, getStrokedBBox, isNullish} from './utilities.js';
 import {transformListToTransform, transformBox, transformPoint} from './math.js';
 import {getTransformList} from './svgtransformlist.js';
 
@@ -20,7 +20,7 @@ let selectorManager_; // A Singleton
 const gripRadius = isTouch() ? 10 : 4;
 
 /**
-* Private class for DOM element selection boxes
+* Private class for DOM element selection boxes.
 */
 export class Selector {
   /**
@@ -76,9 +76,10 @@ export class Selector {
   }
 
   /**
-  * Used to reset the id and element that the selector is attached to
+  * Used to reset the id and element that the selector is attached to.
   * @param {Element} e - DOM element associated with this selector
   * @param {module:utilities.BBoxObject} bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
+  * @returns {undefined}
   */
   reset (e, bbox) {
     this.locked = true;
@@ -88,32 +89,9 @@ export class Selector {
   }
 
   /**
-  * Updates cursors for corner grips on rotation so arrows point the right way
-  * @param {Float} angle - Current rotation angle in degrees
-  */
-  updateGripCursors (angle) {
-    let dir;
-    const dirArr = [];
-    let steps = Math.round(angle / 45);
-    if (steps < 0) { steps += 8; }
-    for (dir in selectorManager_.selectorGrips) {
-      dirArr.push(dir);
-    }
-    while (steps > 0) {
-      dirArr.push(dirArr.shift());
-      steps--;
-    }
-    let i = 0;
-    for (dir in selectorManager_.selectorGrips) {
-      selectorManager_.selectorGrips[dir].setAttribute('style', ('cursor:' + dirArr[i] + '-resize'));
-      i++;
-    }
-  }
-
-  /**
-  * Show the resize grips of this selector
-  *
+  * Show the resize grips of this selector.
   * @param {boolean} show - Indicates whether grips should be shown or not
+  * @returns {undefined}
   */
   showGrips (show) {
     const bShow = show ? 'inline' : 'none';
@@ -122,13 +100,14 @@ export class Selector {
     this.hasGrips = show;
     if (elem && show) {
       this.selectorGroup.append(selectorManager_.selectorGripsGroup);
-      this.updateGripCursors(getRotationAngle(elem));
+      Selector.updateGripCursors(getRotationAngle(elem));
     }
   }
 
   /**
-  * Updates the selector to match the element's size
+  * Updates the selector to match the element's size.
   * @param {module:utilities.BBoxObject} [bbox] - BBox to use for resize (prevents duplicate getBBox call).
+  * @returns {undefined}
   */
   resize (bbox) {
     const selectedBox = this.selectorRect,
@@ -172,7 +151,7 @@ export class Selector {
 
     // apply the transforms
     const l = bbox.x, t = bbox.y, w = bbox.width, h = bbox.height;
-    bbox = {x: l, y: t, width: w, height: h};
+    // bbox = {x: l, y: t, width: w, height: h}; // Not in use
 
     // we need to handle temporary transforms too
     // if skewed, get its transformed box, then find its axis-aligned bbox
@@ -242,11 +221,10 @@ export class Selector {
       e: [nbax + nbaw, nbay + (nbah) / 2],
       s: [nbax + (nbaw) / 2, nbay + nbah]
     };
-    for (const dir in this.gripCoords) {
-      const coords = this.gripCoords[dir];
+    Object.entries(this.gripCoords).forEach(([dir, coords]) => {
       selectedGrips[dir].setAttribute('cx', coords[0]);
       selectedGrips[dir].setAttribute('cy', coords[1]);
-    }
+    });
 
     // we want to go 20 pixels in the negative transformed y direction, ignoring scale
     mgr.rotateGripConnector.setAttribute('x1', nbax + (nbaw) / 2);
@@ -259,9 +237,26 @@ export class Selector {
     // }
   }
 }
+/**
+* Updates cursors for corner grips on rotation so arrows point the right way.
+* @param {Float} angle - Current rotation angle in degrees
+* @returns {undefined}
+*/
+Selector.updateGripCursors = function (angle) {
+  const dirArr = Object.keys(selectorManager_.selectorGrips);
+  let steps = Math.round(angle / 45);
+  if (steps < 0) { steps += 8; }
+  while (steps > 0) {
+    dirArr.push(dirArr.shift());
+    steps--;
+  }
+  Object.values(selectorManager_.selectorGrips).forEach((gripElement, i) => {
+    gripElement.setAttribute('style', ('cursor:' + dirArr[i] + '-resize'));
+  });
+};
 
 /**
-* Manage all selector objects (selection boxes)
+* Manage all selector objects (selection boxes).
 */
 export class SelectorManager {
   constructor () {
@@ -297,7 +292,8 @@ export class SelectorManager {
   }
 
   /**
-  * Resets the parent selector group element
+  * Resets the parent selector group element.
+  * @returns {undefined}
   */
   initGroup () {
     // remove old selector parent group if it existed
@@ -322,7 +318,7 @@ export class SelectorManager {
     this.rubberBandBox = null;
 
     // add the corner grips
-    for (const dir in this.selectorGrips) {
+    Object.keys(this.selectorGrips).forEach((dir) => {
       const grip = svgFactory_.createSVGElement({
         element: 'circle',
         attr: {
@@ -342,7 +338,7 @@ export class SelectorManager {
       $.data(grip, 'dir', dir);
       $.data(grip, 'type', 'resize');
       this.selectorGrips[dir] = this.selectorGripsGroup.appendChild(grip);
-    }
+    });
 
     // add rotator elems
     this.rotateGripConnector = this.selectorGripsGroup.appendChild(
@@ -416,7 +412,7 @@ export class SelectorManager {
   * @returns {Selector} The selector based on the given element
   */
   requestSelector (elem, bbox) {
-    if (elem == null) { return null; }
+    if (isNullish(elem)) { return null; }
 
     const N = this.selectors.length;
     // If we've already acquired one for this element, return it.
@@ -440,17 +436,18 @@ export class SelectorManager {
   }
 
   /**
-  * Removes the selector of the given element (hides selection box)
+  * Removes the selector of the given element (hides selection box).
   *
   * @param {Element} elem - DOM element to remove the selector for
+  * @returns {undefined}
   */
   releaseSelector (elem) {
-    if (elem == null) { return; }
+    if (isNullish(elem)) { return; }
     const N = this.selectors.length,
       sel = this.selectorMap[elem.id];
     if (!sel.locked) {
       // TODO(codedread): Ensure this exists in this module.
-      console.log('WARNING! selector was released but was already unlocked');
+      console.log('WARNING! selector was released but was already unlocked'); // eslint-disable-line no-console
     }
     for (let i = 0; i < N; ++i) {
       if (this.selectors[i] && this.selectors[i] === sel) {

@@ -1,36 +1,42 @@
 var svgEditorExtension_grid = (function () {
   'use strict';
 
-  var asyncToGenerator = function (fn) {
-    return function () {
-      var gen = fn.apply(this, arguments);
-      return new Promise(function (resolve, reject) {
-        function step(key, arg) {
-          try {
-            var info = gen[key](arg);
-            var value = info.value;
-          } catch (error) {
-            reject(error);
-            return;
-          }
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
 
-          if (info.done) {
-            resolve(value);
-          } else {
-            return Promise.resolve(value).then(function (value) {
-              step("next", value);
-            }, function (err) {
-              step("throw", err);
-            });
-          }
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
         }
 
-        return step("next");
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
       });
     };
-  };
+  }
 
-  /* globals jQuery */
   /**
    * ext-grid.js
    *
@@ -39,71 +45,72 @@ var svgEditorExtension_grid = (function () {
    * @copyright 2010 Redou Mine, 2010 Alexis Deveria
    *
    */
-
   var extGrid = {
     name: 'grid',
     init: function () {
-      var _ref2 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref) {
-        var NS = _ref.NS,
-            getTypeMap = _ref.getTypeMap,
-            importLocale = _ref.importLocale;
-        var strings, svgEditor, $, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
+      var _init = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee(_ref) {
+        var $, NS, getTypeMap, importLocale, strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridDefs, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                gridUpdate = function gridUpdate() {
+                gridUpdate = function _ref3() {
                   if (showGrid) {
                     updateGrid(svgCanvas.getZoom());
                   }
+
                   $('#canvasGrid').toggle(showGrid);
                   $('#view_grid').toggleClass('push_button_pressed tool_button');
                 };
 
-                updateGrid = function updateGrid(zoom) {
+                updateGrid = function _ref2(zoom) {
                   // TODO: Try this with <line> elements, then compare performance difference
                   var unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
-                  var uMulti = unit * zoom;
-                  // Calculate the main number interval
+
+                  var uMulti = unit * zoom; // Calculate the main number interval
+
                   var rawM = 100 / uMulti;
                   var multi = 1;
+
                   for (var i = 0; i < intervals.length; i++) {
                     var num = intervals[i];
                     multi = num;
+
                     if (rawM <= num) {
                       break;
                     }
                   }
-                  var bigInt = multi * uMulti;
 
-                  // Set the canvas size to the width of the container
+                  var bigInt = multi * uMulti; // Set the canvas size to the width of the container
+
                   hcanvas.width = bigInt;
                   hcanvas.height = bigInt;
                   var ctx = hcanvas.getContext('2d');
                   var curD = 0.5;
                   var part = bigInt / 10;
-
                   ctx.globalAlpha = 0.2;
                   ctx.strokeStyle = svgEditor.curConfig.gridColor;
+
                   for (var _i = 1; _i < 10; _i++) {
-                    var subD = Math.round(part * _i) + 0.5;
-                    // const lineNum = (i % 2)?12:10;
+                    var subD = Math.round(part * _i) + 0.5; // const lineNum = (i % 2)?12:10;
+
                     var lineNum = 0;
                     ctx.moveTo(subD, bigInt);
                     ctx.lineTo(subD, lineNum);
                     ctx.moveTo(bigInt, subD);
                     ctx.lineTo(lineNum, subD);
                   }
+
                   ctx.stroke();
                   ctx.beginPath();
                   ctx.globalAlpha = 0.5;
                   ctx.moveTo(curD, bigInt);
                   ctx.lineTo(curD, 0);
-
                   ctx.moveTo(bigInt, curD);
                   ctx.lineTo(0, curD);
                   ctx.stroke();
-
                   var datauri = hcanvas.toDataURL('image/png');
                   gridimg.setAttribute('width', bigInt);
                   gridimg.setAttribute('height', bigInt);
@@ -112,22 +119,18 @@ var svgEditorExtension_grid = (function () {
                   svgCanvas.setHref(gridimg, datauri);
                 };
 
-                _context.next = 4;
+                $ = _ref.$, NS = _ref.NS, getTypeMap = _ref.getTypeMap, importLocale = _ref.importLocale;
+                _context.next = 5;
                 return importLocale();
 
-              case 4:
+              case 5:
                 strings = _context.sent;
                 svgEditor = this;
-                $ = jQuery;
                 svgCanvas = svgEditor.canvas;
                 svgdoc = document.getElementById('svgcanvas').ownerDocument, assignAttributes = svgCanvas.assignAttributes, hcanvas = document.createElement('canvas'), canvBG = $('#canvasBackground'), units = getTypeMap(), intervals = [0.01, 0.1, 1, 10, 100, 1000];
                 showGrid = svgEditor.curConfig.showGrid || false;
-
-
                 $(hcanvas).hide().appendTo('body');
-
                 canvasGrid = svgdoc.createElementNS(NS.SVG, 'svg');
-
                 assignAttributes(canvasGrid, {
                   id: 'canvasGrid',
                   width: '100%',
@@ -138,21 +141,20 @@ var svgEditorExtension_grid = (function () {
                   display: 'none'
                 });
                 canvBG.append(canvasGrid);
+                gridDefs = svgdoc.createElementNS(NS.SVG, 'defs'); // grid-pattern
 
-                // grid-pattern
                 gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern');
-
                 assignAttributes(gridPattern, {
                   id: 'gridpattern',
                   patternUnits: 'userSpaceOnUse',
-                  x: 0, // -(value.strokeWidth / 2), // position for strokewidth
-                  y: 0, // -(value.strokeWidth / 2), // position for strokewidth
+                  x: 0,
+                  // -(value.strokeWidth / 2), // position for strokewidth
+                  y: 0,
+                  // -(value.strokeWidth / 2), // position for strokewidth
                   width: 100,
                   height: 100
                 });
-
                 gridimg = svgdoc.createElementNS(NS.SVG, 'image');
-
                 assignAttributes(gridimg, {
                   x: 0,
                   y: 0,
@@ -160,11 +162,10 @@ var svgEditorExtension_grid = (function () {
                   height: 100
                 });
                 gridPattern.append(gridimg);
-                $('#svgroot defs').append(gridPattern);
+                gridDefs.append(gridPattern);
+                $('#canvasGrid').append(gridDefs); // grid-box
 
-                // grid-box
                 gridBox = svgdoc.createElementNS(NS.SVG, 'rect');
-
                 assignAttributes(gridBox, {
                   width: '100%',
                   height: '100%',
@@ -176,6 +177,11 @@ var svgEditorExtension_grid = (function () {
                   style: 'pointer-events: none; display:visible;'
                 });
                 $('#canvasGrid').append(gridBox);
+                /**
+                 *
+                 * @param {Float} zoom
+                 * @returns {undefined}
+                 */
 
                 buttons = [{
                   id: 'view_grid',
@@ -189,10 +195,9 @@ var svgEditorExtension_grid = (function () {
                     }
                   }
                 }];
-                return _context.abrupt('return', {
+                return _context.abrupt("return", {
                   name: strings.name,
                   svgicons: svgEditor.curConfig.extIconsPath + 'grid-icon.xml',
-
                   zoomChanged: function zoomChanged(zoom) {
                     if (showGrid) {
                       updateGrid(zoom);
@@ -203,14 +208,13 @@ var svgEditorExtension_grid = (function () {
                       gridUpdate();
                     }
                   },
-
                   buttons: strings.buttons.map(function (button, i) {
                     return Object.assign(buttons[i], button);
                   })
                 });
 
-              case 25:
-              case 'end':
+              case 27:
+              case "end":
                 return _context.stop();
             }
           }
@@ -218,7 +222,7 @@ var svgEditorExtension_grid = (function () {
       }));
 
       function init(_x) {
-        return _ref2.apply(this, arguments);
+        return _init.apply(this, arguments);
       }
 
       return init;

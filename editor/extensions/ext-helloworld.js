@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-helloworld.js
  *
@@ -15,11 +14,10 @@
 */
 export default {
   name: 'helloworld',
-  async init ({importLocale}) {
+  async init ({$, importLocale}) {
     // See `/editor/extensions/ext-locale/helloworld/`
     const strings = await importLocale();
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     return {
       name: strings.name,
@@ -32,7 +30,7 @@ export default {
         // Must match the icon ID in helloworld-icon.xml
         id: 'hello_world',
 
-        // Fallback, e.g., for `file://` access
+        // Fallback, e.g., for `file:///` access
         icon: svgEditor.curConfig.extIconsPath + 'helloworld.png',
 
         // This indicates that the button will be added to the "mode"
@@ -61,6 +59,7 @@ export default {
           // a value of true in order for mouseUp to be triggered
           return {started: true};
         }
+        return undefined;
       },
 
       // This is triggered from anywhere, but "started" must have been set

@@ -1,4 +1,9 @@
 // http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
+/**
+ *
+ * @param {Event} ev
+ * @returns {undefined}
+ */
 function touchHandler (ev) {
   const {changedTouches} = ev,
     first = changedTouches[0];
@@ -11,7 +16,7 @@ function touchHandler (ev) {
   default: return;
   }
 
-  const {screenX, screenY, clientX, clientY} = first;
+  const {screenX, screenY, clientX, clientY} = first; // eslint-disable-line no-shadow
   const simulatedEvent = new MouseEvent(type, {
     // Event interface
     bubbles: true,

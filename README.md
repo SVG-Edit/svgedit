@@ -1,7 +1,22 @@
 # ![alt text](https://svg-edit.github.io/svgedit/images/logo48x48.svg "svg-edit logo of a pencil") SVG-edit
 
+[![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
+[![devDependencies](https://img.shields.io/david/dev/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit?type=dev)
+[![npm](http://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
+[![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT)
+[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/alerts)
+
 SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
 works in any modern browser.
+
+## Help wanted
+
+While we have made some recent releases to SVG-edit for bug fixes,
+refactoring and documentation to make the codebase more maintainable, the
+core developers responsible for the bulk of the drawing features are no
+longer active with the project, so we would love others familiar with SVG
+to join the project.
 
 ## Demo
 
@@ -10,9 +25,12 @@ works in any modern browser.
 See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
 (or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html) version, which requires a modern browser).
 
-Also available as a download in [releases](https://github.com/SVG-Edit/svgedit/releases).
+You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html> (which
+redirects to a versioned URL).
 
-For testing the latest version in `master`, you may use <https://rawgit.com/SVG-Edit/svgedit/master/editor/svg-editor.html> or
+You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svgedit/releases).
+
+For testing the latest version in `master`, you may use
 <https://raw.githack.com/SVG-Edit/svgedit/master/editor/svg-editor.html>.
 
 ## Installation
@@ -27,6 +45,21 @@ For testing the latest version in `master`, you may use <https://rawgit.com/SVG-
 ```html
 <iframe src="svgedit/editor/svg-editor.html?extensions=" width="100%" height="100%"></iframe>
 ```
+
+Note that if you want support for the following browsers, you will at least
+need some polyfills.
+
+For Android Browser 4.4.3-4.4.4, you will need at least `fetch`.
+
+For the following, you will need at least `URL`, `Promise`, and `fetch`:
+
+- IE <= 11
+- IE Mobile
+- Opera Mini
+- Blackberry Browser <= 10
+
+And for still older browsers (e.g., IE 8), you will at minimum need a
+`querySelector` polyfill.
 
 ### Integrating SVG-edit into your own npm package
 
@@ -82,6 +115,17 @@ incorporating SVGEdit.
 
 ## Recent news
 
+- 2018-12-13 Published 4.2.0 (Chinese (simplified) and Russian locale updates; retaining lines with grid mode)
+- 2018-11-29 Published 4.1.0 (Fix for hyphenated locales, svgcanvas distributions)
+- 2018-11-16 Published 4.0.0/4.0.1 (Move to Promise-based APIs)
+- 2018-11-01 Published 3.2.0 (Update qunit to resolve security vulnerability of a dependency)
+- 2018-10-25 Published 3.1.1 (Fix for saving SVG on Firefox)
+- 2018-10-24 Published 3.1.0 (Redirect on modular page for non-module-support;
+  versions document (for migrating))
+- 2018-10-22 Published 3.0.1 (Revert fix affecting polygon selection)
+- 2018-10-21 Published 3.0.0 (misc. improvements including centering canvas and
+  key locale fixes since last RC)
+- 2018-09-30 Published 3.0.0-rc.3 with security and other fixes
 - 2018-07-31 Published 3.0.0-rc.2 with misc. fixes
 - 2018-07-19 Published 3.0.0-rc.1 allowing for extensions and locales to be
   expressed as modules

@@ -76,14 +76,14 @@ export default {
   name: 'helloworld',
   init () {
     return {
-        svgicons: 'extensions/helloworld-icon.xml',
-        buttons: [{...}],
-        mouseDown () {
-            ...
-        },
-        mouseUp (opts) {
-            ...
-        }
+      svgicons: 'extensions/helloworld-icon.xml',
+      buttons: [{ /* ... */ }],
+      mouseDown () {
+        // ...
+      },
+      mouseUp (opts) {
+        // ...
+      }
     };
   }
 };
@@ -106,7 +106,8 @@ Both `addLangData`
 and `langReady`
 ([JSDocs]{@link module:svgcanvas.ExtensionInitResponse#langReady})
 are passed objects with an `importLocale` function
-([JSDocs]{@link module:SVGEditor~ImportLocale}) that you can use to
+([JSDocs]{@link module:SVGEditor~ImportLocale}) (as well as
+`init`--see the Basic Format section) that you can use to
 import your own extension locales hosted in the above-mentioned directory.
 
 The `importLocale` function will use the detected locale and detected
@@ -123,6 +124,9 @@ required "ext-" prefix and without the trailing ".js").
 The resolved `Promise` value is expected to adhere to
 [`LocaleStrings`]{@link module:locale.LocaleStrings} (as with SVGEdit's
 global locale files).
+
+One may return a Promise (including by `async`/`await`) waiting for
+`importLocale` to resolve so as to delay further processing until complete.
 
 You could also use your own means to store and retrieve locale data for
 your extension (and
@@ -145,6 +149,7 @@ const localeStrings = await importSetGlobalDefault(url, {
 });
 
 // Use `localeStrings`
+console.log(localeStrings);
 
 })();
 ```

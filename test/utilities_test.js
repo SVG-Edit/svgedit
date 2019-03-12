@@ -1,8 +1,8 @@
 /* eslint-env qunit */
 
-import {NS} from '../editor/namespaces.js';
-import * as utilities from '../editor/utilities.js';
 import * as browser from '../editor/browser.js';
+import * as utilities from '../editor/utilities.js';
+import {NS} from '../editor/namespaces.js';
 
 // log function
 QUnit.log((details) => {
@@ -11,19 +11,29 @@ QUnit.log((details) => {
   }
 });
 
+/**
+ * Create an element for test.
+ * @param {module:utilities.SVGElementJSON} jsonMap
+ * @returns {SVGElement}
+ */
 function mockCreateSVGElement (jsonMap) {
-  const elem = document.createElementNS(NS.SVG, jsonMap['element']);
-  for (const attr in jsonMap['attr']) {
-    elem.setAttribute(attr, jsonMap['attr'][attr]);
-  }
+  const elem = document.createElementNS(NS.SVG, jsonMap.element);
+  Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+    elem.setAttribute(attr, value);
+  });
   return elem;
 }
+/**
+ * Adds SVG Element per parameters and appends to root.
+ * @param {module:utilities.SVGElementJSON} json
+ * @returns {SVGElement}
+ */
 function mockaddSVGElementFromJson (json) {
   const elem = mockCreateSVGElement(json);
   svgroot.append(elem);
   return elem;
 }
-const mockPathActions = {resetOrientation () {}};
+const mockPathActions = {resetOrientation () { /* */ }};
 let mockHistorySubCommands = [];
 const mockHistory = {
   BatchCommand: class {
@@ -34,7 +44,8 @@ const mockHistory = {
     }
   },
   RemoveElementCommand: class {
-    constructor (elem, nextSibling, parent) { // Longhand needed since used as a constructor
+    // Longhand needed since used as a constructor
+    constructor (elem, nextSibling, parent) {
       this.elem = elem;
       this.nextSibling = nextSibling;
       this.parent = parent;
@@ -51,9 +62,28 @@ const mockCount = {
   addToSelection: 0,
   addCommandToHistory: 0
 };
-function mockClearSelection () { mockCount.clearSelection++; }
-function mockAddToSelection () { mockCount.addToSelection++; }
-function mockAddCommandToHistory () { mockCount.addCommandToHistory++; }
+
+/**
+ * Increments clear seleciton count for mock test.
+ * @returns {undefined}
+ */
+function mockClearSelection () {
+  mockCount.clearSelection++;
+}
+/**
+* Increments add selection count for mock test.
+ * @returns {undefined}
+ */
+function mockAddToSelection () {
+  mockCount.addToSelection++;
+}
+/**
+* Increments add command to history count for mock test.
+ * @returns {undefined}
+ */
+function mockAddCommandToHistory () {
+  mockCount.addCommandToHistory++;
+}
 
 const svg = document.createElementNS(NS.SVG, 'svg');
 const sandbox = document.getElementById('sandbox');
@@ -70,8 +100,7 @@ QUnit.module('svgedit.utilities', {
     mockCount.addToSelection = 0;
     mockCount.addCommandToHistory = 0;
   },
-  afterEach () {
-  }
+  afterEach () { /* */ }
 });
 
 QUnit.test('Test svgedit.utilities package', function (assert) {
@@ -79,7 +108,7 @@ QUnit.test('Test svgedit.utilities package', function (assert) {
 
   assert.ok(utilities);
   assert.ok(utilities.toXml);
-  assert.equal(typeof utilities.toXml, typeof function () {});
+  assert.equal(typeof utilities.toXml, typeof function () { /* */ });
 });
 
 QUnit.test('Test svgedit.utilities.toXml() function', function (assert) {
@@ -169,7 +198,7 @@ QUnit.test('Test getPathBBox', function (assert) {
   assert.expect(3);
   const doc = utilities.text2xml('<svg></svg>');
   const path = doc.createElementNS(NS.SVG, 'path');
-  path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
+  path.setAttribute('d', 'm0,0l5,0l0,5l-5,0l0,-5z');
   const bb = utilities.getPathBBox(path);
   assert.equal(typeof bb, 'object', 'BBox returned object');
   assert.ok(bb.x && !isNaN(bb.x));
@@ -181,7 +210,7 @@ QUnit.test('Test getPathDFromSegments', function (assert) {
 
   const doc = utilities.text2xml('<svg></svg>');
   const path = doc.createElementNS(NS.SVG, 'path');
-  path.setAttributeNS(null, 'd', 'm0,0l5,0l0,5l-5,0l0,-5z');
+  path.setAttribute('d', 'm0,0l5,0l0,5l-5,0l0,-5z');
   let d = getPathDFromSegments([
     ['M', [1, 2]],
     ['Z', []]
@@ -227,7 +256,7 @@ QUnit.test('Test getPathDFromElement', function (assert) {
     attr: {id: 'roundrect', x: '0', y: '1', rx: '2', ry: '3', width: '10', height: '11'}
   });
   svgroot.append(elem);
-  const closeEnough = new RegExp('M0,4 C0,2.3[0-9]* 0.9[0-9]*,1 2,1 L8,1 C9.0[0-9]*,1 10,2.3[0-9]* 10,4 L10,9 C10,10.6[0-9]* 9.08675799086758,12 8,12 L2,12 C0.9[0-9]*,12 0,10.6[0-9]* 0,9 L0,4 Z');
+  const closeEnough = new RegExp('M0,4 C0,2.3\\d* 0.9\\d*,1 2,1 L8,1 C9.0\\d*,1 10,2.3\\d* 10,4 L10,9 C10,10.6\\d* 9.08675799086758,12 8,12 L2,12 C0.9\\d*,12 0,10.6\\d* 0,9 L0,4 Z');
   assert.equal(closeEnough.test(getPathDFromElement(elem)), true);
   elem.remove();
 
@@ -259,6 +288,10 @@ QUnit.test('Test getPathDFromElement', function (assert) {
 });
 
 QUnit.test('Test getBBoxOfElementAsPath', function (assert) {
+  /**
+   * Wrap `utilities.getBBoxOfElementAsPath` to convert bbox to object for testing.
+   * @implements {module:utilities.getBBoxOfElementAsPath}
+   */
   function getBBoxOfElementAsPath (elem, addSVGElementFromJson, pathActions) {
     const bbox = utilities.getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
     return utilities.bboxToObj(bbox); // need this for assert.equal() to work.

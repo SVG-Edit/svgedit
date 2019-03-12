@@ -1,36 +1,42 @@
 var svgEditorExtension_closepath = (function () {
   'use strict';
 
-  var asyncToGenerator = function (fn) {
-    return function () {
-      var gen = fn.apply(this, arguments);
-      return new Promise(function (resolve, reject) {
-        function step(key, arg) {
-          try {
-            var info = gen[key](arg);
-            var value = info.value;
-          } catch (error) {
-            reject(error);
-            return;
-          }
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
 
-          if (info.done) {
-            resolve(value);
-          } else {
-            return Promise.resolve(value).then(function (value) {
-              step("next", value);
-            }, function (err) {
-              step("throw", err);
-            });
-          }
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
         }
 
-        return step("next");
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
       });
     };
-  };
+  }
 
-  /* globals jQuery */
   /**
    * ext-closepath.js
    *
@@ -39,27 +45,26 @@ var svgEditorExtension_closepath = (function () {
    * @copyright 2010 Jeff Schiller
    *
    */
-
   // This extension adds a simple button to the contextual panel for paths
   // The button toggles whether the path is open or closed
   var extClosepath = {
     name: 'closepath',
     init: function () {
-      var _ref2 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref) {
-        var importLocale = _ref.importLocale;
-        var strings, $, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
+      var _init = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee(_ref) {
+        var importLocale, $, strings, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                importLocale = _ref.importLocale, $ = _ref.$;
+                _context.next = 3;
                 return importLocale();
 
-              case 2:
+              case 3:
                 strings = _context.sent;
-                $ = jQuery;
                 svgEditor = this;
-                selElems = void 0;
 
                 updateButton = function updateButton(path) {
                   var seglist = path.pathSegList,
@@ -72,8 +77,10 @@ var svgEditorExtension_closepath = (function () {
 
                 showPanel = function showPanel(on) {
                   $('#closepath_panel').toggle(on);
+
                   if (on) {
                     var path = selElems[0];
+
                     if (path) {
                       updateButton(path);
                     }
@@ -82,15 +89,17 @@ var svgEditorExtension_closepath = (function () {
 
                 toggleClosed = function toggleClosed() {
                   var path = selElems[0];
+
                   if (path) {
                     var seglist = path.pathSegList,
-                        last = seglist.numberOfItems - 1;
-                    // is closed
+                        last = seglist.numberOfItems - 1; // is closed
+
                     if (seglist.getItem(last).pathSegType === 1) {
                       seglist.removeItem(last);
                     } else {
                       seglist.appendItem(path.createSVGPathSegClosePath());
                     }
+
                     updateButton(path);
                   }
                 };
@@ -116,7 +125,7 @@ var svgEditorExtension_closepath = (function () {
                     }
                   }
                 }];
-                return _context.abrupt('return', {
+                return _context.abrupt("return", {
                   name: strings.name,
                   svgicons: svgEditor.curConfig.extIconsPath + 'closepath_icons.svg',
                   buttons: strings.buttons.map(function (button, i) {
@@ -128,8 +137,10 @@ var svgEditorExtension_closepath = (function () {
                   selectedChanged: function selectedChanged(opts) {
                     selElems = opts.elems;
                     var i = selElems.length;
+
                     while (i--) {
                       var elem = selElems[i];
+
                       if (elem && elem.tagName === 'path') {
                         if (opts.selectedElement && !opts.multiselected) {
                           showPanel(true);
@@ -143,8 +154,8 @@ var svgEditorExtension_closepath = (function () {
                   }
                 });
 
-              case 11:
-              case 'end':
+              case 10:
+              case "end":
                 return _context.stop();
             }
           }
@@ -152,7 +163,7 @@ var svgEditorExtension_closepath = (function () {
       }));
 
       function init(_x) {
-        return _ref2.apply(this, arguments);
+        return _init.apply(this, arguments);
       }
 
       return init;

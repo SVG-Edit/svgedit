@@ -1,4 +1,4 @@
-/* globals jQuery */
+/* eslint-disable unicorn/no-fn-reference-in-iterator */
 /**
  * ext-connector.js
  *
@@ -11,11 +11,10 @@
 export default {
   name: 'connector',
   async init (S) {
-    const $ = jQuery;
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const {getElem} = svgCanvas;
-    const {svgroot, importLocale} = S,
+    const {$, svgroot, importLocale} = S,
       addElem = svgCanvas.addSVGElementFromJson,
       selManager = S.selectorManager,
       connSel = '.se_connector',
@@ -34,6 +33,14 @@ export default {
       connections = [],
       selElems = [];
 
+    /**
+     *
+     * @param {Float} x
+     * @param {Float} y
+     * @param {module:utilities.BBoxObject} bb
+     * @param {Float} offset
+     * @returns {module:math.XYObject}
+     */
     function getBBintersect (x, y, bb, offset) {
       if (offset) {
         offset -= 0;
@@ -66,8 +73,13 @@ export default {
       };
     }
 
+    /**
+    * @param {"start"|"end"} side
+    * @param {Element} line
+    * @returns {Float}
+    */
     function getOffset (side, line) {
-      const giveOffset = !!line.getAttribute('marker-' + side);
+      const giveOffset = line.getAttribute('marker-' + side);
       // const giveOffset = $(line).data(side+'_off');
 
       // TODO: Make this number (5) be based on marker width/height
@@ -75,6 +87,10 @@ export default {
       return giveOffset ? size : 0;
     }
 
+    /**
+    * @param {boolean} on
+    * @returns {undefined}
+    */
     function showPanel (on) {
       let connRules = $('#connector_rules');
       if (!connRules.length) {
@@ -84,6 +100,14 @@ export default {
       $('#connector_panel').toggle(on);
     }
 
+    /**
+     * @param {Element} elem
+     * @param {Integer|"end"} pos
+     * @param {Float} x
+     * @param {Float} y
+     * @param {boolean} [setMid]
+     * @returns {undefined}
+    */
     function setPoint (elem, pos, x, y, setMid) {
       const pts = elem.points;
       const pt = svgroot.createSVGPoint();
@@ -112,6 +136,11 @@ export default {
       }
     }
 
+    /**
+    * @param {Float} diffX
+    * @param {Float} diffY
+    * @returns {undefined}
+    */
     function updateLine (diffX, diffY) {
       // Update line with element
       let i = connections.length;
@@ -148,7 +177,8 @@ export default {
 
     /**
     *
-    * @param {Element[]} [elem=selElems] Array of elements
+    * @param {Element[]} [elems=selElems] Array of elements
+    * @returns {undefined}
     */
     function findConnectors (elems = selElems) {
       const connectors = $(svgcontent).find(connSel);
@@ -157,6 +187,10 @@ export default {
       // Loop through connectors to see if one is connected to the element
       connectors.each(function () {
         let addThis;
+        /**
+        *
+        * @returns {undefined}
+        */
         function add () {
           if (elems.includes(this)) {
             // Pretend this element is selected
@@ -169,7 +203,7 @@ export default {
         ['start', 'end'].forEach(function (pos, i) {
           const key = 'c_' + pos;
           let part = elData(this, key);
-          if (part == null) {
+          if (part === null || part === undefined) { // Does this ever return nullish values?
             part = document.getElementById(
               this.attributes['se:connector'].value.split(' ')[i]
             );
@@ -177,7 +211,7 @@ export default {
             elData(this, pos + '_bb', svgCanvas.getStrokedBBox([part]));
           } else part = document.getElementById(part);
           parts.push(part);
-        }.bind(this));
+        }, this);
 
         for (let i = 0; i < 2; i++) {
           const cElem = parts[i];
@@ -204,6 +238,10 @@ export default {
       });
     }
 
+    /**
+    * @param {Element[]} [elems=selElems]
+    * @returns {undefined}
+    */
     function updateConnectors (elems) {
       // Updates connector lines based on selected elements
       // Is not used on mousemove, as it runs getStrokedBBox every time,
@@ -261,15 +299,15 @@ export default {
     (function () {
       const gse = svgCanvas.groupSelectedElements;
 
-      svgCanvas.groupSelectedElements = function () {
+      svgCanvas.groupSelectedElements = function (...args) {
         svgCanvas.removeFromSelection($(connSel).toArray());
-        return gse.apply(this, arguments);
+        return gse.apply(this, args);
       };
 
       const mse = svgCanvas.moveSelectedElements;
 
-      svgCanvas.moveSelectedElements = function () {
-        const cmd = mse.apply(this, arguments);
+      svgCanvas.moveSelectedElements = function (...args) {
+        const cmd = mse.apply(this, args);
         updateConnectors();
         return cmd;
       };
@@ -277,7 +315,10 @@ export default {
       seNs = svgCanvas.getEditorNS();
     }());
 
-    // Do on reset
+    /**
+    * Do on reset.
+    * @returns {undefined}
+    */
     function init () {
       // Make sure all connectors have data set
       $(svgcontent).find('*').each(function () {
@@ -330,7 +371,7 @@ export default {
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),
-      async addLangData ({lang, importLocale}) {
+      /* async */ addLangData ({lang}) { // , importLocale: importLoc
         return {
           data: strings.langList
         };
@@ -343,7 +384,7 @@ export default {
         const {curConfig: {initStroke}} = svgEditor;
 
         if (mode === 'connector') {
-          if (started) { return; }
+          if (started) { return undefined; }
 
           const mouseTarget = e.target;
 
@@ -385,6 +426,7 @@ export default {
         if (mode === 'select') {
           findConnectors();
         }
+        return undefined;
       },
       mouseMove (opts) {
         const zoom = svgCanvas.getZoom();
@@ -432,7 +474,7 @@ export default {
         let mouseTarget = e.target;
 
         if (svgCanvas.getMode() !== 'connector') {
-          return;
+          return undefined;
         }
         const fo = $(mouseTarget).closest('foreignObject');
         if (fo.length) { mouseTarget = fo[0]; }
@@ -468,6 +510,7 @@ export default {
         const dupe = $(svgcontent).find(connSel).filter(function () {
           const conn = this.getAttributeNS(seNs, 'connector');
           if (conn === connStr || conn === altStr) { return true; }
+          return false;
         });
         if (dupe.length) {
           $(curLine).remove();
@@ -547,8 +590,8 @@ export default {
           const end = elem.getAttribute('marker-end');
           curLine = elem;
           $(elem)
-            .data('start_off', !!start)
-            .data('end_off', !!end);
+            .data('start_off', Boolean(start))
+            .data('end_off', Boolean(end));
 
           if (elem.tagName === 'line' && mid) {
             // Convert to polyline to accept mid-arrow
@@ -595,7 +638,7 @@ export default {
 
             // Check validity - the field would be something like 'svg_21 svg_22', but
             // if one end is missing, it would be 'svg_21' and therefore fail this test
-            if (!/. ./.test(elem.attr['se:connector'])) {
+            if (!(/. ./).test(elem.attr['se:connector'])) {
               remove.push(elem.attr.id);
             }
           }

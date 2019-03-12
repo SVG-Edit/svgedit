@@ -209,7 +209,7 @@ var svgEditorLang_zh_HK = (function () {
       unsavedChanges: 'There are unsaved changes.',
       enterNewLinkURL: 'Enter the new hyperlink URL',
       errorLoadingSVG: 'Error: Unable to load SVG data',
-      URLloadFail: 'Unable to load from URL',
+      URLLoadFail: 'Unable to load from URL',
       retrieving: 'Retrieving \'%s\' ...',
       popupWindowBlocked: 'Popup window may be blocked by browser',
       exportNoBlur: 'Blurred elements will appear as un-blurred',

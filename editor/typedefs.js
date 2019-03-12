@@ -11,13 +11,19 @@
 */
 
 /**
+* @callback GenericCallback
+* @param {...*} args Signature dependent on the function
+* @returns {*} Return dependent on the function
+*/
+
+/**
 * This should only be used for objects known to be potentially arbitrary in form.
 * For those whose determination has not yet been made, simply use type `object`
 * (or type `?` if it may also be a primitive).
-* @typedef {object} ArbitraryObject
+* @typedef {Object} ArbitraryObject
 */
 /**
-* @typedef {object} ArbitraryModule
+* @typedef {Object} ArbitraryModule
 */
 /**
 * This should only be used for objects known to be potentially arbitrary in form,
@@ -44,3 +50,12 @@
 /**
 * @external Window
 */
+
+/**
+ * @external JamilihArray
+ * @type {GenericArray}
+ * @property {string} 0 Element name
+ * @property {PlainObject<string, string>|JamilihArray} [1] Generally a map from an attribute name to attribute value, but also adds event handlers, etc.
+ * @property {JamilihArray} [2] Children
+ * @see {@link https://github.com/brettz9/jamilih/}
+ */

@@ -7,6 +7,7 @@
  */
 
 import {NS} from './namespaces.js';
+import {isNullish} from './utilities.js';
 
 const wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
 const hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
@@ -40,7 +41,7 @@ let typeMap_ = {};
  */
 /**
  * @function module:units.ElementContainer#getElement
- * @returns {Element} An element in the container given an id
+ * @returns {?Element} An element in the container given an id
  */
 /**
  * @function module:units.ElementContainer#getHeight
@@ -134,8 +135,7 @@ export const getTypeMap = function () {
 export const shortFloat = function (val) {
   const digits = elementContainer_.getRoundDigits();
   if (!isNaN(val)) {
-    // Note that + converts to Number
-    return +((+val).toFixed(digits));
+    return Number(Number(val).toFixed(digits));
   }
   if (Array.isArray(val)) {
     return shortFloat(val[0]) + ',' + shortFloat(val[1]);
@@ -144,8 +144,10 @@ export const shortFloat = function (val) {
 };
 
 /**
-* Converts the number to given unit or baseUnit
+* Converts the number to given unit or baseUnit.
 * @function module:units.convertUnit
+* @param {string|Float} val
+* @param {"em"|"ex"|"in"|"cm"|"mm"|"pt"|"pc"|"px"|"%"} [unit]
 * @returns {Float}
 */
 export const convertUnit = function (val, unit) {
@@ -212,7 +214,7 @@ const attrsToConvert = {
 };
 
 /**
-* Converts all applicable attributes to the configured baseUnit
+* Converts all applicable attributes to the configured baseUnit.
 * @function module:units.convertAttrs
 * @param {Element} element - A DOM element whose attributes should be converted
 * @returns {undefined}
@@ -240,7 +242,7 @@ export const convertAttrs = function (element) {
 
 /**
 * Converts given values to numbers. Attributes must be supplied in
-* case a percentage is given
+* case a percentage is given.
 *
 * @function module:units.convertToNum
 * @param {string} attr - Name of the attribute associated with the value
@@ -271,10 +273,11 @@ export const convertToNum = function (attr, val) {
 };
 
 /**
-* Check if an attribute's value is in a valid format
+* Check if an attribute's value is in a valid format.
 * @function module:units.isValidUnit
 * @param {string} attr - The name of the attribute associated with the value
 * @param {string} val - The attribute value to check
+* @param {Element} selectedElement
 * @returns {boolean} Whether the unit is valid
 */
 export const isValidUnit = function (attr, val, selectedElement) {
@@ -301,7 +304,7 @@ export const isValidUnit = function (attr, val, selectedElement) {
     // not already present
     try {
       const elem = elementContainer_.getElement(val);
-      result = (elem == null || elem === selectedElement);
+      result = (isNullish(elem) || elem === selectedElement);
     } catch (e) {}
     return result;
   }

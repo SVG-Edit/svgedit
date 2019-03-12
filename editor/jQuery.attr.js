@@ -8,17 +8,17 @@
 * This fixes `$(...).attr()` to work as expected with SVG elements.
 * Does not currently use `*AttributeNS()` since we rarely need that.
 * Adds {@link external:jQuery.fn.attr}.
-* See {@link https://api.jquery.com/attr/} for basic documentation of `.attr()`
+* See {@link https://api.jquery.com/attr/} for basic documentation of `.attr()`.
 *
 * Additional functionality:
 * - When getting attributes, a string that's a number is returned as type number.
 * - If an array is supplied as the first parameter, multiple values are returned
-*    as an object with values for each given attribute
+*    as an object with values for each given attribute.
 * @function module:jQueryAttr.jQueryAttr
 * @param {external:jQuery} $ The jQuery object to which to add the plug-in
 * @returns {external:jQuery}
 */
-export default function ($) {
+export default function jQueryPluginSVG ($) {
   const proxied = $.fn.attr,
     svgns = 'http://www.w3.org/2000/svg';
   /**
@@ -32,7 +32,7 @@ export default function ($) {
   */
   $.fn.attr = function (key, value) {
     const len = this.length;
-    if (!len) { return proxied.apply(this, arguments); }
+    if (!len) { return proxied.call(this, key, value); }
     for (let i = 0; i < len; ++i) {
       const elem = this[i];
       // set/get SVG attribute
@@ -70,7 +70,7 @@ export default function ($) {
           return attr;
         }
       } else {
-        return proxied.apply(this, arguments);
+        return proxied.call(this, key, value);
       }
     }
     return this;

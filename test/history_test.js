@@ -3,16 +3,16 @@
 import {NS} from '../editor/namespaces.js';
 import * as transformlist from '../editor/svgtransformlist.js';
 import * as utilities from '../editor/utilities.js';
-import * as history from '../editor/history.js';
+import * as hstory from '../editor/history.js';
 
 // TODO(codedread): Write tests for handling history events.
 
 // Mocked out methods.
-transformlist.changeRemoveElementFromListMap((elem) => {});
+transformlist.changeRemoveElementFromListMap((elem) => { /* */ });
 
 utilities.mock({
   getHref (elem) { return '#foo'; },
-  setHref (elem, val) {},
+  setHref (elem, val) { /* */ },
   getRotationAngle (elem) { return 0; }
 });
 
@@ -36,10 +36,10 @@ QUnit.module('svgedit.history');
 
 class MockCommand {
   constructor (optText) { this.text_ = optText; }
-  apply () {}
-  unapply () {}
+  apply () { /* */ } // eslint-disable-line class-methods-use-this
+  unapply () { /* */ } // eslint-disable-line class-methods-use-this
   getText () { return this.text_; }
-  elements () { return []; }
+  elements () { return []; } // eslint-disable-line class-methods-use-this
 }
 
 /*
@@ -48,9 +48,17 @@ class MockHistoryEventHandler {
 }
 */
 
+/**
+ * Set up tests (with undo manager).
+ * @returns {undefined}
+ */
 function setUp () {
-  undoMgr = new history.UndoManager();
+  undoMgr = new hstory.UndoManager();
 }
+/**
+ * Tear down tests, destroying undo manager.
+ * @returns {undefined}
+ */
 function tearDown () {
   undoMgr = null;
 }
@@ -58,19 +66,19 @@ function tearDown () {
 QUnit.test('Test svgedit.history package', function (assert) {
   assert.expect(13);
 
-  assert.ok(history);
-  assert.ok(history.MoveElementCommand);
-  assert.ok(history.InsertElementCommand);
-  assert.ok(history.ChangeElementCommand);
-  assert.ok(history.RemoveElementCommand);
-  assert.ok(history.BatchCommand);
-  assert.ok(history.UndoManager);
-  assert.equal(typeof history.MoveElementCommand, typeof function () {});
-  assert.equal(typeof history.InsertElementCommand, typeof function () {});
-  assert.equal(typeof history.ChangeElementCommand, typeof function () {});
-  assert.equal(typeof history.RemoveElementCommand, typeof function () {});
-  assert.equal(typeof history.BatchCommand, typeof function () {});
-  assert.equal(typeof history.UndoManager, typeof function () {});
+  assert.ok(hstory);
+  assert.ok(hstory.MoveElementCommand);
+  assert.ok(hstory.InsertElementCommand);
+  assert.ok(hstory.ChangeElementCommand);
+  assert.ok(hstory.RemoveElementCommand);
+  assert.ok(hstory.BatchCommand);
+  assert.ok(hstory.UndoManager);
+  assert.equal(typeof hstory.MoveElementCommand, typeof function () { /* */ });
+  assert.equal(typeof hstory.InsertElementCommand, typeof function () { /* */ });
+  assert.equal(typeof hstory.ChangeElementCommand, typeof function () { /* */ });
+  assert.equal(typeof hstory.RemoveElementCommand, typeof function () { /* */ });
+  assert.equal(typeof hstory.BatchCommand, typeof function () { /* */ });
+  assert.equal(typeof hstory.UndoManager, typeof function () { /* */ });
 });
 
 QUnit.test('Test UndoManager methods', function (assert) {
@@ -86,12 +94,12 @@ QUnit.test('Test UndoManager methods', function (assert) {
   assert.ok(undoMgr.getNextRedoCommandText);
 
   assert.equal(typeof undoMgr, typeof {});
-  assert.equal(typeof undoMgr.addCommandToHistory, typeof function () {});
-  assert.equal(typeof undoMgr.getUndoStackSize, typeof function () {});
-  assert.equal(typeof undoMgr.getRedoStackSize, typeof function () {});
-  assert.equal(typeof undoMgr.resetUndoStack, typeof function () {});
-  assert.equal(typeof undoMgr.getNextUndoCommandText, typeof function () {});
-  assert.equal(typeof undoMgr.getNextRedoCommandText, typeof function () {});
+  assert.equal(typeof undoMgr.addCommandToHistory, typeof function () { /* */ });
+  assert.equal(typeof undoMgr.getUndoStackSize, typeof function () { /* */ });
+  assert.equal(typeof undoMgr.getRedoStackSize, typeof function () { /* */ });
+  assert.equal(typeof undoMgr.resetUndoStack, typeof function () { /* */ });
+  assert.equal(typeof undoMgr.getNextUndoCommandText, typeof function () { /* */ });
+  assert.equal(typeof undoMgr.getNextRedoCommandText, typeof function () { /* */ });
 
   tearDown();
 });
@@ -309,11 +317,11 @@ QUnit.test('Test MoveElementCommand', function (assert) {
 
   setUp();
 
-  let move = new history.MoveElementCommand(div3, div1, divparent);
+  let move = new hstory.MoveElementCommand(div3, div1, divparent);
   assert.ok(move.unapply);
   assert.ok(move.apply);
-  assert.equal(typeof move.unapply, typeof function () {});
-  assert.equal(typeof move.apply, typeof function () {});
+  assert.equal(typeof move.unapply, typeof function () { /* */ });
+  assert.equal(typeof move.apply, typeof function () { /* */ });
 
   move.unapply();
   assert.equal(divparent.firstElementChild, div3);
@@ -325,7 +333,7 @@ QUnit.test('Test MoveElementCommand', function (assert) {
   assert.equal(divparent.firstElementChild.nextElementSibling, div2);
   assert.equal(divparent.lastElementChild, div3);
 
-  move = new history.MoveElementCommand(div1, null, divparent);
+  move = new hstory.MoveElementCommand(div1, null, divparent);
 
   move.unapply();
   assert.equal(divparent.firstElementChild, div2);
@@ -337,7 +345,7 @@ QUnit.test('Test MoveElementCommand', function (assert) {
   assert.equal(divparent.firstElementChild.nextElementSibling, div2);
   assert.equal(divparent.lastElementChild, div3);
 
-  move = new history.MoveElementCommand(div2, div5, div4);
+  move = new hstory.MoveElementCommand(div2, div5, div4);
 
   move.unapply();
   assert.equal(divparent.firstElementChild, div1);
@@ -361,11 +369,11 @@ QUnit.test('Test InsertElementCommand', function (assert) {
 
   setUp();
 
-  let insert = new history.InsertElementCommand(div3);
+  let insert = new hstory.InsertElementCommand(div3);
   assert.ok(insert.unapply);
   assert.ok(insert.apply);
-  assert.equal(typeof insert.unapply, typeof function () {});
-  assert.equal(typeof insert.apply, typeof function () {});
+  assert.equal(typeof insert.unapply, typeof function () { /* */ });
+  assert.equal(typeof insert.apply, typeof function () { /* */ });
 
   insert.unapply();
   assert.equal(divparent.childElementCount, 2);
@@ -379,7 +387,7 @@ QUnit.test('Test InsertElementCommand', function (assert) {
   assert.equal(div1.nextElementSibling, div2);
   assert.equal(div2.nextElementSibling, div3);
 
-  insert = new history.InsertElementCommand(div2);
+  insert = new hstory.InsertElementCommand(div2);
 
   insert.unapply();
   assert.equal(divparent.childElementCount, 2);
@@ -404,11 +412,11 @@ QUnit.test('Test RemoveElementCommand', function (assert) {
   const div6 = document.createElement('div');
   div6.id = 'div6';
 
-  let remove = new history.RemoveElementCommand(div6, null, divparent);
+  let remove = new hstory.RemoveElementCommand(div6, null, divparent);
   assert.ok(remove.unapply);
   assert.ok(remove.apply);
-  assert.equal(typeof remove.unapply, typeof function () {});
-  assert.equal(typeof remove.apply, typeof function () {});
+  assert.equal(typeof remove.unapply, typeof function () { /* */ });
+  assert.equal(typeof remove.apply, typeof function () { /* */ });
 
   remove.unapply();
   assert.equal(divparent.childElementCount, 4);
@@ -423,7 +431,7 @@ QUnit.test('Test RemoveElementCommand', function (assert) {
   assert.equal(div1.nextElementSibling, div2);
   assert.equal(div2.nextElementSibling, div3);
 
-  remove = new history.RemoveElementCommand(div6, div2, divparent);
+  remove = new hstory.RemoveElementCommand(div6, div2, divparent);
 
   remove.unapply();
   assert.equal(divparent.childElementCount, 4);
@@ -447,12 +455,12 @@ QUnit.test('Test ChangeElementCommand', function (assert) {
   setUp();
 
   div1.setAttribute('title', 'new title');
-  let change = new history.ChangeElementCommand(div1,
+  let change = new hstory.ChangeElementCommand(div1,
     {title: 'old title', class: 'foo'});
   assert.ok(change.unapply);
   assert.ok(change.apply);
-  assert.equal(typeof change.unapply, typeof function () {});
-  assert.equal(typeof change.apply, typeof function () {});
+  assert.equal(typeof change.unapply, typeof function () { /* */ });
+  assert.equal(typeof change.apply, typeof function () { /* */ });
 
   change.unapply();
   assert.equal(div1.getAttribute('title'), 'old title');
@@ -463,7 +471,7 @@ QUnit.test('Test ChangeElementCommand', function (assert) {
   assert.ok(!div1.getAttribute('class'));
 
   div1.textContent = 'inner text';
-  change = new history.ChangeElementCommand(div1,
+  change = new hstory.ChangeElementCommand(div1,
     {'#text': null});
 
   change.unapply();
@@ -473,7 +481,7 @@ QUnit.test('Test ChangeElementCommand', function (assert) {
   assert.equal(div1.textContent, 'inner text');
 
   div1.textContent = '';
-  change = new history.ChangeElementCommand(div1,
+  change = new hstory.ChangeElementCommand(div1,
     {'#text': 'old text'});
 
   change.unapply();
@@ -502,7 +510,7 @@ QUnit.test('Test ChangeElementCommand', function (assert) {
   });
 
   gethrefvalue = '#newhref';
-  change = new history.ChangeElementCommand(rect,
+  change = new hstory.ChangeElementCommand(rect,
     {'#href': '#oldhref'});
   assert.equal(justCalled, 'getHref');
 
@@ -517,19 +525,19 @@ QUnit.test('Test ChangeElementCommand', function (assert) {
   assert.equal(justCalled, 'setHref');
 
   const line = document.createElementNS(NS.SVG, 'line');
-  line.setAttributeNS(null, 'class', 'newClass');
-  change = new history.ChangeElementCommand(line, {class: 'oldClass'});
+  line.setAttribute('class', 'newClass');
+  change = new hstory.ChangeElementCommand(line, {class: 'oldClass'});
 
   assert.ok(change.unapply);
   assert.ok(change.apply);
-  assert.equal(typeof change.unapply, typeof function () {});
-  assert.equal(typeof change.apply, typeof function () {});
+  assert.equal(typeof change.unapply, typeof function () { /* */ });
+  assert.equal(typeof change.apply, typeof function () { /* */ });
 
   change.unapply();
-  assert.equal(line.getAttributeNS(null, 'class'), 'oldClass');
+  assert.equal(line.getAttribute('class'), 'oldClass');
 
   change.apply();
-  assert.equal(line.getAttributeNS(null, 'class'), 'newClass');
+  assert.equal(line.getAttribute('class'), 'newClass');
 
   tearDown();
 });
@@ -542,15 +550,15 @@ QUnit.test('Test BatchCommand', function (assert) {
   let concatResult = '';
   MockCommand.prototype.apply = function () { concatResult += this.text_; };
 
-  const batch = new history.BatchCommand();
+  const batch = new hstory.BatchCommand();
   assert.ok(batch.unapply);
   assert.ok(batch.apply);
   assert.ok(batch.addSubCommand);
   assert.ok(batch.isEmpty);
-  assert.equal(typeof batch.unapply, typeof function () {});
-  assert.equal(typeof batch.apply, typeof function () {});
-  assert.equal(typeof batch.addSubCommand, typeof function () {});
-  assert.equal(typeof batch.isEmpty, typeof function () {});
+  assert.equal(typeof batch.unapply, typeof function () { /* */ });
+  assert.equal(typeof batch.apply, typeof function () { /* */ });
+  assert.equal(typeof batch.addSubCommand, typeof function () { /* */ });
+  assert.equal(typeof batch.isEmpty, typeof function () { /* */ });
 
   assert.ok(batch.isEmpty());
 
@@ -563,13 +571,13 @@ QUnit.test('Test BatchCommand', function (assert) {
   batch.apply();
   assert.equal(concatResult, 'abc');
 
-  MockCommand.prototype.apply = function () {};
+  MockCommand.prototype.apply = function () { /* */ };
   MockCommand.prototype.unapply = function () { concatResult += this.text_; };
   concatResult = '';
   batch.unapply();
   assert.equal(concatResult, 'cba');
 
-  MockCommand.prototype.unapply = function () {};
+  MockCommand.prototype.unapply = function () { /* */ };
 
   tearDown();
 });

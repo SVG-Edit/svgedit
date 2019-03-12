@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-arrows.js
  *
@@ -13,22 +12,30 @@ export default {
     const strings = await S.importLocale();
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
-    const $ = jQuery;
     const // {svgcontent} = S,
       addElem = svgCanvas.addSVGElementFromJson,
-      {nonce} = S,
+      {nonce, $} = S,
       prefix = 'se_arrow_';
 
     let selElems, arrowprefix, randomizeIds = S.randomize_ids;
 
-    function setArrowNonce (window, n) {
+    /**
+    * @param {Window} win
+    * @param {!(string|Integer)} n
+    * @returns {undefined}
+    */
+    function setArrowNonce (win, n) {
       randomizeIds = true;
       arrowprefix = prefix + n + '_';
       pathdata.fw.id = arrowprefix + 'fw';
       pathdata.bk.id = arrowprefix + 'bk';
     }
 
-    function unsetArrowNonce (window) {
+    /**
+    * @param {Window} win
+    * @returns {undefined}
+    */
+    function unsetArrowNonce (win) {
       randomizeIds = false;
       arrowprefix = prefix;
       pathdata.fw.id = arrowprefix + 'fw';
@@ -49,6 +56,12 @@ export default {
       bk: {d: 'm10,0l-10,5l10,5l-5,-5l5,-5z', refx: 2, id: arrowprefix + 'bk'}
     };
 
+    /**
+     * Gets linked element.
+     * @param {Element} elem
+     * @param {string} attr
+     * @returns {Element}
+    */
     function getLinked (elem, attr) {
       const str = elem.getAttribute(attr);
       if (!str) { return null; }
@@ -59,6 +72,10 @@ export default {
       return svgCanvas.getElem(m[1]);
     }
 
+    /**
+    * @param {boolean} on
+    * @returns {undefined}
+    */
     function showPanel (on) {
       $('#arrow_panel').toggle(on);
       if (on) {
@@ -88,6 +105,10 @@ export default {
       }
     }
 
+    /**
+    *
+    * @returns {undefined}
+    */
     function resetMarker () {
       const el = selElems[0];
       el.removeAttribute('marker-start');
@@ -95,6 +116,12 @@ export default {
       el.removeAttribute('marker-end');
     }
 
+    /**
+    * @param {"bk"|"fw"} dir
+    * @param {"both"|"mid"|"end"|"start"} type
+    * @param {string} id
+    * @returns {Element}
+    */
     function addMarker (dir, type, id) {
       // TODO: Make marker (or use?) per arrow type, since refX can be different
       id = id || arrowprefix + dir;
@@ -136,6 +163,10 @@ export default {
       return marker;
     }
 
+    /**
+    *
+    * @returns {undefined}
+    */
     function setArrow () {
       resetMarker();
 
@@ -163,6 +194,10 @@ export default {
       svgCanvas.call('changed', selElems);
     }
 
+    /**
+    * @param {Element} elem
+    * @returns {undefined}
+    */
     function colorChanged (elem) {
       const color = elem.getAttribute('stroke');
       const mtypes = ['start', 'mid', 'end'];
@@ -183,7 +218,7 @@ export default {
           const attrs = $(this).children().attr(['fill', 'd']);
           if (attrs.fill === color && attrs.d === curD) {
             // Found another marker with this color and this path
-            newMarker = this;
+            newMarker = this; // eslint-disable-line consistent-this
           }
         });
 
@@ -202,14 +237,16 @@ export default {
         // Check if last marker can be removed
         let remove = true;
         $(S.svgcontent).find('line, polyline, path, polygon').each(function () {
-          const elem = this;
+          const element = this; // eslint-disable-line consistent-this
           $.each(mtypes, function (j, mtype) {
-            if ($(elem).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
+            if ($(element).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
               remove = false;
               return remove;
             }
+            return undefined;
           });
           if (!remove) { return false; }
+          return undefined;
         });
 
         // Not found, so can safely remove
@@ -242,9 +279,9 @@ export default {
         $('#arrow_list option')[0].id = 'connector_no_arrow';
       },
       async addLangData ({lang, importLocale}) {
-        const strings = await importLocale();
+        const {langList} = await importLocale();
         return {
-          data: strings.langList
+          data: langList
         };
       },
       selectedChanged (opts) {

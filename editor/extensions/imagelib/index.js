@@ -18,9 +18,9 @@ $('a').click(function () {
     name: $(this).text(),
     id: href
   });
-  if (!this.href.includes('.svg')) {
+  if (!href.includes('.svg')) {
     const img = new Image();
-    img.onload = function () {
+    img.addEventListener('load', function () {
       const canvas = document.createElement('canvas');
       canvas.width = this.width;
       canvas.height = this.height;
@@ -31,12 +31,13 @@ $('a').click(function () {
       try {
         data = canvas.toDataURL();
       } catch (err) {
-        // This fails in Firefox with file:// URLs :(
-        alert('Data URL conversion failed: ' + err);
+        // This fails in Firefox with `file:///` URLs :(
+        // Todo: This could use a generic alert library instead
+        alert('Data URL conversion failed: ' + err); // eslint-disable-line no-alert
         data = '';
       }
       post({href, data});
-    };
+    });
     img.src = href;
   } else {
     // Do ajax request for image's href value

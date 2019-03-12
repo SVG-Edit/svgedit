@@ -156,40 +156,28 @@ const colorDefs = [
   {
     re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
-    process (bits) {
-      return [
-        parseInt(bits[1], 10),
-        parseInt(bits[2], 10),
-        parseInt(bits[3], 10)
-      ];
+    process (_, ...bits) {
+      return bits.map((b) => parseInt(b));
     }
   },
   {
     re: /^(\w{2})(\w{2})(\w{2})$/,
     example: ['#00ff00', '336699'],
-    process (bits) {
-      return [
-        parseInt(bits[1], 16),
-        parseInt(bits[2], 16),
-        parseInt(bits[3], 16)
-      ];
+    process (_, ...bits) {
+      return bits.map((b) => parseInt(b, 16));
     }
   },
   {
     re: /^(\w{1})(\w{1})(\w{1})$/,
     example: ['#fb0', 'f0f'],
-    process (bits) {
-      return [
-        parseInt(bits[1] + bits[1], 16),
-        parseInt(bits[2] + bits[2], 16),
-        parseInt(bits[3] + bits[3], 16)
-      ];
+    process (_, ...bits) {
+      return bits.map((b) => parseInt(b + b, 16));
     }
   }
 ];
 
 /**
- * A class to parse color values
+ * A class to parse color values.
  */
 export default class RGBColor {
   /**
@@ -214,16 +202,15 @@ export default class RGBColor {
     // end of simple type-in colors
 
     // search through the definitions to find a match
-    for (let i = 0; i < colorDefs.length; i++) {
-      const {re} = colorDefs[i];
-      const processor = colorDefs[i].process;
+
+    colorDefs.forEach(({re, process: processor}) => {
       const bits = re.exec(colorString);
       if (bits) {
-        const [r, g, b] = processor(bits);
+        const [r, g, b] = processor(...bits);
         Object.assign(this, {r, g, b});
         this.ok = true;
       }
-    }
+    }, this);
 
     // validate/cleanup values
     this.r = (this.r < 0 || isNaN(this.r)) ? 0 : ((this.r > 255) ? 255 : this.r);
@@ -251,42 +238,42 @@ export default class RGBColor {
     if (b.length === 1) { b = '0' + b; }
     return '#' + r + g + b;
   }
+}
 
-  /**
-  * help
-  * @returns {HTMLUListElement}
-  */
-  getHelpXML () {
-    const examples = [];
+/**
+* Offers a bulleted list of help.
+* @returns {HTMLUListElement}
+*/
+RGBColor.getHelpXML = function () {
+  const examples = [
     // add regexps
-    for (let i = 0; i < colorDefs.length; i++) {
-      const {example} = colorDefs[i];
-      for (let j = 0; j < example.length; j++) {
-        examples[examples.length] = example[j];
-      }
-    }
+    ...colorDefs.flatMap(({example}) => {
+      return example;
+    }),
     // add type-in colors
-    examples.push(...Object.keys(simpleColors));
+    ...Object.keys(simpleColors)
+  ];
 
-    const xml = document.createElement('ul');
-    xml.setAttribute('id', 'rgbcolor-examples');
-    for (let i = 0; i < examples.length; i++) {
-      try {
-        const listItem = document.createElement('li');
-        const listColor = new RGBColor(examples[i]);
-        const exampleDiv = document.createElement('div');
-        exampleDiv.style.cssText =
-`margin: 3px;
+  const xml = document.createElement('ul');
+  xml.setAttribute('id', 'rgbcolor-examples');
+
+  xml.append(...examples.map((example) => {
+    try {
+      const listItem = document.createElement('li');
+      const listColor = new RGBColor(example);
+      const exampleDiv = document.createElement('div');
+      exampleDiv.style.cssText = `
+margin: 3px;
 border: 1px solid black;
 background: ${listColor.toHex()};
-color: ${listColor.toHex()};`
-        ;
-        exampleDiv.append('test');
-        const listItemValue = ` ${examples[i]} -> ${listColor.toRGB()} -> ${listColor.toHex()}`;
-        listItem.append(exampleDiv, listItemValue);
-        xml.append(listItem);
-      } catch (e) {}
+color: ${listColor.toHex()};`;
+      exampleDiv.append('test');
+      const listItemValue = ` ${example} -> ${listColor.toRGB()} -> ${listColor.toHex()}`;
+      listItem.append(exampleDiv, listItemValue);
+      return listItem;
+    } catch (e) {
+      return '';
     }
-    return xml;
-  }
-}
+  }));
+  return xml;
+};

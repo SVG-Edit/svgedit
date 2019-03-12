@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-foreignobject.js
  *
@@ -12,8 +11,7 @@ export default {
   name: 'foreignobject',
   async init (S) {
     const svgEditor = this;
-    const {text2xml, NS, importLocale} = S;
-    const $ = jQuery;
+    const {$, text2xml, NS, importLocale} = S;
     const svgCanvas = svgEditor.canvas;
     const
       // {svgcontent} = S,
@@ -27,6 +25,10 @@ export default {
       $('#svg_source_textarea').css('height', height);
     };
 
+    /**
+    * @param {boolean} on
+    * @returns {undefined}
+    */
     function showPanel (on) {
       let fcRules = $('#fc_rules');
       if (!fcRules.length) {
@@ -36,6 +38,10 @@ export default {
       $('#foreignObject_panel').toggle(on);
     }
 
+    /**
+    * @param {boolean} on
+    * @returns {undefined}
+    */
     function toggleSourceButtons (on) {
       $('#tool_source_save, #tool_source_cancel').toggle(!on);
       $('#foreign_save, #foreign_cancel').toggle(on);
@@ -49,11 +55,10 @@ export default {
     /**
     * This function sets the content of element elt to the input XML.
     * @param {string} xmlString - The XML text
-    * @param {Element} elt - the parent element to append to
     * @returns {boolean} This function returns false if the set was unsuccessful, true otherwise.
     */
     function setForeignString (xmlString) {
-      const elt = selElems[0];
+      const elt = selElems[0]; // The parent `Element` to append to
       try {
         // convert string into XML document
         const newDoc = text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');
@@ -63,13 +68,18 @@ export default {
         svgCanvas.call('changed', [elt]);
         svgCanvas.clearSelection();
       } catch (e) {
-        console.log(e);
+        // Todo: Surface error to user
+        console.log(e); // eslint-disable-line no-console
         return false;
       }
 
       return true;
     }
 
+    /**
+    *
+    * @returns {undefined}
+    */
     function showForeignEditor () {
       const elt = selElems[0];
       if (!elt || editingforeign) { return; }
@@ -84,6 +94,11 @@ export default {
       $('#svg_source_textarea').focus();
     }
 
+    /**
+    * @param {string} attr
+    * @param {string|Float} val
+    * @returns {undefined}
+    */
     function setAttr (attr, val) {
       svgCanvas.changeSelectedAttribute(attr, val);
       svgCanvas.call('changed', selElems);
@@ -168,14 +183,13 @@ export default {
           // Create source save/cancel buttons
           /* const save = */ $('#tool_source_save').clone()
             .hide().attr('id', 'foreign_save').unbind()
-            .appendTo('#tool_source_back').click(function () {
+            .appendTo('#tool_source_back').click(async function () {
               if (!editingforeign) { return; }
 
               if (!setForeignString($('#svg_source_textarea').val())) {
-                $.confirm('Errors found. Revert to original?', function (ok) {
-                  if (!ok) { return false; }
-                  endChanges();
-                });
+                const ok = await $.confirm('Errors found. Revert to original?');
+                if (!ok) { return; }
+                endChanges();
               } else {
                 endChanges();
               }
@@ -191,50 +205,51 @@ export default {
       },
       mouseDown (opts) {
         // const e = opts.event;
-
-        if (svgCanvas.getMode() === 'foreign') {
-          started = true;
-          newFO = svgCanvas.addSVGElementFromJson({
-            element: 'foreignObject',
-            attr: {
-              x: opts.start_x,
-              y: opts.start_y,
-              id: svgCanvas.getNextId(),
-              'font-size': 16, // cur_text.font_size,
-              width: '48',
-              height: '20',
-              style: 'pointer-events:inherit'
-            }
-          });
-          const m = svgdoc.createElementNS(NS.MATH, 'math');
-          m.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
-          m.setAttribute('display', 'inline');
-          const mi = svgdoc.createElementNS(NS.MATH, 'mi');
-          mi.setAttribute('mathvariant', 'normal');
-          mi.textContent = '\u03A6';
-          const mo = svgdoc.createElementNS(NS.MATH, 'mo');
-          mo.textContent = '\u222A';
-          const mi2 = svgdoc.createElementNS(NS.MATH, 'mi');
-          mi2.textContent = '\u2133';
-          m.append(mi, mo, mi2);
-          newFO.append(m);
-          return {
-            started: true
-          };
+        if (svgCanvas.getMode() !== 'foreign') {
+          return undefined;
         }
+        started = true;
+        newFO = svgCanvas.addSVGElementFromJson({
+          element: 'foreignObject',
+          attr: {
+            x: opts.start_x,
+            y: opts.start_y,
+            id: svgCanvas.getNextId(),
+            'font-size': 16, // cur_text.font_size,
+            width: '48',
+            height: '20',
+            style: 'pointer-events:inherit'
+          }
+        });
+        const m = svgdoc.createElementNS(NS.MATH, 'math');
+        m.setAttributeNS(NS.XMLNS, 'xmlns', NS.MATH);
+        m.setAttribute('display', 'inline');
+        const mi = svgdoc.createElementNS(NS.MATH, 'mi');
+        mi.setAttribute('mathvariant', 'normal');
+        mi.textContent = '\u03A6';
+        const mo = svgdoc.createElementNS(NS.MATH, 'mo');
+        mo.textContent = '\u222A';
+        const mi2 = svgdoc.createElementNS(NS.MATH, 'mi');
+        mi2.textContent = '\u2133';
+        m.append(mi, mo, mi2);
+        newFO.append(m);
+        return {
+          started: true
+        };
       },
       mouseUp (opts) {
         // const e = opts.event;
-        if (svgCanvas.getMode() === 'foreign' && started) {
-          const attrs = $(newFO).attr(['width', 'height']);
-          const keep = (attrs.width !== '0' || attrs.height !== '0');
-          svgCanvas.addToSelection([newFO], true);
-
-          return {
-            keep,
-            element: newFO
-          };
+        if (svgCanvas.getMode() !== 'foreign' || !started) {
+          return undefined;
         }
+        const attrs = $(newFO).attr(['width', 'height']);
+        const keep = (attrs.width !== '0' || attrs.height !== '0');
+        svgCanvas.addToSelection([newFO], true);
+
+        return {
+          keep,
+          element: newFO
+        };
       },
       selectedChanged (opts) {
         // Use this to update the current selected elements

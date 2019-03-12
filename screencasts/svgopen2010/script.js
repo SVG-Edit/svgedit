@@ -9,9 +9,9 @@ const byId = function (id) {
   return id;
 };
 
-const query = function (query, root) {
-  if (!query) { return []; }
-  if (typeof query !== 'string') { return [...query]; }
+const query = function (qry, root) {
+  if (!qry) { return []; }
+  if (typeof qry !== 'string') { return [...qry]; }
   if (typeof root === 'string') {
     root = byId(root);
     if (!root) { return []; }
@@ -19,17 +19,17 @@ const query = function (query, root) {
 
   root = root || document;
   const rootIsDoc = (root.nodeType === 9);
-  const doc = rootIsDoc ? root : (root.ownerDocument || document);
+  const dcmnt = rootIsDoc ? root : (root.ownerDocument || document);
 
   // rewrite the query to be ID rooted
-  if (!rootIsDoc || ('>~+'.includes(query[0]))) {
+  if (!rootIsDoc || ('>~+'.includes(qry[0]))) {
     root.id = root.id || ('qUnique' + (ctr++));
-    query = '#' + root.id + ' ' + query;
+    qry = '#' + root.id + ' ' + qry;
   }
   // don't choke on something like ".yada.yada >"
-  if ('>~+'.includes(query.slice(-1))) { query += ' *'; }
+  if ('>~+'.includes(qry.slice(-1))) { qry += ' *'; }
 
-  return [...doc.querySelectorAll(query)];
+  return [...dcmnt.querySelectorAll(qry)];
 };
 
 const ua = navigator.userAgent;
@@ -66,9 +66,11 @@ Slide.prototype = {
   _buildList: [],
   _visited: false,
   _currentState: '',
-  _states: [ 'distant-slide', 'far-past',
+  _states: [
+    'distant-slide', 'far-past',
     'past', 'current', 'future',
-    'far-future', 'distant-slide' ],
+    'far-future', 'distant-slide'
+  ],
   setState (state) {
     if (typeof state !== 'string') {
       state = this._states[state];
@@ -85,8 +87,8 @@ Slide.prototype = {
     /*
     this._runAutos();
     */
-    const _t = this;
-    setTimeout(function () { _t._runAutos(); }, 400);
+    const that = this;
+    setTimeout(function () { that._runAutos(); }, 400);
   },
   _makeCounter () {
     if (!this._count || !this._node) { return; }
@@ -121,18 +123,18 @@ Slide.prototype = {
     if (idx >= 0) {
       const elem = this._buildList.splice(idx, 1)[0];
       const transitionEnd = isWK ? 'webkitTransitionEnd' : (isFF ? 'mozTransitionEnd' : 'oTransitionEnd');
-      const _t = this;
+      const that = this;
       if (canTransition()) {
         const l = function (evt) {
-          elem.parentNode.removeEventListener(transitionEnd, l, false);
-          _t._runAutos();
+          elem.parentNode.removeEventListener(transitionEnd, l);
+          that._runAutos();
         };
-        elem.parentNode.addEventListener(transitionEnd, l, false);
+        elem.parentNode.addEventListener(transitionEnd, l);
         elem.classList.remove('to-build');
       } else {
         setTimeout(function () {
           elem.classList.remove('to-build');
-          _t._runAutos();
+          that._runAutos();
         }, 400);
       }
     }
@@ -156,22 +158,22 @@ const SlideShow = function (slides) {
 
   const h = window.location.hash;
   try {
-    this.current = parseInt(h.split('#slide')[1], 10);
+    this.current = parseInt(h.split('#slide')[1]);
   } catch (e) { /* squeltch */ }
   this.current = isNaN(this.current) ? 1 : this.current;
-  const _t = this;
+  const that = this;
   doc.addEventListener('keydown',
-    function (e) { _t.handleKeys(e); }, false);
+    function (e) { that.handleKeys(e); });
   doc.addEventListener('mousewheel',
-    function (e) { _t.handleWheel(e); }, false);
+    function (e) { that.handleWheel(e); });
   doc.addEventListener('DOMMouseScroll',
-    function (e) { _t.handleWheel(e); }, false);
+    function (e) { that.handleWheel(e); });
   doc.addEventListener('touchstart',
-    function (e) { _t.handleTouchStart(e); }, false);
+    function (e) { that.handleTouchStart(e); });
   doc.addEventListener('touchend',
-    function (e) { _t.handleTouchEnd(e); }, false);
+    function (e) { that.handleTouchEnd(e); });
   window.addEventListener('popstate',
-    function (e) { _t.go(e.state); }, false);
+    function (e) { that.go(e.state); });
   this._update();
 };
 
@@ -242,7 +244,7 @@ SlideShow.prototype = {
     }
   },
   handleKeys (e) {
-    if (/^(input|textarea)$/i.test(e.target.nodeName)) return;
+    if ((/^(input|textarea)$/i).test(e.target.nodeName)) return;
 
     switch (e.keyCode) {
     case 37: // left arrow
@@ -272,25 +274,33 @@ SlideShow.prototype = {
 };
 
 // Initialize
-const slideshow = new SlideShow(query('.slide')); // eslint-disable-line no-unused-vars
+/* const slideshow = */ new SlideShow(query('.slide')); // eslint-disable-line no-new
 
-document.querySelector('#toggle-counter').addEventListener('click', toggleCounter, false);
-document.querySelector('#toggle-size').addEventListener('click', toggleSize, false);
-document.querySelector('#toggle-transitions').addEventListener('click', toggleTransitions, false);
-document.querySelector('#toggle-gradients').addEventListener('click', toggleGradients, false);
+document.querySelector('#toggle-counter').addEventListener('click', toggleCounter);
+document.querySelector('#toggle-size').addEventListener('click', toggleSize);
+document.querySelector('#toggle-transitions').addEventListener('click', toggleTransitions);
+document.querySelector('#toggle-gradients').addEventListener('click', toggleGradients);
 
 const counters = document.querySelectorAll('.counter');
 const slides = document.querySelectorAll('.slide');
 
+/**
+ * Show or hide the counters.
+ * @returns {undefined}
+ */
 function toggleCounter () {
   [...counters].forEach(function (el) {
     el.style.display = (el.offsetHeight) ? 'none' : 'block';
   });
 }
 
+/**
+ * Add or remove `reduced` (size) class.
+ * @returns {undefined}
+ */
 function toggleSize () {
   [...slides].forEach(function (el) {
-    if (!/reduced/.test(el.className)) {
+    if (!(/reduced/).test(el.className)) {
       el.classList.add('reduced');
     } else {
       el.classList.remove('reduced');
@@ -298,9 +308,13 @@ function toggleSize () {
   });
 }
 
+/**
+ * Add or remove `no-transitions` class.
+ * @returns {undefined}
+ */
 function toggleTransitions () {
   [...slides].forEach(function (el) {
-    if (!/no-transitions/.test(el.className)) {
+    if (!(/no-transitions/).test(el.className)) {
       el.classList.add('no-transitions');
     } else {
       el.classList.remove('no-transitions');
@@ -308,9 +322,13 @@ function toggleTransitions () {
   });
 }
 
+/**
+ * Add or remove `no-gradients` class.
+ * @returns {undefined}
+ */
 function toggleGradients () {
   [...slides].forEach(function (el) {
-    if (!/no-gradients/.test(el.className)) {
+    if (!(/no-gradients/).test(el.className)) {
       el.classList.add('no-gradients');
     } else {
       el.classList.remove('no-gradients');

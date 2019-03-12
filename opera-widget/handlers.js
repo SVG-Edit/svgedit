@@ -1,5 +1,7 @@
 /* globals jQuery, svgCanvas */
-// Note: This JavaScript file must be included as the last script on the main HTML editor page to override the open/save handlers
+/* eslint-disable no-console */
+// Note: This JavaScript file must be included as the last script on the main
+//  HTML editor page to override the open/save handlers
 jQuery(function () {
   if (window.opera && window.opera.io && window.opera.io.filesystem) {
     svgCanvas.setCustomHandlers({
@@ -31,9 +33,9 @@ jQuery(function () {
           console.log('Open file failed.');
         }
       },
-      save (window, svg) {
+      save (win, svg) {
         try {
-          window.opera.io.filesystem.browseForSave(
+          win.opera.io.filesystem.browseForSave(
             new Date().getTime(), /* mountpoint name */
             '', /* default location */
             function (file) {

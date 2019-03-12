@@ -20,9 +20,9 @@ QUnit.test('Test svgedit.math package', function (assert) {
   assert.ok(math.transformPoint);
   assert.ok(math.isIdentity);
   assert.ok(math.matrixMultiply);
-  assert.equal(typeof math.transformPoint, typeof function () {});
-  assert.equal(typeof math.isIdentity, typeof function () {});
-  assert.equal(typeof math.matrixMultiply, typeof function () {});
+  assert.equal(typeof math.transformPoint, typeof function () { /* */ });
+  assert.equal(typeof math.isIdentity, typeof function () { /* */ });
+  assert.equal(typeof math.matrixMultiply, typeof function () { /* */ });
 });
 
 QUnit.test('Test svgedit.math.transformPoint() function', function (assert) {

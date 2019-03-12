@@ -87,11 +87,11 @@ svgEditor.setConfig({
   // jGraduatePath: 'jgraduate/images/',
   /*
   Uncomment the following to allow at least same domain (embedded) access,
-  including file:// access.
+  including `file:///` access.
   Setting as `['*']` would allow any domain to access but would be unsafe to
   data privacy and integrity.
   */
-  // allowedOrigins: [window.location.origin || 'null'], // May be 'null' (as a string) when used as a file:// URL
+  // allowedOrigins: [location.origin || 'null'], // May be 'null' (as a string) when used as a `file:///` URL
   // DOCUMENT PROPERTIES
   // dimensions: [640, 480],
   // EDITOR OPTIONS

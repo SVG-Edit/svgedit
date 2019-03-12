@@ -21,7 +21,6 @@ editor/js-hotkeys
 editor/jspdf/jspdf.min.js
 editor/jspdf/underscore-min.js
 
-editor/extensions/imagelib/jquery.min.js
 editor/extensions/mathjax
 
 editor/external/*

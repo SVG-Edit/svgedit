@@ -205,7 +205,7 @@ export default {
     unsavedChanges: 'Obstajajo neshranjene spremembe.',
     enterNewLinkURL: 'Vnesite novo URL povezavo',
     errorLoadingSVG: 'Napaka: Ne morem naložiti SVG podatkov',
-    URLloadFail: 'Ne morem naložiti z URL',
+    URLLoadFail: 'Ne morem naložiti z URL',
     retrieving: 'Retrieving \'%s\' ...',
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',

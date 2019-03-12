@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-server_opensave.js
  *
@@ -11,19 +10,35 @@ import {canvg} from '../canvg/canvg.js';
 
 export default {
   name: 'server_opensave',
-  async init ({decode64, encode64, importLocale}) {
+  async init ({$, decode64, encode64, importLocale}) {
     const strings = await importLocale();
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
+    /**
+     *
+     * @returns {string}
+     */
     function getFileNameFromTitle () {
       const title = svgCanvas.getDocumentTitle();
       // We convert (to underscore) only those disallowed Win7 file name characters
       return title.trim().replace(/[/\\:*?"<>|]/g, '_');
     }
+    /**
+     * Escapes XML predefined entities for quoted attributes.
+     * @param {string} str
+     * @returns {string}
+     */
     function xhtmlEscape (str) {
       return str.replace(/&(?!amp;)/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); // < is actually disallowed above anyways
     }
+
+    /**
+     *
+     * @param {string} [filename='image']
+     * @param {string} suffix To add to file name
+     * @param {string} uri
+     * @returns {boolean}
+     */
     function clientDownloadSupport (filename, suffix, uri) {
       const support = $('<a>')[0].download === '';
       let a;
@@ -35,6 +50,7 @@ export default {
         a[0].click();
         return true;
       }
+      return false;
     }
     const
       saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php',
@@ -43,7 +59,9 @@ export default {
 
     let cancelled = false;
 
-    $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
+    //  Hiding by size instead of display to avoid FF console errors
+    //    with `getBBox` in browser.js `supportsPathBBox_`)
+    $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
     svgEditor.setCustomHandlers({
       save (win, data) {
         const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
@@ -101,7 +119,7 @@ export default {
         }
 
         if (note.length) {
-          alert(note);
+          await $.alert(note);
         }
 
         const filename = getFileNameFromTitle();
@@ -178,36 +196,45 @@ export default {
 
     // It appears necessary to rebuild this input every time a file is
     // selected so the same file can be picked and the change event can fire.
+
+    /**
+     *
+     * @param {external:jQuery} form
+     * @returns {undefined}
+     */
     function rebuildInput (form) {
       form.empty();
       const inp = $('<input type="file" name="svg_file">').appendTo(form);
 
-      function submit () {
-        // This submits the form, which returns the file data using svgEditor.processFile()
+      /**
+       * Submit the form, empty its contents for reuse and show
+       *   uploading message.
+       * @returns {undefined}
+       */
+      async function submit () {
+        // This submits the form, which returns the file data using `svgEditor.processFile()`
         form.submit();
 
         rebuildInput(form);
-        $.process_cancel(strings.uploading, function () {
-          cancelled = true;
-          $('#dialog_box').hide();
-        });
+        await $.process_cancel(strings.uploading);
+        cancelled = true;
+        $('#dialog_box').hide();
       }
 
       if (form[0] === openSvgForm[0]) {
-        inp.change(function () {
+        inp.change(async function () {
           // This takes care of the "are you sure" dialog box
-          svgEditor.openPrep(function (ok) {
-            if (!ok) {
-              rebuildInput(form);
-              return;
-            }
-            submit();
-          });
+          const ok = await svgEditor.openPrep();
+          if (!ok) {
+            rebuildInput(form);
+            return;
+          }
+          await submit();
         });
       } else {
-        inp.change(function () {
+        inp.change(async function () {
           // This submits the form, which returns the file data using svgEditor.processFile()
-          submit();
+          await submit();
         });
       }
     }

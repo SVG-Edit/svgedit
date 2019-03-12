@@ -1,5 +1,5 @@
 /* eslint-env node */
-const fs = require('promise-fs');
+import fs from 'promise-fs';
 
 const filesAndReplacements = [
   {
@@ -32,6 +32,22 @@ const filesAndReplacements = [
       [
         '<script src="external/dom-polyfill/dom-polyfill.js"></script>',
         '<script src="../dist/dom-polyfill.js"></script>'
+      ],
+      [
+        '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
+        ''
+      ]
+    ]
+  },
+  // Now that file has copied, we can replace the DOCTYPE in xdomain
+  {
+    input: 'editor/xdomain-svg-editor-es.html',
+    output: 'editor/xdomain-svg-editor-es.html',
+    replacements: [
+      [
+        '<!DOCTYPE html>',
+        `<!DOCTYPE html>
+<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->`
       ]
     ]
   },
@@ -55,6 +71,33 @@ const filesAndReplacements = [
       [
         '<script src="external/dom-polyfill/dom-polyfill.js"></script>',
         '<script src="../dist/dom-polyfill.js"></script>'
+      ],
+      [
+        '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
+        ''
+      ]
+    ]
+  },
+  {
+    input: 'editor/extensions/imagelib/openclipart-es.html',
+    output: 'editor/extensions/imagelib/openclipart.html',
+    replacements: [
+      [
+        '<!DOCTYPE html>',
+        `<!DOCTYPE html>
+<!-- AUTO-GENERATED FROM imagelib/openclipart-es.html; DO NOT EDIT; use build-html.js to build -->`
+      ],
+      [
+        '<script src="../../external/dom-polyfill/dom-polyfill.js"></script>',
+        '<script src="../../../dist/dom-polyfill.js"></script>'
+      ],
+      [
+        '<script type="module" src="openclipart.js"></script>',
+        '<script defer="defer" src="../../../dist/extensions/imagelib/openclipart.js"></script>'
+      ],
+      [
+        '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
+        ''
       ]
     ]
   },
@@ -70,32 +113,36 @@ const filesAndReplacements = [
       [
         '<script type="module" src="index.js"></script>',
         '<script defer="defer" src="../../../dist/extensions/imagelib/index.js"></script>'
+      ],
+      [
+        '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
+        ''
       ]
     ]
   }
 ];
 
-filesAndReplacements.reduce((p, {input, output, replacements}) => {
-  return p.then(async () => {
-    let data;
-    try {
-      data = await fs.readFile(input, 'utf8');
-    } catch (err) {
-      console.log(`Error reading ${input} file`, err);
-    }
+(async () => {
+await filesAndReplacements.reduce(async (p, {input, output, replacements}) => {
+  await p;
+  let data;
+  try {
+    data = await fs.readFile(input, 'utf8');
+  } catch (err) {
+    console.log(`Error reading ${input} file`, err); // eslint-disable-line no-console
+  }
 
-    data = replacements.reduce((s, [find, replacement]) => {
-      return s.replace(find, replacement);
-    }, data);
+  data = replacements.reduce((s, [fnd, replacement]) => {
+    return s.replace(fnd, replacement);
+  }, data);
 
-    try {
-      await fs.writeFile(output, data);
-    } catch (err) {
-      console.log(`Error writing file: ${err}`, err);
-      return;
-    }
-    console.log(`Completed file ${input} rewriting!`);
-  });
-}, Promise.resolve()).then(() => {
-  console.log('Finished!');
-});
+  try {
+    await fs.writeFile(output, data);
+  } catch (err) {
+    console.log(`Error writing file: ${err}`, err); // eslint-disable-line no-console
+    return;
+  }
+  console.log(`Completed file ${input} rewriting!`); // eslint-disable-line no-console
+}, Promise.resolve());
+console.log('Finished!'); // eslint-disable-line no-console
+})();

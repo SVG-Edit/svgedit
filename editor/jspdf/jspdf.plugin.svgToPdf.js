@@ -30,6 +30,8 @@ const pdfSvgAttr = {
   rect: ['x', 'y', 'width', 'height', 'stroke', 'fill', 'stroke-width'],
   ellipse: ['cx', 'cy', 'rx', 'ry', 'stroke', 'fill', 'stroke-width'],
   circle: ['cx', 'cy', 'r', 'stroke', 'fill', 'stroke-width'],
+  polygon: ['points', 'stroke', 'fill', 'stroke-width'],
+  // polyline attributes are the same as those of polygon
   text: ['x', 'y', 'font-size', 'font-family', 'text-anchor', 'font-weight', 'font-style', 'fill']
 };
 
@@ -55,6 +57,27 @@ const removeAttributes = function (node, attributes) {
   });
 };
 
+const numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE]\d+|[eE][+-]\d+|)/g;
+const getLinesOptionsOfPoly = function (node) {
+  let nums = node.getAttribute('points');
+  nums = (nums && nums.match(numRgx)) || [];
+  if (nums && nums.length) {
+    nums = nums.map((n) => Number(n));
+    if (nums.length % 2) {
+      nums.length--;
+    }
+  }
+  if (nums.length < 4) {
+    console.log('invalid points attribute:', node); // eslint-disable-line no-console
+    return undefined;
+  }
+  const [x, y] = nums, lines = [];
+  for (let i = 2; i < nums.length; i += 2) {
+    lines.push([nums[i] - nums[i - 2], nums[i + 1] - nums[i - 1]]);
+  }
+  return {x, y, lines};
+};
+
 const svgElementToPdf = function (element, pdf, options) {
   // pdf is a jsPDF object
   // console.log('options =', options);
@@ -66,7 +89,7 @@ const svgElementToPdf = function (element, pdf, options) {
     // let hasStrokeColor = false;
     let hasFillColor = false;
     let fillRGB;
-    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'text'])) {
+    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'text'])) {
       const fillColor = node.getAttribute('fill');
       if (attributeIsNotEmpty(fillColor)) {
         fillRGB = new RGBColor(fillColor);
@@ -78,12 +101,12 @@ const svgElementToPdf = function (element, pdf, options) {
         }
       }
     }
-    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle'])) {
+    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline'])) {
       if (hasFillColor) {
         pdf.setFillColor(fillRGB.r, fillRGB.g, fillRGB.b);
       }
       if (attributeIsNotEmpty(node, 'stroke-width')) {
-        pdf.setLineWidth(k * parseInt(node.getAttribute('stroke-width'), 10));
+        pdf.setLineWidth(k * parseInt(node.getAttribute('stroke-width')));
       }
       const strokeColor = node.getAttribute('stroke');
       if (attributeIsNotEmpty(strokeColor)) {
@@ -94,14 +117,15 @@ const svgElementToPdf = function (element, pdf, options) {
           if (colorMode === 'F') {
             colorMode = 'FD';
           } else {
-            colorMode = null;
+            colorMode = 'S';
           }
         } else {
           colorMode = null;
         }
       }
     }
-    switch (node.tagName.toLowerCase()) {
+    const tag = node.tagName.toLowerCase();
+    switch (tag) {
     case 'svg':
     case 'a':
     case 'g':
@@ -110,43 +134,59 @@ const svgElementToPdf = function (element, pdf, options) {
       break;
     case 'line':
       pdf.line(
-        k * parseInt(node.getAttribute('x1'), 10),
-        k * parseInt(node.getAttribute('y1'), 10),
-        k * parseInt(node.getAttribute('x2'), 10),
-        k * parseInt(node.getAttribute('y2'), 10)
+        k * parseInt(node.getAttribute('x1')),
+        k * parseInt(node.getAttribute('y1')),
+        k * parseInt(node.getAttribute('x2')),
+        k * parseInt(node.getAttribute('y2'))
       );
       removeAttributes(node, pdfSvgAttr.line);
       break;
     case 'rect':
       pdf.rect(
-        k * parseInt(node.getAttribute('x'), 10),
-        k * parseInt(node.getAttribute('y'), 10),
-        k * parseInt(node.getAttribute('width'), 10),
-        k * parseInt(node.getAttribute('height'), 10),
+        k * parseInt(node.getAttribute('x')),
+        k * parseInt(node.getAttribute('y')),
+        k * parseInt(node.getAttribute('width')),
+        k * parseInt(node.getAttribute('height')),
         colorMode
       );
       removeAttributes(node, pdfSvgAttr.rect);
       break;
     case 'ellipse':
       pdf.ellipse(
-        k * parseInt(node.getAttribute('cx'), 10),
-        k * parseInt(node.getAttribute('cy'), 10),
-        k * parseInt(node.getAttribute('rx'), 10),
-        k * parseInt(node.getAttribute('ry'), 10),
+        k * parseInt(node.getAttribute('cx')),
+        k * parseInt(node.getAttribute('cy')),
+        k * parseInt(node.getAttribute('rx')),
+        k * parseInt(node.getAttribute('ry')),
         colorMode
       );
       removeAttributes(node, pdfSvgAttr.ellipse);
       break;
     case 'circle':
       pdf.circle(
-        k * parseInt(node.getAttribute('cx'), 10),
-        k * parseInt(node.getAttribute('cy'), 10),
-        k * parseInt(node.getAttribute('r'), 10),
+        k * parseInt(node.getAttribute('cx')),
+        k * parseInt(node.getAttribute('cy')),
+        k * parseInt(node.getAttribute('r')),
         colorMode
       );
       removeAttributes(node, pdfSvgAttr.circle);
       break;
-    case 'text':
+    case 'polygon':
+    case 'polyline': {
+      const linesOptions = getLinesOptionsOfPoly(node);
+      if (linesOptions) {
+        pdf.lines(
+          linesOptions.lines,
+          k * linesOptions.x,
+          k * linesOptions.y,
+          [k, k],
+          colorMode,
+          tag === 'polygon' // polygon is closed, polyline is not closed
+        );
+      }
+      removeAttributes(node, pdfSvgAttr.polygon);
+      break;
+    // TODO: path
+    } case 'text': {
       if (node.hasAttribute('font-family')) {
         switch ((node.getAttribute('font-family') || '').toLowerCase()) {
         case 'serif': pdf.setFont('times'); break;
@@ -176,22 +216,27 @@ const svgElementToPdf = function (element, pdf, options) {
       }
       pdf.setFontType(fontType);
       const pdfFontSize = node.hasAttribute('font-size')
-        ? parseInt(node.getAttribute('font-size'), 10)
+        ? parseInt(node.getAttribute('font-size'))
         : 16;
 
-      const getWidth = (node) => {
+      /**
+       *
+       * @param {Element} elem
+       * @returns {Float}
+       */
+      const getWidth = (elem) => {
         let box;
         try {
-          box = node.getBBox(); // Firefox on MacOS will raise error here
+          box = elem.getBBox(); // Firefox on MacOS will raise error here
         } catch (err) {
           // copy and append to body so that getBBox is available
-          const nodeCopy = node.cloneNode(true);
-          const svg = node.ownerSVGElement.cloneNode(false);
+          const nodeCopy = elem.cloneNode(true);
+          const svg = elem.ownerSVGElement.cloneNode(false);
           svg.appendChild(nodeCopy);
           document.body.appendChild(svg);
           try {
             box = nodeCopy.getBBox();
-          } catch (err) {
+          } catch (error) {
             box = {width: 0};
           }
           document.body.removeChild(svg);
@@ -207,8 +252,8 @@ const svgElementToPdf = function (element, pdf, options) {
         case 'start': break;
         case 'default': node.setAttribute('text-anchor', 'start'); break;
         }
-        x = parseInt(node.getAttribute('x'), 10) - xOffset;
-        y = parseInt(node.getAttribute('y'), 10);
+        x = parseInt(node.getAttribute('x')) - xOffset;
+        y = parseInt(node.getAttribute('y'));
       }
       // console.log('fontSize:', pdfFontSize, 'text:', node.textContent);
       pdf.setFontSize(pdfFontSize).text(
@@ -219,9 +264,9 @@ const svgElementToPdf = function (element, pdf, options) {
       removeAttributes(node, pdfSvgAttr.text);
       break;
     // TODO: image
-    default:
+    } default:
       if (remove) {
-        console.log("can't translate to pdf:", node);
+        console.log("can't translate to pdf:", node); // eslint-disable-line no-console
         node.remove();
       }
     }

@@ -1,6 +1,20 @@
 // Adapted from https://www.npmjs.com/package/sinon-test
 
-export default function ({sinon, QUnit}) {
+/**
+ * @external QUnit
+ */
+/**
+ * @external sinon
+ */
+
+/**
+ * Adds methods to Sinon using a QUnit implementation.
+ * @param {PlainObject} implementations
+ * @param {external:sinon} implementations.sinon
+ * @param {external:QUnit} implementations.QUnit
+ * @returns {undefined}
+ */
+export default function sinonQunit ({sinon, QUnit}) {
   sinon.assert.fail = function (msg) {
     QUnit.ok(false, msg);
   };
@@ -10,7 +24,7 @@ export default function ({sinon, QUnit}) {
   };
 
   const qTest = QUnit.test;
-  QUnit.test = function (testName, callback) {
+  QUnit.test = function (testName, callback) { // eslint-disable-line promise/prefer-await-to-callbacks
     return qTest(testName, sinon.test(callback));
   };
 }

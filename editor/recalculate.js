@@ -5,12 +5,12 @@
  * @license MIT
  */
 
-import jqPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import {NS} from './namespaces.js';
 import {convertToNum} from './units.js';
 import {isWebkit} from './browser.js';
 import {getTransformList} from './svgtransformlist.js';
-import {getRotationAngle, getHref, getBBox, getRefElem} from './utilities.js';
+import {getRotationAngle, getHref, getBBox, getRefElem, isNullish} from './utilities.js';
 import {BatchCommand, ChangeElementCommand} from './history.js';
 import {remapElement} from './coords.js';
 import {
@@ -18,7 +18,7 @@ import {
   hasMatrixTransform
 } from './math.js';
 
-const $ = jqPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 
 let context_;
 
@@ -49,7 +49,7 @@ export const init = function (editorContext) {
 };
 
 /**
-* Updates a `<clipPath>`s values based on the given translation of an element
+* Updates a `<clipPath>`s values based on the given translation of an element.
 * @function module:recalculate.updateClipPath
 * @param {string} attr - The clip-path attribute value with the clipPath's ID
 * @param {Float} tx - The translation's x value
@@ -69,13 +69,13 @@ export const updateClipPath = function (attr, tx, ty) {
 };
 
 /**
-* Decides the course of action based on the element's transform list
+* Decides the course of action based on the element's transform list.
 * @function module:recalculate.recalculateDimensions
 * @param {Element} selected - The DOM element to recalculate
 * @returns {Command} Undo command object with the resulting change
 */
 export const recalculateDimensions = function (selected) {
-  if (selected == null) { return null; }
+  if (isNullish(selected)) { return null; }
 
   // Firefox Issue - 1081
   if (selected.nodeName === 'svg' && navigator.userAgent.includes('Firefox/20')) {
@@ -154,7 +154,8 @@ export const recalculateDimensions = function (selected) {
 
       const m = matrixMultiply(
         tlist.getItem(k - 2).matrix,
-        tlist.getItem(k - 1).matrix);
+        tlist.getItem(k - 1).matrix
+      );
       mt.setMatrix(m);
       tlist.removeItem(k - 2);
       tlist.removeItem(k - 2);
@@ -241,7 +242,7 @@ export const recalculateDimensions = function (selected) {
 
   // if we haven't created an initial array in polygon/polyline/path, then
   // make a copy of initial values and include the transform
-  if (initial == null) {
+  if (isNullish(initial)) {
     initial = $.extend(true, {}, changes);
     $.each(initial, function (attr, val) {
       initial[attr] = convertToNum(attr, val);
@@ -262,7 +263,7 @@ export const recalculateDimensions = function (selected) {
       box.y + box.height / 2,
       transformListToTransform(tlist).matrix
     );
-    let m = svgroot.createSVGMatrix();
+    // let m = svgroot.createSVGMatrix();
 
     // temporarily strip off the rotate and save the old center
     const gangle = getRotationAngle(selected);
@@ -407,7 +408,7 @@ export const recalculateDimensions = function (selected) {
       tlist.removeItem(N - 3);
     } else if (N >= 3 && tlist.getItem(N - 1).type === 1) {
       operation = 3; // scale
-      m = transformListToTransform(tlist).matrix;
+      const m = transformListToTransform(tlist).matrix;
       const e2t = svgroot.createSVGTransform();
       e2t.setMatrix(m);
       tlist.clear();
@@ -431,8 +432,7 @@ export const recalculateDimensions = function (selected) {
         const children = selected.childNodes;
         let c = children.length;
 
-        let clipPathsDone = [];
-
+        const clipPathsDone = [];
         while (c--) {
           const child = children.item(c);
           if (child.nodeType === 1) {
@@ -479,8 +479,6 @@ export const recalculateDimensions = function (selected) {
             }
           }
         }
-
-        clipPathsDone = [];
         context_.setStartTransform(oldStartTransform);
       }
     // else, a matrix imposition from a parent group
@@ -611,7 +609,7 @@ export const recalculateDimensions = function (selected) {
 
     if (!box && selected.tagName !== 'path') return null;
 
-    let m = svgroot.createSVGMatrix();
+    let m; // = svgroot.createSVGMatrix();
     // temporarily strip off the rotate and save the old center
     const angle = getRotationAngle(selected);
     if (angle) {
@@ -737,7 +735,7 @@ export const recalculateDimensions = function (selected) {
     // if it was a rotation, put the rotate back and return without a command
     // (this function has zero work to do for a rotate())
     } else {
-      operation = 4; // rotation
+      // operation = 4; // rotation
       if (angle) {
         const newRot = svgroot.createSVGTransform();
         newRot.setRotate(angle, newcenter.x, newcenter.y);
@@ -798,15 +796,15 @@ export const recalculateDimensions = function (selected) {
     // translation required to re-center it
     // Therefore, [Tr] = [M_inv][Rnew_inv][Rold][M]
     } else if (operation === 3 && angle) {
-      const m = transformListToTransform(tlist).matrix;
+      const {matrix} = transformListToTransform(tlist);
       const roldt = svgroot.createSVGTransform();
       roldt.setRotate(angle, oldcenter.x, oldcenter.y);
       const rold = roldt.matrix;
       const rnew = svgroot.createSVGTransform();
       rnew.setRotate(angle, newcenter.x, newcenter.y);
       const rnewInv = rnew.matrix.inverse();
-      const mInv = m.inverse();
-      const extrat = matrixMultiply(mInv, rnewInv, rold, m);
+      const mInv = matrix.inverse();
+      const extrat = matrixMultiply(mInv, rnewInv, rold, matrix);
 
       remapElement(selected, changes, extrat);
       if (angle) {

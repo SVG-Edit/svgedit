@@ -6,13 +6,8 @@
 let cbid = 0;
 
 /**
-* @callback module:EmbeddedSVGEdit.GenericCallback
-* @param {...*} args Signature dependent on the function
-* @returns {*} Return dependent on the function
-*/
-/**
 * @callback module:EmbeddedSVGEdit.CallbackSetter
-* @param {module:EmbeddedSVGEdit.GenericCallback} newCallback Callback to be stored (signature dependent on function)
+* @param {GenericCallback} newCallback Callback to be stored (signature dependent on function)
 * @returns {undefined}
 */
 /**
@@ -22,16 +17,16 @@ let cbid = 0;
 */
 
 /**
-* @param {string} d
+* @param {string} funcName
 * @returns {module:EmbeddedSVGEdit.CallbackSetGetter}
 */
 function getCallbackSetter (funcName) {
   return function (...args) {
-    const t = this, // New callback
-      cbid = t.send(funcName, args, function () {}); // The callback (currently it's nothing, but will be set later)
+    const that = this, // New callback
+      callbackID = this.send(funcName, args, function () { /* */ }); // The callback (currently it's nothing, but will be set later)
 
     return function (newCallback) {
-      t.callbacks[cbid] = newCallback; // Set callback
+      that.callbacks[callbackID] = newCallback; // Set callback
     };
   };
 }
@@ -39,19 +34,19 @@ function getCallbackSetter (funcName) {
 /**
 * Having this separate from messageListener allows us to
 * avoid using JSON parsing (and its limitations) in the case
-* of same domain control
+* of same domain control.
 * @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
 * @param {JSON} data
 * @returns {undefined}
 */
-function addCallback (t, data) {
-  const result = data.result || data.error,
-    cbid = data.id;
-  if (t.callbacks[cbid]) {
-    if (data.result) {
-      t.callbacks[cbid](result);
+function addCallback (t, {result, error, id: callbackID}) {
+  if (typeof callbackID === 'number' && t.callbacks[callbackID]) {
+    // These should be safe both because we check `cbid` is numeric and
+    //   because the calls are from trusted origins
+    if (result) {
+      t.callbacks[callbackID](result); // lgtm [js/remote-property-injection]
     } else {
-      t.callbacks[cbid](result, 'error');
+      t.callbacks[callbackID](error, 'error'); // lgtm [js/remote-property-injection]
     }
   }
 }
@@ -63,16 +58,16 @@ function addCallback (t, data) {
 function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
   //   will most likely be changed in the future
-  if (typeof e.data !== 'string') {
+  if (!e.data || !['string', 'object'].includes(typeof e.data)) {
     return;
   }
   const {allowedOrigins} = this,
-    data = e.data && JSON.parse(e.data);
+    data = typeof e.data === 'object' ? e.data : JSON.parse(e.data);
   if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
     e.source !== this.frame.contentWindow ||
     (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin))
   ) {
-    console.log(`The origin ${e.origin} was not whitelisted as an origin from which responses may be received by this ${window.origin} script.`);
+    console.log(`The origin ${e.origin} was not whitelisted as an origin from which responses may be received by this ${window.origin} script.`); // eslint-disable-line no-console
     return;
   }
   addCallback(this, data);
@@ -94,9 +89,9 @@ function getMessageListener (t) {
 }
 
 /**
-* Embedded SVG-edit API
+* Embedded SVG-edit API.
 * General usage:
-- Have an iframe somewhere pointing to a version of svg-edit > r1000
+* - Have an iframe somewhere pointing to a version of svg-edit > r1000.
 * @example
 
 // Initialize the magic with:
@@ -141,7 +136,7 @@ class EmbeddedSVGEdit {
   *   If supplied, it should probably be the same as svgEditor's allowedOrigins
   */
   constructor (frame, allowedOrigins) {
-    const t = this;
+    const that = this;
     this.allowedOrigins = allowedOrigins || [];
     // Initialize communication
     this.frame = frame;
@@ -323,7 +318,7 @@ class EmbeddedSVGEdit {
     }
 
     // Older IE may need a polyfill for addEventListener, but so it would for SVG
-    window.addEventListener('message', getMessageListener(this), false);
+    window.addEventListener('message', getMessageListener(this));
     window.addEventListener('keydown', (e) => {
       const {key, keyCode, charCode, which} = e;
       if (e.key === 'Backspace') {
@@ -331,7 +326,7 @@ class EmbeddedSVGEdit {
         const keyboardEvent = new KeyboardEvent(e.type, {
           key, keyCode, charCode, which
         });
-        t.frame.contentDocument.dispatchEvent(keyboardEvent);
+        that.frame.contentDocument.dispatchEvent(keyboardEvent);
       }
     });
   }
@@ -339,14 +334,15 @@ class EmbeddedSVGEdit {
   /**
   * @param {string} name
   * @param {ArgumentsArray} args Signature dependent on function
-  * @param {module:EmbeddedSVGEdit.GenericCallback} callback
+  * @param {GenericCallback} callback (This may be better than a promise in case adding an event.)
+  * @returns {Integer}
   */
-  send (name, args, callback) {
-    const t = this;
+  send (name, args, callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+    const that = this;
     cbid++;
 
     this.callbacks[cbid] = callback;
-    setTimeout((function (cbid) {
+    setTimeout((function (callbackID) {
       return function () { // Delay for the callback to be set in case its synchronous
         /*
         * Todo: Handle non-JSON arguments and return values (undefined,
@@ -356,29 +352,30 @@ class EmbeddedSVGEdit {
         *   made compatile with all API functionality
         */
         // We accept and post strings for the sake of IE9 support
-        let sameOrigin = false;
+        let sameOriginWithGlobal = false;
         try {
-          sameOrigin = window.location.origin === t.frame.contentWindow.location.origin;
+          sameOriginWithGlobal = window.location.origin === that.frame.contentWindow.location.origin &&
+            that.frame.contentWindow.svgEditor.canvas;
         } catch (err) {}
 
-        if (sameOrigin) {
+        if (sameOriginWithGlobal) {
           // Although we do not really need this API if we are working same
           //  domain, it could allow us to write in a way that would work
           //  cross-domain as well, assuming we stick to the argument limitations
           //  of the current JSON-based communication API (e.g., not passing
           //  callbacks). We might be able to address these shortcomings; see
           //  the todo elsewhere in this file.
-          const message = {id: cbid},
-            {svgEditor: {canvas: svgCanvas}} = t.frame.contentWindow;
+          const message = {id: callbackID},
+            {svgEditor: {canvas: svgCanvas}} = that.frame.contentWindow;
           try {
-            message.result = svgCanvas[name].apply(svgCanvas, args);
+            message.result = svgCanvas[name](...args);
           } catch (err) {
             message.error = err.message;
           }
-          addCallback(t, message);
+          addCallback(that, message);
         } else { // Requires the ext-xdomain-messaging.js extension
-          t.frame.contentWindow.postMessage(JSON.stringify({
-            namespace: 'svgCanvas', id: cbid, name, args
+          that.frame.contentWindow.postMessage(JSON.stringify({
+            namespace: 'svgCanvas', id: callbackID, name, args
           }), '*');
         }
       };

@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* eslint-disable new-cap, class-methods-use-this, @mysticatea/no-use-ignored-vars */
 // Todo: Compare with latest canvg (add any improvements of ours) and add full JSDocs (denoting links to standard APIs and which are custom): https://github.com/canvg/canvg
 /**
  * canvg.js - Javascript SVG parser and renderer on Canvas
@@ -9,32 +9,21 @@
  */
 
 import RGBColor from './rgbcolor.js';
-import {canvasRGBA} from './StackBlur.js';
-
-let canvasRGBA_ = canvasRGBA;
+import {canvasRGBA} from '../external/stackblur-canvas/dist/stackblur-es.js';
 
 /**
-* @callback module:canvg.StackBlurCanvasRGBA
-* @param {string} id
-* @param {Float} x
-* @param {Float} y
-* @param {Float} width
-* @param {Float} height
-* @param {Float} blurRadius
-*/
+ * Whether a value is `null` or `undefined`.
+ * @param {Any} val
+ * @returns {boolean}
+ */
+const isNullish = (val) => {
+  return val === null || val === undefined;
+};
 
 /**
 * @callback module:canvg.ForceRedraw
 * @returns {boolean}
 */
-
-/**
-* @function module:canvg.setStackBlurCanvasRGBA
-* @param {module:canvg.StackBlurCanvasRGBA} cb Will be passed the canvas ID, x, y, width, height, blurRadius
-*/
-export const setStackBlurCanvasRGBA = (cb) => {
-  canvasRGBA_ = cb;
-};
 
 /**
 * @typedef {PlainObject} module:canvg.CanvgOptions
@@ -52,16 +41,17 @@ export const setStackBlurCanvasRGBA = (cb) => {
 */
 
 /**
-* If called with no arguments, it will replace all `<svg>` elements on the page with `<canvas>` elements
+* If called with no arguments, it will replace all `<svg>` elements on the page
+* with `<canvas>` elements.
 * @function module:canvg.canvg
 * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
-* @param {string|XMLDocument} s: svg string, url to svg file, or xml document
+* @param {string|XMLDocument} s - svg string, url to svg file, or xml document
 * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
 * @returns {Promise} All the function after the first render is completed with dom
 */
 export const canvg = function (target, s, opts) {
   // no parameters
-  if (target == null && s == null && opts == null) {
+  if (isNullish(target) && isNullish(s) && isNullish(opts)) {
     const svgTags = document.querySelectorAll('svg');
     return Promise.all([...svgTags].map((svgTag) => {
       const c = document.createElement('canvas');
@@ -80,7 +70,7 @@ export const canvg = function (target, s, opts) {
   }
 
   // store class on canvas
-  if (target.svg != null) target.svg.stop();
+  if (!isNullish(target.svg)) target.svg.stop();
   const svg = build(opts || {});
   // on i.e. 8 for flash canvas, we can't assign the property so check for it
   if (!(target.childNodes.length === 1 && target.childNodes[0].nodeName === 'OBJECT')) {
@@ -102,7 +92,7 @@ export const canvg = function (target, s, opts) {
 
 /**
 * @param {module:canvg.CanvgOptions} opts
-* @returns {object}
+* @returns {Object}
 * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
 */
 function build (opts) {
@@ -111,9 +101,9 @@ function build (opts) {
   svg.FRAMERATE = 30;
   svg.MAX_VIRTUAL_PIXELS = 30000;
 
-  svg.log = function (msg) {};
+  svg.log = function (msg) { /* */ };
   if (svg.opts.log === true && typeof console !== 'undefined') {
-    svg.log = function (msg) { console.log(msg); };
+    svg.log = function (msg) { console.log(msg); }; // eslint-disable-line no-console
   }
 
   // globals
@@ -137,11 +127,11 @@ function build (opts) {
       width () { return this.Current().width; },
       height () { return this.Current().height; },
       ComputeSize (d) {
-        if (d != null && typeof d === 'number') return d;
+        if (!isNullish(d) && typeof d === 'number') return d;
         if (d === 'x') return this.width();
         if (d === 'y') return this.height();
         return Math.sqrt(
-          Math.pow(this.width(), 2) + Math.pow(this.height(), 2)
+          (this.width() ** 2) + (this.height() ** 2)
         ) / Math.sqrt(2);
       }
     };
@@ -164,15 +154,13 @@ function build (opts) {
   };
 
   // ajax
+  // Todo: Replace with `fetch` and polyfill
   svg.ajax = function (url, asynch) {
     const AJAX = window.XMLHttpRequest
       ? new XMLHttpRequest()
       : new window.ActiveXObject('Microsoft.XMLHTTP');
-    if (!AJAX) {
-      return null;
-    }
     if (asynch) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
         const req = AJAX.open('GET', url, true);
         req.addEventListener('load', () => {
           resolve(AJAX.responseText);
@@ -191,13 +179,12 @@ function build (opts) {
     if (window.DOMParser) {
       const parser = new DOMParser();
       return parser.parseFromString(xml, 'text/xml');
-    } else {
-      xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
-      const xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
-      xmlDoc.async = 'false';
-      xmlDoc.loadXML(xml);
-      return xmlDoc;
     }
+    xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
+    const xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
+    xmlDoc.async = 'false';
+    xmlDoc.loadXML(xml);
+    return xmlDoc;
   };
 
   // text extensions
@@ -227,7 +214,7 @@ function build (opts) {
     }
 
     hasValue () {
-      return (this.value != null && this.value !== '');
+      return (!isNullish(this.value) && this.value !== '');
     }
 
     // return the numerical value of the property
@@ -235,8 +222,8 @@ function build (opts) {
       if (!this.hasValue()) return 0;
 
       let n = parseFloat(this.value);
-      if ((this.value + '').match(/%$/)) {
-        n = n / 100.0;
+      if (String(this.value).endsWith('%')) {
+        n /= 100.0;
       }
       return n;
     }
@@ -255,7 +242,7 @@ function build (opts) {
     // augment the current color value with the opacity
     addOpacity (opacityProp) {
       let newValue = this.value;
-      if (opacityProp.value != null && opacityProp.value !== '' && typeof this.value === 'string') { // can only add opacity to colors, not patterns
+      if (!isNullish(opacityProp.value) && opacityProp.value !== '' && typeof this.value === 'string') { // can only add opacity to colors, not patterns
         const color = new RGBColor(this.value);
         if (color.ok) {
           newValue = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + opacityProp.numValue() + ')';
@@ -281,12 +268,12 @@ function build (opts) {
       let def = this.getDefinition();
 
       // gradient
-      if (def != null && def.createGradient) {
+      if (!isNullish(def) && def.createGradient) {
         return def.createGradient(svg.ctx, e, opacityProp);
       }
 
       // pattern
-      if (def != null && def.createPattern) {
+      if (!isNullish(def) && def.createPattern) {
         if (def.getHrefAttribute().hasValue()) {
           const pt = def.attribute('patternTransform');
           def = def.getHrefAttribute().getDefinition();
@@ -313,23 +300,22 @@ function build (opts) {
     }
 
     getUnits () {
-      const s = this.value + '';
-      return s.replace(/[0-9.-]/g, '');
+      return String(this.value).replace(/[0-9.-]/g, '');
     }
 
     // get the length as pixels
     toPixels (viewPort, processPercent) {
       if (!this.hasValue()) return 0;
-      const s = this.value + '';
-      if (s.match(/em$/)) return this.numValue() * this.getEM(viewPort);
-      if (s.match(/ex$/)) return this.numValue() * this.getEM(viewPort) / 2.0;
-      if (s.match(/px$/)) return this.numValue();
-      if (s.match(/pt$/)) return this.numValue() * this.getDPI(viewPort) * (1.0 / 72.0);
-      if (s.match(/pc$/)) return this.numValue() * 15;
-      if (s.match(/cm$/)) return this.numValue() * this.getDPI(viewPort) / 2.54;
-      if (s.match(/mm$/)) return this.numValue() * this.getDPI(viewPort) / 25.4;
-      if (s.match(/in$/)) return this.numValue() * this.getDPI(viewPort);
-      if (s.match(/%$/)) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
+      const s = String(this.value);
+      if (s.endsWith('em')) return this.numValue() * this.getEM(viewPort);
+      if (s.endsWith('ex')) return this.numValue() * this.getEM(viewPort) / 2.0;
+      if (s.endsWith('px')) return this.numValue();
+      if (s.endsWith('pt')) return this.numValue() * this.getDPI(viewPort) * (1.0 / 72.0);
+      if (s.endsWith('pc')) return this.numValue() * 15;
+      if (s.endsWith('cm')) return this.numValue() * this.getDPI(viewPort) / 2.54;
+      if (s.endsWith('mm')) return this.numValue() * this.getDPI(viewPort) / 25.4;
+      if (s.endsWith('in')) return this.numValue() * this.getDPI(viewPort);
+      if (s.endsWith('%')) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
       const n = this.numValue();
       if (processPercent && n < 1.0) return n * svg.ViewPort.ComputeSize(viewPort);
       return n;
@@ -339,9 +325,9 @@ function build (opts) {
     // get the time as milliseconds
     toMilliseconds () {
       if (!this.hasValue()) return 0;
-      const s = this.value + '';
-      if (s.match(/s$/)) return this.numValue() * 1000;
-      if (s.match(/ms$/)) return this.numValue();
+      const s = String(this.value);
+      if (s.endsWith('ms')) return this.numValue();
+      if (s.endsWith('s')) return this.numValue() * 1000;
       return this.numValue();
     }
 
@@ -349,10 +335,10 @@ function build (opts) {
     // get the angle as radians
     toRadians () {
       if (!this.hasValue()) return 0;
-      const s = this.value + '';
-      if (s.match(/deg$/)) return this.numValue() * (Math.PI / 180.0);
-      if (s.match(/grad$/)) return this.numValue() * (Math.PI / 200.0);
-      if (s.match(/rad$/)) return this.numValue();
+      const s = String(this.value);
+      if (s.endsWith('deg')) return this.numValue() * (Math.PI / 180.0);
+      if (s.endsWith('grad')) return this.numValue() * (Math.PI / 200.0);
+      if (s.endsWith('rad')) return this.numValue();
       return this.numValue() * (Math.PI / 180.0);
     }
 
@@ -369,7 +355,7 @@ function build (opts) {
     Weights: 'normal|bold|bolder|lighter|100|200|300|400|500|600|700|800|900|inherit',
 
     CreateFont (fontStyle, fontVariant, fontWeight, fontSize, fontFamily, inherit) {
-      const f = inherit != null ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
+      const f = !isNullish(inherit) ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
       return {
         fontFamily: fontFamily || f.fontFamily,
         fontSize: fontSize || f.fontSize,
@@ -387,12 +373,12 @@ function build (opts) {
 
     Parse (s) {
       const f = {};
-      const d = svg.trim(svg.compressSpaces(s || '')).split(' ');
+      const ds = svg.trim(svg.compressSpaces(s || '')).split(' ');
       const set = {
         fontSize: false, fontStyle: false, fontWeight: false, fontVariant: false
       };
       let ff = '';
-      d.forEach((d) => {
+      ds.forEach((d) => {
         if (!set.fontStyle && this.Styles.includes(d)) {
           if (d !== 'inherit') {
             f.fontStyle = d;
@@ -413,8 +399,8 @@ function build (opts) {
             f.fontSize = d.split('/')[0];
           }
           set.fontStyle = set.fontVariant = set.fontWeight = set.fontSize = true;
-        } else {
-          if (d !== 'inherit') { ff += d; }
+        } else if (d !== 'inherit') {
+          ff += d;
         }
       });
       if (ff !== '') { f.fontFamily = ff; }
@@ -425,7 +411,7 @@ function build (opts) {
   // points and paths
   svg.ToNumberArray = function (s) {
     const a = svg.trim(svg.compressSpaces((s || '').replace(/,/g, ' '))).split(' ');
-    return a.map((a) => parseFloat(a));
+    return a.map((_a) => parseFloat(_a));
   };
   svg.Point = class {
     constructor (x, y) {
@@ -475,7 +461,7 @@ function build (opts) {
     height () { return this.y2 - this.y1; }
 
     addPoint (x, y) {
-      if (x != null) {
+      if (!isNullish(x)) {
         if (isNaN(this.x1) || isNaN(this.x2)) {
           this.x1 = x;
           this.x2 = x;
@@ -484,7 +470,7 @@ function build (opts) {
         if (x > this.x2) this.x2 = x;
       }
 
-      if (y != null) {
+      if (!isNullish(y)) {
         if (isNaN(this.y1) || isNaN(this.y2)) {
           this.y1 = y;
           this.y2 = y;
@@ -517,10 +503,10 @@ function build (opts) {
 
       for (let i = 0; i <= 1; i++) {
         const f = function (t) {
-          return Math.pow(1 - t, 3) * p0[i] +
-          3 * Math.pow(1 - t, 2) * t * p1[i] +
-          3 * (1 - t) * Math.pow(t, 2) * p2[i] +
-          Math.pow(t, 3) * p3[i];
+          return ((1 - t) ** 3) * p0[i] +
+          3 * ((1 - t) ** 2) * t * p1[i] +
+          3 * (1 - t) * (t ** 2) * p2[i] +
+          (t ** 3) * p3[i];
         };
 
         const b = 6 * p0[i] - 12 * p1[i] + 6 * p2[i];
@@ -537,7 +523,7 @@ function build (opts) {
           continue;
         }
 
-        const b2ac = Math.pow(b, 2) - 4 * c * a;
+        const b2ac = (b ** 2) - 4 * c * a;
         if (b2ac < 0) continue;
         const t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
         if (t1 > 0 && t1 < 1) {
@@ -592,9 +578,9 @@ function build (opts) {
               ctx.translate(-this.cx, -this.cy);
             };
             this.applyToPoint = function (p) {
-              const a = this.angle.toRadians();
+              const _a = this.angle.toRadians();
               p.applyTransform([1, 0, 0, 1, this.p.x || 0.0, this.p.y || 0.0]);
-              p.applyTransform([Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), 0, 0]);
+              p.applyTransform([Math.cos(_a), Math.sin(_a), -Math.sin(_a), Math.cos(_a), 0, 0]);
               p.applyTransform([1, 0, 0, 1, -this.p.x || 0.0, -this.p.y || 0.0]);
             };
           }
@@ -699,10 +685,10 @@ function build (opts) {
       ctx.translate(-scaleMin * refX.toPixels('x'), -scaleMin * refY.toPixels('y'));
     } else {
       // align
-      if (align.match(/^xMid/) && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
-      if (align.match(/YMid$/) && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
-      if (align.match(/^xMax/) && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width - desiredWidth, 0);
-      if (align.match(/YMax$/) && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height - desiredHeight);
+      if (align.startsWith('xMid') && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
+      if (align.endsWith('YMid') && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
+      if (align.startsWith('xMax') && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width - desiredWidth, 0);
+      if (align.endsWith('YMax') && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height - desiredHeight);
     }
 
     // scale
@@ -711,7 +697,7 @@ function build (opts) {
     else if (meetOrSlice === 'slice') ctx.scale(scaleMax, scaleMax);
 
     // translate
-    ctx.translate(minX == null ? 0 : -minX, minY == null ? 0 : -minY);
+    ctx.translate(isNullish(minX) ? 0 : -minX, isNullish(minY) ? 0 : -minY);
   };
 
   // elements
@@ -721,11 +707,12 @@ function build (opts) {
 
   svg.Element.ElementBase = class {
     constructor (node) {
-      this.captureTextNodes = arguments[1]; // Argument from inheriting class
+      // Argument from inheriting class
+      this.captureTextNodes = arguments[1]; // eslint-disable-line prefer-rest-params
       this.attributes = {};
       this.styles = {};
       this.children = [];
-      if (node != null && node.nodeType === 1) { // ELEMENT_NODE
+      if (!isNullish(node) && node.nodeType === 1) { // ELEMENT_NODE
         // add children
         [...node.childNodes].forEach((childNode) => {
           if (childNode.nodeType === 1) {
@@ -750,10 +737,10 @@ function build (opts) {
         });
         // add tag styles
         let styles = svg.Styles[node.nodeName];
-        if (styles != null) {
-          for (const name in styles) {
-            this.styles[name] = styles[name];
-          }
+        if (!isNullish(styles)) {
+          Object.entries(styles).forEach(([name, styleValue]) => {
+            this.styles[name] = styleValue;
+          });
         }
 
         // add class styles
@@ -761,34 +748,34 @@ function build (opts) {
           const classes = svg.compressSpaces(this.attribute('class').value).split(' ');
           classes.forEach((clss) => {
             styles = svg.Styles['.' + clss];
-            if (styles != null) {
-              for (const name in styles) {
-                this.styles[name] = styles[name];
-              }
+            if (!isNullish(styles)) {
+              Object.entries(styles).forEach(([name, styleValue]) => {
+                this.styles[name] = styleValue;
+              });
             }
             styles = svg.Styles[node.nodeName + '.' + clss];
-            if (styles != null) {
-              for (const name in styles) {
-                this.styles[name] = styles[name];
-              }
+            if (!isNullish(styles)) {
+              Object.entries(styles).forEach(([name, styleValue]) => {
+                this.styles[name] = styleValue;
+              });
             }
           });
         }
 
         // add id styles
         if (this.attribute('id').hasValue()) {
-          const styles = svg.Styles['#' + this.attribute('id').value];
-          if (styles != null) {
-            for (const name in styles) {
-              this.styles[name] = styles[name];
-            }
+          const _styles = svg.Styles['#' + this.attribute('id').value];
+          if (!isNullish(_styles)) {
+            Object.entries(_styles).forEach(([name, styleValue]) => {
+              this.styles[name] = styleValue;
+            });
           }
         }
 
         // add inline styles
         if (this.attribute('style').hasValue()) {
-          const styles = this.attribute('style').value.split(';');
-          styles.forEach((style) => {
+          const _styles = this.attribute('style').value.split(';');
+          _styles.forEach((style) => {
             if (svg.trim(style) !== '') {
               let {name, value} = style.split(':');
               name = svg.trim(name);
@@ -800,7 +787,7 @@ function build (opts) {
 
         // add id
         if (this.attribute('id').hasValue()) {
-          if (svg.Definitions[this.attribute('id').value] == null) {
+          if (isNullish(svg.Definitions[this.attribute('id').value])) {
             svg.Definitions[this.attribute('id').value] = this;
           }
         }
@@ -810,7 +797,7 @@ function build (opts) {
     // get or create attribute
     attribute (name, createIfNotExists) {
       let a = this.attributes[name];
-      if (a != null) return a;
+      if (!isNullish(a)) return a;
 
       if (createIfNotExists === true) { a = new svg.Property(name, ''); this.attributes[name] = a; }
       return a || svg.EmptyProperty;
@@ -818,7 +805,7 @@ function build (opts) {
 
     getHrefAttribute () {
       for (const a in this.attributes) {
-        if (a.match(/:href$/)) {
+        if (a.endsWith(':href')) {
           return this.attributes[a];
         }
       }
@@ -828,19 +815,19 @@ function build (opts) {
     // get or create style, crawls up node tree
     style (name, createIfNotExists, skipAncestors) {
       let s = this.styles[name];
-      if (s != null) return s;
+      if (!isNullish(s)) return s;
 
       const a = this.attribute(name);
-      if (a != null && a.hasValue()) {
+      if (!isNullish(a) && a.hasValue()) {
         this.styles[name] = a; // move up to me to cache
         return a;
       }
 
       if (skipAncestors !== true) {
         const p = this.parent;
-        if (p != null) {
+        if (!isNullish(p)) {
           const ps = p.style(name);
-          if (ps != null && ps.hasValue()) {
+          if (!isNullish(ps) && ps.hasValue()) {
             return ps;
           }
         }
@@ -861,10 +848,10 @@ function build (opts) {
       ctx.save();
       if (this.attribute('mask').hasValue()) { // mask
         const mask = this.attribute('mask').getDefinition();
-        if (mask != null) mask.apply(ctx, this);
+        if (!isNullish(mask)) mask.apply(ctx, this);
       } else if (this.style('filter').hasValue()) { // filter
         const filter = this.style('filter').getDefinition();
-        if (filter != null) filter.apply(ctx, this);
+        if (!isNullish(filter)) filter.apply(ctx, this);
       } else {
         this.setContext(ctx);
         this.renderChildren(ctx);
@@ -904,7 +891,7 @@ function build (opts) {
       // fill
       if (this.style('fill').isUrlDefinition()) {
         const fs = this.style('fill').getFillStyleDefinition(this, this.style('fill-opacity'));
-        if (fs != null) ctx.fillStyle = fs;
+        if (!isNullish(fs)) ctx.fillStyle = fs;
       } else if (this.style('fill').hasValue()) {
         const fillStyle = this.style('fill');
         if (fillStyle.value === 'currentColor') fillStyle.value = this.style('color').value;
@@ -919,7 +906,7 @@ function build (opts) {
       // stroke
       if (this.style('stroke').isUrlDefinition()) {
         const fs = this.style('stroke').getFillStyleDefinition(this, this.style('stroke-opacity'));
-        if (fs != null) ctx.strokeStyle = fs;
+        if (!isNullish(fs)) ctx.strokeStyle = fs;
       } else if (this.style('stroke').hasValue()) {
         const strokeStyle = this.style('stroke');
         if (strokeStyle.value === 'currentColor') strokeStyle.value = this.style('color').value;
@@ -964,7 +951,8 @@ function build (opts) {
           this.style('font-variant').value,
           this.style('font-weight').value,
           this.style('font-size').hasValue() ? this.style('font-size').toPixels() + 'px' : '',
-          this.style('font-family').value).toString();
+          this.style('font-family').value
+        ).toString();
       }
 
       // transform
@@ -976,7 +964,7 @@ function build (opts) {
       // clip
       if (this.style('clip-path', false, true).hasValue()) {
         const clip = this.style('clip-path', false, true).getDefinition();
-        if (clip != null) clip.apply(ctx);
+        if (!isNullish(clip)) clip.apply(ctx);
       }
 
       // opacity
@@ -988,7 +976,7 @@ function build (opts) {
 
   svg.Element.PathElementBase = class extends svg.Element.RenderedElementBase {
     path (ctx) {
-      if (ctx != null) ctx.beginPath();
+      if (!isNullish(ctx)) ctx.beginPath();
       return new svg.BoundingBox();
     }
 
@@ -1005,7 +993,7 @@ function build (opts) {
       if (ctx.strokeStyle !== '') ctx.stroke();
 
       const markers = this.getMarkers();
-      if (markers != null) {
+      if (!isNullish(markers)) {
         if (this.style('marker-start').isUrlDefinition()) {
           const marker = this.style('marker-start').getDefinition();
           marker.render(ctx, markers[0][0], markers[0][1]);
@@ -1124,7 +1112,7 @@ function build (opts) {
       if (this.attribute('ry').hasValue() && !this.attribute('rx').hasValue()) rx = ry;
       rx = Math.min(rx, width / 2.0);
       ry = Math.min(ry, height / 2.0);
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.moveTo(x + rx, y);
         ctx.lineTo(x + width - rx, y);
@@ -1149,7 +1137,7 @@ function build (opts) {
       const cy = this.attribute('cy').toPixels('y');
       const r = this.attribute('r').toPixels();
 
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2, true);
         ctx.closePath();
@@ -1168,7 +1156,7 @@ function build (opts) {
       const cx = this.attribute('cx').toPixels('x');
       const cy = this.attribute('cy').toPixels('y');
 
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.moveTo(cx, cy - ry);
         ctx.bezierCurveTo(cx + (KAPPA * rx), cy - ry, cx + rx, cy - (KAPPA * ry), cx + rx, cy);
@@ -1187,13 +1175,14 @@ function build (opts) {
     getPoints () {
       return [
         new svg.Point(this.attribute('x1').toPixels('x'), this.attribute('y1').toPixels('y')),
-        new svg.Point(this.attribute('x2').toPixels('x'), this.attribute('y2').toPixels('y'))];
+        new svg.Point(this.attribute('x2').toPixels('x'), this.attribute('y2').toPixels('y'))
+      ];
     }
 
     path (ctx) {
       const points = this.getPoints();
 
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         ctx.lineTo(points[1].x, points[1].y);
@@ -1219,14 +1208,14 @@ function build (opts) {
     path (ctx) {
       const {x, y} = this.points[0];
       const bb = new svg.BoundingBox(x, y);
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.beginPath();
         ctx.moveTo(x, y);
       }
       for (let i = 1; i < this.points.length; i++) {
-        const {x, y} = this.points[i];
-        bb.addPoint(x, y);
-        if (ctx != null) ctx.lineTo(x, y);
+        const {x: _x, y: _y} = this.points[i];
+        bb.addPoint(_x, _y);
+        if (!isNullish(ctx)) ctx.lineTo(_x, _y);
       }
       return bb;
     }
@@ -1245,7 +1234,7 @@ function build (opts) {
   svg.Element.polygon = class extends svg.Element.polyline {
     path (ctx) {
       const bb = super.path(ctx);
-      if (ctx != null) {
+      if (!isNullish(ctx)) {
         ctx.lineTo(this.points[0].x, this.points[0].y);
         ctx.closePath();
       }
@@ -1265,9 +1254,9 @@ function build (opts) {
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm, '$1 $2') // separate commands from points
         .replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from points
-        .replace(/([0-9])([+-])/gm, '$1 $2') // separate digits when no comma
-        .replace(/(\.[0-9]*)(\.)/gm, '$1 $2') // separate digits when no comma
-        .replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm, '$1 $3 $4 '); // shorthand elliptical arc path syntax
+        .replace(/(\d)([+-])/gm, '$1 $2') // separate digits when no comma
+        .replace(/(\.\d*)(\.)/gm, '$1 $2') // separate digits when no comma
+        .replace(/([Aa](\s+\d+)(\s+\d+)(\s+\d+))\s+([01])\s*([01])/gm, '$1 $5 $6 '); // shorthand elliptical arc path syntax
       d = svg.compressSpaces(d); // compress multiple spaces
       d = svg.trim(d);
       this.PathParser = {
@@ -1290,7 +1279,7 @@ function build (opts) {
 
         isCommandOrEnd () {
           if (this.isEnd()) return true;
-          return this.tokens[this.i + 1].match(/^[A-Za-z]$/) != null;
+          return !isNullish(this.tokens[this.i + 1].match(/^[A-Za-z]$/));
         },
 
         isRelativeCommand () {
@@ -1364,10 +1353,10 @@ function build (opts) {
 
         addMarker (p, from, priorTo) {
           // if the last angle isn't filled in because we didn't have this point yet ...
-          if (priorTo != null && this.angles.length > 0 && this.angles[this.angles.length - 1] == null) {
+          if (!isNullish(priorTo) && this.angles.length > 0 && isNullish(this.angles[this.angles.length - 1])) {
             this.angles[this.angles.length - 1] = this.points[this.points.length - 1].angleTo(priorTo);
           }
-          this.addMarkerAngle(p, from == null ? null : from.angleTo(p));
+          this.addMarkerAngle(p, isNullish(from) ? null : from.angleTo(p));
         },
 
         addMarkerAngle (p, a) {
@@ -1378,9 +1367,9 @@ function build (opts) {
         getMarkerPoints () { return this.points; },
         getMarkerAngles () {
           for (let i = 0; i < this.angles.length; i++) {
-            if (this.angles[i] == null) {
+            if (isNullish(this.angles[i])) {
               for (let j = i + 1; j < this.angles.length; j++) {
-                if (this.angles[j] != null) {
+                if (!isNullish(this.angles[j])) {
                   this.angles[i] = this.angles[j];
                   break;
                 }
@@ -1397,32 +1386,32 @@ function build (opts) {
       pp.reset();
 
       const bb = new svg.BoundingBox();
-      if (ctx != null) ctx.beginPath();
+      if (!isNullish(ctx)) ctx.beginPath();
       while (!pp.isEnd()) {
         pp.nextCommand();
         switch (pp.command) {
         case 'M':
-        case 'm':
+        case 'm': {
           const p = pp.getAsCurrentPoint();
           pp.addMarker(p);
           bb.addPoint(p.x, p.y);
-          if (ctx != null) ctx.moveTo(p.x, p.y);
+          if (!isNullish(ctx)) ctx.moveTo(p.x, p.y);
           pp.start = pp.current;
           while (!pp.isCommandOrEnd()) {
-            const p = pp.getAsCurrentPoint();
-            pp.addMarker(p, pp.start);
-            bb.addPoint(p.x, p.y);
-            if (ctx != null) ctx.lineTo(p.x, p.y);
+            const _p = pp.getAsCurrentPoint();
+            pp.addMarker(_p, pp.start);
+            bb.addPoint(_p.x, _p.y);
+            if (!isNullish(ctx)) ctx.lineTo(_p.x, _p.y);
           }
           break;
-        case 'L':
+        } case 'L':
         case 'l':
           while (!pp.isCommandOrEnd()) {
             const c = pp.current;
             const p = pp.getAsCurrentPoint();
             pp.addMarker(p, c);
             bb.addPoint(p.x, p.y);
-            if (ctx != null) ctx.lineTo(p.x, p.y);
+            if (!isNullish(ctx)) ctx.lineTo(p.x, p.y);
           }
           break;
         case 'H':
@@ -1432,7 +1421,7 @@ function build (opts) {
             pp.addMarker(newP, pp.current);
             pp.current = newP;
             bb.addPoint(pp.current.x, pp.current.y);
-            if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+            if (!isNullish(ctx)) ctx.lineTo(pp.current.x, pp.current.y);
           }
           break;
         case 'V':
@@ -1442,7 +1431,7 @@ function build (opts) {
             pp.addMarker(newP, pp.current);
             pp.current = newP;
             bb.addPoint(pp.current.x, pp.current.y);
-            if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+            if (!isNullish(ctx)) ctx.lineTo(pp.current.x, pp.current.y);
           }
           break;
         case 'C':
@@ -1454,7 +1443,7 @@ function build (opts) {
             const cp = pp.getAsCurrentPoint();
             pp.addMarker(cp, cntrl, p1);
             bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
-            if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+            if (!isNullish(ctx)) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
           }
           break;
         case 'S':
@@ -1466,7 +1455,7 @@ function build (opts) {
             const cp = pp.getAsCurrentPoint();
             pp.addMarker(cp, cntrl, p1);
             bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
-            if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+            if (!isNullish(ctx)) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
           }
           break;
         case 'Q':
@@ -1477,7 +1466,7 @@ function build (opts) {
             const cp = pp.getAsCurrentPoint();
             pp.addMarker(cp, cntrl, cntrl);
             bb.addQuadraticCurve(curr.x, curr.y, cntrl.x, cntrl.y, cp.x, cp.y);
-            if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
+            if (!isNullish(ctx)) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
           }
           break;
         case 'T':
@@ -1489,7 +1478,7 @@ function build (opts) {
             const cp = pp.getAsCurrentPoint();
             pp.addMarker(cp, cntrl, cntrl);
             bb.addQuadraticCurve(curr.x, curr.y, cntrl.x, cntrl.y, cp.x, cp.y);
-            if (ctx != null) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
+            if (!isNullish(ctx)) ctx.quadraticCurveTo(cntrl.x, cntrl.y, cp.x, cp.y);
           }
           break;
         case 'A':
@@ -1512,15 +1501,15 @@ function build (opts) {
               -Math.sin(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.cos(xAxisRotation) * (curr.y - cp.y) / 2.0
             );
             // adjust radii
-            const l = Math.pow(currp.x, 2) / Math.pow(rx, 2) + Math.pow(currp.y, 2) / Math.pow(ry, 2);
+            const l = (currp.x ** 2) / (rx ** 2) + (currp.y ** 2) / (ry ** 2);
             if (l > 1) {
               rx *= Math.sqrt(l);
               ry *= Math.sqrt(l);
             }
             // cx', cy'
             let s = (largeArcFlag === sweepFlag ? -1 : 1) * Math.sqrt(
-              ((Math.pow(rx, 2) * Math.pow(ry, 2)) - (Math.pow(rx, 2) * Math.pow(currp.y, 2)) - (Math.pow(ry, 2) * Math.pow(currp.x, 2))) /
-              (Math.pow(rx, 2) * Math.pow(currp.y, 2) + Math.pow(ry, 2) * Math.pow(currp.x, 2))
+              (((rx ** 2) * (ry ** 2)) - ((rx ** 2) * (currp.y ** 2)) - ((ry ** 2) * (currp.x ** 2))) /
+              ((rx ** 2) * (currp.y ** 2) + (ry ** 2) * (currp.x ** 2))
             );
             if (isNaN(s)) s = 0;
             const cpp = new svg.Point(s * rx * currp.y / ry, s * -ry * currp.x / rx);
@@ -1531,7 +1520,7 @@ function build (opts) {
             );
             // vector magnitude
             const m = function (v) {
-              return Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2));
+              return Math.sqrt((v[0] ** 2) + (v[1] ** 2));
             };
             // ratio between two vectors
             const r = function (u, v) {
@@ -1561,15 +1550,15 @@ function build (opts) {
             pp.addMarkerAngle(cp, ah - dir * Math.PI);
 
             bb.addPoint(cp.x, cp.y); // TODO: this is too naive, make it better
-            if (ctx != null) {
-              const r = rx > ry ? rx : ry;
+            if (!isNullish(ctx)) {
+              const _r = rx > ry ? rx : ry;
               const sx = rx > ry ? 1 : rx / ry;
               const sy = rx > ry ? ry / rx : 1;
 
               ctx.translate(centp.x, centp.y);
               ctx.rotate(xAxisRotation);
               ctx.scale(sx, sy);
-              ctx.arc(0, 0, r, a1, a1 + ad, 1 - sweepFlag);
+              ctx.arc(0, 0, _r, a1, a1 + ad, 1 - sweepFlag);
               ctx.scale(1 / sx, 1 / sy);
               ctx.rotate(-xAxisRotation);
               ctx.translate(-centp.x, -centp.y);
@@ -1578,7 +1567,7 @@ function build (opts) {
           break;
         case 'Z':
         case 'z':
-          if (ctx != null) ctx.closePath();
+          if (!isNullish(ctx)) ctx.closePath();
           pp.current = pp.start;
         }
       }
@@ -1605,10 +1594,10 @@ function build (opts) {
 
       // render me using a temporary svg element
       const tempSvg = new svg.Element.svg();
-      tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-      tempSvg.attributes['width'] = new svg.Property('width', width + 'px');
-      tempSvg.attributes['height'] = new svg.Property('height', height + 'px');
-      tempSvg.attributes['transform'] = new svg.Property('transform', this.attribute('patternTransform').value);
+      tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
+      tempSvg.attributes.width = new svg.Property('width', width + 'px');
+      tempSvg.attributes.height = new svg.Property('height', height + 'px');
+      tempSvg.attributes.transform = new svg.Property('transform', this.attribute('patternTransform').value);
       tempSvg.children = this.children;
 
       const c = document.createElement('canvas');
@@ -1642,13 +1631,13 @@ function build (opts) {
 
       // render me using a temporary svg element
       const tempSvg = new svg.Element.svg();
-      tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-      tempSvg.attributes['refX'] = new svg.Property('refX', this.attribute('refX').value);
-      tempSvg.attributes['refY'] = new svg.Property('refY', this.attribute('refY').value);
-      tempSvg.attributes['width'] = new svg.Property('width', this.attribute('markerWidth').value);
-      tempSvg.attributes['height'] = new svg.Property('height', this.attribute('markerHeight').value);
-      tempSvg.attributes['fill'] = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
-      tempSvg.attributes['stroke'] = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
+      tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
+      tempSvg.attributes.refX = new svg.Property('refX', this.attribute('refX').value);
+      tempSvg.attributes.refY = new svg.Property('refY', this.attribute('refY').value);
+      tempSvg.attributes.width = new svg.Property('width', this.attribute('markerWidth').value);
+      tempSvg.attributes.height = new svg.Property('height', this.attribute('markerHeight').value);
+      tempSvg.attributes.fill = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
+      tempSvg.attributes.stroke = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
       tempSvg.children = this.children;
       tempSvg.render(ctx);
 
@@ -1699,7 +1688,7 @@ function build (opts) {
       };
 
       const g = this.getGradient(ctx, element);
-      if (g == null) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
+      if (isNullish(g)) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
       stopsContainer.stops.forEach(({offset, color}) => {
         g.addColorStop(offset, addParentOpacity(color));
       });
@@ -1709,20 +1698,20 @@ function build (opts) {
         const rootView = svg.ViewPort.viewPorts[0];
 
         const rect = new svg.Element.rect();
-        rect.attributes['x'] = new svg.Property('x', -svg.MAX_VIRTUAL_PIXELS / 3.0);
-        rect.attributes['y'] = new svg.Property('y', -svg.MAX_VIRTUAL_PIXELS / 3.0);
-        rect.attributes['width'] = new svg.Property('width', svg.MAX_VIRTUAL_PIXELS);
-        rect.attributes['height'] = new svg.Property('height', svg.MAX_VIRTUAL_PIXELS);
+        rect.attributes.x = new svg.Property('x', -svg.MAX_VIRTUAL_PIXELS / 3.0);
+        rect.attributes.y = new svg.Property('y', -svg.MAX_VIRTUAL_PIXELS / 3.0);
+        rect.attributes.width = new svg.Property('width', svg.MAX_VIRTUAL_PIXELS);
+        rect.attributes.height = new svg.Property('height', svg.MAX_VIRTUAL_PIXELS);
 
         const group = new svg.Element.g();
-        group.attributes['transform'] = new svg.Property('transform', this.attribute('gradientTransform').value);
+        group.attributes.transform = new svg.Property('transform', this.attribute('gradientTransform').value);
         group.children = [rect];
 
         const tempSvg = new svg.Element.svg();
-        tempSvg.attributes['x'] = new svg.Property('x', 0);
-        tempSvg.attributes['y'] = new svg.Property('y', 0);
-        tempSvg.attributes['width'] = new svg.Property('width', rootView.width);
-        tempSvg.attributes['height'] = new svg.Property('height', rootView.height);
+        tempSvg.attributes.x = new svg.Property('x', 0);
+        tempSvg.attributes.y = new svg.Property('y', 0);
+        tempSvg.attributes.width = new svg.Property('width', rootView.width);
+        tempSvg.attributes.height = new svg.Property('height', rootView.height);
         tempSvg.children = [group];
 
         const c = document.createElement('canvas');
@@ -1868,7 +1857,7 @@ function build (opts) {
 
     update (delta) {
       // set initial value
-      if (this.initialValue == null) {
+      if (isNullish(this.initialValue)) {
         this.initialValue = this.getProperty().value;
         this.initialUnits = this.getProperty().getUnits();
       }
@@ -1950,7 +1939,7 @@ function build (opts) {
         const r = from.r + (to.r - from.r) * p.progress;
         const g = from.g + (to.g - from.g) * p.progress;
         const b = from.b + (to.b - from.b) * p.progress;
-        return 'rgb(' + parseInt(r, 10) + ',' + parseInt(g, 10) + ',' + parseInt(b, 10) + ')';
+        return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')';
       }
       return this.attribute('from').value;
     }
@@ -2049,8 +2038,8 @@ function build (opts) {
       super.setContext(ctx);
 
       let textBaseline = this.style('dominant-baseline').toTextBaseline();
-      if (textBaseline == null) textBaseline = this.style('alignment-baseline').toTextBaseline();
-      if (textBaseline != null) ctx.textBaseline = textBaseline;
+      if (isNullish(textBaseline)) textBaseline = this.style('alignment-baseline').toTextBaseline();
+      if (!isNullish(textBaseline)) ctx.textBaseline = textBaseline;
     }
 
     getBoundingBox () {
@@ -2107,8 +2096,8 @@ function build (opts) {
 
       child.render(ctx);
 
-      for (let i = 0; i < child.children.length; i++) {
-        this.renderChild(ctx, child, i);
+      for (let j = 0; j < child.children.length; j++) {
+        this.renderChild(ctx, child, j);
       }
     }
   };
@@ -2125,18 +2114,18 @@ function build (opts) {
         if (i > 0 && text[i - 1] !== ' ' && (i === text.length - 1 || text[i + 1] === ' ')) arabicForm = 'initial';
         if (typeof font.glyphs[c] !== 'undefined') {
           glyph = font.glyphs[c][arabicForm];
-          if (glyph == null && font.glyphs[c].type === 'glyph') glyph = font.glyphs[c];
+          if (isNullish(glyph) && font.glyphs[c].type === 'glyph') glyph = font.glyphs[c];
         }
       } else {
         glyph = font.glyphs[c];
       }
-      if (glyph == null) glyph = font.missingGlyph;
+      if (isNullish(glyph)) glyph = font.missingGlyph;
       return glyph;
     }
 
     renderChildren (ctx) {
       const customFont = this.parent.style('font-family').getDefinition();
-      if (customFont != null) {
+      if (!isNullish(customFont)) {
         const fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
         const fontStyle = this.parent.style('font-style').valueOrDefault(svg.Font.Parse(svg.ctx.font).fontStyle);
         let text = this.getText();
@@ -2183,7 +2172,7 @@ function build (opts) {
 
     measureText (ctx) {
       const customFont = this.parent.style('font-family').getDefinition();
-      if (customFont != null) {
+      if (!isNullish(customFont)) {
         const fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
         let measure = 0;
         let text = this.getText();
@@ -2226,7 +2215,8 @@ function build (opts) {
   svg.Element.tref = class extends svg.Element.TextElementBase {
     getText () {
       const element = this.getHrefAttribute().getDefinition();
-      if (element != null) return element.children[0].getText();
+      if (!isNullish(element)) return element.children[0].getText();
+      return undefined;
     }
   };
 
@@ -2291,19 +2281,21 @@ function build (opts) {
         if (svg.opts.useCORS === true) {
           this.img.crossOrigin = 'Anonymous';
         }
-        const self = this;
-        this.img.onload = function () {
-          self.loaded = true;
-        };
-        this.img.onerror = function () {
+        this.img.addEventListener('load', () => {
+          this.loaded = true;
+        });
+        this.img.addEventListener('error', () => {
           svg.log('ERROR: image "' + href + '" not found');
-          self.loaded = true;
-        };
+          this.loaded = true;
+        });
         this.img.src = href;
       } else {
-        svg.ajax(href, true).then((img) => {
+        svg.ajax(href, true).then((img) => { // eslint-disable-line promise/prefer-await-to-then, promise/always-return
           this.img = img;
           this.loaded = true;
+        }).catch((err) => { // eslint-disable-line promise/prefer-await-to-callbacks
+          this.erred = true;
+          console.error('Ajax error for canvg', err); // eslint-disable-line no-console
         });
       }
     }
@@ -2372,8 +2364,10 @@ function build (opts) {
       [...node.childNodes].forEach(({nodeValue}) => {
         css += nodeValue;
       });
-      css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // remove comments
-      css = svg.compressSpaces(css); // replace whitespace
+      // remove comments
+      css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
+      // replace whitespace
+      css = svg.compressSpaces(css);
       const cssDefs = css.split('}');
       cssDefs.forEach((cssDef) => {
         if (svg.trim(cssDef) !== '') {
@@ -2388,14 +2382,14 @@ function build (opts) {
                 const prop = cssProp.indexOf(':');
                 const name = cssProp.substr(0, prop);
                 const value = cssProp.substr(prop + 1, cssProp.length - prop);
-                if (name != null && value != null) {
+                if (!isNullish(name) && !isNullish(value)) {
                   props[svg.trim(name)] = new svg.Property(svg.trim(name), svg.trim(value));
                 }
               });
               svg.Styles[cssClass] = props;
               if (cssClass === '@font-face') {
                 const fontFamily = props['font-family'].value.replace(/"/g, '');
-                const srcs = props['src'].value.split(',');
+                const srcs = props.src.value.split(',');
                 srcs.forEach((src) => {
                   if (src.includes('format("svg")')) {
                     const urlStart = src.indexOf('url');
@@ -2434,31 +2428,32 @@ function build (opts) {
 
     path (ctx) {
       const {_el: element} = this;
-      if (element != null) element.path(ctx);
+      if (!isNullish(element)) element.path(ctx);
     }
 
     getBoundingBox () {
       const {_el: element} = this;
-      if (element != null) return element.getBoundingBox();
+      if (!isNullish(element)) return element.getBoundingBox();
+      return undefined;
     }
 
     renderChildren (ctx) {
       const {_el: element} = this;
-      if (element != null) {
+      if (!isNullish(element)) {
         let tempSvg = element;
         if (element.type === 'symbol') {
           // render me using a temporary svg element in symbol cases (https://www.w3.org/TR/SVG/struct.html#UseElement)
           tempSvg = new svg.Element.svg();
           tempSvg.type = 'svg';
-          tempSvg.attributes['viewBox'] = new svg.Property('viewBox', element.attribute('viewBox').value);
-          tempSvg.attributes['preserveAspectRatio'] = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
-          tempSvg.attributes['overflow'] = new svg.Property('overflow', element.attribute('overflow').value);
+          tempSvg.attributes.viewBox = new svg.Property('viewBox', element.attribute('viewBox').value);
+          tempSvg.attributes.preserveAspectRatio = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
+          tempSvg.attributes.overflow = new svg.Property('overflow', element.attribute('overflow').value);
           tempSvg.children = element.children;
         }
         if (tempSvg.type === 'svg') {
           // if symbol or svg, inherit width/height from me
-          if (this.attribute('width').hasValue()) tempSvg.attributes['width'] = new svg.Property('width', this.attribute('width').value);
-          if (this.attribute('height').hasValue()) tempSvg.attributes['height'] = new svg.Property('height', this.attribute('height').value);
+          if (this.attribute('width').hasValue()) tempSvg.attributes.width = new svg.Property('width', this.attribute('width').value);
+          if (this.attribute('height').hasValue()) tempSvg.attributes.height = new svg.Property('height', this.attribute('height').value);
         }
         const oldParent = tempSvg.parent;
         tempSvg.parent = null;
@@ -2597,10 +2592,29 @@ function build (opts) {
     }
   };
 
+  /**
+  * @param {Uint8ClampedArray} img
+  * @param {Integer} x
+  * @param {Integer} y
+  * @param {Float} width
+  * @param {Float} height
+  * @param {Integer} rgba
+  * @returns {undefined}
+  */
   function imGet (img, x, y, width, height, rgba) {
     return img[y * width * 4 + x * 4 + rgba];
   }
 
+  /**
+  * @param {Uint8ClampedArray} img
+  * @param {Integer} x
+  * @param {Integer} y
+  * @param {Float} width
+  * @param {Float} height
+  * @param {Integer} rgba
+  * @param {Float} val
+  * @returns {undefined}
+  */
   function imSet (img, x, y, width, height, rgba, val) {
     img[y * width * 4 + x * 4 + rgba] = val;
   }
@@ -2611,7 +2625,7 @@ function build (opts) {
 
       let matrix = svg.ToNumberArray(this.attribute('values').value);
       switch (this.attribute('type').valueOrDefault('matrix')) { // https://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
-      case 'saturate':
+      case 'saturate': {
         const s = matrix[0];
         matrix = [
           0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0,
@@ -2621,7 +2635,7 @@ function build (opts) {
           0, 0, 0, 0, 1
         ];
         break;
-      case 'hueRotate':
+      } case 'hueRotate': {
         const a = matrix[0] * Math.PI / 180.0;
         const c = function (m1, m2, m3) {
           return m1 + Math.cos(a) * m2 + Math.sin(a) * m3;
@@ -2634,7 +2648,7 @@ function build (opts) {
           0, 0, 0, 0, 1
         ];
         break;
-      case 'luminanceToAlpha':
+      } case 'luminanceToAlpha':
         matrix = [
           0, 0, 0, 0, 0,
           0, 0, 0, 0, 0,
@@ -2655,16 +2669,16 @@ function build (opts) {
       const {_m: m} = this;
       // assuming x==0 && y==0 for now
       const srcData = ctx.getImageData(0, 0, width, height);
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const r = imGet(srcData.data, x, y, width, height, 0);
-          const g = imGet(srcData.data, x, y, width, height, 1);
-          const b = imGet(srcData.data, x, y, width, height, 2);
-          const a = imGet(srcData.data, x, y, width, height, 3);
-          imSet(srcData.data, x, y, width, height, 0, m(0, r) + m(1, g) + m(2, b) + m(3, a) + m(4, 1));
-          imSet(srcData.data, x, y, width, height, 1, m(5, r) + m(6, g) + m(7, b) + m(8, a) + m(9, 1));
-          imSet(srcData.data, x, y, width, height, 2, m(10, r) + m(11, g) + m(12, b) + m(13, a) + m(14, 1));
-          imSet(srcData.data, x, y, width, height, 3, m(15, r) + m(16, g) + m(17, b) + m(18, a) + m(19, 1));
+      for (let _y = 0; _y < height; _y++) {
+        for (let _x = 0; _x < width; _x++) {
+          const r = imGet(srcData.data, _x, _y, width, height, 0);
+          const g = imGet(srcData.data, _x, _y, width, height, 1);
+          const b = imGet(srcData.data, _x, _y, width, height, 2);
+          const a = imGet(srcData.data, _x, _y, width, height, 3);
+          imSet(srcData.data, _x, _y, width, height, 0, m(0, r) + m(1, g) + m(2, b) + m(3, a) + m(4, 1));
+          imSet(srcData.data, _x, _y, width, height, 1, m(5, r) + m(6, g) + m(7, b) + m(8, a) + m(9, 1));
+          imSet(srcData.data, _x, _y, width, height, 2, m(10, r) + m(11, g) + m(12, b) + m(13, a) + m(14, 1));
+          imSet(srcData.data, _x, _y, width, height, 3, m(15, r) + m(16, g) + m(17, b) + m(18, a) + m(19, 1));
         }
       }
       ctx.clearRect(0, 0, width, height);
@@ -2681,17 +2695,12 @@ function build (opts) {
     }
 
     apply (ctx, x, y, width, height) {
-      if (typeof canvasRGBA_ === 'undefined') {
-        svg.log('ERROR: `setStackBlurCanvasRGBA` must be run for blur to work');
-        return;
-      }
-
       // Todo: This might not be a problem anymore with out `instanceof` fix
       // StackBlur requires canvas be on document
       ctx.canvas.id = svg.UniqueId();
       ctx.canvas.style.display = 'none';
       document.body.append(ctx.canvas);
-      canvasRGBA_(ctx.canvas, x, y, width, height, this.blurRadius);
+      canvasRGBA(ctx.canvas, x, y, width, height, this.blurRadius);
       ctx.canvas.remove();
     }
   };
@@ -2762,20 +2771,20 @@ function build (opts) {
 
     // bind mouse
     if (svg.opts.ignoreMouse !== true) {
-      ctx.canvas.onclick = function (e) {
-        const args = e != null
+      ctx.canvas.addEventListener('click', function (e) {
+        const args = !isNullish(e)
           ? [e.clientX, e.clientY]
-          : [event.clientX, event.clientY];
+          : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
         const {x, y} = mapXY(new svg.Point(...args));
         svg.Mouse.onclick(x, y);
-      };
-      ctx.canvas.onmousemove = function (e) {
-        const args = e != null
+      });
+      ctx.canvas.addEventListener('mousemove', function (e) {
+        const args = !isNullish(e)
           ? [e.clientX, e.clientY]
-          : [event.clientX, event.clientY];
+          : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
         const {x, y} = mapXY(new svg.Point(...args));
         svg.Mouse.onmousemove(x, y);
-      };
+      });
     }
 
     const e = svg.CreateElement(dom.documentElement);
@@ -2813,17 +2822,17 @@ function build (opts) {
       }
       svg.ViewPort.SetCurrent(cWidth, cHeight);
 
-      if (svg.opts.offsetX != null) {
+      if (!isNullish(svg.opts.offsetX)) {
         e.attribute('x', true).value = svg.opts.offsetX;
       }
-      if (svg.opts.offsetY != null) {
+      if (!isNullish(svg.opts.offsetY)) {
         e.attribute('y', true).value = svg.opts.offsetY;
       }
-      if (svg.opts.scaleWidth != null || svg.opts.scaleHeight != null) {
+      if (!isNullish(svg.opts.scaleWidth) || !isNullish(svg.opts.scaleHeight)) {
         const viewBox = svg.ToNumberArray(e.attribute('viewBox').value);
         let xRatio = null, yRatio = null;
 
-        if (svg.opts.scaleWidth != null) {
+        if (!isNullish(svg.opts.scaleWidth)) {
           if (e.attribute('width').hasValue()) {
             xRatio = e.attribute('width').toPixels('x') / svg.opts.scaleWidth;
           } else if (!isNaN(viewBox[2])) {
@@ -2831,7 +2840,7 @@ function build (opts) {
           }
         }
 
-        if (svg.opts.scaleHeight != null) {
+        if (!isNullish(svg.opts.scaleHeight)) {
           if (e.attribute('height').hasValue()) {
             yRatio = e.attribute('height').toPixels('y') / svg.opts.scaleHeight;
           } else if (!isNaN(viewBox[3])) {
@@ -2839,8 +2848,8 @@ function build (opts) {
           }
         }
 
-        if (xRatio == null) { xRatio = yRatio; }
-        if (yRatio == null) { yRatio = xRatio; }
+        if (isNullish(xRatio)) { xRatio = yRatio; }
+        if (isNullish(yRatio)) { yRatio = xRatio; }
 
         e.attribute('width', true).value = svg.opts.scaleWidth;
         e.attribute('height', true).value = svg.opts.scaleHeight;
@@ -2870,13 +2879,14 @@ function build (opts) {
 
       // need update from mouse events?
       if (svg.opts.ignoreMouse !== true) {
-        needUpdate = needUpdate | svg.Mouse.hasEvents();
+        needUpdate = needUpdate || svg.Mouse.hasEvents();
       }
 
       // need update from animations?
       if (svg.opts.ignoreAnimation !== true) {
         svg.Animations.forEach((animation) => {
-          needUpdate = needUpdate | animation.update(1000 / svg.FRAMERATE);
+          const needAnimationUpdate = animation.update(1000 / svg.FRAMERATE);
+          needUpdate = needUpdate || needAnimationUpdate;
         });
       }
 
@@ -2893,7 +2903,8 @@ function build (opts) {
         svg.Mouse.runEvents(); // run and clear our events
       }
     }, 1000 / svg.FRAMERATE);
-    return new Promise((resolve, reject) => {
+    // Todo: Replace with an image loading Promise utility?
+    return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
       if (svg.ImagesLoaded()) {
         waitingForImages = false;
         draw(resolve);

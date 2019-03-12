@@ -40,7 +40,8 @@ const svgCanvas = new SvgCanvas(
     extensions: ['ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js'],
     initTool: 'select',
     wireframe: false
-  });
+  }
+);
 
 const
   // svgroot = document.getElementById('svgroot'),
@@ -188,7 +189,7 @@ QUnit.test('Test import math elements inside a foreignObject', function (assert)
   // see Bug https://bugs.webkit.org/show_bug.cgi?id=35042
   const math = fo.firstChild;
 
-  assert.equal(!!math, true, 'Math element exists');
+  assert.equal(Boolean(math), true, 'Math element exists');
   assert.equal(math.nodeName, 'math', 'Math element has the proper nodeName');
   assert.equal(math.getAttribute('id'), 'm', 'Math element has an id');
   assert.equal(math.namespaceURI, 'http://www.w3.org/1998/Math/MathML', 'Preserved MathML namespace');
@@ -227,12 +228,13 @@ QUnit.test('Test importing SVG remaps IDs', function (assert) {
 
   /* const doc = */ svgCanvas.setSvgString(
     '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">' +
-    '<g><title>Layer 1</title>' +
-      '<ellipse id="svg_1" cx="200" cy="200" rx="50" ry="20" fill="blue"/>' +
-      '<ellipse id="svg_2" cx="300" cy="100" rx="40" ry="30" fill="green"/>' +
-      '<ellipse id="svg_3" cx="300" cy="100" rx="40" ry="30" fill="green"/>' +
-    '</g>' +
-  '</svg>');
+      '<g><title>Layer 1</title>' +
+        '<ellipse id="svg_1" cx="200" cy="200" rx="50" ry="20" fill="blue"/>' +
+        '<ellipse id="svg_2" cx="300" cy="100" rx="40" ry="30" fill="green"/>' +
+        '<ellipse id="svg_3" cx="300" cy="100" rx="40" ry="30" fill="green"/>' +
+      '</g>' +
+    '</svg>'
+  );
 
   svgCanvas.importSvgString(
     '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink">' +

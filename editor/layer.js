@@ -8,7 +8,7 @@
  */
 
 import {NS} from './namespaces.js';
-import {toXml, walkTree} from './utilities.js';
+import {toXml, walkTree, isNullish} from './utilities.js';
 
 const $ = jQuery;
 
@@ -117,7 +117,7 @@ class Layer {
    */
   getOpacity () {
     const opacity = this.group_.getAttribute('opacity');
-    if (opacity === null || opacity === undefined) {
+    if (isNullish(opacity)) {
       return 1;
     }
     return parseFloat(opacity);
@@ -185,7 +185,6 @@ class Layer {
 
   /**
    * Remove this layer's group from the DOM. No more functions on group can be called after this.
-   * @param {SVGGElement} children - The children to append to this layer.
    * @returns {SVGGElement} The layer SVG group that was just removed.
    */
   removeGroup () {
@@ -213,7 +212,7 @@ Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)');
  */
 function addLayerClass (elem) {
   const classes = elem.getAttribute('class');
-  if (classes === null || classes === undefined || !classes.length) {
+  if (isNullish(classes) || !classes.length) {
     elem.setAttribute('class', Layer.CLASS_NAME);
   } else if (!Layer.CLASS_REGEX.test(classes)) {
     elem.setAttribute('class', classes + ' ' + Layer.CLASS_NAME);

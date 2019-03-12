@@ -16,7 +16,7 @@ import {NS} from './namespaces.js';
 const $ = jQuery;
 
 const supportsSVG_ = (function () {
-return !!document.createElementNS && !!document.createElementNS(NS.SVG, 'svg').createSVGRect;
+return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
 }());
 
 /**
@@ -29,7 +29,7 @@ const {userAgent} = navigator;
 const svg = document.createElementNS(NS.SVG, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
-const isOpera_ = !!window.opera;
+const isOpera_ = Boolean(window.opera);
 const isWebkit_ = userAgent.includes('AppleWebKit');
 const isGecko_ = userAgent.includes('Gecko/');
 const isIE_ = userAgent.includes('MSIE');
@@ -39,11 +39,11 @@ const isMac_ = userAgent.includes('Macintosh');
 const isTouch_ = 'ontouchstart' in window;
 
 const supportsSelectors_ = (function () {
-return !!svg.querySelector;
+return Boolean(svg.querySelector);
 }());
 
 const supportsXpath_ = (function () {
-return !!document.evaluate;
+return Boolean(document.evaluate);
 }());
 
 // segList functions (for FF1.5 and 2.0)
@@ -71,7 +71,7 @@ try {
 return false;
 }());
 
-// text character positioning (for IE9)
+// text character positioning (for IE9 and now Chrome)
 const supportsGoodTextCharPos_ = (function () {
 const svgroot = document.createElementNS(NS.SVG, 'svg');
 const svgcontent = document.createElementNS(NS.SVG, 'svg');
@@ -81,9 +81,14 @@ svgroot.append(svgcontent);
 const text = document.createElementNS(NS.SVG, 'text');
 text.textContent = 'a';
 svgcontent.append(text);
-const pos = text.getStartPositionOfChar(0).x;
-svgroot.remove();
-return (pos === 0);
+try { // Chrome now fails here
+  const pos = text.getStartPositionOfChar(0).x;
+  return (pos === 0);
+} catch (err) {
+  return false;
+} finally {
+  svgroot.remove();
+}
 }());
 
 const supportsPathBBox_ = (function () {
@@ -127,8 +132,10 @@ const crect = rect.cloneNode(false);
 const retValue = (!crect.getAttribute('x').includes(','));
 if (!retValue) {
   // Todo: i18nize or remove
-  $.alert('NOTE: This version of Opera is known to contain bugs in SVG-edit.\n' +
-	'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.');
+  $.alert(
+    'NOTE: This version of Opera is known to contain bugs in SVG-edit.\n' +
+    'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.'
+  );
 }
 return retValue;
 }());
@@ -145,15 +152,18 @@ const rxform = rect.transform.baseVal;
 const t1 = svg.createSVGTransform();
 rxform.appendItem(t1);
 const r1 = rxform.getItem(0);
-// Todo: Do frame-independent instance checking
-return r1 instanceof SVGTransform && t1 instanceof SVGTransform &&
-	r1.type === t1.type && r1.angle === t1.angle &&
-	r1.matrix.a === t1.matrix.a &&
-	r1.matrix.b === t1.matrix.b &&
-	r1.matrix.c === t1.matrix.c &&
-	r1.matrix.d === t1.matrix.d &&
-	r1.matrix.e === t1.matrix.e &&
-	r1.matrix.f === t1.matrix.f;
+const isSVGTransform = (o) => {
+  // https://developer.mozilla.org/en-US/docs/Web/API/SVGTransform
+  return o && typeof o === 'object' && typeof o.setMatrix === 'function' && 'angle' in o;
+};
+return isSVGTransform(r1) && isSVGTransform(t1) &&
+  r1.type === t1.type && r1.angle === t1.angle &&
+  r1.matrix.a === t1.matrix.a &&
+  r1.matrix.b === t1.matrix.b &&
+  r1.matrix.c === t1.matrix.c &&
+  r1.matrix.d === t1.matrix.d &&
+  r1.matrix.e === t1.matrix.e &&
+  r1.matrix.f === t1.matrix.f;
 }());
 
 // Public API
@@ -266,7 +276,7 @@ export const supportsNonScalingStroke = () => supportsNonScalingStroke_;
 export const supportsNativeTransformLists = () => supportsNativeSVGTransformLists_;
 
 /**
- * Set `supportsNativeSVGTransformLists_` to `false` (for unit testing)
+ * Set `supportsNativeSVGTransformLists_` to `false` (for unit testing).
  * @function module:browser.disableSupportsNativeTransformLists
  * @returns {undefined}
 */

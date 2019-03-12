@@ -1,3 +1,10 @@
+/**
+ * Expects an out of bounds `INDEX_SIZE_ERR` exception.
+ * @param {GenericObject} obj
+ * @param {GenericCallback} fn
+ * @param {Any} arg1
+ * @returns {undefined}
+ */
 function expectOutOfBoundsException (obj, fn, arg1) {
   const expected = true;
   const message = 'Caught an INDEX_SIZE_ERR exception';
@@ -10,9 +17,13 @@ function expectOutOfBoundsException (obj, fn, arg1) {
     }
   }
   const actual = result;
-  console.log('aaa', result, actual, expected);
   this.pushResult({result, actual, expected, message});
 }
+
+/**
+ * @param {external:qunit} QUnit
+ * @returns {external:qunit} The same instance passed in after extending
+ */
 export default function extend (QUnit) {
   QUnit.extend(QUnit.assert, {
     expectOutOfBoundsException

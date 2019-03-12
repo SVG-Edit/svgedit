@@ -16,6 +16,10 @@
 * including the latest spec changes which were implemented in Firefox 43 and
 * Chrome 46.
 */
+/* eslint-disable no-shadow, class-methods-use-this */
+// Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
+// Linting: We avoid `class-methods-use-this` as this is a polyfill that must
+//   follow the conventions
 (() => {
 if (!('SVGPathSeg' in window)) {
   // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
@@ -591,7 +595,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
         return [];
       }
 
-      const owningPathSegList = this;
+      const owningPathSegList = this; // eslint-disable-line consistent-this
 
       class Builder {
         constructor () {
@@ -800,7 +804,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
           number *= sign;
 
           if (exponent) {
-            number *= Math.pow(10, expsign * exponent);
+            number *= 10 ** (expsign * exponent);
           }
 
           if (startIndex === this._currentIndex) {
@@ -883,10 +887,10 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
           } case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL: {
             const points = {x1: this._parseNumber(), y1: this._parseNumber(), x: this._parseNumber(), y: this._parseNumber()};
             return new SVGPathSegCurvetoQuadraticRel(owningPathSegList, points.x, points.y, points.x1, points.y1);
-          } case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS:
+          } case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS: {
             const points = {x1: this._parseNumber(), y1: this._parseNumber(), x: this._parseNumber(), y: this._parseNumber()};
             return new SVGPathSegCurvetoQuadraticAbs(owningPathSegList, points.x, points.y, points.x1, points.y1);
-          case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL:
+          } case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL:
             return new SVGPathSegCurvetoQuadraticSmoothRel(owningPathSegList, this._parseNumber(), this._parseNumber());
           case SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS:
             return new SVGPathSegCurvetoQuadraticSmoothAbs(owningPathSegList, this._parseNumber(), this._parseNumber());

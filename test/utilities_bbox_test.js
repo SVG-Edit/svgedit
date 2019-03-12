@@ -16,14 +16,25 @@ QUnit.log((details) => {
   }
 });
 
+/**
+ * Create an SVG element for a mock.
+ * @param {module:utilities.SVGElementJSON} jsonMap
+ * @returns {SVGElement}
+ */
 function mockCreateSVGElement (jsonMap) {
-  const elem = document.createElementNS(NS.SVG, jsonMap['element']);
-  for (const attr in jsonMap['attr']) {
-    elem.setAttribute(attr, jsonMap['attr'][attr]);
-  }
+  const elem = document.createElementNS(NS.SVG, jsonMap.element);
+  Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+    elem.setAttribute(attr, value);
+  });
   return elem;
 }
 let mockaddSVGElementFromJsonCallCount = 0;
+
+/**
+ * Mock of {@link module:utilities.EditorContext#addSVGElementFromJson}.
+ * @param {module:utilities.SVGElementJSON} json
+ * @returns {SVGElement}
+ */
 function mockaddSVGElementFromJson (json) {
   const elem = mockCreateSVGElement(json);
   svgroot.append(elem);
@@ -32,7 +43,7 @@ function mockaddSVGElementFromJson (json) {
 }
 const mockPathActions = {
   resetOrientation (pth) {
-    if (pth == null || pth.nodeName !== 'path') { return false; }
+    if (utilities.isNullish(pth) || pth.nodeName !== 'path') { return false; }
     const tlist = transformlist.getTransformList(pth);
     const m = math.transformListToTransform(tlist).matrix;
     tlist.clear();
@@ -57,6 +68,7 @@ const mockPathActions = {
       path.replacePathSeg(type, i, pts, pth);
     }
     // path.reorientGrads(pth, m);
+    return undefined;
   }
 };
 
@@ -75,8 +87,6 @@ QUnit.module('svgedit.utilities_bbox', {
     transformlist.resetListMap();
     path.init(null);
     mockaddSVGElementFromJsonCallCount = 0;
-  },
-  afterEach () {
   }
 });
 
@@ -167,7 +177,7 @@ QUnit.test('Test getBBoxWithTransform and a rotation transform', function (asser
 
   const rect = {x: 10, y: 10, width: 10, height: 20};
   const angle = 45;
-  const origin = {x: 15, y: 20};
+  const origin = {x: 15, y: 20}; // eslint-disable-line no-shadow
   elem = mockCreateSVGElement({
     element: 'rect',
     attr: {id: 'rect2', x: rect.x, y: rect.y, width: rect.width, height: rect.height, transform: 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ')'}
@@ -256,7 +266,7 @@ QUnit.test('Test getBBoxWithTransform with rotation and matrix transforms', func
 
   const rect = {x: 10, y: 10, width: 10, height: 20};
   const angle = 45;
-  const origin = {x: 15, y: 20};
+  const origin = {x: 15, y: 20}; // eslint-disable-line no-shadow
   tx = 10; // tx right
   ty = 10; // tx down
   txInRotatedSpace = Math.sqrt(tx * tx + ty * ty); // translate in rotated 45 space.
@@ -443,10 +453,23 @@ QUnit.test('Test getStrokedBBox with no stroke-width attribute', function (asser
   g.remove();
 });
 
+/**
+ * Returns radians for degrees.
+ * @param {Float} degrees
+ * @returns {Float}
+ */
 function radians (degrees) {
   return degrees * Math.PI / 180;
 }
-function rotatePoint (point, angle, origin) {
+
+/**
+ *
+ * @param {module:utilities.BBoxObject} point
+ * @param {Float} angle
+ * @param {module:math.XYObject} origin
+ * @returns {module:math.XYObject}
+ */
+function rotatePoint (point, angle, origin) { // eslint-disable-line no-shadow
   if (!origin) {
     origin = {x: 0, y: 0};
   }
@@ -458,7 +481,14 @@ function rotatePoint (point, angle, origin) {
     y: x * Math.sin(theta) + y * Math.cos(theta) + origin.y
   };
 }
-function rotateRect (rect, angle, origin) {
+/**
+ *
+ * @param {module:utilities.BBoxObject} rect
+ * @param {Float} angle
+ * @param {module:math.XYObject} origin
+ * @returns {module:utilities.BBoxObject}
+ */
+function rotateRect (rect, angle, origin) { // eslint-disable-line no-shadow
   const tl = rotatePoint({x: rect.x, y: rect.y}, angle, origin);
   const tr = rotatePoint({x: rect.x + rect.width, y: rect.y}, angle, origin);
   const br = rotatePoint({x: rect.x + rect.width, y: rect.y + rect.height}, angle, origin);

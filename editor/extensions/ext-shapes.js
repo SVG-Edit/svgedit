@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-shapes.js
  *
@@ -9,10 +8,9 @@
  */
 export default {
   name: 'shapes',
-  async init ({importLocale}) {
+  async init ({$, importLocale}) {
     const strings = await importLocale();
     const svgEditor = this;
-    const $ = jQuery;
     const canv = svgEditor.canvas;
     const svgroot = canv.getRootElem();
     let lastBBox = {};
@@ -63,10 +61,26 @@ export default {
     let currentD, curShapeId, curShape, startX, startY;
     let curLib = library.basic;
 
+    /**
+    *
+    * @returns {undefined}
+    */
     function loadIcons () {
       $('#shape_buttons').empty().append(curLib.buttons);
     }
 
+    /**
+    * @typedef {PlainObject} module:Extension.Shapes.Shapes
+    * @property {PlainObject.<string, string>} data
+    * @property {Integer} [size]
+    * @property {boolean} [fill]
+    */
+
+    /**
+    * @param {string|"basic"} cat Category ID
+    * @param {module:Extension.Shapes.Shapes} shapes
+    * @returns {undefined}
+    */
     function makeButtons (cat, shapes) {
       const size = curLib.size || 300;
       const fill = curLib.fill || false;
@@ -78,7 +92,8 @@ export default {
           '<svg viewBox="' + vb + '">' +
             '<path fill="' + (fill ? '#333' : 'none') +
               '" stroke="#000" stroke-width="' + stroke + '" /></svg></svg>',
-        'text/xml');
+        'text/xml'
+      );
 
       const width = 24;
       const height = 24;
@@ -88,9 +103,7 @@ export default {
 
       const {data} = shapes;
 
-      curLib.buttons = [];
-      for (const id in data) {
-        const pathD = data[id];
+      curLib.buttons = Object.entries(data).map(([id, pathD]) => {
         const icon = svgElem.clone();
         icon.find('path').attr('d', pathD);
 
@@ -99,10 +112,14 @@ export default {
           title: id
         });
         // Store for later use
-        curLib.buttons.push(iconBtn[0]);
-      }
+        return iconBtn[0];
+      });
     }
 
+    /**
+    * @param {string|"basic"} catId
+    * @returns {undefined}
+    */
     function loadLibrary (catId) {
       const lib = library[catId];
 
@@ -141,33 +158,34 @@ export default {
         return Object.assign(buttons[i], button);
       }),
       callback () {
-        $('<style>').text(
-          '#shape_buttons {' +
-          'overflow: auto;' +
-          'width: 180px;' +
-          'max-height: 300px;' +
-          'display: table-cell;' +
-          'vertical-align: middle;' +
-        '}' +
-        '#shape_cats {' +
-          'min-width: 110px;' +
-          'display: table-cell;' +
-          'vertical-align: middle;' +
-          'height: 300px;' +
-        '}' +
-        '#shape_cats > div {' +
-          'line-height: 1em;' +
-          'padding: .5em;' +
-          'border:1px solid #B0B0B0;' +
-          'background: #E8E8E8;' +
-          'margin-bottom: -1px;' +
-        '}' +
-        '#shape_cats div:hover {' +
-          'background: #FFFFCC;' +
-        '}' +
-        '#shape_cats div.current {' +
-          'font-weight: bold;' +
-        '}').appendTo('head');
+        $('<style>').text(`
+          #shape_buttons {
+            overflow: auto;
+            width: 180px;
+            max-height: 300px;
+            display: table-cell;
+            vertical-align: middle;
+          }
+          #shape_cats {
+            min-width: 110px;
+            display: table-cell;
+            vertical-align: middle;
+            height: 300px;
+          }
+          #shape_cats > div {
+            line-height: 1em;
+            padding: .5em;
+            border:1px solid #B0B0B0;
+            background: #E8E8E8;
+            margin-bottom: -1px;
+          }
+          #shape_cats div:hover {
+            background: #FFFFCC;
+          }
+          #shape_cats div.current {
+            font-weight: bold;
+          }
+        `).appendTo('head');
 
         const btnDiv = $('<div id="shape_buttons">');
         $('#tools_shapelib > *').wrapAll(btnDiv);
@@ -229,14 +247,14 @@ export default {
         });
         // Now add shape categories from locale
         const cats = {};
-        for (const o in categories) {
-          cats['#shape_cats [data-cat="' + o + '"]'] = categories[o];
-        }
+        Object.entries(categories).forEach(([o, categoryName]) => {
+          cats['#shape_cats [data-cat="' + o + '"]'] = categoryName;
+        });
         this.setStrings('content', cats);
       },
       mouseDown (opts) {
         const mode = canv.getMode();
-        if (mode !== modeId) { return; }
+        if (mode !== modeId) { return undefined; }
 
         startX = opts.start_x;
         const x = startX;
@@ -259,7 +277,7 @@ export default {
         });
 
         // Make sure shape uses absolute values
-        if (/[a-z]/.test(currentD)) {
+        if ((/[a-z]/).test(currentD)) {
           currentD = curLib.data[curShapeId] = canv.pathActions.convertPath(curShape);
           curShape.setAttribute('d', currentD);
           canv.pathActions.fixEnd(curShape);
@@ -343,7 +361,7 @@ export default {
       },
       mouseUp (opts) {
         const mode = canv.getMode();
-        if (mode !== modeId) { return; }
+        if (mode !== modeId) { return undefined; }
 
         const keepObject = (opts.event.clientX !== startClientPos.x && opts.event.clientY !== startClientPos.y);
 

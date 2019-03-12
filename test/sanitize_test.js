@@ -15,7 +15,7 @@ QUnit.test('Test sanitizeSvg() strips ws from style attr', function (assert) {
   assert.expect(2);
 
   const rect = document.createElementNS(NS.SVG, 'rect');
-  rect.setAttribute('style', 'stroke: blue ;		stroke-width :		40;');
+  rect.setAttribute('style', 'stroke: blue ;\t\tstroke-width :\t\t40;');
   // sanitizeSvg() requires the node to have a parent and a document.
   svg.append(rect);
   sanitize.sanitizeSvg(rect);

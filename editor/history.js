@@ -5,7 +5,7 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import {getHref, setHref, getRotationAngle} from './utilities.js';
+import {getHref, setHref, getRotationAngle, isNullish} from './utilities.js';
 import {removeElementFromListMap} from './svgtransformlist.js';
 
 /**
@@ -21,7 +21,7 @@ export const HistoryEventTypes = {
 // const removedElements = {};
 
 /**
-* Base class for commands
+* Base class for commands.
 */
 class Command {
   /**
@@ -97,7 +97,7 @@ class Command {
  */
 
 /**
- * History command for an element that had its DOM position changed
+ * History command for an element that had its DOM position changed.
  * @implements {module:history.HistoryCommand}
  * @param {Element} elem - The DOM element that was moved
  * @param {Element} oldNextSibling - The element's next sibling before it was moved
@@ -114,12 +114,12 @@ export class MoveElementCommand extends Command {
     this.newNextSibling = elem.nextSibling;
     this.newParent = elem.parentNode;
   }
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.MoveElementCommand';
   }
 
   /**
-   * Re-positions the element
+   * Re-positions the element.
    * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {undefined}
@@ -138,7 +138,7 @@ export class MoveElementCommand extends Command {
   }
 
   /**
-   * Positions the element back to its original location
+   * Positions the element back to its original location.
    * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {undefined}
@@ -165,7 +165,7 @@ export class MoveElementCommand extends Command {
 MoveElementCommand.type = MoveElementCommand.prototype.type;
 
 /**
-* History command for an element that was added to the DOM
+* History command for an element that was added to the DOM.
 * @implements {module:history.HistoryCommand}
 *
 * @param {Element} elem - The newly added DOM element
@@ -180,12 +180,12 @@ export class InsertElementCommand extends Command {
     this.nextSibling = this.elem.nextSibling;
   }
 
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.InsertElementCommand';
   }
 
   /**
-  * Re-inserts the new element
+  * Re-inserts the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -203,7 +203,7 @@ export class InsertElementCommand extends Command {
   }
 
   /**
-  * Removes the element
+  * Removes the element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -231,7 +231,7 @@ export class InsertElementCommand extends Command {
 InsertElementCommand.type = InsertElementCommand.prototype.type;
 
 /**
-* History command for an element removed from the DOM
+* History command for an element removed from the DOM.
 * @implements {module:history.HistoryCommand}
 * @param {Element} elem - The removed DOM element
 * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
@@ -249,12 +249,12 @@ export class RemoveElementCommand extends Command {
     // special hack for webkit: remove this element's entry in the svgTransformLists map
     removeElementFromListMap(elem);
   }
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.RemoveElementCommand';
   }
 
   /**
-  * Re-removes the new element
+  * Re-removes the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -274,7 +274,7 @@ export class RemoveElementCommand extends Command {
   }
 
   /**
-  * Re-adds the new element
+  * Re-adds the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -285,9 +285,9 @@ export class RemoveElementCommand extends Command {
     }
 
     removeElementFromListMap(this.elem);
-    if (this.nextSibling == null) {
+    if (isNullish(this.nextSibling)) {
       if (window.console) {
-        console.log('Error: reference element was lost');
+        console.log('Error: reference element was lost'); // eslint-disable-line no-console
       }
     }
     this.parent.insertBefore(this.elem, this.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
@@ -338,12 +338,12 @@ export class ChangeElementCommand extends Command {
       }
     }
   }
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.ChangeElementCommand';
   }
 
   /**
-  * Performs the stored change action
+  * Performs the stored change action.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {true}
@@ -354,26 +354,24 @@ export class ChangeElementCommand extends Command {
     }
 
     let bChangedTransform = false;
-    for (const attr in this.newValues) {
-      if (this.newValues[attr]) {
+    Object.entries(this.newValues).forEach(([attr, value]) => {
+      if (value) {
         if (attr === '#text') {
-          this.elem.textContent = this.newValues[attr];
+          this.elem.textContent = value;
         } else if (attr === '#href') {
-          setHref(this.elem, this.newValues[attr]);
+          setHref(this.elem, value);
         } else {
-          this.elem.setAttribute(attr, this.newValues[attr]);
+          this.elem.setAttribute(attr, value);
         }
+      } else if (attr === '#text') {
+        this.elem.textContent = '';
       } else {
-        if (attr === '#text') {
-          this.elem.textContent = '';
-        } else {
-          this.elem.setAttribute(attr, '');
-          this.elem.removeAttribute(attr);
-        }
+        this.elem.setAttribute(attr, '');
+        this.elem.removeAttribute(attr);
       }
 
       if (attr === 'transform') { bChangedTransform = true; }
-    }
+    });
 
     // relocate rotational transform, if necessary
     if (!bChangedTransform) {
@@ -397,7 +395,7 @@ export class ChangeElementCommand extends Command {
   }
 
   /**
-  * Reverses the stored change action
+  * Reverses the stored change action.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {true}
@@ -408,24 +406,22 @@ export class ChangeElementCommand extends Command {
     }
 
     let bChangedTransform = false;
-    for (const attr in this.oldValues) {
-      if (this.oldValues[attr]) {
+    Object.entries(this.oldValues).forEach(([attr, value]) => {
+      if (value) {
         if (attr === '#text') {
-          this.elem.textContent = this.oldValues[attr];
+          this.elem.textContent = value;
         } else if (attr === '#href') {
-          setHref(this.elem, this.oldValues[attr]);
+          setHref(this.elem, value);
         } else {
-          this.elem.setAttribute(attr, this.oldValues[attr]);
+          this.elem.setAttribute(attr, value);
         }
+      } else if (attr === '#text') {
+        this.elem.textContent = '';
       } else {
-        if (attr === '#text') {
-          this.elem.textContent = '';
-        } else {
-          this.elem.removeAttribute(attr);
-        }
+        this.elem.removeAttribute(attr);
       }
       if (attr === 'transform') { bChangedTransform = true; }
-    }
+    });
     // relocate rotational transform, if necessary
     if (!bChangedTransform) {
       const angle = getRotationAngle(this.elem);
@@ -464,7 +460,7 @@ ChangeElementCommand.type = ChangeElementCommand.prototype.type;
 // and they both affect the same element, then collapse the two commands into one
 
 /**
-* History command that can contain/execute multiple other commands
+* History command that can contain/execute multiple other commands.
 * @implements {module:history.HistoryCommand}
 */
 export class BatchCommand extends Command {
@@ -477,12 +473,12 @@ export class BatchCommand extends Command {
     this.stack = [];
   }
 
-  type () {
+  type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.BatchCommand';
   }
 
   /**
-  * Runs "apply" on all subcommands
+  * Runs "apply" on all subcommands.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -503,7 +499,7 @@ export class BatchCommand extends Command {
   }
 
   /**
-  * Runs "unapply" on all subcommands
+  * Runs "unapply" on all subcommands.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
   * @returns {undefined}
@@ -523,7 +519,7 @@ export class BatchCommand extends Command {
   }
 
   /**
-  * Iterate through all our subcommands
+  * Iterate through all our subcommands.
   * @returns {Element[]} All the elements we are changing
   */
   elements () {
@@ -540,8 +536,9 @@ export class BatchCommand extends Command {
   }
 
   /**
-  * Adds a given command to the history stack
+  * Adds a given command to the history stack.
   * @param {Command} cmd - The undo command object to add
+  * @returns {undefined}
   */
   addSubCommand (cmd) {
     this.stack.push(cmd);
@@ -575,7 +572,7 @@ export class UndoManager {
   }
 
   /**
-  * Resets the undo stack, effectively clearing the undo/redo history
+  * Resets the undo stack, effectively clearing the undo/redo history.
   * @returns {undefined}
   */
   resetUndoStack () {
@@ -612,7 +609,7 @@ export class UndoManager {
   }
 
   /**
-  * Performs an undo step
+  * Performs an undo step.
   * @returns {undefined}
   */
   undo () {
@@ -623,7 +620,7 @@ export class UndoManager {
   }
 
   /**
-  * Performs a redo step
+  * Performs a redo step.
   * @returns {undefined}
   */
   redo () {
@@ -634,7 +631,7 @@ export class UndoManager {
   }
 
   /**
-  * Adds a command object to the undo history stack
+  * Adds a command object to the undo history stack.
   * @param {Command} cmd - The command object to add
   * @returns {undefined}
   */
@@ -669,7 +666,7 @@ export class UndoManager {
     const oldValues = new Array(i), elements = new Array(i);
     while (i--) {
       const elem = elems[i];
-      if (elem == null) { continue; }
+      if (isNullish(elem)) { continue; }
       elements[i] = elem;
       oldValues[i] = elem.getAttribute(attrName);
     }
@@ -683,7 +680,7 @@ export class UndoManager {
   /**
   * This function returns a `BatchCommand` object which summarizes the
   * change since `beginUndoableChange` was called.  The command can then
-  * be added to the command history
+  * be added to the command history.
   * @returns {BatchCommand} Batch command object with resulting changes
   */
   finishUndoableChange () {
@@ -694,7 +691,7 @@ export class UndoManager {
     let i = changeset.elements.length;
     while (i--) {
       const elem = changeset.elements[i];
-      if (elem == null) { continue; }
+      if (isNullish(elem)) { continue; }
       const changes = {};
       changes[attrName] = changeset.oldValues[i];
       if (changes[attrName] !== elem.getAttribute(attrName)) {

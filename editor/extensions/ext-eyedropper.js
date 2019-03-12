@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-eyedropper.js
  *
@@ -13,8 +12,7 @@ export default {
   async init (S) {
     const strings = await S.importLocale();
     const svgEditor = this;
-    const $ = jQuery;
-    const {ChangeElementCommand} = S, // , svgcontent,
+    const {$, ChangeElementCommand} = S, // , svgcontent,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       svgCanvas = svgEditor.canvas,
       addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },
@@ -27,6 +25,11 @@ export default {
         strokeLinejoin: 'miter'
       };
 
+    /**
+     *
+     * @param {module:svgcanvas.SvgCanvas#event:ext-selectedChanged|module:svgcanvas.SvgCanvas#event:ext-elementChanged} opts
+     * @returns {undefined}
+     */
     function getStyle (opts) {
       // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
       const mode = svgCanvas.getMode();

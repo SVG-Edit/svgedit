@@ -16,6 +16,7 @@
     <!{else}-->
     <script src="jquery.min.js"></script>
     <!--{endif}-->
+    
     <!-- We keep this next module external to avoid the need to
       load further scripts if not supported -->
     <script defer="defer" src="../dist/redirect-on-lacking-support.js"></script>
@@ -26,7 +27,7 @@
     <!-- The following could be removed for more modern browsers; currently
       using for at least `String.prototype.includes`, `Array.prototype.includes`,
       `String.prototype.startsWith` -->
-    <script src="external/babel-polyfill/polyfill.min.js"></script>
+    <script src="external/@babel/polyfill/polyfill.min.js"></script>
     <!-- If you do not wish to add extensions by URL, you can load them
     by creating the following file and adding by calls to svgEditor.setConfig -->
     <script defer="defer" src="xdomain-svgedit-config-iife.js"></script>

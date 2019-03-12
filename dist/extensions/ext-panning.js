@@ -1,34 +1,41 @@
 var svgEditorExtension_panning = (function () {
   'use strict';
 
-  var asyncToGenerator = function (fn) {
-    return function () {
-      var gen = fn.apply(this, arguments);
-      return new Promise(function (resolve, reject) {
-        function step(key, arg) {
-          try {
-            var info = gen[key](arg);
-            var value = info.value;
-          } catch (error) {
-            reject(error);
-            return;
-          }
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
 
-          if (info.done) {
-            resolve(value);
-          } else {
-            return Promise.resolve(value).then(function (value) {
-              step("next", value);
-            }, function (err) {
-              step("throw", err);
-            });
-          }
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
         }
 
-        return step("next");
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
       });
     };
-  };
+  }
 
   /**
    * ext-panning.js
@@ -38,23 +45,26 @@ var svgEditorExtension_panning = (function () {
    * @copyright 2013 Luis Aguirre
    *
    */
+
   /*
     This is a very basic SVG-Edit extension to let tablet/mobile devices pan without problem
   */
   var extPanning = {
     name: 'panning',
     init: function () {
-      var _ref2 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref) {
-        var importLocale = _ref.importLocale;
-        var strings, svgEditor, svgCanvas, buttons;
+      var _init = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee(_ref) {
+        var importLocale, strings, svgEditor, svgCanvas, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                importLocale = _ref.importLocale;
+                _context.next = 3;
                 return importLocale();
 
-              case 2:
+              case 3:
                 strings = _context.sent;
                 svgEditor = this;
                 svgCanvas = svgEditor.canvas;
@@ -68,7 +78,7 @@ var svgEditorExtension_panning = (function () {
                     }
                   }
                 }];
-                return _context.abrupt('return', {
+                return _context.abrupt("return", {
                   name: strings.name,
                   svgicons: svgEditor.curConfig.extIconsPath + 'ext-panning.xml',
                   buttons: strings.buttons.map(function (button, i) {
@@ -77,8 +87,12 @@ var svgEditorExtension_panning = (function () {
                   mouseDown: function mouseDown() {
                     if (svgCanvas.getMode() === 'ext-panning') {
                       svgEditor.setPanning(true);
-                      return { started: true };
+                      return {
+                        started: true
+                      };
                     }
+
+                    return undefined;
                   },
                   mouseUp: function mouseUp() {
                     if (svgCanvas.getMode() === 'ext-panning') {
@@ -88,11 +102,13 @@ var svgEditorExtension_panning = (function () {
                         element: null
                       };
                     }
+
+                    return undefined;
                   }
                 });
 
-              case 7:
-              case 'end':
+              case 8:
+              case "end":
                 return _context.stop();
             }
           }
@@ -100,7 +116,7 @@ var svgEditorExtension_panning = (function () {
       }));
 
       function init(_x) {
-        return _ref2.apply(this, arguments);
+        return _init.apply(this, arguments);
       }
 
       return init;

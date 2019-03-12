@@ -77,15 +77,15 @@ class HistoryRecordingService {
     if (this.currentBatchCommand_) {
       const batchCommand = this.currentBatchCommand_;
       this.batchCommandStack_.pop();
-      const {length} = this.batchCommandStack_;
-      this.currentBatchCommand_ = length ? this.batchCommandStack_[length - 1] : null;
+      const {length: len} = this.batchCommandStack_;
+      this.currentBatchCommand_ = len ? this.batchCommandStack_[len - 1] : null;
       this.addCommand_(batchCommand);
     }
     return this;
   }
 
   /**
-   * Add a MoveElementCommand to the history or current batch command
+   * Add a `MoveElementCommand` to the history or current batch command.
    * @param {Element} elem - The DOM element that was moved
    * @param {Element} oldNextSibling - The element's next sibling before it was moved
    * @param {Element} oldParent - The element's parent before it was moved
@@ -99,7 +99,7 @@ class HistoryRecordingService {
   }
 
   /**
-   * Add an InsertElementCommand to the history or current batch command
+   * Add an `InsertElementCommand` to the history or current batch command.
    * @param {Element} elem - The DOM element that was added
    * @param {string} [text] - An optional string visible to user related to this change
    * @returns {module:history.HistoryRecordingService}
@@ -111,7 +111,7 @@ class HistoryRecordingService {
   }
 
   /**
-   * Add a RemoveElementCommand to the history or current batch command
+   * Add a `RemoveElementCommand` to the history or current batch command.
    * @param {Element} elem - The DOM element that was removed
    * @param {Element} oldNextSibling - The element's next sibling before it was removed
    * @param {Element} oldParent - The element's parent before it was removed
@@ -125,7 +125,7 @@ class HistoryRecordingService {
   }
 
   /**
-   * Add a ChangeElementCommand to the history or current batch command
+   * Add a `ChangeElementCommand` to the history or current batch command.
    * @param {Element} elem - The DOM element that was changed
    * @param {module:history.CommandAttributes} attrs - An object with the attributes to be changed and the values they had *before* the change
    * @param {string} [text] - An optional string visible to user related to this change
@@ -141,7 +141,7 @@ class HistoryRecordingService {
    * Private function to add a command to the history or current batch command.
    * @private
    * @param {Command} cmd
-   * @returns {module:history.HistoryRecordingService}
+   * @returns {module:history.HistoryRecordingService|undefined}
    */
   addCommand_ (cmd) {
     if (!this.undoManager_) { return this; }
@@ -150,6 +150,7 @@ class HistoryRecordingService {
     } else {
       this.undoManager_.addCommandToHistory(cmd);
     }
+    return undefined;
   }
 }
 /**

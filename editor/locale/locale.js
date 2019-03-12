@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-fn-reference-in-iterator */
 /* globals jQuery */
 /**
  * Localizing script for SVG-edit UI
@@ -39,7 +40,9 @@ export const setStrings = function (type, obj, ids) {
   // Root element to look for element from
   const parent = $('#svg_editor').parent();
   Object.entries(obj).forEach(([sel, val]) => {
-    if (!val) { console.log(sel); }
+    if (!val) {
+      console.log(sel); // eslint-disable-line no-console
+    }
 
     if (ids) { sel = '#' + sel; }
     const $elem = parent.find(sel);
@@ -48,12 +51,13 @@ export const setStrings = function (type, obj, ids) {
 
       switch (type) {
       case 'content':
-        for (let i = 0, node; (node = elem.childNodes[i]); i++) {
+        [...elem.childNodes].some((node) => {
           if (node.nodeType === 3 && node.textContent.trim()) {
             node.textContent = val;
-            break;
+            return true;
           }
-        }
+          return false;
+        });
         break;
 
       case 'title':
@@ -61,7 +65,7 @@ export const setStrings = function (type, obj, ids) {
         break;
       }
     } else {
-      console.log('Missing: ' + sel);
+      console.log('Missing element for localization: ' + sel); // eslint-disable-line no-console
     }
   });
 };
@@ -114,7 +118,7 @@ export const readLang = async function (langData) {
   });
 
   // Old locale file, do nothing for now.
-  if (!langData.tools) { return; }
+  if (!langData.tools) { return undefined; }
 
   const {
     tools,
@@ -223,7 +227,7 @@ export const readLang = async function (langData) {
     image_width: properties.image_width,
     layer_delete: layers.del,
     layer_down: layers.move_down,
-    layer_new: layers['new'],
+    layer_new: layers.new,
     layer_rename: layers.rename,
     layer_moreopts: common.more_opts,
     layer_up: layers.move_up,
@@ -331,7 +335,7 @@ export const putLocale = async function (givenParam, goodLangs, conf) {
       }
     }
 
-    console.log('Lang: ' + langParam);
+    console.log('Lang: ' + langParam); // eslint-disable-line no-console
 
     // Set to English if language is not in list of good langs
     if (!goodLangs.includes(langParam) && langParam !== 'test') {

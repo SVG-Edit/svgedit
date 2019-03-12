@@ -1,4 +1,4 @@
-/* globals jQuery, MathJax */
+/* globals MathJax */
 /**
  * ext-mathjax.js
  *
@@ -12,10 +12,9 @@ import {importScript} from '../external/dynamic-import-polyfill/importModule.js'
 
 export default {
   name: 'mathjax',
-  async init ({importLocale}) {
+  async init ({$, importLocale}) {
     const strings = await importLocale();
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
 
     // Configuration of the MathJax extention.
@@ -54,7 +53,8 @@ export default {
       locationY,
       mathjaxLoaded = false;
 
-    // TODO: Implement language support. Move these uiStrings to the locale files and the code to the langReady callback.
+    // TODO: Implement language support. Move these uiStrings to the locale files and
+    //   the code to the langReady callback. Also i18nize alert and HTML below
     $.extend(uiStrings, {
       mathjax: {
         embed_svg: 'Save as mathematics',
@@ -65,6 +65,10 @@ export default {
       }
     });
 
+    /**
+     *
+     * @returns {undefined}
+     */
     function saveMath () {
       const code = $('#mathjax_code_textarea').val();
       // displaystyle to force MathJax NOT to use the inline style. Because it is
@@ -122,11 +126,15 @@ export default {
       type: 'mode',
       icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
       events: {
-        click () {
+        async click () {
+          // Set the mode.
+          svgCanvas.setMode('mathjax');
+
           // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
           // From this point on it is very probable that it will be needed, so load it.
           if (mathjaxLoaded === false) {
-            $('<div id="mathjax">' +
+            $(
+              '<div id="mathjax">' +
               '<!-- Here is where MathJax creates the math -->' +
                 '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' +
                   '$${}$$' +
@@ -189,21 +197,22 @@ export default {
               svgEditor.curConfig.extIconsPath + mathjaxSrcSecure
             );
             */
-            importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure).then(() => {
+            // We use `extIconsPath` here for now as it does not vary with
+            //  the modular type as does `extPath`
+            try {
+              await importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure);
               // When MathJax is loaded get the div where the math will be rendered.
               MathJax.Hub.queue.Push(function () {
                 math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
-                console.log(math);
+                console.log(math); // eslint-disable-line no-console
                 mathjaxLoaded = true;
-                console.log('MathJax Loaded');
+                console.log('MathJax Loaded'); // eslint-disable-line no-console
               });
-            }).catch(() => {
-              console.log('Failed loadeing MathJax.');
+            } catch (e) {
+              console.log('Failed loading MathJax.'); // eslint-disable-line no-console
               $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
-            });
+            }
           }
-          // Set the mode.
-          svgCanvas.setMode('mathjax');
         }
       }
     }];
@@ -219,6 +228,7 @@ export default {
         if (svgCanvas.getMode() === 'mathjax') {
           return {started: true};
         }
+        return undefined;
       },
       mouseUp (opts) {
         if (svgCanvas.getMode() === 'mathjax') {
@@ -231,6 +241,7 @@ export default {
           $('#mathjax').show();
           return {started: false}; // Otherwise the last selected object dissapears.
         }
+        return undefined;
       },
       callback () {
         $('<style>').text(

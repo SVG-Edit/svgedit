@@ -206,7 +206,7 @@ export default {
     unsavedChanges: 'Il y a des changements non sauvegardés.',
     enterNewLinkURL: "Entrez la nouvelle URL de l'hyperlien",
     errorLoadingSVG: 'Erreur : Impossible de charger les données SVG',
-    URLloadFail: "Impossible de charger l'URL",
+    URLLoadFail: "Impossible de charger l'URL",
     retrieving: 'Récupération de « %s »…',
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',

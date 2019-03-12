@@ -36,20 +36,19 @@ const menuItemIsValid = function (menuItem) {
 /**
 * @function module:contextmenu.add
 * @param {module:contextmenu.MenuItem} menuItem
+* @throws {Error|TypeError}
 * @returns {undefined}
 */
 export const add = function (menuItem) {
   // menuItem: {id, label, shortcut, action}
   if (!menuItemIsValid(menuItem)) {
-    console.error('Menu items must be defined and have at least properties: id, label, action, where action must be a function');
-    return;
+    throw new TypeError('Menu items must be defined and have at least properties: id, label, action, where action must be a function');
   }
   if (menuItem.id in contextMenuExtensions) {
-    console.error('Cannot add extension "' + menuItem.id + '", an extension by that name already exists"');
-    return;
+    throw new Error('Cannot add extension "' + menuItem.id + '", an extension by that name already exists"');
   }
   // Register menuItem action, see below for deferred menu dom injection
-  console.log('Registed contextmenu item: {id:' + menuItem.id + ', label:' + menuItem.label + '}');
+  console.log('Registered contextmenu item: {id:' + menuItem.id + ', label:' + menuItem.label + '}'); // eslint-disable-line no-console
   contextMenuExtensions[menuItem.id] = menuItem;
   // TODO: Need to consider how to handle custom enable/disable behavior
 };
@@ -93,9 +92,9 @@ const injectExtendedContextMenuItemIntoDom = function (menuItem) {
 * @returns {undefined}
 */
 export const injectExtendedContextMenuItemsIntoDom = function () {
-  for (const menuItem in contextMenuExtensions) {
-    injectExtendedContextMenuItemIntoDom(contextMenuExtensions[menuItem]);
-  }
+  Object.values(contextMenuExtensions).forEach((menuItem) => {
+    injectExtendedContextMenuItemIntoDom(menuItem);
+  });
 };
 /**
 * @function module:contextmenu.resetCustomMenus

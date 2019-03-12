@@ -208,7 +208,7 @@ var svgEditorLang_pt_BR = (function () {
       unsavedChanges: 'Existem alterações não salvas.',
       enterNewLinkURL: 'Insira novo URL do hyperlink',
       errorLoadingSVG: 'Erro: Impossível carregar dados SVG',
-      URLloadFail: 'Impossível carregar deste URL',
+      URLLoadFail: 'Impossível carregar deste URL',
       retrieving: 'Retrieving \'%s\' ...',
       popupWindowBlocked: 'Popup window may be blocked by browser',
       exportNoBlur: 'Blurred elements will appear as un-blurred',

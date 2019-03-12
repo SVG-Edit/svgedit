@@ -6,6 +6,7 @@
     <script src="../editor/jquery.min.js"></script>
     <script src="../editor/jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
     <style> #svgroot { overflow: hidden; } </style>
+    <link rel="shortcut icon" type="image/x-icon" href="../editor/images/logo.png" />
   </head>
 
   <body>
@@ -24,7 +25,7 @@
     </div>
 
     <script type="module">
-import Canvas from '../editor/svgcanvas.js';
+import SvgCanvas from '../editor/svgcanvas.js';
 
 const container = document.querySelector('#editorContainer');
 const {width, height} = {width: 500, height: 300};
@@ -41,7 +42,7 @@ const config = {
   baseUnit: 'px',
 };
 
-window.canvas = new Canvas(container, config);
+window.canvas = new SvgCanvas(container, config);
 canvas.updateCanvas(width, height);
 
 window.fill = function (colour) {

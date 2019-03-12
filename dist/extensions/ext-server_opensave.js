@@ -1,155 +1,242 @@
 var svgEditorExtension_server_opensave = (function () {
   'use strict';
 
-  var asyncToGenerator = function (fn) {
-    return function () {
-      var gen = fn.apply(this, arguments);
-      return new Promise(function (resolve, reject) {
-        function step(key, arg) {
-          try {
-            var info = gen[key](arg);
-            var value = info.value;
-          } catch (error) {
-            reject(error);
-            return;
-          }
+  function _typeof(obj) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
 
-          if (info.done) {
-            resolve(value);
-          } else {
-            return Promise.resolve(value).then(function (value) {
-              step("next", value);
-            }, function (err) {
-              step("throw", err);
-            });
-          }
+    return _typeof(obj);
+  }
+
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
         }
 
-        return step("next");
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
       });
     };
-  };
+  }
 
-  var classCallCheck = function (instance, Constructor) {
+  function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
     }
-  };
+  }
 
-  var createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
     }
+  }
 
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
 
-  var get = function get(object, property, receiver) {
-    if (object === null) object = Function.prototype;
-    var desc = Object.getOwnPropertyDescriptor(object, property);
-
-    if (desc === undefined) {
-      var parent = Object.getPrototypeOf(object);
-
-      if (parent === null) {
-        return undefined;
-      } else {
-        return get(parent, property, receiver);
-      }
-    } else if ("value" in desc) {
-      return desc.value;
-    } else {
-      var getter = desc.get;
-
-      if (getter === undefined) {
-        return undefined;
-      }
-
-      return getter.call(receiver);
-    }
-  };
-
-  var inherits = function (subClass, superClass) {
+  function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+      throw new TypeError("Super expression must either be null or a function");
     }
 
     subClass.prototype = Object.create(superClass && superClass.prototype, {
       constructor: {
         value: subClass,
-        enumerable: false,
         writable: true,
         configurable: true
       }
     });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  };
+    if (superClass) _setPrototypeOf(subClass, superClass);
+  }
 
-  var possibleConstructorReturn = function (self, call) {
-    if (!self) {
+  function _getPrototypeOf(o) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o);
+  }
+
+  function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf(o, p);
+  }
+
+  function isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function _construct(Parent, args, Class) {
+    if (isNativeReflectConstruct()) {
+      _construct = Reflect.construct;
+    } else {
+      _construct = function _construct(Parent, args, Class) {
+        var a = [null];
+        a.push.apply(a, args);
+        var Constructor = Function.bind.apply(Parent, a);
+        var instance = new Constructor();
+        if (Class) _setPrototypeOf(instance, Class.prototype);
+        return instance;
+      };
+    }
+
+    return _construct.apply(null, arguments);
+  }
+
+  function _assertThisInitialized(self) {
+    if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
 
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  };
+    return self;
+  }
 
-  var slicedToArray = function () {
-    function sliceIterator(arr, i) {
-      var _arr = [];
-      var _n = true;
-      var _d = false;
-      var _e = undefined;
-
-      try {
-        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-          _arr.push(_s.value);
-
-          if (i && _arr.length === i) break;
-        }
-      } catch (err) {
-        _d = true;
-        _e = err;
-      } finally {
-        try {
-          if (!_n && _i["return"]) _i["return"]();
-        } finally {
-          if (_d) throw _e;
-        }
-      }
-
-      return _arr;
+  function _possibleConstructorReturn(self, call) {
+    if (call && (typeof call === "object" || typeof call === "function")) {
+      return call;
     }
 
-    return function (arr, i) {
-      if (Array.isArray(arr)) {
-        return arr;
-      } else if (Symbol.iterator in Object(arr)) {
-        return sliceIterator(arr, i);
-      } else {
-        throw new TypeError("Invalid attempt to destructure non-iterable instance");
-      }
-    };
-  }();
+    return _assertThisInitialized(self);
+  }
 
-  var toConsumableArray = function (arr) {
+  function _superPropBase(object, property) {
+    while (!Object.prototype.hasOwnProperty.call(object, property)) {
+      object = _getPrototypeOf(object);
+      if (object === null) break;
+    }
+
+    return object;
+  }
+
+  function _get(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) {
+      _get = Reflect.get;
+    } else {
+      _get = function _get(target, property, receiver) {
+        var base = _superPropBase(target, property);
+
+        if (!base) return;
+        var desc = Object.getOwnPropertyDescriptor(base, property);
+
+        if (desc.get) {
+          return desc.get.call(receiver);
+        }
+
+        return desc.value;
+      };
+    }
+
+    return _get(target, property, receiver || target);
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
     if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
 
       return arr2;
-    } else {
-      return Array.from(arr);
     }
-  };
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArray(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  }
 
   /**
    * For parsing color values
@@ -302,216 +389,247 @@ var svgEditorExtension_server_opensave = (function () {
     whitesmoke: 'f5f5f5',
     yellow: 'ffff00',
     yellowgreen: '9acd32'
-  };
+  }; // array of color definition objects
 
-  // array of color definition objects
   var colorDefs = [{
     re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
-    process: function process(bits) {
-      return [parseInt(bits[1], 10), parseInt(bits[2], 10), parseInt(bits[3], 10)];
+    process: function process(_) {
+      for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        bits[_key - 1] = arguments[_key];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b);
+      });
     }
   }, {
     re: /^(\w{2})(\w{2})(\w{2})$/,
     example: ['#00ff00', '336699'],
-    process: function process(bits) {
-      return [parseInt(bits[1], 16), parseInt(bits[2], 16), parseInt(bits[3], 16)];
+    process: function process(_) {
+      for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        bits[_key2 - 1] = arguments[_key2];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b, 16);
+      });
     }
   }, {
     re: /^(\w{1})(\w{1})(\w{1})$/,
     example: ['#fb0', 'f0f'],
-    process: function process(bits) {
-      return [parseInt(bits[1] + bits[1], 16), parseInt(bits[2] + bits[2], 16), parseInt(bits[3] + bits[3], 16)];
+    process: function process(_) {
+      for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+        bits[_key3 - 1] = arguments[_key3];
+      }
+
+      return bits.map(function (b) {
+        return parseInt(b + b, 16);
+      });
     }
   }];
-
   /**
-   * A class to parse color values
+   * A class to parse color values.
    */
 
-  var RGBColor = function () {
+  var RGBColor =
+  /*#__PURE__*/
+  function () {
     /**
     * @param {string} colorString
     */
     function RGBColor(colorString) {
-      classCallCheck(this, RGBColor);
+      var _this = this;
 
-      this.ok = false;
+      _classCallCheck(this, RGBColor);
 
-      // strip any leading #
+      this.ok = false; // strip any leading #
+
       if (colorString.charAt(0) === '#') {
         // remove # if any
         colorString = colorString.substr(1, 6);
       }
 
       colorString = colorString.replace(/ /g, '');
-      colorString = colorString.toLowerCase();
-
-      // before getting into regexps, try simple matches
+      colorString = colorString.toLowerCase(); // before getting into regexps, try simple matches
       // and overwrite the input
+
       if (colorString in simpleColors) {
         colorString = simpleColors[colorString];
-      }
-      // end of simple type-in colors
-
+      } // end of simple type-in colors
       // search through the definitions to find a match
-      for (var i = 0; i < colorDefs.length; i++) {
-        var re = colorDefs[i].re;
 
-        var processor = colorDefs[i].process;
+
+      colorDefs.forEach(function (_ref) {
+        var re = _ref.re,
+            processor = _ref.process;
         var bits = re.exec(colorString);
+
         if (bits) {
-          var _processor = processor(bits),
-              _processor2 = slicedToArray(_processor, 3),
+          var _processor = processor.apply(void 0, _toConsumableArray(bits)),
+              _processor2 = _slicedToArray(_processor, 3),
               r = _processor2[0],
               g = _processor2[1],
               b = _processor2[2];
 
-          Object.assign(this, { r: r, g: g, b: b });
-          this.ok = true;
+          Object.assign(_this, {
+            r: r,
+            g: g,
+            b: b
+          });
+          _this.ok = true;
         }
-      }
+      }, this); // validate/cleanup values
 
-      // validate/cleanup values
       this.r = this.r < 0 || isNaN(this.r) ? 0 : this.r > 255 ? 255 : this.r;
       this.g = this.g < 0 || isNaN(this.g) ? 0 : this.g > 255 ? 255 : this.g;
       this.b = this.b < 0 || isNaN(this.b) ? 0 : this.b > 255 ? 255 : this.b;
-    }
+    } // some getters
 
-    // some getters
     /**
     * @returns {string}
     */
 
 
-    createClass(RGBColor, [{
-      key: 'toRGB',
+    _createClass(RGBColor, [{
+      key: "toRGB",
       value: function toRGB() {
         return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
       }
-
       /**
       * @returns {string}
       */
 
     }, {
-      key: 'toHex',
+      key: "toHex",
       value: function toHex() {
         var r = this.r.toString(16);
         var g = this.g.toString(16);
         var b = this.b.toString(16);
+
         if (r.length === 1) {
           r = '0' + r;
         }
+
         if (g.length === 1) {
           g = '0' + g;
         }
+
         if (b.length === 1) {
           b = '0' + b;
         }
+
         return '#' + r + g + b;
       }
-
-      /**
-      * help
-      * @returns {HTMLUListElement}
-      */
-
-    }, {
-      key: 'getHelpXML',
-      value: function getHelpXML() {
-        var examples = [];
-        // add regexps
-        for (var i = 0; i < colorDefs.length; i++) {
-          var example = colorDefs[i].example;
-
-          for (var j = 0; j < example.length; j++) {
-            examples[examples.length] = example[j];
-          }
-        }
-        // add type-in colors
-        examples.push.apply(examples, toConsumableArray(Object.keys(simpleColors)));
-
-        var xml = document.createElement('ul');
-        xml.setAttribute('id', 'rgbcolor-examples');
-        for (var _i = 0; _i < examples.length; _i++) {
-          try {
-            var listItem = document.createElement('li');
-            var listColor = new RGBColor(examples[_i]);
-            var exampleDiv = document.createElement('div');
-            exampleDiv.style.cssText = 'margin: 3px;\nborder: 1px solid black;\nbackground: ' + listColor.toHex() + ';\ncolor: ' + listColor.toHex() + ';';
-            exampleDiv.append('test');
-            var listItemValue = ' ' + examples[_i] + ' -> ' + listColor.toRGB() + ' -> ' + listColor.toHex();
-            listItem.append(exampleDiv, listItemValue);
-            xml.append(listItem);
-          } catch (e) {}
-        }
-        return xml;
-      }
     }]);
+
     return RGBColor;
   }();
 
+  RGBColor.getHelpXML = function () {
+    var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
+      var example = _ref2.example;
+      return example;
+    })), _toConsumableArray(Object.keys(simpleColors)));
+    var xml = document.createElement('ul');
+    xml.setAttribute('id', 'rgbcolor-examples');
+    xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
+      try {
+        var listItem = document.createElement('li');
+        var listColor = new RGBColor(example);
+        var exampleDiv = document.createElement('div');
+        exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
+        exampleDiv.append('test');
+        var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
+        listItem.append(exampleDiv, listItemValue);
+        return listItem;
+      } catch (e) {
+        return '';
+      }
+    })));
+    return xml;
+  };
+
+  function _typeof$1(obj) {
+    if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
+      _typeof$1 = function _typeof$1(obj) {
+        return _typeof(obj);
+      };
+    } else {
+      _typeof$1 = function _typeof$1(obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
+      };
+    }
+
+    return _typeof$1(obj);
+  }
+
+  function _classCallCheck$1(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
   /**
   * StackBlur - a fast almost Gaussian Blur For Canvas
-
-  In case you find this class useful - especially in commercial projects -
-  I am not totally unhappy for a small donation to my PayPal account
-  mario@quasimondo.de
-
-  Or support me on flattr:
-  https://flattr.com/thing/72791/StackBlur-a-fast-almost-Gaussian-Blur-Effect-for-CanvasJavascript
-
+  *
+  * In case you find this class useful - especially in commercial projects -
+  * I am not totally unhappy for a small donation to my PayPal account
+  * mario@quasimondo.de
+  *
+  * Or support me on flattr:
+  * {@link https://flattr.com/thing/72791/StackBlur-a-fast-almost-Gaussian-Blur-Effect-for-CanvasJavascript}
   * @module StackBlur
   * @version 0.5
   * @author Mario Klingemann
-  Contact: mario@quasimondo.com
-  Website: http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
-  Twitter: @quasimondo
-
+  * Contact: mario@quasimondo.com
+  * Website: {@link http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html}
+  * Twitter: @quasimondo
+  *
   * @copyright (c) 2010 Mario Klingemann
-
-  Permission is hereby granted, free of charge, to any person
-  obtaining a copy of this software and associated documentation
-  files (the "Software"), to deal in the Software without
-  restriction, including without limitation the rights to use,
-  copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following
-  conditions:
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-  OTHER DEALINGS IN THE SOFTWARE.
+  *
+  * Permission is hereby granted, free of charge, to any person
+  * obtaining a copy of this software and associated documentation
+  * files (the "Software"), to deal in the Software without
+  * restriction, including without limitation the rights to use,
+  * copy, modify, merge, publish, distribute, sublicense, and/or sell
+  * copies of the Software, and to permit persons to whom the
+  * Software is furnished to do so, subject to the following
+  * conditions:
+  *
+  * The above copyright notice and this permission notice shall be
+  * included in all copies or substantial portions of the Software.
+  *
+  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+  * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  * OTHER DEALINGS IN THE SOFTWARE.
   */
 
+
   var mulTable = [512, 512, 456, 512, 328, 456, 335, 512, 405, 328, 271, 456, 388, 335, 292, 512, 454, 405, 364, 328, 298, 271, 496, 456, 420, 388, 360, 335, 312, 292, 273, 512, 482, 454, 428, 405, 383, 364, 345, 328, 312, 298, 284, 271, 259, 496, 475, 456, 437, 420, 404, 388, 374, 360, 347, 335, 323, 312, 302, 292, 282, 273, 265, 512, 497, 482, 468, 454, 441, 428, 417, 405, 394, 383, 373, 364, 354, 345, 337, 328, 320, 312, 305, 298, 291, 284, 278, 271, 265, 259, 507, 496, 485, 475, 465, 456, 446, 437, 428, 420, 412, 404, 396, 388, 381, 374, 367, 360, 354, 347, 341, 335, 329, 323, 318, 312, 307, 302, 297, 292, 287, 282, 278, 273, 269, 265, 261, 512, 505, 497, 489, 482, 475, 468, 461, 454, 447, 441, 435, 428, 422, 417, 411, 405, 399, 394, 389, 383, 378, 373, 368, 364, 359, 354, 350, 345, 341, 337, 332, 328, 324, 320, 316, 312, 309, 305, 301, 298, 294, 291, 287, 284, 281, 278, 274, 271, 268, 265, 262, 259, 257, 507, 501, 496, 491, 485, 480, 475, 470, 465, 460, 456, 451, 446, 442, 437, 433, 428, 424, 420, 416, 412, 408, 404, 400, 396, 392, 388, 385, 381, 377, 374, 370, 367, 363, 360, 357, 354, 350, 347, 344, 341, 338, 335, 332, 329, 326, 323, 320, 318, 315, 312, 310, 307, 304, 302, 299, 297, 294, 292, 289, 287, 285, 282, 280, 278, 275, 273, 271, 269, 267, 265, 263, 261, 259];
-
   var shgTable = [9, 11, 12, 13, 13, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
-
   /**
    * @param {string|HTMLCanvasElement} canvas
    * @param {Integer} topX
    * @param {Integer} topY
    * @param {Integer} width
    * @param {Integer} height
-   * @throws {Error}
+   * @throws {Error|TypeError}
    * @returns {ImageData} See {@link https://html.spec.whatwg.org/multipage/canvas.html#imagedata}
    */
+
+
   function getImageDataFromCanvas(canvas, topX, topY, width, height) {
     if (typeof canvas === 'string') {
       canvas = document.getElementById(canvas);
     }
-    if (!canvas || !('getContext' in canvas)) {
-      return;
+
+    if (!canvas || _typeof$1(canvas) !== 'object' || !('getContext' in canvas)) {
+      throw new TypeError('Expecting canvas with `getContext` method in processCanvasRGB(A) calls!');
     }
 
     var context = canvas.getContext('2d');
@@ -522,7 +640,6 @@ var svgEditorExtension_server_opensave = (function () {
       throw new Error('unable to access image data: ' + e);
     }
   }
-
   /**
    * @param {HTMLCanvasElement} canvas
    * @param {Integer} topX
@@ -532,19 +649,18 @@ var svgEditorExtension_server_opensave = (function () {
    * @param {Float} radius
    * @returns {undefined}
    */
+
+
   function processCanvasRGBA(canvas, topX, topY, width, height, radius) {
     if (isNaN(radius) || radius < 1) {
       return;
     }
+
     radius |= 0;
-
     var imageData = getImageDataFromCanvas(canvas, topX, topY, width, height);
-
     imageData = processImageDataRGBA(imageData, topX, topY, width, height, radius);
-
     canvas.getContext('2d').putImageData(imageData, topX, topY);
   }
-
   /**
    * @param {ImageData} imageData
    * @param {Integer} topX
@@ -554,72 +670,46 @@ var svgEditorExtension_server_opensave = (function () {
    * @param {Float} radius
    * @returns {ImageData}
    */
+
+
   function processImageDataRGBA(imageData, topX, topY, width, height, radius) {
     var pixels = imageData.data;
+    var x, y, i, p, yp, yi, yw, rSum, gSum, bSum, aSum, rOutSum, gOutSum, bOutSum, aOutSum, rInSum, gInSum, bInSum, aInSum, pr, pg, pb, pa, rbs;
+    var div = 2 * radius + 1; // const w4 = width << 2;
 
-    var x = void 0,
-        y = void 0,
-        i = void 0,
-        p = void 0,
-        yp = void 0,
-        yi = void 0,
-        yw = void 0,
-        rSum = void 0,
-        gSum = void 0,
-        bSum = void 0,
-        aSum = void 0,
-        rOutSum = void 0,
-        gOutSum = void 0,
-        bOutSum = void 0,
-        aOutSum = void 0,
-        rInSum = void 0,
-        gInSum = void 0,
-        bInSum = void 0,
-        aInSum = void 0,
-        pr = void 0,
-        pg = void 0,
-        pb = void 0,
-        pa = void 0,
-        rbs = void 0;
-
-    var div = radius + radius + 1;
-    // const w4 = width << 2;
     var widthMinus1 = width - 1;
     var heightMinus1 = height - 1;
     var radiusPlus1 = radius + 1;
     var sumFactor = radiusPlus1 * (radiusPlus1 + 1) / 2;
-
     var stackStart = new BlurStack();
     var stack = stackStart;
-    var stackEnd = void 0;
+    var stackEnd;
+
     for (i = 1; i < div; i++) {
       stack = stack.next = new BlurStack();
+
       if (i === radiusPlus1) {
         stackEnd = stack;
       }
     }
+
     stack.next = stackStart;
     var stackIn = null;
     var stackOut = null;
-
     yw = yi = 0;
-
     var mulSum = mulTable[radius];
     var shgSum = shgTable[radius];
 
     for (y = 0; y < height; y++) {
       rInSum = gInSum = bInSum = aInSum = rSum = gSum = bSum = aSum = 0;
-
       rOutSum = radiusPlus1 * (pr = pixels[yi]);
       gOutSum = radiusPlus1 * (pg = pixels[yi + 1]);
       bOutSum = radiusPlus1 * (pb = pixels[yi + 2]);
       aOutSum = radiusPlus1 * (pa = pixels[yi + 3]);
-
       rSum += sumFactor * pr;
       gSum += sumFactor * pg;
       bSum += sumFactor * pb;
       aSum += sumFactor * pa;
-
       stack = stackStart;
 
       for (i = 0; i < radiusPlus1; i++) {
@@ -636,19 +726,19 @@ var svgEditorExtension_server_opensave = (function () {
         gSum += (stack.g = pg = pixels[p + 1]) * rbs;
         bSum += (stack.b = pb = pixels[p + 2]) * rbs;
         aSum += (stack.a = pa = pixels[p + 3]) * rbs;
-
         rInSum += pr;
         gInSum += pg;
         bInSum += pb;
         aInSum += pa;
-
         stack = stack.next;
       }
 
       stackIn = stackStart;
       stackOut = stackEnd;
+
       for (x = 0; x < width; x++) {
         pixels[yi + 3] = pa = aSum * mulSum >> shgSum;
+
         if (pa !== 0) {
           pa = 255 / pa;
           pixels[yi] = (rSum * mulSum >> shgSum) * pa;
@@ -662,57 +752,46 @@ var svgEditorExtension_server_opensave = (function () {
         gSum -= gOutSum;
         bSum -= bOutSum;
         aSum -= aOutSum;
-
         rOutSum -= stackIn.r;
         gOutSum -= stackIn.g;
         bOutSum -= stackIn.b;
         aOutSum -= stackIn.a;
-
         p = yw + ((p = x + radius + 1) < widthMinus1 ? p : widthMinus1) << 2;
-
         rInSum += stackIn.r = pixels[p];
         gInSum += stackIn.g = pixels[p + 1];
         bInSum += stackIn.b = pixels[p + 2];
         aInSum += stackIn.a = pixels[p + 3];
-
         rSum += rInSum;
         gSum += gInSum;
         bSum += bInSum;
         aSum += aInSum;
-
         stackIn = stackIn.next;
-
         rOutSum += pr = stackOut.r;
         gOutSum += pg = stackOut.g;
         bOutSum += pb = stackOut.b;
         aOutSum += pa = stackOut.a;
-
         rInSum -= pr;
         gInSum -= pg;
         bInSum -= pb;
         aInSum -= pa;
-
         stackOut = stackOut.next;
-
         yi += 4;
       }
+
       yw += width;
     }
 
     for (x = 0; x < width; x++) {
       gInSum = bInSum = aInSum = rInSum = gSum = bSum = aSum = rSum = 0;
-
       yi = x << 2;
       rOutSum = radiusPlus1 * (pr = pixels[yi]);
       gOutSum = radiusPlus1 * (pg = pixels[yi + 1]);
       bOutSum = radiusPlus1 * (pb = pixels[yi + 2]);
       aOutSum = radiusPlus1 * (pa = pixels[yi + 3]);
-
       rSum += sumFactor * pr;
       gSum += sumFactor * pg;
       bSum += sumFactor * pb;
       aSum += sumFactor * pa;
-
       stack = stackStart;
 
       for (i = 0; i < radiusPlus1; i++) {
@@ -727,17 +806,14 @@ var svgEditorExtension_server_opensave = (function () {
 
       for (i = 1; i <= radius; i++) {
         yi = yp + x << 2;
-
         rSum += (stack.r = pr = pixels[yi]) * (rbs = radiusPlus1 - i);
         gSum += (stack.g = pg = pixels[yi + 1]) * rbs;
         bSum += (stack.b = pb = pixels[yi + 2]) * rbs;
         aSum += (stack.a = pa = pixels[yi + 3]) * rbs;
-
         rInSum += pr;
         gInSum += pg;
         bInSum += pb;
         aInSum += pa;
-
         stack = stack.next;
 
         if (i < heightMinus1) {
@@ -748,9 +824,11 @@ var svgEditorExtension_server_opensave = (function () {
       yi = x;
       stackIn = stackStart;
       stackOut = stackEnd;
+
       for (y = 0; y < height; y++) {
         p = yi << 2;
         pixels[p + 3] = pa = aSum * mulSum >> shgSum;
+
         if (pa > 0) {
           pa = 255 / pa;
           pixels[p] = (rSum * mulSum >> shgSum) * pa;
@@ -764,44 +842,38 @@ var svgEditorExtension_server_opensave = (function () {
         gSum -= gOutSum;
         bSum -= bOutSum;
         aSum -= aOutSum;
-
         rOutSum -= stackIn.r;
         gOutSum -= stackIn.g;
         bOutSum -= stackIn.b;
         aOutSum -= stackIn.a;
-
         p = x + ((p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1) * width << 2;
-
         rSum += rInSum += stackIn.r = pixels[p];
         gSum += gInSum += stackIn.g = pixels[p + 1];
         bSum += bInSum += stackIn.b = pixels[p + 2];
         aSum += aInSum += stackIn.a = pixels[p + 3];
-
         stackIn = stackIn.next;
-
         rOutSum += pr = stackOut.r;
         gOutSum += pg = stackOut.g;
         bOutSum += pb = stackOut.b;
         aOutSum += pa = stackOut.a;
-
         rInSum -= pr;
         gInSum -= pg;
         bInSum -= pb;
         aInSum -= pa;
-
         stackOut = stackOut.next;
-
         yi += width;
       }
     }
+
     return imageData;
   }
-
   /**
    *
    */
+
+
   var BlurStack = function BlurStack() {
-    classCallCheck(this, BlurStack);
+    _classCallCheck$1(this, BlurStack);
 
     this.r = 0;
     this.g = 0;
@@ -810,9 +882,19 @@ var svgEditorExtension_server_opensave = (function () {
     this.next = null;
   };
 
-  /* eslint-disable new-cap */
+  /**
+   * Whether a value is `null` or `undefined`.
+   * @param {Any} val
+   * @returns {boolean}
+   */
 
-  var canvasRGBA_ = processCanvasRGBA;
+  var isNullish = function isNullish(val) {
+    return val === null || val === undefined;
+  };
+  /**
+  * @callback module:canvg.ForceRedraw
+  * @returns {boolean}
+  */
 
   /**
   * @typedef {PlainObject} module:canvg.CanvgOptions
@@ -830,18 +912,21 @@ var svgEditorExtension_server_opensave = (function () {
   */
 
   /**
-  * If called with no arguments, it will replace all `<svg>` elements on the page with `<canvas>` elements
+  * If called with no arguments, it will replace all `<svg>` elements on the page
+  * with `<canvas>` elements.
   * @function module:canvg.canvg
   * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
-  * @param {string|XMLDocument} s: svg string, url to svg file, or xml document
+  * @param {string|XMLDocument} s - svg string, url to svg file, or xml document
   * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
   * @returns {Promise} All the function after the first render is completed with dom
   */
+
+
   var canvg = function canvg(target, s, opts) {
     // no parameters
-    if (target == null && s == null && opts == null) {
+    if (isNullish(target) && isNullish(s) && isNullish(opts)) {
       var svgTags = document.querySelectorAll('svg');
-      return Promise.all([].concat(toConsumableArray(svgTags)).map(function (svgTag) {
+      return Promise.all(_toConsumableArray(svgTags).map(function (svgTag) {
         var c = document.createElement('canvas');
         c.width = svgTag.clientWidth;
         c.height = svgTag.clientHeight;
@@ -855,54 +940,64 @@ var svgEditorExtension_server_opensave = (function () {
 
     if (typeof target === 'string') {
       target = document.getElementById(target);
-    }
+    } // store class on canvas
 
-    // store class on canvas
-    if (target.svg != null) target.svg.stop();
-    var svg = build(opts || {});
-    // on i.e. 8 for flash canvas, we can't assign the property so check for it
+
+    if (!isNullish(target.svg)) target.svg.stop();
+    var svg = build(opts || {}); // on i.e. 8 for flash canvas, we can't assign the property so check for it
+
     if (!(target.childNodes.length === 1 && target.childNodes[0].nodeName === 'OBJECT')) {
       target.svg = svg;
     }
 
     var ctx = target.getContext('2d');
+
     if (typeof s.documentElement !== 'undefined') {
       // load from xml doc
       return svg.loadXmlDoc(ctx, s);
     }
+
     if (s.substr(0, 1) === '<') {
       // load from xml string
       return svg.loadXml(ctx, s);
-    }
-    // load from url
+    } // load from url
+
+
     return svg.load(ctx, s);
   };
-
   /**
   * @param {module:canvg.CanvgOptions} opts
-  * @returns {object}
+  * @returns {Object}
   * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
   */
-  function build(opts) {
-    var svg = { opts: opts };
 
+  function build(opts) {
+    var svg = {
+      opts: opts
+    };
     svg.FRAMERATE = 30;
     svg.MAX_VIRTUAL_PIXELS = 30000;
 
-    svg.log = function (msg) {};
+    svg.log = function (msg) {
+      /* */
+    };
+
     if (svg.opts.log === true && typeof console !== 'undefined') {
       svg.log = function (msg) {
         console.log(msg);
-      };
-    }
+      }; // eslint-disable-line no-console
 
-    // globals
+    } // globals
+
+
     svg.init = function (ctx) {
       var uniqueId = 0;
+
       svg.UniqueId = function () {
         uniqueId++;
         return 'canvg' + uniqueId;
       };
+
       svg.Definitions = {};
       svg.Styles = {};
       svg.Animations = [];
@@ -914,7 +1009,10 @@ var svgEditorExtension_server_opensave = (function () {
           this.viewPorts = [];
         },
         SetCurrent: function SetCurrent(width, height) {
-          this.viewPorts.push({ width: width, height: height });
+          this.viewPorts.push({
+            width: width,
+            height: height
+          });
         },
         RemoveCurrent: function RemoveCurrent() {
           this.viewPorts.pop();
@@ -929,40 +1027,40 @@ var svgEditorExtension_server_opensave = (function () {
           return this.Current().height;
         },
         ComputeSize: function ComputeSize(d) {
-          if (d != null && typeof d === 'number') return d;
+          if (!isNullish(d) && typeof d === 'number') return d;
           if (d === 'x') return this.width();
           if (d === 'y') return this.height();
           return Math.sqrt(Math.pow(this.width(), 2) + Math.pow(this.height(), 2)) / Math.sqrt(2);
         }
       };
     };
-    svg.init();
 
-    // images loaded
+    svg.init(); // images loaded
+
     svg.ImagesLoaded = function () {
       return svg.Images.every(function (img) {
         return img.loaded;
       });
-    };
+    }; // trim
 
-    // trim
+
     svg.trim = function (s) {
       return s.replace(/^\s+|\s+$/g, '');
-    };
+    }; // compress spaces
 
-    // compress spaces
+
     svg.compressSpaces = function (s) {
       return s.replace(/[\s\r\t\n]+/gm, ' ');
-    };
+    }; // ajax
+    // Todo: Replace with `fetch` and polyfill
 
-    // ajax
+
     svg.ajax = function (url, asynch) {
       var AJAX = window.XMLHttpRequest ? new XMLHttpRequest() : new window.ActiveXObject('Microsoft.XMLHTTP');
-      if (!AJAX) {
-        return null;
-      }
+
       if (asynch) {
         return new Promise(function (resolve, reject) {
+          // eslint-disable-line promise/avoid-new
           var req = AJAX.open('GET', url, true);
           req.addEventListener('load', function () {
             resolve(AJAX.responseText);
@@ -974,24 +1072,24 @@ var svgEditorExtension_server_opensave = (function () {
       AJAX.open('GET', url, false);
       AJAX.send(null);
       return AJAX.responseText;
-    };
+    }; // parse xml
 
-    // parse xml
+
     svg.parseXml = function (xml) {
       if (window.DOMParser) {
         var parser = new DOMParser();
         return parser.parseFromString(xml, 'text/xml');
-      } else {
-        xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
-        var xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
-        xmlDoc.async = 'false';
-        xmlDoc.loadXML(xml);
-        return xmlDoc;
       }
-    };
 
-    // text extensions
+      xml = xml.replace(/<!DOCTYPE svg[^>]*>/, '');
+      var xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
+      xmlDoc.async = 'false';
+      xmlDoc.loadXML(xml);
+      return xmlDoc;
+    }; // text extensions
     // get the text baseline
+
+
     var textBaselineMapping = {
       baseline: 'alphabetic',
       'before-edge': 'top',
@@ -1006,202 +1104,195 @@ var svgEditorExtension_server_opensave = (function () {
       mathematical: 'alphabetic'
     };
 
-    svg.Property = function () {
+    svg.Property =
+    /*#__PURE__*/
+    function () {
       function Property(name, value) {
-        classCallCheck(this, Property);
+        _classCallCheck(this, Property);
 
         this.name = name;
         this.value = value;
       }
 
-      createClass(Property, [{
-        key: 'getValue',
+      _createClass(Property, [{
+        key: "getValue",
         value: function getValue() {
           return this.value;
         }
       }, {
-        key: 'hasValue',
+        key: "hasValue",
         value: function hasValue() {
-          return this.value != null && this.value !== '';
-        }
-
-        // return the numerical value of the property
+          return !isNullish(this.value) && this.value !== '';
+        } // return the numerical value of the property
 
       }, {
-        key: 'numValue',
+        key: "numValue",
         value: function numValue() {
           if (!this.hasValue()) return 0;
-
           var n = parseFloat(this.value);
-          if ((this.value + '').match(/%$/)) {
-            n = n / 100.0;
+
+          if (String(this.value).endsWith('%')) {
+            n /= 100.0;
           }
+
           return n;
         }
       }, {
-        key: 'valueOrDefault',
+        key: "valueOrDefault",
         value: function valueOrDefault(def) {
           if (this.hasValue()) return this.value;
           return def;
         }
       }, {
-        key: 'numValueOrDefault',
+        key: "numValueOrDefault",
         value: function numValueOrDefault(def) {
           if (this.hasValue()) return this.numValue();
           return def;
-        }
-
-        // color extensions
+        } // color extensions
         // augment the current color value with the opacity
 
       }, {
-        key: 'addOpacity',
+        key: "addOpacity",
         value: function addOpacity(opacityProp) {
           var newValue = this.value;
-          if (opacityProp.value != null && opacityProp.value !== '' && typeof this.value === 'string') {
+
+          if (!isNullish(opacityProp.value) && opacityProp.value !== '' && typeof this.value === 'string') {
             // can only add opacity to colors, not patterns
             var color = new RGBColor(this.value);
+
             if (color.ok) {
               newValue = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + opacityProp.numValue() + ')';
             }
           }
-          return new svg.Property(this.name, newValue);
-        }
 
-        // definition extensions
+          return new svg.Property(this.name, newValue);
+        } // definition extensions
         // get the definition from the definitions table
 
       }, {
-        key: 'getDefinition',
+        key: "getDefinition",
         value: function getDefinition() {
           var name = this.value.match(/#([^)'"]+)/);
+
           if (name) {
             name = name[1];
           }
+
           if (!name) {
             name = this.value;
           }
+
           return svg.Definitions[name];
         }
       }, {
-        key: 'isUrlDefinition',
+        key: "isUrlDefinition",
         value: function isUrlDefinition() {
           return this.value.startsWith('url(');
         }
       }, {
-        key: 'getFillStyleDefinition',
+        key: "getFillStyleDefinition",
         value: function getFillStyleDefinition(e, opacityProp) {
-          var def = this.getDefinition();
+          var def = this.getDefinition(); // gradient
 
-          // gradient
-          if (def != null && def.createGradient) {
+          if (!isNullish(def) && def.createGradient) {
             return def.createGradient(svg.ctx, e, opacityProp);
-          }
+          } // pattern
 
-          // pattern
-          if (def != null && def.createPattern) {
+
+          if (!isNullish(def) && def.createPattern) {
             if (def.getHrefAttribute().hasValue()) {
               var pt = def.attribute('patternTransform');
               def = def.getHrefAttribute().getDefinition();
+
               if (pt.hasValue()) {
                 def.attribute('patternTransform', true).value = pt.value;
               }
             }
+
             return def.createPattern(svg.ctx, e);
           }
 
           return null;
-        }
-
-        // length extensions
+        } // length extensions
 
       }, {
-        key: 'getDPI',
+        key: "getDPI",
         value: function getDPI(viewPort) {
           return 96.0; // TODO: compute?
         }
       }, {
-        key: 'getEM',
+        key: "getEM",
         value: function getEM(viewPort) {
           var em = 12;
-
           var fontSize = new svg.Property('fontSize', svg.Font.Parse(svg.ctx.font).fontSize);
           if (fontSize.hasValue()) em = fontSize.toPixels(viewPort);
-
           return em;
         }
       }, {
-        key: 'getUnits',
+        key: "getUnits",
         value: function getUnits() {
-          var s = this.value + '';
-          return s.replace(/[0-9.-]/g, '');
-        }
-
-        // get the length as pixels
+          return String(this.value).replace(/[0-9.-]/g, '');
+        } // get the length as pixels
 
       }, {
-        key: 'toPixels',
+        key: "toPixels",
         value: function toPixels(viewPort, processPercent) {
           if (!this.hasValue()) return 0;
-          var s = this.value + '';
-          if (s.match(/em$/)) return this.numValue() * this.getEM(viewPort);
-          if (s.match(/ex$/)) return this.numValue() * this.getEM(viewPort) / 2.0;
-          if (s.match(/px$/)) return this.numValue();
-          if (s.match(/pt$/)) return this.numValue() * this.getDPI(viewPort) * (1.0 / 72.0);
-          if (s.match(/pc$/)) return this.numValue() * 15;
-          if (s.match(/cm$/)) return this.numValue() * this.getDPI(viewPort) / 2.54;
-          if (s.match(/mm$/)) return this.numValue() * this.getDPI(viewPort) / 25.4;
-          if (s.match(/in$/)) return this.numValue() * this.getDPI(viewPort);
-          if (s.match(/%$/)) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
+          var s = String(this.value);
+          if (s.endsWith('em')) return this.numValue() * this.getEM(viewPort);
+          if (s.endsWith('ex')) return this.numValue() * this.getEM(viewPort) / 2.0;
+          if (s.endsWith('px')) return this.numValue();
+          if (s.endsWith('pt')) return this.numValue() * this.getDPI(viewPort) * (1.0 / 72.0);
+          if (s.endsWith('pc')) return this.numValue() * 15;
+          if (s.endsWith('cm')) return this.numValue() * this.getDPI(viewPort) / 2.54;
+          if (s.endsWith('mm')) return this.numValue() * this.getDPI(viewPort) / 25.4;
+          if (s.endsWith('in')) return this.numValue() * this.getDPI(viewPort);
+          if (s.endsWith('%')) return this.numValue() * svg.ViewPort.ComputeSize(viewPort);
           var n = this.numValue();
           if (processPercent && n < 1.0) return n * svg.ViewPort.ComputeSize(viewPort);
           return n;
-        }
-
-        // time extensions
+        } // time extensions
         // get the time as milliseconds
 
       }, {
-        key: 'toMilliseconds',
+        key: "toMilliseconds",
         value: function toMilliseconds() {
           if (!this.hasValue()) return 0;
-          var s = this.value + '';
-          if (s.match(/s$/)) return this.numValue() * 1000;
-          if (s.match(/ms$/)) return this.numValue();
+          var s = String(this.value);
+          if (s.endsWith('ms')) return this.numValue();
+          if (s.endsWith('s')) return this.numValue() * 1000;
           return this.numValue();
-        }
-
-        // angle extensions
+        } // angle extensions
         // get the angle as radians
 
       }, {
-        key: 'toRadians',
+        key: "toRadians",
         value: function toRadians() {
           if (!this.hasValue()) return 0;
-          var s = this.value + '';
-          if (s.match(/deg$/)) return this.numValue() * (Math.PI / 180.0);
-          if (s.match(/grad$/)) return this.numValue() * (Math.PI / 200.0);
-          if (s.match(/rad$/)) return this.numValue();
+          var s = String(this.value);
+          if (s.endsWith('deg')) return this.numValue() * (Math.PI / 180.0);
+          if (s.endsWith('grad')) return this.numValue() * (Math.PI / 200.0);
+          if (s.endsWith('rad')) return this.numValue();
           return this.numValue() * (Math.PI / 180.0);
         }
       }, {
-        key: 'toTextBaseline',
+        key: "toTextBaseline",
         value: function toTextBaseline() {
           if (!this.hasValue()) return null;
           return textBaselineMapping[this.value];
         }
       }]);
-      return Property;
-    }();
 
-    // fonts
+      return Property;
+    }(); // fonts
+
+
     svg.Font = {
       Styles: 'normal|italic|oblique|inherit',
       Variants: 'normal|small-caps|inherit',
       Weights: 'normal|bold|bolder|lighter|100|200|300|400|500|600|700|800|900|inherit',
-
       CreateFont: function CreateFont(fontStyle, fontVariant, fontWeight, fontSize, fontFamily, inherit) {
-        var f = inherit != null ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
+        var f = !isNullish(inherit) ? this.Parse(inherit) : this.CreateFont('', '', '', '', '', svg.ctx.font);
         return {
           fontFamily: fontFamily || f.fontFamily,
           fontSize: fontSize || f.fontSize,
@@ -1217,67 +1308,76 @@ var svgEditorExtension_server_opensave = (function () {
         var _this = this;
 
         var f = {};
-        var d = svg.trim(svg.compressSpaces(s || '')).split(' ');
-        var set$$1 = {
-          fontSize: false, fontStyle: false, fontWeight: false, fontVariant: false
+        var ds = svg.trim(svg.compressSpaces(s || '')).split(' ');
+        var set = {
+          fontSize: false,
+          fontStyle: false,
+          fontWeight: false,
+          fontVariant: false
         };
         var ff = '';
-        d.forEach(function (d) {
-          if (!set$$1.fontStyle && _this.Styles.includes(d)) {
+        ds.forEach(function (d) {
+          if (!set.fontStyle && _this.Styles.includes(d)) {
             if (d !== 'inherit') {
               f.fontStyle = d;
             }
-            set$$1.fontStyle = true;
-          } else if (!set$$1.fontVariant && _this.Variants.includes(d)) {
+
+            set.fontStyle = true;
+          } else if (!set.fontVariant && _this.Variants.includes(d)) {
             if (d !== 'inherit') {
               f.fontVariant = d;
             }
-            set$$1.fontStyle = set$$1.fontVariant = true;
-          } else if (!set$$1.fontWeight && _this.Weights.includes(d)) {
+
+            set.fontStyle = set.fontVariant = true;
+          } else if (!set.fontWeight && _this.Weights.includes(d)) {
             if (d !== 'inherit') {
               f.fontWeight = d;
             }
-            set$$1.fontStyle = set$$1.fontVariant = set$$1.fontWeight = true;
-          } else if (!set$$1.fontSize) {
+
+            set.fontStyle = set.fontVariant = set.fontWeight = true;
+          } else if (!set.fontSize) {
             if (d !== 'inherit') {
               f.fontSize = d.split('/')[0];
             }
-            set$$1.fontStyle = set$$1.fontVariant = set$$1.fontWeight = set$$1.fontSize = true;
-          } else {
-            if (d !== 'inherit') {
-              ff += d;
-            }
+
+            set.fontStyle = set.fontVariant = set.fontWeight = set.fontSize = true;
+          } else if (d !== 'inherit') {
+            ff += d;
           }
         });
+
         if (ff !== '') {
           f.fontFamily = ff;
         }
+
         return f;
       }
-    };
+    }; // points and paths
 
-    // points and paths
     svg.ToNumberArray = function (s) {
       var a = svg.trim(svg.compressSpaces((s || '').replace(/,/g, ' '))).split(' ');
-      return a.map(function (a) {
-        return parseFloat(a);
+      return a.map(function (_a) {
+        return parseFloat(_a);
       });
     };
-    svg.Point = function () {
+
+    svg.Point =
+    /*#__PURE__*/
+    function () {
       function _class(x, y) {
-        classCallCheck(this, _class);
+        _classCallCheck(this, _class);
 
         this.x = x;
         this.y = y;
       }
 
-      createClass(_class, [{
-        key: 'angleTo',
+      _createClass(_class, [{
+        key: "angleTo",
         value: function angleTo(p) {
           return Math.atan2(p.y - this.y, p.x - this.x);
         }
       }, {
-        key: 'applyTransform',
+        key: "applyTransform",
         value: function applyTransform(v) {
           var xp = this.x * v[0] + this.y * v[2] + v[4];
           var yp = this.x * v[1] + this.y * v[3] + v[5];
@@ -1285,6 +1385,7 @@ var svgEditorExtension_server_opensave = (function () {
           this.y = yp;
         }
       }]);
+
       return _class;
     }();
 
@@ -1292,19 +1393,25 @@ var svgEditorExtension_server_opensave = (function () {
       var a = svg.ToNumberArray(s);
       return new svg.Point(a[0], a[1]);
     };
+
     svg.CreatePath = function (s) {
       var a = svg.ToNumberArray(s);
       var path = [];
+
       for (var i = 0; i < a.length; i += 2) {
         path.push(new svg.Point(a[i], a[i + 1]));
       }
-      return path;
-    };
 
-    // bounding box
-    svg.BoundingBox = function () {
+      return path;
+    }; // bounding box
+
+
+    svg.BoundingBox =
+    /*#__PURE__*/
+    function () {
       function _class2(x1, y1, x2, y2) {
-        classCallCheck(this, _class2);
+        _classCallCheck(this, _class2);
+
         // pass in initial points if you want
         this.x1 = Number.NaN;
         this.y1 = Number.NaN;
@@ -1314,74 +1421,80 @@ var svgEditorExtension_server_opensave = (function () {
         this.addPoint(x2, y2);
       }
 
-      createClass(_class2, [{
-        key: 'x',
+      _createClass(_class2, [{
+        key: "x",
         value: function x() {
           return this.x1;
         }
       }, {
-        key: 'y',
+        key: "y",
         value: function y() {
           return this.y1;
         }
       }, {
-        key: 'width',
+        key: "width",
         value: function width() {
           return this.x2 - this.x1;
         }
       }, {
-        key: 'height',
+        key: "height",
         value: function height() {
           return this.y2 - this.y1;
         }
       }, {
-        key: 'addPoint',
+        key: "addPoint",
         value: function addPoint(x, y) {
-          if (x != null) {
+          if (!isNullish(x)) {
             if (isNaN(this.x1) || isNaN(this.x2)) {
               this.x1 = x;
               this.x2 = x;
             }
+
             if (x < this.x1) this.x1 = x;
             if (x > this.x2) this.x2 = x;
           }
 
-          if (y != null) {
+          if (!isNullish(y)) {
             if (isNaN(this.y1) || isNaN(this.y2)) {
               this.y1 = y;
               this.y2 = y;
             }
+
             if (y < this.y1) this.y1 = y;
             if (y > this.y2) this.y2 = y;
           }
         }
       }, {
-        key: 'addX',
+        key: "addX",
         value: function addX(x) {
           this.addPoint(x, null);
         }
       }, {
-        key: 'addY',
+        key: "addY",
         value: function addY(y) {
           this.addPoint(null, y);
         }
       }, {
-        key: 'addBoundingBox',
+        key: "addBoundingBox",
         value: function addBoundingBox(bb) {
           this.addPoint(bb.x1, bb.y1);
           this.addPoint(bb.x2, bb.y2);
         }
       }, {
-        key: 'addQuadraticCurve',
+        key: "addQuadraticCurve",
         value: function addQuadraticCurve(p0x, p0y, p1x, p1y, p2x, p2y) {
           var cp1x = p0x + 2 / 3 * (p1x - p0x); // CP1 = QP0 + 2/3 *(QP1-QP0)
+
           var cp1y = p0y + 2 / 3 * (p1y - p0y); // CP1 = QP0 + 2/3 *(QP1-QP0)
+
           var cp2x = cp1x + 1 / 3 * (p2x - p0x); // CP2 = CP1 + 1/3 *(QP2-QP0)
+
           var cp2y = cp1y + 1 / 3 * (p2y - p0y); // CP2 = CP1 + 1/3 *(QP2-QP0)
+
           this.addBezierCurve(p0x, p0y, cp1x, cp2x, cp1y, cp2y, p2x, p2y);
         }
       }, {
-        key: 'addBezierCurve',
+        key: "addBezierCurve",
         value: function addBezierCurve(p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y) {
           var _this2 = this;
 
@@ -1403,23 +1516,28 @@ var svgEditorExtension_server_opensave = (function () {
             var c = 3 * p1[i] - 3 * p0[i];
 
             if (a === 0) {
-              if (b === 0) return 'continue';
+              if (b === 0) return "continue";
               var t = -c / b;
+
               if (t > 0 && t < 1) {
                 if (i === 0) _this2.addX(f(t));
                 if (i === 1) _this2.addY(f(t));
               }
-              return 'continue';
+
+              return "continue";
             }
 
             var b2ac = Math.pow(b, 2) - 4 * c * a;
-            if (b2ac < 0) return 'continue';
+            if (b2ac < 0) return "continue";
             var t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
+
             if (t1 > 0 && t1 < 1) {
               if (i === 0) _this2.addX(f(t1));
               if (i === 1) _this2.addY(f(t1));
             }
+
             var t2 = (-b - Math.sqrt(b2ac)) / (2 * a);
+
             if (t2 > 0 && t2 < 1) {
               if (i === 0) _this2.addX(f(t2));
               if (i === 1) _this2.addY(f(t2));
@@ -1429,99 +1547,117 @@ var svgEditorExtension_server_opensave = (function () {
           for (var i = 0; i <= 1; i++) {
             var _ret = _loop(i);
 
-            if (_ret === 'continue') continue;
+            if (_ret === "continue") continue;
           }
         }
       }, {
-        key: 'isPointInBox',
+        key: "isPointInBox",
         value: function isPointInBox(x, y) {
           return this.x1 <= x && x <= this.x2 && this.y1 <= y && y <= this.y2;
         }
       }]);
-      return _class2;
-    }();
 
-    // transforms
-    svg.Transform = function () {
+      return _class2;
+    }(); // transforms
+
+
+    svg.Transform =
+    /*#__PURE__*/
+    function () {
       function _class3(v) {
         var _this6 = this;
 
-        classCallCheck(this, _class3);
+        _classCallCheck(this, _class3);
 
         this.Type = {
           translate: function translate(s) {
-            classCallCheck(this, translate);
+            _classCallCheck(this, translate);
 
             this.p = svg.CreatePoint(s);
+
             this.apply = function (ctx) {
               ctx.translate(this.p.x || 0.0, this.p.y || 0.0);
             };
+
             this.unapply = function (ctx) {
               ctx.translate(-1.0 * this.p.x || 0.0, -1.0 * this.p.y || 0.0);
             };
+
             this.applyToPoint = function (p) {
               p.applyTransform([1, 0, 0, 1, this.p.x || 0.0, this.p.y || 0.0]);
             };
           },
           rotate: function rotate(s) {
-            classCallCheck(this, rotate);
+            _classCallCheck(this, rotate);
 
             var a = svg.ToNumberArray(s);
             this.angle = new svg.Property('angle', a[0]);
             this.cx = a[1] || 0;
             this.cy = a[2] || 0;
+
             this.apply = function (ctx) {
               ctx.translate(this.cx, this.cy);
               ctx.rotate(this.angle.toRadians());
               ctx.translate(-this.cx, -this.cy);
             };
+
             this.unapply = function (ctx) {
               ctx.translate(this.cx, this.cy);
               ctx.rotate(-1.0 * this.angle.toRadians());
               ctx.translate(-this.cx, -this.cy);
             };
+
             this.applyToPoint = function (p) {
-              var a = this.angle.toRadians();
+              var _a = this.angle.toRadians();
+
               p.applyTransform([1, 0, 0, 1, this.p.x || 0.0, this.p.y || 0.0]);
-              p.applyTransform([Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), 0, 0]);
+              p.applyTransform([Math.cos(_a), Math.sin(_a), -Math.sin(_a), Math.cos(_a), 0, 0]);
               p.applyTransform([1, 0, 0, 1, -this.p.x || 0.0, -this.p.y || 0.0]);
             };
           },
           scale: function scale(s) {
-            classCallCheck(this, scale);
+            _classCallCheck(this, scale);
 
             this.p = svg.CreatePoint(s);
+
             this.apply = function (ctx) {
               ctx.scale(this.p.x || 1.0, this.p.y || this.p.x || 1.0);
             };
+
             this.unapply = function (ctx) {
               ctx.scale(1.0 / this.p.x || 1.0, 1.0 / this.p.y || this.p.x || 1.0);
             };
+
             this.applyToPoint = function (p) {
               p.applyTransform([this.p.x || 0.0, 0, 0, this.p.y || 0.0, 0, 0]);
             };
           },
           matrix: function matrix(s) {
-            classCallCheck(this, matrix);
+            _classCallCheck(this, matrix);
 
             this.m = svg.ToNumberArray(s);
+
             this.apply = function (ctx) {
               ctx.transform(this.m[0], this.m[1], this.m[2], this.m[3], this.m[4], this.m[5]);
             };
+
             this.applyToPoint = function (p) {
               p.applyTransform(this.m);
             };
           }
         };
         Object.assign(this.Type, {
-          SkewBase: function (_Type$matrix) {
-            inherits(SkewBase, _Type$matrix);
+          SkewBase:
+          /*#__PURE__*/
+          function (_this$Type$matrix) {
+            _inherits(SkewBase, _this$Type$matrix);
 
             function SkewBase(s) {
-              classCallCheck(this, SkewBase);
+              var _this3;
 
-              var _this3 = possibleConstructorReturn(this, (SkewBase.__proto__ || Object.getPrototypeOf(SkewBase)).call(this, s));
+              _classCallCheck(this, SkewBase);
 
+              _this3 = _possibleConstructorReturn(this, _getPrototypeOf(SkewBase).call(this, s));
               _this3.angle = new svg.Property('angle', s);
               return _this3;
             }
@@ -1530,28 +1666,34 @@ var svgEditorExtension_server_opensave = (function () {
           }(this.Type.matrix)
         });
         Object.assign(this.Type, {
-          skewX: function (_Type$SkewBase) {
-            inherits(skewX, _Type$SkewBase);
+          skewX:
+          /*#__PURE__*/
+          function (_this$Type$SkewBase) {
+            _inherits(skewX, _this$Type$SkewBase);
 
             function skewX(s) {
-              classCallCheck(this, skewX);
+              var _this4;
 
-              var _this4 = possibleConstructorReturn(this, (skewX.__proto__ || Object.getPrototypeOf(skewX)).call(this, s));
+              _classCallCheck(this, skewX);
 
+              _this4 = _possibleConstructorReturn(this, _getPrototypeOf(skewX).call(this, s));
               _this4.m = [1, 0, Math.tan(_this4.angle.toRadians()), 1, 0, 0];
               return _this4;
             }
 
             return skewX;
           }(this.Type.SkewBase),
-          skewY: function (_Type$SkewBase2) {
-            inherits(skewY, _Type$SkewBase2);
+          skewY:
+          /*#__PURE__*/
+          function (_this$Type$SkewBase2) {
+            _inherits(skewY, _this$Type$SkewBase2);
 
             function skewY(s) {
-              classCallCheck(this, skewY);
+              var _this5;
 
-              var _this5 = possibleConstructorReturn(this, (skewY.__proto__ || Object.getPrototypeOf(skewY)).call(this, s));
+              _classCallCheck(this, skewY);
 
+              _this5 = _possibleConstructorReturn(this, _getPrototypeOf(skewY).call(this, s));
               _this5.m = [1, Math.tan(_this5.angle.toRadians()), 0, 1, 0, 0];
               return _this5;
             }
@@ -1559,7 +1701,6 @@ var svgEditorExtension_server_opensave = (function () {
             return skewY;
           }(this.Type.SkewBase)
         });
-
         var data = svg.trim(svg.compressSpaces(v)).replace(/\)([a-zA-Z])/g, ') $1').replace(/\)(\s?,\s?)/g, ') ').split(/\s(?=[a-z])/);
         this.transforms = data.map(function (d) {
           var type = svg.trim(d.split('(')[0]);
@@ -1570,339 +1711,382 @@ var svgEditorExtension_server_opensave = (function () {
         });
       }
 
-      createClass(_class3, [{
-        key: 'apply',
+      _createClass(_class3, [{
+        key: "apply",
         value: function apply(ctx) {
           this.transforms.forEach(function (transform) {
             transform.apply(ctx);
           });
         }
       }, {
-        key: 'unapply',
+        key: "unapply",
         value: function unapply(ctx) {
           for (var i = this.transforms.length - 1; i >= 0; i--) {
             this.transforms[i].unapply(ctx);
           }
         }
       }, {
-        key: 'applyToPoint',
+        key: "applyToPoint",
         value: function applyToPoint(p) {
           this.transforms.forEach(function (transform) {
             transform.applyToPoint(p);
           });
         }
       }]);
-      return _class3;
-    }();
 
-    // aspect ratio
+      return _class3;
+    }(); // aspect ratio
+
+
     svg.AspectRatio = function (ctx, aspectRatio, width, desiredWidth, height, desiredHeight, minX, minY, refX, refY) {
       // aspect ratio - https://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute
       aspectRatio = svg.compressSpaces(aspectRatio);
       aspectRatio = aspectRatio.replace(/^defer\s/, ''); // ignore defer
-      var align = aspectRatio.split(' ')[0] || 'xMidYMid';
-      var meetOrSlice = aspectRatio.split(' ')[1] || 'meet';
 
-      // calculate scale
+      var align = aspectRatio.split(' ')[0] || 'xMidYMid';
+      var meetOrSlice = aspectRatio.split(' ')[1] || 'meet'; // calculate scale
+
       var scaleX = width / desiredWidth;
       var scaleY = height / desiredHeight;
       var scaleMin = Math.min(scaleX, scaleY);
       var scaleMax = Math.max(scaleX, scaleY);
+
       if (meetOrSlice === 'meet') {
-        desiredWidth *= scaleMin;desiredHeight *= scaleMin;
+        desiredWidth *= scaleMin;
+        desiredHeight *= scaleMin;
       }
+
       if (meetOrSlice === 'slice') {
-        desiredWidth *= scaleMax;desiredHeight *= scaleMax;
+        desiredWidth *= scaleMax;
+        desiredHeight *= scaleMax;
       }
 
       refX = new svg.Property('refX', refX);
       refY = new svg.Property('refY', refY);
+
       if (refX.hasValue() && refY.hasValue()) {
         ctx.translate(-scaleMin * refX.toPixels('x'), -scaleMin * refY.toPixels('y'));
       } else {
         // align
-        if (align.match(/^xMid/) && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
-        if (align.match(/YMid$/) && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
-        if (align.match(/^xMax/) && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width - desiredWidth, 0);
-        if (align.match(/YMax$/) && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height - desiredHeight);
-      }
+        if (align.startsWith('xMid') && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
+        if (align.endsWith('YMid') && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
+        if (align.startsWith('xMax') && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width - desiredWidth, 0);
+        if (align.endsWith('YMax') && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height - desiredHeight);
+      } // scale
 
-      // scale
-      if (align === 'none') ctx.scale(scaleX, scaleY);else if (meetOrSlice === 'meet') ctx.scale(scaleMin, scaleMin);else if (meetOrSlice === 'slice') ctx.scale(scaleMax, scaleMax);
 
-      // translate
-      ctx.translate(minX == null ? 0 : -minX, minY == null ? 0 : -minY);
-    };
+      if (align === 'none') ctx.scale(scaleX, scaleY);else if (meetOrSlice === 'meet') ctx.scale(scaleMin, scaleMin);else if (meetOrSlice === 'slice') ctx.scale(scaleMax, scaleMax); // translate
 
-    // elements
+      ctx.translate(isNullish(minX) ? 0 : -minX, isNullish(minY) ? 0 : -minY);
+    }; // elements
+
+
     svg.Element = {};
-
     svg.EmptyProperty = new svg.Property('EMPTY', '');
 
-    svg.Element.ElementBase = function () {
+    svg.Element.ElementBase =
+    /*#__PURE__*/
+    function () {
       function _class4(node) {
         var _this7 = this;
 
-        classCallCheck(this, _class4);
+        _classCallCheck(this, _class4);
 
-        this.captureTextNodes = arguments[1]; // Argument from inheriting class
+        // Argument from inheriting class
+        this.captureTextNodes = arguments[1]; // eslint-disable-line prefer-rest-params
+
         this.attributes = {};
         this.styles = {};
         this.children = [];
-        if (node != null && node.nodeType === 1) {
+
+        if (!isNullish(node) && node.nodeType === 1) {
           // ELEMENT_NODE
           // add children
-          [].concat(toConsumableArray(node.childNodes)).forEach(function (childNode) {
+          _toConsumableArray(node.childNodes).forEach(function (childNode) {
             if (childNode.nodeType === 1) {
               _this7.addChild(childNode, true); // ELEMENT_NODE
+
             }
+
             if (_this7.captureTextNodes && (childNode.nodeType === 3 || childNode.nodeType === 4)) {
               var text = childNode.nodeValue || childNode.text || '';
+
               if (svg.trim(svg.compressSpaces(text)) !== '') {
                 _this7.addChild(new svg.Element.tspan(childNode), false); // TEXT_NODE
+
               }
             }
-          });
+          }); // add attributes
 
-          // add attributes
-          [].concat(toConsumableArray(node.attributes)).forEach(function (_ref) {
+
+          _toConsumableArray(node.attributes).forEach(function (_ref) {
             var nodeName = _ref.nodeName,
                 nodeValue = _ref.nodeValue;
-
             _this7.attributes[nodeName] = new svg.Property(nodeName, nodeValue);
-          });
-          // add tag styles
-          var styles = svg.Styles[node.nodeName];
-          if (styles != null) {
-            for (var name in styles) {
-              this.styles[name] = styles[name];
-            }
-          }
+          }); // add tag styles
 
-          // add class styles
+
+          var styles = svg.Styles[node.nodeName];
+
+          if (!isNullish(styles)) {
+            Object.entries(styles).forEach(function (_ref2) {
+              var _ref3 = _slicedToArray(_ref2, 2),
+                  name = _ref3[0],
+                  styleValue = _ref3[1];
+
+              _this7.styles[name] = styleValue;
+            });
+          } // add class styles
+
+
           if (this.attribute('class').hasValue()) {
             var classes = svg.compressSpaces(this.attribute('class').value).split(' ');
             classes.forEach(function (clss) {
               styles = svg.Styles['.' + clss];
-              if (styles != null) {
-                for (var _name in styles) {
-                  _this7.styles[_name] = styles[_name];
-                }
+
+              if (!isNullish(styles)) {
+                Object.entries(styles).forEach(function (_ref4) {
+                  var _ref5 = _slicedToArray(_ref4, 2),
+                      name = _ref5[0],
+                      styleValue = _ref5[1];
+
+                  _this7.styles[name] = styleValue;
+                });
               }
+
               styles = svg.Styles[node.nodeName + '.' + clss];
-              if (styles != null) {
-                for (var _name2 in styles) {
-                  _this7.styles[_name2] = styles[_name2];
-                }
+
+              if (!isNullish(styles)) {
+                Object.entries(styles).forEach(function (_ref6) {
+                  var _ref7 = _slicedToArray(_ref6, 2),
+                      name = _ref7[0],
+                      styleValue = _ref7[1];
+
+                  _this7.styles[name] = styleValue;
+                });
               }
             });
-          }
+          } // add id styles
 
-          // add id styles
+
           if (this.attribute('id').hasValue()) {
             var _styles = svg.Styles['#' + this.attribute('id').value];
-            if (_styles != null) {
-              for (var _name3 in _styles) {
-                this.styles[_name3] = _styles[_name3];
-              }
-            }
-          }
 
-          // add inline styles
+            if (!isNullish(_styles)) {
+              Object.entries(_styles).forEach(function (_ref8) {
+                var _ref9 = _slicedToArray(_ref8, 2),
+                    name = _ref9[0],
+                    styleValue = _ref9[1];
+
+                _this7.styles[name] = styleValue;
+              });
+            }
+          } // add inline styles
+
+
           if (this.attribute('style').hasValue()) {
             var _styles2 = this.attribute('style').value.split(';');
+
             _styles2.forEach(function (style) {
               if (svg.trim(style) !== '') {
                 var _style$split = style.split(':'),
-                    _name4 = _style$split.name,
+                    name = _style$split.name,
                     value = _style$split.value;
 
-                _name4 = svg.trim(_name4);
+                name = svg.trim(name);
                 value = svg.trim(value);
-                _this7.styles[_name4] = new svg.Property(_name4, value);
+                _this7.styles[name] = new svg.Property(name, value);
               }
             });
-          }
+          } // add id
 
-          // add id
+
           if (this.attribute('id').hasValue()) {
-            if (svg.Definitions[this.attribute('id').value] == null) {
+            if (isNullish(svg.Definitions[this.attribute('id').value])) {
               svg.Definitions[this.attribute('id').value] = this;
             }
           }
         }
-      }
-
-      // get or create attribute
+      } // get or create attribute
 
 
-      createClass(_class4, [{
-        key: 'attribute',
+      _createClass(_class4, [{
+        key: "attribute",
         value: function attribute(name, createIfNotExists) {
           var a = this.attributes[name];
-          if (a != null) return a;
+          if (!isNullish(a)) return a;
 
           if (createIfNotExists === true) {
-            a = new svg.Property(name, '');this.attributes[name] = a;
+            a = new svg.Property(name, '');
+            this.attributes[name] = a;
           }
+
           return a || svg.EmptyProperty;
         }
       }, {
-        key: 'getHrefAttribute',
+        key: "getHrefAttribute",
         value: function getHrefAttribute() {
           for (var a in this.attributes) {
-            if (a.match(/:href$/)) {
+            if (a.endsWith(':href')) {
               return this.attributes[a];
             }
           }
-          return svg.EmptyProperty;
-        }
 
-        // get or create style, crawls up node tree
+          return svg.EmptyProperty;
+        } // get or create style, crawls up node tree
 
       }, {
-        key: 'style',
+        key: "style",
         value: function style(name, createIfNotExists, skipAncestors) {
           var s = this.styles[name];
-          if (s != null) return s;
-
+          if (!isNullish(s)) return s;
           var a = this.attribute(name);
-          if (a != null && a.hasValue()) {
+
+          if (!isNullish(a) && a.hasValue()) {
             this.styles[name] = a; // move up to me to cache
+
             return a;
           }
 
           if (skipAncestors !== true) {
             var p = this.parent;
-            if (p != null) {
+
+            if (!isNullish(p)) {
               var ps = p.style(name);
-              if (ps != null && ps.hasValue()) {
+
+              if (!isNullish(ps) && ps.hasValue()) {
                 return ps;
               }
             }
           }
 
           if (createIfNotExists === true) {
-            s = new svg.Property(name, '');this.styles[name] = s;
+            s = new svg.Property(name, '');
+            this.styles[name] = s;
           }
-          return s || svg.EmptyProperty;
-        }
 
-        // base render
+          return s || svg.EmptyProperty;
+        } // base render
 
       }, {
-        key: 'render',
+        key: "render",
         value: function render(ctx) {
           // don't render display=none
-          if (this.style('display').value === 'none') return;
+          if (this.style('display').value === 'none') return; // don't render visibility=hidden
 
-          // don't render visibility=hidden
           if (this.style('visibility').value === 'hidden') return;
-
           ctx.save();
+
           if (this.attribute('mask').hasValue()) {
             // mask
             var mask = this.attribute('mask').getDefinition();
-            if (mask != null) mask.apply(ctx, this);
+            if (!isNullish(mask)) mask.apply(ctx, this);
           } else if (this.style('filter').hasValue()) {
             // filter
             var filter = this.style('filter').getDefinition();
-            if (filter != null) filter.apply(ctx, this);
+            if (!isNullish(filter)) filter.apply(ctx, this);
           } else {
             this.setContext(ctx);
             this.renderChildren(ctx);
             this.clearContext(ctx);
           }
-          ctx.restore();
-        }
 
-        // base set context
+          ctx.restore();
+        } // base set context
 
       }, {
-        key: 'setContext',
-        value: function setContext(ctx) {}
-        // OVERRIDE ME!
-
-
+        key: "setContext",
+        value: function setContext(ctx) {} // OVERRIDE ME!
         // base clear context
 
       }, {
-        key: 'clearContext',
-        value: function clearContext(ctx) {}
-        // OVERRIDE ME!
-
-
+        key: "clearContext",
+        value: function clearContext(ctx) {} // OVERRIDE ME!
         // base render children
 
       }, {
-        key: 'renderChildren',
+        key: "renderChildren",
         value: function renderChildren(ctx) {
           this.children.forEach(function (child) {
             child.render(ctx);
           });
         }
       }, {
-        key: 'addChild',
+        key: "addChild",
         value: function addChild(childNode, create) {
           var child = create ? svg.CreateElement(childNode) : childNode;
           child.parent = this;
+
           if (child.type !== 'title') {
             this.children.push(child);
           }
         }
       }]);
+
       return _class4;
     }();
 
-    svg.Element.RenderedElementBase = function (_svg$Element$ElementB) {
-      inherits(_class5, _svg$Element$ElementB);
+    svg.Element.RenderedElementBase =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB) {
+      _inherits(_class5, _svg$Element$ElementB);
 
       function _class5() {
-        classCallCheck(this, _class5);
-        return possibleConstructorReturn(this, (_class5.__proto__ || Object.getPrototypeOf(_class5)).apply(this, arguments));
+        _classCallCheck(this, _class5);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class5).apply(this, arguments));
       }
 
-      createClass(_class5, [{
-        key: 'setContext',
+      _createClass(_class5, [{
+        key: "setContext",
         value: function setContext(ctx) {
           // fill
           if (this.style('fill').isUrlDefinition()) {
             var fs = this.style('fill').getFillStyleDefinition(this, this.style('fill-opacity'));
-            if (fs != null) ctx.fillStyle = fs;
+            if (!isNullish(fs)) ctx.fillStyle = fs;
           } else if (this.style('fill').hasValue()) {
             var fillStyle = this.style('fill');
             if (fillStyle.value === 'currentColor') fillStyle.value = this.style('color').value;
             ctx.fillStyle = fillStyle.value === 'none' ? 'rgba(0,0,0,0)' : fillStyle.value;
           }
+
           if (this.style('fill-opacity').hasValue()) {
             var _fillStyle = new svg.Property('fill', ctx.fillStyle);
+
             _fillStyle = _fillStyle.addOpacity(this.style('fill-opacity'));
             ctx.fillStyle = _fillStyle.value;
-          }
+          } // stroke
 
-          // stroke
+
           if (this.style('stroke').isUrlDefinition()) {
             var _fs = this.style('stroke').getFillStyleDefinition(this, this.style('stroke-opacity'));
-            if (_fs != null) ctx.strokeStyle = _fs;
+
+            if (!isNullish(_fs)) ctx.strokeStyle = _fs;
           } else if (this.style('stroke').hasValue()) {
             var strokeStyle = this.style('stroke');
             if (strokeStyle.value === 'currentColor') strokeStyle.value = this.style('color').value;
             ctx.strokeStyle = strokeStyle.value === 'none' ? 'rgba(0,0,0,0)' : strokeStyle.value;
           }
+
           if (this.style('stroke-opacity').hasValue()) {
             var _strokeStyle = new svg.Property('stroke', ctx.strokeStyle);
+
             _strokeStyle = _strokeStyle.addOpacity(this.style('stroke-opacity'));
             ctx.strokeStyle = _strokeStyle.value;
           }
+
           if (this.style('stroke-width').hasValue()) {
             var newLineWidth = this.style('stroke-width').toPixels();
             ctx.lineWidth = newLineWidth === 0 ? 0.001 : newLineWidth; // browsers don't respect 0
           }
+
           if (this.style('stroke-linecap').hasValue()) ctx.lineCap = this.style('stroke-linecap').value;
           if (this.style('stroke-linejoin').hasValue()) ctx.lineJoin = this.style('stroke-linejoin').value;
           if (this.style('stroke-miterlimit').hasValue()) ctx.miterLimit = this.style('stroke-miterlimit').value;
+
           if (this.style('stroke-dasharray').hasValue() && this.style('stroke-dasharray').value !== 'none') {
             var gaps = svg.ToNumberArray(this.style('stroke-dasharray').value);
+
             if (typeof ctx.setLineDash !== 'undefined') {
               ctx.setLineDash(gaps);
             } else if (typeof ctx.webkitLineDash !== 'undefined') {
@@ -1912,6 +2096,7 @@ var svgEditorExtension_server_opensave = (function () {
             }
 
             var offset = this.style('stroke-dashoffset').numValueOrDefault(1);
+
             if (typeof ctx.lineDashOffset !== 'undefined') {
               ctx.lineDashOffset = offset;
             } else if (typeof ctx.webkitLineDashOffset !== 'undefined') {
@@ -1919,53 +2104,58 @@ var svgEditorExtension_server_opensave = (function () {
             } else if (typeof ctx.mozDashOffset !== 'undefined') {
               ctx.mozDashOffset = offset;
             }
-          }
+          } // font
 
-          // font
+
           if (typeof ctx.font !== 'undefined') {
             ctx.font = svg.Font.CreateFont(this.style('font-style').value, this.style('font-variant').value, this.style('font-weight').value, this.style('font-size').hasValue() ? this.style('font-size').toPixels() + 'px' : '', this.style('font-family').value).toString();
-          }
+          } // transform
 
-          // transform
+
           if (this.attribute('transform').hasValue()) {
             var transform = new svg.Transform(this.attribute('transform').value);
             transform.apply(ctx);
-          }
+          } // clip
 
-          // clip
+
           if (this.style('clip-path', false, true).hasValue()) {
             var clip = this.style('clip-path', false, true).getDefinition();
-            if (clip != null) clip.apply(ctx);
-          }
+            if (!isNullish(clip)) clip.apply(ctx);
+          } // opacity
 
-          // opacity
+
           if (this.style('opacity').hasValue()) {
             ctx.globalAlpha = this.style('opacity').numValue();
           }
         }
       }]);
+
       return _class5;
     }(svg.Element.ElementBase);
 
-    svg.Element.PathElementBase = function (_svg$Element$Rendered) {
-      inherits(_class6, _svg$Element$Rendered);
+    svg.Element.PathElementBase =
+    /*#__PURE__*/
+    function (_svg$Element$Rendered) {
+      _inherits(_class6, _svg$Element$Rendered);
 
       function _class6() {
-        classCallCheck(this, _class6);
-        return possibleConstructorReturn(this, (_class6.__proto__ || Object.getPrototypeOf(_class6)).apply(this, arguments));
+        _classCallCheck(this, _class6);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class6).apply(this, arguments));
       }
 
-      createClass(_class6, [{
-        key: 'path',
+      _createClass(_class6, [{
+        key: "path",
         value: function path(ctx) {
-          if (ctx != null) ctx.beginPath();
+          if (!isNullish(ctx)) ctx.beginPath();
           return new svg.BoundingBox();
         }
       }, {
-        key: 'renderChildren',
+        key: "renderChildren",
         value: function renderChildren(ctx) {
           this.path(ctx);
           svg.Mouse.checkPath(this, ctx);
+
           if (ctx.fillStyle !== '') {
             if (this.style('fill-rule').valueOrDefault('inherit') !== 'inherit') {
               ctx.fill(this.style('fill-rule').value);
@@ -1973,85 +2163,95 @@ var svgEditorExtension_server_opensave = (function () {
               ctx.fill();
             }
           }
-          if (ctx.strokeStyle !== '') ctx.stroke();
 
+          if (ctx.strokeStyle !== '') ctx.stroke();
           var markers = this.getMarkers();
-          if (markers != null) {
+
+          if (!isNullish(markers)) {
             if (this.style('marker-start').isUrlDefinition()) {
               var marker = this.style('marker-start').getDefinition();
               marker.render(ctx, markers[0][0], markers[0][1]);
             }
+
             if (this.style('marker-mid').isUrlDefinition()) {
               var _marker = this.style('marker-mid').getDefinition();
+
               for (var i = 1; i < markers.length - 1; i++) {
                 _marker.render(ctx, markers[i][0], markers[i][1]);
               }
             }
+
             if (this.style('marker-end').isUrlDefinition()) {
               var _marker2 = this.style('marker-end').getDefinition();
+
               _marker2.render(ctx, markers[markers.length - 1][0], markers[markers.length - 1][1]);
             }
           }
         }
       }, {
-        key: 'getBoundingBox',
+        key: "getBoundingBox",
         value: function getBoundingBox() {
           return this.path();
         }
       }, {
-        key: 'getMarkers',
+        key: "getMarkers",
         value: function getMarkers() {
           return null;
         }
       }]);
-      return _class6;
-    }(svg.Element.RenderedElementBase);
 
-    // svg element
-    svg.Element.svg = function (_svg$Element$Rendered2) {
-      inherits(_class7, _svg$Element$Rendered2);
+      return _class6;
+    }(svg.Element.RenderedElementBase); // svg element
+
+
+    svg.Element.svg =
+    /*#__PURE__*/
+    function (_svg$Element$Rendered2) {
+      _inherits(_class7, _svg$Element$Rendered2);
 
       function _class7() {
-        classCallCheck(this, _class7);
-        return possibleConstructorReturn(this, (_class7.__proto__ || Object.getPrototypeOf(_class7)).apply(this, arguments));
+        _classCallCheck(this, _class7);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class7).apply(this, arguments));
       }
 
-      createClass(_class7, [{
-        key: 'clearContext',
+      _createClass(_class7, [{
+        key: "clearContext",
         value: function clearContext(ctx) {
-          get(_class7.prototype.__proto__ || Object.getPrototypeOf(_class7.prototype), 'clearContext', this).call(this, ctx);
+          _get(_getPrototypeOf(_class7.prototype), "clearContext", this).call(this, ctx);
+
           svg.ViewPort.RemoveCurrent();
         }
       }, {
-        key: 'setContext',
+        key: "setContext",
         value: function setContext(ctx) {
           // initial values and defaults
           ctx.strokeStyle = 'rgba(0,0,0,0)';
           ctx.lineCap = 'butt';
           ctx.lineJoin = 'miter';
           ctx.miterLimit = 4;
+
           if (typeof ctx.font !== 'undefined' && typeof window.getComputedStyle !== 'undefined') {
             ctx.font = window.getComputedStyle(ctx.canvas).getPropertyValue('font');
           }
 
-          get(_class7.prototype.__proto__ || Object.getPrototypeOf(_class7.prototype), 'setContext', this).call(this, ctx);
+          _get(_getPrototypeOf(_class7.prototype), "setContext", this).call(this, ctx); // create new view port
 
-          // create new view port
+
           if (!this.attribute('x').hasValue()) this.attribute('x', true).value = 0;
           if (!this.attribute('y').hasValue()) this.attribute('y', true).value = 0;
           ctx.translate(this.attribute('x').toPixels('x'), this.attribute('y').toPixels('y'));
-
           var width = svg.ViewPort.width();
           var height = svg.ViewPort.height();
-
           if (!this.attribute('width').hasValue()) this.attribute('width', true).value = '100%';
           if (!this.attribute('height').hasValue()) this.attribute('height', true).value = '100%';
+
           if (typeof this.root === 'undefined') {
             width = this.attribute('width').toPixels('x');
             height = this.attribute('height').toPixels('y');
-
             var x = 0;
             var y = 0;
+
             if (this.attribute('refX').hasValue() && this.attribute('refY').hasValue()) {
               x = -this.attribute('refX').toPixels('x');
               y = -this.attribute('refY').toPixels('y');
@@ -2067,37 +2267,39 @@ var svgEditorExtension_server_opensave = (function () {
               ctx.clip();
             }
           }
-          svg.ViewPort.SetCurrent(width, height);
 
-          // viewbox
+          svg.ViewPort.SetCurrent(width, height); // viewbox
+
           if (this.attribute('viewBox').hasValue()) {
             var viewBox = svg.ToNumberArray(this.attribute('viewBox').value);
             var minX = viewBox[0];
             var minY = viewBox[1];
             width = viewBox[2];
             height = viewBox[3];
-
             svg.AspectRatio(ctx, this.attribute('preserveAspectRatio').value, svg.ViewPort.width(), width, svg.ViewPort.height(), height, minX, minY, this.attribute('refX').value, this.attribute('refY').value);
-
             svg.ViewPort.RemoveCurrent();
             svg.ViewPort.SetCurrent(viewBox[2], viewBox[3]);
           }
         }
       }]);
-      return _class7;
-    }(svg.Element.RenderedElementBase);
 
-    // rect element
-    svg.Element.rect = function (_svg$Element$PathElem) {
-      inherits(_class8, _svg$Element$PathElem);
+      return _class7;
+    }(svg.Element.RenderedElementBase); // rect element
+
+
+    svg.Element.rect =
+    /*#__PURE__*/
+    function (_svg$Element$PathElem) {
+      _inherits(_class8, _svg$Element$PathElem);
 
       function _class8() {
-        classCallCheck(this, _class8);
-        return possibleConstructorReturn(this, (_class8.__proto__ || Object.getPrototypeOf(_class8)).apply(this, arguments));
+        _classCallCheck(this, _class8);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class8).apply(this, arguments));
       }
 
-      createClass(_class8, [{
-        key: 'path',
+      _createClass(_class8, [{
+        key: "path",
         value: function path(ctx) {
           var x = this.attribute('x').toPixels('x');
           var y = this.attribute('y').toPixels('y');
@@ -2109,7 +2311,8 @@ var svgEditorExtension_server_opensave = (function () {
           if (this.attribute('ry').hasValue() && !this.attribute('rx').hasValue()) rx = ry;
           rx = Math.min(rx, width / 2.0);
           ry = Math.min(ry, height / 2.0);
-          if (ctx != null) {
+
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.moveTo(x + rx, y);
             ctx.lineTo(x + width - rx, y);
@@ -2126,26 +2329,30 @@ var svgEditorExtension_server_opensave = (function () {
           return new svg.BoundingBox(x, y, x + width, y + height);
         }
       }]);
-      return _class8;
-    }(svg.Element.PathElementBase);
 
-    // circle element
-    svg.Element.circle = function (_svg$Element$PathElem2) {
-      inherits(_class9, _svg$Element$PathElem2);
+      return _class8;
+    }(svg.Element.PathElementBase); // circle element
+
+
+    svg.Element.circle =
+    /*#__PURE__*/
+    function (_svg$Element$PathElem2) {
+      _inherits(_class9, _svg$Element$PathElem2);
 
       function _class9() {
-        classCallCheck(this, _class9);
-        return possibleConstructorReturn(this, (_class9.__proto__ || Object.getPrototypeOf(_class9)).apply(this, arguments));
+        _classCallCheck(this, _class9);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class9).apply(this, arguments));
       }
 
-      createClass(_class9, [{
-        key: 'path',
+      _createClass(_class9, [{
+        key: "path",
         value: function path(ctx) {
           var cx = this.attribute('cx').toPixels('x');
           var cy = this.attribute('cy').toPixels('y');
           var r = this.attribute('r').toPixels();
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, Math.PI * 2, true);
             ctx.closePath();
@@ -2154,28 +2361,33 @@ var svgEditorExtension_server_opensave = (function () {
           return new svg.BoundingBox(cx - r, cy - r, cx + r, cy + r);
         }
       }]);
-      return _class9;
-    }(svg.Element.PathElementBase);
 
-    // ellipse element
+      return _class9;
+    }(svg.Element.PathElementBase); // ellipse element
+
+
     var KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
-    svg.Element.ellipse = function (_svg$Element$PathElem3) {
-      inherits(_class10, _svg$Element$PathElem3);
+
+    svg.Element.ellipse =
+    /*#__PURE__*/
+    function (_svg$Element$PathElem3) {
+      _inherits(_class10, _svg$Element$PathElem3);
 
       function _class10() {
-        classCallCheck(this, _class10);
-        return possibleConstructorReturn(this, (_class10.__proto__ || Object.getPrototypeOf(_class10)).apply(this, arguments));
+        _classCallCheck(this, _class10);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class10).apply(this, arguments));
       }
 
-      createClass(_class10, [{
-        key: 'path',
+      _createClass(_class10, [{
+        key: "path",
         value: function path(ctx) {
           var rx = this.attribute('rx').toPixels('x');
           var ry = this.attribute('ry').toPixels('y');
           var cx = this.attribute('cx').toPixels('x');
           var cy = this.attribute('cy').toPixels('y');
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.moveTo(cx, cy - ry);
             ctx.bezierCurveTo(cx + KAPPA * rx, cy - ry, cx + rx, cy - KAPPA * ry, cx + rx, cy);
@@ -2188,29 +2400,33 @@ var svgEditorExtension_server_opensave = (function () {
           return new svg.BoundingBox(cx - rx, cy - ry, cx + rx, cy + ry);
         }
       }]);
-      return _class10;
-    }(svg.Element.PathElementBase);
 
-    // line element
-    svg.Element.line = function (_svg$Element$PathElem4) {
-      inherits(_class11, _svg$Element$PathElem4);
+      return _class10;
+    }(svg.Element.PathElementBase); // line element
+
+
+    svg.Element.line =
+    /*#__PURE__*/
+    function (_svg$Element$PathElem4) {
+      _inherits(_class11, _svg$Element$PathElem4);
 
       function _class11() {
-        classCallCheck(this, _class11);
-        return possibleConstructorReturn(this, (_class11.__proto__ || Object.getPrototypeOf(_class11)).apply(this, arguments));
+        _classCallCheck(this, _class11);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class11).apply(this, arguments));
       }
 
-      createClass(_class11, [{
-        key: 'getPoints',
+      _createClass(_class11, [{
+        key: "getPoints",
         value: function getPoints() {
           return [new svg.Point(this.attribute('x1').toPixels('x'), this.attribute('y1').toPixels('y')), new svg.Point(this.attribute('x2').toPixels('x'), this.attribute('y2').toPixels('y'))];
         }
       }, {
-        key: 'path',
+        key: "path",
         value: function path(ctx) {
           var points = this.getPoints();
 
-          if (ctx != null) {
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
             ctx.lineTo(points[1].x, points[1].y);
@@ -2219,112 +2435,131 @@ var svgEditorExtension_server_opensave = (function () {
           return new svg.BoundingBox(points[0].x, points[0].y, points[1].x, points[1].y);
         }
       }, {
-        key: 'getMarkers',
+        key: "getMarkers",
         value: function getMarkers() {
           var points = this.getPoints();
           var a = points[0].angleTo(points[1]);
           return [[points[0], a], [points[1], a]];
         }
       }]);
-      return _class11;
-    }(svg.Element.PathElementBase);
 
-    // polyline element
-    svg.Element.polyline = function (_svg$Element$PathElem5) {
-      inherits(_class12, _svg$Element$PathElem5);
+      return _class11;
+    }(svg.Element.PathElementBase); // polyline element
+
+
+    svg.Element.polyline =
+    /*#__PURE__*/
+    function (_svg$Element$PathElem5) {
+      _inherits(_class12, _svg$Element$PathElem5);
 
       function _class12(node) {
-        classCallCheck(this, _class12);
+        var _this8;
 
-        var _this15 = possibleConstructorReturn(this, (_class12.__proto__ || Object.getPrototypeOf(_class12)).call(this, node));
+        _classCallCheck(this, _class12);
 
-        _this15.points = svg.CreatePath(_this15.attribute('points').value);
-        return _this15;
+        _this8 = _possibleConstructorReturn(this, _getPrototypeOf(_class12).call(this, node));
+        _this8.points = svg.CreatePath(_this8.attribute('points').value);
+        return _this8;
       }
 
-      createClass(_class12, [{
-        key: 'path',
+      _createClass(_class12, [{
+        key: "path",
         value: function path(ctx) {
-          var _points$ = this.points[0],
-              x = _points$.x,
-              y = _points$.y;
-
+          var _this$points$ = this.points[0],
+              x = _this$points$.x,
+              y = _this$points$.y;
           var bb = new svg.BoundingBox(x, y);
-          if (ctx != null) {
+
+          if (!isNullish(ctx)) {
             ctx.beginPath();
             ctx.moveTo(x, y);
           }
-          for (var i = 1; i < this.points.length; i++) {
-            var _points$i = this.points[i],
-                _x = _points$i.x,
-                _y = _points$i.y;
 
+          for (var i = 1; i < this.points.length; i++) {
+            var _this$points$i = this.points[i],
+                _x = _this$points$i.x,
+                _y = _this$points$i.y;
             bb.addPoint(_x, _y);
-            if (ctx != null) ctx.lineTo(_x, _y);
+            if (!isNullish(ctx)) ctx.lineTo(_x, _y);
           }
+
           return bb;
         }
       }, {
-        key: 'getMarkers',
+        key: "getMarkers",
         value: function getMarkers() {
           var markers = [];
+
           for (var i = 0; i < this.points.length - 1; i++) {
             markers.push([this.points[i], this.points[i].angleTo(this.points[i + 1])]);
           }
+
           markers.push([this.points[this.points.length - 1], markers[markers.length - 1][1]]);
           return markers;
         }
       }]);
-      return _class12;
-    }(svg.Element.PathElementBase);
 
-    // polygon element
-    svg.Element.polygon = function (_svg$Element$polyline) {
-      inherits(_class13, _svg$Element$polyline);
+      return _class12;
+    }(svg.Element.PathElementBase); // polygon element
+
+
+    svg.Element.polygon =
+    /*#__PURE__*/
+    function (_svg$Element$polyline) {
+      _inherits(_class13, _svg$Element$polyline);
 
       function _class13() {
-        classCallCheck(this, _class13);
-        return possibleConstructorReturn(this, (_class13.__proto__ || Object.getPrototypeOf(_class13)).apply(this, arguments));
+        _classCallCheck(this, _class13);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class13).apply(this, arguments));
       }
 
-      createClass(_class13, [{
-        key: 'path',
+      _createClass(_class13, [{
+        key: "path",
         value: function path(ctx) {
-          var bb = get(_class13.prototype.__proto__ || Object.getPrototypeOf(_class13.prototype), 'path', this).call(this, ctx);
-          if (ctx != null) {
+          var bb = _get(_getPrototypeOf(_class13.prototype), "path", this).call(this, ctx);
+
+          if (!isNullish(ctx)) {
             ctx.lineTo(this.points[0].x, this.points[0].y);
             ctx.closePath();
           }
+
           return bb;
         }
       }]);
-      return _class13;
-    }(svg.Element.polyline);
 
-    // path element
-    svg.Element.path = function (_svg$Element$PathElem6) {
-      inherits(_class14, _svg$Element$PathElem6);
+      return _class13;
+    }(svg.Element.polyline); // path element
+
+
+    svg.Element.path =
+    /*#__PURE__*/
+    function (_svg$Element$PathElem6) {
+      _inherits(_class14, _svg$Element$PathElem6);
 
       function _class14(node) {
-        classCallCheck(this, _class14);
+        var _this9;
 
-        var _this17 = possibleConstructorReturn(this, (_class14.__proto__ || Object.getPrototypeOf(_class14)).call(this, node));
+        _classCallCheck(this, _class14);
 
-        var d = _this17.attribute('d').value
-        // TODO: convert to real lexer based on https://www.w3.org/TR/SVG11/paths.html#PathDataBNF
+        _this9 = _possibleConstructorReturn(this, _getPrototypeOf(_class14).call(this, node));
+
+        var d = _this9.attribute('d').value // TODO: convert to real lexer based on https://www.w3.org/TR/SVG11/paths.html#PathDataBNF
         .replace(/,/gm, ' ') // get rid of all commas
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm, '$1 $2') // separate commands from points
         .replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from points
-        .replace(/([0-9])([+-])/gm, '$1 $2') // separate digits when no comma
-        .replace(/(\.[0-9]*)(\.)/gm, '$1 $2') // separate digits when no comma
-        .replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm, '$1 $3 $4 '); // shorthand elliptical arc path syntax
-        d = svg.compressSpaces(d); // compress multiple spaces
-        d = svg.trim(d);
-        _this17.PathParser = {
-          tokens: d.split(' '),
+        .replace(/(\d)([+-])/gm, '$1 $2') // separate digits when no comma
+        .replace(/(\.\d*)(\.)/gm, '$1 $2') // separate digits when no comma
+        .replace(/([Aa](\s+\d+)(\s+\d+)(\s+\d+))\s+([01])\s*([01])/gm, '$1 $5 $6 '); // shorthand elliptical arc path syntax
 
+
+        d = svg.compressSpaces(d); // compress multiple spaces
+
+        d = svg.trim(d);
+        _this9.PathParser = {
+          tokens: d.split(' '),
           reset: function reset() {
             this.i = -1;
             this.command = '';
@@ -2340,7 +2575,7 @@ var svgEditorExtension_server_opensave = (function () {
           },
           isCommandOrEnd: function isCommandOrEnd() {
             if (this.isEnd()) return true;
-            return this.tokens[this.i + 1].match(/^[A-Za-z]$/) != null;
+            return !isNullish(this.tokens[this.i + 1].match(/^[A-Za-z]$/));
           },
           isRelativeCommand: function isRelativeCommand() {
             switch (this.command) {
@@ -2356,6 +2591,7 @@ var svgEditorExtension_server_opensave = (function () {
               case 'z':
                 return true;
             }
+
             return false;
           },
           getToken: function getToken() {
@@ -2386,9 +2622,9 @@ var svgEditorExtension_server_opensave = (function () {
           getReflectedControlPoint: function getReflectedControlPoint() {
             if (this.previousCommand.toLowerCase() !== 'c' && this.previousCommand.toLowerCase() !== 's' && this.previousCommand.toLowerCase() !== 'q' && this.previousCommand.toLowerCase() !== 't') {
               return this.current;
-            }
+            } // reflect point
 
-            // reflect point
+
             var p = new svg.Point(2 * this.current.x - this.control.x, 2 * this.current.y - this.control.y);
             return p;
           },
@@ -2397,14 +2633,16 @@ var svgEditorExtension_server_opensave = (function () {
               p.x += this.current.x;
               p.y += this.current.y;
             }
+
             return p;
           },
           addMarker: function addMarker(p, from, priorTo) {
             // if the last angle isn't filled in because we didn't have this point yet ...
-            if (priorTo != null && this.angles.length > 0 && this.angles[this.angles.length - 1] == null) {
+            if (!isNullish(priorTo) && this.angles.length > 0 && isNullish(this.angles[this.angles.length - 1])) {
               this.angles[this.angles.length - 1] = this.points[this.points.length - 1].angleTo(priorTo);
             }
-            this.addMarkerAngle(p, from == null ? null : from.angleTo(p));
+
+            this.addMarkerAngle(p, isNullish(from) ? null : from.angleTo(p));
           },
           addMarkerAngle: function addMarkerAngle(p, a) {
             this.points.push(p);
@@ -2415,56 +2653,68 @@ var svgEditorExtension_server_opensave = (function () {
           },
           getMarkerAngles: function getMarkerAngles() {
             for (var i = 0; i < this.angles.length; i++) {
-              if (this.angles[i] == null) {
+              if (isNullish(this.angles[i])) {
                 for (var j = i + 1; j < this.angles.length; j++) {
-                  if (this.angles[j] != null) {
+                  if (!isNullish(this.angles[j])) {
                     this.angles[i] = this.angles[j];
                     break;
                   }
                 }
               }
             }
+
             return this.angles;
           }
         };
-        return _this17;
+        return _this9;
       }
 
-      createClass(_class14, [{
-        key: 'path',
+      _createClass(_class14, [{
+        key: "path",
         value: function path(ctx) {
           var pp = this.PathParser;
           pp.reset();
-
           var bb = new svg.BoundingBox();
-          if (ctx != null) ctx.beginPath();
+          if (!isNullish(ctx)) ctx.beginPath();
+
           while (!pp.isEnd()) {
             pp.nextCommand();
+
             switch (pp.command) {
               case 'M':
               case 'm':
-                var p = pp.getAsCurrentPoint();
-                pp.addMarker(p);
-                bb.addPoint(p.x, p.y);
-                if (ctx != null) ctx.moveTo(p.x, p.y);
-                pp.start = pp.current;
-                while (!pp.isCommandOrEnd()) {
-                  var _p = pp.getAsCurrentPoint();
-                  pp.addMarker(_p, pp.start);
-                  bb.addPoint(_p.x, _p.y);
-                  if (ctx != null) ctx.lineTo(_p.x, _p.y);
+                {
+                  var p = pp.getAsCurrentPoint();
+                  pp.addMarker(p);
+                  bb.addPoint(p.x, p.y);
+                  if (!isNullish(ctx)) ctx.moveTo(p.x, p.y);
+                  pp.start = pp.current;
+
+                  while (!pp.isCommandOrEnd()) {
+                    var _p = pp.getAsCurrentPoint();
+
+                    pp.addMarker(_p, pp.start);
+                    bb.addPoint(_p.x, _p.y);
+                    if (!isNullish(ctx)) ctx.lineTo(_p.x, _p.y);
+                  }
+
+                  break;
                 }
-                break;
+
               case 'L':
               case 'l':
                 while (!pp.isCommandOrEnd()) {
-                  var _c = pp.current;
+                  var c = pp.current;
+
                   var _p2 = pp.getAsCurrentPoint();
-                  pp.addMarker(_p2, _c);
+
+                  pp.addMarker(_p2, c);
                   bb.addPoint(_p2.x, _p2.y);
-                  if (ctx != null) ctx.lineTo(_p2.x, _p2.y);
+                  if (!isNullish(ctx)) ctx.lineTo(_p2.x, _p2.y);
                 }
+
                 break;
+
               case 'H':
               case 'h':
                 while (!pp.isCommandOrEnd()) {
@@ -2472,19 +2722,24 @@ var svgEditorExtension_server_opensave = (function () {
                   pp.addMarker(newP, pp.current);
                   pp.current = newP;
                   bb.addPoint(pp.current.x, pp.current.y);
-                  if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+                  if (!isNullish(ctx)) ctx.lineTo(pp.current.x, pp.current.y);
                 }
+
                 break;
+
               case 'V':
               case 'v':
                 while (!pp.isCommandOrEnd()) {
                   var _newP = new svg.Point(pp.current.x, (pp.isRelativeCommand() ? pp.current.y : 0) + pp.getScalar());
+
                   pp.addMarker(_newP, pp.current);
                   pp.current = _newP;
                   bb.addPoint(pp.current.x, pp.current.y);
-                  if (ctx != null) ctx.lineTo(pp.current.x, pp.current.y);
+                  if (!isNullish(ctx)) ctx.lineTo(pp.current.x, pp.current.y);
                 }
+
                 break;
+
               case 'C':
               case 'c':
                 while (!pp.isCommandOrEnd()) {
@@ -2494,44 +2749,63 @@ var svgEditorExtension_server_opensave = (function () {
                   var cp = pp.getAsCurrentPoint();
                   pp.addMarker(cp, cntrl, p1);
                   bb.addBezierCurve(curr.x, curr.y, p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
-                  if (ctx != null) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
+                  if (!isNullish(ctx)) ctx.bezierCurveTo(p1.x, p1.y, cntrl.x, cntrl.y, cp.x, cp.y);
                 }
+
                 break;
+
               case 'S':
               case 's':
                 while (!pp.isCommandOrEnd()) {
                   var _curr = pp.current;
+
                   var _p3 = pp.getReflectedControlPoint();
+
                   var _cntrl = pp.getAsControlPoint();
+
                   var _cp = pp.getAsCurrentPoint();
+
                   pp.addMarker(_cp, _cntrl, _p3);
                   bb.addBezierCurve(_curr.x, _curr.y, _p3.x, _p3.y, _cntrl.x, _cntrl.y, _cp.x, _cp.y);
-                  if (ctx != null) ctx.bezierCurveTo(_p3.x, _p3.y, _cntrl.x, _cntrl.y, _cp.x, _cp.y);
+                  if (!isNullish(ctx)) ctx.bezierCurveTo(_p3.x, _p3.y, _cntrl.x, _cntrl.y, _cp.x, _cp.y);
                 }
+
                 break;
+
               case 'Q':
               case 'q':
                 while (!pp.isCommandOrEnd()) {
                   var _curr2 = pp.current;
+
                   var _cntrl2 = pp.getAsControlPoint();
+
                   var _cp2 = pp.getAsCurrentPoint();
+
                   pp.addMarker(_cp2, _cntrl2, _cntrl2);
                   bb.addQuadraticCurve(_curr2.x, _curr2.y, _cntrl2.x, _cntrl2.y, _cp2.x, _cp2.y);
-                  if (ctx != null) ctx.quadraticCurveTo(_cntrl2.x, _cntrl2.y, _cp2.x, _cp2.y);
+                  if (!isNullish(ctx)) ctx.quadraticCurveTo(_cntrl2.x, _cntrl2.y, _cp2.x, _cp2.y);
                 }
+
                 break;
+
               case 'T':
               case 't':
                 while (!pp.isCommandOrEnd()) {
                   var _curr3 = pp.current;
+
                   var _cntrl3 = pp.getReflectedControlPoint();
+
                   pp.control = _cntrl3;
+
                   var _cp3 = pp.getAsCurrentPoint();
+
                   pp.addMarker(_cp3, _cntrl3, _cntrl3);
                   bb.addQuadraticCurve(_curr3.x, _curr3.y, _cntrl3.x, _cntrl3.y, _cp3.x, _cp3.y);
-                  if (ctx != null) ctx.quadraticCurveTo(_cntrl3.x, _cntrl3.y, _cp3.x, _cp3.y);
+                  if (!isNullish(ctx)) ctx.quadraticCurveTo(_cntrl3.x, _cntrl3.y, _cp3.x, _cp3.y);
                 }
+
                 break;
+
               case 'A':
               case 'a':
                 var _loop2 = function _loop2() {
@@ -2541,59 +2815,61 @@ var svgEditorExtension_server_opensave = (function () {
                   var xAxisRotation = pp.getScalar() * (Math.PI / 180.0);
                   var largeArcFlag = pp.getScalar();
                   var sweepFlag = pp.getScalar();
-                  var cp = pp.getAsCurrentPoint();
-
-                  // Conversion from endpoint to center parameterization
+                  var cp = pp.getAsCurrentPoint(); // Conversion from endpoint to center parameterization
                   // https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter
-
                   // x1', y1'
-                  var currp = new svg.Point(Math.cos(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.sin(xAxisRotation) * (curr.y - cp.y) / 2.0, -Math.sin(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.cos(xAxisRotation) * (curr.y - cp.y) / 2.0);
-                  // adjust radii
+
+                  var currp = new svg.Point(Math.cos(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.sin(xAxisRotation) * (curr.y - cp.y) / 2.0, -Math.sin(xAxisRotation) * (curr.x - cp.x) / 2.0 + Math.cos(xAxisRotation) * (curr.y - cp.y) / 2.0); // adjust radii
+
                   var l = Math.pow(currp.x, 2) / Math.pow(rx, 2) + Math.pow(currp.y, 2) / Math.pow(ry, 2);
+
                   if (l > 1) {
                     rx *= Math.sqrt(l);
                     ry *= Math.sqrt(l);
-                  }
-                  // cx', cy'
+                  } // cx', cy'
+
+
                   var s = (largeArcFlag === sweepFlag ? -1 : 1) * Math.sqrt((Math.pow(rx, 2) * Math.pow(ry, 2) - Math.pow(rx, 2) * Math.pow(currp.y, 2) - Math.pow(ry, 2) * Math.pow(currp.x, 2)) / (Math.pow(rx, 2) * Math.pow(currp.y, 2) + Math.pow(ry, 2) * Math.pow(currp.x, 2)));
                   if (isNaN(s)) s = 0;
-                  var cpp = new svg.Point(s * rx * currp.y / ry, s * -ry * currp.x / rx);
-                  // cx, cy
-                  var centp = new svg.Point((curr.x + cp.x) / 2.0 + Math.cos(xAxisRotation) * cpp.x - Math.sin(xAxisRotation) * cpp.y, (curr.y + cp.y) / 2.0 + Math.sin(xAxisRotation) * cpp.x + Math.cos(xAxisRotation) * cpp.y);
-                  // vector magnitude
+                  var cpp = new svg.Point(s * rx * currp.y / ry, s * -ry * currp.x / rx); // cx, cy
+
+                  var centp = new svg.Point((curr.x + cp.x) / 2.0 + Math.cos(xAxisRotation) * cpp.x - Math.sin(xAxisRotation) * cpp.y, (curr.y + cp.y) / 2.0 + Math.sin(xAxisRotation) * cpp.x + Math.cos(xAxisRotation) * cpp.y); // vector magnitude
+
                   var m = function m(v) {
                     return Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2));
-                  };
-                  // ratio between two vectors
+                  }; // ratio between two vectors
+
+
                   var r = function r(u, v) {
                     return (u[0] * v[0] + u[1] * v[1]) / (m(u) * m(v));
-                  };
-                  // angle between two vectors
+                  }; // angle between two vectors
+
+
                   var a = function a(u, v) {
                     return (u[0] * v[1] < u[1] * v[0] ? -1 : 1) * Math.acos(r(u, v));
-                  };
-                  // initial angle
-                  var a1 = a([1, 0], [(currp.x - cpp.x) / rx, (currp.y - cpp.y) / ry]);
-                  // angle delta
+                  }; // initial angle
+
+
+                  var a1 = a([1, 0], [(currp.x - cpp.x) / rx, (currp.y - cpp.y) / ry]); // angle delta
+
                   var u = [(currp.x - cpp.x) / rx, (currp.y - cpp.y) / ry];
                   var v = [(-currp.x - cpp.x) / rx, (-currp.y - cpp.y) / ry];
                   var ad = a(u, v);
                   if (r(u, v) <= -1) ad = Math.PI;
-                  if (r(u, v) >= 1) ad = 0;
+                  if (r(u, v) >= 1) ad = 0; // for markers
 
-                  // for markers
                   var dir = 1 - sweepFlag ? 1.0 : -1.0;
                   var ah = a1 + dir * (ad / 2.0);
                   var halfWay = new svg.Point(centp.x + rx * Math.cos(ah), centp.y + ry * Math.sin(ah));
                   pp.addMarkerAngle(halfWay, ah - dir * Math.PI / 2);
                   pp.addMarkerAngle(cp, ah - dir * Math.PI);
-
                   bb.addPoint(cp.x, cp.y); // TODO: this is too naive, make it better
-                  if (ctx != null) {
+
+                  if (!isNullish(ctx)) {
                     var _r = rx > ry ? rx : ry;
+
                     var sx = rx > ry ? 1 : rx / ry;
                     var sy = rx > ry ? ry / rx : 1;
-
                     ctx.translate(centp.x, centp.y);
                     ctx.rotate(xAxisRotation);
                     ctx.scale(sx, sy);
@@ -2607,10 +2883,12 @@ var svgEditorExtension_server_opensave = (function () {
                 while (!pp.isCommandOrEnd()) {
                   _loop2();
                 }
+
                 break;
+
               case 'Z':
               case 'z':
-                if (ctx != null) ctx.closePath();
+                if (!isNullish(ctx)) ctx.closePath();
                 pp.current = pp.start;
             }
           }
@@ -2618,51 +2896,54 @@ var svgEditorExtension_server_opensave = (function () {
           return bb;
         }
       }, {
-        key: 'getMarkers',
+        key: "getMarkers",
         value: function getMarkers() {
           var points = this.PathParser.getMarkerPoints();
           var angles = this.PathParser.getMarkerAngles();
-
           var markers = points.map(function (point, i) {
             return [point, angles[i]];
           });
           return markers;
         }
       }]);
-      return _class14;
-    }(svg.Element.PathElementBase);
 
-    // pattern element
-    svg.Element.pattern = function (_svg$Element$ElementB2) {
-      inherits(_class15, _svg$Element$ElementB2);
+      return _class14;
+    }(svg.Element.PathElementBase); // pattern element
+
+
+    svg.Element.pattern =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB2) {
+      _inherits(_class15, _svg$Element$ElementB2);
 
       function _class15() {
-        classCallCheck(this, _class15);
-        return possibleConstructorReturn(this, (_class15.__proto__ || Object.getPrototypeOf(_class15)).apply(this, arguments));
+        _classCallCheck(this, _class15);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class15).apply(this, arguments));
       }
 
-      createClass(_class15, [{
-        key: 'createPattern',
+      _createClass(_class15, [{
+        key: "createPattern",
         value: function createPattern(ctx, element) {
           var width = this.attribute('width').toPixels('x', true);
-          var height = this.attribute('height').toPixels('y', true);
+          var height = this.attribute('height').toPixels('y', true); // render me using a temporary svg element
 
-          // render me using a temporary svg element
           var tempSvg = new svg.Element.svg();
-          tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-          tempSvg.attributes['width'] = new svg.Property('width', width + 'px');
-          tempSvg.attributes['height'] = new svg.Property('height', height + 'px');
-          tempSvg.attributes['transform'] = new svg.Property('transform', this.attribute('patternTransform').value);
+          tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
+          tempSvg.attributes.width = new svg.Property('width', width + 'px');
+          tempSvg.attributes.height = new svg.Property('height', height + 'px');
+          tempSvg.attributes.transform = new svg.Property('transform', this.attribute('patternTransform').value);
           tempSvg.children = this.children;
-
           var c = document.createElement('canvas');
           c.width = width;
           c.height = height;
           var cctx = c.getContext('2d');
+
           if (this.attribute('x').hasValue() && this.attribute('y').hasValue()) {
             cctx.translate(this.attribute('x').toPixels('x', true), this.attribute('y').toPixels('y', true));
-          }
-          // render 3x3 grid so when we transform there's no white space on edges
+          } // render 3x3 grid so when we transform there's no white space on edges
+
+
           for (var x = -1; x <= 1; x++) {
             for (var y = -1; y <= 1; y++) {
               cctx.save();
@@ -2671,96 +2952,106 @@ var svgEditorExtension_server_opensave = (function () {
               cctx.restore();
             }
           }
+
           var pattern = ctx.createPattern(c, 'repeat');
           return pattern;
         }
       }]);
-      return _class15;
-    }(svg.Element.ElementBase);
 
-    // marker element
-    svg.Element.marker = function (_svg$Element$ElementB3) {
-      inherits(_class16, _svg$Element$ElementB3);
+      return _class15;
+    }(svg.Element.ElementBase); // marker element
+
+
+    svg.Element.marker =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB3) {
+      _inherits(_class16, _svg$Element$ElementB3);
 
       function _class16() {
-        classCallCheck(this, _class16);
-        return possibleConstructorReturn(this, (_class16.__proto__ || Object.getPrototypeOf(_class16)).apply(this, arguments));
+        _classCallCheck(this, _class16);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class16).apply(this, arguments));
       }
 
-      createClass(_class16, [{
-        key: 'render',
+      _createClass(_class16, [{
+        key: "render",
         value: function render(ctx, point, angle) {
           ctx.translate(point.x, point.y);
           if (this.attribute('orient').valueOrDefault('auto') === 'auto') ctx.rotate(angle);
           if (this.attribute('markerUnits').valueOrDefault('strokeWidth') === 'strokeWidth') ctx.scale(ctx.lineWidth, ctx.lineWidth);
-          ctx.save();
+          ctx.save(); // render me using a temporary svg element
 
-          // render me using a temporary svg element
           var tempSvg = new svg.Element.svg();
-          tempSvg.attributes['viewBox'] = new svg.Property('viewBox', this.attribute('viewBox').value);
-          tempSvg.attributes['refX'] = new svg.Property('refX', this.attribute('refX').value);
-          tempSvg.attributes['refY'] = new svg.Property('refY', this.attribute('refY').value);
-          tempSvg.attributes['width'] = new svg.Property('width', this.attribute('markerWidth').value);
-          tempSvg.attributes['height'] = new svg.Property('height', this.attribute('markerHeight').value);
-          tempSvg.attributes['fill'] = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
-          tempSvg.attributes['stroke'] = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
+          tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
+          tempSvg.attributes.refX = new svg.Property('refX', this.attribute('refX').value);
+          tempSvg.attributes.refY = new svg.Property('refY', this.attribute('refY').value);
+          tempSvg.attributes.width = new svg.Property('width', this.attribute('markerWidth').value);
+          tempSvg.attributes.height = new svg.Property('height', this.attribute('markerHeight').value);
+          tempSvg.attributes.fill = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
+          tempSvg.attributes.stroke = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
           tempSvg.children = this.children;
           tempSvg.render(ctx);
-
           ctx.restore();
           if (this.attribute('markerUnits').valueOrDefault('strokeWidth') === 'strokeWidth') ctx.scale(1 / ctx.lineWidth, 1 / ctx.lineWidth);
           if (this.attribute('orient').valueOrDefault('auto') === 'auto') ctx.rotate(-angle);
           ctx.translate(-point.x, -point.y);
         }
       }]);
-      return _class16;
-    }(svg.Element.ElementBase);
 
-    // definitions element
-    svg.Element.defs = function (_svg$Element$ElementB4) {
-      inherits(_class17, _svg$Element$ElementB4);
+      return _class16;
+    }(svg.Element.ElementBase); // definitions element
+
+
+    svg.Element.defs =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB4) {
+      _inherits(_class17, _svg$Element$ElementB4);
 
       function _class17() {
-        classCallCheck(this, _class17);
-        return possibleConstructorReturn(this, (_class17.__proto__ || Object.getPrototypeOf(_class17)).apply(this, arguments));
+        _classCallCheck(this, _class17);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class17).apply(this, arguments));
       }
 
-      createClass(_class17, [{
-        key: 'render',
-        value: function render(ctx) {
-          // NOOP
+      _createClass(_class17, [{
+        key: "render",
+        value: function render(ctx) {// NOOP
         }
       }]);
-      return _class17;
-    }(svg.Element.ElementBase);
 
-    // base for gradients
-    svg.Element.GradientBase = function (_svg$Element$ElementB5) {
-      inherits(_class18, _svg$Element$ElementB5);
+      return _class17;
+    }(svg.Element.ElementBase); // base for gradients
+
+
+    svg.Element.GradientBase =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB5) {
+      _inherits(_class18, _svg$Element$ElementB5);
 
       function _class18(node) {
-        classCallCheck(this, _class18);
+        var _this10;
 
-        var _this21 = possibleConstructorReturn(this, (_class18.__proto__ || Object.getPrototypeOf(_class18)).call(this, node));
+        _classCallCheck(this, _class18);
 
-        _this21.gradientUnits = _this21.attribute('gradientUnits').valueOrDefault('objectBoundingBox');
+        _this10 = _possibleConstructorReturn(this, _getPrototypeOf(_class18).call(this, node));
+        _this10.gradientUnits = _this10.attribute('gradientUnits').valueOrDefault('objectBoundingBox');
+        _this10.stops = [];
 
-        _this21.stops = [];
-        _this21.children.forEach(function (child) {
+        _this10.children.forEach(function (child) {
           if (child.type === 'stop') {
-            _this21.stops.push(child);
+            _this10.stops.push(child);
           }
         });
-        return _this21;
+
+        return _this10;
       }
 
-      createClass(_class18, [{
-        key: 'getGradient',
-        value: function getGradient() {
-          // OVERRIDE ME!
+      _createClass(_class18, [{
+        key: "getGradient",
+        value: function getGradient() {// OVERRIDE ME!
         }
       }, {
-        key: 'createGradient',
+        key: "createGradient",
         value: function createGradient(ctx, element, parentOpacityProp) {
           var stopsContainer = this.getHrefAttribute().hasValue() ? this.getHrefAttribute().getDefinition() : this;
 
@@ -2769,65 +3060,65 @@ var svgEditorExtension_server_opensave = (function () {
               var p = new svg.Property('color', color);
               return p.addOpacity(parentOpacityProp).value;
             }
+
             return color;
           };
 
           var g = this.getGradient(ctx, element);
-          if (g == null) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
-          stopsContainer.stops.forEach(function (_ref2) {
-            var offset = _ref2.offset,
-                color = _ref2.color;
-
+          if (isNullish(g)) return addParentOpacity(stopsContainer.stops[stopsContainer.stops.length - 1].color);
+          stopsContainer.stops.forEach(function (_ref10) {
+            var offset = _ref10.offset,
+                color = _ref10.color;
             g.addColorStop(offset, addParentOpacity(color));
           });
 
           if (this.attribute('gradientTransform').hasValue()) {
             // render as transformed pattern on temporary canvas
             var rootView = svg.ViewPort.viewPorts[0];
-
             var rect = new svg.Element.rect();
-            rect.attributes['x'] = new svg.Property('x', -svg.MAX_VIRTUAL_PIXELS / 3.0);
-            rect.attributes['y'] = new svg.Property('y', -svg.MAX_VIRTUAL_PIXELS / 3.0);
-            rect.attributes['width'] = new svg.Property('width', svg.MAX_VIRTUAL_PIXELS);
-            rect.attributes['height'] = new svg.Property('height', svg.MAX_VIRTUAL_PIXELS);
-
+            rect.attributes.x = new svg.Property('x', -svg.MAX_VIRTUAL_PIXELS / 3.0);
+            rect.attributes.y = new svg.Property('y', -svg.MAX_VIRTUAL_PIXELS / 3.0);
+            rect.attributes.width = new svg.Property('width', svg.MAX_VIRTUAL_PIXELS);
+            rect.attributes.height = new svg.Property('height', svg.MAX_VIRTUAL_PIXELS);
             var group = new svg.Element.g();
-            group.attributes['transform'] = new svg.Property('transform', this.attribute('gradientTransform').value);
+            group.attributes.transform = new svg.Property('transform', this.attribute('gradientTransform').value);
             group.children = [rect];
-
             var tempSvg = new svg.Element.svg();
-            tempSvg.attributes['x'] = new svg.Property('x', 0);
-            tempSvg.attributes['y'] = new svg.Property('y', 0);
-            tempSvg.attributes['width'] = new svg.Property('width', rootView.width);
-            tempSvg.attributes['height'] = new svg.Property('height', rootView.height);
+            tempSvg.attributes.x = new svg.Property('x', 0);
+            tempSvg.attributes.y = new svg.Property('y', 0);
+            tempSvg.attributes.width = new svg.Property('width', rootView.width);
+            tempSvg.attributes.height = new svg.Property('height', rootView.height);
             tempSvg.children = [group];
-
-            var _c2 = document.createElement('canvas');
-            _c2.width = rootView.width;
-            _c2.height = rootView.height;
-            var tempCtx = _c2.getContext('2d');
+            var c = document.createElement('canvas');
+            c.width = rootView.width;
+            c.height = rootView.height;
+            var tempCtx = c.getContext('2d');
             tempCtx.fillStyle = g;
             tempSvg.render(tempCtx);
-            return tempCtx.createPattern(_c2, 'no-repeat');
+            return tempCtx.createPattern(c, 'no-repeat');
           }
 
           return g;
         }
       }]);
-      return _class18;
-    }(svg.Element.ElementBase);
 
-    // linear gradient element
-    svg.Element.linearGradient = function (_svg$Element$Gradient) {
-      inherits(_class19, _svg$Element$Gradient);
+      return _class18;
+    }(svg.Element.ElementBase); // linear gradient element
+
+
+    svg.Element.linearGradient =
+    /*#__PURE__*/
+    function (_svg$Element$Gradient) {
+      _inherits(_class19, _svg$Element$Gradient);
 
       function _class19() {
-        classCallCheck(this, _class19);
-        return possibleConstructorReturn(this, (_class19.__proto__ || Object.getPrototypeOf(_class19)).apply(this, arguments));
+        _classCallCheck(this, _class19);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class19).apply(this, arguments));
       }
 
-      createClass(_class19, [{
-        key: 'getGradient',
+      _createClass(_class19, [{
+        key: "getGradient",
         value: function getGradient(ctx, element) {
           var useBB = this.gradientUnits === 'objectBoundingBox' && element.getBoundingBox;
           var bb = useBB ? element.getBoundingBox() : null;
@@ -2843,105 +3134,112 @@ var svgEditorExtension_server_opensave = (function () {
           var y1 = useBB ? bb.y() + bb.height() * this.attribute('y1').numValue() : this.attribute('y1').toPixels('y');
           var x2 = useBB ? bb.x() + bb.width() * this.attribute('x2').numValue() : this.attribute('x2').toPixels('x');
           var y2 = useBB ? bb.y() + bb.height() * this.attribute('y2').numValue() : this.attribute('y2').toPixels('y');
-
           if (x1 === x2 && y1 === y2) return null;
           return ctx.createLinearGradient(x1, y1, x2, y2);
         }
       }]);
-      return _class19;
-    }(svg.Element.GradientBase);
 
-    // radial gradient element
-    svg.Element.radialGradient = function (_svg$Element$Gradient2) {
-      inherits(_class20, _svg$Element$Gradient2);
+      return _class19;
+    }(svg.Element.GradientBase); // radial gradient element
+
+
+    svg.Element.radialGradient =
+    /*#__PURE__*/
+    function (_svg$Element$Gradient2) {
+      _inherits(_class20, _svg$Element$Gradient2);
 
       function _class20() {
-        classCallCheck(this, _class20);
-        return possibleConstructorReturn(this, (_class20.__proto__ || Object.getPrototypeOf(_class20)).apply(this, arguments));
+        _classCallCheck(this, _class20);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class20).apply(this, arguments));
       }
 
-      createClass(_class20, [{
-        key: 'getGradient',
+      _createClass(_class20, [{
+        key: "getGradient",
         value: function getGradient(ctx, element) {
           var useBB = this.gradientUnits === 'objectBoundingBox' && element.getBoundingBox;
           var bb = useBB ? element.getBoundingBox() : null;
-
           if (!this.attribute('cx').hasValue()) this.attribute('cx', true).value = '50%';
           if (!this.attribute('cy').hasValue()) this.attribute('cy', true).value = '50%';
           if (!this.attribute('r').hasValue()) this.attribute('r', true).value = '50%';
-
           var cx = useBB ? bb.x() + bb.width() * this.attribute('cx').numValue() : this.attribute('cx').toPixels('x');
           var cy = useBB ? bb.y() + bb.height() * this.attribute('cy').numValue() : this.attribute('cy').toPixels('y');
-
           var fx = cx;
           var fy = cy;
+
           if (this.attribute('fx').hasValue()) {
             fx = useBB ? bb.x() + bb.width() * this.attribute('fx').numValue() : this.attribute('fx').toPixels('x');
           }
+
           if (this.attribute('fy').hasValue()) {
             fy = useBB ? bb.y() + bb.height() * this.attribute('fy').numValue() : this.attribute('fy').toPixels('y');
           }
 
           var r = useBB ? (bb.width() + bb.height()) / 2.0 * this.attribute('r').numValue() : this.attribute('r').toPixels();
-
           return ctx.createRadialGradient(fx, fy, 0, cx, cy, r);
         }
       }]);
-      return _class20;
-    }(svg.Element.GradientBase);
 
-    // gradient stop element
-    svg.Element.stop = function (_svg$Element$ElementB6) {
-      inherits(_class21, _svg$Element$ElementB6);
+      return _class20;
+    }(svg.Element.GradientBase); // gradient stop element
+
+
+    svg.Element.stop =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB6) {
+      _inherits(_class21, _svg$Element$ElementB6);
 
       function _class21(node) {
-        classCallCheck(this, _class21);
+        var _this11;
 
-        var _this24 = possibleConstructorReturn(this, (_class21.__proto__ || Object.getPrototypeOf(_class21)).call(this, node));
+        _classCallCheck(this, _class21);
 
-        _this24.offset = _this24.attribute('offset').numValue();
-        if (_this24.offset < 0) _this24.offset = 0;
-        if (_this24.offset > 1) _this24.offset = 1;
+        _this11 = _possibleConstructorReturn(this, _getPrototypeOf(_class21).call(this, node));
+        _this11.offset = _this11.attribute('offset').numValue();
+        if (_this11.offset < 0) _this11.offset = 0;
+        if (_this11.offset > 1) _this11.offset = 1;
 
-        var stopColor = _this24.style('stop-color');
-        if (_this24.style('stop-opacity').hasValue()) {
-          stopColor = stopColor.addOpacity(_this24.style('stop-opacity'));
+        var stopColor = _this11.style('stop-color');
+
+        if (_this11.style('stop-opacity').hasValue()) {
+          stopColor = stopColor.addOpacity(_this11.style('stop-opacity'));
         }
-        _this24.color = stopColor.value;
-        return _this24;
+
+        _this11.color = stopColor.value;
+        return _this11;
       }
 
       return _class21;
-    }(svg.Element.ElementBase);
+    }(svg.Element.ElementBase); // animation base element
 
-    // animation base element
-    svg.Element.AnimateBase = function (_svg$Element$ElementB7) {
-      inherits(_class22, _svg$Element$ElementB7);
+
+    svg.Element.AnimateBase =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB7) {
+      _inherits(_class22, _svg$Element$ElementB7);
 
       function _class22(node) {
-        classCallCheck(this, _class22);
+        var _this12;
 
-        var _this25 = possibleConstructorReturn(this, (_class22.__proto__ || Object.getPrototypeOf(_class22)).call(this, node));
+        _classCallCheck(this, _class22);
 
-        svg.Animations.push(_this25);
-
-        _this25.duration = 0.0;
-        _this25.begin = _this25.attribute('begin').toMilliseconds();
-        _this25.maxDuration = _this25.begin + _this25.attribute('dur').toMilliseconds();
-
-        _this25.initialValue = null;
-        _this25.initialUnits = '';
-        _this25.removed = false;
-
-        _this25.from = _this25.attribute('from');
-        _this25.to = _this25.attribute('to');
-        _this25.values = _this25.attribute('values');
-        if (_this25.values.hasValue()) _this25.values.value = _this25.values.value.split(';');
-        return _this25;
+        _this12 = _possibleConstructorReturn(this, _getPrototypeOf(_class22).call(this, node));
+        svg.Animations.push(_assertThisInitialized(_this12));
+        _this12.duration = 0.0;
+        _this12.begin = _this12.attribute('begin').toMilliseconds();
+        _this12.maxDuration = _this12.begin + _this12.attribute('dur').toMilliseconds();
+        _this12.initialValue = null;
+        _this12.initialUnits = '';
+        _this12.removed = false;
+        _this12.from = _this12.attribute('from');
+        _this12.to = _this12.attribute('to');
+        _this12.values = _this12.attribute('values');
+        if (_this12.values.hasValue()) _this12.values.value = _this12.values.value.split(';');
+        return _this12;
       }
 
-      createClass(_class22, [{
-        key: 'getProperty',
+      _createClass(_class22, [{
+        key: "getProperty",
         value: function getProperty() {
           var attributeType = this.attribute('attributeType').value;
           var attributeName = this.attribute('attributeName').value;
@@ -2949,24 +3247,25 @@ var svgEditorExtension_server_opensave = (function () {
           if (attributeType === 'CSS') {
             return this.parent.style(attributeName, true);
           }
+
           return this.parent.attribute(attributeName, true);
         }
       }, {
-        key: 'calcValue',
+        key: "calcValue",
         value: function calcValue() {
           // OVERRIDE ME!
           return '';
         }
       }, {
-        key: 'update',
+        key: "update",
         value: function update(delta) {
           // set initial value
-          if (this.initialValue == null) {
+          if (isNullish(this.initialValue)) {
             this.initialValue = this.getProperty().value;
             this.initialUnits = this.getProperty().getUnits();
-          }
+          } // if we're past the end time
 
-          // if we're past the end time
+
           if (this.duration > this.maxDuration) {
             // loop for indefinitely repeating animations
             if (this.attribute('repeatCount').value === 'indefinite' || this.attribute('repeatDur').value === 'indefinite') {
@@ -2980,12 +3279,14 @@ var svgEditorExtension_server_opensave = (function () {
               this.getProperty().value = this.parent.animationFrozen ? this.parent.animationFrozenValue : this.initialValue;
               return true;
             }
+
             return false;
           }
-          this.duration = this.duration + delta;
 
-          // if we're past the begin time
+          this.duration = this.duration + delta; // if we're past the begin time
+
           var updated = false;
+
           if (this.begin < this.duration) {
             var newValue = this.calcValue(); // tween
 
@@ -3000,14 +3301,15 @@ var svgEditorExtension_server_opensave = (function () {
           }
 
           return updated;
-        }
-
-        // fraction of duration we've covered
+        } // fraction of duration we've covered
 
       }, {
-        key: 'progress',
+        key: "progress",
         value: function progress() {
-          var ret = { progress: (this.duration - this.begin) / (this.maxDuration - this.begin) };
+          var ret = {
+            progress: (this.duration - this.begin) / (this.maxDuration - this.begin)
+          };
+
           if (this.values.hasValue()) {
             var p = ret.progress * (this.values.value.length - 1);
             var lb = Math.floor(p),
@@ -3019,45 +3321,53 @@ var svgEditorExtension_server_opensave = (function () {
             ret.from = this.from;
             ret.to = this.to;
           }
+
           return ret;
         }
       }]);
-      return _class22;
-    }(svg.Element.ElementBase);
 
-    // animate element
-    svg.Element.animate = function (_svg$Element$AnimateB) {
-      inherits(_class23, _svg$Element$AnimateB);
+      return _class22;
+    }(svg.Element.ElementBase); // animate element
+
+
+    svg.Element.animate =
+    /*#__PURE__*/
+    function (_svg$Element$AnimateB) {
+      _inherits(_class23, _svg$Element$AnimateB);
 
       function _class23() {
-        classCallCheck(this, _class23);
-        return possibleConstructorReturn(this, (_class23.__proto__ || Object.getPrototypeOf(_class23)).apply(this, arguments));
+        _classCallCheck(this, _class23);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class23).apply(this, arguments));
       }
 
-      createClass(_class23, [{
-        key: 'calcValue',
+      _createClass(_class23, [{
+        key: "calcValue",
         value: function calcValue() {
-          var p = this.progress();
+          var p = this.progress(); // tween value linearly
 
-          // tween value linearly
           var newValue = p.from.numValue() + (p.to.numValue() - p.from.numValue()) * p.progress;
           return newValue + this.initialUnits;
         }
       }]);
-      return _class23;
-    }(svg.Element.AnimateBase);
 
-    // animate color element
-    svg.Element.animateColor = function (_svg$Element$AnimateB2) {
-      inherits(_class24, _svg$Element$AnimateB2);
+      return _class23;
+    }(svg.Element.AnimateBase); // animate color element
+
+
+    svg.Element.animateColor =
+    /*#__PURE__*/
+    function (_svg$Element$AnimateB2) {
+      _inherits(_class24, _svg$Element$AnimateB2);
 
       function _class24() {
-        classCallCheck(this, _class24);
-        return possibleConstructorReturn(this, (_class24.__proto__ || Object.getPrototypeOf(_class24)).apply(this, arguments));
+        _classCallCheck(this, _class24);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class24).apply(this, arguments));
       }
 
-      createClass(_class24, [{
-        key: 'calcValue',
+      _createClass(_class24, [{
+        key: "calcValue",
         value: function calcValue() {
           var p = this.progress();
           var from = new RGBColor(p.from.value);
@@ -3065,32 +3375,36 @@ var svgEditorExtension_server_opensave = (function () {
 
           if (from.ok && to.ok) {
             // tween color linearly
-            var _r2 = from.r + (to.r - from.r) * p.progress;
+            var r = from.r + (to.r - from.r) * p.progress;
             var g = from.g + (to.g - from.g) * p.progress;
-            var _b = from.b + (to.b - from.b) * p.progress;
-            return 'rgb(' + parseInt(_r2, 10) + ',' + parseInt(g, 10) + ',' + parseInt(_b, 10) + ')';
+            var b = from.b + (to.b - from.b) * p.progress;
+            return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')';
           }
+
           return this.attribute('from').value;
         }
       }]);
-      return _class24;
-    }(svg.Element.AnimateBase);
 
-    // animate transform element
-    svg.Element.animateTransform = function (_svg$Element$animate) {
-      inherits(_class25, _svg$Element$animate);
+      return _class24;
+    }(svg.Element.AnimateBase); // animate transform element
+
+
+    svg.Element.animateTransform =
+    /*#__PURE__*/
+    function (_svg$Element$animate) {
+      _inherits(_class25, _svg$Element$animate);
 
       function _class25() {
-        classCallCheck(this, _class25);
-        return possibleConstructorReturn(this, (_class25.__proto__ || Object.getPrototypeOf(_class25)).apply(this, arguments));
+        _classCallCheck(this, _class25);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class25).apply(this, arguments));
       }
 
-      createClass(_class25, [{
-        key: 'calcValue',
+      _createClass(_class25, [{
+        key: "calcValue",
         value: function calcValue() {
-          var p = this.progress();
+          var p = this.progress(); // tween value linearly
 
-          // tween value linearly
           var from = svg.ToNumberArray(p.from.value);
           var to = svg.ToNumberArray(p.to.value);
           var newValue = '';
@@ -3100,124 +3414,144 @@ var svgEditorExtension_server_opensave = (function () {
           return newValue;
         }
       }]);
-      return _class25;
-    }(svg.Element.animate);
 
-    // font element
-    svg.Element.font = function (_svg$Element$ElementB8) {
-      inherits(_class26, _svg$Element$ElementB8);
+      return _class25;
+    }(svg.Element.animate); // font element
+
+
+    svg.Element.font =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB8) {
+      _inherits(_class26, _svg$Element$ElementB8);
 
       function _class26(node) {
-        classCallCheck(this, _class26);
+        var _this13;
 
-        var _this29 = possibleConstructorReturn(this, (_class26.__proto__ || Object.getPrototypeOf(_class26)).call(this, node));
+        _classCallCheck(this, _class26);
 
-        _this29.horizAdvX = _this29.attribute('horiz-adv-x').numValue();
+        _this13 = _possibleConstructorReturn(this, _getPrototypeOf(_class26).call(this, node));
+        _this13.horizAdvX = _this13.attribute('horiz-adv-x').numValue();
+        _this13.isRTL = false;
+        _this13.isArabic = false;
+        _this13.fontFace = null;
+        _this13.missingGlyph = null;
+        _this13.glyphs = [];
 
-        _this29.isRTL = false;
-        _this29.isArabic = false;
-        _this29.fontFace = null;
-        _this29.missingGlyph = null;
-        _this29.glyphs = [];
-        _this29.children.forEach(function (child) {
+        _this13.children.forEach(function (child) {
           if (child.type === 'font-face') {
-            _this29.fontFace = child;
+            _this13.fontFace = child;
+
             if (child.style('font-family').hasValue()) {
-              svg.Definitions[child.style('font-family').value] = _this29;
+              svg.Definitions[child.style('font-family').value] = _assertThisInitialized(_this13);
             }
           } else if (child.type === 'missing-glyph') {
-            _this29.missingGlyph = child;
+            _this13.missingGlyph = child;
           } else if (child.type === 'glyph') {
             if (child.arabicForm !== '') {
-              _this29.isRTL = true;
-              _this29.isArabic = true;
-              if (typeof _this29.glyphs[child.unicode] === 'undefined') {
-                _this29.glyphs[child.unicode] = [];
+              _this13.isRTL = true;
+              _this13.isArabic = true;
+
+              if (typeof _this13.glyphs[child.unicode] === 'undefined') {
+                _this13.glyphs[child.unicode] = [];
               }
-              _this29.glyphs[child.unicode][child.arabicForm] = child;
+
+              _this13.glyphs[child.unicode][child.arabicForm] = child;
             } else {
-              _this29.glyphs[child.unicode] = child;
+              _this13.glyphs[child.unicode] = child;
             }
           }
         });
-        return _this29;
+
+        return _this13;
       }
 
       return _class26;
-    }(svg.Element.ElementBase);
+    }(svg.Element.ElementBase); // font-face element
 
-    // font-face element
-    svg.Element.fontface = function (_svg$Element$ElementB9) {
-      inherits(_class27, _svg$Element$ElementB9);
+
+    svg.Element.fontface =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB9) {
+      _inherits(_class27, _svg$Element$ElementB9);
 
       function _class27(node) {
-        classCallCheck(this, _class27);
+        var _this14;
 
-        var _this30 = possibleConstructorReturn(this, (_class27.__proto__ || Object.getPrototypeOf(_class27)).call(this, node));
+        _classCallCheck(this, _class27);
 
-        _this30.ascent = _this30.attribute('ascent').value;
-        _this30.descent = _this30.attribute('descent').value;
-        _this30.unitsPerEm = _this30.attribute('units-per-em').numValue();
-        return _this30;
+        _this14 = _possibleConstructorReturn(this, _getPrototypeOf(_class27).call(this, node));
+        _this14.ascent = _this14.attribute('ascent').value;
+        _this14.descent = _this14.attribute('descent').value;
+        _this14.unitsPerEm = _this14.attribute('units-per-em').numValue();
+        return _this14;
       }
 
       return _class27;
-    }(svg.Element.ElementBase);
+    }(svg.Element.ElementBase); // missing-glyph element
 
-    // missing-glyph element
-    svg.Element.missingglyph = function (_svg$Element$path) {
-      inherits(_class28, _svg$Element$path);
+
+    svg.Element.missingglyph =
+    /*#__PURE__*/
+    function (_svg$Element$path) {
+      _inherits(_class28, _svg$Element$path);
 
       function _class28(node) {
-        classCallCheck(this, _class28);
+        var _this15;
 
-        var _this31 = possibleConstructorReturn(this, (_class28.__proto__ || Object.getPrototypeOf(_class28)).call(this, node));
+        _classCallCheck(this, _class28);
 
-        _this31.horizAdvX = 0;
-        return _this31;
+        _this15 = _possibleConstructorReturn(this, _getPrototypeOf(_class28).call(this, node));
+        _this15.horizAdvX = 0;
+        return _this15;
       }
 
       return _class28;
-    }(svg.Element.path);
+    }(svg.Element.path); // glyph element
 
-    // glyph element
-    svg.Element.glyph = function (_svg$Element$path2) {
-      inherits(_class29, _svg$Element$path2);
+
+    svg.Element.glyph =
+    /*#__PURE__*/
+    function (_svg$Element$path2) {
+      _inherits(_class29, _svg$Element$path2);
 
       function _class29(node) {
-        classCallCheck(this, _class29);
+        var _this16;
 
-        var _this32 = possibleConstructorReturn(this, (_class29.__proto__ || Object.getPrototypeOf(_class29)).call(this, node));
+        _classCallCheck(this, _class29);
 
-        _this32.horizAdvX = _this32.attribute('horiz-adv-x').numValue();
-        _this32.unicode = _this32.attribute('unicode').value;
-        _this32.arabicForm = _this32.attribute('arabic-form').value;
-        return _this32;
+        _this16 = _possibleConstructorReturn(this, _getPrototypeOf(_class29).call(this, node));
+        _this16.horizAdvX = _this16.attribute('horiz-adv-x').numValue();
+        _this16.unicode = _this16.attribute('unicode').value;
+        _this16.arabicForm = _this16.attribute('arabic-form').value;
+        return _this16;
       }
 
       return _class29;
-    }(svg.Element.path);
+    }(svg.Element.path); // text element
 
-    // text element
-    svg.Element.text = function (_svg$Element$Rendered3) {
-      inherits(_class30, _svg$Element$Rendered3);
+
+    svg.Element.text =
+    /*#__PURE__*/
+    function (_svg$Element$Rendered3) {
+      _inherits(_class30, _svg$Element$Rendered3);
 
       function _class30(node) {
-        classCallCheck(this, _class30);
-        return possibleConstructorReturn(this, (_class30.__proto__ || Object.getPrototypeOf(_class30)).call(this, node, true));
+        _classCallCheck(this, _class30);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class30).call(this, node, true));
       }
 
-      createClass(_class30, [{
-        key: 'setContext',
+      _createClass(_class30, [{
+        key: "setContext",
         value: function setContext(ctx) {
-          get(_class30.prototype.__proto__ || Object.getPrototypeOf(_class30.prototype), 'setContext', this).call(this, ctx);
+          _get(_getPrototypeOf(_class30.prototype), "setContext", this).call(this, ctx);
 
           var textBaseline = this.style('dominant-baseline').toTextBaseline();
-          if (textBaseline == null) textBaseline = this.style('alignment-baseline').toTextBaseline();
-          if (textBaseline != null) ctx.textBaseline = textBaseline;
+          if (isNullish(textBaseline)) textBaseline = this.style('alignment-baseline').toTextBaseline();
+          if (!isNullish(textBaseline)) ctx.textBaseline = textBaseline;
         }
       }, {
-        key: 'getBoundingBox',
+        key: "getBoundingBox",
         value: function getBoundingBox() {
           var x = this.attribute('x').toPixels('x');
           var y = this.attribute('y').toPixels('y');
@@ -3225,36 +3559,42 @@ var svgEditorExtension_server_opensave = (function () {
           return new svg.BoundingBox(x, y - fontSize, x + Math.floor(fontSize * 2.0 / 3.0) * this.children[0].getText().length, y);
         }
       }, {
-        key: 'renderChildren',
+        key: "renderChildren",
         value: function renderChildren(ctx) {
-          var _this34 = this;
+          var _this17 = this;
 
           this.x = this.attribute('x').toPixels('x');
           this.y = this.attribute('y').toPixels('y');
           this.x += this.getAnchorDelta(ctx, this, 0);
           this.children.forEach(function (child, i) {
-            _this34.renderChild(ctx, _this34, i);
+            _this17.renderChild(ctx, _this17, i);
           });
         }
       }, {
-        key: 'getAnchorDelta',
+        key: "getAnchorDelta",
         value: function getAnchorDelta(ctx, parent, startI) {
           var textAnchor = this.style('text-anchor').valueOrDefault('start');
+
           if (textAnchor !== 'start') {
             var width = 0;
+
             for (var i = startI; i < parent.children.length; i++) {
               var child = parent.children[i];
               if (i > startI && child.attribute('x').hasValue()) break; // new group
+
               width += child.measureTextRecursive(ctx);
             }
+
             return -1 * (textAnchor === 'end' ? width : width / 2.0);
           }
+
           return 0;
         }
       }, {
-        key: 'renderChild',
+        key: "renderChild",
         value: function renderChild(ctx, parent, i) {
           var child = parent.children[i];
+
           if (child.attribute('x').hasValue()) {
             child.x = child.attribute('x').toPixels('x') + this.getAnchorDelta(ctx, parent, i);
             if (child.attribute('dx').hasValue()) child.x += child.attribute('dx').toPixels('x');
@@ -3263,6 +3603,7 @@ var svgEditorExtension_server_opensave = (function () {
             if (child.attribute('dx').hasValue()) this.x += child.attribute('dx').toPixels('x');
             child.x = this.x;
           }
+
           this.x = child.x + child.measureText(ctx);
 
           if (child.attribute('y').hasValue()) {
@@ -3273,58 +3614,66 @@ var svgEditorExtension_server_opensave = (function () {
             if (child.attribute('dy').hasValue()) this.y += child.attribute('dy').toPixels('y');
             child.y = this.y;
           }
-          this.y = child.y;
 
+          this.y = child.y;
           child.render(ctx);
 
-          for (var _i = 0; _i < child.children.length; _i++) {
-            this.renderChild(ctx, child, _i);
+          for (var j = 0; j < child.children.length; j++) {
+            this.renderChild(ctx, child, j);
           }
         }
       }]);
-      return _class30;
-    }(svg.Element.RenderedElementBase);
 
-    // text base
-    svg.Element.TextElementBase = function (_svg$Element$Rendered4) {
-      inherits(_class31, _svg$Element$Rendered4);
+      return _class30;
+    }(svg.Element.RenderedElementBase); // text base
+
+
+    svg.Element.TextElementBase =
+    /*#__PURE__*/
+    function (_svg$Element$Rendered4) {
+      _inherits(_class31, _svg$Element$Rendered4);
 
       function _class31() {
-        classCallCheck(this, _class31);
-        return possibleConstructorReturn(this, (_class31.__proto__ || Object.getPrototypeOf(_class31)).apply(this, arguments));
+        _classCallCheck(this, _class31);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class31).apply(this, arguments));
       }
 
-      createClass(_class31, [{
-        key: 'getGlyph',
+      _createClass(_class31, [{
+        key: "getGlyph",
         value: function getGlyph(font, text, i) {
           var c = text[i];
           var glyph = null;
+
           if (font.isArabic) {
             var arabicForm = 'isolated';
             if ((i === 0 || text[i - 1] === ' ') && i < text.length - 2 && text[i + 1] !== ' ') arabicForm = 'terminal';
             if (i > 0 && text[i - 1] !== ' ' && i < text.length - 2 && text[i + 1] !== ' ') arabicForm = 'medial';
             if (i > 0 && text[i - 1] !== ' ' && (i === text.length - 1 || text[i + 1] === ' ')) arabicForm = 'initial';
+
             if (typeof font.glyphs[c] !== 'undefined') {
               glyph = font.glyphs[c][arabicForm];
-              if (glyph == null && font.glyphs[c].type === 'glyph') glyph = font.glyphs[c];
+              if (isNullish(glyph) && font.glyphs[c].type === 'glyph') glyph = font.glyphs[c];
             }
           } else {
             glyph = font.glyphs[c];
           }
-          if (glyph == null) glyph = font.missingGlyph;
+
+          if (isNullish(glyph)) glyph = font.missingGlyph;
           return glyph;
         }
       }, {
-        key: 'renderChildren',
+        key: "renderChildren",
         value: function renderChildren(ctx) {
           var customFont = this.parent.style('font-family').getDefinition();
-          if (customFont != null) {
+
+          if (!isNullish(customFont)) {
             var fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
             var fontStyle = this.parent.style('font-style').valueOrDefault(svg.Font.Parse(svg.ctx.font).fontStyle);
             var text = this.getText();
             if (customFont.isRTL) text = text.split('').reverse().join('');
-
             var dx = svg.ToNumberArray(this.parent.attribute('dx').value);
+
             for (var i = 0; i < text.length; i++) {
               var glyph = this.getGlyph(customFont, text, i);
               var scale = fontSize / customFont.fontFace.unitsPerEm;
@@ -3338,12 +3687,13 @@ var svgEditorExtension_server_opensave = (function () {
               ctx.lineWidth = lw;
               ctx.scale(1 / scale, -1 / scale);
               ctx.translate(-this.x, -this.y);
-
               this.x += fontSize * (glyph.horizAdvX || customFont.horizAdvX) / customFont.fontFace.unitsPerEm;
+
               if (typeof dx[i] !== 'undefined' && !isNaN(dx[i])) {
                 this.x += dx[i];
               }
             }
+
             return;
           }
 
@@ -3351,12 +3701,11 @@ var svgEditorExtension_server_opensave = (function () {
           if (ctx.strokeStyle !== '') ctx.strokeText(svg.compressSpaces(this.getText()), this.x, this.y);
         }
       }, {
-        key: 'getText',
-        value: function getText() {
-          // OVERRIDE ME
+        key: "getText",
+        value: function getText() {// OVERRIDE ME
         }
       }, {
-        key: 'measureTextRecursive',
+        key: "measureTextRecursive",
         value: function measureTextRecursive(ctx) {
           var width = this.measureText(ctx);
           this.children.forEach(function (child) {
@@ -3365,28 +3714,31 @@ var svgEditorExtension_server_opensave = (function () {
           return width;
         }
       }, {
-        key: 'measureText',
+        key: "measureText",
         value: function measureText(ctx) {
           var customFont = this.parent.style('font-family').getDefinition();
-          if (customFont != null) {
+
+          if (!isNullish(customFont)) {
             var fontSize = this.parent.style('font-size').numValueOrDefault(svg.Font.Parse(svg.ctx.font).fontSize);
             var measure = 0;
             var text = this.getText();
             if (customFont.isRTL) text = text.split('').reverse().join('');
             var dx = svg.ToNumberArray(this.parent.attribute('dx').value);
+
             for (var i = 0; i < text.length; i++) {
               var glyph = this.getGlyph(customFont, text, i);
               measure += (glyph.horizAdvX || customFont.horizAdvX) * fontSize / customFont.fontFace.unitsPerEm;
+
               if (typeof dx[i] !== 'undefined' && !isNaN(dx[i])) {
                 measure += dx[i];
               }
             }
+
             return measure;
           }
 
           var textToMeasure = svg.compressSpaces(this.getText());
           if (!ctx.measureText) return textToMeasure.length * 10;
-
           ctx.save();
           this.setContext(ctx);
 
@@ -3397,81 +3749,97 @@ var svgEditorExtension_server_opensave = (function () {
           return width;
         }
       }]);
-      return _class31;
-    }(svg.Element.RenderedElementBase);
 
-    // tspan
-    svg.Element.tspan = function (_svg$Element$TextElem) {
-      inherits(_class32, _svg$Element$TextElem);
+      return _class31;
+    }(svg.Element.RenderedElementBase); // tspan
+
+
+    svg.Element.tspan =
+    /*#__PURE__*/
+    function (_svg$Element$TextElem) {
+      _inherits(_class32, _svg$Element$TextElem);
 
       function _class32(node) {
-        classCallCheck(this, _class32);
+        var _this18;
 
-        var _this36 = possibleConstructorReturn(this, (_class32.__proto__ || Object.getPrototypeOf(_class32)).call(this, node, true));
+        _classCallCheck(this, _class32);
 
-        _this36.text = node.nodeValue || node.text || '';
-        return _this36;
+        _this18 = _possibleConstructorReturn(this, _getPrototypeOf(_class32).call(this, node, true));
+        _this18.text = node.nodeValue || node.text || '';
+        return _this18;
       }
 
-      createClass(_class32, [{
-        key: 'getText',
+      _createClass(_class32, [{
+        key: "getText",
         value: function getText() {
           return this.text;
         }
       }]);
-      return _class32;
-    }(svg.Element.TextElementBase);
 
-    // tref
-    svg.Element.tref = function (_svg$Element$TextElem2) {
-      inherits(_class33, _svg$Element$TextElem2);
+      return _class32;
+    }(svg.Element.TextElementBase); // tref
+
+
+    svg.Element.tref =
+    /*#__PURE__*/
+    function (_svg$Element$TextElem2) {
+      _inherits(_class33, _svg$Element$TextElem2);
 
       function _class33() {
-        classCallCheck(this, _class33);
-        return possibleConstructorReturn(this, (_class33.__proto__ || Object.getPrototypeOf(_class33)).apply(this, arguments));
+        _classCallCheck(this, _class33);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class33).apply(this, arguments));
       }
 
-      createClass(_class33, [{
-        key: 'getText',
+      _createClass(_class33, [{
+        key: "getText",
         value: function getText() {
           var element = this.getHrefAttribute().getDefinition();
-          if (element != null) return element.children[0].getText();
+          if (!isNullish(element)) return element.children[0].getText();
+          return undefined;
         }
       }]);
-      return _class33;
-    }(svg.Element.TextElementBase);
 
-    // a element
-    svg.Element.a = function (_svg$Element$TextElem3) {
-      inherits(_class34, _svg$Element$TextElem3);
+      return _class33;
+    }(svg.Element.TextElementBase); // a element
+
+
+    svg.Element.a =
+    /*#__PURE__*/
+    function (_svg$Element$TextElem3) {
+      _inherits(_class34, _svg$Element$TextElem3);
 
       function _class34(node) {
-        classCallCheck(this, _class34);
+        var _this19;
 
-        var _this38 = possibleConstructorReturn(this, (_class34.__proto__ || Object.getPrototypeOf(_class34)).call(this, node));
+        _classCallCheck(this, _class34);
 
-        _this38.hasText = true;
-        [].concat(toConsumableArray(node.childNodes)).forEach(function (childNode) {
+        _this19 = _possibleConstructorReturn(this, _getPrototypeOf(_class34).call(this, node));
+        _this19.hasText = true;
+
+        _toConsumableArray(node.childNodes).forEach(function (childNode) {
           if (childNode.nodeType !== 3) {
-            _this38.hasText = false;
+            _this19.hasText = false;
           }
-        });
-        // this might contain text
-        _this38.text = _this38.hasText ? node.childNodes[0].nodeValue : '';
-        return _this38;
+        }); // this might contain text
+
+
+        _this19.text = _this19.hasText ? node.childNodes[0].nodeValue : '';
+        return _this19;
       }
 
-      createClass(_class34, [{
-        key: 'getText',
+      _createClass(_class34, [{
+        key: "getText",
         value: function getText() {
           return this.text;
         }
       }, {
-        key: 'renderChildren',
+        key: "renderChildren",
         value: function renderChildren(ctx) {
           if (this.hasText) {
             // render as text element
-            get(_class34.prototype.__proto__ || Object.getPrototypeOf(_class34.prototype), 'renderChildren', this).call(this, ctx);
+            _get(_getPrototypeOf(_class34.prototype), "renderChildren", this).call(this, ctx);
+
             var fontSize = new svg.Property('fontSize', svg.Font.Parse(svg.ctx.font).fontSize);
             svg.Mouse.checkBoundingBox(this, new svg.BoundingBox(this.x, this.y - fontSize.toPixels('y'), this.x + this.measureText(ctx), this.y));
           } else {
@@ -3483,70 +3851,85 @@ var svgEditorExtension_server_opensave = (function () {
           }
         }
       }, {
-        key: 'onclick',
+        key: "onclick",
         value: function onclick() {
           window.open(this.getHrefAttribute().value);
         }
       }, {
-        key: 'onmousemove',
+        key: "onmousemove",
         value: function onmousemove() {
           svg.ctx.canvas.style.cursor = 'pointer';
         }
       }]);
-      return _class34;
-    }(svg.Element.TextElementBase);
 
-    // image element
-    svg.Element.image = function (_svg$Element$Rendered5) {
-      inherits(_class35, _svg$Element$Rendered5);
+      return _class34;
+    }(svg.Element.TextElementBase); // image element
+
+
+    svg.Element.image =
+    /*#__PURE__*/
+    function (_svg$Element$Rendered5) {
+      _inherits(_class35, _svg$Element$Rendered5);
 
       function _class35(node) {
-        classCallCheck(this, _class35);
+        var _this20;
 
-        var _this39 = possibleConstructorReturn(this, (_class35.__proto__ || Object.getPrototypeOf(_class35)).call(this, node));
+        _classCallCheck(this, _class35);
 
-        var href = _this39.getHrefAttribute().value;
+        _this20 = _possibleConstructorReturn(this, _getPrototypeOf(_class35).call(this, node));
+
+        var href = _this20.getHrefAttribute().value;
+
         if (href === '') {
-          return possibleConstructorReturn(_this39);
+          return _possibleConstructorReturn(_this20);
         }
-        _this39._isSvg = href.match(/\.svg$/);
 
-        svg.Images.push(_this39);
-        _this39.loaded = false;
-        if (!_this39._isSvg) {
-          _this39.img = document.createElement('img');
+        _this20._isSvg = href.match(/\.svg$/);
+        svg.Images.push(_assertThisInitialized(_this20));
+        _this20.loaded = false;
+
+        if (!_this20._isSvg) {
+          _this20.img = document.createElement('img');
+
           if (svg.opts.useCORS === true) {
-            _this39.img.crossOrigin = 'Anonymous';
+            _this20.img.crossOrigin = 'Anonymous';
           }
-          var self = _this39;
-          _this39.img.onload = function () {
-            self.loaded = true;
-          };
-          _this39.img.onerror = function () {
+
+          _this20.img.addEventListener('load', function () {
+            _this20.loaded = true;
+          });
+
+          _this20.img.addEventListener('error', function () {
             svg.log('ERROR: image "' + href + '" not found');
-            self.loaded = true;
-          };
-          _this39.img.src = href;
+            _this20.loaded = true;
+          });
+
+          _this20.img.src = href;
         } else {
           svg.ajax(href, true).then(function (img) {
-            _this39.img = img;
-            _this39.loaded = true;
+            // eslint-disable-line promise/prefer-await-to-then, promise/always-return
+            _this20.img = img;
+            _this20.loaded = true;
+          }).catch(function (err) {
+            // eslint-disable-line promise/prefer-await-to-callbacks
+            _this20.erred = true;
+            console.error('Ajax error for canvg', err); // eslint-disable-line no-console
           });
         }
-        return _this39;
+
+        return _this20;
       }
 
-      createClass(_class35, [{
-        key: 'renderChildren',
+      _createClass(_class35, [{
+        key: "renderChildren",
         value: function renderChildren(ctx) {
           var x = this.attribute('x').toPixels('x');
           var y = this.attribute('y').toPixels('y');
-
           var width = this.attribute('width').toPixels('x');
           var height = this.attribute('height').toPixels('y');
           if (width === 0 || height === 0) return;
-
           ctx.save();
+
           if (this._isSvg) {
             ctx.drawSvg(this.img, x, y, width, height);
           } else {
@@ -3554,10 +3937,11 @@ var svgEditorExtension_server_opensave = (function () {
             svg.AspectRatio(ctx, this.attribute('preserveAspectRatio').value, width, this.img.width, height, this.img.height, 0, 0);
             ctx.drawImage(this.img, 0, 0);
           }
+
           ctx.restore();
         }
       }, {
-        key: 'getBoundingBox',
+        key: "getBoundingBox",
         value: function getBoundingBox() {
           var x = this.attribute('x').toPixels('x');
           var y = this.attribute('y').toPixels('y');
@@ -3566,20 +3950,24 @@ var svgEditorExtension_server_opensave = (function () {
           return new svg.BoundingBox(x, y, x + width, y + height);
         }
       }]);
-      return _class35;
-    }(svg.Element.RenderedElementBase);
 
-    // group element
-    svg.Element.g = function (_svg$Element$Rendered6) {
-      inherits(_class36, _svg$Element$Rendered6);
+      return _class35;
+    }(svg.Element.RenderedElementBase); // group element
+
+
+    svg.Element.g =
+    /*#__PURE__*/
+    function (_svg$Element$Rendered6) {
+      _inherits(_class36, _svg$Element$Rendered6);
 
       function _class36() {
-        classCallCheck(this, _class36);
-        return possibleConstructorReturn(this, (_class36.__proto__ || Object.getPrototypeOf(_class36)).apply(this, arguments));
+        _classCallCheck(this, _class36);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class36).apply(this, arguments));
       }
 
-      createClass(_class36, [{
-        key: 'getBoundingBox',
+      _createClass(_class36, [{
+        key: "getBoundingBox",
         value: function getBoundingBox() {
           var bb = new svg.BoundingBox();
           this.children.forEach(function (child) {
@@ -3588,50 +3976,61 @@ var svgEditorExtension_server_opensave = (function () {
           return bb;
         }
       }]);
-      return _class36;
-    }(svg.Element.RenderedElementBase);
 
-    // symbol element
-    svg.Element.symbol = function (_svg$Element$Rendered7) {
-      inherits(_class37, _svg$Element$Rendered7);
+      return _class36;
+    }(svg.Element.RenderedElementBase); // symbol element
+
+
+    svg.Element.symbol =
+    /*#__PURE__*/
+    function (_svg$Element$Rendered7) {
+      _inherits(_class37, _svg$Element$Rendered7);
 
       function _class37() {
-        classCallCheck(this, _class37);
-        return possibleConstructorReturn(this, (_class37.__proto__ || Object.getPrototypeOf(_class37)).apply(this, arguments));
+        _classCallCheck(this, _class37);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class37).apply(this, arguments));
       }
 
-      createClass(_class37, [{
-        key: 'render',
-        value: function render(ctx) {
-          // NO RENDER
+      _createClass(_class37, [{
+        key: "render",
+        value: function render(ctx) {// NO RENDER
         }
       }]);
-      return _class37;
-    }(svg.Element.RenderedElementBase);
 
-    // style element
-    svg.Element.style = function (_svg$Element$ElementB10) {
-      inherits(_class38, _svg$Element$ElementB10);
+      return _class37;
+    }(svg.Element.RenderedElementBase); // style element
+
+
+    svg.Element.style =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB10) {
+      _inherits(_class38, _svg$Element$ElementB10);
 
       function _class38(node) {
-        classCallCheck(this, _class38);
+        var _this21;
 
-        // text, or spaces then CDATA
-        var _this42 = possibleConstructorReturn(this, (_class38.__proto__ || Object.getPrototypeOf(_class38)).call(this, node));
+        _classCallCheck(this, _class38);
+
+        _this21 = _possibleConstructorReturn(this, _getPrototypeOf(_class38).call(this, node)); // text, or spaces then CDATA
 
         var css = '';
-        [].concat(toConsumableArray(node.childNodes)).forEach(function (_ref3) {
-          var nodeValue = _ref3.nodeValue;
 
+        _toConsumableArray(node.childNodes).forEach(function (_ref11) {
+          var nodeValue = _ref11.nodeValue;
           css += nodeValue;
-        });
-        css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // remove comments
-        css = svg.compressSpaces(css); // replace whitespace
+        }); // remove comments
+
+
+        css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
+        // replace whitespace
+
+        css = svg.compressSpaces(css);
         var cssDefs = css.split('}');
         cssDefs.forEach(function (cssDef) {
           if (svg.trim(cssDef) !== '') {
             var _cssDef$split = cssDef.split('{'),
-                _cssDef$split2 = slicedToArray(_cssDef$split, 2),
+                _cssDef$split2 = _slicedToArray(_cssDef$split, 2),
                 cssClasses = _cssDef$split2[0],
                 cssProps = _cssDef$split2[1];
 
@@ -3639,29 +4038,33 @@ var svgEditorExtension_server_opensave = (function () {
             cssProps = cssProps.split(';');
             cssClasses.forEach(function (cssClass) {
               cssClass = svg.trim(cssClass);
+
               if (cssClass !== '') {
                 var props = {};
                 cssProps.forEach(function (cssProp) {
                   var prop = cssProp.indexOf(':');
                   var name = cssProp.substr(0, prop);
                   var value = cssProp.substr(prop + 1, cssProp.length - prop);
-                  if (name != null && value != null) {
+
+                  if (!isNullish(name) && !isNullish(value)) {
                     props[svg.trim(name)] = new svg.Property(svg.trim(name), svg.trim(value));
                   }
                 });
                 svg.Styles[cssClass] = props;
+
                 if (cssClass === '@font-face') {
                   var fontFamily = props['font-family'].value.replace(/"/g, '');
-                  var srcs = props['src'].value.split(',');
+                  var srcs = props.src.value.split(',');
                   srcs.forEach(function (src) {
                     if (src.includes('format("svg")')) {
                       var urlStart = src.indexOf('url');
                       var urlEnd = src.indexOf(')', urlStart);
-                      var url = src.substr(urlStart + 5, urlEnd - urlStart - 6);
-                      // Can this ajax safely be converted to async?
+                      var url = src.substr(urlStart + 5, urlEnd - urlStart - 6); // Can this ajax safely be converted to async?
+
                       var doc = svg.parseXml(svg.ajax(url));
                       var fonts = doc.getElementsByTagName('font');
-                      [].concat(toConsumableArray(fonts)).forEach(function (font) {
+
+                      _toConsumableArray(fonts).forEach(function (font) {
                         font = svg.CreateElement(font);
                         svg.Definitions[fontFamily] = font;
                       });
@@ -3672,67 +4075,73 @@ var svgEditorExtension_server_opensave = (function () {
             });
           }
         });
-        return _this42;
+        return _this21;
       }
 
       return _class38;
-    }(svg.Element.ElementBase);
+    }(svg.Element.ElementBase); // use element
 
-    // use element
-    svg.Element.use = function (_svg$Element$Rendered8) {
-      inherits(_class39, _svg$Element$Rendered8);
+
+    svg.Element.use =
+    /*#__PURE__*/
+    function (_svg$Element$Rendered8) {
+      _inherits(_class39, _svg$Element$Rendered8);
 
       function _class39(node) {
-        classCallCheck(this, _class39);
+        var _this22;
 
-        var _this43 = possibleConstructorReturn(this, (_class39.__proto__ || Object.getPrototypeOf(_class39)).call(this, node));
+        _classCallCheck(this, _class39);
 
-        _this43._el = _this43.getHrefAttribute().getDefinition();
-        return _this43;
+        _this22 = _possibleConstructorReturn(this, _getPrototypeOf(_class39).call(this, node));
+        _this22._el = _this22.getHrefAttribute().getDefinition();
+        return _this22;
       }
 
-      createClass(_class39, [{
-        key: 'setContext',
+      _createClass(_class39, [{
+        key: "setContext",
         value: function setContext(ctx) {
-          get(_class39.prototype.__proto__ || Object.getPrototypeOf(_class39.prototype), 'setContext', this).call(this, ctx);
+          _get(_getPrototypeOf(_class39.prototype), "setContext", this).call(this, ctx);
+
           if (this.attribute('x').hasValue()) ctx.translate(this.attribute('x').toPixels('x'), 0);
           if (this.attribute('y').hasValue()) ctx.translate(0, this.attribute('y').toPixels('y'));
         }
       }, {
-        key: 'path',
+        key: "path",
         value: function path(ctx) {
           var element = this._el;
-
-          if (element != null) element.path(ctx);
+          if (!isNullish(element)) element.path(ctx);
         }
       }, {
-        key: 'getBoundingBox',
+        key: "getBoundingBox",
         value: function getBoundingBox() {
           var element = this._el;
-
-          if (element != null) return element.getBoundingBox();
+          if (!isNullish(element)) return element.getBoundingBox();
+          return undefined;
         }
       }, {
-        key: 'renderChildren',
+        key: "renderChildren",
         value: function renderChildren(ctx) {
           var element = this._el;
 
-          if (element != null) {
+          if (!isNullish(element)) {
             var tempSvg = element;
+
             if (element.type === 'symbol') {
               // render me using a temporary svg element in symbol cases (https://www.w3.org/TR/SVG/struct.html#UseElement)
               tempSvg = new svg.Element.svg();
               tempSvg.type = 'svg';
-              tempSvg.attributes['viewBox'] = new svg.Property('viewBox', element.attribute('viewBox').value);
-              tempSvg.attributes['preserveAspectRatio'] = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
-              tempSvg.attributes['overflow'] = new svg.Property('overflow', element.attribute('overflow').value);
+              tempSvg.attributes.viewBox = new svg.Property('viewBox', element.attribute('viewBox').value);
+              tempSvg.attributes.preserveAspectRatio = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
+              tempSvg.attributes.overflow = new svg.Property('overflow', element.attribute('overflow').value);
               tempSvg.children = element.children;
             }
+
             if (tempSvg.type === 'svg') {
               // if symbol or svg, inherit width/height from me
-              if (this.attribute('width').hasValue()) tempSvg.attributes['width'] = new svg.Property('width', this.attribute('width').value);
-              if (this.attribute('height').hasValue()) tempSvg.attributes['height'] = new svg.Property('height', this.attribute('height').value);
+              if (this.attribute('width').hasValue()) tempSvg.attributes.width = new svg.Property('width', this.attribute('width').value);
+              if (this.attribute('height').hasValue()) tempSvg.attributes.height = new svg.Property('height', this.attribute('height').value);
             }
+
             var oldParent = tempSvg.parent;
             tempSvg.parent = null;
             tempSvg.render(ctx);
@@ -3740,20 +4149,24 @@ var svgEditorExtension_server_opensave = (function () {
           }
         }
       }]);
-      return _class39;
-    }(svg.Element.RenderedElementBase);
 
-    // mask element
-    svg.Element.mask = function (_svg$Element$ElementB11) {
-      inherits(_class40, _svg$Element$ElementB11);
+      return _class39;
+    }(svg.Element.RenderedElementBase); // mask element
+
+
+    svg.Element.mask =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB11) {
+      _inherits(_class40, _svg$Element$ElementB11);
 
       function _class40() {
-        classCallCheck(this, _class40);
-        return possibleConstructorReturn(this, (_class40.__proto__ || Object.getPrototypeOf(_class40)).apply(this, arguments));
+        _classCallCheck(this, _class40);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class40).apply(this, arguments));
       }
 
-      createClass(_class40, [{
-        key: 'apply',
+      _createClass(_class40, [{
+        key: "apply",
         value: function apply(ctx, element) {
           // render as temp svg
           var x = this.attribute('x').toPixels('x');
@@ -3770,18 +4183,16 @@ var svgEditorExtension_server_opensave = (function () {
             y = Math.floor(bb.y1);
             width = Math.floor(bb.width());
             height = Math.floor(bb.height());
-          }
+          } // temporarily remove mask to avoid recursion
 
-          // temporarily remove mask to avoid recursion
+
           var mask = element.attribute('mask').value;
           element.attribute('mask').value = '';
-
           var cMask = document.createElement('canvas');
           cMask.width = x + width;
           cMask.height = y + height;
           var maskCtx = cMask.getContext('2d');
           this.renderChildren(maskCtx);
-
           var c = document.createElement('canvas');
           c.width = x + width;
           c.height = y + height;
@@ -3790,43 +4201,47 @@ var svgEditorExtension_server_opensave = (function () {
           tempCtx.globalCompositeOperation = 'destination-in';
           tempCtx.fillStyle = maskCtx.createPattern(cMask, 'no-repeat');
           tempCtx.fillRect(0, 0, x + width, y + height);
-
           ctx.fillStyle = tempCtx.createPattern(c, 'no-repeat');
-          ctx.fillRect(0, 0, x + width, y + height);
+          ctx.fillRect(0, 0, x + width, y + height); // reassign mask
 
-          // reassign mask
           element.attribute('mask').value = mask;
         }
       }, {
-        key: 'render',
-        value: function render(ctx) {
-          // NO RENDER
+        key: "render",
+        value: function render(ctx) {// NO RENDER
         }
       }]);
-      return _class40;
-    }(svg.Element.ElementBase);
 
-    // clip element
-    svg.Element.clipPath = function (_svg$Element$ElementB12) {
-      inherits(_class41, _svg$Element$ElementB12);
+      return _class40;
+    }(svg.Element.ElementBase); // clip element
+
+
+    svg.Element.clipPath =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB12) {
+      _inherits(_class41, _svg$Element$ElementB12);
 
       function _class41() {
-        classCallCheck(this, _class41);
-        return possibleConstructorReturn(this, (_class41.__proto__ || Object.getPrototypeOf(_class41)).apply(this, arguments));
+        _classCallCheck(this, _class41);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class41).apply(this, arguments));
       }
 
-      createClass(_class41, [{
-        key: 'apply',
+      _createClass(_class41, [{
+        key: "apply",
         value: function apply(ctx) {
           this.children.forEach(function (child) {
             if (typeof child.path !== 'undefined') {
               var transform = null;
+
               if (child.attribute('transform').hasValue()) {
                 transform = new svg.Transform(child.attribute('transform').value);
                 transform.apply(ctx);
               }
+
               child.path(ctx);
               ctx.clip();
+
               if (transform) {
                 transform.unapply(ctx);
               }
@@ -3834,37 +4249,38 @@ var svgEditorExtension_server_opensave = (function () {
           });
         }
       }, {
-        key: 'render',
-        value: function render(ctx) {
-          // NO RENDER
+        key: "render",
+        value: function render(ctx) {// NO RENDER
         }
       }]);
-      return _class41;
-    }(svg.Element.ElementBase);
 
-    // filters
-    svg.Element.filter = function (_svg$Element$ElementB13) {
-      inherits(_class42, _svg$Element$ElementB13);
+      return _class41;
+    }(svg.Element.ElementBase); // filters
+
+
+    svg.Element.filter =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB13) {
+      _inherits(_class42, _svg$Element$ElementB13);
 
       function _class42() {
-        classCallCheck(this, _class42);
-        return possibleConstructorReturn(this, (_class42.__proto__ || Object.getPrototypeOf(_class42)).apply(this, arguments));
+        _classCallCheck(this, _class42);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class42).apply(this, arguments));
       }
 
-      createClass(_class42, [{
-        key: 'apply',
+      _createClass(_class42, [{
+        key: "apply",
         value: function apply(ctx, element) {
           // render as temp svg
           var bb = element.getBoundingBox();
           var x = Math.floor(bb.x1);
           var y = Math.floor(bb.y1);
           var width = Math.floor(bb.width());
-          var height = Math.floor(bb.height());
+          var height = Math.floor(bb.height()); // temporarily remove filter to avoid recursion
 
-          // temporarily remove filter to avoid recursion
           var filter = element.style('filter').value;
           element.style('filter').value = '';
-
           var px = 0,
               py = 0;
           this.children.forEach(function (child) {
@@ -3872,213 +4288,263 @@ var svgEditorExtension_server_opensave = (function () {
             px = Math.max(px, efd);
             py = Math.max(py, efd);
           });
-
           var c = document.createElement('canvas');
           c.width = width + 2 * px;
           c.height = height + 2 * py;
           var tempCtx = c.getContext('2d');
           tempCtx.translate(-x + px, -y + py);
-          element.render(tempCtx);
+          element.render(tempCtx); // apply filters
 
-          // apply filters
           this.children.forEach(function (child) {
             child.apply(tempCtx, 0, 0, width + 2 * px, height + 2 * py);
-          });
+          }); // render on me
 
-          // render on me
-          ctx.drawImage(c, 0, 0, width + 2 * px, height + 2 * py, x - px, y - py, width + 2 * px, height + 2 * py);
+          ctx.drawImage(c, 0, 0, width + 2 * px, height + 2 * py, x - px, y - py, width + 2 * px, height + 2 * py); // reassign filter
 
-          // reassign filter
           element.style('filter', true).value = filter;
         }
       }, {
-        key: 'render',
-        value: function render(ctx) {
-          // NO RENDER
+        key: "render",
+        value: function render(ctx) {// NO RENDER
         }
       }]);
+
       return _class42;
     }(svg.Element.ElementBase);
 
-    svg.Element.feMorphology = function (_svg$Element$ElementB14) {
-      inherits(_class43, _svg$Element$ElementB14);
+    svg.Element.feMorphology =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB14) {
+      _inherits(_class43, _svg$Element$ElementB14);
 
       function _class43() {
-        classCallCheck(this, _class43);
-        return possibleConstructorReturn(this, (_class43.__proto__ || Object.getPrototypeOf(_class43)).apply(this, arguments));
+        _classCallCheck(this, _class43);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class43).apply(this, arguments));
       }
 
-      createClass(_class43, [{
-        key: 'apply',
-        value: function apply(ctx, x, y, width, height) {
-          // TODO: implement
+      _createClass(_class43, [{
+        key: "apply",
+        value: function apply(ctx, x, y, width, height) {// TODO: implement
         }
       }]);
+
       return _class43;
     }(svg.Element.ElementBase);
 
-    svg.Element.feComposite = function (_svg$Element$ElementB15) {
-      inherits(_class44, _svg$Element$ElementB15);
+    svg.Element.feComposite =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB15) {
+      _inherits(_class44, _svg$Element$ElementB15);
 
       function _class44() {
-        classCallCheck(this, _class44);
-        return possibleConstructorReturn(this, (_class44.__proto__ || Object.getPrototypeOf(_class44)).apply(this, arguments));
+        _classCallCheck(this, _class44);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class44).apply(this, arguments));
       }
 
-      createClass(_class44, [{
-        key: 'apply',
-        value: function apply(ctx, x, y, width, height) {
-          // TODO: implement
+      _createClass(_class44, [{
+        key: "apply",
+        value: function apply(ctx, x, y, width, height) {// TODO: implement
         }
       }]);
+
       return _class44;
     }(svg.Element.ElementBase);
+    /**
+    * @param {Uint8ClampedArray} img
+    * @param {Integer} x
+    * @param {Integer} y
+    * @param {Float} width
+    * @param {Float} height
+    * @param {Integer} rgba
+    * @returns {undefined}
+    */
+
 
     function imGet(img, x, y, width, height, rgba) {
       return img[y * width * 4 + x * 4 + rgba];
     }
+    /**
+    * @param {Uint8ClampedArray} img
+    * @param {Integer} x
+    * @param {Integer} y
+    * @param {Float} width
+    * @param {Float} height
+    * @param {Integer} rgba
+    * @param {Float} val
+    * @returns {undefined}
+    */
+
 
     function imSet(img, x, y, width, height, rgba, val) {
       img[y * width * 4 + x * 4 + rgba] = val;
     }
 
-    svg.Element.feColorMatrix = function (_svg$Element$ElementB16) {
-      inherits(_class45, _svg$Element$ElementB16);
+    svg.Element.feColorMatrix =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB16) {
+      _inherits(_class45, _svg$Element$ElementB16);
 
       function _class45(node) {
-        classCallCheck(this, _class45);
+        var _this23;
 
-        var _this49 = possibleConstructorReturn(this, (_class45.__proto__ || Object.getPrototypeOf(_class45)).call(this, node));
+        _classCallCheck(this, _class45);
 
-        var matrix = svg.ToNumberArray(_this49.attribute('values').value);
-        switch (_this49.attribute('type').valueOrDefault('matrix')) {// https://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
+        _this23 = _possibleConstructorReturn(this, _getPrototypeOf(_class45).call(this, node));
+        var matrix = svg.ToNumberArray(_this23.attribute('values').value);
+
+        switch (_this23.attribute('type').valueOrDefault('matrix')) {
+          // https://www.w3.org/TR/SVG/filters.html#feColorMatrixElement
           case 'saturate':
-            var s = matrix[0];
-            matrix = [0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0, 0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s, 0, 0, 0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1];
-            break;
+            {
+              var s = matrix[0];
+              matrix = [0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0, 0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s, 0, 0, 0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1];
+              break;
+            }
+
           case 'hueRotate':
-            var a = matrix[0] * Math.PI / 180.0;
-            var _c3 = function _c3(m1, m2, m3) {
-              return m1 + Math.cos(a) * m2 + Math.sin(a) * m3;
-            };
-            matrix = [_c3(0.213, 0.787, -0.213), _c3(0.715, -0.715, -0.715), _c3(0.072, -0.072, 0.928), 0, 0, _c3(0.213, -0.213, 0.143), _c3(0.715, 0.285, 0.140), _c3(0.072, -0.072, -0.283), 0, 0, _c3(0.213, -0.213, -0.787), _c3(0.715, -0.715, 0.715), _c3(0.072, 0.928, 0.072), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1];
-            break;
+            {
+              var a = matrix[0] * Math.PI / 180.0;
+
+              var c = function c(m1, m2, m3) {
+                return m1 + Math.cos(a) * m2 + Math.sin(a) * m3;
+              };
+
+              matrix = [c(0.213, 0.787, -0.213), c(0.715, -0.715, -0.715), c(0.072, -0.072, 0.928), 0, 0, c(0.213, -0.213, 0.143), c(0.715, 0.285, 0.140), c(0.072, -0.072, -0.283), 0, 0, c(0.213, -0.213, -0.787), c(0.715, -0.715, 0.715), c(0.072, 0.928, 0.072), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1];
+              break;
+            }
+
           case 'luminanceToAlpha':
             matrix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2125, 0.7154, 0.0721, 0, 0, 0, 0, 0, 0, 1];
             break;
         }
-        _this49.matrix = matrix;
 
-        _this49._m = function (i, v) {
+        _this23.matrix = matrix;
+
+        _this23._m = function (i, v) {
           var mi = matrix[i];
           return mi * (mi < 0 ? v - 255 : v);
         };
-        return _this49;
+
+        return _this23;
       }
 
-      createClass(_class45, [{
-        key: 'apply',
+      _createClass(_class45, [{
+        key: "apply",
         value: function apply(ctx, x, y, width, height) {
-          var m = this._m;
-          // assuming x==0 && y==0 for now
+          var m = this._m; // assuming x==0 && y==0 for now
 
           var srcData = ctx.getImageData(0, 0, width, height);
-          for (var _y2 = 0; _y2 < height; _y2++) {
-            for (var _x2 = 0; _x2 < width; _x2++) {
-              var _r3 = imGet(srcData.data, _x2, _y2, width, height, 0);
-              var g = imGet(srcData.data, _x2, _y2, width, height, 1);
-              var _b2 = imGet(srcData.data, _x2, _y2, width, height, 2);
-              var a = imGet(srcData.data, _x2, _y2, width, height, 3);
-              imSet(srcData.data, _x2, _y2, width, height, 0, m(0, _r3) + m(1, g) + m(2, _b2) + m(3, a) + m(4, 1));
-              imSet(srcData.data, _x2, _y2, width, height, 1, m(5, _r3) + m(6, g) + m(7, _b2) + m(8, a) + m(9, 1));
-              imSet(srcData.data, _x2, _y2, width, height, 2, m(10, _r3) + m(11, g) + m(12, _b2) + m(13, a) + m(14, 1));
-              imSet(srcData.data, _x2, _y2, width, height, 3, m(15, _r3) + m(16, g) + m(17, _b2) + m(18, a) + m(19, 1));
+
+          for (var _y = 0; _y < height; _y++) {
+            for (var _x = 0; _x < width; _x++) {
+              var r = imGet(srcData.data, _x, _y, width, height, 0);
+              var g = imGet(srcData.data, _x, _y, width, height, 1);
+              var b = imGet(srcData.data, _x, _y, width, height, 2);
+              var a = imGet(srcData.data, _x, _y, width, height, 3);
+              imSet(srcData.data, _x, _y, width, height, 0, m(0, r) + m(1, g) + m(2, b) + m(3, a) + m(4, 1));
+              imSet(srcData.data, _x, _y, width, height, 1, m(5, r) + m(6, g) + m(7, b) + m(8, a) + m(9, 1));
+              imSet(srcData.data, _x, _y, width, height, 2, m(10, r) + m(11, g) + m(12, b) + m(13, a) + m(14, 1));
+              imSet(srcData.data, _x, _y, width, height, 3, m(15, r) + m(16, g) + m(17, b) + m(18, a) + m(19, 1));
             }
           }
+
           ctx.clearRect(0, 0, width, height);
           ctx.putImageData(srcData, 0, 0);
         }
       }]);
+
       return _class45;
     }(svg.Element.ElementBase);
 
-    svg.Element.feGaussianBlur = function (_svg$Element$ElementB17) {
-      inherits(_class46, _svg$Element$ElementB17);
+    svg.Element.feGaussianBlur =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB17) {
+      _inherits(_class46, _svg$Element$ElementB17);
 
       function _class46(node) {
-        classCallCheck(this, _class46);
+        var _this24;
 
-        var _this50 = possibleConstructorReturn(this, (_class46.__proto__ || Object.getPrototypeOf(_class46)).call(this, node));
+        _classCallCheck(this, _class46);
 
-        _this50.blurRadius = Math.floor(_this50.attribute('stdDeviation').numValue());
-        _this50.extraFilterDistance = _this50.blurRadius;
-        return _this50;
+        _this24 = _possibleConstructorReturn(this, _getPrototypeOf(_class46).call(this, node));
+        _this24.blurRadius = Math.floor(_this24.attribute('stdDeviation').numValue());
+        _this24.extraFilterDistance = _this24.blurRadius;
+        return _this24;
       }
 
-      createClass(_class46, [{
-        key: 'apply',
+      _createClass(_class46, [{
+        key: "apply",
         value: function apply(ctx, x, y, width, height) {
-          if (typeof canvasRGBA_ === 'undefined') {
-            svg.log('ERROR: `setStackBlurCanvasRGBA` must be run for blur to work');
-            return;
-          }
-
           // Todo: This might not be a problem anymore with out `instanceof` fix
           // StackBlur requires canvas be on document
           ctx.canvas.id = svg.UniqueId();
           ctx.canvas.style.display = 'none';
           document.body.append(ctx.canvas);
-          canvasRGBA_(ctx.canvas, x, y, width, height, this.blurRadius);
+          processCanvasRGBA(ctx.canvas, x, y, width, height, this.blurRadius);
           ctx.canvas.remove();
         }
       }]);
-      return _class46;
-    }(svg.Element.ElementBase);
 
-    // title element, do nothing
-    svg.Element.title = function (_svg$Element$ElementB18) {
-      inherits(_class47, _svg$Element$ElementB18);
+      return _class46;
+    }(svg.Element.ElementBase); // title element, do nothing
+
+
+    svg.Element.title =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB18) {
+      _inherits(_class47, _svg$Element$ElementB18);
 
       function _class47(node) {
-        classCallCheck(this, _class47);
-        return possibleConstructorReturn(this, (_class47.__proto__ || Object.getPrototypeOf(_class47)).call(this));
+        _classCallCheck(this, _class47);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class47).call(this));
       }
 
       return _class47;
-    }(svg.Element.ElementBase);
+    }(svg.Element.ElementBase); // desc element, do nothing
 
-    // desc element, do nothing
-    svg.Element.desc = function (_svg$Element$ElementB19) {
-      inherits(_class48, _svg$Element$ElementB19);
+
+    svg.Element.desc =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB19) {
+      _inherits(_class48, _svg$Element$ElementB19);
 
       function _class48(node) {
-        classCallCheck(this, _class48);
-        return possibleConstructorReturn(this, (_class48.__proto__ || Object.getPrototypeOf(_class48)).call(this));
+        _classCallCheck(this, _class48);
+
+        return _possibleConstructorReturn(this, _getPrototypeOf(_class48).call(this));
       }
 
       return _class48;
     }(svg.Element.ElementBase);
 
-    svg.Element.MISSING = function (_svg$Element$ElementB20) {
-      inherits(_class49, _svg$Element$ElementB20);
+    svg.Element.MISSING =
+    /*#__PURE__*/
+    function (_svg$Element$ElementB20) {
+      _inherits(_class49, _svg$Element$ElementB20);
 
       function _class49(node) {
-        classCallCheck(this, _class49);
+        var _this25;
 
-        var _this53 = possibleConstructorReturn(this, (_class49.__proto__ || Object.getPrototypeOf(_class49)).call(this));
+        _classCallCheck(this, _class49);
 
+        _this25 = _possibleConstructorReturn(this, _getPrototypeOf(_class49).call(this));
         svg.log('ERROR: Element \'' + node.nodeName + '\' not yet implemented.');
-        return _this53;
+        return _this25;
       }
 
       return _class49;
-    }(svg.Element.ElementBase);
+    }(svg.Element.ElementBase); // element factory
 
-    // element factory
+
     svg.CreateElement = function (node) {
       var className = node.nodeName.replace(/^[^:]+:/, '') // remove namespace
       .replace(/-/g, ''); // remove dashes
-      var e = void 0;
+
+      var e;
+
       if (typeof svg.Element[className] !== 'undefined') {
         e = new svg.Element[className](node);
       } else {
@@ -4087,11 +4553,15 @@ var svgEditorExtension_server_opensave = (function () {
 
       e.type = node.nodeName;
       return e;
-    };
+    }; // load from url
 
-    // load from url
-    svg.load = function () {
-      var _ref4 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(ctx, url) {
+
+    svg.load =
+    /*#__PURE__*/
+    function () {
+      var _ref12 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee(ctx, url) {
         var dom;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -4102,71 +4572,74 @@ var svgEditorExtension_server_opensave = (function () {
 
               case 2:
                 dom = _context.sent;
-                return _context.abrupt('return', svg.loadXml(ctx, dom));
+                return _context.abrupt("return", svg.loadXml(ctx, dom));
 
               case 4:
-              case 'end':
+              case "end":
                 return _context.stop();
             }
           }
         }, _callee, this);
       }));
 
-      return function (_x3, _x4) {
-        return _ref4.apply(this, arguments);
+      return function (_x2, _x3) {
+        return _ref12.apply(this, arguments);
       };
-    }();
+    }(); // load from xml
 
-    // load from xml
+
     svg.loadXml = function (ctx, xml) {
       return svg.loadXmlDoc(ctx, svg.parseXml(xml));
     };
 
     svg.loadXmlDoc = function (ctx, dom) {
-      var res = void 0;
+      var res;
       svg.init(ctx);
 
       var mapXY = function mapXY(p) {
         var e = ctx.canvas;
+
         while (e) {
           p.x -= e.offsetLeft;
           p.y -= e.offsetTop;
           e = e.offsetParent;
         }
+
         if (window.scrollX) p.x += window.scrollX;
         if (window.scrollY) p.y += window.scrollY;
         return p;
-      };
+      }; // bind mouse
 
-      // bind mouse
+
       if (svg.opts.ignoreMouse !== true) {
-        ctx.canvas.onclick = function (e) {
-          var args = e != null ? [e.clientX, e.clientY] : [event.clientX, event.clientY];
+        ctx.canvas.addEventListener('click', function (e) {
+          var args = !isNullish(e) ? [e.clientX, e.clientY] : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
 
-          var _mapXY = mapXY(new (Function.prototype.bind.apply(svg.Point, [null].concat(args)))()),
+          var _mapXY = mapXY(_construct(svg.Point, args)),
               x = _mapXY.x,
               y = _mapXY.y;
 
           svg.Mouse.onclick(x, y);
-        };
-        ctx.canvas.onmousemove = function (e) {
-          var args = e != null ? [e.clientX, e.clientY] : [event.clientX, event.clientY];
+        });
+        ctx.canvas.addEventListener('mousemove', function (e) {
+          var args = !isNullish(e) ? [e.clientX, e.clientY] : [event.clientX, event.clientY]; // eslint-disable-line no-restricted-globals
 
-          var _mapXY2 = mapXY(new (Function.prototype.bind.apply(svg.Point, [null].concat(args)))()),
+          var _mapXY2 = mapXY(_construct(svg.Point, args)),
               x = _mapXY2.x,
               y = _mapXY2.y;
 
           svg.Mouse.onmousemove(x, y);
-        };
+        });
       }
 
       var e = svg.CreateElement(dom.documentElement);
-      e.root = true;
+      e.root = true; // render loop
 
-      // render loop
       var isFirstRender = true;
+
       var draw = function draw(resolve) {
         svg.ViewPort.Clear();
+
         if (ctx.canvas.parentNode) {
           svg.ViewPort.SetCurrent(ctx.canvas.parentNode.clientWidth, ctx.canvas.parentNode.clientHeight);
         }
@@ -4177,31 +4650,37 @@ var svgEditorExtension_server_opensave = (function () {
             ctx.canvas.width = e.style('width').toPixels('x');
             ctx.canvas.style.width = ctx.canvas.width + 'px';
           }
+
           if (e.style('height').hasValue()) {
             ctx.canvas.height = e.style('height').toPixels('y');
             ctx.canvas.style.height = ctx.canvas.height + 'px';
           }
         }
+
         var cWidth = ctx.canvas.clientWidth || ctx.canvas.width;
         var cHeight = ctx.canvas.clientHeight || ctx.canvas.height;
+
         if (svg.opts.ignoreDimensions === true && e.style('width').hasValue() && e.style('height').hasValue()) {
           cWidth = e.style('width').toPixels('x');
           cHeight = e.style('height').toPixels('y');
         }
+
         svg.ViewPort.SetCurrent(cWidth, cHeight);
 
-        if (svg.opts.offsetX != null) {
+        if (!isNullish(svg.opts.offsetX)) {
           e.attribute('x', true).value = svg.opts.offsetX;
         }
-        if (svg.opts.offsetY != null) {
+
+        if (!isNullish(svg.opts.offsetY)) {
           e.attribute('y', true).value = svg.opts.offsetY;
         }
-        if (svg.opts.scaleWidth != null || svg.opts.scaleHeight != null) {
+
+        if (!isNullish(svg.opts.scaleWidth) || !isNullish(svg.opts.scaleHeight)) {
           var viewBox = svg.ToNumberArray(e.attribute('viewBox').value);
           var xRatio = null,
               yRatio = null;
 
-          if (svg.opts.scaleWidth != null) {
+          if (!isNullish(svg.opts.scaleWidth)) {
             if (e.attribute('width').hasValue()) {
               xRatio = e.attribute('width').toPixels('x') / svg.opts.scaleWidth;
             } else if (!isNaN(viewBox[2])) {
@@ -4209,7 +4688,7 @@ var svgEditorExtension_server_opensave = (function () {
             }
           }
 
-          if (svg.opts.scaleHeight != null) {
+          if (!isNullish(svg.opts.scaleHeight)) {
             if (e.attribute('height').hasValue()) {
               yRatio = e.attribute('height').toPixels('y') / svg.opts.scaleHeight;
             } else if (!isNaN(viewBox[3])) {
@@ -4217,10 +4696,11 @@ var svgEditorExtension_server_opensave = (function () {
             }
           }
 
-          if (xRatio == null) {
+          if (isNullish(xRatio)) {
             xRatio = yRatio;
           }
-          if (yRatio == null) {
+
+          if (isNullish(yRatio)) {
             yRatio = xRatio;
           }
 
@@ -4228,13 +4708,15 @@ var svgEditorExtension_server_opensave = (function () {
           e.attribute('height', true).value = svg.opts.scaleHeight;
           e.attribute('viewBox', true).value = '0 0 ' + cWidth * xRatio + ' ' + cHeight * yRatio;
           e.attribute('preserveAspectRatio', true).value = 'none';
-        }
+        } // clear and render
 
-        // clear and render
+
         if (svg.opts.ignoreClear !== true) {
           ctx.clearRect(0, 0, cWidth, cHeight);
         }
+
         e.render(ctx);
+
         if (isFirstRender) {
           isFirstRender = false;
           resolve(dom);
@@ -4248,39 +4730,43 @@ var svgEditorExtension_server_opensave = (function () {
         if (waitingForImages && svg.ImagesLoaded()) {
           waitingForImages = false;
           needUpdate = true;
-        }
+        } // need update from mouse events?
 
-        // need update from mouse events?
+
         if (svg.opts.ignoreMouse !== true) {
-          needUpdate = needUpdate | svg.Mouse.hasEvents();
-        }
+          needUpdate = needUpdate || svg.Mouse.hasEvents();
+        } // need update from animations?
 
-        // need update from animations?
+
         if (svg.opts.ignoreAnimation !== true) {
           svg.Animations.forEach(function (animation) {
-            needUpdate = needUpdate | animation.update(1000 / svg.FRAMERATE);
+            var needAnimationUpdate = animation.update(1000 / svg.FRAMERATE);
+            needUpdate = needUpdate || needAnimationUpdate;
           });
-        }
+        } // need update from redraw?
 
-        // need update from redraw?
+
         if (typeof svg.opts.forceRedraw === 'function') {
           if (svg.opts.forceRedraw() === true) {
             needUpdate = true;
           }
-        }
+        } // render if needed
 
-        // render if needed
+
         if (needUpdate) {
           draw(res);
           svg.Mouse.runEvents(); // run and clear our events
         }
-      }, 1000 / svg.FRAMERATE);
+      }, 1000 / svg.FRAMERATE); // Todo: Replace with an image loading Promise utility?
+
       return new Promise(function (resolve, reject) {
+        // eslint-disable-line promise/avoid-new
         if (svg.ImagesLoaded()) {
           waitingForImages = false;
           draw(resolve);
           return;
         }
+
         res = resolve;
       });
     };
@@ -4298,7 +4784,9 @@ var svgEditorExtension_server_opensave = (function () {
       },
       onclick: function onclick(x, y) {
         this.events.push({
-          type: 'onclick', x: x, y: y,
+          type: 'onclick',
+          x: x,
+          y: y,
           run: function run(e) {
             if (e.onclick) e.onclick();
           }
@@ -4306,59 +4794,56 @@ var svgEditorExtension_server_opensave = (function () {
       },
       onmousemove: function onmousemove(x, y) {
         this.events.push({
-          type: 'onmousemove', x: x, y: y,
+          type: 'onmousemove',
+          x: x,
+          y: y,
           run: function run(e) {
             if (e.onmousemove) e.onmousemove();
           }
         });
       },
-
-
       eventElements: [],
-
       checkPath: function checkPath(element, ctx) {
-        var _this54 = this;
+        var _this26 = this;
 
-        this.events.forEach(function (_ref5, i) {
-          var x = _ref5.x,
-              y = _ref5.y;
+        this.events.forEach(function (_ref13, i) {
+          var x = _ref13.x,
+              y = _ref13.y;
 
           if (ctx.isPointInPath && ctx.isPointInPath(x, y)) {
-            _this54.eventElements[i] = element;
+            _this26.eventElements[i] = element;
           }
         });
       },
       checkBoundingBox: function checkBoundingBox(element, bb) {
-        var _this55 = this;
+        var _this27 = this;
 
-        this.events.forEach(function (_ref6, i) {
-          var x = _ref6.x,
-              y = _ref6.y;
+        this.events.forEach(function (_ref14, i) {
+          var x = _ref14.x,
+              y = _ref14.y;
 
           if (bb.isPointInBox(x, y)) {
-            _this55.eventElements[i] = element;
+            _this27.eventElements[i] = element;
           }
         });
       },
       runEvents: function runEvents() {
-        var _this56 = this;
+        var _this28 = this;
 
         svg.ctx.canvas.style.cursor = '';
-
         this.events.forEach(function (e, i) {
-          var element = _this56.eventElements[i];
+          var element = _this28.eventElements[i];
+
           while (element) {
             e.run(element);
             element = element.parent;
           }
-        });
+        }); // done running, clear
 
-        // done running, clear
         this.events = [];
         this.eventElements = [];
       }
     };
-
     return svg;
   }
 
@@ -4377,57 +4862,121 @@ var svgEditorExtension_server_opensave = (function () {
     };
   }
 
-  /* globals jQuery */
-
   var extServer_opensave = {
     name: 'server_opensave',
     init: function () {
-      var _ref2 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(_ref) {
-        var decode64 = _ref.decode64,
-            encode64 = _ref.encode64,
-            importLocale = _ref.importLocale;
-        var strings, svgEditor, $, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      var _init = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee5(_ref) {
+        var $, decode64, encode64, importLocale, strings, svgEditor, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                rebuildInput = function rebuildInput(form) {
+                rebuildInput = function _ref7(form) {
                   form.empty();
                   var inp = $('<input type="file" name="svg_file">').appendTo(form);
+                  /**
+                   * Submit the form, empty its contents for reuse and show
+                   *   uploading message.
+                   * @returns {undefined}
+                   */
 
                   function submit() {
-                    // This submits the form, which returns the file data using svgEditor.processFile()
-                    form.submit();
+                    return _submit.apply(this, arguments);
+                  }
 
-                    rebuildInput(form);
-                    $.process_cancel(strings.uploading, function () {
-                      cancelled = true;
-                      $('#dialog_box').hide();
-                    });
+                  function _submit() {
+                    _submit = _asyncToGenerator(
+                    /*#__PURE__*/
+                    regeneratorRuntime.mark(function _callee4() {
+                      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                        while (1) {
+                          switch (_context4.prev = _context4.next) {
+                            case 0:
+                              // This submits the form, which returns the file data using `svgEditor.processFile()`
+                              form.submit();
+                              rebuildInput(form);
+                              _context4.next = 4;
+                              return $.process_cancel(strings.uploading);
+
+                            case 4:
+                              cancelled = true;
+                              $('#dialog_box').hide();
+
+                            case 6:
+                            case "end":
+                              return _context4.stop();
+                          }
+                        }
+                      }, _callee4, this);
+                    }));
+                    return _submit.apply(this, arguments);
                   }
 
                   if (form[0] === openSvgForm[0]) {
-                    inp.change(function () {
-                      // This takes care of the "are you sure" dialog box
-                      svgEditor.openPrep(function (ok) {
-                        if (!ok) {
-                          rebuildInput(form);
-                          return;
+                    inp.change(
+                    /*#__PURE__*/
+                    _asyncToGenerator(
+                    /*#__PURE__*/
+                    regeneratorRuntime.mark(function _callee2() {
+                      var ok;
+                      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                        while (1) {
+                          switch (_context2.prev = _context2.next) {
+                            case 0:
+                              _context2.next = 2;
+                              return svgEditor.openPrep();
+
+                            case 2:
+                              ok = _context2.sent;
+
+                              if (ok) {
+                                _context2.next = 6;
+                                break;
+                              }
+
+                              rebuildInput(form);
+                              return _context2.abrupt("return");
+
+                            case 6:
+                              _context2.next = 8;
+                              return submit();
+
+                            case 8:
+                            case "end":
+                              return _context2.stop();
+                          }
                         }
-                        submit();
-                      });
-                    });
+                      }, _callee2, this);
+                    })));
                   } else {
-                    inp.change(function () {
-                      // This submits the form, which returns the file data using svgEditor.processFile()
-                      submit();
-                    });
+                    inp.change(
+                    /*#__PURE__*/
+                    _asyncToGenerator(
+                    /*#__PURE__*/
+                    regeneratorRuntime.mark(function _callee3() {
+                      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                        while (1) {
+                          switch (_context3.prev = _context3.next) {
+                            case 0:
+                              _context3.next = 2;
+                              return submit();
+
+                            case 2:
+                            case "end":
+                              return _context3.stop();
+                          }
+                        }
+                      }, _callee3, this);
+                    })));
                   }
                 };
 
-                clientDownloadSupport = function clientDownloadSupport(filename, suffix, uri) {
+                clientDownloadSupport = function _ref6(filename, suffix, uri) {
                   var support = $('<a>')[0].download === '';
-                  var a = void 0;
+                  var a;
+
                   if (support) {
                     a = $('<a>hidden</a>').attr({
                       download: (filename || 'image') + suffix,
@@ -4436,33 +4985,39 @@ var svgEditorExtension_server_opensave = (function () {
                     a[0].click();
                     return true;
                   }
+
+                  return false;
                 };
 
-                xhtmlEscape = function xhtmlEscape(str) {
+                xhtmlEscape = function _ref5(str) {
                   return str.replace(/&(?!amp;)/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); // < is actually disallowed above anyways
                 };
 
-                getFileNameFromTitle = function getFileNameFromTitle() {
-                  var title = svgCanvas.getDocumentTitle();
-                  // We convert (to underscore) only those disallowed Win7 file name characters
+                getFileNameFromTitle = function _ref4() {
+                  var title = svgCanvas.getDocumentTitle(); // We convert (to underscore) only those disallowed Win7 file name characters
+
                   return title.trim().replace(/[/\\:*?"<>|]/g, '_');
                 };
 
-                _context2.next = 6;
+                $ = _ref.$, decode64 = _ref.decode64, encode64 = _ref.encode64, importLocale = _ref.importLocale;
+                _context5.next = 7;
                 return importLocale();
 
-              case 6:
-                strings = _context2.sent;
+              case 7:
+                strings = _context5.sent;
                 svgEditor = this;
-                $ = jQuery;
                 svgCanvas = svgEditor.canvas;
-                saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php', saveImgAction = svgEditor.curConfig.extPath + 'filesave.php';
-                // Create upload target (hidden iframe)
+                /**
+                 *
+                 * @returns {string}
+                 */
 
-                cancelled = false;
+                saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php', saveImgAction = svgEditor.curConfig.extPath + 'filesave.php'; // Create upload target (hidden iframe)
 
+                cancelled = false; //  Hiding by size instead of display to avoid FF console errors
+                //    with `getBBox` in browser.js `supportsPathBBox_`)
 
-                $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
+                $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function save(win, data) {
                     var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
@@ -4482,19 +5037,22 @@ var svgEditorExtension_server_opensave = (function () {
                   exportPDF: function exportPDF(win, data) {
                     var filename = getFileNameFromTitle(),
                         datauri = data.output;
+
                     if (clientDownloadSupport(filename, '.pdf', datauri)) {
                       return;
                     }
+
                     $('<form>').attr({
                       method: 'post',
                       action: saveImgAction,
                       target: 'output_frame'
                     }).append('<input type="hidden" name="output_img" value="' + datauri + '">').append('<input type="hidden" name="mime" value="application/pdf">').append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">').appendTo('body').submit().remove();
                   },
-
                   // Todo: Integrate this extension with a new built-in exportWindowType, "download"
                   exportImage: function () {
-                    var _ref3 = asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(win, data) {
+                    var _exportImage = _asyncToGenerator(
+                    /*#__PURE__*/
+                    regeneratorRuntime.mark(function _callee(win, data) {
                       var issues, mimeType, quality, c, datauri, pre, note, filename, suffix;
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
@@ -4502,55 +5060,57 @@ var svgEditorExtension_server_opensave = (function () {
                             case 0:
                               issues = data.issues, mimeType = data.mimeType, quality = data.quality;
 
-
                               if (!$('#export_canvas').length) {
-                                $('<canvas>', { id: 'export_canvas' }).hide().appendTo('body');
+                                $('<canvas>', {
+                                  id: 'export_canvas'
+                                }).hide().appendTo('body');
                               }
+
                               c = $('#export_canvas')[0];
-
-
                               c.width = svgCanvas.contentW;
                               c.height = svgCanvas.contentH;
                               _context.next = 7;
                               return canvg(c, data.svg);
 
                             case 7:
-                              datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
-                              // {uiStrings} = svgEditor;
-
+                              datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType); // {uiStrings} = svgEditor;
                               // Check if there are issues
 
-                              pre = void 0, note = '';
+                              note = '';
 
                               if (issues.length) {
-                                pre = '\n \u2022 ';
+                                pre = "\n \u2022 ";
                                 note += '\n\n' + pre + issues.join(pre);
                               }
 
-                              if (note.length) {
-                                alert(note);
+                              if (!note.length) {
+                                _context.next = 13;
+                                break;
                               }
 
+                              _context.next = 13;
+                              return $.alert(note);
+
+                            case 13:
                               filename = getFileNameFromTitle();
                               suffix = '.' + data.type.toLowerCase();
 
                               if (!clientDownloadSupport(filename, suffix, datauri)) {
-                                _context.next = 15;
+                                _context.next = 17;
                                 break;
                               }
 
-                              return _context.abrupt('return');
+                              return _context.abrupt("return");
 
-                            case 15:
-
+                            case 17:
                               $('<form>').attr({
                                 method: 'post',
                                 action: saveImgAction,
                                 target: 'output_frame'
                               }).append('<input type="hidden" name="output_img" value="' + datauri + '">').append('<input type="hidden" name="mime" value="' + mimeType + '">').append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">').appendTo('body').submit().remove();
 
-                            case 16:
-                            case 'end':
+                            case 18:
+                            case "end":
                               return _context.stop();
                           }
                         }
@@ -4558,33 +5118,29 @@ var svgEditorExtension_server_opensave = (function () {
                     }));
 
                     function exportImage(_x2, _x3) {
-                      return _ref3.apply(this, arguments);
+                      return _exportImage.apply(this, arguments);
                     }
 
                     return exportImage;
                   }()
-                });
-
-                // Do nothing if client support is found
+                }); // Do nothing if client support is found
 
                 if (!window.FileReader) {
-                  _context2.next = 16;
+                  _context5.next = 16;
                   break;
                 }
 
-                return _context2.abrupt('return');
+                return _context5.abrupt("return");
 
               case 16:
-
                 // Change these to appropriate script file
                 openSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=load_svg';
                 importSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_svg';
-                importImgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_img';
-
-                // Set up function for PHP uploader to use
+                importImgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_img'; // Set up function for PHP uploader to use
 
                 svgEditor.processFile = function (str64, type) {
-                  var xmlstr = void 0;
+                  var xmlstr;
+
                   if (cancelled) {
                     cancelled = false;
                     return;
@@ -4602,56 +5158,57 @@ var svgEditorExtension_server_opensave = (function () {
                       svgCanvas.setSvgString(xmlstr);
                       svgEditor.updateCanvas();
                       break;
+
                     case 'import_svg':
                       svgCanvas.importSvgString(xmlstr);
                       svgEditor.updateCanvas();
                       break;
+
                     case 'import_img':
                       svgCanvas.setGoodImage(str64);
                       break;
                   }
-                };
+                }; // Create upload form
 
-                // Create upload form
+
                 openSvgForm = $('<form>');
-
                 openSvgForm.attr({
                   enctype: 'multipart/form-data',
                   method: 'post',
                   action: openSvgAction,
                   target: 'output_frame'
-                });
+                }); // Create import form
 
-                // Create import form
-                importSvgForm = openSvgForm.clone().attr('action', importSvgAction);
+                importSvgForm = openSvgForm.clone().attr('action', importSvgAction); // Create image form
 
-                // Create image form
-
-                importImgForm = openSvgForm.clone().attr('action', importImgAction);
-
-                // It appears necessary to rebuild this input every time a file is
+                importImgForm = openSvgForm.clone().attr('action', importImgAction); // It appears necessary to rebuild this input every time a file is
                 // selected so the same file can be picked and the change event can fire.
+
+                /**
+                 *
+                 * @param {external:jQuery} form
+                 * @returns {undefined}
+                 */
 
                 // Create the input elements
                 rebuildInput(openSvgForm);
                 rebuildInput(importSvgForm);
-                rebuildInput(importImgForm);
+                rebuildInput(importImgForm); // Add forms to buttons
 
-                // Add forms to buttons
                 $('#tool_open').show().prepend(openSvgForm);
                 $('#tool_import').show().prepend(importSvgForm);
                 $('#tool_image').prepend(importImgForm);
 
               case 30:
-              case 'end':
-                return _context2.stop();
+              case "end":
+                return _context5.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee5, this);
       }));
 
       function init(_x) {
-        return _ref2.apply(this, arguments);
+        return _init.apply(this, arguments);
       }
 
       return init;

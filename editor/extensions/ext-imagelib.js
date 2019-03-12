@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-imagelib.js
  *
@@ -9,17 +8,49 @@
  */
 export default {
   name: 'imagelib',
-  async init ({decode64, importLocale}) {
+  async init ({$, decode64, importLocale, dropXMLInternalSubset}) {
     const imagelibStrings = await importLocale();
+
+    const modularVersion = !('svgEditor' in window) ||
+      !window.svgEditor ||
+      window.svgEditor.modules !== false;
+
     const svgEditor = this;
 
-    const $ = jQuery;
-    const {uiStrings, canvas: svgCanvas} = svgEditor;
+    const {uiStrings, canvas: svgCanvas, curConfig: {extIconsPath}} = svgEditor;
 
+    imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(({name, url, description}) => {
+      // Todo: Adopt some standard formatting library like `fluent.js` instead
+      url = url
+        .replace(/\{path\}/g, extIconsPath)
+        .replace(
+          /\{modularVersion\}/g,
+          modularVersion
+            ? (imagelibStrings.moduleEnding || '-es')
+            : ''
+        );
+      return {name, url, description};
+    });
+    const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({url}) => {
+      try {
+        return new URL(url).origin;
+      } catch (err) {
+        return location.origin;
+      }
+    });
+
+    /**
+    *
+    * @returns {undefined}
+    */
     function closeBrowser () {
       $('#imgbrowse_holder').hide();
     }
 
+    /**
+    * @param {string} url
+    * @returns {undefined}
+    */
     function importImage (url) {
       const newImage = svgCanvas.addSVGElementFromJson({
         element: 'image',
@@ -44,67 +75,87 @@ export default {
     let transferStopped = false;
     let preview, submit;
 
-    window.addEventListener('message', function (evt) {
-      // Receive `postMessage` data
-      let response = evt.data;
-
-      if (!response || typeof response !== 'string') {
+    // Receive `postMessage` data
+    window.addEventListener('message', async function ({origin, data: response}) { // eslint-disable-line no-shadow
+      if (!response || !['string', 'object'].includes(typeof response)) {
         // Do nothing
         return;
       }
+      let id;
+      let type;
       try {
         // Todo: This block can be removed (and the above check changed to
         //   insist on an object) if embedAPI moves away from a string to
         //   an object (if IE9 support not needed)
-        response = JSON.parse(response);
+        response = typeof response === 'object' ? response : JSON.parse(response);
         if (response.namespace !== 'imagelib') {
           return;
         }
+        if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
+          // Todo: Surface this error to user?
+          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`); // eslint-disable-line no-console
+          return;
+        }
+        const hasName = 'name' in response;
+        const hasHref = 'href' in response;
+
+        if (!hasName && transferStopped) {
+          transferStopped = false;
+          return;
+        }
+
+        if (hasHref) {
+          id = response.href;
+          response = response.data;
+        }
+
+        // Hide possible transfer dialog box
+        $('#dialog_box').hide();
+        type = hasName
+          ? 'meta'
+          : response.charAt(0);
       } catch (e) {
-        return;
+        // This block is for backward compatibility (for IAN and Openclipart);
+        //   should otherwise return
+        if (typeof response === 'string') {
+          const char1 = response.charAt(0);
+
+          if (char1 !== '{' && transferStopped) {
+            transferStopped = false;
+            return;
+          }
+
+          if (char1 === '|') {
+            const secondpos = response.indexOf('|', 1);
+            id = response.substr(1, secondpos - 1);
+            response = response.substr(secondpos + 1);
+            type = response.charAt(0);
+          }
+        }
       }
 
-      const hasName = 'name' in response;
-      const hasHref = 'href' in response;
-
-      if (!hasName && transferStopped) {
-        transferStopped = false;
-        return;
-      }
-
-      let id;
-      if (hasHref) {
-        id = response.href;
-        response = response.data;
-      }
-
-      // Hide possible transfer dialog box
-      $('#dialog_box').hide();
       let entry, curMeta, svgStr, imgStr;
-      const type = hasName
-        ? 'meta'
-        : response.charAt(0);
       switch (type) {
       case 'meta': {
         // Metadata
         transferStopped = false;
         curMeta = response;
 
-        pending[curMeta.id] = curMeta;
+        // Should be safe to add dynamic property as passed metadata
+        pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
 
         const name = (curMeta.name || 'file');
 
         const message = uiStrings.notification.retrieving.replace('%s', name);
 
         if (mode !== 'm') {
-          $.process_cancel(message, function () {
-            transferStopped = true;
-            // Should a message be sent back to the frame?
+          await $.process_cancel(message);
+          transferStopped = true;
+          // Should a message be sent back to the frame?
 
-            $('#dialog_box').hide();
-          });
+          $('#dialog_box').hide();
         } else {
-          entry = $('<div>' + message + '</div>').data('id', curMeta.id);
+          entry = $('<div>').text(message).data('id', curMeta.id);
           preview.append(entry);
           curMeta.entry = entry;
         }
@@ -140,7 +191,7 @@ export default {
         } else {
           pending[id].entry.remove();
         }
-        // $.alert('Unexpected data was returned: ' + response, function() {
+        // await $.alert('Unexpected data was returned: ' + response, function() {
         //   if (mode !== 'm') {
         //     closeBrowser();
         //   } else {
@@ -160,7 +211,7 @@ export default {
         }
         closeBrowser();
         break;
-      case 'm':
+      case 'm': {
         // Import multiple
         multiArr.push([(svgStr ? 'svg' : 'img'), response]);
         curMeta = pending[id];
@@ -170,14 +221,20 @@ export default {
             title = curMeta.name;
           } else {
             // Try to find a title
-            const xml = new DOMParser().parseFromString(response, 'text/xml').documentElement;
+            // `dropXMLInternalSubset` is to help prevent the billion laughs attack
+            const xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
             title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
           }
           if (curMeta) {
             preview.children().each(function () {
               if ($(this).data('id') === id) {
                 if (curMeta.preview_url) {
-                  $(this).html('<img src="' + curMeta.preview_url + '">' + title);
+                  $(this).html(
+                    $('<span>').append(
+                      $('<img>').attr('src', curMeta.preview_url),
+                      document.createTextNode(title)
+                    )
+                  );
                 } else {
                   $(this).text(title);
                 }
@@ -185,7 +242,9 @@ export default {
               }
             });
           } else {
-            preview.append('<div>' + title + '</div>');
+            preview.append(
+              $('<div>').text(title)
+            );
             submit.removeAttr('disabled');
           }
         } else {
@@ -193,9 +252,12 @@ export default {
             title = curMeta.name || '';
           }
           if (curMeta && curMeta.preview_url) {
-            entry = '<img src="' + curMeta.preview_url + '">' + title;
+            entry = $('<span>').append(
+              $('<img>').attr('src', curMeta.preview_url),
+              document.createTextNode(title)
+            );
           } else {
-            entry = '<img src="' + response + '">';
+            entry = $('<img>').attr('src', response);
           }
 
           if (curMeta) {
@@ -211,20 +273,24 @@ export default {
           }
         }
         break;
-      case 'o':
+      } case 'o': {
         // Open
         if (!svgStr) { break; }
-        svgEditor.openPrep(function (ok) {
-          if (!ok) { return; }
-          svgCanvas.clear();
-          svgCanvas.setSvgString(response);
-          // updateCanvas();
-        });
         closeBrowser();
+        const ok = await svgEditor.openPrep();
+        if (!ok) { return; }
+        svgCanvas.clear();
+        svgCanvas.setSvgString(response);
+        // updateCanvas();
         break;
+      }
       }
     }, true);
 
+    /**
+    * @param {boolean} show
+    * @returns {undefined}
+    */
     function toggleMulti (show) {
       $('#lib_framewrap, #imglib_opts').css({right: (show ? 200 : 10)});
       if (!preview) {
@@ -265,6 +331,10 @@ export default {
       submit.toggle(show);
     }
 
+    /**
+    *
+    * @returns {undefined}
+    */
     function showBrowser () {
       let browser = $('#imgbrowse');
       if (!browser.length) {
@@ -330,26 +400,14 @@ export default {
         cancel.prepend($.getSvgIcon('cancel', true));
         back.prepend($.getSvgIcon('tool_imagelib', true));
 
-        const modularVersion = !('svgEditor' in window) ||
-          !window.svgEditor ||
-          window.svgEditor.modules !== false;
-        $.each(imagelibStrings.imgLibs, function (i, {name, url, description}) {
+        imagelibStrings.imgLibs.forEach(function ({name, url, description}) {
           $('<li>')
             .appendTo(libOpts)
             .text(name)
             .on('click touchend', function () {
               frame.attr(
                 'src',
-                // Todo: Adopt some standard formatting library like `fluent.js` instead
-                url.replace(
-                  '{path}',
-                  svgEditor.curConfig.extIconsPath
-                ).replace(
-                  '{modularVersion}',
-                  modularVersion
-                    ? (imagelibStrings.moduleEnding || '-es')
-                    : ''
-                )
+                url
               ).show();
               header.text(name);
               libOpts.hide();
@@ -364,7 +422,7 @@ export default {
     const buttons = [{
       id: 'tool_imagelib',
       type: 'app_menu', // _flyout
-      icon: svgEditor.curConfig.extIconsPath + 'imagelib.png',
+      icon: extIconsPath + 'imagelib.png',
       position: 4,
       events: {
         mouseup: showBrowser
@@ -372,7 +430,7 @@ export default {
     }];
 
     return {
-      svgicons: svgEditor.curConfig.extIconsPath + 'ext-imagelib.xml',
+      svgicons: extIconsPath + 'ext-imagelib.xml',
       buttons: imagelibStrings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

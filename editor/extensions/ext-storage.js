@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-storage.js
  *
@@ -23,9 +22,8 @@
 */
 export default {
   name: 'storage',
-  init () {
+  init ({$}) {
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
 
     // We could empty any already-set data for users when they decline storage,
@@ -47,8 +45,13 @@ export default {
       noStorageOnLoad,
       forceStorage
     } = svgEditor.curConfig;
-    const {storage} = svgEditor;
+    const {storage, updateCanvas} = svgEditor;
 
+    /**
+     * Replace `storagePrompt` parameter within URL.
+     * @param {string} val
+     * @returns {undefined}
+     */
     function replaceStoragePrompt (val) {
       val = val ? 'storagePrompt=' + val : '';
       const loc = top.location; // Allow this to work with the embedded editor as well
@@ -60,6 +63,13 @@ export default {
         loc.href += (loc.href.includes('?') ? '&' : '?') + val;
       }
     }
+
+    /**
+     * Sets SVG content as a string with "svgedit-" and the current
+     *   canvas name as namespace.
+     * @param {string} val
+     * @returns {undefined}
+     */
     function setSVGContentStorage (val) {
       if (storage) {
         const name = 'svgedit-' + svgEditor.curConfig.canvasName;
@@ -71,25 +81,36 @@ export default {
       }
     }
 
+    /**
+     * Set the cookie to expire.
+     * @param {string} cookie
+     * @returns {undefined}
+     */
     function expireCookie (cookie) {
       document.cookie = encodeURIComponent(cookie) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     }
 
+    /**
+     * Expire the storage cookie.
+     * @returns {undefined}
+     */
     function removeStoragePrefCookie () {
-      expireCookie('store');
+      expireCookie('svgeditstore');
     }
 
+    /**
+     * Empties storage for each of the current preferences.
+     * @returns {undefined}
+     */
     function emptyStorage () {
       setSVGContentStorage('');
-      for (let name in svgEditor.curPrefs) {
-        if (svgEditor.curPrefs.hasOwnProperty(name)) {
-          name = 'svg-edit-' + name;
-          if (storage) {
-            storage.removeItem(name);
-          }
-          expireCookie(name);
+      Object.keys(svgEditor.curPrefs).forEach((name) => {
+        name = 'svg-edit-' + name;
+        if (storage) {
+          storage.removeItem(name);
         }
-      }
+        expireCookie(name);
+      });
     }
 
     // emptyStorage();
@@ -101,14 +122,15 @@ export default {
     *       content into storage)
     * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
     * 3. Use localStorage (where available) or cookies to set preferences.
+    * @returns {undefined}
     */
     function setupBeforeUnloadListener () {
       window.addEventListener('beforeunload', function (e) {
         // Don't save anything unless the user opted in to storage
-        if (!document.cookie.match(/(?:^|;\s*)store=(?:prefsAndContent|prefsOnly)/)) {
+        if (!document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)) {
           return;
         }
-        if (document.cookie.match(/(?:^|;\s*)store=prefsAndContent/)) {
+        if (document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/)) {
           setSVGContentStorage(svgCanvas.getSvgString());
         }
 
@@ -117,25 +139,22 @@ export default {
 
         const {curPrefs} = svgEditor;
 
-        for (let key in curPrefs) {
-          if (curPrefs.hasOwnProperty(key)) { // It's our own config, so we don't need to iterate up the prototype chain
-            let val = curPrefs[key];
-            const store = (val !== undefined);
-            key = 'svg-edit-' + key;
-            if (!store) {
-              continue;
-            }
-            if (storage) {
-              storage.setItem(key, val);
-            } else if (window.widget) {
-              window.widget.setPreferenceForKey(val, key);
-            } else {
-              val = encodeURIComponent(val);
-              document.cookie = encodeURIComponent(key) + '=' + val + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
-            }
+        Object.entries(curPrefs).forEach(([key, val]) => {
+          const store = (val !== undefined);
+          key = 'svg-edit-' + key;
+          if (!store) {
+            return;
           }
-        }
-      }, false);
+          if (storage) {
+            storage.setItem(key, val);
+          } else if (window.widget) {
+            window.widget.setPreferenceForKey(val, key);
+          } else {
+            val = encodeURIComponent(val);
+            document.cookie = encodeURIComponent(key) + '=' + val + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
+          }
+        });
+      });
     }
 
     let loaded = false;
@@ -174,7 +193,7 @@ export default {
             // continual prompts about it)...
             storagePrompt !== false &&
             // ...and this user hasn't previously indicated a desire for storage
-            !document.cookie.match(/(?:^|;\s*)store=(?:prefsAndContent|prefsOnly)/)
+            !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)
           )
           // ...then show the storage prompt.
         )) {
@@ -204,67 +223,67 @@ export default {
 
           // Open select-with-checkbox dialog
           // From svg-editor.js
-          $.select(
+          svgEditor.storagePromptState = 'waiting';
+          const {response: pref, checked} = await $.select(
             message,
             options,
-            function (pref, checked) {
-              if (pref && pref !== 'noPrefsOrContent') {
-                // Regardless of whether the user opted
-                // to remember the choice (and move to a URL which won't
-                // ask them again), we have to assume the user
-                // doesn't even want to remember their not wanting
-                // storage, so we don't set the cookie or continue on with
-                //  setting storage on beforeunload
-                document.cookie = 'store=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
-                // If the URL was configured to always insist on a prompt, if
-                //    the user does indicate a wish to store their info, we
-                //    don't want ask them again upon page refresh so move
-                //    them instead to a URL which does not always prompt
-                if (storagePrompt === true && checked) {
-                  replaceStoragePrompt();
-                  return;
-                }
-              } else { // The user does not wish storage (or cancelled, which we treat equivalently)
-                removeStoragePrefCookie();
-                if (pref && // If the user explicitly expresses wish for no storage
-                  emptyStorageOnDecline
-                ) {
-                  emptyStorage();
-                }
-                if (pref && checked) {
-                  // Open a URL which won't set storage and won't prompt user about storage
-                  replaceStoragePrompt('false');
-                  return;
-                }
-              }
-
-              // Reset width/height of dialog (e.g., for use by Export)
-              $('#dialog_container')[0].style.width = oldContainerWidth;
-              $('#dialog_container')[0].style.marginLeft = oldContainerMarginLeft;
-              $('#dialog_content')[0].style.height = oldContentHeight;
-              $('#dialog_container')[0].style.height = oldContainerHeight;
-
-              // It should be enough to (conditionally) add to storage on
-              //   beforeunload, but if we wished to update immediately,
-              //   we might wish to try setting:
-              //       svgEditor.setConfig({noStorageOnLoad: true});
-              //   and then call:
-              //       svgEditor.loadContentAndPrefs();
-
-              // We don't check for noStorageOnLoad here because
-              //   the prompt gives the user the option to store data
-              setupBeforeUnloadListener();
-
-              svgEditor.storagePromptClosed = true;
-            },
             null,
             null,
             {
               label: rememberLabel,
-              checked: false,
+              checked: true,
               tooltip: rememberTooltip
             }
           );
+          if (pref && pref !== 'noPrefsOrContent') {
+            // Regardless of whether the user opted
+            // to remember the choice (and move to a URL which won't
+            // ask them again), we have to assume the user
+            // doesn't even want to remember their not wanting
+            // storage, so we don't set the cookie or continue on with
+            //  setting storage on beforeunload
+            document.cookie = 'svgeditstore=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
+            // If the URL was configured to always insist on a prompt, if
+            //    the user does indicate a wish to store their info, we
+            //    don't want ask them again upon page refresh so move
+            //    them instead to a URL which does not always prompt
+            if (storagePrompt === true && checked) {
+              replaceStoragePrompt();
+              return;
+            }
+          } else { // The user does not wish storage (or cancelled, which we treat equivalently)
+            removeStoragePrefCookie();
+            if (pref && // If the user explicitly expresses wish for no storage
+              emptyStorageOnDecline
+            ) {
+              emptyStorage();
+            }
+            if (pref && checked) {
+              // Open a URL which won't set storage and won't prompt user about storage
+              replaceStoragePrompt('false');
+              return;
+            }
+          }
+
+          // Reset width/height of dialog (e.g., for use by Export)
+          $('#dialog_container')[0].style.width = oldContainerWidth;
+          $('#dialog_container')[0].style.marginLeft = oldContainerMarginLeft;
+          $('#dialog_content')[0].style.height = oldContentHeight;
+          $('#dialog_container')[0].style.height = oldContainerHeight;
+
+          // It should be enough to (conditionally) add to storage on
+          //   beforeunload, but if we wished to update immediately,
+          //   we might wish to try setting:
+          //       svgEditor.setConfig({noStorageOnLoad: true});
+          //   and then call:
+          //       svgEditor.loadContentAndPrefs();
+
+          // We don't check for noStorageOnLoad here because
+          //   the prompt gives the user the option to store data
+          setupBeforeUnloadListener();
+
+          svgEditor.storagePromptState = 'closed';
+          updateCanvas(true);
         } else if (!noStorageOnLoad || forceStorage) {
           setupBeforeUnloadListener();
         }

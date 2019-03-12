@@ -207,7 +207,7 @@ export default {
     unsavedChanges: 'Wykryto niezapisane zmiany.',
     enterNewLinkURL: 'Wpisz nowy adres URL hiperłącza',
     errorLoadingSVG: 'Błąd: Nie można załadować danych SVG',
-    URLloadFail: 'Nie można załadować z adresu URL',
+    URLLoadFail: 'Nie można załadować z adresu URL',
     retrieving: 'Retrieving \'%s\' ...',
     popupWindowBlocked: 'Popup window may be blocked by browser',
     exportNoBlur: 'Blurred elements will appear as un-blurred',

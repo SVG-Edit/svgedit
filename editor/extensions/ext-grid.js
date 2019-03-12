@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-grid.js
  *
@@ -10,10 +9,9 @@
 
 export default {
   name: 'grid',
-  async init ({NS, getTypeMap, importLocale}) {
+  async init ({$, NS, getTypeMap, importLocale}) {
     const strings = await importLocale();
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     const svgdoc = document.getElementById('svgcanvas').ownerDocument,
       {assignAttributes} = svgCanvas,
@@ -36,7 +34,7 @@ export default {
       display: 'none'
     });
     canvBG.append(canvasGrid);
-
+    const gridDefs = svgdoc.createElementNS(NS.SVG, 'defs');
     // grid-pattern
     const gridPattern = svgdoc.createElementNS(NS.SVG, 'pattern');
     assignAttributes(gridPattern, {
@@ -56,7 +54,8 @@ export default {
       height: 100
     });
     gridPattern.append(gridimg);
-    $('#svgroot defs').append(gridPattern);
+    gridDefs.append(gridPattern);
+    $('#canvasGrid').append(gridDefs);
 
     // grid-box
     const gridBox = svgdoc.createElementNS(NS.SVG, 'rect');
@@ -72,6 +71,11 @@ export default {
     });
     $('#canvasGrid').append(gridBox);
 
+    /**
+     *
+     * @param {Float} zoom
+     * @returns {undefined}
+     */
     function updateGrid (zoom) {
       // TODO: Try this with <line> elements, then compare performance difference
       const unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
@@ -124,6 +128,10 @@ export default {
       svgCanvas.setHref(gridimg, datauri);
     }
 
+    /**
+     *
+     * @returns {undefined}
+     */
     function gridUpdate () {
       if (showGrid) {
         updateGrid(svgCanvas.getZoom());

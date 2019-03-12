@@ -67,7 +67,7 @@ function getNewLayerName (existingLayerNames) {
 }
 
 /**
- * This class encapsulates the concept of a SVG-edit drawing
+ * This class encapsulates the concept of a SVG-edit drawing.
  */
 export class Drawing {
   /**
@@ -139,7 +139,7 @@ export class Drawing {
     const n = this.svgElem_.getAttributeNS(NS.SE, 'nonce');
     // If already set in the DOM, use the nonce throughout the document
     // else, if randomizeIds(true) has been called, create and set the nonce.
-    if (!!n && randIds !== RandomizeModes.NEVER_RANDOMIZE) {
+    if (n && randIds !== RandomizeModes.NEVER_RANDOMIZE) {
       this.nonce_ = n;
     } else if (randIds === RandomizeModes.ALWAYS_RANDOMIZE) {
       this.setNonce(Math.floor(Math.random() * 100001));
@@ -184,7 +184,7 @@ export class Drawing {
   }
 
   /**
-   * Clears any previously set nonce
+   * Clears any previously set nonce.
    * @returns {undefined}
    */
   clearNonce () {
@@ -253,7 +253,7 @@ export class Drawing {
       return false;
     }
     // extract the obj_num of this id
-    const num = parseInt(id.substr(front.length), 10);
+    const num = parseInt(id.substr(front.length));
 
     // if we didn't get a positive number or we already released this number
     // then return false.
@@ -276,7 +276,7 @@ export class Drawing {
   }
 
   /**
-   * Check if layer with given name already exists
+   * Check if layer with given name already exists.
    * @param {string} name - The layer name to check
    * @returns {boolean}
   */
@@ -302,6 +302,7 @@ export class Drawing {
 
   /**
    * Get a layer by name.
+   * @param {string} name
    * @returns {SVGGElement} The SVGGElement representing the named layer or null.
    */
   getLayerByName (name) {
@@ -663,13 +664,13 @@ export class Drawing {
   }
 
   /**
-   * Create a clone of an element, updating its ID and its children's IDs when needed
+   * Create a clone of an element, updating its ID and its children's IDs when needed.
    * @param {Element} el - DOM element to clone
    * @returns {Element}
    */
   copyElem (el) {
-    const self = this;
-    const getNextIdClosure = function () { return self.getNextId(); };
+    const that = this;
+    const getNextIdClosure = function () { return that.getNextId(); };
     return utilCopyElem(el, getNextIdClosure);
   }
 }
@@ -767,7 +768,7 @@ export const init = function (canvas) {
 };
 
 /**
-* Updates layer system
+* Updates layer system.
 * @function module:draw.identifyLayers
 * @returns {undefined}
 */
@@ -980,7 +981,7 @@ export const mergeAllLayers = function (hrService) {
 
 /**
 * Return from a group context to the regular kind, make any previously
-* disabled elements enabled again
+* disabled elements enabled again.
 * @function module:draw.leaveContext
 * @fires module:svgcanvas.SvgCanvas#event:contextset
 * @returns {undefined}
@@ -1006,7 +1007,7 @@ export const leaveContext = function () {
 };
 
 /**
-* Set the current context (for in-group editing)
+* Set the current context (for in-group editing).
 * @function module:draw.setContext
 * @param {Element} elem
 * @fires module:svgcanvas.SvgCanvas#event:contextset

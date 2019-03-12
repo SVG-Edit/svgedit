@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-star.js
  *
@@ -10,10 +9,9 @@ export default {
   name: 'star',
   async init (S) {
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
 
-    const {importLocale} = S; // {svgcontent},
+    const {$, importLocale} = S; // {svgcontent},
     let
       selElems,
       // editingitex = false,
@@ -25,6 +23,12 @@ export default {
       // undoCommand = 'Not image',
       // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
     const strings = await importLocale();
+
+    /**
+     *
+     * @param {boolean} on
+     * @returns {undefined}
+     */
     function showPanel (on) {
       let fcRules = $('#fc_rules');
       if (!fcRules.length) {
@@ -40,6 +44,12 @@ export default {
     }
     */
 
+    /**
+     *
+     * @param {string} attr
+     * @param {string|Float} val
+     * @returns {undefined}
+     */
     function setAttr (attr, val) {
       svgCanvas.changeSelectedAttribute(attr, val);
       svgCanvas.call('changed', selElems);
@@ -140,10 +150,11 @@ export default {
             started: true
           };
         }
+        return undefined;
       },
       mouseMove (opts) {
         if (!started) {
-          return;
+          return undefined;
         }
         if (svgCanvas.getMode() === 'star') {
           const c = $(newFO).attr(['cx', 'cy', 'point', 'orient', 'fill', 'strokecolor', 'strokeWidth', 'radialshift']);
@@ -153,8 +164,8 @@ export default {
           const {cx, cy, fill, strokecolor, strokeWidth, radialshift, point, orient} = c,
             circumradius = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5,
             inradius = circumradius / document.getElementById('starRadiusMulitplier').value;
-          newFO.setAttributeNS(null, 'r', circumradius);
-          newFO.setAttributeNS(null, 'r2', inradius);
+          newFO.setAttribute('r', circumradius);
+          newFO.setAttribute('r2', inradius);
 
           let polyPoints = '';
           for (let s = 0; point >= s; s++) {
@@ -170,7 +181,7 @@ export default {
 
             polyPoints += x + ',' + y + ' ';
 
-            if (inradius != null) {
+            if (!isNaN(inradius)) {
               angle = (2.0 * Math.PI * (s / point)) + (Math.PI / point);
               if (orient === 'point') {
                 angle -= (Math.PI / 2);
@@ -185,16 +196,17 @@ export default {
               polyPoints += x + ',' + y + ' ';
             }
           }
-          newFO.setAttributeNS(null, 'points', polyPoints);
-          newFO.setAttributeNS(null, 'fill', fill);
-          newFO.setAttributeNS(null, 'stroke', strokecolor);
-          newFO.setAttributeNS(null, 'stroke-width', strokeWidth);
-          /* const shape = */ newFO.getAttributeNS(null, 'shape');
+          newFO.setAttribute('points', polyPoints);
+          newFO.setAttribute('fill', fill);
+          newFO.setAttribute('stroke', strokecolor);
+          newFO.setAttribute('stroke-width', strokeWidth);
+          /* const shape = */ newFO.getAttribute('shape');
 
           return {
             started: true
           };
         }
+        return undefined;
       },
       mouseUp () {
         if (svgCanvas.getMode() === 'star') {
@@ -205,6 +217,7 @@ export default {
             element: newFO
           };
         }
+        return undefined;
       },
       selectedChanged (opts) {
         // Use this to update the current selected elements
@@ -213,7 +226,7 @@ export default {
         let i = selElems.length;
         while (i--) {
           const elem = selElems[i];
-          if (elem && elem.getAttributeNS(null, 'shape') === 'star') {
+          if (elem && elem.getAttribute('shape') === 'star') {
             if (opts.selectedElement && !opts.multiselected) {
               // $('#starRadiusMulitplier').val(elem.getAttribute('r2'));
               $('#starNumPoints').val(elem.getAttribute('point'));

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->
 <html>
 <head>
     <meta charset="utf-8"/>
@@ -15,6 +16,7 @@
     <!{else}-->
     <script src="jquery.min.js"></script>
     <!--{endif}-->
+    <script nomodule="" src="redirect-on-no-module-support.js"></script>
     <!-- We keep this next module external to avoid the need to
       load further scripts if not supported -->
     <script type="module" src="redirect-on-lacking-support.js"></script>
@@ -25,7 +27,7 @@
     <!-- The following could be removed for more modern browsers; currently
       using for at least `String.prototype.includes`, `Array.prototype.includes`,
       `String.prototype.startsWith` -->
-    <script src="external/babel-polyfill/polyfill.min.js"></script>
+    <script src="external/@babel/polyfill/polyfill.min.js"></script>
     <!-- If you do not wish to add extensions by URL, you can load them
     by creating the following file and adding by calls to svgEditor.setConfig -->
     <script type="module" src="xdomain-svgedit-config-es.js"></script>

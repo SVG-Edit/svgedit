@@ -73,7 +73,7 @@
  * @param {external:jQuery} $ The jQuery object to which to add the plug-in
  * @returns {external:jQuery}
 */
-export default function ($) {
+export default function jQueryPluginSpinButton ($) {
   if (!$.loadingStylesheets) {
     $.loadingStylesheets = [];
   }
@@ -84,18 +84,20 @@ export default function ($) {
   /**
   * @callback module:jQuerySpinButton.StepCallback
   * @param {external:jQuery} thisArg Value of `this`
+  * @param {Float} i Value to adjust
+  * @returns {Float}
   */
   /**
   * @callback module:jQuerySpinButton.ValueCallback
-  * @param {external:jQuery} thisArg Value of `this`
-  * @param {Float} value Value that was changed
+  * @param {external:jQuery.fn.SpinButton} thisArg Spin Button; check its `value` to see how it was changed.
+  * @returns {undefined}
   */
   /**
    * @typedef {PlainObject} module:jQuerySpinButton.SpinButtonConfig
    * @property {Float} min Set lower limit
    * @property {Float} max Set upper limit.
    * @property {Float} step Set increment size.
-   * @property {module:jQuerySpinButton.StepCallback} stepfunc Custom function to run when changing a value; called with `this` of object and the value to adjust
+   * @property {module:jQuerySpinButton.StepCallback} stepfunc Custom function to run when changing a value; called with `this` of object and the value to adjust and returns a float.
    * @property {module:jQuerySpinButton.ValueCallback} callback Called after value adjusted (with `this` of object)
    * @property {Float} smallStep Set shift-click increment size.
    * @property {PlainObject} stateObj Object to allow passing in live-updating scale
@@ -115,6 +117,13 @@ export default function ($) {
   */
   $.fn.SpinButton = function (cfg) {
     cfg = cfg || {};
+
+    /**
+     *
+     * @param {Element} el
+     * @param {"offsetLeft"|"offsetTop"} prop
+     * @returns {Integer}
+     */
     function coord (el, prop) {
       const b = document.body;
 
@@ -169,7 +178,9 @@ export default function ($) {
         if (this.spinCfg.min !== null) { v = Math.max(v, this.spinCfg.min); }
         if (this.spinCfg.max !== null) { v = Math.min(v, this.spinCfg.max); }
         this.value = v;
-        if (typeof this.spinCfg.callback === 'function') { this.spinCfg.callback(this); }
+        if (typeof this.spinCfg.callback === 'function') {
+          this.spinCfg.callback(this);
+        }
       };
 
       $(this)
@@ -186,7 +197,8 @@ export default function ($) {
           const direction =
             (x > coord(el, 'offsetLeft') +
               el.offsetWidth * scale - this.spinCfg._btn_width)
-              ? ((y < coord(el, 'offsetTop') + height * scale) ? 1 : -1) : 0;
+              ? ((y < coord(el, 'offsetTop') + height * scale) ? 1 : -1)
+              : 0;
 
           if (direction !== this.spinCfg._direction) {
             // Style up/down buttons:
@@ -314,7 +326,7 @@ export default function ($) {
           }
 
           e.preventDefault();
-        }, false);
+        });
       }
     });
   };

@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * ext-server_moinsave.js
  *
@@ -12,15 +11,16 @@ import {canvg} from '../canvg/canvg.js';
 
 export default {
   name: 'server_moinsave',
-  async init ({encode64, importLocale}) {
+  async init ({$, encode64, importLocale}) {
     const strings = await importLocale();
     const svgEditor = this;
-    const $ = jQuery;
     const svgCanvas = svgEditor.canvas;
     const saveSvgAction = '/+modify';
 
     // Create upload target (hidden iframe)
-    /* const target = */ $('<iframe name="output_frame" src="#"/>').hide().appendTo('body');
+    //  Hiding by size instead of display to avoid FF console errors
+    //    with `getBBox` in browser.js `supportsPathBBox_`)
+    /* const target = */ $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
 
     svgEditor.setCustomHandlers({
       async save (win, data) {
@@ -48,7 +48,7 @@ export default {
           .append('<input type="hidden" name="contenttype" value="application/x-svgdraw">')
           .appendTo('body')
           .submit().remove();
-        alert(strings.saved);
+        $.alert(strings.saved);
         top.window.location = '/' + name;
       }
     });

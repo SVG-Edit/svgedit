@@ -12,7 +12,11 @@ import {supportsNativeTransformLists} from './browser.js';
 
 const svgroot = document.createElementNS(NS.SVG, 'svg');
 
-// Helper function.
+/**
+ * Helper function to convert `SVGTransform` to a string.
+ * @param {SVGTransform} xform
+ * @returns {string}
+ */
 function transformToString (xform) {
   const m = xform.matrix;
   let text = '';
@@ -114,8 +118,9 @@ let listMap_ = {};
 * These methods do not currently raise any exceptions.
 * These methods also do not check that transforms are being inserted.  This is basically
 * implementing as much of SVGTransformList that we need to get the job done.
+* @implements {module:SVGTransformList.SVGEditTransformList}
 */
-export class SVGTransformList {
+export class SVGTransformList {// eslint-disable-line no-shadow
   /**
   * @param {Element} elem
   */
@@ -125,7 +130,7 @@ export class SVGTransformList {
     // TODO: how do we capture the undo-ability in the changed transform list?
     this._update = function () {
       let tstr = '';
-      /* const concatMatrix = */ svgroot.createSVGMatrix();
+      // /* const concatMatrix = */ svgroot.createSVGMatrix();
       for (let i = 0; i < this.numberOfItems; ++i) {
         const xform = this._list.getItem(i);
         tstr += transformToString(xform) + ' ';
@@ -170,7 +175,7 @@ export class SVGTransformList {
           } else if (name === 'rotate' && values.length === 1) {
             values.push(0, 0);
           }
-          xform[fname].apply(xform, values);
+          xform[fname](...values);
           this._list.appendItem(xform);
         }
       }
@@ -179,20 +184,15 @@ export class SVGTransformList {
       if (item) {
         // Check if this transform is already in a transformlist, and
         // remove it if so.
-        let found = false;
-        for (const id in listMap_) {
-          const tl = listMap_[id];
+        Object.values(listMap_).some((tl) => {
           for (let i = 0, len = tl._xforms.length; i < len; ++i) {
             if (tl._xforms[i] === item) {
-              found = true;
               tl.removeItem(i);
-              break;
+              return true;
             }
           }
-          if (found) {
-            break;
-          }
-        }
+          return false;
+        });
       }
     };
 
@@ -330,14 +330,14 @@ export const resetListMap = function () {
  * @param {Element} elem - a DOM Element
  * @returns {undefined}
  */
-export let removeElementFromListMap = function (elem) {
+export let removeElementFromListMap = function (elem) { // eslint-disable-line import/no-mutable-exports
   if (elem.id && listMap_[elem.id]) {
     delete listMap_[elem.id];
   }
 };
 
 /**
-* Returns an object that behaves like a `SVGTransformList` for the given DOM element
+* Returns an object that behaves like a `SVGTransformList` for the given DOM element.
 * @function module:SVGTransformList.getTransformList
 * @param {Element} elem - DOM element to get a transformlist from
 * @todo The polyfill should have `SVGAnimatedTransformList` and this should use it
@@ -372,11 +372,12 @@ export const getTransformList = function (elem) {
 * @param {Element} elem
 */
 /**
-* For unit-testing
+* Replace `removeElementFromListMap` for unit-testing.
 * @function module:SVGTransformList.changeRemoveElementFromListMap
 * @param {module:SVGTransformList.removeElementFromListMap} cb Passed a single argument `elem`
 * @returns {undefined}
 */
-export const changeRemoveElementFromListMap = function (cb) {
+
+export const changeRemoveElementFromListMap = function (cb) { // eslint-disable-line promise/prefer-await-to-callbacks
   removeElementFromListMap = cb;
 };
