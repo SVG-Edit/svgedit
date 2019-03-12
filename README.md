@@ -23,7 +23,7 @@ to join the project.
 ### [Try SVG-edit here](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
 
 See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
-(or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html) version, which requires a modern browser).
+(or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor-es.html) version, which requires a modern browser).
 
 You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html> (which
 redirects to a versioned URL).
