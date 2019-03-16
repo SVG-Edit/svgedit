@@ -6,3 +6,7 @@ export const approveStorage = (t) => {
 export const approveStorageAndOpenMainMenu = (t) => {
   return approveStorage(t).click('#main_icon');
 };
+
+export const approveStorageAndOpenEditorPreferences = (t) => {
+  return approveStorageAndOpenMainMenu(t).click('#tool_prefs_option');
+};

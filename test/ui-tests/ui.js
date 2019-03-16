@@ -3,11 +3,20 @@
 // https://github.com/helen-dikareva/axe-testcafe
 import {Selector} from 'testcafe';
 import {
-  approveStorage, approveStorageAndOpenMainMenu
+  approveStorage, approveStorageAndOpenMainMenu,
+  approveStorageAndOpenEditorPreferences
 } from '../ui-test-helper.js';
 
 fixture`TestCafe UI tests`
   .page`http://localhost:8000/editor/svg-editor.html`;
+
+// Bogus test to allow us to check starting browser storage state
+test('Editor - No parameters: save prior locale and set English for tests', async (t) => {
+  await approveStorageAndOpenEditorPreferences(t);
+  t.fixtureCtx.originalLanguage = await Selector('#lang_select').value;
+  // Ensure we test against English
+  return t.click('#lang_select').click('#lang_en').click('#tool_prefs_save');
+});
 
 test('Editor - No parameters: Export button', async (t) => {
   await approveStorageAndOpenMainMenu(t)
@@ -37,4 +46,12 @@ test('Editor - No parameters: Drag control point of arc path', async (t) => {
     .drag('#pathpointgrip_0', randomOffset(), randomOffset(), {offsetX: 2, offsetY: 2})
     .drag('#pathpointgrip_1', randomOffset(), randomOffset(), {offsetX: 2, offsetY: 2})
     .expect(Selector('#svg_1').getAttribute('d')).notContains('NaN');
+});
+
+// Bogus test to allow us to reset browser storage state to starting value
+test('Editor - No parameters: restore prior locale', async (t) => {
+  await approveStorageAndOpenEditorPreferences(t)
+    .click('#lang_select')
+    .click('#lang_' + t.fixtureCtx.originalLanguage)
+    .click('#tool_prefs_save');
 });
