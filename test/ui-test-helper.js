@@ -1,12 +1,12 @@
 export const approveStorage = (t) => {
   return t
-    .click('#dialog_buttons > input[type=button][value=OK]');
+    .click('#dialog_buttons > input[type=button][data-ok]');
 };
 
-export const approveStorageAndOpenMainMenu = (t) => {
-  return approveStorage(t).click('#main_icon');
+export const openMainMenu = (t) => {
+  return t.click('#main_icon');
 };
 
-export const approveStorageAndOpenEditorPreferences = (t) => {
-  return approveStorageAndOpenMainMenu(t).click('#tool_prefs_option');
+export const openEditorPreferences = (t) => {
+  return openMainMenu(t).click('#tool_prefs_option');
 };

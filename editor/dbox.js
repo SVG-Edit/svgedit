@@ -62,7 +62,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
       .toggleClass('prompt', (type === 'prompt'));
     btnHolder.empty();
 
-    const ok = $('<input type="button" value="' + strings.ok + '">').appendTo(btnHolder);
+    const ok = $('<input type="button" data-ok="" value="' + strings.ok + '">').appendTo(btnHolder);
 
     return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
       if (type !== 'alert') {

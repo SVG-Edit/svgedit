@@ -9643,7 +9643,7 @@
     function dbox(type, msg, defaultVal, opts, changeListener, checkbox) {
       dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>').toggleClass('prompt', type === 'prompt');
       btnHolder.empty();
-      var ok = $('<input type="button" value="' + strings.ok + '">').appendTo(btnHolder);
+      var ok = $('<input type="button" data-ok="" value="' + strings.ok + '">').appendTo(btnHolder);
       return new Promise(function (resolve, reject) {
         // eslint-disable-line promise/avoid-new
         if (type !== 'alert') {
