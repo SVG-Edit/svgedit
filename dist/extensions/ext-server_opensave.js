@@ -4579,7 +4579,7 @@ var svgEditorExtension_server_opensave = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee);
       }));
 
       return function (_x2, _x3) {
@@ -4909,7 +4909,7 @@ var svgEditorExtension_server_opensave = (function () {
                               return _context4.stop();
                           }
                         }
-                      }, _callee4, this);
+                      }, _callee4);
                     }));
                     return _submit.apply(this, arguments);
                   }
@@ -4948,7 +4948,7 @@ var svgEditorExtension_server_opensave = (function () {
                               return _context2.stop();
                           }
                         }
-                      }, _callee2, this);
+                      }, _callee2);
                     })));
                   } else {
                     inp.change(
@@ -4968,7 +4968,7 @@ var svgEditorExtension_server_opensave = (function () {
                               return _context3.stop();
                           }
                         }
-                      }, _callee3, this);
+                      }, _callee3);
                     })));
                   }
                 };
@@ -5114,7 +5114,7 @@ var svgEditorExtension_server_opensave = (function () {
                               return _context.stop();
                           }
                         }
-                      }, _callee, this);
+                      }, _callee);
                     }));
 
                     function exportImage(_x2, _x3) {

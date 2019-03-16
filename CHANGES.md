@@ -5,9 +5,12 @@
 - Fix: Delay icon setting until locales available (fixes #323)
 - Fix: Extension with no `placement` to be added to end;
     for #326 (@sjernigan)
+- Fix: Error on dragging control point of arc; fixes #268 (@cuixiping)
 - Optimization fix: Properly run code conditionally on browser check;
     fixes #312 (@ianli-sc)
 - Enhancement: Add CAD Placemark extension (@NeiroNx)
+- Testing (UI Refactoring): Abstract out to helper file functions
+- npm: Update devDeps; update nested deps for security audit
 
 ## 4.2.0
 

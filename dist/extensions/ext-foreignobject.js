@@ -267,7 +267,7 @@ var svgEditorExtension_foreignobject = (function () {
                                 return _context.stop();
                             }
                           }
-                        }, _callee, this);
+                        }, _callee);
                       })));
                       /* const cancel = */
 

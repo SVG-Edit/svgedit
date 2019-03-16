@@ -306,7 +306,7 @@ var svgEditorExtension_mathjax = (function () {
                                 return _context.stop();
                             }
                           }
-                        }, _callee, this, [[7, 13]]);
+                        }, _callee, null, [[7, 13]]);
                       }));
 
                       function click() {

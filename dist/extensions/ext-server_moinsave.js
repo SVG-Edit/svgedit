@@ -4579,7 +4579,7 @@ var svgEditorExtension_server_moinsave = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee);
       }));
 
       return function (_x2, _x3) {
@@ -4935,7 +4935,7 @@ var svgEditorExtension_server_moinsave = (function () {
                               return _context.stop();
                           }
                         }
-                      }, _callee, this);
+                      }, _callee);
                     }));
 
                     function save(_x2, _x3) {

@@ -212,7 +212,7 @@ var svgEditorExtension_markers = (function () {
                             return _context.stop();
                         }
                       }
-                    }, _callee, this);
+                    }, _callee);
                   }));
                   return _showTextPrompt.apply(this, arguments);
                 };

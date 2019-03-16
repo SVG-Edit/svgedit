@@ -785,7 +785,12 @@ export class Segment {
       ]
       : [item.x += dx, item.y += dy];
 
-    replacePathSeg(this.type, this.index, this.type === 10 ? ptObjToArr(this.type, item) : curPts); //type 10 means ARC
+    replacePathSeg(
+      this.type,
+      this.index,
+      // type 10 means ARC
+      this.type === 10 ? ptObjToArr(this.type, item) : curPts
+    );
 
     if (this.next && this.next.ctrlpts) {
       const next = this.next.item;

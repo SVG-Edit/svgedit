@@ -1,4 +1,4 @@
-/* eslint-disable new-cap, class-methods-use-this, @mysticatea/no-use-ignored-vars */
+/* eslint-disable new-cap, class-methods-use-this */
 // Todo: Compare with latest canvg (add any improvements of ours) and add full JSDocs (denoting links to standard APIs and which are custom): https://github.com/canvg/canvg
 /**
  * canvg.js - Javascript SVG parser and renderer on Canvas

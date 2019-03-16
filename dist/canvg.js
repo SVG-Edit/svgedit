@@ -4579,7 +4579,7 @@ var canvg = (function (exports) {
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee);
       }));
 
       return function (_x2, _x3) {

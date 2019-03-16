@@ -5776,7 +5776,8 @@ var SvgCanvas = (function () {
       value: function move(dx, dy) {
         var item = this.item;
         var curPts = this.ctrlpts ? [item.x += dx, item.y += dy, item.x1, item.y1, item.x2 += dx, item.y2 += dy] : [item.x += dx, item.y += dy];
-        replacePathSeg(this.type, this.index, curPts);
+        replacePathSeg(this.type, this.index, // type 10 means ARC
+        this.type === 10 ? ptObjToArr(this.type, item) : curPts);
 
         if (this.next && this.next.ctrlpts) {
           var next = this.next.item;
@@ -11299,7 +11300,7 @@ var SvgCanvas = (function () {
               return _context.stop();
           }
         }
-      }, _callee, this);
+      }, _callee);
     }));
     return _importSetGlobal.apply(this, arguments);
   }
@@ -14505,7 +14506,7 @@ var SvgCanvas = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee);
       }));
 
       return function (_x, _x2, _x3) {

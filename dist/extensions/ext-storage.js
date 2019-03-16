@@ -412,7 +412,7 @@ var svgEditorExtension_storage = (function () {
                     return _context.stop();
                 }
               }
-            }, _callee, this);
+            }, _callee);
           }));
 
           function langReady(_x) {

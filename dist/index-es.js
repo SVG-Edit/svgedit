@@ -5714,7 +5714,8 @@ function () {
     value: function move(dx, dy) {
       var item = this.item;
       var curPts = this.ctrlpts ? [item.x += dx, item.y += dy, item.x1, item.y1, item.x2 += dx, item.y2 += dy] : [item.x += dx, item.y += dy];
-      replacePathSeg(this.type, this.index, curPts);
+      replacePathSeg(this.type, this.index, // type 10 means ARC
+      this.type === 10 ? ptObjToArr(this.type, item) : curPts);
 
       if (this.next && this.next.ctrlpts) {
         var next = this.next.item;
@@ -9445,7 +9446,7 @@ function _importSetGlobal() {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
   return _importSetGlobal.apply(this, arguments);
 }
@@ -14727,7 +14728,7 @@ function SvgCanvas(container, config) {
               return _context.stop();
           }
         }
-      }, _callee, this);
+      }, _callee);
     }));
 
     return function (_x, _x2, _x3) {
@@ -28299,7 +28300,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function readLang(_x) {
@@ -28372,7 +28373,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2);
   }));
 
   return function putLocale(_x2, _x3, _x4) {
@@ -28867,7 +28868,7 @@ function _loadSvgString() {
             return _context23.stop();
         }
       }
-    }, _callee23, this);
+    }, _callee23);
   }));
   return _loadSvgString.apply(this, arguments);
 }
@@ -28926,7 +28927,7 @@ function getImportLocale(_ref) {
                 return _context.stop();
             }
           }
-        }, _callee, this, [[2, 8]]);
+        }, _callee, null, [[2, 8]]);
       }));
 
       function importLocaleDefaulting() {
@@ -29489,7 +29490,7 @@ editor.init = function () {
                           return _context2.stop();
                       }
                     }
-                  }, _callee2, this, [[4, 13]]);
+                  }, _callee2, null, [[4, 13]]);
                 }));
 
                 return function (_x2) {
@@ -29541,7 +29542,7 @@ editor.init = function () {
               return _context3.stop();
           }
         }
-      }, _callee3, this, [[10, 17]]);
+      }, _callee3, null, [[10, 17]]);
     }));
 
     return function extAndLocaleFunc() {
@@ -30132,7 +30133,7 @@ editor.init = function () {
                   return _context4.stop();
               }
             }
-          }, _callee4, this);
+          }, _callee4);
         }));
 
         function callback(_x3) {
@@ -30639,7 +30640,7 @@ editor.init = function () {
               return _context18.stop();
           }
         }
-      }, _callee18, this);
+      }, _callee18);
     }));
     return _promptImgURL.apply(this, arguments);
   }
@@ -32356,7 +32357,7 @@ editor.init = function () {
               return _context5.stop();
           }
         }
-      }, _callee5, this);
+      }, _callee5);
     }));
 
     return function extAdded(_x4, _x5) {
@@ -33346,7 +33347,7 @@ editor.init = function () {
               return _context7.stop();
           }
         }
-      }, _callee7, this);
+      }, _callee7);
     }));
 
     return function makeHyperlink() {
@@ -33512,7 +33513,7 @@ editor.init = function () {
               return _context8.stop();
           }
         }
-      }, _callee8, this);
+      }, _callee8);
     }));
 
     return function clickClear() {
@@ -33660,7 +33661,7 @@ editor.init = function () {
               return _context9.stop();
           }
         }
-      }, _callee9, this);
+      }, _callee9);
     }));
 
     return function clickExport() {
@@ -33917,7 +33918,7 @@ editor.init = function () {
               return _context10.stop();
           }
         }
-      }, _callee10, this);
+      }, _callee10);
     }));
 
     return function saveSourceEditor() {
@@ -34059,7 +34060,7 @@ editor.init = function () {
             return _context11.stop();
         }
       }
-    }, _callee11, this);
+    }, _callee11);
   }));
 
   var resetScrollPos = $$b.noop;
@@ -34138,7 +34139,7 @@ editor.init = function () {
               return _context12.stop();
           }
         }
-      }, _callee12, this);
+      }, _callee12);
     }));
 
     return function cancelOverlays() {
@@ -34560,7 +34561,7 @@ editor.init = function () {
             return _context13.stop();
         }
       }
-    }, _callee13, this);
+    }, _callee13);
   })));
   /**
    *
@@ -34636,7 +34637,7 @@ editor.init = function () {
               return _context19.stop();
           }
         }
-      }, _callee19, this);
+      }, _callee19);
     }));
     return _cloneLayer.apply(this, arguments);
   }
@@ -34718,7 +34719,7 @@ editor.init = function () {
             return _context14.stop();
         }
       }
-    }, _callee14, this);
+    }, _callee14);
   })));
   var SIDEPANEL_MAXWIDTH = 300;
   var SIDEPANEL_OPENWIDTH = 150;
@@ -35967,7 +35968,7 @@ editor.init = function () {
                             return _context15.stop();
                         }
                       }
-                    }, _callee15, this);
+                    }, _callee15);
                   }));
 
                   return function (_x6) {
@@ -36106,7 +36107,7 @@ editor.init = function () {
               return _context17.stop();
           }
         }
-      }, _callee17, this);
+      }, _callee17);
     }));
 
     return function (_x7, _x8) {
@@ -36240,7 +36241,7 @@ regeneratorRuntime.mark(function _callee20() {
           return _context20.stop();
       }
     }
-  }, _callee20, this, [[0, 5]]);
+  }, _callee20, null, [[0, 5]]);
 }));
 /**
 * @param {string} str The SVG string to load
@@ -36288,7 +36289,7 @@ editor.loadFromString = function (str) {
             return _context21.stop();
         }
       }
-    }, _callee21, this, [[0, 5]]);
+    }, _callee21, null, [[0, 5]]);
   })));
 };
 /**
@@ -36478,7 +36479,7 @@ regeneratorRuntime.mark(function _callee22() {
           return _context22.stop();
       }
     }
-  }, _callee22, this, [[0, 6]]);
+  }, _callee22, null, [[0, 6]]);
 }))();
 
 export default editor;

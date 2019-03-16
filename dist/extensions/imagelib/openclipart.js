@@ -3220,7 +3220,7 @@
               return _context3.stop();
           }
         }
-      }, _callee3, this);
+      }, _callee3);
     }));
     return _processResults.apply(this, arguments);
   }
@@ -3253,7 +3253,7 @@
                   return _context.stop();
               }
             }
-          }, _callee, this);
+          }, _callee);
         }));
 
         function $submit() {
