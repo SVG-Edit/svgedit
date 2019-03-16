@@ -36014,8 +36014,6 @@
       var _ref30 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee17(lang, allStrings) {
-        var _this = this;
-
         var oldLayerName, renameLayer, elems;
         return regeneratorRuntime.wrap(function _callee17$(_context17) {
           while (1) {
@@ -36072,7 +36070,7 @@
 
               case 17:
                 loadedExtensionNames.forEach(function (loadedExtensionName) {
-                  _this.runExtension(loadedExtensionName, 'langReady',
+                  svgCanvas.runExtension(loadedExtensionName, 'langReady',
                   /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */
                   {
                     lang: lang,

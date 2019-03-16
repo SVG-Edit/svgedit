@@ -6,6 +6,8 @@
 - Fix: Extension with no `placement` to be added to end;
     for #326 (@sjernigan)
 - Fix: Error on dragging control point of arc; fixes #268 (@cuixiping)
+- Fix: With locales loading before extensions, ensure extensions'
+    `langReady` runs properly; fixes #334 (@cuixiping)
 - Optimization fix: Properly run code conditionally on browser check;
     fixes #312 (@ianli-sc)
 - Enhancement: Add CAD Placemark extension (@NeiroNx)
