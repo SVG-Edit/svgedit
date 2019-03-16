@@ -11,7 +11,11 @@
 - Optimization fix: Properly run code conditionally on browser check;
     fixes #312 (@ianli-sc)
 - Enhancement: Add CAD Placemark extension (@NeiroNx)
+- Refactoring: Make dialog OK button retrievable locale-independently
+    via a `data-ok` attribute (using for testing)
 - Testing (UI Refactoring): Abstract out to helper file functions
+- Testing (UI Refactoring): Avoid testing being locale-dependent;
+    approve storage (and set locale to English) before each test
 - npm: Update devDeps; update nested deps for security audit
 
 ## 4.2.0
