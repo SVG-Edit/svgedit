@@ -6230,7 +6230,7 @@ editor.init = function () {
       extsPreLang.length = 0;
     } else {
       loadedExtensionNames.forEach((loadedExtensionName) => {
-        this.runExtension(
+        svgCanvas.runExtension(
           loadedExtensionName,
           'langReady',
           /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */ {
