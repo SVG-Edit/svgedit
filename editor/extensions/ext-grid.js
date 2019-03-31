@@ -83,13 +83,10 @@ export default {
       // Calculate the main number interval
       const rawM = 100 / uMulti;
       let multi = 1;
-      for (let i = 0; i < intervals.length; i++) {
-        const num = intervals[i];
+      intervals.some((num) => {
         multi = num;
-        if (rawM <= num) {
-          break;
-        }
-      }
+        return rawM <= num;
+      });
       const bigInt = multi * uMulti;
 
       // Set the canvas size to the width of the container

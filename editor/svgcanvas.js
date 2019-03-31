@@ -2681,9 +2681,9 @@ const mouseUp = function (evt) {
     const coords = element.getAttribute('points');
     const commaIndex = coords.indexOf(',');
     if (commaIndex >= 0) {
-      keep = coords.indexOf(',', commaIndex + 1) >= 0;
+      keep = coords.includes(',', commaIndex + 1);
     } else {
-      keep = coords.indexOf(' ', coords.indexOf(' ') + 1) >= 0;
+      keep = coords.includes(' ', coords.indexOf(' ') + 1);
     }
     if (keep) {
       element = pathActions.smoothPolylineIntoPath(element);
@@ -4736,8 +4736,7 @@ this.importSvgString = function (xmlString) {
         symbol.append(first);
       }
       const attrs = svg.attributes;
-      for (let i = 0; i < attrs.length; i++) {
-        const attr = attrs[i];
+      for (const attr of attrs) { // Ok for `NamedNodeMap`
         symbol.setAttribute(attr.nodeName, attr.value);
       }
       symbol.id = getNextId();

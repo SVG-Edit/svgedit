@@ -574,12 +574,11 @@ export class Drawing {
     const group = layer.getGroup();
 
     // Clone children
-    const children = currentGroup.childNodes;
-    for (let index = 0; index < children.length; index++) {
-      const ch = children[index];
-      if (ch.localName === 'title') { continue; }
-      group.append(this.copyElem(ch));
-    }
+    const children = [...currentGroup.childNodes];
+    children.forEach((child) => {
+      if (child.localName === 'title') { return; }
+      group.append(this.copyElem(child));
+    });
 
     if (hrService) {
       hrService.startBatchCommand('Duplicate Layer');

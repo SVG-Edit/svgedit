@@ -12,7 +12,39 @@ module.exports = {
     browser: true
   },
   settings: {
-    polyfills: ["url", "promises", "fetch", "queryselector", "object-values"],
+    polyfills: [
+      "Array.isArray",
+      "Blob",
+      "console",
+      "Date.now",
+      "document.body",
+      "document.evaluate",
+      "document.head",
+      "document.importNode",
+      "document.querySelector", "document.querySelectorAll",
+      "DOMParser",
+      "Error",
+      "fetch",
+      "FileReader",
+      "history.pushState",
+      "history.replaceState",
+      "JSON",
+      "location.href",
+      "location.origin",
+      "MutationObserver",
+      "Object.assign", "Object.defineProperty", "Object.defineProperties",
+      "Object.getOwnPropertyDescriptor",
+      "Object.entries", "Object.keys", "Object.values",
+      "Promise",
+      "Set",
+      "Uint8Array",
+      "URL",
+      "window.getComputedStyle",
+      "window.postMessage",
+      "window.scrollX", "window.scrollY",
+      "XMLHttpRequest",
+      "XMLSerializer"
+    ],
     jsdoc: {
       additionalTagNames: {
         // In case we need to extend
@@ -140,13 +172,14 @@ module.exports = {
   rules: {
     // Override these `ash-nazg/sauron` rules which are difficult for us
     //   to apply at this time
-    "default-case": ["off"],
-    "require-unicode-regexp": ["off"],
+    "default-case": "off",
+    "require-unicode-regexp": "off",
     "max-len": ["off", {
       ignoreUrls: true,
       ignoreRegExpLiterals: true
     }],
-    "unicorn/prefer-query-selector": ["off"],
-    "unicorn/prefer-node-append": ["off"]
+    "unicorn/prefer-query-selector": "off",
+    "unicorn/prefer-node-append": "off",
+    "unicorn/no-zero-fractions": "off"
   }
 };

@@ -1282,15 +1282,14 @@ export class Path {
   */
   addPtsToSelection (indexes) {
     if (!Array.isArray(indexes)) { indexes = [indexes]; }
-    for (let i = 0; i < indexes.length; i++) {
-      const index = indexes[i];
+    indexes.forEach((index) => {
       const seg = this.segs[index];
       if (seg.ptgrip) {
         if (!this.selected_pts.includes(index) && index >= 0) {
           this.selected_pts.push(index);
         }
       }
-    }
+    });
     this.selected_pts.sort();
     let i = this.selected_pts.length;
     const grips = [];

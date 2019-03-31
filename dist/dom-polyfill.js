@@ -149,7 +149,7 @@
         return;
       }
 
-      this.parentNode.removeChild(this);
+      this.parentNode.removeChild(this); // eslint-disable-line unicorn/prefer-node-remove
     }
   };
   mixin(DocumentType, ChildNode);

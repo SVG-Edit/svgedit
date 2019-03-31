@@ -2622,9 +2622,7 @@ editor.init = function () {
       setSelectMode();
     }
 
-    for (let i = 0; i < elems.length; ++i) {
-      const elem = elems[i];
-
+    elems.forEach((elem) => {
       const isSvgElem = (elem && elem.tagName === 'svg');
       if (isSvgElem || isLayer(elem)) {
         populateLayers();
@@ -2638,7 +2636,7 @@ editor.init = function () {
         // || elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
         selectedElement = elem;
       }
-    }
+    });
 
     editor.showSaveWarning = true;
 

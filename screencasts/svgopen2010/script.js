@@ -180,7 +180,7 @@ const SlideShow = function (slides) {
 SlideShow.prototype = {
   _slides: [],
   _update (dontPush) {
-    document.querySelector('#presentation-counter').innerText = this.current;
+    document.querySelector('#presentation-counter').textContent = this.current;
     if (history.pushState) {
       if (!dontPush) {
         history.pushState(this.current, 'Slide ' + this.current, '#slide' + this.current);

@@ -6292,21 +6292,21 @@
     }, {
       key: "addPtsToSelection",
       value: function addPtsToSelection(indexes) {
+        var _this = this;
+
         if (!Array.isArray(indexes)) {
           indexes = [indexes];
         }
 
-        for (var _i4 = 0; _i4 < indexes.length; _i4++) {
-          var index = indexes[_i4];
-          var seg = this.segs[index];
+        indexes.forEach(function (index) {
+          var seg = _this.segs[index];
 
           if (seg.ptgrip) {
-            if (!this.selected_pts.includes(index) && index >= 0) {
-              this.selected_pts.push(index);
+            if (!_this.selected_pts.includes(index) && index >= 0) {
+              _this.selected_pts.push(index);
             }
           }
-        }
-
+        });
         this.selected_pts.sort();
         var i = this.selected_pts.length;
         var grips = [];
@@ -6314,11 +6314,9 @@
 
         while (i--) {
           var pt = this.selected_pts[i];
-          var _seg2 = this.segs[pt];
-
-          _seg2.select(true);
-
-          grips[i] = _seg2.ptgrip;
+          var seg = this.segs[pt];
+          seg.select(true);
+          grips[i] = seg.ptgrip;
         }
 
         var closedSubpath = Path.subpathIsClosed(this.selected_pts[0]);
@@ -10849,6 +10847,8 @@
     }, {
       key: "cloneLayer",
       value: function cloneLayer(name, hrService) {
+        var _this = this;
+
         if (!this.current_layer) {
           return null;
         }
@@ -10864,17 +10864,15 @@
         var layer = new Layer(name, currentGroup, this.svgElem_);
         var group = layer.getGroup(); // Clone children
 
-        var children = currentGroup.childNodes;
+        var children = _toConsumableArray(currentGroup.childNodes);
 
-        for (var _index = 0; _index < children.length; _index++) {
-          var ch = children[_index];
-
-          if (ch.localName === 'title') {
-            continue;
+        children.forEach(function (child) {
+          if (child.localName === 'title') {
+            return;
           }
 
-          group.append(this.copyElem(ch));
-        }
+          group.append(_this.copyElem(child));
+        });
 
         if (hrService) {
           hrService.startBatchCommand('Duplicate Layer');
@@ -16463,9 +16461,9 @@
               var commaIndex = coords.indexOf(',');
 
               if (commaIndex >= 0) {
-                keep = coords.indexOf(',', commaIndex + 1) >= 0;
+                keep = coords.includes(',', commaIndex + 1);
               } else {
-                keep = coords.indexOf(' ', coords.indexOf(' ') + 1) >= 0;
+                keep = coords.includes(' ', coords.indexOf(' ') + 1);
               }
 
               if (keep) {
@@ -18743,10 +18741,29 @@
           }
 
           var attrs = svg.attributes;
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
 
-          for (var i = 0; i < attrs.length; i++) {
-            var attr = attrs[i];
-            symbol.setAttribute(attr.nodeName, attr.value);
+          try {
+            for (var _iterator = attrs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var attr = _step.value;
+              // Ok for `NamedNodeMap`
+              symbol.setAttribute(attr.nodeName, attr.value);
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return != null) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
           }
 
           symbol.id = getNextId(); // Store data
@@ -31404,8 +31421,7 @@
         setSelectMode();
       }
 
-      for (var _i = 0; _i < elems.length; ++_i) {
-        var elem = elems[_i];
+      elems.forEach(function (elem) {
         var isSvgElem = elem && elem.tagName === 'svg';
 
         if (isSvgElem || isLayer(elem)) {
@@ -31420,8 +31436,7 @@
           // || elem && elem.tagName == "path" && !multiselected) { // This was added in r1430, but not sure why
           selectedElement = elem;
         }
-      }
-
+      });
       editor.showSaveWarning = true; // we update the contextual panel with potentially new
       // positional/sizing information (we DON'T want to update the
       // toolbar here as that creates an infinite loop)
@@ -34241,10 +34256,10 @@
 
     if (isMac() && !window.opera) {
       var shortcutButtons = ['tool_clear', 'tool_save', 'tool_source', 'tool_undo', 'tool_redo', 'tool_clone'];
-      var _i2 = shortcutButtons.length;
+      var _i = shortcutButtons.length;
 
-      while (_i2--) {
-        var button = document.getElementById(shortcutButtons[_i2]);
+      while (_i--) {
+        var button = document.getElementById(shortcutButtons[_i]);
 
         if (button) {
           var title = button.title;
@@ -34369,11 +34384,11 @@
                 var childs = selectedElement.getElementsByTagName('*');
                 var gPaint = null;
 
-                for (var _i3 = 0, len = childs.length; _i3 < len; _i3++) {
-                  var elem = childs[_i3];
+                for (var _i2 = 0, len = childs.length; _i2 < len; _i2++) {
+                  var elem = childs[_i2];
                   var p = elem.getAttribute(type);
 
-                  if (_i3 === 0) {
+                  if (_i2 === 0) {
                     gPaint = p;
                   } else if (gPaint !== p) {
                     gPaint = null;
