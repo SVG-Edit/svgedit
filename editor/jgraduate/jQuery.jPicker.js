@@ -2087,7 +2087,9 @@ const jPicker = function ($) {
           let html = '';
           for (let i = 0; i < color.quickList.length; i++) {
             /* if default colors are hex strings, change them to color objects */
-            if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') color.quickList[i] = new Color({hex: color.quickList[i]});
+            if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') {
+              color.quickList[i] = new Color({hex: color.quickList[i]});
+            }
             const alpha = color.quickList[i].val('a');
             let ahex = color.quickList[i].val('ahex');
             if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
@@ -2167,6 +2169,7 @@ const jPicker = function ($) {
         for (let i = 0; i < List.length; i++) {
           if (List[i] === that) {
             List.splice(i, 1);
+            i--; // Decrement to ensure we don't miss next item (lgtm warning)
           }
         }
       }
