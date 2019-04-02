@@ -44,9 +44,9 @@ function addCallback (t, {result, error, id: callbackID}) {
     // These should be safe both because we check `cbid` is numeric and
     //   because the calls are from trusted origins
     if (result) {
-      t.callbacks[callbackID](result); // lgtm [js/remote-property-injection]
+      t.callbacks[callbackID](result); // lgtm [js/unvalidated-dynamic-method-call]
     } else {
-      t.callbacks[callbackID](error, 'error'); // lgtm [js/remote-property-injection]
+      t.callbacks[callbackID](error, 'error'); // lgtm [js/unvalidated-dynamic-method-call]
     }
   }
 }
