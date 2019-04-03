@@ -2966,12 +2966,10 @@ function jQueryPluginSVG($) {
 
         if (_typeof(key) === 'object') {
           // Setting attributes from object
-          var _arr = Object.entries(key);
-
-          for (var _i = 0; _i < _arr.length; _i++) {
-            var _arr$_i = _slicedToArray(_arr[_i], 2),
-                name = _arr$_i[0],
-                val = _arr$_i[1];
+          for (var _i = 0, _Object$entries = Object.entries(key); _i < _Object$entries.length; _i++) {
+            var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+                name = _Object$entries$_i[0],
+                val = _Object$entries$_i[1];
 
             elem.setAttribute(name, val);
           } // Getting attribute
@@ -3546,7 +3544,7 @@ var init = function init(elementContainer) {
   typeMap_ = {
     em: bb.width,
     ex: bb.height,
-    in: inch,
+    "in": inch,
     cm: inch / 2.54,
     mm: inch / 25.4,
     pt: inch / 72,
@@ -9113,12 +9111,10 @@ var getElem = supportsSelectors() ? function (id) {
 */
 
 var assignAttributes = function assignAttributes(elem, attrs, suspendLength, unitCheck) {
-  var _arr = Object.entries(attrs);
-
-  for (var _i = 0; _i < _arr.length; _i++) {
-    var _arr$_i = _slicedToArray(_arr[_i], 2),
-        key = _arr$_i[0],
-        value = _arr$_i[1];
+  for (var _i = 0, _Object$entries = Object.entries(attrs); _i < _Object$entries.length; _i++) {
+    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+        key = _Object$entries$_i[0],
+        value = _Object$entries$_i[1];
 
     var ns = key.substr(0, 4) === 'xml:' ? NS.XML : key.substr(0, 6) === 'xlink:' ? NS.XLINK : null;
 
@@ -11419,7 +11415,7 @@ var svgWhiteList_ = {
   rect: ['class', 'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height', 'id', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'width', 'x', 'y'],
   stop: ['class', 'id', 'offset', 'requiredFeatures', 'stop-color', 'stop-opacity', 'style', 'systemLanguage'],
   svg: ['class', 'clip-path', 'clip-rule', 'filter', 'id', 'height', 'mask', 'preserveAspectRatio', 'requiredFeatures', 'style', 'systemLanguage', 'viewBox', 'width', 'x', 'xmlns', 'xmlns:se', 'xmlns:xlink', 'y'],
-  switch: ['class', 'id', 'requiredFeatures', 'systemLanguage'],
+  "switch": ['class', 'id', 'requiredFeatures', 'systemLanguage'],
   symbol: ['class', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight', 'id', 'opacity', 'preserveAspectRatio', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'viewBox'],
   text: ['class', 'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight', 'id', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'text-anchor', 'transform', 'x', 'xml:space', 'y'],
   textPath: ['class', 'id', 'method', 'requiredFeatures', 'spacing', 'startOffset', 'style', 'systemLanguage', 'transform', 'xlink:href'],
@@ -18754,8 +18750,8 @@ function SvgCanvas(container, config) {
           _iteratorError = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
           } finally {
             if (_didIteratorError) {
@@ -19939,7 +19935,7 @@ function SvgCanvas(container, config) {
         var newblur = addSVGElementFromJson({
           element: 'feGaussianBlur',
           attr: {
-            in: 'SourceGraphic',
+            "in": 'SourceGraphic',
             stdDeviation: val
           }
         });
@@ -22559,7 +22555,7 @@ function jQueryPluginSVGIcons($) {
           }
 
           var icon = $(new Image()).attr({
-            class: 'svg_icon',
+            "class": 'svg_icon',
             src: path + imgsrc,
             width: iconW,
             height: iconH,
@@ -22613,7 +22609,7 @@ function jQueryPluginSVGIcons($) {
             }
 
             icon = $(new Image()).attr({
-              class: 'svg_icon',
+              "class": 'svg_icon',
               src: str,
               alt: alt
             });
@@ -23282,7 +23278,7 @@ function jQueryPluginJGraduate($) {
       }, svg); // stop visuals created here
 
       var beginCoord = $('<div/>').attr({
-        class: 'grad_coord jGraduate_lg_field',
+        "class": 'grad_coord jGraduate_lg_field',
         title: 'Begin Stop'
       }).text(1).css({
         top: y1 * MAX,
@@ -23293,7 +23289,7 @@ function jQueryPluginJGraduate($) {
         left: x2 * MAX
       }).attr('title', 'End stop').data('coord', 'end').appendTo(container);
       var centerCoord = $('<div/>').attr({
-        class: 'grad_coord jGraduate_rg_field',
+        "class": 'grad_coord jGraduate_rg_field',
         title: 'Center stop'
       }).text('C').css({
         top: cy * MAX,
@@ -28323,7 +28319,7 @@ function () {
               image_width: properties.image_width,
               layer_delete: layers.del,
               layer_down: layers.move_down,
-              layer_new: layers.new,
+              layer_new: layers["new"],
               layer_rename: layers.rename,
               layer_moreopts: common.more_opts,
               layer_up: layers.move_up,
@@ -30005,16 +30001,16 @@ editor.init = function () {
         opacity: 'opacity.png',
         new_image: 'clear.png',
         save: 'save.png',
-        export: 'export.png',
+        "export": 'export.png',
         open: 'open.png',
-        import: 'import.png',
+        "import": 'import.png',
         docprops: 'document-properties.png',
         source: 'source.png',
         wireframe: 'wireframe.png',
         undo: 'undo.png',
         redo: 'redo.png',
         clone: 'clone.png',
-        delete: 'delete.png',
+        "delete": 'delete.png',
         go_up: 'go-up.png',
         go_down: 'go-down.png',
         context_menu: 'context_menu.png',
@@ -31888,7 +31884,7 @@ editor.init = function () {
 
   var makeFlyoutHolder = function makeFlyoutHolder(id, child) {
     var div = $$b('<div>', {
-      class: 'tools_flyout',
+      "class": 'tools_flyout',
       id: id
     }).appendTo('#svg_editor').append(child);
     return div;
@@ -32295,7 +32291,7 @@ editor.init = function () {
                       // Create flyout placeholder
                       tlsId = refBtn[0].id.replace('tool_', 'tools_');
                       showBtn = refBtn.clone().attr('id', tlsId + '_show').append($$b('<div>', {
-                        class: 'flyout_arrow_horiz'
+                        "class": 'flyout_arrow_horiz'
                       }));
                       refBtn.before(showBtn); // Create a flyout div
 
@@ -32358,7 +32354,7 @@ editor.init = function () {
                     // Create flyout placeholder
                     _tlsId = refBtn[0].id.replace('tool_', 'tools_');
                     showBtn = refBtn.clone().attr('id', _tlsId + '_show').append($$b('<div>', {
-                      class: 'flyout_arrow_horiz'
+                      "class": 'flyout_arrow_horiz'
                     }));
                     refBtn.before(showBtn); // Create a flyout div
 

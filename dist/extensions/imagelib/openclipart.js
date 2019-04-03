@@ -962,7 +962,7 @@
                 }
 
                 var getConstructor = function getConstructor(cb) {
-                  var baseClass = options && options.extends ? doc.createElement(options.extends).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
+                  var baseClass = options && options["extends"] ? doc.createElement(options["extends"]).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
                   return cb ?
                   /*#__PURE__*/
                   function (_baseClass) {
@@ -1007,7 +1007,7 @@
 
                     if (typeof options === 'string') {
                       options = {
-                        extends: options
+                        "extends": options
                       };
                     } else if (!options.hasOwnProperty('extends')) {
                       prototype = options;
@@ -1026,7 +1026,7 @@
 
                     if (typeof options === 'string') {
                       options = {
-                        extends: options
+                        "extends": options
                       };
                     }
                   }
@@ -1043,7 +1043,7 @@
 
                 if (!options && customizedBuiltIn) {
                   options = {
-                    extends: localName
+                    "extends": localName
                   };
                 }
 
@@ -1068,7 +1068,7 @@
                 var funcBound = func.bind(elem);
 
                 if (typeof symbol === 'string') {
-                  elem[Symbol.for(symbol)] = funcBound;
+                  elem[Symbol["for"](symbol)] = funcBound;
                 } else {
                   elem[symbol] = funcBound;
                 }
@@ -1077,7 +1077,7 @@
                 obj.elem = elem;
 
                 if (typeof symbol === 'string') {
-                  elem[Symbol.for(symbol)] = obj;
+                  elem[Symbol["for"](symbol)] = obj;
                 } else {
                   elem[symbol] = obj;
                 }
@@ -2212,9 +2212,9 @@
     return [map, elem];
   };
 
-  jml.symbol = jml.sym = jml.for = function (elem, sym) {
+  jml.symbol = jml.sym = jml["for"] = function (elem, sym) {
     elem = typeof elem === 'string' ? $(elem) : elem;
-    return elem[_typeof$1(sym) === 'symbol' ? sym : Symbol.for(sym)];
+    return elem[_typeof$1(sym) === 'symbol' ? sym : Symbol["for"](sym)];
   };
 
   jml.command = function (elem, symOrMap, methodName) {
@@ -3271,7 +3271,7 @@
     }
   }, [// Todo: i18nize
   ['fieldset', [['legend', ['Search terms']], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['Query (Title, description, uploader, or tag): ', ['input', {
     id: 'query',
     name: 'query',
@@ -3288,7 +3288,7 @@
       }
     }
   }]]]]], ['br'], ' OR ', ['br'], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['IDs (single or comma-separated): ', ['input', {
     id: 'byids',
     name: 'ids',
@@ -3305,7 +3305,7 @@
       }
     }
   }]]]]]]], ['fieldset', [['legend', ['Configuring results']], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['Sort by: ', ['select', {
     id: 'sort'
   }, [// Todo: i18nize first values
@@ -3319,7 +3319,7 @@
       value: value
     }, [text]];
   })]]]]], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['Results per page: ', ['input', {
     id: 'amount',
     name: 'amount',
@@ -3330,7 +3330,7 @@
     step: 1,
     pattern: '\\d+'
   }]]]]], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['label', ['Page number: ', ['input', {
     // max: 1, // We'll change this based on available results
     id: 'page',
@@ -3342,7 +3342,7 @@
     step: 1,
     pattern: '\\d+'
   }]]]]]]], ['div', {
-    class: 'control'
+    "class": 'control'
   }, [['input', {
     type: 'submit'
   }]]]]], ['div', {

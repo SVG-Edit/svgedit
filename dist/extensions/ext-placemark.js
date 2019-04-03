@@ -137,7 +137,7 @@ var svgEditorExtension_placemark = (function () {
                   var markerName = 'marker-start';
                   var marker = getLinked(el, markerName);
 
-                  if (!marker || !marker.attributes.class) {
+                  if (!marker || !marker.attributes["class"]) {
                     return;
                   } // not created by this extension
 
@@ -165,7 +165,7 @@ var svgEditorExtension_placemark = (function () {
                     return;
                   }
 
-                  if (!marker.attributes.class) {
+                  if (!marker.attributes["class"]) {
                     return;
                   } // not created by this extension
 
@@ -252,7 +252,7 @@ var svgEditorExtension_placemark = (function () {
                       markerUnits: 'strokeWidth',
                       orient: 'auto',
                       style: 'pointer-events:none',
-                      class: seType
+                      "class": seType
                     }
                   });
                   var mel = addElem(markerTypes[seType]);
@@ -557,7 +557,7 @@ var svgEditorExtension_placemark = (function () {
                         element: 'g',
                         attr: {
                           id: id,
-                          class: 'placemark',
+                          "class": 'placemark',
                           fontSize: fontSize,
                           maxlen: maxlen,
                           lines: items.length,

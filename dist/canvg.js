@@ -3910,7 +3910,7 @@ var canvg = (function (exports) {
             // eslint-disable-line promise/prefer-await-to-then, promise/always-return
             _this20.img = img;
             _this20.loaded = true;
-          }).catch(function (err) {
+          })["catch"](function (err) {
             // eslint-disable-line promise/prefer-await-to-callbacks
             _this20.erred = true;
             console.error('Ajax error for canvg', err); // eslint-disable-line no-console

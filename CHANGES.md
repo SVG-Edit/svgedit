@@ -32,6 +32,8 @@
     approve storage (and set locale to English) before each test
 - Testing: Avoid reporting meta-viewport (have own zooming
     controls and difficult to fix)
+- Testing: Skip js errors in Testcafe; we're getting some uncaught
+    error despite not replicating manually; should file a Testcafe issue
 - Docs: Some JSDoc descriptions, JSDoc spacing, fix svgIcons param
     def; add todo
 - npm: Update devDeps; update nested deps for security audit; remove
