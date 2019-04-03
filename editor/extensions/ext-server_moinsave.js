@@ -20,7 +20,10 @@ export default {
     // Create upload target (hidden iframe)
     //  Hiding by size instead of display to avoid FF console errors
     //    with `getBBox` in browser.js `supportsPathBBox_`)
-    /* const target = */ $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
+    /* const target = */ $(
+      `<iframe name="output_frame" title="${strings.hiddenframe}"
+        style="width: 0; height: 0;" src="#"/>`
+    ).appendTo('body');
 
     svgEditor.setCustomHandlers({
       async save (win, data) {

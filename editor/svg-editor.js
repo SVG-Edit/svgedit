@@ -1175,6 +1175,8 @@ editor.init = function () {
       id_match: false,
       no_img: !isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
       fallback_path: curConfig.imgPath,
+      // Todo: Set `alts: {}` with keys as the IDs in fallback set to
+      //   `uiStrings` (localized) values
       fallback: {
         logo: 'logo.png',
 
@@ -2149,7 +2151,10 @@ editor.init = function () {
     const bNoFill = (svgCanvas.getColor('fill') === 'none');
     const bNoStroke = (svgCanvas.getColor('stroke') === 'none');
     const buttonsNeedingStroke = ['#tool_fhpath', '#tool_line'];
-    const buttonsNeedingFillAndStroke = ['#tools_rect .tool_button', '#tools_ellipse .tool_button', '#tool_text', '#tool_path'];
+    const buttonsNeedingFillAndStroke = [
+      '#tools_rect .tool_button', '#tools_ellipse .tool_button',
+      '#tool_text', '#tool_path'
+    ];
 
     if (bNoStroke) {
       buttonsNeedingStroke.forEach((btn) => {
@@ -2177,10 +2182,13 @@ editor.init = function () {
       });
     }
 
-    svgCanvas.runExtensions('toolButtonStateUpdate', /** @type {module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate} */ {
-      nofill: bNoFill,
-      nostroke: bNoStroke
-    });
+    svgCanvas.runExtensions(
+      'toolButtonStateUpdate',
+      /** @type {module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate} */ {
+        nofill: bNoFill,
+        nostroke: bNoStroke
+      }
+    );
 
     // Disable flyouts if all inside are disabled
     $('.tools_flyout').each(function () {
@@ -3194,6 +3202,7 @@ editor.init = function () {
     const {svgicons} = ext;
     if (ext.buttons) {
       const fallbackObj = {},
+        altsObj = {},
         placementObj = {},
         holders = {};
 
@@ -3235,9 +3244,14 @@ editor.init = function () {
 
         let icon;
         if (!svgicons) {
-          icon = $('<img src="' + btn.icon + '">');
+          icon = $(
+            '<img src="' + btn.icon +
+              (btn.title ? '" alt="' + btn.title : '') +
+              '">'
+          );
         } else {
           fallbackObj[id] = btn.icon;
+          altsObj[id] = btn.title;
           const svgicon = btn.svgicon || btn.id;
           if (btn.type === 'app_menu') {
             placementObj['#' + id + ' > div'] = svgicon;
@@ -4931,7 +4945,11 @@ editor.init = function () {
   // added these event handlers for all the push buttons so they
   // behave more like buttons being pressed-in and not images
   (function () {
-    const toolnames = ['clear', 'open', 'save', 'source', 'delete', 'delete_multi', 'paste', 'clone', 'clone_multi', 'move_top', 'move_bottom'];
+    const toolnames = [
+      'clear', 'open', 'save', 'source', 'delete',
+      'delete_multi', 'paste', 'clone', 'clone_multi',
+      'move_top', 'move_bottom'
+    ];
     const curClass = 'tool_button_current';
 
     let allTools = '';
@@ -4967,7 +4985,11 @@ editor.init = function () {
       if (button) {
         const {title} = button;
         const index = title.indexOf('Ctrl+');
-        button.title = [title.substr(0, index), 'Cmd+', title.substr(index + 5)].join('');
+        button.title = [
+          title.substr(0, index),
+          'Cmd+',
+          title.substr(index + 5)
+        ].join('');
       }
     }
   }
@@ -6200,6 +6222,12 @@ editor.init = function () {
     if (!allStrings) {
       return;
     }
+    // Todo: Remove `allStrings.lang` property in locale in
+    //   favor of just `lang`?
+    document.documentElement.lang = allStrings.lang; // lang;
+    // Todo: Add proper RTL Support!
+    // Todo: Use RTL detection instead and take out of locales?
+    // document.documentElement.dir = allStrings.dir;
     $.extend(uiStrings, allStrings);
 
     // const notif = allStrings.notification; // Currently unused

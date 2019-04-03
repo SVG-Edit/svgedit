@@ -49,13 +49,17 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
    * @returns {undefined}
    */
   /**
-  * @param {"alert"|"prompt"|"select"|"process"} type
-  * @param {string} msg
-  * @param {string} [defaultVal]
-  * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
-  * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
-  * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
-  * @returns {jQueryPluginDBox.PromiseResult}
+   * Creates a dialog of the specified type with a given message
+   *  and any defaults and type-specific metadata. Returns a `Promise`
+   *  which resolves differently depending on whether the dialog
+   *  was cancelled or okayed (with the response and any checked state).
+   * @param {"alert"|"prompt"|"select"|"process"} type
+   * @param {string} msg
+   * @param {string} [defaultVal]
+   * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
+   * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
+   * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
+   * @returns {jQueryPluginDBox.PromiseResult}
   */
   function dbox (type, msg, defaultVal, opts, changeListener, checkbox) {
     dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>')
@@ -81,7 +85,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
         ctrl.bind('keydown', 'return', function () { ok.click(); });
       } else if (type === 'select') {
         const div = $('<div style="text-align:center;">');
-        ctrl = $('<select>').appendTo(div);
+        ctrl = $(`<select aria-label="${msg}">`).appendTo(div);
         if (checkbox) {
           const label = $('<label>').text(checkbox.label);
           chkbx = $('<input type="checkbox">').appendTo(label);

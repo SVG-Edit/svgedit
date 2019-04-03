@@ -16,17 +16,26 @@
 - Optimization fix: Properly run code conditionally on browser check;
     fixes #312 (@ianli-sc)
 - Enhancement: Add CAD Placemark extension (@NeiroNx)
+- Enhancement (svgIcons): Fix JSDoc param def; add `alt` options
+- Accessibility: Begin work, add aria-label to some buttons and
+    form controls; add `role=main`; `<img alt>`; `<iframe title>`
+- i18n: Add `lang` attribute
+- Refactoring: lbs, simplify i18nized element retrieval call
 - Refactoring: Make dialog OK button retrievable locale-independently
     via a `data-ok` attribute (using for testing)
 - Linting (ESLint): Update polyfills to new compat rules of
-  eslint-config-ash-nazg and adhere to new rules (prefer `for-of`
-  (or array methods) to `for`, catch preferred `includes` to `indexOf`);
-  avoid `no-zero-fractions` rule for now
+    eslint-config-ash-nazg and adhere to new rules (prefer `for-of`
+    (or array methods) to `for`, catch preferred `includes` to `indexOf`);
+    avoid `no-zero-fractions` rule for now
 - Testing (UI Refactoring): Abstract out to helper file functions
 - Testing (UI Refactoring): Avoid testing being locale-dependent;
     approve storage (and set locale to English) before each test
+- Testing: Avoid reporting meta-viewport (have own zooming
+    controls and difficult to fix)
+- Docs: Some JSDoc descriptions, JSDoc spacing, fix svgIcons param
+    def; add todo
 - npm: Update devDeps; update nested deps for security audit; remove
-  one unneeded)
+    one unneeded)
 
 ## 4.2.0
 

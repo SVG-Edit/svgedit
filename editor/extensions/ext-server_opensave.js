@@ -61,7 +61,10 @@ export default {
 
     //  Hiding by size instead of display to avoid FF console errors
     //    with `getBBox` in browser.js `supportsPathBBox_`)
-    $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
+    $(
+      `<iframe name="output_frame" title="${strings.hiddenframe}"
+        style="width: 0; height: 0;" src="#"/>`
+    ).appendTo('body');
     svgEditor.setCustomHandlers({
       save (win, data) {
         const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works

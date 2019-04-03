@@ -9629,13 +9629,17 @@
      */
 
     /**
-    * @param {"alert"|"prompt"|"select"|"process"} type
-    * @param {string} msg
-    * @param {string} [defaultVal]
-    * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
-    * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
-    * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
-    * @returns {jQueryPluginDBox.PromiseResult}
+     * Creates a dialog of the specified type with a given message
+     *  and any defaults and type-specific metadata. Returns a `Promise`
+     *  which resolves differently depending on whether the dialog
+     *  was cancelled or okayed (with the response and any checked state).
+     * @param {"alert"|"prompt"|"select"|"process"} type
+     * @param {string} msg
+     * @param {string} [defaultVal]
+     * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
+     * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
+     * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
+     * @returns {jQueryPluginDBox.PromiseResult}
     */
 
     function dbox(type, msg, defaultVal, opts, changeListener, checkbox) {
@@ -9661,7 +9665,7 @@
           });
         } else if (type === 'select') {
           var div = $('<div style="text-align:center;">');
-          ctrl = $('<select>').appendTo(div);
+          ctrl = $("<select aria-label=\"".concat(msg, "\">")).appendTo(div);
 
           if (checkbox) {
             var label = $('<label>').text(checkbox.label);
@@ -22307,9 +22311,15 @@
     var svgIcons = {};
     var fixIDs;
     /**
-     * List of raster images with each
-     * key being the SVG icon ID to replace, and the value the image file name
+     * Map of raster images with each key being the SVG icon ID
+     *   to replace, and the value the image file name
      * @typedef {PlainObject.<string, string>} external:jQuery.svgIcons.Fallback
+    */
+
+    /**
+     * Map of raster images with each key being the SVG icon ID
+     *   whose `alt` will be set, and the value being the `alt` text
+     * @typedef {PlainObject.<string, string>} external:jQuery.svgIcons.Alts
     */
 
     /**
@@ -22320,21 +22330,29 @@
     * @param {Float} [opts.h] The icon heights
     * @param {external:jQuery.svgIcons.Fallback} [opts.fallback]
     * @param {string} [opts.fallback_path] The path to use for all images
-      listed under "fallback"
-    * @param {boolean} [opts.replace] If set to `true`, HTML elements will be replaced by,
-      rather than include the SVG icon.
-    * @param {PlainObject.<string, string>} [opts.placement] List with selectors for keys and SVG icon ids
-      as values. This provides a custom method of adding icons.
-    * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} [opts.resize] List with selectors for keys and numbers
-      as values. This allows an easy way to resize specific icons.
-    * @param {module:jQuerySVGIcons.SVGIconsLoadedCallback} [opts.callback] A function to call when all icons have been loaded.
-    * @param {boolean} [opts.id_match=true] Automatically attempt to match SVG icon ids with
-      corresponding HTML id
-    * @param {boolean} [opts.no_img] Prevent attempting to convert the icon into an `<img>`
-      element (may be faster, help for browser consistency)
-    * @param {boolean} [opts.svgz] Indicate that the file is an SVGZ file, and thus not to
-      parse as XML. SVGZ files add compression benefits, but getting data from
-      them fails in Firefox 2 and older.
+    *   listed under "fallback"
+    * @param {boolean} [opts.replace] If set to `true`, HTML elements will
+    *   be replaced by, rather than include the SVG icon.
+    * @param {PlainObject.<string, string>} [opts.placement] Map with selectors
+    *   for keys and SVG icon ids as values. This provides a custom method of
+    *   adding icons.
+    * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} [opts.resize] Map
+    *   with selectors for keys and numbers as values. This allows an easy way to
+    *   resize specific icons.
+    * @param {module:jQuerySVGIcons.SVGIconsLoadedCallback} [opts.callback] A
+    *   function to call when all icons have been loaded.
+    * @param {boolean} [opts.id_match=true] Automatically attempt to match
+    *   SVG icon ids with corresponding HTML id
+    * @param {boolean} [opts.no_img] Prevent attempting to convert the icon
+    *   into an `<img>` element (may be faster, help for browser consistency)
+    * @param {boolean} [opts.svgz] Indicate that the file is an SVGZ file, and
+    *   thus not to parse as XML. SVGZ files add compression benefits, but
+    *   getting data from them fails in Firefox 2 and older.
+    * @param {jQuery.svgIcons.Alts} [opts.alts] Map of images with each key
+    *   being the SVG icon ID whose `alt` will be set, and the value being
+    *   the `alt` text
+    * @param {string} [opts.testIconAlt="icon"] Alt text for the injected test image.
+    *   In case wish to ensure have one for accessibility
     * @returns {undefined}
     */
 
@@ -22445,7 +22463,8 @@
           testImg = $(new Image()).attr({
             src: testSrc,
             width: 0,
-            height: 0
+            height: 0,
+            alt: opts.testIconAlt || 'icon'
           }).appendTo('body').load(function () {
             // Safari 4 crashes, Opera and Chrome don't
             makeIcons(true);
@@ -22463,7 +22482,7 @@
        * @param {external:jQuery} target
        * @param {external:jQuery} icon A wrapped `defs` or Image
        * @param {string} id SVG icon ID
-       * @param {string} setID
+       * @param {boolean} setID Whether to set the ID attribute (with `id`)
        * @returns {undefined}
        */
 
@@ -22475,6 +22494,17 @@
           if (setID) icon.attr('id', id);
           var cl = target.attr('class');
           if (cl) icon.attr('class', 'svg_icon ' + cl);
+
+          if (!target.alt) {
+            var alt = 'icon';
+
+            if (opts.alts) {
+              alt = opts.alts[id] || alt;
+            }
+
+            icon.attr('alt', alt);
+          }
+
           target.replaceWith(icon);
         } else {
           target.append(icon);
@@ -22525,12 +22555,18 @@
           var path = opts.fallback_path || '';
           $.each(fallback, function (id, imgsrc) {
             holder = $('#' + id);
+            var alt = 'icon';
+
+            if (opts.alts) {
+              alt = opts.alts[id] || alt;
+            }
+
             var icon = $(new Image()).attr({
               class: 'svg_icon',
               src: path + imgsrc,
               width: iconW,
               height: iconH,
-              alt: 'icon'
+              alt: alt
             });
             addIcon(icon, id);
           });
@@ -22573,9 +22609,16 @@
             if (toImage) {
               tempHolder.empty().append(svgroot);
               var str = dataPre + encode64(unescape(encodeURIComponent(new XMLSerializer().serializeToString(svgroot))));
+              var alt = 'icon';
+
+              if (opts.alts) {
+                alt = opts.alts[id] || alt;
+              }
+
               icon = $(new Image()).attr({
                 class: 'svg_icon',
-                src: str
+                src: str,
+                alt: alt
               });
             } else {
               icon = fixIDs($(svgroot), i);
@@ -22708,13 +22751,15 @@
     */
 
     /**
-    * If a Float is used, it will represent width and height. Arrays contain the width and height.
+    * If a Float is used, it will represent width and height. Arrays contain
+    *   the width and height.
     * @typedef {module:jQuerySVGIcons.Dimensions|Float} module:jQuerySVGIcons.Size
     */
 
     /**
     * @function external:jQuery.resizeSvgIcons
-    * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} obj Object with selectors as keys. The values are sizes.
+    * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} obj Object with
+    *   selectors as keys. The values are sizes.
     * @returns {undefined}
     */
 
@@ -28026,10 +28071,24 @@
   var $$a = jQuery;
   var langParam;
   /**
-  * @param {"content"|"title"} type
-  * @param {module:locale.LocaleSelectorValue} obj
-  * @param {boolean} ids
-  * @returns {undefined}
+   * Looks for elements to localize using the supplied `obj` to indicate
+   *   on which selectors (or IDs if `ids` is set to `true`) to set its
+   *   strings (with selectors relative to the editor root element). All
+   *   keys will be translated, but for each selector, only the first item
+   *   found matching will be modified.
+   * If the type is `content`, the selector-identified element's children
+   *   will be checked, and the first (non-empty) text (placeholder) node
+   *   found will have its text replaced.
+   * If the type is `title`, the element's `title`
+   *   property will be set.
+   * If the type is `aria-label`, the element's `aria-label` attribute
+   *   will be set (i.e., instructions for screen readers when there is
+   *   otherwise no visible text to be read for the function of the form
+   *   control).
+   * @param {"content"|"title"} type
+   * @param {module:locale.LocaleSelectorValue} obj Selectors or IDs keyed to strings
+   * @param {boolean} ids
+   * @returns {undefined}
   */
 
   var setStrings = function setStrings(type, obj, ids) {
@@ -28051,12 +28110,18 @@
       var $elem = parent.find(sel);
 
       if ($elem.length) {
-        var elem = parent.find(sel)[0];
+        var elem = $elem[0];
 
         switch (type) {
+          case 'aria-label':
+            elem.setAttribute('aria-label', val);
+            break;
+
           case 'content':
             _toConsumableArray(elem.childNodes).some(function (node) {
-              if (node.nodeType === 3 && node.textContent.trim()) {
+              if (node.nodeType === 3
+              /* Node.TEXT_NODE */
+              && node.textContent.trim()) {
                 node.textContent = val;
                 return true;
               }
@@ -28077,7 +28142,7 @@
   };
   /**
   * The "data" property is generally set to an an array of objects with
-  * "id" and "title" or "textContent" properties
+  *   "id" and "title" or "textContent" properties
   * @typedef {PlainObject} module:locale.AddLangExtensionLocaleData
   * @property {module:locale.LocaleStrings[]} data See {@tutorial LocaleDocs}
   */
@@ -28094,10 +28159,11 @@
 
   var editor_;
   /**
-  * @function init
-  * @memberof module:locale
-  * @param {module:locale.LocaleEditorInit} editor
-  * @returns {undefined}
+   * Sets the current editor instance (on which `addLangData`) exists.
+   * @function init
+   * @memberof module:locale
+   * @param {module:locale.LocaleEditorInit} editor
+   * @returns {undefined}
   */
 
   var init$7 = function init(editor) {
@@ -28122,7 +28188,7 @@
     var _ref3 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee(langData) {
-      var more, _langData, tools, properties, config, layers, common, ui, opts;
+      var more, _langData, tools, properties, config, layers, common, ui, opts, ariaLabels;
 
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -28149,6 +28215,7 @@
             case 6:
               _langData = langData, tools = _langData.tools, properties = _langData.properties, config = _langData.config, layers = _langData.layers, common = _langData.common, ui = _langData.ui;
               setStrings('content', {
+                // Todo: Add this powered by (probably by default) but with config to remove
                 // copyrightLabel: misc.powered_by, // Currently commented out in svg-editor.html
                 curve_segments: properties.curve_segments,
                 fitToContent: tools.fitToContent,
@@ -28206,14 +28273,41 @@
               }, true); // Context menus
 
               opts = {};
-              $$a.each(['cut', 'copy', 'paste', 'paste_in_place', 'delete', 'group', 'ungroup', 'move_front', 'move_up', 'move_down', 'move_back'], function () {
-                opts['#cmenu_canvas a[href="#' + this + '"]'] = tools[this];
+              ['cut', 'copy', 'paste', 'paste_in_place', 'delete', 'group', 'ungroup', 'move_front', 'move_up', 'move_down', 'move_back'].forEach(function (item) {
+                opts['#cmenu_canvas a[href="#' + item + '"]'] = tools[item];
               });
-              $$a.each(['dupe', 'merge_down', 'merge_all'], function () {
-                opts['#cmenu_layers a[href="#' + this + '"]'] = layers[this];
+              ['dupe', 'merge_down', 'merge_all'].forEach(function (item) {
+                opts['#cmenu_layers a[href="#' + item + '"]'] = layers[item];
               });
               opts['#cmenu_layers a[href="#delete"]'] = layers.del;
               setStrings('content', opts);
+              ariaLabels = {};
+              Object.entries({
+                tool_blur: properties.blur,
+                tool_position: tools.align_to_page,
+                tool_font_family: properties.font_family,
+                zoom_panel: ui.zoom_level,
+                stroke_linejoin: properties.linejoin_miter,
+                stroke_linecap: properties.linecap_butt,
+                tool_opacity: properties.opacity
+              }).forEach(function (_ref4) {
+                var _ref5 = _slicedToArray(_ref4, 2),
+                    id = _ref5[0],
+                    value = _ref5[1];
+
+                ariaLabels['#' + id + ' button'] = value;
+              });
+              Object.entries({
+                group_opacity: properties.opacity,
+                zoom: ui.zoom_level
+              }).forEach(function (_ref6) {
+                var _ref7 = _slicedToArray(_ref6, 2),
+                    id = _ref7[0],
+                    value = _ref7[1];
+
+                ariaLabels['#' + id] = value;
+              });
+              setStrings('aria-label', ariaLabels);
               setStrings('title', {
                 align_relative_to: tools.align_relative_to,
                 circle_cx: properties.circle_cx,
@@ -28317,7 +28411,7 @@
                 langData: langData
               });
 
-            case 15:
+            case 19:
             case "end":
               return _context.stop();
           }
@@ -28330,20 +28424,21 @@
     };
   }();
   /**
-  * @function module:locale.putLocale
-  * @param {string} givenParam
-  * @param {string[]} goodLangs
-  * @param {{langPath: string}} conf
-  * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
-  * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
-  * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
-  * @returns {Promise} Resolves to result of {@link module:locale.readLang}
+   *
+   * @function module:locale.putLocale
+   * @param {string} givenParam
+   * @param {string[]} goodLangs
+   * @param {{langPath: string}} conf
+   * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
+   * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
+   * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
+   * @returns {Promise} Resolves to result of {@link module:locale.readLang}
   */
 
   var putLocale =
   /*#__PURE__*/
   function () {
-    var _ref4 = _asyncToGenerator(
+    var _ref8 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee2(givenParam, goodLangs, conf) {
       var url;
@@ -28399,7 +28494,7 @@
     }));
 
     return function putLocale(_x2, _x3, _x4) {
-      return _ref4.apply(this, arguments);
+      return _ref8.apply(this, arguments);
     };
   }();
 
@@ -29884,6 +29979,8 @@
         no_img: !isWebkit(),
         // Opera & Firefox 4 gives odd behavior w/images
         fallback_path: curConfig.imgPath,
+        // Todo: Set `alts: {}` with keys as the IDs in fallback set to
+        //   `uiStrings` (localized) values
         fallback: {
           logo: 'logo.png',
           select: 'select.png',
@@ -31899,7 +31996,7 @@
       var _ref13 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee5(win, ext) {
-        var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, placementObj, holders;
+        var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, altsObj, placementObj, holders;
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
@@ -32089,7 +32186,7 @@
                   break;
                 }
 
-                fallbackObj = {}, placementObj = {}, holders = {};
+                fallbackObj = {}, altsObj = {}, placementObj = {}, holders = {};
                 /**
                 * @typedef {GenericArray} module:SVGEditor.KeyArray
                 * @property {string} 0 The key to bind (on `keydown`)
@@ -32134,9 +32231,10 @@
                   var icon;
 
                   if (!svgicons) {
-                    icon = $$b('<img src="' + btn.icon + '">');
+                    icon = $$b('<img src="' + btn.icon + (btn.title ? '" alt="' + btn.title : '') + '">');
                   } else {
                     fallbackObj[id] = btn.icon;
+                    altsObj[id] = btn.title;
                     var svgicon = btn.svgicon || btn.id;
 
                     if (btn.type === 'app_menu') {
@@ -36048,6 +36146,13 @@
                 return _context17.abrupt("return");
 
               case 5:
+                // Todo: Remove `allStrings.lang` property in locale in
+                //   favor of just `lang`?
+                document.documentElement.lang = allStrings.lang; // lang;
+                // Todo: Add proper RTL Support!
+                // Todo: Use RTL detection instead and take out of locales?
+                // document.documentElement.dir = allStrings.dir;
+
                 $$b.extend(uiStrings$1, allStrings); // const notif = allStrings.notification; // Currently unused
                 // $.extend will only replace the given strings
 
@@ -36063,11 +36168,11 @@
 
 
                 if (!extsPreLang.length) {
-                  _context17.next = 17;
+                  _context17.next = 18;
                   break;
                 }
 
-                _context17.next = 14;
+                _context17.next = 15;
                 return Promise.all(extsPreLang.map(function (ext) {
                   loadedExtensionNames.push(ext.name);
                   return ext.langReady({
@@ -36080,12 +36185,12 @@
                   });
                 }));
 
-              case 14:
+              case 15:
                 extsPreLang.length = 0;
-                _context17.next = 18;
+                _context17.next = 19;
                 break;
 
-              case 17:
+              case 18:
                 loadedExtensionNames.forEach(function (loadedExtensionName) {
                   svgCanvas.runExtension(loadedExtensionName, 'langReady',
                   /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */
@@ -36099,7 +36204,7 @@
                   });
                 });
 
-              case 18:
+              case 19:
                 svgCanvas.runExtensions('langChanged',
                 /** @type {module:svgcanvas.SvgCanvas#event:ext-langChanged} */
                 lang); // Update flyout tooltips
@@ -36120,7 +36225,7 @@
                   $$b('#tool_pos' + this.id.substr(10))[0].title = this.title;
                 });
 
-              case 23:
+              case 24:
               case "end":
                 return _context17.stop();
             }

@@ -4887,7 +4887,7 @@ var svgEditorExtension_server_moinsave = (function () {
 
                 /* const target = */
 
-                $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
+                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n        style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function () {
                     var _save = _asyncToGenerator(
