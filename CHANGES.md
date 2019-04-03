@@ -2,6 +2,11 @@
 
 ## ?
 
+- Fix: Droplets for gradient pickers can now be double-clicked in
+    other browsers in addition to Firefox such as Chrome
+    to allow change of color (fixes #181) (@ajinkyas);
+    may be different between the browsers as a result of
+    <https://github.com/w3c/uievents/issues/141>
 - Fix: Delay icon setting until locales available (fixes #323)
 - Fix: Extension with no `placement` to be added to end;
     for #326 (@sjernigan)

@@ -23453,8 +23453,7 @@
         function selectStop(item) {
           if (curStop) curStop.setAttribute('stroke', '#000');
           item.setAttribute('stroke', 'blue');
-          curStop = item;
-          curStop.parentNode.append(curStop); //   stops = $('stop');
+          curStop = item; //   stops = $('stop');
           //   opac_select.val(curStop.attr('fill-opacity') || 1);
           //   root.append(delStop);
         }
@@ -27355,9 +27354,11 @@
 
             for (var i = 0; i < color.quickList.length; i++) {
               /* if default colors are hex strings, change them to color objects */
-              if (_typeof(color.quickList[i]).toString().toLowerCase() === 'string') color.quickList[i] = new Color({
-                hex: color.quickList[i]
-              });
+              if (_typeof(color.quickList[i]).toString().toLowerCase() === 'string') {
+                color.quickList[i] = new Color({
+                  hex: color.quickList[i]
+                });
+              }
 
               var _alpha = color.quickList[i].val('a');
 
@@ -27451,6 +27452,7 @@
           for (var i = 0; i < List.length; i++) {
             if (List[i] === that) {
               List.splice(i, 1);
+              i--; // Decrement to ensure we don't miss next item (lgtm warning)
             }
           }
         }

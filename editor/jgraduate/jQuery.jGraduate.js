@@ -757,7 +757,6 @@ export default function jQueryPluginJGraduate ($) {
         if (curStop) curStop.setAttribute('stroke', '#000');
         item.setAttribute('stroke', 'blue');
         curStop = item;
-        curStop.parentNode.append(curStop);
         //   stops = $('stop');
         //   opac_select.val(curStop.attr('fill-opacity') || 1);
         //   root.append(delStop);
