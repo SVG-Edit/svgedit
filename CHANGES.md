@@ -36,6 +36,7 @@
     error despite not replicating manually; should file a Testcafe issue
 - Docs: Some JSDoc descriptions, JSDoc spacing, fix svgIcons param
     def; add todo
+- Docs (Accessibility): Refer to known issues
 - npm: Update devDeps; update nested deps for security audit; remove
     one unneeded)
 
