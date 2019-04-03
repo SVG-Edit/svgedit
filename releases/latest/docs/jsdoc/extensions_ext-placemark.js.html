@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: extensions/ext-placemark.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: extensions/ext-placemark.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * ext-placemark.js
+ *
+ *
+ * @copyright 2010 CloudCanvas, Inc. All rights reserved
+ *
+ */
+export default {
+  name: 'placemark',
+  async init (S) {
+    const svgEditor = this;
+    const svgCanvas = svgEditor.canvas;
+    const addElem = svgCanvas.addSVGElementFromJson;
+    const {$, importLocale} = S; // {svgcontent},
+    let
+      selElems,
+      // editingitex = false,
+      // svgdoc = S.svgroot.parentNode.ownerDocument,
+      started,
+      newPM;
+      // edg = 0,
+      // newFOG, newFOGParent, newDef, newImageName, newMaskID,
+      // undoCommand = 'Not image',
+      // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
+    const strings = await importLocale();
+    const markerTypes = {
+      nomarker: {},
+      forwardslash:
+        {element: 'path', attr: {d: 'M30,100 L70,0'}},
+      reverseslash:
+        {element: 'path', attr: {d: 'M30,0 L70,100'}},
+      verticalslash:
+        {element: 'path', attr: {d: 'M50,0 L50,100'}},
+      xmark:
+        {element: 'path', attr: {d: 'M20,80 L80,20 M80,80 L20,20'}},
+      leftarrow:
+        {element: 'path', attr: {d: 'M0,50 L100,90 L70,50 L100,10 Z'}},
+      rightarrow:
+        {element: 'path', attr: {d: 'M100,50 L0,90 L30,50 L0,10 Z'}},
+      box:
+        {element: 'path', attr: {d: 'M20,20 L20,80 L80,80 L80,20 Z'}},
+      star:
+        {element: 'path', attr: {d: 'M10,30 L90,30 L20,90 L50,10 L80,90 Z'}},
+      mcircle:
+        {element: 'circle', attr: {r: 30, cx: 50, cy: 50}},
+      triangle:
+        {element: 'path', attr: {d: 'M10,80 L50,20 L80,80 Z'}}
+    };
+
+    // duplicate shapes to support unfilled (open) marker types with an _o suffix
+    ['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'].forEach((v) => {
+      markerTypes[v + '_o'] = markerTypes[v];
+    });
+
+    /**
+     *
+     * @param {boolean} on
+     * @returns {undefined}
+     */
+    function showPanel (on) {
+      $('#placemark_panel').toggle(on);
+    }
+
+    /**
+    * @param {Element} elem - A graphic element will have an attribute like marker-start
+    * @param {"marker-start"|"marker-mid"|"marker-end"} attr
+    * @returns {Element} The marker element that is linked to the graphic element
+    */
+    function getLinked (elem, attr) {
+      if (!elem) { return null; }
+      const str = elem.getAttribute(attr);
+      if (!str) { return null; }
+      const m = str.match(/\(#(.*)\)/);
+      if (!m || m.length !== 2) {
+        return null;
+      }
+      return svgCanvas.getElem(m[1]);
+    }
+
+    /**
+     * Called when text is changed.
+     * @param {string} txt
+     * @returns {undefined}
+     */
+    function updateText (txt) {
+      const items = txt.split(';');
+      selElems.forEach((elem) => {
+        if (elem &amp;&amp; elem.getAttribute('class').includes('placemark')) {
+          $(elem).children().each((_, i) => {
+            const [, , type, n] = i.id.split('_');
+            if (type === 'txt') {
+              $(i).text(items[n]);
+            }
+          });
+        }
+      });
+    }
+    /**
+     * Called when font is changed.
+     * @param {string} font
+     * @returns {undefined}
+     */
+    function updateFont (font) {
+      font = font.split(' ');
+      const fontSize = parseInt(font.pop());
+      font = font.join(' ');
+      selElems.forEach((elem) => {
+        if (elem &amp;&amp; elem.getAttribute('class').includes('placemark')) {
+          $(elem).children().each((_, i) => {
+            const [, , type] = i.id.split('_');
+            if (type === 'txt') {
+              $(i).attr({'font-family': font, 'font-size': fontSize});
+            }
+          });
+        }
+      });
+    }
+    /**
+    * @param {string} id
+    * @param {""|"\\nomarker"|"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"textmarker_top"|"textmarker_bottom"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} val
+    * @returns {undefined}
+    */
+    function addMarker (id, val) {
+      let marker = svgCanvas.getElem(id);
+      if (marker) { return undefined; }
+      // console.log(id);
+      if (val === '' || val === 'nomarker') { return undefined; }
+      const color = svgCanvas.getColor('stroke');
+      // NOTE: Safari didn't like a negative value in viewBox
+      // so we use a standardized 0 0 100 100
+      // with 50 50 being mapped to the marker position
+      const scale = 2;// parseFloat($('#marker_size').val());
+      const strokeWidth = 10;
+      let refX = 50;
+      const refY = 50;
+      const viewBox = '0 0 100 100';
+      const markerWidth = 5 * scale;
+      const markerHeight = 5 * scale;
+      const seType = val;
+
+      if (!markerTypes[seType]) { return undefined; } // an unknown type!
+      // positional markers(arrows) at end of line
+      if (seType.includes('left')) refX = 0;
+      if (seType.includes('right')) refX = 100;
+
+      // create a generic marker
+      marker = addElem({
+        element: 'marker',
+        attr: {
+          id,
+          markerUnits: 'strokeWidth',
+          orient: 'auto',
+          style: 'pointer-events:none',
+          class: seType
+        }
+      });
+
+      const mel = addElem(markerTypes[seType]);
+      const fillcolor = (seType.substr(-2) === '_o')
+        ? 'none'
+        : color;
+
+      mel.setAttribute('fill', fillcolor);
+      mel.setAttribute('stroke', color);
+      mel.setAttribute('stroke-width', strokeWidth);
+      marker.append(mel);
+
+      marker.setAttribute('viewBox', viewBox);
+      marker.setAttribute('markerWidth', markerWidth);
+      marker.setAttribute('markerHeight', markerHeight);
+      marker.setAttribute('refX', refX);
+      marker.setAttribute('refY', refY);
+      svgCanvas.findDefs().append(marker);
+
+      return marker;
+    }
+    /**
+    * @param {Element} el
+    * @param {string} val
+    * @returns {undefined}
+    */
+    function setMarker (el, val) {
+      const markerName = 'marker-start';
+      const marker = getLinked(el, markerName);
+      if (marker) { $(marker).remove(); }
+      el.removeAttribute(markerName);
+      if (val === 'nomarker') {
+        svgCanvas.call('changed', [el]);
+        return;
+      }
+      // Set marker on element
+      const id = 'placemark_marker_' + el.id;
+      addMarker(id, val);
+      el.setAttribute(markerName, 'url(#' + id + ')');
+      svgCanvas.call('changed', [el]);
+    }
+
+    /**
+     * Called when the main system modifies an object. This routine changes
+     *   the associated markers to be the same color.
+     * @param {Element} el
+     * @returns {undefined}
+    */
+    function colorChanged (el) {
+      const color = el.getAttribute('stroke');
+      const marker = getLinked(el, 'marker-start');
+      // console.log(marker);
+      if (!marker) { return; }
+      if (!marker.attributes.class) { return; } // not created by this extension
+      const ch = marker.lastElementChild;
+      if (!ch) { return; }
+      const curfill = ch.getAttribute('fill');
+      const curstroke = ch.getAttribute('stroke');
+      if (curfill &amp;&amp; curfill !== 'none') { ch.setAttribute('fill', color); }
+      if (curstroke &amp;&amp; curstroke !== 'none') { ch.setAttribute('stroke', color); }
+    }
+
+    /**
+    * Called when the main system creates or modifies an object.
+    * Its primary purpose is to create new markers for cloned objects.
+    * @param {Element} el
+    * @returns {undefined}
+    */
+    function updateReferences (el) {
+      const id = 'placemark_marker_' + el.id;
+      const markerName = 'marker-start';
+      const marker = getLinked(el, markerName);
+      if (!marker || !marker.attributes.class) { return; } // not created by this extension
+      const url = el.getAttribute(markerName);
+      if (url) {
+        const len = el.id.length;
+        const linkid = url.substr(-len - 1, len);
+        if (el.id !== linkid) {
+          const val = $('#placemark_marker').attr('value') || 'leftarrow';
+          addMarker(id, val);
+          svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
+          svgCanvas.call('changed', selElems);
+        }
+      }
+    }
+    /**
+    * @param {Event} ev
+    * @returns {Promise} Resolves to `undefined`
+    */
+    function setArrowFromButton (ev) {
+      const parts = this.id.split('_');
+      let val = parts[2];
+      if (parts[3]) { val += '_' + parts[3]; }
+      $('#placemark_marker').attr('value', val);
+    }
+
+    /**
+    * @param {"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} id
+    * @returns {undefined}
+    */
+    function getTitle (id) {
+      const {langList} = strings;
+      const item = langList.find((itm) => {
+        return itm.id === id;
+      });
+      return item ? item.title : id;
+    }
+
+    /**
+    * Build the toolbar button array from the marker definitions.
+    * @param {module:SVGEditor.Button[]} buttons
+    * @returns {module:SVGEditor.Button[]}
+    */
+    function addMarkerButtons (buttons) {
+      Object.keys(markerTypes).forEach(function (id) {
+        const title = getTitle(String(id));
+        buttons.push({
+          id: 'placemark_marker_' + id,
+          svgicon: id,
+          icon: svgEditor.curConfig.extIconsPath + 'markers-' + id + '.png',
+          title,
+          type: 'context',
+          events: {click: setArrowFromButton},
+          panel: 'placemark_panel',
+          list: 'placemark_marker',
+          isDefault: id === 'leftarrow'
+        });
+      });
+      return buttons;
+    }
+
+    const buttons = [{
+      id: 'tool_placemark',
+      icon: svgEditor.curConfig.extIconsPath + 'placemark.png',
+      type: 'mode',
+      position: 12,
+      events: {
+        click () {
+          showPanel(true);
+          svgCanvas.setMode('placemark');
+        }
+      }
+    }];
+    const contextTools = [
+      {
+        type: 'button-select',
+        panel: 'placemark_panel',
+        id: 'placemark_marker',
+        colnum: 3,
+        events: {change: setArrowFromButton}
+      },
+      {
+        type: 'input',
+        panel: 'placemark_panel',
+        id: 'placemarkText',
+        size: 20,
+        defval: '',
+        events: {
+          change () {
+            updateText(this.value);
+          }
+        }
+      }, {
+        type: 'input',
+        panel: 'placemark_panel',
+        id: 'placemarkFont',
+        size: 7,
+        defval: 'Arial 10',
+        events: {
+          change () {
+            updateFont(this.value);
+          }
+        }
+      }
+    ];
+
+    return {
+      name: strings.name,
+      svgicons: svgEditor.curConfig.extIconsPath + 'placemark-icons.xml',
+      buttons: addMarkerButtons(strings.buttons.map((button, i) => {
+        return Object.assign(buttons[i], button);
+      })),
+      context_tools: strings.contextTools.map((contextTool, i) => {
+        return Object.assign(contextTools[i], contextTool);
+      }),
+      callback () {
+        $('#placemark_panel').hide();
+        // const endChanges = function(){};
+      },
+      mouseDown (opts) {
+        // const rgb = svgCanvas.getColor('fill');
+        const sRgb = svgCanvas.getColor('stroke');
+        const sWidth = svgCanvas.getStrokeWidth();
+
+        if (svgCanvas.getMode() === 'placemark') {
+          started = true;
+          const id = svgCanvas.getNextId();
+          const items = $('#placemarkText').val().split(';');
+          let font = $('#placemarkFont').val().split(' ');
+          const fontSize = parseInt(font.pop());
+          font = font.join(' ');
+          const x0 = opts.start_x + 10, y0 = opts.start_y + 10;
+          let maxlen = 0;
+          const children = [{
+            element: 'line',
+            attr: {
+              id: id + '_pline_0',
+              fill: 'none',
+              stroke: sRgb,
+              'stroke-width': sWidth,
+              'stroke-linecap': 'round',
+              x1: opts.start_x,
+              y1: opts.start_y,
+              x2: x0,
+              y2: y0
+            }
+          }];
+          items.forEach((i, n) => {
+            maxlen = Math.max(maxlen, i.length);
+            children.push({
+              element: 'line',
+              attr: {
+                id: id + '_tline_' + n,
+                fill: 'none',
+                stroke: sRgb,
+                'stroke-width': sWidth,
+                'stroke-linecap': 'round',
+                x1: x0,
+                y1: y0 + (fontSize + 6) * n,
+                x2: x0 + i.length * fontSize * 0.5 + fontSize,
+                y2: y0 + (fontSize + 6) * n
+              }
+            });
+            children.push({
+              element: 'text',
+              attr: {
+                id: id + '_txt_' + n,
+                fill: sRgb,
+                stroke: 'none',
+                'stroke-width': 0,
+                x: x0 + 3,
+                y: y0 - 3 + (fontSize + 6) * n,
+                'font-family': font,
+                'font-size': fontSize,
+                'text-anchor': 'start'
+              },
+              children: [i]
+            });
+          });
+          if (items.length > 0) {
+            children.push({
+              element: 'line',
+              attr: {
+                id: id + '_vline_0',
+                fill: 'none',
+                stroke: sRgb,
+                'stroke-width': sWidth,
+                'stroke-linecap': 'round',
+                x1: x0,
+                y1: y0,
+                x2: x0,
+                y2: y0 + (fontSize + 6) * (items.length - 1)
+              }
+            });
+          }
+          newPM = svgCanvas.addSVGElementFromJson({
+            element: 'g',
+            attr: {
+              id,
+              class: 'placemark',
+              fontSize,
+              maxlen,
+              lines: items.length,
+              x: opts.start_x,
+              y: opts.start_y,
+              px: opts.start_x,
+              py: opts.start_y
+            },
+            children
+          });
+          setMarker(
+            newPM.firstElementChild,
+            $('#placemark_marker').attr('value') || 'leftarrow'
+          );
+          return {
+            started: true
+          };
+        }
+        return undefined;
+      },
+      mouseMove (opts) {
+        if (!started) {
+          return undefined;
+        }
+        if (svgCanvas.getMode() === 'placemark') {
+          const x = opts.mouse_x / svgCanvas.getZoom();
+          const y = opts.mouse_y / svgCanvas.getZoom();
+          const {fontSize, maxlen, lines, px, py} = $(newPM).attr(
+            ['fontSize', 'maxlen', 'lines', 'px', 'py']
+          );
+          $(newPM).attr({x, y});
+          $(newPM).children().each((_, i) => {
+            const [, , type, n] = i.id.split('_');
+            const y0 = y + (fontSize + 6) * n,
+              x0 = x + maxlen * fontSize * 0.5 + fontSize;
+            const nx = (x + (x0 - x) / 2 &lt; px) ? x0 : x;
+            const ny = (y + ((fontSize + 6) * (lines - 1)) / 2 &lt; py)
+              ? y + (fontSize + 6) * (lines - 1)
+              : y;
+            if (type === 'pline') {
+              i.setAttribute('x2', nx);
+              i.setAttribute('y2', ny);
+            }
+            if (type === 'tline') {
+              i.setAttribute('x1', x);
+              i.setAttribute('y1', y0);
+              i.setAttribute('x2', x0);
+              i.setAttribute('y2', y0);
+            }
+            if (type === 'vline') {
+              i.setAttribute('x1', nx);
+              i.setAttribute('y1', y);
+              i.setAttribute('x2', nx);
+              i.setAttribute('y2', y + (fontSize + 6) * (lines - 1));
+            }
+            if (type === 'txt') {
+              i.setAttribute('x', x + fontSize / 2);
+              i.setAttribute('y', y0 - 3);
+            }
+          });
+          return {
+            started: true
+          };
+        }
+        return undefined;
+      },
+      mouseUp () {
+        if (svgCanvas.getMode() === 'placemark') {
+          const {x, y, px, py} = $(newPM).attr(['x', 'y', 'px', 'py']);
+          return {
+            keep: (x != px &amp;&amp; y != py), // eslint-disable-line eqeqeq
+            element: newPM
+          };
+        }
+        return undefined;
+      },
+      selectedChanged (opts) {
+        // Use this to update the current selected elements
+        selElems = opts.elems;
+        selElems.forEach((elem) => {
+          if (elem &amp;&amp; elem.getAttribute('class').includes('placemark')) {
+            const txt = [];
+            $(elem).children().each((n, i) => {
+              const [, , type] = i.id.split('_');
+              if (type === 'txt') {
+                $('#placemarkFont').val(
+                  i.getAttribute('font-family') + ' ' + i.getAttribute('font-size')
+                );
+                txt.push($(i).text());
+              }
+            });
+            $('#placemarkText').val(txt.join(';'));
+            showPanel(true);
+          } else {
+            showPanel(false);
+          }
+        });
+      },
+      elementChanged (opts) {
+        opts.elems.forEach((elem) => {
+          if (elem.id.includes('pline_0')) { // need update marker of pline_0
+            colorChanged(elem);
+            updateReferences(elem);
+          }
+        });
+      }
+    };
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-browser.html">browser</a></li><li><a href="module-canvg.html">canvg</a></li><li><a href="module-contextmenu.html">contextmenu</a></li><li><a href="module-coords.html">coords</a></li><li><a href="module-DOMPolyfill.html">DOMPolyfill</a></li><li><a href="module-draw.html">draw</a></li><li><a href="module-EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-EmbeddedSVGEditDOM.html">EmbeddedSVGEditDOM</a></li><li><a href="module-history.html">history</a></li><li><a href="module-importModule.html">importModule</a></li><li><a href="module-jGraduate.html">jGraduate</a></li><li><a href="module-jPicker.html">jPicker</a></li><li><a href="module-jQueryAttr.html">jQueryAttr</a></li><li><a href="module-jQueryContextMenu.html">jQueryContextMenu</a></li><li><a href="module-jQueryPluginDBox.html">jQueryPluginDBox</a></li><li><a href="module-jQuerySpinButton.html">jQuerySpinButton</a></li><li><a href="module-jQuerySVGIcons.html">jQuerySVGIcons</a></li><li><a href="module-layer.html">layer</a></li><li><a href="module-locale.html">locale</a></li><li><a href="module-math.html">math</a></li><li><a href="module-namespaces.html">namespaces</a></li><li><a href="module-path.html">path</a></li><li><a href="module-recalculate.html">recalculate</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-sanitize.html">sanitize</a></li><li><a href="module-select.html">select</a></li><li><a href="module-StackBlur.html">StackBlur</a></li><li><a href="module-svgcanvas.html">svgcanvas</a></li><li><a href="module-SVGEditor.html">SVGEditor</a></li><li><a href="module-SVGTransformList.html">SVGTransformList</a></li><li><a href="module-units.html">units</a></li><li><a href="module-utilities.html">utilities</a></li></ul><h3>Externals</h3><ul><li><a href="external-JamilihArray.html">JamilihArray</a></li><li><a href="external-jQuery.html">jQuery</a></li><li><a href="external-jsPDF.html">jsPDF</a></li><li><a href="external-Math.html">Math</a></li><li><a href="external-MouseEvent.html">MouseEvent</a></li><li><a href="external-Storage.html">Storage</a></li><li><a href="external-Window.html">Window</a></li></ul><h3>Classes</h3><ul><li><a href="external-jQuery.jGraduate.Paint.html">Paint</a></li><li><a href="external-jQuery.jPicker.Color.html">Color</a></li><li><a href="module-draw.Drawing.html">Drawing</a></li><li><a href="module-draw.Layer.html">Layer</a></li><li><a href="module-EmbeddedSVGEdit.EmbeddedSVGEdit.html">EmbeddedSVGEdit</a></li><li><a href="module-history.BatchCommand.html">BatchCommand</a></li><li><a href="module-history.ChangeElementCommand.html">ChangeElementCommand</a></li><li><a href="module-history.HistoryRecordingService.html">HistoryRecordingService</a></li><li><a href="module-history.InsertElementCommand.html">InsertElementCommand</a></li><li><a href="module-history.MoveElementCommand.html">MoveElementCommand</a></li><li><a href="module-history.RemoveElementCommand.html">RemoveElementCommand</a></li><li><a href="module-history.UndoManager.html">UndoManager</a></li><li><a href="module-history-Command.html">Command</a></li><li><a href="module-jGraduate-Paint.html">Paint</a></li><li><a href="module-jPicker.Slider.html">Slider</a></li><li><a href="module-jPicker-ColorValuePicker.html">ColorValuePicker</a></li><li><a href="module-layer.Layer.html">Layer</a></li><li><a href="module-path.Path.html">Path</a></li><li><a href="module-path.Segment.html">Segment</a></li><li><a href="module-RGBColor.html">RGBColor</a></li><li><a href="module-select.Selector.html">Selector</a></li><li><a href="module-select.SelectorManager.html">SelectorManager</a></li><li><a href="module-svgcanvas.SvgCanvas.html">SvgCanvas</a></li><li><a href="module-SVGTransformList.SVGTransformList.html">SVGTransformList</a></li><li><a href="QueryResult.html">QueryResult</a></li></ul><h3>Events</h3><ul><li><a href="module-history-Command.html#event:event:history">history</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:changed">changed</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:cleared">cleared</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:contextset">contextset</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exported">exported</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:exportedPDF">exportedPDF</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-addLangData">ext-addLangData</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-callback">ext-callback</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-canvasUpdated">ext-canvasUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementChanged">ext-elementChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-elementTransition">ext-elementTransition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-IDsUpdated">ext-IDsUpdated</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langChanged">ext-langChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-langReady">ext-langReady</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseDown">ext-mouseDown</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseMove">ext-mouseMove</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-mouseUp">ext-mouseUp</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-onNewDocument">ext-onNewDocument</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-selectedChanged">ext-selectedChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-toolButtonStateUpdate">ext-toolButtonStateUpdate</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-workareaResized">ext-workareaResized</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:ext-zoomChanged">ext-zoomChanged</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extension_added">extension_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:extensions_added">extensions_added</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:GenericCanvasEvent">GenericCanvasEvent</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:message">message</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:pointsAdded">pointsAdded</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:saved">saved</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:selected">selected</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:setnonce">setnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:transition">transition</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:unsetnonce">unsetnonce</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:updateCanvas">updateCanvas</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomDone">zoomDone</a></li><li><a href="module-svgcanvas.SvgCanvas.html#event:event:zoomed">zoomed</a></li><li><a href="module-SVGEditor.html#event:event:svgEditorReadyEvent">svgEditorReadyEvent</a></li></ul><h3>Namespaces</h3><ul><li><a href="external-jQuery.fn.html">fn</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.html">$.fn.jPicker</a></li><li><a href="external-jQuery.fn.$.fn.jPicker.defaults.html">defaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.html">jGraduateDefaults</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.images.html">images</a></li><li><a href="external-jQuery.fn.jGraduateDefaults.window.html">window</a></li><li><a href="external-jQuery.jGraduate.html">jGraduate</a></li><li><a href="external-jQuery.jPicker.html">jPicker</a></li><li><a href="external-jQuery.jPicker.ColorMethods.html">ColorMethods</a></li><li><a href="module-path.pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_pathActions.html">pathActions</a></li><li><a href="module-svgcanvas.SvgCanvas_textActions.html">textActions</a></li><li><a href="module-SVGEditor-Actions.html">Actions</a></li><li><a href="module-SVGEditor-defaultConfig.html">defaultConfig</a></li><li><a href="module-SVGEditor-defaultPrefs.html">defaultPrefs</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-CanvasAPI.html">CanvasAPI</a></li><li><a href="tutorial-Editor.html">Editor</a></li><li><a href="tutorial-EditorAPI.html">EditorAPI</a></li><li><a href="tutorial-Events.html">Events</a></li><li><a href="tutorial-FrequentlyAskedQuestions.html">Frequently Asked Questions (FAQ)</a></li></ul><h3>Interfaces</h3><ul><li><a href="module-coords.EditorContext.html">EditorContext</a></li><li><a href="module-draw.DrawCanvasInit.html">DrawCanvasInit</a></li><li><a href="module-history.HistoryCommand.html">HistoryCommand</a></li><li><a href="module-history.HistoryEventHandler.html">HistoryEventHandler</a></li><li><a href="module-locale.LocaleEditorInit.html">LocaleEditorInit</a></li><li><a href="module-path.EditorContext.html">EditorContext</a></li><li><a href="module-recalculate.EditorContext.html">EditorContext</a></li><li><a href="module-select.SVGFactory.html">SVGFactory</a></li><li><a href="module-svgcanvas.ExtensionInitResponse.html">ExtensionInitResponse</a></li><li><a href="module-svgcanvas.PrivateMethods.html">PrivateMethods</a></li><li><a href="module-SVGEditor.Config.html">Config</a></li><li><a href="module-SVGEditor.CustomHandler.html">CustomHandler</a></li><li><a href="module-SVGEditor.Prefs.html">Prefs</a></li><li><a href="module-SVGTransformList.SVGEditTransformList.html">SVGEditTransformList</a></li><li><a href="module-units.ElementContainer.html">ElementContainer</a></li><li><a href="module-utilities.EditorContext.html">EditorContext</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_addEvent">_addEvent</a></li><li><a href="global.html#_applyAnyStylesheet">_applyAnyStylesheet</a></li><li><a href="global.html#_createSafeReference">_createSafeReference</a></li><li><a href="global.html#_getHTMLNodeName">_getHTMLNodeName</a></li><li><a href="global.html#_upperCase">_upperCase</a></li><li><a href="global.html#jml">jml</a></li><li><a href="global.html#processResults">processResults</a></li><li><a href="global.html#touchHandler">touchHandler</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Apr 03 2019 17:31:04 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

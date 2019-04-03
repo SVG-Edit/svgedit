@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Minimal demo of SvgCanvas</title>
+    <script src="../editor/jquery.min.js"></script>
+    <script src="../editor/jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
+    <style> #svgroot { overflow: hidden; } </style>
+    <link rel="shortcut icon" type="image/x-icon" href="../editor/images/logo.png" />
+  </head>
+
+  <body>
+    <h1>Minimal demo of SvgCanvas</h1>
+
+    <div id="editorContainer"></div>
+
+    <div>
+      [<button onclick="canvas.setMode('select')">Select</button>
+      <button onclick="canvas.setMode('circle')">Circle</button>
+      <button onclick="canvas.setMode('rect')">Rect</button>]
+      <button onclick="fill('#ff0000')">Fill Red</button>
+      <button onclick="canvas.deleteSelectedElements()">Delete Selected</button>
+      <button onclick="canvas.clear(); canvas.updateCanvas(width, height);">Clear All</button>
+      <button onclick="alert(canvas.getSvgString())">Get SVG</button>
+    </div>
+
+    <script type="module">
+import SvgCanvas from '../editor/svgcanvas.js';
+
+const container = document.querySelector('#editorContainer');
+const {width, height} = {width: 500, height: 300};
+window.width = width;
+window.height = height;
+
+const config = {
+  initFill: {color: 'FFFFFF', opacity: 1},
+  initStroke: {color: '000000', opacity: 1, width: 1},
+  text: {stroke_width: 0, font_size: 24, font_family: 'serif'},
+  initOpacity: 1,
+  imgPath: 'editor/images/',
+  dimensions: [width, height],
+  baseUnit: 'px',
+};
+
+window.canvas = new SvgCanvas(container, config);
+canvas.updateCanvas(width, height);
+
+window.fill = function (colour) {
+  canvas.getSelectedElems().forEach((el) => {
+    el.setAttribute('fill', colour);
+  });
+};
+    </script>
+  </body>
+</html>
