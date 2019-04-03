@@ -6,6 +6,9 @@ non-impaired users.
 
 ## Known rule problems
 
+Here are the [rules](https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md)
+currently being reported:
+
 1. `meta-viewport` - Regarding "Zooming and scaling must not be disabled",
     `<meta name="viewport" content="...user-scalable=no">`; this rule
     is ignored in tests, as it is a known issue. We do have our
