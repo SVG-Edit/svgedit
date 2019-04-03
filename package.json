@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/index-umd.js",
   "module": "dist/index-es.js",

@@ -1,6 +1,6 @@
 # SVG-Edit CHANGES
 
-## ?
+## 4.3.0
 
 - Fix: Droplets for gradient pickers can now be double-clicked in
     other browsers in addition to Firefox such as Chrome
@@ -34,8 +34,8 @@
     controls and difficult to fix)
 - Testing: Skip js errors in Testcafe; we're getting some uncaught
     error despite not replicating manually; should file a Testcafe issue
-- Docs: Some JSDoc descriptions, JSDoc spacing, fix svgIcons param
-    def; add todo
+- Docs: Some JSDoc descriptions, JSDoc spacing, fix svgIcons
+    param def
 - Docs (Accessibility): Refer to known issues
 - npm: Update devDeps; update nested deps for security audit; remove
     one unneeded)
