@@ -3,7 +3,7 @@ var svgEditorExtensionLocale_server_opensave_en = (function () {
 
   var en = {
     uploading: 'Uploading...',
-    hiddenframe: 'Frame to store hidden values'
+    hiddenframe: 'Opensave frame to store hidden values'
   };
 
   return en;

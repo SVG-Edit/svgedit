@@ -3,7 +3,7 @@ var svgEditorExtensionLocale_server_moinsave_en = (function () {
 
   var en = {
     saved: 'Saved! Return to Item View!',
-    hiddenframe: 'Frame to store hidden values'
+    hiddenframe: 'Moinsave frame to store hidden values'
   };
 
   return en;
