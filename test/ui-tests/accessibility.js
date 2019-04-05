@@ -4,11 +4,14 @@
 import axeCheck from 'axe-testcafe';
 
 /**
+* @external AxeResult
+*/
+/**
  * @external TestcafeTest
 */
 /**
  * @param {external.TestcafeTest} t
- * @returns {Promise}
+ * @returns {Promise<external:AxeResult>}
  */
 function axeCheckWithConfig (t) {
   return axeCheck(

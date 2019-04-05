@@ -1,5 +1,13 @@
 # SVG-Edit CHANGES
 
+## ?
+
+- Enhancement: Return a Promise for Editor's `setCustomHandlers`,
+    `loadFromString`, `loadFromDataURI` so known when ready and set
+- Docs (Refactoring): Formally specify `Promise` resolve type;
+    add `typedef` for dialog result object; add an
+    `ArbitraryCallbackResult` type
+
 ## 4.3.0
 
 - Fix: Droplets for gradient pickers can now be double-clicked in

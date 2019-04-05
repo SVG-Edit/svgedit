@@ -318,7 +318,7 @@ let svgCanvas, urldata,
  * @param {PlainObject} [opts={}]
  * @param {boolean} [opts.noAlert]
  * @throws {Error} Upon failure to load SVG
- * @returns {Promise} Resolves to undefined upon success (or if `noAlert` is
+ * @returns {Promise<void>} Resolves to undefined upon success (or if `noAlert` is
  *   falsey, though only until after the `alert` is closed); rejects if SVG
  *   loading fails and `noAlert` is truthy.
  */
@@ -348,13 +348,13 @@ function getImportLocale ({defaultLang, defaultName}) {
    * @param {PlainObject} localeInfo
    * @param {string} [localeInfo.name] Defaults to `defaultName` of {@link module:SVGEditor~getImportLocale}
    * @param {string} [localeInfo.lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
-   * @returns {Promise} Resolves to {@link module:locale.LocaleStrings}
+   * @returns {Promise<module:locale.LocaleStrings>} Resolves to {@link module:locale.LocaleStrings}
    */
   return async function importLocaleDefaulting ({name = defaultName, lang = defaultLang} = {}) {
     /**
      *
      * @param {string} language
-     * @returns {Promise} Resolves to {@link module:locale.LocaleStrings}
+     * @returns {Promise<module:locale.LocaleStrings>} Resolves to {@link module:locale.LocaleStrings}
      */
     function importLocale (language) {
       const url = `${curConfig.extPath}ext-locale/${name}/${language}.js`;
@@ -607,10 +607,10 @@ editor.setConfig = function (opts, cfgCfg) {
 * Allows one to override default SVGEdit `open`, `save`, and
 * `export` editor behaviors.
 * @param {module:SVGEditor.CustomHandler} opts Extension mechanisms may call `setCustomHandlers` with three functions: `opts.open`, `opts.save`, and `opts.exportImage`
-* @returns {undefined}
+* @returns {Promise<void>}
 */
 editor.setCustomHandlers = function (opts) {
-  editor.ready(function () {
+  return editor.ready(function () {
     if (opts.open) {
       $('#tool_open > input[type="file"]').remove();
       $('#tool_open').show();
@@ -798,7 +798,7 @@ editor.init = function () {
    * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
    * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
    * @fires module:svgcanvas.SvgCanvas#event:extensions_added
-   * @returns {Promise} Resolves to result of {@link module:locale.readLang}
+   * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
    */
   const extAndLocaleFunc = async function () {
     // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
@@ -1884,7 +1884,7 @@ editor.init = function () {
   /**
    * @param {PlainObject} [opts={}]
    * @param {boolean} [opts.cancelDeletes=false}]
-   * @returns {Promise} Resolves to `undefined`
+   * @returns {Promise<void>} Resolves to `undefined`
    */
   async function promptImgURL ({cancelDeletes = false} = {}) {
     let curhref = svgCanvas.getHref(selectedElement);
@@ -3041,7 +3041,7 @@ editor.init = function () {
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
    * @listens module:svgcanvas.SvgCanvas#event:extension_added
-   * @returns {Promise|undefined} Resolves to `undefined`
+   * @returns {Promise<void>|undefined} Resolves to `undefined`
    */
   const extAdded = async function (win, ext) {
     if (!ext) {
@@ -4324,7 +4324,7 @@ editor.init = function () {
 
   /**
   *
-  * @returns {Promise} Resolves to `undefined`
+  * @returns {Promise<void>} Resolves to `undefined`
   */
   const makeHyperlink = async function () {
     if (!Utils.isNullish(selectedElement) || multiselected) {
@@ -4432,7 +4432,7 @@ editor.init = function () {
 
   /**
    * @fires module:svgcanvas.SvgCanvas#event:ext-onNewDocument
-   * @returns {Promise} Resolves to `undefined`
+   * @returns {Promise<void>} Resolves to `undefined`
    */
   const clickClear = async function () {
     const [x, y] = curConfig.dimensions;
@@ -4487,7 +4487,7 @@ editor.init = function () {
   let loadingURL;
   /**
   *
-  * @returns {Promise} Resolves to `undefined`
+  * @returns {Promise<void>} Resolves to `undefined`
   */
   const clickExport = async function () {
     const imgType = await $.select('Select an image type for export: ', [
@@ -4724,7 +4724,7 @@ editor.init = function () {
 
   /**
   *
-  * @returns {Promise} Resolves to `undefined`
+  * @returns {Promise<void>} Resolves to `undefined`
   */
   const saveSourceEditor = async function () {
     if (!editingsource) { return; }
@@ -4853,7 +4853,7 @@ editor.init = function () {
 
   /**
   *
-  * @returns {Promise} Resolves to `undefined`
+  * @returns {Promise<void>} Resolves to `undefined`
   */
   const cancelOverlays = async function () {
     $('#dialog_box').hide();
@@ -6045,7 +6045,7 @@ editor.init = function () {
   };
 
   /**
-  * @returns {Promise} Resolves to boolean indicating `true` if there were no changes
+  * @returns {Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
   *  and `false` after the user confirms.
   */
   editor.openPrep = function () {
@@ -6213,7 +6213,7 @@ editor.init = function () {
   * @param {module:locale.LocaleStrings} allStrings See {@tutorial LocaleDocs}
   * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
   * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
-  * @returns {Promise} A Promise which resolves to `undefined`
+  * @returns {Promise<void>} A Promise which resolves to `undefined`
   */
   const setLang = editor.setLang = async function (lang, allStrings) {
     editor.langChanged = true;
@@ -6336,14 +6336,14 @@ editor.init = function () {
 
 /**
 * @callback module:SVGEditor.ReadyCallback
-* @returns {Promise|undefined}
+* @returns {Promise<void>|undefined}
 */
 /**
 * Queues a callback to be invoked when the editor is ready (or
 *   to be invoked immediately if it is already ready--i.e.,
 *   if `runCallbacks` has been run).
 * @param {module:SVGEditor.ReadyCallback} cb Callback to be queued to invoke
-* @returns {Promise} Resolves when all callbacks, including the supplied have resolved
+* @returns {Promise<ArbitraryCallbackResult>} Resolves when all callbacks, including the supplied have resolved
 */
 editor.ready = function (cb) { // eslint-disable-line promise/prefer-await-to-callbacks
   return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
@@ -6357,7 +6357,7 @@ editor.ready = function (cb) { // eslint-disable-line promise/prefer-await-to-ca
 
 /**
 * Invokes the callbacks previous set by `svgEditor.ready`
-* @returns {Promise} Resolves to `undefined` if all callbacks succeeded and rejects otherwise
+* @returns {Promise<void>} Resolves to `undefined` if all callbacks succeeded and rejects otherwise
 */
 editor.runCallbacks = async function () {
   try {
@@ -6380,10 +6380,10 @@ editor.runCallbacks = async function () {
 * @param {string} str The SVG string to load
 * @param {PlainObject} [opts={}]
 * @param {boolean} [opts.noAlert=false] Option to avoid alert to user and instead get rejected promise
-* @returns {Promise}
+* @returns {Promise<void>}
 */
 editor.loadFromString = function (str, {noAlert} = {}) {
-  editor.ready(async function () {
+  return editor.ready(async function () {
     try {
       await loadSvgString(str, {noAlert});
     } catch (err) {
@@ -6416,7 +6416,7 @@ editor.disableUI = function (featList) {
 * @param {PlainObject} [opts={}] May contain properties: `cache`, `callback`
 * @param {boolean} [opts.cache]
 * @param {boolean} [opts.noAlert]
-* @returns {Promise} Resolves to `undefined` or rejects upon bad loading of
+* @returns {Promise<void>} Resolves to `undefined` or rejects upon bad loading of
 *   the SVG (or upon failure to parse the loaded string) when `noAlert` is
 *   enabled
 */
@@ -6457,10 +6457,10 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
 * @param {string} str The Data URI to base64-decode (if relevant) and load
 * @param {PlainObject} [opts={}]
 * @param {boolean} [opts.noAlert]
-* @returns {Promise} Resolves to `undefined` and rejects if loading SVG string fails and `noAlert` is enabled
+* @returns {Promise<void>} Resolves to `undefined` and rejects if loading SVG string fails and `noAlert` is enabled
 */
 editor.loadFromDataURI = function (str, {noAlert} = {}) {
-  editor.ready(function () {
+  return editor.ready(function () {
     let base64 = false;
     let pre = str.match(/^data:image\/svg\+xml;base64,/);
     if (pre) {
@@ -6481,7 +6481,7 @@ editor.loadFromDataURI = function (str, {noAlert} = {}) {
  * @param {module:svgcanvas.ExtensionInitCallback} init Config to be invoked on this module
  * @param {module:svgcanvas.ExtensionInitArgs} initArgs
  * @throws {Error} If called too early
- * @returns {Promise} Resolves to `undefined`
+ * @returns {Promise<void>} Resolves to `undefined`
 */
 editor.addExtension = function (name, init, initArgs) {
   // Note that we don't want this on editor.ready since some extensions

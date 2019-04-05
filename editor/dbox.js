@@ -24,12 +24,18 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
     dialogContent = $('#dialog_content');
 
   /**
+  * @typedef {PlainObject} module:jQueryPluginDBox.PromiseResultObject
+  * @property {string|true} response
+  * @property {boolean} checked
+  */
+
+  /**
   * Resolves to `false` (if cancelled), for prompts and selects
   * without checkboxes, it resolves to the value of the form control. For other
   * types without checkboxes, it resolves to `true`. For checkboxes, it resolves
   * to an object with the `response` key containing the same value as the previous
   * mentioned (string or `true`) and a `checked` (boolean) property.
-  * @typedef {Promise} module:jQueryPluginDBox.PromiseResult
+  * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.PromiseResult
   */
   /**
   * @typedef {PlainObject} module:jQueryPluginDBox.SelectOption

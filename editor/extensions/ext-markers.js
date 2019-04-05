@@ -388,7 +388,7 @@ export default {
 
     /**
     * @param {"start"|"mid"|"end"} pos
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
     async function showTextPrompt (pos) {
       let def = $('#' + pos + '_marker').val();
@@ -426,7 +426,7 @@ export default {
     // callback function for a toolbar button click
     /**
     * @param {Event} ev
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
     async function setArrowFromButton (ev) {
       const parts = this.id.split('_');

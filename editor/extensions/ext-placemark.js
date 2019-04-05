@@ -240,7 +240,7 @@ export default {
     }
     /**
     * @param {Event} ev
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
     function setArrowFromButton (ev) {
       const parts = this.id.split('_');

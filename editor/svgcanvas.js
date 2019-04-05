@@ -1113,7 +1113,7 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 /**
  * @function module:svgcanvas.ExtensionInitResponse#addLangData
  * @param {module:svgcanvas.SvgCanvas#event:ext-addLangData} arg
- * @returns {Promise} Resolves to {@link module:locale.ExtensionLocaleData}
+ * @returns {Promise<module:locale.ExtensionLocaleData>} Resolves to {@link module:locale.ExtensionLocaleData}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#onNewDocument
@@ -1136,7 +1136,7 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 * @callback module:svgcanvas.ExtensionInitCallback
 * @this module:SVGEditor
 * @param {module:svgcanvas.ExtensionArgumentObject} arg
-* @returns {Promise} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
+* @returns {Promise<module:svgcanvas.ExtensionInitResponse|void>} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
 */
 /**
 * @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
@@ -1152,7 +1152,7 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 * @fires module:svgcanvas.SvgCanvas#event:extension_added
 * @throws {TypeError|Error} `TypeError` if `extInitFunc` is not a function, `Error`
 *   if extension of supplied name already exists
-* @returns {Promise} Resolves to `undefined`
+* @returns {Promise<void>} Resolves to `undefined`
 */
 this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
   if (typeof extInitFunc !== 'function') {
@@ -1416,7 +1416,7 @@ canvas.call = call;
 /**
  * The promise return, if present, resolves to `undefined`
  *  (`extension_added`, `exported`, `saved`)
- * @typedef {Promise|undefined} module:svgcanvas.EventHandlerReturn
+ * @typedef {Promise<void>|void} module:svgcanvas.EventHandlerReturn
 */
 
 /**
@@ -3827,7 +3827,7 @@ this.svgToString = function (elem, indent) {
 * Converts a given image file to a data URL when possible, then runs a given callback.
 * @function module:svgcanvas.SvgCanvas#embedImage
 * @param {string} src - The path/URL of the image
-* @returns {Promise} Resolves to Data URL (string|false)
+* @returns {Promise<string|false>} Resolves to a Data URL (string|false)
 */
 this.embedImage = function (src) {
   // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
@@ -3967,7 +3967,7 @@ let canvg;
 * @param {boolean} [opts.avoidEvent]
 * @fires module:svgcanvas.SvgCanvas#event:exported
 * @todo Confirm/fix ICO type
-* @returns {Promise} Resolves to {@link module:svgcanvas.ImageExportedResults}
+* @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
 */
 this.rasterExport = async function (imgType, quality, exportWindowName, opts = {}) {
   const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
@@ -4053,7 +4053,7 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
 * @param {string} [exportWindowName] Will also be used for the download file name here
 * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
 * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
-* @returns {Promise} Resolves to {@link module:svgcanvas.PDFExportedResults}
+* @returns {Promise<module:svgcanvas.PDFExportedResults>} Resolves to {@link module:svgcanvas.PDFExportedResults}
 */
 this.exportPDF = async function (
   exportWindowName,

@@ -11,9 +11,15 @@
 */
 
 /**
+* This should only be used when the return result from a callback
+*  is not known as to type.
+* @typedef {*} ArbitraryCallbackResult
+*/
+
+/**
 * @callback GenericCallback
 * @param {...*} args Signature dependent on the function
-* @returns {*} Return dependent on the function
+* @returns {ArbitraryCallbackResult} Return dependent on the function
 */
 
 /**
