@@ -9,6 +9,7 @@
     add `typedef` for dialog result object; add an
     `ArbitraryCallbackResult` type
 - npm: Rename `build-doc` to `build-docs`; add `open-docs` script
+- npm: Update devDeps (and our @babel/polyfill copy)
 
 ## 4.3.0
 
