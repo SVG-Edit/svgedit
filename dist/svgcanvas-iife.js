@@ -2630,12 +2630,18 @@ var SvgCanvas = (function () {
         btnHolder = $('#dialog_buttons'),
         dialogContent = $('#dialog_content');
     /**
+    * @typedef {PlainObject} module:jQueryPluginDBox.PromiseResultObject
+    * @property {string|true} response
+    * @property {boolean} checked
+    */
+
+    /**
     * Resolves to `false` (if cancelled), for prompts and selects
     * without checkboxes, it resolves to the value of the form control. For other
     * types without checkboxes, it resolves to `true`. For checkboxes, it resolves
     * to an object with the `response` key containing the same value as the previous
     * mentioned (string or `true`) and a `checked` (boolean) property.
-    * @typedef {Promise} module:jQueryPluginDBox.PromiseResult
+    * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.PromiseResult
     */
 
     /**
@@ -11248,7 +11254,7 @@ var SvgCanvas = (function () {
   * @function module:importModule.importSetGlobal
   * @param {string|string[]} url
   * @param {module:importModule.ImportConfig} config
-  * @returns {Promise} The promise resolves to either an `ArbitraryModule` or
+  * @returns {Promise<ArbitraryModule>} The promise resolves to either an `ArbitraryModule` or
   *   any other value depends on the export of the targeted module.
   */
 
@@ -11260,7 +11266,7 @@ var SvgCanvas = (function () {
    * @author Brett Zamir (other items are from `dynamic-import-polyfill`)
    * @param {string|string[]} url
    * @param {PlainObject} [atts={}]
-   * @returns {Promise} Resolves to `undefined` or rejects with an `Error` upon a
+   * @returns {Promise<void|Error>} Resolves to `undefined` or rejects with an `Error` upon a
    *   script loading error
    */
 
@@ -11351,14 +11357,14 @@ var SvgCanvas = (function () {
     });
   }
   /**
-   *
-   * @param {string|string[]} url
-   * @param {PlainObject} [atts={}]
-   * @param {PlainObject} opts
-   * @param {boolean} [opts.returnDefault=false} = {}]
-   * @returns {Promise} Resolves to value of loading module or rejects with
-   *   `Error` upon a script loading error.
-   */
+  *
+  * @param {string|string[]} url
+  * @param {PlainObject} [atts={}]
+  * @param {PlainObject} opts
+  * @param {boolean} [opts.returnDefault=false} = {}]
+  * @returns {Promise<*>} Resolves to value of loading module or rejects with
+  *   `Error` upon a script loading error.
+  */
 
   function importModule(url) {
     var atts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -14386,7 +14392,7 @@ var SvgCanvas = (function () {
     /**
      * @function module:svgcanvas.ExtensionInitResponse#addLangData
      * @param {module:svgcanvas.SvgCanvas#event:ext-addLangData} arg
-     * @returns {Promise} Resolves to {@link module:locale.ExtensionLocaleData}
+     * @returns {Promise<module:locale.ExtensionLocaleData>} Resolves to {@link module:locale.ExtensionLocaleData}
     */
 
     /**
@@ -14412,7 +14418,7 @@ var SvgCanvas = (function () {
     * @callback module:svgcanvas.ExtensionInitCallback
     * @this module:SVGEditor
     * @param {module:svgcanvas.ExtensionArgumentObject} arg
-    * @returns {Promise} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
+    * @returns {Promise<module:svgcanvas.ExtensionInitResponse|void>} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
     */
 
     /**
@@ -14430,7 +14436,7 @@ var SvgCanvas = (function () {
     * @fires module:svgcanvas.SvgCanvas#event:extension_added
     * @throws {TypeError|Error} `TypeError` if `extInitFunc` is not a function, `Error`
     *   if extension of supplied name already exists
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
 
 
@@ -14763,7 +14769,7 @@ var SvgCanvas = (function () {
     /**
      * The promise return, if present, resolves to `undefined`
      *  (`extension_added`, `exported`, `saved`)
-     * @typedef {Promise|undefined} module:svgcanvas.EventHandlerReturn
+     * @typedef {Promise<void>|void} module:svgcanvas.EventHandlerReturn
     */
 
     /**
@@ -17466,7 +17472,7 @@ var SvgCanvas = (function () {
     * Converts a given image file to a data URL when possible, then runs a given callback.
     * @function module:svgcanvas.SvgCanvas#embedImage
     * @param {string} src - The path/URL of the image
-    * @returns {Promise} Resolves to Data URL (string|false)
+    * @returns {Promise<string|false>} Resolves to a Data URL (string|false)
     */
 
 
@@ -17618,7 +17624,7 @@ var SvgCanvas = (function () {
     * @param {boolean} [opts.avoidEvent]
     * @fires module:svgcanvas.SvgCanvas#event:exported
     * @todo Confirm/fix ICO type
-    * @returns {Promise} Resolves to {@link module:svgcanvas.ImageExportedResults}
+    * @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
     */
 
     this.rasterExport =
@@ -17765,7 +17771,7 @@ var SvgCanvas = (function () {
     * @param {string} [exportWindowName] Will also be used for the download file name here
     * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
     * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
-    * @returns {Promise} Resolves to {@link module:svgcanvas.PDFExportedResults}
+    * @returns {Promise<module:svgcanvas.PDFExportedResults>} Resolves to {@link module:svgcanvas.PDFExportedResults}
     */
 
 

@@ -5,7 +5,10 @@ export default {
   name: 'php_savefile',
   init ({$}) {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {
+      curConfig: {extPath},
+      canvas: svgCanvas
+    } = svgEditor;
     /**
      * Get file name out of SVGEdit document title.
      * @returns {string}
@@ -14,7 +17,7 @@ export default {
       const title = svgCanvas.getDocumentTitle();
       return title.trim();
     }
-    const saveSvgAction = svgEditor.curConfig.extPath + 'savefile.php';
+    const saveSvgAction = extPath + 'savefile.php';
     svgEditor.setCustomHandlers({
       save (win, data) {
         const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,

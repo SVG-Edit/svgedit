@@ -8,7 +8,8 @@ var svgEditorExtension_php_savefile = (function () {
     init: function init(_ref) {
       var $ = _ref.$;
       var svgEditor = this;
-      var svgCanvas = svgEditor.canvas;
+      var extPath = svgEditor.curConfig.extPath,
+          svgCanvas = svgEditor.canvas;
       /**
        * Get file name out of SVGEdit document title.
        * @returns {string}
@@ -19,7 +20,7 @@ var svgEditorExtension_php_savefile = (function () {
         return title.trim();
       }
 
-      var saveSvgAction = svgEditor.curConfig.extPath + 'savefile.php';
+      var saveSvgAction = extPath + 'savefile.php';
       svgEditor.setCustomHandlers({
         save: function save(win, data) {
           var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,

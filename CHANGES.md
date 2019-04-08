@@ -4,9 +4,11 @@
 
 - Enhancement: Return a Promise for Editor's `setCustomHandlers`,
     `loadFromString`, `loadFromDataURI` so known when ready and set
+- Refactoring: Destructuring, templates, label Unicode code point
 - Docs (Refactoring): Formally specify `Promise` resolve type;
     add `typedef` for dialog result object; add an
     `ArbitraryCallbackResult` type
+- npm: Rename `build-doc` to `build-docs`; add `open-docs` script
 
 ## 4.3.0
 

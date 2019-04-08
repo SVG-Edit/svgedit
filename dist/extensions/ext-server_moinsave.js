@@ -4893,14 +4893,15 @@ var svgEditorExtension_server_moinsave = (function () {
                     var _save = _asyncToGenerator(
                     /*#__PURE__*/
                     regeneratorRuntime.mark(function _callee(win, data) {
-                      var svg, qstr, name, svgData, c, datauri, pngData;
+                      var svg, qstr, _qstr$substr$split, _qstr$substr$split2, name, svgData, c, datauri, pngData;
+
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
                           switch (_context.prev = _context.next) {
                             case 0:
                               svg = '<?xml version="1.0"?>\n' + data;
                               qstr = $.param.querystring();
-                              name = qstr.substr(9).split('/+get/')[1];
+                              _qstr$substr$split = qstr.substr(9).split('/+get/'), _qstr$substr$split2 = _slicedToArray(_qstr$substr$split, 2), name = _qstr$substr$split2[1];
                               svgData = encode64(svg);
 
                               if (!$('#export_canvas').length) {
@@ -4926,7 +4927,7 @@ var svgEditorExtension_server_moinsave = (function () {
                                 method: 'post',
                                 action: saveSvgAction + '/' + name,
                                 target: 'output_frame'
-                              }).append('<input type="hidden" name="png_data" value="' + pngData + '">').append('<input type="hidden" name="filepath" value="' + svgData + '">').append('<input type="hidden" name="filename" value="' + 'drawing.svg">').append('<input type="hidden" name="contenttype" value="application/x-svgdraw">').appendTo('body').submit().remove();
+                              }).append("\n          <input type=\"hidden\" name=\"png_data\" value=\"".concat(pngData, "\">\n          <input type=\"hidden\" name=\"filepath\" value=\"").concat(svgData, "\">\n          <input type=\"hidden\" name=\"filename\" value=\"drawing.svg\">\n          <input type=\"hidden\" name=\"contenttype\" value=\"application/x-svgdraw\">\n        ")).appendTo('body').submit().remove();
                               $.alert(strings.saved);
                               top.window.location = '/' + name;
 

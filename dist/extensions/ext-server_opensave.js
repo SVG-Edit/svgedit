@@ -4868,7 +4868,7 @@ var svgEditorExtension_server_opensave = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee5(_ref) {
-        var $, decode64, encode64, importLocale, strings, svgEditor, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+        var $, decode64, encode64, importLocale, strings, svgEditor, extPath, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
@@ -5006,18 +5006,18 @@ var svgEditorExtension_server_opensave = (function () {
               case 7:
                 strings = _context5.sent;
                 svgEditor = this;
-                svgCanvas = svgEditor.canvas;
+                extPath = svgEditor.curConfig, svgCanvas = svgEditor.canvas;
                 /**
                  *
                  * @returns {string}
                  */
 
-                saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php', saveImgAction = svgEditor.curConfig.extPath + 'filesave.php'; // Create upload target (hidden iframe)
+                saveSvgAction = extPath + 'filesave.php', saveImgAction = extPath + 'filesave.php'; // Create upload target (hidden iframe)
 
                 cancelled = false; //  Hiding by size instead of display to avoid FF console errors
                 //    with `getBBox` in browser.js `supportsPathBBox_`)
 
-                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n        style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
+                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n          style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function save(win, data) {
                     var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
@@ -5032,7 +5032,7 @@ var svgEditorExtension_server_opensave = (function () {
                       method: 'post',
                       action: saveSvgAction,
                       target: 'output_frame'
-                    }).append('<input type="hidden" name="output_svg" value="' + xhtmlEscape(svg) + '">').append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">').appendTo('body').submit().remove();
+                    }).append("\n          <input type=\"hidden\" name=\"output_svg\" value=\"".concat(xhtmlEscape(svg), "\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
                   },
                   exportPDF: function exportPDF(win, data) {
                     var filename = getFileNameFromTitle(),
@@ -5046,7 +5046,7 @@ var svgEditorExtension_server_opensave = (function () {
                       method: 'post',
                       action: saveImgAction,
                       target: 'output_frame'
-                    }).append('<input type="hidden" name="output_img" value="' + datauri + '">').append('<input type="hidden" name="mime" value="application/pdf">').append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">').appendTo('body').submit().remove();
+                    }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"application/pdf\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
                   },
                   // Todo: Integrate this extension with a new built-in exportWindowType, "download"
                   exportImage: function () {
@@ -5079,7 +5079,8 @@ var svgEditorExtension_server_opensave = (function () {
                               note = '';
 
                               if (issues.length) {
-                                pre = "\n \u2022 ";
+                                pre = "\n \u2022 "; // Bullet
+
                                 note += '\n\n' + pre + issues.join(pre);
                               }
 
@@ -5107,7 +5108,7 @@ var svgEditorExtension_server_opensave = (function () {
                                 method: 'post',
                                 action: saveImgAction,
                                 target: 'output_frame'
-                              }).append('<input type="hidden" name="output_img" value="' + datauri + '">').append('<input type="hidden" name="mime" value="' + mimeType + '">').append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">').appendTo('body').submit().remove();
+                              }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"").concat(mimeType, "\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
 
                             case 18:
                             case "end":
@@ -5134,9 +5135,9 @@ var svgEditorExtension_server_opensave = (function () {
 
               case 16:
                 // Change these to appropriate script file
-                openSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=load_svg';
-                importSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_svg';
-                importImgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_img'; // Set up function for PHP uploader to use
+                openSvgAction = extPath + 'fileopen.php?type=load_svg';
+                importSvgAction = extPath + 'fileopen.php?type=import_svg';
+                importImgAction = extPath + 'fileopen.php?type=import_img'; // Set up function for PHP uploader to use
 
                 svgEditor.processFile = function (str64, type) {
                   var xmlstr;

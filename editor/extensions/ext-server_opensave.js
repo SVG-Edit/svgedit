@@ -13,7 +13,11 @@ export default {
   async init ({$, decode64, encode64, importLocale}) {
     const strings = await importLocale();
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {
+      curConfig: extPath,
+      canvas: svgCanvas
+    } = svgEditor;
+
     /**
      *
      * @returns {string}
@@ -53,8 +57,8 @@ export default {
       return false;
     }
     const
-      saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php',
-      saveImgAction = svgEditor.curConfig.extPath + 'filesave.php';
+      saveSvgAction = extPath + 'filesave.php',
+      saveImgAction = extPath + 'filesave.php';
       // Create upload target (hidden iframe)
 
     let cancelled = false;
@@ -63,7 +67,7 @@ export default {
     //    with `getBBox` in browser.js `supportsPathBBox_`)
     $(
       `<iframe name="output_frame" title="${strings.hiddenframe}"
-        style="width: 0; height: 0;" src="#"/>`
+          style="width: 0; height: 0;" src="#"/>`
     ).appendTo('body');
     svgEditor.setCustomHandlers({
       save (win, data) {
@@ -78,9 +82,10 @@ export default {
           method: 'post',
           action: saveSvgAction,
           target: 'output_frame'
-        }).append('<input type="hidden" name="output_svg" value="' + xhtmlEscape(svg) + '">')
-          .append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
-          .appendTo('body')
+        }).append(`
+          <input type="hidden" name="output_svg" value="${xhtmlEscape(svg)}">
+          <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">
+        `).appendTo('body')
           .submit().remove();
       },
       exportPDF (win, data) {
@@ -93,10 +98,11 @@ export default {
           method: 'post',
           action: saveImgAction,
           target: 'output_frame'
-        }).append('<input type="hidden" name="output_img" value="' + datauri + '">')
-          .append('<input type="hidden" name="mime" value="application/pdf">')
-          .append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
-          .appendTo('body')
+        }).append(`
+          <input type="hidden" name="output_img" value="${datauri}">
+          <input type="hidden" name="mime" value="application/pdf">
+          <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">
+        `).appendTo('body')
           .submit().remove();
       },
       // Todo: Integrate this extension with a new built-in exportWindowType, "download"
@@ -117,7 +123,7 @@ export default {
         // Check if there are issues
         let pre, note = '';
         if (issues.length) {
-          pre = '\n \u2022 ';
+          pre = '\n \u2022 '; // Bullet
           note += ('\n\n' + pre + issues.join(pre));
         }
 
@@ -136,10 +142,11 @@ export default {
           method: 'post',
           action: saveImgAction,
           target: 'output_frame'
-        }).append('<input type="hidden" name="output_img" value="' + datauri + '">')
-          .append('<input type="hidden" name="mime" value="' + mimeType + '">')
-          .append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">')
-          .appendTo('body')
+        }).append(`
+          <input type="hidden" name="output_img" value="${datauri}">
+          <input type="hidden" name="mime" value="${mimeType}">
+          <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">
+        `).appendTo('body')
           .submit().remove();
       }
     });
@@ -148,9 +155,9 @@ export default {
     if (window.FileReader) { return; }
 
     // Change these to appropriate script file
-    const openSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=load_svg';
-    const importSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_svg';
-    const importImgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_img';
+    const openSvgAction = extPath + 'fileopen.php?type=load_svg';
+    const importSvgAction = extPath + 'fileopen.php?type=import_svg';
+    const importImgAction = extPath + 'fileopen.php?type=import_img';
 
     // Set up function for PHP uploader to use
     svgEditor.processFile = function (str64, type) {

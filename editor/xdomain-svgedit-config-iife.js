@@ -9380,7 +9380,7 @@
   * @function module:importModule.importSetGlobalDefault
   * @param {string|string[]} url
   * @param {module:importModule.ImportConfig} config
-  * @returns {Promise} The value to which it resolves depends on the export of the targeted module.
+  * @returns {Promise<*>} The value to which it resolves depends on the export of the targeted module.
   */
 
 
@@ -9393,7 +9393,7 @@
   * @function module:importModule.importSetGlobal
   * @param {string|string[]} url
   * @param {module:importModule.ImportConfig} config
-  * @returns {Promise} The promise resolves to either an `ArbitraryModule` or
+  * @returns {Promise<ArbitraryModule>} The promise resolves to either an `ArbitraryModule` or
   *   any other value depends on the export of the targeted module.
   */
 
@@ -9405,7 +9405,7 @@
    * @author Brett Zamir (other items are from `dynamic-import-polyfill`)
    * @param {string|string[]} url
    * @param {PlainObject} [atts={}]
-   * @returns {Promise} Resolves to `undefined` or rejects with an `Error` upon a
+   * @returns {Promise<void|Error>} Resolves to `undefined` or rejects with an `Error` upon a
    *   script loading error
    */
 
@@ -9496,14 +9496,14 @@
     });
   }
   /**
-   *
-   * @param {string|string[]} url
-   * @param {PlainObject} [atts={}]
-   * @param {PlainObject} opts
-   * @param {boolean} [opts.returnDefault=false} = {}]
-   * @returns {Promise} Resolves to value of loading module or rejects with
-   *   `Error` upon a script loading error.
-   */
+  *
+  * @param {string|string[]} url
+  * @param {PlainObject} [atts={}]
+  * @param {PlainObject} opts
+  * @param {boolean} [opts.returnDefault=false} = {}]
+  * @returns {Promise<*>} Resolves to value of loading module or rejects with
+  *   `Error` upon a script loading error.
+  */
 
   function importModule(url) {
     var atts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -9596,12 +9596,18 @@
         btnHolder = $('#dialog_buttons'),
         dialogContent = $('#dialog_content');
     /**
+    * @typedef {PlainObject} module:jQueryPluginDBox.PromiseResultObject
+    * @property {string|true} response
+    * @property {boolean} checked
+    */
+
+    /**
     * Resolves to `false` (if cancelled), for prompts and selects
     * without checkboxes, it resolves to the value of the form control. For other
     * types without checkboxes, it resolves to `true`. For checkboxes, it resolves
     * to an object with the `response` key containing the same value as the previous
     * mentioned (string or `true`) and a `checked` (boolean) property.
-    * @typedef {Promise} module:jQueryPluginDBox.PromiseResult
+    * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.PromiseResult
     */
 
     /**
@@ -14611,7 +14617,7 @@
     /**
      * @function module:svgcanvas.ExtensionInitResponse#addLangData
      * @param {module:svgcanvas.SvgCanvas#event:ext-addLangData} arg
-     * @returns {Promise} Resolves to {@link module:locale.ExtensionLocaleData}
+     * @returns {Promise<module:locale.ExtensionLocaleData>} Resolves to {@link module:locale.ExtensionLocaleData}
     */
 
     /**
@@ -14637,7 +14643,7 @@
     * @callback module:svgcanvas.ExtensionInitCallback
     * @this module:SVGEditor
     * @param {module:svgcanvas.ExtensionArgumentObject} arg
-    * @returns {Promise} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
+    * @returns {Promise<module:svgcanvas.ExtensionInitResponse|void>} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
     */
 
     /**
@@ -14655,7 +14661,7 @@
     * @fires module:svgcanvas.SvgCanvas#event:extension_added
     * @throws {TypeError|Error} `TypeError` if `extInitFunc` is not a function, `Error`
     *   if extension of supplied name already exists
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
 
 
@@ -14988,7 +14994,7 @@
     /**
      * The promise return, if present, resolves to `undefined`
      *  (`extension_added`, `exported`, `saved`)
-     * @typedef {Promise|undefined} module:svgcanvas.EventHandlerReturn
+     * @typedef {Promise<void>|void} module:svgcanvas.EventHandlerReturn
     */
 
     /**
@@ -17691,7 +17697,7 @@
     * Converts a given image file to a data URL when possible, then runs a given callback.
     * @function module:svgcanvas.SvgCanvas#embedImage
     * @param {string} src - The path/URL of the image
-    * @returns {Promise} Resolves to Data URL (string|false)
+    * @returns {Promise<string|false>} Resolves to a Data URL (string|false)
     */
 
 
@@ -17843,7 +17849,7 @@
     * @param {boolean} [opts.avoidEvent]
     * @fires module:svgcanvas.SvgCanvas#event:exported
     * @todo Confirm/fix ICO type
-    * @returns {Promise} Resolves to {@link module:svgcanvas.ImageExportedResults}
+    * @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
     */
 
     this.rasterExport =
@@ -17990,7 +17996,7 @@
     * @param {string} [exportWindowName] Will also be used for the download file name here
     * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
     * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
-    * @returns {Promise} Resolves to {@link module:svgcanvas.PDFExportedResults}
+    * @returns {Promise<module:svgcanvas.PDFExportedResults>} Resolves to {@link module:svgcanvas.PDFExportedResults}
     */
 
 
@@ -28175,7 +28181,7 @@
   * @function module:locale.readLang
   * @param {module:locale.LocaleStrings} langData See {@tutorial LocaleDocs}
   * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
-  * @returns {Promise} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
+  * @returns {Promise<module:locale.LangAndData>} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
   */
 
   var readLang =
@@ -28428,7 +28434,7 @@
    * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
    * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
    * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
-   * @returns {Promise} Resolves to result of {@link module:locale.readLang}
+   * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
   */
 
   var putLocale =
@@ -28921,7 +28927,7 @@
    * @param {PlainObject} [opts={}]
    * @param {boolean} [opts.noAlert]
    * @throws {Error} Upon failure to load SVG
-   * @returns {Promise} Resolves to undefined upon success (or if `noAlert` is
+   * @returns {Promise<void>} Resolves to undefined upon success (or if `noAlert` is
    *   falsey, though only until after the `alert` is closed); rejects if SVG
    *   loading fails and `noAlert` is truthy.
    */
@@ -28995,7 +29001,7 @@
      * @param {PlainObject} localeInfo
      * @param {string} [localeInfo.name] Defaults to `defaultName` of {@link module:SVGEditor~getImportLocale}
      * @param {string} [localeInfo.lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
-     * @returns {Promise} Resolves to {@link module:locale.LocaleStrings}
+     * @returns {Promise<module:locale.LocaleStrings>} Resolves to {@link module:locale.LocaleStrings}
      */
     return (
       /*#__PURE__*/
@@ -29288,12 +29294,12 @@
   * Allows one to override default SVGEdit `open`, `save`, and
   * `export` editor behaviors.
   * @param {module:SVGEditor.CustomHandler} opts Extension mechanisms may call `setCustomHandlers` with three functions: `opts.open`, `opts.save`, and `opts.exportImage`
-  * @returns {undefined}
+  * @returns {Promise<void>}
   */
 
 
   editor.setCustomHandlers = function (opts) {
-    editor.ready(function () {
+    return editor.ready(function () {
       if (opts.open) {
         $$b('#tool_open > input[type="file"]').remove();
         $$b('#tool_open').show();
@@ -29502,7 +29508,7 @@
      * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
      * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
      * @fires module:svgcanvas.SvgCanvas#event:extensions_added
-     * @returns {Promise} Resolves to result of {@link module:locale.readLang}
+     * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
      */
 
 
@@ -30707,7 +30713,7 @@
     /**
      * @param {PlainObject} [opts={}]
      * @param {boolean} [opts.cancelDeletes=false}]
-     * @returns {Promise} Resolves to `undefined`
+     * @returns {Promise<void>} Resolves to `undefined`
      */
 
 
@@ -31983,7 +31989,7 @@
      * @param {external:Window} win
      * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
      * @listens module:svgcanvas.SvgCanvas#event:extension_added
-     * @returns {Promise|undefined} Resolves to `undefined`
+     * @returns {Promise<void>|undefined} Resolves to `undefined`
      */
 
     var extAdded =
@@ -33426,7 +33432,7 @@
     };
     /**
     *
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
 
 
@@ -33581,7 +33587,7 @@
     };
     /**
      * @fires module:svgcanvas.SvgCanvas#event:ext-onNewDocument
-     * @returns {Promise} Resolves to `undefined`
+     * @returns {Promise<void>} Resolves to `undefined`
      */
 
 
@@ -33674,7 +33680,7 @@
     var loadingURL;
     /**
     *
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
 
     var clickExport =
@@ -33969,7 +33975,7 @@
     };
     /**
     *
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
 
 
@@ -34180,7 +34186,7 @@
     var resetScrollPos = $$b.noop;
     /**
     *
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
 
     var cancelOverlays =
@@ -35879,7 +35885,7 @@
       return uiStrings$1;
     };
     /**
-    * @returns {Promise} Resolves to boolean indicating `true` if there were no changes
+    * @returns {Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
     *  and `false` after the user confirms.
     */
 
@@ -36116,7 +36122,7 @@
     * @param {module:locale.LocaleStrings} allStrings See {@tutorial LocaleDocs}
     * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
     * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
-    * @returns {Promise} A Promise which resolves to `undefined`
+    * @returns {Promise<void>} A Promise which resolves to `undefined`
     */
 
     var setLang = editor.setLang =
@@ -36282,7 +36288,7 @@
   };
   /**
   * @callback module:SVGEditor.ReadyCallback
-  * @returns {Promise|undefined}
+  * @returns {Promise<void>|undefined}
   */
 
   /**
@@ -36290,7 +36296,7 @@
   *   to be invoked immediately if it is already ready--i.e.,
   *   if `runCallbacks` has been run).
   * @param {module:SVGEditor.ReadyCallback} cb Callback to be queued to invoke
-  * @returns {Promise} Resolves when all callbacks, including the supplied have resolved
+  * @returns {Promise<ArbitraryCallbackResult>} Resolves when all callbacks, including the supplied have resolved
   */
 
 
@@ -36309,7 +36315,7 @@
   };
   /**
   * Invokes the callbacks previous set by `svgEditor.ready`
-  * @returns {Promise} Resolves to `undefined` if all callbacks succeeded and rejects otherwise
+  * @returns {Promise<void>} Resolves to `undefined` if all callbacks succeeded and rejects otherwise
   */
 
 
@@ -36366,14 +36372,14 @@
   * @param {string} str The SVG string to load
   * @param {PlainObject} [opts={}]
   * @param {boolean} [opts.noAlert=false] Option to avoid alert to user and instead get rejected promise
-  * @returns {Promise}
+  * @returns {Promise<void>}
   */
 
   editor.loadFromString = function (str) {
     var _ref39 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
         noAlert = _ref39.noAlert;
 
-    editor.ready(
+    return editor.ready(
     /*#__PURE__*/
     _asyncToGenerator(
     /*#__PURE__*/
@@ -36434,7 +36440,7 @@
   * @param {PlainObject} [opts={}] May contain properties: `cache`, `callback`
   * @param {boolean} [opts.cache]
   * @param {boolean} [opts.noAlert]
-  * @returns {Promise} Resolves to `undefined` or rejects upon bad loading of
+  * @returns {Promise<void>} Resolves to `undefined` or rejects upon bad loading of
   *   the SVG (or upon failure to parse the loaded string) when `noAlert` is
   *   enabled
   */
@@ -36487,7 +36493,7 @@
   * @param {string} str The Data URI to base64-decode (if relevant) and load
   * @param {PlainObject} [opts={}]
   * @param {boolean} [opts.noAlert]
-  * @returns {Promise} Resolves to `undefined` and rejects if loading SVG string fails and `noAlert` is enabled
+  * @returns {Promise<void>} Resolves to `undefined` and rejects if loading SVG string fails and `noAlert` is enabled
   */
 
 
@@ -36495,7 +36501,7 @@
     var _ref42 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
         noAlert = _ref42.noAlert;
 
-    editor.ready(function () {
+    return editor.ready(function () {
       var base64 = false;
       var pre = str.match(/^data:image\/svg\+xml;base64,/);
 
@@ -36520,7 +36526,7 @@
    * @param {module:svgcanvas.ExtensionInitCallback} init Config to be invoked on this module
    * @param {module:svgcanvas.ExtensionInitArgs} initArgs
    * @throws {Error} If called too early
-   * @returns {Promise} Resolves to `undefined`
+   * @returns {Promise<void>} Resolves to `undefined`
   */
 
 
