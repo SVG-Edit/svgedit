@@ -119,25 +119,25 @@ let editorContext_ = null;
 /**
  * @function module:path.EditorContext#clearSelection
  * @param {boolean} [noCall] - When `true`, does not call the "selected" handler
- * @returns {undefined}
+ * @returns {void}
 */
 /**
  * @function module:path.EditorContext#addToSelection
  * @param {Element[]} elemsToAdd - An array of DOM elements to add to the selection
  * @param {boolean} showGrips - Indicates whether the resize grips should be shown
- * @returns {undefined}
+ * @returns {void}
 */
 /**
  * @function module:path.EditorContext#addCommandToHistory
  * @param {Command} cmd
- * @returns {undefined}
+ * @returns {void}
  */
 /**
  * @function module:path.EditorContext#remapElement
  * @param {Element} selected - DOM element to be changed
  * @param {PlainObject.<string, string>} changes - Object with changes to be remapped
  * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
- * @returns {undefined}
+ * @returns {void}
  */
 /**
  * @function module:path.EditorContext#addSVGElementFromJson

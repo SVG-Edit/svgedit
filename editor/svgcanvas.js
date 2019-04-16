@@ -228,6 +228,7 @@ canvas.current_drawing_ = new draw.Drawing(svgcontent, idprefix);
 * Returns the current Drawing.
 * @function module:svgcanvas.SvgCanvas#getCurrentDrawing
 * @implements {module:draw.DrawCanvasInit#getCurrentDrawing}
+* @returns {module:draw.Drawing}
 */
 const getCurrentDrawing = canvas.getCurrentDrawing = function () {
   return canvas.current_drawing_;
@@ -314,6 +315,7 @@ const getJsonFromSvgElement = this.getJsonFromSvgElement = function (data) {
 * This should really be an intersection implementing all rather than a union.
 * @function module:svgcanvas.SvgCanvas#addSVGElementFromJson
 * @implements {module:utilities.EditorContext#addSVGElementFromJson|module:path.EditorContext#addSVGElementFromJson}
+* @returns {Element} The new element
 */
 const addSVGElementFromJson = this.addSVGElementFromJson = function (data) {
   if (typeof data === 'string') return svgdoc.createTextNode(data);
@@ -367,6 +369,7 @@ canvas.transformListToTransform = transformListToTransform;
 
 /**
 * @implements {module:utilities.EditorContext#getBaseUnit}
+* @returns {string}
 */
 const getBaseUnit = () => { return curConfig.baseUnit; };
 
@@ -392,6 +395,7 @@ canvas.convertToNum = convertToNum;
 /**
 * This should really be an intersection implementing all rather than a union.
 * @implements {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
+* @returns {SVGSVGElement}
 */
 const getSVGContent = () => { return svgcontent; };
 
@@ -399,6 +403,7 @@ const getSVGContent = () => { return svgcontent; };
 * Should really be an intersection with all needing to apply rather than a union.
 * @function module:svgcanvas.SvgCanvas#getSelectedElements
 * @implements {module:utilities.EditorContext#getSelectedElements|module:draw.DrawCanvasInit#getSelectedElements|module:path.EditorContext#getSelectedElements}
+* @returns {Element[]} the array with selected DOM elements
 */
 const getSelectedElements = this.getSelectedElems = function () {
   return selectedElements;
@@ -409,6 +414,7 @@ const {pathActions} = pathModule;
 /**
 * This should actually be an intersection as all interfaces should be met.
 * @implements {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
+* @returns {SVGSVGElement}
 */
 const getSVGRoot = () => svgroot;
 
@@ -444,7 +450,8 @@ this.cleanupElement = cleanupElement;
 
 /**
 * This should actually be an intersection not a union as all should apply.
-* @implements {module:coords.EditorContext|module:path.EditorContext}
+* @implements {module:coords.EditorContext#getGridSnapping|module:path.EditorContext#getGridSnapping}
+* @returns {boolean}
 */
 const getGridSnapping = () => { return curConfig.gridSnapping; };
 
@@ -561,6 +568,7 @@ const addCommandToHistory = function (cmd) {
 * This should really be an intersection applying to all types rather than a union.
 * @function module:svgcanvas.SvgCanvas#getZoom
 * @implements {module:path.EditorContext#getCurrentZoom|module:select.SVGFactory#getCurrentZoom}
+* @returns {Float} The current zoom level
 */
 const getCurrentZoom = this.getZoom = function () { return currentZoom; };
 
@@ -568,6 +576,7 @@ const getCurrentZoom = this.getZoom = function () { return currentZoom; };
 * This method rounds the incoming value to the nearest value based on the `currentZoom`
 * @function module:svgcanvas.SvgCanvas#round
 * @implements {module:path.EditorContext#round}
+* @returns {Float} Rounded value to nearest value based on `currentZoom`
 */
 const round = this.round = function (val) {
   return parseInt(val * currentZoom) / currentZoom;
@@ -596,6 +605,7 @@ const selectorManager = this.selectorManager = getSelectorManager();
 /**
 * @function module:svgcanvas.SvgCanvas#getNextId
 * @implements {module:path.EditorContext#getNextId}
+* @returns {string}
 */
 const getNextId = canvas.getNextId = function () {
   return getCurrentDrawing().getNextId();
@@ -604,6 +614,7 @@ const getNextId = canvas.getNextId = function () {
 /**
 * @function module:svgcanvas.SvgCanvas#getId
 * @implements {module:path.EditorContext#getId}
+* @returns {string}
 */
 const getId = canvas.getId = function () {
   return getCurrentDrawing().getId();
@@ -648,6 +659,7 @@ const clearSelection = this.clearSelection = function (noCall) {
 * @function module:svgcanvas.SvgCanvas#addToSelection
 * @implements {module:path.EditorContext#addToSelection}
 * @fires module:svgcanvas.SvgCanvas#event:selected
+* @returns {void}
 */
 const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
   if (!elemsToAdd.length) { return; }
@@ -717,6 +729,7 @@ const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
 
 /**
 * @implements {module:path.EditorContext#getOpacity}
+* @returns {Float}
 */
 const getOpacity = function () {
   return curShape.opacity;
@@ -725,6 +738,7 @@ const getOpacity = function () {
 /**
 * @function module:svgcanvas.SvgCanvas#getMouseTarget
 * @implements {module:path.EditorContext#getMouseTarget}
+* @returns {Element} DOM element we want
 */
 const getMouseTarget = this.getMouseTarget = function (evt) {
   if (isNullish(evt)) {

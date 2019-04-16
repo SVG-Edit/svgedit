@@ -511,7 +511,7 @@ export class SelectorManager {
  */
 /**
  * @function module:select.SVGFactory#getCurrentZoom
- * @returns {Float}
+ * @returns {Float} The current zoom level
  */
 
 /**

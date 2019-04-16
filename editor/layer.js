@@ -29,7 +29,7 @@ class Layer {
   *     If group and no svgElem, use group for this layer.
   *     If group and svgElem, create a new group element and insert it in the DOM after group.
   *     If no group and svgElem, create a new group element and insert it in the DOM as the last layer.
-  * @param {SVGGElement=} svgElem - The SVG DOM element. If defined, use this to add
+  * @param {SVGGElement} [svgElem] - The SVG DOM element. If defined, use this to add
   *     a new layer to the document.
   */
   constructor (name, group, svgElem) {

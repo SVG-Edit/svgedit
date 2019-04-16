@@ -1168,6 +1168,7 @@ editor.init = function () {
 
   /**
    * Setup SVG icons
+   * @returns {void}
    */
   function setIcons () {
     $.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
@@ -5446,6 +5447,7 @@ editor.init = function () {
 
   /**
    * @implements {module:jQuerySpinButton.StepCallback}
+   * @returns {Float}
    */
   function stepFontSize (elem, step) {
     const origVal = Number(elem.value);
@@ -5470,6 +5472,7 @@ editor.init = function () {
 
   /**
    * @implements {module:jQuerySpinButton.StepCallback}
+   * @returns {Float}
    */
   function stepZoom (elem, step) {
     const origVal = Number(elem.value);

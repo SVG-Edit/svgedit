@@ -711,6 +711,7 @@ const jPicker = function ($) {
     * @class
     * @memberof external:jQuery.jPicker
     * @param {module:jPicker.JPickerInit} init
+    * @returns {external:jQuery.jPicker.Color}
     */
     Color: function (init) { // eslint-disable-line object-shorthand
       const that = this;
