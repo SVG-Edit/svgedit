@@ -10,7 +10,7 @@ QUnit.log((details) => {
 
 /**
  * Tear down tests, resetting custom menus.
- * @returns {undefined}
+ * @returns {void}
  */
 function tearDown () {
   contextmenu.resetCustomMenus();

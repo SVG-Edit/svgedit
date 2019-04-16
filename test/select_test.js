@@ -35,7 +35,7 @@ const mockFactory = {
 
 /**
  * Potentially reusable test set-up.
- * @returns {undefined}
+ * @returns {void}
  */
 function setUp () {
   svgroot = mockFactory.createSVGElement({
@@ -72,7 +72,7 @@ function setUpWithInit () {
 
 /**
  * Tear down the test by emptying our sandbox area.
- * @returns {undefined}
+ * @returns {void}
  */
 function tearDown () {
   while (sandbox.hasChildNodes()) {

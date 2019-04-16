@@ -61,7 +61,7 @@ let listMap_ = {};
 */
 /**
 * @function module:SVGTransformList.SVGEditTransformList#clear
-* @returns {undefined}
+* @returns {void}
 */
 /**
 * @function module:SVGTransformList.SVGEditTransformList#initialize
@@ -199,7 +199,7 @@ export class SVGTransformList {// eslint-disable-line no-shadow
     this.numberOfItems = 0;
   }
   /**
-  * @returns {undefined}
+  * @returns {void}
   */
   clear () {
     this.numberOfItems = 0;
@@ -318,7 +318,7 @@ export class SVGTransformList {// eslint-disable-line no-shadow
 
 /**
 * @function module:SVGTransformList.resetListMap
-* @returns {undefined}
+* @returns {void}
 */
 export const resetListMap = function () {
   listMap_ = {};
@@ -328,7 +328,7 @@ export const resetListMap = function () {
  * Removes transforms of the given element from the map.
  * @function module:SVGTransformList.removeElementFromListMap
  * @param {Element} elem - a DOM Element
- * @returns {undefined}
+ * @returns {void}
  */
 export let removeElementFromListMap = function (elem) { // eslint-disable-line import/no-mutable-exports
   if (elem.id && listMap_[elem.id]) {
@@ -375,7 +375,7 @@ export const getTransformList = function (elem) {
 * Replace `removeElementFromListMap` for unit-testing.
 * @function module:SVGTransformList.changeRemoveElementFromListMap
 * @param {module:SVGTransformList.removeElementFromListMap} cb Passed a single argument `elem`
-* @returns {undefined}
+* @returns {void}
 */
 
 export const changeRemoveElementFromListMap = function (cb) { // eslint-disable-line promise/prefer-await-to-callbacks

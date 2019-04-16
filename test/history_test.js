@@ -50,14 +50,14 @@ class MockHistoryEventHandler {
 
 /**
  * Set up tests (with undo manager).
- * @returns {undefined}
+ * @returns {void}
  */
 function setUp () {
   undoMgr = new hstory.UndoManager();
 }
 /**
  * Tear down tests, destroying undo manager.
- * @returns {undefined}
+ * @returns {void}
  */
 function tearDown () {
   undoMgr = null;

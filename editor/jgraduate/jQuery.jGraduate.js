@@ -205,7 +205,7 @@ export default function jQueryPluginJGraduate ($) {
   /**
   * @param {SVGElement} elem
   * @param {module:jGraduate.Attrs} attrs
-  * @returns {undefined}
+  * @returns {void}
   */
   function setAttrs (elem, attrs) {
     if (isGecko) {
@@ -257,11 +257,11 @@ export default function jQueryPluginJGraduate ($) {
   /**
   * @callback external:jQuery.fn.jGraduate.OkCallback
   * @param {external:jQuery.jGraduate.Paint} paint
-  * @returns {undefined}
+  * @returns {void}
   */
   /**
   * @callback external:jQuery.fn.jGraduate.CancelCallback
-  * @returns {undefined}
+  * @returns {void}
   */
 
   /**
@@ -727,7 +727,7 @@ export default function jQueryPluginJGraduate ($) {
 
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function remStop () {
         delStop.setAttribute('display', 'none');
@@ -751,7 +751,7 @@ export default function jQueryPluginJGraduate ($) {
 
       /**
       * @param {Element} item
-      * @returns {undefined}
+      * @returns {void}
       */
       function selectStop (item) {
         if (curStop) curStop.setAttribute('stroke', '#000');
@@ -766,7 +766,7 @@ export default function jQueryPluginJGraduate ($) {
 
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function remDrags () {
         $win.unbind('mousemove', dragColor);
@@ -782,7 +782,7 @@ export default function jQueryPluginJGraduate ($) {
       let cY = cy;
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function xform () {
         const rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
@@ -799,7 +799,7 @@ export default function jQueryPluginJGraduate ($) {
 
       /**
       * @param {Event} evt
-      * @returns {undefined}
+      * @returns {void}
       */
       function dragColor (evt) {
         let x = evt.pageX - stopOffset.left;

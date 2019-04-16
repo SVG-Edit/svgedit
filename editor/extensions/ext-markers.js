@@ -97,7 +97,7 @@ export default {
      *
      * @param {"start"|"mid"|"end"} pos
      * @param {string} id
-     * @returns {undefined}
+     * @returns {void}
      */
     function setIcon (pos, id) {
       if (id.substr(0, 1) !== '\\') { id = '\\textmarker'; }
@@ -111,7 +111,7 @@ export default {
      * Toggles context tool panel off/on. Sets the controls with the
      *   selected element's settings.
      * @param {boolean} on
-     * @returns {undefined}
+     * @returns {void}
     */
     function showPanel (on) {
       $('#marker_panel').toggle(on);
@@ -147,7 +147,7 @@ export default {
     /**
     * @param {string} id
     * @param {""|"\\nomarker"|"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} val
-    * @returns {undefined}
+    * @returns {void}
     */
     function addMarker (id, val) {
       const txtBoxBg = '#ffffff';
@@ -295,7 +295,7 @@ export default {
 
     /**
     *
-    * @returns {undefined}
+    * @returns {void}
     */
     function setMarker () {
       const poslist = {start_marker: 'start', mid_marker: 'mid', end_marker: 'end'};
@@ -327,7 +327,7 @@ export default {
      * Called when the main system modifies an object. This routine changes
      *   the associated markers to be the same color.
      * @param {Element} elem
-     * @returns {undefined}
+     * @returns {void}
     */
     function colorChanged (elem) {
       const color = elem.getAttribute('stroke');
@@ -349,7 +349,7 @@ export default {
     * Called when the main system creates or modifies an object.
     * Its primary purpose is to create new markers for cloned objects.
     * @param {Element} el
-    * @returns {undefined}
+    * @returns {void}
     */
     function updateReferences (el) {
       $.each(mtypes, function (i, pos) {
@@ -376,7 +376,7 @@ export default {
     /**
     * @param {"start"|"mid"|"end"} pos
     * @param {string} val
-    * @returns {undefined}
+    * @returns {void}
     */
     function triggerTextEntry (pos, val) {
       $('#' + pos + '_marker').val(val);
@@ -443,7 +443,7 @@ export default {
 
     /**
     * @param {"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} id
-    * @returns {undefined}
+    * @returns {void}
     */
     function getTitle (id) {
       const {langList} = strings;

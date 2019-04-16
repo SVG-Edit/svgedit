@@ -48,7 +48,7 @@ let langParam;
  * @param {"content"|"title"} type
  * @param {module:locale.LocaleSelectorValue} obj Selectors or IDs keyed to strings
  * @param {boolean} ids
- * @returns {undefined}
+ * @returns {void}
 */
 export const setStrings = function (type, obj, ids) {
   // Root element to look for element from
@@ -111,7 +111,7 @@ let editor_;
  * @function init
  * @memberof module:locale
  * @param {module:locale.LocaleEditorInit} editor
- * @returns {undefined}
+ * @returns {void}
 */
 export const init = (editor) => {
   editor_ = editor;

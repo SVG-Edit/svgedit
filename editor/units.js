@@ -74,7 +74,7 @@ let typeMap_ = {};
  *
  * @function module:units.init
  * @param {module:units.ElementContainer} elementContainer - An object implementing the ElementContainer interface.
- * @returns {undefined}
+ * @returns {void}
  */
 export const init = function (elementContainer) {
   elementContainer_ = elementContainer;
@@ -165,7 +165,7 @@ export const convertUnit = function (val, unit) {
 * @param {Element} elem - DOM element to be changed
 * @param {string} attr - Name of the attribute associated with the value
 * @param {string} val - Attribute value to convert
-* @returns {undefined}
+* @returns {void}
 */
 export const setUnitAttr = function (elem, attr, val) {
   //  if (!isNaN(val)) {
@@ -217,7 +217,7 @@ const attrsToConvert = {
 * Converts all applicable attributes to the configured baseUnit.
 * @function module:units.convertAttrs
 * @param {Element} element - A DOM element whose attributes should be converted
-* @returns {undefined}
+* @returns {void}
 */
 export const convertAttrs = function (element) {
   const elName = element.tagName;

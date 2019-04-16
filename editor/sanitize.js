@@ -108,7 +108,7 @@ Object.entries(svgWhiteList_).forEach(function ([elt, atts]) {
 * It only keeps what is allowed from our whitelist defined above.
 * @function module:sanitize.sanitizeSvg
 * @param {Text|Element} node - The DOM element to be checked (we'll also check its children) or text node to be cleaned up
-* @returns {undefined}
+* @returns {void}
 */
 export const sanitizeSvg = function (node) {
   // Cleanup text nodes

@@ -89,7 +89,7 @@ export default {
 
     /**
     * @param {boolean} on
-    * @returns {undefined}
+    * @returns {void}
     */
     function showPanel (on) {
       let connRules = $('#connector_rules');
@@ -106,7 +106,7 @@ export default {
      * @param {Float} x
      * @param {Float} y
      * @param {boolean} [setMid]
-     * @returns {undefined}
+     * @returns {void}
     */
     function setPoint (elem, pos, x, y, setMid) {
       const pts = elem.points;
@@ -139,7 +139,7 @@ export default {
     /**
     * @param {Float} diffX
     * @param {Float} diffY
-    * @returns {undefined}
+    * @returns {void}
     */
     function updateLine (diffX, diffY) {
       // Update line with element
@@ -178,7 +178,7 @@ export default {
     /**
     *
     * @param {Element[]} [elems=selElems] Array of elements
-    * @returns {undefined}
+    * @returns {void}
     */
     function findConnectors (elems = selElems) {
       const connectors = $(svgcontent).find(connSel);
@@ -189,7 +189,7 @@ export default {
         let addThis;
         /**
         *
-        * @returns {undefined}
+        * @returns {void}
         */
         function add () {
           if (elems.includes(this)) {
@@ -240,7 +240,7 @@ export default {
 
     /**
     * @param {Element[]} [elems=selElems]
-    * @returns {undefined}
+    * @returns {void}
     */
     function updateConnectors (elems) {
       // Updates connector lines based on selected elements
@@ -317,7 +317,7 @@ export default {
 
     /**
     * Do on reset.
-    * @returns {undefined}
+    * @returns {void}
     */
     function init () {
       // Make sure all connectors have data set

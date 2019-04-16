@@ -23,7 +23,7 @@ let svgcontent, rect, circle;
 
 /**
  * Set up tests, adding elements.
- * @returns {undefined}
+ * @returns {void}
  */
 function setUp () {
   svgcontent = svgroot.appendChild(document.createElementNS(NS.SVG, 'svg'));
@@ -35,7 +35,7 @@ function setUp () {
 
 /**
  * Tear down tests, emptying SVG root, and resetting list map.
- * @returns {undefined}
+ * @returns {void}
  */
 function tearDown () {
   transformlist.resetListMap();

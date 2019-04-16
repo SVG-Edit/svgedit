@@ -90,7 +90,7 @@ export default function jQueryPluginSpinButton ($) {
   /**
   * @callback module:jQuerySpinButton.ValueCallback
   * @param {external:jQuery.fn.SpinButton} thisArg Spin Button; check its `value` to see how it was changed.
-  * @returns {undefined}
+  * @returns {void}
   */
   /**
    * @typedef {PlainObject} module:jQuerySpinButton.SpinButtonConfig

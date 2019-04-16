@@ -46,7 +46,7 @@ class Command {
  * @function module:history.HistoryCommand#apply
  * @param {module:history.HistoryEventHandler}
  * @fires module:history~Command#event:history
- * @returns {undefined|true}
+ * @returns {void|true}
  */
 /**
  *
@@ -54,7 +54,7 @@ class Command {
  * @function module:history.HistoryCommand#unapply
  * @param {module:history.HistoryEventHandler}
  * @fires module:history~Command#event:history
- * @returns {undefined|true}
+ * @returns {void|true}
  */
 /**
  * Returns the elements
@@ -92,7 +92,7 @@ class Command {
  * @param {string} eventType One of the HistoryEvent types
  * @param {module:history~Command#event:history} command
  * @listens module:history~Command#event:history
- * @returns {undefined}
+ * @returns {void}
  *
  */
 
@@ -122,7 +122,7 @@ export class MoveElementCommand extends Command {
    * Re-positions the element.
    * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
-   * @returns {undefined}
+   * @returns {void}
   */
   apply (handler) {
     // TODO(codedread): Refactor this common event code into a base HistoryCommand class.
@@ -141,7 +141,7 @@ export class MoveElementCommand extends Command {
    * Positions the element back to its original location.
    * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
-   * @returns {undefined}
+   * @returns {void}
   */
   unapply (handler) {
     if (handler) {
@@ -188,7 +188,7 @@ export class InsertElementCommand extends Command {
   * Re-inserts the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
-  * @returns {undefined}
+  * @returns {void}
   */
   apply (handler) {
     if (handler) {
@@ -206,7 +206,7 @@ export class InsertElementCommand extends Command {
   * Removes the element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
-  * @returns {undefined}
+  * @returns {void}
   */
   unapply (handler) {
     if (handler) {
@@ -257,7 +257,7 @@ export class RemoveElementCommand extends Command {
   * Re-removes the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
-  * @returns {undefined}
+  * @returns {void}
   */
   apply (handler) {
     if (handler) {
@@ -277,7 +277,7 @@ export class RemoveElementCommand extends Command {
   * Re-adds the new element.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
-  * @returns {undefined}
+  * @returns {void}
   */
   unapply (handler) {
     if (handler) {
@@ -481,7 +481,7 @@ export class BatchCommand extends Command {
   * Runs "apply" on all subcommands.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
-  * @returns {undefined}
+  * @returns {void}
   */
   apply (handler) {
     if (handler) {
@@ -502,7 +502,7 @@ export class BatchCommand extends Command {
   * Runs "unapply" on all subcommands.
   * @param {module:history.HistoryEventHandler} handler
   * @fires module:history~Command#event:history
-  * @returns {undefined}
+  * @returns {void}
   */
   unapply (handler) {
     if (handler) {
@@ -538,7 +538,7 @@ export class BatchCommand extends Command {
   /**
   * Adds a given command to the history stack.
   * @param {Command} cmd - The undo command object to add
-  * @returns {undefined}
+  * @returns {void}
   */
   addSubCommand (cmd) {
     this.stack.push(cmd);
@@ -573,7 +573,7 @@ export class UndoManager {
 
   /**
   * Resets the undo stack, effectively clearing the undo/redo history.
-  * @returns {undefined}
+  * @returns {void}
   */
   resetUndoStack () {
     this.undoStack = [];
@@ -610,7 +610,7 @@ export class UndoManager {
 
   /**
   * Performs an undo step.
-  * @returns {undefined}
+  * @returns {void}
   */
   undo () {
     if (this.undoStackPointer > 0) {
@@ -621,7 +621,7 @@ export class UndoManager {
 
   /**
   * Performs a redo step.
-  * @returns {undefined}
+  * @returns {void}
   */
   redo () {
     if (this.undoStackPointer < this.undoStack.length && this.undoStack.length > 0) {
@@ -633,7 +633,7 @@ export class UndoManager {
   /**
   * Adds a command object to the undo history stack.
   * @param {Command} cmd - The command object to add
-  * @returns {undefined}
+  * @returns {void}
   */
   addCommandToHistory (cmd) {
     // FIXME: we MUST compress consecutive text changes to the same element
@@ -658,7 +658,7 @@ export class UndoManager {
   * from the DOM and uses all of these to construct the undo-able command.
   * @param {string} attrName - The name of the attribute being changed
   * @param {Element[]} elems - Array of DOM elements being changed
-  * @returns {undefined}
+  * @returns {void}
   */
   beginUndoableChange (attrName, elems) {
     const p = ++this.undoChangeStackPointer;

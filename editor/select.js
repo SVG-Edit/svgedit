@@ -79,7 +79,7 @@ export class Selector {
   * Used to reset the id and element that the selector is attached to.
   * @param {Element} e - DOM element associated with this selector
   * @param {module:utilities.BBoxObject} bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
-  * @returns {undefined}
+  * @returns {void}
   */
   reset (e, bbox) {
     this.locked = true;
@@ -91,7 +91,7 @@ export class Selector {
   /**
   * Show the resize grips of this selector.
   * @param {boolean} show - Indicates whether grips should be shown or not
-  * @returns {undefined}
+  * @returns {void}
   */
   showGrips (show) {
     const bShow = show ? 'inline' : 'none';
@@ -107,7 +107,7 @@ export class Selector {
   /**
   * Updates the selector to match the element's size.
   * @param {module:utilities.BBoxObject} [bbox] - BBox to use for resize (prevents duplicate getBBox call).
-  * @returns {undefined}
+  * @returns {void}
   */
   resize (bbox) {
     const selectedBox = this.selectorRect,
@@ -240,7 +240,7 @@ export class Selector {
 /**
 * Updates cursors for corner grips on rotation so arrows point the right way.
 * @param {Float} angle - Current rotation angle in degrees
-* @returns {undefined}
+* @returns {void}
 */
 Selector.updateGripCursors = function (angle) {
   const dirArr = Object.keys(selectorManager_.selectorGrips);
@@ -293,7 +293,7 @@ export class SelectorManager {
 
   /**
   * Resets the parent selector group element.
-  * @returns {undefined}
+  * @returns {void}
   */
   initGroup () {
     // remove old selector parent group if it existed
@@ -439,7 +439,7 @@ export class SelectorManager {
   * Removes the selector of the given element (hides selection box).
   *
   * @param {Element} elem - DOM element to remove the selector for
-  * @returns {undefined}
+  * @returns {void}
   */
   releaseSelector (elem) {
     if (isNullish(elem)) { return; }
@@ -531,7 +531,7 @@ export class SelectorManager {
  * @function module:select.init
  * @param {module:select.Config} config - An object containing configurable parameters (imgPath)
  * @param {module:select.SVGFactory} svgFactory - An object implementing the SVGFactory interface.
- * @returns {undefined}
+ * @returns {void}
  */
 export const init = function (config, svgFactory) {
   config_ = config;

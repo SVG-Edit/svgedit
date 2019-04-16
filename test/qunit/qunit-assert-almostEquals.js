@@ -5,7 +5,7 @@ const NEAR_ZERO = 5e-6; // 0.000005, Firefox fails at higher levels of precision
  * @param {Float} actual
  * @param {Float} expected
  * @param {string} message
- * @returns {undefined}
+ * @returns {void}
  */
 function almostEquals (actual, expected, message) {
   message = message || (actual + ' did not equal ' + expected);

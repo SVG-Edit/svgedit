@@ -22,7 +22,7 @@ export default {
     /**
     * @param {Window} win
     * @param {!(string|Integer)} n
-    * @returns {undefined}
+    * @returns {void}
     */
     function setArrowNonce (win, n) {
       randomizeIds = true;
@@ -33,7 +33,7 @@ export default {
 
     /**
     * @param {Window} win
-    * @returns {undefined}
+    * @returns {void}
     */
     function unsetArrowNonce (win) {
       randomizeIds = false;
@@ -74,7 +74,7 @@ export default {
 
     /**
     * @param {boolean} on
-    * @returns {undefined}
+    * @returns {void}
     */
     function showPanel (on) {
       $('#arrow_panel').toggle(on);
@@ -107,7 +107,7 @@ export default {
 
     /**
     *
-    * @returns {undefined}
+    * @returns {void}
     */
     function resetMarker () {
       const el = selElems[0];
@@ -165,7 +165,7 @@ export default {
 
     /**
     *
-    * @returns {undefined}
+    * @returns {void}
     */
     function setArrow () {
       resetMarker();
@@ -196,7 +196,7 @@ export default {
 
     /**
     * @param {Element} elem
-    * @returns {undefined}
+    * @returns {void}
     */
     function colorChanged (elem) {
       const color = elem.getAttribute('stroke');

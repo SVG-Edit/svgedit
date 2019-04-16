@@ -74,7 +74,7 @@ export default {
     /**
      *
      * @param {Float} zoom
-     * @returns {undefined}
+     * @returns {void}
      */
     function updateGrid (zoom) {
       // TODO: Try this with <line> elements, then compare performance difference
@@ -127,7 +127,7 @@ export default {
 
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function gridUpdate () {
       if (showGrid) {

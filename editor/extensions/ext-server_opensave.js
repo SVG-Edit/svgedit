@@ -210,7 +210,7 @@ export default {
     /**
      *
      * @param {external:jQuery} form
-     * @returns {undefined}
+     * @returns {void}
      */
     function rebuildInput (form) {
       form.empty();
@@ -219,7 +219,7 @@ export default {
       /**
        * Submit the form, empty its contents for reuse and show
        *   uploading message.
-       * @returns {undefined}
+       * @returns {void}
        */
       async function submit () {
         // This submits the form, which returns the file data using `svgEditor.processFile()`

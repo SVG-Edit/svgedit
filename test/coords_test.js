@@ -21,7 +21,7 @@ let elemId = 1;
 
 /**
  * Set up tests with mock data.
- * @returns {undefined}
+ * @returns {void}
  */
 function setUp () {
   // Mock out editor context.
@@ -52,7 +52,7 @@ function setUp () {
 
 /**
  * Tear down tests, removing elements.
- * @returns {undefined}
+ * @returns {void}
  */
 function tearDown () {
   while (svg.hasChildNodes()) {

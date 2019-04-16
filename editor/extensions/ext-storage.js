@@ -50,7 +50,7 @@ export default {
     /**
      * Replace `storagePrompt` parameter within URL.
      * @param {string} val
-     * @returns {undefined}
+     * @returns {void}
      */
     function replaceStoragePrompt (val) {
       val = val ? 'storagePrompt=' + val : '';
@@ -68,7 +68,7 @@ export default {
      * Sets SVG content as a string with "svgedit-" and the current
      *   canvas name as namespace.
      * @param {string} val
-     * @returns {undefined}
+     * @returns {void}
      */
     function setSVGContentStorage (val) {
       if (storage) {
@@ -84,7 +84,7 @@ export default {
     /**
      * Set the cookie to expire.
      * @param {string} cookie
-     * @returns {undefined}
+     * @returns {void}
      */
     function expireCookie (cookie) {
       document.cookie = encodeURIComponent(cookie) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
@@ -92,7 +92,7 @@ export default {
 
     /**
      * Expire the storage cookie.
-     * @returns {undefined}
+     * @returns {void}
      */
     function removeStoragePrefCookie () {
       expireCookie('svgeditstore');
@@ -100,7 +100,7 @@ export default {
 
     /**
      * Empties storage for each of the current preferences.
-     * @returns {undefined}
+     * @returns {void}
      */
     function emptyStorage () {
       setSVGContentStorage('');
@@ -122,7 +122,7 @@ export default {
     *       content into storage)
     * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
     * 3. Use localStorage (where available) or cookies to set preferences.
-    * @returns {undefined}
+    * @returns {void}
     */
     function setupBeforeUnloadListener () {
       window.addEventListener('beforeunload', function (e) {

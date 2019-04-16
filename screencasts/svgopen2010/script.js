@@ -286,7 +286,7 @@ const slides = document.querySelectorAll('.slide');
 
 /**
  * Show or hide the counters.
- * @returns {undefined}
+ * @returns {void}
  */
 function toggleCounter () {
   [...counters].forEach(function (el) {
@@ -296,7 +296,7 @@ function toggleCounter () {
 
 /**
  * Add or remove `reduced` (size) class.
- * @returns {undefined}
+ * @returns {void}
  */
 function toggleSize () {
   [...slides].forEach(function (el) {
@@ -310,7 +310,7 @@ function toggleSize () {
 
 /**
  * Add or remove `no-transitions` class.
- * @returns {undefined}
+ * @returns {void}
  */
 function toggleTransitions () {
   [...slides].forEach(function (el) {
@@ -324,7 +324,7 @@ function toggleTransitions () {
 
 /**
  * Add or remove `no-gradients` class.
- * @returns {undefined}
+ * @returns {void}
  */
 function toggleGradients () {
   [...slides].forEach(function (el) {

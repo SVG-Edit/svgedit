@@ -10,7 +10,7 @@ QUnit.log((details) => {
 
 /**
  * Set up tests, supplying mock data.
- * @returns {undefined}
+ * @returns {void}
  */
 function setUp () {
   units.init(

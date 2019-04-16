@@ -43,7 +43,7 @@ let editorContext_ = null;
 /**
 * @function module:coords.init
 * @param {module:coords.EditorContext} editorContext
-* @returns {undefined}
+* @returns {void}
 */
 export const init = function (editorContext) {
   editorContext_ = editorContext;

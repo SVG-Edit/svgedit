@@ -36,13 +36,13 @@ let context_;
 /**
  * @function module:recalculate.EditorContext#setStartTransform
  * @param {string} transform
- * @returns {undefined}
+ * @returns {void}
  */
 
 /**
 * @function module:recalculate.init
 * @param {module:recalculate.EditorContext} editorContext
-* @returns {undefined}
+* @returns {void}
 */
 export const init = function (editorContext) {
   context_ = editorContext;
@@ -54,7 +54,7 @@ export const init = function (editorContext) {
 * @param {string} attr - The clip-path attribute value with the clipPath's ID
 * @param {Float} tx - The translation's x value
 * @param {Float} ty - The translation's y value
-* @returns {undefined}
+* @returns {void}
 */
 export const updateClipPath = function (attr, tx, ty) {
   const path = getRefElem(attr).firstChild;

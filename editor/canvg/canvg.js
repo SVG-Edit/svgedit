@@ -2599,7 +2599,7 @@ function build (opts) {
   * @param {Float} width
   * @param {Float} height
   * @param {Integer} rgba
-  * @returns {undefined}
+  * @returns {void}
   */
   function imGet (img, x, y, width, height, rgba) {
     return img[y * width * 4 + x * 4 + rgba];
@@ -2613,7 +2613,7 @@ function build (opts) {
   * @param {Float} height
   * @param {Integer} rgba
   * @param {Float} val
-  * @returns {undefined}
+  * @returns {void}
   */
   function imSet (img, x, y, width, height, rgba, val) {
     img[y * width * 4 + x * 4 + rgba] = val;

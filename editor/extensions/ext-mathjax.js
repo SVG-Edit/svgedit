@@ -67,7 +67,7 @@ export default {
 
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function saveMath () {
       const code = $('#mathjax_code_textarea').val();

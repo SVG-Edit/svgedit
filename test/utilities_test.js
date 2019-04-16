@@ -65,21 +65,21 @@ const mockCount = {
 
 /**
  * Increments clear seleciton count for mock test.
- * @returns {undefined}
+ * @returns {void}
  */
 function mockClearSelection () {
   mockCount.clearSelection++;
 }
 /**
 * Increments add selection count for mock test.
- * @returns {undefined}
+ * @returns {void}
  */
 function mockAddToSelection () {
   mockCount.addToSelection++;
 }
 /**
 * Increments add command to history count for mock test.
- * @returns {undefined}
+ * @returns {void}
  */
 function mockAddCommandToHistory () {
   mockCount.addCommandToHistory++;

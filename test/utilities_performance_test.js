@@ -46,7 +46,7 @@ const textWithMatrixTransform = document.getElementById('svg_text_with_matrix_tr
  * Toward performance testing, fill document with clones of element.
  * @param {SVGElement} elem
  * @param {Integer} count
- * @returns {undefined}
+ * @returns {void}
  */
 function fillDocumentByCloningElement (elem, count) {
   const elemId = elem.getAttribute('id') + '-';

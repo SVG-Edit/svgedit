@@ -180,7 +180,7 @@ function jQueryContextMenu ($) {
     /**
     * Disable context menu items on the fly.
     * @memberof external:jQuery.fn
-    * @param {undefined|string} o Comma-separated
+    * @param {void|string} o Comma-separated
     * @returns {external:jQuery}
     */
     disableContextMenuItems (o) {
@@ -203,7 +203,7 @@ function jQueryContextMenu ($) {
     /**
     * Enable context menu items on the fly.
     * @memberof external:jQuery.fn
-    * @param {undefined|string} o Comma-separated
+    * @param {void|string} o Comma-separated
     * @returns {external:jQuery}
     */
     enableContextMenuItems (o) {

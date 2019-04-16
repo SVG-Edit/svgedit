@@ -23,7 +23,7 @@ let elemId = 1;
 
 /**
  * Initilize modules to set up the tests.
- * @returns {undefined}
+ * @returns {void}
  */
 function setUp () {
   utilities.init(
@@ -65,7 +65,7 @@ let elem;
 
 /**
  * Initialize for tests and set up `rect` element.
- * @returns {undefined}
+ * @returns {void}
  */
 function setUpRect () {
   setUp();
@@ -79,7 +79,7 @@ function setUpRect () {
 
 /**
  * Initialize for tests and set up `text` element with `tspan` child.
- * @returns {undefined}
+ * @returns {void}
  */
 function setUpTextWithTspan () {
   setUp();
@@ -99,7 +99,7 @@ function setUpTextWithTspan () {
 
 /**
  * Tear down the tests (empty the svg element).
- * @returns {undefined}
+ * @returns {void}
  */
 function tearDown () {
   while (svg.hasChildNodes()) {

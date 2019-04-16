@@ -143,7 +143,7 @@ export default function jQueryPluginSVGIcons ($) {
   *   the `alt` text
   * @param {string} [opts.testIconAlt="icon"] Alt text for the injected test image.
   *   In case wish to ensure have one for accessibility
-  * @returns {undefined}
+  * @returns {void}
   */
   $.svgIcons = function (file, opts = {}) {
     const svgns = 'http://www.w3.org/2000/svg',
@@ -208,9 +208,9 @@ export default function jQueryPluginSVGIcons ($) {
 
     /**
      *
-     * @param {"ajax"|0|undefined} evt
+     * @param {"ajax"|0|void} evt
      * @param {boolean} [noWait]
-     * @returns {undefined}
+     * @returns {void}
      */
     function getIcons (evt, noWait) {
       if (evt !== 'ajax') {
@@ -263,7 +263,7 @@ export default function jQueryPluginSVGIcons ($) {
      * @param {external:jQuery} icon A wrapped `defs` or Image
      * @param {string} id SVG icon ID
      * @param {boolean} setID Whether to set the ID attribute (with `id`)
-     * @returns {undefined}
+     * @returns {void}
      */
     function setIcon (target, icon, id, setID) {
       if (isOpera) icon.css('visibility', 'hidden');
@@ -293,7 +293,7 @@ export default function jQueryPluginSVGIcons ($) {
     /**
      * @param {external:jQuery} icon A wrapped `defs` or Image
      * @param {string} id SVG icon ID
-     * @returns {undefined}
+     * @returns {void}
      */
     function addIcon (icon, id) {
       if (opts.id_match === undefined || opts.id_match !== false) {
@@ -306,7 +306,7 @@ export default function jQueryPluginSVGIcons ($) {
      *
      * @param {boolean} [toImage]
      * @param {external:jQuery.svgIcons.Fallback} [fallback]
-     * @returns {undefined}
+     * @returns {void}
      */
     function makeIcons (toImage = false, fallback) {
       if (iconsMade) return;
@@ -473,7 +473,7 @@ export default function jQueryPluginSVGIcons ($) {
     };
 
     /**
-     * @returns {undefined}
+     * @returns {void}
      */
     function useFallback () {
       if (file.includes('.svgz')) {
@@ -519,7 +519,7 @@ export default function jQueryPluginSVGIcons ($) {
   * @function external:jQuery.resizeSvgIcons
   * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} obj Object with
   *   selectors as keys. The values are sizes.
-  * @returns {undefined}
+  * @returns {void}
   */
   $.resizeSvgIcons = function (obj) {
     // FF2 and older don't detect .svg_icon, so we change it detect svg elems instead

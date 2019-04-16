@@ -20,7 +20,7 @@ function toAbsoluteURL (url) {
  * Add any of the whitelisted attributes to the script tag.
  * @param {HTMLScriptElement} script
  * @param {PlainObject.<string, string>} atts
- * @returns {undefined}
+ * @returns {void}
  */
 function addScriptAtts (script, atts) {
   ['id', 'class', 'type'].forEach((prop) => {
@@ -81,7 +81,7 @@ export function importScript (url, atts = {}) {
     const script = document.createElement('script');
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function scriptOnError () {
       reject(new Error(`Failed to import: ${url}`));
@@ -89,7 +89,7 @@ export function importScript (url, atts = {}) {
     }
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function scriptOnLoad () {
       resolve();
@@ -131,7 +131,7 @@ export function importModule (url, atts = {}, {returnDefault = false} = {}) {
     const script = document.createElement('script');
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function scriptOnError () {
       reject(new Error(`Failed to import: ${url}`));
@@ -139,7 +139,7 @@ export function importModule (url, atts = {}, {returnDefault = false} = {}) {
     }
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function scriptOnLoad () {
       resolve(window[vector]);

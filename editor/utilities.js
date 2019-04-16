@@ -93,7 +93,7 @@ let svgroot_ = null;
 /**
 * @function module:utilities.init
 * @param {module:utilities.EditorContext} editorContext
-* @returns {undefined}
+* @returns {void}
 */
 export const init = function (editorContext) {
   editorContext_ = editorContext;
@@ -371,7 +371,7 @@ export const bboxToObj = function ({x, y, width, height}) {
 /**
 * @callback module:utilities.TreeWalker
 * @param {Element} elem - DOM element being traversed
-* @returns {undefined}
+* @returns {void}
 */
 
 /**
@@ -379,7 +379,7 @@ export const bboxToObj = function ({x, y, width, height}) {
 * @function module:utilities.walkTree
 * @param {Element} elem - DOM element to traverse
 * @param {module:utilities.TreeWalker} cbFn - Callback function to run on each element
-* @returns {undefined}
+* @returns {void}
 */
 export const walkTree = function (elem, cbFn) {
   if (elem && elem.nodeType === 1) {
@@ -397,7 +397,7 @@ export const walkTree = function (elem, cbFn) {
 * @todo FIXME: Shouldn't this be calling walkTreePost?
 * @param {Element} elem - DOM element to traverse
 * @param {module:utilities.TreeWalker} cbFn - Callback function to run on each element
-* @returns {undefined}
+* @returns {void}
 */
 export const walkTreePost = function (elem, cbFn) {
   if (elem && elem.nodeType === 1) {
@@ -450,7 +450,7 @@ export let getHref = function (elem) { // eslint-disable-line import/no-mutable-
 * @function module:utilities.setHref
 * @param {Element} elem
 * @param {string} val
-* @returns {undefined}
+* @returns {void}
 */
 export let setHref = function (elem, val) { // eslint-disable-line import/no-mutable-exports
   elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
@@ -1222,7 +1222,7 @@ export const getElem = (supportsSelectors())
 * @param {PlainObject.<string, string>} attrs - Object with attribute keys/values
 * @param {Integer} [suspendLength] - Milliseconds to suspend redraw
 * @param {boolean} [unitCheck=false] - Boolean to indicate the need to use units.setUnitAttr
-* @returns {undefined}
+* @returns {void}
 */
 export const assignAttributes = function (elem, attrs, suspendLength, unitCheck) {
   for (const [key, value] of Object.entries(attrs)) {
@@ -1244,7 +1244,7 @@ export const assignAttributes = function (elem, attrs, suspendLength, unitCheck)
 * Remove unneeded (default) attributes, making resulting SVG smaller.
 * @function module:utilities.cleanupElement
 * @param {Element} element - DOM element to clean up
-* @returns {undefined}
+* @returns {void}
 */
 export const cleanupElement = function (element) {
   const defaults = {
@@ -1305,7 +1305,7 @@ export const regexEscape = function (str) {
  * Prevents default browser click behaviour on the given element.
  * @function module:utilities.preventClickDefault
  * @param {Element} img - The DOM element to prevent the click on
- * @returns {undefined}
+ * @returns {void}
  */
 export const preventClickDefault = function (img) {
   $(img).click(function (e) { e.preventDefault(); });
@@ -1380,7 +1380,7 @@ export const isNullish = (val) => {
 * Overwrite methods for unit testing.
 * @function module:utilities.mock
 * @param {PlainObject} mockMethods
-* @returns {undefined}
+* @returns {void}
 */
 export const mock = ({
   getHref: getHrefUser, setHref: setHrefUser, getRotationAngle: getRotationAngleUser

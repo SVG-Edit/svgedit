@@ -52,7 +52,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
   /**
    * Triggered upon a change of value for the select pull-down.
    * @callback module:jQueryPluginDBox.SelectChangeListener
-   * @returns {undefined}
+   * @returns {void}
    */
   /**
    * Creates a dialog of the specified type with a given message

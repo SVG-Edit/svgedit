@@ -278,7 +278,7 @@ export const supportsNativeTransformLists = () => supportsNativeSVGTransformList
 /**
  * Set `supportsNativeSVGTransformLists_` to `false` (for unit testing).
  * @function module:browser.disableSupportsNativeTransformLists
- * @returns {undefined}
+ * @returns {void}
 */
 export const disableSupportsNativeTransformLists = () => {
   supportsNativeSVGTransformLists_ = false;

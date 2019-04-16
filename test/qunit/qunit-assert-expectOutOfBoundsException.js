@@ -3,7 +3,7 @@
  * @param {GenericObject} obj
  * @param {GenericCallback} fn
  * @param {Any} arg1
- * @returns {undefined}
+ * @returns {void}
  */
 function expectOutOfBoundsException (obj, fn, arg1) {
   const expected = true;

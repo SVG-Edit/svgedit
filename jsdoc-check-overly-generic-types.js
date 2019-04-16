@@ -61,7 +61,7 @@ console.log(`${output}\nTotal failures found: ${total}.\n`); // eslint-disable-l
  * Eliminates known false matches against overly generic types.
  * @param {string} file
  * @param {external:FindInFilesResult} res
- * @returns {undefined}
+ * @returns {void}
  */
 function reduceFalseMatches (file, res) {
   switch (file) {

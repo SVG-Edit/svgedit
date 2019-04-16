@@ -2,7 +2,7 @@
 /**
  *
  * @param {Event} ev
- * @returns {undefined}
+ * @returns {void}
  */
 function touchHandler (ev) {
   const {changedTouches} = ev,

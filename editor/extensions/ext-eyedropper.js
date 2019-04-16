@@ -28,7 +28,7 @@ export default {
     /**
      *
      * @param {module:svgcanvas.SvgCanvas#event:ext-selectedChanged|module:svgcanvas.SvgCanvas#event:ext-elementChanged} opts
-     * @returns {undefined}
+     * @returns {void}
      */
     function getStyle (opts) {
       // if we are in eyedropper mode, we don't want to disable the eye-dropper tool

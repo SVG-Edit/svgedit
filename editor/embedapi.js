@@ -8,7 +8,7 @@ let cbid = 0;
 /**
 * @callback module:EmbeddedSVGEdit.CallbackSetter
 * @param {GenericCallback} newCallback Callback to be stored (signature dependent on function)
-* @returns {undefined}
+* @returns {void}
 */
 /**
 * @callback module:EmbeddedSVGEdit.CallbackSetGetter
@@ -37,7 +37,7 @@ function getCallbackSetter (funcName) {
 * of same domain control.
 * @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
 * @param {JSON} data
-* @returns {undefined}
+* @returns {void}
 */
 function addCallback (t, {result, error, id: callbackID}) {
   if (typeof callbackID === 'number' && t.callbacks[callbackID]) {
@@ -53,7 +53,7 @@ function addCallback (t, {result, error, id: callbackID}) {
 
 /**
 * @param {Event} e
-* @returns {undefined}
+* @returns {void}
 */
 function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
@@ -76,7 +76,7 @@ function messageListener (e) {
 /**
 * @callback module:EmbeddedSVGEdit.MessageListener
 * @param {MessageEvent} e
-* @returns {undefined}
+* @returns {void}
 */
 /**
 * @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value

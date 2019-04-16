@@ -22,7 +22,7 @@ export default {
       * @param {module:svgcanvas.SvgCanvas#event:message} data
       * @listens module:svgcanvas.SvgCanvas#event:message
       * @throws {Error} Unexpected event type
-      * @returns {undefined}
+      * @returns {void}
       */
       (win, {data, origin}) => { // eslint-disable-line no-shadow
         // console.log('data, origin', data, origin);

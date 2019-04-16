@@ -1,6 +1,6 @@
 /**
  * Opens the dialog with the SVG Editor.
- * @returns {undefined}
+ * @returns {void}
  */
 function startSvgEdit () { // eslint-disable-line no-unused-vars
   const url = 'chrome://svg-edit/content/editor/svg-editor.html';

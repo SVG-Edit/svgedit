@@ -12,7 +12,7 @@
  * @param {PlainObject} implementations
  * @param {external:sinon} implementations.sinon
  * @param {external:QUnit} implementations.QUnit
- * @returns {undefined}
+ * @returns {void}
  */
 export default function sinonQunit ({sinon, QUnit}) {
   sinon.assert.fail = function (msg) {

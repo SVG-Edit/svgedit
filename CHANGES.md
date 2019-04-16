@@ -5,7 +5,8 @@
 - Enhancement: Return a Promise for Editor's `setCustomHandlers`,
     `loadFromString`, `loadFromDataURI` so known when ready and set
 - Refactoring: Destructuring, templates, label Unicode code point
-- Linting (JSDoc): Update per newly enforced `require-returns`
+- Linting (JSDoc): Update per newly enforced `require-returns`; avoid
+  Closure syntax
 - Docs (Refactoring): Formally specify `Promise` resolve type;
     add `typedef` for dialog result object; add an
     `ArbitraryCallbackResult` type; prefer `void`
