@@ -273,7 +273,7 @@ var svgEditorExtension_arrows = (function () {
                 /**
                 * @param {Window} win
                 * @param {!(string|Integer)} n
-                * @returns {undefined}
+                * @returns {void}
                 */
 
                 svgCanvas.bind('setnonce', setArrowNonce);

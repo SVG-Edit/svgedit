@@ -135,7 +135,7 @@ var svgEditorExtension_connector = (function () {
                     var addThis;
                     /**
                     *
-                    * @returns {undefined}
+                    * @returns {void}
                     */
 
                     function add() {
@@ -347,7 +347,7 @@ var svgEditorExtension_connector = (function () {
                 })();
                 /**
                 * Do on reset.
-                * @returns {undefined}
+                * @returns {void}
                 */
 
 

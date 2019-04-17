@@ -3009,7 +3009,7 @@
   /**
    * Shows results after query submission.
    * @param {string} url
-   * @returns {undefined}
+   * @returns {void}
    */
 
   function processResults(_x) {

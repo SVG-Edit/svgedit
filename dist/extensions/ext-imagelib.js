@@ -237,7 +237,7 @@ var svgEditorExtension_imagelib = (function () {
                 });
                 /**
                 *
-                * @returns {undefined}
+                * @returns {void}
                 */
 
                 pending = {};
@@ -542,7 +542,7 @@ var svgEditorExtension_imagelib = (function () {
                 }(), true);
                 /**
                 * @param {boolean} show
-                * @returns {undefined}
+                * @returns {void}
                 */
 
                 buttons = [{

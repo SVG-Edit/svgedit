@@ -205,7 +205,7 @@ var svgEditorExtension_shapes = (function () {
                 curLib = library.basic;
                 /**
                 *
-                * @returns {undefined}
+                * @returns {void}
                 */
 
                 buttons = [{

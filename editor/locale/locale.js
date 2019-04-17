@@ -126,7 +126,7 @@ export const init = (editor) => {
 /**
 * @function module:locale.readLang
 * @param {module:locale.LocaleStrings} langData See {@tutorial LocaleDocs}
-* @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
+* @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
 * @returns {Promise<module:locale.LangAndData>} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
 */
 export const readLang = async function (langData) {
@@ -363,9 +363,9 @@ export const readLang = async function (langData) {
  * @param {string} givenParam
  * @param {string[]} goodLangs
  * @param {{langPath: string}} conf
- * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
- * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
- * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
+ * @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
+ * @fires module:svgcanvas.SvgCanvas#event:ext_langReady
+ * @fires module:svgcanvas.SvgCanvas#event:ext_langChanged
  * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
 */
 export const putLocale = async function (givenParam, goodLangs, conf) {

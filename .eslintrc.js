@@ -63,8 +63,9 @@ module.exports = {
     }
   },
   overrides: [
+    // Remove this rule when fully migrated to eslint-plugin-jsdoc: https://github.com/gajus/eslint-plugin-jsdoc/issues/107
     // These would otherwise currently break because of these issues:
-    //  1. `event:` https://github.com/eslint/doctrine/issues/221 and https://github.com/Kuniwak/jsdoctypeparser/pull/49 with https://github.com/Kuniwak/jsdoctypeparser/issues/47
+    //  1. `event:` https://github.com/eslint/doctrine/issues/221
     //  1. `@implements`/`@augments`/`@extends`/`@override`: https://github.com/eslint/doctrine/issues/222
     {
       files: [
@@ -73,7 +74,6 @@ module.exports = {
         "editor/extensions/ext-eyedropper.js", "editor/extensions/ext-webappfind.js"
       ],
       rules: {
-        "jsdoc/valid-types": "off",
         "valid-jsdoc": "off"
       }
     },

@@ -174,7 +174,7 @@ var svgEditorExtension_grid = (function () {
                 /**
                  *
                  * @param {Float} zoom
-                 * @returns {undefined}
+                 * @returns {void}
                  */
 
                 buttons = [{

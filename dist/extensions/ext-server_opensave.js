@@ -4358,7 +4358,7 @@ var svgEditorExtension_server_opensave = (function () {
     * @param {Float} width
     * @param {Float} height
     * @param {Integer} rgba
-    * @returns {undefined}
+    * @returns {void}
     */
 
 
@@ -4373,7 +4373,7 @@ var svgEditorExtension_server_opensave = (function () {
     * @param {Float} height
     * @param {Integer} rgba
     * @param {Float} val
-    * @returns {undefined}
+    * @returns {void}
     */
 
 
@@ -4879,7 +4879,7 @@ var svgEditorExtension_server_opensave = (function () {
                   /**
                    * Submit the form, empty its contents for reuse and show
                    *   uploading message.
-                   * @returns {undefined}
+                   * @returns {void}
                    */
 
                   function submit() {
@@ -5188,7 +5188,7 @@ var svgEditorExtension_server_opensave = (function () {
                 /**
                  *
                  * @param {external:jQuery} form
-                 * @returns {undefined}
+                 * @returns {void}
                  */
 
                 // Create the input elements

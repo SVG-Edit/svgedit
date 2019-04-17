@@ -27,7 +27,7 @@ export default {
 
     /**
      *
-     * @param {module:svgcanvas.SvgCanvas#event:ext-selectedChanged|module:svgcanvas.SvgCanvas#event:ext-elementChanged} opts
+     * @param {module:svgcanvas.SvgCanvas#event:ext_selectedChanged|module:svgcanvas.SvgCanvas#event:ext_elementChanged} opts
      * @returns {void}
      */
     function getStyle (opts) {

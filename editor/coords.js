@@ -42,7 +42,7 @@ let editorContext_ = null;
 
 /**
 * @function module:coords.init
-* @param {module:coords.EditorContext} editorContext
+* @param {module:svgcanvas.SvgCanvas#event:pointsAdded} editorContext
 * @returns {void}
 */
 export const init = function (editorContext) {

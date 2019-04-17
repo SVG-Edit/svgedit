@@ -794,9 +794,9 @@ editor.init = function () {
   };
 
   /**
-   * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
-   * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
-   * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
+   * @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
+   * @fires module:svgcanvas.SvgCanvas#event:ext_langReady
+   * @fires module:svgcanvas.SvgCanvas#event:ext_langChanged
    * @fires module:svgcanvas.SvgCanvas#event:extensions_added
    * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
    */
@@ -2145,7 +2145,7 @@ editor.init = function () {
   };
 
   /**
-   * @fires module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate
+   * @fires module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate
    * @returns {void}
    */
   const updateToolButtonState = function () {
@@ -2185,7 +2185,7 @@ editor.init = function () {
 
     svgCanvas.runExtensions(
       'toolButtonStateUpdate',
-      /** @type {module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate} */ {
+      /** @type {module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate} */ {
         nofill: bNoFill,
         nostroke: bNoStroke
       }
@@ -2536,7 +2536,7 @@ editor.init = function () {
   * @param {external:Window} win
   * @param {module:svgcanvas.SvgCanvas#event:selected} elems Array of elements that were selected
   * @listens module:svgcanvas.SvgCanvas#event:selected
-  * @fires module:svgcanvas.SvgCanvas#event:ext-selectedChanged
+  * @fires module:svgcanvas.SvgCanvas#event:ext_selectedChanged
   * @returns {void}
   */
   const selectedChanged = function (win, elems) {
@@ -2561,7 +2561,7 @@ editor.init = function () {
     // Deal with pathedit mode
     togglePathEditMode(isNode, elems);
     updateContextPanel();
-    svgCanvas.runExtensions('selectedChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-selectedChanged} */ {
+    svgCanvas.runExtensions('selectedChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_selectedChanged} */ {
       elems,
       selectedElement,
       multiselected
@@ -2574,7 +2574,7 @@ editor.init = function () {
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:transition} elems
    * @listens module:svgcanvas.SvgCanvas#event:transition
-   * @fires module:svgcanvas.SvgCanvas#event:ext-elementTransition
+   * @fires module:svgcanvas.SvgCanvas#event:ext_elementTransition
    * @returns {void}
    */
   const elementTransition = function (win, elems) {
@@ -2603,7 +2603,7 @@ editor.init = function () {
       }
       }
     }
-    svgCanvas.runExtensions('elementTransition', /** @type {module:svgcanvas.SvgCanvas#event:ext-elementTransition} */ {
+    svgCanvas.runExtensions('elementTransition', /** @type {module:svgcanvas.SvgCanvas#event:ext_elementTransition} */ {
       elems
     });
   };
@@ -2622,7 +2622,7 @@ editor.init = function () {
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:changed} elems
    * @listens module:svgcanvas.SvgCanvas#event:changed
-   * @fires module:svgcanvas.SvgCanvas#event:ext-elementChanged
+   * @fires module:svgcanvas.SvgCanvas#event:ext_elementChanged
    * @returns {void}
    */
   const elementChanged = function (win, elems) {
@@ -2664,7 +2664,7 @@ editor.init = function () {
       paintBox.stroke.update();
     }
 
-    svgCanvas.runExtensions('elementChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-elementChanged} */ {
+    svgCanvas.runExtensions('elementChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_elementChanged} */ {
       elems
     });
   };
@@ -4432,7 +4432,7 @@ editor.init = function () {
   };
 
   /**
-   * @fires module:svgcanvas.SvgCanvas#event:ext-onNewDocument
+   * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
    * @returns {Promise<void>} Resolves to `undefined`
    */
   const clickClear = async function () {
@@ -5361,7 +5361,7 @@ editor.init = function () {
 
   /**
    * @param {Float} delta
-   * @fires module:svgcanvas.SvgCanvas#event:ext-workareaResized
+   * @fires module:svgcanvas.SvgCanvas#event:ext_workareaResized
    * @returns {void}
    */
   const changeSidePanelWidth = function (delta) {
@@ -6214,8 +6214,8 @@ editor.init = function () {
   * @function module:SVGEditor.setLang
   * @param {string} lang The language code
   * @param {module:locale.LocaleStrings} allStrings See {@tutorial LocaleDocs}
-  * @fires module:svgcanvas.SvgCanvas#event:ext-langReady
-  * @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
+  * @fires module:svgcanvas.SvgCanvas#event:ext_langReady
+  * @fires module:svgcanvas.SvgCanvas#event:ext_langChanged
   * @returns {Promise<void>} A Promise which resolves to `undefined`
   */
   const setLang = editor.setLang = async function (lang, allStrings) {
@@ -6262,13 +6262,13 @@ editor.init = function () {
         svgCanvas.runExtension(
           loadedExtensionName,
           'langReady',
-          /** @type {module:svgcanvas.SvgCanvas#event:ext-langReady} */ {
+          /** @type {module:svgcanvas.SvgCanvas#event:ext_langReady} */ {
             lang, uiStrings, importLocale: getImportLocale({defaultLang: lang, defaultName: loadedExtensionName})
           }
         );
       });
     }
-    svgCanvas.runExtensions('langChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-langChanged} */ lang);
+    svgCanvas.runExtensions('langChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_langChanged} */ lang);
 
     // Update flyout tooltips
     setFlyoutTitles();
@@ -6300,7 +6300,7 @@ editor.init = function () {
       * returning an object with a `data` property set to its locales (to be
       * merged with regular locales).
       * @param {string} langParam
-      * @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
+      * @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
       * @todo Can we forego this in favor of `langReady` (or forego `langReady`)?
       * @returns {module:locale.AddLangExtensionLocaleData[]}
       */
@@ -6311,7 +6311,7 @@ editor.init = function () {
            * @function
            * @type {module:svgcanvas.ExtensionVarBuilder}
            * @param {string} name
-           * @returns {module:svgcanvas.SvgCanvas#event:ext-addLangData}
+           * @returns {module:svgcanvas.SvgCanvas#event:ext_addLangData}
            */
           (name) => { // We pass in a function as we don't know the extension name here when defining this `addLangData` method
             return {

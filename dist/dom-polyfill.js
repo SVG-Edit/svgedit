@@ -25,7 +25,7 @@
    *
    * @param {Node} o
    * @param {module:DOMPolyfill~ParentNode|module:DOMPolyfill~ChildNode} ps
-   * @returns {undefined}
+   * @returns {void}
    */
   function mixin(o, ps) {
     if (!o) return;

@@ -158,7 +158,7 @@ In addition to your own extension's locale strings,
 [`langReady`]{@link module:svgcanvas.ExtensionInitResponse#langReady}
 also has access to the global internationalization strings through the
 `uiStrings` property on the object passed to it (see
-[event:ext-langReady]{@link module:svgcanvas.SvgCanvas#event:ext-langReady}).
+[event:ext_langReady]{@link module:svgcanvas.SvgCanvas#event:ext_langReady}).
 
 See also [LocaleDocs]{@tutorial LocaleDocs}, including for information on
 formatting of locale strings (the current lack of any standard beyond a

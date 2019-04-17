@@ -4358,7 +4358,7 @@ var svgEditorExtension_server_moinsave = (function () {
     * @param {Float} width
     * @param {Float} height
     * @param {Integer} rgba
-    * @returns {undefined}
+    * @returns {void}
     */
 
 
@@ -4373,7 +4373,7 @@ var svgEditorExtension_server_moinsave = (function () {
     * @param {Float} height
     * @param {Integer} rgba
     * @param {Float} val
-    * @returns {undefined}
+    * @returns {void}
     */
 
 

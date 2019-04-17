@@ -416,7 +416,7 @@ var svgEditorExtension_placemark = (function () {
                 /**
                  *
                  * @param {boolean} on
-                 * @returns {undefined}
+                 * @returns {void}
                  */
 
                 buttons = [{

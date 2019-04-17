@@ -132,7 +132,7 @@ var svgEditorExtension_foreignobject = (function () {
                 };
                 /**
                 * @param {boolean} on
-                * @returns {undefined}
+                * @returns {void}
                 */
 
 

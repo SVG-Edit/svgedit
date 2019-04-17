@@ -4358,7 +4358,7 @@ var canvg = (function (exports) {
     * @param {Float} width
     * @param {Float} height
     * @param {Integer} rgba
-    * @returns {undefined}
+    * @returns {void}
     */
 
 
@@ -4373,7 +4373,7 @@ var canvg = (function (exports) {
     * @param {Float} height
     * @param {Integer} rgba
     * @param {Float} val
-    * @returns {undefined}
+    * @returns {void}
     */
 
 

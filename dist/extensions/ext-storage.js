@@ -117,7 +117,7 @@ var svgEditorExtension_storage = (function () {
       /**
        * Replace `storagePrompt` parameter within URL.
        * @param {string} val
-       * @returns {undefined}
+       * @returns {void}
        */
 
       function replaceStoragePrompt(val) {
@@ -136,7 +136,7 @@ var svgEditorExtension_storage = (function () {
        * Sets SVG content as a string with "svgedit-" and the current
        *   canvas name as namespace.
        * @param {string} val
-       * @returns {undefined}
+       * @returns {void}
        */
 
 
@@ -154,7 +154,7 @@ var svgEditorExtension_storage = (function () {
       /**
        * Set the cookie to expire.
        * @param {string} cookie
-       * @returns {undefined}
+       * @returns {void}
        */
 
 
@@ -163,7 +163,7 @@ var svgEditorExtension_storage = (function () {
       }
       /**
        * Expire the storage cookie.
-       * @returns {undefined}
+       * @returns {void}
        */
 
 
@@ -172,7 +172,7 @@ var svgEditorExtension_storage = (function () {
       }
       /**
        * Empties storage for each of the current preferences.
-       * @returns {undefined}
+       * @returns {void}
        */
 
 
@@ -196,7 +196,7 @@ var svgEditorExtension_storage = (function () {
       *       content into storage)
       * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
       * 3. Use localStorage (where available) or cookies to set preferences.
-      * @returns {undefined}
+      * @returns {void}
       */
 
 

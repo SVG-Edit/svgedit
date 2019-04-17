@@ -1006,7 +1006,7 @@ this.runExtension = function (name, action, vars) {
 /**
 * @callback module:svgcanvas.ExtensionVarBuilder
 * @param {string} name The name of the extension
-* @returns {module:svgcanvas.SvgCanvas#event:ext-addLangData}
+* @returns {module:svgcanvas.SvgCanvas#event:ext_addLangData}
 */
 /**
 * @callback module:svgcanvas.ExtensionNameFilter
@@ -1018,7 +1018,7 @@ this.runExtension = function (name, action, vars) {
 * @todo Would be easier to document if passing in object with key of action and vars as value; could then define an interface which tied both together
 * @function module:svgcanvas.SvgCanvas#runExtensions
 * @param {"mouseDown"|"mouseMove"|"mouseUp"|"zoomChanged"|"IDsUpdated"|"canvasUpdated"|"toolButtonStateUpdate"|"selectedChanged"|"elementTransition"|"elementChanged"|"langReady"|"langChanged"|"addLangData"|"onNewDocument"|"workareaResized"} action
-* @param {module:svgcanvas.SvgCanvas#event:ext-mouseDown|module:svgcanvas.SvgCanvas#event:ext-mouseMove|module:svgcanvas.SvgCanvas#event:ext-mouseUp|module:svgcanvas.SvgCanvas#event:ext-zoomChanged|module:svgcanvas.SvgCanvas#event:ext-IDsUpdated|module:svgcanvas.SvgCanvas#event:ext-canvasUpdated|module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate|module:svgcanvas.SvgCanvas#event:ext-selectedChanged|module:svgcanvas.SvgCanvas#event:ext-elementTransition|module:svgcanvas.SvgCanvas#event:ext-elementChanged|module:svgcanvas.SvgCanvas#event:ext-langReady|module:svgcanvas.SvgCanvas#event:ext-langChanged|module:svgcanvas.SvgCanvas#event:ext-addLangData|module:svgcanvas.SvgCanvas#event:ext-onNewDocument|module:svgcanvas.SvgCanvas#event:ext-workareaResized|module:svgcanvas.ExtensionVarBuilder} [vars]
+* @param {module:svgcanvas.SvgCanvas#event:ext_mouseDown|module:svgcanvas.SvgCanvas#event:ext_mouseMove|module:svgcanvas.SvgCanvas#event:ext_mouseUp|module:svgcanvas.SvgCanvas#event:ext_zoomChanged|module:svgcanvas.SvgCanvas#event:ext_IDsUpdated|module:svgcanvas.SvgCanvas#event:ext_canvasUpdated|module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate|module:svgcanvas.SvgCanvas#event:ext_selectedChanged|module:svgcanvas.SvgCanvas#event:ext_elementTransition|module:svgcanvas.SvgCanvas#event:ext_elementChanged|module:svgcanvas.SvgCanvas#event:ext_langReady|module:svgcanvas.SvgCanvas#event:ext_langChanged|module:svgcanvas.SvgCanvas#event:ext_addLangData|module:svgcanvas.SvgCanvas#event:ext_onNewDocument|module:svgcanvas.SvgCanvas#event:ext_workareaResized|module:svgcanvas.ExtensionVarBuilder} [vars]
 * @param {boolean} [returnArray]
 * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
 * @returns {GenericArray.<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
@@ -1066,83 +1066,83 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#mouseDown
- * @param {module:svgcanvas.SvgCanvas#event:ext-mouseDown} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_mouseDown} arg
  * @returns {void|module:svgcanvas.ExtensionMouseDownStatus}
  */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#mouseMove
- * @param {module:svgcanvas.SvgCanvas#event:ext-mouseMove} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_mouseMove} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#mouseUp
- * @param {module:svgcanvas.SvgCanvas#event:ext-mouseUp} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_mouseUp} arg
  * @returns {module:svgcanvas.ExtensionMouseUpStatus}
  */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#zoomChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext-zoomChanged} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#IDsUpdated
- * @param {module:svgcanvas.SvgCanvas#event:ext-IDsUpdated} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} arg
  * @returns {module:svgcanvas.ExtensionIDsUpdatedStatus}
  */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#canvasUpdated
- * @param {module:svgcanvas.SvgCanvas#event:ext-canvasUpdated} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#toolButtonStateUpdate
- * @param {module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#selectedChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext-selectedChanged} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_selectedChanged} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#elementTransition
- * @param {module:svgcanvas.SvgCanvas#event:ext-elementTransition} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_elementTransition} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#elementChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext-elementChanged} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_elementChanged} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#langReady
- * @param {module:svgcanvas.SvgCanvas#event:ext-langReady} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_langReady} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#langChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext-langChanged} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_langChanged} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#addLangData
- * @param {module:svgcanvas.SvgCanvas#event:ext-addLangData} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_addLangData} arg
  * @returns {Promise<module:locale.ExtensionLocaleData>} Resolves to {@link module:locale.ExtensionLocaleData}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#onNewDocument
- * @param {module:svgcanvas.SvgCanvas#event:ext-onNewDocument} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_onNewDocument} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#workareaResized
- * @param {module:svgcanvas.SvgCanvas#event:ext-workareaResized} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_workareaResized} arg
  * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#callback
  * @this module:SVGEditor
- * @param {module:svgcanvas.SvgCanvas#event:ext-callback} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_callback} arg
  * @returns {void}
 */
 
@@ -1727,7 +1727,7 @@ const getBsplinePoint = function (t) {
  * - When we are in select mode, select the element, remember the position
  *   and do nothing else.
  * @param {MouseEvent} evt
- * @fires module:svgcanvas.SvgCanvas#event:ext-mouseDown
+ * @fires module:svgcanvas.SvgCanvas#event:ext_mouseDown
  * @returns {void}
  */
 const mouseDown = function (evt) {
@@ -2088,14 +2088,14 @@ const mouseDown = function (evt) {
 
   /**
    * The main (left) mouse button is held down on the canvas area
-   * @event module:svgcanvas.SvgCanvas#event:ext-mouseDown
+   * @event module:svgcanvas.SvgCanvas#event:ext_mouseDown
    * @type {PlainObject}
    * @property {MouseEvent} event The event object
    * @property {Float} start_x x coordinate on canvas
    * @property {Float} start_y y coordinate on canvas
    * @property {Element[]} selectedElements An array of the selected Elements
   */
-  const extResult = runExtensions('mouseDown', /** @type {module:svgcanvas.SvgCanvas#event:ext-mouseDown} */ {
+  const extResult = runExtensions('mouseDown', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseDown} */ {
     event: evt,
     start_x: startX,
     start_y: startY,
@@ -2115,7 +2115,7 @@ const mouseDown = function (evt) {
  *
  * @param {MouseEvent} evt
  * @fires module:svgcanvas.SvgCanvas#event:transition
- * @fires module:svgcanvas.SvgCanvas#event:ext-mouseMove
+ * @fires module:svgcanvas.SvgCanvas#event:ext_mouseMove
  * @returns {void}
  */
 const mouseMove = function (evt) {
@@ -2540,14 +2540,14 @@ const mouseMove = function (evt) {
 
   /**
   * The mouse has moved on the canvas area
-  * @event module:svgcanvas.SvgCanvas#event:ext-mouseMove
+  * @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
   * @type {PlainObject}
   * @property {MouseEvent} event The event object
   * @property {Float} mouse_x x coordinate on canvas
   * @property {Float} mouse_y y coordinate on canvas
   * @property {Element} selected Refers to the first selected element
   */
-  runExtensions('mouseMove', /** @type {module:svgcanvas.SvgCanvas#event:ext-mouseMove} */ {
+  runExtensions('mouseMove', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseMove} */ {
     event: evt,
     mouse_x: mouseX,
     mouse_y: mouseY,
@@ -2565,7 +2565,7 @@ const mouseMove = function (evt) {
  * @param {MouseEvent} evt
  * @fires module:svgcanvas.SvgCanvas#event:zoomed
  * @fires module:svgcanvas.SvgCanvas#event:changed
- * @fires module:svgcanvas.SvgCanvas#event:ext-mouseUp
+ * @fires module:svgcanvas.SvgCanvas#event:ext_mouseUp
  * @returns {void}
  */
 const mouseUp = function (evt) {
@@ -2802,13 +2802,13 @@ const mouseUp = function (evt) {
 
   /**
   * The main (left) mouse button is released (anywhere)
-  * @event module:svgcanvas.SvgCanvas#event:ext-mouseUp
+  * @event module:svgcanvas.SvgCanvas#event:ext_mouseUp
   * @type {PlainObject}
   * @property {MouseEvent} event The event object
   * @property {Float} mouse_x x coordinate on canvas
   * @property {Float} mouse_y y coordinate on canvas
   */
-  const extResult = runExtensions('mouseUp', /** @type {module:svgcanvas.SvgCanvas#event:ext-mouseUp} */ {
+  const extResult = runExtensions('mouseUp', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseUp} */ {
     event: evt,
     mouse_x: mouseX,
     mouse_y: mouseY
@@ -5202,19 +5202,19 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 
 /**
 * The zoom level has changed. Supplies the new zoom level as a number (not percentage).
-* @event module:svgcanvas.SvgCanvas#event:ext-zoomChanged
+* @event module:svgcanvas.SvgCanvas#event:ext_zoomChanged
 * @type {Float}
 */
 /**
 * The bottom panel was updated
-* @event module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate
+* @event module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate
 * @type {PlainObject}
 * @property {boolean} nofill Indicates fill is disabled
 * @property {boolean} nostroke Indicates stroke is disabled
 */
 /**
 * The element selection has changed (elements were added/removed from selection)
-* @event module:svgcanvas.SvgCanvas#event:ext-selectedChanged
+* @event module:svgcanvas.SvgCanvas#event:ext_selectedChanged
 * @type {PlainObject}
 * @property {Element[]} elems Array of the newly selected elements
 * @property {Element|null} selectedElement The single selected element
@@ -5223,19 +5223,19 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 /**
 * Called when part of element is in process of changing, generally on
 * mousemove actions like rotate, move, etc.
-* @event module:svgcanvas.SvgCanvas#event:ext-elementTransition
+* @event module:svgcanvas.SvgCanvas#event:ext_elementTransition
 * @type {PlainObject}
 * @property {Element[]} elems Array of transitioning elements
 */
 /**
 * One or more elements were changed
-* @event module:svgcanvas.SvgCanvas#event:ext-elementChanged
+* @event module:svgcanvas.SvgCanvas#event:ext_elementChanged
 * @type {PlainObject}
 * @property {Element[]} elems Array of the affected elements
 */
 /**
 * Invoked as soon as the locale is ready
-* @event module:svgcanvas.SvgCanvas#event:ext-langReady
+* @event module:svgcanvas.SvgCanvas#event:ext_langReady
 * @type {PlainObject}
 * @property {string} lang The two-letter language code
 * @property {module:SVGEditor.uiStrings} uiStrings
@@ -5243,30 +5243,30 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 */
 /**
 * The language was changed. Two-letter code of the new language.
-* @event module:svgcanvas.SvgCanvas#event:ext-langChanged
+* @event module:svgcanvas.SvgCanvas#event:ext_langChanged
 * @type {string}
 */
 /**
 * Means for an extension to add locale data. The two-letter language code.
-* @event module:svgcanvas.SvgCanvas#event:ext-addLangData
+* @event module:svgcanvas.SvgCanvas#event:ext_addLangData
 * @type {PlainObject}
 * @property {string} lang
 * @property {module:SVGEditor~ImportLocale} importLocale
 */
 /**
  * Called when new image is created
- * @event module:svgcanvas.SvgCanvas#event:ext-onNewDocument
+ * @event module:svgcanvas.SvgCanvas#event:ext_onNewDocument
  * @type {void}
  */
 /**
  * Called when sidepanel is resized or toggled
- * @event module:svgcanvas.SvgCanvas#event:ext-workareaResized
+ * @event module:svgcanvas.SvgCanvas#event:ext_workareaResized
  * @type {void}
 */
 /**
  * Called upon addition of the extension, or, if svgicons are set,
  * after the icons are ready when extension SVG icons have loaded.
- * @event module:svgcanvas.SvgCanvas#event:ext-callback
+ * @event module:svgcanvas.SvgCanvas#event:ext_callback
  * @type {void}
 */
 
@@ -5274,7 +5274,7 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 * Sets the zoom to the given level.
 * @function module:svgcanvas.SvgCanvas#setZoom
 * @param {Float} zoomLevel - Float indicating the zoom level to change to
-* @fires module:svgcanvas.SvgCanvas#event:ext-zoomChanged
+* @fires module:svgcanvas.SvgCanvas#event:ext_zoomChanged
 * @returns {void}
 */
 this.setZoom = function (zoomLevel) {
@@ -5286,7 +5286,7 @@ this.setZoom = function (zoomLevel) {
     selectorManager.requestSelector(elem).resize();
   });
   pathActions.zoomChange();
-  runExtensions('zoomChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-zoomChanged} */ zoomLevel);
+  runExtensions('zoomChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} */ zoomLevel);
 };
 
 /**
@@ -6368,7 +6368,7 @@ this.copySelectedElements = function () {
 * @param {Integer|void} x Expected if type is "point"
 * @param {Integer|void} y Expected if type is "point"
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @fires module:svgcanvas.SvgCanvas#event:ext-IDsUpdated
+* @fires module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
 * @returns {void}
 */
 this.pasteElements = function (type, x, y) {
@@ -6405,14 +6405,14 @@ this.pasteElements = function (type, x, y) {
   // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
   /**
   * Triggered when `pasteElements` is called from a paste action (context menu or key)
-  * @event module:svgcanvas.SvgCanvas#event:ext-IDsUpdated
+  * @event module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
   * @type {PlainObject}
   * @property {module:svgcanvas.SVGAsJSON[]} elems
   * @property {module:svgcanvas.ChangedIDs} changes Maps past ID (on attribute) to current ID
   */
   runExtensions(
     'IDsUpdated',
-    /** @type {module:svgcanvas.SvgCanvas#event:ext-IDsUpdated} */
+    /** @type {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} */
     {elems: clipb, changes: changedIDs},
     true
   ).forEach(function (extChanges) {
@@ -7130,7 +7130,7 @@ this.contentH = getResolution().h;
 * @function module:svgcanvas.SvgCanvas#updateCanvas
 * @param {Float} w - Float with the new width
 * @param {Float} h - Float with the new height
-* @fires module:svgcanvas.SvgCanvas#event:ext-canvasUpdated
+* @fires module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
 * @returns {module:svgcanvas.CanvasInfo}
 */
 this.updateCanvas = function (w, h) {
@@ -7169,7 +7169,7 @@ this.updateCanvas = function (w, h) {
 
   /**
   * Invoked upon updates to the canvas.
-  * @event module:svgcanvas.SvgCanvas#event:ext-canvasUpdated
+  * @event module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
   * @type {PlainObject}
   * @property {Integer} new_x
   * @property {Integer} new_y
@@ -7181,7 +7181,7 @@ this.updateCanvas = function (w, h) {
   runExtensions(
     'canvasUpdated',
     /**
-     * @type {module:svgcanvas.SvgCanvas#event:ext-canvasUpdated}
+     * @type {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated}
      */
     {new_x: x, new_y: y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY}
   );
