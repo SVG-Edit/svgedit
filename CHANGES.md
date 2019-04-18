@@ -3,7 +3,7 @@
 ## ?
 
 - Fix: Ensure PHP files are present in `dist/extensions` alongside
-    JavaScript files using them
+    JavaScript extension files using them
 - Fix: Bug in obtaining `extPath` in ext-server_opensave.js
 - Enhancement: Add config `avoidClientSide` to avoid using
     client-side support by default (and always require server)
