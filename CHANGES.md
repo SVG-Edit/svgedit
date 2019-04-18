@@ -2,6 +2,11 @@
 
 ## ?
 
+- Fix: Ensure PHP files are present in `dist/extensions` alongside
+    JavaScript files using them
+- Fix: Bug in obtaining `extPath` in ext-server_opensave.js
+- Enhancement: Add config `avoidClientSide` to avoid using
+    client-side support by default (and always require server)
 - Enhancement: Return a Promise for Editor's `setCustomHandlers`,
     `loadFromString`, `loadFromDataURI` so known when ready and set
 - Refactoring: Destructuring, templates, label Unicode code point
@@ -11,6 +16,7 @@
 - Docs (Refactoring): Formally specify `Promise` resolve type;
     add `typedef` for dialog result object; add an
     `ArbitraryCallbackResult` type; prefer `void`
+- Build: Require Node 8.5
 - npm: Rename `build-doc` to `build-docs`; add `open-docs` script
 - npm: Update devDeps (and our @babel/polyfill copy)
 

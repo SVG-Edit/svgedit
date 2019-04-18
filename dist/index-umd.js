@@ -28793,6 +28793,7 @@
   * @property {boolean} [noStorageOnLoad=false] Some interaction with `ext-storage.js`; prevent even the loading of previously saved local storage.
   * @property {boolean} [forceStorage=false] Some interaction with `ext-storage.js`; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not (and may be required by law in some regions)
   * @property {boolean} [emptyStorageOnDecline=false] Used by `ext-storage.js`; empty any prior storage if the user declines to store
+  * @property {boolean} [avoidClientSide=false] Used by `ext-server_opensave.js`; set to `true` if you wish to always save to server and not only as fallback when client support is lacking
   * @property {string[]} [extensions=module:SVGEditor~defaultExtensions] Extensions to load on startup. Use an array in `setConfig` and comma separated file names in the URL. Extension names must begin with "ext-". Note that as of version 2.7, paths containing "/", "\", or ":", are disallowed for security reasons. Although previous versions of this list would entirely override the default list, as of version 2.7, the defaults will always be added to this explicit list unless the configuration `noDefaultExtensions` is included.
   * @property {module:SVGEditor.Stylesheet[]} [stylesheets=["@default"]] An array of required stylesheets to load in parallel; include the value `"@default"` within this array to ensure all default stylesheets are loaded.
   * @property {string[]} [allowedOrigins=[]] Used by `ext-xdomain-messaging.js` to indicate which origins are permitted for cross-domain messaging (e.g., between the embedded editor and main editor code). Besides explicit domains, one might add '*' to allow all domains (not recommended for privacy/data integrity of your user's content!), `window.location.origin` for allowing the same origin (should be safe if you trust all apps on your domain), 'null' to allow `file:///` URL usage
@@ -28899,8 +28900,10 @@
     // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
     forceStorage: false,
     // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not
-    emptyStorageOnDecline: false // Used by ext-storage.js; empty any prior storage if the user declines to store
-
+    emptyStorageOnDecline: false,
+    // Used by ext-storage.js; empty any prior storage if the user declines to store
+    // EXTENSION (CLIENT VS. SERVER SAVING)
+    avoidClientSide: false
   },
 
   /**
@@ -29209,45 +29212,47 @@
     }
 
     $$b.each(opts, function (key, val) {
-      if ({}.hasOwnProperty.call(opts, key)) {
-        // Only allow prefs defined in defaultPrefs
-        if ({}.hasOwnProperty.call(defaultPrefs, key)) {
-          if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || {}.hasOwnProperty.call(curPrefs, key))) {
+      if (!{}.hasOwnProperty.call(opts, key)) {
+        return;
+      } // Only allow prefs defined in defaultPrefs
+
+
+      if ({}.hasOwnProperty.call(defaultPrefs, key)) {
+        if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || {}.hasOwnProperty.call(curPrefs, key))) {
+          return;
+        }
+
+        if (cfgCfg.allowInitialUserOverride === true) {
+          defaultPrefs[key] = val;
+        } else {
+          $$b.pref(key, val);
+        }
+      } else if (['extensions', 'stylesheets', 'allowedOrigins'].includes(key)) {
+        if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || ['allowedOrigins', 'stylesheets'].includes(key) || key === 'extensions' && curConfig.lockExtensions)) {
+          return;
+        }
+
+        curConfig[key] = curConfig[key].concat(val); // We will handle any dupes later
+        // Only allow other curConfig if defined in defaultConfig
+      } else if ({}.hasOwnProperty.call(defaultConfig, key)) {
+        if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || {}.hasOwnProperty.call(curConfig, key))) {
+          return;
+        } // Potentially overwriting of previously set config
+
+
+        if ({}.hasOwnProperty.call(curConfig, key)) {
+          if (cfgCfg.overwrite === false) {
             return;
           }
 
-          if (cfgCfg.allowInitialUserOverride === true) {
-            defaultPrefs[key] = val;
-          } else {
-            $$b.pref(key, val);
-          }
-        } else if (['extensions', 'stylesheets', 'allowedOrigins'].includes(key)) {
-          if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || ['allowedOrigins', 'stylesheets'].includes(key) || key === 'extensions' && curConfig.lockExtensions)) {
-            return;
-          }
-
-          curConfig[key] = curConfig[key].concat(val); // We will handle any dupes later
-          // Only allow other curConfig if defined in defaultConfig
-        } else if ({}.hasOwnProperty.call(defaultConfig, key)) {
-          if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || {}.hasOwnProperty.call(curConfig, key))) {
-            return;
-          } // Potentially overwriting of previously set config
-
-
-          if ({}.hasOwnProperty.call(curConfig, key)) {
-            if (cfgCfg.overwrite === false) {
-              return;
-            }
-
-            extendOrAdd(curConfig, key, val);
-          } else if (cfgCfg.allowInitialUserOverride === true) {
-            extendOrAdd(defaultConfig, key, val);
-          } else if (defaultConfig[key] && _typeof(defaultConfig[key]) === 'object') {
-            curConfig[key] = Array.isArray(defaultConfig[key]) ? [] : {};
-            $$b.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
-          } else {
-            curConfig[key] = val;
-          }
+          extendOrAdd(curConfig, key, val);
+        } else if (cfgCfg.allowInitialUserOverride === true) {
+          extendOrAdd(defaultConfig, key, val);
+        } else if (defaultConfig[key] && _typeof(defaultConfig[key]) === 'object') {
+          curConfig[key] = Array.isArray(defaultConfig[key]) ? [] : {};
+          $$b.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
+        } else {
+          curConfig[key] = val;
         }
       }
     });

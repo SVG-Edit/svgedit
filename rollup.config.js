@@ -8,7 +8,7 @@ import babel from 'rollup-plugin-babel';
 import {terser} from 'rollup-plugin-terser';
 import replace from 'rollup-plugin-re';
 
-const {lstatSync, readdirSync} = require('fs'); // eslint-disable-line import/no-commonjs
+const {lstatSync, readdirSync, copyFileSync} = require('fs'); // eslint-disable-line import/no-commonjs
 const {join, basename} = require('path'); // eslint-disable-line import/no-commonjs
 
 const localeFiles = readdirSync('editor/locale');
@@ -180,6 +180,13 @@ export default [
     };
   }),
   ...extensionFiles.map((extensionFile) => {
+    if (extensionFile.match(/\.php$/)) {
+      copyFileSync(
+        join('editor/extensions', extensionFile),
+        join('dist/extensions', extensionFile)
+      );
+      return undefined;
+    }
     // ext-*.js
     const extensionName = extensionFile.match(/^ext-(.+?)\.js$/);
     if (!extensionName) {

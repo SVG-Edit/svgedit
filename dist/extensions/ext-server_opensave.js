@@ -4868,7 +4868,8 @@ var svgEditorExtension_server_opensave = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee5(_ref) {
-        var $, decode64, encode64, importLocale, strings, svgEditor, extPath, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+        var $, decode64, encode64, importLocale, strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
@@ -4974,6 +4975,10 @@ var svgEditorExtension_server_opensave = (function () {
                 };
 
                 clientDownloadSupport = function _ref6(filename, suffix, uri) {
+                  if (avoidClientSide) {
+                    return false;
+                  }
+
                   var support = $('<a>')[0].download === '';
                   var a;
 
@@ -5006,7 +5011,7 @@ var svgEditorExtension_server_opensave = (function () {
               case 7:
                 strings = _context5.sent;
                 svgEditor = this;
-                extPath = svgEditor.curConfig, svgCanvas = svgEditor.canvas;
+                _svgEditor$curConfig = svgEditor.curConfig, extPath = _svgEditor$curConfig.extPath, avoidClientSide = _svgEditor$curConfig.avoidClientSide, svgCanvas = svgEditor.canvas;
                 /**
                  *
                  * @returns {string}

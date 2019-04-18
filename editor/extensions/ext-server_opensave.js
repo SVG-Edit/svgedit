@@ -14,7 +14,7 @@ export default {
     const strings = await importLocale();
     const svgEditor = this;
     const {
-      curConfig: extPath,
+      curConfig: {extPath, avoidClientSide},
       canvas: svgCanvas
     } = svgEditor;
 
@@ -44,6 +44,9 @@ export default {
      * @returns {boolean}
      */
     function clientDownloadSupport (filename, suffix, uri) {
+      if (avoidClientSide) {
+        return false;
+      }
       const support = $('<a>')[0].download === '';
       let a;
       if (support) {

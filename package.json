@@ -10,7 +10,7 @@
     "test": "test"
   },
   "engines": {
-    "node": ">= 7.6.0"
+    "node": ">= 8.5.0"
   },
   "scripts": {
     "prepublishOnly": "npm run test-prep",
