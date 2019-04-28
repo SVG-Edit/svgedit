@@ -77,16 +77,16 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.4.3",
+    "@babel/core": "^7.4.4",
     "@babel/node": "^7.2.2",
-    "@babel/plugin-transform-modules-commonjs": "^7.4.3",
-    "@babel/polyfill": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "@mysticatea/eslint-plugin": "^9.0.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.4.4",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@mysticatea/eslint-plugin": "^10.0.2",
     "axe-testcafe": "^1.1.0",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
     "eslint": "5.16.0",
-    "eslint-config-ash-nazg": "2.0.0",
+    "eslint-config-ash-nazg": "3.0.1",
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-compat": "^3.1.1",
     "eslint-plugin-eslint-comments": "^3.1.1",
@@ -113,7 +113,7 @@
     "qunit": "^2.9.2",
     "remark-cli": "^6.0.1",
     "remark-lint-ordered-list-marker-value": "^1.0.2",
-    "rollup": "1.10.0",
+    "rollup": "1.10.1",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-node-builtins": "^2.1.2",
@@ -123,6 +123,6 @@
     "sinon": "^7.3.2",
     "sinon-test": "^2.4.0",
     "stackblur-canvas": "^2.2.0",
-    "testcafe": "^1.1.2"
+    "testcafe": "^1.1.3"
   }
 }
