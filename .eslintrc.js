@@ -129,11 +129,15 @@ module.exports = {
         "node/no-missing-import": ["off"]
       }
     },
-    // Dis-apply Node rules mistakenly giving errors with browser files
+    // Dis-apply Node rules mistakenly giving errors with browser files,
+    //  and treating Node global `root` as being present for shadowing
     {
-      files: ["editor/**", "test/**"],
+      files: ["editor/**", "test/**", "screencasts/**"],
+      globals: {
+        root: "off"
+      },
       rules: {
-        "node/no-unsupported-features/node-builtins": ["off"]
+        "node/no-unsupported-features/node-builtins": "off"
       }
     },
     // We want console in tests!
@@ -153,9 +157,15 @@ module.exports = {
       env: {
         node: true,
       },
+      globals: {
+        require: true
+      },
       rules: {
-        "node/no-unpublished-import": ["off"],
-        "node/no-unsupported-features/es-syntax": ["off"]
+        // We can't put Rollup in npmignore or user can't get access,
+        //  and we have too many modules to add to `peerDependencies`
+        //  so this rule can know them to be available, so we instead
+        //  disable
+        "node/no-unpublished-import": "off"
       }
     },
     {
@@ -164,8 +174,12 @@ module.exports = {
       parserOptions: {
         sourceType: "script"
       },
+      globals: {
+        "module": false
+      },
       rules: {
-        "import/no-commonjs": "off"
+        "import/no-commonjs": "off",
+        "strict": "off"
       }
     }
   ],

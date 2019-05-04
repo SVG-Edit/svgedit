@@ -13,12 +13,14 @@
 - Linting (JSDoc): Update per newly enforced `require-returns`; avoid
   Closure syntax; reenable `jsdoc/valid-jsdoc` as fixed; notes
   re: valid-jsdoc replacement; use same namepath
+- Linting: Update per ash-nazg/plugin-node update
 - Docs (Refactoring): Formally specify `Promise` resolve type;
     add `typedef` for dialog result object; add an
     `ArbitraryCallbackResult` type; prefer `void`
 - Build: Require Node 8.5
 - npm: Rename `build-doc` to `build-docs`; add `open-docs` script
 - npm: Update devDeps (and our @babel/polyfill copy)
+- npm: Remove unused devDeps
 
 ## 4.3.0
 
