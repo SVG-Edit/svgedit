@@ -118,6 +118,7 @@ incorporating SVGEdit.
 
 ## Recent news
 
+- 2019-05-07 Published 5.0.0 Change from `@babel/polyfill`
 - 2019-04-03 Published 4.3.0 Fix for double click on gradient
     picker droplets affecting some browsers and dragging control
     point of arc. Other misc. fixes. Some accessibility and i18n.

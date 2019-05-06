@@ -1,10 +1,14 @@
 # SVG-Edit CHANGES
 
-## ?
+## 5.0.0
 
+- Breaking change: Switch from deprecated `@babel/polyfill` to
+    `core-js-bundle` and `regenerator-runtime` replacements
+- Build: Require Node 8.5
 - Fix: Ensure PHP files are present in `dist/extensions` alongside
     JavaScript extension files using them
-- Fix: Bug in obtaining `extPath` in ext-server_opensave.js
+- Fix: Bug in obtaining `extPath` in `ext-server_opensave.js`
+- Fix: Fully redirect extension entrances for lacking browser support
 - Enhancement: Add config `avoidClientSide` to avoid using
     client-side support by default (and always require server)
 - Enhancement: Return a Promise for Editor's `setCustomHandlers`,
@@ -14,13 +18,15 @@
   Closure syntax; reenable `jsdoc/valid-jsdoc` as fixed; notes
   re: valid-jsdoc replacement; use same namepath
 - Linting: Update per ash-nazg/plugin-node update
+- Docs: Simplify comments in HTML files re: script purposes
+- Docs: Update release instructions
 - Docs (Refactoring): Formally specify `Promise` resolve type;
     add `typedef` for dialog result object; add an
     `ArbitraryCallbackResult` type; prefer `void`
-- Build: Require Node 8.5
-- npm: Rename `build-doc` to `build-docs`; add `open-docs` script
-- npm: Update devDeps (and our @babel/polyfill copy)
-- npm: Remove unused devDeps
+- npm: Rename (`build-doc` to `build-docs`, `types-doc` to
+    `types-docs`); add `open-docs` script
+- npm: Update devDeps
+- npm: Remove unused devDeps; update insecure devDeps
 
 ## 4.3.0
 

@@ -65,6 +65,7 @@ console.log(`${output}\nTotal failures found: ${total}.\n`); // eslint-disable-l
  */
 function reduceFalseMatches (file, res) {
   switch (file) {
+  case 'editor/external/core-js-bundle/minified.js':
   case 'editor/external/jamilih/jml-es.js':
   case 'editor/xdomain-svgedit-config-iife.js': // Ignore
     res.line = [];
