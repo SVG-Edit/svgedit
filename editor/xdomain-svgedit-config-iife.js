@@ -2562,6 +2562,22 @@
             }
 
             return builder.pathSegList;
+          } // STATIC
+
+        }], [{
+          key: "_pathSegArrayAsString",
+          value: function _pathSegArrayAsString(pathSegArray) {
+            var string = '';
+            var first = true;
+            pathSegArray.forEach(function (pathSeg) {
+              if (first) {
+                first = false;
+                string += pathSeg._asPathString();
+              } else {
+                string += ' ' + pathSeg._asPathString();
+              }
+            });
+            return string;
           }
         }]);
 
@@ -2576,23 +2592,8 @@
           return this._list.length;
         },
         enumerable: true
-      });
-
-      SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
-        var string = '';
-        var first = true;
-        pathSegArray.forEach(function (pathSeg) {
-          if (first) {
-            first = false;
-            string += pathSeg._asPathString();
-          } else {
-            string += ' ' + pathSeg._asPathString();
-          }
-        });
-        return string;
-      }; // Add the pathSegList accessors to SVGPathElement.
+      }); // Add the pathSegList accessors to SVGPathElement.
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGAnimatedPathData
-
 
       Object.defineProperties(SVGPathElement.prototype, {
         pathSegList: {
@@ -6319,45 +6320,47 @@
           grips: grips,
           closedSubpath: closedSubpath
         });
+      } // STATIC
+
+      /**
+      * @param {Integer} index
+      * @returns {boolean}
+      */
+
+    }], [{
+      key: "subpathIsClosed",
+      value: function subpathIsClosed(index) {
+        var clsd = false; // Check if subpath is already open
+
+        path.eachSeg(function (i) {
+          if (i <= index) {
+            return true;
+          }
+
+          if (this.type === 2) {
+            // Found M first, so open
+            return false;
+          }
+
+          if (this.type === 1) {
+            // Found Z first, so closed
+            clsd = true;
+            return false;
+          }
+
+          return true;
+        });
+        return clsd;
       }
     }]);
 
     return Path;
   }();
   /**
-  * @param {Integer} index
-  * @returns {boolean}
-  */
-
-  Path.subpathIsClosed = function (index) {
-    var clsd = false; // Check if subpath is already open
-
-    path.eachSeg(function (i) {
-      if (i <= index) {
-        return true;
-      }
-
-      if (this.type === 2) {
-        // Found M first, so open
-        return false;
-      }
-
-      if (this.type === 1) {
-        // Found Z first, so closed
-        clsd = true;
-        return false;
-      }
-
-      return true;
-    });
-    return clsd;
-  };
-  /**
   * @function module:path.getPath_
   * @param {SVGPathElement} elem
   * @returns {module:path.Path}
   */
-
 
   var getPath_ = function getPath_(elem) {
     var p = pathData[elem.id];
@@ -13163,38 +13166,40 @@
         mgr.rotateGripConnector.setAttribute('y2', nbay - gripRadius * 5);
         mgr.rotateGrip.setAttribute('cx', nbax + nbaw / 2);
         mgr.rotateGrip.setAttribute('cy', nbay - gripRadius * 5); // }
+      } // STATIC methods
+
+      /**
+      * Updates cursors for corner grips on rotation so arrows point the right way.
+      * @param {Float} angle - Current rotation angle in degrees
+      * @returns {void}
+      */
+
+    }], [{
+      key: "updateGripCursors",
+      value: function updateGripCursors(angle) {
+        var dirArr = Object.keys(selectorManager_.selectorGrips);
+        var steps = Math.round(angle / 45);
+
+        if (steps < 0) {
+          steps += 8;
+        }
+
+        while (steps > 0) {
+          dirArr.push(dirArr.shift());
+          steps--;
+        }
+
+        Object.values(selectorManager_.selectorGrips).forEach(function (gripElement, i) {
+          gripElement.setAttribute('style', 'cursor:' + dirArr[i] + '-resize');
+        });
       }
     }]);
 
     return Selector;
   }();
   /**
-  * Updates cursors for corner grips on rotation so arrows point the right way.
-  * @param {Float} angle - Current rotation angle in degrees
-  * @returns {void}
-  */
-
-  Selector.updateGripCursors = function (angle) {
-    var dirArr = Object.keys(selectorManager_.selectorGrips);
-    var steps = Math.round(angle / 45);
-
-    if (steps < 0) {
-      steps += 8;
-    }
-
-    while (steps > 0) {
-      dirArr.push(dirArr.shift());
-      steps--;
-    }
-
-    Object.values(selectorManager_.selectorGrips).forEach(function (gripElement, i) {
-      gripElement.setAttribute('style', 'cursor:' + dirArr[i] + '-resize');
-    });
-  };
-  /**
   * Manage all selector objects (selection boxes).
   */
-
 
   var SelectorManager =
   /*#__PURE__*/

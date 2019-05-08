@@ -2343,6 +2343,22 @@
             }
 
             return builder.pathSegList;
+          } // STATIC
+
+        }], [{
+          key: "_pathSegArrayAsString",
+          value: function _pathSegArrayAsString(pathSegArray) {
+            var string = '';
+            var first = true;
+            pathSegArray.forEach(function (pathSeg) {
+              if (first) {
+                first = false;
+                string += pathSeg._asPathString();
+              } else {
+                string += ' ' + pathSeg._asPathString();
+              }
+            });
+            return string;
           }
         }]);
 
@@ -2357,23 +2373,8 @@
           return this._list.length;
         },
         enumerable: true
-      });
-
-      SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
-        var string = '';
-        var first = true;
-        pathSegArray.forEach(function (pathSeg) {
-          if (first) {
-            first = false;
-            string += pathSeg._asPathString();
-          } else {
-            string += ' ' + pathSeg._asPathString();
-          }
-        });
-        return string;
-      }; // Add the pathSegList accessors to SVGPathElement.
+      }); // Add the pathSegList accessors to SVGPathElement.
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGAnimatedPathData
-
 
       Object.defineProperties(SVGPathElement.prototype, {
         pathSegList: {

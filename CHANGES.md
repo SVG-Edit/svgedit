@@ -1,5 +1,9 @@
 # SVG-Edit CHANGES
 
+## ?
+
+- Refactoring: Use `static` keyword for classes
+
 ## 5.0.0
 
 - Breaking change: Switch from deprecated `@babel/polyfill` to

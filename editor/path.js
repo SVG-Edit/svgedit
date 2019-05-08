@@ -1305,31 +1305,32 @@ export class Path {
     const closedSubpath = Path.subpathIsClosed(this.selected_pts[0]);
     editorContext_.addPtsToSelection({grips, closedSubpath});
   }
+
+  // STATIC
+  /**
+  * @param {Integer} index
+  * @returns {boolean}
+  */
+  static subpathIsClosed (index) {
+    let clsd = false;
+    // Check if subpath is already open
+    path.eachSeg(function (i) {
+      if (i <= index) { return true; }
+      if (this.type === 2) {
+        // Found M first, so open
+        return false;
+      }
+      if (this.type === 1) {
+        // Found Z first, so closed
+        clsd = true;
+        return false;
+      }
+      return true;
+    });
+
+    return clsd;
+  }
 }
-
-/**
-* @param {Integer} index
-* @returns {boolean}
-*/
-Path.subpathIsClosed = function (index) {
-  let clsd = false;
-  // Check if subpath is already open
-  path.eachSeg(function (i) {
-    if (i <= index) { return true; }
-    if (this.type === 2) {
-      // Found M first, so open
-      return false;
-    }
-    if (this.type === 1) {
-      // Found Z first, so closed
-      clsd = true;
-      return false;
-    }
-    return true;
-  });
-
-  return clsd;
-};
 
 /**
 * @function module:path.getPath_

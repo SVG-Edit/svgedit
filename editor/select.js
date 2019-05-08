@@ -236,24 +236,26 @@ export class Selector {
     mgr.rotateGrip.setAttribute('cy', nbay - (gripRadius * 5));
     // }
   }
-}
-/**
-* Updates cursors for corner grips on rotation so arrows point the right way.
-* @param {Float} angle - Current rotation angle in degrees
-* @returns {void}
-*/
-Selector.updateGripCursors = function (angle) {
-  const dirArr = Object.keys(selectorManager_.selectorGrips);
-  let steps = Math.round(angle / 45);
-  if (steps < 0) { steps += 8; }
-  while (steps > 0) {
-    dirArr.push(dirArr.shift());
-    steps--;
+
+  // STATIC methods
+  /**
+  * Updates cursors for corner grips on rotation so arrows point the right way.
+  * @param {Float} angle - Current rotation angle in degrees
+  * @returns {void}
+  */
+  static updateGripCursors (angle) {
+    const dirArr = Object.keys(selectorManager_.selectorGrips);
+    let steps = Math.round(angle / 45);
+    if (steps < 0) { steps += 8; }
+    while (steps > 0) {
+      dirArr.push(dirArr.shift());
+      steps--;
+    }
+    Object.values(selectorManager_.selectorGrips).forEach((gripElement, i) => {
+      gripElement.setAttribute('style', ('cursor:' + dirArr[i] + '-resize'));
+    });
   }
-  Object.values(selectorManager_.selectorGrips).forEach((gripElement, i) => {
-    gripElement.setAttribute('style', ('cursor:' + dirArr[i] + '-resize'));
-  });
-};
+}
 
 /**
 * Manage all selector objects (selection boxes).

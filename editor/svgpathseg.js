@@ -922,6 +922,21 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
 
       return builder.pathSegList;
     }
+
+    // STATIC
+    static _pathSegArrayAsString (pathSegArray) {
+      let string = '';
+      let first = true;
+      pathSegArray.forEach((pathSeg) => {
+        if (first) {
+          first = false;
+          string += pathSeg._asPathString();
+        } else {
+          string += ' ' + pathSeg._asPathString();
+        }
+      });
+      return string;
+    }
   }
 
   SVGPathSegList.prototype.classname = 'SVGPathSegList';
@@ -933,20 +948,6 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
     },
     enumerable: true
   });
-
-  SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
-    let string = '';
-    let first = true;
-    pathSegArray.forEach((pathSeg) => {
-      if (first) {
-        first = false;
-        string += pathSeg._asPathString();
-      } else {
-        string += ' ' + pathSeg._asPathString();
-      }
-    });
-    return string;
-  };
 
   // Add the pathSegList accessors to SVGPathElement.
   // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGAnimatedPathData

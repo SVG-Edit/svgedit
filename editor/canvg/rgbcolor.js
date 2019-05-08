@@ -238,42 +238,42 @@ export default class RGBColor {
     if (b.length === 1) { b = '0' + b; }
     return '#' + r + g + b;
   }
+
+  /**
+  * Offers a bulleted list of help.
+  * @returns {HTMLUListElement}
+  */
+  static getHelpXML () {
+    const examples = [
+      // add regexps
+      ...colorDefs.flatMap(({example}) => {
+        return example;
+      }),
+      // add type-in colors
+      ...Object.keys(simpleColors)
+    ];
+
+    const xml = document.createElement('ul');
+    xml.setAttribute('id', 'rgbcolor-examples');
+
+    xml.append(...examples.map((example) => {
+      try {
+        const listItem = document.createElement('li');
+        const listColor = new RGBColor(example);
+        const exampleDiv = document.createElement('div');
+        exampleDiv.style.cssText = `
+  margin: 3px;
+  border: 1px solid black;
+  background: ${listColor.toHex()};
+  color: ${listColor.toHex()};`;
+        exampleDiv.append('test');
+        const listItemValue = ` ${example} -> ${listColor.toRGB()} -> ${listColor.toHex()}`;
+        listItem.append(exampleDiv, listItemValue);
+        return listItem;
+      } catch (e) {
+        return '';
+      }
+    }));
+    return xml;
+  }
 }
-
-/**
-* Offers a bulleted list of help.
-* @returns {HTMLUListElement}
-*/
-RGBColor.getHelpXML = function () {
-  const examples = [
-    // add regexps
-    ...colorDefs.flatMap(({example}) => {
-      return example;
-    }),
-    // add type-in colors
-    ...Object.keys(simpleColors)
-  ];
-
-  const xml = document.createElement('ul');
-  xml.setAttribute('id', 'rgbcolor-examples');
-
-  xml.append(...examples.map((example) => {
-    try {
-      const listItem = document.createElement('li');
-      const listColor = new RGBColor(example);
-      const exampleDiv = document.createElement('div');
-      exampleDiv.style.cssText = `
-margin: 3px;
-border: 1px solid black;
-background: ${listColor.toHex()};
-color: ${listColor.toHex()};`;
-      exampleDiv.append('test');
-      const listItemValue = ` ${example} -> ${listColor.toRGB()} -> ${listColor.toHex()}`;
-      listItem.append(exampleDiv, listItemValue);
-      return listItem;
-    } catch (e) {
-      return '';
-    }
-  }));
-  return xml;
-};

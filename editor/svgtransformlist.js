@@ -120,7 +120,7 @@ let listMap_ = {};
 * implementing as much of SVGTransformList that we need to get the job done.
 * @implements {module:SVGTransformList.SVGEditTransformList}
 */
-export class SVGTransformList {// eslint-disable-line no-shadow
+export class SVGTransformList { // eslint-disable-line no-shadow
   /**
   * @param {Element} elem
   */

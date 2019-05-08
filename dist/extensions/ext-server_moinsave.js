@@ -521,34 +521,40 @@ var svgEditorExtension_server_moinsave = (function () {
 
         return '#' + r + g + b;
       }
+      /**
+      * Offers a bulleted list of help.
+      * @returns {HTMLUListElement}
+      */
+
+    }], [{
+      key: "getHelpXML",
+      value: function getHelpXML() {
+        var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
+          var example = _ref2.example;
+          return example;
+        })), _toConsumableArray(Object.keys(simpleColors)));
+        var xml = document.createElement('ul');
+        xml.setAttribute('id', 'rgbcolor-examples');
+        xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
+          try {
+            var listItem = document.createElement('li');
+            var listColor = new RGBColor(example);
+            var exampleDiv = document.createElement('div');
+            exampleDiv.style.cssText = "\n  margin: 3px;\n  border: 1px solid black;\n  background: ".concat(listColor.toHex(), ";\n  color: ").concat(listColor.toHex(), ";");
+            exampleDiv.append('test');
+            var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
+            listItem.append(exampleDiv, listItemValue);
+            return listItem;
+          } catch (e) {
+            return '';
+          }
+        })));
+        return xml;
+      }
     }]);
 
     return RGBColor;
   }();
-
-  RGBColor.getHelpXML = function () {
-    var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
-      var example = _ref2.example;
-      return example;
-    })), _toConsumableArray(Object.keys(simpleColors)));
-    var xml = document.createElement('ul');
-    xml.setAttribute('id', 'rgbcolor-examples');
-    xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
-      try {
-        var listItem = document.createElement('li');
-        var listColor = new RGBColor(example);
-        var exampleDiv = document.createElement('div');
-        exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
-        exampleDiv.append('test');
-        var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
-        listItem.append(exampleDiv, listItemValue);
-        return listItem;
-      } catch (e) {
-        return '';
-      }
-    })));
-    return xml;
-  };
 
   function _typeof$1(obj) {
     if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
