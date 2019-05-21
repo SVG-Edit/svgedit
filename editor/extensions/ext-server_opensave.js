@@ -14,7 +14,11 @@ export default {
     const strings = await importLocale();
     const svgEditor = this;
     const {
-      curConfig: {extPath, avoidClientSide},
+      curConfig: {
+        extPath,
+        avoidClientSide, // Deprecated
+        avoidClientSideDownload, avoidClientSideOpen
+      },
       canvas: svgCanvas
     } = svgEditor;
 
@@ -44,7 +48,7 @@ export default {
      * @returns {boolean}
      */
     function clientDownloadSupport (filename, suffix, uri) {
-      if (avoidClientSide) {
+      if (avoidClientSide || avoidClientSideDownload) {
         return false;
       }
       const support = $('<a>')[0].download === '';
@@ -155,7 +159,7 @@ export default {
     });
 
     // Do nothing if client support is found
-    if (window.FileReader) { return; }
+    if (window.FileReader && !avoidClientSideOpen) { return; }
 
     // Change these to appropriate script file
     const openSvgAction = extPath + 'fileopen.php?type=load_svg';

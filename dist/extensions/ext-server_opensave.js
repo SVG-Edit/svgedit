@@ -4874,7 +4874,7 @@ var svgEditorExtension_server_opensave = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee5(_ref) {
-        var $, decode64, encode64, importLocale, strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+        var $, decode64, encode64, importLocale, strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, avoidClientSideDownload, avoidClientSideOpen, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
 
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
@@ -4981,7 +4981,7 @@ var svgEditorExtension_server_opensave = (function () {
                 };
 
                 clientDownloadSupport = function _ref6(filename, suffix, uri) {
-                  if (avoidClientSide) {
+                  if (avoidClientSide || avoidClientSideDownload) {
                     return false;
                   }
 
@@ -5017,7 +5017,7 @@ var svgEditorExtension_server_opensave = (function () {
               case 7:
                 strings = _context5.sent;
                 svgEditor = this;
-                _svgEditor$curConfig = svgEditor.curConfig, extPath = _svgEditor$curConfig.extPath, avoidClientSide = _svgEditor$curConfig.avoidClientSide, svgCanvas = svgEditor.canvas;
+                _svgEditor$curConfig = svgEditor.curConfig, extPath = _svgEditor$curConfig.extPath, avoidClientSide = _svgEditor$curConfig.avoidClientSide, avoidClientSideDownload = _svgEditor$curConfig.avoidClientSideDownload, avoidClientSideOpen = _svgEditor$curConfig.avoidClientSideOpen, svgCanvas = svgEditor.canvas;
                 /**
                  *
                  * @returns {string}
@@ -5137,7 +5137,7 @@ var svgEditorExtension_server_opensave = (function () {
                   }()
                 }); // Do nothing if client support is found
 
-                if (!window.FileReader) {
+                if (!(window.FileReader && !avoidClientSideOpen)) {
                   _context5.next = 16;
                   break;
                 }

@@ -2,7 +2,13 @@
 
 ## ?
 
+- Deprecated: Should now use `avoidClientSideDownload` in place of
+    `avoidClientSide` (config for `ext-server_opensave.js`).
+- Enhancement: Added `avoidClientSideOpen` config for
+    `ext-server_opensave.js`
 - Refactoring: Use `static` keyword for classes
+- npm: Update devDeps (including switching from deprecate opn-cli
+    package to open-cli)
 
 ## 5.0.0
 
