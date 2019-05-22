@@ -92,7 +92,7 @@ export const canvg = function (target, s, opts) {
 
 /**
 * @param {module:canvg.CanvgOptions} opts
-* @returns {Object}
+* @returns {object}
 * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
 */
 function build (opts) {
@@ -2599,7 +2599,7 @@ function build (opts) {
   * @param {Float} width
   * @param {Float} height
   * @param {Integer} rgba
-  * @returns {void}
+  * @returns {Integer}
   */
   function imGet (img, x, y, width, height, rgba) {
     return img[y * width * 4 + x * 4 + rgba];

@@ -973,7 +973,7 @@ var canvg = (function (exports) {
   };
   /**
   * @param {module:canvg.CanvgOptions} opts
-  * @returns {Object}
+  * @returns {object}
   * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
   */
 
@@ -4364,7 +4364,7 @@ var canvg = (function (exports) {
     * @param {Float} width
     * @param {Float} height
     * @param {Integer} rgba
-    * @returns {void}
+    * @returns {Integer}
     */
 
 

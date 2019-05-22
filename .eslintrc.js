@@ -63,20 +63,6 @@ module.exports = {
     }
   },
   overrides: [
-    // Remove this rule when fully migrated to eslint-plugin-jsdoc: https://github.com/gajus/eslint-plugin-jsdoc/issues/107
-    // These would otherwise currently break because of these issues:
-    //  1. `event:` https://github.com/eslint/doctrine/issues/221
-    //  1. `@implements`/`@augments`/`@extends`/`@override`: https://github.com/eslint/doctrine/issues/222
-    {
-      files: [
-        "test/utilities_test.js", "editor/svg-editor.js", "editor/svgcanvas.js",
-        "editor/coords.js",
-        "editor/extensions/ext-eyedropper.js", "editor/extensions/ext-webappfind.js"
-      ],
-      rules: {
-        "valid-jsdoc": "off"
-      }
-    },
     // Locales have no need for importing outside of SVG-Edit
     {
       files: [
@@ -126,7 +112,10 @@ module.exports = {
         "padded-blocks": ["off"],
         "import/unambiguous": ["off"],
         "import/no-unresolved": ["off"],
-        "node/no-missing-import": ["off"]
+        "node/no-missing-import": ["off"],
+        "no-multi-spaces": "off",
+        // Disable until may fix https://github.com/gajus/eslint-plugin-jsdoc/issues/211
+        "indent": "off"
       }
     },
     // Dis-apply Node rules mistakenly giving errors with browser files,
@@ -194,6 +183,8 @@ module.exports = {
     }],
     "unicorn/prefer-query-selector": "off",
     "unicorn/prefer-node-append": "off",
-    "unicorn/no-zero-fractions": "off"
+    "unicorn/no-zero-fractions": "off",
+    // Disable until ash-nazg removes
+    "valid-jsdoc": "off"
   }
 };

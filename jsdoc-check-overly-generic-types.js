@@ -90,8 +90,8 @@ function reduceFalseMatches (file, res) {
       return ![
         '* @typedef {number} Float',
         '* @typedef {*} ArbitraryCallbackResult',
-        '* @typedef {Object} ArbitraryObject',
-        '* @typedef {Object} ArbitraryModule',
+        '* @typedef {object} ArbitraryObject',
+        '* @typedef {object} ArbitraryModule',
         '* @typedef {Array} GenericArray',
         '* @typedef {*} Any',
         '* @param {...*} args Signature dependent on the function'

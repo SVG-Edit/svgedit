@@ -6145,7 +6145,7 @@ var SvgCanvas = (function () {
       }
       /**
       * @param {Integer} y
-      * @returns {void}
+      * @returns {Path}
       */
 
     }, {
@@ -9346,9 +9346,9 @@ var SvgCanvas = (function () {
    * an existing group element or, with three parameters, will create a new layer group element.
    *
    * @example
-   * new Layer('name', group);          // Use the existing group for this layer.
-   * new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
-   * new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
+   * const l1 = new Layer('name', group);          // Use the existing group for this layer.
+   * const l2 = new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
+   * const l3 = new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
    * @memberof module:layer
    */
 

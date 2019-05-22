@@ -93,7 +93,6 @@ function getMessageListener (t) {
 * General usage:
 * - Have an iframe somewhere pointing to a version of svg-edit > r1000.
 * @example
-
 // Initialize the magic with:
 const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
 
@@ -101,11 +100,11 @@ const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
 svgCanvas.setSvgString('string');
 
 // Or if a callback is needed:
-svgCanvas.setSvgString('string')(function(data, error){
-  if (error){
-  // There was an error
-  } else{
-  // Handle data
+svgCanvas.setSvgString('string')(function (data, error) {
+  if (error) {
+     // There was an error
+  } else {
+     // Handle data
   }
 });
 
@@ -121,10 +120,12 @@ svgCanvas.setSvgString('string')(function(data, error){
 // the SVG editor on the same domain and reference the
 // JavaScript methods on the frame itself.
 
-// The only other difference is
-// when handling returns: the callback notation is used instead.
+// The only other difference is when handling returns:
+// the callback notation is used instead.
 const blah = new EmbeddedSVGEdit(window.frames.svgedit);
-blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {a: 'tree',b:6, c: 9})(function(){console.log('GET DATA',arguments)})
+blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {
+     a: 'tree', b: 6, c: 9
+})(function () { console.log('GET DATA', args); });
 *
 * @memberof module:EmbeddedSVGEdit
 */

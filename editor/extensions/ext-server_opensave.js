@@ -226,7 +226,7 @@ export default {
       /**
        * Submit the form, empty its contents for reuse and show
        *   uploading message.
-       * @returns {void}
+       * @returns {Promise<void>}
        */
       async function submit () {
         // This submits the form, which returns the file data using `svgEditor.processFile()`

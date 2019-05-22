@@ -1109,7 +1109,7 @@ export class Path {
 
   /**
   * @param {Integer} y
-  * @returns {void}
+  * @returns {Path}
   */
   show (y) {
     // Shows this path's segment grips

@@ -644,7 +644,7 @@ editor.setCustomHandlers = function (opts) {
 * @returns {void}
 */
 editor.randomizeIds = function (arg) {
-  return svgCanvas.randomizeIds(arg);
+  svgCanvas.randomizeIds(arg);
 };
 
 /**
@@ -2861,7 +2861,7 @@ editor.init = function () {
           /**
            * Clicking the icon in flyout should set this set's icon.
            * @param {Event} ev
-           * @returns {void}
+           * @returns {boolean}
            */
           const flyoutAction = function (ev) {
             let options = opts;
@@ -2964,7 +2964,7 @@ editor.init = function () {
   /**
   * @param {string} id
   * @param {external:jQuery} child
-  * @returns {void}
+  * @returns {external:jQuery}
   */
   const makeFlyoutHolder = function (id, child) {
     const div = $('<div>', {
@@ -4824,7 +4824,7 @@ editor.init = function () {
   /**
   * Save user preferences based on current values in the UI.
   * @function module:SVGEditor.savePreferences
-  * @returns {void}
+  * @returns {Promise<void>}
   */
   const savePreferences = editor.savePreferences = async function () {
     // Set background
@@ -5294,7 +5294,7 @@ editor.init = function () {
 
   /**
    *
-   * @returns {void}
+   * @returns {Promise<void>}
    */
   async function cloneLayer () {
     const name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';

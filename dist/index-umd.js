@@ -6079,7 +6079,7 @@
       }
       /**
       * @param {Integer} y
-      * @returns {void}
+      * @returns {Path}
       */
 
     }, {
@@ -9785,9 +9785,9 @@
    * an existing group element or, with three parameters, will create a new layer group element.
    *
    * @example
-   * new Layer('name', group);          // Use the existing group for this layer.
-   * new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
-   * new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
+   * const l1 = new Layer('name', group);          // Use the existing group for this layer.
+   * const l2 = new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
+   * const l3 = new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
    * @memberof module:layer
    */
 
@@ -29155,8 +29155,9 @@
 
     if (editor.storage && ( // Cookies do not have enough available memory to hold large documents
     curConfig.forceStorage || !curConfig.noStorageOnLoad && document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/))) {
-      var name = 'svgedit-' + curConfig.canvasName;
-      var cached = editor.storage.getItem(name);
+      var _name = 'svgedit-' + curConfig.canvasName;
+
+      var cached = editor.storage.getItem(_name);
 
       if (cached) {
         editor.loadFromString(cached);
@@ -29363,7 +29364,7 @@
 
 
   editor.randomizeIds = function (arg) {
-    return svgCanvas.randomizeIds(arg);
+    svgCanvas.randomizeIds(arg);
   };
   /**
   * Auto-run after a Promise microtask.
@@ -29584,7 +29585,7 @@
                   var _ref6 = _asyncToGenerator(
                   /*#__PURE__*/
                   regeneratorRuntime.mark(function _callee2(extname) {
-                    var extName, url, imported, _imported$name, name, init, importLocale;
+                    var extName, url, imported, _imported$name, _name2, init, importLocale;
 
                     return regeneratorRuntime.wrap(function _callee2$(_context2) {
                       while (1) {
@@ -29618,12 +29619,12 @@
 
                           case 7:
                             imported = _context2.sent;
-                            _imported$name = imported.name, name = _imported$name === void 0 ? extName[1] : _imported$name, init = imported.init;
+                            _imported$name = imported.name, _name2 = _imported$name === void 0 ? extName[1] : _imported$name, init = imported.init;
                             importLocale = getImportLocale({
                               defaultLang: langParam,
-                              defaultName: name
+                              defaultName: _name2
                             });
-                            return _context2.abrupt("return", editor.addExtension(name, init && init.bind(editor), {
+                            return _context2.abrupt("return", editor.addExtension(_name2, init && init.bind(editor), {
                               $: $$b,
                               importLocale: importLocale
                             }));
@@ -30429,12 +30430,13 @@
       var layer = svgCanvas.getCurrentDrawing().getNumLayers(); // we get the layers in the reverse z-order (the layer rendered on top is listed first)
 
       while (layer--) {
-        var name = drawing.getLayerName(layer);
-        var layerTr = $$b('<tr class="layer">').toggleClass('layersel', name === currentLayerName);
-        var layerVis = $$b('<td class="layervis">').toggleClass('layerinvis', !drawing.getLayerVisibility(name));
-        var layerName = $$b('<td class="layername">' + name + '</td>');
+        var _name3 = drawing.getLayerName(layer);
+
+        var layerTr = $$b('<tr class="layer">').toggleClass('layersel', _name3 === currentLayerName);
+        var layerVis = $$b('<td class="layervis">').toggleClass('layerinvis', !drawing.getLayerVisibility(_name3));
+        var layerName = $$b('<td class="layername">' + _name3 + '</td>');
         layerlist.append(layerTr.append(layerVis, layerName));
-        selLayerNames.append('<option value="' + name + '">' + name + '</option>');
+        selLayerNames.append('<option value="' + _name3 + '">' + _name3 + '</option>');
       }
 
       if (icon !== undefined) {
@@ -31804,7 +31806,7 @@
           /**
            * Clicking the icon in flyout should set this set's icon.
            * @param {Event} ev
-           * @returns {void}
+           * @returns {boolean}
            */
 
 
@@ -31922,7 +31924,7 @@
     /**
     * @param {string} id
     * @param {external:jQuery} child
-    * @returns {void}
+    * @returns {external:jQuery}
     */
 
 
@@ -34155,7 +34157,7 @@
     /**
     * Save user preferences based on current values in the UI.
     * @function module:SVGEditor.savePreferences
-    * @returns {void}
+    * @returns {Promise<void>}
     */
 
 
@@ -34736,7 +34738,7 @@
     }
     /**
      *
-     * @returns {void}
+     * @returns {Promise<void>}
      */
 
 

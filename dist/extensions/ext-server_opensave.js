@@ -973,7 +973,7 @@ var svgEditorExtension_server_opensave = (function () {
   };
   /**
   * @param {module:canvg.CanvgOptions} opts
-  * @returns {Object}
+  * @returns {object}
   * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
   */
 
@@ -4364,7 +4364,7 @@ var svgEditorExtension_server_opensave = (function () {
     * @param {Float} width
     * @param {Float} height
     * @param {Integer} rgba
-    * @returns {void}
+    * @returns {Integer}
     */
 
 
@@ -4886,7 +4886,7 @@ var svgEditorExtension_server_opensave = (function () {
                   /**
                    * Submit the form, empty its contents for reuse and show
                    *   uploading message.
-                   * @returns {void}
+                   * @returns {Promise<void>}
                    */
 
                   function submit() {

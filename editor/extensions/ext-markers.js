@@ -147,7 +147,7 @@ export default {
     /**
     * @param {string} id
     * @param {""|"\\nomarker"|"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} val
-    * @returns {void}
+    * @returns {SVGMarkerElement}
     */
     function addMarker (id, val) {
       const txtBoxBg = '#ffffff';
@@ -443,7 +443,7 @@ export default {
 
     /**
     * @param {"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} id
-    * @returns {void}
+    * @returns {string}
     */
     function getTitle (id) {
       const {langList} = strings;
