@@ -60,6 +60,15 @@ module.exports = {
       // For `jsdoc/check-examples` in `ash-nazg`
       matchingFileName: "dummy.md",
       rejectExampleCodeRegex: "^`",
+      // Todo: Figure out why this is not working and why seem to have to
+      //    disable for all Markdown:
+      /*
+      baseConfig: {
+        rules: {
+          "no-multi-spaces": "off"
+        }
+      }
+      */
     }
   },
   overrides: [
