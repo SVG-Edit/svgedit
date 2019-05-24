@@ -90,14 +90,14 @@ export const canvg = function (target, s, opts) {
   return svg.load(ctx, s);
 };
 
-/* Todo: Reenable after ash-nazg may merge; eslint-disable jsdoc/check-types */
+/* eslint-disable jsdoc/check-types */
 /**
 * @param {module:canvg.CanvgOptions} opts
 * @returns {object}
 * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
 */
 function build (opts) {
-  /* Todo: Reenable after ash-nazg may merge; eslint-enable jsdoc/check-types */
+  /* eslint-enable jsdoc/check-types */
   const svg = {opts};
 
   svg.FRAMERATE = 30;

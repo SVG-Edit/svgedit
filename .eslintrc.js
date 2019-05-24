@@ -65,8 +65,9 @@ module.exports = {
         }
       }
       */
+      // Todo: Remove after ash-nazg update
       forceRequireReturn: true,
-      // Todo: Once PR to eslint-plugin-jsdoc may be merged, fix its "reenable later" to-dos for `jsdoc/check-types` in canvg.js file
+      // Todo: Remove if ash-nazg has sufficiently merged
       preferredTypes: {
         "*": {
           message: "Use a more precise type or if necessary use `{{preferredType}}` or `ArbitraryCallbackResult`",
@@ -83,11 +84,11 @@ module.exports = {
           message: "Point to a `@callback` namepath or `{{preferredType}}` if truly arbitrary in form",
           replacement: "GenericCallback"
         },
-        'object<>': {
+        object: {
           message: "Use the specific object type or `{{preferredType}}` (or `ArbitraryObject` or `ArbitraryModule`) if truly arbitrary",
           replacement: "PlainObject"
         },
-        'Array<>': {
+        Array: {
           message: "Use `{{preferredType}}` (or `ArgumentsArray`) if it is truly arbitrary.",
           replacement: "GenericArray"
         }
