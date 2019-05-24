@@ -80,7 +80,8 @@ module.exports = {
           message: "Use `Integer` or `Float`"
         },
         Function: {
-          message: "Point to a `@callback` namepath or `GenericCallback` if truly arbitrary in form"
+          message: "Point to a `@callback` namepath or `{{preferredType}}` if truly arbitrary in form",
+          replacement: "GenericCallback"
         },
         'object<>': {
           message: "Use the specific object type or `{{preferredType}}` (or `ArbitraryObject` or `ArbitraryModule`) if truly arbitrary",
