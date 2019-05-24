@@ -216,9 +216,10 @@ module.exports = {
     "unicorn/prefer-node-append": "off",
     "unicorn/no-zero-fractions": "off",
 
-    // Remove when ash-nazg removes
+    // Todo: Remove when ash-nazg removes
     "valid-jsdoc": "off",
-    // Remove when ash-nazg adds
+    // Todo: Remove when ash-nazg adds (then also remove
+    //   jsdoc-check-overly-generic-types.js file and npm script)
     "jsdoc/require-returns-check": ["error"],
     "jsdoc/match-description": ["error"],
   }
