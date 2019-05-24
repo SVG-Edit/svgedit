@@ -50,10 +50,6 @@ module.exports = {
         // In case we need to extend
         customTags: []
       },
-      tagNamePreference: {
-        arg: "param",
-        return: "returns"
-      },
       allowOverrideWithoutParam: true,
       allowImplementsWithoutParam: true,
       allowAugmentsExtendsWithoutParam: true,

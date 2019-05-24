@@ -21,7 +21,7 @@ let results = await Promise.all(fileMatchPatterns.map((fileMatchPattern) => {
     {
       // We grab to the end of the line as the `line` result for `find-in-files`
       //  only grabs from the beginning of the file to the end of the match.
-      term: `(@[^{\\n]*{[^}\\n]*(\\bobject|\\barray\\b|[^.]function|\\bnumber|\\*)[^}\\n]*}|@.*{} ).*`,
+      term: `(@[^{\\n]*{[^}\\n]*(\\bobject|Promise(?!<|Result)|\\barray\\b|[^.]function|\\bnumber|\\*)[^}\\n]*}|@.*{} ).*`,
       flags: 'gi'
     },
     fileMatchPattern,
