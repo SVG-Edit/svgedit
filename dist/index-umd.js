@@ -2933,7 +2933,7 @@
 
     /**
     * @function external:jQuery.fn.attr
-    * @param {string|string[]|PlainObject.<string, string>} key
+    * @param {string|string[]|PlainObject<string, string>} key
     * @param {string} value
     * @returns {external:jQuery|module:jQueryAttr.Attributes}
     */
@@ -3140,6 +3140,7 @@
 
     /**
     * @param {Element} elem
+    * @returns {SVGTransformList}
     */
     function SVGTransformList(elem) {
       _classCallCheck(this, SVGTransformList);
@@ -3248,7 +3249,7 @@
       }
       /**
       * @param {SVGTransform} newItem
-      * @returns {SVGTransform}
+      * @returns {void}
       */
 
     }, {
@@ -5385,7 +5386,7 @@
   /**
   * @function module:path.getControlPoints
   * @param {Segment} seg
-  * @returns {PlainObject.<string, SVGLineElement|SVGCircleElement>}
+  * @returns {PlainObject<string, SVGLineElement|SVGCircleElement>}
   */
 
   var getControlPoints = function getControlPoints(seg) {
@@ -7130,7 +7131,7 @@
               width: 0,
               height: 0,
               display: 'inline'
-            }, 100);
+            });
           }
 
           return undefined;
@@ -8688,7 +8689,7 @@
   * Get a set of attributes from an element that is useful for convertToPath.
   * @function module:utilities.getExtraAttributesForConvertToPath
   * @param {Element} elem - The element to be probed
-  * @returns {PlainObject.<"marker-start"|"marker-end"|"marker-mid"|"filter"|"clip-path", string>} An object with attributes.
+  * @returns {PlainObject<"marker-start"|"marker-end"|"marker-mid"|"filter"|"clip-path", string>} An object with attributes.
   */
 
   var getExtraAttributesForConvertToPath = function getExtraAttributesForConvertToPath(elem) {
@@ -9113,7 +9114,7 @@
   * Assigns multiple attributes to an element.
   * @function module:utilities.assignAttributes
   * @param {Element} elem - DOM element to apply new attribute values to
-  * @param {PlainObject.<string, string>} attrs - Object with attribute keys/values
+  * @param {PlainObject<string, string>} attrs - Object with attribute keys/values
   * @param {Integer} [suspendLength] - Milliseconds to suspend redraw
   * @param {boolean} [unitCheck=false] - Boolean to indicate the need to use units.setUnitAttr
   * @returns {void}
@@ -9363,7 +9364,7 @@
   /**
    * Add any of the whitelisted attributes to the script tag.
    * @param {HTMLScriptElement} script
-   * @param {PlainObject.<string, string>} atts
+   * @param {PlainObject<string, string>} atts
    * @returns {void}
    */
 
@@ -9384,9 +9385,9 @@
 
   /**
   * @function module:importModule.importSetGlobalDefault
-  * @param {string|string[]} url
+  * @param {string|GenericArray<Any>} url
   * @param {module:importModule.ImportConfig} config
-  * @returns {Promise<*>} The value to which it resolves depends on the export of the targeted module.
+  * @returns {Promise<Any>} The value to which it resolves depends on the export of the targeted module.
   */
 
 
@@ -9507,7 +9508,7 @@
   * @param {PlainObject} [atts={}]
   * @param {PlainObject} opts
   * @param {boolean} [opts.returnDefault=false} = {}]
-  * @returns {Promise<*>} Resolves to value of loading module or rejects with
+  * @returns {Promise<Any>} Resolves to value of loading module or rejects with
   *   `Error` upon a script loading error.
   */
 
@@ -9613,7 +9614,7 @@
     * types without checkboxes, it resolves to `true`. For checkboxes, it resolves
     * to an object with the `response` key containing the same value as the previous
     * mentioned (string or `true`) and a `checked` (boolean) property.
-    * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.PromiseResult
+    * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.ResultPromise
     */
 
     /**
@@ -9647,7 +9648,7 @@
      * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
      * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
      * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
-     * @returns {jQueryPluginDBox.PromiseResult}
+     * @returns {jQueryPluginDBox.ResultPromise}
     */
 
     function dbox(type, msg, defaultVal, opts, changeListener, checkbox) {
@@ -9735,7 +9736,7 @@
     }
     /**
     * @param {string} msg Message to alert
-    * @returns {jQueryPluginDBox.PromiseResult}
+    * @returns {jQueryPluginDBox.ResultPromise}
     */
 
 
@@ -9744,7 +9745,7 @@
     };
     /**
     * @param {string} msg Message for which to ask confirmation
-    * @returns {jQueryPluginDBox.PromiseResult}
+    * @returns {jQueryPluginDBox.ResultPromise}
     */
 
 
@@ -9753,7 +9754,7 @@
     };
     /**
     * @param {string} msg Message to indicate upon cancelable indicator
-    * @returns {jQueryPluginDBox.PromiseResult}
+    * @returns {jQueryPluginDBox.ResultPromise}
     */
 
 
@@ -9763,7 +9764,7 @@
     /**
     * @param {string} msg Message to accompany the prompt
     * @param {string} [defaultText=''] The default text to show for the prompt
-    * @returns {jQueryPluginDBox.PromiseResult}
+    * @returns {jQueryPluginDBox.ResultPromise}
     */
 
 
@@ -9936,8 +9937,28 @@
     }, {
       key: "appendChildren",
       value: function appendChildren(children) {
-        for (var i = 0; i < children.length; ++i) {
-          this.group_.append(children[i]);
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var child = _step.value;
+            this.group_.append(child);
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
         }
       }
       /**
@@ -13784,10 +13805,10 @@
           'fill-opacity': curShape.fill_opacity,
           opacity: curShape.opacity / 2,
           style: 'pointer-events:inherit'
-        }, 100);
+        });
       }
 
-      assignAttributes(shape, data.attr, 100);
+      assignAttributes(shape, data.attr);
       cleanupElement(shape); // Children
 
       if (data.children) {
@@ -14516,7 +14537,7 @@
     * @param {module:svgcanvas.SvgCanvas#event:ext_mouseDown|module:svgcanvas.SvgCanvas#event:ext_mouseMove|module:svgcanvas.SvgCanvas#event:ext_mouseUp|module:svgcanvas.SvgCanvas#event:ext_zoomChanged|module:svgcanvas.SvgCanvas#event:ext_IDsUpdated|module:svgcanvas.SvgCanvas#event:ext_canvasUpdated|module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate|module:svgcanvas.SvgCanvas#event:ext_selectedChanged|module:svgcanvas.SvgCanvas#event:ext_elementTransition|module:svgcanvas.SvgCanvas#event:ext_elementChanged|module:svgcanvas.SvgCanvas#event:ext_langReady|module:svgcanvas.SvgCanvas#event:ext_langChanged|module:svgcanvas.SvgCanvas#event:ext_addLangData|module:svgcanvas.SvgCanvas#event:ext_onNewDocument|module:svgcanvas.SvgCanvas#event:ext_workareaResized|module:svgcanvas.ExtensionVarBuilder} [vars]
     * @param {boolean} [returnArray]
     * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
-    * @returns {GenericArray.<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
+    * @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
     */
 
 
@@ -15441,12 +15462,14 @@
               if (!rightClick) {
                 // insert a dummy transform so if the element(s) are moved it will have
                 // a transform to use for its translate
-                for (var i = 0; i < selectedElements.length; ++i) {
-                  if (isNullish(selectedElements[i])) {
+                for (var _i2 = 0, _selectedElements = selectedElements; _i2 < _selectedElements.length; _i2++) {
+                  var selectedElement = _selectedElements[_i2];
+
+                  if (isNullish(selectedElement)) {
                     continue;
                   }
 
-                  var slist = getTransformList(selectedElements[i]);
+                  var slist = getTransformList(selectedElement);
 
                   if (slist.numberOfItems) {
                     slist.insertItemBefore(svgroot.createSVGTransform(), 0);
@@ -15475,7 +15498,7 @@
                 width: 0,
                 height: 0,
                 display: 'inline'
-              }, 100);
+              });
             }
 
             break;
@@ -15493,7 +15516,7 @@
               width: 0,
               height: 0,
               display: 'inline'
-            }, 100);
+            });
             break;
 
           case 'resize':
@@ -15550,16 +15573,16 @@
                   var all = mouseTarget.getElementsByTagName('*'),
                       len = all.length;
 
-                  for (var _i2 = 0; _i2 < len; _i2++) {
-                    if (!all[_i2].style) {
+                  for (var i = 0; i < len; i++) {
+                    if (!all[i].style) {
                       // mathML
                       continue;
                     }
 
-                    all[_i2].style.vectorEffect = 'non-scaling-stroke';
+                    all[i].style.vectorEffect = 'non-scaling-stroke';
 
                     if (iswebkit) {
-                      delayedStroke(all[_i2]);
+                      delayedStroke(all[i]);
                     }
                   }
                 }
@@ -15890,7 +15913,7 @@
                 y: Math.min(rStartY, realY),
                 width: Math.abs(realX - rStartX),
                 height: Math.abs(realY - rStartY)
-              }, 100); // for each selected:
+              }); // for each selected:
               // - if newList contains selected, do nothing
               // - if newList doesn't contain selected, remove it from selected
               // - for any newList that was not in selectedElements, add it to selected
@@ -16038,7 +16061,7 @@
                 y: Math.min(rStartY * currentZoom, realY),
                 width: Math.abs(realX - rStartX * currentZoom),
                 height: Math.abs(realY - rStartY * currentZoom)
-              }, 100);
+              });
               break;
             }
 
@@ -16047,7 +16070,7 @@
               assignAttributes(shape, {
                 x: x,
                 y: y
-              }, 1000);
+              });
               break;
             }
 
@@ -16106,7 +16129,7 @@
                 height: h,
                 x: newX,
                 y: newY
-              }, 1000);
+              });
               break;
             }
 
@@ -16238,7 +16261,7 @@
                   y: Math.min(rStartY * currentZoom, realY),
                   width: Math.abs(realX - rStartX * currentZoom),
                   height: Math.abs(realY - rStartY * currentZoom)
-                }, 100);
+                });
               }
 
               pathActions$1.mouseMove(x, y);
@@ -19012,10 +19035,30 @@
 
       elem = $$9(elem).data('gsvg') || $$9(elem).data('symbol') || elem;
       var childs = elem.childNodes;
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
-      for (var i = 0; i < childs.length; i++) {
-        if (childs[i].nodeName === 'title') {
-          return childs[i].textContent;
+      try {
+        for (var _iterator2 = childs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var child = _step2.value;
+
+          if (child.nodeName === 'title') {
+            return child.textContent;
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
         }
       }
 
@@ -19082,12 +19125,32 @@
       var docTitle = false,
           oldTitle = '';
       var batchCmd = new BatchCommand$1('Change Image Title');
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
-      for (var i = 0; i < childs.length; i++) {
-        if (childs[i].nodeName === 'title') {
-          docTitle = childs[i];
-          oldTitle = docTitle.textContent;
-          break;
+      try {
+        for (var _iterator3 = childs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var child = _step3.value;
+
+          if (child.nodeName === 'title') {
+            docTitle = child;
+            oldTitle = docTitle.textContent;
+            break;
+          }
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
         }
       }
 
@@ -19928,7 +19991,7 @@
             y: '-50%',
             width: '200%',
             height: '200%'
-          }, 100); // Removing these attributes hides text in Chrome (see Issue 579)
+          }); // Removing these attributes hides text in Chrome (see Issue 579)
         } else if (!isWebkit()) {
           filterElem.removeAttribute('x');
           filterElem.removeAttribute('y');
@@ -21074,9 +21137,9 @@
 
 
     this.moveToTopSelectedElement = function () {
-      var _selectedElements = selectedElements,
-          _selectedElements2 = _slicedToArray(_selectedElements, 1),
-          selected = _selectedElements2[0];
+      var _selectedElements2 = selectedElements,
+          _selectedElements3 = _slicedToArray(_selectedElements2, 1),
+          selected = _selectedElements3[0];
 
       if (!isNullish(selected)) {
         var t = selected;
@@ -21101,9 +21164,9 @@
 
 
     this.moveToBottomSelectedElement = function () {
-      var _selectedElements3 = selectedElements,
-          _selectedElements4 = _slicedToArray(_selectedElements3, 1),
-          selected = _selectedElements4[0];
+      var _selectedElements4 = selectedElements,
+          _selectedElements5 = _slicedToArray(_selectedElements4, 1),
+          selected = _selectedElements5[0];
 
       if (!isNullish(selected)) {
         var t = selected;
@@ -22358,10 +22421,10 @@
     *   listed under "fallback"
     * @param {boolean} [opts.replace] If set to `true`, HTML elements will
     *   be replaced by, rather than include the SVG icon.
-    * @param {PlainObject.<string, string>} [opts.placement] Map with selectors
+    * @param {PlainObject<string, string>} [opts.placement] Map with selectors
     *   for keys and SVG icon ids as values. This provides a custom method of
     *   adding icons.
-    * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} [opts.resize] Map
+    * @param {PlainObject<string, module:jQuerySVGIcons.Size>} [opts.resize] Map
     *   with selectors for keys and numbers as values. This allows an easy way to
     *   resize specific icons.
     * @param {module:jQuerySVGIcons.SVGIconsLoadedCallback} [opts.callback] A
@@ -22783,7 +22846,7 @@
 
     /**
     * @function external:jQuery.resizeSvgIcons
-    * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} obj Object with
+    * @param {PlainObject<string, module:jQuerySVGIcons.Size>} obj Object with
     *   selectors as keys. The values are sizes.
     * @returns {void}
     */
@@ -24688,9 +24751,28 @@
         $(this).each(function () {
           if (o !== undefined) {
             var d = o.split(',');
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
 
-            for (var i = 0; i < d.length; i++) {
-              $(this).find('A[href="' + d[i] + '"]').parent().addClass('disabled');
+            try {
+              for (var _iterator = d[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var href = _step.value;
+                $(this).find('A[href="' + href + '"]').parent().addClass('disabled');
+              }
+            } catch (err) {
+              _didIteratorError = true;
+              _iteratorError = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                  _iterator["return"]();
+                }
+              } finally {
+                if (_didIteratorError) {
+                  throw _iteratorError;
+                }
+              }
             }
           }
         });
@@ -24713,9 +24795,28 @@
         $(this).each(function () {
           if (o !== undefined) {
             var d = o.split(',');
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
-            for (var i = 0; i < d.length; i++) {
-              $(this).find('A[href="' + d[i] + '"]').parent().removeClass('disabled');
+            try {
+              for (var _iterator2 = d[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var href = _step2.value;
+                $(this).find('A[href="' + href + '"]').parent().removeClass('disabled');
+              }
+            } catch (err) {
+              _didIteratorError2 = true;
+              _iteratorError2 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                  _iterator2["return"]();
+                }
+              } finally {
+                if (_didIteratorError2) {
+                  throw _iteratorError2;
+                }
+              }
             }
           }
         });
@@ -28524,6 +28625,44 @@
     };
   }();
 
+  function _slicedToArray$1(arr, i) {
+    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _nonIterableRest$1();
+  }
+
+  function _arrayWithHoles$1(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArrayLimit$1(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _nonIterableRest$1() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  }
+
   function loadStylesheets(stylesheets) {
     var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
         beforeDefault = _ref.before,
@@ -28542,7 +28681,7 @@
       if (Array.isArray(stylesheetURL)) {
         var _stylesheetURL = stylesheetURL;
 
-        var _stylesheetURL2 = _slicedToArray(_stylesheetURL, 2);
+        var _stylesheetURL2 = _slicedToArray$1(_stylesheetURL, 2);
 
         stylesheetURL = _stylesheetURL2[0];
         var _stylesheetURL2$ = _stylesheetURL2[1];
@@ -30004,7 +30143,7 @@
       setFlyoutPositions();
     };
     /**
-     * Setup SVG icons
+     * Setup SVG icons.
      * @returns {void}
      */
 
@@ -30387,7 +30526,7 @@
     }
     /**
      * This function highlights the layer passed in (by fading out the other layers).
-     * If no layer is passed in, this function restores the other layers
+     * If no layer is passed in, this function restores the other layers.
      * @param {string} [layerNameToHighlight]
      * @returns {void}
     */
@@ -31763,7 +31902,7 @@
 
     var allHolders = {};
     /**
-     * @param {PlainObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
+     * @param {PlainObject<string, module:SVGEditor.ToolButton>} holders Key is a selector
      * @returns {void}
      */
 
@@ -35832,7 +35971,7 @@
       }
     });
     /**
-    * Implements {@see module:jQueryContextMenu.jQueryContextMenuListener}
+    * Implements {@see module:jQueryContextMenu.jQueryContextMenuListener}.
     * @param {"dupe"|"delete"|"merge_down"|"merge_all"} action
     * @param {external:jQuery} el
     * @param {{x: Float, y: Float, docX: Float, docY: Float}} pos
@@ -36030,7 +36169,7 @@
             var result = _ref27.target.result;
 
             /**
-            * Insert the new image until we know its dimensions
+            * Insert the new image until we know its dimensions.
             * @param {Float} width
             * @param {Float} height
             * @returns {void}

@@ -50,12 +50,7 @@ module.exports = {
         // In case we need to extend
         customTags: []
       },
-      allowOverrideWithoutParam: true,
-      allowImplementsWithoutParam: true,
-      allowAugmentsExtendsWithoutParam: true,
-      // For `jsdoc/check-examples` in `ash-nazg`
-      matchingFileName: "dummy.md",
-      rejectExampleCodeRegex: "^`",
+      augmentsExtendsReplacesDocs: true,
       // Todo: Figure out why this is not working and why seem to have to
       //    disable for all Markdown:
       /*
@@ -65,34 +60,6 @@ module.exports = {
         }
       }
       */
-      // Todo: Remove after ash-nazg update
-      forceRequireReturn: true,
-      // Todo: Remove if ash-nazg has sufficiently merged
-      preferredTypes: {
-        "*": {
-          message: "Use a more precise type or if necessary use `{{preferredType}}` or `ArbitraryCallbackResult`",
-          replacement: "Any"
-        },
-        any: {
-          message: "Use a more precise type or if necessary use `{{preferredType}}` or `ArbitraryCallbackResult`",
-          replacement: "Any"
-        },
-        number: {
-          message: "Use `Integer` or `Float`"
-        },
-        Function: {
-          message: "Point to a `@callback` namepath or `{{preferredType}}` if truly arbitrary in form",
-          replacement: "GenericCallback"
-        },
-        object: {
-          message: "Use the specific object type or `{{preferredType}}` (or `ArbitraryObject` or `ArbitraryModule`) if truly arbitrary",
-          replacement: "PlainObject"
-        },
-        Array: {
-          message: "Use `{{preferredType}}` (or `ArgumentsArray`) if it is truly arbitrary.",
-          replacement: "GenericArray"
-        }
-      }
     }
   },
   overrides: [
@@ -173,7 +140,7 @@ module.exports = {
       // Node files
       files: [
         "docs/jsdoc-config.js",
-        "build-html.js", "jsdoc-check-overly-generic-types.js",
+        "build-html.js",
         "rollup.config.js", "rollup-config.config.js"
       ],
       env: {
@@ -216,13 +183,6 @@ module.exports = {
     }],
     "unicorn/prefer-query-selector": "off",
     "unicorn/prefer-node-append": "off",
-    "unicorn/no-zero-fractions": "off",
-
-    // Todo: Remove when ash-nazg removes
-    "valid-jsdoc": "off",
-    // Todo: Remove when ash-nazg adds (then also remove
-    //   jsdoc-check-overly-generic-types.js file and npm script)
-    "jsdoc/require-returns-check": ["error"],
-    "jsdoc/match-description": ["error"],
+    "unicorn/no-zero-fractions": "off"
   }
 };

@@ -2830,7 +2830,7 @@ editor.init = function () {
 
   const allHolders = {};
   /**
-   * @param {PlainObject.<string, module:SVGEditor.ToolButton>} holders Key is a selector
+   * @param {PlainObject<string, module:SVGEditor.ToolButton>} holders Key is a selector
    * @returns {void}
    */
   const setupFlyouts = function (holders) {

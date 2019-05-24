@@ -314,19 +314,17 @@ class EmbeddedSVGEdit {
     ];
 
     // TODO: rewrite the following, it's pretty scary.
-    for (let i = 0; i < functions.length; i++) {
-      this[functions[i]] = getCallbackSetter(functions[i]);
+    for (const func of functions) {
+      this[func] = getCallbackSetter(func);
     }
 
     // Older IE may need a polyfill for addEventListener, but so it would for SVG
     window.addEventListener('message', getMessageListener(this));
     window.addEventListener('keydown', (e) => {
-      const {key, keyCode, charCode, which} = e;
-      if (e.key === 'Backspace') {
+      const {type, key} = e;
+      if (key === 'Backspace') {
         e.preventDefault();
-        const keyboardEvent = new KeyboardEvent(e.type, {
-          key, keyCode, charCode, which
-        });
+        const keyboardEvent = new KeyboardEvent(type, {key});
         that.frame.contentDocument.dispatchEvent(keyboardEvent);
       }
     });

@@ -141,8 +141,8 @@ class Layer {
    * @returns {void}
    */
   appendChildren (children) {
-    for (let i = 0; i < children.length; ++i) {
-      this.group_.append(children[i]);
+    for (const child of children) {
+      this.group_.append(child);
     }
   }
 

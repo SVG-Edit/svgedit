@@ -7,6 +7,7 @@
 - Enhancement: Added `avoidClientSideOpen` config for
     `ext-server_opensave.js`
 - Refactoring: Use `static` keyword for classes
+- Build: Remove `types-docs` script as being handled in ESLint
 - npm: Update devDeps (including switching from deprecate opn-cli
     package to open-cli)
 

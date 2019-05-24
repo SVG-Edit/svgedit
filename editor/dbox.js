@@ -35,7 +35,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
   * types without checkboxes, it resolves to `true`. For checkboxes, it resolves
   * to an object with the `response` key containing the same value as the previous
   * mentioned (string or `true`) and a `checked` (boolean) property.
-  * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.PromiseResult
+  * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.ResultPromise
   */
   /**
   * @typedef {PlainObject} module:jQueryPluginDBox.SelectOption
@@ -65,7 +65,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
    * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
    * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
    * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
-   * @returns {jQueryPluginDBox.PromiseResult}
+   * @returns {jQueryPluginDBox.ResultPromise}
   */
   function dbox (type, msg, defaultVal, opts, changeListener, checkbox) {
     dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>')
@@ -141,21 +141,21 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
 
   /**
   * @param {string} msg Message to alert
-  * @returns {jQueryPluginDBox.PromiseResult}
+  * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.alert = function (msg) {
     return dbox('alert', msg);
   };
   /**
   * @param {string} msg Message for which to ask confirmation
-  * @returns {jQueryPluginDBox.PromiseResult}
+  * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.confirm = function (msg) {
     return dbox('confirm', msg);
   };
   /**
   * @param {string} msg Message to indicate upon cancelable indicator
-  * @returns {jQueryPluginDBox.PromiseResult}
+  * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.process_cancel = function (msg) {
     return dbox('process', msg);
@@ -163,7 +163,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
   /**
   * @param {string} msg Message to accompany the prompt
   * @param {string} [defaultText=''] The default text to show for the prompt
-  * @returns {jQueryPluginDBox.PromiseResult}
+  * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.prompt = function (msg, defaultText = '') {
     return dbox('prompt', msg, defaultText);

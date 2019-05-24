@@ -192,8 +192,8 @@ function jQueryContextMenu ($) {
       $(this).each(function () {
         if (o !== undefined) {
           const d = o.split(',');
-          for (let i = 0; i < d.length; i++) {
-            $(this).find('A[href="' + d[i] + '"]').parent().addClass('disabled');
+          for (const href of d) {
+            $(this).find('A[href="' + href + '"]').parent().addClass('disabled');
           }
         }
       });
@@ -215,8 +215,8 @@ function jQueryContextMenu ($) {
       $(this).each(function () {
         if (o !== undefined) {
           const d = o.split(',');
-          for (let i = 0; i < d.length; i++) {
-            $(this).find('A[href="' + d[i] + '"]').parent().removeClass('disabled');
+          for (const href of d) {
+            $(this).find('A[href="' + href + '"]').parent().removeClass('disabled');
           }
         }
       });

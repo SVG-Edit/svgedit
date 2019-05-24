@@ -924,7 +924,7 @@ var svgEditorExtension_server_moinsave = (function () {
   * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
   * @param {string|XMLDocument} s - svg string, url to svg file, or xml document
   * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
-  * @returns {Promise} All the function after the first render is completed with dom
+  * @returns {Promise<XMLDocument|XMLDocument[]>} All the function after the first render is completed with dom
   */
 
 

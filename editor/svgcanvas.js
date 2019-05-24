@@ -1021,7 +1021,7 @@ this.runExtension = function (name, action, vars) {
 * @param {module:svgcanvas.SvgCanvas#event:ext_mouseDown|module:svgcanvas.SvgCanvas#event:ext_mouseMove|module:svgcanvas.SvgCanvas#event:ext_mouseUp|module:svgcanvas.SvgCanvas#event:ext_zoomChanged|module:svgcanvas.SvgCanvas#event:ext_IDsUpdated|module:svgcanvas.SvgCanvas#event:ext_canvasUpdated|module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate|module:svgcanvas.SvgCanvas#event:ext_selectedChanged|module:svgcanvas.SvgCanvas#event:ext_elementTransition|module:svgcanvas.SvgCanvas#event:ext_elementChanged|module:svgcanvas.SvgCanvas#event:ext_langReady|module:svgcanvas.SvgCanvas#event:ext_langChanged|module:svgcanvas.SvgCanvas#event:ext_addLangData|module:svgcanvas.SvgCanvas#event:ext_onNewDocument|module:svgcanvas.SvgCanvas#event:ext_workareaResized|module:svgcanvas.ExtensionVarBuilder} [vars]
 * @param {boolean} [returnArray]
 * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
-* @returns {GenericArray.<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
+* @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
 */
 const runExtensions = this.runExtensions = function (action, vars, returnArray, nameFilter) {
   let result = returnArray ? [] : false;
@@ -1822,9 +1822,9 @@ const mouseDown = function (evt) {
       if (!rightClick) {
         // insert a dummy transform so if the element(s) are moved it will have
         // a transform to use for its translate
-        for (let i = 0; i < selectedElements.length; ++i) {
-          if (isNullish(selectedElements[i])) { continue; }
-          const slist = getTransformList(selectedElements[i]);
+        for (const selectedElement of selectedElements) {
+          if (isNullish(selectedElement)) { continue; }
+          const slist = getTransformList(selectedElement);
           if (slist.numberOfItems) {
             slist.insertItemBefore(svgroot.createSVGTransform(), 0);
           } else {
@@ -4957,9 +4957,9 @@ this.getTitle = function (elem) {
   if (!elem) { return undefined; }
   elem = $(elem).data('gsvg') || $(elem).data('symbol') || elem;
   const childs = elem.childNodes;
-  for (let i = 0; i < childs.length; i++) {
-    if (childs[i].nodeName === 'title') {
-      return childs[i].textContent;
+  for (const child of childs) {
+    if (child.nodeName === 'title') {
+      return child.textContent;
     }
   }
   return '';
@@ -5023,9 +5023,9 @@ this.setDocumentTitle = function (newTitle) {
 
   const batchCmd = new BatchCommand('Change Image Title');
 
-  for (let i = 0; i < childs.length; i++) {
-    if (childs[i].nodeName === 'title') {
-      docTitle = childs[i];
+  for (const child of childs) {
+    if (child.nodeName === 'title') {
+      docTitle = child;
       oldTitle = docTitle.textContent;
       break;
     }

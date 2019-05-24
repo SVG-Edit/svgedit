@@ -123,10 +123,10 @@ export default function jQueryPluginSVGIcons ($) {
   *   listed under "fallback"
   * @param {boolean} [opts.replace] If set to `true`, HTML elements will
   *   be replaced by, rather than include the SVG icon.
-  * @param {PlainObject.<string, string>} [opts.placement] Map with selectors
+  * @param {PlainObject<string, string>} [opts.placement] Map with selectors
   *   for keys and SVG icon ids as values. This provides a custom method of
   *   adding icons.
-  * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} [opts.resize] Map
+  * @param {PlainObject<string, module:jQuerySVGIcons.Size>} [opts.resize] Map
   *   with selectors for keys and numbers as values. This allows an easy way to
   *   resize specific icons.
   * @param {module:jQuerySVGIcons.SVGIconsLoadedCallback} [opts.callback] A
@@ -517,7 +517,7 @@ export default function jQueryPluginSVGIcons ($) {
 
   /**
   * @function external:jQuery.resizeSvgIcons
-  * @param {PlainObject.<string, module:jQuerySVGIcons.Size>} obj Object with
+  * @param {PlainObject<string, module:jQuerySVGIcons.Size>} obj Object with
   *   selectors as keys. The values are sizes.
   * @returns {void}
   */

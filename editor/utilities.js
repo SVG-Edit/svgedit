@@ -808,7 +808,7 @@ export const getPathDFromElement = function (elem) {
 * Get a set of attributes from an element that is useful for convertToPath.
 * @function module:utilities.getExtraAttributesForConvertToPath
 * @param {Element} elem - The element to be probed
-* @returns {PlainObject.<"marker-start"|"marker-end"|"marker-mid"|"filter"|"clip-path", string>} An object with attributes.
+* @returns {PlainObject<"marker-start"|"marker-end"|"marker-mid"|"filter"|"clip-path", string>} An object with attributes.
 */
 export const getExtraAttributesForConvertToPath = function (elem) {
   const attrs = {};
@@ -1219,7 +1219,7 @@ export const getElem = (supportsSelectors())
 * Assigns multiple attributes to an element.
 * @function module:utilities.assignAttributes
 * @param {Element} elem - DOM element to apply new attribute values to
-* @param {PlainObject.<string, string>} attrs - Object with attribute keys/values
+* @param {PlainObject<string, string>} attrs - Object with attribute keys/values
 * @param {Integer} [suspendLength] - Milliseconds to suspend redraw
 * @param {boolean} [unitCheck=false] - Boolean to indicate the need to use units.setUnitAttr
 * @returns {void}

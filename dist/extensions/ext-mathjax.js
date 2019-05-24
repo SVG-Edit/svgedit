@@ -40,7 +40,7 @@ var svgEditorExtension_mathjax = (function () {
   /**
    * Add any of the whitelisted attributes to the script tag.
    * @param {HTMLScriptElement} script
-   * @param {PlainObject.<string, string>} atts
+   * @param {PlainObject<string, string>} atts
    * @returns {void}
    */
 

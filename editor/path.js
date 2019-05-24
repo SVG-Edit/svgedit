@@ -484,7 +484,7 @@ export const getPointGrip = function (seg, update) {
 /**
 * @function module:path.getControlPoints
 * @param {Segment} seg
-* @returns {PlainObject.<string, SVGLineElement|SVGCircleElement>}
+* @returns {PlainObject<string, SVGLineElement|SVGCircleElement>}
 */
 export const getControlPoints = function (seg) {
   const {item, index} = seg;

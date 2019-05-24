@@ -26,7 +26,7 @@ export default function jQueryPluginSVG ($) {
   */
   /**
   * @function external:jQuery.fn.attr
-  * @param {string|string[]|PlainObject.<string, string>} key
+  * @param {string|string[]|PlainObject<string, string>} key
   * @param {string} value
   * @returns {external:jQuery|module:jQueryAttr.Attributes}
   */
