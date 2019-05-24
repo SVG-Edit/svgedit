@@ -36,6 +36,7 @@ function addScriptAtts (script, atts) {
 * @property {string} global The variable name to set on `window` (when not using the modular version)
 * @property {boolean} [returnDefault=false]
 */
+/* eslint-disable jsdoc/check-types */
 /**
 * @function module:importModule.importSetGlobalDefault
 * @param {string|string[]} url
@@ -43,6 +44,7 @@ function addScriptAtts (script, atts) {
 * @returns {Promise<*>} The value to which it resolves depends on the export of the targeted module.
 */
 export function importSetGlobalDefault (url, config) {
+  /* eslint-enable jsdoc/check-types */
   return importSetGlobal(url, {...config, returnDefault: true});
 }
 /**
@@ -111,6 +113,7 @@ export function importScript (url, atts = {}) {
   });
 }
 
+/* eslint-disable jsdoc/check-types */
 /**
 *
 * @param {string|string[]} url
@@ -121,6 +124,7 @@ export function importScript (url, atts = {}) {
 *   `Error` upon a script loading error.
 */
 export function importModule (url, atts = {}, {returnDefault = false} = {}) {
+  /* eslint-enable jsdoc/check-types */
   if (Array.isArray(url)) {
     return Promise.all(url.map((u) => {
       return importModule(u, atts);

@@ -65,6 +65,32 @@ module.exports = {
         }
       }
       */
+      forceRequireReturn: true,
+      // Todo: Once PR to eslint-plugin-jsdoc may be merged, fix its "reenable later" to-dos for `jsdoc/check-types` in canvg.js file
+      preferredTypes: {
+        "*": {
+          message: "Use a more precise type or if necessary use `{{preferredType}}` or `ArbitraryCallbackResult`",
+          replacement: "Any"
+        },
+        any: {
+          message: "Use a more precise type or if necessary use `{{preferredType}}` or `ArbitraryCallbackResult`",
+          replacement: "Any"
+        },
+        number: {
+          message: "Use `Integer` or `Float`"
+        },
+        Function: {
+          message: "Point to a `@callback` namepath or `GenericCallback` if truly arbitrary in form"
+        },
+        'object<>': {
+          message: "Use the specific object type or `{{preferredType}}` (or `ArbitraryObject` or `ArbitraryModule`) if truly arbitrary",
+          replacement: "PlainObject"
+        },
+        'Array<>': {
+          message: "Use `{{preferredType}}` (or `ArgumentsArray`) if it is truly arbitrary.",
+          replacement: "GenericArray"
+        }
+      }
     }
   },
   overrides: [
@@ -189,7 +215,11 @@ module.exports = {
     "unicorn/prefer-query-selector": "off",
     "unicorn/prefer-node-append": "off",
     "unicorn/no-zero-fractions": "off",
-    // Disable until ash-nazg removes
-    "valid-jsdoc": "off"
+
+    // Remove when ash-nazg removes
+    "valid-jsdoc": "off",
+    // Remove when ash-nazg adds
+    "jsdoc/require-returns-check": ["error"],
+    "jsdoc/match-description": ["error"],
   }
 };

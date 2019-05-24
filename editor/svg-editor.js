@@ -1174,7 +1174,7 @@ editor.init = function () {
   };
 
   /**
-   * Setup SVG icons
+   * Setup SVG icons.
    * @returns {void}
    */
   function setIcons () {
@@ -1551,7 +1551,7 @@ editor.init = function () {
 
   /**
    * This function highlights the layer passed in (by fading out the other layers).
-   * If no layer is passed in, this function restores the other layers
+   * If no layer is passed in, this function restores the other layers.
    * @param {string} [layerNameToHighlight]
    * @returns {void}
   */
@@ -5961,7 +5961,7 @@ editor.init = function () {
   );
 
   /**
-  * Implements {@see module:jQueryContextMenu.jQueryContextMenuListener}
+  * Implements {@see module:jQueryContextMenu.jQueryContextMenuListener}.
   * @param {"dupe"|"delete"|"merge_down"|"merge_all"} action
   * @param {external:jQuery} el
   * @param {{x: Float, y: Float, docX: Float, docY: Float}} pos
@@ -6146,7 +6146,7 @@ editor.init = function () {
         reader = new FileReader();
         reader.onloadend = function ({target: {result}}) {
           /**
-          * Insert the new image until we know its dimensions
+          * Insert the new image until we know its dimensions.
           * @param {Float} width
           * @param {Float} height
           * @returns {void}

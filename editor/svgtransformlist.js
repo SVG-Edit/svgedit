@@ -123,6 +123,7 @@ let listMap_ = {};
 export class SVGTransformList { // eslint-disable-line no-shadow
   /**
   * @param {Element} elem
+  * @returns {SVGTransformList}
   */
   constructor (elem) {
     this._elem = elem || null;
@@ -208,7 +209,7 @@ export class SVGTransformList { // eslint-disable-line no-shadow
 
   /**
   * @param {SVGTransform} newItem
-  * @returns {SVGTransform}
+  * @returns {void}
   */
   initialize (newItem) {
     this.numberOfItems = 1;
