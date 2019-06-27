@@ -41,7 +41,7 @@ let svgroot_ = null;
 * Object with the following keys/values
 * @typedef {PlainObject} module:utilities.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
-* @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element
+* @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
 * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
 * @property {module:utilities.SVGElementJSON[]} [children] - Data objects to be added recursively as children
 * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
