@@ -75,7 +75,8 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
 1. Install SVG-edit into your package:
   `npm i --save svgedit`.
 1. Look within `node_modules/svgedit/`, e.g., `node_modules/svgedit/editor/svg-editor.html`
-  for the files your package needs and use accordingly.
+  for the files your package needs and use accordingly (from outside of
+  `node_modules`).
 1. If you want to publish your own work, you can use `npm publish`.
 
 ## Programmatic customization
