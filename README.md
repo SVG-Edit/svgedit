@@ -104,24 +104,25 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
   references JavaScript rolled up into a single file), you can follow these
   steps after any config changes you make, so that your changes can also be
   automatically made available to both versions.
-  1. JavaScript:
-    1. Run `npm install` within the svgedit directory (`node_modules/svgedit`
-      if you installed via npm) and the root repository directory if you
-      cloned the Git repository instead. This will install the build tools
-      for SVG-edit.
-    1. Run `npm run build-config` within the svgedit directory mentioned
-      in the step above.
-      1. This will rebuild `svgedit-config-iife.js` (applying Babel to allow
-        it to work on older browsers and applying Rollup to build all
-        JavaScript into one file). The file will then contain non-ES6 module
-        JavaScript that can work in older browsers. Note that it bundles all
-        of SVGEdit, so it is to be expected that this file will be much
-        larger in size than the original ES6 config file.
-  1. HTML:
-    1. If you wish to make changes to both HTML files, it is recommended that
-        you work and test on `svg-editor-es.html` and then run
-        `npm run build-html` to have the changes properly copied to
-        `svg-editor.html`.
+    1. JavaScript:
+        1. Run `npm install` within the svgedit directory
+          (`node_modules/svgedit` if you installed via npm) and the root
+          repository directory if you cloned the Git repository instead.
+          This will install the build tools for SVG-edit.
+        1. Run `npm run build-config` within the svgedit directory mentioned
+          in the step above.
+            1. This will rebuild `svgedit-config-iife.js` (applying Babel to
+              allow it to work on older browsers and applying Rollup to build
+              all JavaScript into one file). The file will then contain
+              non-ES6 module JavaScript that can work in older browsers.
+              Note that it bundles all of SVGEdit, so it is to be expected
+              that this file will be much larger in size than the original
+              ES6 config file.
+    1. HTML:
+      1. If you wish to make changes to both HTML files, it is recommended that
+          you work and test on `svg-editor-es.html` and then run
+          `npm run build-html` to have the changes properly copied to
+          `svg-editor.html`.
 
 ## Recent news
 
