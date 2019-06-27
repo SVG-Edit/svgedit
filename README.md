@@ -119,10 +119,10 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
               that this file will be much larger in size than the original
               ES6 config file.
     1. HTML:
-      1. If you wish to make changes to both HTML files, it is recommended that
-          you work and test on `svg-editor-es.html` and then run
-          `npm run build-html` to have the changes properly copied to
-          `svg-editor.html`.
+        1. If you wish to make changes to both HTML files, it is recommended that
+            you work and test on `svg-editor-es.html` and then run
+            `npm run build-html` to have the changes properly copied to
+            `svg-editor.html`.
 
 ## Recent news
 
