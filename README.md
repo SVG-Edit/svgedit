@@ -109,7 +109,8 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
       if you installed via npm) and the root repository directory if you
       cloned the Git repository instead. This will install the build tools
       for SVG-edit.
-    1. Run `npm run build-config` within the `node_modules/svgedit` directory.
+    1. Run `npm run build-config` within the svgedit directory mentioned
+      in the step above.
       1. This will rebuild `svgedit-config-iife.js` (applying Babel to allow
         it to work on older browsers and applying Rollup to build all
         JavaScript into one file). The file will then contain non-ES6 module
