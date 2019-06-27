@@ -42,7 +42,7 @@ const segData = {
 /**
  * @tutorial LocaleDocs
  * @typedef {module:locale.LocaleStrings|PlainObject} module:path.uiStrings
- * @property {PlainObject.<string, string>} ui
+ * @property {PlainObject<string, string>} ui
 */
 
 const uiStrings = {};
@@ -89,7 +89,7 @@ let editorContext_ = null;
 * Object with the following keys/values
 * @typedef {PlainObject} module:path.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
-* @property {PlainObject.<string, string>} attr - Has key-value attributes to assign to the new element
+* @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element
 * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
 * @property {module:path.SVGElementJSON[]} [children] - Data objects to be added recursively as children
 * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -135,7 +135,7 @@ let editorContext_ = null;
 /**
  * @function module:path.EditorContext#remapElement
  * @param {Element} selected - DOM element to be changed
- * @param {PlainObject.<string, string>} changes - Object with changes to be remapped
+ * @param {PlainObject<string, string>} changes - Object with changes to be remapped
  * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
  * @returns {void}
  */

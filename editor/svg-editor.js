@@ -3107,10 +3107,10 @@ editor.init = function () {
     * @typedef {PlainObject} module:SVGEditor.ContextTool
     * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
     * @property {string} id The ID of the actual tool element. Required.
-    * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
+    * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
     * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
     * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
-    * @property {PlainObject.<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
+    * @property {PlainObject<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
     * @property {string} [container_id] The ID to be given to the tool's container element.
     * @property {string} [defval] Default value
     * @property {string|Integer} [colnum] Added as part of the option list class.
@@ -3228,7 +3228,7 @@ editor.init = function () {
       * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
       * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
       * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
-      * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
+      * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
       * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
       * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
       * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call

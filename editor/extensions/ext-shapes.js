@@ -71,7 +71,7 @@ export default {
 
     /**
     * @typedef {PlainObject} module:Extension.Shapes.Shapes
-    * @property {PlainObject.<string, string>} data
+    * @property {PlainObject<string, string>} data
     * @property {Integer} [size]
     * @property {boolean} [fill]
     */

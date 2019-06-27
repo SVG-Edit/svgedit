@@ -406,7 +406,6 @@ const jPicker = function ($) {
    * @param {external:jQuery.jPicker.Color} color
    * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
    * @param {Float} alphaPrecision
-   * @constructor
    */
   class ColorValuePicker {
     constructor (picker, color, bindedHex, alphaPrecision) {

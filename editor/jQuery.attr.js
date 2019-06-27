@@ -22,7 +22,7 @@ export default function jQueryPluginSVG ($) {
   const proxied = $.fn.attr,
     svgns = 'http://www.w3.org/2000/svg';
   /**
-  * @typedef {PlainObject.<string, string|Float>} module:jQueryAttr.Attributes
+  * @typedef {PlainObject<string, string|Float>} module:jQueryAttr.Attributes
   */
   /**
   * @function external:jQuery.fn.attr

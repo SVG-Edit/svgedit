@@ -90,7 +90,7 @@ $(function() {
 
 /**
 * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
-* @param {PlainObject.<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
+* @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
 */
 
 /**
@@ -105,12 +105,12 @@ export default function jQueryPluginSVGIcons ($) {
   /**
    * Map of raster images with each key being the SVG icon ID
    *   to replace, and the value the image file name
-   * @typedef {PlainObject.<string, string>} external:jQuery.svgIcons.Fallback
+   * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Fallback
   */
   /**
    * Map of raster images with each key being the SVG icon ID
    *   whose `alt` will be set, and the value being the `alt` text
-   * @typedef {PlainObject.<string, string>} external:jQuery.svgIcons.Alts
+   * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Alts
   */
   /**
   * @function external:jQuery.svgIcons

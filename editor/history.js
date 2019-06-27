@@ -310,7 +310,7 @@ RemoveElementCommand.type = RemoveElementCommand.prototype.type;
 * @typedef {"#text"|"#href"|string} module:history.CommandAttributeName
 */
 /**
-* @typedef {PlainObject.<module:history.CommandAttributeName, string>} module:history.CommandAttributes
+* @typedef {PlainObject<module:history.CommandAttributeName, string>} module:history.CommandAttributes
 */
 
 /**

@@ -200,7 +200,7 @@ export default function jQueryPluginJGraduate ($) {
   const isGecko = navigator.userAgent.includes('Gecko/');
 
   /**
-  * @typedef {PlainObject.<string, string>} module:jGraduate.Attrs
+  * @typedef {PlainObject<string, string>} module:jGraduate.Attrs
   */
   /**
   * @param {SVGElement} elem

@@ -13,12 +13,12 @@
 /**
 * This should only be used when the return result from a callback
 *  is not known as to type.
-* @typedef {*} ArbitraryCallbackResult
+* @typedef {Any} ArbitraryCallbackResult
 */
 
 /**
 * @callback GenericCallback
-* @param {...*} args Signature dependent on the function
+* @param {...Any} args Signature dependent on the function
 * @returns {ArbitraryCallbackResult} Return dependent on the function
 */
 
@@ -48,9 +48,9 @@
 * representing arguments for passing around
 * @typedef {GenericArray} ArgumentsArray
 */
+
 /**
-* This should only be used for items known to be wholly arbitrary
-* @typedef {*} Any
+* The `Any` type should only be used for items known to be wholly arbitrary
 */
 
 /**

@@ -121,7 +121,7 @@ export class Drawing {
     * Note: Layers are ordered, but referenced externally by name; so, we need both container
     * types depending on which function is called (i.e. all_layers and layer_map).
     *
-    * @type {PlainObject.<string, Layer>}
+    * @type {PlainObject<string, Layer>}
     */
     this.layer_map = {};
 
@@ -133,7 +133,7 @@ export class Drawing {
 
     /**
     * The nonce to use to uniquely identify elements across drawings.
-    * @type {!String}
+    * @type {!string}
     */
     this.nonce_ = '';
     const n = this.svgElem_.getAttributeNS(NS.SE, 'nonce');

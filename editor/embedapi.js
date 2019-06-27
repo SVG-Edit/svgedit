@@ -12,7 +12,7 @@ let cbid = 0;
 */
 /**
 * @callback module:EmbeddedSVGEdit.CallbackSetGetter
-* @param {...*} args Signature dependent on the function
+* @param {...Any} args Signature dependent on the function
 * @returns {module:EmbeddedSVGEdit.CallbackSetter}
 */
 

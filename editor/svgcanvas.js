@@ -89,6 +89,8 @@ if (window.opera) {
   window.console.dir = function (str) { /* */ };
 }
 
+// Reenable after fixing eslint-plugin-jsdoc to handle
+/* eslint-disable jsdoc/valid-types */
 /**
 * The main SvgCanvas class that manages all SVG-related functions.
 * @memberof module:svgcanvas
@@ -118,6 +120,7 @@ if (window.opera) {
 * @borrows module:path.pathActions.linkControlPoints as #linkControlPoints
 */
 class SvgCanvas {
+  /* eslint-enable jsdoc/valid-types */
   /**
   * @param {HTMLElement} container - The container HTML element that should hold the SVG root element
   * @param {module:SVGEditor.curConfig} config - An object that contains configuration data
@@ -279,7 +282,7 @@ let selectedElements = [];
 /**
 * @typedef {PlainObject} module:svgcanvas.SVGAsJSON
 * @property {string} element
-* @property {PlainObject.<string, string>} attr
+* @property {PlainObject<string, string>} attr
 * @property {module:svgcanvas.SVGAsJSON[]} children
 */
 
@@ -1061,8 +1064,8 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 
 /**
  * @interface module:svgcanvas.ExtensionInitResponse
- * @property {module:SVGEditor.ContextTool[]|PlainObject.<string, module:SVGEditor.ContextTool>} [context_tools]
- * @property {module:SVGEditor.Button[]|PlainObject.<Integer, module:SVGEditor.Button>} [buttons]
+ * @property {module:SVGEditor.ContextTool[]|PlainObject<string, module:SVGEditor.ContextTool>} [context_tools]
+ * @property {module:SVGEditor.Button[]|PlainObject<Integer, module:SVGEditor.Button>} [buttons]
  * @property {string} [svgicons] The location of a local SVG or SVGz file
 */
 /**
@@ -6383,7 +6386,7 @@ this.pasteElements = function (type, x, y) {
   const batchCmd = new BatchCommand('Paste elements');
   // const drawing = getCurrentDrawing();
   /**
-  * @typedef {PlainObject.<string, string>} module:svgcanvas.ChangedIDs
+  * @typedef {PlainObject<string, string>} module:svgcanvas.ChangedIDs
   */
   /**
    * @type {module:svgcanvas.ChangedIDs}

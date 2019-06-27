@@ -12,16 +12,16 @@
 
 /**
  * Used, for example, in the ImageLibs extension, to present libraries (with name/URL/description) in order
- * @typedef {GenericArray.<module:locale.LocaleStrings>} module:locale.LocaleArray
+ * @typedef {GenericArray<module:locale.LocaleStrings>} module:locale.LocaleArray
 */
 /**
  * The string keys of the object are two-letter language codes
  * @tutorial LocaleDocs
- * @typedef {PlainObject.<string, string|module:locale.LocaleStrings|module:locale.LocaleArray>} module:locale.LocaleStrings
+ * @typedef {PlainObject<string, string|module:locale.LocaleStrings|module:locale.LocaleArray>} module:locale.LocaleStrings
  */
 // keyed to an array of objects with "id" and "title" or "textContent" properties
 /**
- * @typedef {PlainObject.<string, string>} module:locale.LocaleSelectorValue
+ * @typedef {PlainObject<string, string>} module:locale.LocaleSelectorValue
  */
 
 import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
