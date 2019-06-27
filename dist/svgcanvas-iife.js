@@ -14541,7 +14541,8 @@ var SvgCanvas = (function () {
 
                 if (extObj) {
                   extObj.name = name;
-                }
+                } // eslint-disable-next-line require-atomic-updates
+
 
                 extensions[name] = extObj;
                 return _context.abrupt("return", call('extension_added', extObj));

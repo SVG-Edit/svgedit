@@ -21,7 +21,8 @@ import './svgpathseg.js';
 import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginDBox from './dbox.js';
 import * as draw from './draw.js'; // eslint-disable-line import/no-duplicates
-import { // eslint-disable-line no-duplicate-imports
+// eslint-disable-next-line no-duplicate-imports
+import {
   identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
   setCurrentLayer, renameCurrentLayer, setCurrentLayerPosition,
   setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
@@ -1201,6 +1202,7 @@ this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
     extObj.name = name;
   }
 
+  // eslint-disable-next-line require-atomic-updates
   extensions[name] = extObj;
   return call('extension_added', extObj);
 };
@@ -3990,6 +3992,7 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
   const svg = this.svgCanvasToString();
 
   if (!canvg) {
+    // eslint-disable-next-line require-atomic-updates
     ({canvg} = await importSetGlobal(curConfig.canvgPath + 'canvg.js', {
       global: 'canvg'
     }));

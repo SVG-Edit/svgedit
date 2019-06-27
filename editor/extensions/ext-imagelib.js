@@ -150,6 +150,7 @@ export default {
 
         if (mode !== 'm') {
           await $.process_cancel(message);
+          // eslint-disable-next-line require-atomic-updates
           transferStopped = true;
           // Should a message be sent back to the frame?
 

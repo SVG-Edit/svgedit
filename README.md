@@ -68,7 +68,7 @@ And for still older browsers (e.g., IE 8), you will at minimum need a
 ### Integrating SVG-edit into your own npm package
 
 These steps are only needed if you wish to set up your own npm package
-incorporating SVGEdit.
+incorporating SVGEdit. You will need to have Node.js/npm installed.
 
 1. Create your npm package: `npm init` (complete the fields).
 1. Install SVG-edit into your package:

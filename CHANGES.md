@@ -6,10 +6,15 @@
     `avoidClientSide` (config for `ext-server_opensave.js`).
 - Enhancement: Added `avoidClientSideOpen` config for
     `ext-server_opensave.js`
+- Optimization: Re-rerun image optimization per update
+- Linting (ESLint): Adjust per now applied rules
 - Refactoring: Use `static` keyword for classes
+- Testing: Accessibility test API update
+- Docs: Clarify need for Node.js/npm being installed
 - Build: Remove `types-docs` script as being handled in ESLint
 - npm: Update devDeps (including switching from deprecate opn-cli
-    package to open-cli)
+    package to open-cli); update core-js-bundle copy; add new
+    axe testing peer dep. axe-core in devDeps
 
 ## 5.0.0
 
