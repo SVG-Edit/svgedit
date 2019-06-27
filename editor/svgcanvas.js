@@ -90,7 +90,6 @@ if (window.opera) {
 }
 
 // Reenable after fixing eslint-plugin-jsdoc to handle
-/* eslint-disable jsdoc/valid-types */
 /**
 * The main SvgCanvas class that manages all SVG-related functions.
 * @memberof module:svgcanvas
@@ -120,7 +119,6 @@ if (window.opera) {
 * @borrows module:path.pathActions.linkControlPoints as #linkControlPoints
 */
 class SvgCanvas {
-  /* eslint-enable jsdoc/valid-types */
   /**
   * @param {HTMLElement} container - The container HTML element that should hold the SVG root element
   * @param {module:SVGEditor.curConfig} config - An object that contains configuration data
