@@ -2925,7 +2925,7 @@
     var proxied = $.fn.attr,
         svgns = 'http://www.w3.org/2000/svg';
     /**
-    * @typedef {PlainObject.<string, string|Float>} module:jQueryAttr.Attributes
+    * @typedef {PlainObject<string, string|Float>} module:jQueryAttr.Attributes
     */
 
     /**
@@ -4127,7 +4127,7 @@
   */
 
   /**
-  * @typedef {PlainObject.<module:history.CommandAttributeName, string>} module:history.CommandAttributes
+  * @typedef {PlainObject<module:history.CommandAttributeName, string>} module:history.CommandAttributes
   */
 
   /**
@@ -4903,7 +4903,7 @@
   /**
    * @tutorial LocaleDocs
    * @typedef {module:locale.LocaleStrings|PlainObject} module:path.uiStrings
-   * @property {PlainObject.<string, string>} ui
+   * @property {PlainObject<string, string>} ui
   */
 
   var uiStrings = {};
@@ -4947,7 +4947,7 @@
   * Object with the following keys/values
   * @typedef {PlainObject} module:path.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
-  * @property {PlainObject.<string, string>} attr - Has key-value attributes to assign to the new element
+  * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
   * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
   * @property {module:path.SVGElementJSON[]} [children] - Data objects to be added recursively as children
   * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -5001,7 +5001,7 @@
   /**
    * @function module:path.EditorContext#remapElement
    * @param {Element} selected - DOM element to be changed
-   * @param {PlainObject.<string, string>} changes - Object with changes to be remapped
+   * @param {PlainObject<string, string>} changes - Object with changes to be remapped
    * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
    * @returns {void}
    */
@@ -7875,7 +7875,7 @@
   * Object with the following keys/values
   * @typedef {PlainObject} module:utilities.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
-  * @property {PlainObject.<string, string>} attr - Has key-value attributes to assign to the new element
+  * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
   * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
   * @property {module:utilities.SVGElementJSON[]} [children] - Data objects to be added recursively as children
   * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -10356,7 +10356,7 @@
       * Note: Layers are ordered, but referenced externally by name; so, we need both container
       * types depending on which function is called (i.e. all_layers and layer_map).
       *
-      * @type {PlainObject.<string, Layer>}
+      * @type {PlainObject<string, Layer>}
       */
 
       this.layer_map = {};
@@ -10368,7 +10368,7 @@
       this.current_layer = null;
       /**
       * The nonce to use to uniquely identify elements across drawings.
-      * @type {!String}
+      * @type {!string}
       */
 
       this.nonce_ = '';
@@ -13562,7 +13562,8 @@
     window.console.dir = function (str) {
       /* */
     };
-  }
+  } // Reenable after fixing eslint-plugin-jsdoc to handle
+
   /**
   * The main SvgCanvas class that manages all SVG-related functions.
   * @memberof module:svgcanvas
@@ -13731,7 +13732,7 @@
     /**
     * @typedef {PlainObject} module:svgcanvas.SVGAsJSON
     * @property {string} element
-    * @property {PlainObject.<string, string>} attr
+    * @property {PlainObject<string, string>} attr
     * @property {module:svgcanvas.SVGAsJSON[]} children
     */
 
@@ -14578,8 +14579,8 @@
 
     /**
      * @interface module:svgcanvas.ExtensionInitResponse
-     * @property {module:SVGEditor.ContextTool[]|PlainObject.<string, module:SVGEditor.ContextTool>} [context_tools]
-     * @property {module:SVGEditor.Button[]|PlainObject.<Integer, module:SVGEditor.Button>} [buttons]
+     * @property {module:SVGEditor.ContextTool[]|PlainObject<string, module:SVGEditor.ContextTool>} [context_tools]
+     * @property {module:SVGEditor.Button[]|PlainObject<Integer, module:SVGEditor.Button>} [buttons]
      * @property {string} [svgicons] The location of a local SVG or SVGz file
     */
 
@@ -20687,7 +20688,7 @@
       var batchCmd = new BatchCommand$1('Paste elements'); // const drawing = getCurrentDrawing();
 
       /**
-      * @typedef {PlainObject.<string, string>} module:svgcanvas.ChangedIDs
+      * @typedef {PlainObject<string, string>} module:svgcanvas.ChangedIDs
       */
 
       /**
@@ -22384,7 +22385,7 @@
 
   /**
   * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
-  * @param {PlainObject.<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
+  * @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
   */
 
   /**
@@ -22399,13 +22400,13 @@
     /**
      * Map of raster images with each key being the SVG icon ID
      *   to replace, and the value the image file name
-     * @typedef {PlainObject.<string, string>} external:jQuery.svgIcons.Fallback
+     * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Fallback
     */
 
     /**
      * Map of raster images with each key being the SVG icon ID
      *   whose `alt` will be set, and the value being the `alt` text
-     * @typedef {PlainObject.<string, string>} external:jQuery.svgIcons.Alts
+     * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Alts
     */
 
     /**
@@ -23100,7 +23101,7 @@
     };
     var isGecko = navigator.userAgent.includes('Gecko/');
     /**
-    * @typedef {PlainObject.<string, string>} module:jGraduate.Attrs
+    * @typedef {PlainObject<string, string>} module:jGraduate.Attrs
     */
 
     /**
@@ -25358,7 +25359,6 @@
      * @param {external:jQuery.jPicker.Color} color
      * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
      * @param {Float} alphaPrecision
-     * @constructor
      */
 
 
@@ -32249,10 +32249,10 @@
                 * @typedef {PlainObject} module:SVGEditor.ContextTool
                 * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
                 * @property {string} id The ID of the actual tool element. Required.
-                * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
+                * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
                 * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
                 * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
-                * @property {PlainObject.<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
+                * @property {PlainObject<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
                 * @property {string} [container_id] The ID to be given to the tool's container element.
                 * @property {string} [defval] Default value
                 * @property {string|Integer} [colnum] Added as part of the option list class.
@@ -32379,7 +32379,7 @@
                 * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
                 * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
                 * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
-                * @property {PlainObject.<string, external:jQuery.Function>|PlainObject.<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
+                * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
                 * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
                 * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
                 * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call

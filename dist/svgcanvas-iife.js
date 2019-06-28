@@ -2529,7 +2529,7 @@ var SvgCanvas = (function () {
     var proxied = $.fn.attr,
         svgns = 'http://www.w3.org/2000/svg';
     /**
-    * @typedef {PlainObject.<string, string|Float>} module:jQueryAttr.Attributes
+    * @typedef {PlainObject<string, string|Float>} module:jQueryAttr.Attributes
     */
 
     /**
@@ -4196,7 +4196,7 @@ var SvgCanvas = (function () {
   */
 
   /**
-  * @typedef {PlainObject.<module:history.CommandAttributeName, string>} module:history.CommandAttributes
+  * @typedef {PlainObject<module:history.CommandAttributeName, string>} module:history.CommandAttributes
   */
 
   /**
@@ -4972,7 +4972,7 @@ var SvgCanvas = (function () {
   /**
    * @tutorial LocaleDocs
    * @typedef {module:locale.LocaleStrings|PlainObject} module:path.uiStrings
-   * @property {PlainObject.<string, string>} ui
+   * @property {PlainObject<string, string>} ui
   */
 
   var uiStrings = {};
@@ -5016,7 +5016,7 @@ var SvgCanvas = (function () {
   * Object with the following keys/values
   * @typedef {PlainObject} module:path.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
-  * @property {PlainObject.<string, string>} attr - Has key-value attributes to assign to the new element
+  * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
   * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
   * @property {module:path.SVGElementJSON[]} [children] - Data objects to be added recursively as children
   * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -5070,7 +5070,7 @@ var SvgCanvas = (function () {
   /**
    * @function module:path.EditorContext#remapElement
    * @param {Element} selected - DOM element to be changed
-   * @param {PlainObject.<string, string>} changes - Object with changes to be remapped
+   * @param {PlainObject<string, string>} changes - Object with changes to be remapped
    * @param {SVGMatrix} m - Matrix object to use for remapping coordinates
    * @returns {void}
    */
@@ -7944,7 +7944,7 @@ var SvgCanvas = (function () {
   * Object with the following keys/values
   * @typedef {PlainObject} module:utilities.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
-  * @property {PlainObject.<string, string>} attr - Has key-value attributes to assign to the new element
+  * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
   * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
   * @property {module:utilities.SVGElementJSON[]} [children] - Data objects to be added recursively as children
   * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -9920,7 +9920,7 @@ var SvgCanvas = (function () {
       * Note: Layers are ordered, but referenced externally by name; so, we need both container
       * types depending on which function is called (i.e. all_layers and layer_map).
       *
-      * @type {PlainObject.<string, Layer>}
+      * @type {PlainObject<string, Layer>}
       */
 
       this.layer_map = {};
@@ -9932,7 +9932,7 @@ var SvgCanvas = (function () {
       this.current_layer = null;
       /**
       * The nonce to use to uniquely identify elements across drawings.
-      * @type {!String}
+      * @type {!string}
       */
 
       this.nonce_ = '';
@@ -13337,7 +13337,8 @@ var SvgCanvas = (function () {
     window.console.dir = function (str) {
       /* */
     };
-  }
+  } // Reenable after fixing eslint-plugin-jsdoc to handle
+
   /**
   * The main SvgCanvas class that manages all SVG-related functions.
   * @memberof module:svgcanvas
@@ -13506,7 +13507,7 @@ var SvgCanvas = (function () {
     /**
     * @typedef {PlainObject} module:svgcanvas.SVGAsJSON
     * @property {string} element
-    * @property {PlainObject.<string, string>} attr
+    * @property {PlainObject<string, string>} attr
     * @property {module:svgcanvas.SVGAsJSON[]} children
     */
 
@@ -14353,8 +14354,8 @@ var SvgCanvas = (function () {
 
     /**
      * @interface module:svgcanvas.ExtensionInitResponse
-     * @property {module:SVGEditor.ContextTool[]|PlainObject.<string, module:SVGEditor.ContextTool>} [context_tools]
-     * @property {module:SVGEditor.Button[]|PlainObject.<Integer, module:SVGEditor.Button>} [buttons]
+     * @property {module:SVGEditor.ContextTool[]|PlainObject<string, module:SVGEditor.ContextTool>} [context_tools]
+     * @property {module:SVGEditor.Button[]|PlainObject<Integer, module:SVGEditor.Button>} [buttons]
      * @property {string} [svgicons] The location of a local SVG or SVGz file
     */
 
@@ -20462,7 +20463,7 @@ var SvgCanvas = (function () {
       var batchCmd = new BatchCommand$1('Paste elements'); // const drawing = getCurrentDrawing();
 
       /**
-      * @typedef {PlainObject.<string, string>} module:svgcanvas.ChangedIDs
+      * @typedef {PlainObject<string, string>} module:svgcanvas.ChangedIDs
       */
 
       /**

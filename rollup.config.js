@@ -3,13 +3,12 @@
 // NOTE:
 // See rollup-config.config.js instead for building the main (configurable)
 //   user entrance file
+import {join, basename} from 'path';
+import {lstatSync, readdirSync, copyFileSync} from 'fs';
 
 import babel from 'rollup-plugin-babel';
 import {terser} from 'rollup-plugin-terser';
 import replace from 'rollup-plugin-re';
-
-const {lstatSync, readdirSync, copyFileSync} = require('fs'); // eslint-disable-line import/no-commonjs
-const {join, basename} = require('path'); // eslint-disable-line import/no-commonjs
 
 const localeFiles = readdirSync('editor/locale');
 const extensionFiles = readdirSync('editor/extensions');
