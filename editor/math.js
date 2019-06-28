@@ -209,6 +209,40 @@ export const snapToAngle = function (x1, y1, x2, y2) {
 };
 
 /**
+ * Returns a coordinate locked to whichever axis is closest.
+ * @function module:math.snapToAxis
+ * @param {Integer} x1 - Starting coordinate's x value
+ * @param {Integer} y1 - Starting coordinate's y value
+ * @param {Integer} x2 - Ending coordinate's x value
+ * @param {Integer} y2 - Ending coordinate's y value
+ * @returns {module:math.XYObject}
+*/
+export const snapToAxis = function (x1, y1, x2, y2) {
+  const delta = {
+    x: x2 - x1,
+    y: y2 - y1
+  };
+  const distance = {
+    x: Math.abs(delta.x),
+    y: Math.abs(delta.y)
+  };
+  const ret = {
+    x: x1,
+    y: y1
+  };
+
+  // Only add the difference to the axis that's furthest away
+  // from the starting coordinate.
+  if (Math.max(distance.x, distance.y) === delta.x) {
+    ret.x = x2;
+  } else {
+    ret.y = y2;
+  }
+
+  return ret;
+};
+
+/**
  * Check if two rectangles (BBoxes objects) intersect each other.
  * @function module:math.rectsIntersect
  * @param {SVGRect} r1 - The first BBox-like object
