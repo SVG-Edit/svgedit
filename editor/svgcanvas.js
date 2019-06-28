@@ -45,7 +45,7 @@ import {
 import * as hstry from './history.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
-  getMatrix, snapToAngle, isIdentity, rectsIntersect, transformBox
+  getMatrix, snapToAngle, snapToAxis, isIdentity, rectsIntersect, transformBox
 } from './math.js';
 import {
   convertToNum, convertAttrs, convertUnit, shortFloat, getTypeMap,
@@ -2314,6 +2314,14 @@ const mouseMove = function (evt) {
         sx = sy;
       } else { sy = sx; }
     }
+    if (evt.ctrlKey) {
+      if (sx > sy) {
+        sy = 1;
+      }
+      else if (sy > sx) {
+        sx = 1;
+      }
+    }
     scale.setScale(sx, sy);
 
     translateBack.setTranslate(left + tx, top + ty);
@@ -2364,6 +2372,11 @@ const mouseMove = function (evt) {
       x2 = xya.x;
       y2 = xya.y;
     }
+    if (evt.ctrlKey) {
+      const xy_locked = snapToAxis(startX, startY, x2, y2);
+      x2 = xy_locked.x;
+      y2 = xy_locked.y;
+    }
 
     shape.setAttribute('x2', x2);
     shape.setAttribute('y2', y2);
@@ -2384,6 +2397,8 @@ const mouseMove = function (evt) {
       w = h = Math.max(w, h);
       newX = startX < x ? startX : startX - w;
       newY = startY < y ? startY : startY - h;
+    } else if (evt.ctrlKey) {
+      // TODO: Lock axis
     } else {
       newX = Math.min(startX, x);
       newY = Math.min(startY, y);
@@ -2422,9 +2437,24 @@ const mouseMove = function (evt) {
       y = snapToGrid(y);
       cy = snapToGrid(cy);
     }
-    shape.setAttribute('rx', Math.abs(x - cx));
-    const ry = Math.abs(evt.shiftKey ? (x - cx) : (y - cy));
-    shape.setAttribute('ry', ry);
+    const r = {
+      x: Math.abs(x - cx),
+      y: Math.abs(y - cy)
+    };
+    if (evt.shiftKey) {
+      r.y = r.x;
+    }
+    if (evt.ctrlKey) {
+      // Keep the closer axis from changing
+      if (Math.max(r.x, r.y) === r.x) {
+        r.y = y;
+      }
+      else {
+        r.x = x;
+      }
+    }
+    shape.setAttribute('rx', r.x);
+    shape.setAttribute('ry', r.y);
     break;
   }
   case 'fhellipse':
@@ -2487,6 +2517,10 @@ const mouseMove = function (evt) {
       }
       xya = snapToAngle(x1, y1, x, y);
       ({x, y} = xya);
+    }
+    if (evt.ctrlKey) {
+      const xy_locked = snapToAxis(startX, startY, x, y);
+      ({x, y} = xy_locked);
     }
 
     if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
