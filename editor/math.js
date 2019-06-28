@@ -233,7 +233,7 @@ export const snapToAxis = function (x1, y1, x2, y2) {
 
   // Only add the difference to the axis that's furthest away
   // from the starting coordinate.
-  if (Math.max(distance.x, distance.y) === delta.x) {
+  if (distance.x > distance.y) {
     ret.x = x2;
   } else {
     ret.y = y2;
