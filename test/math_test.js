@@ -119,3 +119,51 @@ QUnit.test('Test svgedit.math.transformBox() function', function (assert) {
   assert.equal(r.aabox.width, 200);
   assert.equal(r.aabox.height, 300);
 });
+
+QUnit.test('Test svgedit.math.snapToAxis() locks to x axis', function (assert) {
+  const first = {
+    x: 10,
+    y: 10
+  };
+  const second = {
+    x: 100,
+    y: 15
+  };
+
+  // should lock to x axis
+  const lockedPoint = math.snapToAxis(first.x, first.y, second.x, second.y);
+  assert.equal(lockedPoint.x, second.x);
+  assert.equal(lockedPoint.y, first.y);
+});
+
+QUnit.test('Test svgedit.math.snapToAxis() locks to y axis', function (assert) {
+  const first = {
+    x: 10,
+    y: 10
+  };
+  const second = {
+    x: 50,
+    y: 100
+  };
+
+  // should lock to y axis
+  const lockedPoint = math.snapToAxis(first.x, first.y, second.x, second.y);
+  assert.equal(lockedPoint.x, first.x);
+  assert.equal(lockedPoint.y, second.y);
+});
+
+QUnit.test('Test svgedit.math.snapToAxis() locks to y axis when distance is equal', function (assert) {
+  const first = {
+    x: 10,
+    y: 10
+  };
+  const second = {
+    x: 100,
+    y: 100
+  };
+
+  // should lock to y axis
+  const lockedPoint = math.snapToAxis(first.x, first.y, second.x, second.y);
+  assert.equal(lockedPoint.x, first.x);
+  assert.equal(lockedPoint.y, second.y);
+});
