@@ -86,11 +86,11 @@ export default {
     function getLinked (elem, attr) {
       const str = elem.getAttribute(attr);
       if (!str) { return null; }
-      const m = str.match(/\(#(.*)\)/);
-      if (!m || m.length !== 2) {
+      const m = str.match(/\(#(?<id>.+)\)/);
+      if (!m || !m.groups.id) {
         return null;
       }
-      return svgCanvas.getElem(m[1]);
+      return svgCanvas.getElem(m.groups.id);
     }
 
     /**
@@ -254,7 +254,7 @@ export default {
     function convertline (elem) {
       // this routine came from the connectors extension
       // it is needed because midpoint markers don't work with line elements
-      if (!(elem.tagName === 'line')) { return elem; }
+      if (elem.tagName !== 'line') { return elem; }
 
       // Convert to polyline to accept mid-arrow
 

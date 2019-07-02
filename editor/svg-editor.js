@@ -495,7 +495,7 @@ editor.setConfig = function (opts, cfgCfg) {
    *
    * @param {module:SVGEditor.Config|module:SVGEditor.Prefs} cfgObj
    * @param {string} key
-   * @param {Any} val See {@link module:SVGEditor.Config} or {@link module:SVGEditor.Prefs}
+   * @param {any} val See {@link module:SVGEditor.Config} or {@link module:SVGEditor.Prefs}
    * @returns {void}
    */
   function extendOrAdd (cfgObj, key, val) {
@@ -757,7 +757,7 @@ editor.init = function () {
         qstr = $.param.querystring();
         if (!src) { // urldata.source may have been null if it ended with '='
           if (qstr.includes('source=data:')) {
-            src = qstr.match(/source=(data:[^&]*)/)[1];
+            ({src} = qstr.match(/source=(?<src>data:[^&]*)/).groups);
           }
         }
         if (src) {
@@ -820,7 +820,7 @@ editor.init = function () {
     try {
       await Promise.all(
         curConfig.extensions.map(async (extname) => {
-          const extName = extname.match(/^ext-(.+)\.js/);
+          const {extName} = extname.match(/^ext-(?<extName>.+)\.js/).groups;
           if (!extName) { // Ensure URL cannot specify some other unintended file in the extPath
             return undefined;
           }
@@ -838,9 +838,9 @@ editor.init = function () {
              * @type {module:SVGEditor.ExtensionObject}
              */
             const imported = await importSetGlobalDefault(url, {
-              global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
+              global: 'svgEditorExtension_' + extName.replace(/-/g, '_')
             });
-            const {name = extName[1], init} = imported;
+            const {name = extName, init} = imported;
             const importLocale = getImportLocale({defaultLang: langParam, defaultName: name});
             return editor.addExtension(name, (init && init.bind(editor)), {$, importLocale});
           } catch (err) {
@@ -909,7 +909,7 @@ editor.init = function () {
   * @type {string}
   */
   const uaPrefix = (function () {
-    const regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
+    const regex = /^(?:Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
     const someScript = document.getElementsByTagName('script')[0];
     for (const prop in someScript.style) {
       if (regex.test(prop)) {
@@ -2735,7 +2735,7 @@ editor.init = function () {
   };
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeZoom = function (ctl) {
     const zoomlevel = ctl.value / 100;
@@ -3581,21 +3581,21 @@ editor.init = function () {
   $('#image_save_opts input').val([$.pref('img_save')]);
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeRectRadius = function (ctl) {
     svgCanvas.setRectRadius(ctl.value);
   };
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeFontSize = function (ctl) {
     svgCanvas.setFontSize(ctl.value);
   };
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeStrokeWidth = function (ctl) {
     let val = ctl.value;
@@ -3606,7 +3606,7 @@ editor.init = function () {
   };
 
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
   const changeRotationAngle = function (ctl) {
     svgCanvas.setRotationAngle(ctl.value);
@@ -5456,8 +5456,7 @@ editor.init = function () {
   $(window).bind('load resize', centerCanvas);
 
   /**
-   * @implements {module:jQuerySpinButton.StepCallback}
-   * @returns {Float}
+   * @type {module:jQuerySpinButton.StepCallback}
    */
   function stepFontSize (elem, step) {
     const origVal = Number(elem.value);
@@ -5481,8 +5480,7 @@ editor.init = function () {
   }
 
   /**
-   * @implements {module:jQuerySpinButton.StepCallback}
-   * @returns {Float}
+   * @type {module:jQuerySpinButton.StepCallback}
    */
   function stepZoom (elem, step) {
     const origVal = Number(elem.value);
@@ -6519,7 +6517,7 @@ let extensionsAdded = false;
 const messageQueue = [];
 /**
  * @param {PlainObject} info
- * @param {Any} info.data
+ * @param {any} info.data
  * @param {string} info.origin
  * @fires module:svgcanvas.SvgCanvas#event:message
  * @returns {void}

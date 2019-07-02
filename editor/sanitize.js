@@ -166,7 +166,7 @@ export const sanitizeSvg = function (node) {
         case 'transform':
         case 'gradientTransform':
         case 'patternTransform': {
-          const val = attr.value.replace(/(\d)-/g, '$1 -');
+          const val = attr.value.replace(/(?<digit>\d)-/g, '$<digit> -');
           node.setAttribute(attrName, val);
           break;
         }

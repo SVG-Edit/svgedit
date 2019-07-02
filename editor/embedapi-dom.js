@@ -96,6 +96,8 @@ const framePath = '/editor/xdomain-svg-editor-es.html?extensions=ext-xdomain-mes
 const iframe = $('<iframe width="900px" height="600px" id="svgedit"></iframe>');
 iframe[0].src = frameBase + framePath +
   (location.href.includes('?')
+    // ? location.href.replace(/\?(?<search>.*)$/, '&$<search>')
+    // eslint-disable-next-line prefer-named-capture-group
     ? location.href.replace(/\?(.*)$/, '&$1')
     : ''); // Append arguments to this file onto the iframe
 

@@ -1,4 +1,6 @@
 /* eslint-env node */
+// Wait until Node 10 to enable
+/* eslint-disable prefer-named-capture-group */
 
 // NOTE:
 // See rollup-config.config.js instead for building the main (configurable)

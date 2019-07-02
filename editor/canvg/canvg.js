@@ -1,4 +1,4 @@
-/* eslint-disable new-cap, class-methods-use-this */
+/* eslint-disable new-cap, class-methods-use-this, prefer-named-capture-group */
 // Todo: Compare with latest canvg (add any improvements of ours) and add full JSDocs (denoting links to standard APIs and which are custom): https://github.com/canvg/canvg
 /**
  * canvg.js - Javascript SVG parser and renderer on Canvas
@@ -13,7 +13,7 @@ import {canvasRGBA} from '../external/stackblur-canvas/dist/stackblur-es.js';
 
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 const isNullish = (val) => {

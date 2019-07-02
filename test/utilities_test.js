@@ -290,8 +290,7 @@ QUnit.test('Test getPathDFromElement', function (assert) {
 QUnit.test('Test getBBoxOfElementAsPath', function (assert) {
   /**
    * Wrap `utilities.getBBoxOfElementAsPath` to convert bbox to object for testing.
-   * @implements {module:utilities.getBBoxOfElementAsPath}
-   * @returns {DOMRect|false} The resulting path's bounding box object.
+   * @type {module:utilities.getBBoxOfElementAsPath}
    */
   function getBBoxOfElementAsPath (elem, addSVGElementFromJson, pathActions) {
     const bbox = utilities.getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);

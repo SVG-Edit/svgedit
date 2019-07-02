@@ -244,7 +244,7 @@ SlideShow.prototype = {
     }
   },
   handleKeys (e) {
-    if ((/^(input|textarea)$/i).test(e.target.nodeName)) return;
+    if ((/^(?:input|textarea)$/i).test(e.target.nodeName)) return;
 
     switch (e.keyCode) {
     case 37: // left arrow

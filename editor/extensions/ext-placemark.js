@@ -70,11 +70,11 @@ export default {
       if (!elem) { return null; }
       const str = elem.getAttribute(attr);
       if (!str) { return null; }
-      const m = str.match(/\(#(.*)\)/);
-      if (!m || m.length !== 2) {
+      const m = str.match(/\(#(?<id>.+)\)/);
+      if (!m || !m.groups.id) {
         return null;
       }
-      return svgCanvas.getElem(m[1]);
+      return svgCanvas.getElem(m.groups.id);
     }
 
     /**
