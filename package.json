@@ -109,7 +109,7 @@
     "load-stylesheets": "^0.8.0",
     "node-static": "^0.7.11",
     "open-cli": "^5.0.0",
-    "promise-fs": "^2.1.0",
+    "promise-fs": "^2.1.1",
     "qr-manipulation": "https://github.com/brettz9/qr-manipulation",
     "query-result": "https://github.com/WebReflection/query-result",
     "qunit": "^2.9.2",
