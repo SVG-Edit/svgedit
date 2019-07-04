@@ -88,6 +88,66 @@ $(function() {
 });
 */
 
+const isOpera = Boolean(window.opera);
+
+const fixIDs = function (svgEl, svgNum, force) {
+  const defs = svgEl.find('defs');
+  if (!defs.length) return svgEl;
+
+  let idElems;
+  if (isOpera) {
+    idElems = defs.find('*').filter(function () {
+      return Boolean(this.id);
+    });
+  } else {
+    idElems = defs.find('[id]');
+  }
+
+  const allElems = svgEl[0].getElementsByTagName('*'),
+    len = allElems.length;
+
+  idElems.each(function (i) {
+    const {id} = this;
+    /*
+    const noDupes = ($(svgdoc).find('#' + id).length <= 1);
+    if (isOpera) noDupes = false; // Opera didn't clone svgEl, so not reliable
+    if(!force && noDupes) return;
+    */
+    const newId = 'x' + id + svgNum + i;
+    this.id = newId;
+
+    const oldVal = 'url(#' + id + ')';
+    const newVal = 'url(#' + newId + ')';
+
+    // Selector method, possibly faster but fails in Opera / jQuery 1.4.3
+    //  svgEl.find('[fill="url(#' + id + ')"]').each(function() {
+    //    this.setAttribute('fill', 'url(#' + newId + ')');
+    //  }).end().find('[stroke="url(#' + id + ')"]').each(function() {
+    //    this.setAttribute('stroke', 'url(#' + newId + ')');
+    //  }).end().find('use').each(function() {
+    //    if(this.getAttribute('xlink:href') == '#' + id) {
+    //      this.setAttributeNS(xlinkns,'href','#' + newId);
+    //    }
+    //  }).end().find('[filter="url(#' + id + ')"]').each(function() {
+    //    this.setAttribute('filter', 'url(#' + newId + ')');
+    //  });
+
+    for (i = 0; i < len; i++) {
+      const elem = allElems[i];
+      if (elem.getAttribute('fill') === oldVal) {
+        elem.setAttribute('fill', newVal);
+      }
+      if (elem.getAttribute('stroke') === oldVal) {
+        elem.setAttribute('stroke', newVal);
+      }
+      if (elem.getAttribute('filter') === oldVal) {
+        elem.setAttribute('filter', newVal);
+      }
+    }
+  });
+  return svgEl;
+};
+
 /**
 * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
 * @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
@@ -101,7 +161,6 @@ $(function() {
 export default function jQueryPluginSVGIcons ($) {
   const svgIcons = {};
 
-  let fixIDs;
   /**
    * Map of raster images with each key being the SVG icon ID
    *   to replace, and the value the image file name
@@ -154,8 +213,7 @@ export default function jQueryPluginSVGIcons ($) {
       iconsMade = false,
       dataLoaded = false,
       loadAttempts = 0;
-    const isOpera = Boolean(window.opera),
-      // ua = navigator.userAgent,
+    const // ua = navigator.userAgent,
       // isSafari = (ua.includes('Safari/') && !ua.includes('Chrome/')),
       dataPre = 'data:image/svg+xml;charset=utf-8;base64,';
 
@@ -413,64 +471,6 @@ export default function jQueryPluginSVGIcons ($) {
 
       if (opts.callback) opts.callback(svgIcons);
     }
-
-    fixIDs = function (svgEl, svgNum, force) {
-      const defs = svgEl.find('defs');
-      if (!defs.length) return svgEl;
-
-      let idElems;
-      if (isOpera) {
-        idElems = defs.find('*').filter(function () {
-          return Boolean(this.id);
-        });
-      } else {
-        idElems = defs.find('[id]');
-      }
-
-      const allElems = svgEl[0].getElementsByTagName('*'),
-        len = allElems.length;
-
-      idElems.each(function (i) {
-        const {id} = this;
-        /*
-        const noDupes = ($(svgdoc).find('#' + id).length <= 1);
-        if (isOpera) noDupes = false; // Opera didn't clone svgEl, so not reliable
-        if(!force && noDupes) return;
-        */
-        const newId = 'x' + id + svgNum + i;
-        this.id = newId;
-
-        const oldVal = 'url(#' + id + ')';
-        const newVal = 'url(#' + newId + ')';
-
-        // Selector method, possibly faster but fails in Opera / jQuery 1.4.3
-        //  svgEl.find('[fill="url(#' + id + ')"]').each(function() {
-        //    this.setAttribute('fill', 'url(#' + newId + ')');
-        //  }).end().find('[stroke="url(#' + id + ')"]').each(function() {
-        //    this.setAttribute('stroke', 'url(#' + newId + ')');
-        //  }).end().find('use').each(function() {
-        //    if(this.getAttribute('xlink:href') == '#' + id) {
-        //      this.setAttributeNS(xlinkns,'href','#' + newId);
-        //    }
-        //  }).end().find('[filter="url(#' + id + ')"]').each(function() {
-        //    this.setAttribute('filter', 'url(#' + newId + ')');
-        //  });
-
-        for (i = 0; i < len; i++) {
-          const elem = allElems[i];
-          if (elem.getAttribute('fill') === oldVal) {
-            elem.setAttribute('fill', newVal);
-          }
-          if (elem.getAttribute('stroke') === oldVal) {
-            elem.setAttribute('stroke', newVal);
-          }
-          if (elem.getAttribute('filter') === oldVal) {
-            elem.setAttribute('filter', newVal);
-          }
-        }
-      });
-      return svgEl;
-    };
 
     /**
      * @returns {void}

@@ -4,6 +4,8 @@
 
 - Deprecated: Should now use `avoidClientSideDownload` in place of
     `avoidClientSide` (config for `ext-server_opensave.js`).
+- Fix: Avoid race condition in `jQuery.svgIcons.js` (evident
+    when attempting to load from `file:` URL in Chrome)
 - Enhancement: Added `avoidClientSideOpen` config for
     `ext-server_opensave.js`
 - Optimization: Re-rerun image optimization per update
