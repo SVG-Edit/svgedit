@@ -2271,28 +2271,29 @@ const mouseMove = function (evt) {
       dy = r * Math.sin(theta);
     }
 
+    var normalized_dx = dx, normalized_dy = dy;
     // if not stretching in y direction, set dy to 0
     // if not stretching in x direction, set dx to 0
     if (!currentResizeMode.includes('n') && !currentResizeMode.includes('s')) {
-      dy = 0;
+      normalized_dx = 0;
     }
     if (!currentResizeMode.includes('e') && !currentResizeMode.includes('w')) {
-      dx = 0;
+      normalized_dy = 0;
     }
 
     let // ts = null,
       tx = 0, ty = 0,
-      sy = height ? (height + dy) / height : 1,
-      sx = width ? (width + dx) / width : 1;
+      sy = height ? (height + normalized_dy) / height : 1,
+      sx = width ? (width + normalized_dx) / width : 1;
     // if we are dragging on the north side, then adjust the scale factor and ty
     if (currentResizeMode.includes('n')) {
-      sy = height ? (height - dy) / height : 1;
+      sy = height ? (height - normalized_dy) / height : 1;
       ty = height;
     }
 
     // if we dragging on the east side, then adjust the scale factor and tx
     if (currentResizeMode.includes('w')) {
-      sx = width ? (width - dx) / width : 1;
+      sx = width ? (width - normalized_dx) / width : 1;
       tx = width;
     }
 
@@ -2314,11 +2315,11 @@ const mouseMove = function (evt) {
         sx = sy;
       } else { sy = sx; }
     }
-    if (evt.ctrlKey) {
-      if (sx > sy) {
+    else if (evt.ctrlKey) {
+      if (Math.abs(dx) > Math.abs(dy)) {
         sy = 1;
       }
-      else if (sy > sx) {
+      else {
         sx = 1;
       }
     }
