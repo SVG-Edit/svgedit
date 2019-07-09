@@ -22480,33 +22480,32 @@ This will return the icon (as jQuery object) with a given ID.
  * @license MIT
  * @copyright (c) 2009 Alexis Deveria
  * {@link http://a.deveria.com}
- * @example usage #1:
-
-$(function() {
+ * @example
+$(function () {
   $.svgIcons('my_icon_set.svg'); // The SVG file that contains all icons
   // No options have been set, so all icons will automatically be inserted
   // into HTML elements that match the same IDs.
 });
 
-* @example usage #2:
-
-$(function() {
-  $.svgIcons('my_icon_set.svg', { // The SVG file that contains all icons
+* @example
+$(function () {
+  // The SVG file that contains all icons
+  $.svgIcons('my_icon_set.svg', {
     callback (icons) { // Custom callback function that sets click
                   // events for each icon
-      $.each(icons, function(id, icon) {
-        icon.click(function() {
+      $.each(icons, function (id, icon) {
+        icon.click(function () {
           alert('You clicked on the icon with id ' + id);
         });
       });
     }
-  }); //The SVG file that contains all icons
+  });
 });
 
-* @example usage #3:
-
-$(function() {
-  $.svgIcons('my_icon_set.svgz', { // The SVGZ file that contains all icons
+* @example
+$(function () {
+  // The SVGZ file that contains all icons
+  $.svgIcons('my_icon_set.svgz', {
     w: 32,  // All icons will be 32px wide
     h: 32,  // All icons will be 32px high
     fallback_path: 'icons/',  // All fallback files can be found here
@@ -22516,19 +22515,18 @@ $(function() {
       '#close_icon': 'close.png',
       '#save_icon': 'save.png'
     },
-    placement: {'.open_icon','open'}, // The "open" icon will be added
+    placement: {'.open_icon': 'open'}, // The "open" icon will be added
                     // to all elements with class "open_icon"
-    resize () {
+    resize: {
       '#save_icon .svg_icon': 64  // The "save" icon will be resized to 64 x 64px
     },
 
     callback (icons) { // Sets background color for "close" icon
-      icons['close'].css('background','red');
+      icons.close.css('background', 'red');
     },
 
     svgz: true // Indicates that an SVGZ file is being used
-
-  })
+  });
 });
 */
 
@@ -23038,12 +23036,12 @@ function jQueryPluginSVGIcons($) {
  * @license Apache-2.0
  * @example
  * // The Paint object is described below.
- * $.jGraduate.Paint() // constructs a 'none' color
- * @example $.jGraduate.Paint({copy: o}) // creates a copy of the paint o
- * @example $.jGraduate.Paint({hex: '#rrggbb'}) // creates a solid color paint with hex = "#rrggbb"
- * @example $.jGraduate.Paint({linearGradient: o, a: 50}) // creates a linear gradient paint with opacity=0.5
- * @example $.jGraduate.Paint({radialGradient: o, a: 7}) // creates a radial gradient paint with opacity=0.07
- * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}) // throws an exception?
+ * $.jGraduate.Paint(); // constructs a 'none' color
+ * @example $.jGraduate.Paint({copy: o}); // creates a copy of the paint o
+ * @example $.jGraduate.Paint({hex: '#rrggbb'}); // creates a solid color paint with hex = "#rrggbb"
+ * @example $.jGraduate.Paint({linearGradient: o, a: 50}); // creates a linear gradient paint with opacity=0.5
+ * @example $.jGraduate.Paint({radialGradient: o, a: 7}); // creates a radial gradient paint with opacity=0.07
+ * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
  *
 */
 
@@ -24363,7 +24361,6 @@ function jQueryPluginJGraduate($) {
  * | v1.9 | 20 May 2018 | Brett Zamir | Avoid SVGEdit dependency via `stateObj` config;<br />convert to ES6 module |
  * @module jQuerySpinButton
  * @example
-
   // Create group of settings to initialise spinbutton(s). (Optional)
   const myOptions = {
     min: 0, // Set lower limit.
@@ -24378,7 +24375,7 @@ function jQueryPluginJGraduate($) {
 
   $(function () {
     // Initialise INPUT element(s) as SpinButtons: (passing options if desired)
-    $("#myInputElement").SpinButton(myOptions);
+    $('#myInputElement').SpinButton(myOptions);
   });
  */
 

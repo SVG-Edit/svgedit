@@ -127,6 +127,7 @@ module.exports = {
         "node/no-missing-import": ["off"],
         "no-multi-spaces": "off",
         "sonarjs/no-all-duplicated-branches": "off",
+        "no-alert": "off",
         // Disable until may fix https://github.com/gajus/eslint-plugin-jsdoc/issues/211
         "indent": "off"
       }
@@ -139,7 +140,7 @@ module.exports = {
         root: "off"
       },
       rules: {
-        "node/no-unsupported-features/es-syntax": "off",        
+        "node/no-unsupported-features/es-syntax": "off",
         "node/no-unsupported-features/node-builtins": "off"
       }
     },
