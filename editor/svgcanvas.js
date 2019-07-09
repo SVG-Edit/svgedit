@@ -2519,7 +2519,7 @@ const mouseMove = function (evt) {
       xya = snapToAngle(x1, y1, x, y);
       ({x, y} = xya);
     }
-    if (evt.ctrlKey) {
+    else if (evt.ctrlKey) {
       const xy_locked = snapToAxis(startX, startY, x, y);
       ({x, y} = xy_locked);
     }
