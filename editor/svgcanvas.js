@@ -272,6 +272,10 @@ $.extend(allProperties.text, {
 
 // Current shape style properties
 const curShape = allProperties.shape;
+let curShapeInfo = {
+  circle: null,
+  image: null,
+};
 
 // Array with all the currently selected elements
 // default size of 1 until it needs to grow bigger
@@ -2394,13 +2398,41 @@ const mouseMove = function (evt) {
       w = Math.abs(x - startX),
       h = Math.abs(y - startY);
     let newX, newY;
+    
+    if (!evt.ctrlKey) {
+      curShapeInfo.image = null;
+    }
+    else if (!curShapeInfo.image) {
+      curShapeInfo.image = {
+        ctrlDimensions: { w, h }
+      }
+    }
+
     if (square) {
       w = h = Math.max(w, h);
       newX = startX < x ? startX : startX - w;
       newY = startY < y ? startY : startY - h;
-    } else if (evt.ctrlKey) {
-      // TODO: Lock axis
-    } else {
+    }
+    else if (evt.ctrlKey) {
+      if (curShapeInfo.image) {
+        const ctrlDimensions = curShapeInfo.image.ctrlDimensions;
+        const distance = {
+          w: Math.abs(w - ctrlDimensions.w),
+          h: Math.abs(w - ctrlDimensions.h),
+        };
+        // Set the closer axis to the radius captured last time the ctrl key was pressed
+        if (w > h) {
+          h = ctrlDimensions.h;
+        }
+        else {
+          w = ctrlDimensions.w;
+        }
+      }
+
+      newX = startX < x ? startX : startX - w;
+      newY = startY < y ? startY : startY - h;
+    }
+    else {
       newX = Math.min(startX, x);
       newY = Math.min(startY, y);
     }
@@ -2438,24 +2470,43 @@ const mouseMove = function (evt) {
       y = snapToGrid(y);
       cy = snapToGrid(cy);
     }
-    const r = {
+    const radius = {
       x: Math.abs(x - cx),
       y: Math.abs(y - cy)
     };
-    if (evt.shiftKey) {
-      r.y = r.x;
+
+    // Save the last circle radius on the first mouse event after the ctrl key is pressed
+    if (!evt.ctrlKey) {
+      curShapeInfo.circle = null;
     }
-    if (evt.ctrlKey) {
-      // Keep the closer axis from changing
-      if (Math.max(r.x, r.y) === r.x) {
-        r.y = y;
+    else if (!curShapeInfo.circle) {
+      curShapeInfo.circle = {
+        ctrlRadius: radius
+      }
+    }
+
+    if (evt.shiftKey) {
+      radius.y = radius.x;
+    }
+    else if (evt.ctrlKey) {
+      if (curShapeInfo.circle) {
+        const originalRadius = curShapeInfo.circle.ctrlRadius;
+        const distance = {
+          x: Math.abs(radius.x - originalRadius.x),
+          y: Math.abs(radius.y - originalRadius.y)
+        };
+        // Set the closer axis to the radius captured last time the ctrl key was pressed
+        if (distance.x > distance.y) {
+          radius.y = originalRadius.y;
       }
       else {
-        r.x = x;
+          radius.x = originalRadius.x;
+        }
       }
     }
-    shape.setAttribute('rx', r.x);
-    shape.setAttribute('ry', r.y);
+    
+    shape.setAttribute('rx', radius.x);
+    shape.setAttribute('ry', radius.y);
     break;
   }
   case 'fhellipse':
