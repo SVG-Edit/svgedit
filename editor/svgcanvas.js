@@ -2321,10 +2321,10 @@ const mouseMove = function (evt) {
     }
     else if (evt.ctrlKey) {
       if (Math.abs(dx) > Math.abs(dy)) {
-        sy = 1;
+        sy = 1 * dy > 0 ? 1 : -1;
       }
       else {
-        sx = 1;
+        sx = 1 * dx > 0 ? 1 : -1;
       }
     }
     scale.setScale(sx, sy);
@@ -2498,8 +2498,8 @@ const mouseMove = function (evt) {
         // Set the closer axis to the radius captured last time the ctrl key was pressed
         if (distance.x > distance.y) {
           radius.y = originalRadius.y;
-      }
-      else {
+        }
+        else {
           radius.x = originalRadius.x;
         }
       }
