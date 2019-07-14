@@ -23045,7 +23045,6 @@
    * @example $.jGraduate.Paint({linearGradient: o, a: 50}); // creates a linear gradient paint with opacity=0.5
    * @example $.jGraduate.Paint({radialGradient: o, a: 7}); // creates a radial gradient paint with opacity=0.07
    * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
-   *
   */
 
   /**
