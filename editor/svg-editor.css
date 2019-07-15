@@ -832,7 +832,7 @@ span.zoom_tool {
 }
 
 #tools_bottom input[type=text] {
-  width: 2.2em;
+  width: 4em;
 }
 
 /* Color tools: fill, stroke, opacity
