@@ -2399,29 +2399,10 @@ const mouseMove = function (evt) {
       h = Math.abs(y - startY);
     let newX, newY;
     
-    if (!evt.ctrlKey) {
-      curShapeInfo.image = null;
-    }
-    else if (!curShapeInfo.image) {
-      curShapeInfo.image = {
-        ctrlDimensions: { w, h }
-      }
-    }
-
     if (square) {
       w = h = Math.max(w, h);
       newX = startX < x ? startX : startX - w;
       newY = startY < y ? startY : startY - h;
-    }
-    else if (evt.ctrlKey) {
-      if (curShapeInfo.image) {
-        const newDims = snapToAxis(startX, startY, x, y);
-        w = newDims.x;
-        h = newDims.y;
-      }
-
-      newX = startX < w ? startX : startX - w;
-      newY = startY < h ? startY : startY - h;
     }
     else {
       newX = Math.min(startX, x);
@@ -2482,8 +2463,6 @@ const mouseMove = function (evt) {
     else if (evt.ctrlKey) {
       if (curShapeInfo.circle) {
         const origin = curShapeInfo.circle.ctrlRadius;
-        console.log("origin", origin);
-        console.log("radius", radius);
         radius = snapToAxis(origin.x, origin.y, radius.x, radius.y);
       }
     }
