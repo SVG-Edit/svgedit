@@ -1,4 +1,6 @@
 /* eslint-env node */
+// Wait until Node 10 to enable
+/* eslint-disable prefer-named-capture-group */
 
 // NOTE:
 // See rollup-config.config.js instead for building the main (configurable)
@@ -34,9 +36,9 @@ extensionLocaleDirs.forEach((dir) => {
  */
 
 /**
- * @param {PlainObject} config
- * @param {boolean} config.minifying
- * @param {string} [config.format='umd'} = {}]
+ * @param {PlainObject} [config={}]
+ * @param {boolean} [config.minifying]
+ * @param {string} [config.format='umd']
  * @returns {external:RollupConfig}
  */
 function getRollupObject ({minifying, format = 'umd'} = {}) {

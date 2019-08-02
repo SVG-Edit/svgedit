@@ -119,6 +119,74 @@ function _setPrototypeOf(o, p) {
   return _setPrototypeOf(o, p);
 }
 
+function isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function _construct(Parent, args, Class) {
+  if (isNativeReflectConstruct()) {
+    _construct = Reflect.construct;
+  } else {
+    _construct = function _construct(Parent, args, Class) {
+      var a = [null];
+      a.push.apply(a, args);
+      var Constructor = Function.bind.apply(Parent, a);
+      var instance = new Constructor();
+      if (Class) _setPrototypeOf(instance, Class.prototype);
+      return instance;
+    };
+  }
+
+  return _construct.apply(null, arguments);
+}
+
+function _isNativeFunction(fn) {
+  return Function.toString.call(fn).indexOf("[native code]") !== -1;
+}
+
+function _wrapNativeSuper(Class) {
+  var _cache = typeof Map === "function" ? new Map() : undefined;
+
+  _wrapNativeSuper = function _wrapNativeSuper(Class) {
+    if (Class === null || !_isNativeFunction(Class)) return Class;
+
+    if (typeof Class !== "function") {
+      throw new TypeError("Super expression must either be null or a function");
+    }
+
+    if (typeof _cache !== "undefined") {
+      if (_cache.has(Class)) return _cache.get(Class);
+
+      _cache.set(Class, Wrapper);
+    }
+
+    function Wrapper() {
+      return _construct(Class, arguments, _getPrototypeOf(this).constructor);
+    }
+
+    Wrapper.prototype = Object.create(Class.prototype, {
+      constructor: {
+        value: Wrapper,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    return _setPrototypeOf(Wrapper, Class);
+  };
+
+  return _wrapNativeSuper(Class);
+}
+
 function _assertThisInitialized(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -191,6 +259,71 @@ function _nonIterableSpread() {
 
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance");
+}
+
+function _wrapRegExp(re, groups) {
+  _wrapRegExp = function (re, groups) {
+    return new BabelRegExp(re, groups);
+  };
+
+  var _RegExp = _wrapNativeSuper(RegExp);
+
+  var _super = RegExp.prototype;
+
+  var _groups = new WeakMap();
+
+  function BabelRegExp(re, groups) {
+    var _this = _RegExp.call(this, re);
+
+    _groups.set(_this, groups);
+
+    return _this;
+  }
+
+  _inherits(BabelRegExp, _RegExp);
+
+  BabelRegExp.prototype.exec = function (str) {
+    var result = _super.exec.call(this, str);
+
+    if (result) result.groups = buildGroups(result, this);
+    return result;
+  };
+
+  BabelRegExp.prototype[Symbol.replace] = function (str, substitution) {
+    if (typeof substitution === "string") {
+      var groups = _groups.get(this);
+
+      return _super[Symbol.replace].call(this, str, substitution.replace(/\$<([^>]+)>/g, function (_, name) {
+        return "$" + groups[name];
+      }));
+    } else if (typeof substitution === "function") {
+      var _this = this;
+
+      return _super[Symbol.replace].call(this, str, function () {
+        var args = [];
+        args.push.apply(args, arguments);
+
+        if (typeof args[args.length - 1] !== "object") {
+          args.push(buildGroups(args, _this));
+        }
+
+        return substitution.apply(this, args);
+      });
+    } else {
+      return _super[Symbol.replace].call(this, str, substitution);
+    }
+  };
+
+  function buildGroups(result, re) {
+    var g = _groups.get(re);
+
+    return Object.keys(g).reduce(function (groups, name) {
+      groups[name] = result[g[name]];
+      return groups;
+    }, Object.create(null));
+  }
+
+  return _wrapRegExp.apply(this, arguments);
 }
 
 // http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
@@ -3167,22 +3300,35 @@ function () {
       } // TODO: Add skew support in future
 
 
-      var re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
+      var re = _wrapRegExp(/\s*((?:scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/, {
+        xform: 1
+      });
+
       var m = true;
 
       while (m) {
         m = str.match(re);
         str = str.replace(re, '');
 
-        if (m && m[1]) {
+        if (m && m.groups.xform) {
           (function () {
-            var x = m[1];
-            var bits = x.split(/\s*\(/);
-            var name = bits[0];
-            var valBits = bits[1].match(/\s*(.*?)\s*\)/);
-            valBits[1] = valBits[1].replace(/(\d)-/g, '$1 -');
-            var valArr = valBits[1].split(/[, ]+/);
-            var letters = 'abcdef'.split('');
+            var x = m.groups.xform;
+
+            var _x$split = x.split(/\s*\(/),
+                _x$split2 = _slicedToArray(_x$split, 2),
+                name = _x$split2[0],
+                bits = _x$split2[1];
+
+            var valBits = bits.match(_wrapRegExp(/\s*(.*?)\s*\)/, {
+              nonWhitespace: 1
+            }));
+            valBits.groups.nonWhitespace = valBits.groups.nonWhitespace.replace(_wrapRegExp(/(\d)-/g, {
+              digit: 1
+            }), '$<digit> -');
+            var valArr = valBits.groups.nonWhitespace.split(/[, ]+/);
+
+            var letters = _toConsumableArray('abcdef');
+
             var mtx = svgroot.createSVGMatrix();
             Object.values(valArr).forEach(function (item, i) {
               valArr[i] = parseFloat(item);
@@ -6515,11 +6661,12 @@ var reorientGrads = function reorientGrads(elem, m) {
         var pt1 = transformPoint(x1, y1, m);
         var pt2 = transformPoint(x2, y2, m); // Convert back to BB points
 
-        var gCoords = {};
-        gCoords.x1 = (pt1.x - bb.x) / bb.width;
-        gCoords.y1 = (pt1.y - bb.y) / bb.height;
-        gCoords.x2 = (pt2.x - bb.x) / bb.width;
-        gCoords.y2 = (pt2.y - bb.y) / bb.height;
+        var gCoords = {
+          x1: (pt1.x - bb.x) / bb.width,
+          y1: (pt1.y - bb.y) / bb.height,
+          x2: (pt2.x - bb.x) / bb.width,
+          y2: (pt2.y - bb.y) / bb.height
+        };
         var newgrad = grad.cloneNode(true);
         $$1(newgrad).attr(gCoords);
         newgrad.id = editorContext_.getNextId();
@@ -6703,6 +6850,7 @@ var convertPath = function convertPath(pth, toRel) {
 
         d += pathDSegment(letter, [[x1, y1], [x, y]]);
         break;
+      // eslint-disable-next-line sonarjs/no-duplicated-branches
 
       case 10:
         // absolute elliptical arc (A)
@@ -7950,7 +8098,10 @@ var init$2 = function init(editorContext) {
  */
 
 var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
-  return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, '$1$2');
+  return str.replace(_wrapRegExp(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, {
+    doctypeOpen: 1,
+    doctypeClose: 2
+  }), '$<doctypeOpen>$<doctypeClose>');
 };
 /**
 * Converts characters in a string to XML-friendly entities.
@@ -8090,9 +8241,16 @@ var dataURLToObjectURL = function dataURLToObjectURL(dataurl) {
     return '';
   }
 
-  var arr = dataurl.split(','),
-      mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]);
+  var _dataurl$split = dataurl.split(','),
+      _dataurl$split2 = _slicedToArray(_dataurl$split, 2),
+      prefix = _dataurl$split2[0],
+      suffix = _dataurl$split2[1],
+      _prefix$match = prefix.match(_wrapRegExp(/:(.*?);/, {
+    mime: 1
+  })),
+      mime = _prefix$match.groups.mime,
+      bstr = atob(suffix);
+
   var n = bstr.length;
   var u8arr = new Uint8Array(n);
 
@@ -8144,6 +8302,7 @@ var blankPageObjectURL = function () {
 
 var text2xml = function text2xml(sXML) {
   if (sXML.includes('<svg:svg')) {
+    // eslint-disable-next-line prefer-named-capture-group
     sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
   }
 
@@ -8525,11 +8684,17 @@ var getBBox = function getBBox(elem) {
 
 
         if (!isWebkit()) {
-          var bb = {};
-          bb.width = ret.width;
-          bb.height = ret.height;
-          bb.x = ret.x + parseFloat(selected.getAttribute('x') || 0);
-          bb.y = ret.y + parseFloat(selected.getAttribute('y') || 0);
+          var _ret = ret,
+              x = _ret.x,
+              y = _ret.y,
+              width = _ret.width,
+              height = _ret.height;
+          var bb = {
+            width: width,
+            height: height,
+            x: x + parseFloat(selected.getAttribute('x') || 0),
+            y: y + parseFloat(selected.getAttribute('y') || 0)
+          };
           ret = bb;
         }
       } else if (visElemsArr.includes(elname)) {
@@ -8541,12 +8706,13 @@ var getBBox = function getBBox(elem) {
             // Re: Chrome returning bbox for containing text element, see: https://bugs.chromium.org/p/chromium/issues/detail?id=349835
             var extent = selected.getExtentOfChar(0); // pos+dimensions of the first glyph
 
-            var width = selected.getComputedTextLength(); // width of the tspan
+            var _width = selected.getComputedTextLength(); // width of the tspan
+
 
             ret = {
               x: extent.x,
               y: extent.y,
-              width: width,
+              width: _width,
               height: extent.height
             };
           }
@@ -9272,7 +9438,7 @@ var copyElem = function copyElem(el, getNextId) {
 };
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 
@@ -9379,9 +9545,9 @@ function addScriptAtts(script, atts) {
 
 /**
 * @function module:importModule.importSetGlobalDefault
-* @param {string|GenericArray<Any>} url
+* @param {string|GenericArray<any>} url
 * @param {module:importModule.ImportConfig} config
-* @returns {Promise<Any>} The value to which it resolves depends on the export of the targeted module.
+* @returns {Promise<any>} The value to which it resolves depends on the export of the targeted module.
 */
 
 
@@ -9502,7 +9668,7 @@ function importScript(url) {
 * @param {PlainObject} [atts={}]
 * @param {PlainObject} opts
 * @param {boolean} [opts.returnDefault=false} = {}]
-* @returns {Promise<Any>} Resolves to value of loading module or rejects with
+* @returns {Promise<any>} Resolves to value of loading module or rejects with
 *   `Error` upon a script loading error.
 */
 
@@ -11575,7 +11741,9 @@ var sanitizeSvg = function sanitizeSvg(node) {
           case 'gradientTransform':
           case 'patternTransform':
             {
-              var val = attr.value.replace(/(\d)-/g, '$1 -');
+              var val = attr.value.replace(_wrapRegExp(/(\d)-/g, {
+                digit: 1
+              }), '$<digit> -');
               node.setAttribute(attrName, val);
               break;
             }
@@ -11708,9 +11876,8 @@ var init$4 = function init(editorContext) {
 };
 /**
  * Applies coordinate changes to an element based on the given matrix.
- * @function module:coords.remapElement
- * @implements {module:path.EditorContext#remapElement}
- * @returns {void}
+ * @name module:coords.remapElement
+ * @type {module:path.EditorContext#remapElement}
 */
 
 var remapElement = function remapElement(selected, changes, m) {
@@ -13681,9 +13848,8 @@ function SvgCanvas(container, config) {
   canvas.current_drawing_ = new Drawing(svgcontent, idprefix);
   /**
   * Returns the current Drawing.
-  * @function module:svgcanvas.SvgCanvas#getCurrentDrawing
-  * @implements {module:draw.DrawCanvasInit#getCurrentDrawing}
-  * @returns {module:draw.Drawing}
+  * @name module:svgcanvas.SvgCanvas#getCurrentDrawing
+  * @type {module:draw.DrawCanvasInit#getCurrentDrawing}
   */
 
   var getCurrentDrawing = canvas.getCurrentDrawing = function () {
@@ -13762,9 +13928,8 @@ function SvgCanvas(container, config) {
   };
   /**
   * This should really be an intersection implementing all rather than a union.
-  * @function module:svgcanvas.SvgCanvas#addSVGElementFromJson
-  * @implements {module:utilities.EditorContext#addSVGElementFromJson|module:path.EditorContext#addSVGElementFromJson}
-  * @returns {Element} The new element
+  * @name module:svgcanvas.SvgCanvas#addSVGElementFromJson
+  * @type {module:utilities.EditorContext#addSVGElementFromJson|module:path.EditorContext#addSVGElementFromJson}
   */
 
 
@@ -13820,8 +13985,7 @@ function SvgCanvas(container, config) {
   canvas.hasMatrixTransform = hasMatrixTransform;
   canvas.transformListToTransform = transformListToTransform;
   /**
-  * @implements {module:utilities.EditorContext#getBaseUnit}
-  * @returns {string}
+  * @type {module:utilities.EditorContext#getBaseUnit}
   */
 
   var getBaseUnit = function getBaseUnit() {
@@ -13853,8 +14017,7 @@ function SvgCanvas(container, config) {
   canvas.convertToNum = convertToNum;
   /**
   * This should really be an intersection implementing all rather than a union.
-  * @implements {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
-  * @returns {SVGSVGElement}
+  * @type {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
   */
 
   var getSVGContent = function getSVGContent() {
@@ -13862,9 +14025,8 @@ function SvgCanvas(container, config) {
   };
   /**
   * Should really be an intersection with all needing to apply rather than a union.
-  * @function module:svgcanvas.SvgCanvas#getSelectedElements
-  * @implements {module:utilities.EditorContext#getSelectedElements|module:draw.DrawCanvasInit#getSelectedElements|module:path.EditorContext#getSelectedElements}
-  * @returns {Element[]} the array with selected DOM elements
+  * @name module:svgcanvas.SvgCanvas#getSelectedElements
+  * @type {module:utilities.EditorContext#getSelectedElements|module:draw.DrawCanvasInit#getSelectedElements|module:path.EditorContext#getSelectedElements}
   */
 
 
@@ -13875,8 +14037,7 @@ function SvgCanvas(container, config) {
   var pathActions$1 = pathActions;
   /**
   * This should actually be an intersection as all interfaces should be met.
-  * @implements {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
-  * @returns {SVGSVGElement}
+  * @type {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
   */
 
   var getSVGRoot = function getSVGRoot() {
@@ -13920,8 +14081,7 @@ function SvgCanvas(container, config) {
   this.cleanupElement = cleanupElement;
   /**
   * This should actually be an intersection not a union as all should apply.
-  * @implements {module:coords.EditorContext#getGridSnapping|module:path.EditorContext#getGridSnapping}
-  * @returns {boolean}
+  * @type {module:coords.EditorContext#getGridSnapping|module:path.EditorContext#getGridSnapping}
   */
 
   var getGridSnapping = function getGridSnapping() {
@@ -14035,8 +14195,8 @@ function SvgCanvas(container, config) {
   });
   /**
   * This should really be an intersection applying to all types rather than a union.
-  * @function module:svgcanvas~addCommandToHistory
-  * @implements {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory}
+  * @name module:svgcanvas~addCommandToHistory
+  * @type {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory}
   */
 
   var addCommandToHistory = function addCommandToHistory(cmd) {
@@ -14044,9 +14204,8 @@ function SvgCanvas(container, config) {
   };
   /**
   * This should really be an intersection applying to all types rather than a union.
-  * @function module:svgcanvas.SvgCanvas#getZoom
-  * @implements {module:path.EditorContext#getCurrentZoom|module:select.SVGFactory#getCurrentZoom}
-  * @returns {Float} The current zoom level
+  * @name module:svgcanvas.SvgCanvas#getZoom
+  * @type {module:path.EditorContext#getCurrentZoom|module:select.SVGFactory#getCurrentZoom}
   */
 
 
@@ -14055,9 +14214,8 @@ function SvgCanvas(container, config) {
   };
   /**
   * This method rounds the incoming value to the nearest value based on the `currentZoom`
-  * @function module:svgcanvas.SvgCanvas#round
-  * @implements {module:path.EditorContext#round}
-  * @returns {Float} Rounded value to nearest value based on `currentZoom`
+  * @name module:svgcanvas.SvgCanvas#round
+  * @type {module:path.EditorContext#round}
   */
 
 
@@ -14090,18 +14248,16 @@ function SvgCanvas(container, config) {
 
   var selectorManager = this.selectorManager = getSelectorManager();
   /**
-  * @function module:svgcanvas.SvgCanvas#getNextId
-  * @implements {module:path.EditorContext#getNextId}
-  * @returns {string}
+  * @name module:svgcanvas.SvgCanvas#getNextId
+  * @type {module:path.EditorContext#getNextId}
   */
 
   var getNextId = canvas.getNextId = function () {
     return getCurrentDrawing().getNextId();
   };
   /**
-  * @function module:svgcanvas.SvgCanvas#getId
-  * @implements {module:path.EditorContext#getId}
-  * @returns {string}
+  * @name module:svgcanvas.SvgCanvas#getId
+  * @type {module:path.EditorContext#getId}
   */
 
 
@@ -14110,11 +14266,8 @@ function SvgCanvas(container, config) {
   };
   /**
   * The "implements" should really be an intersection applying to all types rather than a union.
-  * @function module:svgcanvas.SvgCanvas#call
-  * @implements {module:draw.DrawCanvasInit#call|module:path.EditorContext#call}
-  * @param {"selected"|"changed"|"contextset"|"pointsAdded"|"extension_added"|"extensions_added"|"message"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String with the event name
-  * @param {module:svgcanvas.SvgCanvas#event:GenericCanvasEvent} arg - Argument to pass through to the callback function.
-  * @returns {module:svgcanvas.EventHandlerReturn|void}
+  * @name module:svgcanvas.SvgCanvas#call
+  * @type {module:draw.DrawCanvasInit#call|module:path.EditorContext#call}
   */
 
 
@@ -14128,8 +14281,8 @@ function SvgCanvas(container, config) {
   /**
   * Clears the selection. The 'selected' handler is then optionally called.
   * This should really be an intersection applying to all types rather than a union.
-  * @function module:svgcanvas.SvgCanvas#clearSelection
-  * @implements {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection}
+  * @name module:svgcanvas.SvgCanvas#clearSelection
+  * @type {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection}
   * @fires module:svgcanvas.SvgCanvas#event:selected
   */
 
@@ -14150,10 +14303,9 @@ function SvgCanvas(container, config) {
   };
   /**
   * Adds a list of elements to the selection. The 'selected' handler is then called.
-  * @function module:svgcanvas.SvgCanvas#addToSelection
-  * @implements {module:path.EditorContext#addToSelection}
+  * @name module:svgcanvas.SvgCanvas#addToSelection
+  * @type {module:path.EditorContext#addToSelection}
   * @fires module:svgcanvas.SvgCanvas#event:selected
-  * @returns {void}
   */
 
 
@@ -14235,8 +14387,7 @@ function SvgCanvas(container, config) {
     }
   };
   /**
-  * @implements {module:path.EditorContext#getOpacity}
-  * @returns {Float}
+  * @type {module:path.EditorContext#getOpacity}
   */
 
 
@@ -14244,9 +14395,8 @@ function SvgCanvas(container, config) {
     return curShape.opacity;
   };
   /**
-  * @function module:svgcanvas.SvgCanvas#getMouseTarget
-  * @implements {module:path.EditorContext#getMouseTarget}
-  * @returns {Element} DOM element we want
+  * @name module:svgcanvas.SvgCanvas#getMouseTarget
+  * @type {module:path.EditorContext#getMouseTarget}
   */
 
 
@@ -14314,7 +14464,7 @@ function SvgCanvas(container, config) {
 
   canvas.pathActions = pathActions$1;
   /**
-  * @implements {module:path.EditorContext#resetD}
+  * @type {module:path.EditorContext#resetD}
   */
 
   function resetD(p) {
@@ -14979,7 +15129,7 @@ function SvgCanvas(container, config) {
 
   /**
    * @typedef {PlainObject} module:svgcanvas.Message
-   * @property {Any} data The data
+   * @property {any} data The data
    * @property {string} origin The origin
    */
 
@@ -18584,10 +18734,12 @@ function SvgCanvas(container, config) {
         if (val) {
           if (val.startsWith('data:')) {
             // Check if an SVG-edit data URI
-            var m = val.match(/svgedit_url=(.*?);/);
+            var m = val.match(_wrapRegExp(/svgedit_url=(.*?);/, {
+              url: 1
+            }));
 
             if (m) {
-              var url = decodeURIComponent(m[1]);
+              var url = decodeURIComponent(m.groups.url);
               $$9(new Image()).load(function () {
                 image.setAttributeNS(NS.XLINK, 'xlink:href', url);
               }).attr('src', url);
@@ -22328,33 +22480,32 @@ This will return the icon (as jQuery object) with a given ID.
  * @license MIT
  * @copyright (c) 2009 Alexis Deveria
  * {@link http://a.deveria.com}
- * @example usage #1:
-
-$(function() {
+ * @example
+$(function () {
   $.svgIcons('my_icon_set.svg'); // The SVG file that contains all icons
   // No options have been set, so all icons will automatically be inserted
   // into HTML elements that match the same IDs.
 });
 
-* @example usage #2:
-
-$(function() {
-  $.svgIcons('my_icon_set.svg', { // The SVG file that contains all icons
+* @example
+$(function () {
+  // The SVG file that contains all icons
+  $.svgIcons('my_icon_set.svg', {
     callback (icons) { // Custom callback function that sets click
                   // events for each icon
-      $.each(icons, function(id, icon) {
-        icon.click(function() {
+      $.each(icons, function (id, icon) {
+        icon.click(function () {
           alert('You clicked on the icon with id ' + id);
         });
       });
     }
-  }); //The SVG file that contains all icons
+  });
 });
 
-* @example usage #3:
-
-$(function() {
-  $.svgIcons('my_icon_set.svgz', { // The SVGZ file that contains all icons
+* @example
+$(function () {
+  // The SVGZ file that contains all icons
+  $.svgIcons('my_icon_set.svgz', {
     w: 32,  // All icons will be 32px wide
     h: 32,  // All icons will be 32px high
     fallback_path: 'icons/',  // All fallback files can be found here
@@ -22364,22 +22515,80 @@ $(function() {
       '#close_icon': 'close.png',
       '#save_icon': 'save.png'
     },
-    placement: {'.open_icon','open'}, // The "open" icon will be added
+    placement: {'.open_icon': 'open'}, // The "open" icon will be added
                     // to all elements with class "open_icon"
-    resize () {
+    resize: {
       '#save_icon .svg_icon': 64  // The "save" icon will be resized to 64 x 64px
     },
 
     callback (icons) { // Sets background color for "close" icon
-      icons['close'].css('background','red');
+      icons.close.css('background', 'red');
     },
 
     svgz: true // Indicates that an SVGZ file is being used
-
-  })
+  });
 });
 */
 
+var isOpera$1 = Boolean(window.opera);
+
+var fixIDs = function fixIDs(svgEl, svgNum, force) {
+  var defs = svgEl.find('defs');
+  if (!defs.length) return svgEl;
+  var idElems;
+
+  if (isOpera$1) {
+    idElems = defs.find('*').filter(function () {
+      return Boolean(this.id);
+    });
+  } else {
+    idElems = defs.find('[id]');
+  }
+
+  var allElems = svgEl[0].getElementsByTagName('*'),
+      len = allElems.length;
+  idElems.each(function (i) {
+    var id = this.id;
+    /*
+    const noDupes = ($(svgdoc).find('#' + id).length <= 1);
+    if (isOpera) noDupes = false; // Opera didn't clone svgEl, so not reliable
+    if(!force && noDupes) return;
+    */
+
+    var newId = 'x' + id + svgNum + i;
+    this.id = newId;
+    var oldVal = 'url(#' + id + ')';
+    var newVal = 'url(#' + newId + ')'; // Selector method, possibly faster but fails in Opera / jQuery 1.4.3
+    //  svgEl.find('[fill="url(#' + id + ')"]').each(function() {
+    //    this.setAttribute('fill', 'url(#' + newId + ')');
+    //  }).end().find('[stroke="url(#' + id + ')"]').each(function() {
+    //    this.setAttribute('stroke', 'url(#' + newId + ')');
+    //  }).end().find('use').each(function() {
+    //    if(this.getAttribute('xlink:href') == '#' + id) {
+    //      this.setAttributeNS(xlinkns,'href','#' + newId);
+    //    }
+    //  }).end().find('[filter="url(#' + id + ')"]').each(function() {
+    //    this.setAttribute('filter', 'url(#' + newId + ')');
+    //  });
+
+    for (i = 0; i < len; i++) {
+      var elem = allElems[i];
+
+      if (elem.getAttribute('fill') === oldVal) {
+        elem.setAttribute('fill', newVal);
+      }
+
+      if (elem.getAttribute('stroke') === oldVal) {
+        elem.setAttribute('stroke', newVal);
+      }
+
+      if (elem.getAttribute('filter') === oldVal) {
+        elem.setAttribute('filter', newVal);
+      }
+    }
+  });
+  return svgEl;
+};
 /**
 * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
 * @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
@@ -22391,9 +22600,9 @@ $(function() {
  * @returns {external:jQuery} The enhanced jQuery object
 */
 
+
 function jQueryPluginSVGIcons($) {
   var svgIcons = {};
-  var fixIDs;
   /**
    * Map of raster images with each key being the SVG icon ID
    *   to replace, and the value the image file name
@@ -22452,8 +22661,7 @@ function jQueryPluginSVGIcons($) {
         iconsMade = false,
         dataLoaded = false,
         loadAttempts = 0;
-    var isOpera = Boolean(window.opera),
-        // ua = navigator.userAgent,
+    var // ua = navigator.userAgent,
     // isSafari = (ua.includes('Safari/') && !ua.includes('Chrome/')),
     dataPre = 'data:image/svg+xml;charset=utf-8;base64,';
     var dataEl;
@@ -22572,7 +22780,7 @@ function jQueryPluginSVGIcons($) {
 
 
     function setIcon(target, icon, id, setID) {
-      if (isOpera) icon.css('visibility', 'hidden');
+      if (isOpera$1) icon.css('visibility', 'hidden');
 
       if (opts.replace) {
         if (setID) icon.attr('id', id);
@@ -22594,7 +22802,7 @@ function jQueryPluginSVGIcons($) {
         target.append(icon);
       }
 
-      if (isOpera) {
+      if (isOpera$1) {
         setTimeout(function () {
           icon.removeAttr('style');
         }, 1);
@@ -22686,7 +22894,7 @@ function jQueryPluginSVGIcons($) {
           svgroot.setAttribute('class', 'svg_icon'); // Without cloning, Firefox will make another GET request.
           // With cloning, causes issue in Opera/Win/Non-EN
 
-          if (!isOpera) svg = svg.cloneNode(true);
+          if (!isOpera$1) svg = svg.cloneNode(true);
           svgroot.append(svg);
           var icon = void 0;
 
@@ -22717,7 +22925,7 @@ function jQueryPluginSVGIcons($) {
           if (!svgIcons[id]) return;
           $(sel).each(function (i) {
             var copy = svgIcons[id].clone();
-            if (i > 0 && !toImage) copy = fixIDs(copy, i, true);
+            if (i > 0 && !toImage) copy = fixIDs(copy, i);
             setIcon($(this), copy, id);
           });
         });
@@ -22733,64 +22941,6 @@ function jQueryPluginSVGIcons($) {
       iconsMade = true;
       if (opts.callback) opts.callback(svgIcons);
     }
-
-    fixIDs = function fixIDs(svgEl, svgNum, force) {
-      var defs = svgEl.find('defs');
-      if (!defs.length) return svgEl;
-      var idElems;
-
-      if (isOpera) {
-        idElems = defs.find('*').filter(function () {
-          return Boolean(this.id);
-        });
-      } else {
-        idElems = defs.find('[id]');
-      }
-
-      var allElems = svgEl[0].getElementsByTagName('*'),
-          len = allElems.length;
-      idElems.each(function (i) {
-        var id = this.id;
-        /*
-        const noDupes = ($(svgdoc).find('#' + id).length <= 1);
-        if (isOpera) noDupes = false; // Opera didn't clone svgEl, so not reliable
-        if(!force && noDupes) return;
-        */
-
-        var newId = 'x' + id + svgNum + i;
-        this.id = newId;
-        var oldVal = 'url(#' + id + ')';
-        var newVal = 'url(#' + newId + ')'; // Selector method, possibly faster but fails in Opera / jQuery 1.4.3
-        //  svgEl.find('[fill="url(#' + id + ')"]').each(function() {
-        //    this.setAttribute('fill', 'url(#' + newId + ')');
-        //  }).end().find('[stroke="url(#' + id + ')"]').each(function() {
-        //    this.setAttribute('stroke', 'url(#' + newId + ')');
-        //  }).end().find('use').each(function() {
-        //    if(this.getAttribute('xlink:href') == '#' + id) {
-        //      this.setAttributeNS(xlinkns,'href','#' + newId);
-        //    }
-        //  }).end().find('[filter="url(#' + id + ')"]').each(function() {
-        //    this.setAttribute('filter', 'url(#' + newId + ')');
-        //  });
-
-        for (i = 0; i < len; i++) {
-          var elem = allElems[i];
-
-          if (elem.getAttribute('fill') === oldVal) {
-            elem.setAttribute('fill', newVal);
-          }
-
-          if (elem.getAttribute('stroke') === oldVal) {
-            elem.setAttribute('stroke', newVal);
-          }
-
-          if (elem.getAttribute('filter') === oldVal) {
-            elem.setAttribute('filter', newVal);
-          }
-        }
-      });
-      return svgEl;
-    };
     /**
      * @returns {void}
      */
@@ -22822,7 +22972,7 @@ function jQueryPluginSVGIcons($) {
     var icon = svgIcons[id];
 
     if (uniqueClone && icon) {
-      icon = fixIDs(icon, 0, true).clone(true);
+      icon = fixIDs(icon, 0).clone(true);
     }
 
     return icon;
@@ -22886,13 +23036,12 @@ function jQueryPluginSVGIcons($) {
  * @license Apache-2.0
  * @example
  * // The Paint object is described below.
- * $.jGraduate.Paint() // constructs a 'none' color
- * @example $.jGraduate.Paint({copy: o}) // creates a copy of the paint o
- * @example $.jGraduate.Paint({hex: '#rrggbb'}) // creates a solid color paint with hex = "#rrggbb"
- * @example $.jGraduate.Paint({linearGradient: o, a: 50}) // creates a linear gradient paint with opacity=0.5
- * @example $.jGraduate.Paint({radialGradient: o, a: 7}) // creates a radial gradient paint with opacity=0.07
- * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}) // throws an exception?
- *
+ * $.jGraduate.Paint(); // constructs a 'none' color
+ * @example $.jGraduate.Paint({copy: o}); // creates a copy of the paint o
+ * @example $.jGraduate.Paint({hex: '#rrggbb'}); // creates a solid color paint with hex = "#rrggbb"
+ * @example $.jGraduate.Paint({linearGradient: o, a: 50}); // creates a linear gradient paint with opacity=0.5
+ * @example $.jGraduate.Paint({radialGradient: o, a: 7}); // creates a radial gradient paint with opacity=0.07
+ * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
 
 /**
@@ -24211,7 +24360,6 @@ function jQueryPluginJGraduate($) {
  * | v1.9 | 20 May 2018 | Brett Zamir | Avoid SVGEdit dependency via `stateObj` config;<br />convert to ES6 module |
  * @module jQuerySpinButton
  * @example
-
   // Create group of settings to initialise spinbutton(s). (Optional)
   const myOptions = {
     min: 0, // Set lower limit.
@@ -24226,7 +24374,7 @@ function jQueryPluginJGraduate($) {
 
   $(function () {
     // Initialise INPUT element(s) as SpinButtons: (passing options if desired)
-    $("#myInputElement").SpinButton(myOptions);
+    $('#myInputElement').SpinButton(myOptions);
   });
  */
 
@@ -24895,7 +25043,7 @@ function toFixedNumeric(value, precision) {
 }
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 
@@ -29344,7 +29492,7 @@ editor.setConfig = function (opts, cfgCfg) {
    *
    * @param {module:SVGEditor.Config|module:SVGEditor.Prefs} cfgObj
    * @param {string} key
-   * @param {Any} val See {@link module:SVGEditor.Config} or {@link module:SVGEditor.Prefs}
+   * @param {any} val See {@link module:SVGEditor.Config} or {@link module:SVGEditor.Prefs}
    * @returns {void}
    */
 
@@ -29621,7 +29769,9 @@ editor.init = function () {
         if (!src) {
           // urldata.source may have been null if it ended with '='
           if (qstr.includes('source=data:')) {
-            src = qstr.match(/source=(data:[^&]*)/)[1];
+            src = qstr.match(_wrapRegExp(/source=(data:[^&]*)/, {
+              src: 1
+            })).groups.src;
           }
         }
 
@@ -29725,7 +29875,9 @@ editor.init = function () {
                     while (1) {
                       switch (_context2.prev = _context2.next) {
                         case 0:
-                          extName = extname.match(/^ext-(.+)\.js/);
+                          extName = extname.match(_wrapRegExp(/^ext-(.+)\.js/, {
+                            extName: 1
+                          })).groups.extName;
 
                           if (extName) {
                             _context2.next = 3;
@@ -29748,12 +29900,12 @@ editor.init = function () {
                           _context2.prev = 4;
                           _context2.next = 7;
                           return importSetGlobalDefault(url, {
-                            global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
+                            global: 'svgEditorExtension_' + extName.replace(/-/g, '_')
                           });
 
                         case 7:
                           imported = _context2.sent;
-                          _imported$name = imported.name, _name2 = _imported$name === void 0 ? extName[1] : _imported$name, init = imported.init;
+                          _imported$name = imported.name, _name2 = _imported$name === void 0 ? extName : _imported$name, init = imported.init;
                           importLocale = getImportLocale({
                             defaultLang: langParam,
                             defaultName: _name2
@@ -29867,7 +30019,7 @@ editor.init = function () {
 
 
   var uaPrefix = function () {
-    var regex = /^(Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
+    var regex = /^(?:Moz|Webkit|Khtml|O|ms|Icab)(?=[A-Z])/;
     var someScript = document.getElementsByTagName('script')[0];
 
     for (var prop in someScript.style) {
@@ -31795,7 +31947,7 @@ editor.init = function () {
     zoomDone();
   };
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
 
 
@@ -32761,14 +32913,14 @@ editor.init = function () {
   setBackground($$b.pref('bkgd_color'), $$b.pref('bkgd_url'));
   $$b('#image_save_opts input').val([$$b.pref('img_save')]);
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
 
   var changeRectRadius = function changeRectRadius(ctl) {
     svgCanvas.setRectRadius(ctl.value);
   };
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
 
 
@@ -32776,7 +32928,7 @@ editor.init = function () {
     svgCanvas.setFontSize(ctl.value);
   };
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
 
 
@@ -32790,7 +32942,7 @@ editor.init = function () {
     svgCanvas.setStrokeWidth(val);
   };
   /**
-  * @implements {module:jQuerySpinButton.ValueCallback}
+  * @type {module:jQuerySpinButton.ValueCallback}
   */
 
 
@@ -35117,8 +35269,7 @@ editor.init = function () {
 
   $$b(window).bind('load resize', centerCanvas);
   /**
-   * @implements {module:jQuerySpinButton.StepCallback}
-   * @returns {Float}
+   * @type {module:jQuerySpinButton.StepCallback}
    */
 
   function stepFontSize(elem, step) {
@@ -35149,8 +35300,7 @@ editor.init = function () {
     return sugVal;
   }
   /**
-   * @implements {module:jQuerySpinButton.StepCallback}
-   * @returns {Float}
+   * @type {module:jQuerySpinButton.StepCallback}
    */
 
 
@@ -36729,7 +36879,7 @@ var extensionsAdded = false;
 var messageQueue = [];
 /**
  * @param {PlainObject} info
- * @param {Any} info.data
+ * @param {any} info.data
  * @param {string} info.origin
  * @fires module:svgcanvas.SvgCanvas#event:message
  * @returns {void}

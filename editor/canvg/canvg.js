@@ -1,4 +1,4 @@
-/* eslint-disable new-cap, class-methods-use-this */
+/* eslint-disable new-cap, class-methods-use-this, prefer-named-capture-group */
 // Todo: Compare with latest canvg (add any improvements of ours) and add full JSDocs (denoting links to standard APIs and which are custom): https://github.com/canvg/canvg
 /**
  * canvg.js - Javascript SVG parser and renderer on Canvas
@@ -13,7 +13,7 @@ import {canvasRGBA} from '../external/stackblur-canvas/dist/stackblur-es.js';
 
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 const isNullish = (val) => {
@@ -90,12 +90,14 @@ export const canvg = function (target, s, opts) {
   return svg.load(ctx, s);
 };
 
+/* eslint-disable jsdoc/check-types */
 /**
 * @param {module:canvg.CanvgOptions} opts
 * @returns {object}
 * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
 */
 function build (opts) {
+  /* eslint-enable jsdoc/check-types */
   const svg = {opts};
 
   svg.FRAMERATE = 30;

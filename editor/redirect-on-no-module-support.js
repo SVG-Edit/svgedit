@@ -3,6 +3,6 @@
 
 // We only need to replace the first instance
 location.href = location.href
-  .replace(/(xdomain-)?svg-editor-es\.html/, 'svg-editor.html')
+  .replace(/(?:xdomain-)?svg-editor-es\.html/, 'svg-editor.html')
   .replace('openclipart-es.html', 'openclipart.html')
   .replace('imagelib/index-es.html', 'imagelib/index.html');

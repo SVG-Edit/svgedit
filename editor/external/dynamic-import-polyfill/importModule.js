@@ -39,9 +39,9 @@ function addScriptAtts (script, atts) {
 
 /**
 * @function module:importModule.importSetGlobalDefault
-* @param {string|GenericArray<Any>} url
+* @param {string|GenericArray<any>} url
 * @param {module:importModule.ImportConfig} config
-* @returns {Promise<Any>} The value to which it resolves depends on the export of the targeted module.
+* @returns {Promise<any>} The value to which it resolves depends on the export of the targeted module.
 */
 export function importSetGlobalDefault (url, config) {
   return importSetGlobal(url, {...config, returnDefault: true});
@@ -118,7 +118,7 @@ export function importScript (url, atts = {}) {
 * @param {PlainObject} [atts={}]
 * @param {PlainObject} opts
 * @param {boolean} [opts.returnDefault=false} = {}]
-* @returns {Promise<Any>} Resolves to value of loading module or rejects with
+* @returns {Promise<any>} Resolves to value of loading module or rejects with
 *   `Error` upon a script loading error.
 */
 export function importModule (url, atts = {}, {returnDefault = false} = {}) {

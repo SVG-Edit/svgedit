@@ -99,6 +99,18 @@ module.exports = {
         "import/unambiguous": ["off"]
       }
     },
+    {
+      files: ['test/browser-bugs/**'],
+      rules: {
+        'no-var': 'off'
+      }
+    },
+    {
+      files: ['**/*.html'],
+      rules: {
+        'import/unambiguous': 'off'
+      }
+    },
     // Our Markdown rules (and used for JSDoc examples as well, by way of
     //   our use of `matchingFileName` in conjunction with
     //   `jsdoc/check-examples` within `ash-nazg`)
@@ -114,6 +126,8 @@ module.exports = {
         "import/no-unresolved": ["off"],
         "node/no-missing-import": ["off"],
         "no-multi-spaces": "off",
+        "sonarjs/no-all-duplicated-branches": "off",
+        "no-alert": "off",
         // Disable until may fix https://github.com/gajus/eslint-plugin-jsdoc/issues/211
         "indent": "off"
       }
@@ -126,6 +140,7 @@ module.exports = {
         root: "off"
       },
       rules: {
+        "node/no-unsupported-features/es-syntax": "off",
         "node/no-unsupported-features/node-builtins": "off"
       }
     },

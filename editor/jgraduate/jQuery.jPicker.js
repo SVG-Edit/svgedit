@@ -32,7 +32,7 @@ function toFixedNumeric (value, precision) {
 
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 const isNullish = (val) => {

@@ -51,9 +51,8 @@ export const init = function (editorContext) {
 
 /**
  * Applies coordinate changes to an element based on the given matrix.
- * @function module:coords.remapElement
- * @implements {module:path.EditorContext#remapElement}
- * @returns {void}
+ * @name module:coords.remapElement
+ * @type {module:path.EditorContext#remapElement}
 */
 export const remapElement = function (selected, changes, m) {
   const remap = function (x, y) { return transformPoint(x, y, m); },

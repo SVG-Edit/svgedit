@@ -5,11 +5,15 @@
     <title>SVG Edit</title>
     <link rel="stylesheet" href="style.css">
     <script>
-      // This method adds the script that overrides the default open/save handlers
+      /* eslint-disable no-unused-vars */
+      /**
+       * This method adds the script that overrides the default open/save handlers.
+       * @returns {void}
+       */
       function addHandlers () {
-        var cdoc = document.getElementById('container').contentDocument;
+        const cdoc = document.getElementById('container').contentDocument;
         if (cdoc) {
-          var scriptelm = cdoc.createElement('script');
+          const scriptelm = cdoc.createElement('script');
           scriptelm.src = '../handlers.js';
           cdoc.getElementsByTagName('head')[0].appendChild(scriptelm);
         }

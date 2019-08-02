@@ -134,6 +134,44 @@ var canvg = (function (exports) {
     return _construct.apply(null, arguments);
   }
 
+  function _isNativeFunction(fn) {
+    return Function.toString.call(fn).indexOf("[native code]") !== -1;
+  }
+
+  function _wrapNativeSuper(Class) {
+    var _cache = typeof Map === "function" ? new Map() : undefined;
+
+    _wrapNativeSuper = function _wrapNativeSuper(Class) {
+      if (Class === null || !_isNativeFunction(Class)) return Class;
+
+      if (typeof Class !== "function") {
+        throw new TypeError("Super expression must either be null or a function");
+      }
+
+      if (typeof _cache !== "undefined") {
+        if (_cache.has(Class)) return _cache.get(Class);
+
+        _cache.set(Class, Wrapper);
+      }
+
+      function Wrapper() {
+        return _construct(Class, arguments, _getPrototypeOf(this).constructor);
+      }
+
+      Wrapper.prototype = Object.create(Class.prototype, {
+        constructor: {
+          value: Wrapper,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
+      });
+      return _setPrototypeOf(Wrapper, Class);
+    };
+
+    return _wrapNativeSuper(Class);
+  }
+
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -236,6 +274,71 @@ var canvg = (function (exports) {
 
   function _nonIterableRest() {
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  }
+
+  function _wrapRegExp(re, groups) {
+    _wrapRegExp = function (re, groups) {
+      return new BabelRegExp(re, groups);
+    };
+
+    var _RegExp = _wrapNativeSuper(RegExp);
+
+    var _super = RegExp.prototype;
+
+    var _groups = new WeakMap();
+
+    function BabelRegExp(re, groups) {
+      var _this = _RegExp.call(this, re);
+
+      _groups.set(_this, groups);
+
+      return _this;
+    }
+
+    _inherits(BabelRegExp, _RegExp);
+
+    BabelRegExp.prototype.exec = function (str) {
+      var result = _super.exec.call(this, str);
+
+      if (result) result.groups = buildGroups(result, this);
+      return result;
+    };
+
+    BabelRegExp.prototype[Symbol.replace] = function (str, substitution) {
+      if (typeof substitution === "string") {
+        var groups = _groups.get(this);
+
+        return _super[Symbol.replace].call(this, str, substitution.replace(/\$<([^>]+)>/g, function (_, name) {
+          return "$" + groups[name];
+        }));
+      } else if (typeof substitution === "function") {
+        var _this = this;
+
+        return _super[Symbol.replace].call(this, str, function () {
+          var args = [];
+          args.push.apply(args, arguments);
+
+          if (typeof args[args.length - 1] !== "object") {
+            args.push(buildGroups(args, _this));
+          }
+
+          return substitution.apply(this, args);
+        });
+      } else {
+        return _super[Symbol.replace].call(this, str, substitution);
+      }
+    };
+
+    function buildGroups(result, re) {
+      var g = _groups.get(re);
+
+      return Object.keys(g).reduce(function (groups, name) {
+        groups[name] = result[g[name]];
+        return groups;
+      }, Object.create(null));
+    }
+
+    return _wrapRegExp.apply(this, arguments);
   }
 
   /**
@@ -392,7 +495,11 @@ var canvg = (function (exports) {
   }; // array of color definition objects
 
   var colorDefs = [{
-    re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+    re: _wrapRegExp(/^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/, {
+      r: 1,
+      g: 2,
+      b: 3
+    }),
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
     process: function process(_) {
       for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -404,7 +511,11 @@ var canvg = (function (exports) {
       });
     }
   }, {
-    re: /^(\w{2})(\w{2})(\w{2})$/,
+    re: _wrapRegExp(/^(\w{2})(\w{2})(\w{2})$/, {
+      r: 1,
+      g: 2,
+      b: 3
+    }),
     example: ['#00ff00', '336699'],
     process: function process(_) {
       for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
@@ -416,7 +527,11 @@ var canvg = (function (exports) {
       });
     }
   }, {
-    re: /^(\w{1})(\w{1})(\w{1})$/,
+    re: _wrapRegExp(/^(\w{1})(\w{1})(\w{1})$/, {
+      r: 1,
+      g: 2,
+      b: 3
+    }),
     example: ['#fb0', 'f0f'],
     process: function process(_) {
       for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
@@ -479,7 +594,7 @@ var canvg = (function (exports) {
           });
           _this.ok = true;
         }
-      }, this); // validate/cleanup values
+      }); // validate/cleanup values
 
       this.r = this.r < 0 || isNaN(this.r) ? 0 : this.r > 255 ? 255 : this.r;
       this.g = this.g < 0 || isNaN(this.g) ? 0 : this.g > 255 ? 255 : this.g;
@@ -890,7 +1005,7 @@ var canvg = (function (exports) {
 
   /**
    * Whether a value is `null` or `undefined`.
-   * @param {Any} val
+   * @param {any} val
    * @returns {boolean}
    */
 
@@ -971,6 +1086,8 @@ var canvg = (function (exports) {
 
     return svg.load(ctx, s);
   };
+  /* eslint-disable jsdoc/check-types */
+
   /**
   * @param {module:canvg.CanvgOptions} opts
   * @returns {object}
@@ -978,6 +1095,7 @@ var canvg = (function (exports) {
   */
 
   function build(opts) {
+    /* eslint-enable jsdoc/check-types */
     var svg = {
       opts: opts
     };

@@ -1484,12 +1484,12 @@ export const reorientGrads = function (elem, m) {
         const pt2 = transformPoint(x2, y2, m);
 
         // Convert back to BB points
-        const gCoords = {};
-
-        gCoords.x1 = (pt1.x - bb.x) / bb.width;
-        gCoords.y1 = (pt1.y - bb.y) / bb.height;
-        gCoords.x2 = (pt2.x - bb.x) / bb.width;
-        gCoords.y2 = (pt2.y - bb.y) / bb.height;
+        const gCoords = {
+          x1: (pt1.x - bb.x) / bb.width,
+          y1: (pt1.y - bb.y) / bb.height,
+          x2: (pt2.x - bb.x) / bb.width,
+          y2: (pt2.y - bb.y) / bb.height
+        };
 
         const newgrad = grad.cloneNode(true);
         $(newgrad).attr(gCoords);
@@ -1632,6 +1632,7 @@ export const convertPath = function (pth, toRel) {
       }
       d += pathDSegment(letter, [[x1, y1], [x, y]]);
       break;
+    // eslint-disable-next-line sonarjs/no-duplicated-branches
     case 10: // absolute elliptical arc (A)
       x -= curx;
       y -= cury;

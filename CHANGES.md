@@ -4,15 +4,18 @@
 
 - Deprecated: Should now use `avoidClientSideDownload` in place of
     `avoidClientSide` (config for `ext-server_opensave.js`).
+- Fix: Avoid race condition in `jQuery.svgIcons.js` (evident
+    when attempting to load from `file:` URL in Chrome)
 - Enhancement: Added `avoidClientSideOpen` config for
     `ext-server_opensave.js`
 - Optimization: Re-rerun image optimization per update
 - Linting (ESLint): Adjust per now applied rules
+- Linting (ESLint): Add HTML files to linting
 - Refactoring: Use `static` keyword for classes
 - Testing: Accessibility test API update
 - Docs: Clarify need for Node.js/npm being installed
 - Build: Remove `types-docs` script as being handled in ESLint
-- npm: Update devDeps (including switching from deprecate opn-cli
+- npm: Update devDeps (including switching from deprecated opn-cli
     package to open-cli); update core-js-bundle copy; add new
     axe testing peer dep. axe-core in devDeps
 
