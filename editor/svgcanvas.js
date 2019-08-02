@@ -2532,7 +2532,7 @@ const mouseMove = function (evt) {
       startX = snapToGrid(startX);
       startY = snapToGrid(startY);
     }
-    if (evt.shiftKey) {
+    if (evt.shiftKey || evt.ctrlKey) {
       const {path} = pathModule;
       let x1, y1;
       if (path) {
@@ -2542,12 +2542,17 @@ const mouseMove = function (evt) {
         x1 = startX;
         y1 = startY;
       }
-      xya = snapToAngle(x1, y1, x, y);
-      ({x, y} = xya);
-    }
-    else if (evt.ctrlKey) {
-      const xy_locked = snapToAxis(startX, startY, x, y);
-      ({x, y} = xy_locked);
+
+      if (evt.shiftKey) {
+        const locked = snapToAngle(x1, y1, x, y);
+        x = locked.x;
+        y = locked.y;
+      }
+      else if (evt.ctrlKey) {
+        const locked = snapToAxis(x1, y1, x, y);
+        x = locked.x;
+        y = locked.y;
+      }
     }
 
     if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
