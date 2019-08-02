@@ -211,32 +211,32 @@ export const snapToAngle = function (x1, y1, x2, y2) {
 /**
  * Returns a coordinate locked to whichever axis is closest.
  * @function module:math.snapToAxis
- * @param {Integer} x1 - Starting coordinate's x value
- * @param {Integer} y1 - Starting coordinate's y value
- * @param {Integer} x2 - Ending coordinate's x value
- * @param {Integer} y2 - Ending coordinate's y value
+ * @param {Integer} ox - Origin coordinate's x value
+ * @param {Integer} oy - Origin coordinate's y value
+ * @param {Integer} x - Ending coordinate's x value
+ * @param {Integer} y - Ending coordinate's y value
  * @returns {module:math.XYObject}
 */
-export const snapToAxis = function (x1, y1, x2, y2) {
+export const snapToAxis = function (ox, oy, x, y) {
+  console.log("snap coords to axis:", ox, oy, x, y);
   const delta = {
-    x: x2 - x1,
-    y: y2 - y1
+    x: x - ox,
+    y: y - oy
   };
   const distance = {
     x: Math.abs(delta.x),
     y: Math.abs(delta.y)
   };
   const ret = {
-    x: x1,
-    y: y1
+    x: ox,
+    y: oy
   };
 
-  // Only add the difference to the axis that's furthest away
-  // from the starting coordinate.
+  // Keep the closest axis colinear with the origin.
   if (distance.x > distance.y) {
-    ret.x = x2;
+    ret.x = x;
   } else {
-    ret.y = y2;
+    ret.y = y;
   }
 
   return ret;
