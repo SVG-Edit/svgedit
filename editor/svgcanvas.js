@@ -2417,9 +2417,31 @@ const mouseMove = function (evt) {
       newX = startX < x ? startX : startX - w;
       newY = startY < y ? startY : startY - h;
     }
+    else if (evt.ctrlKey && curShapeInfo.quad) {
+      const origin = curShapeInfo.quad.origin;
+      const toAxis = snapToAxis(origin.w, origin.h, w, h);
+
+      w = Math.abs(toAxis.x);
+      h = Math.abs(toAxis.y);
+
+      const sign = { x: Math.sign(x - startX), y: Math.sign(y - startY) };
+      
+      newX = sign.x > 0 ? startX : startX - w;
+      newY = sign.y > 0 ? startY : startY - h;
+    }
     else {
+
       newX = Math.min(startX, x);
       newY = Math.min(startY, y);
+    }
+    
+    if (!evt.ctrlKey) {
+      curShapeInfo.quad = null;
+    }
+    else if (!curShapeInfo.quad) {
+      curShapeInfo.quad = {
+        origin: { w, h }
+      }
     }
 
     if (curConfig.gridSnapping) {

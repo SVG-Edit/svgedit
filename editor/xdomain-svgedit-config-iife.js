@@ -16175,9 +16175,33 @@
                 w = h = Math.max(w, h);
                 newX = startX < x ? startX : startX - w;
                 newY = startY < y ? startY : startY - h;
+              } else if (evt.ctrlKey && curShapeInfo.quad) {
+                var _origin = curShapeInfo.quad.origin;
+
+                var _toAxis = snapToAxis(_origin.w, _origin.h, w, h);
+
+                w = Math.abs(_toAxis.x);
+                h = Math.abs(_toAxis.y);
+                var _sign = {
+                  x: Math.sign(x - startX),
+                  y: Math.sign(y - startY)
+                };
+                newX = _sign.x > 0 ? startX : startX - w;
+                newY = _sign.y > 0 ? startY : startY - h;
               } else {
                 newX = Math.min(startX, x);
                 newY = Math.min(startY, y);
+              }
+
+              if (!evt.ctrlKey) {
+                curShapeInfo.quad = null;
+              } else if (!curShapeInfo.quad) {
+                curShapeInfo.quad = {
+                  origin: {
+                    w: w,
+                    h: h
+                  }
+                };
               }
 
               if (curConfig.gridSnapping) {
@@ -16243,8 +16267,8 @@
                 radius.y = radius.x;
               } else if (evt.ctrlKey) {
                 if (curShapeInfo.circle) {
-                  var _origin = curShapeInfo.circle.ctrlRadius;
-                  radius = snapToAxis(_origin.x, _origin.y, radius.x, radius.y);
+                  var _origin2 = curShapeInfo.circle.ctrlRadius;
+                  radius = snapToAxis(_origin2.x, _origin2.y, radius.x, radius.y);
                 }
               }
 
