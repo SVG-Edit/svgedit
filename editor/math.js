@@ -218,7 +218,6 @@ export const snapToAngle = function (x1, y1, x2, y2) {
  * @returns {module:math.XYObject}
 */
 export const snapToAxis = function (ox, oy, x, y) {
-  console.log("snap coords to axis:", ox, oy, x, y);
   const delta = {
     x: x - ox,
     y: y - oy

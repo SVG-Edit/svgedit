@@ -4878,7 +4878,6 @@
   */
 
   var snapToAxis = function snapToAxis(ox, oy, x, y) {
-    console.log("snap coords to axis:", ox, oy, x, y);
     var delta = {
       x: x - ox,
       y: y - oy
@@ -16068,12 +16067,29 @@
                 } else {
                   sy = sx;
                 }
-              } else if (evt.ctrlKey) {
-                if (Math.abs(dx) > Math.abs(dy)) {
-                  sy = 1 * dy > 0 ? 1 : -1;
-                } else {
-                  sx = 1 * dx > 0 ? 1 : -1;
-                }
+              } else if (evt.ctrlKey && curShapeInfo.resize) {
+                var origin = curShapeInfo.resize.origin;
+                var toAxis = snapToAxis(origin.sx, origin.sy, sx, sy);
+                var sign = {
+                  x: Math.sign(x - left),
+                  y: Math.sign(y - top)
+                };
+                sx = Math.abs(toAxis.x) * sign.x;
+                origin.sx = Math.abs(origin.sx) * sign.x;
+                sy = Math.abs(toAxis.y) * sign.y;
+                origin.sy = Math.abs(origin.sy) * sign.y;
+              }
+
+              if (!evt.ctrlKey) {
+                curShapeInfo.resize = null;
+              } else if (!curShapeInfo.resize) {
+                console.log("refresh");
+                curShapeInfo.resize = {
+                  origin: {
+                    sx: sx,
+                    sy: sy
+                  }
+                };
               }
 
               scale.setScale(sx, sy);
@@ -16171,15 +16187,6 @@
                 w = h = Math.max(w, h);
                 newX = startX < x ? startX : startX - w;
                 newY = startY < y ? startY : startY - h;
-              } else if (evt.ctrlKey) {
-                if (curShapeInfo.image) {
-                  var newDims = snapToAxis(startX, startY, x, y);
-                  w = newDims.x;
-                  h = newDims.y;
-                }
-
-                newX = startX < w ? startX : startX - w;
-                newY = startY < h ? startY : startY - h;
               } else {
                 newX = Math.min(startX, x);
                 newY = Math.min(startY, y);
@@ -16248,10 +16255,8 @@
                 radius.y = radius.x;
               } else if (evt.ctrlKey) {
                 if (curShapeInfo.circle) {
-                  var origin = curShapeInfo.circle.ctrlRadius;
-                  console.log("origin", origin);
-                  console.log("radius", radius);
-                  radius = snapToAxis(origin.x, origin.y, radius.x, radius.y);
+                  var _origin = curShapeInfo.circle.ctrlRadius;
+                  radius = snapToAxis(_origin.x, _origin.y, radius.x, radius.y);
                 }
               }
 
