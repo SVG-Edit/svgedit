@@ -16083,7 +16083,6 @@
               if (!evt.ctrlKey) {
                 curShapeInfo.resize = null;
               } else if (!curShapeInfo.resize) {
-                console.log("refresh");
                 curShapeInfo.resize = {
                   origin: {
                     sx: sx,
@@ -16171,17 +16170,6 @@
               var w = Math.abs(x - startX),
                   h = Math.abs(y - startY);
               var newX, newY;
-
-              if (!evt.ctrlKey) {
-                curShapeInfo.image = null;
-              } else if (!curShapeInfo.image) {
-                curShapeInfo.image = {
-                  ctrlDimensions: {
-                    w: w,
-                    h: h
-                  }
-                };
-              }
 
               if (square) {
                 w = h = Math.max(w, h);
@@ -16331,7 +16319,7 @@
                 startY = snapToGrid(startY);
               }
 
-              if (evt.shiftKey) {
+              if (evt.shiftKey || evt.ctrlKey) {
                 var path$1 = path;
                 var x1, y1;
 
@@ -16343,15 +16331,16 @@
                   y1 = startY;
                 }
 
-                xya = snapToAngle(x1, y1, x, y);
-                var _xya = xya;
-                x = _xya.x;
-                y = _xya.y;
-              } else if (evt.ctrlKey) {
-                var _xy_locked = snapToAxis(startX, startY, x, y);
+                if (evt.shiftKey) {
+                  var locked = snapToAngle(x1, y1, x, y);
+                  x = locked.x;
+                  y = locked.y;
+                } else if (evt.ctrlKey) {
+                  var _locked = snapToAxis(x1, y1, x, y);
 
-                x = _xy_locked.x;
-                y = _xy_locked.y;
+                  x = _locked.x;
+                  y = _locked.y;
+                }
               }
 
               if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
