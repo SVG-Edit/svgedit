@@ -272,9 +272,10 @@ $.extend(allProperties.text, {
 
 // Current shape style properties
 const curShape = allProperties.shape;
-let curShapeInfo = {
-  circle: null,
-  image: null,
+
+// Assigned on mouse events when ctrl is pressed.
+let ctrlLastPressed = {
+  coords: null
 };
 
 // Array with all the currently selected elements
@@ -2142,6 +2143,10 @@ const mouseMove = function (evt) {
   let realY = mouseY / currentZoom;
   let y = realY;
 
+  if (!evt.ctrlKey) {
+    ctrlLastPressed.coords = null;
+  }
+
   if (curConfig.gridSnapping) {
     x = snapToGrid(x);
     y = snapToGrid(y);
@@ -2319,24 +2324,22 @@ const mouseMove = function (evt) {
         sx = sy;
       } else { sy = sx; }
     }
-    else if (evt.ctrlKey && curShapeInfo.resize) {
-      const origin = curShapeInfo.resize.origin;
-      const toAxis = snapToAxis(origin.sx, origin.sy, sx, sy);
-
-      const sign = { x: Math.sign(x - left), y: Math.sign(y - top) };
-      sx = Math.abs(toAxis.x) * sign.x;
-      origin.sx = Math.abs(origin.sx) * sign.x;
-
-      sy = Math.abs(toAxis.y) * sign.y;
-      origin.sy = Math.abs(origin.sy) * sign.y;
-    }
-    
-    if (!evt.ctrlKey) {
-      curShapeInfo.resize = null;
-    }
-    else if (!curShapeInfo.resize) {
-      curShapeInfo.resize = {
-        origin: { sx: sx, sy: sy }
+    else if (evt.ctrlKey) {
+      if (!ctrlLastPressed.coords) {
+        ctrlLastPressed.coords = {
+          sx: sx, sy: sy
+        }
+      }
+      else {
+        const origin = ctrlLastPressed.coords;
+        const toAxis = snapToAxis(origin.sx, origin.sy, sx, sy);
+  
+        const sign = { x: Math.sign(x - left), y: Math.sign(y - top) };
+        sx = Math.abs(toAxis.x) * sign.x;
+        origin.sx = Math.abs(origin.sx) * sign.x;
+  
+        sy = Math.abs(toAxis.y) * sign.y;
+        origin.sy = Math.abs(origin.sy) * sign.y;
       }
     }
 
@@ -2417,30 +2420,28 @@ const mouseMove = function (evt) {
       newX = startX < x ? startX : startX - w;
       newY = startY < y ? startY : startY - h;
     }
-    else if (evt.ctrlKey && curShapeInfo.quad) {
-      const origin = curShapeInfo.quad.origin;
-      const toAxis = snapToAxis(origin.w, origin.h, w, h);
-
-      w = Math.abs(toAxis.x);
-      h = Math.abs(toAxis.y);
-
-      const sign = { x: Math.sign(x - startX), y: Math.sign(y - startY) };
-      
-      newX = sign.x > 0 ? startX : startX - w;
-      newY = sign.y > 0 ? startY : startY - h;
-    }
     else {
-
       newX = Math.min(startX, x);
       newY = Math.min(startY, y);
-    }
+      
+      if (evt.ctrlKey) {
+        if (!ctrlLastPressed.coords) {
+          ctrlLastPressed.coords = {
+            w, h
+          }
+        }
+        else {
+          const origin = ctrlLastPressed.coords;
+          const toAxis = snapToAxis(origin.w, origin.h, w, h);
     
-    if (!evt.ctrlKey) {
-      curShapeInfo.quad = null;
-    }
-    else if (!curShapeInfo.quad) {
-      curShapeInfo.quad = {
-        origin: { w, h }
+          w = Math.abs(toAxis.x);
+          h = Math.abs(toAxis.y);
+    
+          const sign = { x: Math.sign(x - startX), y: Math.sign(y - startY) };
+          
+          newX = sign.x > 0 ? startX : startX - w;
+          newY = sign.y > 0 ? startY : startY - h;
+        }
       }
     }
 
@@ -2481,24 +2482,18 @@ const mouseMove = function (evt) {
       x: Math.abs(x - cx),
       y: Math.abs(y - cy)
     };
-
-    // Save the last circle radius on the first mouse event after the ctrl key is pressed
-    if (!evt.ctrlKey) {
-      curShapeInfo.circle = null;
-    }
-    else if (!curShapeInfo.circle) {
-      curShapeInfo.circle = {
-        ctrlRadius: radius
-      }
-    }
-
     if (evt.shiftKey) {
       radius.y = radius.x;
     }
     else if (evt.ctrlKey) {
-      if (curShapeInfo.circle) {
-        const origin = curShapeInfo.circle.ctrlRadius;
-        radius = snapToAxis(origin.x, origin.y, radius.x, radius.y);
+      if (!ctrlLastPressed.coords) {
+        ctrlLastPressed.coords = {
+          x: radius.x, y: radius.y
+        }
+      }
+      else {
+        const original = ctrlLastPressed.coords;
+        radius = snapToAxis(original.x, original.y, radius.x, radius.y);
       }
     }
     

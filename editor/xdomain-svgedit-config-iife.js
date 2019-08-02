@@ -13757,10 +13757,10 @@
       font_family: curConfig.text && curConfig.text.font_family
     }); // Current shape style properties
 
-    var curShape = allProperties.shape;
-    var curShapeInfo = {
-      circle: null,
-      image: null
+    var curShape = allProperties.shape; // Assigned on mouse events when ctrl is pressed.
+
+    var ctrlMemory = {
+      coords: null
     }; // Array with all the currently selected elements
     // default size of 1 until it needs to grow bigger
 
@@ -15867,6 +15867,10 @@
         var realY = mouseY / currentZoom;
         var y = realY;
 
+        if (!evt.ctrlKey) {
+          ctrlMemory.coords = null;
+        }
+
         if (curConfig.gridSnapping) {
           x = snapToGrid(x);
           y = snapToGrid(y);
@@ -16067,28 +16071,24 @@
                 } else {
                   sy = sx;
                 }
-              } else if (evt.ctrlKey && curShapeInfo.resize) {
-                var origin = curShapeInfo.resize.origin;
-                var toAxis = snapToAxis(origin.sx, origin.sy, sx, sy);
-                var sign = {
-                  x: Math.sign(x - left),
-                  y: Math.sign(y - top)
-                };
-                sx = Math.abs(toAxis.x) * sign.x;
-                origin.sx = Math.abs(origin.sx) * sign.x;
-                sy = Math.abs(toAxis.y) * sign.y;
-                origin.sy = Math.abs(origin.sy) * sign.y;
-              }
-
-              if (!evt.ctrlKey) {
-                curShapeInfo.resize = null;
-              } else if (!curShapeInfo.resize) {
-                curShapeInfo.resize = {
-                  origin: {
+              } else if (evt.ctrlKey) {
+                if (!ctrlMemory.coords) {
+                  ctrlMemory.coords = {
                     sx: sx,
                     sy: sy
-                  }
-                };
+                  };
+                } else {
+                  var origin = ctrlMemory.coords;
+                  var toAxis = snapToAxis(origin.sx, origin.sy, sx, sy);
+                  var sign = {
+                    x: Math.sign(x - left),
+                    y: Math.sign(y - top)
+                  };
+                  sx = Math.abs(toAxis.x) * sign.x;
+                  origin.sx = Math.abs(origin.sx) * sign.x;
+                  sy = Math.abs(toAxis.y) * sign.y;
+                  origin.sy = Math.abs(origin.sy) * sign.y;
+                }
               }
 
               scale.setScale(sx, sy);
@@ -16175,33 +16175,31 @@
                 w = h = Math.max(w, h);
                 newX = startX < x ? startX : startX - w;
                 newY = startY < y ? startY : startY - h;
-              } else if (evt.ctrlKey && curShapeInfo.quad) {
-                var _origin = curShapeInfo.quad.origin;
-
-                var _toAxis = snapToAxis(_origin.w, _origin.h, w, h);
-
-                w = Math.abs(_toAxis.x);
-                h = Math.abs(_toAxis.y);
-                var _sign = {
-                  x: Math.sign(x - startX),
-                  y: Math.sign(y - startY)
-                };
-                newX = _sign.x > 0 ? startX : startX - w;
-                newY = _sign.y > 0 ? startY : startY - h;
               } else {
                 newX = Math.min(startX, x);
                 newY = Math.min(startY, y);
-              }
 
-              if (!evt.ctrlKey) {
-                curShapeInfo.quad = null;
-              } else if (!curShapeInfo.quad) {
-                curShapeInfo.quad = {
-                  origin: {
-                    w: w,
-                    h: h
+                if (evt.ctrlKey) {
+                  if (!ctrlMemory.coords) {
+                    ctrlMemory.coords = {
+                      w: w,
+                      h: h
+                    };
+                  } else {
+                    var _origin = ctrlMemory.coords;
+
+                    var _toAxis = snapToAxis(_origin.w, _origin.h, w, h);
+
+                    w = Math.abs(_toAxis.x);
+                    h = Math.abs(_toAxis.y);
+                    var _sign = {
+                      x: Math.sign(x - startX),
+                      y: Math.sign(y - startY)
+                    };
+                    newX = _sign.x > 0 ? startX : startX - w;
+                    newY = _sign.y > 0 ? startY : startY - h;
                   }
-                };
+                }
               }
 
               if (curConfig.gridSnapping) {
@@ -16253,22 +16251,19 @@
               var radius = {
                 x: Math.abs(x - cx),
                 y: Math.abs(y - cy)
-              }; // Save the last circle radius on the first mouse event after the ctrl key is pressed
-
-              if (!evt.ctrlKey) {
-                curShapeInfo.circle = null;
-              } else if (!curShapeInfo.circle) {
-                curShapeInfo.circle = {
-                  ctrlRadius: radius
-                };
-              }
+              };
 
               if (evt.shiftKey) {
                 radius.y = radius.x;
               } else if (evt.ctrlKey) {
-                if (curShapeInfo.circle) {
-                  var _origin2 = curShapeInfo.circle.ctrlRadius;
-                  radius = snapToAxis(_origin2.x, _origin2.y, radius.x, radius.y);
+                if (!ctrlMemory.coords) {
+                  ctrlMemory.coords = {
+                    x: radius.x,
+                    y: radius.y
+                  };
+                } else {
+                  var original = ctrlMemory.coords;
+                  radius = snapToAxis(original.x, original.y, radius.x, radius.y);
                 }
               }
 
