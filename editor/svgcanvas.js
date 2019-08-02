@@ -2319,14 +2319,27 @@ const mouseMove = function (evt) {
         sx = sy;
       } else { sy = sx; }
     }
-    else if (evt.ctrlKey) {
-      if (Math.abs(dx) > Math.abs(dy)) {
-        sy = 1 * dy > 0 ? 1 : -1;
-      }
-      else {
-        sx = 1 * dx > 0 ? 1 : -1;
+    else if (evt.ctrlKey && curShapeInfo.resize) {
+      const origin = curShapeInfo.resize.origin;
+      const toAxis = snapToAxis(origin.sx, origin.sy, sx, sy);
+
+      const sign = { x: Math.sign(x - left), y: Math.sign(y - top) };
+      sx = Math.abs(toAxis.x) * sign.x;
+      origin.sx = Math.abs(origin.sx) * sign.x;
+
+      sy = Math.abs(toAxis.y) * sign.y;
+      origin.sy = Math.abs(origin.sy) * sign.y;
+    }
+    
+    if (!evt.ctrlKey) {
+      curShapeInfo.resize = null;
+    }
+    else if (!curShapeInfo.resize) {
+      curShapeInfo.resize = {
+        origin: { sx: sx, sy: sy }
       }
     }
+
     scale.setScale(sx, sy);
 
     translateBack.setTranslate(left + tx, top + ty);
@@ -2398,7 +2411,7 @@ const mouseMove = function (evt) {
       w = Math.abs(x - startX),
       h = Math.abs(y - startY);
     let newX, newY;
-    
+
     if (square) {
       w = h = Math.max(w, h);
       newX = startX < x ? startX : startX - w;
