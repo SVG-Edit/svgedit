@@ -2415,22 +2415,13 @@ const mouseMove = function (evt) {
     }
     else if (evt.ctrlKey) {
       if (curShapeInfo.image) {
-        const ctrlDimensions = curShapeInfo.image.ctrlDimensions;
-        const distance = {
-          w: Math.abs(w - ctrlDimensions.w),
-          h: Math.abs(w - ctrlDimensions.h),
-        };
-        // Set the closer axis to the radius captured last time the ctrl key was pressed
-        if (w > h) {
-          h = ctrlDimensions.h;
-        }
-        else {
-          w = ctrlDimensions.w;
-        }
+        const newDims = snapToAxis(startX, startY, x, y);
+        w = newDims.x;
+        h = newDims.y;
       }
 
-      newX = startX < x ? startX : startX - w;
-      newY = startY < y ? startY : startY - h;
+      newX = startX < w ? startX : startX - w;
+      newY = startY < h ? startY : startY - h;
     }
     else {
       newX = Math.min(startX, x);
@@ -2470,7 +2461,7 @@ const mouseMove = function (evt) {
       y = snapToGrid(y);
       cy = snapToGrid(cy);
     }
-    const radius = {
+    let radius = {
       x: Math.abs(x - cx),
       y: Math.abs(y - cy)
     };
@@ -2490,18 +2481,10 @@ const mouseMove = function (evt) {
     }
     else if (evt.ctrlKey) {
       if (curShapeInfo.circle) {
-        const originalRadius = curShapeInfo.circle.ctrlRadius;
-        const distance = {
-          x: Math.abs(radius.x - originalRadius.x),
-          y: Math.abs(radius.y - originalRadius.y)
-        };
-        // Set the closer axis to the radius captured last time the ctrl key was pressed
-        if (distance.x > distance.y) {
-          radius.y = originalRadius.y;
-        }
-        else {
-          radius.x = originalRadius.x;
-        }
+        const origin = curShapeInfo.circle.ctrlRadius;
+        console.log("origin", origin);
+        console.log("radius", radius);
+        radius = snapToAxis(origin.x, origin.y, radius.x, radius.y);
       }
     }
     
