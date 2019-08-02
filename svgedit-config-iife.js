@@ -4868,6 +4868,39 @@
     };
   };
   /**
+   * Returns a coordinate locked to whichever axis is closest.
+   * @function module:math.snapToAxis
+   * @param {Integer} ox - Origin coordinate's x value
+   * @param {Integer} oy - Origin coordinate's y value
+   * @param {Integer} x - Ending coordinate's x value
+   * @param {Integer} y - Ending coordinate's y value
+   * @returns {module:math.XYObject}
+  */
+
+  var snapToAxis = function snapToAxis(ox, oy, x, y) {
+    console.log("snap coords to axis:", ox, oy, x, y);
+    var delta = {
+      x: x - ox,
+      y: y - oy
+    };
+    var distance = {
+      x: Math.abs(delta.x),
+      y: Math.abs(delta.y)
+    };
+    var ret = {
+      x: ox,
+      y: oy
+    }; // Keep the closest axis colinear with the origin.
+
+    if (distance.x > distance.y) {
+      ret.x = x;
+    } else {
+      ret.y = y;
+    }
+
+    return ret;
+  };
+  /**
    * Check if two rectangles (BBoxes objects) intersect each other.
    * @function module:math.rectsIntersect
    * @param {SVGRect} r1 - The first BBox-like object
@@ -13725,7 +13758,11 @@
       font_family: curConfig.text && curConfig.text.font_family
     }); // Current shape style properties
 
-    var curShape = allProperties.shape; // Array with all the currently selected elements
+    var curShape = allProperties.shape;
+    var curShapeInfo = {
+      circle: null,
+      image: null
+    }; // Array with all the currently selected elements
     // default size of 1 until it needs to grow bigger
 
     var selectedElements = [];
@@ -15980,32 +16017,34 @@
                     theta = Math.atan2(dy, dx) - angle * Math.PI / 180.0;
                 dx = r * Math.cos(theta);
                 dy = r * Math.sin(theta);
-              } // if not stretching in y direction, set dy to 0
+              }
+
+              var normalized_dx = dx,
+                  normalized_dy = dy; // if not stretching in y direction, set dy to 0
               // if not stretching in x direction, set dx to 0
 
-
               if (!currentResizeMode.includes('n') && !currentResizeMode.includes('s')) {
-                dy = 0;
+                normalized_dx = 0;
               }
 
               if (!currentResizeMode.includes('e') && !currentResizeMode.includes('w')) {
-                dx = 0;
+                normalized_dy = 0;
               }
 
               var // ts = null,
               tx = 0,
                   ty = 0,
-                  sy = height ? (height + dy) / height : 1,
-                  sx = width ? (width + dx) / width : 1; // if we are dragging on the north side, then adjust the scale factor and ty
+                  sy = height ? (height + normalized_dy) / height : 1,
+                  sx = width ? (width + normalized_dx) / width : 1; // if we are dragging on the north side, then adjust the scale factor and ty
 
               if (currentResizeMode.includes('n')) {
-                sy = height ? (height - dy) / height : 1;
+                sy = height ? (height - normalized_dy) / height : 1;
                 ty = height;
               } // if we dragging on the east side, then adjust the scale factor and tx
 
 
               if (currentResizeMode.includes('w')) {
-                sx = width ? (width - dx) / width : 1;
+                sx = width ? (width - normalized_dx) / width : 1;
                 tx = width;
               } // update the transform list with translate,scale,translate
 
@@ -16028,6 +16067,12 @@
                   sx = sy;
                 } else {
                   sy = sx;
+                }
+              } else if (evt.ctrlKey) {
+                if (Math.abs(dx) > Math.abs(dy)) {
+                  sy = 1 * dy > 0 ? 1 : -1;
+                } else {
+                  sx = 1 * dx > 0 ? 1 : -1;
                 }
               }
 
@@ -16087,6 +16132,10 @@
                 xya = snapToAngle(startX, startY, x2, y2);
                 x2 = xya.x;
                 y2 = xya.y;
+              } else if (evt.ctrlKey) {
+                var xy_locked = snapToAxis(startX, startY, x2, y2);
+                x2 = xy_locked.x;
+                y2 = xy_locked.y;
               }
 
               shape.setAttribute('x2', x2);
@@ -16107,10 +16156,30 @@
                   h = Math.abs(y - startY);
               var newX, newY;
 
+              if (!evt.ctrlKey) {
+                curShapeInfo.image = null;
+              } else if (!curShapeInfo.image) {
+                curShapeInfo.image = {
+                  ctrlDimensions: {
+                    w: w,
+                    h: h
+                  }
+                };
+              }
+
               if (square) {
                 w = h = Math.max(w, h);
                 newX = startX < x ? startX : startX - w;
                 newY = startY < y ? startY : startY - h;
+              } else if (evt.ctrlKey) {
+                if (curShapeInfo.image) {
+                  var newDims = snapToAxis(startX, startY, x, y);
+                  w = newDims.x;
+                  h = newDims.y;
+                }
+
+                newX = startX < w ? startX : startX - w;
+                newY = startY < h ? startY : startY - h;
               } else {
                 newX = Math.min(startX, x);
                 newY = Math.min(startY, y);
@@ -16162,9 +16231,32 @@
                 cy = snapToGrid(cy);
               }
 
-              shape.setAttribute('rx', Math.abs(x - cx));
-              var ry = Math.abs(evt.shiftKey ? x - cx : y - cy);
-              shape.setAttribute('ry', ry);
+              var radius = {
+                x: Math.abs(x - cx),
+                y: Math.abs(y - cy)
+              }; // Save the last circle radius on the first mouse event after the ctrl key is pressed
+
+              if (!evt.ctrlKey) {
+                curShapeInfo.circle = null;
+              } else if (!curShapeInfo.circle) {
+                curShapeInfo.circle = {
+                  ctrlRadius: radius
+                };
+              }
+
+              if (evt.shiftKey) {
+                radius.y = radius.x;
+              } else if (evt.ctrlKey) {
+                if (curShapeInfo.circle) {
+                  var origin = curShapeInfo.circle.ctrlRadius;
+                  console.log("origin", origin);
+                  console.log("radius", radius);
+                  radius = snapToAxis(origin.x, origin.y, radius.x, radius.y);
+                }
+              }
+
+              shape.setAttribute('rx', radius.x);
+              shape.setAttribute('ry', radius.y);
               break;
             }
 
@@ -16250,6 +16342,11 @@
                 var _xya = xya;
                 x = _xya.x;
                 y = _xya.y;
+              } else if (evt.ctrlKey) {
+                var _xy_locked = snapToAxis(startX, startY, x, y);
+
+                x = _xy_locked.x;
+                y = _xy_locked.y;
               }
 
               if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
@@ -33305,17 +33402,17 @@
       multiclick: true
     });
     /*
-     When a flyout icon is selected
+      When a flyout icon is selected
       (if flyout) {
       - Change the icon
       - Make pressing the button run its stuff
       }
       - Run its stuff
-     When its shortcut key is pressed
+      When its shortcut key is pressed
       - If not current in list, do as above
       , else:
       - Just run its stuff
-     */
+      */
     // Unfocus text input when workarea is mousedowned.
 
     (function () {
@@ -36136,7 +36233,7 @@
           return;
         }
         /* if (file.type === 'application/pdf') { // Todo: Handle PDF imports
-         }
+          }
         else */
 
 
