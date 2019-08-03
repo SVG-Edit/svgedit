@@ -29051,7 +29051,18 @@
   * @name module:SVGEditor~defaultExtensions
   * @type {string[]}
   */
-  defaultExtensions = ['ext-connector.js', 'ext-eyedropper.js', 'ext-grid.js', 'ext-imagelib.js', 'ext-markers.js', 'ext-overview_window.js', 'ext-panning.js', 'ext-polygon.js', 'ext-shapes.js', 'ext-star.js', 'ext-storage.js'],
+  defaultExtensions = ['ext-electron.js' // 'ext-connector.js',
+  // 'ext-eyedropper.js',
+  // 'ext-grid.js',
+  // 'ext-imagelib.js',
+  // 'ext-markers.js',
+  // 'ext-overview_window.js',
+  // 'ext-panning.js',
+  // 'ext-polygon.js',
+  // 'ext-shapes.js',
+  // 'ext-star.js',
+  // 'ext-storage.js'
+  ],
 
   /**
   * @typedef {"@default"|string} module:SVGEditor.Stylesheet `@default` will automatically load all of the default CSS paths for SVGEditor
@@ -36368,75 +36379,81 @@
       workarea[0].addEventListener('dragover', onDragOver);
       workarea[0].addEventListener('dragleave', onDragLeave);
       workarea[0].addEventListener('drop', importImage);
-      var open = $$b('<input type="file">').click(
+      var open = $$b('<input type="file">').change(
       /*#__PURE__*/
-      _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee16() {
-        var ok, reader;
-        return regeneratorRuntime.wrap(function _callee16$(_context16) {
-          while (1) {
-            switch (_context16.prev = _context16.next) {
-              case 0:
-                _context16.next = 2;
-                return editor.openPrep();
+      function () {
+        var _ref28 = _asyncToGenerator(
+        /*#__PURE__*/
+        regeneratorRuntime.mark(function _callee16(e) {
+          var ok, reader;
+          return regeneratorRuntime.wrap(function _callee16$(_context16) {
+            while (1) {
+              switch (_context16.prev = _context16.next) {
+                case 0:
+                  _context16.next = 2;
+                  return editor.openPrep();
 
-              case 2:
-                ok = _context16.sent;
+                case 2:
+                  ok = _context16.sent;
 
-                if (ok) {
-                  _context16.next = 5;
-                  break;
-                }
+                  if (ok) {
+                    _context16.next = 5;
+                    break;
+                  }
 
-                return _context16.abrupt("return");
+                  return _context16.abrupt("return");
 
-              case 5:
-                svgCanvas.clear();
+                case 5:
+                  svgCanvas.clear();
 
-                if (this.files.length === 1) {
-                  $$b.process_cancel(uiStrings$1.notification.loadingImage);
-                  reader = new FileReader();
+                  if (this.files.length === 1) {
+                    $$b.process_cancel(uiStrings$1.notification.loadingImage);
+                    reader = new FileReader();
 
-                  reader.onloadend =
-                  /*#__PURE__*/
-                  function () {
-                    var _ref29 = _asyncToGenerator(
+                    reader.onloadend =
                     /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee15(e) {
-                      return regeneratorRuntime.wrap(function _callee15$(_context15) {
-                        while (1) {
-                          switch (_context15.prev = _context15.next) {
-                            case 0:
-                              _context15.next = 2;
-                              return loadSvgString(e.target.result);
+                    function () {
+                      var _ref29 = _asyncToGenerator(
+                      /*#__PURE__*/
+                      regeneratorRuntime.mark(function _callee15(e) {
+                        return regeneratorRuntime.wrap(function _callee15$(_context15) {
+                          while (1) {
+                            switch (_context15.prev = _context15.next) {
+                              case 0:
+                                _context15.next = 2;
+                                return loadSvgString(e.target.result);
 
-                            case 2:
-                              updateCanvas();
+                              case 2:
+                                updateCanvas();
 
-                            case 3:
-                            case "end":
-                              return _context15.stop();
+                              case 3:
+                              case "end":
+                                return _context15.stop();
+                            }
                           }
-                        }
-                      }, _callee15);
-                    }));
+                        }, _callee15);
+                      }));
 
-                    return function (_x6) {
-                      return _ref29.apply(this, arguments);
-                    };
-                  }();
+                      return function (_x7) {
+                        return _ref29.apply(this, arguments);
+                      };
+                    }();
 
-                  reader.readAsText(this.files[0]);
-                }
+                    reader.readAsText(this.files[0]);
+                  }
 
-              case 7:
-              case "end":
-                return _context16.stop();
+                case 7:
+                case "end":
+                  return _context16.stop();
+              }
             }
-          }
-        }, _callee16, this);
-      })));
+          }, _callee16, this);
+        }));
+
+        return function (_x6) {
+          return _ref28.apply(this, arguments);
+        };
+      }());
       $$b('#tool_open').show().prepend(open);
       var imgImport = $$b('<input type="file">').change(importImage);
       $$b('#tool_import').show().prepend(imgImport);
@@ -36567,7 +36584,7 @@
         }, _callee17);
       }));
 
-      return function (_x7, _x8) {
+      return function (_x8, _x9) {
         return _ref30.apply(this, arguments);
       };
     }();
