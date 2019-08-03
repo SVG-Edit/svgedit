@@ -6193,7 +6193,7 @@ editor.init = function () {
     workarea[0].addEventListener('dragleave', onDragLeave);
     workarea[0].addEventListener('drop', importImage);
 
-    const open = $('<input type="file">').click(async function () {
+    const open = $('<input type="file">').change(async function (e) {
       const ok = await editor.openPrep();
       if (!ok) { return; }
       svgCanvas.clear();

@@ -36368,7 +36368,7 @@
       workarea[0].addEventListener('dragover', onDragOver);
       workarea[0].addEventListener('dragleave', onDragLeave);
       workarea[0].addEventListener('drop', importImage);
-      var open = $$b('<input type="file">').click(
+      var open = $$b('<input type="file">').change(
       /*#__PURE__*/
       _asyncToGenerator(
       /*#__PURE__*/
