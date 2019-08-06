@@ -11,6 +11,7 @@
 - Optimization: Re-rerun image optimization per update
 - Linting (ESLint): Adjust per now applied rules
 - Linting (ESLint): Add HTML files to linting
+- Linting (ESLint): Avoid shadowing
 - Refactoring: Use `static` keyword for classes
 - Testing: Accessibility test API update
 - Docs: Clarify need for Node.js/npm being installed

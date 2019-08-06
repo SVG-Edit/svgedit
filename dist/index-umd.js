@@ -29268,7 +29268,7 @@
     _loadSvgString = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee23(str) {
-      var _ref45,
+      var _ref46,
           noAlert,
           success,
           _args23 = arguments;
@@ -29277,7 +29277,7 @@
         while (1) {
           switch (_context23.prev = _context23.next) {
             case 0:
-              _ref45 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref45.noAlert;
+              _ref46 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref46.noAlert;
               success = svgCanvas.setSvgString(str) !== false;
 
               if (!success) {
@@ -31059,8 +31059,8 @@
       _promptImgURL = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee18() {
-        var _ref31,
-            _ref31$cancelDeletes,
+        var _ref32,
+            _ref32$cancelDeletes,
             cancelDeletes,
             curhref,
             url,
@@ -31070,7 +31070,7 @@
           while (1) {
             switch (_context18.prev = _context18.next) {
               case 0:
-                _ref31 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref31$cancelDeletes = _ref31.cancelDeletes, cancelDeletes = _ref31$cancelDeletes === void 0 ? false : _ref31$cancelDeletes;
+                _ref32 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref32$cancelDeletes = _ref32.cancelDeletes, cancelDeletes = _ref32$cancelDeletes === void 0 ? false : _ref32$cancelDeletes;
                 curhref = svgCanvas.getHref(selectedElement);
                 curhref = curhref.startsWith('data:') ? '' : curhref;
                 _context18.next = 5;
@@ -36371,75 +36371,83 @@
       workarea[0].addEventListener('dragover', onDragOver);
       workarea[0].addEventListener('dragleave', onDragLeave);
       workarea[0].addEventListener('drop', importImage);
-      var open = $$b('<input type="file">').click(
+      var open = $$b('<input type="file">').change(
       /*#__PURE__*/
-      _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee16() {
-        var ok, reader;
-        return regeneratorRuntime.wrap(function _callee16$(_context16) {
-          while (1) {
-            switch (_context16.prev = _context16.next) {
-              case 0:
-                _context16.next = 2;
-                return editor.openPrep();
+      function () {
+        var _ref28 = _asyncToGenerator(
+        /*#__PURE__*/
+        regeneratorRuntime.mark(function _callee16(e) {
+          var ok, reader;
+          return regeneratorRuntime.wrap(function _callee16$(_context16) {
+            while (1) {
+              switch (_context16.prev = _context16.next) {
+                case 0:
+                  _context16.next = 2;
+                  return editor.openPrep();
 
-              case 2:
-                ok = _context16.sent;
+                case 2:
+                  ok = _context16.sent;
 
-                if (ok) {
-                  _context16.next = 5;
-                  break;
-                }
+                  if (ok) {
+                    _context16.next = 5;
+                    break;
+                  }
 
-                return _context16.abrupt("return");
+                  return _context16.abrupt("return");
 
-              case 5:
-                svgCanvas.clear();
+                case 5:
+                  svgCanvas.clear();
 
-                if (this.files.length === 1) {
-                  $$b.process_cancel(uiStrings$1.notification.loadingImage);
-                  reader = new FileReader();
+                  if (this.files.length === 1) {
+                    $$b.process_cancel(uiStrings$1.notification.loadingImage);
+                    reader = new FileReader();
 
-                  reader.onloadend =
-                  /*#__PURE__*/
-                  function () {
-                    var _ref29 = _asyncToGenerator(
+                    reader.onloadend =
                     /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee15(e) {
-                      return regeneratorRuntime.wrap(function _callee15$(_context15) {
-                        while (1) {
-                          switch (_context15.prev = _context15.next) {
-                            case 0:
-                              _context15.next = 2;
-                              return loadSvgString(e.target.result);
+                    function () {
+                      var _ref30 = _asyncToGenerator(
+                      /*#__PURE__*/
+                      regeneratorRuntime.mark(function _callee15(_ref29) {
+                        var target;
+                        return regeneratorRuntime.wrap(function _callee15$(_context15) {
+                          while (1) {
+                            switch (_context15.prev = _context15.next) {
+                              case 0:
+                                target = _ref29.target;
+                                _context15.next = 3;
+                                return loadSvgString(target.result);
 
-                            case 2:
-                              updateCanvas();
+                              case 3:
+                                updateCanvas();
 
-                            case 3:
-                            case "end":
-                              return _context15.stop();
+                              case 4:
+                              case "end":
+                                return _context15.stop();
+                            }
                           }
-                        }
-                      }, _callee15);
-                    }));
+                        }, _callee15);
+                      }));
 
-                    return function (_x6) {
-                      return _ref29.apply(this, arguments);
-                    };
-                  }();
+                      return function (_x7) {
+                        return _ref30.apply(this, arguments);
+                      };
+                    }();
 
-                  reader.readAsText(this.files[0]);
-                }
+                    reader.readAsText(this.files[0]);
+                  }
 
-              case 7:
-              case "end":
-                return _context16.stop();
+                case 7:
+                case "end":
+                  return _context16.stop();
+              }
             }
-          }
-        }, _callee16, this);
-      })));
+          }, _callee16, this);
+        }));
+
+        return function (_x6) {
+          return _ref28.apply(this, arguments);
+        };
+      }());
       $$b('#tool_open').show().prepend(open);
       var imgImport = $$b('<input type="file">').change(importImage);
       $$b('#tool_import').show().prepend(imgImport);
@@ -36462,7 +36470,7 @@
     var setLang = editor.setLang =
     /*#__PURE__*/
     function () {
-      var _ref30 = _asyncToGenerator(
+      var _ref31 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee17(lang, allStrings) {
         var oldLayerName, renameLayer, elems;
@@ -36570,8 +36578,8 @@
         }, _callee17);
       }));
 
-      return function (_x7, _x8) {
-        return _ref30.apply(this, arguments);
+      return function (_x8, _x9) {
+        return _ref31.apply(this, arguments);
       };
     }();
 
@@ -36665,9 +36673,9 @@
           case 0:
             _context20.prev = 0;
             _context20.next = 3;
-            return Promise.all(callbacks.map(function (_ref33) {
-              var _ref34 = _slicedToArray(_ref33, 1),
-                  cb = _ref34[0];
+            return Promise.all(callbacks.map(function (_ref34) {
+              var _ref35 = _slicedToArray(_ref34, 1),
+                  cb = _ref35[0];
 
               return cb(); // eslint-disable-line promise/prefer-await-to-callbacks
             }));
@@ -36679,18 +36687,18 @@
           case 5:
             _context20.prev = 5;
             _context20.t0 = _context20["catch"](0);
-            callbacks.forEach(function (_ref35) {
-              var _ref36 = _slicedToArray(_ref35, 3),
-                  reject = _ref36[2];
+            callbacks.forEach(function (_ref36) {
+              var _ref37 = _slicedToArray(_ref36, 3),
+                  reject = _ref37[2];
 
               reject();
             });
             throw _context20.t0;
 
           case 9:
-            callbacks.forEach(function (_ref37) {
-              var _ref38 = _slicedToArray(_ref37, 2),
-                  resolve = _ref38[1];
+            callbacks.forEach(function (_ref38) {
+              var _ref39 = _slicedToArray(_ref38, 2),
+                  resolve = _ref39[1];
 
               resolve();
             });
@@ -36711,8 +36719,8 @@
   */
 
   editor.loadFromString = function (str) {
-    var _ref39 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        noAlert = _ref39.noAlert;
+    var _ref40 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref40.noAlert;
 
     return editor.ready(
     /*#__PURE__*/
@@ -36782,9 +36790,9 @@
 
 
   editor.loadFromURL = function (url) {
-    var _ref41 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        cache = _ref41.cache,
-        noAlert = _ref41.noAlert;
+    var _ref42 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        cache = _ref42.cache,
+        noAlert = _ref42.noAlert;
 
     return editor.ready(function () {
       return new Promise(function (resolve, reject) {
@@ -36833,8 +36841,8 @@
 
 
   editor.loadFromDataURI = function (str) {
-    var _ref42 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        noAlert = _ref42.noAlert;
+    var _ref43 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref43.noAlert;
 
     return editor.ready(function () {
       var base64 = false;
@@ -36891,9 +36899,9 @@
    * @returns {void}
    */
 
-  var messageListener = function messageListener(_ref43) {
-    var data = _ref43.data,
-        origin = _ref43.origin;
+  var messageListener = function messageListener(_ref44) {
+    var data = _ref44.data,
+        origin = _ref44.origin;
     // eslint-disable-line no-shadow
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = {

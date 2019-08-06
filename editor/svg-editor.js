@@ -6200,8 +6200,8 @@ editor.init = function () {
       if (this.files.length === 1) {
         $.process_cancel(uiStrings.notification.loadingImage);
         const reader = new FileReader();
-        reader.onloadend = async function (e) {
-          await loadSvgString(e.target.result);
+        reader.onloadend = async function ({target}) {
+          await loadSvgString(target.result);
           updateCanvas();
         };
         reader.readAsText(this.files[0]);
