@@ -1,5 +1,8 @@
-# See editor/config-sample.js for an example
-editor/config.js
-editor/custom.css
+ignore
+node_modules
+
 build/
-editor/svgedit.compiled.js
+
+svgedit-custom.css
+
+docs/jsdoc

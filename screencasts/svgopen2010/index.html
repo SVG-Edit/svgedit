@@ -32,9 +32,8 @@
 
     <meta charset="utf-8" />
     <title>SVG-edit, Pavol Rusnák, SVG Open 2010, Paris</title>
-    <link href="http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono" rel="stylesheet" type="text/css" />
-    <link type="text/css" rel="stylesheet" href="style.css" />
-
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="presentation">
@@ -207,16 +206,16 @@
             <h2>Plugin Architecture</h2>
            </header>
            <pre>
-svgEditor.addExtension("Hello World", function() {
+svgEditor.addExtension('Hello World', function () {
 
         return {
-                svgicons: "extensions/helloworld-icon.xml",
+                svgicons: 'extensions/helloworld-icon.xml',
                 buttons: [{...}],
-                mouseDown: function() {
+                mouseDown () {
                         ...
                 },
 
-                mouseUp: function(opts) {
+                mouseUp (opts) {
                         ...
                 }
         };
@@ -265,10 +264,10 @@ svgEditor.addExtension("Hello World", function() {
             <h2>Resources</h2>
            </header>
             <ul class="bulleted">
-              <li><a href="http://svg-edit.googlecode.com">http://svg-edit.googlecode.com/</a> (demos, downloads, source, wiki, issue tracker)</li>
+              <li><a href="https://github.com/SVG-Edit/svgedit">https://github.com/SVG-Edit/svgedit</a> (demos, downloads, source, wiki, issue tracker)</li>
               <li>#svg-edit on irc.freenode.net</li>
-              <li><a href="http://groups.google.com/group/svg-edit">http://groups.google.com/group/svg-edit</a></li>
-              <li><a href="http://en.wikipedia.org/wiki/SVG-edit">http://en.wikipedia.org/wiki/SVG-edit</a></li>
+              <li><a href="https://groups.google.com/group/svg-edit">https://groups.google.com/group/svg-edit</a></li>
+              <li><a href="https://en.wikipedia.org/wiki/SVG-edit">https://en.wikipedia.org/wiki/SVG-edit</a></li>
             </ul>
           </section>
         </div>
@@ -285,13 +284,5 @@ svgEditor.addExtension("Hello World", function() {
     </div> <!-- presentation -->
 
     <script src="script.js"></script>
-
-    <!--[if lt IE 9]>
-    <script
-      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">
-    </script>
-        <script>CFInstall.check({ mode: "overlay" });</script>
-    <![endif]-->
-
   </body>
 </html>

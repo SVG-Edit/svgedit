@@ -57,5 +57,4 @@ text.png                        http://tango.freedesktop.org/static/cvs/tango-ar
 text.svg                        http://tango.freedesktop.org/static/cvs/tango-art-libre/22x22/tools/draw-text.svg
 undo.png
 view-refresh.png
-wave.png
 zoom.png                        http://tango.freedesktop.org/static/cvs/tango-art-libre/22x22/tools/page-magnifier.png

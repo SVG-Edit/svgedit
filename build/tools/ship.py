@@ -121,7 +121,6 @@ def parseComment(line, line_num, enabled_flags):
 
   return line
 
-
 def ship(inFileName, enabled_flags):
   # read in HTML file
   lines = file(inFileName, 'r').readlines()
@@ -141,7 +140,7 @@ def ship(inFileName, enabled_flags):
     else: # else append line to the output list
       out_lines.append(line)
     i += 1
-  
+
   return ''.join(out_lines)
 
 if __name__ == '__main__':

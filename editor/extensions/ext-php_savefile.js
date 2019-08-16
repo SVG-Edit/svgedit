@@ -1,23 +1,30 @@
-/*globals $, svgCanvas, svgEditor*/
-/*jslint regexp:true*/
 // TODO: Might add support for "exportImage" custom
 //   handler as in "ext-server_opensave.js" (and in savefile.php)
 
-svgEditor.addExtension("php_savefile", {
-	callback: function() {
-		'use strict';
-		function getFileNameFromTitle () {
-			var title = svgCanvas.getDocumentTitle();
-			return $.trim(title);
-		}
-		var save_svg_action = svgEditor.curConfig.extPath + 'savefile.php';
-		svgEditor.setCustomHandlers({
-			save: function(win, data) {
-				var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
-					filename = getFileNameFromTitle();
+export default {
+  name: 'php_savefile',
+  init ({$}) {
+    const svgEditor = this;
+    const {
+      curConfig: {extPath},
+      canvas: svgCanvas
+    } = svgEditor;
+    /**
+     * Get file name out of SVGEdit document title.
+     * @returns {string}
+     */
+    function getFileNameFromTitle () {
+      const title = svgCanvas.getDocumentTitle();
+      return title.trim();
+    }
+    const saveSvgAction = extPath + 'savefile.php';
+    svgEditor.setCustomHandlers({
+      save (win, data) {
+        const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
+          filename = getFileNameFromTitle();
 
-				$.post(save_svg_action, {output_svg: svg, filename: filename});
-			}
-		});
-	}
-});
+        $.post(saveSvgAction, {output_svg: svg, filename});
+      }
+    });
+  }
+};

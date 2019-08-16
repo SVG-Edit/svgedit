@@ -1,179 +1,387 @@
-﻿/*
-Embedded SVG-edit API
-
-General usage:
-- Have an iframe somewhere pointing to a version of svg-edit > r1000
-- Initialize the magic with:
-var svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
-- Pass functions in this format:
-svgCanvas.setSvgString('string')
-- Or if a callback is needed:
-svgCanvas.setSvgString('string')(function(data, error){
-  if (error){
-	// There was an error
-  } else{
-	// Handle data
-  }
-})
-
-Everything is done with the same API as the real svg-edit,
-and all documentation is unchanged.
-
-However, this file depends on the postMessage API which
-can only support JSON-serializable arguments and
-return values, so, for example, arguments whose value is
-'undefined', a function, a non-finite number, or a built-in
-object like Date(), RegExp(), etc. will most likely not behave
-as expected. In such a case one may need to host
-the SVG editor on the same domain and reference the
-JavaScript methods on the frame itself.
-
-The only other difference is
-when handling returns: the callback notation is used instead.
-
-var blah = new EmbeddedSVGEdit(window.frames.svgedit);
-blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {a: 'tree',b:6, c: 9})(function(){console.log('GET DATA',arguments)})
+/**
+* Handles underlying communication between the embedding window and the editor frame
+* @module EmbeddedSVGEdit
 */
 
-(function () {'use strict';
+let cbid = 0;
 
-var cbid = 0;
+/**
+* @callback module:EmbeddedSVGEdit.CallbackSetter
+* @param {GenericCallback} newCallback Callback to be stored (signature dependent on function)
+* @returns {void}
+*/
+/**
+* @callback module:EmbeddedSVGEdit.CallbackSetGetter
+* @param {...any} args Signature dependent on the function
+* @returns {module:EmbeddedSVGEdit.CallbackSetter}
+*/
 
-function getCallbackSetter (d) {
-  return function () {
-	var t = this, // New callback
-	  args = [].slice.call(arguments),
-	  cbid = t.send(d, args, function(){});  // The callback (currently it's nothing, but will be set later)
+/**
+* @param {string} funcName
+* @returns {module:EmbeddedSVGEdit.CallbackSetGetter}
+*/
+function getCallbackSetter (funcName) {
+  return function (...args) {
+    const that = this, // New callback
+      callbackID = this.send(funcName, args, function () { /* */ }); // The callback (currently it's nothing, but will be set later)
 
-	return function(newcallback){
-	  t.callbacks[cbid] = newcallback; // Set callback
-	};
+    return function (newCallback) {
+      that.callbacks[callbackID] = newCallback; // Set callback
+    };
   };
 }
 
-/*
+/**
 * Having this separate from messageListener allows us to
 * avoid using JSON parsing (and its limitations) in the case
-* of same domain control
+* of same domain control.
+* @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
+* @param {JSON} data
+* @returns {void}
 */
-function addCallback (t, data) {
-  var result = data.result || data.error,
-	cbid = data.id;
-  if (t.callbacks[cbid]) {
-	if (data.result) {
-	  t.callbacks[cbid](result);
-	} else {
-	  t.callbacks[cbid](result, 'error');
-	}
+function addCallback (t, {result, error, id: callbackID}) {
+  if (typeof callbackID === 'number' && t.callbacks[callbackID]) {
+    // These should be safe both because we check `cbid` is numeric and
+    //   because the calls are from trusted origins
+    if (result) {
+      t.callbacks[callbackID](result); // lgtm [js/unvalidated-dynamic-method-call]
+    } else {
+      t.callbacks[callbackID](error, 'error'); // lgtm [js/unvalidated-dynamic-method-call]
+    }
   }
 }
 
+/**
+* @param {Event} e
+* @returns {void}
+*/
 function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
   //   will most likely be changed in the future
-  if (typeof e.data !== 'string') {
-	return;
+  if (!e.data || !['string', 'object'].includes(typeof e.data)) {
+    return;
   }
-  var allowedOrigins = this.allowedOrigins,
-	data = e.data && JSON.parse(e.data);
+  const {allowedOrigins} = this,
+    data = typeof e.data === 'object' ? e.data : JSON.parse(e.data);
   if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
-	  e.source !== this.frame.contentWindow ||
-	  (allowedOrigins.indexOf('*') === -1 && allowedOrigins.indexOf(e.origin) === -1)
+    e.source !== this.frame.contentWindow ||
+    (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin))
   ) {
-	return;
+    console.log(`The origin ${e.origin} was not whitelisted as an origin from which responses may be received by this ${window.origin} script.`); // eslint-disable-line no-console
+    return;
   }
   addCallback(this, data);
 }
 
+/**
+* @callback module:EmbeddedSVGEdit.MessageListener
+* @param {MessageEvent} e
+* @returns {void}
+*/
+/**
+* @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
+* @returns {module:EmbeddedSVGEdit.MessageListener} Event listener
+*/
 function getMessageListener (t) {
-	return function (e) {
-		messageListener.call(t, e);
-	};
+  return function (e) {
+    messageListener.call(t, e);
+  };
 }
 
 /**
-* @param {HTMLIFrameElement} frame
-* @param {array} [allowedOrigins=[]] Array of origins from which incoming
-*	 messages will be allowed when same origin is not used; defaults to none.
-*	 If supplied, it should probably be the same as svgEditor's allowedOrigins
+* Embedded SVG-edit API.
+* General usage:
+* - Have an iframe somewhere pointing to a version of svg-edit > r1000.
+* @example
+// Initialize the magic with:
+const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
+
+// Pass functions in this format:
+svgCanvas.setSvgString('string');
+
+// Or if a callback is needed:
+svgCanvas.setSvgString('string')(function (data, error) {
+  if (error) {
+     // There was an error
+  } else {
+     // Handle data
+  }
+});
+
+// Everything is done with the same API as the real svg-edit,
+// and all documentation is unchanged.
+
+// However, this file depends on the postMessage API which
+// can only support JSON-serializable arguments and
+// return values, so, for example, arguments whose value is
+// 'undefined', a function, a non-finite number, or a built-in
+// object like Date(), RegExp(), etc. will most likely not behave
+// as expected. In such a case one may need to host
+// the SVG editor on the same domain and reference the
+// JavaScript methods on the frame itself.
+
+// The only other difference is when handling returns:
+// the callback notation is used instead.
+const blah = new EmbeddedSVGEdit(window.frames.svgedit);
+blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {
+     a: 'tree', b: 6, c: 9
+})(function () { console.log('GET DATA', args); });
+*
+* @memberof module:EmbeddedSVGEdit
 */
-function EmbeddedSVGEdit (frame, allowedOrigins) {
-  if (!(this instanceof EmbeddedSVGEdit)) { // Allow invocation without 'new' keyword
-	return new EmbeddedSVGEdit(frame);
+class EmbeddedSVGEdit {
+  /**
+  * @param {HTMLIFrameElement} frame
+  * @param {string[]} [allowedOrigins=[]] Array of origins from which incoming
+  *   messages will be allowed when same origin is not used; defaults to none.
+  *   If supplied, it should probably be the same as svgEditor's allowedOrigins
+  */
+  constructor (frame, allowedOrigins) {
+    const that = this;
+    this.allowedOrigins = allowedOrigins || [];
+    // Initialize communication
+    this.frame = frame;
+    this.callbacks = {};
+    // List of functions extracted with this:
+    // Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
+
+    // for (const i=0,q=[],f = document.querySelectorAll('div.CFunction h3.CTitle a'); i < f.length; i++) { q.push(f[i].name); }; q
+    // const functions = ['clearSelection', 'addToSelection', 'removeFromSelection', 'open', 'save', 'getSvgString', 'setSvgString',
+    // 'createLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility',
+    // 'moveSelectedToLayer', 'clear'];
+
+    // Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
+    // const {svgCanvas} = frame.contentWindow;
+    // const l = [];
+    // for (const i in svgCanvas) { if (typeof svgCanvas[i] === 'function') { l.push(i);} };
+    // alert("['" + l.join("', '") + "']");
+    // Run in svgedit itself
+    const functions = [
+      'addExtension',
+      'addSVGElementFromJson',
+      'addToSelection',
+      'alignSelectedElements',
+      'assignAttributes',
+      'bind',
+      'call',
+      'changeSelectedAttribute',
+      'cleanupElement',
+      'clear',
+      'clearSelection',
+      'clearSvgContentElement',
+      'cloneLayer',
+      'cloneSelectedElements',
+      'convertGradients',
+      'convertToGroup',
+      'convertToNum',
+      'convertToPath',
+      'copySelectedElements',
+      'createLayer',
+      'cutSelectedElements',
+      'cycleElement',
+      'deleteCurrentLayer',
+      'deleteSelectedElements',
+      'embedImage',
+      'exportPDF',
+      'findDefs',
+      'getBBox',
+      'getBlur',
+      'getBold',
+      'getColor',
+      'getContentElem',
+      'getCurrentDrawing',
+      'getDocumentTitle',
+      'getEditorNS',
+      'getElem',
+      'getFillOpacity',
+      'getFontColor',
+      'getFontFamily',
+      'getFontSize',
+      'getHref',
+      'getId',
+      'getIntersectionList',
+      'getItalic',
+      'getMode',
+      'getMouseTarget',
+      'getNextId',
+      'getOffset',
+      'getOpacity',
+      'getPaintOpacity',
+      'getPrivateMethods',
+      'getRefElem',
+      'getResolution',
+      'getRootElem',
+      'getRotationAngle',
+      'getSelectedElems',
+      'getStrokeOpacity',
+      'getStrokeWidth',
+      'getStrokedBBox',
+      'getStyle',
+      'getSvgString',
+      'getText',
+      'getTitle',
+      'getTransformList',
+      'getUIStrings',
+      'getUrlFromAttr',
+      'getVersion',
+      'getVisibleElements',
+      'getVisibleElementsAndBBoxes',
+      'getZoom',
+      'groupSelectedElements',
+      'groupSvgElem',
+      'hasMatrixTransform',
+      'identifyLayers',
+      'importSvgString',
+      'leaveContext',
+      'linkControlPoints',
+      'makeHyperlink',
+      'matrixMultiply',
+      'mergeAllLayers',
+      'mergeLayer',
+      'moveSelectedElements',
+      'moveSelectedToLayer',
+      'moveToBottomSelectedElement',
+      'moveToTopSelectedElement',
+      'moveUpDownSelected',
+      'open',
+      'pasteElements',
+      'prepareSvg',
+      'pushGroupProperties',
+      'randomizeIds',
+      'rasterExport',
+      'ready',
+      'recalculateAllSelectedDimensions',
+      'recalculateDimensions',
+      'remapElement',
+      'removeFromSelection',
+      'removeHyperlink',
+      'removeUnusedDefElems',
+      'renameCurrentLayer',
+      'round',
+      'runExtensions',
+      'sanitizeSvg',
+      'save',
+      'selectAllInCurrentLayer',
+      'selectOnly',
+      'setBBoxZoom',
+      'setBackground',
+      'setBlur',
+      'setBlurNoUndo',
+      'setBlurOffsets',
+      'setBold',
+      'setColor',
+      'setConfig',
+      'setContext',
+      'setCurrentLayer',
+      'setCurrentLayerPosition',
+      'setDocumentTitle',
+      'setFillPaint',
+      'setFontColor',
+      'setFontFamily',
+      'setFontSize',
+      'setGoodImage',
+      'setGradient',
+      'setGroupTitle',
+      'setHref',
+      'setIdPrefix',
+      'setImageURL',
+      'setItalic',
+      'setLayerVisibility',
+      'setLinkURL',
+      'setMode',
+      'setOpacity',
+      'setPaint',
+      'setPaintOpacity',
+      'setRectRadius',
+      'setResolution',
+      'setRotationAngle',
+      'setSegType',
+      'setStrokeAttr',
+      'setStrokePaint',
+      'setStrokeWidth',
+      'setSvgString',
+      'setTextContent',
+      'setUiStrings',
+      'setUseData',
+      'setZoom',
+      'svgCanvasToString',
+      'svgToString',
+      'transformListToTransform',
+      'ungroupSelectedElement',
+      'uniquifyElems',
+      'updateCanvas',
+      'zoomChanged'
+    ];
+
+    // TODO: rewrite the following, it's pretty scary.
+    for (const func of functions) {
+      this[func] = getCallbackSetter(func);
+    }
+
+    // Older IE may need a polyfill for addEventListener, but so it would for SVG
+    window.addEventListener('message', getMessageListener(this));
+    window.addEventListener('keydown', (e) => {
+      const {type, key} = e;
+      if (key === 'Backspace') {
+        e.preventDefault();
+        const keyboardEvent = new KeyboardEvent(type, {key});
+        that.frame.contentDocument.dispatchEvent(keyboardEvent);
+      }
+    });
   }
-  this.allowedOrigins = allowedOrigins || [];
-  // Initialize communication
-  this.frame = frame;
-  this.callbacks = {};
-  // List of functions extracted with this:
-  // Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
 
-  // for (var i=0,q=[],f = document.querySelectorAll('div.CFunction h3.CTitle a'); i < f.length; i++) { q.push(f[i].name); }; q
-  // var functions = ['clearSelection', 'addToSelection', 'removeFromSelection', 'open', 'save', 'getSvgString', 'setSvgString',
-  // 'createLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility',
-  // 'moveSelectedToLayer', 'clear'];
+  /**
+  * @param {string} name
+  * @param {ArgumentsArray} args Signature dependent on function
+  * @param {GenericCallback} callback (This may be better than a promise in case adding an event.)
+  * @returns {Integer}
+  */
+  send (name, args, callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+    const that = this;
+    cbid++;
 
-  // Newer, well, it extracts things that aren't documented as well. All functions accessible through the normal thingy can now be accessed though the API
-  // var svgCanvas = frame.contentWindow.svgCanvas;
-  // var l = []; for (var i in svgCanvas){ if (typeof svgCanvas[i] == 'function') { l.push(i);} };
-  // alert("['" + l.join("', '") + "']");
-  // Run in svgedit itself
-  var i,
-	functions = [
-		'clearSvgContentElement', 'setIdPrefix', 'getCurrentDrawing', 'addSvgElementFromJson', 'getTransformList', 'matrixMultiply', 'hasMatrixTransform', 'transformListToTransform', 'convertToNum', 'findDefs', 'getUrlFromAttr', 'getHref', 'setHref', 'getBBox', 'getRotationAngle', 'getElem', 'getRefElem', 'assignAttributes', 'cleanupElement', 'remapElement', 'recalculateDimensions', 'sanitizeSvg', 'runExtensions', 'addExtension', 'round', 'getIntersectionList', 'getStrokedBBox', 'getVisibleElements', 'getVisibleElementsAndBBoxes', 'groupSvgElem', 'getId', 'getNextId', 'call', 'bind', 'prepareSvg', 'setRotationAngle', 'recalculateAllSelectedDimensions', 'clearSelection', 'addToSelection', 'selectOnly', 'removeFromSelection', 'selectAllInCurrentLayer', 'getMouseTarget', 'removeUnusedDefElems', 'svgCanvasToString', 'svgToString', 'embedImage', 'setGoodImage', 'open', 'save', 'rasterExport', 'exportPDF', 'getSvgString', 'randomizeIds', 'uniquifyElems', 'setUseData', 'convertGradients', 'convertToGroup', 'setSvgString', 'importSvgString', 'identifyLayers', 'createLayer', 'cloneLayer', 'deleteCurrentLayer', 'setCurrentLayer', 'renameCurrentLayer', 'setCurrentLayerPosition', 'setLayerVisibility', 'moveSelectedToLayer', 'mergeLayer', 'mergeAllLayers', 'leaveContext', 'setContext', 'clear', 'linkControlPoints', 'getContentElem', 'getRootElem', 'getSelectedElems', 'getResolution', 'getZoom', 'getVersion', 'setUiStrings', 'setConfig', 'getTitle', 'setGroupTitle', 'getDocumentTitle', 'setDocumentTitle', 'getEditorNS', 'setResolution', 'getOffset', 'setBBoxZoom', 'setZoom', 'getMode', 'setMode', 'getColor', 'setColor', 'setGradient', 'setPaint', 'setStrokePaint', 'setFillPaint', 'getStrokeWidth', 'setStrokeWidth', 'setStrokeAttr', 'getStyle', 'getOpacity', 'setOpacity', 'getFillOpacity', 'getStrokeOpacity', 'setPaintOpacity', 'getPaintOpacity', 'getBlur', 'setBlurNoUndo', 'setBlurOffsets', 'setBlur', 'getBold', 'setBold', 'getItalic', 'setItalic', 'getFontFamily', 'setFontFamily', 'setFontColor', 'getFontColor', 'getFontSize', 'setFontSize', 'getText', 'setTextContent', 'setImageURL', 'setLinkURL', 'setRectRadius', 'makeHyperlink', 'removeHyperlink', 'setSegType', 'convertToPath', 'changeSelectedAttribute', 'deleteSelectedElements', 'cutSelectedElements', 'copySelectedElements', 'pasteElements', 'groupSelectedElements', 'pushGroupProperties', 'ungroupSelectedElement', 'moveToTopSelectedElement', 'moveToBottomSelectedElement', 'moveUpDownSelected', 'moveSelectedElements', 'cloneSelectedElements', 'alignSelectedElements', 'updateCanvas', 'setBackground', 'cycleElement', 'getPrivateMethods', 'zoomChanged', 'ready'
-	];
+    this.callbacks[cbid] = callback;
+    setTimeout((function (callbackID) {
+      return function () { // Delay for the callback to be set in case its synchronous
+        /*
+        * Todo: Handle non-JSON arguments and return values (undefined,
+        *   nonfinite numbers, functions, and built-in objects like Date,
+        *   RegExp), etc.? Allow promises instead of callbacks? Review
+        *   SVG-Edit functions for whether JSON-able parameters can be
+        *   made compatile with all API functionality
+        */
+        // We accept and post strings for the sake of IE9 support
+        let sameOriginWithGlobal = false;
+        try {
+          sameOriginWithGlobal = window.location.origin === that.frame.contentWindow.location.origin &&
+            that.frame.contentWindow.svgEditor.canvas;
+        } catch (err) {}
 
-  // TODO: rewrite the following, it's pretty scary.
-  for (i = 0; i < functions.length; i++) {
-	this[functions[i]] = getCallbackSetter(functions[i]);
+        if (sameOriginWithGlobal) {
+          // Although we do not really need this API if we are working same
+          //  domain, it could allow us to write in a way that would work
+          //  cross-domain as well, assuming we stick to the argument limitations
+          //  of the current JSON-based communication API (e.g., not passing
+          //  callbacks). We might be able to address these shortcomings; see
+          //  the todo elsewhere in this file.
+          const message = {id: callbackID},
+            {svgEditor: {canvas: svgCanvas}} = that.frame.contentWindow;
+          try {
+            message.result = svgCanvas[name](...args);
+          } catch (err) {
+            message.error = err.message;
+          }
+          addCallback(that, message);
+        } else { // Requires the ext-xdomain-messaging.js extension
+          that.frame.contentWindow.postMessage(JSON.stringify({
+            namespace: 'svgCanvas', id: callbackID, name, args
+          }), '*');
+        }
+      };
+    }(cbid)), 0);
+
+    return cbid;
   }
- 
-  // Older IE may need a polyfill for addEventListener, but so it would for SVG
-  window.addEventListener('message', getMessageListener(this), false);
 }
 
-EmbeddedSVGEdit.prototype.send = function (name, args, callback){
-  var t = this;
-  cbid++;
-
-  this.callbacks[cbid] = callback;
-  setTimeout((function (cbid) {
-	return function () { // Delay for the callback to be set in case its synchronous
-		/*
-		* Todo: Handle non-JSON arguments and return values (undefined,
-		*   nonfinite numbers, functions, and built-in objects like Date,
-		*   RegExp), etc.? Allow promises instead of callbacks? Review
-		*   SVG-Edit functions for whether JSON-able parameters can be
-		*   made compatile with all API functionality
-		*/
-		// We accept and post strings for the sake of IE9 support
-		if (window.location.origin === t.frame.contentWindow.location.origin) {
-		  // Although we do not really need this API if we are working same
-		  //  domain, it could allow us to write in a way that would work
-		  //  cross-domain as well, assuming we stick to the argument limitations
-		  //  of the current JSON-based communication API (e.g., not passing
-		  //  callbacks). We might be able to address these shortcomings; see
-		  //  the todo elsewhere in this file.
-		  var message = {id: cbid},
-			svgCanvas = t.frame.contentWindow.svgCanvas;
-		  try {
-			message.result = svgCanvas[name].apply(svgCanvas, args);
-		  }
-		  catch (err) {
-			message.error = err.message;
-		  }
-		  addCallback(t, message);
-		}
-		else { // Requires the ext-xdomain-messaging.js extension
-		  t.frame.contentWindow.postMessage(JSON.stringify({namespace: 'svgCanvas', id: cbid, name: name, args: args}), '*');
-		}
-	  };
-  }(cbid)), 0);
-
-  return cbid;
-};
-
-window.embedded_svg_edit = EmbeddedSVGEdit; // Export old, deprecated API
-window.EmbeddedSVGEdit = EmbeddedSVGEdit; // Follows common JS convention of CamelCase and, as enforced in JSLint, of initial caps for constructors
-
-}());
+export default EmbeddedSVGEdit;

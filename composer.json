@@ -3,24 +3,28 @@
     "description": "SVG-edit is a fast, web-based, javascript-driven SVG drawing editor that works in any modern browser.",
     "authors": [
         {
-            "name":"Narendra Sisodiya",
+            "name": "Narendra Sisodiya",
             "email": "narendra@narendrasisodiya.com"
         },
         {
-            "name":"Pavol Rusnak",
+            "name": "Pavol Rusnak",
             "email": "stick@gk2.sk"
         },
         {
-            "name":"Jeff Schiller",
+            "name": "Jeff Schiller",
             "email": "codedread@gmail.com"
         },
         {
-            "name":"Vidar Hokstad",
+            "name": "Vidar Hokstad",
             "email": "vidar.hokstad@gmail.com"
         },
         {
-            "name":"Alexis Deveria",
+            "name": "Alexis Deveria",
             "email": "adeveria@gmail.com"
+        },
+        {
+            "name": "Brett Zamir",
+            "email": "brettz9@yahoo.com"
         }
     ],
     "keywords": [
