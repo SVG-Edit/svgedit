@@ -8,7 +8,7 @@ const filesAndReplacements = [
     replacements: [
       [
         '<script type="module" src="../svgedit-config-es.js"></script>',
-        `<script type="module" src="xdomain-svgedit-config-es.js"></script>`
+        '<script type="module" src="xdomain-svgedit-config-es.js"></script>'
       ]
     ]
   },

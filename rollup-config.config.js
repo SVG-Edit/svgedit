@@ -39,7 +39,7 @@ export default [
     input: 'svgedit-config-es.js',
     output: {
       format: 'iife',
-      file: `svgedit-config-iife.js`
+      file: 'svgedit-config-iife.js'
     },
     plugins
   },
@@ -47,7 +47,7 @@ export default [
     input: 'editor/xdomain-svgedit-config-es.js',
     output: {
       format: 'iife',
-      file: `editor/xdomain-svgedit-config-iife.js`
+      file: 'editor/xdomain-svgedit-config-iife.js'
     },
     plugins
   }

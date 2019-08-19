@@ -107,7 +107,7 @@ export default [
     input: 'editor/redirect-on-lacking-support.js',
     output: {
       format: 'iife',
-      file: `dist/redirect-on-lacking-support.js`
+      file: 'dist/redirect-on-lacking-support.js'
     },
     plugins: [babel()]
   },
@@ -115,7 +115,7 @@ export default [
     input: 'editor/jspdf/jspdf.plugin.svgToPdf.js',
     output: {
       format: 'iife',
-      file: `dist/jspdf.plugin.svgToPdf.js`
+      file: 'dist/jspdf.plugin.svgToPdf.js'
     },
     plugins: [babel()]
   },
@@ -216,6 +216,7 @@ export default [
             ...[
               // For now, we'll replace with globals
               // We'll still make at least one import: editor/ext-locale/storage/
+              // eslint-disable-next-line quotes
               `import '../svgpathseg.js';`
             ].map((tst) => {
               return {
