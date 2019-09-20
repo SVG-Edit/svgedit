@@ -636,7 +636,7 @@ export class UndoManager {
   * @returns {void}
   */
   addCommandToHistory (cmd) {
-    // FIXME: we MUST compress consecutive text changes to the same element
+    // TODO: we MUST compress consecutive text changes to the same element
     // (right now each keystroke is saved as a separate command that includes the
     // entire text contents of the text element)
     // TODO: consider limiting the history that we store here (need to do some slicing)

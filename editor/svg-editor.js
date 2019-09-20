@@ -1626,7 +1626,7 @@ editor.init = function () {
     // if there were too few rows, let's add a few to make it not so lonely
     let num = 5 - $('#layerlist tr.layer').size();
     while (num-- > 0) {
-      // FIXME: there must a better way to do this
+      // TODO: there must a better way to do this
       layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
     }
   };

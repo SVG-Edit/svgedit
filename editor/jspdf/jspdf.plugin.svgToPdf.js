@@ -243,7 +243,7 @@ const svgElementToPdf = function (element, pdf, options) {
         }
         return box.width;
       };
-      // FIXME: use more accurate positioning!!
+      // TODO: use more accurate positioning!!
       let x, y, xOffset = 0;
       if (node.hasAttribute('text-anchor')) {
         switch (node.getAttribute('text-anchor')) {

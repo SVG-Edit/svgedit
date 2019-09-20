@@ -395,7 +395,7 @@ export const walkTree = function (elem, cbFn) {
 /**
 * Walks the tree and executes the callback on each element in a depth-first fashion.
 * @function module:utilities.walkTreePost
-* @todo FIXME: Shouldn't this be calling walkTreePost?
+* @todo Shouldn't this be calling walkTreePost?
 * @param {Element} elem - DOM element to traverse
 * @param {module:utilities.TreeWalker} cbFn - Callback function to run on each element
 * @returns {void}
@@ -1300,8 +1300,8 @@ export const snapToGrid = function (value) {
 * @returns {string}
 */
 export const regexEscape = function (str) {
-  // From: http://phpjs.org/functions
-  return String(str).replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\-]', 'g'), '\\$&');
+  // Originally from: http://phpjs.org/functions
+  return String(str).replace(/[.\\+*?[^\]$(){}=!<>|:-]/g, '\\$&');
 };
 
 /**

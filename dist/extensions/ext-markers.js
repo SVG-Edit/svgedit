@@ -138,7 +138,7 @@ var svgEditorExtension_markers = (function () {
 
   function _wrapRegExp(re, groups) {
     _wrapRegExp = function (re, groups) {
-      return new BabelRegExp(re, groups);
+      return new BabelRegExp(re, undefined, groups);
     };
 
     var _RegExp = _wrapNativeSuper(RegExp);
@@ -147,10 +147,10 @@ var svgEditorExtension_markers = (function () {
 
     var _groups = new WeakMap();
 
-    function BabelRegExp(re, groups) {
-      var _this = _RegExp.call(this, re);
+    function BabelRegExp(re, flags, groups) {
+      var _this = _RegExp.call(this, re, flags);
 
-      _groups.set(_this, groups);
+      _groups.set(_this, groups || _groups.get(re));
 
       return _this;
     }

@@ -361,10 +361,10 @@ export default function jQueryPluginSVGIcons ($) {
     /**
      *
      * @param {boolean} [toImage]
-     * @param {external:jQuery.svgIcons.Fallback} [fallback]
+     * @param {external:jQuery.svgIcons.Fallback} [fallback=false]
      * @returns {void}
      */
-    function makeIcons (toImage = false, fallback) {
+    function makeIcons (toImage = false, fallback = false) {
       if (iconsMade) return;
       if (opts.no_img) toImage = false;
 

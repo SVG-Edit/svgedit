@@ -233,7 +233,7 @@ export const sanitizeSvg = function (node) {
   // else (element not supported), remove it
   } else {
     // remove all children from this node and insert them before this node
-    // FIXME: in the case of animation elements this will hardly ever be correct
+    // TODO: in the case of animation elements this will hardly ever be correct
     const children = [];
     while (node.hasChildNodes()) {
       children.push(parent.insertBefore(node.firstChild, node));

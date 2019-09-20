@@ -2387,7 +2387,7 @@
           },
           enumerable: true
         },
-        // FIXME: The following are not implemented and simply return SVGPathElement.pathSegList.
+        // TODO: The following are not implemented and simply return SVGPathElement.pathSegList.
         normalizedPathSegList: {
           get: function get() {
             return this.pathSegList;
@@ -2451,8 +2451,6 @@
   var _navigator = navigator,
       userAgent = _navigator.userAgent;
   var svg = document.createElementNS(NS.SVG, 'svg'); // Note: Browser sniffing should only be used if no other detection method is possible
-
-  var isOpera_ = Boolean(window.opera);
   var isWebkit_ = userAgent.includes('AppleWebKit');
   var isGecko_ = userAgent.includes('Gecko/');
   var isIE_ = userAgent.includes('MSIE');
@@ -2463,10 +2461,6 @@
   var supportsSelectors_ = function () {
     return Boolean(svg.querySelector);
   }();
-
-  var supportsXpath_ = function () {
-    return Boolean(document.evaluate);
-  }(); // segList functions (for FF1.5 and 2.0)
 
 
   var supportsPathReplaceItem_ = function () {

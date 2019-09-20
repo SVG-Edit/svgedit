@@ -273,7 +273,7 @@ export const recalculateDimensions = function (selected) {
       if (Math.abs(a) > (1.0e-10)) {
         s = Math.sin(a) / (1 - Math.cos(a));
       } else {
-        // FIXME: This blows up if the angle is exactly 0!
+        // TODO: This blows up if the angle is exactly 0!
         s = 2 / a;
       }
       for (let i = 0; i < tlist.numberOfItems; ++i) {
@@ -599,7 +599,7 @@ export const recalculateDimensions = function (selected) {
     }
   // else, it's a non-group
   } else {
-    // FIXME: box might be null for some elements (<metadata> etc), need to handle this
+    // TODO: box might be null for some elements (<metadata> etc), need to handle this
     const box = getBBox(selected);
 
     // Paths (and possbly other shapes) will have no BBox while still in <defs>,
@@ -623,7 +623,7 @@ export const recalculateDimensions = function (selected) {
       const a = angle * Math.PI / 180;
       const s = (Math.abs(a) > (1.0e-10))
         ? Math.sin(a) / (1 - Math.cos(a))
-        // FIXME: This blows up if the angle is exactly 0!
+        // TODO: This blows up if the angle is exactly 0!
         : 2 / a;
 
       for (let i = 0; i < tlist.numberOfItems; ++i) {

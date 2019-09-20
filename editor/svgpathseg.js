@@ -961,7 +961,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
       },
       enumerable: true
     },
-    // FIXME: The following are not implemented and simply return SVGPathElement.pathSegList.
+    // TODO: The following are not implemented and simply return SVGPathElement.pathSegList.
     normalizedPathSegList: {get () { return this.pathSegList; }, enumerable: true},
     animatedPathSegList: {get () { return this.pathSegList; }, enumerable: true},
     animatedNormalizedPathSegList: {get () { return this.pathSegList; }, enumerable: true}

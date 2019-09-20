@@ -243,6 +243,10 @@ var canvg = (function (exports) {
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -278,7 +282,7 @@ var canvg = (function (exports) {
 
   function _wrapRegExp(re, groups) {
     _wrapRegExp = function (re, groups) {
-      return new BabelRegExp(re, groups);
+      return new BabelRegExp(re, undefined, groups);
     };
 
     var _RegExp = _wrapNativeSuper(RegExp);
@@ -287,10 +291,10 @@ var canvg = (function (exports) {
 
     var _groups = new WeakMap();
 
-    function BabelRegExp(re, groups) {
-      var _this = _RegExp.call(this, re);
+    function BabelRegExp(re, flags, groups) {
+      var _this = _RegExp.call(this, re, flags);
 
-      _groups.set(_this, groups);
+      _groups.set(_this, groups || _groups.get(re));
 
       return _this;
     }

@@ -213,6 +213,10 @@ var SvgCanvas = (function () {
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -248,7 +252,7 @@ var SvgCanvas = (function () {
 
   function _wrapRegExp(re, groups) {
     _wrapRegExp = function (re, groups) {
-      return new BabelRegExp(re, groups);
+      return new BabelRegExp(re, undefined, groups);
     };
 
     var _RegExp = _wrapNativeSuper(RegExp);
@@ -257,10 +261,10 @@ var SvgCanvas = (function () {
 
     var _groups = new WeakMap();
 
-    function BabelRegExp(re, groups) {
-      var _this = _RegExp.call(this, re);
+    function BabelRegExp(re, flags, groups) {
+      var _this = _RegExp.call(this, re, flags);
 
-      _groups.set(_this, groups);
+      _groups.set(_this, groups || _groups.get(re));
 
       return _this;
     }
@@ -2614,7 +2618,7 @@ var SvgCanvas = (function () {
           },
           enumerable: true
         },
-        // FIXME: The following are not implemented and simply return SVGPathElement.pathSegList.
+        // TODO: The following are not implemented and simply return SVGPathElement.pathSegList.
         normalizedPathSegList: {
           get: function get() {
             return this.pathSegList;
@@ -4764,7 +4768,7 @@ var SvgCanvas = (function () {
     }, {
       key: "addCommandToHistory",
       value: function addCommandToHistory(cmd) {
-        // FIXME: we MUST compress consecutive text changes to the same element
+        // TODO: we MUST compress consecutive text changes to the same element
         // (right now each keystroke is saved as a separate command that includes the
         // entire text contents of the text element)
         // TODO: consider limiting the history that we store here (need to do some slicing)
@@ -8453,7 +8457,7 @@ var SvgCanvas = (function () {
   /**
   * Walks the tree and executes the callback on each element in a depth-first fashion.
   * @function module:utilities.walkTreePost
-  * @todo FIXME: Shouldn't this be calling walkTreePost?
+  * @todo Shouldn't this be calling walkTreePost?
   * @param {Element} elem - DOM element to traverse
   * @param {module:utilities.TreeWalker} cbFn - Callback function to run on each element
   * @returns {void}
@@ -11391,7 +11395,7 @@ var SvgCanvas = (function () {
 
     } else {
       // remove all children from this node and insert them before this node
-      // FIXME: in the case of animation elements this will hardly ever be correct
+      // TODO: in the case of animation elements this will hardly ever be correct
       var children = [];
 
       while (node.hasChildNodes()) {
@@ -12282,7 +12286,7 @@ var SvgCanvas = (function () {
         if (Math.abs(a) > 1.0e-10) {
           s = Math.sin(a) / (1 - Math.cos(a));
         } else {
-          // FIXME: This blows up if the angle is exactly 0!
+          // TODO: This blows up if the angle is exactly 0!
           s = 2 / a;
         }
 
@@ -12643,7 +12647,7 @@ var SvgCanvas = (function () {
       } // else, it's a non-group
 
     } else {
-      // FIXME: box might be null for some elements (<metadata> etc), need to handle this
+      // TODO: box might be null for some elements (<metadata> etc), need to handle this
       var _box = getBBox(selected); // Paths (and possbly other shapes) will have no BBox while still in <defs>,
       // but we still may need to recalculate them (see issue 595).
       // TODO: Figure out how to get BBox from these elements in case they
@@ -12667,7 +12671,7 @@ var SvgCanvas = (function () {
 
         var _a = _angle * Math.PI / 180;
 
-        var _s = Math.abs(_a) > 1.0e-10 ? Math.sin(_a) / (1 - Math.cos(_a)) // FIXME: This blows up if the angle is exactly 0!
+        var _s = Math.abs(_a) > 1.0e-10 ? Math.sin(_a) / (1 - Math.cos(_a)) // TODO: This blows up if the angle is exactly 0!
         : 2 / _a;
 
         for (var _i2 = 0; _i2 < tlist.numberOfItems; ++_i2) {
@@ -15386,19 +15390,38 @@ var SvgCanvas = (function () {
               if (!rightClick) {
                 // insert a dummy transform so if the element(s) are moved it will have
                 // a transform to use for its translate
-                for (var _i2 = 0, _selectedElements = selectedElements; _i2 < _selectedElements.length; _i2++) {
-                  var selectedElement = _selectedElements[_i2];
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
 
-                  if (isNullish(selectedElement)) {
-                    continue;
+                try {
+                  for (var _iterator = selectedElements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var selectedElement = _step.value;
+
+                    if (isNullish(selectedElement)) {
+                      continue;
+                    }
+
+                    var slist = getTransformList(selectedElement);
+
+                    if (slist.numberOfItems) {
+                      slist.insertItemBefore(svgroot.createSVGTransform(), 0);
+                    } else {
+                      slist.appendItem(svgroot.createSVGTransform());
+                    }
                   }
-
-                  var slist = getTransformList(selectedElement);
-
-                  if (slist.numberOfItems) {
-                    slist.insertItemBefore(svgroot.createSVGTransform(), 0);
-                  } else {
-                    slist.appendItem(svgroot.createSVGTransform());
+                } catch (err) {
+                  _didIteratorError = true;
+                  _iteratorError = err;
+                } finally {
+                  try {
+                    if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                      _iterator["return"]();
+                    }
+                  } finally {
+                    if (_didIteratorError) {
+                      throw _iteratorError;
+                    }
                   }
                 }
               }
@@ -15562,7 +15585,7 @@ var SvgCanvas = (function () {
               break;
             }
 
-          case 'square': // FIXME: once we create the rect, we lose information that this was a square
+          case 'square': // TODO: once we create the rect, we lose information that this was a square
           // (for resizing purposes this could be important)
           // Fallthrough
 
@@ -17504,11 +17527,11 @@ var SvgCanvas = (function () {
               }
             });
           });
-          var _i3 = attrs.length;
+          var _i2 = attrs.length;
           var attrNames = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
 
-          while (_i3--) {
-            var attr = attrs[_i3];
+          while (_i2--) {
+            var attr = attrs[_i2];
             var attrVal = toXml(attr.value); // Namespaces have already been dealt with, so skip
 
             if (attr.nodeName.startsWith('xmlns:')) {
@@ -17534,8 +17557,8 @@ var SvgCanvas = (function () {
 
           var mozAttrs = ['-moz-math-font-style', '_moz-math-font-style'];
 
-          for (var _i4 = attrs.length - 1; _i4 >= 0; _i4--) {
-            var _attr = attrs[_i4];
+          for (var _i3 = attrs.length - 1; _i3 >= 0; _i3--) {
+            var _attr = attrs[_i3];
 
             var _attrVal = toXml(_attr.value); // remove bogus attributes added by Gecko
 
@@ -17591,14 +17614,14 @@ var SvgCanvas = (function () {
           indent++;
           var bOneLine = false;
 
-          for (var _i5 = 0; _i5 < childs.length; _i5++) {
-            var child = childs.item(_i5);
+          for (var _i4 = 0; _i4 < childs.length; _i4++) {
+            var child = childs.item(_i4);
 
             switch (child.nodeType) {
               case 1:
                 // element node
                 out.push('\n');
-                out.push(this.svgToString(childs.item(_i5), indent));
+                out.push(this.svgToString(childs.item(_i4), indent));
                 break;
 
               case 3:
@@ -17640,7 +17663,7 @@ var SvgCanvas = (function () {
           if (!bOneLine) {
             out.push('\n');
 
-            for (var _i6 = 0; _i6 < indent; _i6++) {
+            for (var _i5 = 0; _i5 < indent; _i5++) {
               out.push(' ');
             }
           }
@@ -18716,27 +18739,27 @@ var SvgCanvas = (function () {
           }
 
           var attrs = svg.attributes;
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
 
           try {
-            for (var _iterator = attrs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var attr = _step.value;
+            for (var _iterator2 = attrs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var attr = _step2.value;
               // Ok for `NamedNodeMap`
               symbol.setAttribute(attr.nodeName, attr.value);
             }
           } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                _iterator["return"]();
+              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                _iterator2["return"]();
               }
             } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
+              if (_didIteratorError2) {
+                throw _iteratorError2;
               }
             }
           }
@@ -18961,29 +18984,29 @@ var SvgCanvas = (function () {
 
       elem = $$8(elem).data('gsvg') || $$8(elem).data('symbol') || elem;
       var childs = elem.childNodes;
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
       try {
-        for (var _iterator2 = childs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var child = _step2.value;
+        for (var _iterator3 = childs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var child = _step3.value;
 
           if (child.nodeName === 'title') {
             return child.textContent;
           }
         }
       } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-            _iterator2["return"]();
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
           }
         } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
+          if (_didIteratorError3) {
+            throw _iteratorError3;
           }
         }
       }
@@ -19051,13 +19074,13 @@ var SvgCanvas = (function () {
       var docTitle = false,
           oldTitle = '';
       var batchCmd = new BatchCommand$1('Change Image Title');
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
-        for (var _iterator3 = childs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var child = _step3.value;
+        for (var _iterator4 = childs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var child = _step4.value;
 
           if (child.nodeName === 'title') {
             docTitle = child;
@@ -19066,16 +19089,16 @@ var SvgCanvas = (function () {
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-            _iterator3["return"]();
+          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+            _iterator4["return"]();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }
@@ -20384,7 +20407,7 @@ var SvgCanvas = (function () {
           canvas.moveSelectedElements(diffX * currentZoom, diffY * currentZoom, true);
           return "continue";
         } // only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
-        // TODO: FIXME: Missing statement body
+        // TODO: Missing statement body
         // if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
 
 
@@ -21063,9 +21086,9 @@ var SvgCanvas = (function () {
 
 
     this.moveToTopSelectedElement = function () {
-      var _selectedElements2 = selectedElements,
-          _selectedElements3 = _slicedToArray(_selectedElements2, 1),
-          selected = _selectedElements3[0];
+      var _selectedElements = selectedElements,
+          _selectedElements2 = _slicedToArray(_selectedElements, 1),
+          selected = _selectedElements2[0];
 
       if (!isNullish(selected)) {
         var t = selected;
@@ -21090,9 +21113,9 @@ var SvgCanvas = (function () {
 
 
     this.moveToBottomSelectedElement = function () {
-      var _selectedElements4 = selectedElements,
-          _selectedElements5 = _slicedToArray(_selectedElements4, 1),
-          selected = _selectedElements5[0];
+      var _selectedElements3 = selectedElements,
+          _selectedElements4 = _slicedToArray(_selectedElements3, 1),
+          selected = _selectedElements4[0];
 
       if (!isNullish(selected)) {
         var t = selected;
@@ -21400,45 +21423,45 @@ var SvgCanvas = (function () {
       var dx = new Array(len);
       var dy = new Array(len);
 
-      for (var _i7 = 0; _i7 < len; ++_i7) {
-        if (isNullish(selectedElements[_i7])) {
+      for (var _i6 = 0; _i6 < len; ++_i6) {
+        if (isNullish(selectedElements[_i6])) {
           break;
         } // const elem = selectedElements[i];
 
 
-        var bbox = bboxes[_i7];
-        dx[_i7] = 0;
-        dy[_i7] = 0;
+        var bbox = bboxes[_i6];
+        dx[_i6] = 0;
+        dy[_i6] = 0;
 
         switch (type) {
           case 'l':
             // left (horizontal)
-            dx[_i7] = minx - bbox.x;
+            dx[_i6] = minx - bbox.x;
             break;
 
           case 'c':
             // center (horizontal)
-            dx[_i7] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
+            dx[_i6] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
             break;
 
           case 'r':
             // right (horizontal)
-            dx[_i7] = maxx - (bbox.x + bbox.width);
+            dx[_i6] = maxx - (bbox.x + bbox.width);
             break;
 
           case 't':
             // top (vertical)
-            dy[_i7] = miny - bbox.y;
+            dy[_i6] = miny - bbox.y;
             break;
 
           case 'm':
             // middle (vertical)
-            dy[_i7] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
+            dy[_i6] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
             break;
 
           case 'b':
             // bottom (vertical)
-            dy[_i7] = maxy - (bbox.y + bbox.height);
+            dy[_i6] = maxy - (bbox.y + bbox.height);
             break;
         }
       }

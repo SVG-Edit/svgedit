@@ -1955,7 +1955,7 @@ const mouseDown = function (evt) {
     preventClickDefault(newImage);
     break;
   } case 'square':
-    // FIXME: once we create the rect, we lose information that this was a square
+    // TODO: once we create the rect, we lose information that this was a square
     // (for resizing purposes this could be important)
     // Fallthrough
   case 'rect':
@@ -6169,7 +6169,7 @@ const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
     }
 
     // only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
-    // TODO: FIXME: Missing statement body
+    // TODO: Missing statement body
     // if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
     let oldval = attr === '#text' ? elem.textContent : elem.getAttribute(attr);
     if (isNullish(oldval)) { oldval = ''; }
