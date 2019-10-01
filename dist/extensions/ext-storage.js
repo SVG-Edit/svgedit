@@ -293,7 +293,7 @@ var svgEditorExtension_storage = (function () {
         var loc = top.location; // Allow this to work with the embedded editor as well
 
         if (loc.href.includes('storagePrompt=')) {
-          loc.href = loc.href.replace(_wrapRegExp(/([&?])storagePrompt=[^&]*(&?)/, {
+          loc.href = loc.href.replace(_wrapRegExp(/([&\?])storagePrompt=[\0-%'-\uFFFF]*(&?)/, {
             sep: 1,
             amp: 2
           }), function (n0, sep, amp) {

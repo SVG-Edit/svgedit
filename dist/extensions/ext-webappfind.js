@@ -87,8 +87,8 @@ var svgEditorExtension_webappfind = (function () {
                     if (origin !== location.origin || // We are only interested in a message sent as though within this URL by our browser add-on
                     excludedMessages.includes(type) // Avoid our post below (other messages might be possible in the future which may also need to be excluded if your subsequent code makes assumptions on the type of message this is)
                     ) {
-                      return;
-                    }
+                        return;
+                      }
                   } catch (err) {
                     return;
                   }

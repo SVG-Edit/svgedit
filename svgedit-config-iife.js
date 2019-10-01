@@ -3307,7 +3307,7 @@
         } // TODO: Add skew support in future
 
 
-        var re = _wrapRegExp(/\s*((?:scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/, {
+        var re = _wrapRegExp(/[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*((?:scale|matrix|rotate|translate)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*\(.*?\))[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*,?[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*/, {
           xform: 1
         });
 
@@ -3326,10 +3326,10 @@
                   name = _x$split2[0],
                   bits = _x$split2[1];
 
-              var valBits = bits.match(_wrapRegExp(/\s*(.*?)\s*\)/, {
+              var valBits = bits.match(_wrapRegExp(/[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*(.*?)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*\)/, {
                 nonWhitespace: 1
               }));
-              valBits.groups.nonWhitespace = valBits.groups.nonWhitespace.replace(_wrapRegExp(/(\d)-/g, {
+              valBits.groups.nonWhitespace = valBits.groups.nonWhitespace.replace(_wrapRegExp(/([0-9])\x2D/g, {
                 digit: 1
               }), '$<digit> -');
               var valArr = valBits.groups.nonWhitespace.split(/[, ]+/);
@@ -4788,6 +4788,7 @@
   }();
 
   var hstry = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     HistoryEventTypes: HistoryEventTypes,
     MoveElementCommand: MoveElementCommand,
     InsertElementCommand: InsertElementCommand,
@@ -8105,7 +8106,7 @@
    */
 
   var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
-    return str.replace(_wrapRegExp(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, {
+    return str.replace(_wrapRegExp(/(<!DOCTYPE[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+[0-9A-Z_a-z]*[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*\[).*(\?\]>)/, {
       doctypeOpen: 1,
       doctypeClose: 2
     }), '$<doctypeOpen>$<doctypeClose>');
@@ -11748,7 +11749,7 @@
             case 'gradientTransform':
             case 'patternTransform':
               {
-                var val = attr.value.replace(_wrapRegExp(/(\d)-/g, {
+                var val = attr.value.replace(_wrapRegExp(/([0-9])\x2D/g, {
                   digit: 1
                 }), '$<digit> -');
                 node.setAttribute(attrName, val);
@@ -29795,7 +29796,7 @@
           if (!src) {
             // urldata.source may have been null if it ended with '='
             if (qstr.includes('source=data:')) {
-              src = qstr.match(_wrapRegExp(/source=(data:[^&]*)/, {
+              src = qstr.match(_wrapRegExp(/source=(data:[\0-%'-\uFFFF]*)/, {
                 src: 1
               })).groups.src;
             }
@@ -29901,7 +29902,7 @@
                       while (1) {
                         switch (_context2.prev = _context2.next) {
                           case 0:
-                            extName = extname.match(_wrapRegExp(/^ext-(.+)\.js/, {
+                            extName = extname.match(_wrapRegExp(/^ext\x2D(.+)\.js/, {
                               extName: 1
                             })).groups.extName;
 

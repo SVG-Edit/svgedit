@@ -190,6 +190,7 @@ module.exports = {
   rules: {
     // Override these `ash-nazg/sauron` rules which are difficult for us
     //   to apply at this time
+    "unicorn/prefer-string-slice": "off",
     "default-case": "off",
     "require-unicode-regexp": "off",
     "max-len": ["off", {

@@ -403,7 +403,7 @@
   }; // array of color definition objects
 
   var colorDefs = [{
-    re: _wrapRegExp(/^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/, {
+    re: _wrapRegExp(/^rgb\(([0-9]{1,3}),[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*([0-9]{1,3}),[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*([0-9]{1,3})\)$/, {
       r: 1,
       g: 2,
       b: 3
@@ -419,7 +419,7 @@
       });
     }
   }, {
-    re: _wrapRegExp(/^(\w{2})(\w{2})(\w{2})$/, {
+    re: _wrapRegExp(/^([0-9A-Z_a-z]{2})([0-9A-Z_a-z]{2})([0-9A-Z_a-z]{2})$/, {
       r: 1,
       g: 2,
       b: 3
@@ -435,7 +435,7 @@
       });
     }
   }, {
-    re: _wrapRegExp(/^(\w{1})(\w{1})(\w{1})$/, {
+    re: _wrapRegExp(/^([0-9A-Z_a-z]{1})([0-9A-Z_a-z]{1})([0-9A-Z_a-z]{1})$/, {
       r: 1,
       g: 2,
       b: 3
