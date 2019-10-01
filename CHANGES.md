@@ -16,6 +16,7 @@
 - Testing: Accessibility test API update
 - Docs: Clarify need for Node.js/npm being installed
 - Build: Remove `types-docs` script as being handled in ESLint
+- npm: Add script to fix eslint errors
 - npm: Update devDeps (including switching from deprecated opn-cli
     package to open-cli); update core-js-bundle copy; add new
     axe testing peer dep. axe-core in devDeps
