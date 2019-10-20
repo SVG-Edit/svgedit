@@ -8915,9 +8915,6 @@ var SvgCanvas = (function () {
 
           break;
         }
-
-      default:
-        break;
     }
 
     return d;
@@ -9484,9 +9481,6 @@ var SvgCanvas = (function () {
         case 3:
           // text node
           newEl.textContent = child.nodeValue;
-          break;
-
-        default:
           break;
       }
     });
@@ -12791,9 +12785,6 @@ var SvgCanvas = (function () {
             _operation = 1;
             tlist.clear();
             break;
-
-          default:
-            break;
         } // if it was a rotation, put the rotate back and return without a command
         // (this function has zero work to do for a rotate())
 
@@ -15710,10 +15701,6 @@ var SvgCanvas = (function () {
 
             canvas.undoMgr.beginUndoableChange('transform', selectedElements);
             break;
-
-          default:
-            // This could occur in an extension
-            break;
         }
         /**
          * The main (left) mouse button is held down on the canvas area
@@ -16257,9 +16244,6 @@ var SvgCanvas = (function () {
               call('transition', selectedElements);
               break;
             }
-
-          default:
-            break;
         }
         /**
         * The mouse has moved on the canvas area
@@ -16577,10 +16561,6 @@ var SvgCanvas = (function () {
               call('changed', selectedElements);
               break;
             }
-
-          default:
-            // This could occur in an extension
-            break;
         }
         /**
         * The main (left) mouse button is released (anywhere)

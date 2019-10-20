@@ -216,7 +216,6 @@ export default [
             ...[
               // For now, we'll replace with globals
               // We'll still make at least one import: editor/ext-locale/storage/
-              // eslint-disable-next-line quotes
               `import '../svgpathseg.js';`
             ].map((tst) => {
               return {

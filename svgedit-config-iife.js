@@ -8846,9 +8846,6 @@
 
           break;
         }
-
-      default:
-        break;
     }
 
     return d;
@@ -9426,9 +9423,6 @@
         case 3:
           // text node
           newEl.textContent = child.nodeValue;
-          break;
-
-        default:
           break;
       }
     });
@@ -13016,9 +13010,6 @@
             _operation = 1;
             tlist.clear();
             break;
-
-          default:
-            break;
         } // if it was a rotation, put the rotate back and return without a command
         // (this function has zero work to do for a rotate())
 
@@ -15935,10 +15926,6 @@
 
             canvas.undoMgr.beginUndoableChange('transform', selectedElements);
             break;
-
-          default:
-            // This could occur in an extension
-            break;
         }
         /**
          * The main (left) mouse button is held down on the canvas area
@@ -16482,9 +16469,6 @@
               call('transition', selectedElements);
               break;
             }
-
-          default:
-            break;
         }
         /**
         * The mouse has moved on the canvas area
@@ -16802,10 +16786,6 @@
               call('changed', selectedElements);
               break;
             }
-
-          default:
-            // This could occur in an extension
-            break;
         }
         /**
         * The main (left) mouse button is released (anywhere)
@@ -28804,6 +28784,10 @@
   }
 
   function _iterableToArrayLimit$1(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -28877,11 +28861,13 @@
         } else if (after) {
           after.after(link);
         } else {
+          // eslint-disable-next-line unicorn/prefer-node-append
           document.head.appendChild(link);
         }
       }
 
-      var link = document.createElement('link');
+      var link = document.createElement('link'); // eslint-disable-next-line promise/avoid-new
+
       return new Promise(function (resolve, reject) {
         var rej = reject;
 
@@ -28945,7 +28931,9 @@
       });
     }
 
-    return Promise.all(stylesheets.map(setupLink));
+    return Promise.all(stylesheets.map(function (stylesheetURL) {
+      return setupLink(stylesheetURL);
+    }));
   }
 
   /**
@@ -32524,9 +32512,6 @@
 
                           break;
                         }
-
-                      default:
-                        break;
                     }
                   });
                 }
