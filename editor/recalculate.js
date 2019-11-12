@@ -340,14 +340,14 @@ export const recalculateDimensions = function (selected) {
 
           const angle = getRotationAngle(child);
           oldStartTransform = context_.getStartTransform();
-          const childxforms = [];
+          // const childxforms = [];
           context_.setStartTransform(child.getAttribute('transform'));
           if (angle || hasMatrixTransform(childTlist)) {
             const e2t = svgroot.createSVGTransform();
             e2t.setMatrix(matrixMultiply(tm, sm, tmn, m));
             childTlist.clear();
             childTlist.appendItem(e2t);
-            childxforms.push(e2t);
+            // childxforms.push(e2t);
           // if not rotated or skewed, push the [T][S][-T] down to the child
           } else {
             // update the transform list with translate,scale,translate
@@ -377,9 +377,9 @@ export const recalculateDimensions = function (selected) {
             childTlist.appendItem(translateBack);
             childTlist.appendItem(scale);
             childTlist.appendItem(translateOrigin);
-            childxforms.push(translateBack);
-            childxforms.push(scale);
-            childxforms.push(translateOrigin);
+            // childxforms.push(translateBack);
+            // childxforms.push(scale);
+            // childxforms.push(translateOrigin);
             // logMatrix(translateBack.matrix);
             // logMatrix(scale.matrix);
           } // not rotated
