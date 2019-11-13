@@ -1,4 +1,5 @@
 node_modules
+ignore
 
 dist
 docs/jsdoc

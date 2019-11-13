@@ -15,42 +15,6 @@ var svgEditorExtension_server_opensave = (function () {
     return _typeof(obj);
   }
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -4684,36 +4648,26 @@ var svgEditorExtension_server_opensave = (function () {
     }; // load from url
 
 
-    svg.load =
-    /*#__PURE__*/
-    function () {
-      var _ref12 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(ctx, url) {
-        var dom;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _context.next = 2;
-                return svg.ajax(url, true);
+    svg.load = function _callee(ctx, url) {
+      var dom;
+      return regeneratorRuntime.async(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return regeneratorRuntime.awrap(svg.ajax(url, true));
 
-              case 2:
-                dom = _context.sent;
-                return _context.abrupt("return", svg.loadXml(ctx, dom));
+            case 2:
+              dom = _context.sent;
+              return _context.abrupt("return", svg.loadXml(ctx, dom));
 
-              case 4:
-              case "end":
-                return _context.stop();
-            }
+            case 4:
+            case "end":
+              return _context.stop();
           }
-        }, _callee);
-      }));
-
-      return function (_x2, _x3) {
-        return _ref12.apply(this, arguments);
-      };
-    }(); // load from xml
+        }
+      });
+    }; // load from xml
 
 
     svg.loadXml = function (ctx, xml) {
@@ -4934,9 +4888,9 @@ var svgEditorExtension_server_opensave = (function () {
       checkPath: function checkPath(element, ctx) {
         var _this26 = this;
 
-        this.events.forEach(function (_ref13, i) {
-          var x = _ref13.x,
-              y = _ref13.y;
+        this.events.forEach(function (_ref12, i) {
+          var x = _ref12.x,
+              y = _ref12.y;
 
           if (ctx.isPointInPath && ctx.isPointInPath(x, y)) {
             _this26.eventElements[i] = element;
@@ -4946,9 +4900,9 @@ var svgEditorExtension_server_opensave = (function () {
       checkBoundingBox: function checkBoundingBox(element, bb) {
         var _this27 = this;
 
-        this.events.forEach(function (_ref14, i) {
-          var x = _ref14.x,
-              y = _ref14.y;
+        this.events.forEach(function (_ref13, i) {
+          var x = _ref13.x,
+              y = _ref13.y;
 
           if (bb.isPointInBox(x, y)) {
             _this27.eventElements[i] = element;
@@ -4990,363 +4944,334 @@ var svgEditorExtension_server_opensave = (function () {
     };
   }
 
+  /**
+   * ext-server_opensave.js
+   *
+   * @license MIT
+   *
+   * @copyright 2010 Alexis Deveria
+   *
+   */
   var extServer_opensave = {
     name: 'server_opensave',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee5(_ref) {
-        var $, decode64, encode64, importLocale, strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, avoidClientSideDownload, avoidClientSideOpen, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+    init: function init(_ref) {
+      var $, decode64, encode64, importLocale, strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, avoidClientSideDownload, avoidClientSideOpen, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
 
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
-          while (1) {
-            switch (_context5.prev = _context5.next) {
-              case 0:
-                rebuildInput = function _ref7(form) {
-                  form.empty();
-                  var inp = $('<input type="file" name="svg_file">').appendTo(form);
-                  /**
-                   * Submit the form, empty its contents for reuse and show
-                   *   uploading message.
-                   * @returns {Promise<void>}
-                   */
-
-                  function submit() {
-                    return _submit.apply(this, arguments);
-                  }
-
-                  function _submit() {
-                    _submit = _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee4() {
-                      return regeneratorRuntime.wrap(function _callee4$(_context4) {
-                        while (1) {
-                          switch (_context4.prev = _context4.next) {
-                            case 0:
-                              // This submits the form, which returns the file data using `svgEditor.processFile()`
-                              form.submit();
-                              rebuildInput(form);
-                              _context4.next = 4;
-                              return $.process_cancel(strings.uploading);
-
-                            case 4:
-                              cancelled = true;
-                              $('#dialog_box').hide();
-
-                            case 6:
-                            case "end":
-                              return _context4.stop();
-                          }
-                        }
-                      }, _callee4);
-                    }));
-                    return _submit.apply(this, arguments);
-                  }
-
-                  if (form[0] === openSvgForm[0]) {
-                    inp.change(
-                    /*#__PURE__*/
-                    _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee2() {
-                      var ok;
-                      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                        while (1) {
-                          switch (_context2.prev = _context2.next) {
-                            case 0:
-                              _context2.next = 2;
-                              return svgEditor.openPrep();
-
-                            case 2:
-                              ok = _context2.sent;
-
-                              if (ok) {
-                                _context2.next = 6;
-                                break;
-                              }
-
-                              rebuildInput(form);
-                              return _context2.abrupt("return");
-
-                            case 6:
-                              _context2.next = 8;
-                              return submit();
-
-                            case 8:
-                            case "end":
-                              return _context2.stop();
-                          }
-                        }
-                      }, _callee2);
-                    })));
-                  } else {
-                    inp.change(
-                    /*#__PURE__*/
-                    _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee3() {
-                      return regeneratorRuntime.wrap(function _callee3$(_context3) {
-                        while (1) {
-                          switch (_context3.prev = _context3.next) {
-                            case 0:
-                              _context3.next = 2;
-                              return submit();
-
-                            case 2:
-                            case "end":
-                              return _context3.stop();
-                          }
-                        }
-                      }, _callee3);
-                    })));
-                  }
-                };
-
-                clientDownloadSupport = function _ref6(filename, suffix, uri) {
-                  if (avoidClientSide || avoidClientSideDownload) {
-                    return false;
-                  }
-
-                  var support = $('<a>')[0].download === '';
-                  var a;
-
-                  if (support) {
-                    a = $('<a>hidden</a>').attr({
-                      download: (filename || 'image') + suffix,
-                      href: uri
-                    }).css('display', 'none').appendTo('body');
-                    a[0].click();
-                    return true;
-                  }
-
-                  return false;
-                };
-
-                xhtmlEscape = function _ref5(str) {
-                  return str.replace(/&(?!amp;)/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); // < is actually disallowed above anyways
-                };
-
-                getFileNameFromTitle = function _ref4() {
-                  var title = svgCanvas.getDocumentTitle(); // We convert (to underscore) only those disallowed Win7 file name characters
-
-                  return title.trim().replace(/[/\\:*?"<>|]/g, '_');
-                };
-
-                $ = _ref.$, decode64 = _ref.decode64, encode64 = _ref.encode64, importLocale = _ref.importLocale;
-                _context5.next = 7;
-                return importLocale();
-
-              case 7:
-                strings = _context5.sent;
-                svgEditor = this;
-                _svgEditor$curConfig = svgEditor.curConfig, extPath = _svgEditor$curConfig.extPath, avoidClientSide = _svgEditor$curConfig.avoidClientSide, avoidClientSideDownload = _svgEditor$curConfig.avoidClientSideDownload, avoidClientSideOpen = _svgEditor$curConfig.avoidClientSideOpen, svgCanvas = svgEditor.canvas;
+      return regeneratorRuntime.async(function init$(_context5) {
+        while (1) {
+          switch (_context5.prev = _context5.next) {
+            case 0:
+              rebuildInput = function _ref5(form) {
+                form.empty();
+                var inp = $('<input type="file" name="svg_file">').appendTo(form);
                 /**
-                 *
-                 * @returns {string}
+                 * Submit the form, empty its contents for reuse and show
+                 *   uploading message.
+                 * @returns {Promise<void>}
                  */
 
-                saveSvgAction = extPath + 'filesave.php', saveImgAction = extPath + 'filesave.php'; // Create upload target (hidden iframe)
+                function submit() {
+                  return regeneratorRuntime.async(function submit$(_context2) {
+                    while (1) {
+                      switch (_context2.prev = _context2.next) {
+                        case 0:
+                          // This submits the form, which returns the file data using `svgEditor.processFile()`
+                          form.submit();
+                          rebuildInput(form);
+                          _context2.next = 4;
+                          return regeneratorRuntime.awrap($.process_cancel(strings.uploading));
 
-                cancelled = false; //  Hiding by size instead of display to avoid FF console errors
-                //    with `getBBox` in browser.js `supportsPathBBox_`)
+                        case 4:
+                          cancelled = true;
+                          $('#dialog_box').hide();
 
-                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n          style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
-                svgEditor.setCustomHandlers({
-                  save: function save(win, data) {
-                    var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
-                        // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
-                    filename = getFileNameFromTitle();
-
-                    if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + encode64(svg))) {
-                      return;
+                        case 6:
+                        case "end":
+                          return _context2.stop();
+                      }
                     }
-
-                    $('<form>').attr({
-                      method: 'post',
-                      action: saveSvgAction,
-                      target: 'output_frame'
-                    }).append("\n          <input type=\"hidden\" name=\"output_svg\" value=\"".concat(xhtmlEscape(svg), "\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
-                  },
-                  exportPDF: function exportPDF(win, data) {
-                    var filename = getFileNameFromTitle(),
-                        datauri = data.output;
-
-                    if (clientDownloadSupport(filename, '.pdf', datauri)) {
-                      return;
-                    }
-
-                    $('<form>').attr({
-                      method: 'post',
-                      action: saveImgAction,
-                      target: 'output_frame'
-                    }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"application/pdf\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
-                  },
-                  // Todo: Integrate this extension with a new built-in exportWindowType, "download"
-                  exportImage: function () {
-                    var _exportImage = _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee(win, data) {
-                      var issues, mimeType, quality, c, datauri, pre, note, filename, suffix;
-                      return regeneratorRuntime.wrap(function _callee$(_context) {
-                        while (1) {
-                          switch (_context.prev = _context.next) {
-                            case 0:
-                              issues = data.issues, mimeType = data.mimeType, quality = data.quality;
-
-                              if (!$('#export_canvas').length) {
-                                $('<canvas>', {
-                                  id: 'export_canvas'
-                                }).hide().appendTo('body');
-                              }
-
-                              c = $('#export_canvas')[0];
-                              c.width = svgCanvas.contentW;
-                              c.height = svgCanvas.contentH;
-                              _context.next = 7;
-                              return canvg(c, data.svg);
-
-                            case 7:
-                              datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType); // {uiStrings} = svgEditor;
-                              // Check if there are issues
-
-                              note = '';
-
-                              if (issues.length) {
-                                pre = "\n \u2022 "; // Bullet
-
-                                note += '\n\n' + pre + issues.join(pre);
-                              }
-
-                              if (!note.length) {
-                                _context.next = 13;
-                                break;
-                              }
-
-                              _context.next = 13;
-                              return $.alert(note);
-
-                            case 13:
-                              filename = getFileNameFromTitle();
-                              suffix = '.' + data.type.toLowerCase();
-
-                              if (!clientDownloadSupport(filename, suffix, datauri)) {
-                                _context.next = 17;
-                                break;
-                              }
-
-                              return _context.abrupt("return");
-
-                            case 17:
-                              $('<form>').attr({
-                                method: 'post',
-                                action: saveImgAction,
-                                target: 'output_frame'
-                              }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"").concat(mimeType, "\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
-
-                            case 18:
-                            case "end":
-                              return _context.stop();
-                          }
-                        }
-                      }, _callee);
-                    }));
-
-                    function exportImage(_x2, _x3) {
-                      return _exportImage.apply(this, arguments);
-                    }
-
-                    return exportImage;
-                  }()
-                }); // Do nothing if client support is found
-
-                if (!(window.FileReader && !avoidClientSideOpen)) {
-                  _context5.next = 16;
-                  break;
+                  });
                 }
 
-                return _context5.abrupt("return");
+                if (form[0] === openSvgForm[0]) {
+                  inp.change(function _callee() {
+                    var ok;
+                    return regeneratorRuntime.async(function _callee$(_context3) {
+                      while (1) {
+                        switch (_context3.prev = _context3.next) {
+                          case 0:
+                            _context3.next = 2;
+                            return regeneratorRuntime.awrap(svgEditor.openPrep());
 
-              case 16:
-                // Change these to appropriate script file
-                openSvgAction = extPath + 'fileopen.php?type=load_svg';
-                importSvgAction = extPath + 'fileopen.php?type=import_svg';
-                importImgAction = extPath + 'fileopen.php?type=import_img'; // Set up function for PHP uploader to use
+                          case 2:
+                            ok = _context3.sent;
 
-                svgEditor.processFile = function (str64, type) {
-                  var xmlstr;
+                            if (ok) {
+                              _context3.next = 6;
+                              break;
+                            }
 
-                  if (cancelled) {
-                    cancelled = false;
+                            rebuildInput(form);
+                            return _context3.abrupt("return");
+
+                          case 6:
+                            _context3.next = 8;
+                            return regeneratorRuntime.awrap(submit());
+
+                          case 8:
+                          case "end":
+                            return _context3.stop();
+                        }
+                      }
+                    });
+                  });
+                } else {
+                  inp.change(function _callee2() {
+                    return regeneratorRuntime.async(function _callee2$(_context4) {
+                      while (1) {
+                        switch (_context4.prev = _context4.next) {
+                          case 0:
+                            _context4.next = 2;
+                            return regeneratorRuntime.awrap(submit());
+
+                          case 2:
+                          case "end":
+                            return _context4.stop();
+                        }
+                      }
+                    });
+                  });
+                }
+              };
+
+              clientDownloadSupport = function _ref4(filename, suffix, uri) {
+                if (avoidClientSide || avoidClientSideDownload) {
+                  return false;
+                }
+
+                var support = $('<a>')[0].download === '';
+                var a;
+
+                if (support) {
+                  a = $('<a>hidden</a>').attr({
+                    download: (filename || 'image') + suffix,
+                    href: uri
+                  }).css('display', 'none').appendTo('body');
+                  a[0].click();
+                  return true;
+                }
+
+                return false;
+              };
+
+              xhtmlEscape = function _ref3(str) {
+                return str.replace(/&(?!amp;)/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); // < is actually disallowed above anyways
+              };
+
+              getFileNameFromTitle = function _ref2() {
+                var title = svgCanvas.getDocumentTitle(); // We convert (to underscore) only those disallowed Win7 file name characters
+
+                return title.trim().replace(/[/\\:*?"<>|]/g, '_');
+              };
+
+              $ = _ref.$, decode64 = _ref.decode64, encode64 = _ref.encode64, importLocale = _ref.importLocale;
+              _context5.next = 7;
+              return regeneratorRuntime.awrap(importLocale());
+
+            case 7:
+              strings = _context5.sent;
+              svgEditor = this;
+              _svgEditor$curConfig = svgEditor.curConfig, extPath = _svgEditor$curConfig.extPath, avoidClientSide = _svgEditor$curConfig.avoidClientSide, avoidClientSideDownload = _svgEditor$curConfig.avoidClientSideDownload, avoidClientSideOpen = _svgEditor$curConfig.avoidClientSideOpen, svgCanvas = svgEditor.canvas;
+              /**
+               *
+               * @returns {string}
+               */
+
+              saveSvgAction = extPath + 'filesave.php', saveImgAction = extPath + 'filesave.php'; // Create upload target (hidden iframe)
+
+              cancelled = false; //  Hiding by size instead of display to avoid FF console errors
+              //    with `getBBox` in browser.js `supportsPathBBox_`)
+
+              $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n          style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
+              svgEditor.setCustomHandlers({
+                save: function save(win, data) {
+                  var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
+                      // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
+                  filename = getFileNameFromTitle();
+
+                  if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + encode64(svg))) {
                     return;
                   }
 
-                  $('#dialog_box').hide();
+                  $('<form>').attr({
+                    method: 'post',
+                    action: saveSvgAction,
+                    target: 'output_frame'
+                  }).append("\n          <input type=\"hidden\" name=\"output_svg\" value=\"".concat(xhtmlEscape(svg), "\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
+                },
+                exportPDF: function exportPDF(win, data) {
+                  var filename = getFileNameFromTitle(),
+                      datauri = data.output;
 
-                  if (type !== 'import_img') {
-                    xmlstr = decode64(str64);
+                  if (clientDownloadSupport(filename, '.pdf', datauri)) {
+                    return;
                   }
 
-                  switch (type) {
-                    case 'load_svg':
-                      svgCanvas.clear();
-                      svgCanvas.setSvgString(xmlstr);
-                      svgEditor.updateCanvas();
-                      break;
+                  $('<form>').attr({
+                    method: 'post',
+                    action: saveImgAction,
+                    target: 'output_frame'
+                  }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"application/pdf\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
+                },
+                // Todo: Integrate this extension with a new built-in exportWindowType, "download"
+                exportImage: function exportImage(win, data) {
+                  var issues, mimeType, quality, c, datauri, pre, note, filename, suffix;
+                  return regeneratorRuntime.async(function exportImage$(_context) {
+                    while (1) {
+                      switch (_context.prev = _context.next) {
+                        case 0:
+                          issues = data.issues, mimeType = data.mimeType, quality = data.quality;
 
-                    case 'import_svg':
-                      svgCanvas.importSvgString(xmlstr);
-                      svgEditor.updateCanvas();
-                      break;
+                          if (!$('#export_canvas').length) {
+                            $('<canvas>', {
+                              id: 'export_canvas'
+                            }).hide().appendTo('body');
+                          }
 
-                    case 'import_img':
-                      svgCanvas.setGoodImage(str64);
-                      break;
-                  }
-                }; // Create upload form
+                          c = $('#export_canvas')[0];
+                          c.width = svgCanvas.contentW;
+                          c.height = svgCanvas.contentH;
+                          _context.next = 7;
+                          return regeneratorRuntime.awrap(canvg(c, data.svg));
+
+                        case 7:
+                          datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType); // {uiStrings} = svgEditor;
+                          // Check if there are issues
+
+                          note = '';
+
+                          if (issues.length) {
+                            pre = "\n \u2022 "; // Bullet
+
+                            note += '\n\n' + pre + issues.join(pre);
+                          }
+
+                          if (!note.length) {
+                            _context.next = 13;
+                            break;
+                          }
+
+                          _context.next = 13;
+                          return regeneratorRuntime.awrap($.alert(note));
+
+                        case 13:
+                          filename = getFileNameFromTitle();
+                          suffix = '.' + data.type.toLowerCase();
+
+                          if (!clientDownloadSupport(filename, suffix, datauri)) {
+                            _context.next = 17;
+                            break;
+                          }
+
+                          return _context.abrupt("return");
+
+                        case 17:
+                          $('<form>').attr({
+                            method: 'post',
+                            action: saveImgAction,
+                            target: 'output_frame'
+                          }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"").concat(mimeType, "\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
+
+                        case 18:
+                        case "end":
+                          return _context.stop();
+                      }
+                    }
+                  });
+                }
+              }); // Do nothing if client support is found
+
+              if (!(window.FileReader && !avoidClientSideOpen)) {
+                _context5.next = 16;
+                break;
+              }
+
+              return _context5.abrupt("return");
+
+            case 16:
+              // Change these to appropriate script file
+              openSvgAction = extPath + 'fileopen.php?type=load_svg';
+              importSvgAction = extPath + 'fileopen.php?type=import_svg';
+              importImgAction = extPath + 'fileopen.php?type=import_img'; // Set up function for PHP uploader to use
+
+              svgEditor.processFile = function (str64, type) {
+                var xmlstr;
+
+                if (cancelled) {
+                  cancelled = false;
+                  return;
+                }
+
+                $('#dialog_box').hide();
+
+                if (type !== 'import_img') {
+                  xmlstr = decode64(str64);
+                }
+
+                switch (type) {
+                  case 'load_svg':
+                    svgCanvas.clear();
+                    svgCanvas.setSvgString(xmlstr);
+                    svgEditor.updateCanvas();
+                    break;
+
+                  case 'import_svg':
+                    svgCanvas.importSvgString(xmlstr);
+                    svgEditor.updateCanvas();
+                    break;
+
+                  case 'import_img':
+                    svgCanvas.setGoodImage(str64);
+                    break;
+                }
+              }; // Create upload form
 
 
-                openSvgForm = $('<form>');
-                openSvgForm.attr({
-                  enctype: 'multipart/form-data',
-                  method: 'post',
-                  action: openSvgAction,
-                  target: 'output_frame'
-                }); // Create import form
+              openSvgForm = $('<form>');
+              openSvgForm.attr({
+                enctype: 'multipart/form-data',
+                method: 'post',
+                action: openSvgAction,
+                target: 'output_frame'
+              }); // Create import form
 
-                importSvgForm = openSvgForm.clone().attr('action', importSvgAction); // Create image form
+              importSvgForm = openSvgForm.clone().attr('action', importSvgAction); // Create image form
 
-                importImgForm = openSvgForm.clone().attr('action', importImgAction); // It appears necessary to rebuild this input every time a file is
-                // selected so the same file can be picked and the change event can fire.
+              importImgForm = openSvgForm.clone().attr('action', importImgAction); // It appears necessary to rebuild this input every time a file is
+              // selected so the same file can be picked and the change event can fire.
 
-                /**
-                 *
-                 * @param {external:jQuery} form
-                 * @returns {void}
-                 */
+              /**
+               *
+               * @param {external:jQuery} form
+               * @returns {void}
+               */
 
-                // Create the input elements
-                rebuildInput(openSvgForm);
-                rebuildInput(importSvgForm);
-                rebuildInput(importImgForm); // Add forms to buttons
+              // Create the input elements
+              rebuildInput(openSvgForm);
+              rebuildInput(importSvgForm);
+              rebuildInput(importImgForm); // Add forms to buttons
 
-                $('#tool_open').show().prepend(openSvgForm);
-                $('#tool_import').show().prepend(importSvgForm);
-                $('#tool_image').prepend(importImgForm);
+              $('#tool_open').show().prepend(openSvgForm);
+              $('#tool_import').show().prepend(importSvgForm);
+              $('#tool_image').prepend(importImgForm);
 
-              case 30:
-              case "end":
-                return _context5.stop();
-            }
+            case 30:
+            case "end":
+              return _context5.stop();
           }
-        }, _callee5, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }
+      }, null, this);
+    }
   };
 
   return extServer_opensave;

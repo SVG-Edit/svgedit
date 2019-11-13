@@ -1,42 +1,6 @@
 var svgEditorExtension_helloworld = (function () {
   'use strict';
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
   function _slicedToArray(arr, i) {
     return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
   }
@@ -95,101 +59,91 @@ var svgEditorExtension_helloworld = (function () {
   */
   var extHelloworld = {
     name: 'helloworld',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
-        var $, importLocale, strings, svgEditor, svgCanvas;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                $ = _ref.$, importLocale = _ref.importLocale;
-                _context.next = 3;
-                return importLocale();
+    init: function init(_ref) {
+      var $, importLocale, strings, svgEditor, svgCanvas;
+      return regeneratorRuntime.async(function init$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              $ = _ref.$, importLocale = _ref.importLocale;
+              _context.next = 3;
+              return regeneratorRuntime.awrap(importLocale());
 
-              case 3:
-                strings = _context.sent;
-                svgEditor = this;
-                svgCanvas = svgEditor.canvas;
-                return _context.abrupt("return", {
-                  name: strings.name,
-                  // For more notes on how to make an icon file, see the source of
-                  // the helloworld-icon.xml
-                  svgicons: svgEditor.curConfig.extIconsPath + 'helloworld-icon.xml',
-                  // Multiple buttons can be added in this array
-                  buttons: [{
-                    // Must match the icon ID in helloworld-icon.xml
-                    id: 'hello_world',
-                    // Fallback, e.g., for `file:///` access
-                    icon: svgEditor.curConfig.extIconsPath + 'helloworld.png',
-                    // This indicates that the button will be added to the "mode"
-                    // button panel on the left side
-                    type: 'mode',
-                    // Tooltip text
-                    title: strings.buttons[0].title,
-                    // Events
-                    events: {
-                      click: function click() {
-                        // The action taken when the button is clicked on.
-                        // For "mode" buttons, any other button will
-                        // automatically be de-pressed.
-                        svgCanvas.setMode('hello_world');
-                      }
-                    }
-                  }],
-                  // This is triggered when the main mouse button is pressed down
-                  // on the editor canvas (not the tool panels)
-                  mouseDown: function mouseDown() {
-                    // Check the mode on mousedown
-                    if (svgCanvas.getMode() === 'hello_world') {
-                      // The returned object must include "started" with
-                      // a value of true in order for mouseUp to be triggered
-                      return {
-                        started: true
-                      };
-                    }
-
-                    return undefined;
-                  },
-                  // This is triggered from anywhere, but "started" must have been set
-                  // to true (see above). Note that "opts" is an object with event info
-                  mouseUp: function mouseUp(opts) {
-                    // Check the mode on mouseup
-                    if (svgCanvas.getMode() === 'hello_world') {
-                      var zoom = svgCanvas.getZoom(); // Get the actual coordinate by dividing by the zoom value
-
-                      var x = opts.mouse_x / zoom;
-                      var y = opts.mouse_y / zoom; // We do our own formatting
-
-                      var text = strings.text;
-                      [['x', x], ['y', y]].forEach(function (_ref2) {
-                        var _ref3 = _slicedToArray(_ref2, 2),
-                            prop = _ref3[0],
-                            val = _ref3[1];
-
-                        text = text.replace('{' + prop + '}', val);
-                      }); // Show the text using the custom alert function
-
-                      $.alert(text);
+            case 3:
+              strings = _context.sent;
+              svgEditor = this;
+              svgCanvas = svgEditor.canvas;
+              return _context.abrupt("return", {
+                name: strings.name,
+                // For more notes on how to make an icon file, see the source of
+                // the helloworld-icon.xml
+                svgicons: svgEditor.curConfig.extIconsPath + 'helloworld-icon.xml',
+                // Multiple buttons can be added in this array
+                buttons: [{
+                  // Must match the icon ID in helloworld-icon.xml
+                  id: 'hello_world',
+                  // Fallback, e.g., for `file:///` access
+                  icon: svgEditor.curConfig.extIconsPath + 'helloworld.png',
+                  // This indicates that the button will be added to the "mode"
+                  // button panel on the left side
+                  type: 'mode',
+                  // Tooltip text
+                  title: strings.buttons[0].title,
+                  // Events
+                  events: {
+                    click: function click() {
+                      // The action taken when the button is clicked on.
+                      // For "mode" buttons, any other button will
+                      // automatically be de-pressed.
+                      svgCanvas.setMode('hello_world');
                     }
                   }
-                });
+                }],
+                // This is triggered when the main mouse button is pressed down
+                // on the editor canvas (not the tool panels)
+                mouseDown: function mouseDown() {
+                  // Check the mode on mousedown
+                  if (svgCanvas.getMode() === 'hello_world') {
+                    // The returned object must include "started" with
+                    // a value of true in order for mouseUp to be triggered
+                    return {
+                      started: true
+                    };
+                  }
 
-              case 7:
-              case "end":
-                return _context.stop();
-            }
+                  return undefined;
+                },
+                // This is triggered from anywhere, but "started" must have been set
+                // to true (see above). Note that "opts" is an object with event info
+                mouseUp: function mouseUp(opts) {
+                  // Check the mode on mouseup
+                  if (svgCanvas.getMode() === 'hello_world') {
+                    var zoom = svgCanvas.getZoom(); // Get the actual coordinate by dividing by the zoom value
+
+                    var x = opts.mouse_x / zoom;
+                    var y = opts.mouse_y / zoom; // We do our own formatting
+
+                    var text = strings.text;
+                    [['x', x], ['y', y]].forEach(function (_ref2) {
+                      var _ref3 = _slicedToArray(_ref2, 2),
+                          prop = _ref3[0],
+                          val = _ref3[1];
+
+                      text = text.replace('{' + prop + '}', val);
+                    }); // Show the text using the custom alert function
+
+                    $.alert(text);
+                  }
+                }
+              });
+
+            case 7:
+            case "end":
+              return _context.stop();
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }
+      }, null, this);
+    }
   };
 
   return extHelloworld;

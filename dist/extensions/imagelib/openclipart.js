@@ -15,42 +15,6 @@
     return _typeof(obj);
   }
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -303,20 +267,35 @@
     return obj;
   }
 
-  function _objectSpread(target) {
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
 
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
+      if (i % 2) {
+        ownKeys(source, true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(source).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
       }
-
-      ownKeys.forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
     }
 
     return target;
@@ -494,6 +473,10 @@
   }
 
   function _iterableToArrayLimit$1(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -683,7 +666,7 @@
    * @static
    * @param {Element} el DOM element to which to attach the event
    * @param {string} type The DOM event (without 'on') to attach to the element
-   * @param {Function} handler The event handler to attach to the element
+   * @param {EventListener} handler The event handler to attach to the element
    * @param {boolean} [capturing] Whether or not the event should be
    *   capturing (W3C-browsers only); default is false; NOT IN USE
    * @returns {void}
@@ -725,7 +708,7 @@
   } // Todo: Make as public utility
 
   /**
-   * @param {*} o
+   * @param {any} o
    * @returns {boolean}
    */
 
@@ -737,7 +720,7 @@
   /**
   * @private
   * @static
-  * @param {string|object|Array|Element|DocumentFragment} item
+  * @param {string|JamilihAttributes|JamilihArray|Element|DocumentFragment} item
   * @returns {"string"|"null"|"array"|"element"|"fragment"|"object"}
   */
 
@@ -833,7 +816,7 @@
     return jml(arg);
   }
   /**
-  * @typedef {Array} AttributeArray
+  * @typedef {JamilihAttributes} AttributeArray
   * @property {string} 0 The key
   * @property {string} 1 The value
   */
@@ -921,10 +904,10 @@
   * @private
   * @static
   function _DOMfromJMLOrString (childNodeJML) {
-      if (typeof childNodeJML === 'string') {
-          return doc.createTextNode(childNodeJML);
-      }
-      return jml(...childNodeJML);
+    if (typeof childNodeJML === 'string') {
+      return doc.createTextNode(childNodeJML);
+    }
+    return jml(...childNodeJML);
   }
   */
 
@@ -933,11 +916,15 @@
   */
 
   /**
+  * @typedef {PlainObject} JamilihAttributes
+  */
+
+  /**
   * @typedef {GenericArray} JamilihArray
   * @property {string} 0 The element to create (by lower-case name)
-  * @property {Object} [1] Attributes to add with the key as the attribute name
-  *   and value as the attribute value; important for IE where the input
-  *   element's type cannot be added later after already added to the page
+  * @property {JamilihAttributes} [1] Attributes to add with the key as the
+  *   attribute name and value as the attribute value; important for IE where
+  *   the input element's type cannot be added later after already added to the page
   * @param {Element[]} [children] The optional children of this element
   *   (but raw DOM elements required to be specified within arrays since
   *   could not otherwise be distinguished from siblings being added)
@@ -999,9 +986,9 @@
            0. {$xmlDocument: []} // doc.implementation.createDocument
            0. Accept array for any attribute with first item as prefix and second as value?
           0. {$: ['xhtml', 'div']} for prefixed elements
-              case '$': // Element with prefix?
-                  nodes[nodes.length] = elem = doc.createElementNS(attVal[0], attVal[1]);
-                  break;
+            case '$': // Element with prefix?
+              nodes[nodes.length] = elem = doc.createElementNS(attVal[0], attVal[1]);
+              break;
           */
           case '#':
             {
@@ -1287,7 +1274,7 @@
               /*
               // Todo:
               if (attVal.internalSubset) {
-                  node = {};
+                node = {};
               }
               else
               */
@@ -1320,13 +1307,13 @@
               /*
               // Todo: Should we auto-copy another node's properties/methods (like DocumentType) excluding or changing its non-entity node values?
               const node = {
-                  nodeName: attVal.name,
-                  nodeValue: null,
-                  publicId: attVal.publicId,
-                  systemId: attVal.systemId,
-                  notationName: attVal.notationName,
-                  nodeType: 6,
-                  childNodes: attVal.childNodes.map(_DOMfromJMLOrString)
+                nodeName: attVal.name,
+                nodeValue: null,
+                publicId: attVal.publicId,
+                systemId: attVal.systemId,
+                notationName: attVal.notationName,
+                nodeType: 6,
+                childNodes: attVal.childNodes.map(_DOMfromJMLOrString)
               };
               */
               break;
@@ -1472,9 +1459,9 @@
                 /*
                 // The following reorders which is troublesome for serialization, e.g., as used in our testing
                 if (elem.style.cssText !== undefined) {
-                    elem.style.cssText += attVal;
+                  elem.style.cssText += attVal;
                 } else { // Opera
-                    elem.style += attVal;
+                  elem.style += attVal;
                 }
                 */
 
@@ -1568,8 +1555,6 @@
           map = dataVal[0] || defaultMap[0];
           obj = dataVal[1] || defaultMap[1];
         } // Map
-
-        /* eslint-disable-next-line unicorn/no-unsafe-regex */
 
       } else if (/^\[object (?:Weak)?Map\]$/.test([].toString.call(dataVal))) {
         map = dataVal;
@@ -1823,11 +1808,11 @@
   /**
   * Converts a DOM object or a string of HTML into a Jamilih object (or string).
   * @param {string|HTMLElement} [dom=document.documentElement] Defaults to converting the current document.
-  * @param {object} [config={stringOutput:false}] Configuration object
+  * @param {PlainObject} [config] Configuration object
   * @param {boolean} [config.stringOutput=false] Whether to output the Jamilih object as a string.
-  * @returns {Array|string} Array containing the elements which represent a Jamilih object, or,
-                              if `stringOutput` is true, it will be the stringified version of
-                              such an object
+  * @returns {JamilihArray|string} Array containing the elements which represent
+  * a Jamilih object, or, if `stringOutput` is true, it will be the stringified
+  * version of such an object
   */
 
 
@@ -1890,7 +1875,7 @@
     }
     /**
      *
-     * @param {*} val
+     * @param {any} val
      * @returns {void}
      */
 
@@ -1938,11 +1923,11 @@
 
       /*
       if ((node.prefix && node.prefix.includes(':')) || (node.localName && node.localName.includes(':'))) {
-          invalidStateError();
+        invalidStateError();
       }
       */
       var type = 'nodeType' in node ? node.nodeType : null;
-      namespaces = _objectSpread({}, namespaces);
+      namespaces = _objectSpread2({}, namespaces);
       var xmlChars = /([\t\n\r -\uD7FF\uE000-\uFFFD]|(?:[\uD800-\uDBFF](?![\uDC00-\uDFFF]))(?:(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))*$/; // eslint-disable-line no-control-regex
 
       if ([2, 3, 4, 7, 8].includes(type) && !xmlChars.test(node.nodeValue)) {
@@ -2018,7 +2003,7 @@
             break;
           }
 
-        case undefined: // Treat as attribute node until this is fixed: https://github.com/tmpvar/jsdom/issues/1641 / https://github.com/tmpvar/jsdom/pull/1822
+        case undefined: // Treat as attribute node until this is fixed: https://github.com/jsdom/jsdom/issues/1641 / https://github.com/jsdom/jsdom/pull/1822
 
         case 2:
           // ATTRIBUTE (should only get here if passing in an attribute node)
@@ -3235,256 +3220,227 @@
    * @returns {Promise<void>}
    */
 
-  function processResults(_x) {
-    return _processResults.apply(this, arguments);
-  }
+  function processResults(url) {
+    var queryLink, r, json, payload, _json$info, numResults, pages, currentPage, semiColonSep;
 
-  function _processResults() {
-    _processResults = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee3(url) {
-      var queryLink, r, json, payload, _json$info, numResults, pages, currentPage, semiColonSep;
-
-      return regeneratorRuntime.wrap(function _callee3$(_context3) {
-        while (1) {
-          switch (_context3.prev = _context3.next) {
-            case 0:
-              queryLink = function _ref4(query) {
-                return ['a', {
-                  href: jsVoid,
-                  dataset: {
-                    value: query
-                  },
-                  $on: {
-                    click: function click(e) {
-                      e.preventDefault();
-                      var value = this.dataset.value;
-                      $$1('#query')[0].$set(value);
-                      $$1('#openclipart')[0].$submit();
-                    }
+    return regeneratorRuntime.async(function processResults$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            queryLink = function _ref2(query) {
+              return ['a', {
+                href: jsVoid,
+                dataset: {
+                  value: query
+                },
+                $on: {
+                  click: function click(e) {
+                    e.preventDefault();
+                    var value = this.dataset.value;
+                    $$1('#query')[0].$set(value);
+                    $$1('#openclipart')[0].$submit();
                   }
-                }, [query]];
-              };
+                }
+              }, [query]];
+            };
 
-              _context3.next = 3;
-              return fetch(url);
+            _context2.next = 3;
+            return regeneratorRuntime.awrap(fetch(url));
 
-            case 3:
-              r = _context3.sent;
-              _context3.next = 6;
-              return r.json();
+          case 3:
+            r = _context2.sent;
+            _context2.next = 6;
+            return regeneratorRuntime.awrap(r.json());
 
-            case 6:
-              json = _context3.sent;
+          case 6:
+            json = _context2.sent;
 
-              if (!(!json || json.msg !== 'success')) {
-                _context3.next = 10;
-                break;
-              }
+            if (!(!json || json.msg !== 'success')) {
+              _context2.next = 10;
+              break;
+            }
 
-              // Todo: This could use a generic alert library instead
-              alert('There was a problem downloading the results'); // eslint-disable-line no-alert
+            // Todo: This could use a generic alert library instead
+            alert('There was a problem downloading the results'); // eslint-disable-line no-alert
 
-              return _context3.abrupt("return");
+            return _context2.abrupt("return");
 
-            case 10:
-              payload = json.payload, _json$info = json.info, numResults = _json$info.results, pages = _json$info.pages, currentPage = _json$info.current_page; // $('#page')[0].value = currentPage;
-              // $('#page')[0].max = pages;
-              // Unused properties:
-              // - `svg_filesize` always 0?
-              // - `dimensions: {
-              //      png_thumb: {width, height},
-              //      png_full_lossy: {width, height}
-              //    }` object of relevance?
-              // - No need for `tags` with `tags_array`
-              // - `svg`'s: `png_thumb`, `png_full_lossy`, `png_2400px`
+          case 10:
+            payload = json.payload, _json$info = json.info, numResults = _json$info.results, pages = _json$info.pages, currentPage = _json$info.current_page; // $('#page')[0].value = currentPage;
+            // $('#page')[0].max = pages;
+            // Unused properties:
+            // - `svg_filesize` always 0?
+            // - `dimensions: {
+            //      png_thumb: {width, height},
+            //      png_full_lossy: {width, height}
+            //    }` object of relevance?
+            // - No need for `tags` with `tags_array`
+            // - `svg`'s: `png_thumb`, `png_full_lossy`, `png_2400px`
 
-              semiColonSep = '; ' + nbsp;
-              $$1('#results').jml('div', [['span', ['Number of results: ', numResults]], semiColonSep, ['span', ['page ', currentPage, ' out of ', pages]]].concat(_toConsumableArray(payload.map(function (_ref3) {
-                var title = _ref3.title,
-                    description = _ref3.description,
-                    id = _ref3.id,
-                    uploader = _ref3.uploader,
-                    created = _ref3.created,
-                    svgURL = _ref3.svg.url,
-                    detailLink = _ref3.detail_link,
-                    tagsArray = _ref3.tags_array,
-                    downloadedBy = _ref3.downloaded_by,
-                    totalFavorites = _ref3.total_favorites;
-                var imgHW = '100px';
-                var colonSep = ': ' + nbsp;
-                return ['div', [['button', {
-                  style: 'margin-right: 8px; border: 2px solid black;',
-                  dataset: {
-                    id: id,
-                    value: svgURL
-                  },
-                  $on: {
-                    click: function () {
-                      var _click = _asyncToGenerator(
-                      /*#__PURE__*/
-                      regeneratorRuntime.mark(function _callee2(e) {
-                        var svgurl, post, result, svg;
-                        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                          while (1) {
-                            switch (_context2.prev = _context2.next) {
-                              case 0:
-                                e.preventDefault();
-                                svgurl = this.dataset.value; // console.log('this', id, svgurl);
+            semiColonSep = '; ' + nbsp;
+            $$1('#results').jml('div', [['span', ['Number of results: ', numResults]], semiColonSep, ['span', ['page ', currentPage, ' out of ', pages]]].concat(_toConsumableArray(payload.map(function (_ref) {
+              var title = _ref.title,
+                  description = _ref.description,
+                  id = _ref.id,
+                  uploader = _ref.uploader,
+                  created = _ref.created,
+                  svgURL = _ref.svg.url,
+                  detailLink = _ref.detail_link,
+                  tagsArray = _ref.tags_array,
+                  downloadedBy = _ref.downloaded_by,
+                  totalFavorites = _ref.total_favorites;
+              var imgHW = '100px';
+              var colonSep = ': ' + nbsp;
+              return ['div', [['button', {
+                style: 'margin-right: 8px; border: 2px solid black;',
+                dataset: {
+                  id: id,
+                  value: svgURL
+                },
+                $on: {
+                  click: function click(e) {
+                    var svgurl, post, result, svg;
+                    return regeneratorRuntime.async(function click$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            e.preventDefault();
+                            svgurl = this.dataset.value; // console.log('this', id, svgurl);
 
-                                post = function post(message) {
-                                  // Todo: Make origin customizable as set by opening window
-                                  // Todo: If dropping IE9, avoid stringifying
-                                  window.parent.postMessage(JSON.stringify(_extends({
-                                    namespace: 'imagelib'
-                                  }, message)), '*');
-                                }; // Send metadata (also indicates file is about to be sent)
+                            post = function post(message) {
+                              // Todo: Make origin customizable as set by opening window
+                              // Todo: If dropping IE9, avoid stringifying
+                              window.parent.postMessage(JSON.stringify(_extends({
+                                namespace: 'imagelib'
+                              }, message)), '*');
+                            }; // Send metadata (also indicates file is about to be sent)
 
 
-                                post({
-                                  name: title,
-                                  id: svgurl
-                                });
-                                _context2.next = 6;
-                                return fetch(svgurl);
+                            post({
+                              name: title,
+                              id: svgurl
+                            });
+                            _context.next = 6;
+                            return regeneratorRuntime.awrap(fetch(svgurl));
 
-                              case 6:
-                                result = _context2.sent;
-                                _context2.next = 9;
-                                return result.text();
+                          case 6:
+                            result = _context.sent;
+                            _context.next = 9;
+                            return regeneratorRuntime.awrap(result.text());
 
-                              case 9:
-                                svg = _context2.sent;
-                                // console.log('url and svg', svgurl, svg);
-                                post({
-                                  href: svgurl,
-                                  data: svg
-                                });
+                          case 9:
+                            svg = _context.sent;
+                            // console.log('url and svg', svgurl, svg);
+                            post({
+                              href: svgurl,
+                              data: svg
+                            });
 
-                              case 11:
-                              case "end":
-                                return _context2.stop();
-                            }
-                          }
-                        }, _callee2, this);
-                      }));
-
-                      function click(_x2) {
-                        return _click.apply(this, arguments);
+                          case 11:
+                          case "end":
+                            return _context.stop();
+                        }
                       }
+                    }, null, this);
+                  }
+                }
+              }, [// If we wanted interactive versions despite security risk:
+              // ['object', {data: svgURL, type: 'image/svg+xml'}]
+              ['img', {
+                src: svgURL,
+                style: "width: ".concat(imgHW, "; height: ").concat(imgHW, ";")
+              }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
+                href: jsVoid,
+                dataset: {
+                  value: id
+                },
+                $on: {
+                  click: function click(e) {
+                    e.preventDefault();
+                    var value = this.dataset.value;
+                    $$1('#byids')[0].$set(value);
+                    $$1('#openclipart')[0].$submit();
+                  }
+                }
+              }, [id]], ')']], ' ', ['i', [['a', {
+                href: detailLink,
+                target: '_blank'
+              }, ['Details']]]], ['br'], ['span', [['u', ['Uploaded by']], colonSep, queryLink(uploader), semiColonSep]], ['span', [['u', ['Download count']], colonSep, downloadedBy, semiColonSep]], ['span', [['u', ['Times used as favorite']], colonSep, totalFavorites, semiColonSep]], ['span', [['u', ['Created date']], colonSep, created]], ['br'], ['u', ['Tags']], colonSep].concat(_toConsumableArray(tagsArray.map(function (tag) {
+                return ['span', [' ', queryLink(tag)]];
+              })))];
+            })), [['br'], ['br'], currentPage === 1 || pages <= 2 ? '' : ['span', [['a', {
+              href: jsVoid,
+              $on: {
+                click: function click(e) {
+                  e.preventDefault();
+                  $$1('#page')[0].value = 1;
+                  $$1('#openclipart')[0].$submit();
+                }
+              }
+            }, ['First']], ' ']], currentPage === 1 ? '' : ['span', [['a', {
+              href: jsVoid,
+              $on: {
+                click: function click(e) {
+                  e.preventDefault();
+                  $$1('#page')[0].value = currentPage - 1;
+                  $$1('#openclipart')[0].$submit();
+                }
+              }
+            }, ['Prev']], ' ']], currentPage === pages ? '' : ['span', [['a', {
+              href: jsVoid,
+              $on: {
+                click: function click(e) {
+                  e.preventDefault();
+                  $$1('#page')[0].value = currentPage + 1;
+                  $$1('#openclipart')[0].$submit();
+                }
+              }
+            }, ['Next']], ' ']], currentPage === pages || pages <= 2 ? '' : ['span', [['a', {
+              href: jsVoid,
+              $on: {
+                click: function click(e) {
+                  e.preventDefault();
+                  $$1('#page')[0].value = pages;
+                  $$1('#openclipart')[0].$submit();
+                }
+              }
+            }, ['Last']], ' ']]]));
 
-                      return click;
-                    }()
-                  }
-                }, [// If we wanted interactive versions despite security risk:
-                // ['object', {data: svgURL, type: 'image/svg+xml'}]
-                ['img', {
-                  src: svgURL,
-                  style: "width: ".concat(imgHW, "; height: ").concat(imgHW, ";")
-                }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
-                  href: jsVoid,
-                  dataset: {
-                    value: id
-                  },
-                  $on: {
-                    click: function click(e) {
-                      e.preventDefault();
-                      var value = this.dataset.value;
-                      $$1('#byids')[0].$set(value);
-                      $$1('#openclipart')[0].$submit();
-                    }
-                  }
-                }, [id]], ')']], ' ', ['i', [['a', {
-                  href: detailLink,
-                  target: '_blank'
-                }, ['Details']]]], ['br'], ['span', [['u', ['Uploaded by']], colonSep, queryLink(uploader), semiColonSep]], ['span', [['u', ['Download count']], colonSep, downloadedBy, semiColonSep]], ['span', [['u', ['Times used as favorite']], colonSep, totalFavorites, semiColonSep]], ['span', [['u', ['Created date']], colonSep, created]], ['br'], ['u', ['Tags']], colonSep].concat(_toConsumableArray(tagsArray.map(function (tag) {
-                  return ['span', [' ', queryLink(tag)]];
-                })))];
-              })), [['br'], ['br'], currentPage === 1 || pages <= 2 ? '' : ['span', [['a', {
-                href: jsVoid,
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    $$1('#page')[0].value = 1;
-                    $$1('#openclipart')[0].$submit();
-                  }
-                }
-              }, ['First']], ' ']], currentPage === 1 ? '' : ['span', [['a', {
-                href: jsVoid,
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    $$1('#page')[0].value = currentPage - 1;
-                    $$1('#openclipart')[0].$submit();
-                  }
-                }
-              }, ['Prev']], ' ']], currentPage === pages ? '' : ['span', [['a', {
-                href: jsVoid,
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    $$1('#page')[0].value = currentPage + 1;
-                    $$1('#openclipart')[0].$submit();
-                  }
-                }
-              }, ['Next']], ' ']], currentPage === pages || pages <= 2 ? '' : ['span', [['a', {
-                href: jsVoid,
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    $$1('#page')[0].value = pages;
-                    $$1('#openclipart')[0].$submit();
-                  }
-                }
-              }, ['Last']], ' ']]]));
-
-            case 13:
-            case "end":
-              return _context3.stop();
-          }
+          case 13:
+          case "end":
+            return _context2.stop();
         }
-      }, _callee3);
-    }));
-    return _processResults.apply(this, arguments);
+      }
+    });
   }
 
   jml('div', [['style', [".control {\n      padding-top: 10px;\n    }"]], ['form', {
     id: 'openclipart',
     $custom: {
-      $submit: function () {
-        var _$submit = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee() {
-          var url;
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  url = new URL(baseAPIURL);
-                  ['query', 'sort', 'amount', 'page', 'byids'].forEach(function (prop) {
-                    var value = $$1('#' + prop)[0].value;
+      $submit: function $submit() {
+        var url;
+        return regeneratorRuntime.async(function $submit$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                url = new URL(baseAPIURL);
+                ['query', 'sort', 'amount', 'page', 'byids'].forEach(function (prop) {
+                  var value = $$1('#' + prop)[0].value;
 
-                    if (value) {
-                      url.searchParams.set(prop, value);
-                    }
-                  });
-                  _context.next = 4;
-                  return processResults(url);
+                  if (value) {
+                    url.searchParams.set(prop, value);
+                  }
+                });
+                _context3.next = 4;
+                return regeneratorRuntime.awrap(processResults(url));
 
-                case 4:
-                case "end":
-                  return _context.stop();
-              }
+              case 4:
+              case "end":
+                return _context3.stop();
             }
-          }, _callee);
-        }));
-
-        function $submit() {
-          return _$submit.apply(this, arguments);
-        }
-
-        return $submit;
-      }()
+          }
+        });
+      }
     },
     $on: {
       submit: function submit(e) {
@@ -3532,11 +3488,11 @@
   }, [['label', ['Sort by: ', ['select', {
     id: 'sort'
   }, [// Todo: i18nize first values
-  ['Date', 'date'], ['Downloads', 'downloads'], ['Favorited', 'favorites']].map(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-        text = _ref2[0],
-        _ref2$ = _ref2[1],
-        value = _ref2$ === void 0 ? text : _ref2$;
+  ['Date', 'date'], ['Downloads', 'downloads'], ['Favorited', 'favorites']].map(function (_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+        text = _ref4[0],
+        _ref4$ = _ref4[1],
+        value = _ref4$ === void 0 ? text : _ref4$;
 
     return ['option', {
       value: value
