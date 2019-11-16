@@ -757,7 +757,8 @@ editor.init = function () {
         qstr = $.param.querystring();
         if (!src) { // urldata.source may have been null if it ended with '='
           if (qstr.includes('source=data:')) {
-            ({src} = qstr.match(/source=(?<src>data:[^&]*)/).groups);
+            src = qstr.match(/source=(data:[^&]*)/)[1];
+            // ({src} = qstr.match(/source=(?<src>data:[^&]*)/).groups);
           }
         }
         if (src) {
@@ -820,7 +821,8 @@ editor.init = function () {
     try {
       await Promise.all(
         curConfig.extensions.map(async (extname) => {
-          const {extName} = extname.match(/^ext-(?<extName>.+)\.js/).groups;
+          const extName = extname.match(/^ext-(.+)\.js/);
+          // const {extName} = extname.match(/^ext-(?<extName>.+)\.js/).groups;
           if (!extName) { // Ensure URL cannot specify some other unintended file in the extPath
             return undefined;
           }
@@ -838,9 +840,11 @@ editor.init = function () {
              * @type {module:SVGEditor.ExtensionObject}
              */
             const imported = await importSetGlobalDefault(url, {
-              global: 'svgEditorExtension_' + extName.replace(/-/g, '_')
+              global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
+              // global: 'svgEditorExtension_' + extName.replace(/-/g, '_')
             });
-            const {name = extName, init} = imported;
+            const {name = extName[1], init} = imported;
+            // const {name = extName, init} = imported;
             const importLocale = getImportLocale({defaultLang: langParam, defaultName: name});
             return editor.addExtension(name, (init && init.bind(editor)), {$, importLocale});
           } catch (err) {

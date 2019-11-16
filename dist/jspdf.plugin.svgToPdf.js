@@ -23,105 +23,6 @@
     return Constructor;
   }
 
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) _setPrototypeOf(subClass, superClass);
-  }
-
-  function _getPrototypeOf(o) {
-    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-      return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return _getPrototypeOf(o);
-  }
-
-  function _setPrototypeOf(o, p) {
-    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-      o.__proto__ = p;
-      return o;
-    };
-
-    return _setPrototypeOf(o, p);
-  }
-
-  function isNativeReflectConstruct() {
-    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-    if (Reflect.construct.sham) return false;
-    if (typeof Proxy === "function") return true;
-
-    try {
-      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function _construct(Parent, args, Class) {
-    if (isNativeReflectConstruct()) {
-      _construct = Reflect.construct;
-    } else {
-      _construct = function _construct(Parent, args, Class) {
-        var a = [null];
-        a.push.apply(a, args);
-        var Constructor = Function.bind.apply(Parent, a);
-        var instance = new Constructor();
-        if (Class) _setPrototypeOf(instance, Class.prototype);
-        return instance;
-      };
-    }
-
-    return _construct.apply(null, arguments);
-  }
-
-  function _isNativeFunction(fn) {
-    return Function.toString.call(fn).indexOf("[native code]") !== -1;
-  }
-
-  function _wrapNativeSuper(Class) {
-    var _cache = typeof Map === "function" ? new Map() : undefined;
-
-    _wrapNativeSuper = function _wrapNativeSuper(Class) {
-      if (Class === null || !_isNativeFunction(Class)) return Class;
-
-      if (typeof Class !== "function") {
-        throw new TypeError("Super expression must either be null or a function");
-      }
-
-      if (typeof _cache !== "undefined") {
-        if (_cache.has(Class)) return _cache.get(Class);
-
-        _cache.set(Class, Wrapper);
-      }
-
-      function Wrapper() {
-        return _construct(Class, arguments, _getPrototypeOf(this).constructor);
-      }
-
-      Wrapper.prototype = Object.create(Class.prototype, {
-        constructor: {
-          value: Wrapper,
-          enumerable: false,
-          writable: true,
-          configurable: true
-        }
-      });
-      return _setPrototypeOf(Wrapper, Class);
-    };
-
-    return _wrapNativeSuper(Class);
-  }
-
   function _slicedToArray(arr, i) {
     return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
   }
@@ -182,71 +83,6 @@
 
   function _nonIterableRest() {
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
-  }
-
-  function _wrapRegExp(re, groups) {
-    _wrapRegExp = function (re, groups) {
-      return new BabelRegExp(re, undefined, groups);
-    };
-
-    var _RegExp = _wrapNativeSuper(RegExp);
-
-    var _super = RegExp.prototype;
-
-    var _groups = new WeakMap();
-
-    function BabelRegExp(re, flags, groups) {
-      var _this = _RegExp.call(this, re, flags);
-
-      _groups.set(_this, groups || _groups.get(re));
-
-      return _this;
-    }
-
-    _inherits(BabelRegExp, _RegExp);
-
-    BabelRegExp.prototype.exec = function (str) {
-      var result = _super.exec.call(this, str);
-
-      if (result) result.groups = buildGroups(result, this);
-      return result;
-    };
-
-    BabelRegExp.prototype[Symbol.replace] = function (str, substitution) {
-      if (typeof substitution === "string") {
-        var groups = _groups.get(this);
-
-        return _super[Symbol.replace].call(this, str, substitution.replace(/\$<([^>]+)>/g, function (_, name) {
-          return "$" + groups[name];
-        }));
-      } else if (typeof substitution === "function") {
-        var _this = this;
-
-        return _super[Symbol.replace].call(this, str, function () {
-          var args = [];
-          args.push.apply(args, arguments);
-
-          if (typeof args[args.length - 1] !== "object") {
-            args.push(buildGroups(args, _this));
-          }
-
-          return substitution.apply(this, args);
-        });
-      } else {
-        return _super[Symbol.replace].call(this, str, substitution);
-      }
-    };
-
-    function buildGroups(result, re) {
-      var g = _groups.get(re);
-
-      return Object.keys(g).reduce(function (groups, name) {
-        groups[name] = result[g[name]];
-        return groups;
-      }, Object.create(null));
-    }
-
-    return _wrapRegExp.apply(this, arguments);
   }
 
   /**
@@ -403,11 +239,8 @@
   }; // array of color definition objects
 
   var colorDefs = [{
-    re: _wrapRegExp(/^rgb\(([0-9]{1,3}),[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*([0-9]{1,3}),[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*([0-9]{1,3})\)$/, {
-      r: 1,
-      g: 2,
-      b: 3
-    }),
+    re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+    // re: /^rgb\((?<r>\d{1,3}),\s*(?<g>\d{1,3}),\s*(?<b>\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
     process: function process(_) {
       for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -419,11 +252,8 @@
       });
     }
   }, {
-    re: _wrapRegExp(/^([0-9A-Z_a-z]{2})([0-9A-Z_a-z]{2})([0-9A-Z_a-z]{2})$/, {
-      r: 1,
-      g: 2,
-      b: 3
-    }),
+    re: /^(\w{2})(\w{2})(\w{2})$/,
+    // re: /^(?<r>\w{2})(?<g>\w{2})(?<b>\w{2})$/,
     example: ['#00ff00', '336699'],
     process: function process(_) {
       for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
@@ -435,11 +265,8 @@
       });
     }
   }, {
-    re: _wrapRegExp(/^([0-9A-Z_a-z]{1})([0-9A-Z_a-z]{1})([0-9A-Z_a-z]{1})$/, {
-      r: 1,
-      g: 2,
-      b: 3
-    }),
+    re: /^(\w{1})(\w{1})(\w{1})$/,
+    // re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
     example: ['#fb0', 'f0f'],
     process: function process(_) {
       for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {

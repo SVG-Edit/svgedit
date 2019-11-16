@@ -56,8 +56,13 @@ export default {
       val = val ? 'storagePrompt=' + val : '';
       const loc = top.location; // Allow this to work with the embedded editor as well
       if (loc.href.includes('storagePrompt=')) {
+        /*
         loc.href = loc.href.replace(/(?<sep>[&?])storagePrompt=[^&]*(?<amp>&?)/, function (n0, sep, amp) {
           return (val ? sep : '') + val + (!val && amp ? sep : (amp || ''));
+        });
+        */
+        loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
+          return (val ? n1 : '') + val + (!val && amp ? n1 : (amp || ''));
         });
       } else {
         loc.href += (loc.href.includes('?') ? '&' : '?') + val;

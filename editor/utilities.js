@@ -110,7 +110,8 @@ export const init = function (editorContext) {
  * @todo This might be needed in other places `parseFromString` is used even without LGTM flagging
  */
 export const dropXMLInteralSubset = (str) => {
-  return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
+  return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, '$1$2');
+  // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
 };
 
 /**
@@ -265,9 +266,14 @@ export const dataURLToObjectURL = function (dataurl) {
   if (typeof Uint8Array === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) {
     return '';
   }
+  const arr = dataurl.split(','),
+    mime = arr[0].match(/:(.*?);/)[1],
+    bstr = atob(arr[1]);
+  /*
   const [prefix, suffix] = dataurl.split(','),
     {groups: {mime}} = prefix.match(/:(?<mime>.*?);/),
     bstr = atob(suffix);
+  */
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
   while (n--) {
@@ -330,7 +336,6 @@ export const convertToXMLReferences = function (input) {
 */
 export const text2xml = function (sXML) {
   if (sXML.includes('<svg:svg')) {
-    // eslint-disable-next-line prefer-named-capture-group
     sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
   }
 

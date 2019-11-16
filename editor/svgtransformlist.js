@@ -145,11 +145,21 @@ export class SVGTransformList { // eslint-disable-line no-shadow
       if (!str) { return; }
 
       // TODO: Add skew support in future
-      const re = /\s*(?<xform>(?:scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
+      const re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
+      // const re = /\s*(?<xform>(?:scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
       let m = true;
       while (m) {
         m = str.match(re);
         str = str.replace(re, '');
+        if (m && m[1]) {
+          const x = m[1];
+          const bits = x.split(/\s*\(/);
+          const name = bits[0];
+          const valBits = bits[1].match(/\s*(.*?)\s*\)/);
+          valBits[1] = valBits[1].replace(/(\d)-/g, '$1 -');
+          const valArr = valBits[1].split(/[, ]+/);
+          const letters = 'abcdef'.split('');
+          /*
         if (m && m.groups.xform) {
           const x = m.groups.xform;
           const [name, bits] = x.split(/\s*\(/);
@@ -159,6 +169,7 @@ export class SVGTransformList { // eslint-disable-line no-shadow
           );
           const valArr = valBits.groups.nonWhitespace.split(/[, ]+/);
           const letters = [...'abcdef'];
+          */
           const mtx = svgroot.createSVGMatrix();
           Object.values(valArr).forEach(function (item, i) {
             valArr[i] = parseFloat(item);

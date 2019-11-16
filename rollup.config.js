@@ -1,6 +1,4 @@
 /* eslint-env node */
-// Wait until Node 10 to enable
-/* eslint-disable prefer-named-capture-group */
 
 // NOTE:
 // See rollup-config.config.js instead for building the main (configurable)
@@ -52,7 +50,10 @@ function getRollupObject ({minifying, format = 'umd'} = {}) {
     },
     plugins: [
       babel({
-        plugins: ['transform-object-rest-spread']
+        plugins: [
+          'transform-object-rest-spread',
+          '@babel/plugin-transform-named-capturing-groups-regex'
+        ]
       })
     ]
   };

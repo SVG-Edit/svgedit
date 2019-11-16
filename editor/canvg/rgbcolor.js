@@ -154,21 +154,24 @@ const simpleColors = {
 // array of color definition objects
 const colorDefs = [
   {
-    re: /^rgb\((?<r>\d{1,3}),\s*(?<g>\d{1,3}),\s*(?<b>\d{1,3})\)$/,
+    re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+    // re: /^rgb\((?<r>\d{1,3}),\s*(?<g>\d{1,3}),\s*(?<b>\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
     process (_, ...bits) {
       return bits.map((b) => parseInt(b));
     }
   },
   {
-    re: /^(?<r>\w{2})(?<g>\w{2})(?<b>\w{2})$/,
+    re: /^(\w{2})(\w{2})(\w{2})$/,
+    // re: /^(?<r>\w{2})(?<g>\w{2})(?<b>\w{2})$/,
     example: ['#00ff00', '336699'],
     process (_, ...bits) {
       return bits.map((b) => parseInt(b, 16));
     }
   },
   {
-    re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
+    re: /^(\w{1})(\w{1})(\w{1})$/,
+    // re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
     example: ['#fb0', 'f0f'],
     process (_, ...bits) {
       return bits.map((b) => parseInt(b + b, 16));

@@ -86,11 +86,14 @@ export default {
     function getLinked (elem, attr) {
       const str = elem.getAttribute(attr);
       if (!str) { return null; }
-      const m = str.match(/\(#(?<id>.+)\)/);
-      if (!m || !m.groups.id) {
+      const m = str.match(/\(#(.*)\)/);
+      // const m = str.match(/\(#(?<id>.+)\)/);
+      // if (!m || !m.groups.id) {
+      if (!m || m.length !== 2) {
         return null;
       }
-      return svgCanvas.getElem(m.groups.id);
+      return svgCanvas.getElem(m[1]);
+      // return svgCanvas.getElem(m.groups.id);
     }
 
     /**

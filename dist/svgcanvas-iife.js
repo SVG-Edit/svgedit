@@ -68,74 +68,6 @@ var SvgCanvas = (function () {
     return _setPrototypeOf(o, p);
   }
 
-  function isNativeReflectConstruct() {
-    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-    if (Reflect.construct.sham) return false;
-    if (typeof Proxy === "function") return true;
-
-    try {
-      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function _construct(Parent, args, Class) {
-    if (isNativeReflectConstruct()) {
-      _construct = Reflect.construct;
-    } else {
-      _construct = function _construct(Parent, args, Class) {
-        var a = [null];
-        a.push.apply(a, args);
-        var Constructor = Function.bind.apply(Parent, a);
-        var instance = new Constructor();
-        if (Class) _setPrototypeOf(instance, Class.prototype);
-        return instance;
-      };
-    }
-
-    return _construct.apply(null, arguments);
-  }
-
-  function _isNativeFunction(fn) {
-    return Function.toString.call(fn).indexOf("[native code]") !== -1;
-  }
-
-  function _wrapNativeSuper(Class) {
-    var _cache = typeof Map === "function" ? new Map() : undefined;
-
-    _wrapNativeSuper = function _wrapNativeSuper(Class) {
-      if (Class === null || !_isNativeFunction(Class)) return Class;
-
-      if (typeof Class !== "function") {
-        throw new TypeError("Super expression must either be null or a function");
-      }
-
-      if (typeof _cache !== "undefined") {
-        if (_cache.has(Class)) return _cache.get(Class);
-
-        _cache.set(Class, Wrapper);
-      }
-
-      function Wrapper() {
-        return _construct(Class, arguments, _getPrototypeOf(this).constructor);
-      }
-
-      Wrapper.prototype = Object.create(Class.prototype, {
-        constructor: {
-          value: Wrapper,
-          enumerable: false,
-          writable: true,
-          configurable: true
-        }
-      });
-      return _setPrototypeOf(Wrapper, Class);
-    };
-
-    return _wrapNativeSuper(Class);
-  }
-
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -212,71 +144,6 @@ var SvgCanvas = (function () {
 
   function _nonIterableRest() {
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
-  }
-
-  function _wrapRegExp(re, groups) {
-    _wrapRegExp = function (re, groups) {
-      return new BabelRegExp(re, undefined, groups);
-    };
-
-    var _RegExp = _wrapNativeSuper(RegExp);
-
-    var _super = RegExp.prototype;
-
-    var _groups = new WeakMap();
-
-    function BabelRegExp(re, flags, groups) {
-      var _this = _RegExp.call(this, re, flags);
-
-      _groups.set(_this, groups || _groups.get(re));
-
-      return _this;
-    }
-
-    _inherits(BabelRegExp, _RegExp);
-
-    BabelRegExp.prototype.exec = function (str) {
-      var result = _super.exec.call(this, str);
-
-      if (result) result.groups = buildGroups(result, this);
-      return result;
-    };
-
-    BabelRegExp.prototype[Symbol.replace] = function (str, substitution) {
-      if (typeof substitution === "string") {
-        var groups = _groups.get(this);
-
-        return _super[Symbol.replace].call(this, str, substitution.replace(/\$<([^>]+)>/g, function (_, name) {
-          return "$" + groups[name];
-        }));
-      } else if (typeof substitution === "function") {
-        var _this = this;
-
-        return _super[Symbol.replace].call(this, str, function () {
-          var args = [];
-          args.push.apply(args, arguments);
-
-          if (typeof args[args.length - 1] !== "object") {
-            args.push(buildGroups(args, _this));
-          }
-
-          return substitution.apply(this, args);
-        });
-      } else {
-        return _super[Symbol.replace].call(this, str, substitution);
-      }
-    };
-
-    function buildGroups(result, re) {
-      var g = _groups.get(re);
-
-      return Object.keys(g).reduce(function (groups, name) {
-        groups[name] = result[g[name]];
-        return groups;
-      }, Object.create(null));
-    }
-
-    return _wrapRegExp.apply(this, arguments);
   }
 
   /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
@@ -3383,9 +3250,7 @@ var SvgCanvas = (function () {
         } // TODO: Add skew support in future
 
 
-        var re = _wrapRegExp(/[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*((?:scale|matrix|rotate|translate)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*\(.*?\))[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*,?[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*/, {
-          xform: 1
-        });
+        var re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/; // const re = /\s*(?<xform>(?:scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
 
         var m = true;
 
@@ -3393,24 +3258,26 @@ var SvgCanvas = (function () {
           m = str.match(re);
           str = str.replace(re, '');
 
-          if (m && m.groups.xform) {
+          if (m && m[1]) {
             (function () {
-              var x = m.groups.xform;
-
-              var _x$split = x.split(/\s*\(/),
-                  _x$split2 = _slicedToArray(_x$split, 2),
-                  name = _x$split2[0],
-                  bits = _x$split2[1];
-
-              var valBits = bits.match(_wrapRegExp(/[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*(.*?)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*\)/, {
-                nonWhitespace: 1
-              }));
-              valBits.groups.nonWhitespace = valBits.groups.nonWhitespace.replace(_wrapRegExp(/([0-9])\x2D/g, {
-                digit: 1
-              }), '$<digit> -');
-              var valArr = valBits.groups.nonWhitespace.split(/[, ]+/);
-
-              var letters = _toConsumableArray('abcdef');
+              var x = m[1];
+              var bits = x.split(/\s*\(/);
+              var name = bits[0];
+              var valBits = bits[1].match(/\s*(.*?)\s*\)/);
+              valBits[1] = valBits[1].replace(/(\d)-/g, '$1 -');
+              var valArr = valBits[1].split(/[, ]+/);
+              var letters = 'abcdef'.split('');
+              /*
+              if (m && m.groups.xform) {
+              const x = m.groups.xform;
+              const [name, bits] = x.split(/\s*\(/);
+              const valBits = bits.match(/\s*(?<nonWhitespace>.*?)\s*\)/);
+              valBits.groups.nonWhitespace = valBits.groups.nonWhitespace.replace(
+                /(?<digit>\d)-/g, '$<digit> -'
+              );
+              const valArr = valBits.groups.nonWhitespace.split(/[, ]+/);
+              const letters = [...'abcdef'];
+              */
 
               var mtx = svgroot.createSVGMatrix();
               Object.values(valArr).forEach(function (item, i) {
@@ -8139,10 +8006,7 @@ var SvgCanvas = (function () {
    */
 
   var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
-    return str.replace(_wrapRegExp(/(<!DOCTYPE[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+[0-9A-Z_a-z]*[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*\[).*(\?\]>)/, {
-      doctypeOpen: 1,
-      doctypeClose: 2
-    }), '$<doctypeOpen>$<doctypeClose>');
+    return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
   };
   /**
   * Converts characters in a string to XML-friendly entities.
@@ -8282,15 +8146,14 @@ var SvgCanvas = (function () {
       return '';
     }
 
-    var _dataurl$split = dataurl.split(','),
-        _dataurl$split2 = _slicedToArray(_dataurl$split, 2),
-        prefix = _dataurl$split2[0],
-        suffix = _dataurl$split2[1],
-        _prefix$match = prefix.match(_wrapRegExp(/:(.*?);/, {
-      mime: 1
-    })),
-        mime = _prefix$match.groups.mime,
-        bstr = atob(suffix);
+    var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]);
+    /*
+    const [prefix, suffix] = dataurl.split(','),
+      {groups: {mime}} = prefix.match(/:(?<mime>.*?);/),
+      bstr = atob(suffix);
+    */
 
     var n = bstr.length;
     var u8arr = new Uint8Array(n);
@@ -8343,7 +8206,6 @@ var SvgCanvas = (function () {
 
   var text2xml = function text2xml(sXML) {
     if (sXML.includes('<svg:svg')) {
-      // eslint-disable-next-line prefer-named-capture-group
       sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
     }
 
@@ -11271,9 +11133,8 @@ var SvgCanvas = (function () {
             case 'gradientTransform':
             case 'patternTransform':
               {
-                var val = attr.value.replace(_wrapRegExp(/([0-9])\x2D/g, {
-                  digit: 1
-                }), '$<digit> -');
+                var val = attr.value.replace(/(\d)-/g, '$1 -'); // const val = attr.value.replace(/(?<digit>\d)-/g, '$<digit> -');
+
                 node.setAttribute(attrName, val);
                 break;
               }
@@ -18441,12 +18302,11 @@ var SvgCanvas = (function () {
           if (val) {
             if (val.startsWith('data:')) {
               // Check if an SVG-edit data URI
-              var m = val.match(_wrapRegExp(/svgedit_url=(.*?);/, {
-                url: 1
-              }));
+              var m = val.match(/svgedit_url=(.*?);/); // const m = val.match(/svgedit_url=(?<url>.*?);/);
 
               if (m) {
-                var url = decodeURIComponent(m.groups.url);
+                var url = decodeURIComponent(m[1]); // const url = decodeURIComponent(m.groups.url);
+
                 $$8(new Image()).load(function () {
                   image.setAttributeNS(NS.XLINK, 'xlink:href', url);
                 }).attr('src', url);

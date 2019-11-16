@@ -4532,9 +4532,11 @@ this.setSvgString = function (xmlString, preventUndo) {
       if (val) {
         if (val.startsWith('data:')) {
           // Check if an SVG-edit data URI
-          const m = val.match(/svgedit_url=(?<url>.*?);/);
+          const m = val.match(/svgedit_url=(.*?);/);
+          // const m = val.match(/svgedit_url=(?<url>.*?);/);
           if (m) {
-            const url = decodeURIComponent(m.groups.url);
+            const url = decodeURIComponent(m[1]);
+            // const url = decodeURIComponent(m.groups.url);
             $(new Image()).load(function () {
               image.setAttributeNS(NS.XLINK, 'xlink:href', url);
             }).attr('src', url);
