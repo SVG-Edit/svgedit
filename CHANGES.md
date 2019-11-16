@@ -4,20 +4,28 @@
 
 - Deprecated: Should now use `avoidClientSideDownload` in place of
     `avoidClientSide` (config for `ext-server_opensave.js`).
+- Fix: IE 11 issue; fixes #363
 - Fix: Avoid race condition in `jQuery.svgIcons.js` (evident
     when attempting to load from `file:` URL in Chrome)
+- Fix: Input width (@seahindeniz)
+- Fix: Use change event to be sure that file is loaded before
+   the function (@Moliman)
 - Enhancement: Added `avoidClientSideOpen` config for
     `ext-server_opensave.js`
 - Optimization: Re-rerun image optimization per update
 - Linting (ESLint): Adjust per now applied rules
 - Linting (ESLint): Add HTML files to linting
 - Linting (ESLint): Avoid shadowing
+- Linting: Assorted changes; ensure license versions are valid semver
 - Refactoring: Use `static` keyword for classes
+- Refactoring: Prefer `for...of`, `event.key` (newly enforced linting)
+- Refactoring: Better var. names
 - Testing: Accessibility test API update
 - Docs: Clarify need for Node.js/npm being installed
 - Build: Remove `types-docs` script as being handled in ESLint
 - Maintenance: Add `.editorconfig`
 - npm: Add script to fix eslint errors
+- npm: Rename `build-config` to `build-by-config`
 - npm: Update devDeps (including switching from deprecated opn-cli
     package to open-cli); update core-js-bundle copy; add new
     axe testing peer dep. axe-core in devDeps
