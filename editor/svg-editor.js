@@ -1704,7 +1704,7 @@ editor.init = function () {
     const a = document.createElement('a');
     a.href = 'data:image/svg+xml;base64,' + Utils.encode64(svg);
     a.download = 'icon.svg';
-    a.style = 'display: none;';
+    a.style.display = 'none';
     document.body.append(a); // Need to append for Firefox
 
     a.click();
