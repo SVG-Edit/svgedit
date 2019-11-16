@@ -1,0 +1,58 @@
+{
+  "licenses": {
+    "spdx": [
+      "MIT", "ISC", "Apache-2.0", "BSD-3-Clause", "BSD-2-Clause", "Unlicense", "WTFPL"
+    ]
+  },
+  "ignore": [
+    {
+      "scope": "babel"
+    },
+    {
+      "scope": "mysticatea"
+    },
+    {
+      "prefix": "axe"
+    },
+    {
+      "prefix": "babel"
+    },
+    {
+      "prefix": "eslint"
+    },
+    {
+      "prefix": "imageoptim"
+    },
+    {
+      "prefix": "jsdoc"
+    },
+    {
+      "prefix": "licensee"
+    },
+    {
+      "prefix": "node-static"
+    },
+    {
+      "prefix": "open-cli"
+    },
+    {
+      "prefix": "qunit"
+    },
+    {
+      "prefix": "eslint"
+    },
+    {
+      "prefix": "remark"
+    },
+    {
+      "prefix": "rollup"
+    },
+    {
+      "prefix": "sinon"
+    },
+    {
+      "prefix": "testcafe"
+    }
+  ],
+  "corrections": false
+}
