@@ -1,6 +1,6 @@
 # SVG-Edit CHANGES
 
-## ?
+## 5.1.0
 
 - Deprecated: Should now use `avoidClientSideDownload` in place of
     `avoidClientSide` (config for `ext-server_opensave.js`).

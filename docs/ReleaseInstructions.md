@@ -20,7 +20,7 @@
 1. Add new release info to `Recent news` section in README
 1. Commit these changes
 <!-- with `git commit -m "Updating Makefile and CHANGES for release X.Y.Z"`-->.
-1. Tag the version, prefixed by "v", e.g., `v5.0.1`.
+1. Tag the version, prefixed by "v", e.g., `v5.1.0`.
 
 The above steps can be done on a fork and committed via a pull request.
 
