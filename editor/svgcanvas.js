@@ -1751,6 +1751,10 @@ const mouseDown = function (evt) {
     mouseTarget = mouseTarget.firstChild;
   }
 
+  if (mouseTarget.tagName == 'rect' && !isNullish(selectedElements[0]) && currentMode !== 'select') {
+      currentMode = 'select';
+  } 
+
   // realX/y ignores grid-snap value
   const realX = x;
   rStartX = startX = x;

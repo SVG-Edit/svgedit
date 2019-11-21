@@ -15128,7 +15128,10 @@ var SvgCanvas = (function () {
           mouseTarget = mouseTarget.firstChild;
         } // realX/y ignores grid-snap value
 
-
+        if (mouseTarget.tagName == 'rect' && !isNullish(selectedElements[0]) && currentMode !== 'select') {
+          currentMode = 'select';
+        } 
+        
         var realX = x;
         rStartX = startX = x;
         var realY = y;
