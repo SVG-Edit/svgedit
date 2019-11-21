@@ -15366,7 +15366,9 @@
           startY = snapToGrid(startY);
         } // if it is a selector grip, then it must be a single element selected,
         // set the mouseTarget to that and update the mode to rotate/resize
-
+        if (mouseTarget.tagName == 'rect' && !isNullish(selectedElements[0]) && currentMode !== 'select') {
+          currentMode = 'select';
+        } 
 
         if (mouseTarget === selectorManager.selectorParentGroup && !isNullish(selectedElements[0])) {
           var grip = evt.target;

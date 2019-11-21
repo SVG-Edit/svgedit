@@ -1764,6 +1764,10 @@ const mouseDown = function (evt) {
     startY = snapToGrid(startY);
   }
 
+  if (mouseTarget.tagName == 'rect' && !isNullish(selectedElements[0]) && currentMode !== 'select') {
+    currentMode = 'select';
+  }
+
   // if it is a selector grip, then it must be a single element selected,
   // set the mouseTarget to that and update the mode to rotate/resize
 
