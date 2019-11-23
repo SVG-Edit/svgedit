@@ -1,6 +1,6 @@
 describe('Accessibility', function () {
   beforeEach(() => {
-    cy.visit('/editor/svg-editor-es.html');
+    cy.visit('/instrumented/svg-editor-es.html');
     cy.injectAxe();
   });
 
