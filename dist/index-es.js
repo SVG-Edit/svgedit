@@ -34385,7 +34385,7 @@ editor.init = function () {
 
       var cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke']; // set up gradients to be used for the buttons
 
-      var svgdocbox = new DOMParser().parseFromString("<svg xmlns=\"http://www.w3.org/2000/svg\">\n          <rect width=\"16.5\" height=\"16.5\"\n            fill=\"#".concat(cur.color, "\" opacity=\"").concat(cur.opacity, "\"/>\n          <defs><linearGradient id=\"gradbox_\"/></defs>\n        </svg>"), 'text/xml');
+      var svgdocbox = new DOMParser().parseFromString("<svg xmlns=\"http://www.w3.org/2000/svg\">\n          <rect width=\"16.5\" height=\"16.5\"\n            fill=\"#".concat(cur.color, "\" opacity=\"").concat(cur.opacity, "\"/>\n          <defs><linearGradient id=\"gradbox_").concat(PaintBox.ctr++, "\"/></defs>\n        </svg>"), 'text/xml');
       var docElem = svgdocbox.documentElement;
       docElem = $$b(container)[0].appendChild(document.importNode(docElem, true));
       docElem.setAttribute('width', 16.5);
@@ -34521,6 +34521,7 @@ editor.init = function () {
     return PaintBox;
   }();
 
+  PaintBox.ctr = 0;
   paintBox.fill = new PaintBox('#fill_color', 'fill');
   paintBox.stroke = new PaintBox('#stroke_color', 'stroke');
   $$b('#stroke_width').val(curConfig.initStroke.width);

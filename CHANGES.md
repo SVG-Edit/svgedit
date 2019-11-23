@@ -1,5 +1,11 @@
 # SVG-Edit CHANGES
 
+## ?
+
+- Fix (Accessibility): Avoid duplicate IDs
+- Testing: Switch to Cypress with code coverage for UI testing
+- npm: Add peerDeps
+
 ## 5.1.0
 
 - Deprecated: Should now use `avoidClientSideDownload` in place of

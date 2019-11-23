@@ -5057,7 +5057,7 @@ editor.init = function () {
         `<svg xmlns="http://www.w3.org/2000/svg">
           <rect width="16.5" height="16.5"
             fill="#${cur.color}" opacity="${cur.opacity}"/>
-          <defs><linearGradient id="gradbox_"/></defs>
+          <defs><linearGradient id="gradbox_${PaintBox.ctr++}"/></defs>
         </svg>`,
         'text/xml'
       );
@@ -5173,6 +5173,7 @@ editor.init = function () {
       }
     }
   }
+  PaintBox.ctr = 0;
 
   paintBox.fill = new PaintBox('#fill_color', 'fill');
   paintBox.stroke = new PaintBox('#stroke_color', 'stroke');
