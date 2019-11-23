@@ -5,6 +5,7 @@
 - Fix (Accessibility): Avoid duplicate IDs
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
+- Testing: Add map file for underscore
 - npm: Add peerDeps
 
 ## 5.1.0
