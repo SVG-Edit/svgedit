@@ -31,7 +31,7 @@
     "cypress:run": "cypress run",
     "open-report": "open http://localhost:3000/coverage/",
     "start-open-report": "run-p start open-report",
-    "instrument": "npx nyc instrument app/public instrumented",
+    "instrument": "npx nyc instrument editor instrumented",
     "open-cov": "npm-run-all instrument --parallel --race start cypress:open",
     "open": "run-p start cypress:open",
     "report": "npx nyc report",
