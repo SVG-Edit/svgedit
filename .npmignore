@@ -5,3 +5,10 @@ test
 .github/ISSUE_TEMPLATE/bug_report.md
 build
 lgtm.yml
+
+cypress/**
+cypress.env.json
+
+coverage/**
+.nyc_output
+instrumented/**

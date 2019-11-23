@@ -1,8 +1,5 @@
 module.exports = {
-  extends: [
-    "ash-nazg/sauron-node",
-    "plugin:qunit/recommended", "plugin:testcafe/recommended"
-  ],
+  extends: ["ash-nazg/sauron-node"],
   parserOptions: {
     sourceType: "module"
   },
@@ -127,6 +124,7 @@ module.exports = {
         "node/no-missing-import": ["off"],
         "no-multi-spaces": "off",
         "sonarjs/no-all-duplicated-branches": "off",
+        'node/no-unpublished-import': ['error', {allowModules: ['@cypress/fiddle']}],
         "no-alert": "off",
         // Disable until may fix https://github.com/gajus/eslint-plugin-jsdoc/issues/211
         "indent": "off"
@@ -145,6 +143,7 @@ module.exports = {
     },
     // We want console in tests!
     {
+      extends: ["plugin:qunit/recommended"],
       files: ["test/**"],
       rules: {
         "no-console": ["off"]
@@ -183,6 +182,16 @@ module.exports = {
       rules: {
         "import/no-commonjs": "off",
         "strict": "off"
+      }
+    },
+    {
+      files: ["cypress/**"],
+      extends: ["plugin:cypress/recommended"],
+      env: {
+        node: true
+      },
+      rules: {
+        'import/unambiguous': 0,
       }
     }
   ],

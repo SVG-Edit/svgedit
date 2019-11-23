@@ -1,6 +1,7 @@
 node_modules
 ignore
 
+coverage
 dist
 docs/jsdoc
 
