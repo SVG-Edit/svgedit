@@ -29,7 +29,7 @@
     "start": "echo \"Open file to http://localhost:8000/test/all_tests.html\" && static -p 8000",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "open-report": "open http://localhost:3000/coverage/",
+    "open-report": "open http://localhost:8000/coverage/",
     "start-open-report": "run-p start open-report",
     "instrument": "npx nyc instrument editor instrumented",
     "open-cov": "npm-run-all instrument --parallel --race start cypress:open",
@@ -42,6 +42,12 @@
     "test-prep": "npm run eslint && npm run build-html && npm run rollup && npm run build-by-config",
     "test": "run-p start cypress:run",
     "browser-test": "npm run test-prep && open-cli http://localhost:8000/test/all_tests.html && static -p 8000"
+  },
+  "nyc": {
+    "reporter": [
+      "text",
+      "html"
+    ]
   },
   "repository": {
     "type": "git",
