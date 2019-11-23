@@ -3263,7 +3263,7 @@ var svgEditorExtension_server_opensave = (function () {
             return false;
           }
 
-          this.duration = this.duration + delta; // if we're past the begin time
+          this.duration += delta; // if we're past the begin time
 
           var updated = false;
 

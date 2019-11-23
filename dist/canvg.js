@@ -3263,7 +3263,7 @@ var canvg = (function (exports) {
             return false;
           }
 
-          this.duration = this.duration + delta; // if we're past the begin time
+          this.duration += delta; // if we're past the begin time
 
           var updated = false;
 

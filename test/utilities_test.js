@@ -37,10 +37,9 @@ const mockPathActions = {resetOrientation () { /* */ }};
 let mockHistorySubCommands = [];
 const mockHistory = {
   BatchCommand: class {
-    constructor () {
-      return {
-        addSubCommand (cmd) { mockHistorySubCommands.push(cmd); }
-      };
+    // eslint-disable-next-line class-methods-use-this
+    addSubCommand (cmd) {
+      mockHistorySubCommands.push(cmd);
     }
   },
   RemoveElementCommand: class {

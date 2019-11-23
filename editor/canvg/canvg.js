@@ -1881,7 +1881,7 @@ function build (opts) {
         }
         return false;
       }
-      this.duration = this.duration + delta;
+      this.duration += delta;
 
       // if we're past the begin time
       let updated = false;
