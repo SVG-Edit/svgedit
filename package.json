@@ -33,7 +33,8 @@
     "start-open-report": "run-p start open-report",
     "instrument:replace-html": "FRS-replace \"../svgedit-config-es.js\" \"svgedit-config-es.js\" -i instrumented/svg-editor-es.html -o instrumented/svg-editor-es.html",
     "instrument:replace-js": "FRS-replace \"editor/svg-editor.js\" \"svg-editor.js\" -i svgedit-config-es.js -o instrumented/svgedit-config-es.js",
-    "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js",
+    "instrument:copy-excluded": "node cypress/support/copy.js",
+    "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js && npm run instrument:copy-excluded",
     "instrument": "rm -Rf instrumented && npx nyc instrument editor instrumented && npm run copy-instrumented",
     "open-cov": "npm-run-all instrument --parallel --race start cypress:open",
     "open": "run-p start cypress:open",
@@ -47,6 +48,16 @@
     "browser-test": "npm run test-prep && open-cli http://localhost:8000/test/all_tests.html && static -p 8000"
   },
   "nyc": {
+    "exclude": [
+      "editor/external/**",
+      "editor/jquery.min.js",
+      "editor/jquery-ui/**",
+      "editor/jquerybbq/**",
+      "editor/js-hotkeys/**",
+      "editor/jspdf/jspdf.min.js",
+      "editor/jspdf/underscore-min.js",
+      "editor/spinbtn/**"
+    ],
     "reporter": [
       "text",
       "html"
