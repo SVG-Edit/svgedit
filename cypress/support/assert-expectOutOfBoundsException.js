@@ -1,3 +1,5 @@
+import assertionWrapper from './assertion-wrapper.js';
+
 /**
  * Expects an out of bounds `INDEX_SIZE_ERR` exception.
  * @param {GenericObject} obj
@@ -17,16 +19,18 @@ function expectOutOfBoundsException (obj, fn, arg1) {
     }
   }
   const actual = result;
-  this.pushResult({result, actual, expected, message});
+  return {result, message, actual, expected};
 }
 
 /**
- * @param {external:qunit} QUnit
- * @returns {external:qunit} The same instance passed in after extending
+ * @param {external:chai} _chai
+ * @param {external:chai_utils} utils
+ * @returns {void}
  */
-export default function extend (QUnit) {
-  QUnit.extend(QUnit.assert, {
-    expectOutOfBoundsException
-  });
-  return QUnit;
+function setAssertionMethods (_chai, utils) {
+  const wrap = assertionWrapper(_chai, utils);
+
+  assert.expectOutOfBoundsException = wrap(expectOutOfBoundsException);
 }
+
+export default setAssertionMethods;

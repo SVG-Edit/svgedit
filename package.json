@@ -137,7 +137,6 @@
     "eslint-plugin-no-use-extend-native": "^0.4.1",
     "eslint-plugin-node": "10.0.0",
     "eslint-plugin-promise": "4.2.1",
-    "eslint-plugin-qunit": "^4.0.0",
     "eslint-plugin-sonarjs": "^0.5.0",
     "eslint-plugin-standard": "4.0.1",
     "eslint-plugin-unicorn": "^13.0.0",
@@ -153,7 +152,6 @@
     "promise-fs": "^2.1.1",
     "qr-manipulation": "https://github.com/brettz9/qr-manipulation",
     "query-result": "https://github.com/WebReflection/query-result",
-    "qunit": "^2.9.3",
     "regenerator-runtime": "^0.13.3",
     "remark-cli": "^7.0.1",
     "remark-lint-ordered-list-marker-value": "^1.0.3",
@@ -161,8 +159,6 @@
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^5.1.2",
-    "sinon": "^7.5.0",
-    "sinon-test": "^2.4.0",
     "stackblur-canvas": "^2.2.0",
     "typescript": "^3.7.2"
   }

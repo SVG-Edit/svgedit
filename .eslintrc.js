@@ -3,8 +3,6 @@ module.exports = {
   parserOptions: {
     sourceType: "module"
   },
-  // Need to make explicit here for processing by jsdoc/check-examples
-  plugins: ["qunit"],
   env: {
     browser: true
   },
@@ -87,19 +85,13 @@ module.exports = {
         "editor/redirect-on-no-module-support.js",
         "editor/extensions/imagelib/index.js",
         "editor/external/dom-polyfill/dom-polyfill.js",
-        "test/all_tests.js", "screencasts/svgopen2010/script.js",
+        "screencasts/svgopen2010/script.js",
         "opera-widget/handlers.js",
         "firefox-extension/handlers.js",
         "firefox-extension/content/svg-edit-overlay.js"
       ],
       rules: {
         "import/unambiguous": ["off"]
-      }
-    },
-    {
-      files: ['test/browser-bugs/**'],
-      rules: {
-        'no-var': 'off'
       }
     },
     {
@@ -133,20 +125,12 @@ module.exports = {
     // Dis-apply Node rules mistakenly giving errors with browser files,
     //  and treating Node global `root` as being present for shadowing
     {
-      files: ["editor/**", "test/**", "screencasts/**"],
+      files: ["editor/**", "screencasts/**"],
       globals: {
         root: "off"
       },
       rules: {
         "node/no-unsupported-features/node-builtins": "off"
-      }
-    },
-    // We want console in tests!
-    {
-      extends: ["plugin:qunit/recommended"],
-      files: ["test/**"],
-      rules: {
-        "no-console": ["off"]
       }
     },
     {
@@ -191,6 +175,7 @@ module.exports = {
         node: true
       },
       rules: {
+        'no-console': 0,
         'import/unambiguous': 0,
       }
     }
