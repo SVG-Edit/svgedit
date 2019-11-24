@@ -1,6 +1,6 @@
 # ![alt text](https://svg-edit.github.io/svgedit/images/logo48x48.svg "svg-edit logo of a pencil") SVG-edit
 
-[![npm](http://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
+[![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
 [![devDependencies](https://img.shields.io/david/dev/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit?type=dev)
 
