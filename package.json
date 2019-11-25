@@ -35,7 +35,8 @@
     "instrument:replace-js": "frs-replace \"editor/svg-editor.js\" \"svg-editor.js\" -i svgedit-config-es.js -o instrumented/svgedit-config-es.js",
     "instrument:copy-excluded": "node cypress/support/copy.js",
     "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js && npm run instrument:copy-excluded",
-    "instrument": "rm -Rf instrumented && npx nyc instrument editor instrumented && npm run copy-instrumented",
+    "instrument": "rm -Rf instrumented && npx nyc instrument editor instrumented && npm run copy-instrumented && npm run coverage-badge",
+    "coverage-badge": "node cypress/support/build-coverage-badge.js",
     "open-cov": "npm-run-all instrument --parallel --race start cypress:open",
     "open": "run-p start cypress:open",
     "report": "npx nyc report",
@@ -59,6 +60,7 @@
       "editor/spinbtn/**"
     ],
     "reporter": [
+      "json-summary",
       "text",
       "html"
     ]
@@ -119,6 +121,7 @@
     "axe-core": "^3.4.0",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
     "coffeescript": "^2.4.1",
+    "convert-svg-to-png": "^0.5.0",
     "copyfiles": "^2.1.1",
     "core-js-bundle": "^3.4.2",
     "cypress": "^3.6.1",
@@ -141,6 +144,7 @@
     "eslint-plugin-standard": "4.0.1",
     "eslint-plugin-unicorn": "^13.0.0",
     "frs-replace": "^2.0.1",
+    "gh-badges": "^2.2.1",
     "imageoptim-cli": "^3.0.2",
     "jamilih": "^0.46.0",
     "jsdoc": "^3.6.3",

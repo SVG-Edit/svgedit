@@ -169,6 +169,10 @@ module.exports = {
       }
     },
     {
+      extends: ['plugin:node/recommended-script'],
+      files: ['cypress/support/build-coverage-badge.js']
+    },
+    {
       files: ["cypress/**"],
       extends: ["plugin:cypress/recommended"],
       env: {
