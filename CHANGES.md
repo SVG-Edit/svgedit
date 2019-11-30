@@ -3,10 +3,13 @@
 ## ?
 
 - Fix (Accessibility): Avoid duplicate IDs
+- Linting (ESLint): Simplify regexes
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
 - Testing: Add map file for underscore
-- npm: Add peerDeps
+- npm: Update scripts to reflect removal of `all_tests.html`;
+  remove `browser-test` script
+- npm: Update devDeps, peerDeps
 
 ## 5.1.0
 

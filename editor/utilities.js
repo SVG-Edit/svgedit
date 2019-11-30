@@ -110,7 +110,7 @@ export const init = function (editorContext) {
  * @todo This might be needed in other places `parseFromString` is used even without LGTM flagging
  */
 export const dropXMLInteralSubset = (str) => {
-  return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, '$1$2');
+  return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?]>)/, '$1$2');
   // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
 };
 
@@ -208,7 +208,7 @@ export function decode64 (input) {
   }
 
   // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-  input = input.replace(/[^A-Za-z0-9+/=]/g, '');
+  input = input.replace(/[^A-Za-z\d+/=]/g, '');
 
   let output = '';
   let i = 0;

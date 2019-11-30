@@ -7937,7 +7937,7 @@
    */
 
   var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
-    return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
+    return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
   };
   /**
   * Converts characters in a string to XML-friendly entities.
@@ -8017,7 +8017,7 @@
     } // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
 
 
-    input = input.replace(/[^A-Za-z0-9+/=]/g, '');
+    input = input.replace(/[^A-Za-z\d+/=]/g, '');
     var output = '';
     var i = 0;
 
@@ -17104,8 +17104,8 @@
         var pt = screenToPt(mouseX, mouseY);
         var index = getIndexFromPoint(pt.x, pt.y);
         var str = curtext.textContent;
-        var first = str.substr(0, index).replace(/[a-z0-9]+$/i, '').length;
-        var m = str.substr(index).match(/^[a-z0-9]+/i);
+        var first = str.substr(0, index).replace(/[a-z\d]+$/i, '').length;
+        var m = str.substr(index).match(/^[a-z\d]+/i);
         var last = (m ? m[0].length : 0) + index;
         setSelection(first, last); // Set tripleclick
 
@@ -25473,19 +25473,19 @@
             break;
 
           case hex.get(0):
-            hex.val(hex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
+            hex.val(hex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6));
             bindedHex && bindedHex.val(hex.val());
             color.val('hex', hex.val() !== '' ? hex.val() : null, e.target);
             break;
 
           case bindedHex && bindedHex.get(0):
-            bindedHex.val(bindedHex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
+            bindedHex.val(bindedHex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6));
             hex.val(bindedHex.val());
             color.val('hex', bindedHex.val() !== '' ? bindedHex.val() : null, e.target);
             break;
 
           case ahex && ahex.get(0):
-            ahex.val(ahex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 2));
+            ahex.val(ahex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2));
             color.val('a', !isNullish$1(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
             break;
         }
@@ -26124,7 +26124,7 @@
         */
         validateHex: function validateHex(hex) {
           // if (typeof hex === 'object') return '';
-          hex = hex.toLowerCase().replace(/[^a-f0-9]/g, '');
+          hex = hex.toLowerCase().replace(/[^a-f\d]/g, '');
           if (hex.length > 8) hex = hex.substring(0, 8);
           return hex;
         },

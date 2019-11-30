@@ -170,7 +170,7 @@ const colorDefs = [
     }
   },
   {
-    re: /^(\w{1})(\w{1})(\w{1})$/,
+    re: /^(\w)(\w)(\w)$/,
     // re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
     example: ['#fb0', 'f0f'],
     process (_, ...bits) {

@@ -185,6 +185,8 @@ module.exports = {
     }
   ],
   rules: {
+    // https://github.com/sindresorhus/eslint-plugin-unicorn/issues/453
+    "unicorn/regex-shorthand": 0,
     // The Babel transform seems to have a problem converting these
     "prefer-named-capture-group": "off",
     // Override these `ash-nazg/sauron` rules which are difficult for us

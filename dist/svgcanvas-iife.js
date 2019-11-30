@@ -8006,7 +8006,7 @@ var SvgCanvas = (function () {
    */
 
   var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
-    return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?\]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
+    return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
   };
   /**
   * Converts characters in a string to XML-friendly entities.
@@ -8086,7 +8086,7 @@ var SvgCanvas = (function () {
     } // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
 
 
-    input = input.replace(/[^A-Za-z0-9+/=]/g, '');
+    input = input.replace(/[^A-Za-z\d+/=]/g, '');
     var output = '';
     var i = 0;
 
@@ -16879,8 +16879,8 @@ var SvgCanvas = (function () {
         var pt = screenToPt(mouseX, mouseY);
         var index = getIndexFromPoint(pt.x, pt.y);
         var str = curtext.textContent;
-        var first = str.substr(0, index).replace(/[a-z0-9]+$/i, '').length;
-        var m = str.substr(index).match(/^[a-z0-9]+/i);
+        var first = str.substr(0, index).replace(/[a-z\d]+$/i, '').length;
+        var m = str.substr(index).match(/^[a-z\d]+/i);
         var last = (m ? m[0].length : 0) + index;
         setSelection(first, last); // Set tripleclick
 

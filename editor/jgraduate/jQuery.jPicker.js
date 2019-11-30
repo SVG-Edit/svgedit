@@ -549,17 +549,17 @@ const jPicker = function ($) {
           color.val('v', value.val(), e.target);
           break;
         case hex.get(0):
-          hex.val(hex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
+          hex.val(hex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6));
           bindedHex && bindedHex.val(hex.val());
           color.val('hex', hex.val() !== '' ? hex.val() : null, e.target);
           break;
         case bindedHex && bindedHex.get(0):
-          bindedHex.val(bindedHex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
+          bindedHex.val(bindedHex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6));
           hex.val(bindedHex.val());
           color.val('hex', bindedHex.val() !== '' ? bindedHex.val() : null, e.target);
           break;
         case ahex && ahex.get(0):
-          ahex.val(ahex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 2));
+          ahex.val(ahex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2));
           color.val('a', !isNullish(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
           break;
         }
@@ -1056,7 +1056,7 @@ const jPicker = function ($) {
       */
       validateHex (hex) {
         // if (typeof hex === 'object') return '';
-        hex = hex.toLowerCase().replace(/[^a-f0-9]/g, '');
+        hex = hex.toLowerCase().replace(/[^a-f\d]/g, '');
         if (hex.length > 8) hex = hex.substring(0, 8);
         return hex;
       },
