@@ -10,7 +10,7 @@
  * @todo Update to latest version and adapt (and needs jQuery update as well): {@link https://github.com/swisnl/jQuery-contextMenu}
  * @version 1.0.1
  *
- * @license (GPL-2.0-or-later OR MIT)
+ * @license (MIT OR GPL-2.0-or-later)
  *
  * This plugin is dual-licensed under the GNU General Public License
  *   and the MIT License and is copyright A Beautiful Site, LLC.

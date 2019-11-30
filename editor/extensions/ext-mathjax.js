@@ -2,7 +2,7 @@
 /**
  * ext-mathjax.js
  *
- * @license Apache-2.0
+ * @license MIT
  *
  * @copyright 2013 Jo Segaert
  *
