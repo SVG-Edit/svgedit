@@ -2,7 +2,14 @@
 
 ## ?
 
+- License: Relicense ext-mathjax from Apache-2.0 to MIT per
+  <https://github.com/josegaert/ext-mathjax/issues/6>
+- License: Clarify in `@license` that `ext-server_moinsave.js` is
+  "(MIT OR GPL-2.0-or-later)" per subsequent text
+- License: Reorder license listing in `jquery.contextMenu.js` so
+  that more permissive is noticeable first
 - Fix (Accessibility): Avoid duplicate IDs
+- Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Linting (ESLint): Simplify regexes
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
