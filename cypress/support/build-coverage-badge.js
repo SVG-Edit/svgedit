@@ -1,17 +1,19 @@
 'use strict';
 
-const {writeFile: writeFileOriginal, unlink: unlinkOriginal /* openSync */} = require('fs');
-const {join} = require('path');
+const {
+  writeFile: writeFileOriginal /* unlink: unlinkOriginal, openSync */
+} = require('fs');
+// const {join} = require('path');
 // const {spawn} = require('child_process');
 const {promisify} = require('util');
 
-const {convertFile} = require('convert-svg-to-png');
+// const {convertFile} = require('convert-svg-to-png');
 const {BadgeFactory} = require('gh-badges');
 
 const coverageSummary = require('../../coverage/coverage-summary.json');
 
 const writeFile = promisify(writeFileOriginal);
-const unlink = promisify(unlinkOriginal);
+// const unlink = promisify(unlinkOriginal);
 const {pct} = coverageSummary.total.statements;
 
 /*
@@ -31,7 +33,7 @@ const bf = new BadgeFactory();
 const format = {
   text: ['Coverage', `${pct}%`],
   color: 'orange',
-  format: 'png', // svg|json|png|jpg|gif
+  format: 'svg', // svg|json|png|jpg|gif
   // labelColor: 'black',
   template: 'flat' // 'flat'|'flat-square'|'for-the-badge'|'plastic'|'social'
 };
@@ -42,10 +44,11 @@ const svgFilePath = 'coverage-badge.svg';
 await writeFile(svgFilePath, badge);
 console.log('Finished writing temporary SVG file...');
 
-const outputFile = await convertFile(join(process.cwd(), svgFilePath));
-console.log('Wrote file', outputFile);
+// Works too
+// const outputFile = await convertFile(join(process.cwd(), svgFilePath));
+// console.log('Wrote file', outputFile);
 
-await unlink(svgFilePath);
-console.log('Cleaned up temporary SVG file');
+// await unlink(svgFilePath);
+// console.log('Cleaned up temporary SVG file');
 console.log('Done!');
 })();
