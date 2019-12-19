@@ -11,6 +11,7 @@
 - Fix (Accessibility): Avoid duplicate IDs
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Linting (ESLint): Simplify regexes
+- Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
 - Testing: Add map file for underscore
