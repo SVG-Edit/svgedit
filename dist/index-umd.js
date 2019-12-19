@@ -18,6 +18,42 @@
     return _typeof(obj);
   }
 
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -9395,38 +9431,8 @@
   *   any other value depends on the export of the targeted module.
   */
 
-  function importSetGlobal(url, _ref) {
-    var glob, returnDefault, modularVersion;
-    return regeneratorRuntime.async(function importSetGlobal$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            glob = _ref.global, returnDefault = _ref.returnDefault;
-            // Todo: Replace calls to this function with `import()` when supported
-            modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
-
-            if (!modularVersion) {
-              _context.next = 4;
-              break;
-            }
-
-            return _context.abrupt("return", importModule(url, undefined, {
-              returnDefault: returnDefault
-            }));
-
-          case 4:
-            _context.next = 6;
-            return regeneratorRuntime.awrap(importScript(url));
-
-          case 6:
-            return _context.abrupt("return", window[glob]);
-
-          case 7:
-          case "end":
-            return _context.stop();
-        }
-      }
-    });
+  function importSetGlobal(_x, _x2) {
+    return _importSetGlobal.apply(this, arguments);
   }
   /**
    *
@@ -9436,6 +9442,45 @@
    * @returns {Promise<void|Error>} Resolves to `undefined` or rejects with an `Error` upon a
    *   script loading error
    */
+
+  function _importSetGlobal() {
+    _importSetGlobal = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(url, _ref) {
+      var glob, returnDefault, modularVersion;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              glob = _ref.global, returnDefault = _ref.returnDefault;
+              // Todo: Replace calls to this function with `import()` when supported
+              modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
+
+              if (!modularVersion) {
+                _context.next = 4;
+                break;
+              }
+
+              return _context.abrupt("return", importModule(url, undefined, {
+                returnDefault: returnDefault
+              }));
+
+            case 4:
+              _context.next = 6;
+              return importScript(url);
+
+            case 6:
+              return _context.abrupt("return", window[glob]);
+
+            case 7:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+    return _importSetGlobal.apply(this, arguments);
+  }
 
   function importScript(url) {
     var atts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -14672,74 +14717,84 @@
     */
 
 
-    this.addExtension = function _callee(name, extInitFunc, _ref3) {
-      var jq, importLocale, argObj, extObj;
-      return regeneratorRuntime.async(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              jq = _ref3.$, importLocale = _ref3.importLocale;
+    this.addExtension =
+    /*#__PURE__*/
+    function () {
+      var _ref4 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref3) {
+        var jq, importLocale, argObj, extObj;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                jq = _ref3.$, importLocale = _ref3.importLocale;
 
-              if (!(typeof extInitFunc !== 'function')) {
-                _context.next = 3;
-                break;
-              }
+                if (!(typeof extInitFunc !== 'function')) {
+                  _context.next = 3;
+                  break;
+                }
 
-              throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
+                throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
 
-            case 3:
-              if (!(name in extensions)) {
-                _context.next = 5;
-                break;
-              }
+              case 3:
+                if (!(name in extensions)) {
+                  _context.next = 5;
+                  break;
+                }
 
-              throw new Error('Cannot add extension "' + name + '", an extension by that name already exists.');
+                throw new Error('Cannot add extension "' + name + '", an extension by that name already exists.');
 
-            case 5:
-              // Provide private vars/funcs here. Is there a better way to do this?
+              case 5:
+                // Provide private vars/funcs here. Is there a better way to do this?
 
-              /**
-               * @typedef {module:svgcanvas.PrivateMethods} module:svgcanvas.ExtensionArgumentObject
-               * @property {SVGSVGElement} svgroot See {@link module:svgcanvas~svgroot}
-               * @property {SVGSVGElement} svgcontent See {@link module:svgcanvas~svgcontent}
-               * @property {!(string|Integer)} nonce See {@link module:draw.Drawing#getNonce}
-               * @property {module:select.SelectorManager} selectorManager
-               * @property {module:SVGEditor~ImportLocale} importLocale
-               */
+                /**
+                 * @typedef {module:svgcanvas.PrivateMethods} module:svgcanvas.ExtensionArgumentObject
+                 * @property {SVGSVGElement} svgroot See {@link module:svgcanvas~svgroot}
+                 * @property {SVGSVGElement} svgcontent See {@link module:svgcanvas~svgcontent}
+                 * @property {!(string|Integer)} nonce See {@link module:draw.Drawing#getNonce}
+                 * @property {module:select.SelectorManager} selectorManager
+                 * @property {module:SVGEditor~ImportLocale} importLocale
+                 */
 
-              /**
-               * @type {module:svgcanvas.ExtensionArgumentObject}
-               * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
-               */
-              argObj = $$9.extend(canvas.getPrivateMethods(), {
-                $: jq,
-                importLocale: importLocale,
-                svgroot: svgroot,
-                svgcontent: svgcontent,
-                nonce: getCurrentDrawing().getNonce(),
-                selectorManager: selectorManager
-              });
-              _context.next = 8;
-              return regeneratorRuntime.awrap(extInitFunc(argObj));
+                /**
+                 * @type {module:svgcanvas.ExtensionArgumentObject}
+                 * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
+                 */
+                argObj = $$9.extend(canvas.getPrivateMethods(), {
+                  $: jq,
+                  importLocale: importLocale,
+                  svgroot: svgroot,
+                  svgcontent: svgcontent,
+                  nonce: getCurrentDrawing().getNonce(),
+                  selectorManager: selectorManager
+                });
+                _context.next = 8;
+                return extInitFunc(argObj);
 
-            case 8:
-              extObj = _context.sent;
+              case 8:
+                extObj = _context.sent;
 
-              if (extObj) {
-                extObj.name = name;
-              } // eslint-disable-next-line require-atomic-updates
+                if (extObj) {
+                  extObj.name = name;
+                } // eslint-disable-next-line require-atomic-updates
 
 
-              extensions[name] = extObj;
-              return _context.abrupt("return", call('extension_added', extObj));
+                extensions[name] = extObj;
+                return _context.abrupt("return", call('extension_added', extObj));
 
-            case 12:
-            case "end":
-              return _context.stop();
+              case 12:
+              case "end":
+                return _context.stop();
+            }
           }
-        }
-      });
-    };
+        }, _callee);
+      }));
+
+      return function (_x, _x2, _x3) {
+        return _ref4.apply(this, arguments);
+      };
+    }();
     /**
     * This method sends back an array or a NodeList full of elements that
     * intersect the multi-select rubber-band-box on the currentLayer only.
@@ -17860,105 +17915,115 @@
     * @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
     */
 
-    this.rasterExport = function _callee2(imgType, quality, exportWindowName) {
-      var opts,
-          type,
-          mimeType,
-          _getIssues,
-          issues,
-          issueCodes,
-          svg,
-          _ref4,
-          c,
-          _args2 = arguments;
+    this.rasterExport =
+    /*#__PURE__*/
+    function () {
+      var _ref5 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
+        var opts,
+            type,
+            mimeType,
+            _getIssues,
+            issues,
+            issueCodes,
+            svg,
+            _ref6,
+            c,
+            _args2 = arguments;
 
-      return regeneratorRuntime.async(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              opts = _args2.length > 3 && _args2[3] !== undefined ? _args2[3] : {};
-              type = imgType === 'ICO' ? 'BMP' : imgType || 'PNG';
-              mimeType = 'image/' + type.toLowerCase();
-              _getIssues = getIssues(), issues = _getIssues.issues, issueCodes = _getIssues.issueCodes;
-              svg = this.svgCanvasToString();
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                opts = _args2.length > 3 && _args2[3] !== undefined ? _args2[3] : {};
+                type = imgType === 'ICO' ? 'BMP' : imgType || 'PNG';
+                mimeType = 'image/' + type.toLowerCase();
+                _getIssues = getIssues(), issues = _getIssues.issues, issueCodes = _getIssues.issueCodes;
+                svg = this.svgCanvasToString();
 
-              if (canvg) {
-                _context2.next = 10;
-                break;
-              }
+                if (canvg) {
+                  _context2.next = 10;
+                  break;
+                }
 
-              _context2.next = 8;
-              return regeneratorRuntime.awrap(importSetGlobal(curConfig.canvgPath + 'canvg.js', {
-                global: 'canvg'
-              }));
+                _context2.next = 8;
+                return importSetGlobal(curConfig.canvgPath + 'canvg.js', {
+                  global: 'canvg'
+                });
 
-            case 8:
-              _ref4 = _context2.sent;
-              canvg = _ref4.canvg;
+              case 8:
+                _ref6 = _context2.sent;
+                canvg = _ref6.canvg;
 
-            case 10:
-              if (!$$9('#export_canvas').length) {
-                $$9('<canvas>', {
-                  id: 'export_canvas'
-                }).hide().appendTo('body');
-              }
+              case 10:
+                if (!$$9('#export_canvas').length) {
+                  $$9('<canvas>', {
+                    id: 'export_canvas'
+                  }).hide().appendTo('body');
+                }
 
-              c = $$9('#export_canvas')[0];
-              c.width = canvas.contentW;
-              c.height = canvas.contentH;
-              _context2.next = 16;
-              return regeneratorRuntime.awrap(canvg(c, svg));
+                c = $$9('#export_canvas')[0];
+                c.width = canvas.contentW;
+                c.height = canvas.contentH;
+                _context2.next = 16;
+                return canvg(c, svg);
 
-            case 16:
-              return _context2.abrupt("return", new Promise(function (resolve, reject) {
-                // eslint-disable-line promise/avoid-new
-                var dataURLType = type.toLowerCase();
-                var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
-                var bloburl;
-                /**
-                 * Called when `bloburl` is available for export.
-                 * @returns {void}
-                 */
+              case 16:
+                return _context2.abrupt("return", new Promise(function (resolve, reject) {
+                  // eslint-disable-line promise/avoid-new
+                  var dataURLType = type.toLowerCase();
+                  var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
+                  var bloburl;
+                  /**
+                   * Called when `bloburl` is available for export.
+                   * @returns {void}
+                   */
 
-                function done() {
-                  var obj = {
-                    datauri: datauri,
-                    bloburl: bloburl,
-                    svg: svg,
-                    issues: issues,
-                    issueCodes: issueCodes,
-                    type: imgType,
-                    mimeType: mimeType,
-                    quality: quality,
-                    exportWindowName: exportWindowName
-                  };
+                  function done() {
+                    var obj = {
+                      datauri: datauri,
+                      bloburl: bloburl,
+                      svg: svg,
+                      issues: issues,
+                      issueCodes: issueCodes,
+                      type: imgType,
+                      mimeType: mimeType,
+                      quality: quality,
+                      exportWindowName: exportWindowName
+                    };
 
-                  if (!opts.avoidEvent) {
-                    call('exported', obj);
+                    if (!opts.avoidEvent) {
+                      call('exported', obj);
+                    }
+
+                    resolve(obj);
                   }
 
-                  resolve(obj);
-                }
+                  if (c.toBlob) {
+                    c.toBlob(function (blob) {
+                      bloburl = createObjectURL(blob);
+                      done();
+                    }, mimeType, quality);
+                    return;
+                  }
 
-                if (c.toBlob) {
-                  c.toBlob(function (blob) {
-                    bloburl = createObjectURL(blob);
-                    done();
-                  }, mimeType, quality);
-                  return;
-                }
+                  bloburl = dataURLToObjectURL(datauri);
+                  done();
+                }));
 
-                bloburl = dataURLToObjectURL(datauri);
-                done();
-              }));
-
-            case 17:
-            case "end":
-              return _context2.stop();
+              case 17:
+              case "end":
+                return _context2.stop();
+            }
           }
-        }
-      }, null, this);
-    };
+        }, _callee2, this);
+      }));
+
+      return function (_x4, _x5, _x6) {
+        return _ref5.apply(this, arguments);
+      };
+    }();
     /**
      * @external jsPDF
      */
@@ -17998,93 +18063,103 @@
     */
 
 
-    this.exportPDF = function _callee3(exportWindowName) {
-      var outputType,
-          modularVersion,
-          res,
-          orientation,
-          unit,
-          doc,
-          docTitle,
-          _getIssues2,
-          issues,
-          issueCodes,
-          svg,
-          obj,
-          _args3 = arguments;
+    this.exportPDF =
+    /*#__PURE__*/
+    function () {
+      var _ref7 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee3(exportWindowName) {
+        var outputType,
+            modularVersion,
+            res,
+            orientation,
+            unit,
+            doc,
+            docTitle,
+            _getIssues2,
+            issues,
+            issueCodes,
+            svg,
+            obj,
+            _args3 = arguments;
 
-      return regeneratorRuntime.async(function _callee3$(_context3) {
-        while (1) {
-          switch (_context3.prev = _context3.next) {
-            case 0:
-              outputType = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : isChrome() ? 'save' : undefined;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                outputType = _args3.length > 1 && _args3[1] !== undefined ? _args3[1] : isChrome() ? 'save' : undefined;
 
-              if (window.jsPDF) {
+                if (window.jsPDF) {
+                  _context3.next = 7;
+                  break;
+                }
+
+                _context3.next = 4;
+                return importScript([// We do not currently have these paths configurable as they are
+                //   currently global-only, so not Rolled-up
+                'jspdf/underscore-min.js', 'jspdf/jspdf.min.js']);
+
+              case 4:
+                modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false; // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
+
                 _context3.next = 7;
-                break;
-              }
+                return importScript(curConfig.jspdfPath + 'jspdf.plugin.svgToPdf.js', {
+                  type: modularVersion ? 'module' : 'text/javascript'
+                });
 
-              _context3.next = 4;
-              return regeneratorRuntime.awrap(importScript([// We do not currently have these paths configurable as they are
-              //   currently global-only, so not Rolled-up
-              'jspdf/underscore-min.js', 'jspdf/jspdf.min.js']));
+              case 7:
+                res = getResolution();
+                orientation = res.w > res.h ? 'landscape' : 'portrait';
+                unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
+                // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
 
-            case 4:
-              modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false; // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
+                doc = jsPDF({
+                  orientation: orientation,
+                  unit: unit,
+                  format: [res.w, res.h] // , compressPdf: true
 
-              _context3.next = 7;
-              return regeneratorRuntime.awrap(importScript(curConfig.jspdfPath + 'jspdf.plugin.svgToPdf.js', {
-                type: modularVersion ? 'module' : 'text/javascript'
-              }));
+                });
+                docTitle = getDocumentTitle();
+                doc.setProperties({
+                  title: docTitle
+                  /* ,
+                  subject: '',
+                  author: '',
+                  keywords: '',
+                  creator: '' */
 
-            case 7:
-              res = getResolution();
-              orientation = res.w > res.h ? 'landscape' : 'portrait';
-              unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-              // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+                });
+                _getIssues2 = getIssues(), issues = _getIssues2.issues, issueCodes = _getIssues2.issueCodes;
+                svg = this.svgCanvasToString();
+                doc.addSVG(svg, 0, 0); // doc.output('save'); // Works to open in a new
+                //  window; todo: configure this and other export
+                //  options to optionally work in this manner as
+                //  opposed to opening a new tab
 
-              doc = jsPDF({
-                orientation: orientation,
-                unit: unit,
-                format: [res.w, res.h] // , compressPdf: true
+                outputType = outputType || 'dataurlstring';
+                obj = {
+                  svg: svg,
+                  issues: issues,
+                  issueCodes: issueCodes,
+                  exportWindowName: exportWindowName,
+                  outputType: outputType
+                };
+                obj.output = doc.output(outputType, outputType === 'save' ? exportWindowName || 'svg.pdf' : undefined);
+                call('exportedPDF', obj);
+                return _context3.abrupt("return", obj);
 
-              });
-              docTitle = getDocumentTitle();
-              doc.setProperties({
-                title: docTitle
-                /* ,
-                subject: '',
-                author: '',
-                keywords: '',
-                creator: '' */
-
-              });
-              _getIssues2 = getIssues(), issues = _getIssues2.issues, issueCodes = _getIssues2.issueCodes;
-              svg = this.svgCanvasToString();
-              doc.addSVG(svg, 0, 0); // doc.output('save'); // Works to open in a new
-              //  window; todo: configure this and other export
-              //  options to optionally work in this manner as
-              //  opposed to opening a new tab
-
-              outputType = outputType || 'dataurlstring';
-              obj = {
-                svg: svg,
-                issues: issues,
-                issueCodes: issueCodes,
-                exportWindowName: exportWindowName,
-                outputType: outputType
-              };
-              obj.output = doc.output(outputType, outputType === 'save' ? exportWindowName || 'svg.pdf' : undefined);
-              call('exportedPDF', obj);
-              return _context3.abrupt("return", obj);
-
-            case 21:
-            case "end":
-              return _context3.stop();
+              case 21:
+              case "end":
+                return _context3.stop();
+            }
           }
-        }
-      }, null, this);
-    };
+        }, _callee3, this);
+      }));
+
+      return function (_x7) {
+        return _ref7.apply(this, arguments);
+      };
+    }();
     /**
     * Returns the current drawing as raw SVG XML text.
     * @function module:svgcanvas.SvgCanvas#getSvgString
@@ -18811,10 +18886,10 @@
       leaveContext: leaveContext,
       setContext: setContext
     };
-    Object.entries(dr).forEach(function (_ref5) {
-      var _ref6 = _slicedToArray(_ref5, 2),
-          prop = _ref6[0],
-          propVal = _ref6[1];
+    Object.entries(dr).forEach(function (_ref8) {
+      var _ref9 = _slicedToArray(_ref8, 2),
+          prop = _ref9[0],
+          propVal = _ref9[1];
 
       canvas[prop] = propVal;
     });
@@ -28246,237 +28321,247 @@
   * @returns {Promise<module:locale.LangAndData>} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
   */
 
-  var readLang = function readLang(langData) {
-    var more, _langData, tools, properties, config, layers, common, ui, opts, ariaLabels;
+  var readLang =
+  /*#__PURE__*/
+  function () {
+    var _ref3 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(langData) {
+      var more, _langData, tools, properties, config, layers, common, ui, opts, ariaLabels;
 
-    return regeneratorRuntime.async(function readLang$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return regeneratorRuntime.awrap(editor_.addLangData(langParam));
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return editor_.addLangData(langParam);
 
-          case 2:
-            more = _context.sent;
-            $$a.each(more, function (i, m) {
-              if (m.data) {
-                langData = $$a.merge(langData, m.data);
+            case 2:
+              more = _context.sent;
+              $$a.each(more, function (i, m) {
+                if (m.data) {
+                  langData = $$a.merge(langData, m.data);
+                }
+              }); // Old locale file, do nothing for now.
+
+              if (langData.tools) {
+                _context.next = 6;
+                break;
               }
-            }); // Old locale file, do nothing for now.
 
-            if (langData.tools) {
-              _context.next = 6;
-              break;
-            }
+              return _context.abrupt("return", undefined);
 
-            return _context.abrupt("return", undefined);
+            case 6:
+              _langData = langData, tools = _langData.tools, properties = _langData.properties, config = _langData.config, layers = _langData.layers, common = _langData.common, ui = _langData.ui;
+              setStrings('content', {
+                // Todo: Add this powered by (probably by default) but with config to remove
+                // copyrightLabel: misc.powered_by, // Currently commented out in svg-editor.html
+                curve_segments: properties.curve_segments,
+                fitToContent: tools.fitToContent,
+                fit_to_all: tools.fit_to_all,
+                fit_to_canvas: tools.fit_to_canvas,
+                fit_to_layer_content: tools.fit_to_layer_content,
+                fit_to_sel: tools.fit_to_sel,
+                icon_large: config.icon_large,
+                icon_medium: config.icon_medium,
+                icon_small: config.icon_small,
+                icon_xlarge: config.icon_xlarge,
+                image_opt_embed: config.image_opt_embed,
+                image_opt_ref: config.image_opt_ref,
+                includedImages: config.included_images,
+                largest_object: tools.largest_object,
+                layersLabel: layers.layers,
+                page: tools.page,
+                relativeToLabel: tools.relativeTo,
+                selLayerLabel: layers.move_elems_to,
+                selectedPredefined: config.select_predefined,
+                selected_objects: tools.selected_objects,
+                smallest_object: tools.smallest_object,
+                straight_segments: properties.straight_segments,
+                svginfo_bg_url: config.editor_img_url + ':',
+                svginfo_bg_note: config.editor_bg_note,
+                svginfo_change_background: config.background,
+                svginfo_dim: config.doc_dims,
+                svginfo_editor_prefs: config.editor_prefs,
+                svginfo_height: common.height,
+                svginfo_icons: config.icon_size,
+                svginfo_image_props: config.image_props,
+                svginfo_lang: config.language,
+                svginfo_title: config.doc_title,
+                svginfo_width: common.width,
+                tool_docprops_cancel: common.cancel,
+                tool_docprops_save: common.ok,
+                tool_source_cancel: common.cancel,
+                tool_source_save: common.ok,
+                tool_prefs_cancel: common.cancel,
+                tool_prefs_save: common.ok,
+                sidepanel_handle: layers.layers.split('').join(' '),
+                tool_clear: tools.new_doc,
+                tool_docprops: tools.docprops,
+                tool_export: tools.export_img,
+                tool_import: tools.import_doc,
+                tool_open: tools.open_doc,
+                tool_save: tools.save_doc,
+                svginfo_units_rulers: config.units_and_rulers,
+                svginfo_rulers_onoff: config.show_rulers,
+                svginfo_unit: config.base_unit,
+                svginfo_grid_settings: config.grid,
+                svginfo_snap_onoff: config.snapping_onoff,
+                svginfo_snap_step: config.snapping_stepsize,
+                svginfo_grid_color: config.grid_color
+              }, true); // Context menus
 
-          case 6:
-            _langData = langData, tools = _langData.tools, properties = _langData.properties, config = _langData.config, layers = _langData.layers, common = _langData.common, ui = _langData.ui;
-            setStrings('content', {
-              // Todo: Add this powered by (probably by default) but with config to remove
-              // copyrightLabel: misc.powered_by, // Currently commented out in svg-editor.html
-              curve_segments: properties.curve_segments,
-              fitToContent: tools.fitToContent,
-              fit_to_all: tools.fit_to_all,
-              fit_to_canvas: tools.fit_to_canvas,
-              fit_to_layer_content: tools.fit_to_layer_content,
-              fit_to_sel: tools.fit_to_sel,
-              icon_large: config.icon_large,
-              icon_medium: config.icon_medium,
-              icon_small: config.icon_small,
-              icon_xlarge: config.icon_xlarge,
-              image_opt_embed: config.image_opt_embed,
-              image_opt_ref: config.image_opt_ref,
-              includedImages: config.included_images,
-              largest_object: tools.largest_object,
-              layersLabel: layers.layers,
-              page: tools.page,
-              relativeToLabel: tools.relativeTo,
-              selLayerLabel: layers.move_elems_to,
-              selectedPredefined: config.select_predefined,
-              selected_objects: tools.selected_objects,
-              smallest_object: tools.smallest_object,
-              straight_segments: properties.straight_segments,
-              svginfo_bg_url: config.editor_img_url + ':',
-              svginfo_bg_note: config.editor_bg_note,
-              svginfo_change_background: config.background,
-              svginfo_dim: config.doc_dims,
-              svginfo_editor_prefs: config.editor_prefs,
-              svginfo_height: common.height,
-              svginfo_icons: config.icon_size,
-              svginfo_image_props: config.image_props,
-              svginfo_lang: config.language,
-              svginfo_title: config.doc_title,
-              svginfo_width: common.width,
-              tool_docprops_cancel: common.cancel,
-              tool_docprops_save: common.ok,
-              tool_source_cancel: common.cancel,
-              tool_source_save: common.ok,
-              tool_prefs_cancel: common.cancel,
-              tool_prefs_save: common.ok,
-              sidepanel_handle: layers.layers.split('').join(' '),
-              tool_clear: tools.new_doc,
-              tool_docprops: tools.docprops,
-              tool_export: tools.export_img,
-              tool_import: tools.import_doc,
-              tool_open: tools.open_doc,
-              tool_save: tools.save_doc,
-              svginfo_units_rulers: config.units_and_rulers,
-              svginfo_rulers_onoff: config.show_rulers,
-              svginfo_unit: config.base_unit,
-              svginfo_grid_settings: config.grid,
-              svginfo_snap_onoff: config.snapping_onoff,
-              svginfo_snap_step: config.snapping_stepsize,
-              svginfo_grid_color: config.grid_color
-            }, true); // Context menus
+              opts = {};
+              ['cut', 'copy', 'paste', 'paste_in_place', 'delete', 'group', 'ungroup', 'move_front', 'move_up', 'move_down', 'move_back'].forEach(function (item) {
+                opts['#cmenu_canvas a[href="#' + item + '"]'] = tools[item];
+              });
+              ['dupe', 'merge_down', 'merge_all'].forEach(function (item) {
+                opts['#cmenu_layers a[href="#' + item + '"]'] = layers[item];
+              });
+              opts['#cmenu_layers a[href="#delete"]'] = layers.del;
+              setStrings('content', opts);
+              ariaLabels = {};
+              Object.entries({
+                tool_blur: properties.blur,
+                tool_position: tools.align_to_page,
+                tool_font_family: properties.font_family,
+                zoom_panel: ui.zoom_level,
+                stroke_linejoin: properties.linejoin_miter,
+                stroke_linecap: properties.linecap_butt,
+                tool_opacity: properties.opacity
+              }).forEach(function (_ref4) {
+                var _ref5 = _slicedToArray(_ref4, 2),
+                    id = _ref5[0],
+                    value = _ref5[1];
 
-            opts = {};
-            ['cut', 'copy', 'paste', 'paste_in_place', 'delete', 'group', 'ungroup', 'move_front', 'move_up', 'move_down', 'move_back'].forEach(function (item) {
-              opts['#cmenu_canvas a[href="#' + item + '"]'] = tools[item];
-            });
-            ['dupe', 'merge_down', 'merge_all'].forEach(function (item) {
-              opts['#cmenu_layers a[href="#' + item + '"]'] = layers[item];
-            });
-            opts['#cmenu_layers a[href="#delete"]'] = layers.del;
-            setStrings('content', opts);
-            ariaLabels = {};
-            Object.entries({
-              tool_blur: properties.blur,
-              tool_position: tools.align_to_page,
-              tool_font_family: properties.font_family,
-              zoom_panel: ui.zoom_level,
-              stroke_linejoin: properties.linejoin_miter,
-              stroke_linecap: properties.linecap_butt,
-              tool_opacity: properties.opacity
-            }).forEach(function (_ref3) {
-              var _ref4 = _slicedToArray(_ref3, 2),
-                  id = _ref4[0],
-                  value = _ref4[1];
+                ariaLabels['#' + id + ' button'] = value;
+              });
+              Object.entries({
+                group_opacity: properties.opacity,
+                zoom: ui.zoom_level
+              }).forEach(function (_ref6) {
+                var _ref7 = _slicedToArray(_ref6, 2),
+                    id = _ref7[0],
+                    value = _ref7[1];
 
-              ariaLabels['#' + id + ' button'] = value;
-            });
-            Object.entries({
-              group_opacity: properties.opacity,
-              zoom: ui.zoom_level
-            }).forEach(function (_ref5) {
-              var _ref6 = _slicedToArray(_ref5, 2),
-                  id = _ref6[0],
-                  value = _ref6[1];
+                ariaLabels['#' + id] = value;
+              });
+              setStrings('aria-label', ariaLabels);
+              setStrings('title', {
+                align_relative_to: tools.align_relative_to,
+                circle_cx: properties.circle_cx,
+                circle_cy: properties.circle_cy,
+                circle_r: properties.circle_r,
+                cornerRadiusLabel: properties.corner_radius,
+                ellipse_cx: properties.ellipse_cx,
+                ellipse_cy: properties.ellipse_cy,
+                ellipse_rx: properties.ellipse_rx,
+                ellipse_ry: properties.ellipse_ry,
+                fill_color: properties.fill_color,
+                font_family: properties.font_family,
+                idLabel: properties.id,
+                image_height: properties.image_height,
+                image_url: properties.image_url,
+                image_width: properties.image_width,
+                layer_delete: layers.del,
+                layer_down: layers.move_down,
+                layer_new: layers["new"],
+                layer_rename: layers.rename,
+                layer_moreopts: common.more_opts,
+                layer_up: layers.move_up,
+                line_x1: properties.line_x1,
+                line_x2: properties.line_x2,
+                line_y1: properties.line_y1,
+                line_y2: properties.line_y2,
+                linecap_butt: properties.linecap_butt,
+                linecap_round: properties.linecap_round,
+                linecap_square: properties.linecap_square,
+                linejoin_bevel: properties.linejoin_bevel,
+                linejoin_miter: properties.linejoin_miter,
+                linejoin_round: properties.linejoin_round,
+                main_icon: tools.main_menu,
+                palette: ui.palette_info,
+                zoom_panel: ui.zoom_level,
+                path_node_x: properties.node_x,
+                path_node_y: properties.node_y,
+                rect_height_tool: properties.rect_height,
+                rect_width_tool: properties.rect_width,
+                seg_type: properties.seg_type,
+                selLayerNames: layers.move_selected,
+                selected_x: properties.pos_x,
+                selected_y: properties.pos_y,
+                stroke_color: properties.stroke_color,
+                stroke_style: properties.stroke_style,
+                stroke_width: properties.stroke_width,
+                svginfo_title: config.doc_title,
+                text: properties.text_contents,
+                toggle_stroke_tools: ui.toggle_stroke_tools,
+                tool_add_subpath: tools.add_subpath,
+                tool_alignbottom: tools.align_bottom,
+                tool_aligncenter: tools.align_center,
+                tool_alignleft: tools.align_left,
+                tool_alignmiddle: tools.align_middle,
+                tool_alignright: tools.align_right,
+                tool_aligntop: tools.align_top,
+                tool_angle: properties.angle,
+                tool_blur: properties.blur,
+                tool_bold: properties.bold,
+                tool_circle: tools.mode_circle,
+                tool_clone: tools.clone,
+                tool_clone_multi: tools.clone,
+                tool_delete: tools.del,
+                tool_delete_multi: tools.del,
+                tool_ellipse: tools.mode_ellipse,
+                tool_fhellipse: tools.mode_fhellipse,
+                tool_fhpath: tools.mode_fhpath,
+                tool_fhrect: tools.mode_fhrect,
+                tool_font_size: properties.font_size,
+                tool_group_elements: tools.group_elements,
+                tool_make_link: tools.make_link,
+                tool_link_url: tools.set_link_url,
+                tool_image: tools.mode_image,
+                tool_italic: properties.italic,
+                tool_line: tools.mode_line,
+                tool_move_bottom: tools.move_bottom,
+                tool_move_top: tools.move_top,
+                tool_node_clone: tools.node_clone,
+                tool_node_delete: tools.node_delete,
+                tool_node_link: tools.node_link,
+                tool_opacity: properties.opacity,
+                tool_openclose_path: tools.openclose_path,
+                tool_path: tools.mode_path,
+                tool_position: tools.align_to_page,
+                tool_rect: tools.mode_rect,
+                tool_redo: tools.redo,
+                tool_reorient: tools.reorient_path,
+                tool_select: tools.mode_select,
+                tool_source: tools.source_save,
+                tool_square: tools.mode_square,
+                tool_text: tools.mode_text,
+                tool_topath: tools.to_path,
+                tool_undo: tools.undo,
+                tool_ungroup: tools.ungroup,
+                tool_wireframe: tools.wireframe_mode,
+                tool_zoom: tools.mode_zoom,
+                url_notice: tools.no_embed
+              }, true);
+              return _context.abrupt("return", {
+                langParam: langParam,
+                langData: langData
+              });
 
-              ariaLabels['#' + id] = value;
-            });
-            setStrings('aria-label', ariaLabels);
-            setStrings('title', {
-              align_relative_to: tools.align_relative_to,
-              circle_cx: properties.circle_cx,
-              circle_cy: properties.circle_cy,
-              circle_r: properties.circle_r,
-              cornerRadiusLabel: properties.corner_radius,
-              ellipse_cx: properties.ellipse_cx,
-              ellipse_cy: properties.ellipse_cy,
-              ellipse_rx: properties.ellipse_rx,
-              ellipse_ry: properties.ellipse_ry,
-              fill_color: properties.fill_color,
-              font_family: properties.font_family,
-              idLabel: properties.id,
-              image_height: properties.image_height,
-              image_url: properties.image_url,
-              image_width: properties.image_width,
-              layer_delete: layers.del,
-              layer_down: layers.move_down,
-              layer_new: layers["new"],
-              layer_rename: layers.rename,
-              layer_moreopts: common.more_opts,
-              layer_up: layers.move_up,
-              line_x1: properties.line_x1,
-              line_x2: properties.line_x2,
-              line_y1: properties.line_y1,
-              line_y2: properties.line_y2,
-              linecap_butt: properties.linecap_butt,
-              linecap_round: properties.linecap_round,
-              linecap_square: properties.linecap_square,
-              linejoin_bevel: properties.linejoin_bevel,
-              linejoin_miter: properties.linejoin_miter,
-              linejoin_round: properties.linejoin_round,
-              main_icon: tools.main_menu,
-              palette: ui.palette_info,
-              zoom_panel: ui.zoom_level,
-              path_node_x: properties.node_x,
-              path_node_y: properties.node_y,
-              rect_height_tool: properties.rect_height,
-              rect_width_tool: properties.rect_width,
-              seg_type: properties.seg_type,
-              selLayerNames: layers.move_selected,
-              selected_x: properties.pos_x,
-              selected_y: properties.pos_y,
-              stroke_color: properties.stroke_color,
-              stroke_style: properties.stroke_style,
-              stroke_width: properties.stroke_width,
-              svginfo_title: config.doc_title,
-              text: properties.text_contents,
-              toggle_stroke_tools: ui.toggle_stroke_tools,
-              tool_add_subpath: tools.add_subpath,
-              tool_alignbottom: tools.align_bottom,
-              tool_aligncenter: tools.align_center,
-              tool_alignleft: tools.align_left,
-              tool_alignmiddle: tools.align_middle,
-              tool_alignright: tools.align_right,
-              tool_aligntop: tools.align_top,
-              tool_angle: properties.angle,
-              tool_blur: properties.blur,
-              tool_bold: properties.bold,
-              tool_circle: tools.mode_circle,
-              tool_clone: tools.clone,
-              tool_clone_multi: tools.clone,
-              tool_delete: tools.del,
-              tool_delete_multi: tools.del,
-              tool_ellipse: tools.mode_ellipse,
-              tool_fhellipse: tools.mode_fhellipse,
-              tool_fhpath: tools.mode_fhpath,
-              tool_fhrect: tools.mode_fhrect,
-              tool_font_size: properties.font_size,
-              tool_group_elements: tools.group_elements,
-              tool_make_link: tools.make_link,
-              tool_link_url: tools.set_link_url,
-              tool_image: tools.mode_image,
-              tool_italic: properties.italic,
-              tool_line: tools.mode_line,
-              tool_move_bottom: tools.move_bottom,
-              tool_move_top: tools.move_top,
-              tool_node_clone: tools.node_clone,
-              tool_node_delete: tools.node_delete,
-              tool_node_link: tools.node_link,
-              tool_opacity: properties.opacity,
-              tool_openclose_path: tools.openclose_path,
-              tool_path: tools.mode_path,
-              tool_position: tools.align_to_page,
-              tool_rect: tools.mode_rect,
-              tool_redo: tools.redo,
-              tool_reorient: tools.reorient_path,
-              tool_select: tools.mode_select,
-              tool_source: tools.source_save,
-              tool_square: tools.mode_square,
-              tool_text: tools.mode_text,
-              tool_topath: tools.to_path,
-              tool_undo: tools.undo,
-              tool_ungroup: tools.ungroup,
-              tool_wireframe: tools.wireframe_mode,
-              tool_zoom: tools.mode_zoom,
-              url_notice: tools.no_embed
-            }, true);
-            return _context.abrupt("return", {
-              langParam: langParam,
-              langData: langData
-            });
-
-          case 19:
-          case "end":
-            return _context.stop();
+            case 19:
+            case "end":
+              return _context.stop();
+          }
         }
-      }
-    });
-  };
+      }, _callee);
+    }));
+
+    return function readLang(_x) {
+      return _ref3.apply(this, arguments);
+    };
+  }();
   /**
    *
    * @function module:locale.putLocale
@@ -28489,58 +28574,68 @@
    * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
   */
 
-  var putLocale = function putLocale(givenParam, goodLangs, conf) {
-    var url;
-    return regeneratorRuntime.async(function putLocale$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            if (givenParam) {
-              langParam = givenParam;
-            } else {
-              langParam = $$a.pref('lang');
+  var putLocale =
+  /*#__PURE__*/
+  function () {
+    var _ref8 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee2(givenParam, goodLangs, conf) {
+      var url;
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              if (givenParam) {
+                langParam = givenParam;
+              } else {
+                langParam = $$a.pref('lang');
 
-              if (!langParam) {
-                if (navigator.userLanguage) {
-                  // Explorer
-                  langParam = navigator.userLanguage;
-                } else if (navigator.language) {
-                  // FF, Opera, ...
-                  langParam = navigator.language;
+                if (!langParam) {
+                  if (navigator.userLanguage) {
+                    // Explorer
+                    langParam = navigator.userLanguage;
+                  } else if (navigator.language) {
+                    // FF, Opera, ...
+                    langParam = navigator.language;
+                  }
                 }
+
+                console.log('Lang: ' + langParam); // eslint-disable-line no-console
+                // Set to English if language is not in list of good langs
+
+                if (!goodLangs.includes(langParam) && langParam !== 'test') {
+                  langParam = 'en';
+                } // don't bother on first run if language is English
+                // The following line prevents setLang from running
+                //    extensions which depend on updated uiStrings,
+                //    so commenting it out.
+                // if (langParam.startsWith('en')) {return;}
+
               }
 
-              console.log('Lang: ' + langParam); // eslint-disable-line no-console
-              // Set to English if language is not in list of good langs
+              url = conf.langPath + 'lang.' + langParam + '.js';
+              _context2.t0 = readLang;
+              _context2.next = 5;
+              return importSetGlobalDefault(url, {
+                global: 'svgEditorLang_' + langParam.replace(/-/g, '_')
+              });
 
-              if (!goodLangs.includes(langParam) && langParam !== 'test') {
-                langParam = 'en';
-              } // don't bother on first run if language is English
-              // The following line prevents setLang from running
-              //    extensions which depend on updated uiStrings,
-              //    so commenting it out.
-              // if (langParam.startsWith('en')) {return;}
+            case 5:
+              _context2.t1 = _context2.sent;
+              return _context2.abrupt("return", (0, _context2.t0)(_context2.t1));
 
-            }
-
-            url = conf.langPath + 'lang.' + langParam + '.js';
-            _context2.t0 = readLang;
-            _context2.next = 5;
-            return regeneratorRuntime.awrap(importSetGlobalDefault(url, {
-              global: 'svgEditorLang_' + langParam.replace(/-/g, '_')
-            }));
-
-          case 5:
-            _context2.t1 = _context2.sent;
-            return _context2.abrupt("return", (0, _context2.t0)(_context2.t1));
-
-          case 7:
-          case "end":
-            return _context2.stop();
+            case 7:
+            case "end":
+              return _context2.stop();
+          }
         }
-      }
-    });
-  };
+      }, _callee2);
+    }));
+
+    return function putLocale(_x2, _x3, _x4) {
+      return _ref8.apply(this, arguments);
+    };
+  }();
 
   function _slicedToArray$1(arr, i) {
     return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _nonIterableRest$1();
@@ -29028,47 +29123,8 @@
    *   loading fails and `noAlert` is truthy.
    */
 
-  function loadSvgString(str) {
-    var _ref,
-        noAlert,
-        success,
-        _args = arguments;
-
-    return regeneratorRuntime.async(function loadSvgString$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _ref = _args.length > 1 && _args[1] !== undefined ? _args[1] : {}, noAlert = _ref.noAlert;
-            success = svgCanvas.setSvgString(str) !== false;
-
-            if (!success) {
-              _context.next = 4;
-              break;
-            }
-
-            return _context.abrupt("return");
-
-          case 4:
-            if (noAlert) {
-              _context.next = 8;
-              break;
-            }
-
-            _context.next = 7;
-            return regeneratorRuntime.awrap($$b.alert(uiStrings$1.notification.errorLoadingSVG));
-
-          case 7:
-            return _context.abrupt("return");
-
-          case 8:
-            throw new Error('Error loading SVG');
-
-          case 9:
-          case "end":
-            return _context.stop();
-        }
-      }
-    });
+  function loadSvgString(_x) {
+    return _loadSvgString.apply(this, arguments);
   }
   /**
    * @function module:SVGEditor~getImportLocale
@@ -29079,9 +29135,57 @@
    */
 
 
-  function getImportLocale(_ref2) {
-    var defaultLang = _ref2.defaultLang,
-        defaultName = _ref2.defaultName;
+  function _loadSvgString() {
+    _loadSvgString = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee23(str) {
+      var _ref46,
+          noAlert,
+          success,
+          _args23 = arguments;
+
+      return regeneratorRuntime.wrap(function _callee23$(_context23) {
+        while (1) {
+          switch (_context23.prev = _context23.next) {
+            case 0:
+              _ref46 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref46.noAlert;
+              success = svgCanvas.setSvgString(str) !== false;
+
+              if (!success) {
+                _context23.next = 4;
+                break;
+              }
+
+              return _context23.abrupt("return");
+
+            case 4:
+              if (noAlert) {
+                _context23.next = 8;
+                break;
+              }
+
+              _context23.next = 7;
+              return $$b.alert(uiStrings$1.notification.errorLoadingSVG);
+
+            case 7:
+              return _context23.abrupt("return");
+
+            case 8:
+              throw new Error('Error loading SVG');
+
+            case 9:
+            case "end":
+              return _context23.stop();
+          }
+        }
+      }, _callee23);
+    }));
+    return _loadSvgString.apply(this, arguments);
+  }
+
+  function getImportLocale(_ref) {
+    var defaultLang = _ref.defaultLang,
+        defaultName = _ref.defaultName;
 
     /**
      * @function module:SVGEditor~ImportLocale
@@ -29090,46 +29194,59 @@
      * @param {string} [localeInfo.lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
      * @returns {Promise<module:locale.LocaleStrings>} Resolves to {@link module:locale.LocaleStrings}
      */
-    return function importLocaleDefaulting() {
-      var _ref3,
-          _ref3$name,
-          name,
-          _ref3$lang,
-          lang,
-          importLocale,
-          _args2 = arguments;
+    return (
+      /*#__PURE__*/
+      function () {
+        var _importLocaleDefaulting = _asyncToGenerator(
+        /*#__PURE__*/
+        regeneratorRuntime.mark(function _callee() {
+          var _ref2,
+              _ref2$name,
+              name,
+              _ref2$lang,
+              lang,
+              importLocale,
+              _args = arguments;
 
-      return regeneratorRuntime.async(function importLocaleDefaulting$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              importLocale = function _ref4(language) {
-                var url = "".concat(curConfig.extPath, "ext-locale/").concat(name, "/").concat(language, ".js");
-                return importSetGlobalDefault(url, {
-                  global: "svgEditorExtensionLocale_".concat(name, "_").concat(language.replace(/-/g, '_'))
-                });
-              };
+          return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  importLocale = function _ref3(language) {
+                    var url = "".concat(curConfig.extPath, "ext-locale/").concat(name, "/").concat(language, ".js");
+                    return importSetGlobalDefault(url, {
+                      global: "svgEditorExtensionLocale_".concat(name, "_").concat(language.replace(/-/g, '_'))
+                    });
+                  };
 
-              _ref3 = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : {}, _ref3$name = _ref3.name, name = _ref3$name === void 0 ? defaultName : _ref3$name, _ref3$lang = _ref3.lang, lang = _ref3$lang === void 0 ? defaultLang : _ref3$lang;
-              _context2.prev = 2;
-              _context2.next = 5;
-              return regeneratorRuntime.awrap(importLocale(lang));
+                  _ref2 = _args.length > 0 && _args[0] !== undefined ? _args[0] : {}, _ref2$name = _ref2.name, name = _ref2$name === void 0 ? defaultName : _ref2$name, _ref2$lang = _ref2.lang, lang = _ref2$lang === void 0 ? defaultLang : _ref2$lang;
+                  _context.prev = 2;
+                  _context.next = 5;
+                  return importLocale(lang);
 
-            case 5:
-              return _context2.abrupt("return", _context2.sent);
+                case 5:
+                  return _context.abrupt("return", _context.sent);
 
-            case 8:
-              _context2.prev = 8;
-              _context2.t0 = _context2["catch"](2);
-              return _context2.abrupt("return", importLocale('en'));
+                case 8:
+                  _context.prev = 8;
+                  _context.t0 = _context["catch"](2);
+                  return _context.abrupt("return", importLocale('en'));
 
-            case 11:
-            case "end":
-              return _context2.stop();
-          }
+                case 11:
+                case "end":
+                  return _context.stop();
+              }
+            }
+          }, _callee, null, [[2, 8]]);
+        }));
+
+        function importLocaleDefaulting() {
+          return _importLocaleDefaulting.apply(this, arguments);
         }
-      }, null, null, [[2, 8]]);
-    };
+
+        return importLocaleDefaulting;
+      }()
+    );
   }
   /**
   * EXPORTS
@@ -29589,144 +29706,164 @@
      */
 
 
-    var extAndLocaleFunc = function extAndLocaleFunc() {
-      var _ref5, langParam, langData, _uiStrings$common, ok, cancel;
+    var extAndLocaleFunc =
+    /*#__PURE__*/
+    function () {
+      var _ref4 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee3() {
+        var _ref5, langParam, langData, _uiStrings$common, ok, cancel;
 
-      return regeneratorRuntime.async(function extAndLocaleFunc$(_context4) {
-        while (1) {
-          switch (_context4.prev = _context4.next) {
-            case 0:
-              _context4.next = 2;
-              return regeneratorRuntime.awrap(editor.putLocale(null, goodLangs, curConfig));
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return editor.putLocale(null, goodLangs, curConfig);
 
-            case 2:
-              _ref5 = _context4.sent;
-              langParam = _ref5.langParam;
-              langData = _ref5.langData;
-              _context4.next = 7;
-              return regeneratorRuntime.awrap(setLang(langParam, langData));
+              case 2:
+                _ref5 = _context3.sent;
+                langParam = _ref5.langParam;
+                langData = _ref5.langData;
+                _context3.next = 7;
+                return setLang(langParam, langData);
 
-            case 7:
-              _uiStrings$common = uiStrings$1.common, ok = _uiStrings$common.ok, cancel = _uiStrings$common.cancel;
-              jQueryPluginDBox($$b, {
-                ok: ok,
-                cancel: cancel
-              });
-              setIcons(); // Wait for dbox as needed for i18n
+              case 7:
+                _uiStrings$common = uiStrings$1.common, ok = _uiStrings$common.ok, cancel = _uiStrings$common.cancel;
+                jQueryPluginDBox($$b, {
+                  ok: ok,
+                  cancel: cancel
+                });
+                setIcons(); // Wait for dbox as needed for i18n
 
-              _context4.prev = 10;
-              _context4.next = 13;
-              return regeneratorRuntime.awrap(Promise.all(curConfig.extensions.map(function _callee(extname) {
-                var extName, url, imported, _imported$name, _name2, init, importLocale;
+                _context3.prev = 10;
+                _context3.next = 13;
+                return Promise.all(curConfig.extensions.map(
+                /*#__PURE__*/
+                function () {
+                  var _ref6 = _asyncToGenerator(
+                  /*#__PURE__*/
+                  regeneratorRuntime.mark(function _callee2(extname) {
+                    var extName, url, imported, _imported$name, _name2, init, importLocale;
 
-                return regeneratorRuntime.async(function _callee$(_context3) {
-                  while (1) {
-                    switch (_context3.prev = _context3.next) {
-                      case 0:
-                        extName = extname.match(/^ext-(.+)\.js/); // const {extName} = extname.match(/^ext-(?<extName>.+)\.js/).groups;
+                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                      while (1) {
+                        switch (_context2.prev = _context2.next) {
+                          case 0:
+                            extName = extname.match(/^ext-(.+)\.js/); // const {extName} = extname.match(/^ext-(?<extName>.+)\.js/).groups;
 
-                        if (extName) {
-                          _context3.next = 3;
-                          break;
+                            if (extName) {
+                              _context2.next = 3;
+                              break;
+                            }
+
+                            return _context2.abrupt("return", undefined);
+
+                          case 3:
+                            url = curConfig.extPath + extname; // Todo: Replace this with `return import(url);` when
+                            //   `import()` widely supported
+
+                            /**
+                             * @tutorial ExtensionDocs
+                             * @typedef {PlainObject} module:SVGEditor.ExtensionObject
+                             * @property {string} [name] Name of the extension. Used internally; no need for i18n. Defaults to extension name without beginning "ext-" or ending ".js".
+                             * @property {module:svgcanvas.ExtensionInitCallback} [init]
+                             */
+
+                            _context2.prev = 4;
+                            _context2.next = 7;
+                            return importSetGlobalDefault(url, {
+                              global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_') // global: 'svgEditorExtension_' + extName.replace(/-/g, '_')
+
+                            });
+
+                          case 7:
+                            imported = _context2.sent;
+                            _imported$name = imported.name, _name2 = _imported$name === void 0 ? extName[1] : _imported$name, init = imported.init; // const {name = extName, init} = imported;
+
+                            importLocale = getImportLocale({
+                              defaultLang: langParam,
+                              defaultName: _name2
+                            });
+                            return _context2.abrupt("return", editor.addExtension(_name2, init && init.bind(editor), {
+                              $: $$b,
+                              importLocale: importLocale
+                            }));
+
+                          case 13:
+                            _context2.prev = 13;
+                            _context2.t0 = _context2["catch"](4);
+                            // Todo: Add config to alert any errors
+                            console.log(_context2.t0); // eslint-disable-line no-console
+
+                            console.error('Extension failed to load: ' + extname + '; ' + _context2.t0); // eslint-disable-line no-console
+
+                            return _context2.abrupt("return", undefined);
+
+                          case 18:
+                          case "end":
+                            return _context2.stop();
                         }
+                      }
+                    }, _callee2, null, [[4, 13]]);
+                  }));
 
-                        return _context3.abrupt("return", undefined);
+                  return function (_x2) {
+                    return _ref6.apply(this, arguments);
+                  };
+                }()));
 
-                      case 3:
-                        url = curConfig.extPath + extname; // Todo: Replace this with `return import(url);` when
-                        //   `import()` widely supported
-
-                        /**
-                         * @tutorial ExtensionDocs
-                         * @typedef {PlainObject} module:SVGEditor.ExtensionObject
-                         * @property {string} [name] Name of the extension. Used internally; no need for i18n. Defaults to extension name without beginning "ext-" or ending ".js".
-                         * @property {module:svgcanvas.ExtensionInitCallback} [init]
-                         */
-
-                        _context3.prev = 4;
-                        _context3.next = 7;
-                        return regeneratorRuntime.awrap(importSetGlobalDefault(url, {
-                          global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_') // global: 'svgEditorExtension_' + extName.replace(/-/g, '_')
-
-                        }));
-
-                      case 7:
-                        imported = _context3.sent;
-                        _imported$name = imported.name, _name2 = _imported$name === void 0 ? extName[1] : _imported$name, init = imported.init; // const {name = extName, init} = imported;
-
-                        importLocale = getImportLocale({
-                          defaultLang: langParam,
-                          defaultName: _name2
-                        });
-                        return _context3.abrupt("return", editor.addExtension(_name2, init && init.bind(editor), {
-                          $: $$b,
-                          importLocale: importLocale
-                        }));
-
-                      case 13:
-                        _context3.prev = 13;
-                        _context3.t0 = _context3["catch"](4);
-                        // Todo: Add config to alert any errors
-                        console.log(_context3.t0); // eslint-disable-line no-console
-
-                        console.error('Extension failed to load: ' + extname + '; ' + _context3.t0); // eslint-disable-line no-console
-
-                        return _context3.abrupt("return", undefined);
-
-                      case 18:
-                      case "end":
-                        return _context3.stop();
-                    }
-                  }
-                }, null, null, [[4, 13]]);
-              })));
-
-            case 13:
-              svgCanvas.bind('extensions_added',
-              /**
-              * @param {external:Window} win
-              * @param {module:svgcanvas.SvgCanvas#event:extensions_added} data
-              * @listens module:svgcanvas.SvgCanvas#event:extensions_added
-              * @returns {void}
-              */
-              function (win, data) {
-                extensionsAdded = true;
-                Actions.setAll();
-                $$b('.flyout_arrow_horiz:empty').each(function () {
-                  $$b(this).append($$b.getSvgIcon('arrow_right', true).width(5).height(5));
-                });
-
-                if (editor.storagePromptState === 'ignore') {
-                  updateCanvas(true);
-                }
-
-                messageQueue.forEach(
+              case 13:
+                svgCanvas.bind('extensions_added',
                 /**
-                 * @param {module:svgcanvas.SvgCanvas#event:message} messageObj
-                 * @fires module:svgcanvas.SvgCanvas#event:message
-                 * @returns {void}
-                 */
-                function (messageObj) {
-                  svgCanvas.call('message', messageObj);
+                * @param {external:Window} win
+                * @param {module:svgcanvas.SvgCanvas#event:extensions_added} data
+                * @listens module:svgcanvas.SvgCanvas#event:extensions_added
+                * @returns {void}
+                */
+                function (win, data) {
+                  extensionsAdded = true;
+                  Actions.setAll();
+                  $$b('.flyout_arrow_horiz:empty').each(function () {
+                    $$b(this).append($$b.getSvgIcon('arrow_right', true).width(5).height(5));
+                  });
+
+                  if (editor.storagePromptState === 'ignore') {
+                    updateCanvas(true);
+                  }
+
+                  messageQueue.forEach(
+                  /**
+                   * @param {module:svgcanvas.SvgCanvas#event:message} messageObj
+                   * @fires module:svgcanvas.SvgCanvas#event:message
+                   * @returns {void}
+                   */
+                  function (messageObj) {
+                    svgCanvas.call('message', messageObj);
+                  });
                 });
-              });
-              svgCanvas.call('extensions_added');
-              _context4.next = 20;
-              break;
+                svgCanvas.call('extensions_added');
+                _context3.next = 20;
+                break;
 
-            case 17:
-              _context4.prev = 17;
-              _context4.t0 = _context4["catch"](10);
-              // Todo: Report errors through the UI
-              console.log(_context4.t0); // eslint-disable-line no-console
+              case 17:
+                _context3.prev = 17;
+                _context3.t0 = _context3["catch"](10);
+                // Todo: Report errors through the UI
+                console.log(_context3.t0); // eslint-disable-line no-console
 
-            case 20:
-            case "end":
-              return _context4.stop();
+              case 20:
+              case "end":
+                return _context3.stop();
+            }
           }
-        }
-      }, null, null, [[10, 17]]);
-    };
+        }, _callee3, null, [[10, 17]]);
+      }));
+
+      return function extAndLocaleFunc() {
+        return _ref4.apply(this, arguments);
+      };
+    }();
 
     var stateObj = {
       tool_scale: editor.tool_scale
@@ -30205,114 +30342,124 @@
           '.stroke_tool div div .svg_icon': 20,
           '#tools_bottom label .svg_icon': 18
         },
-        callback: function callback(icons) {
-          var tleft, minHeight, size, getStylesheetPriority, stylesheets, idx, _stylesheets;
+        callback: function () {
+          var _callback = _asyncToGenerator(
+          /*#__PURE__*/
+          regeneratorRuntime.mark(function _callee4(icons) {
+            var tleft, minHeight, size, getStylesheetPriority, stylesheets, idx, _stylesheets;
 
-          return regeneratorRuntime.async(function callback$(_context5) {
-            while (1) {
-              switch (_context5.prev = _context5.next) {
-                case 0:
-                  getStylesheetPriority = function _ref7(stylesheetFile) {
-                    switch (stylesheetFile) {
-                      case 'jgraduate/css/jPicker.css':
-                        return 1;
+            return regeneratorRuntime.wrap(function _callee4$(_context4) {
+              while (1) {
+                switch (_context4.prev = _context4.next) {
+                  case 0:
+                    getStylesheetPriority = function _ref8(stylesheetFile) {
+                      switch (stylesheetFile) {
+                        case 'jgraduate/css/jPicker.css':
+                          return 1;
 
-                      case 'jgraduate/css/jGraduate.css':
-                        return 2;
+                        case 'jgraduate/css/jGraduate.css':
+                          return 2;
 
-                      case 'svg-editor.css':
-                        return 3;
+                        case 'svg-editor.css':
+                          return 3;
 
-                      case 'spinbtn/jQuery.SpinButton.css':
-                        return 4;
+                        case 'spinbtn/jQuery.SpinButton.css':
+                          return 4;
 
-                      default:
-                        return Infinity;
-                    }
-                  };
-
-                  $$b('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
-                    $$b(this).parent().prepend(this);
-                  });
-                  tleft = $$b('#tools_left');
-
-                  if (tleft.length) {
-                    minHeight = tleft.offset().top + tleft.outerHeight();
-                  }
-
-                  size = $$b.pref('iconsize');
-                  editor.setIconSize(size || ($$b(window).height() < minHeight ? 's' : 'm')); // Look for any missing flyout icons from plugins
-
-                  $$b('.tools_flyout').each(function () {
-                    var shower = $$b('#' + this.id + '_show');
-                    var sel = shower.attr('data-curopt'); // Check if there's an icon here
-
-                    if (!shower.children('svg, img').length) {
-                      var clone = $$b(sel).children().clone();
-
-                      if (clone.length) {
-                        clone[0].removeAttribute('style'); // Needed for Opera
-
-                        shower.append(clone);
+                        default:
+                          return Infinity;
                       }
-                    }
-                  });
-                  /**
-                   * Since stylesheets may be added out of order, we indicate the desired order
-                   *   for defaults and others after them (in an indeterminate order).
-                   * @param {string} stylesheetFile
-                   * @returns {Integer|PositiveInfinity}
-                   */
+                    };
 
-                  stylesheets = $$b.loadingStylesheets.sort(function (a, b) {
-                    var priorityA = getStylesheetPriority(a);
-                    var priorityB = getStylesheetPriority(b);
+                    $$b('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
+                      $$b(this).parent().prepend(this);
+                    });
+                    tleft = $$b('#tools_left');
 
-                    if (priorityA === priorityB) {
-                      return 0;
+                    if (tleft.length) {
+                      minHeight = tleft.offset().top + tleft.outerHeight();
                     }
 
-                    return priorityA > priorityB;
-                  });
+                    size = $$b.pref('iconsize');
+                    editor.setIconSize(size || ($$b(window).height() < minHeight ? 's' : 'm')); // Look for any missing flyout icons from plugins
 
-                  if (curConfig.stylesheets.length) {
-                    // Ensure a copy with unique items
-                    stylesheets = _toConsumableArray(new Set(curConfig.stylesheets));
-                    idx = stylesheets.indexOf('@default');
+                    $$b('.tools_flyout').each(function () {
+                      var shower = $$b('#' + this.id + '_show');
+                      var sel = shower.attr('data-curopt'); // Check if there's an icon here
 
-                    if (idx > -1) {
-                      (_stylesheets = stylesheets).splice.apply(_stylesheets, [idx, 1].concat(_toConsumableArray($$b.loadingStylesheets)));
-                    }
-                  }
+                      if (!shower.children('svg, img').length) {
+                        var clone = $$b(sel).children().clone();
 
-                  _context5.next = 11;
-                  return regeneratorRuntime.awrap(loadStylesheets(stylesheets, {
-                    acceptErrors: function acceptErrors(_ref6) {
-                      var stylesheetURL = _ref6.stylesheetURL,
-                          reject = _ref6.reject,
-                          resolve = _ref6.resolve;
+                        if (clone.length) {
+                          clone[0].removeAttribute('style'); // Needed for Opera
 
-                      if ($$b.loadingStylesheets.includes(stylesheetURL)) {
-                        reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
-                        return;
+                          shower.append(clone);
+                        }
+                      }
+                    });
+                    /**
+                     * Since stylesheets may be added out of order, we indicate the desired order
+                     *   for defaults and others after them (in an indeterminate order).
+                     * @param {string} stylesheetFile
+                     * @returns {Integer|PositiveInfinity}
+                     */
+
+                    stylesheets = $$b.loadingStylesheets.sort(function (a, b) {
+                      var priorityA = getStylesheetPriority(a);
+                      var priorityB = getStylesheetPriority(b);
+
+                      if (priorityA === priorityB) {
+                        return 0;
                       }
 
-                      resolve();
+                      return priorityA > priorityB;
+                    });
+
+                    if (curConfig.stylesheets.length) {
+                      // Ensure a copy with unique items
+                      stylesheets = _toConsumableArray(new Set(curConfig.stylesheets));
+                      idx = stylesheets.indexOf('@default');
+
+                      if (idx > -1) {
+                        (_stylesheets = stylesheets).splice.apply(_stylesheets, [idx, 1].concat(_toConsumableArray($$b.loadingStylesheets)));
+                      }
                     }
-                  }));
 
-                case 11:
-                  $$b('#svg_container')[0].style.visibility = 'visible';
-                  _context5.next = 14;
-                  return regeneratorRuntime.awrap(editor.runCallbacks());
+                    _context4.next = 11;
+                    return loadStylesheets(stylesheets, {
+                      acceptErrors: function acceptErrors(_ref7) {
+                        var stylesheetURL = _ref7.stylesheetURL,
+                            reject = _ref7.reject,
+                            resolve = _ref7.resolve;
 
-                case 14:
-                case "end":
-                  return _context5.stop();
+                        if ($$b.loadingStylesheets.includes(stylesheetURL)) {
+                          reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
+                          return;
+                        }
+
+                        resolve();
+                      }
+                    });
+
+                  case 11:
+                    $$b('#svg_container')[0].style.visibility = 'visible';
+                    _context4.next = 14;
+                    return editor.runCallbacks();
+
+                  case 14:
+                  case "end":
+                    return _context4.stop();
+                }
               }
-            }
-          });
-        }
+            }, _callee4);
+          }));
+
+          function callback(_x3) {
+            return _callback.apply(this, arguments);
+          }
+
+          return callback;
+        }()
       });
     }
     /**
@@ -30769,44 +30916,53 @@
 
 
     function promptImgURL() {
-      var _ref8,
-          _ref8$cancelDeletes,
-          cancelDeletes,
-          curhref,
-          url,
-          _args6 = arguments;
-
-      return regeneratorRuntime.async(function promptImgURL$(_context6) {
-        while (1) {
-          switch (_context6.prev = _context6.next) {
-            case 0:
-              _ref8 = _args6.length > 0 && _args6[0] !== undefined ? _args6[0] : {}, _ref8$cancelDeletes = _ref8.cancelDeletes, cancelDeletes = _ref8$cancelDeletes === void 0 ? false : _ref8$cancelDeletes;
-              curhref = svgCanvas.getHref(selectedElement);
-              curhref = curhref.startsWith('data:') ? '' : curhref;
-              _context6.next = 5;
-              return regeneratorRuntime.awrap($$b.prompt(uiStrings$1.notification.enterNewImgURL, curhref));
-
-            case 5:
-              url = _context6.sent;
-
-              if (url) {
-                setImageURL(url);
-              } else if (cancelDeletes) {
-                svgCanvas.deleteSelectedElements();
-              }
-
-            case 7:
-            case "end":
-              return _context6.stop();
-          }
-        }
-      });
+      return _promptImgURL.apply(this, arguments);
     }
     /**
     * @param {Element} elem
     * @returns {void}
     */
 
+
+    function _promptImgURL() {
+      _promptImgURL = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee18() {
+        var _ref32,
+            _ref32$cancelDeletes,
+            cancelDeletes,
+            curhref,
+            url,
+            _args18 = arguments;
+
+        return regeneratorRuntime.wrap(function _callee18$(_context18) {
+          while (1) {
+            switch (_context18.prev = _context18.next) {
+              case 0:
+                _ref32 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref32$cancelDeletes = _ref32.cancelDeletes, cancelDeletes = _ref32$cancelDeletes === void 0 ? false : _ref32$cancelDeletes;
+                curhref = svgCanvas.getHref(selectedElement);
+                curhref = curhref.startsWith('data:') ? '' : curhref;
+                _context18.next = 5;
+                return $$b.prompt(uiStrings$1.notification.enterNewImgURL, curhref);
+
+              case 5:
+                url = _context18.sent;
+
+                if (url) {
+                  setImageURL(url);
+                } else if (cancelDeletes) {
+                  svgCanvas.deleteSelectedElements();
+                }
+
+              case 7:
+              case "end":
+                return _context18.stop();
+            }
+          }
+        }, _callee18);
+      }));
+      return _promptImgURL.apply(this, arguments);
+    }
 
     var setInputWidth = function setInputWidth(elem) {
       var w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
@@ -32034,485 +32190,495 @@
      * @returns {Promise<void>|void} Resolves to `undefined`
      */
 
-    var extAdded = function extAdded(win, ext) {
-      var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, altsObj, placementObj, holders;
-      return regeneratorRuntime.async(function extAdded$(_context7) {
-        while (1) {
-          switch (_context7.prev = _context7.next) {
-            case 0:
-              prepResize = function _ref13() {
-                if (resizeTimer) {
-                  clearTimeout(resizeTimer);
-                  resizeTimer = null;
-                }
-
-                if (!resizeDone) {
-                  resizeTimer = setTimeout(function () {
-                    resizeDone = true;
-                    setIconSize($$b.pref('iconsize'));
-                  }, 50);
-                }
-              };
-
-              if (ext) {
-                _context7.next = 3;
-                break;
-              }
-
-              return _context7.abrupt("return", undefined);
-
-            case 3:
-              cbCalled = false;
-              resizeDone = false;
-
-              if (!ext.langReady) {
-                _context7.next = 14;
-                break;
-              }
-
-              if (!editor.langChanged) {
-                _context7.next = 13;
-                break;
-              }
-
-              // We check for this since the "lang" pref could have been set by storage
-              lang = $$b.pref('lang');
-              _context7.next = 10;
-              return regeneratorRuntime.awrap(ext.langReady({
-                lang: lang,
-                uiStrings: uiStrings$1,
-                importLocale: getImportLocale({
-                  defaultLang: lang,
-                  defaultName: ext.name
-                })
-              }));
-
-            case 10:
-              loadedExtensionNames.push(ext.name);
-              _context7.next = 14;
-              break;
-
-            case 13:
-              extsPreLang.push(ext);
-
-            case 14:
-              /**
-              *
-              * @returns {void}
-              */
-              runCallback = function runCallback() {
-                if (ext.callback && !cbCalled) {
-                  cbCalled = true;
-                  ext.callback.call(editor);
-                }
-              };
-
-              btnSelects = [];
-              /**
-              * @typedef {PlainObject} module:SVGEditor.ContextTool
-              * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
-              * @property {string} id The ID of the actual tool element. Required.
-              * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
-              * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
-              * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
-              * @property {PlainObject<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
-              * @property {string} [container_id] The ID to be given to the tool's container element.
-              * @property {string} [defval] Default value
-              * @property {string|Integer} [colnum] Added as part of the option list class.
-              * @property {string} [label] Label associated with the tool, visible in the UI
-              * @property {Integer} [size] Value of the "size" attribute of the tool input
-              * @property {module:jQuerySpinButton.SpinButtonConfig} [spindata] When added to a tool of type "input", this tool becomes a "spinner" which allows the number to be in/decreased.
-              */
-
-              if (ext.context_tools) {
-                $$b.each(ext.context_tools, function (i, tool) {
-                  // Add select tool
-                  var contId = tool.container_id ? ' id="' + tool.container_id + '"' : '';
-                  var panel = $$b('#' + tool.panel); // create the panel if it doesn't exist
-
-                  if (!panel.length) {
-                    panel = $$b('<div>', {
-                      id: tool.panel
-                    }).appendTo('#tools_top');
+    var extAdded =
+    /*#__PURE__*/
+    function () {
+      var _ref13 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee5(win, ext) {
+        var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, altsObj, placementObj, holders;
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                prepResize = function _ref14() {
+                  if (resizeTimer) {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = null;
                   }
 
-                  var html; // TODO: Allow support for other types, or adding to existing tool
-
-                  switch (tool.type) {
-                    case 'tool_button':
-                      {
-                        html = '<div class="tool_button">' + tool.id + '</div>';
-                        var div = $$b(html).appendTo(panel);
-
-                        if (tool.events) {
-                          $$b.each(tool.events, function (evt, func) {
-                            $$b(div).bind(evt, func);
-                          });
-                        }
-
-                        break;
-                      }
-
-                    case 'select':
-                      {
-                        html = '<label' + contId + '>' + '<select id="' + tool.id + '">';
-                        $$b.each(tool.options, function (val, text) {
-                          var sel = val === tool.defval ? ' selected' : '';
-                          html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
-                        });
-                        html += '</select></label>'; // Creates the tool, hides & adds it, returns the select element
-
-                        var sel = $$b(html).appendTo(panel).find('select');
-                        $$b.each(tool.events, function (evt, func) {
-                          $$b(sel).bind(evt, func);
-                        });
-                        break;
-                      }
-
-                    case 'button-select':
-                      {
-                        html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' + '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
-                        var list = $$b('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
-
-                        if (tool.colnum) {
-                          list.addClass('optcols' + tool.colnum);
-                        } // Creates the tool, hides & adds it, returns the select element
-
-                        /* const dropdown = */
-
-
-                        $$b(html).appendTo(panel).children();
-                        btnSelects.push({
-                          elem: '#' + tool.id,
-                          list: '#' + tool.id + '_opts',
-                          title: tool.title,
-                          callback: tool.events.change,
-                          cur: '#cur_' + tool.id
-                        });
-                        break;
-                      }
-
-                    case 'input':
-                      {
-                        html = '<label' + contId + '>' + '<span id="' + tool.id + '_label">' + tool.label + ':</span>' + '<input id="' + tool.id + '" title="' + tool.title + '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>'; // Creates the tool, hides & adds it, returns the select element
-                        // Add to given tool.panel
-
-                        var inp = $$b(html).appendTo(panel).find('input');
-
-                        if (tool.spindata) {
-                          inp.SpinButton(tool.spindata);
-                        }
-
-                        if (tool.events) {
-                          $$b.each(tool.events, function (evt, func) {
-                            inp.bind(evt, func);
-                          });
-                        }
-
-                        break;
-                      }
+                  if (!resizeDone) {
+                    resizeTimer = setTimeout(function () {
+                      resizeDone = true;
+                      setIconSize($$b.pref('iconsize'));
+                    }, 50);
                   }
+                };
+
+                if (ext) {
+                  _context5.next = 3;
+                  break;
+                }
+
+                return _context5.abrupt("return", undefined);
+
+              case 3:
+                cbCalled = false;
+                resizeDone = false;
+
+                if (!ext.langReady) {
+                  _context5.next = 14;
+                  break;
+                }
+
+                if (!editor.langChanged) {
+                  _context5.next = 13;
+                  break;
+                }
+
+                // We check for this since the "lang" pref could have been set by storage
+                lang = $$b.pref('lang');
+                _context5.next = 10;
+                return ext.langReady({
+                  lang: lang,
+                  uiStrings: uiStrings$1,
+                  importLocale: getImportLocale({
+                    defaultLang: lang,
+                    defaultName: ext.name
+                  })
                 });
-              }
 
-              svgicons = ext.svgicons;
-
-              if (!ext.buttons) {
-                _context7.next = 24;
+              case 10:
+                loadedExtensionNames.push(ext.name);
+                _context5.next = 14;
                 break;
-              }
 
-              fallbackObj = {}, altsObj = {}, placementObj = {}, holders = {};
-              /**
-              * @typedef {GenericArray} module:SVGEditor.KeyArray
-              * @property {string} 0 The key to bind (on `keydown`)
-              * @property {boolean} 1 Whether to `preventDefault` on the `keydown` event
-              * @property {boolean} 2 Not apparently in use (NoDisableInInput)
-              */
+              case 13:
+                extsPreLang.push(ext);
 
-              /**
-               * @typedef {string|module:SVGEditor.KeyArray} module:SVGEditor.Key
-               */
-
-              /**
-              * @typedef {PlainObject} module:SVGEditor.Button
-              * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
-              * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
-              * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
-              * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
-              * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
-              * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
-              * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
-              * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
-              * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
-              * @property {boolean} [isDefault] Whether or not the button is the default. Used with `list`.
-              * @property {PlainObject} [includeWith] Object with flyout menu data
-              * @property {boolean} [includeWith.isDefault] Indicates whether button is default in flyout list or not.
-              * @property {string} includeWith.button jQuery selector of the existing button to be joined. Example: '#tool_line'. Required if `includeWith` is used.
-              * @property {"last"|Integer} [includeWith.position] Position of icon in flyout list; will be added to end if not indicated. Integer is for use with {@link http://api.jquery.com/eq/}.
-              * @property {module:SVGEditor.Key} [key] The key to bind to the button
-              */
-              // Add buttons given by extension
-
-              $$b.each(ext.buttons, function (i,
-              /** @type {module:SVGEditor.Button} */
-              btn) {
-                var id = btn.id;
-                var num = i; // Give button a unique ID
-
-                while ($$b('#' + id).length) {
-                  id = btn.id + '_' + ++num;
-                }
-
-                var icon;
-
-                if (!svgicons) {
-                  icon = $$b('<img src="' + btn.icon + (btn.title ? '" alt="' + btn.title : '') + '">');
-                } else {
-                  fallbackObj[id] = btn.icon;
-                  altsObj[id] = btn.title;
-                  var svgicon = btn.svgicon || btn.id;
-
-                  if (btn.type === 'app_menu') {
-                    placementObj['#' + id + ' > div'] = svgicon;
-                  } else {
-                    placementObj['#' + id] = svgicon;
+              case 14:
+                /**
+                *
+                * @returns {void}
+                */
+                runCallback = function runCallback() {
+                  if (ext.callback && !cbCalled) {
+                    cbCalled = true;
+                    ext.callback.call(editor);
                   }
-                }
+                };
 
-                var cls, parent; // Set button up according to its type
+                btnSelects = [];
+                /**
+                * @typedef {PlainObject} module:SVGEditor.ContextTool
+                * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
+                * @property {string} id The ID of the actual tool element. Required.
+                * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
+                * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
+                * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
+                * @property {PlainObject<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
+                * @property {string} [container_id] The ID to be given to the tool's container element.
+                * @property {string} [defval] Default value
+                * @property {string|Integer} [colnum] Added as part of the option list class.
+                * @property {string} [label] Label associated with the tool, visible in the UI
+                * @property {Integer} [size] Value of the "size" attribute of the tool input
+                * @property {module:jQuerySpinButton.SpinButtonConfig} [spindata] When added to a tool of type "input", this tool becomes a "spinner" which allows the number to be in/decreased.
+                */
 
-                switch (btn.type) {
-                  case 'mode_flyout':
-                  case 'mode':
-                    cls = 'tool_button';
-                    parent = '#tools_left';
-                    break;
+                if (ext.context_tools) {
+                  $$b.each(ext.context_tools, function (i, tool) {
+                    // Add select tool
+                    var contId = tool.container_id ? ' id="' + tool.container_id + '"' : '';
+                    var panel = $$b('#' + tool.panel); // create the panel if it doesn't exist
 
-                  case 'context':
-                    cls = 'tool_button';
-                    parent = '#' + btn.panel; // create the panel if it doesn't exist
-
-                    if (!$$b(parent).length) {
-                      $$b('<div>', {
-                        id: btn.panel
+                    if (!panel.length) {
+                      panel = $$b('<div>', {
+                        id: tool.panel
                       }).appendTo('#tools_top');
                     }
 
-                    break;
+                    var html; // TODO: Allow support for other types, or adding to existing tool
 
-                  case 'app_menu':
-                    cls = '';
-                    parent = '#main_menu ul';
-                    break;
-                }
+                    switch (tool.type) {
+                      case 'tool_button':
+                        {
+                          html = '<div class="tool_button">' + tool.id + '</div>';
+                          var div = $$b(html).appendTo(panel);
 
-                var flyoutHolder, showBtn, refData, refBtn;
-                var button = $$b(btn.list || btn.type === 'app_menu' ? '<li/>' : '<div/>').attr('id', id).attr('title', btn.title).addClass(cls);
-
-                if (!btn.includeWith && !btn.list) {
-                  if ('position' in btn) {
-                    if ($$b(parent).children().eq(btn.position).length) {
-                      $$b(parent).children().eq(btn.position).before(button);
-                    } else {
-                      $$b(parent).children().last().after(button);
-                    }
-                  } else {
-                    button.appendTo(parent);
-                  }
-
-                  if (btn.type === 'mode_flyout') {
-                    // Add to flyout menu / make flyout menu
-                    // const opts = btn.includeWith;
-                    // // opts.button, default, position
-                    refBtn = $$b(button);
-                    flyoutHolder = refBtn.parent(); // Create a flyout menu if there isn't one already
-
-                    var tlsId;
-
-                    if (!refBtn.parent().hasClass('tools_flyout')) {
-                      // Create flyout placeholder
-                      tlsId = refBtn[0].id.replace('tool_', 'tools_');
-                      showBtn = refBtn.clone().attr('id', tlsId + '_show').append($$b('<div>', {
-                        "class": 'flyout_arrow_horiz'
-                      }));
-                      refBtn.before(showBtn); // Create a flyout div
-
-                      flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
-                      flyoutHolder.data('isLibrary', true);
-                      showBtn.data('isLibrary', true);
-                    } // refData = Actions.getButtonData(opts.button);
-
-
-                    placementObj['#' + tlsId + '_show'] = btn.id; // TODO: Find way to set the current icon using the iconloader if this is not default
-                    // Include data for extension button as well as ref button
-
-                    /* curH = */
-
-                    holders['#' + flyoutHolder[0].id] = [{
-                      sel: '#' + id,
-                      fn: btn.events.click,
-                      icon: btn.id,
-                      // key: btn.key,
-                      isDefault: true
-                    }]; // , refData
-                    //
-                    // // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
-                    //
-                    // const pos = ('position' in opts)?opts.position:'last';
-                    // const len = flyoutHolder.children().length;
-                    //
-                    // // Add at given position or end
-                    // if (!isNaN(pos) && pos >= 0 && pos < len) {
-                    //   flyoutHolder.children().eq(pos).before(button);
-                    // } else {
-                    //   flyoutHolder.append(button);
-                    //   curH.reverse();
-                    // }
-                  } else if (btn.type === 'app_menu') {
-                    button.append('<div>').append(btn.title);
-                  }
-                } else if (btn.list) {
-                  // Add button to list
-                  button.addClass('push_button');
-                  $$b('#' + btn.list + '_opts').append(button);
-
-                  if (btn.isDefault) {
-                    $$b('#cur_' + btn.list).append(button.children().clone());
-
-                    var _svgicon = btn.svgicon || btn.id;
-
-                    placementObj['#cur_' + btn.list] = _svgicon;
-                  }
-                } else if (btn.includeWith) {
-                  // Add to flyout menu / make flyout menu
-                  var opts = btn.includeWith; // opts.button, default, position
-
-                  refBtn = $$b(opts.button);
-                  flyoutHolder = refBtn.parent(); // Create a flyout menu if there isn't one already
-
-                  var _tlsId;
-
-                  if (!refBtn.parent().hasClass('tools_flyout')) {
-                    // Create flyout placeholder
-                    _tlsId = refBtn[0].id.replace('tool_', 'tools_');
-                    showBtn = refBtn.clone().attr('id', _tlsId + '_show').append($$b('<div>', {
-                      "class": 'flyout_arrow_horiz'
-                    }));
-                    refBtn.before(showBtn); // Create a flyout div
-
-                    flyoutHolder = makeFlyoutHolder(_tlsId, refBtn);
-                  }
-
-                  refData = Actions.getButtonData(opts.button);
-
-                  if (opts.isDefault) {
-                    placementObj['#' + _tlsId + '_show'] = btn.id;
-                  } // TODO: Find way to set the current icon using the iconloader if this is not default
-                  // Include data for extension button as well as ref button
-
-
-                  var curH = holders['#' + flyoutHolder[0].id] = [{
-                    sel: '#' + id,
-                    fn: btn.events.click,
-                    icon: btn.id,
-                    key: btn.key,
-                    isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
-                  }, refData]; // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
-
-                  var pos = 'position' in opts ? opts.position : 'last';
-                  var len = flyoutHolder.children().length; // Add at given position or end
-
-                  if (!isNaN(pos) && pos >= 0 && pos < len) {
-                    flyoutHolder.children().eq(pos).before(button);
-                  } else {
-                    flyoutHolder.append(button);
-                    curH.reverse();
-                  }
-                }
-
-                if (!svgicons) {
-                  button.append(icon);
-                }
-
-                if (!btn.list) {
-                  // Add given events to button
-                  $$b.each(btn.events, function (name, func) {
-                    if (name === 'click' && btn.type === 'mode') {
-                      // `touch.js` changes `touchstart` to `mousedown`,
-                      //   so we must map extension click events as well
-                      if (isTouch() && name === 'click') {
-                        name = 'mousedown';
-                      }
-
-                      if (btn.includeWith) {
-                        button.bind(name, func);
-                      } else {
-                        button.bind(name, function () {
-                          if (toolButtonClick(button)) {
-                            func();
+                          if (tool.events) {
+                            $$b.each(tool.events, function (evt, func) {
+                              $$b(div).bind(evt, func);
+                            });
                           }
-                        });
-                      }
 
-                      if (btn.key) {
-                        $$b(document).bind('keydown', btn.key, func);
-
-                        if (btn.title) {
-                          button.attr('title', btn.title + ' [' + btn.key + ']');
+                          break;
                         }
-                      }
-                    } else {
-                      button.bind(name, func);
+
+                      case 'select':
+                        {
+                          html = '<label' + contId + '>' + '<select id="' + tool.id + '">';
+                          $$b.each(tool.options, function (val, text) {
+                            var sel = val === tool.defval ? ' selected' : '';
+                            html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
+                          });
+                          html += '</select></label>'; // Creates the tool, hides & adds it, returns the select element
+
+                          var sel = $$b(html).appendTo(panel).find('select');
+                          $$b.each(tool.events, function (evt, func) {
+                            $$b(sel).bind(evt, func);
+                          });
+                          break;
+                        }
+
+                      case 'button-select':
+                        {
+                          html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' + '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+                          var list = $$b('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
+
+                          if (tool.colnum) {
+                            list.addClass('optcols' + tool.colnum);
+                          } // Creates the tool, hides & adds it, returns the select element
+
+                          /* const dropdown = */
+
+
+                          $$b(html).appendTo(panel).children();
+                          btnSelects.push({
+                            elem: '#' + tool.id,
+                            list: '#' + tool.id + '_opts',
+                            title: tool.title,
+                            callback: tool.events.change,
+                            cur: '#cur_' + tool.id
+                          });
+                          break;
+                        }
+
+                      case 'input':
+                        {
+                          html = '<label' + contId + '>' + '<span id="' + tool.id + '_label">' + tool.label + ':</span>' + '<input id="' + tool.id + '" title="' + tool.title + '" size="' + (tool.size || '4') + '" value="' + (tool.defval || '') + '" type="text"/></label>'; // Creates the tool, hides & adds it, returns the select element
+                          // Add to given tool.panel
+
+                          var inp = $$b(html).appendTo(panel).find('input');
+
+                          if (tool.spindata) {
+                            inp.SpinButton(tool.spindata);
+                          }
+
+                          if (tool.events) {
+                            $$b.each(tool.events, function (evt, func) {
+                              inp.bind(evt, func);
+                            });
+                          }
+
+                          break;
+                        }
                     }
                   });
                 }
 
-                setupFlyouts(holders);
-              });
-              $$b.each(btnSelects, function () {
-                addAltDropDown(this.elem, this.list, this.callback, {
-                  seticon: true
-                });
-              });
+                svgicons = ext.svgicons;
 
-              if (!svgicons) {
-                _context7.next = 24;
-                break;
-              }
+                if (!ext.buttons) {
+                  _context5.next = 24;
+                  break;
+                }
 
-              return _context7.abrupt("return", new Promise(function (resolve, reject) {
-                // eslint-disable-line promise/avoid-new
-                $$b.svgIcons(svgicons, {
-                  w: 24,
-                  h: 24,
-                  id_match: false,
-                  no_img: !isWebkit(),
-                  fallback: fallbackObj,
-                  placement: placementObj,
-                  callback: function callback(icons) {
-                    // Non-ideal hack to make the icon match the current size
-                    // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
-                    if ($$b.pref('iconsize') !== 'm') {
-                      prepResize();
+                fallbackObj = {}, altsObj = {}, placementObj = {}, holders = {};
+                /**
+                * @typedef {GenericArray} module:SVGEditor.KeyArray
+                * @property {string} 0 The key to bind (on `keydown`)
+                * @property {boolean} 1 Whether to `preventDefault` on the `keydown` event
+                * @property {boolean} 2 Not apparently in use (NoDisableInInput)
+                */
+
+                /**
+                 * @typedef {string|module:SVGEditor.KeyArray} module:SVGEditor.Key
+                 */
+
+                /**
+                * @typedef {PlainObject} module:SVGEditor.Button
+                * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
+                * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
+                * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
+                * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
+                * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
+                * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
+                * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
+                * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
+                * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
+                * @property {boolean} [isDefault] Whether or not the button is the default. Used with `list`.
+                * @property {PlainObject} [includeWith] Object with flyout menu data
+                * @property {boolean} [includeWith.isDefault] Indicates whether button is default in flyout list or not.
+                * @property {string} includeWith.button jQuery selector of the existing button to be joined. Example: '#tool_line'. Required if `includeWith` is used.
+                * @property {"last"|Integer} [includeWith.position] Position of icon in flyout list; will be added to end if not indicated. Integer is for use with {@link http://api.jquery.com/eq/}.
+                * @property {module:SVGEditor.Key} [key] The key to bind to the button
+                */
+                // Add buttons given by extension
+
+                $$b.each(ext.buttons, function (i,
+                /** @type {module:SVGEditor.Button} */
+                btn) {
+                  var id = btn.id;
+                  var num = i; // Give button a unique ID
+
+                  while ($$b('#' + id).length) {
+                    id = btn.id + '_' + ++num;
+                  }
+
+                  var icon;
+
+                  if (!svgicons) {
+                    icon = $$b('<img src="' + btn.icon + (btn.title ? '" alt="' + btn.title : '') + '">');
+                  } else {
+                    fallbackObj[id] = btn.icon;
+                    altsObj[id] = btn.title;
+                    var svgicon = btn.svgicon || btn.id;
+
+                    if (btn.type === 'app_menu') {
+                      placementObj['#' + id + ' > div'] = svgicon;
+                    } else {
+                      placementObj['#' + id] = svgicon;
+                    }
+                  }
+
+                  var cls, parent; // Set button up according to its type
+
+                  switch (btn.type) {
+                    case 'mode_flyout':
+                    case 'mode':
+                      cls = 'tool_button';
+                      parent = '#tools_left';
+                      break;
+
+                    case 'context':
+                      cls = 'tool_button';
+                      parent = '#' + btn.panel; // create the panel if it doesn't exist
+
+                      if (!$$b(parent).length) {
+                        $$b('<div>', {
+                          id: btn.panel
+                        }).appendTo('#tools_top');
+                      }
+
+                      break;
+
+                    case 'app_menu':
+                      cls = '';
+                      parent = '#main_menu ul';
+                      break;
+                  }
+
+                  var flyoutHolder, showBtn, refData, refBtn;
+                  var button = $$b(btn.list || btn.type === 'app_menu' ? '<li/>' : '<div/>').attr('id', id).attr('title', btn.title).addClass(cls);
+
+                  if (!btn.includeWith && !btn.list) {
+                    if ('position' in btn) {
+                      if ($$b(parent).children().eq(btn.position).length) {
+                        $$b(parent).children().eq(btn.position).before(button);
+                      } else {
+                        $$b(parent).children().last().after(button);
+                      }
+                    } else {
+                      button.appendTo(parent);
                     }
 
-                    runCallback();
-                    resolve();
+                    if (btn.type === 'mode_flyout') {
+                      // Add to flyout menu / make flyout menu
+                      // const opts = btn.includeWith;
+                      // // opts.button, default, position
+                      refBtn = $$b(button);
+                      flyoutHolder = refBtn.parent(); // Create a flyout menu if there isn't one already
+
+                      var tlsId;
+
+                      if (!refBtn.parent().hasClass('tools_flyout')) {
+                        // Create flyout placeholder
+                        tlsId = refBtn[0].id.replace('tool_', 'tools_');
+                        showBtn = refBtn.clone().attr('id', tlsId + '_show').append($$b('<div>', {
+                          "class": 'flyout_arrow_horiz'
+                        }));
+                        refBtn.before(showBtn); // Create a flyout div
+
+                        flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
+                        flyoutHolder.data('isLibrary', true);
+                        showBtn.data('isLibrary', true);
+                      } // refData = Actions.getButtonData(opts.button);
+
+
+                      placementObj['#' + tlsId + '_show'] = btn.id; // TODO: Find way to set the current icon using the iconloader if this is not default
+                      // Include data for extension button as well as ref button
+
+                      /* curH = */
+
+                      holders['#' + flyoutHolder[0].id] = [{
+                        sel: '#' + id,
+                        fn: btn.events.click,
+                        icon: btn.id,
+                        // key: btn.key,
+                        isDefault: true
+                      }]; // , refData
+                      //
+                      // // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+                      //
+                      // const pos = ('position' in opts)?opts.position:'last';
+                      // const len = flyoutHolder.children().length;
+                      //
+                      // // Add at given position or end
+                      // if (!isNaN(pos) && pos >= 0 && pos < len) {
+                      //   flyoutHolder.children().eq(pos).before(button);
+                      // } else {
+                      //   flyoutHolder.append(button);
+                      //   curH.reverse();
+                      // }
+                    } else if (btn.type === 'app_menu') {
+                      button.append('<div>').append(btn.title);
+                    }
+                  } else if (btn.list) {
+                    // Add button to list
+                    button.addClass('push_button');
+                    $$b('#' + btn.list + '_opts').append(button);
+
+                    if (btn.isDefault) {
+                      $$b('#cur_' + btn.list).append(button.children().clone());
+
+                      var _svgicon = btn.svgicon || btn.id;
+
+                      placementObj['#cur_' + btn.list] = _svgicon;
+                    }
+                  } else if (btn.includeWith) {
+                    // Add to flyout menu / make flyout menu
+                    var opts = btn.includeWith; // opts.button, default, position
+
+                    refBtn = $$b(opts.button);
+                    flyoutHolder = refBtn.parent(); // Create a flyout menu if there isn't one already
+
+                    var _tlsId;
+
+                    if (!refBtn.parent().hasClass('tools_flyout')) {
+                      // Create flyout placeholder
+                      _tlsId = refBtn[0].id.replace('tool_', 'tools_');
+                      showBtn = refBtn.clone().attr('id', _tlsId + '_show').append($$b('<div>', {
+                        "class": 'flyout_arrow_horiz'
+                      }));
+                      refBtn.before(showBtn); // Create a flyout div
+
+                      flyoutHolder = makeFlyoutHolder(_tlsId, refBtn);
+                    }
+
+                    refData = Actions.getButtonData(opts.button);
+
+                    if (opts.isDefault) {
+                      placementObj['#' + _tlsId + '_show'] = btn.id;
+                    } // TODO: Find way to set the current icon using the iconloader if this is not default
+                    // Include data for extension button as well as ref button
+
+
+                    var curH = holders['#' + flyoutHolder[0].id] = [{
+                      sel: '#' + id,
+                      fn: btn.events.click,
+                      icon: btn.id,
+                      key: btn.key,
+                      isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
+                    }, refData]; // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+
+                    var pos = 'position' in opts ? opts.position : 'last';
+                    var len = flyoutHolder.children().length; // Add at given position or end
+
+                    if (!isNaN(pos) && pos >= 0 && pos < len) {
+                      flyoutHolder.children().eq(pos).before(button);
+                    } else {
+                      flyoutHolder.append(button);
+                      curH.reverse();
+                    }
                   }
+
+                  if (!svgicons) {
+                    button.append(icon);
+                  }
+
+                  if (!btn.list) {
+                    // Add given events to button
+                    $$b.each(btn.events, function (name, func) {
+                      if (name === 'click' && btn.type === 'mode') {
+                        // `touch.js` changes `touchstart` to `mousedown`,
+                        //   so we must map extension click events as well
+                        if (isTouch() && name === 'click') {
+                          name = 'mousedown';
+                        }
+
+                        if (btn.includeWith) {
+                          button.bind(name, func);
+                        } else {
+                          button.bind(name, function () {
+                            if (toolButtonClick(button)) {
+                              func();
+                            }
+                          });
+                        }
+
+                        if (btn.key) {
+                          $$b(document).bind('keydown', btn.key, func);
+
+                          if (btn.title) {
+                            button.attr('title', btn.title + ' [' + btn.key + ']');
+                          }
+                        }
+                      } else {
+                        button.bind(name, func);
+                      }
+                    });
+                  }
+
+                  setupFlyouts(holders);
                 });
-              }));
+                $$b.each(btnSelects, function () {
+                  addAltDropDown(this.elem, this.list, this.callback, {
+                    seticon: true
+                  });
+                });
 
-            case 24:
-              return _context7.abrupt("return", runCallback());
+                if (!svgicons) {
+                  _context5.next = 24;
+                  break;
+                }
 
-            case 25:
-            case "end":
-              return _context7.stop();
+                return _context5.abrupt("return", new Promise(function (resolve, reject) {
+                  // eslint-disable-line promise/avoid-new
+                  $$b.svgIcons(svgicons, {
+                    w: 24,
+                    h: 24,
+                    id_match: false,
+                    no_img: !isWebkit(),
+                    fallback: fallbackObj,
+                    placement: placementObj,
+                    callback: function callback(icons) {
+                      // Non-ideal hack to make the icon match the current size
+                      // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
+                      if ($$b.pref('iconsize') !== 'm') {
+                        prepResize();
+                      }
+
+                      runCallback();
+                      resolve();
+                    }
+                  });
+                }));
+
+              case 24:
+                return _context5.abrupt("return", runCallback());
+
+              case 25:
+              case "end":
+                return _context5.stop();
+            }
           }
-        }
-      });
-    };
+        }, _callee5);
+      }));
+
+      return function extAdded(_x4, _x5) {
+        return _ref13.apply(this, arguments);
+      };
+    }();
     /**
     * @param {string} color
     * @param {Float} opac
@@ -32585,9 +32751,9 @@
      * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
      * @returns {void}
      */
-    function (win, _ref14) {
-      var center = _ref14.center,
-          newCtr = _ref14.newCtr;
+    function (win, _ref15) {
+      var center = _ref15.center,
+          newCtr = _ref15.newCtr;
       updateCanvas(center, newCtr);
     });
     svgCanvas.bind('contextset', contextChanged);
@@ -32718,11 +32884,15 @@
     }); // fired when user wants to move elements to another layer
 
     var promptMoveLayerOnce = false;
-    $$b('#selLayerNames').change(function _callee2() {
+    $$b('#selLayerNames').change(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee6() {
       var destLayer, confirmStr, moveToLayer, ok;
-      return regeneratorRuntime.async(function _callee2$(_context8) {
+      return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context8.prev = _context8.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
               destLayer = this.options[this.selectedIndex].value;
               confirmStr = uiStrings$1.notification.QmoveElemsToLayer.replace('%s', destLayer);
@@ -32743,43 +32913,43 @@
               };
 
               if (!destLayer) {
-                _context8.next = 14;
+                _context6.next = 14;
                 break;
               }
 
               if (!promptMoveLayerOnce) {
-                _context8.next = 8;
+                _context6.next = 8;
                 break;
               }
 
               moveToLayer(true);
-              _context8.next = 14;
+              _context6.next = 14;
               break;
 
             case 8:
-              _context8.next = 10;
-              return regeneratorRuntime.awrap($$b.confirm(confirmStr));
+              _context6.next = 10;
+              return $$b.confirm(confirmStr);
 
             case 10:
-              ok = _context8.sent;
+              ok = _context6.sent;
 
               if (ok) {
-                _context8.next = 13;
+                _context6.next = 13;
                 break;
               }
 
-              return _context8.abrupt("return");
+              return _context6.abrupt("return");
 
             case 13:
               moveToLayer(true);
 
             case 14:
             case "end":
-              return _context8.stop();
+              return _context6.stop();
           }
         }
-      }, null, this);
-    });
+      }, _callee6, this);
+    })));
     $$b('#font_family').change(function () {
       svgCanvas.setFontFamily(this.value);
     });
@@ -33461,34 +33631,44 @@
     */
 
 
-    var makeHyperlink = function makeHyperlink() {
-      var url;
-      return regeneratorRuntime.async(function makeHyperlink$(_context9) {
-        while (1) {
-          switch (_context9.prev = _context9.next) {
-            case 0:
-              if (!(!isNullish(selectedElement) || multiselected)) {
-                _context9.next = 5;
-                break;
-              }
+    var makeHyperlink =
+    /*#__PURE__*/
+    function () {
+      var _ref17 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee7() {
+        var url;
+        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                if (!(!isNullish(selectedElement) || multiselected)) {
+                  _context7.next = 5;
+                  break;
+                }
 
-              _context9.next = 3;
-              return regeneratorRuntime.awrap($$b.prompt(uiStrings$1.notification.enterNewLinkURL, 'http://'));
+                _context7.next = 3;
+                return $$b.prompt(uiStrings$1.notification.enterNewLinkURL, 'http://');
 
-            case 3:
-              url = _context9.sent;
+              case 3:
+                url = _context7.sent;
 
-              if (url) {
-                svgCanvas.makeHyperlink(url);
-              }
+                if (url) {
+                  svgCanvas.makeHyperlink(url);
+                }
 
-            case 5:
-            case "end":
-              return _context9.stop();
+              case 5:
+              case "end":
+                return _context7.stop();
+            }
           }
-        }
-      });
-    };
+        }, _callee7);
+      }));
+
+      return function makeHyperlink() {
+        return _ref17.apply(this, arguments);
+      };
+    }();
     /**
     * @param {Float} dx
     * @param {Float} dy
@@ -33606,45 +33786,55 @@
      */
 
 
-    var clickClear = function clickClear() {
-      var _curConfig$dimensions, x, y, ok;
+    var clickClear =
+    /*#__PURE__*/
+    function () {
+      var _ref18 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee8() {
+        var _curConfig$dimensions, x, y, ok;
 
-      return regeneratorRuntime.async(function clickClear$(_context10) {
-        while (1) {
-          switch (_context10.prev = _context10.next) {
-            case 0:
-              _curConfig$dimensions = _slicedToArray(curConfig.dimensions, 2), x = _curConfig$dimensions[0], y = _curConfig$dimensions[1];
-              _context10.next = 3;
-              return regeneratorRuntime.awrap($$b.confirm(uiStrings$1.notification.QwantToClear));
+        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _curConfig$dimensions = _slicedToArray(curConfig.dimensions, 2), x = _curConfig$dimensions[0], y = _curConfig$dimensions[1];
+                _context8.next = 3;
+                return $$b.confirm(uiStrings$1.notification.QwantToClear);
 
-            case 3:
-              ok = _context10.sent;
+              case 3:
+                ok = _context8.sent;
 
-              if (ok) {
-                _context10.next = 6;
-                break;
-              }
+                if (ok) {
+                  _context8.next = 6;
+                  break;
+                }
 
-              return _context10.abrupt("return");
+                return _context8.abrupt("return");
 
-            case 6:
-              setSelectMode();
-              svgCanvas.clear();
-              svgCanvas.setResolution(x, y);
-              updateCanvas(true);
-              zoomImage();
-              populateLayers();
-              updateContextPanel();
-              prepPaints();
-              svgCanvas.runExtensions('onNewDocument');
+              case 6:
+                setSelectMode();
+                svgCanvas.clear();
+                svgCanvas.setResolution(x, y);
+                updateCanvas(true);
+                zoomImage();
+                populateLayers();
+                updateContextPanel();
+                prepPaints();
+                svgCanvas.runExtensions('onNewDocument');
 
-            case 15:
-            case "end":
-              return _context10.stop();
+              case 15:
+              case "end":
+                return _context8.stop();
+            }
           }
-        }
-      });
-    };
+        }, _callee8);
+      }));
+
+      return function clickClear() {
+        return _ref18.apply(this, arguments);
+      };
+    }();
     /**
     *
     * @returns {false}
@@ -33688,101 +33878,111 @@
     * @returns {Promise<void>} Resolves to `undefined`
     */
 
-    var clickExport = function clickExport() {
-      var imgType, exportWindowName, openExportWindow, chrome, quality;
-      return regeneratorRuntime.async(function clickExport$(_context11) {
-        while (1) {
-          switch (_context11.prev = _context11.next) {
-            case 0:
-              openExportWindow = function _ref15() {
-                var loadingImage = uiStrings$1.notification.loadingImage;
+    var clickExport =
+    /*#__PURE__*/
+    function () {
+      var _ref19 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee9() {
+        var imgType, exportWindowName, openExportWindow, chrome, quality;
+        return regeneratorRuntime.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                openExportWindow = function _ref20() {
+                  var loadingImage = uiStrings$1.notification.loadingImage;
 
-                if (curConfig.exportWindowType === 'new') {
-                  editor.exportWindowCt++;
-                }
+                  if (curConfig.exportWindowType === 'new') {
+                    editor.exportWindowCt++;
+                  }
 
-                exportWindowName = curConfig.canvasName + editor.exportWindowCt;
-                var popHTML, popURL;
+                  exportWindowName = curConfig.canvasName + editor.exportWindowCt;
+                  var popHTML, popURL;
 
-                if (loadingURL) {
-                  popURL = loadingURL;
-                } else {
-                  popHTML = "<!DOCTYPE html><html>\n          <head>\n            <meta charset=\"utf-8\">\n            <title>".concat(loadingImage, "</title>\n          </head>\n          <body><h1>").concat(loadingImage, "</h1></body>\n        <html>");
-
-                  if (typeof URL !== 'undefined' && URL.createObjectURL) {
-                    var blob = new Blob([popHTML], {
-                      type: 'text/html'
-                    });
-                    popURL = URL.createObjectURL(blob);
+                  if (loadingURL) {
+                    popURL = loadingURL;
                   } else {
-                    popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
+                    popHTML = "<!DOCTYPE html><html>\n          <head>\n            <meta charset=\"utf-8\">\n            <title>".concat(loadingImage, "</title>\n          </head>\n          <body><h1>").concat(loadingImage, "</h1></body>\n        <html>");
+
+                    if (typeof URL !== 'undefined' && URL.createObjectURL) {
+                      var blob = new Blob([popHTML], {
+                        type: 'text/html'
+                      });
+                      popURL = URL.createObjectURL(blob);
+                    } else {
+                      popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
+                    }
+
+                    loadingURL = popURL;
                   }
 
-                  loadingURL = popURL;
-                }
+                  exportWindow = window.open(popURL, exportWindowName);
+                };
 
-                exportWindow = window.open(popURL, exportWindowName);
-              };
+                _context9.next = 3;
+                return $$b.select('Select an image type for export: ', [// See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
+                // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
+                'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'], function () {
+                  var sel = $$b(this);
 
-              _context11.next = 3;
-              return regeneratorRuntime.awrap($$b.select('Select an image type for export: ', [// See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
-              // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
-              'PNG', 'JPEG', 'BMP', 'WEBP', 'PDF'], function () {
-                var sel = $$b(this);
-
-                if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
-                  if (!$$b('#image-slider').length) {
-                    $$b("<div><label>".concat(uiStrings$1.ui.quality, "\n              <input id=\"image-slider\"\n                type=\"range\" min=\"1\" max=\"100\" value=\"92\" />\n            </label></div>")).appendTo(sel.parent());
+                  if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
+                    if (!$$b('#image-slider').length) {
+                      $$b("<div><label>".concat(uiStrings$1.ui.quality, "\n              <input id=\"image-slider\"\n                type=\"range\" min=\"1\" max=\"100\" value=\"92\" />\n            </label></div>")).appendTo(sel.parent());
+                    }
+                  } else {
+                    $$b('#image-slider').parent().remove();
                   }
-                } else {
-                  $$b('#image-slider').parent().remove();
+                });
+
+              case 3:
+                imgType = _context9.sent;
+
+                if (imgType) {
+                  _context9.next = 6;
+                  break;
                 }
-              }));
 
-            case 3:
-              imgType = _context11.sent;
+                return _context9.abrupt("return");
 
-              if (imgType) {
-                _context11.next = 6;
+              case 6:
+                chrome = isChrome();
+
+                if (!(imgType === 'PDF')) {
+                  _context9.next = 12;
+                  break;
+                }
+
+                if (!customExportPDF && !chrome) {
+                  openExportWindow();
+                }
+
+                svgCanvas.exportPDF(exportWindowName);
+                _context9.next = 16;
                 break;
-              }
 
-              return _context11.abrupt("return");
+              case 12:
+                if (!customExportImage) {
+                  openExportWindow();
+                }
 
-            case 6:
-              chrome = isChrome();
+                quality = parseInt($$b('#image-slider').val()) / 100;
+                /* const results = */
 
-              if (!(imgType === 'PDF')) {
-                _context11.next = 12;
-                break;
-              }
+                _context9.next = 16;
+                return svgCanvas.rasterExport(imgType, quality, exportWindowName);
 
-              if (!customExportPDF && !chrome) {
-                openExportWindow();
-              }
-
-              svgCanvas.exportPDF(exportWindowName);
-              _context11.next = 16;
-              break;
-
-            case 12:
-              if (!customExportImage) {
-                openExportWindow();
-              }
-
-              quality = parseInt($$b('#image-slider').val()) / 100;
-              /* const results = */
-
-              _context11.next = 16;
-              return regeneratorRuntime.awrap(svgCanvas.rasterExport(imgType, quality, exportWindowName));
-
-            case 16:
-            case "end":
-              return _context11.stop();
+              case 16:
+              case "end":
+                return _context9.stop();
+            }
           }
-        }
-      });
-    };
+        }, _callee9);
+      }));
+
+      return function clickExport() {
+        return _ref19.apply(this, arguments);
+      };
+    }();
     /**
      * By default, svgCanvas.open() is a no-op. It is up to an extension
      *  mechanism (opera widget, etc.) to call `setCustomHandlers()` which
@@ -33974,62 +34174,72 @@
     */
 
 
-    var saveSourceEditor = function saveSourceEditor() {
-      var saveChanges, ok;
-      return regeneratorRuntime.async(function saveSourceEditor$(_context12) {
-        while (1) {
-          switch (_context12.prev = _context12.next) {
-            case 0:
-              if (editingsource) {
-                _context12.next = 2;
-                break;
-              }
+    var saveSourceEditor =
+    /*#__PURE__*/
+    function () {
+      var _ref21 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee10() {
+        var saveChanges, ok;
+        return regeneratorRuntime.wrap(function _callee10$(_context10) {
+          while (1) {
+            switch (_context10.prev = _context10.next) {
+              case 0:
+                if (editingsource) {
+                  _context10.next = 2;
+                  break;
+                }
 
-              return _context12.abrupt("return");
+                return _context10.abrupt("return");
 
-            case 2:
-              saveChanges = function saveChanges() {
-                svgCanvas.clearSelection();
-                hideSourceEditor();
-                zoomImage();
-                populateLayers();
-                updateTitle();
-                prepPaints();
-              };
+              case 2:
+                saveChanges = function saveChanges() {
+                  svgCanvas.clearSelection();
+                  hideSourceEditor();
+                  zoomImage();
+                  populateLayers();
+                  updateTitle();
+                  prepPaints();
+                };
 
-              if (svgCanvas.setSvgString($$b('#svg_source_textarea').val())) {
-                _context12.next = 11;
-                break;
-              }
+                if (svgCanvas.setSvgString($$b('#svg_source_textarea').val())) {
+                  _context10.next = 11;
+                  break;
+                }
 
-              _context12.next = 6;
-              return regeneratorRuntime.awrap($$b.confirm(uiStrings$1.notification.QerrorsRevertToSource));
+                _context10.next = 6;
+                return $$b.confirm(uiStrings$1.notification.QerrorsRevertToSource);
 
-            case 6:
-              ok = _context12.sent;
+              case 6:
+                ok = _context10.sent;
 
-              if (ok) {
-                _context12.next = 9;
-                break;
-              }
+                if (ok) {
+                  _context10.next = 9;
+                  break;
+                }
 
-              return _context12.abrupt("return");
+                return _context10.abrupt("return");
 
-            case 9:
-              saveChanges();
-              return _context12.abrupt("return");
+              case 9:
+                saveChanges();
+                return _context10.abrupt("return");
 
-            case 11:
-              saveChanges();
-              setSelectMode();
+              case 11:
+                saveChanges();
+                setSelectMode();
 
-            case 13:
-            case "end":
-              return _context12.stop();
+              case 13:
+              case "end":
+                return _context10.stop();
+            }
           }
-        }
-      });
-    };
+        }, _callee10);
+      }));
+
+      return function saveSourceEditor() {
+        return _ref21.apply(this, arguments);
+      };
+    }();
     /**
     *
     * @returns {void}
@@ -34109,12 +34319,16 @@
     */
 
 
-    var savePreferences = editor.savePreferences = function _callee3() {
-      var color, lang, _ref16, langParam, langData;
+    var savePreferences = editor.savePreferences =
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee11() {
+      var color, lang, _ref23, langParam, langData;
 
-      return regeneratorRuntime.async(function _callee3$(_context13) {
+      return regeneratorRuntime.wrap(function _callee11$(_context11) {
         while (1) {
-          switch (_context13.prev = _context13.next) {
+          switch (_context11.prev = _context11.next) {
             case 0:
               // Set background
               color = $$b('#bg_blocks div.cur_background').css('background-color') || '#FFF';
@@ -34123,19 +34337,19 @@
               lang = $$b('#lang_select').val();
 
               if (!(lang !== $$b.pref('lang'))) {
-                _context13.next = 11;
+                _context11.next = 11;
                 break;
               }
 
-              _context13.next = 6;
-              return regeneratorRuntime.awrap(editor.putLocale(lang, goodLangs, curConfig));
+              _context11.next = 6;
+              return editor.putLocale(lang, goodLangs, curConfig);
 
             case 6:
-              _ref16 = _context13.sent;
-              langParam = _ref16.langParam;
-              langData = _ref16.langData;
-              _context13.next = 11;
-              return regeneratorRuntime.awrap(setLang(langParam, langData));
+              _ref23 = _context11.sent;
+              langParam = _ref23.langParam;
+              langData = _ref23.langData;
+              _context11.next = 11;
+              return setLang(langParam, langData);
 
             case 11:
               // set icon size
@@ -34163,11 +34377,11 @@
 
             case 22:
             case "end":
-              return _context13.stop();
+              return _context11.stop();
           }
         }
-      });
-    };
+      }, _callee11);
+    }));
 
     var resetScrollPos = $$b.noop;
     /**
@@ -34175,73 +34389,83 @@
     * @returns {Promise<void>} Resolves to `undefined`
     */
 
-    var cancelOverlays = function cancelOverlays() {
-      var ok;
-      return regeneratorRuntime.async(function cancelOverlays$(_context14) {
-        while (1) {
-          switch (_context14.prev = _context14.next) {
-            case 0:
-              $$b('#dialog_box').hide();
+    var cancelOverlays =
+    /*#__PURE__*/
+    function () {
+      var _ref24 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee12() {
+        var ok;
+        return regeneratorRuntime.wrap(function _callee12$(_context12) {
+          while (1) {
+            switch (_context12.prev = _context12.next) {
+              case 0:
+                $$b('#dialog_box').hide();
 
-              if (!(!editingsource && !docprops && !preferences)) {
-                _context14.next = 4;
+                if (!(!editingsource && !docprops && !preferences)) {
+                  _context12.next = 4;
+                  break;
+                }
+
+                if (curContext) {
+                  svgCanvas.leaveContext();
+                }
+
+                return _context12.abrupt("return");
+
+              case 4:
+                if (!editingsource) {
+                  _context12.next = 15;
+                  break;
+                }
+
+                if (!(origSource !== $$b('#svg_source_textarea').val())) {
+                  _context12.next = 12;
+                  break;
+                }
+
+                _context12.next = 8;
+                return $$b.confirm(uiStrings$1.notification.QignoreSourceChanges);
+
+              case 8:
+                ok = _context12.sent;
+
+                if (ok) {
+                  hideSourceEditor();
+                }
+
+                _context12.next = 13;
                 break;
-              }
 
-              if (curContext) {
-                svgCanvas.leaveContext();
-              }
-
-              return _context14.abrupt("return");
-
-            case 4:
-              if (!editingsource) {
-                _context14.next = 15;
-                break;
-              }
-
-              if (!(origSource !== $$b('#svg_source_textarea').val())) {
-                _context14.next = 12;
-                break;
-              }
-
-              _context14.next = 8;
-              return regeneratorRuntime.awrap($$b.confirm(uiStrings$1.notification.QignoreSourceChanges));
-
-            case 8:
-              ok = _context14.sent;
-
-              if (ok) {
+              case 12:
                 hideSourceEditor();
-              }
 
-              _context14.next = 13;
-              break;
+              case 13:
+                _context12.next = 16;
+                break;
 
-            case 12:
-              hideSourceEditor();
+              case 15:
+                if (docprops) {
+                  hideDocProperties();
+                } else if (preferences) {
+                  hidePreferences();
+                }
 
-            case 13:
-              _context14.next = 16;
-              break;
+              case 16:
+                resetScrollPos();
 
-            case 15:
-              if (docprops) {
-                hideDocProperties();
-              } else if (preferences) {
-                hidePreferences();
-              }
-
-            case 16:
-              resetScrollPos();
-
-            case 17:
-            case "end":
-              return _context14.stop();
+              case 17:
+              case "end":
+                return _context12.stop();
+            }
           }
-        }
-      });
-    };
+        }, _callee12);
+      }));
+
+      return function cancelOverlays() {
+        return _ref24.apply(this, arguments);
+      };
+    }();
 
     var winWh = {
       width: $$b(window).width(),
@@ -34609,11 +34833,15 @@
       $$b(this).removeClass('push_button_pressed').addClass('push_button');
     }); // ask for a layer name
 
-    $$b('#layer_new').click(function _callee4() {
+    $$b('#layer_new').click(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee13() {
       var uniqName, i, newName;
-      return regeneratorRuntime.async(function _callee4$(_context15) {
+      return regeneratorRuntime.wrap(function _callee13$(_context13) {
         while (1) {
-          switch (_context15.prev = _context15.next) {
+          switch (_context13.prev = _context13.next) {
             case 0:
               i = svgCanvas.getCurrentDrawing().getNumLayers();
 
@@ -34621,28 +34849,28 @@
                 uniqName = uiStrings$1.layers.layer + ' ' + ++i;
               } while (svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 
-              _context15.next = 4;
-              return regeneratorRuntime.awrap($$b.prompt(uiStrings$1.notification.enterUniqueLayerName, uniqName));
+              _context13.next = 4;
+              return $$b.prompt(uiStrings$1.notification.enterUniqueLayerName, uniqName);
 
             case 4:
-              newName = _context15.sent;
+              newName = _context13.sent;
 
               if (newName) {
-                _context15.next = 7;
+                _context13.next = 7;
                 break;
               }
 
-              return _context15.abrupt("return");
+              return _context13.abrupt("return");
 
             case 7:
               if (!svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-                _context15.next = 10;
+                _context13.next = 10;
                 break;
               }
 
               /* await */
               $$b.alert(uiStrings$1.notification.dupeLayerName);
-              return _context15.abrupt("return");
+              return _context13.abrupt("return");
 
             case 10:
               svgCanvas.createLayer(newName);
@@ -34651,11 +34879,11 @@
 
             case 13:
             case "end":
-              return _context15.stop();
+              return _context13.stop();
           }
         }
-      });
-    });
+      }, _callee13);
+    })));
     /**
      *
      * @returns {void}
@@ -34679,52 +34907,61 @@
 
 
     function cloneLayer() {
-      var name, newName;
-      return regeneratorRuntime.async(function cloneLayer$(_context16) {
-        while (1) {
-          switch (_context16.prev = _context16.next) {
-            case 0:
-              name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
-              _context16.next = 3;
-              return regeneratorRuntime.awrap($$b.prompt(uiStrings$1.notification.enterUniqueLayerName, name));
-
-            case 3:
-              newName = _context16.sent;
-
-              if (newName) {
-                _context16.next = 6;
-                break;
-              }
-
-              return _context16.abrupt("return");
-
-            case 6:
-              if (!svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-                _context16.next = 9;
-                break;
-              }
-
-              /* await */
-              $$b.alert(uiStrings$1.notification.dupeLayerName);
-              return _context16.abrupt("return");
-
-            case 9:
-              svgCanvas.cloneLayer(newName);
-              updateContextPanel();
-              populateLayers();
-
-            case 12:
-            case "end":
-              return _context16.stop();
-          }
-        }
-      });
+      return _cloneLayer.apply(this, arguments);
     }
     /**
      *
      * @returns {void}
      */
 
+
+    function _cloneLayer() {
+      _cloneLayer = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee19() {
+        var name, newName;
+        return regeneratorRuntime.wrap(function _callee19$(_context19) {
+          while (1) {
+            switch (_context19.prev = _context19.next) {
+              case 0:
+                name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
+                _context19.next = 3;
+                return $$b.prompt(uiStrings$1.notification.enterUniqueLayerName, name);
+
+              case 3:
+                newName = _context19.sent;
+
+                if (newName) {
+                  _context19.next = 6;
+                  break;
+                }
+
+                return _context19.abrupt("return");
+
+              case 6:
+                if (!svgCanvas.getCurrentDrawing().hasLayer(newName)) {
+                  _context19.next = 9;
+                  break;
+                }
+
+                /* await */
+                $$b.alert(uiStrings$1.notification.dupeLayerName);
+                return _context19.abrupt("return");
+
+              case 9:
+                svgCanvas.cloneLayer(newName);
+                updateContextPanel();
+                populateLayers();
+
+              case 12:
+              case "end":
+                return _context19.stop();
+            }
+          }
+        }, _callee19);
+      }));
+      return _cloneLayer.apply(this, arguments);
+    }
 
     function mergeLayer() {
       if ($$b('#layerlist tr.layersel').index() === svgCanvas.getCurrentDrawing().getNumLayers() - 1) {
@@ -34759,36 +34996,40 @@
     $$b('#layer_down').click(function () {
       moveLayer(1);
     });
-    $$b('#layer_rename').click(function _callee5() {
+    $$b('#layer_rename').click(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee14() {
       var oldName, newName;
-      return regeneratorRuntime.async(function _callee5$(_context17) {
+      return regeneratorRuntime.wrap(function _callee14$(_context14) {
         while (1) {
-          switch (_context17.prev = _context17.next) {
+          switch (_context14.prev = _context14.next) {
             case 0:
               // const curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
               oldName = $$b('#layerlist tr.layersel td.layername').text();
-              _context17.next = 3;
-              return regeneratorRuntime.awrap($$b.prompt(uiStrings$1.notification.enterNewLayerName, ''));
+              _context14.next = 3;
+              return $$b.prompt(uiStrings$1.notification.enterNewLayerName, '');
 
             case 3:
-              newName = _context17.sent;
+              newName = _context14.sent;
 
               if (newName) {
-                _context17.next = 6;
+                _context14.next = 6;
                 break;
               }
 
-              return _context17.abrupt("return");
+              return _context14.abrupt("return");
 
             case 6:
               if (!(oldName === newName || svgCanvas.getCurrentDrawing().hasLayer(newName))) {
-                _context17.next = 9;
+                _context14.next = 9;
                 break;
               }
 
               /* await */
               $$b.alert(uiStrings$1.notification.layerHasThatName);
-              return _context17.abrupt("return");
+              return _context14.abrupt("return");
 
             case 9:
               svgCanvas.renameCurrentLayer(newName);
@@ -34796,11 +35037,11 @@
 
             case 11:
             case "end":
-              return _context17.stop();
+              return _context14.stop();
           }
         }
-      });
-    });
+      }, _callee14);
+    })));
     var SIDEPANEL_MAXWIDTH = 300;
     var SIDEPANEL_OPENWIDTH = 150;
     var sidedrag = -1,
@@ -35947,8 +36188,8 @@
           // bitmap handling
           reader = new FileReader();
 
-          reader.onloadend = function (_ref17) {
-            var result = _ref17.target.result;
+          reader.onloadend = function (_ref27) {
+            var result = _ref27.target.result;
 
             /**
             * Insert the new image until we know its dimensions.
@@ -35997,63 +36238,83 @@
       workarea[0].addEventListener('dragover', onDragOver);
       workarea[0].addEventListener('dragleave', onDragLeave);
       workarea[0].addEventListener('drop', importImage);
-      var open = $$b('<input type="file">').change(function _callee7(e) {
-        var ok, reader;
-        return regeneratorRuntime.async(function _callee7$(_context19) {
-          while (1) {
-            switch (_context19.prev = _context19.next) {
-              case 0:
-                _context19.next = 2;
-                return regeneratorRuntime.awrap(editor.openPrep());
+      var open = $$b('<input type="file">').change(
+      /*#__PURE__*/
+      function () {
+        var _ref28 = _asyncToGenerator(
+        /*#__PURE__*/
+        regeneratorRuntime.mark(function _callee16(e) {
+          var ok, reader;
+          return regeneratorRuntime.wrap(function _callee16$(_context16) {
+            while (1) {
+              switch (_context16.prev = _context16.next) {
+                case 0:
+                  _context16.next = 2;
+                  return editor.openPrep();
 
-              case 2:
-                ok = _context19.sent;
+                case 2:
+                  ok = _context16.sent;
 
-                if (ok) {
-                  _context19.next = 5;
-                  break;
-                }
+                  if (ok) {
+                    _context16.next = 5;
+                    break;
+                  }
 
-                return _context19.abrupt("return");
+                  return _context16.abrupt("return");
 
-              case 5:
-                svgCanvas.clear();
+                case 5:
+                  svgCanvas.clear();
 
-                if (this.files.length === 1) {
-                  $$b.process_cancel(uiStrings$1.notification.loadingImage);
-                  reader = new FileReader();
+                  if (this.files.length === 1) {
+                    $$b.process_cancel(uiStrings$1.notification.loadingImage);
+                    reader = new FileReader();
 
-                  reader.onloadend = function _callee6(_ref18) {
-                    var target;
-                    return regeneratorRuntime.async(function _callee6$(_context18) {
-                      while (1) {
-                        switch (_context18.prev = _context18.next) {
-                          case 0:
-                            target = _ref18.target;
-                            _context18.next = 3;
-                            return regeneratorRuntime.awrap(loadSvgString(target.result));
+                    reader.onloadend =
+                    /*#__PURE__*/
+                    function () {
+                      var _ref30 = _asyncToGenerator(
+                      /*#__PURE__*/
+                      regeneratorRuntime.mark(function _callee15(_ref29) {
+                        var target;
+                        return regeneratorRuntime.wrap(function _callee15$(_context15) {
+                          while (1) {
+                            switch (_context15.prev = _context15.next) {
+                              case 0:
+                                target = _ref29.target;
+                                _context15.next = 3;
+                                return loadSvgString(target.result);
 
-                          case 3:
-                            updateCanvas();
+                              case 3:
+                                updateCanvas();
 
-                          case 4:
-                          case "end":
-                            return _context18.stop();
-                        }
-                      }
-                    });
-                  };
+                              case 4:
+                              case "end":
+                                return _context15.stop();
+                            }
+                          }
+                        }, _callee15);
+                      }));
 
-                  reader.readAsText(this.files[0]);
-                }
+                      return function (_x7) {
+                        return _ref30.apply(this, arguments);
+                      };
+                    }();
 
-              case 7:
-              case "end":
-                return _context19.stop();
+                    reader.readAsText(this.files[0]);
+                  }
+
+                case 7:
+                case "end":
+                  return _context16.stop();
+              }
             }
-          }
-        }, null, this);
-      });
+          }, _callee16, this);
+        }));
+
+        return function (_x6) {
+          return _ref28.apply(this, arguments);
+        };
+      }());
       $$b('#tool_open').show().prepend(open);
       var imgImport = $$b('<input type="file">').change(importImage);
       $$b('#tool_import').show().prepend(imgImport);
@@ -36073,111 +36334,121 @@
     * @returns {Promise<void>} A Promise which resolves to `undefined`
     */
 
-    var setLang = editor.setLang = function _callee8(lang, allStrings) {
-      var oldLayerName, renameLayer, elems;
-      return regeneratorRuntime.async(function _callee8$(_context20) {
-        while (1) {
-          switch (_context20.prev = _context20.next) {
-            case 0:
-              editor.langChanged = true;
-              $$b.pref('lang', lang);
-              $$b('#lang_select').val(lang);
+    var setLang = editor.setLang =
+    /*#__PURE__*/
+    function () {
+      var _ref31 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee17(lang, allStrings) {
+        var oldLayerName, renameLayer, elems;
+        return regeneratorRuntime.wrap(function _callee17$(_context17) {
+          while (1) {
+            switch (_context17.prev = _context17.next) {
+              case 0:
+                editor.langChanged = true;
+                $$b.pref('lang', lang);
+                $$b('#lang_select').val(lang);
 
-              if (allStrings) {
-                _context20.next = 5;
+                if (allStrings) {
+                  _context17.next = 5;
+                  break;
+                }
+
+                return _context17.abrupt("return");
+
+              case 5:
+                // Todo: Remove `allStrings.lang` property in locale in
+                //   favor of just `lang`?
+                document.documentElement.lang = allStrings.lang; // lang;
+                // Todo: Add proper RTL Support!
+                // Todo: Use RTL detection instead and take out of locales?
+                // document.documentElement.dir = allStrings.dir;
+
+                $$b.extend(uiStrings$1, allStrings); // const notif = allStrings.notification; // Currently unused
+                // $.extend will only replace the given strings
+
+                oldLayerName = $$b('#layerlist tr.layersel td.layername').text();
+                renameLayer = oldLayerName === uiStrings$1.common.layer + ' 1';
+                svgCanvas.setUiStrings(allStrings);
+                Actions.setTitles();
+
+                if (renameLayer) {
+                  svgCanvas.renameCurrentLayer(uiStrings$1.common.layer + ' 1');
+                  populateLayers();
+                } // In case extensions loaded before the locale, now we execute a callback on them
+
+
+                if (!extsPreLang.length) {
+                  _context17.next = 18;
+                  break;
+                }
+
+                _context17.next = 15;
+                return Promise.all(extsPreLang.map(function (ext) {
+                  loadedExtensionNames.push(ext.name);
+                  return ext.langReady({
+                    lang: lang,
+                    uiStrings: uiStrings$1,
+                    importLocale: getImportLocale({
+                      defaultLang: lang,
+                      defaultName: ext.name
+                    })
+                  });
+                }));
+
+              case 15:
+                // eslint-disable-next-line require-atomic-updates
+                extsPreLang.length = 0;
+                _context17.next = 19;
                 break;
-              }
 
-              return _context20.abrupt("return");
-
-            case 5:
-              // Todo: Remove `allStrings.lang` property in locale in
-              //   favor of just `lang`?
-              document.documentElement.lang = allStrings.lang; // lang;
-              // Todo: Add proper RTL Support!
-              // Todo: Use RTL detection instead and take out of locales?
-              // document.documentElement.dir = allStrings.dir;
-
-              $$b.extend(uiStrings$1, allStrings); // const notif = allStrings.notification; // Currently unused
-              // $.extend will only replace the given strings
-
-              oldLayerName = $$b('#layerlist tr.layersel td.layername').text();
-              renameLayer = oldLayerName === uiStrings$1.common.layer + ' 1';
-              svgCanvas.setUiStrings(allStrings);
-              Actions.setTitles();
-
-              if (renameLayer) {
-                svgCanvas.renameCurrentLayer(uiStrings$1.common.layer + ' 1');
-                populateLayers();
-              } // In case extensions loaded before the locale, now we execute a callback on them
-
-
-              if (!extsPreLang.length) {
-                _context20.next = 18;
-                break;
-              }
-
-              _context20.next = 15;
-              return regeneratorRuntime.awrap(Promise.all(extsPreLang.map(function (ext) {
-                loadedExtensionNames.push(ext.name);
-                return ext.langReady({
-                  lang: lang,
-                  uiStrings: uiStrings$1,
-                  importLocale: getImportLocale({
-                    defaultLang: lang,
-                    defaultName: ext.name
-                  })
+              case 18:
+                loadedExtensionNames.forEach(function (loadedExtensionName) {
+                  svgCanvas.runExtension(loadedExtensionName, 'langReady',
+                  /** @type {module:svgcanvas.SvgCanvas#event:ext_langReady} */
+                  {
+                    lang: lang,
+                    uiStrings: uiStrings$1,
+                    importLocale: getImportLocale({
+                      defaultLang: lang,
+                      defaultName: loadedExtensionName
+                    })
+                  });
                 });
-              })));
 
-            case 15:
-              // eslint-disable-next-line require-atomic-updates
-              extsPreLang.length = 0;
-              _context20.next = 19;
-              break;
+              case 19:
+                svgCanvas.runExtensions('langChanged',
+                /** @type {module:svgcanvas.SvgCanvas#event:ext_langChanged} */
+                lang); // Update flyout tooltips
 
-            case 18:
-              loadedExtensionNames.forEach(function (loadedExtensionName) {
-                svgCanvas.runExtension(loadedExtensionName, 'langReady',
-                /** @type {module:svgcanvas.SvgCanvas#event:ext_langReady} */
-                {
-                  lang: lang,
-                  uiStrings: uiStrings$1,
-                  importLocale: getImportLocale({
-                    defaultLang: lang,
-                    defaultName: loadedExtensionName
-                  })
+                setFlyoutTitles(); // Copy title for certain tool elements
+
+                elems = {
+                  '#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
+                  '#fill_color': '#tool_fill label, #tool_fill .color_block',
+                  '#linejoin_miter': '#cur_linejoin',
+                  '#linecap_butt': '#cur_linecap'
+                };
+                $$b.each(elems, function (source, dest) {
+                  $$b(dest).attr('title', $$b(source)[0].title);
+                }); // Copy alignment titles
+
+                $$b('#multiselected_panel div[id^=tool_align]').each(function () {
+                  $$b('#tool_pos' + this.id.substr(10))[0].title = this.title;
                 });
-              });
 
-            case 19:
-              svgCanvas.runExtensions('langChanged',
-              /** @type {module:svgcanvas.SvgCanvas#event:ext_langChanged} */
-              lang); // Update flyout tooltips
-
-              setFlyoutTitles(); // Copy title for certain tool elements
-
-              elems = {
-                '#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
-                '#fill_color': '#tool_fill label, #tool_fill .color_block',
-                '#linejoin_miter': '#cur_linejoin',
-                '#linecap_butt': '#cur_linecap'
-              };
-              $$b.each(elems, function (source, dest) {
-                $$b(dest).attr('title', $$b(source)[0].title);
-              }); // Copy alignment titles
-
-              $$b('#multiselected_panel div[id^=tool_align]').each(function () {
-                $$b('#tool_pos' + this.id.substr(10))[0].title = this.title;
-              });
-
-            case 24:
-            case "end":
-              return _context20.stop();
+              case 24:
+              case "end":
+                return _context17.stop();
+            }
           }
-        }
-      });
-    };
+        }, _callee17);
+      }));
+
+      return function (_x8, _x9) {
+        return _ref31.apply(this, arguments);
+      };
+    }();
 
     init$7(
     /**
@@ -36258,39 +36529,43 @@
   */
 
 
-  editor.runCallbacks = function _callee9() {
-    return regeneratorRuntime.async(function _callee9$(_context21) {
+  editor.runCallbacks =
+  /*#__PURE__*/
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee20() {
+    return regeneratorRuntime.wrap(function _callee20$(_context20) {
       while (1) {
-        switch (_context21.prev = _context21.next) {
+        switch (_context20.prev = _context20.next) {
           case 0:
-            _context21.prev = 0;
-            _context21.next = 3;
-            return regeneratorRuntime.awrap(Promise.all(callbacks.map(function (_ref19) {
-              var _ref20 = _slicedToArray(_ref19, 1),
-                  cb = _ref20[0];
+            _context20.prev = 0;
+            _context20.next = 3;
+            return Promise.all(callbacks.map(function (_ref34) {
+              var _ref35 = _slicedToArray(_ref34, 1),
+                  cb = _ref35[0];
 
               return cb(); // eslint-disable-line promise/prefer-await-to-callbacks
-            })));
+            }));
 
           case 3:
-            _context21.next = 9;
+            _context20.next = 9;
             break;
 
           case 5:
-            _context21.prev = 5;
-            _context21.t0 = _context21["catch"](0);
-            callbacks.forEach(function (_ref21) {
-              var _ref22 = _slicedToArray(_ref21, 3),
-                  reject = _ref22[2];
+            _context20.prev = 5;
+            _context20.t0 = _context20["catch"](0);
+            callbacks.forEach(function (_ref36) {
+              var _ref37 = _slicedToArray(_ref36, 3),
+                  reject = _ref37[2];
 
               reject();
             });
-            throw _context21.t0;
+            throw _context20.t0;
 
           case 9:
-            callbacks.forEach(function (_ref23) {
-              var _ref24 = _slicedToArray(_ref23, 2),
-                  resolve = _ref24[1];
+            callbacks.forEach(function (_ref38) {
+              var _ref39 = _slicedToArray(_ref38, 2),
+                  resolve = _ref39[1];
 
               resolve();
             });
@@ -36298,11 +36573,11 @@
 
           case 11:
           case "end":
-            return _context21.stop();
+            return _context20.stop();
         }
       }
-    }, null, null, [[0, 5]]);
-  };
+    }, _callee20, null, [[0, 5]]);
+  }));
   /**
   * @param {string} str The SVG string to load
   * @param {PlainObject} [opts={}]
@@ -36310,44 +36585,47 @@
   * @returns {Promise<void>}
   */
 
-
   editor.loadFromString = function (str) {
-    var _ref25 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        noAlert = _ref25.noAlert;
+    var _ref40 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref40.noAlert;
 
-    return editor.ready(function _callee10() {
-      return regeneratorRuntime.async(function _callee10$(_context22) {
+    return editor.ready(
+    /*#__PURE__*/
+    _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee21() {
+      return regeneratorRuntime.wrap(function _callee21$(_context21) {
         while (1) {
-          switch (_context22.prev = _context22.next) {
+          switch (_context21.prev = _context21.next) {
             case 0:
-              _context22.prev = 0;
-              _context22.next = 3;
-              return regeneratorRuntime.awrap(loadSvgString(str, {
+              _context21.prev = 0;
+              _context21.next = 3;
+              return loadSvgString(str, {
                 noAlert: noAlert
-              }));
+              });
 
             case 3:
-              _context22.next = 9;
+              _context21.next = 9;
               break;
 
             case 5:
-              _context22.prev = 5;
-              _context22.t0 = _context22["catch"](0);
+              _context21.prev = 5;
+              _context21.t0 = _context21["catch"](0);
 
               if (!noAlert) {
-                _context22.next = 9;
+                _context21.next = 9;
                 break;
               }
 
-              throw _context22.t0;
+              throw _context21.t0;
 
             case 9:
             case "end":
-              return _context22.stop();
+              return _context21.stop();
           }
         }
-      }, null, null, [[0, 5]]);
-    });
+      }, _callee21, null, [[0, 5]]);
+    })));
   };
   /**
   * Not presently in use.
@@ -36379,9 +36657,9 @@
 
 
   editor.loadFromURL = function (url) {
-    var _ref26 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        cache = _ref26.cache,
-        noAlert = _ref26.noAlert;
+    var _ref42 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        cache = _ref42.cache,
+        noAlert = _ref42.noAlert;
 
     return editor.ready(function () {
       return new Promise(function (resolve, reject) {
@@ -36430,8 +36708,8 @@
 
 
   editor.loadFromDataURI = function (str) {
-    var _ref27 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        noAlert = _ref27.noAlert;
+    var _ref43 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref43.noAlert;
 
     return editor.ready(function () {
       var base64 = false;
@@ -36488,9 +36766,9 @@
    * @returns {void}
    */
 
-  var messageListener = function messageListener(_ref28) {
-    var data = _ref28.data,
-        origin = _ref28.origin;
+  var messageListener = function messageListener(_ref44) {
+    var data = _ref44.data,
+        origin = _ref44.origin;
     // eslint-disable-line no-shadow
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = {
@@ -36510,32 +36788,34 @@
   window.addEventListener('message', messageListener); // Run init once DOM is loaded
   // jQuery(editor.init);
 
-  (function _callee11() {
-    return regeneratorRuntime.async(function _callee11$(_context23) {
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee22() {
+    return regeneratorRuntime.wrap(function _callee22$(_context22) {
       while (1) {
-        switch (_context23.prev = _context23.next) {
+        switch (_context22.prev = _context22.next) {
           case 0:
-            _context23.prev = 0;
-            _context23.next = 3;
-            return regeneratorRuntime.awrap(Promise.resolve());
+            _context22.prev = 0;
+            _context22.next = 3;
+            return Promise.resolve();
 
           case 3:
             editor.init();
-            _context23.next = 9;
+            _context22.next = 9;
             break;
 
           case 6:
-            _context23.prev = 6;
-            _context23.t0 = _context23["catch"](0);
-            console.error(_context23.t0); // eslint-disable-line no-console
+            _context22.prev = 6;
+            _context22.t0 = _context22["catch"](0);
+            console.error(_context22.t0); // eslint-disable-line no-console
 
           case 9:
           case "end":
-            return _context23.stop();
+            return _context22.stop();
         }
       }
-    }, null, null, [[0, 6]]);
-  })();
+    }, _callee22, null, [[0, 6]]);
+  }))();
 
   return editor;
 

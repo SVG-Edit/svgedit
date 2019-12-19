@@ -15,6 +15,42 @@ var svgEditorExtension_server_moinsave = (function () {
     return _typeof(obj);
   }
 
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -4536,26 +4572,36 @@ var svgEditorExtension_server_moinsave = (function () {
     }; // load from url
 
 
-    svg.load = function _callee(ctx, url) {
-      var dom;
-      return regeneratorRuntime.async(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              _context.next = 2;
-              return regeneratorRuntime.awrap(svg.ajax(url, true));
+    svg.load =
+    /*#__PURE__*/
+    function () {
+      var _ref12 = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee(ctx, url) {
+        var dom;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return svg.ajax(url, true);
 
-            case 2:
-              dom = _context.sent;
-              return _context.abrupt("return", svg.loadXml(ctx, dom));
+              case 2:
+                dom = _context.sent;
+                return _context.abrupt("return", svg.loadXml(ctx, dom));
 
-            case 4:
-            case "end":
-              return _context.stop();
+              case 4:
+              case "end":
+                return _context.stop();
+            }
           }
-        }
-      });
-    }; // load from xml
+        }, _callee);
+      }));
+
+      return function (_x2, _x3) {
+        return _ref12.apply(this, arguments);
+      };
+    }(); // load from xml
 
 
     svg.loadXml = function (ctx, xml) {
@@ -4776,9 +4822,9 @@ var svgEditorExtension_server_moinsave = (function () {
       checkPath: function checkPath(element, ctx) {
         var _this26 = this;
 
-        this.events.forEach(function (_ref12, i) {
-          var x = _ref12.x,
-              y = _ref12.y;
+        this.events.forEach(function (_ref13, i) {
+          var x = _ref13.x,
+              y = _ref13.y;
 
           if (ctx.isPointInPath && ctx.isPointInPath(x, y)) {
             _this26.eventElements[i] = element;
@@ -4788,9 +4834,9 @@ var svgEditorExtension_server_moinsave = (function () {
       checkBoundingBox: function checkBoundingBox(element, bb) {
         var _this27 = this;
 
-        this.events.forEach(function (_ref13, i) {
-          var x = _ref13.x,
-              y = _ref13.y;
+        this.events.forEach(function (_ref14, i) {
+          var x = _ref14.x,
+              y = _ref14.y;
 
           if (bb.isPointInBox(x, y)) {
             _this27.eventElements[i] = element;
@@ -4834,83 +4880,103 @@ var svgEditorExtension_server_moinsave = (function () {
 
   var extServer_moinsave = {
     name: 'server_moinsave',
-    init: function init(_ref) {
-      var $, encode64, importLocale, strings, svgEditor, svgCanvas, saveSvgAction;
-      return regeneratorRuntime.async(function init$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              $ = _ref.$, encode64 = _ref.encode64, importLocale = _ref.importLocale;
-              _context2.next = 3;
-              return regeneratorRuntime.awrap(importLocale());
+    init: function () {
+      var _init = _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2(_ref) {
+        var $, encode64, importLocale, strings, svgEditor, svgCanvas, saveSvgAction;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                $ = _ref.$, encode64 = _ref.encode64, importLocale = _ref.importLocale;
+                _context2.next = 3;
+                return importLocale();
 
-            case 3:
-              strings = _context2.sent;
-              svgEditor = this;
-              svgCanvas = svgEditor.canvas;
-              saveSvgAction = '/+modify'; // Create upload target (hidden iframe)
-              //  Hiding by size instead of display to avoid FF console errors
-              //    with `getBBox` in browser.js `supportsPathBBox_`)
+              case 3:
+                strings = _context2.sent;
+                svgEditor = this;
+                svgCanvas = svgEditor.canvas;
+                saveSvgAction = '/+modify'; // Create upload target (hidden iframe)
+                //  Hiding by size instead of display to avoid FF console errors
+                //    with `getBBox` in browser.js `supportsPathBBox_`)
 
-              /* const target = */
+                /* const target = */
 
-              $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n        style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
-              svgEditor.setCustomHandlers({
-                save: function save(win, data) {
-                  var svg, qstr, _qstr$substr$split, _qstr$substr$split2, name, svgData, c, datauri, pngData;
+                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n        style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
+                svgEditor.setCustomHandlers({
+                  save: function () {
+                    var _save = _asyncToGenerator(
+                    /*#__PURE__*/
+                    regeneratorRuntime.mark(function _callee(win, data) {
+                      var svg, qstr, _qstr$substr$split, _qstr$substr$split2, name, svgData, c, datauri, pngData;
 
-                  return regeneratorRuntime.async(function save$(_context) {
-                    while (1) {
-                      switch (_context.prev = _context.next) {
-                        case 0:
-                          svg = '<?xml version="1.0"?>\n' + data;
-                          qstr = $.param.querystring();
-                          _qstr$substr$split = qstr.substr(9).split('/+get/'), _qstr$substr$split2 = _slicedToArray(_qstr$substr$split, 2), name = _qstr$substr$split2[1];
-                          svgData = encode64(svg);
+                      return regeneratorRuntime.wrap(function _callee$(_context) {
+                        while (1) {
+                          switch (_context.prev = _context.next) {
+                            case 0:
+                              svg = '<?xml version="1.0"?>\n' + data;
+                              qstr = $.param.querystring();
+                              _qstr$substr$split = qstr.substr(9).split('/+get/'), _qstr$substr$split2 = _slicedToArray(_qstr$substr$split, 2), name = _qstr$substr$split2[1];
+                              svgData = encode64(svg);
 
-                          if (!$('#export_canvas').length) {
-                            $('<canvas>', {
-                              id: 'export_canvas'
-                            }).hide().appendTo('body');
+                              if (!$('#export_canvas').length) {
+                                $('<canvas>', {
+                                  id: 'export_canvas'
+                                }).hide().appendTo('body');
+                              }
+
+                              c = $('#export_canvas')[0];
+                              c.width = svgCanvas.contentW;
+                              c.height = svgCanvas.contentH;
+                              _context.next = 10;
+                              return canvg(c, svg);
+
+                            case 10:
+                              datauri = c.toDataURL('image/png'); // const {uiStrings} = svgEditor;
+
+                              pngData = encode64(datauri); // Brett: This encoding seems unnecessary
+
+                              /* const form = */
+
+                              $('<form>').attr({
+                                method: 'post',
+                                action: saveSvgAction + '/' + name,
+                                target: 'output_frame'
+                              }).append("\n          <input type=\"hidden\" name=\"png_data\" value=\"".concat(pngData, "\">\n          <input type=\"hidden\" name=\"filepath\" value=\"").concat(svgData, "\">\n          <input type=\"hidden\" name=\"filename\" value=\"drawing.svg\">\n          <input type=\"hidden\" name=\"contenttype\" value=\"application/x-svgdraw\">\n        ")).appendTo('body').submit().remove();
+                              $.alert(strings.saved);
+                              top.window.location = '/' + name;
+
+                            case 15:
+                            case "end":
+                              return _context.stop();
                           }
+                        }
+                      }, _callee);
+                    }));
 
-                          c = $('#export_canvas')[0];
-                          c.width = svgCanvas.contentW;
-                          c.height = svgCanvas.contentH;
-                          _context.next = 10;
-                          return regeneratorRuntime.awrap(canvg(c, svg));
-
-                        case 10:
-                          datauri = c.toDataURL('image/png'); // const {uiStrings} = svgEditor;
-
-                          pngData = encode64(datauri); // Brett: This encoding seems unnecessary
-
-                          /* const form = */
-
-                          $('<form>').attr({
-                            method: 'post',
-                            action: saveSvgAction + '/' + name,
-                            target: 'output_frame'
-                          }).append("\n          <input type=\"hidden\" name=\"png_data\" value=\"".concat(pngData, "\">\n          <input type=\"hidden\" name=\"filepath\" value=\"").concat(svgData, "\">\n          <input type=\"hidden\" name=\"filename\" value=\"drawing.svg\">\n          <input type=\"hidden\" name=\"contenttype\" value=\"application/x-svgdraw\">\n        ")).appendTo('body').submit().remove();
-                          $.alert(strings.saved);
-                          top.window.location = '/' + name;
-
-                        case 15:
-                        case "end":
-                          return _context.stop();
-                      }
+                    function save(_x2, _x3) {
+                      return _save.apply(this, arguments);
                     }
-                  });
-                }
-              });
 
-            case 9:
-            case "end":
-              return _context2.stop();
+                    return save;
+                  }()
+                });
+
+              case 9:
+              case "end":
+                return _context2.stop();
+            }
           }
-        }
-      }, null, this);
-    }
+        }, _callee2, this);
+      }));
+
+      function init(_x) {
+        return _init.apply(this, arguments);
+      }
+
+      return init;
+    }()
   };
 
   return extServer_moinsave;

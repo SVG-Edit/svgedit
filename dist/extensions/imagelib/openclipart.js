@@ -15,6 +15,42 @@
     return _typeof(obj);
   }
 
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -3220,227 +3256,256 @@
    * @returns {Promise<void>}
    */
 
-  function processResults(url) {
-    var queryLink, r, json, payload, _json$info, numResults, pages, currentPage, semiColonSep;
+  function processResults(_x) {
+    return _processResults.apply(this, arguments);
+  }
 
-    return regeneratorRuntime.async(function processResults$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            queryLink = function _ref2(query) {
-              return ['a', {
-                href: jsVoid,
-                dataset: {
-                  value: query
-                },
-                $on: {
-                  click: function click(e) {
-                    e.preventDefault();
-                    var value = this.dataset.value;
-                    $$1('#query')[0].$set(value);
-                    $$1('#openclipart')[0].$submit();
+  function _processResults() {
+    _processResults = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee3(url) {
+      var queryLink, r, json, payload, _json$info, numResults, pages, currentPage, semiColonSep;
+
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              queryLink = function _ref4(query) {
+                return ['a', {
+                  href: jsVoid,
+                  dataset: {
+                    value: query
+                  },
+                  $on: {
+                    click: function click(e) {
+                      e.preventDefault();
+                      var value = this.dataset.value;
+                      $$1('#query')[0].$set(value);
+                      $$1('#openclipart')[0].$submit();
+                    }
                   }
-                }
-              }, [query]];
-            };
+                }, [query]];
+              };
 
-            _context2.next = 3;
-            return regeneratorRuntime.awrap(fetch(url));
+              _context3.next = 3;
+              return fetch(url);
 
-          case 3:
-            r = _context2.sent;
-            _context2.next = 6;
-            return regeneratorRuntime.awrap(r.json());
+            case 3:
+              r = _context3.sent;
+              _context3.next = 6;
+              return r.json();
 
-          case 6:
-            json = _context2.sent;
+            case 6:
+              json = _context3.sent;
 
-            if (!(!json || json.msg !== 'success')) {
-              _context2.next = 10;
-              break;
-            }
+              if (!(!json || json.msg !== 'success')) {
+                _context3.next = 10;
+                break;
+              }
 
-            // Todo: This could use a generic alert library instead
-            alert('There was a problem downloading the results'); // eslint-disable-line no-alert
+              // Todo: This could use a generic alert library instead
+              alert('There was a problem downloading the results'); // eslint-disable-line no-alert
 
-            return _context2.abrupt("return");
+              return _context3.abrupt("return");
 
-          case 10:
-            payload = json.payload, _json$info = json.info, numResults = _json$info.results, pages = _json$info.pages, currentPage = _json$info.current_page; // $('#page')[0].value = currentPage;
-            // $('#page')[0].max = pages;
-            // Unused properties:
-            // - `svg_filesize` always 0?
-            // - `dimensions: {
-            //      png_thumb: {width, height},
-            //      png_full_lossy: {width, height}
-            //    }` object of relevance?
-            // - No need for `tags` with `tags_array`
-            // - `svg`'s: `png_thumb`, `png_full_lossy`, `png_2400px`
+            case 10:
+              payload = json.payload, _json$info = json.info, numResults = _json$info.results, pages = _json$info.pages, currentPage = _json$info.current_page; // $('#page')[0].value = currentPage;
+              // $('#page')[0].max = pages;
+              // Unused properties:
+              // - `svg_filesize` always 0?
+              // - `dimensions: {
+              //      png_thumb: {width, height},
+              //      png_full_lossy: {width, height}
+              //    }` object of relevance?
+              // - No need for `tags` with `tags_array`
+              // - `svg`'s: `png_thumb`, `png_full_lossy`, `png_2400px`
 
-            semiColonSep = '; ' + nbsp;
-            $$1('#results').jml('div', [['span', ['Number of results: ', numResults]], semiColonSep, ['span', ['page ', currentPage, ' out of ', pages]]].concat(_toConsumableArray(payload.map(function (_ref) {
-              var title = _ref.title,
-                  description = _ref.description,
-                  id = _ref.id,
-                  uploader = _ref.uploader,
-                  created = _ref.created,
-                  svgURL = _ref.svg.url,
-                  detailLink = _ref.detail_link,
-                  tagsArray = _ref.tags_array,
-                  downloadedBy = _ref.downloaded_by,
-                  totalFavorites = _ref.total_favorites;
-              var imgHW = '100px';
-              var colonSep = ': ' + nbsp;
-              return ['div', [['button', {
-                style: 'margin-right: 8px; border: 2px solid black;',
-                dataset: {
-                  id: id,
-                  value: svgURL
-                },
-                $on: {
-                  click: function click(e) {
-                    var svgurl, post, result, svg;
-                    return regeneratorRuntime.async(function click$(_context) {
-                      while (1) {
-                        switch (_context.prev = _context.next) {
-                          case 0:
-                            e.preventDefault();
-                            svgurl = this.dataset.value; // console.log('this', id, svgurl);
+              semiColonSep = '; ' + nbsp;
+              $$1('#results').jml('div', [['span', ['Number of results: ', numResults]], semiColonSep, ['span', ['page ', currentPage, ' out of ', pages]]].concat(_toConsumableArray(payload.map(function (_ref3) {
+                var title = _ref3.title,
+                    description = _ref3.description,
+                    id = _ref3.id,
+                    uploader = _ref3.uploader,
+                    created = _ref3.created,
+                    svgURL = _ref3.svg.url,
+                    detailLink = _ref3.detail_link,
+                    tagsArray = _ref3.tags_array,
+                    downloadedBy = _ref3.downloaded_by,
+                    totalFavorites = _ref3.total_favorites;
+                var imgHW = '100px';
+                var colonSep = ': ' + nbsp;
+                return ['div', [['button', {
+                  style: 'margin-right: 8px; border: 2px solid black;',
+                  dataset: {
+                    id: id,
+                    value: svgURL
+                  },
+                  $on: {
+                    click: function () {
+                      var _click = _asyncToGenerator(
+                      /*#__PURE__*/
+                      regeneratorRuntime.mark(function _callee2(e) {
+                        var svgurl, post, result, svg;
+                        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                          while (1) {
+                            switch (_context2.prev = _context2.next) {
+                              case 0:
+                                e.preventDefault();
+                                svgurl = this.dataset.value; // console.log('this', id, svgurl);
 
-                            post = function post(message) {
-                              // Todo: Make origin customizable as set by opening window
-                              // Todo: If dropping IE9, avoid stringifying
-                              window.parent.postMessage(JSON.stringify(_extends({
-                                namespace: 'imagelib'
-                              }, message)), '*');
-                            }; // Send metadata (also indicates file is about to be sent)
+                                post = function post(message) {
+                                  // Todo: Make origin customizable as set by opening window
+                                  // Todo: If dropping IE9, avoid stringifying
+                                  window.parent.postMessage(JSON.stringify(_extends({
+                                    namespace: 'imagelib'
+                                  }, message)), '*');
+                                }; // Send metadata (also indicates file is about to be sent)
 
 
-                            post({
-                              name: title,
-                              id: svgurl
-                            });
-                            _context.next = 6;
-                            return regeneratorRuntime.awrap(fetch(svgurl));
+                                post({
+                                  name: title,
+                                  id: svgurl
+                                });
+                                _context2.next = 6;
+                                return fetch(svgurl);
 
-                          case 6:
-                            result = _context.sent;
-                            _context.next = 9;
-                            return regeneratorRuntime.awrap(result.text());
+                              case 6:
+                                result = _context2.sent;
+                                _context2.next = 9;
+                                return result.text();
 
-                          case 9:
-                            svg = _context.sent;
-                            // console.log('url and svg', svgurl, svg);
-                            post({
-                              href: svgurl,
-                              data: svg
-                            });
+                              case 9:
+                                svg = _context2.sent;
+                                // console.log('url and svg', svgurl, svg);
+                                post({
+                                  href: svgurl,
+                                  data: svg
+                                });
 
-                          case 11:
-                          case "end":
-                            return _context.stop();
-                        }
+                              case 11:
+                              case "end":
+                                return _context2.stop();
+                            }
+                          }
+                        }, _callee2, this);
+                      }));
+
+                      function click(_x2) {
+                        return _click.apply(this, arguments);
                       }
-                    }, null, this);
+
+                      return click;
+                    }()
                   }
-                }
-              }, [// If we wanted interactive versions despite security risk:
-              // ['object', {data: svgURL, type: 'image/svg+xml'}]
-              ['img', {
-                src: svgURL,
-                style: "width: ".concat(imgHW, "; height: ").concat(imgHW, ";")
-              }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
+                }, [// If we wanted interactive versions despite security risk:
+                // ['object', {data: svgURL, type: 'image/svg+xml'}]
+                ['img', {
+                  src: svgURL,
+                  style: "width: ".concat(imgHW, "; height: ").concat(imgHW, ";")
+                }]]], ['b', [title]], ' ', ['i', [description]], ' ', ['span', ['(ID: ', ['a', {
+                  href: jsVoid,
+                  dataset: {
+                    value: id
+                  },
+                  $on: {
+                    click: function click(e) {
+                      e.preventDefault();
+                      var value = this.dataset.value;
+                      $$1('#byids')[0].$set(value);
+                      $$1('#openclipart')[0].$submit();
+                    }
+                  }
+                }, [id]], ')']], ' ', ['i', [['a', {
+                  href: detailLink,
+                  target: '_blank'
+                }, ['Details']]]], ['br'], ['span', [['u', ['Uploaded by']], colonSep, queryLink(uploader), semiColonSep]], ['span', [['u', ['Download count']], colonSep, downloadedBy, semiColonSep]], ['span', [['u', ['Times used as favorite']], colonSep, totalFavorites, semiColonSep]], ['span', [['u', ['Created date']], colonSep, created]], ['br'], ['u', ['Tags']], colonSep].concat(_toConsumableArray(tagsArray.map(function (tag) {
+                  return ['span', [' ', queryLink(tag)]];
+                })))];
+              })), [['br'], ['br'], currentPage === 1 || pages <= 2 ? '' : ['span', [['a', {
                 href: jsVoid,
-                dataset: {
-                  value: id
-                },
                 $on: {
                   click: function click(e) {
                     e.preventDefault();
-                    var value = this.dataset.value;
-                    $$1('#byids')[0].$set(value);
+                    $$1('#page')[0].value = 1;
                     $$1('#openclipart')[0].$submit();
                   }
                 }
-              }, [id]], ')']], ' ', ['i', [['a', {
-                href: detailLink,
-                target: '_blank'
-              }, ['Details']]]], ['br'], ['span', [['u', ['Uploaded by']], colonSep, queryLink(uploader), semiColonSep]], ['span', [['u', ['Download count']], colonSep, downloadedBy, semiColonSep]], ['span', [['u', ['Times used as favorite']], colonSep, totalFavorites, semiColonSep]], ['span', [['u', ['Created date']], colonSep, created]], ['br'], ['u', ['Tags']], colonSep].concat(_toConsumableArray(tagsArray.map(function (tag) {
-                return ['span', [' ', queryLink(tag)]];
-              })))];
-            })), [['br'], ['br'], currentPage === 1 || pages <= 2 ? '' : ['span', [['a', {
-              href: jsVoid,
-              $on: {
-                click: function click(e) {
-                  e.preventDefault();
-                  $$1('#page')[0].value = 1;
-                  $$1('#openclipart')[0].$submit();
+              }, ['First']], ' ']], currentPage === 1 ? '' : ['span', [['a', {
+                href: jsVoid,
+                $on: {
+                  click: function click(e) {
+                    e.preventDefault();
+                    $$1('#page')[0].value = currentPage - 1;
+                    $$1('#openclipart')[0].$submit();
+                  }
                 }
-              }
-            }, ['First']], ' ']], currentPage === 1 ? '' : ['span', [['a', {
-              href: jsVoid,
-              $on: {
-                click: function click(e) {
-                  e.preventDefault();
-                  $$1('#page')[0].value = currentPage - 1;
-                  $$1('#openclipart')[0].$submit();
+              }, ['Prev']], ' ']], currentPage === pages ? '' : ['span', [['a', {
+                href: jsVoid,
+                $on: {
+                  click: function click(e) {
+                    e.preventDefault();
+                    $$1('#page')[0].value = currentPage + 1;
+                    $$1('#openclipart')[0].$submit();
+                  }
                 }
-              }
-            }, ['Prev']], ' ']], currentPage === pages ? '' : ['span', [['a', {
-              href: jsVoid,
-              $on: {
-                click: function click(e) {
-                  e.preventDefault();
-                  $$1('#page')[0].value = currentPage + 1;
-                  $$1('#openclipart')[0].$submit();
+              }, ['Next']], ' ']], currentPage === pages || pages <= 2 ? '' : ['span', [['a', {
+                href: jsVoid,
+                $on: {
+                  click: function click(e) {
+                    e.preventDefault();
+                    $$1('#page')[0].value = pages;
+                    $$1('#openclipart')[0].$submit();
+                  }
                 }
-              }
-            }, ['Next']], ' ']], currentPage === pages || pages <= 2 ? '' : ['span', [['a', {
-              href: jsVoid,
-              $on: {
-                click: function click(e) {
-                  e.preventDefault();
-                  $$1('#page')[0].value = pages;
-                  $$1('#openclipart')[0].$submit();
-                }
-              }
-            }, ['Last']], ' ']]]));
+              }, ['Last']], ' ']]]));
 
-          case 13:
-          case "end":
-            return _context2.stop();
+            case 13:
+            case "end":
+              return _context3.stop();
+          }
         }
-      }
-    });
+      }, _callee3);
+    }));
+    return _processResults.apply(this, arguments);
   }
 
   jml('div', [['style', [".control {\n      padding-top: 10px;\n    }"]], ['form', {
     id: 'openclipart',
     $custom: {
-      $submit: function $submit() {
-        var url;
-        return regeneratorRuntime.async(function $submit$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                url = new URL(baseAPIURL);
-                ['query', 'sort', 'amount', 'page', 'byids'].forEach(function (prop) {
-                  var value = $$1('#' + prop)[0].value;
+      $submit: function () {
+        var _$submit = _asyncToGenerator(
+        /*#__PURE__*/
+        regeneratorRuntime.mark(function _callee() {
+          var url;
+          return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  url = new URL(baseAPIURL);
+                  ['query', 'sort', 'amount', 'page', 'byids'].forEach(function (prop) {
+                    var value = $$1('#' + prop)[0].value;
 
-                  if (value) {
-                    url.searchParams.set(prop, value);
-                  }
-                });
-                _context3.next = 4;
-                return regeneratorRuntime.awrap(processResults(url));
+                    if (value) {
+                      url.searchParams.set(prop, value);
+                    }
+                  });
+                  _context.next = 4;
+                  return processResults(url);
 
-              case 4:
-              case "end":
-                return _context3.stop();
+                case 4:
+                case "end":
+                  return _context.stop();
+              }
             }
-          }
-        });
-      }
+          }, _callee);
+        }));
+
+        function $submit() {
+          return _$submit.apply(this, arguments);
+        }
+
+        return $submit;
+      }()
     },
     $on: {
       submit: function submit(e) {
@@ -3488,11 +3553,11 @@
   }, [['label', ['Sort by: ', ['select', {
     id: 'sort'
   }, [// Todo: i18nize first values
-  ['Date', 'date'], ['Downloads', 'downloads'], ['Favorited', 'favorites']].map(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-        text = _ref4[0],
-        _ref4$ = _ref4[1],
-        value = _ref4$ === void 0 ? text : _ref4$;
+  ['Date', 'date'], ['Downloads', 'downloads'], ['Favorited', 'favorites']].map(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        text = _ref2[0],
+        _ref2$ = _ref2[1],
+        value = _ref2$ === void 0 ? text : _ref2$;
 
     return ['option', {
       value: value
