@@ -60,6 +60,7 @@ module.exports = {
     exclude: [
       'node_modules',
       'dist',
+      'editor/external',
       'firefox-extension',
       'opera-widget',
       'screencasts',

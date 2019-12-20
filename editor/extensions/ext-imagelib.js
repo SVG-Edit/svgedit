@@ -41,7 +41,7 @@ export default {
 
     /**
     *
-    * @returns {undefined}
+    * @returns {void}
     */
     function closeBrowser () {
       $('#imgbrowse_holder').hide();
@@ -49,7 +49,7 @@ export default {
 
     /**
     * @param {string} url
-    * @returns {undefined}
+    * @returns {void}
     */
     function importImage (url) {
       const newImage = svgCanvas.addSVGElementFromJson({
@@ -150,6 +150,7 @@ export default {
 
         if (mode !== 'm') {
           await $.process_cancel(message);
+          // eslint-disable-next-line require-atomic-updates
           transferStopped = true;
           // Should a message be sent back to the frame?
 
@@ -289,7 +290,7 @@ export default {
 
     /**
     * @param {boolean} show
-    * @returns {undefined}
+    * @returns {void}
     */
     function toggleMulti (show) {
       $('#lib_framewrap, #imglib_opts').css({right: (show ? 200 : 10)});
@@ -333,7 +334,7 @@ export default {
 
     /**
     *
-    * @returns {undefined}
+    * @returns {void}
     */
     function showBrowser () {
       let browser = $('#imgbrowse');

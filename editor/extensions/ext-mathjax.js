@@ -2,7 +2,7 @@
 /**
  * ext-mathjax.js
  *
- * @license Apache
+ * @license MIT
  *
  * @copyright 2013 Jo Segaert
  *
@@ -67,7 +67,7 @@ export default {
 
     /**
      *
-     * @returns {undefined}
+     * @returns {void}
      */
     function saveMath () {
       const code = $('#mathjax_code_textarea').val();

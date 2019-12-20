@@ -21,7 +21,8 @@ import './svgpathseg.js';
 import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginDBox from './dbox.js';
 import * as draw from './draw.js'; // eslint-disable-line import/no-duplicates
-import { // eslint-disable-line no-duplicate-imports
+// eslint-disable-next-line no-duplicate-imports
+import {
   identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
   setCurrentLayer, renameCurrentLayer, setCurrentLayerPosition,
   setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
@@ -88,6 +89,7 @@ if (window.opera) {
   window.console.dir = function (str) { /* */ };
 }
 
+// Reenable after fixing eslint-plugin-jsdoc to handle
 /**
 * The main SvgCanvas class that manages all SVG-related functions.
 * @memberof module:svgcanvas
@@ -180,7 +182,7 @@ let svgcontent = svgdoc.createElementNS(NS.SVG, 'svg');
 /**
 * This function resets the svgcontent element while keeping it in the DOM.
 * @function module:svgcanvas.SvgCanvas#clearSvgContentElement
-* @returns {undefined}
+* @returns {void}
 */
 const clearSvgContentElement = canvas.clearSvgContentElement = function () {
   $(svgcontent).empty();
@@ -211,7 +213,7 @@ let idprefix = 'svg_';
 * Changes the ID prefix to the given value.
 * @function module:svgcanvas.SvgCanvas#setIdPrefix
 * @param {string} p - String with the new prefix
-* @returns {undefined}
+* @returns {void}
 */
 canvas.setIdPrefix = function (p) {
   idprefix = p;
@@ -226,8 +228,8 @@ canvas.current_drawing_ = new draw.Drawing(svgcontent, idprefix);
 
 /**
 * Returns the current Drawing.
-* @function module:svgcanvas.SvgCanvas#getCurrentDrawing
-* @implements {module:draw.DrawCanvasInit#getCurrentDrawing}
+* @name module:svgcanvas.SvgCanvas#getCurrentDrawing
+* @type {module:draw.DrawCanvasInit#getCurrentDrawing}
 */
 const getCurrentDrawing = canvas.getCurrentDrawing = function () {
   return canvas.current_drawing_;
@@ -277,7 +279,7 @@ let selectedElements = [];
 /**
 * @typedef {PlainObject} module:svgcanvas.SVGAsJSON
 * @property {string} element
-* @property {PlainObject.<string, string>} attr
+* @property {PlainObject<string, string>} attr
 * @property {module:svgcanvas.SVGAsJSON[]} children
 */
 
@@ -312,8 +314,8 @@ const getJsonFromSvgElement = this.getJsonFromSvgElement = function (data) {
 
 /**
 * This should really be an intersection implementing all rather than a union.
-* @function module:svgcanvas.SvgCanvas#addSVGElementFromJson
-* @implements {module:utilities.EditorContext#addSVGElementFromJson|module:path.EditorContext#addSVGElementFromJson}
+* @name module:svgcanvas.SvgCanvas#addSVGElementFromJson
+* @type {module:utilities.EditorContext#addSVGElementFromJson|module:path.EditorContext#addSVGElementFromJson}
 */
 const addSVGElementFromJson = this.addSVGElementFromJson = function (data) {
   if (typeof data === 'string') return svgdoc.createTextNode(data);
@@ -366,7 +368,7 @@ canvas.hasMatrixTransform = hasMatrixTransform;
 canvas.transformListToTransform = transformListToTransform;
 
 /**
-* @implements {module:utilities.EditorContext#getBaseUnit}
+* @type {module:utilities.EditorContext#getBaseUnit}
 */
 const getBaseUnit = () => { return curConfig.baseUnit; };
 
@@ -391,14 +393,14 @@ canvas.convertToNum = convertToNum;
 
 /**
 * This should really be an intersection implementing all rather than a union.
-* @implements {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
+* @type {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
 */
 const getSVGContent = () => { return svgcontent; };
 
 /**
 * Should really be an intersection with all needing to apply rather than a union.
-* @function module:svgcanvas.SvgCanvas#getSelectedElements
-* @implements {module:utilities.EditorContext#getSelectedElements|module:draw.DrawCanvasInit#getSelectedElements|module:path.EditorContext#getSelectedElements}
+* @name module:svgcanvas.SvgCanvas#getSelectedElements
+* @type {module:utilities.EditorContext#getSelectedElements|module:draw.DrawCanvasInit#getSelectedElements|module:path.EditorContext#getSelectedElements}
 */
 const getSelectedElements = this.getSelectedElems = function () {
   return selectedElements;
@@ -408,7 +410,7 @@ const {pathActions} = pathModule;
 
 /**
 * This should actually be an intersection as all interfaces should be met.
-* @implements {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
+* @type {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
 */
 const getSVGRoot = () => svgroot;
 
@@ -444,7 +446,7 @@ this.cleanupElement = cleanupElement;
 
 /**
 * This should actually be an intersection not a union as all should apply.
-* @implements {module:coords.EditorContext|module:path.EditorContext}
+* @type {module:coords.EditorContext#getGridSnapping|module:path.EditorContext#getGridSnapping}
 */
 const getGridSnapping = () => { return curConfig.gridSnapping; };
 
@@ -486,7 +488,7 @@ const undoMgr = canvas.undoMgr = new UndoManager({
    * @param {string} eventType One of the HistoryEvent types
    * @param {module:history.HistoryCommand} cmd Fulfills the HistoryCommand interface
    * @fires module:svgcanvas.SvgCanvas#event:changed
-   * @returns {undefined}
+   * @returns {void}
    */
   handleHistoryEvent (eventType, cmd) {
     const EventTypes = HistoryEventTypes;
@@ -550,8 +552,8 @@ const undoMgr = canvas.undoMgr = new UndoManager({
 
 /**
 * This should really be an intersection applying to all types rather than a union.
-* @function module:svgcanvas~addCommandToHistory
-* @implements {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory}
+* @name module:svgcanvas~addCommandToHistory
+* @type {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory}
 */
 const addCommandToHistory = function (cmd) {
   canvas.undoMgr.addCommandToHistory(cmd);
@@ -559,15 +561,15 @@ const addCommandToHistory = function (cmd) {
 
 /**
 * This should really be an intersection applying to all types rather than a union.
-* @function module:svgcanvas.SvgCanvas#getZoom
-* @implements {module:path.EditorContext#getCurrentZoom|module:select.SVGFactory#getCurrentZoom}
+* @name module:svgcanvas.SvgCanvas#getZoom
+* @type {module:path.EditorContext#getCurrentZoom|module:select.SVGFactory#getCurrentZoom}
 */
 const getCurrentZoom = this.getZoom = function () { return currentZoom; };
 
 /**
 * This method rounds the incoming value to the nearest value based on the `currentZoom`
-* @function module:svgcanvas.SvgCanvas#round
-* @implements {module:path.EditorContext#round}
+* @name module:svgcanvas.SvgCanvas#round
+* @type {module:path.EditorContext#round}
 */
 const round = this.round = function (val) {
   return parseInt(val * currentZoom) / currentZoom;
@@ -594,16 +596,16 @@ selectInit(
 const selectorManager = this.selectorManager = getSelectorManager();
 
 /**
-* @function module:svgcanvas.SvgCanvas#getNextId
-* @implements {module:path.EditorContext#getNextId}
+* @name module:svgcanvas.SvgCanvas#getNextId
+* @type {module:path.EditorContext#getNextId}
 */
 const getNextId = canvas.getNextId = function () {
   return getCurrentDrawing().getNextId();
 };
 
 /**
-* @function module:svgcanvas.SvgCanvas#getId
-* @implements {module:path.EditorContext#getId}
+* @name module:svgcanvas.SvgCanvas#getId
+* @type {module:path.EditorContext#getId}
 */
 const getId = canvas.getId = function () {
   return getCurrentDrawing().getId();
@@ -611,11 +613,8 @@ const getId = canvas.getId = function () {
 
 /**
 * The "implements" should really be an intersection applying to all types rather than a union.
-* @function module:svgcanvas.SvgCanvas#call
-* @implements {module:draw.DrawCanvasInit#call|module:path.EditorContext#call}
-* @param {"selected"|"changed"|"contextset"|"pointsAdded"|"extension_added"|"extensions_added"|"message"|"transition"|"zoomed"|"updateCanvas"|"zoomDone"|"saved"|"exported"|"exportedPDF"|"setnonce"|"unsetnonce"|"cleared"} ev - String with the event name
-* @param {module:svgcanvas.SvgCanvas#event:GenericCanvasEvent} arg - Argument to pass through to the callback function.
-* @returns {module:svgcanvas.EventHandlerReturn|undefined}
+* @name module:svgcanvas.SvgCanvas#call
+* @type {module:draw.DrawCanvasInit#call|module:path.EditorContext#call}
 */
 const call = function (ev, arg) {
   if (events[ev]) {
@@ -627,8 +626,8 @@ const call = function (ev, arg) {
 /**
 * Clears the selection. The 'selected' handler is then optionally called.
 * This should really be an intersection applying to all types rather than a union.
-* @function module:svgcanvas.SvgCanvas#clearSelection
-* @implements {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection}
+* @name module:svgcanvas.SvgCanvas#clearSelection
+* @type {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection}
 * @fires module:svgcanvas.SvgCanvas#event:selected
 */
 const clearSelection = this.clearSelection = function (noCall) {
@@ -645,8 +644,8 @@ const clearSelection = this.clearSelection = function (noCall) {
 
 /**
 * Adds a list of elements to the selection. The 'selected' handler is then called.
-* @function module:svgcanvas.SvgCanvas#addToSelection
-* @implements {module:path.EditorContext#addToSelection}
+* @name module:svgcanvas.SvgCanvas#addToSelection
+* @type {module:path.EditorContext#addToSelection}
 * @fires module:svgcanvas.SvgCanvas#event:selected
 */
 const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
@@ -716,15 +715,15 @@ const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
 };
 
 /**
-* @implements {module:path.EditorContext#getOpacity}
+* @type {module:path.EditorContext#getOpacity}
 */
 const getOpacity = function () {
   return curShape.opacity;
 };
 
 /**
-* @function module:svgcanvas.SvgCanvas#getMouseTarget
-* @implements {module:path.EditorContext#getMouseTarget}
+* @name module:svgcanvas.SvgCanvas#getMouseTarget
+* @type {module:path.EditorContext#getMouseTarget}
 */
 const getMouseTarget = this.getMouseTarget = function (evt) {
   if (isNullish(evt)) {
@@ -787,7 +786,7 @@ const getMouseTarget = this.getMouseTarget = function (evt) {
 */
 canvas.pathActions = pathActions;
 /**
-* @implements {module:path.EditorContext#resetD}
+* @type {module:path.EditorContext#resetD}
 */
 function resetD (p) {
   p.setAttribute('d', pathActions.convertPath(p));
@@ -829,7 +828,7 @@ pathModule.init(
      * @param {SVGCircleElement[]} ptsInfo.grips
      * @fires module:svgcanvas.SvgCanvas#event:pointsAdded
      * @fires module:svgcanvas.SvgCanvas#event:selected
-     * @returns {undefined}
+     * @returns {void}
      */
     addPtsToSelection ({closedSubpath, grips}) {
       // TODO: Correct this:
@@ -843,7 +842,7 @@ pathModule.init(
      * @param {ChangeElementCommand} changes.cmd
      * @param {SVGPathElement} changes.elem
      * @fires module:svgcanvas.SvgCanvas#event:changed
-     * @returns {undefined}
+     * @returns {void}
      */
     endChanges ({cmd, elem}) {
       addCommandToHistory(cmd);
@@ -986,13 +985,13 @@ this.runExtension = function (name, action, vars) {
   return this.runExtensions(action, vars, false, (n) => n === name);
 };
 /**
-* @typedef {module:svgcanvas.ExtensionMouseDownStatus|module:svgcanvas.ExtensionMouseUpStatus|module:svgcanvas.ExtensionIDsUpdatedStatus|module:locale.ExtensionLocaleData[]|undefined} module:svgcanvas.ExtensionStatus
+* @typedef {module:svgcanvas.ExtensionMouseDownStatus|module:svgcanvas.ExtensionMouseUpStatus|module:svgcanvas.ExtensionIDsUpdatedStatus|module:locale.ExtensionLocaleData[]|void} module:svgcanvas.ExtensionStatus
 * @tutorial ExtensionDocs
 */
 /**
 * @callback module:svgcanvas.ExtensionVarBuilder
 * @param {string} name The name of the extension
-* @returns {module:svgcanvas.SvgCanvas#event:ext-addLangData}
+* @returns {module:svgcanvas.SvgCanvas#event:ext_addLangData}
 */
 /**
 * @callback module:svgcanvas.ExtensionNameFilter
@@ -1004,10 +1003,10 @@ this.runExtension = function (name, action, vars) {
 * @todo Would be easier to document if passing in object with key of action and vars as value; could then define an interface which tied both together
 * @function module:svgcanvas.SvgCanvas#runExtensions
 * @param {"mouseDown"|"mouseMove"|"mouseUp"|"zoomChanged"|"IDsUpdated"|"canvasUpdated"|"toolButtonStateUpdate"|"selectedChanged"|"elementTransition"|"elementChanged"|"langReady"|"langChanged"|"addLangData"|"onNewDocument"|"workareaResized"} action
-* @param {module:svgcanvas.SvgCanvas#event:ext-mouseDown|module:svgcanvas.SvgCanvas#event:ext-mouseMove|module:svgcanvas.SvgCanvas#event:ext-mouseUp|module:svgcanvas.SvgCanvas#event:ext-zoomChanged|module:svgcanvas.SvgCanvas#event:ext-IDsUpdated|module:svgcanvas.SvgCanvas#event:ext-canvasUpdated|module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate|module:svgcanvas.SvgCanvas#event:ext-selectedChanged|module:svgcanvas.SvgCanvas#event:ext-elementTransition|module:svgcanvas.SvgCanvas#event:ext-elementChanged|module:svgcanvas.SvgCanvas#event:ext-langReady|module:svgcanvas.SvgCanvas#event:ext-langChanged|module:svgcanvas.SvgCanvas#event:ext-addLangData|module:svgcanvas.SvgCanvas#event:ext-onNewDocument|module:svgcanvas.SvgCanvas#event:ext-workareaResized|module:svgcanvas.ExtensionVarBuilder} [vars]
+* @param {module:svgcanvas.SvgCanvas#event:ext_mouseDown|module:svgcanvas.SvgCanvas#event:ext_mouseMove|module:svgcanvas.SvgCanvas#event:ext_mouseUp|module:svgcanvas.SvgCanvas#event:ext_zoomChanged|module:svgcanvas.SvgCanvas#event:ext_IDsUpdated|module:svgcanvas.SvgCanvas#event:ext_canvasUpdated|module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate|module:svgcanvas.SvgCanvas#event:ext_selectedChanged|module:svgcanvas.SvgCanvas#event:ext_elementTransition|module:svgcanvas.SvgCanvas#event:ext_elementChanged|module:svgcanvas.SvgCanvas#event:ext_langReady|module:svgcanvas.SvgCanvas#event:ext_langChanged|module:svgcanvas.SvgCanvas#event:ext_addLangData|module:svgcanvas.SvgCanvas#event:ext_onNewDocument|module:svgcanvas.SvgCanvas#event:ext_workareaResized|module:svgcanvas.ExtensionVarBuilder} [vars]
 * @param {boolean} [returnArray]
 * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
-* @returns {GenericArray.<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
+* @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
 */
 const runExtensions = this.runExtensions = function (action, vars, returnArray, nameFilter) {
   let result = returnArray ? [] : false;
@@ -1046,97 +1045,97 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 
 /**
  * @interface module:svgcanvas.ExtensionInitResponse
- * @property {module:SVGEditor.ContextTool[]|PlainObject.<string, module:SVGEditor.ContextTool>} [context_tools]
- * @property {module:SVGEditor.Button[]|PlainObject.<Integer, module:SVGEditor.Button>} [buttons]
+ * @property {module:SVGEditor.ContextTool[]|PlainObject<string, module:SVGEditor.ContextTool>} [context_tools]
+ * @property {module:SVGEditor.Button[]|PlainObject<Integer, module:SVGEditor.Button>} [buttons]
  * @property {string} [svgicons] The location of a local SVG or SVGz file
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#mouseDown
- * @param {module:svgcanvas.SvgCanvas#event:ext-mouseDown} arg
- * @returns {undefined|module:svgcanvas.ExtensionMouseDownStatus}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_mouseDown} arg
+ * @returns {void|module:svgcanvas.ExtensionMouseDownStatus}
  */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#mouseMove
- * @param {module:svgcanvas.SvgCanvas#event:ext-mouseMove} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_mouseMove} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#mouseUp
- * @param {module:svgcanvas.SvgCanvas#event:ext-mouseUp} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_mouseUp} arg
  * @returns {module:svgcanvas.ExtensionMouseUpStatus}
  */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#zoomChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext-zoomChanged} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#IDsUpdated
- * @param {module:svgcanvas.SvgCanvas#event:ext-IDsUpdated} arg
+ * @param {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} arg
  * @returns {module:svgcanvas.ExtensionIDsUpdatedStatus}
  */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#canvasUpdated
- * @param {module:svgcanvas.SvgCanvas#event:ext-canvasUpdated} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#toolButtonStateUpdate
- * @param {module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#selectedChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext-selectedChanged} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_selectedChanged} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#elementTransition
- * @param {module:svgcanvas.SvgCanvas#event:ext-elementTransition} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_elementTransition} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#elementChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext-elementChanged} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_elementChanged} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#langReady
- * @param {module:svgcanvas.SvgCanvas#event:ext-langReady} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_langReady} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#langChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext-langChanged} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_langChanged} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#addLangData
- * @param {module:svgcanvas.SvgCanvas#event:ext-addLangData} arg
- * @returns {Promise} Resolves to {@link module:locale.ExtensionLocaleData}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_addLangData} arg
+ * @returns {Promise<module:locale.ExtensionLocaleData>} Resolves to {@link module:locale.ExtensionLocaleData}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#onNewDocument
- * @param {module:svgcanvas.SvgCanvas#event:ext-onNewDocument} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_onNewDocument} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#workareaResized
- * @param {module:svgcanvas.SvgCanvas#event:ext-workareaResized} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_workareaResized} arg
+ * @returns {void}
 */
 /**
  * @function module:svgcanvas.ExtensionInitResponse#callback
  * @this module:SVGEditor
- * @param {module:svgcanvas.SvgCanvas#event:ext-callback} arg
- * @returns {undefined}
+ * @param {module:svgcanvas.SvgCanvas#event:ext_callback} arg
+ * @returns {void}
 */
 
 /**
 * @callback module:svgcanvas.ExtensionInitCallback
 * @this module:SVGEditor
 * @param {module:svgcanvas.ExtensionArgumentObject} arg
-* @returns {Promise} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
+* @returns {Promise<module:svgcanvas.ExtensionInitResponse|void>} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
 */
 /**
 * @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
@@ -1152,7 +1151,7 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 * @fires module:svgcanvas.SvgCanvas#event:extension_added
 * @throws {TypeError|Error} `TypeError` if `extInitFunc` is not a function, `Error`
 *   if extension of supplied name already exists
-* @returns {Promise} Resolves to `undefined`
+* @returns {Promise<void>} Resolves to `undefined`
 */
 this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
   if (typeof extInitFunc !== 'function') {
@@ -1187,6 +1186,7 @@ this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
     extObj.name = name;
   }
 
+  // eslint-disable-next-line require-atomic-updates
   extensions[name] = extObj;
   return call('extension_added', extObj);
 };
@@ -1293,7 +1293,7 @@ const getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function 
 * Wrap an SVG element into a group element, mark the group as 'gsvg'.
 * @function module:svgcanvas.SvgCanvas#groupSvgElem
 * @param {Element} elem - SVG element to wrap
-* @returns {undefined}
+* @returns {void}
 */
 const groupSvgElem = this.groupSvgElem = function (elem) {
   const g = document.createElementNS(NS.SVG, 'g');
@@ -1361,15 +1361,15 @@ canvas.call = call;
  * [`init()`]{@link module:svgcanvas.ExtensionInitCallback}
  * along with the name of the extension.
  * @event module:svgcanvas.SvgCanvas#event:extension_added
- * @type {module:svgcanvas.ExtensionInitResponsePlusName|undefined}
+ * @type {module:svgcanvas.ExtensionInitResponsePlusName|void}
  */
 /**
  * @event module:svgcanvas.SvgCanvas#event:extensions_added
- * @type {undefined}
+ * @type {void}
 */
 /**
  * @typedef {PlainObject} module:svgcanvas.Message
- * @property {Any} data The data
+ * @property {any} data The data
  * @property {string} origin The origin
  */
 /**
@@ -1387,15 +1387,15 @@ canvas.call = call;
  */
 /**
  * @event module:svgcanvas.SvgCanvas#event:unsetnonce
- * @type {undefined}
+ * @type {void}
  */
 /**
  * @event module:svgcanvas.SvgCanvas#event:zoomDone
- * @type {undefined}
+ * @type {void}
 */
 /**
  * @event module:svgcanvas.SvgCanvas#event:cleared
- * @type {undefined}
+ * @type {void}
 */
 
 /**
@@ -1410,13 +1410,13 @@ canvas.call = call;
  * Creating a cover-all class until {@link https://github.com/jsdoc3/jsdoc/issues/1545} may be supported.
  * `undefined` may be returned by {@link module:svgcanvas.SvgCanvas#event:extension_added} if the extension's `init` returns `undefined` It is also the type for the following events "zoomDone", "unsetnonce", "cleared", and "extensions_added".
  * @event module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
- * @type {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset|module:svgcanvas.SvgCanvas#event:pointsAdded|module:svgcanvas.SvgCanvas#event:extension_added|module:svgcanvas.SvgCanvas#event:extensions_added|module:svgcanvas.SvgCanvas#event:message|module:svgcanvas.SvgCanvas#event:transition|module:svgcanvas.SvgCanvas#event:zoomed|module:svgcanvas.SvgCanvas#event:updateCanvas|module:svgcanvas.SvgCanvas#event:saved|module:svgcanvas.SvgCanvas#event:exported|module:svgcanvas.SvgCanvas#event:exportedPDF|module:svgcanvas.SvgCanvas#event:setnonce|module:svgcanvas.SvgCanvas#event:unsetnonce|undefined}
+ * @type {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset|module:svgcanvas.SvgCanvas#event:pointsAdded|module:svgcanvas.SvgCanvas#event:extension_added|module:svgcanvas.SvgCanvas#event:extensions_added|module:svgcanvas.SvgCanvas#event:message|module:svgcanvas.SvgCanvas#event:transition|module:svgcanvas.SvgCanvas#event:zoomed|module:svgcanvas.SvgCanvas#event:updateCanvas|module:svgcanvas.SvgCanvas#event:saved|module:svgcanvas.SvgCanvas#event:exported|module:svgcanvas.SvgCanvas#event:exportedPDF|module:svgcanvas.SvgCanvas#event:setnonce|module:svgcanvas.SvgCanvas#event:unsetnonce|void}
  */
 
 /**
  * The promise return, if present, resolves to `undefined`
  *  (`extension_added`, `exported`, `saved`)
- * @typedef {Promise|undefined} module:svgcanvas.EventHandlerReturn
+ * @typedef {Promise<void>|void} module:svgcanvas.EventHandlerReturn
 */
 
 /**
@@ -1444,7 +1444,7 @@ canvas.bind = function (ev, f) {
 * Runs the SVG Document through the sanitizer and then updates its paths.
 * @function module:svgcanvas.SvgCanvas#prepareSvg
 * @param {XMLDocument} newDoc - The SVG DOM document
-* @returns {undefined}
+* @returns {void}
 */
 this.prepareSvg = function (newDoc) {
   this.sanitizeSvg(newDoc.documentElement);
@@ -1492,7 +1492,7 @@ const ffClone = function (elem) {
 * @param {string|Float} val - The new rotation angle in degrees
 * @param {boolean} preventUndo - Indicates whether the action should be undoable or not
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.setRotationAngle = function (val, preventUndo) {
   // ensure val is the proper type
@@ -1546,7 +1546,7 @@ this.setRotationAngle = function (val, preventUndo) {
 * adding the changes to a single batch command.
 * @function module:svgcanvas.SvgCanvas#recalculateAllSelectedDimensions
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 const recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function () {
   const text = (currentResizeMode === 'none' ? 'position' : 'size');
@@ -1572,7 +1572,7 @@ const recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions =
  * Debug tool to easily see the current matrix in the browser's console.
  * @function module:svgcanvas~logMatrix
  * @param {SVGMatrix} m The matrix
- * @returns {undefined}
+ * @returns {void}
  */
 const logMatrix = function (m) {
   console.log([m.a, m.b, m.c, m.d, m.e, m.f]); // eslint-disable-line no-console
@@ -1592,7 +1592,7 @@ let rootSctm = null;
 * @function module:svgcanvas.SvgCanvas#selectOnly
 * @param {Element[]} elems - an array of DOM elements to be selected
 * @param {boolean} showGrips - Indicates whether the resize grips should be shown
-* @returns {undefined}
+* @returns {void}
 */
 const selectOnly = this.selectOnly = function (elems, showGrips) {
   clearSelection(true);
@@ -1606,7 +1606,7 @@ const selectOnly = this.selectOnly = function (elems, showGrips) {
 * Removes elements from the selection.
 * @function module:svgcanvas.SvgCanvas#removeFromSelection
 * @param {Element[]} elemsToRemove - An array of elements to remove from selection
-* @returns {undefined}
+* @returns {void}
 */
 /* const removeFromSelection = */ this.removeFromSelection = function (elemsToRemove) {
   if (isNullish(selectedElements[0])) { return; }
@@ -1633,7 +1633,7 @@ const selectOnly = this.selectOnly = function (elems, showGrips) {
 /**
 * Clears the selection, then adds all elements in the current layer to the selection.
 * @function module:svgcanvas.SvgCanvas#selectAllInCurrentLayer
-* @returns {undefined}
+* @returns {void}
 */
 this.selectAllInCurrentLayer = function () {
   const currentLayer = getCurrentDrawing().getCurrentLayer();
@@ -1713,8 +1713,8 @@ const getBsplinePoint = function (t) {
  * - When we are in select mode, select the element, remember the position
  *   and do nothing else.
  * @param {MouseEvent} evt
- * @fires module:svgcanvas.SvgCanvas#event:ext-mouseDown
- * @returns {undefined}
+ * @fires module:svgcanvas.SvgCanvas#event:ext_mouseDown
+ * @returns {void}
  */
 const mouseDown = function (evt) {
   if (canvas.spaceKey || evt.button === 1) { return; }
@@ -1808,9 +1808,9 @@ const mouseDown = function (evt) {
       if (!rightClick) {
         // insert a dummy transform so if the element(s) are moved it will have
         // a transform to use for its translate
-        for (let i = 0; i < selectedElements.length; ++i) {
-          if (isNullish(selectedElements[i])) { continue; }
-          const slist = getTransformList(selectedElements[i]);
+        for (const selectedElement of selectedElements) {
+          if (isNullish(selectedElement)) { continue; }
+          const slist = getTransformList(selectedElement);
           if (slist.numberOfItems) {
             slist.insertItemBefore(svgroot.createSVGTransform(), 0);
           } else {
@@ -1955,7 +1955,7 @@ const mouseDown = function (evt) {
     preventClickDefault(newImage);
     break;
   } case 'square':
-    // FIXME: once we create the rect, we lose information that this was a square
+    // TODO: once we create the rect, we lose information that this was a square
     // (for resizing purposes this could be important)
     // Fallthrough
   case 'rect':
@@ -2074,14 +2074,14 @@ const mouseDown = function (evt) {
 
   /**
    * The main (left) mouse button is held down on the canvas area
-   * @event module:svgcanvas.SvgCanvas#event:ext-mouseDown
+   * @event module:svgcanvas.SvgCanvas#event:ext_mouseDown
    * @type {PlainObject}
    * @property {MouseEvent} event The event object
    * @property {Float} start_x x coordinate on canvas
    * @property {Float} start_y y coordinate on canvas
    * @property {Element[]} selectedElements An array of the selected Elements
   */
-  const extResult = runExtensions('mouseDown', /** @type {module:svgcanvas.SvgCanvas#event:ext-mouseDown} */ {
+  const extResult = runExtensions('mouseDown', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseDown} */ {
     event: evt,
     start_x: startX,
     start_y: startY,
@@ -2101,8 +2101,8 @@ const mouseDown = function (evt) {
  *
  * @param {MouseEvent} evt
  * @fires module:svgcanvas.SvgCanvas#event:transition
- * @fires module:svgcanvas.SvgCanvas#event:ext-mouseMove
- * @returns {undefined}
+ * @fires module:svgcanvas.SvgCanvas#event:ext_mouseMove
+ * @returns {void}
  */
 const mouseMove = function (evt) {
   if (!started) { return; }
@@ -2526,14 +2526,14 @@ const mouseMove = function (evt) {
 
   /**
   * The mouse has moved on the canvas area
-  * @event module:svgcanvas.SvgCanvas#event:ext-mouseMove
+  * @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
   * @type {PlainObject}
   * @property {MouseEvent} event The event object
   * @property {Float} mouse_x x coordinate on canvas
   * @property {Float} mouse_y y coordinate on canvas
   * @property {Element} selected Refers to the first selected element
   */
-  runExtensions('mouseMove', /** @type {module:svgcanvas.SvgCanvas#event:ext-mouseMove} */ {
+  runExtensions('mouseMove', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseMove} */ {
     event: evt,
     mouse_x: mouseX,
     mouse_y: mouseY,
@@ -2551,8 +2551,8 @@ const mouseMove = function (evt) {
  * @param {MouseEvent} evt
  * @fires module:svgcanvas.SvgCanvas#event:zoomed
  * @fires module:svgcanvas.SvgCanvas#event:changed
- * @fires module:svgcanvas.SvgCanvas#event:ext-mouseUp
- * @returns {undefined}
+ * @fires module:svgcanvas.SvgCanvas#event:ext_mouseUp
+ * @returns {void}
  */
 const mouseUp = function (evt) {
   if (evt.button === 2) { return; }
@@ -2681,9 +2681,9 @@ const mouseUp = function (evt) {
     const coords = element.getAttribute('points');
     const commaIndex = coords.indexOf(',');
     if (commaIndex >= 0) {
-      keep = coords.indexOf(',', commaIndex + 1) >= 0;
+      keep = coords.includes(',', commaIndex + 1);
     } else {
-      keep = coords.indexOf(' ', coords.indexOf(' ') + 1) >= 0;
+      keep = coords.includes(' ', coords.indexOf(' ') + 1);
     }
     if (keep) {
       element = pathActions.smoothPolylineIntoPath(element);
@@ -2788,13 +2788,13 @@ const mouseUp = function (evt) {
 
   /**
   * The main (left) mouse button is released (anywhere)
-  * @event module:svgcanvas.SvgCanvas#event:ext-mouseUp
+  * @event module:svgcanvas.SvgCanvas#event:ext_mouseUp
   * @type {PlainObject}
   * @property {MouseEvent} event The event object
   * @property {Float} mouse_x x coordinate on canvas
   * @property {Float} mouse_y y coordinate on canvas
   */
-  const extResult = runExtensions('mouseUp', /** @type {module:svgcanvas.SvgCanvas#event:ext-mouseUp} */ {
+  const extResult = runExtensions('mouseUp', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseUp} */ {
     event: evt,
     mouse_x: mouseX,
     mouse_y: mouseY
@@ -2939,7 +2939,7 @@ $(container).bind(
    * @param {Event} e
    * @fires module:svgcanvas.SvgCanvas#event:updateCanvas
    * @fires module:svgcanvas.SvgCanvas#event:zoomDone
-   * @returns {undefined}
+   * @returns {void}
    */
   function (e) {
     if (!e.shiftKey) { return; }
@@ -3044,7 +3044,7 @@ let allowDbl;
 /**
  *
  * @param {Integer} index
- * @returns {undefined}
+ * @returns {void}
  */
 function setCursor (index) {
   const empty = (textinput.value === '');
@@ -3101,7 +3101,7 @@ function setCursor (index) {
  * @param {Integer} start
  * @param {Integer} end
  * @param {boolean} skipInput
- * @returns {undefined}
+ * @returns {void}
  */
 function setSelection (start, end, skipInput) {
   if (start === end) {
@@ -3183,7 +3183,7 @@ function getIndexFromPoint (mouseX, mouseY) {
  *
  * @param {Float} mouseX
  * @param {Float} mouseY
- * @returns {undefined}
+ * @returns {void}
  */
 function setCursorFromPoint (mouseX, mouseY) {
   setCursor(getIndexFromPoint(mouseX, mouseY));
@@ -3194,7 +3194,7 @@ function setCursorFromPoint (mouseX, mouseY) {
  * @param {Float} x
  * @param {Float} y
  * @param {boolean} apply
- * @returns {undefined}
+ * @returns {void}
  */
 function setEndSelectionFromPoint (x, y, apply) {
   const i1 = textinput.selectionStart;
@@ -3265,7 +3265,7 @@ function hideCursor () {
 /**
  *
  * @param {Event} evt
- * @returns {undefined}
+ * @returns {void}
  */
 function selectAll (evt) {
   setSelection(0, curtext.textContent.length);
@@ -3275,7 +3275,7 @@ function selectAll (evt) {
 /**
  *
  * @param {Event} evt
- * @returns {undefined}
+ * @returns {void}
  */
 function selectWord (evt) {
   if (!allowDbl || !curtext) { return; }
@@ -3287,8 +3287,8 @@ function selectWord (evt) {
 
   const index = getIndexFromPoint(pt.x, pt.y);
   const str = curtext.textContent;
-  const first = str.substr(0, index).replace(/[a-z0-9]+$/i, '').length;
-  const m = str.substr(index).match(/^[a-z0-9]+/i);
+  const first = str.substr(0, index).replace(/[a-z\d]+$/i, '').length;
+  const m = str.substr(index).match(/^[a-z\d]+/i);
   const last = (m ? m[0].length : 0) + index;
   setSelection(first, last);
 
@@ -3304,7 +3304,7 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   * @param {Element} target
   * @param {Float} x
   * @param {Float} y
-  * @returns {undefined}
+  * @returns {void}
   */
   select (target, x, y) {
     curtext = target;
@@ -3312,7 +3312,7 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   },
   /**
   * @param {Element} elem
-  * @returns {undefined}
+  * @returns {void}
   */
   start (elem) {
     curtext = elem;
@@ -3323,7 +3323,7 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   * @param {Element} mouseTarget
   * @param {Float} startX
   * @param {Float} startY
-  * @returns {undefined}
+  * @returns {void}
   */
   mouseDown (evt, mouseTarget, startX, startY) {
     const pt = screenToPt(startX, startY);
@@ -3338,7 +3338,7 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   /**
   * @param {Float} mouseX
   * @param {Float} mouseY
-  * @returns {undefined}
+  * @returns {void}
   */
   mouseMove (mouseX, mouseY) {
     const pt = screenToPt(mouseX, mouseY);
@@ -3348,7 +3348,7 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   * @param {external:MouseEvent} evt
   * @param {Float} mouseX
   * @param {Float} mouseY
-  * @returns {undefined}
+  * @returns {void}
   */
   mouseUp (evt, mouseX, mouseY) {
     const pt = screenToPt(mouseX, mouseY);
@@ -3374,13 +3374,13 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   /**
   * @function
   * @param {Integer} index
-  * @returns {undefined}
+  * @returns {void}
   */
   setCursor,
   /**
   * @param {Float} x
   * @param {Float} y
-  * @returns {undefined}
+  * @returns {void}
   */
   toEditMode (x, y) {
     allowDbl = false;
@@ -3413,7 +3413,7 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   /**
   * @param {boolean|Element} selectElem
   * @fires module:svgcanvas.SvgCanvas#event:selected
-  * @returns {undefined}
+  * @returns {void}
   */
   toSelectMode (selectElem) {
     currentMode = 'select';
@@ -3445,14 +3445,14 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   },
   /**
   * @param {Element} elem
-  * @returns {undefined}
+  * @returns {void}
   */
   setInputElem (elem) {
     textinput = elem;
     // $(textinput).blur(hideCursor);
   },
   /**
-  * @returns {undefined}
+  * @returns {void}
   */
   clear () {
     if (currentMode === 'textedit') {
@@ -3461,7 +3461,7 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
   },
   /**
   * @param {Element} inputElem Not in use
-  * @returns {undefined}
+  * @returns {void}
   */
   init (inputElem) {
     if (!curtext) { return; }
@@ -3821,13 +3821,13 @@ this.svgToString = function (elem, indent) {
  * Function to run when image data is found
  * @callback module:svgcanvas.ImageEmbeddedCallback
  * @param {string|false} result Data URL
- * @returns {undefined}
+ * @returns {void}
  */
 /**
 * Converts a given image file to a data URL when possible, then runs a given callback.
 * @function module:svgcanvas.SvgCanvas#embedImage
 * @param {string} src - The path/URL of the image
-* @returns {Promise} Resolves to Data URL (string|false)
+* @returns {Promise<string|false>} Resolves to a Data URL (string|false)
 */
 this.embedImage = function (src) {
   // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
@@ -3862,7 +3862,7 @@ this.embedImage = function (src) {
 * Sets a given URL to be a "last good image" URL.
 * @function module:svgcanvas.SvgCanvas#setGoodImage
 * @param {string} val
-* @returns {undefined}
+* @returns {void}
 */
 this.setGoodImage = function (val) {
   lastGoodImgUrl = val;
@@ -3871,7 +3871,7 @@ this.setGoodImage = function (val) {
 /**
 * Does nothing by default, handled by optional widget/extension.
 * @function module:svgcanvas.SvgCanvas#open
-* @returns {undefined}
+* @returns {void}
 */
 this.open = function () {
   /* */
@@ -3884,7 +3884,7 @@ this.open = function () {
 * @function module:svgcanvas.SvgCanvas#save
 * @param {module:svgcanvas.SaveOptions} opts
 * @fires module:svgcanvas.SvgCanvas#event:saved
-* @returns {undefined}
+* @returns {void}
 */
 this.save = function (opts) {
   // remove the selected outline before serializing
@@ -3967,7 +3967,7 @@ let canvg;
 * @param {boolean} [opts.avoidEvent]
 * @fires module:svgcanvas.SvgCanvas#event:exported
 * @todo Confirm/fix ICO type
-* @returns {Promise} Resolves to {@link module:svgcanvas.ImageExportedResults}
+* @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
 */
 this.rasterExport = async function (imgType, quality, exportWindowName, opts = {}) {
   const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
@@ -3976,6 +3976,7 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
   const svg = this.svgCanvasToString();
 
   if (!canvg) {
+    // eslint-disable-next-line require-atomic-updates
     ({canvg} = await importSetGlobal(curConfig.canvgPath + 'canvg.js', {
       global: 'canvg'
     }));
@@ -3997,7 +3998,7 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
     let bloburl;
     /**
      * Called when `bloburl` is available for export.
-     * @returns {undefined}
+     * @returns {void}
      */
     function done () {
       const obj = {
@@ -4024,7 +4025,7 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
  * @external jsPDF
  */
 /**
- * @typedef {undefined|"save"|"arraybuffer"|"blob"|"datauristring"|"dataurlstring"|"dataurlnewwindow"|"datauri"|"dataurl"} external:jsPDF.OutputType
+ * @typedef {void|"save"|"arraybuffer"|"blob"|"datauristring"|"dataurlstring"|"dataurlnewwindow"|"datauri"|"dataurl"} external:jsPDF.OutputType
  * @todo Newer version to add also allows these `outputType` values "bloburi"|"bloburl" which return strings, so document here and for `outputType` of `module:svgcanvas.PDFExportedResults` below if added
 */
 /**
@@ -4053,7 +4054,7 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
 * @param {string} [exportWindowName] Will also be used for the download file name here
 * @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
 * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
-* @returns {Promise} Resolves to {@link module:svgcanvas.PDFExportedResults}
+* @returns {Promise<module:svgcanvas.PDFExportedResults>} Resolves to {@link module:svgcanvas.PDFExportedResults}
 */
 this.exportPDF = async function (
   exportWindowName,
@@ -4132,7 +4133,7 @@ this.getSvgString = function () {
 * @function module:svgcanvas.SvgCanvas#randomizeIds
 * @param {boolean} [enableRandomization] If true, adds a nonce to the prefix. Thus
 * `svgCanvas.randomizeIds() <==> svgCanvas.randomizeIds(true)`
-* @returns {undefined}
+* @returns {void}
 */
 this.randomizeIds = function (enableRandomization) {
   if (arguments.length > 0 && enableRandomization === false) {
@@ -4146,7 +4147,7 @@ this.randomizeIds = function (enableRandomization) {
 * Ensure each element has a unique ID.
 * @function module:svgcanvas.SvgCanvas#uniquifyElems
 * @param {Element} g - The parent element of the tree to give unique IDs
-* @returns {undefined}
+* @returns {void}
 */
 const uniquifyElems = this.uniquifyElems = function (g) {
   const ids = {};
@@ -4240,7 +4241,7 @@ const uniquifyElems = this.uniquifyElems = function (g) {
 * Assigns reference data for each use element.
 * @function module:svgcanvas.SvgCanvas#setUseData
 * @param {Element} parent
-* @returns {undefined}
+* @returns {void}
 */
 const setUseData = this.setUseData = function (parent) {
   let elems = $(parent);
@@ -4264,7 +4265,7 @@ const setUseData = this.setUseData = function (parent) {
 * Converts gradients from userSpaceOnUse to objectBoundingBox.
 * @function module:svgcanvas.SvgCanvas#convertGradients
 * @param {Element} elem
-* @returns {undefined}
+* @returns {void}
 */
 const convertGradients = this.convertGradients = function (elem) {
   let elems = $(elem).find('linearGradient, radialGradient');
@@ -4343,7 +4344,7 @@ const convertGradients = this.convertGradients = function (elem) {
 * @function module:svgcanvas.SvgCanvas#convertToGroup
 * @param {Element} elem
 * @fires module:svgcanvas.SvgCanvas#event:selected
-* @returns {undefined}
+* @returns {void}
 */
 const convertToGroup = this.convertToGroup = function (elem) {
   if (!elem) {
@@ -4532,8 +4533,10 @@ this.setSvgString = function (xmlString, preventUndo) {
         if (val.startsWith('data:')) {
           // Check if an SVG-edit data URI
           const m = val.match(/svgedit_url=(.*?);/);
+          // const m = val.match(/svgedit_url=(?<url>.*?);/);
           if (m) {
             const url = decodeURIComponent(m[1]);
+            // const url = decodeURIComponent(m.groups.url);
             $(new Image()).load(function () {
               image.setAttributeNS(NS.XLINK, 'xlink:href', url);
             }).attr('src', url);
@@ -4736,8 +4739,7 @@ this.importSvgString = function (xmlString) {
         symbol.append(first);
       }
       const attrs = svg.attributes;
-      for (let i = 0; i < attrs.length; i++) {
-        const attr = attrs[i];
+      for (const attr of attrs) { // Ok for `NamedNodeMap`
         symbol.setAttribute(attr.nodeName, attr.value);
       }
       symbol.id = getNextId();
@@ -4813,7 +4815,7 @@ draw.init(
     addCommandToHistory,
     /**
      * @fires module:svgcanvas.SvgCanvas#event:changed
-     * @returns {undefined}
+     * @returns {void}
      */
     changeSVGContent () {
       call('changed', [svgcontent]);
@@ -4829,7 +4831,7 @@ draw.init(
 * Clears the current document. This is not an undoable action.
 * @function module:svgcanvas.SvgCanvas#clear
 * @fires module:svgcanvas.SvgCanvas#event:cleared
-* @returns {undefined}
+* @returns {void}
 */
 this.clear = function () {
   pathActions.clear();
@@ -4915,7 +4917,7 @@ this.getVersion = function () {
 * Update interface strings with given values.
 * @function module:svgcanvas.SvgCanvas#setUiStrings
 * @param {module:path.uiStrings} strs - Object with strings (see the [locales API]{@link module:locale.LocaleStrings} and the [tutorial]{@tutorial LocaleDocs})
-* @returns {undefined}
+* @returns {void}
 */
 this.setUiStrings = function (strs) {
   Object.assign(uiStrings, strs.notification);
@@ -4927,7 +4929,7 @@ this.setUiStrings = function (strs) {
 * Update configuration options with given values.
 * @function module:svgcanvas.SvgCanvas#setConfig
 * @param {module:SVGEditor.Config} opts - Object with options
-* @returns {undefined}
+* @returns {void}
 */
 this.setConfig = function (opts) {
   Object.assign(curConfig, opts);
@@ -4936,7 +4938,7 @@ this.setConfig = function (opts) {
 /**
 * @function module:svgcanvas.SvgCanvas#getTitle
 * @param {Element} [elem]
-* @returns {string|undefined} the current group/SVG's title contents or
+* @returns {string|void} the current group/SVG's title contents or
 * `undefined` if no element is passed nd there are no selected elements.
 */
 this.getTitle = function (elem) {
@@ -4944,9 +4946,9 @@ this.getTitle = function (elem) {
   if (!elem) { return undefined; }
   elem = $(elem).data('gsvg') || $(elem).data('symbol') || elem;
   const childs = elem.childNodes;
-  for (let i = 0; i < childs.length; i++) {
-    if (childs[i].nodeName === 'title') {
-      return childs[i].textContent;
+  for (const child of childs) {
+    if (child.nodeName === 'title') {
+      return child.textContent;
     }
   }
   return '';
@@ -4957,7 +4959,7 @@ this.getTitle = function (elem) {
 * @function module:svgcanvas.SvgCanvas#setGroupTitle
 * @param {string} val
 * @todo Combine this with `setDocumentTitle`
-* @returns {undefined}
+* @returns {void}
 */
 this.setGroupTitle = function (val) {
   let elem = selectedElements[0];
@@ -4991,7 +4993,7 @@ this.setGroupTitle = function (val) {
 
 /**
 * @function module:svgcanvas.SvgCanvas#getDocumentTitle
-* @returns {string|undefined} The current document title or an empty string if not found
+* @returns {string|void} The current document title or an empty string if not found
 */
 const getDocumentTitle = this.getDocumentTitle = function () {
   return canvas.getTitle(svgcontent);
@@ -5002,7 +5004,7 @@ const getDocumentTitle = this.getDocumentTitle = function () {
 * This is an undoable action.
 * @function module:svgcanvas.SvgCanvas#setDocumentTitle
 * @param {string} newTitle - String with the new title
-* @returns {undefined}
+* @returns {void}
 */
 this.setDocumentTitle = function (newTitle) {
   const childs = svgcontent.childNodes;
@@ -5010,9 +5012,9 @@ this.setDocumentTitle = function (newTitle) {
 
   const batchCmd = new BatchCommand('Change Image Title');
 
-  for (let i = 0; i < childs.length; i++) {
-    if (childs[i].nodeName === 'title') {
-      docTitle = childs[i];
+  for (const child of childs) {
+    if (child.nodeName === 'title') {
+      docTitle = child;
       oldTitle = docTitle.textContent;
       break;
     }
@@ -5135,7 +5137,7 @@ this.getOffset = function () {
 * @param {"selection"|"canvas"|"content"|"layer"|module:SVGEditor.BBoxObjectWithFactor} val - Bounding box object to zoom to or string indicating zoom option. Note: the object value type is defined in `svg-editor.js`
 * @param {Integer} editorW - The editor's workarea box's width
 * @param {Integer} editorH - The editor's workarea box's height
-* @returns {module:svgcanvas.ZoomAndBBox|undefined}
+* @returns {module:svgcanvas.ZoomAndBBox|void}
 */
 this.setBBoxZoom = function (val, editorW, editorH) {
   let spacer = 0.85;
@@ -5189,19 +5191,19 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 
 /**
 * The zoom level has changed. Supplies the new zoom level as a number (not percentage).
-* @event module:svgcanvas.SvgCanvas#event:ext-zoomChanged
+* @event module:svgcanvas.SvgCanvas#event:ext_zoomChanged
 * @type {Float}
 */
 /**
 * The bottom panel was updated
-* @event module:svgcanvas.SvgCanvas#event:ext-toolButtonStateUpdate
+* @event module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate
 * @type {PlainObject}
 * @property {boolean} nofill Indicates fill is disabled
 * @property {boolean} nostroke Indicates stroke is disabled
 */
 /**
 * The element selection has changed (elements were added/removed from selection)
-* @event module:svgcanvas.SvgCanvas#event:ext-selectedChanged
+* @event module:svgcanvas.SvgCanvas#event:ext_selectedChanged
 * @type {PlainObject}
 * @property {Element[]} elems Array of the newly selected elements
 * @property {Element|null} selectedElement The single selected element
@@ -5210,19 +5212,19 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 /**
 * Called when part of element is in process of changing, generally on
 * mousemove actions like rotate, move, etc.
-* @event module:svgcanvas.SvgCanvas#event:ext-elementTransition
+* @event module:svgcanvas.SvgCanvas#event:ext_elementTransition
 * @type {PlainObject}
 * @property {Element[]} elems Array of transitioning elements
 */
 /**
 * One or more elements were changed
-* @event module:svgcanvas.SvgCanvas#event:ext-elementChanged
+* @event module:svgcanvas.SvgCanvas#event:ext_elementChanged
 * @type {PlainObject}
 * @property {Element[]} elems Array of the affected elements
 */
 /**
 * Invoked as soon as the locale is ready
-* @event module:svgcanvas.SvgCanvas#event:ext-langReady
+* @event module:svgcanvas.SvgCanvas#event:ext_langReady
 * @type {PlainObject}
 * @property {string} lang The two-letter language code
 * @property {module:SVGEditor.uiStrings} uiStrings
@@ -5230,39 +5232,39 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 */
 /**
 * The language was changed. Two-letter code of the new language.
-* @event module:svgcanvas.SvgCanvas#event:ext-langChanged
+* @event module:svgcanvas.SvgCanvas#event:ext_langChanged
 * @type {string}
 */
 /**
 * Means for an extension to add locale data. The two-letter language code.
-* @event module:svgcanvas.SvgCanvas#event:ext-addLangData
+* @event module:svgcanvas.SvgCanvas#event:ext_addLangData
 * @type {PlainObject}
 * @property {string} lang
 * @property {module:SVGEditor~ImportLocale} importLocale
 */
 /**
  * Called when new image is created
- * @event module:svgcanvas.SvgCanvas#event:ext-onNewDocument
- * @type {undefined}
+ * @event module:svgcanvas.SvgCanvas#event:ext_onNewDocument
+ * @type {void}
  */
 /**
  * Called when sidepanel is resized or toggled
- * @event module:svgcanvas.SvgCanvas#event:ext-workareaResized
- * @type {undefined}
+ * @event module:svgcanvas.SvgCanvas#event:ext_workareaResized
+ * @type {void}
 */
 /**
  * Called upon addition of the extension, or, if svgicons are set,
  * after the icons are ready when extension SVG icons have loaded.
- * @event module:svgcanvas.SvgCanvas#event:ext-callback
- * @type {undefined}
+ * @event module:svgcanvas.SvgCanvas#event:ext_callback
+ * @type {void}
 */
 
 /**
 * Sets the zoom to the given level.
 * @function module:svgcanvas.SvgCanvas#setZoom
 * @param {Float} zoomLevel - Float indicating the zoom level to change to
-* @fires module:svgcanvas.SvgCanvas#event:ext-zoomChanged
-* @returns {undefined}
+* @fires module:svgcanvas.SvgCanvas#event:ext_zoomChanged
+* @returns {void}
 */
 this.setZoom = function (zoomLevel) {
   const res = getResolution();
@@ -5273,7 +5275,7 @@ this.setZoom = function (zoomLevel) {
     selectorManager.requestSelector(elem).resize();
   });
   pathActions.zoomChange();
-  runExtensions('zoomChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext-zoomChanged} */ zoomLevel);
+  runExtensions('zoomChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} */ zoomLevel);
 };
 
 /**
@@ -5288,7 +5290,7 @@ this.getMode = function () {
 * Sets the editor's mode to the given string.
 * @function module:svgcanvas.SvgCanvas#setMode
 * @param {string} name - String with the new mode to change to
-* @returns {undefined}
+* @returns {void}
 */
 this.setMode = function (name) {
   pathActions.clear(true);
@@ -5322,7 +5324,7 @@ this.getColor = function (type) {
 * @param {string} val - The value to set the stroke attribute to
 * @param {boolean} preventUndo - Boolean indicating whether or not this should be an undoable option
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.setColor = function (type, val, preventUndo) {
   curShape[type] = val;
@@ -5331,7 +5333,7 @@ this.setColor = function (type, val, preventUndo) {
   /**
    *
    * @param {Element} e
-   * @returns {undefined}
+   * @returns {void}
    */
   function addNonG (e) {
     if (e.nodeName !== 'g') {
@@ -5367,7 +5369,7 @@ this.setColor = function (type, val, preventUndo) {
 * Apply the current gradient to selected element's fill or stroke.
 * @function module:svgcanvas.SvgCanvas#setGradient
 * @param {"fill"|"stroke"} type - String indicating "fill" or "stroke" to apply to an element
-* @returns {undefined}
+* @returns {void}
 */
 const setGradient = this.setGradient = function (type) {
   if (!curProperties[type + '_paint'] || curProperties[type + '_paint'].type === 'solidColor') { return; }
@@ -5453,7 +5455,7 @@ const findDuplicateGradient = function (grad) {
 * @function module:svgcanvas.SvgCanvas#setPaint
 * @param {"fill"|"stroke"} type - String with "fill" or "stroke"
 * @param {module:jGraduate.jGraduatePaintOptions} paint - The jGraduate paint object to apply
-* @returns {undefined}
+* @returns {void}
 */
 this.setPaint = function (type, paint) {
   // make a copy
@@ -5477,7 +5479,7 @@ this.setPaint = function (type, paint) {
 /**
 * @function module:svgcanvas.SvgCanvas#setStrokePaint
 * @param {module:jGraduate~Paint} paint
-* @returns {undefined}
+* @returns {void}
 */
 this.setStrokePaint = function (paint) {
   this.setPaint('stroke', paint);
@@ -5486,7 +5488,7 @@ this.setStrokePaint = function (paint) {
 /**
 * @function module:svgcanvas.SvgCanvas#setFillPaint
 * @param {module:jGraduate~Paint} paint
-* @returns {undefined}
+* @returns {void}
 */
 this.setFillPaint = function (paint) {
   this.setPaint('fill', paint);
@@ -5506,7 +5508,7 @@ this.getStrokeWidth = function () {
 * @function module:svgcanvas.SvgCanvas#setStrokeWidth
 * @param {Float} val - A Float indicating the new stroke width value
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.setStrokeWidth = function (val) {
   if (val === 0 && ['line', 'path'].includes(currentMode)) {
@@ -5519,7 +5521,7 @@ this.setStrokeWidth = function (val) {
   /**
    *
    * @param {Element} e
-   * @returns {undefined}
+   * @returns {void}
    */
   function addNonG (e) {
     if (e.nodeName !== 'g') {
@@ -5549,7 +5551,7 @@ this.setStrokeWidth = function (val) {
 * @param {string} attr - String with the attribute name
 * @param {string|Float} val - String or number with the attribute value
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.setStrokeAttr = function (attr, val) {
   curShape[attr.replace('-', '_')] = val;
@@ -5603,7 +5605,7 @@ this.getOpacity = getOpacity;
 * Sets the given opacity on the current selected elements.
 * @function module:svgcanvas.SvgCanvas#setOpacity
 * @param {string} val
-* @returns {undefined}
+* @returns {void}
 */
 this.setOpacity = function (val) {
   curShape.opacity = val;
@@ -5632,7 +5634,7 @@ this.getStrokeOpacity = function () {
 * @param {string} type - String with "fill" or "stroke"
 * @param {Float} val - Float with the new opacity value
 * @param {boolean} preventUndo - Indicates whether or not this should be an undoable action
-* @returns {undefined}
+* @returns {void}
 */
 this.setPaintOpacity = function (type, val, preventUndo) {
   curShape[type + '_opacity'] = val;
@@ -5684,7 +5686,7 @@ let filterHidden = false;
 * Sets the `stdDeviation` blur value on the selected element without being undoable.
 * @function module:svgcanvas.SvgCanvas#setBlurNoUndo
 * @param {Float} val - The new `stdDeviation` value
-* @returns {undefined}
+* @returns {void}
 */
 canvas.setBlurNoUndo = function (val) {
   if (!filter) {
@@ -5713,7 +5715,7 @@ canvas.setBlurNoUndo = function (val) {
 
 /**
  *
- * @returns {undefined}
+ * @returns {void}
  */
 function finishChange () {
   const bCmd = canvas.undoMgr.finishUndoableChange();
@@ -5729,7 +5731,7 @@ function finishChange () {
 * @function module:svgcanvas.SvgCanvas#setBlurOffsets
 * @param {Element} filterElem - The filter DOM element to update
 * @param {Float} stdDev - The standard deviation value on which to base the offset size
-* @returns {undefined}
+* @returns {void}
 */
 canvas.setBlurOffsets = function (filterElem, stdDev) {
   if (stdDev > 3) {
@@ -5754,7 +5756,7 @@ canvas.setBlurOffsets = function (filterElem, stdDev) {
 * @function module:svgcanvas.SvgCanvas#setBlur
 * @param {Float} val - Float with the new `stdDeviation` blur value
 * @param {boolean} complete - Whether or not the action should be completed (to add to the undo manager)
-* @returns {undefined}
+* @returns {void}
 */
 canvas.setBlur = function (val, complete) {
   if (curCommand) {
@@ -5837,7 +5839,7 @@ this.getBold = function () {
 * Make the selected element bold or normal.
 * @function module:svgcanvas.SvgCanvas#setBold
 * @param {boolean} b - Indicates bold (`true`) or normal (`false`)
-* @returns {undefined}
+* @returns {void}
 */
 this.setBold = function (b) {
   const selected = selectedElements[0];
@@ -5868,7 +5870,7 @@ this.getItalic = function () {
 * Make the selected element italic or normal.
 * @function module:svgcanvas.SvgCanvas#setItalic
 * @param {boolean} i - Indicates italic (`true`) or normal (`false`)
-* @returns {undefined}
+* @returns {void}
 */
 this.setItalic = function (i) {
   const selected = selectedElements[0];
@@ -5893,7 +5895,7 @@ this.getFontFamily = function () {
 * Set the new font family.
 * @function module:svgcanvas.SvgCanvas#setFontFamily
 * @param {string} val - String with the new font family
-* @returns {undefined}
+* @returns {void}
 */
 this.setFontFamily = function (val) {
   curText.font_family = val;
@@ -5907,7 +5909,7 @@ this.setFontFamily = function (val) {
 * Set the new font color.
 * @function module:svgcanvas.SvgCanvas#setFontColor
 * @param {string} val - String with the new font color
-* @returns {undefined}
+* @returns {void}
 */
 this.setFontColor = function (val) {
   curText.fill = val;
@@ -5934,7 +5936,7 @@ this.getFontSize = function () {
 * Applies the given font size to the selected element.
 * @function module:svgcanvas.SvgCanvas#setFontSize
 * @param {Float} val - Float with the new font size
-* @returns {undefined}
+* @returns {void}
 */
 this.setFontSize = function (val) {
   curText.font_size = val;
@@ -5958,7 +5960,7 @@ this.getText = function () {
 * Updates the text element with the given string.
 * @function module:svgcanvas.SvgCanvas#setTextContent
 * @param {string} val - String with the new text
-* @returns {undefined}
+* @returns {void}
 */
 this.setTextContent = function (val) {
   changeSelectedAttribute('#text', val);
@@ -5972,7 +5974,7 @@ this.setTextContent = function (val) {
 * @function module:svgcanvas.SvgCanvas#setImageURL
 * @param {string} val - String with the image URL/path
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.setImageURL = function (val) {
   const elem = selectedElements[0];
@@ -6015,7 +6017,7 @@ this.setImageURL = function (val) {
 * Sets the new link URL for the selected anchor element.
 * @function module:svgcanvas.SvgCanvas#setLinkURL
 * @param {string} val - String with the link URL/path
-* @returns {undefined}
+* @returns {void}
 */
 this.setLinkURL = function (val) {
   let elem = selectedElements[0];
@@ -6050,7 +6052,7 @@ this.setLinkURL = function (val) {
 * @function module:svgcanvas.SvgCanvas#setRectRadius
 * @param {string|Float} val - The new radius
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.setRectRadius = function (val) {
   const selected = selectedElements[0];
@@ -6069,7 +6071,7 @@ this.setRectRadius = function (val) {
 * Wraps the selected element(s) in an anchor element or converts group to one.
 * @function module:svgcanvas.SvgCanvas#makeHyperlink
 * @param {string} url
-* @returns {undefined}
+* @returns {void}
 */
 this.makeHyperlink = function (url) {
   canvas.groupSelectedElements('a', url);
@@ -6080,7 +6082,7 @@ this.makeHyperlink = function (url) {
 
 /**
 * @function module:svgcanvas.SvgCanvas#removeHyperlink
-* @returns {undefined}
+* @returns {void}
 */
 this.removeHyperlink = function () {
   canvas.ungroupSelectedElement();
@@ -6094,7 +6096,7 @@ this.removeHyperlink = function () {
 * Sets the new segment type to the selected segment(s).
 * @function module:svgcanvas.SvgCanvas#setSegType
 * @param {Integer} newType - New segment type. See {@link https://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg} for list
-* @returns {undefined}
+* @returns {void}
 */
 this.setSegType = function (newType) {
   pathActions.setSegType(newType);
@@ -6106,7 +6108,7 @@ this.setSegType = function (newType) {
 * @todo (codedread): Remove the getBBox argument and split this function into two.
 * @param {Element} elem - The DOM element to be converted
 * @param {boolean} getBBox - Boolean on whether or not to only return the path's BBox
-* @returns {undefined|DOMRect|false|SVGPathElement|null} If the getBBox flag is true, the resulting path's bounding box object.
+* @returns {void|DOMRect|false|SVGPathElement|null} If the getBBox flag is true, the resulting path's bounding box object.
 * Otherwise the resulting path element is returned.
 */
 this.convertToPath = function (elem, getBBox) {
@@ -6143,7 +6145,7 @@ this.convertToPath = function (elem, getBBox) {
 * @param {string} attr - Attribute name
 * @param {string|Float} newValue - String or number with the new attribute value
 * @param {Element[]} elems - The DOM elements to apply the change to
-* @returns {undefined}
+* @returns {void}
 */
 const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
   if (currentMode === 'pathedit') {
@@ -6169,7 +6171,7 @@ const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
     }
 
     // only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
-    // TODO: FIXME: Missing statement body
+    // TODO: Missing statement body
     // if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
     let oldval = attr === '#text' ? elem.textContent : elem.getAttribute(attr);
     if (isNullish(oldval)) { oldval = ''; }
@@ -6267,7 +6269,7 @@ const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
 * @param {string} attr - String with the attribute name
 * @param {string|Float} val - String or number with the new attribute value
 * @param {Element[]} elems - The DOM elements to apply the change to
-* @returns {undefined}
+* @returns {void}
 */
 const changeSelectedAttribute = this.changeSelectedAttribute = function (attr, val, elems) {
   elems = elems || selectedElements;
@@ -6287,7 +6289,7 @@ const changeSelectedAttribute = this.changeSelectedAttribute = function (attr, v
 * history stack.
 * @function module:svgcanvas.SvgCanvas#deleteSelectedElements
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.deleteSelectedElements = function () {
   const batchCmd = new BatchCommand('Delete Elements');
@@ -6329,7 +6331,7 @@ this.deleteSelectedElements = function () {
 * Removes all selected elements from the DOM and adds the change to the
 * history stack. Remembers removed elements on the clipboard.
 * @function module:svgcanvas.SvgCanvas#cutSelectedElements
-* @returns {undefined}
+* @returns {void}
 */
 this.cutSelectedElements = function () {
   canvas.copySelectedElements();
@@ -6339,7 +6341,7 @@ this.cutSelectedElements = function () {
 /**
 * Remembers the current selected elements on the clipboard.
 * @function module:svgcanvas.SvgCanvas#copySelectedElements
-* @returns {undefined}
+* @returns {void}
 */
 this.copySelectedElements = function () {
   localStorage.setItem('svgedit_clipboard', JSON.stringify(
@@ -6351,12 +6353,12 @@ this.copySelectedElements = function () {
 
 /**
 * @function module:svgcanvas.SvgCanvas#pasteElements
-* @param {"in_place"|"point"|undefined} type
-* @param {Integer|undefined} x Expected if type is "point"
-* @param {Integer|undefined} y Expected if type is "point"
+* @param {"in_place"|"point"|void} type
+* @param {Integer|void} x Expected if type is "point"
+* @param {Integer|void} y Expected if type is "point"
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @fires module:svgcanvas.SvgCanvas#event:ext-IDsUpdated
-* @returns {undefined}
+* @fires module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
+* @returns {void}
 */
 this.pasteElements = function (type, x, y) {
   let clipb = JSON.parse(localStorage.getItem('svgedit_clipboard'));
@@ -6367,7 +6369,7 @@ this.pasteElements = function (type, x, y) {
   const batchCmd = new BatchCommand('Paste elements');
   // const drawing = getCurrentDrawing();
   /**
-  * @typedef {PlainObject.<string, string>} module:svgcanvas.ChangedIDs
+  * @typedef {PlainObject<string, string>} module:svgcanvas.ChangedIDs
   */
   /**
    * @type {module:svgcanvas.ChangedIDs}
@@ -6378,7 +6380,7 @@ this.pasteElements = function (type, x, y) {
   /**
    *
    * @param {module:svgcanvas.SVGAsJSON} elem
-   * @returns {undefined}
+   * @returns {void}
    */
   function checkIDs (elem) {
     if (elem.attr && elem.attr.id) {
@@ -6392,14 +6394,14 @@ this.pasteElements = function (type, x, y) {
   // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
   /**
   * Triggered when `pasteElements` is called from a paste action (context menu or key)
-  * @event module:svgcanvas.SvgCanvas#event:ext-IDsUpdated
+  * @event module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
   * @type {PlainObject}
   * @property {module:svgcanvas.SVGAsJSON[]} elems
   * @property {module:svgcanvas.ChangedIDs} changes Maps past ID (on attribute) to current ID
   */
   runExtensions(
     'IDsUpdated',
-    /** @type {module:svgcanvas.SvgCanvas#event:ext-IDsUpdated} */
+    /** @type {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} */
     {elems: clipb, changes: changedIDs},
     true
   ).forEach(function (extChanges) {
@@ -6461,7 +6463,7 @@ this.pasteElements = function (type, x, y) {
 * @function module:svgcanvas.SvgCanvas#groupSelectedElements
 * @param {"a"|"g"} [type="g"] - type of element to group into, defaults to `<g>`
 * @param {string} [urlArg]
-* @returns {undefined}
+* @returns {void}
 */
 this.groupSelectedElements = function (type, urlArg) {
   if (!type) { type = 'g'; }
@@ -6521,7 +6523,7 @@ this.groupSelectedElements = function (type, urlArg) {
 * @function module:svgcanvas.SvgCanvas#pushGroupProperties
 * @param {SVGAElement|SVGGElement} g
 * @param {boolean} undoable
-* @returns {BatchCommand|undefined}
+* @returns {BatchCommand|void}
 */
 const pushGroupProperties = this.pushGroupProperties = function (g, undoable) {
   const children = g.childNodes;
@@ -6707,7 +6709,7 @@ const pushGroupProperties = this.pushGroupProperties = function (g, undoable) {
 * Unwraps all the elements in a selected group (`g`) element. This requires
 * significant recalculations to apply group's transforms, etc. to its children.
 * @function module:svgcanvas.SvgCanvas#ungroupSelectedElement
-* @returns {undefined}
+* @returns {void}
 */
 this.ungroupSelectedElement = function () {
   let g = selectedElements[0];
@@ -6779,7 +6781,7 @@ this.ungroupSelectedElement = function () {
 * other elements.
 * @function module:svgcanvas.SvgCanvas#moveToTopSelectedElement
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.moveToTopSelectedElement = function () {
   const [selected] = selectedElements;
@@ -6802,7 +6804,7 @@ this.moveToTopSelectedElement = function () {
 * other elements.
 * @function module:svgcanvas.SvgCanvas#moveToBottomSelectedElement
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.moveToBottomSelectedElement = function () {
   const [selected] = selectedElements;
@@ -6835,7 +6837,7 @@ this.moveToBottomSelectedElement = function () {
 * @function module:svgcanvas.SvgCanvas#moveUpDownSelected
 * @param {"Up"|"Down"} dir - String that's either 'Up' or 'Down'
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 this.moveUpDownSelected = function (dir) {
   const selected = selectedElements[0];
@@ -6878,7 +6880,7 @@ this.moveUpDownSelected = function (dir) {
 * @param {Float} dy - Float with the distance to move on the y-axis
 * @param {boolean} undoable - Boolean indicating whether or not the action should be undoable
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {BatchCommand|undefined} Batch command for the move
+* @returns {BatchCommand|void} Batch command for the move
 */
 this.moveSelectedElements = function (dx, dy, undoable) {
   // if undoable is not sent, default to true
@@ -6948,7 +6950,7 @@ this.moveSelectedElements = function (dx, dy, undoable) {
 * @function module:svgcanvas.SvgCanvas#cloneSelectedElements
 * @param {Float} x Float with the distance to move on the x-axis
 * @param {Float} y Float with the distance to move on the y-axis
-* @returns {undefined}
+* @returns {void}
 */
 this.cloneSelectedElements = function (x, y) {
   let i, elem;
@@ -6995,7 +6997,7 @@ this.cloneSelectedElements = function (x, y) {
 * @function module:svgcanvas.SvgCanvas#alignSelectedElements
 * @param {string} type - String with single character indicating the alignment type
 * @param {"selected"|"largest"|"smallest"|"page"} relativeTo
-* @returns {undefined}
+* @returns {void}
 */
 this.alignSelectedElements = function (type, relativeTo) {
   const bboxes = []; // angles = [];
@@ -7117,7 +7119,7 @@ this.contentH = getResolution().h;
 * @function module:svgcanvas.SvgCanvas#updateCanvas
 * @param {Float} w - Float with the new width
 * @param {Float} h - Float with the new height
-* @fires module:svgcanvas.SvgCanvas#event:ext-canvasUpdated
+* @fires module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
 * @returns {module:svgcanvas.CanvasInfo}
 */
 this.updateCanvas = function (w, h) {
@@ -7156,7 +7158,7 @@ this.updateCanvas = function (w, h) {
 
   /**
   * Invoked upon updates to the canvas.
-  * @event module:svgcanvas.SvgCanvas#event:ext-canvasUpdated
+  * @event module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
   * @type {PlainObject}
   * @property {Integer} new_x
   * @property {Integer} new_y
@@ -7168,7 +7170,7 @@ this.updateCanvas = function (w, h) {
   runExtensions(
     'canvasUpdated',
     /**
-     * @type {module:svgcanvas.SvgCanvas#event:ext-canvasUpdated}
+     * @type {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated}
      */
     {new_x: x, new_y: y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY}
   );
@@ -7180,7 +7182,7 @@ this.updateCanvas = function (w, h) {
 * @function module:svgcanvas.SvgCanvas#setBackground
 * @param {string} color - String with fill color to apply
 * @param {string} url - URL or path to image to use
-* @returns {undefined}
+* @returns {void}
 */
 this.setBackground = function (color, url) {
   const bg = getElem('canvasBackground');
@@ -7210,7 +7212,7 @@ this.setBackground = function (color, url) {
 * @function module:svgcanvas.SvgCanvas#cycleElement
 * @param {boolean} next - true = next and false = previous element
 * @fires module:svgcanvas.SvgCanvas#event:selected
-* @returns {undefined}
+* @returns {void}
 */
 this.cycleElement = function (next) {
   let num;

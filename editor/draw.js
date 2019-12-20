@@ -121,7 +121,7 @@ export class Drawing {
     * Note: Layers are ordered, but referenced externally by name; so, we need both container
     * types depending on which function is called (i.e. all_layers and layer_map).
     *
-    * @type {PlainObject.<string, Layer>}
+    * @type {PlainObject<string, Layer>}
     */
     this.layer_map = {};
 
@@ -133,7 +133,7 @@ export class Drawing {
 
     /**
     * The nonce to use to uniquely identify elements across drawings.
-    * @type {!String}
+    * @type {!string}
     */
     this.nonce_ = '';
     const n = this.svgElem_.getAttributeNS(NS.SE, 'nonce');
@@ -175,7 +175,7 @@ export class Drawing {
 
   /**
    * @param {!(string|Integer)} n The nonce to set
-   * @returns {undefined}
+   * @returns {void}
    */
   setNonce (n) {
     this.svgElem_.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
@@ -185,7 +185,7 @@ export class Drawing {
 
   /**
    * Clears any previously set nonce.
-   * @returns {undefined}
+   * @returns {void}
    */
   clearNonce () {
     // We deliberately leave any se:nonce attributes alone,
@@ -385,7 +385,7 @@ export class Drawing {
 
   /**
   * @param {module:history.HistoryRecordingService} hrService
-  * @returns {undefined}
+  * @returns {void}
   */
   mergeLayer (hrService) {
     const currentGroup = this.current_layer.getGroup();
@@ -425,7 +425,7 @@ export class Drawing {
 
   /**
   * @param {module:history.HistoryRecordingService} hrService
-  * @returns {undefined}
+  * @returns {void}
   */
   mergeAllLayers (hrService) {
     // Set the current layer to the last layer.
@@ -476,7 +476,7 @@ export class Drawing {
   /**
    * Updates layer system and sets the current layer to the
    * top-most layer (last `<g>` child of this drawing).
-   * @returns {undefined}
+   * @returns {void}
   */
   identifyLayers () {
     this.all_layers = [];
@@ -574,12 +574,11 @@ export class Drawing {
     const group = layer.getGroup();
 
     // Clone children
-    const children = currentGroup.childNodes;
-    for (let index = 0; index < children.length; index++) {
-      const ch = children[index];
-      if (ch.localName === 'title') { continue; }
-      group.append(this.copyElem(ch));
-    }
+    const children = [...currentGroup.childNodes];
+    children.forEach((child) => {
+      if (child.localName === 'title') { return; }
+      group.append(this.copyElem(child));
+    });
 
     if (hrService) {
       hrService.startBatchCommand('Duplicate Layer');
@@ -651,7 +650,7 @@ export class Drawing {
    * action.
    * @param {string} layerName - Name of the layer on which to set the opacity
    * @param {Float} opacity - A float value in the range 0.0-1.0
-   * @returns {undefined}
+   * @returns {void}
   */
   setLayerOpacity (layerName, opacity) {
     if (typeof opacity !== 'number' || opacity < 0.0 || opacity > 1.0) {
@@ -681,7 +680,7 @@ export class Drawing {
  * @function module:draw.randomizeIds
  * @param {boolean} enableRandomization - flag indicating if documents should have randomized ids
  * @param {draw.Drawing} currentDrawing
- * @returns {undefined}
+ * @returns {void}
  */
 export const randomizeIds = function (enableRandomization, currentDrawing) {
   randIds = enableRandomization === false
@@ -719,7 +718,7 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 /**
  * @function module:draw.DrawCanvasInit#setCurrentGroup
  * @param {Element} cg
- * @returns {undefined}
+ * @returns {void}
 */
 /**
  * @function module:draw.DrawCanvasInit#getSelectedElements
@@ -736,7 +735,7 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 /**
  * @function module:draw.DrawCanvasInit#clearSelection
  * @param {boolean} [noCall] - When `true`, does not call the "selected" handler
- * @returns {undefined}
+ * @returns {void}
 */
 /**
  * Run the callback function associated with the given event
@@ -745,23 +744,23 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
  * @param {module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset} arg - Argument to pass through to the callback
  * function. If the event is "changed", a (single-item) array of `Element`s is
  * passed. If the event is "contextset", the arg is `null` or `Element`.
- * @returns {undefined}
+ * @returns {void}
  */
 /**
  * @function module:draw.DrawCanvasInit#addCommandToHistory
  * @param {Command} cmd
- * @returns {undefined}
+ * @returns {void}
 */
 /**
  * @function module:draw.DrawCanvasInit#changeSVGContent
- * @returns {undefined}
+ * @returns {void}
  */
 
 let canvas_;
 /**
 * @function module:draw.init
 * @param {module:draw.DrawCanvasInit} canvas
-* @returns {undefined}
+* @returns {void}
 */
 export const init = function (canvas) {
   canvas_ = canvas;
@@ -770,7 +769,7 @@ export const init = function (canvas) {
 /**
 * Updates layer system.
 * @function module:draw.identifyLayers
-* @returns {undefined}
+* @returns {void}
 */
 export const identifyLayers = function () {
   leaveContext();
@@ -785,7 +784,7 @@ export const identifyLayers = function () {
 * @param {string} name - The given name
 * @param {module:history.HistoryRecordingService} hrService
 * @fires module:svgcanvas.SvgCanvas#event:changed
-* @returns {undefined}
+* @returns {void}
 */
 export const createLayer = function (name, hrService) {
   const newLayer = canvas_.getCurrentDrawing().createLayer(
@@ -804,7 +803,7 @@ export const createLayer = function (name, hrService) {
  * @param {string} name - The given name. If the layer name exists, a new name will be generated.
  * @param {module:history.HistoryRecordingService} hrService - History recording service
  * @fires module:svgcanvas.SvgCanvas#event:changed
- * @returns {undefined}
+ * @returns {void}
  */
 export const cloneLayer = function (name, hrService) {
   // Clone the current layer and make the cloned layer the new current layer
@@ -958,7 +957,7 @@ export const moveSelectedToLayer = function (layerName) {
 /**
 * @function module:draw.mergeLayer
 * @param {module:history.HistoryRecordingService} hrService
-* @returns {undefined}
+* @returns {void}
 */
 export const mergeLayer = function (hrService) {
   canvas_.getCurrentDrawing().mergeLayer(historyRecordingService(hrService));
@@ -970,7 +969,7 @@ export const mergeLayer = function (hrService) {
 /**
 * @function module:draw.mergeAllLayers
 * @param {module:history.HistoryRecordingService} hrService
-* @returns {undefined}
+* @returns {void}
 */
 export const mergeAllLayers = function (hrService) {
   canvas_.getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService));
@@ -984,7 +983,7 @@ export const mergeAllLayers = function (hrService) {
 * disabled elements enabled again.
 * @function module:draw.leaveContext
 * @fires module:svgcanvas.SvgCanvas#event:contextset
-* @returns {undefined}
+* @returns {void}
 */
 export const leaveContext = function () {
   const len = disabledElems.length;
@@ -1011,7 +1010,7 @@ export const leaveContext = function () {
 * @function module:draw.setContext
 * @param {Element} elem
 * @fires module:svgcanvas.SvgCanvas#event:contextset
-* @returns {undefined}
+* @returns {void}
 */
 export const setContext = function (elem) {
   leaveContext();

@@ -17,9 +17,9 @@ const $ = jQuery;
  * an existing group element or, with three parameters, will create a new layer group element.
  *
  * @example
- * new Layer('name', group);          // Use the existing group for this layer.
- * new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
- * new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
+ * const l1 = new Layer('name', group);          // Use the existing group for this layer.
+ * const l2 = new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
+ * const l3 = new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
  * @memberof module:layer
  */
 class Layer {
@@ -29,7 +29,7 @@ class Layer {
   *     If group and no svgElem, use group for this layer.
   *     If group and svgElem, create a new group element and insert it in the DOM after group.
   *     If no group and svgElem, create a new group element and insert it in the DOM as the last layer.
-  * @param {SVGGElement=} svgElem - The SVG DOM element. If defined, use this to add
+  * @param {SVGGElement} [svgElem] - The SVG DOM element. If defined, use this to add
   *     a new layer to the document.
   */
   constructor (name, group, svgElem) {
@@ -76,7 +76,7 @@ class Layer {
 
   /**
    * Active this layer so it takes pointer events.
-   * @returns {undefined}
+   * @returns {void}
    */
   activate () {
     this.group_.setAttribute('style', 'pointer-events:all');
@@ -84,7 +84,7 @@ class Layer {
 
   /**
    * Deactive this layer so it does NOT take pointer events.
-   * @returns {undefined}
+   * @returns {void}
    */
   deactivate () {
     this.group_.setAttribute('style', 'pointer-events:none');
@@ -93,7 +93,7 @@ class Layer {
   /**
    * Set this layer visible or hidden based on 'visible' parameter.
    * @param {boolean} visible - If true, make visible; otherwise, hide it.
-   * @returns {undefined}
+   * @returns {void}
    */
   setVisible (visible) {
     const expected = visible === undefined || visible ? 'inline' : 'none';
@@ -127,7 +127,7 @@ class Layer {
    * Sets the opacity of this layer. If opacity is not a value between 0.0 and 1.0,
    * nothing happens.
    * @param {Float} opacity - A float value in the range 0.0-1.0
-   * @returns {undefined}
+   * @returns {void}
    */
   setOpacity (opacity) {
     if (typeof opacity === 'number' && opacity >= 0.0 && opacity <= 1.0) {
@@ -138,11 +138,11 @@ class Layer {
   /**
    * Append children to this layer.
    * @param {SVGGElement} children - The children to append to this layer.
-   * @returns {undefined}
+   * @returns {void}
    */
   appendChildren (children) {
-    for (let i = 0; i < children.length; ++i) {
-      this.group_.append(children[i]);
+    for (const child of children) {
+      this.group_.append(child);
     }
   }
 
@@ -208,7 +208,7 @@ Layer.CLASS_REGEX = new RegExp('(\\s|^)' + Layer.CLASS_NAME + '(\\s|$)');
  * Add class `Layer.CLASS_NAME` to the element (usually `class='layer'`).
  *
  * @param {SVGGElement} elem - The SVG element to update
- * @returns {undefined}
+ * @returns {void}
  */
 function addLayerClass (elem) {
   const classes = elem.getAttribute('class');

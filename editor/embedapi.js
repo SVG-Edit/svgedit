@@ -8,11 +8,11 @@ let cbid = 0;
 /**
 * @callback module:EmbeddedSVGEdit.CallbackSetter
 * @param {GenericCallback} newCallback Callback to be stored (signature dependent on function)
-* @returns {undefined}
+* @returns {void}
 */
 /**
 * @callback module:EmbeddedSVGEdit.CallbackSetGetter
-* @param {...*} args Signature dependent on the function
+* @param {...any} args Signature dependent on the function
 * @returns {module:EmbeddedSVGEdit.CallbackSetter}
 */
 
@@ -37,23 +37,23 @@ function getCallbackSetter (funcName) {
 * of same domain control.
 * @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
 * @param {JSON} data
-* @returns {undefined}
+* @returns {void}
 */
 function addCallback (t, {result, error, id: callbackID}) {
   if (typeof callbackID === 'number' && t.callbacks[callbackID]) {
     // These should be safe both because we check `cbid` is numeric and
     //   because the calls are from trusted origins
     if (result) {
-      t.callbacks[callbackID](result); // lgtm [js/remote-property-injection]
+      t.callbacks[callbackID](result); // lgtm [js/unvalidated-dynamic-method-call]
     } else {
-      t.callbacks[callbackID](error, 'error'); // lgtm [js/remote-property-injection]
+      t.callbacks[callbackID](error, 'error'); // lgtm [js/unvalidated-dynamic-method-call]
     }
   }
 }
 
 /**
 * @param {Event} e
-* @returns {undefined}
+* @returns {void}
 */
 function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
@@ -76,7 +76,7 @@ function messageListener (e) {
 /**
 * @callback module:EmbeddedSVGEdit.MessageListener
 * @param {MessageEvent} e
-* @returns {undefined}
+* @returns {void}
 */
 /**
 * @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
@@ -93,7 +93,6 @@ function getMessageListener (t) {
 * General usage:
 * - Have an iframe somewhere pointing to a version of svg-edit > r1000.
 * @example
-
 // Initialize the magic with:
 const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
 
@@ -101,11 +100,11 @@ const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
 svgCanvas.setSvgString('string');
 
 // Or if a callback is needed:
-svgCanvas.setSvgString('string')(function(data, error){
-  if (error){
-  // There was an error
-  } else{
-  // Handle data
+svgCanvas.setSvgString('string')(function (data, error) {
+  if (error) {
+     // There was an error
+  } else {
+     // Handle data
   }
 });
 
@@ -121,10 +120,12 @@ svgCanvas.setSvgString('string')(function(data, error){
 // the SVG editor on the same domain and reference the
 // JavaScript methods on the frame itself.
 
-// The only other difference is
-// when handling returns: the callback notation is used instead.
+// The only other difference is when handling returns:
+// the callback notation is used instead.
 const blah = new EmbeddedSVGEdit(window.frames.svgedit);
-blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {a: 'tree',b:6, c: 9})(function(){console.log('GET DATA',arguments)})
+blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {
+     a: 'tree', b: 6, c: 9
+})(function () { console.log('GET DATA', args); });
 *
 * @memberof module:EmbeddedSVGEdit
 */
@@ -313,19 +314,17 @@ class EmbeddedSVGEdit {
     ];
 
     // TODO: rewrite the following, it's pretty scary.
-    for (let i = 0; i < functions.length; i++) {
-      this[functions[i]] = getCallbackSetter(functions[i]);
+    for (const func of functions) {
+      this[func] = getCallbackSetter(func);
     }
 
     // Older IE may need a polyfill for addEventListener, but so it would for SVG
     window.addEventListener('message', getMessageListener(this));
     window.addEventListener('keydown', (e) => {
-      const {key, keyCode, charCode, which} = e;
-      if (e.key === 'Backspace') {
+      const {type, key} = e;
+      if (key === 'Backspace') {
         e.preventDefault();
-        const keyboardEvent = new KeyboardEvent(e.type, {
-          key, keyCode, charCode, which
-        });
+        const keyboardEvent = new KeyboardEvent(type, {key});
         that.frame.contentDocument.dispatchEvent(keyboardEvent);
       }
     });

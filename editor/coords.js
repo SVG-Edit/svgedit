@@ -42,8 +42,8 @@ let editorContext_ = null;
 
 /**
 * @function module:coords.init
-* @param {module:coords.EditorContext} editorContext
-* @returns {undefined}
+* @param {module:svgcanvas.SvgCanvas#event:pointsAdded} editorContext
+* @returns {void}
 */
 export const init = function (editorContext) {
   editorContext_ = editorContext;
@@ -51,8 +51,8 @@ export const init = function (editorContext) {
 
 /**
  * Applies coordinate changes to an element based on the given matrix.
- * @function module:coords.remapElement
- * @implements {module:path.EditorContext#remapElement}
+ * @name module:coords.remapElement
+ * @type {module:path.EditorContext#remapElement}
 */
 export const remapElement = function (selected, changes, m) {
   const remap = function (x, y) { return transformPoint(x, y, m); },

@@ -237,13 +237,14 @@ var svgEditorExtension_arrows = (function () {
                     return null;
                   }
 
-                  var m = str.match(/\(#(.*)\)/);
+                  var m = str.match(/\(#(.*)\)/); // const m = str.match(/\(#(?<id>.+)\)/);
+                  // if (!m || !m.groups.id) {
 
                   if (!m || m.length !== 2) {
                     return null;
                   }
 
-                  return svgCanvas.getElem(m[1]);
+                  return svgCanvas.getElem(m[1]); // return svgCanvas.getElem(m.groups.id);
                 };
 
                 unsetArrowNonce = function _ref4(win) {
@@ -273,7 +274,7 @@ var svgEditorExtension_arrows = (function () {
                 /**
                 * @param {Window} win
                 * @param {!(string|Integer)} n
-                * @returns {undefined}
+                * @returns {void}
                 */
 
                 svgCanvas.bind('setnonce', setArrowNonce);

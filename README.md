@@ -1,11 +1,21 @@
 # ![alt text](https://svg-edit.github.io/svgedit/images/logo48x48.svg "svg-edit logo of a pencil") SVG-edit
 
+[![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
 [![devDependencies](https://img.shields.io/david/dev/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit?type=dev)
-[![npm](http://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
-[![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT)
-[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
+
+<!-- [![Actions Status](https://github.com/SVG-Edit/svgedit/workflows/Node%20CI/badge.svg)](https://github.com/SVG-Edit/svgedit/actions)
+[![Actions Status](https://github.com/SVG-Edit/svgedit/workflows/Coverage/badge.svg)](https://github.com/SVG-Edit/svgedit/actions)
+-->
+[![coverage badge](coverage-badge.svg)](coverage-badge.svg)
+
+[![Known Vulnerabilities](https://snyk.io/test/github/SVG-Edit/svgedit/badge.svg)](https://snyk.io/test/github/SVG-Edit/svgedit)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/alerts)
+[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
+
+[![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT)
+
+[![issuehunt-to-marktext](https://issuehunt.io/static/embed/issuehunt-button-v1.svg)](https://issuehunt.io/r/SVG-Edit/svgedit)
 
 SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
 works in any modern browser.
@@ -23,10 +33,11 @@ to join the project.
 ### [Try SVG-edit here](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
 
 See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
-(or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor-es.html) version, which requires a modern browser).
+(or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor-es.html)
+version, which requires a modern browser).
 
-You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html> (which
-redirects to a versioned URL).
+You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>
+(which redirects to a versioned URL).
 
 You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svgedit/releases).
 
@@ -43,7 +54,8 @@ For testing the latest version in `master`, you may use
   configuration (see `docs/tutorials/ConfigOptions.md`
   ([ConfigOptions]{@tutorial ConfigOptions})) within the URL:
 ```html
-<iframe src="svgedit/editor/svg-editor.html?extensions=" width="100%" height="100%"></iframe>
+<iframe src="svgedit/editor/svg-editor.html?extensions="
+    width="100%" height="100%"></iframe>
 ```
 
 Note that if you want support for the following browsers, you will at least
@@ -64,24 +76,26 @@ And for still older browsers (e.g., IE 8), you will at minimum need a
 ### Integrating SVG-edit into your own npm package
 
 These steps are only needed if you wish to set up your own npm package
-incorporating SVGEdit.
+incorporating SVGEdit. You will need to have Node.js/npm installed.
 
+1. Create and enter an empty folder somewhere on your desktop.
 1. Create your npm package: `npm init` (complete the fields).
 1. Install SVG-edit into your package:
-  `npm i svgedit`.
+  `npm i --save svgedit`.
 1. Look within `node_modules/svgedit/`, e.g., `node_modules/svgedit/editor/svg-editor.html`
-  for the files your package needs and use accordingly.
-1. `npm publish`
+  for the files your package needs and use accordingly (from outside of
+  `node_modules`).
+1. If you want to publish your own work, you can use `npm publish`.
 
 ## Programmatic customization
 
 1. If you are not concerned about supporting ES6 Modules (see the
   "ES6 Modules file" section), you can add your config directly to
   `svgedit-config-iife.js` within the SVG-Edit project root.
-  1. Note: Do not remove the `import svgEditor...` code which is responsible for
-  importing the SVG edit code. Versions prior to 3.0 did not require this,
-  but the advantage is that your HTML does not need to be polluted with
-  extra script references.
+  1. Note: Do not remove the `import svgEditor...` code which is responsible
+  for importing the SVG edit code. Versions prior to 3.0 did not require
+  this, but the advantage is that your HTML does not need to be polluted
+  with extra script references.
 1. Modify or utilize any options. See `docs/tutorials/ConfigOptions.md`
   ([ConfigOptions]{@tutorial ConfigOptions}).
 
@@ -98,27 +112,40 @@ incorporating SVGEdit.
   references JavaScript rolled up into a single file), you can follow these
   steps after any config changes you make, so that your changes can also be
   automatically made available to both versions.
-  1. JavaScript:
-    1. Run `npm install` within the `node_modules/svgedit` directory to
-      install the build tools for SVG-edit.
-    1. Run `npm run build-config` within the `node_modules/svgedit` directory.
-      1. This will rebuild `svgedit-config-iife.js` (applying Babel to allow
-        it to work on older browsers and applying Rollup to build all
-        JavaScript into one file). The file will then contain non-ES6 module
-        JavaScript that can work in older browsers. Note that it bundles all
-        of SVGEdit, so it is to be expected that this file will be much larger
-        in size than the original ES6 config file.
-  1. HTML:
-    1. If you wish to make changes to both HTML files, it is recommended that you
-      work and test on `svg-editor-es.html` and then run `npm run build-html`
-      to have the changes properly copied to `svg-editor.html`.
+    1. JavaScript:
+        1. Run `npm install` within the svgedit directory
+          (`node_modules/svgedit` if you installed via npm) and the root
+          repository directory if you cloned the Git repository instead.
+          This will install the build tools for SVG-edit.
+        1. Run `npm run build-by-config` within the svgedit directory mentioned
+          in the step above.
+            1. This will rebuild `svgedit-config-iife.js` (applying Babel to
+              allow it to work on older browsers and applying Rollup to build
+              all JavaScript into one file). The file will then contain
+              non-ES6 module JavaScript that can work in older browsers.
+              Note that it bundles all of SVGEdit, so it is to be expected
+              that this file will be much larger in size than the original
+              ES6 config file.
+    1. HTML:
+        1. If you wish to make changes to both HTML files, it is recommended that
+            you work and test on `svg-editor-es.html` and then run
+            `npm run build-html` to have the changes properly copied to
+            `svg-editor.html`.
 
 ## Recent news
 
-- 2018-12-13 Published 4.2.0 (Chinese (simplified) and Russian locale updates; retaining lines with grid mode)
-- 2018-11-29 Published 4.1.0 (Fix for hyphenated locales, svgcanvas distributions)
+- 2019-11-16 Published 5.1.0 Misc. fixes and refactoring
+- 2019-05-07 Published 5.0.0 Change from `@babel/polyfill`
+- 2019-04-03 Published 4.3.0 Fix for double click on gradient
+    picker droplets affecting some browsers and dragging control
+    point of arc. Other misc. fixes. Some accessibility and i18n.
+- 2018-12-13 Published 4.2.0 (Chinese (simplified) and Russian locale
+    updates; retaining lines with grid mode)
+- 2018-11-29 Published 4.1.0 (Fix for hyphenated locales, svgcanvas
+    distributions)
 - 2018-11-16 Published 4.0.0/4.0.1 (Move to Promise-based APIs)
-- 2018-11-01 Published 3.2.0 (Update qunit to resolve security vulnerability of a dependency)
+- 2018-11-01 Published 3.2.0 (Update qunit to resolve security vulnerability
+    of a dependency)
 - 2018-10-25 Published 3.1.1 (Fix for saving SVG on Firefox)
 - 2018-10-24 Published 3.1.0 (Redirect on modular page for non-module-support;
   versions document (for migrating))
@@ -133,8 +160,10 @@ incorporating SVGEdit.
 - 2017-07 Added to Packagist: https://packagist.org/packages/svg-edit/svgedit
 - 2015-12-02 SVG-edit 2.8.1 was released.
 - 2015-11-24 SVG-edit 2.8 was released.
-- 2015-11-24 Code, issue tracking, and docs are being moved to github (previously [code.google.com](https://code.google.com/p/svg-edit)).
-- 2014-04-17 2.7 and stable branches updated to reflect 2.7.1 important bug fixes for the embedded editor.
+- 2015-11-24 Code, issue tracking, and docs are being moved to github
+    (previously [code.google.com](https://code.google.com/p/svg-edit)).
+- 2014-04-17 2.7 and stable branches updated to reflect 2.7.1 important bug
+    fixes for the embedded editor.
 - 2014-04-07 SVG-edit 2.7 was released.
 - 2013-01-15 SVG-edit 2.6 was released.
 
@@ -147,7 +176,8 @@ incorporating SVGEdit.
 
 ## Supported browsers
 
-The following browsers had been tested for 2.6 or earlier and will probably continue to work with 3.0.
+The following browsers had been tested for 2.6 or earlier and will
+probably continue to work with 3.0.
 
 - Firefox 1.5+
 - Opera 9.50+
@@ -157,9 +187,12 @@ The following browsers had been tested for 2.6 or earlier and will probably cont
 
 ## Further reading and more information
 
- * See [docs](docs/) for more documentation. See the [JSDocs for our latest release](https://svg-edit.github.io/svgedit/releases/latest/docs/jsdoc/index.html).
- * [Acknowledgements](docs/Acknowledgements.md) lists open source projects used in svg-edit.
+ * See [docs](docs/) for more documentation. See the
+    [JSDocs for our latest release](https://svg-edit.github.io/svgedit/releases/latest/docs/jsdoc/index.html).
+ * [Acknowledgements](docs/Acknowledgements.md) lists open source projects
+    used in svg-edit.
  * See [AUTHORS](AUTHORS) file for authors.
  * [StackOverflow](https://stackoverflow.com/tags/svg-edit) group.
  * Join the [svg-edit mailing list](https://groups.google.com/forum/#!forum/svg-edit).
- * Join us on `#svg-edit` on `freenode.net` (or use the [web client](https://webchat.freenode.net/?channels=svg-edit)).
+ * Join us on `#svg-edit` on `freenode.net` (or use the
+    [web client](https://webchat.freenode.net/?channels=svg-edit)).

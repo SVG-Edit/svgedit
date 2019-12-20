@@ -48,6 +48,10 @@
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -236,6 +240,7 @@
 
   var colorDefs = [{
     re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+    // re: /^rgb\((?<r>\d{1,3}),\s*(?<g>\d{1,3}),\s*(?<b>\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
     process: function process(_) {
       for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -248,6 +253,7 @@
     }
   }, {
     re: /^(\w{2})(\w{2})(\w{2})$/,
+    // re: /^(?<r>\w{2})(?<g>\w{2})(?<b>\w{2})$/,
     example: ['#00ff00', '336699'],
     process: function process(_) {
       for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
@@ -259,7 +265,8 @@
       });
     }
   }, {
-    re: /^(\w{1})(\w{1})(\w{1})$/,
+    re: /^(\w)(\w)(\w)$/,
+    // re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
     example: ['#fb0', 'f0f'],
     process: function process(_) {
       for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
@@ -322,7 +329,7 @@
           });
           _this.ok = true;
         }
-      }, this); // validate/cleanup values
+      }); // validate/cleanup values
 
       this.r = this.r < 0 || isNaN(this.r) ? 0 : this.r > 255 ? 255 : this.r;
       this.g = this.g < 0 || isNaN(this.g) ? 0 : this.g > 255 ? 255 : this.g;
@@ -364,34 +371,40 @@
 
         return '#' + r + g + b;
       }
+      /**
+      * Offers a bulleted list of help.
+      * @returns {HTMLUListElement}
+      */
+
+    }], [{
+      key: "getHelpXML",
+      value: function getHelpXML() {
+        var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
+          var example = _ref2.example;
+          return example;
+        })), _toConsumableArray(Object.keys(simpleColors)));
+        var xml = document.createElement('ul');
+        xml.setAttribute('id', 'rgbcolor-examples');
+        xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
+          try {
+            var listItem = document.createElement('li');
+            var listColor = new RGBColor(example);
+            var exampleDiv = document.createElement('div');
+            exampleDiv.style.cssText = "\n  margin: 3px;\n  border: 1px solid black;\n  background: ".concat(listColor.toHex(), ";\n  color: ").concat(listColor.toHex(), ";");
+            exampleDiv.append('test');
+            var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
+            listItem.append(exampleDiv, listItemValue);
+            return listItem;
+          } catch (e) {
+            return '';
+          }
+        })));
+        return xml;
+      }
     }]);
 
     return RGBColor;
   }();
-
-  RGBColor.getHelpXML = function () {
-    var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
-      var example = _ref2.example;
-      return example;
-    })), _toConsumableArray(Object.keys(simpleColors)));
-    var xml = document.createElement('ul');
-    xml.setAttribute('id', 'rgbcolor-examples');
-    xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
-      try {
-        var listItem = document.createElement('li');
-        var listColor = new RGBColor(example);
-        var exampleDiv = document.createElement('div');
-        exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
-        exampleDiv.append('test');
-        var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
-        listItem.append(exampleDiv, listItemValue);
-        return listItem;
-      } catch (e) {
-        return '';
-      }
-    })));
-    return xml;
-  };
 
   var jsPDFAPI = jsPDF.API;
   var pdfSvgAttr = {
@@ -638,7 +651,7 @@
               }
 
               return box.width;
-            }; // FIXME: use more accurate positioning!!
+            }; // TODO: use more accurate positioning!!
 
 
             var x,

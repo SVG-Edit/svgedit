@@ -1,5 +1,8 @@
 node_modules
+ignore
 
+coverage
+instrumented
 dist
 docs/jsdoc
 

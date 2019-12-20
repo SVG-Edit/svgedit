@@ -2343,6 +2343,22 @@
             }
 
             return builder.pathSegList;
+          } // STATIC
+
+        }], [{
+          key: "_pathSegArrayAsString",
+          value: function _pathSegArrayAsString(pathSegArray) {
+            var string = '';
+            var first = true;
+            pathSegArray.forEach(function (pathSeg) {
+              if (first) {
+                first = false;
+                string += pathSeg._asPathString();
+              } else {
+                string += ' ' + pathSeg._asPathString();
+              }
+            });
+            return string;
           }
         }]);
 
@@ -2357,23 +2373,8 @@
           return this._list.length;
         },
         enumerable: true
-      });
-
-      SVGPathSegList._pathSegArrayAsString = function (pathSegArray) {
-        var string = '';
-        var first = true;
-        pathSegArray.forEach(function (pathSeg) {
-          if (first) {
-            first = false;
-            string += pathSeg._asPathString();
-          } else {
-            string += ' ' + pathSeg._asPathString();
-          }
-        });
-        return string;
-      }; // Add the pathSegList accessors to SVGPathElement.
+      }); // Add the pathSegList accessors to SVGPathElement.
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGAnimatedPathData
-
 
       Object.defineProperties(SVGPathElement.prototype, {
         pathSegList: {
@@ -2386,7 +2387,7 @@
           },
           enumerable: true
         },
-        // FIXME: The following are not implemented and simply return SVGPathElement.pathSegList.
+        // TODO: The following are not implemented and simply return SVGPathElement.pathSegList.
         normalizedPathSegList: {
           get: function get() {
             return this.pathSegList;
@@ -2450,8 +2451,6 @@
   var _navigator = navigator,
       userAgent = _navigator.userAgent;
   var svg = document.createElementNS(NS.SVG, 'svg'); // Note: Browser sniffing should only be used if no other detection method is possible
-
-  var isOpera_ = Boolean(window.opera);
   var isWebkit_ = userAgent.includes('AppleWebKit');
   var isGecko_ = userAgent.includes('Gecko/');
   var isIE_ = userAgent.includes('MSIE');
@@ -2462,10 +2461,6 @@
   var supportsSelectors_ = function () {
     return Boolean(svg.querySelector);
   }();
-
-  var supportsXpath_ = function () {
-    return Boolean(document.evaluate);
-  }(); // segList functions (for FF1.5 and 2.0)
 
 
   var supportsPathReplaceItem_ = function () {

@@ -205,6 +205,10 @@ var svgEditorExtension_server_opensave = (function () {
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -393,6 +397,7 @@ var svgEditorExtension_server_opensave = (function () {
 
   var colorDefs = [{
     re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
+    // re: /^rgb\((?<r>\d{1,3}),\s*(?<g>\d{1,3}),\s*(?<b>\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
     process: function process(_) {
       for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -405,6 +410,7 @@ var svgEditorExtension_server_opensave = (function () {
     }
   }, {
     re: /^(\w{2})(\w{2})(\w{2})$/,
+    // re: /^(?<r>\w{2})(?<g>\w{2})(?<b>\w{2})$/,
     example: ['#00ff00', '336699'],
     process: function process(_) {
       for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
@@ -416,7 +422,8 @@ var svgEditorExtension_server_opensave = (function () {
       });
     }
   }, {
-    re: /^(\w{1})(\w{1})(\w{1})$/,
+    re: /^(\w)(\w)(\w)$/,
+    // re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
     example: ['#fb0', 'f0f'],
     process: function process(_) {
       for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
@@ -479,7 +486,7 @@ var svgEditorExtension_server_opensave = (function () {
           });
           _this.ok = true;
         }
-      }, this); // validate/cleanup values
+      }); // validate/cleanup values
 
       this.r = this.r < 0 || isNaN(this.r) ? 0 : this.r > 255 ? 255 : this.r;
       this.g = this.g < 0 || isNaN(this.g) ? 0 : this.g > 255 ? 255 : this.g;
@@ -521,34 +528,40 @@ var svgEditorExtension_server_opensave = (function () {
 
         return '#' + r + g + b;
       }
+      /**
+      * Offers a bulleted list of help.
+      * @returns {HTMLUListElement}
+      */
+
+    }], [{
+      key: "getHelpXML",
+      value: function getHelpXML() {
+        var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
+          var example = _ref2.example;
+          return example;
+        })), _toConsumableArray(Object.keys(simpleColors)));
+        var xml = document.createElement('ul');
+        xml.setAttribute('id', 'rgbcolor-examples');
+        xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
+          try {
+            var listItem = document.createElement('li');
+            var listColor = new RGBColor(example);
+            var exampleDiv = document.createElement('div');
+            exampleDiv.style.cssText = "\n  margin: 3px;\n  border: 1px solid black;\n  background: ".concat(listColor.toHex(), ";\n  color: ").concat(listColor.toHex(), ";");
+            exampleDiv.append('test');
+            var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
+            listItem.append(exampleDiv, listItemValue);
+            return listItem;
+          } catch (e) {
+            return '';
+          }
+        })));
+        return xml;
+      }
     }]);
 
     return RGBColor;
   }();
-
-  RGBColor.getHelpXML = function () {
-    var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
-      var example = _ref2.example;
-      return example;
-    })), _toConsumableArray(Object.keys(simpleColors)));
-    var xml = document.createElement('ul');
-    xml.setAttribute('id', 'rgbcolor-examples');
-    xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
-      try {
-        var listItem = document.createElement('li');
-        var listColor = new RGBColor(example);
-        var exampleDiv = document.createElement('div');
-        exampleDiv.style.cssText = "\nmargin: 3px;\nborder: 1px solid black;\nbackground: ".concat(listColor.toHex(), ";\ncolor: ").concat(listColor.toHex(), ";");
-        exampleDiv.append('test');
-        var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
-        listItem.append(exampleDiv, listItemValue);
-        return listItem;
-      } catch (e) {
-        return '';
-      }
-    })));
-    return xml;
-  };
 
   function _typeof$1(obj) {
     if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
@@ -884,7 +897,7 @@ var svgEditorExtension_server_opensave = (function () {
 
   /**
    * Whether a value is `null` or `undefined`.
-   * @param {Any} val
+   * @param {any} val
    * @returns {boolean}
    */
 
@@ -918,7 +931,7 @@ var svgEditorExtension_server_opensave = (function () {
   * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
   * @param {string|XMLDocument} s - svg string, url to svg file, or xml document
   * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
-  * @returns {Promise} All the function after the first render is completed with dom
+  * @returns {Promise<XMLDocument|XMLDocument[]>} All the function after the first render is completed with dom
   */
 
 
@@ -965,13 +978,16 @@ var svgEditorExtension_server_opensave = (function () {
 
     return svg.load(ctx, s);
   };
+  /* eslint-disable jsdoc/check-types */
+
   /**
   * @param {module:canvg.CanvgOptions} opts
-  * @returns {Object}
+  * @returns {object}
   * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
   */
 
   function build(opts) {
+    /* eslint-enable jsdoc/check-types */
     var svg = {
       opts: opts
     };
@@ -1050,7 +1066,7 @@ var svgEditorExtension_server_opensave = (function () {
 
 
     svg.compressSpaces = function (s) {
-      return s.replace(/[\s\r\t\n]+/gm, ' ');
+      return s.replace(/\s+/gm, ' ');
     }; // ajax
     // Todo: Replace with `fetch` and polyfill
 
@@ -1231,7 +1247,7 @@ var svgEditorExtension_server_opensave = (function () {
       }, {
         key: "getUnits",
         value: function getUnits() {
-          return String(this.value).replace(/[0-9.-]/g, '');
+          return String(this.value).replace(/[\d.-]/g, '');
         } // get the length as pixels
 
       }, {
@@ -2548,8 +2564,8 @@ var svgEditorExtension_server_opensave = (function () {
         .replace(/,/gm, ' ') // get rid of all commas
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
-        .replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm, '$1 $2') // separate commands from points
-        .replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from points
+        .replace(/([MmZzLlHhVvCcSsQqTtAa])(\S)/gm, '$1 $2') // separate commands from points
+        .replace(/(\S)([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from points
         .replace(/(\d)([+-])/gm, '$1 $2') // separate digits when no comma
         .replace(/(\.\d*)(\.)/gm, '$1 $2') // separate digits when no comma
         .replace(/([Aa](\s+\d+)(\s+\d+)(\s+\d+))\s+([01])\s*([01])/gm, '$1 $5 $6 '); // shorthand elliptical arc path syntax
@@ -3283,7 +3299,7 @@ var svgEditorExtension_server_opensave = (function () {
             return false;
           }
 
-          this.duration = this.duration + delta; // if we're past the begin time
+          this.duration += delta; // if we're past the begin time
 
           var updated = false;
 
@@ -3910,7 +3926,7 @@ var svgEditorExtension_server_opensave = (function () {
             // eslint-disable-line promise/prefer-await-to-then, promise/always-return
             _this20.img = img;
             _this20.loaded = true;
-          }).catch(function (err) {
+          })["catch"](function (err) {
             // eslint-disable-line promise/prefer-await-to-callbacks
             _this20.erred = true;
             console.error('Ajax error for canvg', err); // eslint-disable-line no-console
@@ -4022,7 +4038,7 @@ var svgEditorExtension_server_opensave = (function () {
         }); // remove comments
 
 
-        css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
+        css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^\s*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
         // replace whitespace
 
         css = svg.compressSpaces(css);
@@ -4358,7 +4374,7 @@ var svgEditorExtension_server_opensave = (function () {
     * @param {Float} width
     * @param {Float} height
     * @param {Integer} rgba
-    * @returns {undefined}
+    * @returns {Integer}
     */
 
 
@@ -4373,7 +4389,7 @@ var svgEditorExtension_server_opensave = (function () {
     * @param {Float} height
     * @param {Integer} rgba
     * @param {Float} val
-    * @returns {undefined}
+    * @returns {void}
     */
 
 
@@ -4868,7 +4884,8 @@ var svgEditorExtension_server_opensave = (function () {
       var _init = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee5(_ref) {
-        var $, decode64, encode64, importLocale, strings, svgEditor, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+        var $, decode64, encode64, importLocale, strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, avoidClientSideDownload, avoidClientSideOpen, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
@@ -4879,7 +4896,7 @@ var svgEditorExtension_server_opensave = (function () {
                   /**
                    * Submit the form, empty its contents for reuse and show
                    *   uploading message.
-                   * @returns {undefined}
+                   * @returns {Promise<void>}
                    */
 
                   function submit() {
@@ -4974,6 +4991,10 @@ var svgEditorExtension_server_opensave = (function () {
                 };
 
                 clientDownloadSupport = function _ref6(filename, suffix, uri) {
+                  if (avoidClientSide || avoidClientSideDownload) {
+                    return false;
+                  }
+
                   var support = $('<a>')[0].download === '';
                   var a;
 
@@ -5006,18 +5027,18 @@ var svgEditorExtension_server_opensave = (function () {
               case 7:
                 strings = _context5.sent;
                 svgEditor = this;
-                svgCanvas = svgEditor.canvas;
+                _svgEditor$curConfig = svgEditor.curConfig, extPath = _svgEditor$curConfig.extPath, avoidClientSide = _svgEditor$curConfig.avoidClientSide, avoidClientSideDownload = _svgEditor$curConfig.avoidClientSideDownload, avoidClientSideOpen = _svgEditor$curConfig.avoidClientSideOpen, svgCanvas = svgEditor.canvas;
                 /**
                  *
                  * @returns {string}
                  */
 
-                saveSvgAction = svgEditor.curConfig.extPath + 'filesave.php', saveImgAction = svgEditor.curConfig.extPath + 'filesave.php'; // Create upload target (hidden iframe)
+                saveSvgAction = extPath + 'filesave.php', saveImgAction = extPath + 'filesave.php'; // Create upload target (hidden iframe)
 
                 cancelled = false; //  Hiding by size instead of display to avoid FF console errors
                 //    with `getBBox` in browser.js `supportsPathBBox_`)
 
-                $('<iframe name="output_frame" style="width: 0; height: 0;" src="#"/>').appendTo('body');
+                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n          style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function save(win, data) {
                     var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
@@ -5032,7 +5053,7 @@ var svgEditorExtension_server_opensave = (function () {
                       method: 'post',
                       action: saveSvgAction,
                       target: 'output_frame'
-                    }).append('<input type="hidden" name="output_svg" value="' + xhtmlEscape(svg) + '">').append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">').appendTo('body').submit().remove();
+                    }).append("\n          <input type=\"hidden\" name=\"output_svg\" value=\"".concat(xhtmlEscape(svg), "\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
                   },
                   exportPDF: function exportPDF(win, data) {
                     var filename = getFileNameFromTitle(),
@@ -5046,7 +5067,7 @@ var svgEditorExtension_server_opensave = (function () {
                       method: 'post',
                       action: saveImgAction,
                       target: 'output_frame'
-                    }).append('<input type="hidden" name="output_img" value="' + datauri + '">').append('<input type="hidden" name="mime" value="application/pdf">').append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">').appendTo('body').submit().remove();
+                    }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"application/pdf\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
                   },
                   // Todo: Integrate this extension with a new built-in exportWindowType, "download"
                   exportImage: function () {
@@ -5079,7 +5100,8 @@ var svgEditorExtension_server_opensave = (function () {
                               note = '';
 
                               if (issues.length) {
-                                pre = "\n \u2022 ";
+                                pre = "\n \u2022 "; // Bullet
+
                                 note += '\n\n' + pre + issues.join(pre);
                               }
 
@@ -5107,7 +5129,7 @@ var svgEditorExtension_server_opensave = (function () {
                                 method: 'post',
                                 action: saveImgAction,
                                 target: 'output_frame'
-                              }).append('<input type="hidden" name="output_img" value="' + datauri + '">').append('<input type="hidden" name="mime" value="' + mimeType + '">').append('<input type="hidden" name="filename" value="' + xhtmlEscape(filename) + '">').appendTo('body').submit().remove();
+                              }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"").concat(mimeType, "\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
 
                             case 18:
                             case "end":
@@ -5125,7 +5147,7 @@ var svgEditorExtension_server_opensave = (function () {
                   }()
                 }); // Do nothing if client support is found
 
-                if (!window.FileReader) {
+                if (!(window.FileReader && !avoidClientSideOpen)) {
                   _context5.next = 16;
                   break;
                 }
@@ -5134,9 +5156,9 @@ var svgEditorExtension_server_opensave = (function () {
 
               case 16:
                 // Change these to appropriate script file
-                openSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=load_svg';
-                importSvgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_svg';
-                importImgAction = svgEditor.curConfig.extPath + 'fileopen.php?type=import_img'; // Set up function for PHP uploader to use
+                openSvgAction = extPath + 'fileopen.php?type=load_svg';
+                importSvgAction = extPath + 'fileopen.php?type=import_svg';
+                importImgAction = extPath + 'fileopen.php?type=import_img'; // Set up function for PHP uploader to use
 
                 svgEditor.processFile = function (str64, type) {
                   var xmlstr;
@@ -5187,7 +5209,7 @@ var svgEditorExtension_server_opensave = (function () {
                 /**
                  *
                  * @param {external:jQuery} form
-                 * @returns {undefined}
+                 * @returns {void}
                  */
 
                 // Create the input elements

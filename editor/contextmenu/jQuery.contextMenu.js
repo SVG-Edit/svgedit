@@ -8,10 +8,9 @@
  *
  * @module jQueryContextMenu
  * @todo Update to latest version and adapt (and needs jQuery update as well): {@link https://github.com/swisnl/jQuery-contextMenu}
- * @version 1.01
+ * @version 1.0.1
  *
- * @license
- * Terms of Use
+ * @license (MIT OR GPL-2.0-or-later)
  *
  * This plugin is dual-licensed under the GNU General Public License
  *   and the MIT License and is copyright A Beautiful Site, LLC.
@@ -180,7 +179,7 @@ function jQueryContextMenu ($) {
     /**
     * Disable context menu items on the fly.
     * @memberof external:jQuery.fn
-    * @param {undefined|string} o Comma-separated
+    * @param {void|string} o Comma-separated
     * @returns {external:jQuery}
     */
     disableContextMenuItems (o) {
@@ -192,8 +191,8 @@ function jQueryContextMenu ($) {
       $(this).each(function () {
         if (o !== undefined) {
           const d = o.split(',');
-          for (let i = 0; i < d.length; i++) {
-            $(this).find('A[href="' + d[i] + '"]').parent().addClass('disabled');
+          for (const href of d) {
+            $(this).find('A[href="' + href + '"]').parent().addClass('disabled');
           }
         }
       });
@@ -203,7 +202,7 @@ function jQueryContextMenu ($) {
     /**
     * Enable context menu items on the fly.
     * @memberof external:jQuery.fn
-    * @param {undefined|string} o Comma-separated
+    * @param {void|string} o Comma-separated
     * @returns {external:jQuery}
     */
     enableContextMenuItems (o) {
@@ -215,8 +214,8 @@ function jQueryContextMenu ($) {
       $(this).each(function () {
         if (o !== undefined) {
           const d = o.split(',');
-          for (let i = 0; i < d.length; i++) {
-            $(this).find('A[href="' + d[i] + '"]').parent().removeClass('disabled');
+          for (const href of d) {
+            $(this).find('A[href="' + href + '"]').parent().removeClass('disabled');
           }
         }
       });

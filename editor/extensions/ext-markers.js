@@ -87,17 +87,20 @@ export default {
       const str = elem.getAttribute(attr);
       if (!str) { return null; }
       const m = str.match(/\(#(.*)\)/);
+      // const m = str.match(/\(#(?<id>.+)\)/);
+      // if (!m || !m.groups.id) {
       if (!m || m.length !== 2) {
         return null;
       }
       return svgCanvas.getElem(m[1]);
+      // return svgCanvas.getElem(m.groups.id);
     }
 
     /**
      *
      * @param {"start"|"mid"|"end"} pos
      * @param {string} id
-     * @returns {undefined}
+     * @returns {void}
      */
     function setIcon (pos, id) {
       if (id.substr(0, 1) !== '\\') { id = '\\textmarker'; }
@@ -111,7 +114,7 @@ export default {
      * Toggles context tool panel off/on. Sets the controls with the
      *   selected element's settings.
      * @param {boolean} on
-     * @returns {undefined}
+     * @returns {void}
     */
     function showPanel (on) {
       $('#marker_panel').toggle(on);
@@ -147,7 +150,7 @@ export default {
     /**
     * @param {string} id
     * @param {""|"\\nomarker"|"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} val
-    * @returns {undefined}
+    * @returns {SVGMarkerElement}
     */
     function addMarker (id, val) {
       const txtBoxBg = '#ffffff';
@@ -254,7 +257,7 @@ export default {
     function convertline (elem) {
       // this routine came from the connectors extension
       // it is needed because midpoint markers don't work with line elements
-      if (!(elem.tagName === 'line')) { return elem; }
+      if (elem.tagName !== 'line') { return elem; }
 
       // Convert to polyline to accept mid-arrow
 
@@ -295,7 +298,7 @@ export default {
 
     /**
     *
-    * @returns {undefined}
+    * @returns {void}
     */
     function setMarker () {
       const poslist = {start_marker: 'start', mid_marker: 'mid', end_marker: 'end'};
@@ -327,7 +330,7 @@ export default {
      * Called when the main system modifies an object. This routine changes
      *   the associated markers to be the same color.
      * @param {Element} elem
-     * @returns {undefined}
+     * @returns {void}
     */
     function colorChanged (elem) {
       const color = elem.getAttribute('stroke');
@@ -349,7 +352,7 @@ export default {
     * Called when the main system creates or modifies an object.
     * Its primary purpose is to create new markers for cloned objects.
     * @param {Element} el
-    * @returns {undefined}
+    * @returns {void}
     */
     function updateReferences (el) {
       $.each(mtypes, function (i, pos) {
@@ -376,7 +379,7 @@ export default {
     /**
     * @param {"start"|"mid"|"end"} pos
     * @param {string} val
-    * @returns {undefined}
+    * @returns {void}
     */
     function triggerTextEntry (pos, val) {
       $('#' + pos + '_marker').val(val);
@@ -388,7 +391,7 @@ export default {
 
     /**
     * @param {"start"|"mid"|"end"} pos
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
     async function showTextPrompt (pos) {
       let def = $('#' + pos + '_marker').val();
@@ -426,7 +429,7 @@ export default {
     // callback function for a toolbar button click
     /**
     * @param {Event} ev
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {Promise<void>} Resolves to `undefined`
     */
     async function setArrowFromButton (ev) {
       const parts = this.id.split('_');
@@ -443,7 +446,7 @@ export default {
 
     /**
     * @param {"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} id
-    * @returns {undefined}
+    * @returns {string}
     */
     function getTitle (id) {
       const {langList} = strings;

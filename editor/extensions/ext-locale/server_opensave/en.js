@@ -1,3 +1,4 @@
 export default {
-  uploading: 'Uploading...'
+  uploading: 'Uploading...',
+  hiddenframe: 'Opensave frame to store hidden values'
 };

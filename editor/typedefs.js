@@ -11,20 +11,29 @@
 */
 
 /**
-* @callback GenericCallback
-* @param {...*} args Signature dependent on the function
-* @returns {*} Return dependent on the function
+* This should only be used when the return result from a callback
+*  is not known as to type.
+* @typedef {any} ArbitraryCallbackResult
 */
 
+/**
+* @callback GenericCallback
+* @param {...any} args Signature dependent on the function
+* @returns {ArbitraryCallbackResult} Return dependent on the function
+*/
+
+/* eslint-disable jsdoc/check-types */
 /**
 * This should only be used for objects known to be potentially arbitrary in form.
 * For those whose determination has not yet been made, simply use type `object`
 * (or type `?` if it may also be a primitive).
-* @typedef {Object} ArbitraryObject
+* @typedef {object} ArbitraryObject
 */
 /**
-* @typedef {Object} ArbitraryModule
+* @typedef {object} ArbitraryModule
 */
+/* eslint-enable jsdoc/check-types */
+
 /**
 * This should only be used for objects known to be potentially arbitrary in form,
 * but not of a special type.
@@ -32,19 +41,22 @@
 * @typedef {ArbitraryObject} PlainObject
 */
 
+/* eslint-disable jsdoc/check-types */
 /**
 * This should only be used for arrays known to be potentially arbitrary in form.
 * For those whose determination has not yet been made, simply use type `Array`.
 * @typedef {Array} GenericArray
 */
+/* eslint-enable jsdoc/check-types */
+
 /**
 * This should only be used for arrays known to be potentially arbitrary in form and
 * representing arguments for passing around
 * @typedef {GenericArray} ArgumentsArray
 */
+
 /**
-* This should only be used for items known to be wholly arbitrary
-* @typedef {*} Any
+* The `Any` type should only be used for items known to be wholly arbitrary
 */
 
 /**

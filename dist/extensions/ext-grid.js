@@ -73,16 +73,10 @@ var svgEditorExtension_grid = (function () {
 
                   var rawM = 100 / uMulti;
                   var multi = 1;
-
-                  for (var i = 0; i < intervals.length; i++) {
-                    var num = intervals[i];
+                  intervals.some(function (num) {
                     multi = num;
-
-                    if (rawM <= num) {
-                      break;
-                    }
-                  }
-
+                    return rawM <= num;
+                  });
                   var bigInt = multi * uMulti; // Set the canvas size to the width of the container
 
                   hcanvas.width = bigInt;
@@ -93,8 +87,8 @@ var svgEditorExtension_grid = (function () {
                   ctx.globalAlpha = 0.2;
                   ctx.strokeStyle = svgEditor.curConfig.gridColor;
 
-                  for (var _i = 1; _i < 10; _i++) {
-                    var subD = Math.round(part * _i) + 0.5; // const lineNum = (i % 2)?12:10;
+                  for (var i = 1; i < 10; i++) {
+                    var subD = Math.round(part * i) + 0.5; // const lineNum = (i % 2)?12:10;
 
                     var lineNum = 0;
                     ctx.moveTo(subD, bigInt);
@@ -180,7 +174,7 @@ var svgEditorExtension_grid = (function () {
                 /**
                  *
                  * @param {Float} zoom
-                 * @returns {undefined}
+                 * @returns {void}
                  */
 
                 buttons = [{

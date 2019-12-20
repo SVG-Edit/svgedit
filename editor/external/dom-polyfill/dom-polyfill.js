@@ -8,7 +8,7 @@
  *
  * @param {Node} o
  * @param {module:DOMPolyfill~ParentNode|module:DOMPolyfill~ChildNode} ps
- * @returns {undefined}
+ * @returns {void}
  */
 function mixin (o, ps) {
   if (!o) return;
@@ -108,7 +108,7 @@ const ChildNode = {
   },
   remove () {
     if (!this.parentNode) { return; }
-    this.parentNode.removeChild(this);
+    this.parentNode.removeChild(this); // eslint-disable-line unicorn/prefer-node-remove
   }
 };
 

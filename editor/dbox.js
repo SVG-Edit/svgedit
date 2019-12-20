@@ -24,12 +24,18 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
     dialogContent = $('#dialog_content');
 
   /**
+  * @typedef {PlainObject} module:jQueryPluginDBox.PromiseResultObject
+  * @property {string|true} response
+  * @property {boolean} checked
+  */
+
+  /**
   * Resolves to `false` (if cancelled), for prompts and selects
   * without checkboxes, it resolves to the value of the form control. For other
   * types without checkboxes, it resolves to `true`. For checkboxes, it resolves
   * to an object with the `response` key containing the same value as the previous
   * mentioned (string or `true`) and a `checked` (boolean) property.
-  * @typedef {Promise} module:jQueryPluginDBox.PromiseResult
+  * @typedef {Promise<boolean|string|module:jQueryPluginDBox.PromiseResultObject>} module:jQueryPluginDBox.ResultPromise
   */
   /**
   * @typedef {PlainObject} module:jQueryPluginDBox.SelectOption
@@ -46,16 +52,20 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
   /**
    * Triggered upon a change of value for the select pull-down.
    * @callback module:jQueryPluginDBox.SelectChangeListener
-   * @returns {undefined}
+   * @returns {void}
    */
   /**
-  * @param {"alert"|"prompt"|"select"|"process"} type
-  * @param {string} msg
-  * @param {string} [defaultVal]
-  * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
-  * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
-  * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
-  * @returns {jQueryPluginDBox.PromiseResult}
+   * Creates a dialog of the specified type with a given message
+   *  and any defaults and type-specific metadata. Returns a `Promise`
+   *  which resolves differently depending on whether the dialog
+   *  was cancelled or okayed (with the response and any checked state).
+   * @param {"alert"|"prompt"|"select"|"process"} type
+   * @param {string} msg
+   * @param {string} [defaultVal]
+   * @param {module:jQueryPluginDBox.SelectOption[]} [opts]
+   * @param {module:jQueryPluginDBox.SelectChangeListener} [changeListener]
+   * @param {module:jQueryPluginDBox.CheckboxInfo} [checkbox]
+   * @returns {jQueryPluginDBox.ResultPromise}
   */
   function dbox (type, msg, defaultVal, opts, changeListener, checkbox) {
     dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>')
@@ -81,7 +91,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
         ctrl.bind('keydown', 'return', function () { ok.click(); });
       } else if (type === 'select') {
         const div = $('<div style="text-align:center;">');
-        ctrl = $('<select>').appendTo(div);
+        ctrl = $(`<select aria-label="${msg}">`).appendTo(div);
         if (checkbox) {
           const label = $('<label>').text(checkbox.label);
           chkbx = $('<input type="checkbox">').appendTo(label);
@@ -131,21 +141,21 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
 
   /**
   * @param {string} msg Message to alert
-  * @returns {jQueryPluginDBox.PromiseResult}
+  * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.alert = function (msg) {
     return dbox('alert', msg);
   };
   /**
   * @param {string} msg Message for which to ask confirmation
-  * @returns {jQueryPluginDBox.PromiseResult}
+  * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.confirm = function (msg) {
     return dbox('confirm', msg);
   };
   /**
   * @param {string} msg Message to indicate upon cancelable indicator
-  * @returns {jQueryPluginDBox.PromiseResult}
+  * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.process_cancel = function (msg) {
     return dbox('process', msg);
@@ -153,7 +163,7 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
   /**
   * @param {string} msg Message to accompany the prompt
   * @param {string} [defaultText=''] The default text to show for the prompt
-  * @returns {jQueryPluginDBox.PromiseResult}
+  * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.prompt = function (msg, defaultText = '') {
     return dbox('prompt', msg, defaultText);

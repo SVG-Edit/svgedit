@@ -1,8 +1,13 @@
 ignore
 screencasts
-test
 
 .github/ISSUE_TEMPLATE/bug_report.md
 build
-jsdoc-check-overly-generic-types.js
 lgtm.yml
+
+cypress/**
+cypress.env.json
+
+coverage/**
+.nyc_output
+instrumented/**

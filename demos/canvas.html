@@ -25,6 +25,7 @@
     </div>
 
     <script type="module">
+/* globals canvas */
 import SvgCanvas from '../editor/svgcanvas.js';
 
 const container = document.querySelector('#editorContainer');
@@ -39,7 +40,7 @@ const config = {
   initOpacity: 1,
   imgPath: 'editor/images/',
   dimensions: [width, height],
-  baseUnit: 'px',
+  baseUnit: 'px'
 };
 
 window.canvas = new SvgCanvas(container, config);

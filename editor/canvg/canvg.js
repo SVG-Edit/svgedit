@@ -13,7 +13,7 @@ import {canvasRGBA} from '../external/stackblur-canvas/dist/stackblur-es.js';
 
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 const isNullish = (val) => {
@@ -47,7 +47,7 @@ const isNullish = (val) => {
 * @param {HTMLCanvasElement|string} target canvas element or the id of a canvas element
 * @param {string|XMLDocument} s - svg string, url to svg file, or xml document
 * @param {module:canvg.CanvgOptions} [opts] Optional hash of options
-* @returns {Promise} All the function after the first render is completed with dom
+* @returns {Promise<XMLDocument|XMLDocument[]>} All the function after the first render is completed with dom
 */
 export const canvg = function (target, s, opts) {
   // no parameters
@@ -90,12 +90,14 @@ export const canvg = function (target, s, opts) {
   return svg.load(ctx, s);
 };
 
+/* eslint-disable jsdoc/check-types */
 /**
 * @param {module:canvg.CanvgOptions} opts
-* @returns {Object}
+* @returns {object}
 * @todo Flesh out exactly what object is returned here (after updating to latest and reincluding our changes here and those of StackBlur)
 */
 function build (opts) {
+  /* eslint-enable jsdoc/check-types */
   const svg = {opts};
 
   svg.FRAMERATE = 30;
@@ -150,7 +152,7 @@ function build (opts) {
 
   // compress spaces
   svg.compressSpaces = function (s) {
-    return s.replace(/[\s\r\t\n]+/gm, ' ');
+    return s.replace(/\s+/gm, ' ');
   };
 
   // ajax
@@ -300,7 +302,7 @@ function build (opts) {
     }
 
     getUnits () {
-      return String(this.value).replace(/[0-9.-]/g, '');
+      return String(this.value).replace(/[\d.-]/g, '');
     }
 
     // get the length as pixels
@@ -1252,8 +1254,8 @@ function build (opts) {
         .replace(/,/gm, ' ') // get rid of all commas
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
         .replace(/([MmZzLlHhVvCcSsQqTtAa])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from commands
-        .replace(/([MmZzLlHhVvCcSsQqTtAa])([^\s])/gm, '$1 $2') // separate commands from points
-        .replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from points
+        .replace(/([MmZzLlHhVvCcSsQqTtAa])(\S)/gm, '$1 $2') // separate commands from points
+        .replace(/(\S)([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2') // separate commands from points
         .replace(/(\d)([+-])/gm, '$1 $2') // separate digits when no comma
         .replace(/(\.\d*)(\.)/gm, '$1 $2') // separate digits when no comma
         .replace(/([Aa](\s+\d+)(\s+\d+)(\s+\d+))\s+([01])\s*([01])/gm, '$1 $5 $6 '); // shorthand elliptical arc path syntax
@@ -1879,7 +1881,7 @@ function build (opts) {
         }
         return false;
       }
-      this.duration = this.duration + delta;
+      this.duration += delta;
 
       // if we're past the begin time
       let updated = false;
@@ -2365,7 +2367,7 @@ function build (opts) {
         css += nodeValue;
       });
       // remove comments
-      css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^[\s]*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
+      css = css.replace(/(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(^\s*\/\/.*)/gm, ''); // eslint-disable-line unicorn/no-unsafe-regex
       // replace whitespace
       css = svg.compressSpaces(css);
       const cssDefs = css.split('}');
@@ -2599,7 +2601,7 @@ function build (opts) {
   * @param {Float} width
   * @param {Float} height
   * @param {Integer} rgba
-  * @returns {undefined}
+  * @returns {Integer}
   */
   function imGet (img, x, y, width, height, rgba) {
     return img[y * width * 4 + x * 4 + rgba];
@@ -2613,7 +2615,7 @@ function build (opts) {
   * @param {Float} height
   * @param {Integer} rgba
   * @param {Float} val
-  * @returns {undefined}
+  * @returns {void}
   */
   function imSet (img, x, y, width, height, rgba, val) {
     img[y * width * 4 + x * 4 + rgba] = val;

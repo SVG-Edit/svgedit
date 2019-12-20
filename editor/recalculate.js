@@ -36,13 +36,13 @@ let context_;
 /**
  * @function module:recalculate.EditorContext#setStartTransform
  * @param {string} transform
- * @returns {undefined}
+ * @returns {void}
  */
 
 /**
 * @function module:recalculate.init
 * @param {module:recalculate.EditorContext} editorContext
-* @returns {undefined}
+* @returns {void}
 */
 export const init = function (editorContext) {
   context_ = editorContext;
@@ -54,7 +54,7 @@ export const init = function (editorContext) {
 * @param {string} attr - The clip-path attribute value with the clipPath's ID
 * @param {Float} tx - The translation's x value
 * @param {Float} ty - The translation's y value
-* @returns {undefined}
+* @returns {void}
 */
 export const updateClipPath = function (attr, tx, ty) {
   const path = getRefElem(attr).firstChild;
@@ -273,7 +273,7 @@ export const recalculateDimensions = function (selected) {
       if (Math.abs(a) > (1.0e-10)) {
         s = Math.sin(a) / (1 - Math.cos(a));
       } else {
-        // FIXME: This blows up if the angle is exactly 0!
+        // TODO: This blows up if the angle is exactly 0!
         s = 2 / a;
       }
       for (let i = 0; i < tlist.numberOfItems; ++i) {
@@ -340,14 +340,14 @@ export const recalculateDimensions = function (selected) {
 
           const angle = getRotationAngle(child);
           oldStartTransform = context_.getStartTransform();
-          const childxforms = [];
+          // const childxforms = [];
           context_.setStartTransform(child.getAttribute('transform'));
           if (angle || hasMatrixTransform(childTlist)) {
             const e2t = svgroot.createSVGTransform();
             e2t.setMatrix(matrixMultiply(tm, sm, tmn, m));
             childTlist.clear();
             childTlist.appendItem(e2t);
-            childxforms.push(e2t);
+            // childxforms.push(e2t);
           // if not rotated or skewed, push the [T][S][-T] down to the child
           } else {
             // update the transform list with translate,scale,translate
@@ -377,9 +377,9 @@ export const recalculateDimensions = function (selected) {
             childTlist.appendItem(translateBack);
             childTlist.appendItem(scale);
             childTlist.appendItem(translateOrigin);
-            childxforms.push(translateBack);
-            childxforms.push(scale);
-            childxforms.push(translateOrigin);
+            // childxforms.push(translateBack);
+            // childxforms.push(scale);
+            // childxforms.push(translateOrigin);
             // logMatrix(translateBack.matrix);
             // logMatrix(scale.matrix);
           } // not rotated
@@ -599,7 +599,7 @@ export const recalculateDimensions = function (selected) {
     }
   // else, it's a non-group
   } else {
-    // FIXME: box might be null for some elements (<metadata> etc), need to handle this
+    // TODO: box might be null for some elements (<metadata> etc), need to handle this
     const box = getBBox(selected);
 
     // Paths (and possbly other shapes) will have no BBox while still in <defs>,
@@ -623,7 +623,7 @@ export const recalculateDimensions = function (selected) {
       const a = angle * Math.PI / 180;
       const s = (Math.abs(a) > (1.0e-10))
         ? Math.sin(a) / (1 - Math.cos(a))
-        // FIXME: This blows up if the angle is exactly 0!
+        // TODO: This blows up if the angle is exactly 0!
         : 2 / a;
 
       for (let i = 0; i < tlist.numberOfItems; ++i) {

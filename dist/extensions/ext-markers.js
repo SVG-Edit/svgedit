@@ -337,7 +337,7 @@ var svgEditorExtension_markers = (function () {
                 convertline = function _ref6(elem) {
                   // this routine came from the connectors extension
                   // it is needed because midpoint markers don't work with line elements
-                  if (!(elem.tagName === 'line')) {
+                  if (elem.tagName !== 'line') {
                     return elem;
                   } // Convert to polyline to accept mid-arrow
 
@@ -535,13 +535,14 @@ var svgEditorExtension_markers = (function () {
                     return null;
                   }
 
-                  var m = str.match(/\(#(.*)\)/);
+                  var m = str.match(/\(#(.*)\)/); // const m = str.match(/\(#(?<id>.+)\)/);
+                  // if (!m || !m.groups.id) {
 
                   if (!m || m.length !== 2) {
                     return null;
                   }
 
-                  return svgCanvas.getElem(m[1]);
+                  return svgCanvas.getElem(m[1]); // return svgCanvas.getElem(m.groups.id);
                 };
 
                 _context3.next = 17;

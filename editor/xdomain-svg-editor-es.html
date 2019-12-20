@@ -2,34 +2,39 @@
 <!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
     <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <!-- STYLESHEETS (others loaded dynamically) -->
     <style id="styleoverrides" media="screen"></style>
 
     <!-- SCRIPTS -->
+
+    <!-- As yet no ES6 Module support -->
     <!--{if jquery_release}>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <!{else}-->
     <script src="jquery.min.js"></script>
     <!--{endif}-->
+
+    <!-- Lacking browser support -->
     <script nomodule="" src="redirect-on-no-module-support.js"></script>
-    <!-- We keep this next module external to avoid the need to
-      load further scripts if not supported -->
     <script type="module" src="redirect-on-lacking-support.js"></script>
-    <!-- always minified scripts -->
+
+    <!-- As yet no ES6 Module support -->
     <script src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
-    <!-- The following could be removed for more modern browsers -->
+
+    <!-- Browser polyfills -->
     <script src="external/dom-polyfill/dom-polyfill.js"></script>
-    <!-- The following could be removed for more modern browsers; currently
-      using for at least `String.prototype.includes`, `Array.prototype.includes`,
-      `String.prototype.startsWith` -->
-    <script src="external/@babel/polyfill/polyfill.min.js"></script>
-    <!-- If you do not wish to add extensions by URL, you can load them
-    by creating the following file and adding by calls to svgEditor.setConfig -->
+
+    <!-- ES6+ polyfills (Babel) -->
+    <script src="external/core-js-bundle/minified.js"></script>
+    <script src="external/regenerator-runtime/runtime.js"></script>
+
+    <!-- If you do not wish to add extensions by URL, you can add calls
+      within the following file to svgEditor.setConfig -->
     <script type="module" src="xdomain-svgedit-config-es.js"></script>
 
     <!-- FEEDS -->
@@ -39,12 +44,13 @@
     <link rel="alternate" type="application/atom+xml"
       title="SVG-edit Updates (Commits)"
       href="https://github.com/SVG-Edit/svgedit/commits/master.atom"/>
+
     <title>SVG-edit</title>
 </head>
 <body>
 
 <div id="svg_container" style="visibility: hidden;">
-<div id="svg_editor">
+<div id="svg_editor" role="main">
   <div id="rulers">
     <div id="ruler_corner"></div>
     <div id="ruler_x">

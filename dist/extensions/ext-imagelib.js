@@ -237,7 +237,7 @@ var svgEditorExtension_imagelib = (function () {
                 });
                 /**
                 *
-                * @returns {undefined}
+                * @returns {void}
                 */
 
                 pending = {};
@@ -365,6 +365,7 @@ var svgEditorExtension_imagelib = (function () {
                             return $.process_cancel(message);
 
                           case 39:
+                            // eslint-disable-next-line require-atomic-updates
                             transferStopped = true; // Should a message be sent back to the frame?
 
                             $('#dialog_box').hide();
@@ -542,7 +543,7 @@ var svgEditorExtension_imagelib = (function () {
                 }(), true);
                 /**
                 * @param {boolean} show
-                * @returns {undefined}
+                * @returns {void}
                 */
 
                 buttons = [{

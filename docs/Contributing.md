@@ -5,6 +5,7 @@
   - `Security fix: `
   - `Known regression: `
   - `Breaking change: `
+  - `Deprecated:`
   - `Compatibility fix: `
   - `Fix: `
   - `Fix (<component>): ` - Component may be an extension, locale, etc.

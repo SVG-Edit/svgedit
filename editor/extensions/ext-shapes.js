@@ -63,7 +63,7 @@ export default {
 
     /**
     *
-    * @returns {undefined}
+    * @returns {void}
     */
     function loadIcons () {
       $('#shape_buttons').empty().append(curLib.buttons);
@@ -71,7 +71,7 @@ export default {
 
     /**
     * @typedef {PlainObject} module:Extension.Shapes.Shapes
-    * @property {PlainObject.<string, string>} data
+    * @property {PlainObject<string, string>} data
     * @property {Integer} [size]
     * @property {boolean} [fill]
     */
@@ -79,7 +79,7 @@ export default {
     /**
     * @param {string|"basic"} cat Category ID
     * @param {module:Extension.Shapes.Shapes} shapes
-    * @returns {undefined}
+    * @returns {void}
     */
     function makeButtons (cat, shapes) {
       const size = curLib.size || 300;
@@ -118,7 +118,7 @@ export default {
 
     /**
     * @param {string|"basic"} catId
-    * @returns {undefined}
+    * @returns {void}
     */
     function loadLibrary (catId) {
       const lib = library[catId];

@@ -93,7 +93,7 @@ Slide.prototype = {
   _makeCounter () {
     if (!this._count || !this._node) { return; }
     const c = doc.createElement('span');
-    c.innerHTML = this._count;
+    c.textContent = this._count;
     c.className = 'counter';
     this._node.append(c);
   },
@@ -180,7 +180,7 @@ const SlideShow = function (slides) {
 SlideShow.prototype = {
   _slides: [],
   _update (dontPush) {
-    document.querySelector('#presentation-counter').innerText = this.current;
+    document.querySelector('#presentation-counter').textContent = this.current;
     if (history.pushState) {
       if (!dontPush) {
         history.pushState(this.current, 'Slide ' + this.current, '#slide' + this.current);
@@ -244,7 +244,7 @@ SlideShow.prototype = {
     }
   },
   handleKeys (e) {
-    if ((/^(input|textarea)$/i).test(e.target.nodeName)) return;
+    if ((/^(?:input|textarea)$/i).test(e.target.nodeName)) return;
 
     switch (e.keyCode) {
     case 37: // left arrow
@@ -286,7 +286,7 @@ const slides = document.querySelectorAll('.slide');
 
 /**
  * Show or hide the counters.
- * @returns {undefined}
+ * @returns {void}
  */
 function toggleCounter () {
   [...counters].forEach(function (el) {
@@ -296,7 +296,7 @@ function toggleCounter () {
 
 /**
  * Add or remove `reduced` (size) class.
- * @returns {undefined}
+ * @returns {void}
  */
 function toggleSize () {
   [...slides].forEach(function (el) {
@@ -310,7 +310,7 @@ function toggleSize () {
 
 /**
  * Add or remove `no-transitions` class.
- * @returns {undefined}
+ * @returns {void}
  */
 function toggleTransitions () {
   [...slides].forEach(function (el) {
@@ -324,7 +324,7 @@ function toggleTransitions () {
 
 /**
  * Add or remove `no-gradients` class.
- * @returns {undefined}
+ * @returns {void}
  */
 function toggleGradients () {
   [...slides].forEach(function (el) {

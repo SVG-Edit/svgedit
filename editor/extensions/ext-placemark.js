@@ -55,7 +55,7 @@ export default {
     /**
      *
      * @param {boolean} on
-     * @returns {undefined}
+     * @returns {void}
      */
     function showPanel (on) {
       $('#placemark_panel').toggle(on);
@@ -70,17 +70,21 @@ export default {
       if (!elem) { return null; }
       const str = elem.getAttribute(attr);
       if (!str) { return null; }
+
+      // const m = str.match(/\(#(?<id>.+)\)/);
+      // if (!m || !m.groups.id) {
       const m = str.match(/\(#(.*)\)/);
       if (!m || m.length !== 2) {
         return null;
       }
       return svgCanvas.getElem(m[1]);
+      // return svgCanvas.getElem(m.groups.id);
     }
 
     /**
      * Called when text is changed.
      * @param {string} txt
-     * @returns {undefined}
+     * @returns {void}
      */
     function updateText (txt) {
       const items = txt.split(';');
@@ -98,7 +102,7 @@ export default {
     /**
      * Called when font is changed.
      * @param {string} font
-     * @returns {undefined}
+     * @returns {void}
      */
     function updateFont (font) {
       font = font.split(' ');
@@ -118,7 +122,7 @@ export default {
     /**
     * @param {string} id
     * @param {""|"\\nomarker"|"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"textmarker_top"|"textmarker_bottom"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} val
-    * @returns {undefined}
+    * @returns {SVGMarkerElement}
     */
     function addMarker (id, val) {
       let marker = svgCanvas.getElem(id);
@@ -177,7 +181,7 @@ export default {
     /**
     * @param {Element} el
     * @param {string} val
-    * @returns {undefined}
+    * @returns {void}
     */
     function setMarker (el, val) {
       const markerName = 'marker-start';
@@ -199,7 +203,7 @@ export default {
      * Called when the main system modifies an object. This routine changes
      *   the associated markers to be the same color.
      * @param {Element} el
-     * @returns {undefined}
+     * @returns {void}
     */
     function colorChanged (el) {
       const color = el.getAttribute('stroke');
@@ -219,7 +223,7 @@ export default {
     * Called when the main system creates or modifies an object.
     * Its primary purpose is to create new markers for cloned objects.
     * @param {Element} el
-    * @returns {undefined}
+    * @returns {void}
     */
     function updateReferences (el) {
       const id = 'placemark_marker_' + el.id;
@@ -240,7 +244,7 @@ export default {
     }
     /**
     * @param {Event} ev
-    * @returns {Promise} Resolves to `undefined`
+    * @returns {void}
     */
     function setArrowFromButton (ev) {
       const parts = this.id.split('_');
@@ -251,7 +255,7 @@ export default {
 
     /**
     * @param {"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} id
-    * @returns {undefined}
+    * @returns {string}
     */
     function getTitle (id) {
       const {langList} = strings;

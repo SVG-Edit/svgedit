@@ -275,7 +275,8 @@ var svgEditorExtension_star = (function () {
                       }
                     }
                   },
-                  elementChanged: function elementChanged(opts) {}
+                  elementChanged: function elementChanged(opts) {// const elem = opts.elems[0];
+                  }
                 });
 
               case 11:

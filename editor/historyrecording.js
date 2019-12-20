@@ -141,7 +141,7 @@ class HistoryRecordingService {
    * Private function to add a command to the history or current batch command.
    * @private
    * @param {Command} cmd
-   * @returns {module:history.HistoryRecordingService|undefined}
+   * @returns {module:history.HistoryRecordingService|void}
    */
   addCommand_ (cmd) {
     if (!this.undoManager_) { return this; }

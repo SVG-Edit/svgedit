@@ -37,7 +37,7 @@ const menuItemIsValid = function (menuItem) {
 * @function module:contextmenu.add
 * @param {module:contextmenu.MenuItem} menuItem
 * @throws {Error|TypeError}
-* @returns {undefined}
+* @returns {void}
 */
 export const add = function (menuItem) {
   // menuItem: {id, label, shortcut, action}
@@ -73,7 +73,7 @@ export const getCustomHandler = function (handlerKey) {
 
 /**
 * @param {module:contextmenu.MenuItem} menuItem
-* @returns {undefined}
+* @returns {void}
 */
 const injectExtendedContextMenuItemIntoDom = function (menuItem) {
   if (!Object.keys(contextMenuExtensions).length) {
@@ -89,7 +89,7 @@ const injectExtendedContextMenuItemIntoDom = function (menuItem) {
 
 /**
 * @function module:contextmenu.injectExtendedContextMenuItemsIntoDom
-* @returns {undefined}
+* @returns {void}
 */
 export const injectExtendedContextMenuItemsIntoDom = function () {
   Object.values(contextMenuExtensions).forEach((menuItem) => {
@@ -98,6 +98,6 @@ export const injectExtendedContextMenuItemsIntoDom = function () {
 };
 /**
 * @function module:contextmenu.resetCustomMenus
-* @returns {undefined}
+* @returns {void}
 */
 export const resetCustomMenus = function () { contextMenuExtensions = {}; };

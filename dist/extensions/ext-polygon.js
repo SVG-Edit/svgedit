@@ -290,7 +290,8 @@ var svgEditorExtension_polygon = (function () {
                       }
                     }
                   },
-                  elementChanged: function elementChanged(opts) {}
+                  elementChanged: function elementChanged(opts) {// const elem = opts.elems[0];
+                  }
                 });
 
               case 13:

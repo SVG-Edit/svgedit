@@ -32,7 +32,7 @@ function toFixedNumeric (value, precision) {
 
 /**
  * Whether a value is `null` or `undefined`.
- * @param {Any} val
+ * @param {any} val
  * @returns {boolean}
  */
 const isNullish = (val) => {
@@ -74,7 +74,7 @@ const jPicker = function ($) {
   * @memberof module:jPicker
   * @param {external:jQuery} bar
   * @param {module:jPicker.SliderOptions} options
-  * @returns {undefined}
+  * @returns {void}
   */
   class Slider {
     constructor (bar, options) {
@@ -82,7 +82,7 @@ const jPicker = function ($) {
       /**
        * Fire events on the supplied `context`
        * @param {module:jPicker.JPickerInit} context
-       * @returns {undefined}
+       * @returns {void}
        */
       function fireChangeEvents (context) {
         changeEvents.forEach((changeEvent) => {
@@ -93,7 +93,7 @@ const jPicker = function ($) {
       /**
        * Bind the mousedown to the bar not the arrow for quick snapping to the clicked location.
        * @param {external:jQuery.Event} e
-       * @returns {undefined}
+       * @returns {void}
        */
       function mouseDown (e) {
         const off = bar.offset();
@@ -136,7 +136,7 @@ const jPicker = function ($) {
       /**
        * Calculate mouse position and set value within the current range.
        * @param {Event} e
-       * @returns {undefined}
+       * @returns {void}
        */
       function setValuesFromMousePosition (e) {
         const barW = bar.w, // local copies for YUI compressor
@@ -155,7 +155,7 @@ const jPicker = function ($) {
       }
       /**
        *
-       * @returns {undefined}
+       * @returns {void}
        */
       function draw () {
         const
@@ -192,7 +192,7 @@ const jPicker = function ($) {
        * @param {?("xy"|"x"|"y")} name
        * @param {module:math.XYObject} value
        * @param {module:jPicker.Slider} context
-       * @returns {module:math.XYObject|Float|undefined}
+       * @returns {module:math.XYObject|Float|void}
        */
       function val (name, value, context) {
         const set = value !== undefined;
@@ -263,7 +263,7 @@ const jPicker = function ($) {
        *
        * @param {"minx"|"maxx"|"rangex"|"miny"|"maxy"|"rangey"|"all"} name
        * @param {module:jPicker.MinMaxRangeXY} value
-       * @returns {module:jPicker.MinMaxRangeXY|module:jPicker.MinMaxRangeX|module:jPicker.MinMaxRangeY|undefined}
+       * @returns {module:jPicker.MinMaxRangeXY|module:jPicker.MinMaxRangeX|module:jPicker.MinMaxRangeY|void}
        */
       function range (name, value) {
         const set = value !== undefined;
@@ -336,14 +336,14 @@ const jPicker = function ($) {
       }
       /**
       * @param {GenericCallback} callback
-      * @returns {undefined}
+      * @returns {void}
       */
       function bind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback === 'function') changeEvents.push(callback);
       }
       /**
       * @param {GenericCallback} callback
-      * @returns {undefined}
+      * @returns {void}
       */
       function unbind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback !== 'function') return;
@@ -352,7 +352,7 @@ const jPicker = function ($) {
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function destroy () {
         // unbind all possible events and null objects
@@ -406,7 +406,6 @@ const jPicker = function ($) {
    * @param {external:jQuery.jPicker.Color} color
    * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
    * @param {Float} alphaPrecision
-   * @constructor
    */
   class ColorValuePicker {
     constructor (picker, color, bindedHex, alphaPrecision) {
@@ -416,7 +415,7 @@ const jPicker = function ($) {
       /**
        *
        * @param {Event} e
-       * @returns {Event|false|undefined}
+       * @returns {Event|false|void}
        */
       function keyDown (e) {
         if (e.target.value === '' && e.target !== hex.get(0) && ((!isNullish(bindedHex) && e.target !== bindedHex.get(0)) || isNullish(bindedHex))) return undefined;
@@ -512,7 +511,7 @@ const jPicker = function ($) {
       // input box key up - validate value and set color
       /**
       * @param {Event} e
-      * @returns {Event|undefined}
+      * @returns {Event|void}
       * @todo Why is this returning an event?
       */
       function keyUp (e) {
@@ -550,17 +549,17 @@ const jPicker = function ($) {
           color.val('v', value.val(), e.target);
           break;
         case hex.get(0):
-          hex.val(hex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
+          hex.val(hex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6));
           bindedHex && bindedHex.val(hex.val());
           color.val('hex', hex.val() !== '' ? hex.val() : null, e.target);
           break;
         case bindedHex && bindedHex.get(0):
-          bindedHex.val(bindedHex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 6));
+          bindedHex.val(bindedHex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6));
           hex.val(bindedHex.val());
           color.val('hex', bindedHex.val() !== '' ? bindedHex.val() : null, e.target);
           break;
         case ahex && ahex.get(0):
-          ahex.val(ahex.val().replace(/[^a-fA-F0-9]/g, '').toLowerCase().substring(0, 2));
+          ahex.val(ahex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2));
           color.val('a', !isNullish(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
           break;
         }
@@ -569,7 +568,7 @@ const jPicker = function ($) {
       // input box blur - reset to original if value empty
       /**
       * @param {Event} e
-      * @returns {undefined}
+      * @returns {void}
       */
       function blur (e) {
         if (!isNullish(color.val())) {
@@ -625,7 +624,7 @@ const jPicker = function ($) {
       /**
       * @param {external:jQuery} ui
       * @param {Element} context
-      * @returns {undefined}
+      * @returns {void}
       */
       function colorChanged (ui, context) {
         const all = ui.val('all');
@@ -642,7 +641,7 @@ const jPicker = function ($) {
       }
       /**
       * Unbind all events and null objects.
-      * @returns {undefined}
+      * @returns {void}
       */
       function destroy () {
         red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).unbind('keyup', keyUp).unbind('blur', blur);
@@ -711,23 +710,24 @@ const jPicker = function ($) {
     * @class
     * @memberof external:jQuery.jPicker
     * @param {module:jPicker.JPickerInit} init
+    * @returns {external:jQuery.jPicker.Color}
     */
     Color: function (init) { // eslint-disable-line object-shorthand
       const that = this;
       /**
        *
        * @param {module:jPicker.Slider} context
-       * @returns {undefined}
+       * @returns {void}
        */
       function fireChangeEvents (context) {
         for (let i = 0; i < changeEvents.length; i++) changeEvents[i].call(that, that, context);
       }
 
       /**
-       * @param {string|"ahex"|"hex"|"all"|""|null|undefined} name String composed of letters "r", "g", "b", "a", "h", "s", and/or "v"
+       * @param {string|"ahex"|"hex"|"all"|""|null|void} name String composed of letters "r", "g", "b", "a", "h", "s", and/or "v"
        * @param {module:jPicker.RGBA|module:jPicker.JPickerInit|string} [value]
        * @param {external:jQuery.jPicker.Color} context
-       * @returns {module:jPicker.JPickerInit|string|null|undefined}
+       * @returns {module:jPicker.JPickerInit|string|null|void}
        */
       function val (name, value, context) {
         // Kind of ugly
@@ -954,14 +954,14 @@ const jPicker = function ($) {
       }
       /**
       * @param {GenericCallback} callback
-      * @returns {undefined}
+      * @returns {void}
       */
       function bind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback === 'function') changeEvents.push(callback);
       }
       /**
       * @param {GenericCallback} callback
-      * @returns {undefined}
+      * @returns {void}
       */
       function unbind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
         if (typeof callback !== 'function') return;
@@ -972,7 +972,7 @@ const jPicker = function ($) {
       }
       /**
       * Unset `changeEvents`
-      * @returns {undefined}
+      * @returns {void}
       */
       function destroy () {
         changeEvents = null;
@@ -1056,7 +1056,7 @@ const jPicker = function ($) {
       */
       validateHex (hex) {
         // if (typeof hex === 'object') return '';
-        hex = hex.toLowerCase().replace(/[^a-f0-9]/g, '');
+        hex = hex.toLowerCase().replace(/[^a-f\d]/g, '');
         if (hex.length > 8) hex = hex.substring(0, 8);
         return hex;
       },
@@ -1193,19 +1193,19 @@ const jPicker = function ($) {
   * @callback module:jPicker.LiveCallback
   * @param {external:jQuery} ui
   * @param {Element} context
-  * @returns {undefined}
+  * @returns {void}
   */
   /**
   * @callback module:jPicker.CommitCallback
   * @param {external:jQuery.jPicker.Color} activeColor
   * @param {external:jQuery} okButton
-  * @returns {undefined} Return value not used.
+  * @returns {void} Return value not used.
   */
   /**
    * @callback module:jPicker.CancelCallback
    * @param {external:jQuery.jPicker.Color} activeColor
    * @param {external:jQuery} cancelButton
-   * @returns {undefined} Return value not used.
+   * @returns {void} Return value not used.
    */
   /**
   * While it would seem this should specify the name `jPicker` for JSDoc, that doesn't
@@ -1250,7 +1250,7 @@ const jPicker = function ($) {
        *
        * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode
        * @throws {Error} Invalid mode
-       * @returns {undefined}
+       * @returns {void}
        */
       function setColorMode (colorMode) {
         const {active} = color, // local copies for YUI compressor
@@ -1406,7 +1406,7 @@ const jPicker = function ($) {
        * Update color when user changes text values.
        * @param {external:jQuery} ui
        * @param {?module:jPicker.Slider} context
-       * @returns {undefined}
+       * @returns {void}
       */
       function activeColorChanged (ui, context) {
         if (isNullish(context) || (context !== colorBar && context !== colorMap)) positionMapAndBarArrows.call(that, ui, context);
@@ -1421,7 +1421,7 @@ const jPicker = function ($) {
        * User has dragged the ColorMap pointer.
        * @param {external:jQuery} ui
        * @param {?module:jPicker.Slider} context
-       * @returns {undefined}
+       * @returns {void}
       */
       function mapValueChanged (ui, context) {
         const {active} = color;
@@ -1454,7 +1454,7 @@ const jPicker = function ($) {
        * User has dragged the ColorBar slider.
        * @param {external:jQuery} ui
        * @param {?module:jPicker.Slider} context
-       * @returns {undefined}
+       * @returns {void}
       */
       function colorBarValueChanged (ui, context) {
         const {active} = color;
@@ -1488,7 +1488,7 @@ const jPicker = function ($) {
        * Position map and bar arrows to match current color.
        * @param {external:jQuery} ui
        * @param {?module:jPicker.Slider} context
-       * @returns {undefined}
+       * @returns {void}
       */
       function positionMapAndBarArrows (ui, context) {
         if (context !== colorMap) {
@@ -1554,7 +1554,7 @@ const jPicker = function ($) {
       }
       /**
       * @param {external:jQuery} ui
-      * @returns {undefined}
+      * @returns {void}
       */
       function updatePreview (ui) {
         try {
@@ -1565,7 +1565,7 @@ const jPicker = function ($) {
       }
       /**
       * @param {external:jQuery} ui
-      * @returns {undefined}
+      * @returns {void}
       */
       function updateMapVisuals (ui) {
         switch (settings.color.mode) {
@@ -1596,7 +1596,7 @@ const jPicker = function ($) {
       }
       /**
       * @param {external:jQuery} ui
-      * @returns {undefined}
+      * @returns {void}
       */
       function updateBarVisuals (ui) {
         switch (settings.color.mode) {
@@ -1650,7 +1650,7 @@ const jPicker = function ($) {
       /**
       * @param {external:jQuery} el
       * @param {string} [c="transparent"]
-      * @returns {undefined}
+      * @returns {void}
       */
       function setBG (el, c) {
         el.css({backgroundColor: (c && c.length === 6 && '#' + c) || 'transparent'});
@@ -1659,7 +1659,7 @@ const jPicker = function ($) {
       /**
       * @param {external:jQuery} img
       * @param {string} src The image source
-      * @returns {undefined}
+      * @returns {void}
       */
       function setImg (img, src) {
         if (isLessThanIE7 && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
@@ -1670,7 +1670,7 @@ const jPicker = function ($) {
       /**
       * @param {external:jQuery} img
       * @param {Float} y
-      * @returns {undefined}
+      * @returns {void}
       */
       function setImgLoc (img, y) {
         img.css({top: y + 'px'});
@@ -1678,7 +1678,7 @@ const jPicker = function ($) {
       /**
       * @param {external:jQuery} obj
       * @param {Float} alpha
-      * @returns {undefined}
+      * @returns {void}
       */
       function setAlpha (obj, alpha) {
         obj.css({visibility: alpha > 0 ? 'visible' : 'hidden'});
@@ -1711,21 +1711,21 @@ const jPicker = function ($) {
 
       /**
       * Revert color to original color when opened.
-      * @returns {undefined}
+      * @returns {void}
       */
       function revertColor () {
         color.active.val('ahex', color.current.val('ahex'));
       }
       /**
       * Commit the color changes.
-      * @returns {undefined}
+      * @returns {void}
       */
       function commitColor () {
         color.current.val('ahex', color.active.val('ahex'));
       }
       /**
       * @param {Event} e
-      * @returns {undefined}
+      * @returns {void}
       */
       function radioClicked (e) {
         $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
@@ -1733,14 +1733,14 @@ const jPicker = function ($) {
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function currentClicked () {
         revertColor.call(that);
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function cancelClicked () {
         revertColor.call(that);
@@ -1749,7 +1749,7 @@ const jPicker = function ($) {
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function okClicked () {
         commitColor.call(that);
@@ -1758,14 +1758,14 @@ const jPicker = function ($) {
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function iconImageClicked () {
         show.call(that);
       }
       /**
       * @param {external:jQuery} ui
-      * @returns {undefined}
+      * @returns {void}
       */
       function currentColorChanged (ui) {
         const hex = ui.val('hex');
@@ -1774,7 +1774,7 @@ const jPicker = function ($) {
       }
       /**
       * @param {external:jQuery} ui
-      * @returns {undefined}
+      * @returns {void}
       */
       function expandableColorChanged (ui) {
         const hex = ui.val('hex');
@@ -1790,7 +1790,7 @@ const jPicker = function ($) {
       }
       /**
       * @param {Event} e
-      * @returns {undefined}
+      * @returns {void}
       */
       function moveBarMouseDown (e) {
         // const {element} = settings.window, // local copies for YUI compressor
@@ -1844,13 +1844,13 @@ const jPicker = function ($) {
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function show () {
         color.current.val('ahex', color.active.val('ahex'));
         /**
         *
-        * @returns {undefined}
+        * @returns {void}
         */
         function attachIFrame () {
           if (!settings.window.expandable || $.support.boxModel) return;
@@ -1884,12 +1884,12 @@ const jPicker = function ($) {
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function hide () {
         /**
         *
-        * @returns {undefined}
+        * @returns {void}
         */
         function removeIFrame () {
           if (settings.window.expandable) container.css({zIndex: 10});
@@ -1911,7 +1911,7 @@ const jPicker = function ($) {
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function initialize () {
         const win = settings.window,
@@ -1930,7 +1930,7 @@ const jPicker = function ($) {
         else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
         const controlHtml = `<table class="jPicker" cellpadding="0" cellspacing="0">
           <tbody>
-            ${win.expandable ? `<tr><td class="Move" colspan="5">&nbsp;</td></tr>` : ''}
+            ${win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : ''}
             <tr>
               <td rowspan="9"><h2 class="Title">${win.title || localization.text.title}</h2><div class="Map"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><img src="${images.clientPath + images.colorMap.arrow.file}" class="Arrow"/></div></td>
               <td rowspan="9"><div class="Bar"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><span class="Map4">&nbsp;</span><span class="Map5">&nbsp;</span><span class="Map6">&nbsp;</span><img src="${images.clientPath + images.colorBar.arrow.file}" class="Arrow"/></div></td>
@@ -2087,7 +2087,9 @@ const jPicker = function ($) {
           let html = '';
           for (let i = 0; i < color.quickList.length; i++) {
             /* if default colors are hex strings, change them to color objects */
-            if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') color.quickList[i] = new Color({hex: color.quickList[i]});
+            if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') {
+              color.quickList[i] = new Color({hex: color.quickList[i]});
+            }
             const alpha = color.quickList[i].val('a');
             let ahex = color.quickList[i].val('ahex');
             if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
@@ -2125,7 +2127,7 @@ const jPicker = function ($) {
       }
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function destroy () {
         container.find('td.Radio input').unbind('click', radioClicked);
@@ -2167,6 +2169,7 @@ const jPicker = function ($) {
         for (let i = 0; i < List.length; i++) {
           if (List[i] === that) {
             List.splice(i, 1);
+            i--; // Decrement to ensure we don't miss next item (lgtm warning)
           }
         }
       }

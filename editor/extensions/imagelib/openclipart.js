@@ -11,7 +11,7 @@ const jsVoid = 'javascript: void(0);'; // eslint-disable-line no-script-url
 /**
  * Shows results after query submission.
  * @param {string} url
- * @returns {undefined}
+ * @returns {Promise<void>}
  */
 async function processResults (url) {
   /**

@@ -3,23 +3,13 @@
 ## Prepare
 
 1. `npm run browser-test` - Ensure build steps occur and tests are passing
-1. `npm test` - This should also be run, though currently accessibility tests
-    are failing
-1. `npm run build-doc` - Ensure JSDoc can build and is available for site
+1. `npm start` and in another console window, `npm test` - This should
+    also be run, though currently accessibility tests are failing.
+1. `npm run build-docs` - Ensure JSDoc can build and is available for site
     build (though not added to `master`, will be copied over in `gh-pages`
     steps and used in `npm publish` step).
-1. `npm run types-doc` - For JSDoc, we ensure that a minimum of generic types
-    have been added (e.g., "number" should instead be "Float" or "Array",
-    and "object", "function", or "array" should be replaced by more specific
-    `@interface`s, `@typdef`s, or `@callback`. Deriving types can use
-    `PlainObject` or `GenericArray` to indicate the simple base type was
-    intentional. `*` should also be checked. The script reports all failing
-    matches within `editor`. There should be none (there is currently one
-    due to our needing to move the file to its own module).
-1. `npm pack` to preview which files will be included once published and
-    taking into account `.npmignore`. Take care to remove the `.tgz` tarball
-    file that it creates so it is not itself included during the
-    publishing step.
+1. `npm pack --dry-run` to preview which files will be included once
+    published and taking into account `.npmignore`.
 
 ## Update the main project
 <!--
@@ -30,7 +20,7 @@
 1. Add new release info to `Recent news` section in README
 1. Commit these changes
 <!-- with `git commit -m "Updating Makefile and CHANGES for release X.Y.Z"`-->.
-1. Tag the version, prefixed by "v", e.g., `v4.0.1`.
+1. Tag the version, prefixed by "v", e.g., `v5.1.0`.
 
 The above steps can be done on a fork and committed via a pull request.
 

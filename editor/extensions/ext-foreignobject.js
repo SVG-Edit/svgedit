@@ -27,7 +27,7 @@ export default {
 
     /**
     * @param {boolean} on
-    * @returns {undefined}
+    * @returns {void}
     */
     function showPanel (on) {
       let fcRules = $('#fc_rules');
@@ -40,7 +40,7 @@ export default {
 
     /**
     * @param {boolean} on
-    * @returns {undefined}
+    * @returns {void}
     */
     function toggleSourceButtons (on) {
       $('#tool_source_save, #tool_source_cancel').toggle(!on);
@@ -78,7 +78,7 @@ export default {
 
     /**
     *
-    * @returns {undefined}
+    * @returns {void}
     */
     function showForeignEditor () {
       const elt = selElems[0];
@@ -97,7 +97,7 @@ export default {
     /**
     * @param {string} attr
     * @param {string|Float} val
-    * @returns {undefined}
+    * @returns {void}
     */
     function setAttr (attr, val) {
       svgCanvas.changeSelectedAttribute(attr, val);

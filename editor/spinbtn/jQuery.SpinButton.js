@@ -50,7 +50,6 @@
  * | v1.9 | 20 May 2018 | Brett Zamir | Avoid SVGEdit dependency via `stateObj` config;<br />convert to ES6 module |
  * @module jQuerySpinButton
  * @example
-
   // Create group of settings to initialise spinbutton(s). (Optional)
   const myOptions = {
     min: 0, // Set lower limit.
@@ -65,7 +64,7 @@
 
   $(function () {
     // Initialise INPUT element(s) as SpinButtons: (passing options if desired)
-    $("#myInputElement").SpinButton(myOptions);
+    $('#myInputElement').SpinButton(myOptions);
   });
  */
 /**
@@ -90,7 +89,7 @@ export default function jQueryPluginSpinButton ($) {
   /**
   * @callback module:jQuerySpinButton.ValueCallback
   * @param {external:jQuery.fn.SpinButton} thisArg Spin Button; check its `value` to see how it was changed.
-  * @returns {undefined}
+  * @returns {void}
   */
   /**
    * @typedef {PlainObject} module:jQuerySpinButton.SpinButtonConfig

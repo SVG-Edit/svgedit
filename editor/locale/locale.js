@@ -12,16 +12,16 @@
 
 /**
  * Used, for example, in the ImageLibs extension, to present libraries (with name/URL/description) in order
- * @typedef {GenericArray.<module:locale.LocaleStrings>} module:locale.LocaleArray
+ * @typedef {GenericArray<module:locale.LocaleStrings>} module:locale.LocaleArray
 */
 /**
  * The string keys of the object are two-letter language codes
  * @tutorial LocaleDocs
- * @typedef {PlainObject.<string, string|module:locale.LocaleStrings|module:locale.LocaleArray>} module:locale.LocaleStrings
+ * @typedef {PlainObject<string, string|module:locale.LocaleStrings|module:locale.LocaleArray>} module:locale.LocaleStrings
  */
 // keyed to an array of objects with "id" and "title" or "textContent" properties
 /**
- * @typedef {PlainObject.<string, string>} module:locale.LocaleSelectorValue
+ * @typedef {PlainObject<string, string>} module:locale.LocaleSelectorValue
  */
 
 import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
@@ -31,10 +31,24 @@ const $ = jQuery;
 let langParam;
 
 /**
-* @param {"content"|"title"} type
-* @param {module:locale.LocaleSelectorValue} obj
-* @param {boolean} ids
-* @returns {undefined}
+ * Looks for elements to localize using the supplied `obj` to indicate
+ *   on which selectors (or IDs if `ids` is set to `true`) to set its
+ *   strings (with selectors relative to the editor root element). All
+ *   keys will be translated, but for each selector, only the first item
+ *   found matching will be modified.
+ * If the type is `content`, the selector-identified element's children
+ *   will be checked, and the first (non-empty) text (placeholder) node
+ *   found will have its text replaced.
+ * If the type is `title`, the element's `title`
+ *   property will be set.
+ * If the type is `aria-label`, the element's `aria-label` attribute
+ *   will be set (i.e., instructions for screen readers when there is
+ *   otherwise no visible text to be read for the function of the form
+ *   control).
+ * @param {"content"|"title"} type
+ * @param {module:locale.LocaleSelectorValue} obj Selectors or IDs keyed to strings
+ * @param {boolean} ids
+ * @returns {void}
 */
 export const setStrings = function (type, obj, ids) {
   // Root element to look for element from
@@ -47,12 +61,17 @@ export const setStrings = function (type, obj, ids) {
     if (ids) { sel = '#' + sel; }
     const $elem = parent.find(sel);
     if ($elem.length) {
-      const elem = parent.find(sel)[0];
+      const elem = $elem[0];
 
       switch (type) {
+      case 'aria-label':
+        elem.setAttribute('aria-label', val);
+        break;
       case 'content':
         [...elem.childNodes].some((node) => {
-          if (node.nodeType === 3 && node.textContent.trim()) {
+          if (node.nodeType === 3 /* Node.TEXT_NODE */ &&
+            node.textContent.trim()
+          ) {
             node.textContent = val;
             return true;
           }
@@ -72,7 +91,7 @@ export const setStrings = function (type, obj, ids) {
 
 /**
 * The "data" property is generally set to an an array of objects with
-* "id" and "title" or "textContent" properties
+*   "id" and "title" or "textContent" properties
 * @typedef {PlainObject} module:locale.AddLangExtensionLocaleData
 * @property {module:locale.LocaleStrings[]} data See {@tutorial LocaleDocs}
 */
@@ -88,10 +107,11 @@ export const setStrings = function (type, obj, ids) {
 
 let editor_;
 /**
-* @function init
-* @memberof module:locale
-* @param {module:locale.LocaleEditorInit} editor
-* @returns {undefined}
+ * Sets the current editor instance (on which `addLangData`) exists.
+ * @function init
+ * @memberof module:locale
+ * @param {module:locale.LocaleEditorInit} editor
+ * @returns {void}
 */
 export const init = (editor) => {
   editor_ = editor;
@@ -106,8 +126,8 @@ export const init = (editor) => {
 /**
 * @function module:locale.readLang
 * @param {module:locale.LocaleStrings} langData See {@tutorial LocaleDocs}
-* @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
-* @returns {Promise} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
+* @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
+* @returns {Promise<module:locale.LangAndData>} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
 */
 export const readLang = async function (langData) {
   const more = await editor_.addLangData(langParam);
@@ -127,6 +147,7 @@ export const readLang = async function (langData) {
   } = langData;
 
   setStrings('content', {
+    // Todo: Add this powered by (probably by default) but with config to remove
     // copyrightLabel: misc.powered_by, // Currently commented out in svg-editor.html
     curve_segments: properties.curve_segments,
     fitToContent: tools.fitToContent,
@@ -197,17 +218,41 @@ export const readLang = async function (langData) {
 
   // Context menus
   const opts = {};
-  $.each(['cut', 'copy', 'paste', 'paste_in_place', 'delete', 'group', 'ungroup', 'move_front', 'move_up', 'move_down', 'move_back'], function () {
-    opts['#cmenu_canvas a[href="#' + this + '"]'] = tools[this];
+  [
+    'cut', 'copy', 'paste', 'paste_in_place', 'delete',
+    'group', 'ungroup', 'move_front', 'move_up',
+    'move_down', 'move_back'
+  ].forEach((item) => {
+    opts['#cmenu_canvas a[href="#' + item + '"]'] = tools[item];
   });
 
-  $.each(['dupe', 'merge_down', 'merge_all'], function () {
-    opts['#cmenu_layers a[href="#' + this + '"]'] = layers[this];
+  ['dupe', 'merge_down', 'merge_all'].forEach((item) => {
+    opts['#cmenu_layers a[href="#' + item + '"]'] = layers[item];
   });
 
   opts['#cmenu_layers a[href="#delete"]'] = layers.del;
 
   setStrings('content', opts);
+
+  const ariaLabels = {};
+  Object.entries({
+    tool_blur: properties.blur,
+    tool_position: tools.align_to_page,
+    tool_font_family: properties.font_family,
+    zoom_panel: ui.zoom_level,
+    stroke_linejoin: properties.linejoin_miter,
+    stroke_linecap: properties.linecap_butt,
+    tool_opacity: properties.opacity
+  }).forEach(([id, value]) => {
+    ariaLabels['#' + id + ' button'] = value;
+  });
+  Object.entries({
+    group_opacity: properties.opacity,
+    zoom: ui.zoom_level
+  }).forEach(([id, value]) => {
+    ariaLabels['#' + id] = value;
+  });
+  setStrings('aria-label', ariaLabels);
 
   setStrings('title', {
     align_relative_to: tools.align_relative_to,
@@ -313,14 +358,15 @@ export const readLang = async function (langData) {
 };
 
 /**
-* @function module:locale.putLocale
-* @param {string} givenParam
-* @param {string[]} goodLangs
-* @param {{langPath: string}} conf
-* @fires module:svgcanvas.SvgCanvas#event:ext-addLangData
-* @fires module:svgcanvas.SvgCanvas#event:ext-langReady
-* @fires module:svgcanvas.SvgCanvas#event:ext-langChanged
-* @returns {Promise} Resolves to result of {@link module:locale.readLang}
+ *
+ * @function module:locale.putLocale
+ * @param {string} givenParam
+ * @param {string[]} goodLangs
+ * @param {{langPath: string}} conf
+ * @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
+ * @fires module:svgcanvas.SvgCanvas#event:ext_langReady
+ * @fires module:svgcanvas.SvgCanvas#event:ext_langChanged
+ * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
 */
 export const putLocale = async function (givenParam, goodLangs, conf) {
   if (givenParam) {

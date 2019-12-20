@@ -46,6 +46,10 @@ var svgEditorExtension_placemark = (function () {
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -137,7 +141,7 @@ var svgEditorExtension_placemark = (function () {
                   var markerName = 'marker-start';
                   var marker = getLinked(el, markerName);
 
-                  if (!marker || !marker.attributes.class) {
+                  if (!marker || !marker.attributes["class"]) {
                     return;
                   } // not created by this extension
 
@@ -165,7 +169,7 @@ var svgEditorExtension_placemark = (function () {
                     return;
                   }
 
-                  if (!marker.attributes.class) {
+                  if (!marker.attributes["class"]) {
                     return;
                   } // not created by this extension
 
@@ -252,7 +256,7 @@ var svgEditorExtension_placemark = (function () {
                       markerUnits: 'strokeWidth',
                       orient: 'auto',
                       style: 'pointer-events:none',
-                      class: seType
+                      "class": seType
                     }
                   });
                   var mel = addElem(markerTypes[seType]);
@@ -319,7 +323,9 @@ var svgEditorExtension_placemark = (function () {
 
                   if (!str) {
                     return null;
-                  }
+                  } // const m = str.match(/\(#(?<id>.+)\)/);
+                  // if (!m || !m.groups.id) {
+
 
                   var m = str.match(/\(#(.*)\)/);
 
@@ -327,7 +333,7 @@ var svgEditorExtension_placemark = (function () {
                     return null;
                   }
 
-                  return svgCanvas.getElem(m[1]);
+                  return svgCanvas.getElem(m[1]); // return svgCanvas.getElem(m.groups.id);
                 };
 
                 showPanel = function _ref(on) {
@@ -416,7 +422,7 @@ var svgEditorExtension_placemark = (function () {
                 /**
                  *
                  * @param {boolean} on
-                 * @returns {undefined}
+                 * @returns {void}
                  */
 
                 buttons = [{
@@ -557,7 +563,7 @@ var svgEditorExtension_placemark = (function () {
                         element: 'g',
                         attr: {
                           id: id,
-                          class: 'placemark',
+                          "class": 'placemark',
                           fontSize: fontSize,
                           maxlen: maxlen,
                           lines: items.length,

@@ -38,7 +38,7 @@ export default {
 
     /**
     * @param {boolean} on
-    * @returns {undefined}
+    * @returns {void}
     */
     function showPanel (on) {
       let fcRules = $('#fc_rules');
@@ -59,7 +59,7 @@ export default {
     /**
     * @param {string} attr
     * @param {string|Float} val
-    * @returns {undefined}
+    * @returns {void}
     */
     function setAttr (attr, val) {
       svgCanvas.changeSelectedAttribute(attr, val);

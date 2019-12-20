@@ -50,12 +50,17 @@ export default {
     /**
      * Replace `storagePrompt` parameter within URL.
      * @param {string} val
-     * @returns {undefined}
+     * @returns {void}
      */
     function replaceStoragePrompt (val) {
       val = val ? 'storagePrompt=' + val : '';
       const loc = top.location; // Allow this to work with the embedded editor as well
       if (loc.href.includes('storagePrompt=')) {
+        /*
+        loc.href = loc.href.replace(/(?<sep>[&?])storagePrompt=[^&]*(?<amp>&?)/, function (n0, sep, amp) {
+          return (val ? sep : '') + val + (!val && amp ? sep : (amp || ''));
+        });
+        */
         loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
           return (val ? n1 : '') + val + (!val && amp ? n1 : (amp || ''));
         });
@@ -68,7 +73,7 @@ export default {
      * Sets SVG content as a string with "svgedit-" and the current
      *   canvas name as namespace.
      * @param {string} val
-     * @returns {undefined}
+     * @returns {void}
      */
     function setSVGContentStorage (val) {
       if (storage) {
@@ -84,7 +89,7 @@ export default {
     /**
      * Set the cookie to expire.
      * @param {string} cookie
-     * @returns {undefined}
+     * @returns {void}
      */
     function expireCookie (cookie) {
       document.cookie = encodeURIComponent(cookie) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
@@ -92,7 +97,7 @@ export default {
 
     /**
      * Expire the storage cookie.
-     * @returns {undefined}
+     * @returns {void}
      */
     function removeStoragePrefCookie () {
       expireCookie('svgeditstore');
@@ -100,7 +105,7 @@ export default {
 
     /**
      * Empties storage for each of the current preferences.
-     * @returns {undefined}
+     * @returns {void}
      */
     function emptyStorage () {
       setSVGContentStorage('');
@@ -122,7 +127,7 @@ export default {
     *       content into storage)
     * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
     * 3. Use localStorage (where available) or cookies to set preferences.
-    * @returns {undefined}
+    * @returns {void}
     */
     function setupBeforeUnloadListener () {
       window.addEventListener('beforeunload', function (e) {
@@ -242,6 +247,7 @@ export default {
             // doesn't even want to remember their not wanting
             // storage, so we don't set the cookie or continue on with
             //  setting storage on beforeunload
+            // eslint-disable-next-line require-atomic-updates
             document.cookie = 'svgeditstore=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
             // If the URL was configured to always insist on a prompt, if
             //    the user does indicate a wish to store their info, we

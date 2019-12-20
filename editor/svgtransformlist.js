@@ -61,7 +61,7 @@ let listMap_ = {};
 */
 /**
 * @function module:SVGTransformList.SVGEditTransformList#clear
-* @returns {undefined}
+* @returns {void}
 */
 /**
 * @function module:SVGTransformList.SVGEditTransformList#initialize
@@ -120,9 +120,10 @@ let listMap_ = {};
 * implementing as much of SVGTransformList that we need to get the job done.
 * @implements {module:SVGTransformList.SVGEditTransformList}
 */
-export class SVGTransformList {// eslint-disable-line no-shadow
+export class SVGTransformList { // eslint-disable-line no-shadow
   /**
   * @param {Element} elem
+  * @returns {SVGTransformList}
   */
   constructor (elem) {
     this._elem = elem || null;
@@ -145,6 +146,7 @@ export class SVGTransformList {// eslint-disable-line no-shadow
 
       // TODO: Add skew support in future
       const re = /\s*((scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
+      // const re = /\s*(?<xform>(?:scale|matrix|rotate|translate)\s*\(.*?\))\s*,?\s*/;
       let m = true;
       while (m) {
         m = str.match(re);
@@ -157,6 +159,17 @@ export class SVGTransformList {// eslint-disable-line no-shadow
           valBits[1] = valBits[1].replace(/(\d)-/g, '$1 -');
           const valArr = valBits[1].split(/[, ]+/);
           const letters = 'abcdef'.split('');
+          /*
+        if (m && m.groups.xform) {
+          const x = m.groups.xform;
+          const [name, bits] = x.split(/\s*\(/);
+          const valBits = bits.match(/\s*(?<nonWhitespace>.*?)\s*\)/);
+          valBits.groups.nonWhitespace = valBits.groups.nonWhitespace.replace(
+            /(?<digit>\d)-/g, '$<digit> -'
+          );
+          const valArr = valBits.groups.nonWhitespace.split(/[, ]+/);
+          const letters = [...'abcdef'];
+          */
           const mtx = svgroot.createSVGMatrix();
           Object.values(valArr).forEach(function (item, i) {
             valArr[i] = parseFloat(item);
@@ -199,7 +212,7 @@ export class SVGTransformList {// eslint-disable-line no-shadow
     this.numberOfItems = 0;
   }
   /**
-  * @returns {undefined}
+  * @returns {void}
   */
   clear () {
     this.numberOfItems = 0;
@@ -208,7 +221,7 @@ export class SVGTransformList {// eslint-disable-line no-shadow
 
   /**
   * @param {SVGTransform} newItem
-  * @returns {SVGTransform}
+  * @returns {void}
   */
   initialize (newItem) {
     this.numberOfItems = 1;
@@ -318,7 +331,7 @@ export class SVGTransformList {// eslint-disable-line no-shadow
 
 /**
 * @function module:SVGTransformList.resetListMap
-* @returns {undefined}
+* @returns {void}
 */
 export const resetListMap = function () {
   listMap_ = {};
@@ -328,7 +341,7 @@ export const resetListMap = function () {
  * Removes transforms of the given element from the map.
  * @function module:SVGTransformList.removeElementFromListMap
  * @param {Element} elem - a DOM Element
- * @returns {undefined}
+ * @returns {void}
  */
 export let removeElementFromListMap = function (elem) { // eslint-disable-line import/no-mutable-exports
   if (elem.id && listMap_[elem.id]) {
@@ -375,7 +388,7 @@ export const getTransformList = function (elem) {
 * Replace `removeElementFromListMap` for unit-testing.
 * @function module:SVGTransformList.changeRemoveElementFromListMap
 * @param {module:SVGTransformList.removeElementFromListMap} cb Passed a single argument `elem`
-* @returns {undefined}
+* @returns {void}
 */
 
 export const changeRemoveElementFromListMap = function (cb) { // eslint-disable-line promise/prefer-await-to-callbacks

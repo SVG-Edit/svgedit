@@ -108,7 +108,7 @@ Object.entries(svgWhiteList_).forEach(function ([elt, atts]) {
 * It only keeps what is allowed from our whitelist defined above.
 * @function module:sanitize.sanitizeSvg
 * @param {Text|Element} node - The DOM element to be checked (we'll also check its children) or text node to be cleaned up
-* @returns {undefined}
+* @returns {void}
 */
 export const sanitizeSvg = function (node) {
   // Cleanup text nodes
@@ -167,6 +167,7 @@ export const sanitizeSvg = function (node) {
         case 'gradientTransform':
         case 'patternTransform': {
           const val = attr.value.replace(/(\d)-/g, '$1 -');
+          // const val = attr.value.replace(/(?<digit>\d)-/g, '$<digit> -');
           node.setAttribute(attrName, val);
           break;
         }
@@ -233,7 +234,7 @@ export const sanitizeSvg = function (node) {
   // else (element not supported), remove it
   } else {
     // remove all children from this node and insert them before this node
-    // FIXME: in the case of animation elements this will hardly ever be correct
+    // TODO: in the case of animation elements this will hardly ever be correct
     const children = [];
     while (node.hasChildNodes()) {
       children.push(parent.insertBefore(node.firstChild, node));

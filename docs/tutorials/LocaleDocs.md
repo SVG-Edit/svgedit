@@ -28,10 +28,16 @@ to use less-distracting single quotes if not
 
 ## Special properties
 
+The `lang` property  should define its HTML `lang` value (which should
+probably always be the same as "<lang>" within the "lang.<lang>.js"
+file name). This is important for accessibility (screen readers),
+search engines, and, for some languages, font selection (e.g., Chinese,
+Japanese and Korean languages are expected in different font styles,
+despite many characters being shared). `lang` can also potentially be
+used programmatically for different styling or behaviors.
+
 While not currently in use, the `dir` property should be used to indicate
-the default directionality of the language of the locale, while the `lang`
-should define its HTML `lang` value (which should probably always be the
-same as "<lang>" within the "lang.<lang>.js" file name).
+the default directionality of the language of the locale.
 
 ## Location of locale files (including for extensions)
 

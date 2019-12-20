@@ -2,6 +2,88 @@
 
 ## ?
 
+- License: Relicense ext-mathjax from Apache-2.0 to MIT per
+  <https://github.com/josegaert/ext-mathjax/issues/6>
+- License: Clarify in `@license` that `ext-server_moinsave.js` is
+  "(MIT OR GPL-2.0-or-later)" per subsequent text
+- License: Reorder license listing in `jquery.contextMenu.js` so
+  that more permissive is noticeable first
+- Fix (Accessibility): Avoid duplicate IDs
+- Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
+- Linting (ESLint): Simplify regexes
+- Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
+- Testing: Switch to Cypress with code coverage for UI testing;
+  use ESM version for faster debugging
+- Testing: Add map file for underscore
+- npm: Update scripts to reflect removal of `all_tests.html`;
+  remove `browser-test` script
+- npm: Update devDeps, peerDeps
+
+## 5.1.0
+
+- Deprecated: Should now use `avoidClientSideDownload` in place of
+    `avoidClientSide` (config for `ext-server_opensave.js`).
+- Fix: IE 11 issue; fixes #363
+- Fix: Avoid race condition in `jQuery.svgIcons.js` (evident
+    when attempting to load from `file:` URL in Chrome)
+- Fix: Input width (@seahindeniz)
+- Fix: Use change event to be sure that file is loaded before
+   the function (@Moliman)
+- Enhancement: Added `avoidClientSideOpen` config for
+    `ext-server_opensave.js`
+- Optimization: Re-rerun image optimization per update
+- Linting (ESLint): Adjust per now applied rules
+- Linting (ESLint): Add HTML files to linting
+- Linting (ESLint): Avoid shadowing
+- Linting: Assorted changes; ensure license versions are valid semver
+- Refactoring: Use `static` keyword for classes
+- Refactoring: Prefer `for...of`, `event.key` (newly enforced linting)
+- Refactoring: Better var. names
+- Testing: Accessibility test API update
+- Docs: Clarify need for Node.js/npm being installed
+- Build: Remove `types-docs` script as being handled in ESLint
+- Maintenance: Add `.editorconfig`
+- npm: Add script to fix eslint errors
+- npm: Rename `build-config` to `build-by-config`
+- npm: Update devDeps (including switching from deprecated opn-cli
+    package to open-cli); update core-js-bundle copy; add new
+    axe testing peer dep. axe-core in devDeps
+
+## 5.0.0
+
+- Breaking change: Switch from deprecated `@babel/polyfill` to
+    `core-js-bundle` and `regenerator-runtime` replacements
+- Build: Require Node 8.5
+- Fix: Ensure PHP files are present in `dist/extensions` alongside
+    JavaScript extension files using them
+- Fix: Bug in obtaining `extPath` in `ext-server_opensave.js`
+- Fix: Fully redirect extension entrances for lacking browser support
+- Enhancement: Add config `avoidClientSide` to avoid using
+    client-side support by default (and always require server)
+- Enhancement: Return a Promise for Editor's `setCustomHandlers`,
+    `loadFromString`, `loadFromDataURI` so known when ready and set
+- Refactoring: Destructuring, templates, label Unicode code point
+- Linting (JSDoc): Update per newly enforced `require-returns`; avoid
+  Closure syntax; reenable `jsdoc/valid-jsdoc` as fixed; notes
+  re: valid-jsdoc replacement; use same namepath
+- Linting: Update per ash-nazg/plugin-node update
+- Docs: Simplify comments in HTML files re: script purposes
+- Docs: Update release instructions
+- Docs (Refactoring): Formally specify `Promise` resolve type;
+    add `typedef` for dialog result object; add an
+    `ArbitraryCallbackResult` type; prefer `void`
+- npm: Rename (`build-doc` to `build-docs`, `types-doc` to
+    `types-docs`); add `open-docs` script
+- npm: Update devDeps
+- npm: Remove unused devDeps; update insecure devDeps
+
+## 4.3.0
+
+- Fix: Droplets for gradient pickers can now be double-clicked in
+    other browsers in addition to Firefox such as Chrome
+    to allow change of color (fixes #181) (@ajinkyas);
+    may be different between the browsers as a result of
+    <https://github.com/w3c/uievents/issues/141>
 - Fix: Delay icon setting until locales available (fixes #323)
 - Fix: Extension with no `placement` to be added to end;
     for #326 (@sjernigan)
@@ -11,12 +93,29 @@
 - Optimization fix: Properly run code conditionally on browser check;
     fixes #312 (@ianli-sc)
 - Enhancement: Add CAD Placemark extension (@NeiroNx)
+- Enhancement (svgIcons): Fix JSDoc param def; add `alt` options
+- Accessibility: Begin work, add aria-label to some buttons and
+    form controls; add `role=main`; `<img alt>`; `<iframe title>`
+- i18n: Add `lang` attribute
+- Refactoring: lbs, simplify i18nized element retrieval call
 - Refactoring: Make dialog OK button retrievable locale-independently
     via a `data-ok` attribute (using for testing)
+- Linting (ESLint): Update polyfills to new compat rules of
+    eslint-config-ash-nazg and adhere to new rules (prefer `for-of`
+    (or array methods) to `for`, catch preferred `includes` to `indexOf`);
+    avoid `no-zero-fractions` rule for now
 - Testing (UI Refactoring): Abstract out to helper file functions
 - Testing (UI Refactoring): Avoid testing being locale-dependent;
     approve storage (and set locale to English) before each test
-- npm: Update devDeps; update nested deps for security audit
+- Testing: Avoid reporting meta-viewport (have own zooming
+    controls and difficult to fix)
+- Testing: Skip js errors in Testcafe; we're getting some uncaught
+    error despite not replicating manually; should file a Testcafe issue
+- Docs: Some JSDoc descriptions, JSDoc spacing, fix svgIcons
+    param def
+- Docs (Accessibility): Refer to known issues
+- npm: Update devDeps; update nested deps for security audit; remove
+    one unneeded)
 
 ## 4.2.0
 

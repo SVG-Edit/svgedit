@@ -9,13 +9,12 @@
  * @license Apache-2.0
  * @example
  * // The Paint object is described below.
- * $.jGraduate.Paint() // constructs a 'none' color
- * @example $.jGraduate.Paint({copy: o}) // creates a copy of the paint o
- * @example $.jGraduate.Paint({hex: '#rrggbb'}) // creates a solid color paint with hex = "#rrggbb"
- * @example $.jGraduate.Paint({linearGradient: o, a: 50}) // creates a linear gradient paint with opacity=0.5
- * @example $.jGraduate.Paint({radialGradient: o, a: 7}) // creates a radial gradient paint with opacity=0.07
- * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}) // throws an exception?
- *
+ * $.jGraduate.Paint(); // constructs a 'none' color
+ * @example $.jGraduate.Paint({copy: o}); // creates a copy of the paint o
+ * @example $.jGraduate.Paint({hex: '#rrggbb'}); // creates a solid color paint with hex = "#rrggbb"
+ * @example $.jGraduate.Paint({linearGradient: o, a: 50}); // creates a linear gradient paint with opacity=0.5
+ * @example $.jGraduate.Paint({radialGradient: o, a: 7}); // creates a radial gradient paint with opacity=0.07
+ * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
 
 /**
@@ -200,12 +199,12 @@ export default function jQueryPluginJGraduate ($) {
   const isGecko = navigator.userAgent.includes('Gecko/');
 
   /**
-  * @typedef {PlainObject.<string, string>} module:jGraduate.Attrs
+  * @typedef {PlainObject<string, string>} module:jGraduate.Attrs
   */
   /**
   * @param {SVGElement} elem
   * @param {module:jGraduate.Attrs} attrs
-  * @returns {undefined}
+  * @returns {void}
   */
   function setAttrs (elem, attrs) {
     if (isGecko) {
@@ -257,11 +256,11 @@ export default function jQueryPluginJGraduate ($) {
   /**
   * @callback external:jQuery.fn.jGraduate.OkCallback
   * @param {external:jQuery.jGraduate.Paint} paint
-  * @returns {undefined}
+  * @returns {void}
   */
   /**
   * @callback external:jQuery.fn.jGraduate.CancelCallback
-  * @returns {undefined}
+  * @returns {void}
   */
 
   /**
@@ -303,12 +302,17 @@ export default function jQueryPluginJGraduate ($) {
         $this.hide();
       };
 
-      $.extend(true, $this, { // public properties, methods, and callbacks
-        // make a copy of the incoming paint
-        paint: new $.jGraduate.Paint({copy: $settings.paint}),
-        okCallback: typeof okCallback === 'function' ? okCallback : null,
-        cancelCallback: typeof cancelCallback === 'function' ? cancelCallback : null
-      });
+      $.extend(
+        true,
+        $this,
+        // public properties, methods, and callbacks
+        {
+          // make a copy of the incoming paint
+          paint: new $.jGraduate.Paint({copy: $settings.paint}),
+          okCallback: typeof okCallback === 'function' ? okCallback : null,
+          cancelCallback: typeof cancelCallback === 'function' ? cancelCallback : null
+        }
+      );
 
       let // pos = $this.position(),
         color = null;
@@ -727,7 +731,7 @@ export default function jQueryPluginJGraduate ($) {
 
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function remStop () {
         delStop.setAttribute('display', 'none');
@@ -751,13 +755,12 @@ export default function jQueryPluginJGraduate ($) {
 
       /**
       * @param {Element} item
-      * @returns {undefined}
+      * @returns {void}
       */
       function selectStop (item) {
         if (curStop) curStop.setAttribute('stroke', '#000');
         item.setAttribute('stroke', 'blue');
         curStop = item;
-        curStop.parentNode.append(curStop);
         //   stops = $('stop');
         //   opac_select.val(curStop.attr('fill-opacity') || 1);
         //   root.append(delStop);
@@ -767,7 +770,7 @@ export default function jQueryPluginJGraduate ($) {
 
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function remDrags () {
         $win.unbind('mousemove', dragColor);
@@ -783,7 +786,7 @@ export default function jQueryPluginJGraduate ($) {
       let cY = cy;
       /**
       *
-      * @returns {undefined}
+      * @returns {void}
       */
       function xform () {
         const rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
@@ -800,7 +803,7 @@ export default function jQueryPluginJGraduate ($) {
 
       /**
       * @param {Event} evt
-      * @returns {undefined}
+      * @returns {void}
       */
       function dragColor (evt) {
         let x = evt.pageX - stopOffset.left;
