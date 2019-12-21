@@ -205,6 +205,8 @@ export const readLang = async function (langData) {
     tool_import: tools.import_doc,
     tool_open: tools.open_doc,
     tool_save: tools.save_doc,
+    tool_editor_prefs: config.editor_prefs,
+    tool_editor_homepage: tools.editor_homepage,
 
     svginfo_units_rulers: config.units_and_rulers,
     svginfo_rulers_onoff: config.show_rulers,
