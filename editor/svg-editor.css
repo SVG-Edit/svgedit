@@ -431,7 +431,7 @@ div.palette_item:first-child {
   padding-left: 7px;
   margin: -5px;
   overflow: auto;
-  cursor: default;
+  cursor: pointer;
 }
 
 #main_menu li:hover {
@@ -1246,10 +1246,6 @@ ul li.current {
   margin-left: 0;
 }
 
-#tool_prefs_option {
-  float: right;
-}
-
 .toolbar_button button {
   border:1px solid #dedede;
   line-height:130%;
@@ -1264,6 +1260,7 @@ ul li.current {
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
+  cursor: pointer;
 }
 
 .toolbar_button button:hover {
