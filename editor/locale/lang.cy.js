@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Elfennau Ungroup',
     docprops: 'Document Eiddo',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Symud i&#39;r Gwaelod',
     move_top: 'Symud i&#39;r Top',
     node_clone: 'Clone Node',

@@ -126,6 +126,7 @@ export default {
     reorient_path: '‫جهت دهی مجدد مسیر‬',
     ungroup: '‫خارج کردن عناصر از گروه ‬',
     docprops: '‫مشخصات سند ‬',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: '‫انتقال به پایین ترین ‬',
     move_top: '‫انتقال به بالاترین ‬',
     node_clone: '‫ایجاد کپی از نقطه‬',

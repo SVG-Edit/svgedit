@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Елементи розгрупувати',
     docprops: 'Властивості документа',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Перемістити вниз',
     move_top: 'Перемістити догори',
     node_clone: 'Clone Node',
