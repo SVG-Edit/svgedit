@@ -137,7 +137,7 @@ module.exports = {
       // Node files
       files: [
         "docs/jsdoc-config.js",
-        "build-html.js",
+        "build/build-html.js",
         "rollup.config.js", "rollup-config.config.js"
       ],
       env: {
@@ -170,7 +170,10 @@ module.exports = {
     },
     {
       extends: ['plugin:node/recommended-script'],
-      files: ['cypress/support/build-coverage-badge.js']
+      files: [
+        'cypress/support/build-coverage-badge.js',
+        'build/testing-badge.js'
+      ]
     },
     {
       files: ["cypress/**"],

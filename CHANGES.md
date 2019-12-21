@@ -23,9 +23,14 @@
 - Fix: Ensure `setupCurPrefs` is run (including when `source` or
     `url` is set within the URL)
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
+- Optimization: Remove old build/tools closure/yuicompressor code
 - Localization: Add 'SVG-Edit Home Page' to locale files
+- Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
+- Docs: Add testing badge
+- Docs: Reprioritize `docs` in commit lists (prioritize user-facing)
 - Refactoring: Switch from `$.param.querystring` to `URL`
 - Refactoring: Ensure file-global jsdoc tags are at beginning of file
+- Refactoring: Move `build-html` to `build` directory
 - Linting (ESLint): Simplify regexes
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
 - Linting (ESLint): Update as per latest ash-nazg
@@ -37,7 +42,8 @@
   setup browser-bug folder and ui issues folder
 - Testing: Create test utilities for selecting English and visiting and
   approving storage
-- Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
+- Testing: Produce mochawesome report
+- Testing: Cypress with multiple reporters in case we need
 - npm: Add `underscore` to copy script
 - npm: Make `copy`, `compress-images`, `start-embedded`, `build-docs-remove`
   scripts cross-platform; add `start-allow-origin` script

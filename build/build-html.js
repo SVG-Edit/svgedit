@@ -19,7 +19,7 @@ const filesAndReplacements = [
       [
         '<!DOCTYPE html>',
         `<!DOCTYPE html>
-<!-- AUTO-GENERATED FROM xdomain-svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->`
+<!-- AUTO-GENERATED FROM xdomain-svg-editor-es.html; DO NOT EDIT; use build/build-html.js to build -->`
       ],
       [
         '<script type="module" src="redirect-on-lacking-support.js"></script>',
@@ -47,7 +47,7 @@ const filesAndReplacements = [
       [
         '<!DOCTYPE html>',
         `<!DOCTYPE html>
-<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->`
+<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build/build-html.js to build -->`
       ]
     ]
   },
@@ -58,7 +58,7 @@ const filesAndReplacements = [
       [
         '<!DOCTYPE html>',
         `<!DOCTYPE html>
-<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->`
+<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build/build-html.js to build -->`
       ],
       [
         '<script type="module" src="redirect-on-lacking-support.js"></script>',
@@ -85,7 +85,7 @@ const filesAndReplacements = [
       [
         '<!DOCTYPE html>',
         `<!DOCTYPE html>
-<!-- AUTO-GENERATED FROM imagelib/openclipart-es.html; DO NOT EDIT; use build-html.js to build -->`
+<!-- AUTO-GENERATED FROM imagelib/openclipart-es.html; DO NOT EDIT; use build/build-html.js to build -->`
       ],
       [
         '<script src="../../external/dom-polyfill/dom-polyfill.js"></script>',
@@ -108,7 +108,7 @@ const filesAndReplacements = [
       [
         '<!DOCTYPE html>',
         `<!DOCTYPE html>
-<!-- AUTO-GENERATED FROM imagelib/index-es.html; DO NOT EDIT; use build-html.js to build -->`
+<!-- AUTO-GENERATED FROM imagelib/index-es.html; DO NOT EDIT; use build/build-html.js to build -->`
       ],
       [
         '<script type="module" src="index.js"></script>',

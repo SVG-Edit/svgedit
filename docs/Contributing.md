@@ -13,11 +13,11 @@
   - `Enhancement: `
   - `Optimization: ` - Performance enhancements
   - `Localization:`
+  - `Docs: `
   - `Update: ` - e.g., if updating a bundled library or updating code per a
     dependency's updated new API
   - `Refactoring: `
   - `Linting (<type>):` - Linting by type, e.g., "ESLint"
   - `Testing:`
-  - `Docs: `
   - `Build: `
   - `npm` - Updates to dependencies, npm version, etc.
