@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorientar contorno',
     ungroup: 'Desagrupar Elementos',
     docprops: 'Propriedades',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Mover para o fundo',
     move_top: 'Mover para o topo',
     node_clone: 'Clonar Aresta',

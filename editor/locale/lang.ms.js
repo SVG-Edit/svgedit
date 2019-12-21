@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Ungroup Elemen',
     docprops: 'Document Properties',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Pindah ke Bawah',
     move_top: 'Pindah ke Atas',
     node_clone: 'Clone Node',
