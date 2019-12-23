@@ -1186,7 +1186,6 @@ this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
     extObj.name = name;
   }
 
-  // eslint-disable-next-line require-atomic-updates
   extensions[name] = extObj;
   return call('extension_added', extObj);
 };
@@ -3976,7 +3975,6 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
   const svg = this.svgCanvasToString();
 
   if (!canvg) {
-    // eslint-disable-next-line require-atomic-updates
     ({canvg} = await importSetGlobal(curConfig.canvgPath + 'canvg.js', {
       global: 'canvg'
     }));
@@ -6757,7 +6755,7 @@ this.ungroupSelectedElement = function () {
         continue;
       }
 
-      children[i++] = elem = parent.insertBefore(elem, anchor);
+      children[i++] = elem = anchor.before(elem);
       batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
     }
 

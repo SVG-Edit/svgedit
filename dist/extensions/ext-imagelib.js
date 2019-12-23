@@ -365,7 +365,6 @@ var svgEditorExtension_imagelib = (function () {
                             return $.process_cancel(message);
 
                           case 39:
-                            // eslint-disable-next-line require-atomic-updates
                             transferStopped = true; // Should a message be sent back to the frame?
 
                             $('#dialog_box').hide();

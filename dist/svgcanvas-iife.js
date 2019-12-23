@@ -14549,8 +14549,7 @@ var SvgCanvas = (function () {
 
                 if (extObj) {
                   extObj.name = name;
-                } // eslint-disable-next-line require-atomic-updates
-
+                }
 
                 extensions[name] = extObj;
                 return _context.abrupt("return", call('extension_added', extObj));
@@ -20898,7 +20897,7 @@ var SvgCanvas = (function () {
             continue;
           }
 
-          children[i++] = elem = parent.insertBefore(elem, anchor);
+          children[i++] = elem = anchor.before(elem);
           batchCmd.addSubCommand(new MoveElementCommand$1(elem, oldNextSibling, oldParent));
         } // remove the group from the selection
 

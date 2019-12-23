@@ -355,7 +355,6 @@ var svgEditorExtension_storage = (function () {
                     // doesn't even want to remember their not wanting
                     // storage, so we don't set the cookie or continue on with
                     //  setting storage on beforeunload
-                    // eslint-disable-next-line require-atomic-updates
                     document.cookie = 'svgeditstore=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
                     // If the URL was configured to always insist on a prompt, if
                     //    the user does indicate a wish to store their info, we

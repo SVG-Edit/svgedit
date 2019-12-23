@@ -4845,17 +4845,14 @@ editor.init = function () {
     // set icon size
     setIconSize($('#iconsize').val());
 
-    /* eslint-disable require-atomic-updates */
     // set grid setting
     curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
     curConfig.snappingStep = $('#grid_snapping_step').val();
     curConfig.gridColor = $('#grid_color').val();
     curConfig.showRulers = $('#show_rulers')[0].checked;
-    /* eslint-enable require-atomic-updates */
 
     $('#rulers').toggle(curConfig.showRulers);
     if (curConfig.showRulers) { updateRulers(); }
-    // eslint-disable-next-line require-atomic-updates
     curConfig.baseUnit = $('#base_unit').val();
 
     svgCanvas.setConfig(curConfig);
@@ -6270,7 +6267,6 @@ editor.init = function () {
           importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})
         });
       }));
-      // eslint-disable-next-line require-atomic-updates
       extsPreLang.length = 0;
     } else {
       loadedExtensionNames.forEach((loadedExtensionName) => {
