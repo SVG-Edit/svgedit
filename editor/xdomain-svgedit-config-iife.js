@@ -14774,8 +14774,7 @@
 
                 if (extObj) {
                   extObj.name = name;
-                } // eslint-disable-next-line require-atomic-updates
-
+                }
 
                 extensions[name] = extObj;
                 return _context.abrupt("return", call('extension_added', extObj));
@@ -21123,7 +21122,7 @@
             continue;
           }
 
-          children[i++] = elem = parent.insertBefore(elem, anchor);
+          children[i++] = elem = anchor.before(elem);
           batchCmd.addSubCommand(new MoveElementCommand$1(elem, oldNextSibling, oldParent));
         } // remove the group from the selection
 
@@ -34350,22 +34349,17 @@
 
             case 11:
               // set icon size
-              setIconSize($$b('#iconsize').val());
-              /* eslint-disable require-atomic-updates */
-              // set grid setting
+              setIconSize($$b('#iconsize').val()); // set grid setting
 
               curConfig.gridSnapping = $$b('#grid_snapping_on')[0].checked;
               curConfig.snappingStep = $$b('#grid_snapping_step').val();
               curConfig.gridColor = $$b('#grid_color').val();
               curConfig.showRulers = $$b('#show_rulers')[0].checked;
-              /* eslint-enable require-atomic-updates */
-
               $$b('#rulers').toggle(curConfig.showRulers);
 
               if (curConfig.showRulers) {
                 updateRulers();
-              } // eslint-disable-next-line require-atomic-updates
-
+              }
 
               curConfig.baseUnit = $$b('#base_unit').val();
               svgCanvas.setConfig(curConfig);
@@ -36394,7 +36388,6 @@
                 }));
 
               case 15:
-                // eslint-disable-next-line require-atomic-updates
                 extsPreLang.length = 0;
                 _context17.next = 19;
                 break;

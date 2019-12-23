@@ -89,6 +89,7 @@ const ChildNode = {
       viableNextSibling = viableNextSibling.nextSibling;
     }
     const node = convertNodesIntoANode(nodes);
+    // eslint-disable-next-line unicorn/prefer-modern-dom-apis
     parent.insertBefore(node, viableNextSibling);
   },
   replaceWith (...nodes) {
@@ -103,6 +104,7 @@ const ChildNode = {
     if (this.parentNode === parent) {
       parent.replaceChild(node, this);
     } else {
+      // eslint-disable-next-line unicorn/prefer-modern-dom-apis
       parent.insertBefore(node, viableNextSibling);
     }
   },
