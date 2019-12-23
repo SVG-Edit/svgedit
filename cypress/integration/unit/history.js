@@ -1,9 +1,9 @@
-import '../../instrumented/jquery.min.js';
+import '../../../instrumented/jquery.min.js';
 
-import {NS} from '../../instrumented/namespaces.js';
-import * as transformlist from '../../instrumented/svgtransformlist.js';
-import * as utilities from '../../instrumented/utilities.js';
-import * as hstory from '../../instrumented/history.js';
+import {NS} from '../../../instrumented/namespaces.js';
+import * as transformlist from '../../../instrumented/svgtransformlist.js';
+import * as utilities from '../../../instrumented/utilities.js';
+import * as hstory from '../../../instrumented/history.js';
 
 describe('history', function () {
   // TODO(codedread): Write tests for handling history events.

@@ -1,10 +1,10 @@
 /* globals SVGPathSeg */
-import '../../instrumented/jquery.min.js';
+import '../../../instrumented/jquery.min.js';
 
-import '../../instrumented/svgpathseg.js';
-import {NS} from '../../instrumented/namespaces.js';
-import * as utilities from '../../instrumented/utilities.js';
-import * as pathModule from '../../instrumented/path.js';
+import '../../../instrumented/svgpathseg.js';
+import {NS} from '../../../instrumented/namespaces.js';
+import * as utilities from '../../../instrumented/utilities.js';
+import * as pathModule from '../../../instrumented/path.js';
 
 describe('path', function () {
   /**

@@ -1,8 +1,8 @@
-import '../../instrumented/jquery.min.js';
+import '../../../instrumented/jquery.min.js';
 
-import {NS} from '../../instrumented/namespaces.js';
-import * as utilities from '../../instrumented/utilities.js';
-import * as coords from '../../instrumented/coords.js';
+import {NS} from '../../../instrumented/namespaces.js';
+import * as utilities from '../../../instrumented/utilities.js';
+import * as coords from '../../../instrumented/coords.js';
 
 describe('coords', function () {
   let elemId = 1;

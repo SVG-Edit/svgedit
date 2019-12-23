@@ -15,6 +15,10 @@
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
 - Testing: Add map file for underscore
+- Testing: Separate tests into unit/ui; split UI tests by specific domain;
+  setup browser-bug folder and ui issues folder
+- Testing: Create test utilities for selecting English and visiting and
+  approving storage
 - npm: Update scripts to reflect removal of `all_tests.html`;
   remove `browser-test` script
 - npm: Update devDeps, peerDeps

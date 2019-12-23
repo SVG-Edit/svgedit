@@ -1,27 +1,10 @@
 import {
-  approveStorage, openMainMenu,
-  openEditorPreferences
-} from '../support/ui-test-helper.js';
+  visitAndApproveStorage
+} from '../../support/ui-test-helper.js';
 
-describe('UI tests', function () {
+describe('UI - Control Points', function () {
   beforeEach(() => {
-    cy.visit('/instrumented/svg-editor-es.html');
-    // Ensure we test against English regardless of the original locale
-    approveStorage();
-    openEditorPreferences();
-    cy.get('#lang_select').select('en');
-    cy.get('#tool_prefs_save').click();
-  });
-
-  it('Editor - No parameters: Has export button', () => {
-    openMainMenu();
-    cy.get('#tool_export');
-  });
-
-  it('Editor - No parameters: Export button clicking; dialog opens', () => {
-    openMainMenu();
-    cy.get('#tool_export').click();
-    cy.get('#dialog_content select');
+    visitAndApproveStorage();
   });
 
   it('Editor - No parameters: Drag control point of arc path', () => {
