@@ -3,6 +3,11 @@ export const approveStorage = () => {
     .click();
 };
 
+export const visitAndApproveStorage = () => {
+  cy.visit('/instrumented/svg-editor-es.html');
+  approveStorage();
+};
+
 export const openMainMenu = () => {
   return cy.get('#main_icon').click();
 };
@@ -10,4 +15,10 @@ export const openMainMenu = () => {
 export const openEditorPreferences = () => {
   openMainMenu();
   return cy.get('#tool_prefs_option').click();
+};
+
+export const selectEnglish = () => {
+  openEditorPreferences();
+  cy.get('#lang_select').select('en');
+  cy.get('#tool_prefs_save').click();
 };

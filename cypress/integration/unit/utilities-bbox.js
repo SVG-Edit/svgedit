@@ -1,12 +1,12 @@
-import '../../instrumented/jquery.min.js';
+import '../../../instrumented/jquery.min.js';
 
-import '../../instrumented/svgpathseg.js';
-import {NS} from '../../instrumented/namespaces.js';
-import * as utilities from '../../instrumented/utilities.js';
-import * as transformlist from '../../instrumented/svgtransformlist.js';
-import * as math from '../../instrumented/math.js';
-import * as path from '../../instrumented/path.js';
-import setAssertionMethods from '../support/assert-close.js';
+import '../../../instrumented/svgpathseg.js';
+import {NS} from '../../../instrumented/namespaces.js';
+import * as utilities from '../../../instrumented/utilities.js';
+import * as transformlist from '../../../instrumented/svgtransformlist.js';
+import * as math from '../../../instrumented/math.js';
+import * as path from '../../../instrumented/path.js';
+import setAssertionMethods from '../../support/assert-close.js';
 
 chai.use(setAssertionMethods);
 

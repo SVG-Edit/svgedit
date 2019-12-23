@@ -1,11 +1,11 @@
-import '../../instrumented/jquery.min.js';
+import '../../../instrumented/jquery.min.js';
 
-import {NS} from '../../instrumented/namespaces.js';
-import * as transformlist from '../../instrumented/svgtransformlist.js';
-import {disableSupportsNativeTransformLists} from '../../instrumented/browser.js';
+import {NS} from '../../../instrumented/namespaces.js';
+import * as transformlist from '../../../instrumented/svgtransformlist.js';
+import {disableSupportsNativeTransformLists} from '../../../instrumented/browser.js';
 
-import almostEqualsPlugin from '../support/assert-almostEquals.js';
-import expectOutOfBoundsExceptionPlugin from '../support/assert-expectOutOfBoundsException.js';
+import almostEqualsPlugin from '../../support/assert-almostEquals.js';
+import expectOutOfBoundsExceptionPlugin from '../../support/assert-expectOutOfBoundsException.js';
 
 chai.use(almostEqualsPlugin);
 chai.use(expectOutOfBoundsExceptionPlugin);

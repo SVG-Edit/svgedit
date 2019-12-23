@@ -1,8 +1,8 @@
-import '../../instrumented/jquery.min.js';
-import '../../instrumented/jquery-ui/jquery-ui-1.8.17.custom.min.js';
+import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/jquery-ui/jquery-ui-1.8.17.custom.min.js';
 
-import '../../instrumented/svgpathseg.js';
-import SvgCanvas from '../../instrumented/svgcanvas.js';
+import '../../../instrumented/svgpathseg.js';
+import SvgCanvas from '../../../instrumented/svgcanvas.js';
 
 describe('Basic Module', function () {
   // helper functions

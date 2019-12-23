@@ -1,7 +1,7 @@
-import '../../instrumented/jquery.min.js';
+import '../../../instrumented/jquery.min.js';
 
-import {NS} from '../../instrumented/namespaces.js';
-import * as sanitize from '../../instrumented/sanitize.js';
+import {NS} from '../../../instrumented/namespaces.js';
+import * as sanitize from '../../../instrumented/sanitize.js';
 
 describe('sanitize', function () {
   const svg = document.createElementNS(NS.SVG, 'svg');
