@@ -14,7 +14,7 @@ export const openMainMenu = () => {
 
 export const openEditorPreferences = () => {
   openMainMenu();
-  return cy.get('#tool_prefs_option').click();
+  return cy.get('#tool_editor_prefs').click();
 };
 
 export const selectEnglish = () => {
