@@ -20,8 +20,8 @@
         <text x="325" y="150" fill="#010101" fill-opacity=".3" transform="scale(0.1)" textLength="530" lengthAdjust="spacing">Coverage</text>
         <text x="325" y="140" transform="scale(0.1)" textLength="530" lengthAdjust="spacing">Coverage</text>
     
-    <text x="885" y="150" fill="#010101" fill-opacity=".3" transform="scale(0.1)" textLength="430" lengthAdjust="spacing">22.02%</text>
-    <text x="885" y="140" transform="scale(0.1)" textLength="430" lengthAdjust="spacing">22.02%</text>
+    <text x="885" y="150" fill="#010101" fill-opacity=".3" transform="scale(0.1)" textLength="430" lengthAdjust="spacing">40.74%</text>
+    <text x="885" y="140" transform="scale(0.1)" textLength="430" lengthAdjust="spacing">40.74%</text>
   </g>
 
   
