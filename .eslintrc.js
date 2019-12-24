@@ -26,6 +26,7 @@ module.exports = {
       "JSON",
       "location.href",
       "location.origin",
+      "CustomEvent",
       "MutationObserver",
       "Object.assign", "Object.defineProperty", "Object.defineProperties",
       "Object.getOwnPropertyDescriptor",
