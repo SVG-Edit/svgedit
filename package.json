@@ -31,7 +31,7 @@
     "start": "echo \"Open file, e.g., to http://localhost:8000/editor/svg-editor-es.html\" && static -p 8000",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run && npm run coverage-badge",
-    "open-report": "open http://localhost:8000/coverage/",
+    "open-report": "open-cli http://localhost:8000/coverage/",
     "start-open-report": "run-p start open-report",
     "instrument:replace-html": "frs-replace \"../svgedit-config-es.js\" \"svgedit-config-es.js\" -i instrumented/svg-editor-es.html -o instrumented/svg-editor-es.html",
     "instrument:replace-js": "frs-replace \"editor/svg-editor.js\" \"svg-editor.js\" -i svgedit-config-es.js -o instrumented/svgedit-config-es.js",
