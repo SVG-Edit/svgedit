@@ -19,7 +19,7 @@
   setup browser-bug folder and ui issues folder
 - Testing: Create test utilities for selecting English and visiting and
   approving storage
-- npm: Add rimraf toward supporting Windows development (needed for
+- npm: Fix scripts for Windows development (needed for
   building docs and instrumenting)
 - npm: Update scripts to reflect removal of `all_tests.html`;
   remove `browser-test` script
