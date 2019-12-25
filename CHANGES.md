@@ -19,6 +19,10 @@
   setup browser-bug folder and ui issues folder
 - Testing: Create test utilities for selecting English and visiting and
   approving storage
+- Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
+- npm: Rename open script to open-tests, and add `open` script for opening
+  instance of svgedit
+- npm: Ensure starting server for open scripts
 - npm: Fix scripts for Windows development (needed for
   building docs and instrumenting)
 - npm: Update scripts to reflect removal of `all_tests.html`;

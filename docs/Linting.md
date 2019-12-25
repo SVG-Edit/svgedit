@@ -7,18 +7,6 @@ npm run eslint
 This will query both JavaScript files and will query JavaScript within
 Markdown files. It will also check for some JSDoc issues.
 
-## JSDoc
-
-To check for JSDoc issues, besides the eslint script, one may run the
-following to find any overly generic types in use (types should be as
-specific as possible):
-
-```
-npm run types-doc
-```
-
-See also [ReleaseInstructions](./ReleaseInstructions.md).
-
 ## Atom usage
 
 If using the Atom package `linter-eslint`, one may add `source.gfm` to the
