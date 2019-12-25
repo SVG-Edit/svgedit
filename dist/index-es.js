@@ -28395,6 +28395,8 @@ function () {
               tool_import: tools.import_doc,
               tool_open: tools.open_doc,
               tool_save: tools.save_doc,
+              tool_editor_prefs: config.editor_prefs,
+              tool_editor_homepage: tools.editor_homepage,
               svginfo_units_rulers: config.units_and_rulers,
               svginfo_rulers_onoff: config.show_rulers,
               svginfo_unit: config.base_unit,
@@ -28817,6 +28819,7 @@ if (!$.loadingStylesheets) {
 }
 */
 
+var homePage = 'https://github.com/SVG-Edit/svgedit';
 var stylesheet = 'svg-editor.css';
 
 if (!$$b.loadingStylesheets.includes(stylesheet)) {
@@ -30247,17 +30250,20 @@ editor.init = function () {
         warning: 'warning.png',
         node_delete: 'node_delete.png',
         node_clone: 'node_clone.png',
-        globe_link: 'globe_link.png'
+        globe_link: 'globe_link.png',
+        config: 'config.png'
       },
       placement: {
         '#logo': 'logo',
         '#tool_clear div,#layer_new': 'new_image',
         '#tool_save div': 'save',
         '#tool_export div': 'export',
-        '#tool_open div div': 'open',
-        '#tool_import div div': 'import',
+        '#tool_open div': 'open',
+        '#tool_import div': 'import',
         '#tool_source': 'source',
         '#tool_docprops > div': 'docprops',
+        '#tool_editor_prefs > div': 'config',
+        '#tool_editor_homepage > div': 'globe_link',
         '#tool_wireframe': 'wireframe',
         '#tool_undo': 'undo',
         '#tool_redo': 'redo',
@@ -34156,6 +34162,15 @@ editor.init = function () {
   */
 
 
+  var openHomePage = function openHomePage() {
+    window.open(homePage, '_blank');
+  };
+  /**
+  *
+  * @returns {void}
+  */
+
+
   var hideSourceEditor = function hideSourceEditor() {
     $$b('#svg_source_editor').hide();
     editingsource = false;
@@ -35386,18 +35401,31 @@ editor.init = function () {
     }, {
       sel: '#tool_docprops',
       fn: showDocProperties,
-      evt: 'mouseup'
+      evt: 'click'
     }, {
       sel: '#tool_prefs_save',
       fn: savePreferences,
       evt: 'click'
     }, {
-      sel: '#tool_prefs_option',
+      sel: '#tool_editor_prefs',
+      fn: showPreferences,
+      evt: 'click'
+    }, {
+      sel: '#tool_editor_homepage',
+      fn: openHomePage,
+      evt: 'click'
+    }, {
+      sel: '#tool_open',
       fn: function fn() {
-        showPreferences();
-        return false;
+        window.dispatchEvent(new CustomEvent('openImage'));
       },
-      evt: 'mouseup'
+      evt: 'click'
+    }, {
+      sel: '#tool_import',
+      fn: function fn() {
+        window.dispatchEvent(new CustomEvent('importImage'));
+      },
+      evt: 'click'
     }, {
       sel: '#tool_delete,#tool_delete_multi',
       fn: deleteSelected,
@@ -36303,9 +36331,15 @@ editor.init = function () {
         return _ref28.apply(this, arguments);
       };
     }());
-    $$b('#tool_open').show().prepend(open);
+    $$b('#tool_open').show();
+    $$b(window).on('openImage', function () {
+      return open.click();
+    });
     var imgImport = $$b('<input type="file">').change(importImage);
-    $$b('#tool_import').show().prepend(imgImport);
+    $$b('#tool_import').show();
+    $$b(window).on('importImage', function () {
+      return imgImport.click();
+    });
   }
 
   updateCanvas(true); //  const revnums = 'svg-editor.js ($Rev$) ';

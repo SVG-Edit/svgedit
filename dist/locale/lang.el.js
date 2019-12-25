@@ -129,6 +129,7 @@ var svgEditorLang_el = (function () {
       reorient_path: 'Reorient path',
       ungroup: 'Κατάργηση ομαδοποίησης Στοιχεία',
       docprops: 'Ιδιότητες εγγράφου',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: 'Μετακίνηση προς τα κάτω',
       move_top: 'Μετακίνηση στην αρχή',
       node_clone: 'Clone Node',

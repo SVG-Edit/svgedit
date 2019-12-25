@@ -129,6 +129,7 @@ var svgEditorLang_tl = (function () {
       reorient_path: 'Reorient path',
       ungroup: 'Ungroup Sangkap',
       docprops: 'Document Katangian',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: 'Ilipat sa Ibaba',
       move_top: 'Ilipat sa Tuktok',
       node_clone: 'Clone Node',

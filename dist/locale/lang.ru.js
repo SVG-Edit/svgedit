@@ -129,6 +129,7 @@ var svgEditorLang_ru = (function () {
       reorient_path: 'Изменить ориентацию контура',
       ungroup: 'Разгруппировать элементы',
       docprops: 'Свойства документа',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: 'Опустить',
       move_top: 'Поднять',
       node_clone: 'Создать копию узла',

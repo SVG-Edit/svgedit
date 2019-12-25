@@ -129,6 +129,7 @@ var svgEditorLang_hu = (function () {
       reorient_path: 'Reorient path',
       ungroup: 'Szétbont elemei',
       docprops: 'Dokumentum tulajdonságai',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: 'Mozgatás lefelé',
       move_top: 'Move to Top',
       node_clone: 'Clone Node',
