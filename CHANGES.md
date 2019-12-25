@@ -10,6 +10,7 @@
   that more permissive is noticeable first
 - Fix (Accessibility): Avoid duplicate IDs
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
+- Localization: Add 'SVG-Edit Home Page' to locale files
 - Linting (ESLint): Simplify regexes
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
 - Testing: Switch to Cypress with code coverage for UI testing;
