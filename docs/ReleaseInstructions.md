@@ -6,8 +6,8 @@
 1. `npm start` and in another console window, `npm test` - This should
     also be run, though currently accessibility tests are failing.
 1. `npm run build-docs` - Ensure JSDoc can build and is available for site
-    build (though not added to `master`, will be copied over in `gh-pages`
-    steps and used in `npm publish` step).
+    build (though not added to `master`, will be copied over in
+    the `SVG-Edit.github.io` steps and used in `npm publish` step).
 1. `npm pack --dry-run` to preview which files will be included once
     published and taking into account `.npmignore`.
 
@@ -24,19 +24,19 @@
 
 The above steps can be done on a fork and committed via a pull request.
 
-## Create the release on `gh-pages`
+## Create the release on `SVG-Edit.github.io`
 <!--
 2. From the root directory run `make`.
 3. Copy `build/svg-edit-X.Y.Z/`, `build/svg-edit-X.Y.Z-src.tar.gz`, and `build/svg-edit-X.Y.Z.zip` to a temporary directory.
 -->
 
-1. Switch to the `gh-pages` branch with `git checkout gh-pages`.
+1. Go to a clone of the latest <https://github.com/SVG-Edit/SVG-Edit.github.io>.
 1. Run the `build.js` executable (`npm run build` if within the project root
-    directory); **Please note: this script is only available on `gh-pages` and
-    currently assumes that one has the `gh-pages` branch checked out within
-    a folder that is in a sibling directory to a folder named `svgedit` that
-    is on the `master` branch and whose files and version info will be copied
-    over to `gh-pages` in making the "latest" and specific version builds**
+    directory); **Please note: this script currently assumes that one has this
+    repo within a folder that is in a sibling directory to a folder named
+    `svgedit` that is on the `master` branch and whose files and version info
+    will be copied over to the SVG-Edit.github.io repo in making the "latest"
+    and specific version builds**
 1. Commit these changes with `git commit -m "Updating files for release X.Y.Z"`.
 1. Switch back to the `master` branch with `git checkout master`.
 1. Ensure this step worked by visiting
