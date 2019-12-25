@@ -29,6 +29,7 @@
   building docs and instrumenting)
 - npm: Update scripts to reflect removal of `all_tests.html`;
   remove `browser-test` script
+- npm: Rename `test-prep` to `prep`
 - npm: Update devDeps, peerDeps
 
 ## 5.1.0

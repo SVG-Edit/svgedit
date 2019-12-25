@@ -13,7 +13,7 @@
     "node": ">= 8.5.0"
   },
   "scripts": {
-    "prepublishOnly": "npm run test-prep",
+    "prepublishOnly": "npm run prep",
     "build-by-config": "rollup -c rollup-config.config.js",
     "open-es-allext": "open-cli http://localhost:8000/editor/svg-editor-es.html?extensions=ext-arrows.js,ext-closepath.js,ext-foreignobject.js,ext-helloworld.js,ext-mathjax.js,ext-php_savefile.js,ext-server_moinsave.js,ext-server_opensave.js,ext-webappfind.js,ext-xdomain-messaging.js && npm start",
     "open": "open-cli http://localhost:8000/editor/svg-editor-es.html && npm start",
@@ -48,7 +48,7 @@
     "test-cov": "run-s -c test-cov-prereport report-summary",
     "test-cov-open": "npm-run-all instrument --parallel --race start cypress:run",
     "test-no-build": "npm run eslint && npm run build-html && npm run build-by-config && npm test",
-    "test-prep": "npm run eslint && npm run build-html && npm run rollup && npm run build-by-config",
+    "prep": "npm run eslint && npm run build-html && npm run rollup && npm run build-by-config",
     "test": "run-p start cypress:run"
   },
   "nyc": {
