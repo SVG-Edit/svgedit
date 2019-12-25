@@ -8,6 +8,7 @@
   "(MIT OR GPL-2.0-or-later)" per subsequent text
 - License: Reorder license listing in `jquery.contextMenu.js` so
   that more permissive is noticeable first
+- Fix: main menu style and text #371
 - Fix (Accessibility): Avoid duplicate IDs
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Localization: Add 'SVG-Edit Home Page' to locale files
