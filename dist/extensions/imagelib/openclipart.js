@@ -2739,6 +2739,10 @@
   }
 
   function _iterableToArrayLimit$2(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -2802,18 +2806,18 @@
               }
 
             case undefined:
-              {
-                // Array of nodes, QueryResult objects
-                // if (Array.isArray(content)) {
-                if (typeof content.reduce === 'function') {
-                  return content.reduce(function (s, node) {
-                    return s + convertToString(node, type);
-                  }, '');
-                }
+              // Array of nodes, QueryResult objects
+              // if (Array.isArray(content)) {
+              if (typeof content.reduce === 'function') {
+                return content.reduce(function (s, node) {
+                  return s + convertToString(node, type);
+                }, '');
               }
+
+              break;
           }
 
-          return;
+          return undefined;
         }
 
       case 'string':

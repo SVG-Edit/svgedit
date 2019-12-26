@@ -23,6 +23,9 @@
 - Testing: Create test utilities for selecting English and visiting and
   approving storage
 - Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
+- npm: Add `underscore` to copy script
+- npm: Make `copy`, `compress-images`, `start-embedded`, `build-docs-remove`
+  scripts cross-platform; add `start-allow-origin` script
 - npm: Rename open script to open-tests, and add `open` script for opening
   instance of svgedit
 - npm: Ensure starting server for open scripts
@@ -31,6 +34,7 @@
 - npm: Update scripts to reflect removal of `all_tests.html`;
   remove `browser-test` script
 - npm: Rename `test-prep` to `prep`
+- npm: Update `package-lock.json`
 - npm: Update devDeps, peerDeps
 
 ## 5.1.0
