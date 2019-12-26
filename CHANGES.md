@@ -10,6 +10,7 @@
   that more permissive is noticeable first
 - Fix: main menu style and text #371
 - Fix (Accessibility): Avoid duplicate IDs
+- Fix (openclipart browser): Redirect on lacking browser support
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Localization: Add 'SVG-Edit Home Page' to locale files
 - Linting (ESLint): Simplify regexes
