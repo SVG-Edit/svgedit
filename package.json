@@ -15,8 +15,8 @@
   "scripts": {
     "prepublishOnly": "npm run prep",
     "build-by-config": "rollup -c rollup-config.config.js",
-    "open-es-allext-no-start": "open-cli http://localhost:8000/editor/svg-editor-es.html?extensions=ext-arrows.js,ext-closepath.js,ext-foreignobject.js,ext-helloworld.js,ext-mathjax.js,ext-php_savefile.js,ext-server_moinsave.js,ext-server_opensave.js,ext-webappfind.js,ext-xdomain-messaging.js",
-    "open-es-allext": "run-p start open-es-allext-no-start",
+    "open-allext-no-start": "open-cli http://localhost:8000/editor/svg-editor-es.html?extensions=ext-arrows.js,ext-closepath.js,ext-foreignobject.js,ext-helloworld.js,ext-mathjax.js,ext-php_savefile.js,ext-server_moinsave.js,ext-server_opensave.js,ext-webappfind.js,ext-xdomain-messaging.js",
+    "open-allext": "run-p start open-allext-no-start",
     "open-no-start": "open-cli http://localhost:8000/editor/svg-editor-es.html",
     "open": "run-p start open-no-start",
     "build-docs-remove": "rimraf \"docs/jsdoc/*\"",
