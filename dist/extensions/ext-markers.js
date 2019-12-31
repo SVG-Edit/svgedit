@@ -38,7 +38,7 @@ var svgEditorExtension_markers = (function () {
   }
 
   /**
-   * ext-markers.js
+   * @file ext-markers.js
    *
    * @license Apache-2.0
    *

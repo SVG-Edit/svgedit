@@ -2,7 +2,7 @@ var svgEditorExtension_overview_window = (function () {
   'use strict';
 
   /**
-   * ext-overview_window.js
+   * @file ext-overview_window.js
    *
    * @license MIT
    *

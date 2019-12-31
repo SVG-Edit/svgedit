@@ -38,7 +38,7 @@ var svgEditorExtension_star = (function () {
   }
 
   /**
-   * ext-star.js
+   * @file ext-star.js
    *
    *
    * @copyright 2010 CloudCanvas, Inc. All rights reserved

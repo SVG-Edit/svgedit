@@ -1,5 +1,5 @@
 /**
- * Tools for working with units
+ * Tools for working with units.
  * @module units
  * @license MIT
  *
@@ -105,7 +105,7 @@ export const init = function (elementContainer) {
 };
 
 /**
-* Group: Unit conversion functions
+* Group: Unit conversion functions.
 */
 
 /**

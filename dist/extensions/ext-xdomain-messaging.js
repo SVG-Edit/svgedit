@@ -38,7 +38,7 @@ var svgEditorExtension_xdomain_messaging = (function () {
   /**
   * Should not be needed for same domain control (just call via child frame),
   *  but an API common for cross-domain and same domain use can be found
-  *  in embedapi.js with a demo at embedapi.html
+  *  in embedapi.js with a demo at embedapi.html.
   */
   var extXdomainMessaging = {
     name: 'xdomain-messaging',

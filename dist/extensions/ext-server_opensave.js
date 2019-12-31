@@ -243,7 +243,7 @@ var svgEditorExtension_server_opensave = (function () {
   }
 
   /**
-   * For parsing color values
+   * For parsing color values.
    * @module RGBColor
    * @author Stoyan Stefanov <sstoo@gmail.com>
    * @see https://www.phpied.com/rgb-color-parser-in-javascript/

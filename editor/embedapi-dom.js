@@ -68,7 +68,7 @@ function exportPDF () {
   svgCanvas.getUIStrings()(function (uiStrings) {
     const str = uiStrings.notification.loadingImage;
 
-    /**
+    /*
     // If you want to handle the PDF blob yourself, do as follows
     svgCanvas.bind('exportedPDF', function (win, data) {
       alert(data.output);

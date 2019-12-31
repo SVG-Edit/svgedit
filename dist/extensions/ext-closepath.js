@@ -38,7 +38,7 @@ var svgEditorExtension_closepath = (function () {
   }
 
   /**
-   * ext-closepath.js
+   * @file ext-closepath.js
    *
    * @license MIT
    *

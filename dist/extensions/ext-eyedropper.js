@@ -38,7 +38,7 @@ var svgEditorExtension_eyedropper = (function () {
   }
 
   /**
-   * ext-eyedropper.js
+   * @file ext-eyedropper.js
    *
    * @license MIT
    *

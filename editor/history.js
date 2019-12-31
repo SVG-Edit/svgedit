@@ -1,5 +1,5 @@
 /**
- * For command history tracking and undo functionality
+ * For command history tracking and undo functionality.
  * @module history
  * @license MIT
  * @copyright 2010 Jeff Schiller
@@ -9,7 +9,7 @@ import {getHref, setHref, getRotationAngle, isNullish} from './utilities.js';
 import {removeElementFromListMap} from './svgtransformlist.js';
 
 /**
-* Group: Undo/Redo history management
+* Group: Undo/Redo history management.
 */
 export const HistoryEventTypes = {
   BEFORE_APPLY: 'before_apply',
@@ -41,7 +41,7 @@ class Command {
  * @interface module:history.HistoryCommand
 */
 /**
- * Applies
+ * Applies.
  *
  * @function module:history.HistoryCommand#apply
  * @param {module:history.HistoryEventHandler} handler
@@ -50,29 +50,29 @@ class Command {
  */
 /**
  *
- * Unapplies
+ * Unapplies.
  * @function module:history.HistoryCommand#unapply
  * @param {module:history.HistoryEventHandler} handler
  * @fires module:history~Command#event:history
  * @returns {void|true}
  */
 /**
- * Returns the elements
+ * Returns the elements.
  * @function module:history.HistoryCommand#elements
  * @returns {Element[]}
  */
 /**
- * Gets the text
+ * Gets the text.
  * @function module:history.HistoryCommand#getText
  * @returns {string}
  */
 /**
- * Gives the type
+ * Gives the type.
  * @function module:history.HistoryCommand.type
  * @returns {string}
  */
 /**
- * Gives the type
+ * Gives the type.
  * @function module:history.HistoryCommand#type
  * @returns {string}
 */

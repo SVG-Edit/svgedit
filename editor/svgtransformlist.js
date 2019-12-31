@@ -69,27 +69,27 @@ let listMap_ = {};
 * @returns {SVGTransform}
 */
 /**
-* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* DOES NOT THROW DOMException, INDEX_SIZE_ERR.
 * @function module:SVGTransformList.SVGEditTransformList#getItem
 * @param {Integer} index unsigned long
 * @returns {SVGTransform}
 */
 /**
-* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* DOES NOT THROW DOMException, INDEX_SIZE_ERR.
 * @function module:SVGTransformList.SVGEditTransformList#insertItemBefore
 * @param {SVGTransform} newItem
 * @param {Integer} index unsigned long
 * @returns {SVGTransform}
 */
 /**
-* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* DOES NOT THROW DOMException, INDEX_SIZE_ERR.
 * @function module:SVGTransformList.SVGEditTransformList#replaceItem
 * @param {SVGTransform} newItem
 * @param {Integer} index unsigned long
 * @returns {SVGTransform}
 */
 /**
-* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* DOES NOT THROW DOMException, INDEX_SIZE_ERR.
 * @function module:SVGTransformList.SVGEditTransformList#removeItem
 * @param {Integer} index unsigned long
 * @returns {SVGTransform}
@@ -100,14 +100,14 @@ let listMap_ = {};
 * @returns {SVGTransform}
 */
 /**
-* NOT IMPLEMENTED
+* NOT IMPLEMENTED.
 * @ignore
 * @function module:SVGTransformList.SVGEditTransformList#createSVGTransformFromMatrix
 * @param {SVGMatrix} matrix
 * @returns {SVGTransform}
 */
 /**
-* NOT IMPLEMENTED
+* NOT IMPLEMENTED.
 * @ignore
 * @function module:SVGTransformList.SVGEditTransformList#consolidate
 * @returns {SVGTransform}

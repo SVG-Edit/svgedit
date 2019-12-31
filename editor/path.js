@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Path functionality
+ * Path functionality.
  * @module path
  * @license MIT
  *
@@ -86,7 +86,7 @@ let editorContext_ = null;
 */
 
 /**
-* Object with the following keys/values
+* Object with the following keys/values.
 * @typedef {PlainObject} module:path.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
 * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -111,7 +111,7 @@ let editorContext_ = null;
  * @returns {void}
 */
 /**
- * Note: This doesn't round to an integer necessarily
+ * Note: This doesn't round to an integer necessarily.
  * @function module:path.EditorContext#round
  * @param {Float} val
  * @returns {Float} Rounded value to nearest value based on `currentZoom`
@@ -193,17 +193,17 @@ let editorContext_ = null;
  * @returns {Float} The current zoom level
  */
 /**
- * Returns the last created DOM element ID string
+ * Returns the last created DOM element ID string.
  * @function module:path.EditorContext#getId
  * @returns {string}
  */
 /**
- * Creates and returns a unique ID string for a DOM element
+ * Creates and returns a unique ID string for a DOM element.
  * @function module:path.EditorContext#getNextId
  * @returns {string}
 */
 /**
- * Gets the desired element from a mouse event
+ * Gets the desired element from a mouse event.
  * @function module:path.EditorContext#getMouseTarget
  * @param {external:MouseEvent} evt - Event object from the mouse event
  * @returns {Element} DOM element we want
@@ -1503,7 +1503,7 @@ export const reorientGrads = function (elem, m) {
 };
 
 /**
-* This is how we map paths to our preferred relative segment types
+* This is how we map paths to our preferred relative segment types.
 * @name module:path.pathMap
 * @type {GenericArray}
 */
@@ -1699,8 +1699,8 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
 
 /* eslint-disable jsdoc/require-property */
 /**
-* Group: Path edit functions
-* Functions relating to editing path elements
+* Group: Path edit functions.
+* Functions relating to editing path elements.
 * @namespace {PlainObject} pathActions
 * @memberof module:path
 */
@@ -2640,7 +2640,7 @@ export const pathActions = (function () {
     },
     // Can't seem to use `@borrows` here, so using `@see`
     /**
-    * Smooth polyline into path
+    * Smooth polyline into path.
     * @function module:path.pathActions.smoothPolylineIntoPath
     * @see module:path~smoothPolylineIntoPath
     */
@@ -2704,7 +2704,7 @@ export const pathActions = (function () {
     },
     // Can't seem to use `@borrows` here, so using `@see`
     /**
-    * Convert a path to one with only absolute or relative values
+    * Convert a path to one with only absolute or relative values.
     * @function module:path.pathActions.convertPath
     * @see module:path.convertPath
     */

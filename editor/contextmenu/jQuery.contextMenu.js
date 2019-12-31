@@ -1,5 +1,5 @@
 /**
- * jQuery Context Menu Plugin
+ * @file jQuery Context Menu Plugin
  * Cory S.N. LaViska
  * A Beautiful Site ({@link https://abeautifulsite.net/})
  * Modified by Alexis Deveria

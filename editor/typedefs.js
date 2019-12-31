@@ -51,12 +51,12 @@
 
 /**
 * This should only be used for arrays known to be potentially arbitrary in form and
-* representing arguments for passing around
+* representing arguments for passing around.
 * @typedef {GenericArray} ArgumentsArray
 */
 
 /**
-* The `Any` type should only be used for items known to be wholly arbitrary
+* The `Any` type should only be used for items known to be wholly arbitrary.
 */
 
 /**

@@ -31,7 +31,7 @@ import {
 import loadStylesheets from './external/load-stylesheets/index-es.js';
 
 /**
-* The main module for the visual SVG Editor
+* The main module for the visual SVG Editor.
 *
 * @license MIT
 *
@@ -102,7 +102,7 @@ const callbacks = [],
   * @typedef {"s"|"m"|"l"|"xl"|Float} module:SVGEditor.IconSize
   */
   /**
-  * Preferences
+  * Preferences.
   * @interface module:SVGEditor.Prefs
   * @property {string} [lang="en"] Two-letter language code. The language must exist in the Editor Preferences language list. Defaults to "en" if `locale.js` detection does not detect another language.
   * @property {module:SVGEditor.IconSize} [iconsize="s"|"m"] Size of the toolbar icons. Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise.
@@ -122,12 +122,12 @@ const callbacks = [],
   defaultPrefs = /** @lends module:SVGEditor~defaultPrefs */ {
     // EDITOR OPTIONS (DIALOG)
     /**
-    * Default to "en" if locale.js detection does not detect another language
+    * Default to "en" if locale.js detection does not detect another language.
     */
     lang: '',
     /**
-    * Will default to 's' if the window height is smaller than the minimum height and
-    * 'm' otherwise
+    * Will default to 's' if the window height is smaller than the minimum
+    * height and 'm' otherwise.
     */
     iconsize: '',
     bkgd_color: '#FFF',
@@ -286,7 +286,7 @@ const callbacks = [],
     avoidClientSideOpen: false
   },
   /**
-  * LOCALE
+  * LOCALE.
   * @name module:SVGEditor.uiStrings
   * @type {PlainObject}
   */
@@ -381,7 +381,7 @@ function getImportLocale ({defaultLang, defaultName}) {
 }
 
 /**
-* EXPORTS
+* EXPORTS.
 */
 
 /**
@@ -569,7 +569,7 @@ editor.setConfig = function (opts, cfgCfg) {
 };
 
 /**
-* All methods are optional
+* All methods are optional.
 * @interface module:SVGEditor.CustomHandler
 * @type {PlainObject}
 */
@@ -586,7 +586,7 @@ editor.setConfig = function (opts, cfgCfg) {
 * Its responsibilities are:
 *  - accept the string contents of the current document
 *  - invoke a file chooser dialog in 'save' mode
-*  - save the file to location chosen by the user
+*  - save the file to location chosen by the user.
 * @function module:SVGEditor.CustomHandler#save
 * @param {external:Window} win
 * @param {module:svgcanvas.SvgCanvas#event:saved} svgStr A string of the SVG
@@ -3939,7 +3939,7 @@ editor.init = function () {
   // Made public for UI customization.
   // TODO: Group UI functions into a public editor.ui interface.
   /**
-   * See {@link http://api.jquery.com/bind/#bind-eventType-eventData-handler}
+   * See {@link http://api.jquery.com/bind/#bind-eventType-eventData-handler}.
    * @callback module:SVGEditor.DropDownCallback
    * @param {external:jQuery.Event} ev See {@link http://api.jquery.com/Types/#Event}
    * @listens external:jQuery.Event
@@ -5554,7 +5554,7 @@ editor.init = function () {
   ];
   /* eslint-disable jsdoc/require-property */
   /**
-   * Associate all button actions as well as non-button keyboard shortcuts
+   * Associate all button actions as well as non-button keyboard shortcuts.
    * @namespace {PlainObject} module:SVGEditor~Actions
    */
   const Actions = (function () {

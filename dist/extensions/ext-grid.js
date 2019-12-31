@@ -38,7 +38,7 @@ var svgEditorExtension_grid = (function () {
   }
 
   /**
-   * ext-grid.js
+   * @file ext-grid.js
    *
    * @license Apache-2.0
    *

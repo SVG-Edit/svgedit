@@ -1,5 +1,5 @@
 /**
- * ext-storage.js
+ * @file ext-storage.js
  *
  * This extension allows automatic saving of the SVG canvas contents upon
  *  page unload (which can later be automatically retrieved upon future

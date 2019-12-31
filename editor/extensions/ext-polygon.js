@@ -1,5 +1,5 @@
 /**
- * ext-polygon.js
+ * @file ext-polygon.js
  *
  *
  * @copyright 2010 CloudCanvas, Inc. All rights reserved

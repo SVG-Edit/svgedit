@@ -80,7 +80,7 @@ var svgEditorExtension_shapes = (function () {
   }
 
   /**
-   * ext-shapes.js
+   * @file ext-shapes.js
    *
    * @license MIT
    *

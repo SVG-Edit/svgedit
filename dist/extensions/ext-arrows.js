@@ -38,7 +38,7 @@ var svgEditorExtension_arrows = (function () {
   }
 
   /**
-   * ext-arrows.js
+   * @file ext-arrows.js
    *
    * @license MIT
    *

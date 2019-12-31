@@ -38,7 +38,7 @@ var svgEditorExtension_panning = (function () {
   }
 
   /**
-   * ext-panning.js
+   * @file ext-panning.js
    *
    * @license MIT
    *

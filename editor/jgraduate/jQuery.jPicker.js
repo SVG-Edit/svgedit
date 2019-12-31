@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
 /**
- * jPicker (Adapted from version 1.1.6)
+ * @file jPicker (Adapted from version 1.1.6)
  *
  * jQuery Plugin for Photoshop style color picker
  *
@@ -698,7 +698,7 @@ const jPicker = function ($) {
   $.jPicker = /** @lends external:jQuery.jPicker */ {
     /* eslint-enable jsdoc/require-property */
     /**
-    * Array holding references to each active instance of the jPicker control
+    * Array holding references to each active instance of the jPicker control.
     * @type {external:jQuery.fn.$.fn.jPicker[]}
     */
     List: [],
@@ -1006,7 +1006,7 @@ const jPicker = function ($) {
       }
     },
     /**
-    * color conversion methods  - make public to give use to external scripts
+    * Color conversion methods  - make public to give use to external scripts.
     * @namespace
     */
     ColorMethods: {
@@ -1191,7 +1191,7 @@ const jPicker = function ($) {
    */
 
   /**
-  * Will be bound to active {@link jQuery.jPicker.Color}
+  * Will be bound to active {@link jQuery.jPicker.Color}.
   * @callback module:jPicker.LiveCallback
   * @param {external:jQuery} ui
   * @param {Element} context
@@ -2331,8 +2331,8 @@ const jPicker = function ($) {
   * @property {string} localization.tooltips.hex.alpha
   */
   /**
-  * jPicker defaults - you can change anything in this section (such as the
-  * clientPath to your images) without fear of breaking the program
+  * The jPicker defaults - you can change anything in this section (such as the
+  * clientPath to your images) without fear of breaking the program.
   * @namespace {external:jQuery.fn.jPickerOptions} defaults
   * @memberof external:jQuery.fn.$.fn.jPicker
   * @borrows external:jQuery.fn.jPickerOptions as external:jQuery.fn.jPicker.defaults

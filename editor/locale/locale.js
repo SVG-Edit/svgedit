@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-fn-reference-in-iterator */
 /* globals jQuery */
 /**
- * Localizing script for SVG-edit UI
+ * Localizing script for SVG-edit UI.
  * @module locale
  * @license MIT
  *
@@ -11,11 +11,12 @@
  */
 
 /**
- * Used, for example, in the ImageLibs extension, to present libraries (with name/URL/description) in order
+ * Used, for example, in the ImageLibs extension, to present libraries
+ * (with name/URL/description) in order.
  * @typedef {GenericArray<module:locale.LocaleStrings>} module:locale.LocaleArray
 */
 /**
- * The string keys of the object are two-letter language codes
+ * The string keys of the object are two-letter language codes.
  * @tutorial LocaleDocs
  * @typedef {PlainObject<string, string|module:locale.LocaleStrings|module:locale.LocaleArray>} module:locale.LocaleStrings
  */
@@ -91,7 +92,7 @@ export const setStrings = function (type, obj, ids) {
 
 /**
 * The "data" property is generally set to an an array of objects with
-*   "id" and "title" or "textContent" properties
+*   "id" and "title" or "textContent" properties.
 * @typedef {PlainObject} module:locale.AddLangExtensionLocaleData
 * @property {module:locale.LocaleStrings[]} data See {@tutorial LocaleDocs}
 */

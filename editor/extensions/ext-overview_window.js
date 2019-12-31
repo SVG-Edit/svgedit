@@ -1,5 +1,5 @@
 /**
- * ext-overview_window.js
+ * @file ext-overview_window.js
  *
  * @license MIT
  *

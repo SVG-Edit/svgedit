@@ -1,5 +1,5 @@
 /**
- * HistoryRecordingService component of history
+ * HistoryRecordingService component of history.
  * @module history
  * @license MIT
  * @copyright 2016 Flint O'Brien

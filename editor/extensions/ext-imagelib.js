@@ -1,5 +1,5 @@
 /**
- * ext-imagelib.js
+ * @file ext-imagelib.js
  *
  * @license MIT
  *

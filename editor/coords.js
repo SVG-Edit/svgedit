@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Manipulating coordinates
+ * Manipulating coordinates.
  * @module coords
  * @license MIT
  */

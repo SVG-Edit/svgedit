@@ -1,5 +1,5 @@
 /**
- * ext-placemark.js
+ * @file ext-placemark.js
  *
  *
  * @copyright 2010 CloudCanvas, Inc. All rights reserved

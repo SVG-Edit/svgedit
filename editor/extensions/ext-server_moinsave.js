@@ -1,5 +1,5 @@
 /**
- * ext-server_moinsave.js
+ * @file ext-server_moinsave.js
  *
  * @license (MIT OR GPL-2.0-or-later)
  *

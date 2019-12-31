@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Miscellaneous utilities
+ * Miscellaneous utilities.
  * @module utilities
  * @license MIT
  *
@@ -38,7 +38,7 @@ let domcontainer_ = null;
 let svgroot_ = null;
 
 /**
-* Object with the following keys/values
+* Object with the following keys/values.
 * @typedef {PlainObject} module:utilities.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
 * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -60,7 +60,7 @@ let svgroot_ = null;
 /**
  * Create a new SVG element based on the given object keys/values and add it
  * to the current layer.
- * The element will be run through `cleanupElement` before being returned
+ * The element will be run through `cleanupElement` before being returned.
  * @function module:utilities.EditorContext#addSVGElementFromJson
  * @param {module:utilities.SVGElementJSON} data
  * @returns {Element} The new element

@@ -1,5 +1,5 @@
 /**
- * jGraduate 0.4
+ * @file jGraduate 0.4
  *
  * jQuery Plugin for a gradient picker
  *
@@ -86,13 +86,13 @@ export default function jQueryPluginJGraduate ($) {
          */
         this.type = options.copy.type;
         /**
-         * Represents opacity (0-100)
+         * Represents opacity (0-100).
          * @name module:jGraduate~Paint#alpha
          * @type {Float}
          */
         this.alpha = options.copy.alpha;
         /**
-         * Represents #RRGGBB hex of color
+         * Represents #RRGGBB hex of color.
          * @name module:jGraduate~Paint#solidColor
          * @type {string}
          */
@@ -169,7 +169,7 @@ export default function jQueryPluginJGraduate ($) {
   */
   $.fn.jGraduateDefaults = /** @lends external:jQuery.fn.jGraduateDefaults */ {
     /**
-    * Creates an object with a 'none' color
+    * Creates an object with a 'none' color.
     * @type {external:jQuery.jGraduate.Paint}
     * @see module:jGraduate.Options
     */

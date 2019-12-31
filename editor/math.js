@@ -1,5 +1,5 @@
 /**
- * Mathematical utilities
+ * Mathematical utilities.
  * @module math
  * @license MIT
  *

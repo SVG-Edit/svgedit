@@ -272,13 +272,13 @@
   document.addEventListener('touchcancel', touchHandler, true);
 
   /**
-   * Namespaces or tools therefor
+   * Namespaces or tools therefor.
    * @module namespaces
    * @license MIT
   */
 
   /**
-  * Common namepaces constants in alpha order
+  * Common namepaces constants in alpha order.
   * @enum {string}
   * @type {PlainObject}
   * @memberof module:namespaces
@@ -2909,7 +2909,7 @@
   };
 
   /**
-   * jQuery module to work with SVG attributes
+   * A jQuery module to work with SVG attributes.
    * @module jQueryAttr
    * @license MIT
    */
@@ -3079,14 +3079,14 @@
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#getItem
   * @param {Integer} index unsigned long
   * @returns {SVGTransform}
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#insertItemBefore
   * @param {SVGTransform} newItem
   * @param {Integer} index unsigned long
@@ -3094,7 +3094,7 @@
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#replaceItem
   * @param {SVGTransform} newItem
   * @param {Integer} index unsigned long
@@ -3102,7 +3102,7 @@
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#removeItem
   * @param {Integer} index unsigned long
   * @returns {SVGTransform}
@@ -3115,7 +3115,7 @@
   */
 
   /**
-  * NOT IMPLEMENTED
+  * NOT IMPLEMENTED.
   * @ignore
   * @function module:SVGTransformList.SVGEditTransformList#createSVGTransformFromMatrix
   * @param {SVGMatrix} matrix
@@ -3123,7 +3123,7 @@
   */
 
   /**
-  * NOT IMPLEMENTED
+  * NOT IMPLEMENTED.
   * @ignore
   * @function module:SVGTransformList.SVGEditTransformList#consolidate
   * @returns {SVGTransform}
@@ -3475,7 +3475,7 @@
   };
 
   /**
-   * Tools for working with units
+   * Tools for working with units.
    * @module units
    * @license MIT
    *
@@ -3579,7 +3579,7 @@
     };
   };
   /**
-  * Group: Unit conversion functions
+  * Group: Unit conversion functions.
   */
 
   /**
@@ -3761,7 +3761,7 @@
   };
 
   /**
-  * Group: Undo/Redo history management
+  * Group: Undo/Redo history management.
   */
 
   var HistoryEventTypes = {
@@ -3804,7 +3804,7 @@
   */
 
   /**
-   * Applies
+   * Applies.
    *
    * @function module:history.HistoryCommand#apply
    * @param {module:history.HistoryEventHandler} handler
@@ -3814,7 +3814,7 @@
 
   /**
    *
-   * Unapplies
+   * Unapplies.
    * @function module:history.HistoryCommand#unapply
    * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
@@ -3822,25 +3822,25 @@
    */
 
   /**
-   * Returns the elements
+   * Returns the elements.
    * @function module:history.HistoryCommand#elements
    * @returns {Element[]}
    */
 
   /**
-   * Gets the text
+   * Gets the text.
    * @function module:history.HistoryCommand#getText
    * @returns {string}
    */
 
   /**
-   * Gives the type
+   * Gives the type.
    * @function module:history.HistoryCommand.type
    * @returns {string}
    */
 
   /**
-   * Gives the type
+   * Gives the type.
    * @function module:history.HistoryCommand#type
    * @returns {string}
   */
@@ -4669,7 +4669,7 @@
   });
 
   /**
-   * Mathematical utilities
+   * Mathematical utilities.
    * @module math
    * @license MIT
    *
@@ -4965,7 +4965,7 @@
   */
 
   /**
-  * Object with the following keys/values
+  * Object with the following keys/values.
   * @typedef {PlainObject} module:path.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
   * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -4994,7 +4994,7 @@
   */
 
   /**
-   * Note: This doesn't round to an integer necessarily
+   * Note: This doesn't round to an integer necessarily.
    * @function module:path.EditorContext#round
    * @param {Float} val
    * @returns {Float} Rounded value to nearest value based on `currentZoom`
@@ -5092,19 +5092,19 @@
    */
 
   /**
-   * Returns the last created DOM element ID string
+   * Returns the last created DOM element ID string.
    * @function module:path.EditorContext#getId
    * @returns {string}
    */
 
   /**
-   * Creates and returns a unique ID string for a DOM element
+   * Creates and returns a unique ID string for a DOM element.
    * @function module:path.EditorContext#getNextId
    * @returns {string}
   */
 
   /**
-   * Gets the desired element from a mouse event
+   * Gets the desired element from a mouse event.
    * @function module:path.EditorContext#getMouseTarget
    * @param {external:MouseEvent} evt - Event object from the mouse event
    * @returns {Element} DOM element we want
@@ -6555,7 +6555,7 @@
     }
   };
   /**
-  * This is how we map paths to our preferred relative segment types
+  * This is how we map paths to our preferred relative segment types.
   * @name module:path.pathMap
   * @type {GenericArray}
   */
@@ -6811,8 +6811,8 @@
   /* eslint-disable jsdoc/require-property */
 
   /**
-  * Group: Path edit functions
-  * Functions relating to editing path elements
+  * Group: Path edit functions.
+  * Functions relating to editing path elements.
   * @namespace {PlainObject} pathActions
   * @memberof module:path
   */
@@ -7799,7 +7799,7 @@
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
-        * Smooth polyline into path
+        * Smooth polyline into path.
         * @function module:path.pathActions.smoothPolylineIntoPath
         * @see module:path~smoothPolylineIntoPath
         */
@@ -7877,7 +7877,7 @@
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
-        * Convert a path to one with only absolute or relative values
+        * Convert a path to one with only absolute or relative values.
         * @function module:path.pathActions.convertPath
         * @see module:path.convertPath
         */
@@ -7898,7 +7898,7 @@
   var domcontainer_ = null;
   var svgroot_ = null;
   /**
-  * Object with the following keys/values
+  * Object with the following keys/values.
   * @typedef {PlainObject} module:utilities.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
   * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -7922,7 +7922,7 @@
   /**
    * Create a new SVG element based on the given object keys/values and add it
    * to the current layer.
-   * The element will be run through `cleanupElement` before being returned
+   * The element will be run through `cleanupElement` before being returned.
    * @function module:utilities.EditorContext#addSVGElementFromJson
    * @param {module:utilities.SVGElementJSON} data
    * @returns {Element} The new element
@@ -9319,7 +9319,7 @@
   /* globals jQuery */
 
   /**
-   * Adds context menu functionality
+   * Adds context menu functionality.
    * @module contextmenu
    * @license Apache-2.0
    * @author Adam Bender
@@ -11077,7 +11077,7 @@
   }; // Layer API Functions
 
   /**
-  * Group: Layers
+  * Group: Layers.
   */
 
   /**
@@ -11125,7 +11125,7 @@
   */
 
   /**
-   * Run the callback function associated with the given event
+   * Run the callback function associated with the given event.
    * @function module:draw.DrawCanvasInit#call
    * @param {"changed"|"contextset"} ev - String with the event name
    * @param {module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset} arg - Argument to pass through to the callback
@@ -11449,7 +11449,7 @@
 
   /**
    * This defines which elements and attributes that we support (or at least
-   * don't remove)
+   * don't remove).
    * @type {PlainObject}
    */
 
@@ -13660,7 +13660,7 @@
     var svgroot = svgdoc.importNode(text2xml('<svg id="svgroot" xmlns="' + NS.SVG + '" xlinkns="' + NS.XLINK + '" ' + 'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' + '<defs>' + '<filter id="canvashadow" filterUnits="objectBoundingBox">' + '<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>' + '<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>' + '<feMerge>' + '<feMergeNode in="offsetBlur"/>' + '<feMergeNode in="SourceGraphic"/>' + '</feMerge>' + '</filter>' + '</defs>' + '</svg>').documentElement, true);
     container.append(svgroot);
     /**
-     * The actual element that represents the final output SVG element
+     * The actual element that represents the final output SVG element.
      * @name module:svgcanvas~svgcontent
      * @type {SVGSVGElement}
      */
@@ -13705,7 +13705,7 @@
       idprefix = p;
     };
     /**
-    * Current draw.Drawing object
+    * Current `draw.Drawing` object.
     * @type {module:draw.Drawing}
     * @name module:svgcanvas.SvgCanvas#current_drawing_
     */
@@ -13722,7 +13722,7 @@
       return canvas.current_drawing_;
     };
     /**
-    * Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
+    * Float displaying the current zoom level (1 = 100%, .5 = 50%, etc.).
     * @type {Float}
     */
 
@@ -13858,8 +13858,8 @@
       return curConfig.baseUnit;
     };
     /**
-    * initialize from units.js.
-    * Send in an object implementing the ElementContainer interface (see units.js)
+    * Initialize from units.js.
+    * Send in an object implementing the ElementContainer interface (see units.js).
     */
 
 
@@ -14091,7 +14091,7 @@
 
     init$6(curConfig,
     /**
-    * Export to select.js
+    * Export to select.js.
     * @implements {module:select.SVGFactory}
     */
     {
@@ -14107,7 +14107,7 @@
       getCurrentZoom: getCurrentZoom
     });
     /**
-    * This object manages selectors for us
+    * This object manages selectors for us.
     * @name module:svgcanvas.SvgCanvas#selectorManager
     * @type {module:select.SelectorManager}
     */
@@ -14924,26 +14924,26 @@
     var events = {};
     canvas.call = call;
     /**
-     * Array of what was changed (elements, layers)
+     * Array of what was changed (elements, layers).
      * @event module:svgcanvas.SvgCanvas#event:changed
      * @type {Element[]}
      */
 
     /**
-     * Array of selected elements
+     * Array of selected elements.
      * @event module:svgcanvas.SvgCanvas#event:selected
      * @type {Element[]}
      */
 
     /**
-     * Array of selected elements
+     * Array of selected elements.
      * @event module:svgcanvas.SvgCanvas#event:transition
      * @type {Element[]}
      */
 
     /**
      * The Element is always `SVGGElement`?
-     * If not `null`, will be the set current group element
+     * If not `null`, will be the set current group element.
      * @event module:svgcanvas.SvgCanvas#event:contextset
      * @type {null|Element}
      */
@@ -15004,7 +15004,7 @@
      */
 
     /**
-     * SVG canvas converted to string
+     * SVG canvas converted to string.
      * @event module:svgcanvas.SvgCanvas#event:saved
      * @type {string}
      */
@@ -15048,7 +15048,7 @@
 
     /**
      * The promise return, if present, resolves to `undefined`
-     *  (`extension_added`, `exported`, `saved`)
+     *  (`extension_added`, `exported`, `saved`).
      * @typedef {Promise<void>|void} module:svgcanvas.EventHandlerReturn
     */
 
@@ -15227,7 +15227,7 @@
 
     var rootSctm = null;
     /**
-    * Group: Selection
+    * Group: Selection.
     */
     // TODO: do we need to worry about selectedBBoxes here?
 
@@ -15794,7 +15794,7 @@
             break;
         }
         /**
-         * The main (left) mouse button is held down on the canvas area
+         * The main (left) mouse button is held down on the canvas area.
          * @event module:svgcanvas.SvgCanvas#event:ext_mouseDown
          * @type {PlainObject}
          * @property {MouseEvent} event The event object
@@ -16337,7 +16337,7 @@
             }
         }
         /**
-        * The mouse has moved on the canvas area
+        * The mouse has moved on the canvas area.
         * @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
         * @type {PlainObject}
         * @property {MouseEvent} event The event object
@@ -16654,7 +16654,7 @@
             }
         }
         /**
-        * The main (left) mouse button is released (anywhere)
+        * The main (left) mouse button is released (anywhere).
         * @event module:svgcanvas.SvgCanvas#event:ext_mouseUp
         * @type {PlainObject}
         * @property {MouseEvent} event The event object
@@ -16887,7 +16887,7 @@
 
     /**
     * Group: Text edit functions
-    * Functions relating to editing text elements
+    * Functions relating to editing text elements.
     * @namespace {PlainObject} textActions
     * @memberof module:svgcanvas.SvgCanvas#
     */
@@ -17412,7 +17412,7 @@
       );
     }();
     /**
-    * Group: Serialization
+    * Group: Serialization.
     */
 
     /**
@@ -17755,7 +17755,7 @@
     }; // end svgToString()
 
     /**
-     * Function to run when image data is found
+     * Function to run when image data is found.
      * @callback module:svgcanvas.ImageEmbeddedCallback
      * @param {string|false} result Data URL
      * @returns {void}
@@ -18928,7 +18928,7 @@
       }
     });
     /**
-    * Group: Document functions
+    * Group: Document functions.
     */
 
     /**
@@ -19395,7 +19395,7 @@
     */
 
     /**
-    * The bottom panel was updated
+    * The bottom panel was updated.
     * @event module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate
     * @type {PlainObject}
     * @property {boolean} nofill Indicates fill is disabled
@@ -19403,7 +19403,7 @@
     */
 
     /**
-    * The element selection has changed (elements were added/removed from selection)
+    * The element selection has changed (elements were added/removed from selection).
     * @event module:svgcanvas.SvgCanvas#event:ext_selectedChanged
     * @type {PlainObject}
     * @property {Element[]} elems Array of the newly selected elements
@@ -19420,14 +19420,14 @@
     */
 
     /**
-    * One or more elements were changed
+    * One or more elements were changed.
     * @event module:svgcanvas.SvgCanvas#event:ext_elementChanged
     * @type {PlainObject}
     * @property {Element[]} elems Array of the affected elements
     */
 
     /**
-    * Invoked as soon as the locale is ready
+    * Invoked as soon as the locale is ready.
     * @event module:svgcanvas.SvgCanvas#event:ext_langReady
     * @type {PlainObject}
     * @property {string} lang The two-letter language code
@@ -19450,13 +19450,13 @@
     */
 
     /**
-     * Called when new image is created
+     * Called when new image is created.
      * @event module:svgcanvas.SvgCanvas#event:ext_onNewDocument
      * @type {void}
      */
 
     /**
-     * Called when sidepanel is resized or toggled
+     * Called when sidepanel is resized or toggled.
      * @event module:svgcanvas.SvgCanvas#event:ext_workareaResized
      * @type {void}
     */
@@ -19517,7 +19517,7 @@
       currentMode = name;
     };
     /**
-    * Group: Element Styling
+    * Group: Element Styling.
     */
 
     /**
@@ -20390,7 +20390,7 @@
       canvas.ungroupSelectedElement();
     };
     /**
-    * Group: Element manipulation
+    * Group: Element manipulation.
     */
 
     /**
@@ -20739,7 +20739,7 @@
       clipb.forEach(checkIDs); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
 
       /**
-      * Triggered when `pasteElements` is called from a paste action (context menu or key)
+      * Triggered when `pasteElements` is called from a paste action (context menu or key).
       * @event module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
       * @type {PlainObject}
       * @property {module:svgcanvas.SVGAsJSON[]} elems
@@ -21543,7 +21543,7 @@
       this.moveSelectedElements(dx, dy);
     };
     /**
-    * Group: Additional editor tools
+    * Group: Additional editor tools.
     */
 
     /**
@@ -22320,7 +22320,7 @@
 
   // Todo: Move to own module (and have it import a modular base64 encoder)
   /**
-   * SVG Icon Loader 2.0
+   * @file SVG Icon Loader 2.0
    *
    * jQuery Plugin for loading SVG icons from a single file
    *
@@ -22481,13 +22481,13 @@
     var svgIcons = {};
     /**
      * Map of raster images with each key being the SVG icon ID
-     *   to replace, and the value the image file name
+     *   to replace, and the value the image file name.
      * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Fallback
     */
 
     /**
      * Map of raster images with each key being the SVG icon ID
-     *   whose `alt` will be set, and the value being the `alt` text
+     *   whose `alt` will be set, and the value being the `alt` text.
      * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Alts
     */
 
@@ -22902,7 +22902,7 @@
   }
 
   /**
-   * jGraduate 0.4
+   * @file jGraduate 0.4
    *
    * jQuery Plugin for a gradient picker
    *
@@ -23001,14 +23001,14 @@
          */
         this.type = options.copy.type;
         /**
-         * Represents opacity (0-100)
+         * Represents opacity (0-100).
          * @name module:jGraduate~Paint#alpha
          * @type {Float}
          */
 
         this.alpha = options.copy.alpha;
         /**
-         * Represents #RRGGBB hex of color
+         * Represents #RRGGBB hex of color.
          * @name module:jGraduate~Paint#solidColor
          * @type {string}
          */
@@ -23094,7 +23094,7 @@
     /** @lends external:jQuery.fn.jGraduateDefaults */
     {
       /**
-      * Creates an object with a 'none' color
+      * Creates an object with a 'none' color.
       * @type {external:jQuery.jGraduate.Paint}
       * @see module:jGraduate.Options
       */
@@ -24193,55 +24193,57 @@
   }
 
   /**
-   * SpinButton control
+   * SpinButton control.
    *
    * Adds bells and whistles to any ordinary textbox to
    * make it look and feel like a SpinButton Control.
    *
-   * Supplies {@link external:jQuery.fn.SpinButton} (and also {@link external:jQuery.loadingStylesheets})
+   * Supplies {@link external:jQuery.fn.SpinButton} (and also {@link external:jQuery.loadingStylesheets}).
    *
-   * Originally written by George Adamson, Software Unity (george.jquery@softwareunity.com) August 2006.
-   * - Added min/max options
-   * - Added step size option
-   * - Added bigStep (page up/down) option
+   * Originally written by George Adamson, Software Unity (george.jquery@softwareunity.com) August 2006:
+   * - Added min/max options.
+   * - Added step size option.
+   * - Added bigStep (page up/down) option.
    *
    * Modifications made by Mark Gibson, (mgibson@designlinks.net) September 2006:
-   * - Converted to jQuery plugin
-   * - Allow limited or unlimited min/max values
-   * - Allow custom class names, and add class to input element
-   * - Removed global vars
-   * - Reset (to original or through config) when invalid value entered
-   * - Repeat whilst holding mouse button down (with initial pause, like keyboard repeat)
-   * - Support mouse wheel in Firefox
-   * - Fix double click in IE
-   * - Refactored some code and renamed some vars
+   * - Converted to jQuery plugin.
+   * - Allow limited or unlimited min/max values.
+   * - Allow custom class names, and add class to input element.
+   * - Removed global vars.
+   * - Reset (to original or through config) when invalid value entered.
+   * - Repeat whilst holding mouse button down (with initial pause, like keyboard repeat).
+   * - Support mouse wheel in Firefox.
+   * - Fix double click in IE.
+   * - Refactored some code and renamed some vars.
    *
    * Modifications by Jeff Schiller, June 2009:
    * - provide callback function for when the value changes based on the following
-   *   {@link https://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html}
+   *   {@link https://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html}.
    *
    * Modifications by Jeff Schiller, July 2009:
-   * - improve styling for widget in Opera
-   * - consistent key-repeat handling cross-browser
+   * - improve styling for widget in Opera.
+   * - consistent key-repeat handling cross-browser.
    *
    * Modifications by Alexis Deveria, October 2009:
-   * - provide "stepfunc" callback option to allow custom function to run when changing a value
+   * - provide "stepfunc" callback option to allow custom function to run when changing a value.
    * - Made adjustValue(0) only run on certain keyup events, not all.
    *
-   * Tested in IE6, Opera9, Firefox 1.5
+   * Tested in IE6, Opera9, Firefox 1.5.
    *
-   * | Version | Date | Author | Notes
-   * |---------|------|--------|------|
-   * | v1.0 | 11 Aug 2006 | George Adamson | First release
-   * | v1.1 | Aug 2006 | George Adamson | Minor enhancements
-   * | v1.2 | 27 Sep 2006 | Mark Gibson | Major enhancements
-   * | v1.3a | 28 Sep 2006 | George Adamson | Minor enhancements
-   * | v1.4 | 18 Jun 2009 | Jeff Schiller | Added callback function
-   * | v1.5 | 06 Jul 2009 | Jeff Schiller | Fixes for Opera.
-   * | v1.6 | 13 Oct 2009 | Alexis Deveria | Added stepfunc function
-   * | v1.7 | 21 Oct 2009 | Alexis Deveria | Minor fixes.<br />Fast-repeat for keys and live updating as you type.
-   * | v1.8 | 12 Jan 2010 | Benjamin Thomas | Fixes for mouseout behavior.<br />Added smallStep
+   * | Version | Date | Author | Notes |
+   * |---------|------|--------|-------|
+   * | v1.0 | 11 Aug 2006 | George Adamson | First release |
+   * | v1.1 | Aug 2006 | George Adamson | Minor enhancements |
+   * | v1.2 | 27 Sep 2006 | Mark Gibson | Major enhancements |
+   * | v1.3a | 28 Sep 2006 | George Adamson | Minor enhancements |
+   * | v1.4 | 18 Jun 2009 | Jeff Schiller | Added callback function |
+   * | v1.5 | 06 Jul 2009 | Jeff Schiller | Fixes for Opera. |
+   * | v1.6 | 13 Oct 2009 | Alexis Deveria | Added stepfunc function |
+   * | v1.7 | 21 Oct 2009 | Alexis Deveria | Minor fixes.<br />Fast-repeat for keys and live updating as you type. |
+   * | v1.8 | 12 Jan 2010 | Benjamin Thomas | Fixes for mouseout behavior.<br />Added smallStep |
    * | v1.9 | 20 May 2018 | Brett Zamir | Avoid SVGEdit dependency via `stateObj` config;<br />convert to ES6 module |
+   * .
+   *
    * @module jQuerySpinButton
    * @example
     // Create group of settings to initialise spinbutton(s). (Optional)
@@ -24563,7 +24565,7 @@
   }
 
   /**
-   * jQuery Context Menu Plugin
+   * @file jQuery Context Menu Plugin
    * Cory S.N. LaViska
    * A Beautiful Site ({@link https://abeautifulsite.net/})
    * Modified by Alexis Deveria
@@ -24895,7 +24897,7 @@
   /* eslint-disable no-bitwise */
 
   /**
-   * jPicker (Adapted from version 1.1.6)
+   * @file jPicker (Adapted from version 1.1.6)
    *
    * jQuery Plugin for Photoshop style color picker
    *
@@ -25757,7 +25759,7 @@
       /* eslint-enable jsdoc/require-property */
 
       /**
-      * Array holding references to each active instance of the jPicker control
+      * Array holding references to each active instance of the jPicker control.
       * @type {external:jQuery.fn.$.fn.jPicker[]}
       */
       List: [],
@@ -26151,7 +26153,7 @@
       },
 
       /**
-      * color conversion methods  - make public to give use to external scripts
+      * Color conversion methods  - make public to give use to external scripts.
       * @namespace
       */
       ColorMethods: {
@@ -26386,7 +26388,7 @@
      */
 
     /**
-    * Will be bound to active {@link jQuery.jPicker.Color}
+    * Will be bound to active {@link jQuery.jPicker.Color}.
     * @callback module:jPicker.LiveCallback
     * @param {external:jQuery} ui
     * @param {Element} context
@@ -27825,8 +27827,8 @@
     */
 
     /**
-    * jPicker defaults - you can change anything in this section (such as the
-    * clientPath to your images) without fear of breaking the program
+    * The jPicker defaults - you can change anything in this section (such as the
+    * clientPath to your images) without fear of breaking the program.
     * @namespace {external:jQuery.fn.jPickerOptions} defaults
     * @memberof external:jQuery.fn.$.fn.jPicker
     * @borrows external:jQuery.fn.jPickerOptions as external:jQuery.fn.jPicker.defaults
@@ -28300,7 +28302,7 @@
   };
   /**
   * The "data" property is generally set to an an array of objects with
-  *   "id" and "title" or "textContent" properties
+  *   "id" and "title" or "textContent" properties.
   * @typedef {PlainObject} module:locale.AddLangExtensionLocaleData
   * @property {module:locale.LocaleStrings[]} data See {@tutorial LocaleDocs}
   */
@@ -28820,7 +28822,7 @@
   }
 
   /**
-  * The main module for the visual SVG Editor
+  * The main module for the visual SVG Editor.
   *
   * @license MIT
   *
@@ -28900,7 +28902,7 @@
   */
 
   /**
-  * Preferences
+  * Preferences.
   * @interface module:SVGEditor.Prefs
   * @property {string} [lang="en"] Two-letter language code. The language must exist in the Editor Preferences language list. Defaults to "en" if `locale.js` detection does not detect another language.
   * @property {module:SVGEditor.IconSize} [iconsize="s"|"m"] Size of the toolbar icons. Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise.
@@ -28924,13 +28926,13 @@
     // EDITOR OPTIONS (DIALOG)
 
     /**
-    * Default to "en" if locale.js detection does not detect another language
+    * Default to "en" if locale.js detection does not detect another language.
     */
     lang: '',
 
     /**
-    * Will default to 's' if the window height is smaller than the minimum height and
-    * 'm' otherwise
+    * Will default to 's' if the window height is smaller than the minimum
+    * height and 'm' otherwise.
     */
     iconsize: '',
     bkgd_color: '#FFF',
@@ -29098,7 +29100,7 @@
   },
 
   /**
-  * LOCALE
+  * LOCALE.
   * @name module:SVGEditor.uiStrings
   * @type {PlainObject}
   */
@@ -29271,7 +29273,7 @@
     );
   }
   /**
-  * EXPORTS
+  * EXPORTS.
   */
 
   /**
@@ -29457,7 +29459,7 @@
     editor.curConfig = curConfig; // Update exported value
   };
   /**
-  * All methods are optional
+  * All methods are optional.
   * @interface module:SVGEditor.CustomHandler
   * @type {PlainObject}
   */
@@ -29476,7 +29478,7 @@
   * Its responsibilities are:
   *  - accept the string contents of the current document
   *  - invoke a file chooser dialog in 'save' mode
-  *  - save the file to location chosen by the user
+  *  - save the file to location chosen by the user.
   * @function module:SVGEditor.CustomHandler#save
   * @param {external:Window} win
   * @param {module:svgcanvas.SvgCanvas#event:saved} svgStr A string of the SVG
@@ -33215,7 +33217,7 @@
     // TODO: Group UI functions into a public editor.ui interface.
 
     /**
-     * See {@link http://api.jquery.com/bind/#bind-eventType-eventData-handler}
+     * See {@link http://api.jquery.com/bind/#bind-eventType-eventData-handler}.
      * @callback module:SVGEditor.DropDownCallback
      * @param {external:jQuery.Event} ev See {@link http://api.jquery.com/Types/#Event}
      * @listens external:jQuery.Event
@@ -35267,7 +35269,7 @@
     /* eslint-disable jsdoc/require-property */
 
     /**
-     * Associate all button actions as well as non-button keyboard shortcuts
+     * Associate all button actions as well as non-button keyboard shortcuts.
      * @namespace {PlainObject} module:SVGEditor~Actions
      */
 

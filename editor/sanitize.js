@@ -1,5 +1,5 @@
 /**
- * Tools for SVG sanitization
+ * Tools for SVG sanitization.
  * @module sanitize
  * @license MIT
  *
@@ -15,7 +15,7 @@ const REVERSE_NS = getReverseNS();
 // Todo: Split out into core attributes, presentation attributes, etc. so consistent
 /**
  * This defines which elements and attributes that we support (or at least
- * don't remove)
+ * don't remove).
  * @type {PlainObject}
  */
 const svgWhiteList_ = {

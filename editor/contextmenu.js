@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Adds context menu functionality
+ * Adds context menu functionality.
  * @module contextmenu
  * @license Apache-2.0
  * @author Adam Bender

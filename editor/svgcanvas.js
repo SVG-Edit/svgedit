@@ -1,7 +1,7 @@
 /* eslint-disable indent, unicorn/no-fn-reference-in-iterator */
 /* globals jQuery, jsPDF */
 /**
- * Numerous tools for working with the editor's "canvas"
+ * Numerous tools for working with the editor's "canvas".
  * @module svgcanvas
  *
  * @license MIT
@@ -173,7 +173,7 @@ const svgroot = svgdoc.importNode(
 container.append(svgroot);
 
 /**
- * The actual element that represents the final output SVG element
+ * The actual element that represents the final output SVG element.
  * @name module:svgcanvas~svgcontent
  * @type {SVGSVGElement}
  */
@@ -220,7 +220,7 @@ canvas.setIdPrefix = function (p) {
 };
 
 /**
-* Current draw.Drawing object
+* Current `draw.Drawing` object.
 * @type {module:draw.Drawing}
 * @name module:svgcanvas.SvgCanvas#current_drawing_
 */
@@ -236,7 +236,7 @@ const getCurrentDrawing = canvas.getCurrentDrawing = function () {
 };
 
 /**
-* Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
+* Float displaying the current zoom level (1 = 100%, .5 = 50%, etc.).
 * @type {Float}
 */
 let currentZoom = 1;
@@ -373,8 +373,8 @@ canvas.transformListToTransform = transformListToTransform;
 const getBaseUnit = () => { return curConfig.baseUnit; };
 
 /**
-* initialize from units.js.
-* Send in an object implementing the ElementContainer interface (see units.js)
+* Initialize from units.js.
+* Send in an object implementing the ElementContainer interface (see units.js).
 */
 unitsInit(
   /**
@@ -578,7 +578,7 @@ const round = this.round = function (val) {
 selectInit(
   curConfig,
   /**
-  * Export to select.js
+  * Export to select.js.
   * @implements {module:select.SVGFactory}
   */
   {
@@ -589,7 +589,7 @@ selectInit(
   }
 );
 /**
-* This object manages selectors for us
+* This object manages selectors for us.
 * @name module:svgcanvas.SvgCanvas#selectorManager
 * @type {module:select.SelectorManager}
 */
@@ -1307,23 +1307,23 @@ const events = {};
 
 canvas.call = call;
 /**
- * Array of what was changed (elements, layers)
+ * Array of what was changed (elements, layers).
  * @event module:svgcanvas.SvgCanvas#event:changed
  * @type {Element[]}
  */
 /**
- * Array of selected elements
+ * Array of selected elements.
  * @event module:svgcanvas.SvgCanvas#event:selected
  * @type {Element[]}
  */
 /**
- * Array of selected elements
+ * Array of selected elements.
  * @event module:svgcanvas.SvgCanvas#event:transition
  * @type {Element[]}
  */
 /**
  * The Element is always `SVGGElement`?
- * If not `null`, will be the set current group element
+ * If not `null`, will be the set current group element.
  * @event module:svgcanvas.SvgCanvas#event:contextset
  * @type {null|Element}
  */
@@ -1376,7 +1376,7 @@ canvas.call = call;
  * @type {module:svgcanvas.Message}
  */
 /**
- * SVG canvas converted to string
+ * SVG canvas converted to string.
  * @event module:svgcanvas.SvgCanvas#event:saved
  * @type {string}
  */
@@ -1414,7 +1414,7 @@ canvas.call = call;
 
 /**
  * The promise return, if present, resolves to `undefined`
- *  (`extension_added`, `exported`, `saved`)
+ *  (`extension_added`, `exported`, `saved`).
  * @typedef {Promise<void>|void} module:svgcanvas.EventHandlerReturn
 */
 
@@ -1581,7 +1581,7 @@ const logMatrix = function (m) {
 let rootSctm = null;
 
 /**
-* Group: Selection
+* Group: Selection.
 */
 
 // TODO: do we need to worry about selectedBBoxes here?
@@ -2072,7 +2072,7 @@ const mouseDown = function (evt) {
   }
 
   /**
-   * The main (left) mouse button is held down on the canvas area
+   * The main (left) mouse button is held down on the canvas area.
    * @event module:svgcanvas.SvgCanvas#event:ext_mouseDown
    * @type {PlainObject}
    * @property {MouseEvent} event The event object
@@ -2524,7 +2524,7 @@ const mouseMove = function (evt) {
   }
 
   /**
-  * The mouse has moved on the canvas area
+  * The mouse has moved on the canvas area.
   * @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
   * @type {PlainObject}
   * @property {MouseEvent} event The event object
@@ -2786,7 +2786,7 @@ const mouseUp = function (evt) {
   }
 
   /**
-  * The main (left) mouse button is released (anywhere)
+  * The main (left) mouse button is released (anywhere).
   * @event module:svgcanvas.SvgCanvas#event:ext_mouseUp
   * @type {PlainObject}
   * @property {MouseEvent} event The event object
@@ -3025,7 +3025,7 @@ $(container).bind(
 /* eslint-disable jsdoc/require-property */
 /**
 * Group: Text edit functions
-* Functions relating to editing text elements
+* Functions relating to editing text elements.
 * @namespace {PlainObject} textActions
 * @memberof module:svgcanvas.SvgCanvas#
 */
@@ -3533,7 +3533,7 @@ return /** @lends module:svgcanvas.SvgCanvas#textActions */ {
 }());
 
 /**
-* Group: Serialization
+* Group: Serialization.
 */
 
 /**
@@ -3819,7 +3819,7 @@ this.svgToString = function (elem, indent) {
 }; // end svgToString()
 
 /**
- * Function to run when image data is found
+ * Function to run when image data is found.
  * @callback module:svgcanvas.ImageEmbeddedCallback
  * @param {string|false} result Data URL
  * @returns {void}
@@ -4824,7 +4824,7 @@ draw.init(
 );
 
 /**
-* Group: Document functions
+* Group: Document functions.
 */
 
 /**
@@ -5195,14 +5195,14 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 * @type {Float}
 */
 /**
-* The bottom panel was updated
+* The bottom panel was updated.
 * @event module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate
 * @type {PlainObject}
 * @property {boolean} nofill Indicates fill is disabled
 * @property {boolean} nostroke Indicates stroke is disabled
 */
 /**
-* The element selection has changed (elements were added/removed from selection)
+* The element selection has changed (elements were added/removed from selection).
 * @event module:svgcanvas.SvgCanvas#event:ext_selectedChanged
 * @type {PlainObject}
 * @property {Element[]} elems Array of the newly selected elements
@@ -5217,13 +5217,13 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 * @property {Element[]} elems Array of transitioning elements
 */
 /**
-* One or more elements were changed
+* One or more elements were changed.
 * @event module:svgcanvas.SvgCanvas#event:ext_elementChanged
 * @type {PlainObject}
 * @property {Element[]} elems Array of the affected elements
 */
 /**
-* Invoked as soon as the locale is ready
+* Invoked as soon as the locale is ready.
 * @event module:svgcanvas.SvgCanvas#event:ext_langReady
 * @type {PlainObject}
 * @property {string} lang The two-letter language code
@@ -5243,12 +5243,12 @@ this.setBBoxZoom = function (val, editorW, editorH) {
 * @property {module:SVGEditor~ImportLocale} importLocale
 */
 /**
- * Called when new image is created
+ * Called when new image is created.
  * @event module:svgcanvas.SvgCanvas#event:ext_onNewDocument
  * @type {void}
  */
 /**
- * Called when sidepanel is resized or toggled
+ * Called when sidepanel is resized or toggled.
  * @event module:svgcanvas.SvgCanvas#event:ext_workareaResized
  * @type {void}
 */
@@ -5300,7 +5300,7 @@ this.setMode = function (name) {
 };
 
 /**
-* Group: Element Styling
+* Group: Element Styling.
 */
 
 /**
@@ -6089,7 +6089,7 @@ this.removeHyperlink = function () {
 };
 
 /**
-* Group: Element manipulation
+* Group: Element manipulation.
 */
 
 /**
@@ -6393,7 +6393,7 @@ this.pasteElements = function (type, x, y) {
 
   // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
   /**
-  * Triggered when `pasteElements` is called from a paste action (context menu or key)
+  * Triggered when `pasteElements` is called from a paste action (context menu or key).
   * @event module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
   * @type {PlainObject}
   * @property {module:svgcanvas.SVGAsJSON[]} elems
@@ -7090,7 +7090,7 @@ this.alignSelectedElements = function (type, relativeTo) {
 };
 
 /**
-* Group: Additional editor tools
+* Group: Additional editor tools.
 */
 
 /**

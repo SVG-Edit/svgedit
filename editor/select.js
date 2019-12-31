@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * DOM element selection box tools
+ * DOM element selection box tools.
  * @module select
  * @license MIT
  *

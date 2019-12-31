@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Tools for drawing
+ * Tools for drawing.
  * @module draw
  * @license MIT
  * @copyright 2011 Jeff Schiller
@@ -697,7 +697,7 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 // Layer API Functions
 
 /**
-* Group: Layers
+* Group: Layers.
 */
 
 /**
@@ -738,7 +738,7 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
  * @returns {void}
 */
 /**
- * Run the callback function associated with the given event
+ * Run the callback function associated with the given event.
  * @function module:draw.DrawCanvasInit#call
  * @param {"changed"|"contextset"} ev - String with the event name
  * @param {module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset} arg - Argument to pass through to the callback
