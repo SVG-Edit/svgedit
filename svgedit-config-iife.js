@@ -9370,11 +9370,10 @@
     });
   };
 
-  // MIT License
-  // From: https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js
-
   /**
+   * Adapted from {@link https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js}.
    * @module importModule
+   * @license MIT
    */
 
   /**
@@ -22315,7 +22314,6 @@
     return jQuery;
   }
 
-  // Todo: Move to own module (and have it import a modular base64 encoder)
   /**
    * @file SVG Icon Loader 2.0
    *
@@ -22401,7 +22399,6 @@
     });
   });
   */
-
   var isOpera$1 = Boolean(window.opera);
 
   var fixIDs = function fixIDs(svgEl, svgNum, force) {
@@ -28817,22 +28814,6 @@
       return setupLink(stylesheetURL);
     }));
   }
-
-  /**
-  * The main module for the visual SVG Editor.
-  *
-  * @license MIT
-  *
-  * @copyright 2010 Alexis Deveria
-  * 2010 Pavol Rusnak
-  * 2010 Jeff Schiller
-  * 2010 Narendra Sisodiya
-  * 2014 Brett Zamir
-  * @exports module:SVGEditor
-  * @borrows module:locale.putLocale as putLocale
-  * @borrows module:locale.readLang as readLang
-  * @borrows module:locale.setStrings as setStrings
-  */
 
   var editor = {};
   var $$b = [jQueryPluginJSHotkeys, jQueryPluginBBQ, jQueryPluginSVGIcons, jQueryPluginJGraduate, jQueryPluginSpinButton, jQueryPluginSVG, jQueryContextMenu, jPicker].reduce(function (jq, func) {

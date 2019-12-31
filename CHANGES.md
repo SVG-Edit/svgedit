@@ -13,6 +13,7 @@
 - Fix (openclipart browser): Redirect on lacking browser support
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Localization: Add 'SVG-Edit Home Page' to locale files
+- Refactoring: Ensure file-global tags are at beginning of file
 - Linting (ESLint): Simplify regexes
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
 - Linting (ESLint): Update as per latest ash-nazg (bad jsdoc)

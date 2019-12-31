@@ -11272,11 +11272,10 @@ var SvgCanvas = (function () {
     }
   };
 
-  // MIT License
-  // From: https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js
-
   /**
+   * Adapted from {@link https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js}.
    * @module importModule
+   * @license MIT
    */
 
   /**

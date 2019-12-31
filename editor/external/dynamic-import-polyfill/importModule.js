@@ -1,8 +1,7 @@
-// MIT License
-// From: https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js
-
 /**
+ * Adapted from {@link https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js}.
  * @module importModule
+ * @license MIT
  */
 
 /**
@@ -64,6 +63,7 @@ export async function importSetGlobal (url, {global: glob, returnDefault}) {
   await importScript(url);
   return window[glob];
 }
+
 /**
  *
  * @author Brett Zamir (other items are from `dynamic-import-polyfill`)
