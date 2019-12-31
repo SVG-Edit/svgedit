@@ -7790,6 +7790,8 @@ var pathActions = function () {
 
         path.endChanges('Delete path node(s)');
       },
+
+      /* eslint-disable jsdoc/require-returns */
       // Can't seem to use `@borrows` here, so using `@see`
 
       /**
@@ -7798,6 +7800,8 @@ var pathActions = function () {
       * @see module:path~smoothPolylineIntoPath
       */
       smoothPolylineIntoPath: smoothPolylineIntoPath,
+
+      /* eslint-enable jsdoc/require-returns */
 
       /**
       * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
@@ -7868,6 +7872,8 @@ var pathActions = function () {
           editorContext_.resetD(elem);
         }
       },
+
+      /* eslint-disable jsdoc/require-returns */
       // Can't seem to use `@borrows` here, so using `@see`
 
       /**
@@ -7876,6 +7882,8 @@ var pathActions = function () {
       * @see module:path.convertPath
       */
       convertPath: convertPath
+      /* eslint-enable jsdoc/require-returns */
+
     }
   );
 }(); // end pathActions
@@ -26373,10 +26381,14 @@ var jPicker = function jPicker($) {
       List = _$$jPicker.List,
       ColorMethods = _$$jPicker.ColorMethods; // local copies for YUI compressor
 
+  /* eslint-disable jsdoc/require-returns */
+
   /**
    * @function external:jQuery.fn.jPicker
    * @see {@link external:jQuery.fn.$.fn.jPicker}
    */
+
+  /* eslint-enable jsdoc/require-returns */
 
   /**
   * Will be bound to active {@link jQuery.jPicker.Color}.

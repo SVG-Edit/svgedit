@@ -7862,6 +7862,8 @@ var SvgCanvas = (function () {
 
           path.endChanges('Delete path node(s)');
         },
+
+        /* eslint-disable jsdoc/require-returns */
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
@@ -7870,6 +7872,8 @@ var SvgCanvas = (function () {
         * @see module:path~smoothPolylineIntoPath
         */
         smoothPolylineIntoPath: smoothPolylineIntoPath,
+
+        /* eslint-enable jsdoc/require-returns */
 
         /**
         * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
@@ -7940,6 +7944,8 @@ var SvgCanvas = (function () {
             editorContext_.resetD(elem);
           }
         },
+
+        /* eslint-disable jsdoc/require-returns */
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
@@ -7948,6 +7954,8 @@ var SvgCanvas = (function () {
         * @see module:path.convertPath
         */
         convertPath: convertPath
+        /* eslint-enable jsdoc/require-returns */
+
       }
     );
   }(); // end pathActions

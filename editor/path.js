@@ -2638,6 +2638,7 @@ export const pathActions = (function () {
       }
       path.endChanges('Delete path node(s)');
     },
+    /* eslint-disable jsdoc/require-returns */
     // Can't seem to use `@borrows` here, so using `@see`
     /**
     * Smooth polyline into path.
@@ -2645,6 +2646,7 @@ export const pathActions = (function () {
     * @see module:path~smoothPolylineIntoPath
     */
     smoothPolylineIntoPath,
+    /* eslint-enable jsdoc/require-returns */
     /**
     * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
     * @returns {void}
@@ -2702,6 +2704,7 @@ export const pathActions = (function () {
       }
       if (isWebkit()) { editorContext_.resetD(elem); }
     },
+    /* eslint-disable jsdoc/require-returns */
     // Can't seem to use `@borrows` here, so using `@see`
     /**
     * Convert a path to one with only absolute or relative values.
@@ -2709,6 +2712,7 @@ export const pathActions = (function () {
     * @see module:path.convertPath
     */
     convertPath
+    /* eslint-enable jsdoc/require-returns */
   });
 })();
 // end pathActions

@@ -1185,10 +1185,12 @@ const jPicker = function ($) {
     }
   };
   const {Color, List, ColorMethods} = $.jPicker; // local copies for YUI compressor
+  /* eslint-disable jsdoc/require-returns */
   /**
    * @function external:jQuery.fn.jPicker
    * @see {@link external:jQuery.fn.$.fn.jPicker}
    */
+  /* eslint-enable jsdoc/require-returns */
 
   /**
   * Will be bound to active {@link jQuery.jPicker.Color}.

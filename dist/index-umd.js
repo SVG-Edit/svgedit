@@ -7796,6 +7796,8 @@
 
           path.endChanges('Delete path node(s)');
         },
+
+        /* eslint-disable jsdoc/require-returns */
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
@@ -7804,6 +7806,8 @@
         * @see module:path~smoothPolylineIntoPath
         */
         smoothPolylineIntoPath: smoothPolylineIntoPath,
+
+        /* eslint-enable jsdoc/require-returns */
 
         /**
         * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
@@ -7874,6 +7878,8 @@
             editorContext_.resetD(elem);
           }
         },
+
+        /* eslint-disable jsdoc/require-returns */
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
@@ -7882,6 +7888,8 @@
         * @see module:path.convertPath
         */
         convertPath: convertPath
+        /* eslint-enable jsdoc/require-returns */
+
       }
     );
   }(); // end pathActions
@@ -26379,10 +26387,14 @@
         List = _$$jPicker.List,
         ColorMethods = _$$jPicker.ColorMethods; // local copies for YUI compressor
 
+    /* eslint-disable jsdoc/require-returns */
+
     /**
      * @function external:jQuery.fn.jPicker
      * @see {@link external:jQuery.fn.$.fn.jPicker}
      */
+
+    /* eslint-enable jsdoc/require-returns */
 
     /**
     * Will be bound to active {@link jQuery.jPicker.Color}.
