@@ -23,6 +23,7 @@ import {isMac} from '../browser.js';
 * @param {string} href The `href` value after the first character (for bypassing an initial `#`)
 * @param {external:jQuery} srcElement The wrapped jQuery srcElement
 * @param {{x: Float, y: Float, docX: Float, docY: Float}} coords
+* @returns {void}
 */
 
 /**

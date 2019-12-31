@@ -3873,7 +3873,7 @@ var SvgCanvas = (function () {
    * Applies
    *
    * @function module:history.HistoryCommand#apply
-   * @param {module:history.HistoryEventHandler}
+   * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {void|true}
    */
@@ -3882,7 +3882,7 @@ var SvgCanvas = (function () {
    *
    * Unapplies
    * @function module:history.HistoryCommand#unapply
-   * @param {module:history.HistoryEventHandler}
+   * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {void|true}
    */

@@ -16,6 +16,8 @@ let contextMenuExtensions = {};
  * Signature depends on what the user adds; in the case of our uses with
  * SVGEditor, no parameters are passed nor anything expected for a return.
  * @callback module:contextmenu.MenuItemAction
+ * @param {...args} args
+ * @returns {any}
 */
 
 /**

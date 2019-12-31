@@ -149,6 +149,7 @@ const fixIDs = function (svgEl, svgNum, force) {
 /**
 * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
 * @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
+* @returns {void}
 */
 
 /**

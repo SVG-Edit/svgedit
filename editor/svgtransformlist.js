@@ -383,6 +383,7 @@ export const getTransformList = function (elem) {
 /**
 * @callback module:SVGTransformList.removeElementFromListMap
 * @param {Element} elem
+* @returns {void}
 */
 /**
 * Replace `removeElementFromListMap` for unit-testing.

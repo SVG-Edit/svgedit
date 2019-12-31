@@ -3801,7 +3801,7 @@ function () {
  * Applies
  *
  * @function module:history.HistoryCommand#apply
- * @param {module:history.HistoryEventHandler}
+ * @param {module:history.HistoryEventHandler} handler
  * @fires module:history~Command#event:history
  * @returns {void|true}
  */
@@ -3810,7 +3810,7 @@ function () {
  *
  * Unapplies
  * @function module:history.HistoryCommand#unapply
- * @param {module:history.HistoryEventHandler}
+ * @param {module:history.HistoryEventHandler} handler
  * @fires module:history~Command#event:history
  * @returns {void|true}
  */
@@ -22461,6 +22461,7 @@ var fixIDs = function fixIDs(svgEl, svgNum, force) {
 /**
 * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
 * @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
+* @returns {void}
 */
 
 /**
@@ -24578,6 +24579,7 @@ function jQueryPluginSpinButton($) {
 * @param {string} href The `href` value after the first character (for bypassing an initial `#`)
 * @param {external:jQuery} srcElement The wrapped jQuery srcElement
 * @param {{x: Float, y: Float, docX: Float, docY: Float}} coords
+* @returns {void}
 */
 
 /**

@@ -3804,7 +3804,7 @@
    * Applies
    *
    * @function module:history.HistoryCommand#apply
-   * @param {module:history.HistoryEventHandler}
+   * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {void|true}
    */
@@ -3813,7 +3813,7 @@
    *
    * Unapplies
    * @function module:history.HistoryCommand#unapply
-   * @param {module:history.HistoryEventHandler}
+   * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {void|true}
    */
@@ -22464,6 +22464,7 @@
   /**
   * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
   * @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
+  * @returns {void}
   */
 
   /**
@@ -24581,6 +24582,7 @@
   * @param {string} href The `href` value after the first character (for bypassing an initial `#`)
   * @param {external:jQuery} srcElement The wrapped jQuery srcElement
   * @param {{x: Float, y: Float, docX: Float, docY: Float}} coords
+  * @returns {void}
   */
 
   /**
