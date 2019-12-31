@@ -1697,6 +1697,7 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
   return segment;
 }
 
+/* eslint-disable jsdoc/require-property */
 /**
 * Group: Path edit functions
 * Functions relating to editing path elements
@@ -1704,6 +1705,7 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
 * @memberof module:path
 */
 export const pathActions = (function () {
+  /* eslint-enable jsdoc/require-property */
   let subpath = false;
   let newPoint, firstCtrl;
 

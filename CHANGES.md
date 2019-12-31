@@ -15,6 +15,7 @@
 - Localization: Add 'SVG-Edit Home Page' to locale files
 - Linting (ESLint): Simplify regexes
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
+- Linting (ESLint): Update as per latest ash-nazg (bad jsdoc)
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
 - Testing: Add map file for underscore

@@ -690,11 +690,13 @@ const jPicker = function ($) {
   * @property {string} [ahex]
   */
 
+  /* eslint-disable jsdoc/require-property */
   /**
   * @namespace {PlainObject} jPicker
   * @memberof external:jQuery
   */
   $.jPicker = /** @lends external:jQuery.jPicker */ {
+    /* eslint-enable jsdoc/require-property */
     /**
     * Array holding references to each active instance of the jPicker control
     * @type {external:jQuery.fn.$.fn.jPicker[]}

@@ -17,6 +17,7 @@
  * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
 
+/* eslint-disable jsdoc/require-property */
 /**
   * The jQuery namespace.
   * @external jQuery
@@ -27,6 +28,7 @@
  * @memberof external:jQuery
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
+/* eslint-enable jsdoc/require-property */
 
 const ns = {
   svg: 'http://www.w3.org/2000/svg',
@@ -59,11 +61,11 @@ export default function jQueryPluginJGraduate ($) {
 
   /**
   * @typedef {PlainObject} module:jGraduate.jGraduatePaintOptions
-  * @param {Float} [alpha]
-  * @param {module:jGraduate~Paint} [copy] Copy paint object
-  * @param {SVGLinearGradientElement} [linearGradient]
-  * @param {SVGRadialGradientElement} [radialGradient]
-  * @param {string} [solidColor]
+  * @property {Float} [alpha]
+  * @property {module:jGraduate~Paint} [copy] Copy paint object
+  * @property {SVGLinearGradientElement} [linearGradient]
+  * @property {SVGRadialGradientElement} [radialGradient]
+  * @property {string} [solidColor]
   */
 
   /**
@@ -144,11 +146,14 @@ export default function jQueryPluginJGraduate ($) {
       }
     }
   }
+
+  /* eslint-disable jsdoc/require-property */
   /**
   * @namespace {PlainObject} jGraduate
   * @memberof external:jQuery
   */
   $.jGraduate = /** @lends external:jQuery.jGraduate */ {
+    /* eslint-enable jsdoc/require-property */
     /**
     * @class external:jQuery.jGraduate.Paint
     * @see module:jGraduate~Paint

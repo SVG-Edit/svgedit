@@ -911,17 +911,17 @@ var svgEditorExtension_server_moinsave = (function () {
 
   /**
   * @typedef {PlainObject} module:canvg.CanvgOptions
-  * @property {boolean} opts.ignoreMouse true => ignore mouse events
-  * @property {boolean} opts.ignoreAnimation true => ignore animations
-  * @property {boolean} opts.ignoreDimensions true => does not try to resize canvas
-  * @property {boolean} opts.ignoreClear true => does not clear canvas
-  * @property {Integer} opts.offsetX int => draws at a x offset
-  * @property {Integer} opts.offsetY int => draws at a y offset
-  * @property {Integer} opts.scaleWidth int => scales horizontally to width
-  * @property {Integer} opts.scaleHeight int => scales vertically to height
-  * @property {module:canvg.ForceRedraw} opts.forceRedraw function => will call the function on every frame, if it returns true, will redraw
-  * @property {boolean} opts.log Adds log function
-  * @property {boolean} opts.useCORS Whether to set CORS `crossOrigin` for the image to `Anonymous`
+  * @property {boolean} ignoreMouse true => ignore mouse events
+  * @property {boolean} ignoreAnimation true => ignore animations
+  * @property {boolean} ignoreDimensions true => does not try to resize canvas
+  * @property {boolean} ignoreClear true => does not clear canvas
+  * @property {Integer} offsetX int => draws at a x offset
+  * @property {Integer} offsetY int => draws at a y offset
+  * @property {Integer} scaleWidth int => scales horizontally to width
+  * @property {Integer} scaleHeight int => scales vertically to height
+  * @property {module:canvg.ForceRedraw} forceRedraw function => will call the function on every frame, if it returns true, will redraw
+  * @property {boolean} log Adds log function
+  * @property {boolean} useCORS Whether to set CORS `crossOrigin` for the image to `Anonymous`
   */
 
   /**

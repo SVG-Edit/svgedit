@@ -1139,8 +1139,8 @@ const runExtensions = this.runExtensions = function (action, vars, returnArray, 
 */
 /**
 * @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
-* @param {external:jQuery} initArgs.$
-* @param {module:SVGEditor~ImportLocale} initArgs.importLocale
+* @property {external:jQuery} $
+* @property {module:SVGEditor~ImportLocale} importLocale
 */
 /**
 * Add an extension to the editor.
@@ -3022,6 +3022,7 @@ $(container).bind(
 );
 }());
 
+/* eslint-disable jsdoc/require-property */
 /**
 * Group: Text edit functions
 * Functions relating to editing text elements
@@ -3029,6 +3030,7 @@ $(container).bind(
 * @memberof module:svgcanvas.SvgCanvas#
 */
 const textActions = canvas.textActions = (function () {
+/* eslint-enable jsdoc/require-property */
 let curtext;
 let textinput;
 let cursor;

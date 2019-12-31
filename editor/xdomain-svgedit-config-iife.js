@@ -6805,6 +6805,8 @@
 
     return segment;
   }
+  /* eslint-disable jsdoc/require-property */
+
   /**
   * Group: Path edit functions
   * Functions relating to editing path elements
@@ -6814,6 +6816,7 @@
 
 
   var pathActions = function () {
+    /* eslint-enable jsdoc/require-property */
     var subpath = false;
     var newPoint, firstCtrl;
     var currentPath = null;
@@ -14697,8 +14700,8 @@
 
     /**
     * @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
-    * @param {external:jQuery} initArgs.$
-    * @param {module:SVGEditor~ImportLocale} initArgs.importLocale
+    * @property {external:jQuery} $
+    * @property {module:SVGEditor~ImportLocale} importLocale
     */
 
     /**
@@ -16877,6 +16880,8 @@
         call('zoomDone');
       });
     })();
+    /* eslint-disable jsdoc/require-property */
+
     /**
     * Group: Text edit functions
     * Functions relating to editing text elements
@@ -16886,6 +16891,7 @@
 
 
     var textActions = canvas.textActions = function () {
+      /* eslint-enable jsdoc/require-property */
       var curtext;
       var textinput;
       var cursor;
@@ -22910,6 +22916,8 @@
    * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
   */
 
+  /* eslint-disable jsdoc/require-property */
+
   /**
     * The jQuery namespace.
     * @external jQuery
@@ -22921,6 +22929,8 @@
    * @memberof external:jQuery
    * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
    */
+
+  /* eslint-enable jsdoc/require-property */
   var ns = {
     svg: 'http://www.w3.org/2000/svg',
     xlink: 'http://www.w3.org/1999/xlink'
@@ -22958,11 +22968,11 @@
     }
     /**
     * @typedef {PlainObject} module:jGraduate.jGraduatePaintOptions
-    * @param {Float} [alpha]
-    * @param {module:jGraduate~Paint} [copy] Copy paint object
-    * @param {SVGLinearGradientElement} [linearGradient]
-    * @param {SVGRadialGradientElement} [radialGradient]
-    * @param {string} [solidColor]
+    * @property {Float} [alpha]
+    * @property {module:jGraduate~Paint} [copy] Copy paint object
+    * @property {SVGLinearGradientElement} [linearGradient]
+    * @property {SVGRadialGradientElement} [radialGradient]
+    * @property {string} [solidColor]
     */
 
     /**
@@ -23050,6 +23060,8 @@
         this.radialGradient = null;
       }
     };
+    /* eslint-disable jsdoc/require-property */
+
     /**
     * @namespace {PlainObject} jGraduate
     * @memberof external:jQuery
@@ -23059,6 +23071,8 @@
     $.jGraduate =
     /** @lends external:jQuery.jGraduate */
     {
+      /* eslint-enable jsdoc/require-property */
+
       /**
       * @class external:jQuery.jGraduate.Paint
       * @see module:jGraduate~Paint
@@ -25724,6 +25738,8 @@
     * @property {string} [ahex]
     */
 
+    /* eslint-disable jsdoc/require-property */
+
     /**
     * @namespace {PlainObject} jPicker
     * @memberof external:jQuery
@@ -25733,6 +25749,8 @@
     $.jPicker =
     /** @lends external:jQuery.jPicker */
     {
+      /* eslint-enable jsdoc/require-property */
+
       /**
       * Array holding references to each active instance of the jPicker control
       * @type {external:jQuery.fn.$.fn.jPicker[]}
@@ -35241,12 +35259,16 @@
 
     $$b('input,select').attr('autocomplete', 'off');
     var dialogSelectors = ['#tool_source_cancel', '#tool_docprops_cancel', '#tool_prefs_cancel', '.overlay'];
+    /* eslint-disable jsdoc/require-property */
+
     /**
      * Associate all button actions as well as non-button keyboard shortcuts
      * @namespace {PlainObject} module:SVGEditor~Actions
      */
 
     var Actions = function () {
+      /* eslint-enable jsdoc/require-property */
+
       /**
       * @typedef {PlainObject} module:SVGEditor.ToolButton
       * @property {string} sel The CSS selector for the tool

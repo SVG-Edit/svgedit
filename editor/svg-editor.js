@@ -5552,11 +5552,13 @@ editor.init = function () {
     '#tool_source_cancel', '#tool_docprops_cancel',
     '#tool_prefs_cancel', '.overlay'
   ];
+  /* eslint-disable jsdoc/require-property */
   /**
    * Associate all button actions as well as non-button keyboard shortcuts
    * @namespace {PlainObject} module:SVGEditor~Actions
    */
   const Actions = (function () {
+    /* eslint-enable jsdoc/require-property */
     /**
     * @typedef {PlainObject} module:SVGEditor.ToolButton
     * @property {string} sel The CSS selector for the tool

@@ -22,7 +22,7 @@
 * @returns {ArbitraryCallbackResult} Return dependent on the function
 */
 
-/* eslint-disable jsdoc/check-types */
+/* eslint-disable jsdoc/require-property */
 /**
 * This should only be used for objects known to be potentially arbitrary in form.
 * For those whose determination has not yet been made, simply use type `object`
@@ -32,7 +32,7 @@
 /**
 * @typedef {object} ArbitraryModule
 */
-/* eslint-enable jsdoc/check-types */
+/* eslint-enable jsdoc/require-property */
 
 /**
 * This should only be used for objects known to be potentially arbitrary in form,

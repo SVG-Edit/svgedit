@@ -6874,6 +6874,8 @@ var SvgCanvas = (function () {
 
     return segment;
   }
+  /* eslint-disable jsdoc/require-property */
+
   /**
   * Group: Path edit functions
   * Functions relating to editing path elements
@@ -6883,6 +6885,7 @@ var SvgCanvas = (function () {
 
 
   var pathActions = function () {
+    /* eslint-enable jsdoc/require-property */
     var subpath = false;
     var newPoint, firstCtrl;
     var currentPath = null;
@@ -14472,8 +14475,8 @@ var SvgCanvas = (function () {
 
     /**
     * @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
-    * @param {external:jQuery} initArgs.$
-    * @param {module:SVGEditor~ImportLocale} initArgs.importLocale
+    * @property {external:jQuery} $
+    * @property {module:SVGEditor~ImportLocale} importLocale
     */
 
     /**
@@ -16652,6 +16655,8 @@ var SvgCanvas = (function () {
         call('zoomDone');
       });
     })();
+    /* eslint-disable jsdoc/require-property */
+
     /**
     * Group: Text edit functions
     * Functions relating to editing text elements
@@ -16661,6 +16666,7 @@ var SvgCanvas = (function () {
 
 
     var textActions = canvas.textActions = function () {
+      /* eslint-enable jsdoc/require-property */
       var curtext;
       var textinput;
       var cursor;
