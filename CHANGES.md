@@ -16,7 +16,8 @@
 - Refactoring: Ensure file-global tags are at beginning of file
 - Linting (ESLint): Simplify regexes
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
-- Linting (ESLint): Update as per latest ash-nazg (bad jsdoc)
+- Linting (ESLint): Update as per latest ash-nazg
+- Linting (ESLint): Add rules to check for file-level tags
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
 - Testing: Add map file for underscore

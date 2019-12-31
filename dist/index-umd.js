@@ -9381,6 +9381,8 @@
     });
   };
 
+  /* eslint-disable jsdoc/require-file-overview */
+
   /**
    * Adapted from {@link https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js}.
    * @module importModule

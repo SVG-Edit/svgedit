@@ -201,6 +201,34 @@ module.exports = {
     }],
     "unicorn/prefer-query-selector": "off",
     "unicorn/prefer-node-append": "off",
-    "unicorn/no-zero-fractions": "off"
+    "unicorn/no-zero-fractions": "off",
+    "jsdoc/require-file-overview": ["error", {
+      tags: {
+        file: {
+          "initialCommentsOnly": true,
+          "preventDuplicates": true,
+        },
+        license: {
+          "initialCommentsOnly": true,
+          "preventDuplicates": true,
+        },
+        copyright: {
+          "initialCommentsOnly": true,
+          "preventDuplicates": true,
+        },
+        author: {
+          "initialCommentsOnly": true,
+          "preventDuplicates": true,
+        },
+        module: {
+          "initialCommentsOnly": true,
+          "preventDuplicates": true,
+        },
+        exports: {
+          "initialCommentsOnly": true,
+          "preventDuplicates": true,
+        }
+      }
+    }]
   }
 };
