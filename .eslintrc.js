@@ -102,8 +102,7 @@ module.exports = {
       }
     },
     // Our Markdown rules (and used for JSDoc examples as well, by way of
-    //   our use of `matchingFileName` in conjunction with
-    //   `jsdoc/check-examples` within `ash-nazg`)
+    //   our use of `jsdoc/check-examples` within `ash-nazg`)
     {
       files: ["**/*.md"],
       rules: {
