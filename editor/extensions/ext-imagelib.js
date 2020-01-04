@@ -232,7 +232,7 @@ export default {
                   $(this).html(
                     $('<span>').append(
                       $('<img>').attr('src', curMeta.preview_url),
-                      document.createTextNode(title)
+                      title
                     )
                   );
                 } else {
@@ -254,7 +254,7 @@ export default {
           if (curMeta && curMeta.preview_url) {
             entry = $('<span>').append(
               $('<img>').attr('src', curMeta.preview_url),
-              document.createTextNode(title)
+              title
             );
           } else {
             entry = $('<img>').attr('src', response);

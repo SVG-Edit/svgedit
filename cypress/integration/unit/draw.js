@@ -69,19 +69,19 @@ describe('draw.Drawing', function () {
   const setupSVGWith3Layers = function (svgElem) {
     const layer1 = document.createElementNS(NS.SVG, 'g');
     const layer1Title = document.createElementNS(NS.SVG, 'title');
-    layer1Title.append(document.createTextNode(LAYER1));
+    layer1Title.append(LAYER1);
     layer1.append(layer1Title);
     svgElem.append(layer1);
 
     const layer2 = document.createElementNS(NS.SVG, 'g');
     const layer2Title = document.createElementNS(NS.SVG, 'title');
-    layer2Title.append(document.createTextNode(LAYER2));
+    layer2Title.append(LAYER2);
     layer2.append(layer2Title);
     svgElem.append(layer2);
 
     const layer3 = document.createElementNS(NS.SVG, 'g');
     const layer3Title = document.createElementNS(NS.SVG, 'title');
-    layer3Title.append(document.createTextNode(LAYER3));
+    layer3Title.append(LAYER3);
     layer3.append(layer3Title);
     svgElem.append(layer3);
 

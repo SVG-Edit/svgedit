@@ -89,7 +89,7 @@ describe('recalculate', function () {
     tspan.setAttribute('x', '200');
     tspan.setAttribute('y', '150');
 
-    const theText = document.createTextNode('Foo bar');
+    const theText = 'Foo bar';
     tspan.append(theText);
     elem.append(tspan);
     svg.append(elem);
