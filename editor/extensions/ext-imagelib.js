@@ -250,8 +250,6 @@ export default {
         } else {
           if (curMeta && curMeta.preview_url) {
             title = curMeta.name || '';
-          }
-          if (curMeta && curMeta.preview_url) {
             entry = $('<span>').append(
               $('<img>').attr('src', curMeta.preview_url),
               title
