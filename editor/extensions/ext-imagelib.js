@@ -76,27 +76,32 @@ export default {
     let preview, submit;
 
     /**
-    * @typedef {PlainObject} ImageLibMessage
-    * @property {"imagelib"} namespace Required to distinguish from any other messages of app.
-    * @property {string} href Set to same value as previous `ImageLibMetaMessage` `id`.
-    * @property {string} data The response (as an SVG string or URL)
+     * Contains the SVG to insert.
+     * @typedef {PlainObject} ImageLibMessage
+     * @property {"imagelib"} namespace Required to distinguish from any other messages of app.
+     * @property {string} href Set to same value as previous `ImageLibMetaMessage` `id`.
+     * @property {string} data The response (as an SVG string or URL)
     */
 
     /**
+     * Used for setting meta-data before images are retrieved.
      * @typedef {PlainObject} ImageLibMetaMessage
      * @property {"imagelib"} namespace Required to distinguish from any other messages of app.
      * @property {string} name If the subsequent response is an SVG string or if `preview_url`
      *   is present, will be used as the title for the preview image. When an
      *   SVG string is present, will default to the first `<title>`'s contents or
      *   "(SVG #<Length of response>)" if none is present. Otherwise, if `preview_url`
-     *   is present, will default to the empty string.
+     *   is present, will default to the empty string. Though `name` may be falsy,
+     *   it is always expected to be present for meta messages.
      * @property {string} id Identifier (the expected `href` for a subsequent response message);
      * used for ensuring the subsequent response can be tied to this `ImageLibMetaMessage` object.
-     * @property {string} [preview_url] Used to set an image source along with the
-     * name/title. If the subsequent response is an SVG string and there is no `preview_url`,
-     * the default will just be to show the name/title. If the response is not an SVG
-     * string, the default will be to show that response (i.e., the URL).
-     * @property {string} entry Set automatically with div holding retrieving message (until ready to delete)
+     * @property {string} [preview_url] When import mode is multiple, used to set an image
+     * source along with the name/title. If the subsequent response is an SVG string
+     * and there is no `preview_url`, the default will just be to show the
+     * name/title. If the response is not an SVG string, the default will be to
+     * show that response (i.e., the URL).
+     * @property {string} entry Set automatically with div holding retrieving
+     * message (until ready to delete)
      * @todo Should use a separate Map instead of `entry`
     */
 
