@@ -104,12 +104,12 @@ export const init = function (editorContext) {
 
 /**
  * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}.
- * @function module:utilities.dropXMLInteralSubset
+ * @function module:utilities.dropXMLInternalSubset
  * @param {string} str String to be processed
  * @returns {string} The string with entity declarations in the internal subset removed
  * @todo This might be needed in other places `parseFromString` is used even without LGTM flagging
  */
-export const dropXMLInteralSubset = (str) => {
+export const dropXMLInternalSubset = (str) => {
   return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?]>)/, '$1$2');
   // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
 };

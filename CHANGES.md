@@ -11,6 +11,9 @@
 - Fix: main menu style and text #371
 - Fix (Accessibility): Avoid duplicate IDs
 - Fix (openclipart browser): Redirect on lacking browser support
+- Fix: Misspelling for `dropXMLInternalSubset` method (also fixes
+    use in imagelib when defaulting to image's title)
+- Fix: Redirect paths for imagelib redirect checks
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Localization: Add 'SVG-Edit Home Page' to locale files
 - Refactoring: Ensure file-global tags are at beginning of file
