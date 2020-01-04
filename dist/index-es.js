@@ -7974,13 +7974,13 @@ var init$2 = function init(editorContext) {
 };
 /**
  * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}.
- * @function module:utilities.dropXMLInteralSubset
+ * @function module:utilities.dropXMLInternalSubset
  * @param {string} str String to be processed
  * @returns {string} The string with entity declarations in the internal subset removed
  * @todo This might be needed in other places `parseFromString` is used even without LGTM flagging
  */
 
-var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
+var dropXMLInternalSubset = function dropXMLInternalSubset(str) {
   return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
 };
 /**
@@ -21731,7 +21731,7 @@ function SvgCanvas(container, config) {
   * @property {module:history.HistoryCommand} BatchCommand
   * @property {module:history.HistoryCommand} ChangeElementCommand
   * @property {module:utilities.decode64} decode64
-  * @property {module:utilities.dropXMLInteralSubset} dropXMLInteralSubset
+  * @property {module:utilities.dropXMLInternalSubset} dropXMLInternalSubset
   * @property {module:utilities.encode64} encode64
   * @property {module:svgcanvas~ffClone} ffClone
   * @property {module:svgcanvas~findDuplicateGradient} findDuplicateGradient
@@ -21773,7 +21773,7 @@ function SvgCanvas(container, config) {
       BatchCommand: BatchCommand$1,
       ChangeElementCommand: ChangeElementCommand$1,
       decode64: decode64,
-      dropXMLInteralSubset: dropXMLInteralSubset,
+      dropXMLInternalSubset: dropXMLInternalSubset,
       encode64: encode64,
       ffClone: ffClone,
       findDefs: findDefs,
@@ -29268,8 +29268,11 @@ function getImportLocale(_ref) {
 /**
 * Store and retrieve preferences.
 * @param {string} key The preference name to be retrieved or set
-* @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will be made.
-* @returns {string|void} If val is missing or falsey, the value of the previously stored preference will be returned.
+* @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will
+* be made unless `mayBeEmpty` is set.
+* @param {boolean} [mayBeEmpty] If value may be falsey.
+* @returns {string|void} If val is missing or falsey and `mayBeEmpty` is not set, the
+* value of the previously stored preference will be returned.
 * @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
 * @todo Review whether any remaining existing direct references to
 *  getting `curPrefs` can be changed to use `$.pref()` getting to ensure
@@ -29279,8 +29282,8 @@ function getImportLocale(_ref) {
 */
 
 
-$$b.pref = function (key, val) {
-  if (val) {
+$$b.pref = function (key, val, mayBeEmpty) {
+  if (mayBeEmpty || val) {
     curPrefs[key] = val;
     /**
     * @name curPrefs
@@ -30920,7 +30923,7 @@ editor.init = function () {
   function setBackground(color, url) {
     // if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) { return; }
     $$b.pref('bkgd_color', color);
-    $$b.pref('bkgd_url', url); // This should be done in svgcanvas.js for the borderRect fill
+    $$b.pref('bkgd_url', url, true); // This should be done in svgcanvas.js for the borderRect fill
 
     svgCanvas.setBackground(color, url);
   }

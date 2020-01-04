@@ -387,8 +387,11 @@ function getImportLocale ({defaultLang, defaultName}) {
 /**
 * Store and retrieve preferences.
 * @param {string} key The preference name to be retrieved or set
-* @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will be made.
-* @returns {string|void} If val is missing or falsey, the value of the previously stored preference will be returned.
+* @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will
+* be made unless `mayBeEmpty` is set.
+* @param {boolean} [mayBeEmpty] If value may be falsey.
+* @returns {string|void} If val is missing or falsey and `mayBeEmpty` is not set, the
+* value of the previously stored preference will be returned.
 * @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
 * @todo Review whether any remaining existing direct references to
 *  getting `curPrefs` can be changed to use `$.pref()` getting to ensure
@@ -396,8 +399,8 @@ function getImportLocale ({defaultLang, defaultName}) {
 *  the pref dialog has a button to auto-calculate background, but otherwise uses `$.pref()` to be able to get default prefs
 *  or overridable settings
 */
-$.pref = function (key, val) {
-  if (val) {
+$.pref = function (key, val, mayBeEmpty) {
+  if (mayBeEmpty || val) {
     curPrefs[key] = val;
     /**
     * @name curPrefs
@@ -1893,7 +1896,7 @@ editor.init = function () {
   function setBackground (color, url) {
     // if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) { return; }
     $.pref('bkgd_color', color);
-    $.pref('bkgd_url', url);
+    $.pref('bkgd_url', url, true);
 
     // This should be done in svgcanvas.js for the borderRect fill
     svgCanvas.setBackground(color, url);

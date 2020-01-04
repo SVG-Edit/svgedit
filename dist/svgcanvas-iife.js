@@ -8046,13 +8046,13 @@ var SvgCanvas = (function () {
   };
   /**
    * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}.
-   * @function module:utilities.dropXMLInteralSubset
+   * @function module:utilities.dropXMLInternalSubset
    * @param {string} str String to be processed
    * @returns {string} The string with entity declarations in the internal subset removed
    * @todo This might be needed in other places `parseFromString` is used even without LGTM flagging
    */
 
-  var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
+  var dropXMLInternalSubset = function dropXMLInternalSubset(str) {
     return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
   };
   /**
@@ -21509,7 +21509,7 @@ var SvgCanvas = (function () {
     * @property {module:history.HistoryCommand} BatchCommand
     * @property {module:history.HistoryCommand} ChangeElementCommand
     * @property {module:utilities.decode64} decode64
-    * @property {module:utilities.dropXMLInteralSubset} dropXMLInteralSubset
+    * @property {module:utilities.dropXMLInternalSubset} dropXMLInternalSubset
     * @property {module:utilities.encode64} encode64
     * @property {module:svgcanvas~ffClone} ffClone
     * @property {module:svgcanvas~findDuplicateGradient} findDuplicateGradient
@@ -21551,7 +21551,7 @@ var SvgCanvas = (function () {
         BatchCommand: BatchCommand$1,
         ChangeElementCommand: ChangeElementCommand$1,
         decode64: decode64,
-        dropXMLInteralSubset: dropXMLInteralSubset,
+        dropXMLInternalSubset: dropXMLInternalSubset,
         encode64: encode64,
         ffClone: ffClone,
         findDefs: findDefs,
