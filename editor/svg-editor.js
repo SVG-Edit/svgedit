@@ -726,7 +726,6 @@ editor.init = function () {
   }
   (() => {
     // Load config/data from URL if given
-    let src, qstr;
     urldata = $.deparam.querystring(true);
     if (!$.isEmptyObject(urldata)) {
       if (urldata.dimensions) {
@@ -759,19 +758,19 @@ editor.init = function () {
       setupCurConfig();
 
       if (!curConfig.preventURLContentLoading) {
-        src = urldata.source;
-        qstr = $.param.querystring();
-        if (!src) { // urldata.source may have been null if it ended with '='
-          if (qstr.includes('source=data:')) {
-            src = qstr.match(/source=(data:[^&]*)/)[1];
-            // ({src} = qstr.match(/source=(?<src>data:[^&]*)/).groups);
+        let {source} = urldata;
+        if (!source) { // urldata.source may have been null if it ended with '='
+          const {searchParams} = new URL(location);
+          const src = searchParams.get('source');
+          if (src.startsWith('data:')) {
+            source = src;
           }
         }
-        if (src) {
-          if (src.startsWith('data:')) {
-            editor.loadFromDataURI(src);
+        if (source) {
+          if (source.startsWith('data:')) {
+            editor.loadFromDataURI(source);
           } else {
-            editor.loadFromString(src);
+            editor.loadFromString(source);
           }
           return;
         }
