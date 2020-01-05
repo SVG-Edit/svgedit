@@ -15,12 +15,6 @@
 * @borrows module:locale.setStrings as setStrings
 */
 
-/*
-* Dependencies to remove:
-*
-* 1. jQuery BBQ (for deparam)
- */
-
 import './touch.js';
 import {NS} from './namespaces.js';
 import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from './browser.js';
@@ -30,12 +24,12 @@ import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
 import {importSetGlobalDefault} from './external/dynamic-import-polyfill/importModule.js';
+import deparam from './external/deparam/deparam.esm.js';
 
 import SvgCanvas from './svgcanvas.js';
 import Layer from './layer.js';
 
 import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
-import jQueryPluginBBQ from './jquerybbq/jquery.bbq.min.js';
 import jQueryPluginSVGIcons from './svgicons/jQuery.svgIcons.js';
 import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
 import jQueryPluginSpinButton from './spinbtn/jQuery.SpinButton.js';
@@ -54,7 +48,7 @@ import loadStylesheets from './external/load-stylesheets/index-es.js';
 const editor = {};
 
 const $ = [
-  jQueryPluginJSHotkeys, jQueryPluginBBQ, jQueryPluginSVGIcons, jQueryPluginJGraduate,
+  jQueryPluginJSHotkeys, jQueryPluginSVGIcons, jQueryPluginJGraduate,
   jQueryPluginSpinButton, jQueryPluginSVG, jQueryPluginContextMenu, jQueryPluginJPicker
 ].reduce((jq, func) => func(jq), jQuery);
 
@@ -298,7 +292,7 @@ const callbacks = [],
   */
   uiStrings = editor.uiStrings = {};
 
-let svgCanvas, urldata,
+let svgCanvas, urldata = {},
   isReady = false,
   customExportImage = false,
   customExportPDF = false,
@@ -517,10 +511,7 @@ editor.setConfig = function (opts, cfgCfg) {
       cfgObj[key] = val;
     }
   }
-  $.each(opts, function (key, val) {
-    if (!{}.hasOwnProperty.call(opts, key)) {
-      return;
-    }
+  Object.entries(opts).forEach(function ([key, val]) {
     // Only allow prefs defined in defaultPrefs or...
     if ({}.hasOwnProperty.call(defaultPrefs, key)) {
       if (cfgCfg.overwrite === false && (
@@ -732,15 +723,27 @@ editor.init = function () {
   }
   (() => {
     // Load config/data from URL if given
-    urldata = $.deparam.querystring(true);
-    if (!$.isEmptyObject(urldata)) {
+    const {search, searchParams} = new URL(location);
+
+    if (search) {
+      urldata = deparam(searchParams.toString(), true);
+
+      ['initStroke', 'initFill'].forEach((prop) => {
+        if (searchParams.has(`${prop}[color]`)) {
+          // Restore back to original non-deparamed value to avoid color
+          //  strings being converted to numbers
+          urldata[prop].color = searchParams.get(`${prop}[color]`);
+        }
+      });
+
+      if (searchParams.has('bkgd_color')) {
+        urldata.bkgd_color = '#' + searchParams.get('bkgd_color');
+      }
+
       if (urldata.dimensions) {
         urldata.dimensions = urldata.dimensions.split(',');
       }
 
-      if (urldata.bkgd_color) {
-        urldata.bkgd_color = '#' + urldata.bkgd_color;
-      }
 
       if (urldata.extensions) {
         // For security reasons, disallow cross-domain or cross-folder
