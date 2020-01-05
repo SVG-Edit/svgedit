@@ -392,14 +392,14 @@ function getImportLocale ({defaultLang, defaultName}) {
 * @param {boolean} [mayBeEmpty] If value may be falsey.
 * @returns {string|void} If val is missing or falsey and `mayBeEmpty` is not set, the
 * value of the previously stored preference will be returned.
-* @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
 * @todo Review whether any remaining existing direct references to
-*  getting `curPrefs` can be changed to use `$.pref()` getting to ensure
-*  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`); specifically, `bkgd_color` could be changed so that
-*  the pref dialog has a button to auto-calculate background, but otherwise uses `$.pref()` to be able to get default prefs
-*  or overridable settings
+*  getting `curPrefs` can be changed to use `svgEditor.pref()` getting to ensure
+*  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`);
+*  specifically, `bkgd_color` could be changed so that the pref dialog has a
+*  button to auto-calculate background, but otherwise uses `svgEditor.pref()` to
+*  be able to get default prefs or overridable settings
 */
-$.pref = function (key, val, mayBeEmpty) {
+editor.pref = function (key, val, mayBeEmpty) {
   if (mayBeEmpty || val) {
     curPrefs[key] = val;
     /**
@@ -526,7 +526,7 @@ editor.setConfig = function (opts, cfgCfg) {
       if (cfgCfg.allowInitialUserOverride === true) {
         defaultPrefs[key] = val;
       } else {
-        $.pref(key, val);
+        editor.pref(key, val);
       }
     } else if (['extensions', 'stylesheets', 'allowedOrigins'].includes(key)) {
       if (cfgCfg.overwrite === false &&
@@ -816,7 +816,9 @@ editor.init = function () {
    */
   const extAndLocaleFunc = async function () {
     // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-    const {langParam, langData} = await editor.putLocale(null, goodLangs, curConfig);
+    const {langParam, langData} = await editor.putLocale(
+      editor.pref('lang'), goodLangs, curConfig
+    );
     await setLang(langParam, langData);
 
     const {ok, cancel} = uiStrings.common;
@@ -1012,7 +1014,7 @@ editor.init = function () {
     hiddenPs.css('visibility', 'visible').hide();
     // return;
 
-    $.pref('iconsize', size);
+    editor.pref('iconsize', size);
     $('#iconsize').val(size);
 
     // Change icon size
@@ -1397,7 +1399,7 @@ editor.init = function () {
           minHeight = tleft.offset().top + tleft.outerHeight();
         }
 
-        const size = $.pref('iconsize');
+        const size = editor.pref('iconsize');
         editor.setIconSize(size || ($(window).height() < minHeight ? 's' : 'm'));
 
         // Look for any missing flyout icons from plugins
@@ -1724,7 +1726,7 @@ editor.init = function () {
 
     // Alert will only appear the first time saved OR the
     //   first time the bug is encountered
-    let done = $.pref('save_notice_done');
+    let done = editor.pref('save_notice_done');
 
     if (done !== 'all') {
       let note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
@@ -1733,13 +1735,13 @@ editor.init = function () {
         if (svg.includes('<defs')) {
           // warning about Mozilla bug #308590 when applicable (seems to be fixed now in Feb 2013)
           note += '\n\n' + uiStrings.notification.defsFailOnSave;
-          $.pref('save_notice_done', 'all');
+          editor.pref('save_notice_done', 'all');
           done = 'all';
         } else {
-          $.pref('save_notice_done', 'part');
+          editor.pref('save_notice_done', 'part');
         }
       } else {
-        $.pref('save_notice_done', 'all');
+        editor.pref('save_notice_done', 'all');
       }
       if (done !== 'part') {
         $.alert(note);
@@ -1764,7 +1766,7 @@ editor.init = function () {
     }
 
     exportWindow.location.href = data.bloburl || data.datauri;
-    const done = $.pref('export_notice_done');
+    const done = editor.pref('export_notice_done');
     if (done !== 'all') {
       let note = uiStrings.notification.saveFromBrowser.replace('%s', data.type);
 
@@ -1776,7 +1778,7 @@ editor.init = function () {
 
       // Note that this will also prevent the notice even though new issues may appear later.
       // May want to find a way to deal with that without annoying the user
-      $.pref('export_notice_done', 'all');
+      editor.pref('export_notice_done', 'all');
       exportWindow.alert(note);
     }
   };
@@ -1894,9 +1896,9 @@ editor.init = function () {
    * @returns {void}
    */
   function setBackground (color, url) {
-    // if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) { return; }
-    $.pref('bkgd_color', color);
-    $.pref('bkgd_url', url, true);
+    // if (color == editor.pref('bkgd_color') && url == editor.pref('bkgd_url')) { return; }
+    editor.pref('bkgd_color', color);
+    editor.pref('bkgd_url', url, true);
 
     // This should be done in svgcanvas.js for the borderRect fill
     svgCanvas.setBackground(color, url);
@@ -3073,7 +3075,7 @@ editor.init = function () {
 
     if (ext.langReady) {
       if (editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
-        const lang = $.pref('lang');
+        const lang = editor.pref('lang');
         await ext.langReady({
           lang,
           uiStrings,
@@ -3098,7 +3100,7 @@ editor.init = function () {
       if (!resizeDone) {
         resizeTimer = setTimeout(function () {
           resizeDone = true;
-          setIconSize($.pref('iconsize'));
+          setIconSize(editor.pref('iconsize'));
         }, 50);
       }
     }
@@ -3483,7 +3485,7 @@ editor.init = function () {
             callback (icons) {
               // Non-ideal hack to make the icon match the current size
               // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
-              if ($.pref('iconsize') !== 'm') {
+              if (editor.pref('iconsize') !== 'm') {
                 prepResize();
               }
               runCallback();
@@ -3589,9 +3591,9 @@ editor.init = function () {
     });
   });
 
-  setBackground($.pref('bkgd_color'), $.pref('bkgd_url'));
+  setBackground(editor.pref('bkgd_color'), editor.pref('bkgd_url'));
 
-  $('#image_save_opts input').val([$.pref('img_save')]);
+  $('#image_save_opts input').val([editor.pref('img_save')]);
 
   /**
   * @type {module:jQuerySpinButton.ValueCallback}
@@ -4499,7 +4501,7 @@ editor.init = function () {
   const clickSave = function () {
     // In the future, more options can be provided here
     const saveOpts = {
-      images: $.pref('img_save'),
+      images: editor.pref('img_save'),
       round_digits: 6
     };
     svgCanvas.save(saveOpts);
@@ -4688,7 +4690,7 @@ editor.init = function () {
     docprops = true;
 
     // This selects the correct radio button by using the array notation
-    $('#image_save_opts input').val([$.pref('img_save')]);
+    $('#image_save_opts input').val([editor.pref('img_save')]);
 
     // update resolution option with actual resolution
     const res = svgCanvas.getResolution();
@@ -4715,7 +4717,7 @@ editor.init = function () {
 
     // Update background color with current one
     const canvasBg = curPrefs.bkgd_color;
-    const url = $.pref('bkgd_url');
+    const url = editor.pref('bkgd_url');
     blocks.each(function () {
       const blk = $(this);
       const isBg = blk.css('background-color') === canvasBg;
@@ -4787,7 +4789,7 @@ editor.init = function () {
     $('#svg_docprops').hide();
     $('#canvas_width,#canvas_height').removeAttr('disabled');
     $('#resolution')[0].selectedIndex = 0;
-    $('#image_save_opts input').val([$.pref('img_save')]);
+    $('#image_save_opts input').val([editor.pref('img_save')]);
     docprops = false;
   };
 
@@ -4836,7 +4838,7 @@ editor.init = function () {
     }
 
     // Set image save option
-    $.pref('img_save', $('#image_save_opts :checked').val());
+    editor.pref('img_save', $('#image_save_opts :checked').val());
     updateCanvas();
     hideDocProperties();
     return true;
@@ -4854,7 +4856,7 @@ editor.init = function () {
 
     // set language
     const lang = $('#lang_select').val();
-    if (lang !== $.pref('lang')) {
+    if (lang && lang !== editor.pref('lang')) {
       const {langParam, langData} = await editor.putLocale(lang, goodLangs, curConfig);
       await setLang(langParam, langData);
     }
@@ -5227,7 +5229,7 @@ editor.init = function () {
         // Disable option
         $('#image_save_opts [value=embed]').attr('disabled', 'disabled');
         $('#image_save_opts input').val(['ref']);
-        $.pref('img_save', 'ref');
+        editor.pref('img_save', 'ref');
         $('#image_opt_embed').css('color', '#666').attr(
           'title',
           uiStrings.notification.featNotSupported
@@ -6255,7 +6257,7 @@ editor.init = function () {
   */
   const setLang = editor.setLang = async function (lang, allStrings) {
     editor.langChanged = true;
-    $.pref('lang', lang);
+    editor.pref('lang', lang);
     $('#lang_select').val(lang);
     if (!allStrings) {
       return;

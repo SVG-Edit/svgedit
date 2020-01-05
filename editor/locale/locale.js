@@ -374,28 +374,17 @@ export const readLang = async function (langData) {
 export const putLocale = async function (givenParam, goodLangs, conf) {
   if (givenParam) {
     langParam = givenParam;
-  } else {
-    langParam = $.pref('lang');
-    if (!langParam) {
-      if (navigator.userLanguage) { // Explorer
-        langParam = navigator.userLanguage;
-      } else if (navigator.language) { // FF, Opera, ...
-        langParam = navigator.language;
-      }
-    }
+  } else if (navigator.userLanguage) { // Explorer
+    langParam = navigator.userLanguage;
+  } else if (navigator.language) { // FF, Opera, ...
+    langParam = navigator.language;
+  }
 
-    console.log('Lang: ' + langParam); // eslint-disable-line no-console
+  console.log('Lang: ' + langParam); // eslint-disable-line no-console
 
-    // Set to English if language is not in list of good langs
-    if (!goodLangs.includes(langParam) && langParam !== 'test') {
-      langParam = 'en';
-    }
-
-    // don't bother on first run if language is English
-    // The following line prevents setLang from running
-    //    extensions which depend on updated uiStrings,
-    //    so commenting it out.
-    // if (langParam.startsWith('en')) {return;}
+  // Set to English if language is not in list of good langs
+  if (!goodLangs.includes(langParam) && langParam !== 'test') {
+    langParam = 'en';
   }
 
   const url = conf.langPath + 'lang.' + langParam + '.js';

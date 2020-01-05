@@ -1,6 +1,6 @@
 # SVG-Edit CHANGES
 
-## ?
+## 6.0.0 (unreleased)
 
 - License: Relicense ext-mathjax from Apache-2.0 to MIT per
   <https://github.com/josegaert/ext-mathjax/issues/6>
@@ -8,6 +8,12 @@
   "(MIT OR GPL-2.0-or-later)" per subsequent text
 - License: Reorder license listing in `jquery.contextMenu.js` so
   that more permissive is noticeable first
+- BREAKING CHANGE: Remove `$.pref` in favor of new `svgEditor.pref`
+  (avoiding polluting jQuery). (Might be moved to own module in
+  future.)
+- BREAKING CHANGE: `putLocale` (a function called automatically by
+  `svg-editor.js`) no longer checks `pref`. Should not impact
+  average consumers.
 - Fix: main menu style and text #371
 - Fix (Accessibility): Avoid duplicate IDs
 - Fix (openclipart browser): Redirect on lacking browser support

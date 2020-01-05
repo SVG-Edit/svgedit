@@ -14,9 +14,9 @@
  * @license MIT
  *
  * @copyright 2010 Brett Zamir
- * @todo Revisit on whether to use $.pref over directly setting curConfig in all
- *   extensions for a more public API (not only for extPath and imagePath,
- *   but other currently used config in the extensions)
+ * @todo Revisit on whether to use `svgEditor.pref` over directly setting
+ * `curConfig` in all extensions for a more public API (not only for `extPath`
+ * and `imagePath`, but other currently used config in the extensions)
  * @todo We might provide control of storage settings through the UI besides the
  *   initial (or URL-forced) dialog. *
 */
