@@ -521,7 +521,7 @@ editor.setConfig = function (opts, cfgCfg) {
     if (!{}.hasOwnProperty.call(opts, key)) {
       return;
     }
-    // Only allow prefs defined in defaultPrefs
+    // Only allow prefs defined in defaultPrefs or...
     if ({}.hasOwnProperty.call(defaultPrefs, key)) {
       if (cfgCfg.overwrite === false && (
         curConfig.preventAllURLConfig ||
@@ -792,8 +792,8 @@ editor.init = function () {
       setupCurConfig();
       editor.loadContentAndPrefs();
     }
-    setupCurPrefs();
   })();
+  setupCurPrefs();
 
   /**
   * Called internally.

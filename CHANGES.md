@@ -20,6 +20,8 @@
 - Fix: Misspelling for `dropXMLInternalSubset` method (also fixes
     use in imagelib when defaulting to image's title)
 - Fix: Redirect paths for imagelib redirect checks
+- Fix: Ensure `setupCurPrefs` is run (including when `source` or
+    `url` is set within the URL)
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Localization: Add 'SVG-Edit Home Page' to locale files
 - Refactoring: Switch from `$.param.querystring` to `URL`
