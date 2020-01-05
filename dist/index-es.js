@@ -9608,6 +9608,94 @@ function importModule(url) {
 }
 
 /**
+ * Created by alexey2baranov on 28.01.17.
+ */
+
+/*
+ An extraction of the deparam method from Ben Alman's jQuery BBQ
+ http://benalman.com/projects/jquery-bbq-plugin/
+ */
+var coerce_types = {
+  'true': !0,
+  'false': !1,
+  'null': null
+};
+
+function deparam(params, coerce) {
+  // console.log(params)
+  var obj = {}; // Iterate over all name=value pairs.
+
+  params.replace(/\+/g, ' ').split('&').forEach(function (v) {
+    var param = v.split('=');
+    var key = decodeURIComponent(param[0]),
+        // If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
+    // into its component parts.
+    keys = key.split(']['),
+        keys_last = keys.length - 1; // If the first keys part contains [ and the last ends with ], then []
+    // are correctly balanced.
+
+    if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
+      // Remove the trailing ] from the last keys part.
+      keys[keys_last] = keys[keys_last].replace(/\]$/, ''); // Split first keys part into two parts on the [ and add them back onto
+      // the beginning of the keys array.
+
+      keys = keys.shift().split('[').concat(keys);
+      keys_last = keys.length - 1;
+    } else {
+      // Basic 'foo' style key.
+      keys_last = 0;
+    } // Are we dealing with a name=value pair, or just a name?
+
+
+    if (param.length >= 2) {
+      var val = decodeURIComponent(param.slice(1).join('=')); // Coerce values.
+
+      if (coerce) {
+        val = val && !isNaN(val) ? +val // number
+        : val === 'undefined' ? undefined // undefined
+        : coerce_types[val] !== undefined ? coerce_types[val] // true, false, null
+        : val; // string
+      }
+
+      if (keys_last) {
+        var cur = obj; // Complex key, build deep object structure based on a few rules:
+        // * The 'cur' pointer starts at the object top-level.
+        // * [] = array push (n is set to array length), [n] = array if n is
+        //   numeric, otherwise object.
+        // * If at the last keys part, set the value.
+        // * For each keys part, if the current level is undefined create an
+        //   object or array based on the type of the next keys part.
+        // * Move the 'cur' pointer to the next level.
+        // * Rinse & repeat.
+
+        for (var i = 0; i <= keys_last; i++) {
+          key = keys[i] === '' ? cur.length : keys[i];
+          cur = cur[key] = i < keys_last ? cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ? {} : []) : val;
+        }
+      } else {
+        // Simple key, even simpler rules, since only scalars and shallow
+        // arrays are allowed.
+        if (Array.isArray(obj[key])) {
+          // val is already an array, so push on the next value.
+          obj[key].push(val);
+        } else if (obj[key] !== undefined) {
+          // val isn't an array, but since a second value has been specified,
+          // convert val into an array.
+          obj[key] = [obj[key], val];
+        } else {
+          // val is a scalar.
+          obj[key] = val;
+        }
+      }
+    } else if (key) {
+      // No value was defined, so set something meaningful.
+      obj[key] = coerce ? undefined : '';
+    }
+  });
+  return obj;
+}
+
+/**
  * @module jQueryPluginDBox
  */
 
@@ -21961,366 +22049,6 @@ function jQueryPluginJSHotkeys (b) {
   return b;
 }
 
-/*
- * Todo: Update to latest at https://github.com/cowboy/jquery-bbq ?
- * jQuery BBQ: Back Button & Query Library - v1.2.1 - 2/17/2010
- * http://benalman.com/projects/jquery-bbq-plugin/
- *
- * Copyright (c) 2010 "Cowboy" Ben Alman
- * Dual licensed under the MIT and GPL licenses.
- * http://benalman.com/about/license/
- */
-// For sake of modules, added this wrapping export and changed `this` to `window`
-function jQueryPluginBBQ (jQuery) {
-  (function ($, p) {
-    var i,
-        m = Array.prototype.slice,
-        r = decodeURIComponent,
-        a = $.param,
-        c,
-        l,
-        v,
-        b = $.bbq = $.bbq || {},
-        q,
-        u,
-        j,
-        e = $.event.special,
-        d = "hashchange",
-        A = "querystring",
-        D = "fragment",
-        y = "elemUrlAttr",
-        g = "location",
-        k = "href",
-        t = "src",
-        x = /^.*\?|#.*$/g,
-        w = /^.*\#/,
-        h,
-        C = {};
-
-    function E(F) {
-      return typeof F === "string";
-    }
-
-    function B(G) {
-      var F = m.call(arguments, 1);
-      return function () {
-        return G.apply(this, F.concat(m.call(arguments)));
-      };
-    }
-
-    function n(F) {
-      return F.replace(/^[^#]*#?(.*)$/, "$1");
-    }
-
-    function o(F) {
-      return F.replace(/(?:^[^?#]*\?([^#]*).*$)?.*/, "$1");
-    }
-
-    function f(H, M, F, I, G) {
-      var O, L, K, N, J;
-
-      if (I !== i) {
-        K = F.match(H ? /^([^#]*)\#?(.*)$/ : /^([^#?]*)\??([^#]*)(#?.*)/);
-        J = K[3] || "";
-
-        if (G === 2 && E(I)) {
-          L = I.replace(H ? w : x, "");
-        } else {
-          N = l(K[2]);
-          I = E(I) ? l[H ? D : A](I) : I;
-          L = G === 2 ? I : G === 1 ? $.extend({}, I, N) : $.extend({}, N, I);
-          L = a(L);
-
-          if (H) {
-            L = L.replace(h, r);
-          }
-        }
-
-        O = K[1] + (H ? "#" : L || !K[1] ? "?" : "") + L + J;
-      } else {
-        O = M(F !== i ? F : p[g][k]);
-      }
-
-      return O;
-    }
-
-    a[A] = B(f, 0, o);
-    a[D] = c = B(f, 1, n);
-
-    c.noEscape = function (G) {
-      G = G || "";
-      var F = $.map(G.split(""), encodeURIComponent);
-      h = new RegExp(F.join("|"), "g");
-    };
-
-    c.noEscape(",/");
-
-    $.deparam = l = function l(I, F) {
-      var H = {},
-          G = {
-        "true": !0,
-        "false": !1,
-        "null": null
-      };
-      $.each(I.replace(/\+/g, " ").split("&"), function (L, Q) {
-        var K = Q.split("="),
-            P = r(K[0]),
-            J,
-            O = H,
-            M = 0,
-            R = P.split("]["),
-            N = R.length - 1;
-
-        if (/\[/.test(R[0]) && /\]$/.test(R[N])) {
-          R[N] = R[N].replace(/\]$/, "");
-          R = R.shift().split("[").concat(R);
-          N = R.length - 1;
-        } else {
-          N = 0;
-        }
-
-        if (K.length === 2) {
-          J = r(K[1]);
-
-          if (F) {
-            J = J && !isNaN(J) ? +J : J === "undefined" ? i : G[J] !== i ? G[J] : J;
-          }
-
-          if (N) {
-            for (; M <= N; M++) {
-              P = R[M] === "" ? O.length : R[M];
-              O = O[P] = M < N ? O[P] || (R[M + 1] && isNaN(R[M + 1]) ? {} : []) : J;
-            }
-          } else {
-            if ($.isArray(H[P])) {
-              H[P].push(J);
-            } else {
-              if (H[P] !== i) {
-                H[P] = [H[P], J];
-              } else {
-                H[P] = J;
-              }
-            }
-          }
-        } else {
-          if (P) {
-            H[P] = F ? i : "";
-          }
-        }
-      });
-      return H;
-    };
-
-    function z(H, F, G) {
-      if (F === i || typeof F === "boolean") {
-        G = F;
-        F = a[H ? D : A]();
-      } else {
-        F = E(F) ? F.replace(H ? w : x, "") : F;
-      }
-
-      return l(F, G);
-    }
-
-    l[A] = B(z, 0);
-    l[D] = v = B(z, 1);
-    $[y] || ($[y] = function (F) {
-      return $.extend(C, F);
-    })({
-      a: k,
-      base: k,
-      iframe: t,
-      img: t,
-      input: t,
-      form: "action",
-      link: k,
-      script: t
-    });
-    j = $[y];
-
-    function s(I, G, H, F) {
-      if (!E(H) && _typeof(H) !== "object") {
-        F = H;
-        H = G;
-        G = i;
-      }
-
-      return this.each(function () {
-        var L = $(this),
-            J = G || j()[(this.nodeName || "").toLowerCase()] || "",
-            K = J && L.attr(J) || "";
-        L.attr(J, a[I](K, H, F));
-      });
-    }
-
-    $.fn[A] = B(s, A);
-    $.fn[D] = B(s, D);
-
-    b.pushState = q = function q(I, F) {
-      if (E(I) && /^#/.test(I) && F === i) {
-        F = 2;
-      }
-
-      var H = I !== i,
-          G = c(p[g][k], H ? I : {}, H ? F : 2);
-      p[g][k] = G + (/#/.test(G) ? "" : "#");
-    };
-
-    b.getState = u = function u(F, G) {
-      return F === i || typeof F === "boolean" ? v(F) : v(G)[F];
-    };
-
-    b.removeState = function (F) {
-      var G = {};
-
-      if (F !== i) {
-        G = u();
-        $.each($.isArray(F) ? F : arguments, function (I, H) {
-          delete G[H];
-        });
-      }
-
-      q(G, 2);
-    };
-
-    e[d] = $.extend(e[d], {
-      add: function add(F) {
-        var H;
-
-        function G(J) {
-          var I = J[D] = c();
-
-          J.getState = function (K, L) {
-            return K === i || typeof K === "boolean" ? l(I, K) : l(I, L)[K];
-          };
-
-          H.apply(this, arguments);
-        }
-
-        if ($.isFunction(F)) {
-          H = F;
-          return G;
-        } else {
-          H = F.handler;
-          F.handler = G;
-        }
-      }
-    });
-  })(jQuery, window);
-  /*
-   * jQuery hashchange event - v1.2 - 2/11/2010
-   * http://benalman.com/projects/jquery-hashchange-plugin/
-   *
-   * Copyright (c) 2010 "Cowboy" Ben Alman
-   * Dual licensed under the MIT and GPL licenses.
-   * http://benalman.com/about/license/
-   */
-
-
-  (function ($, i, b) {
-    var j,
-        k = $.event.special,
-        c = "location",
-        d = "hashchange",
-        l = "href",
-        f = $.browser,
-        g = document.documentMode,
-        h = f.msie && (g === b || g < 8),
-        e = "on" + d in i && !h;
-
-    function a(m) {
-      m = m || i[c][l];
-      return m.replace(/^[^#]*#?(.*)$/, "$1");
-    }
-
-    $[d + "Delay"] = 100;
-    k[d] = $.extend(k[d], {
-      setup: function setup() {
-        if (e) {
-          return false;
-        }
-
-        $(j.start);
-      },
-      teardown: function teardown() {
-        if (e) {
-          return false;
-        }
-
-        $(j.stop);
-      }
-    });
-
-    j = function () {
-      var m = {},
-          r,
-          n,
-          o,
-          q;
-
-      function p() {
-        o = q = function q(s) {
-          return s;
-        };
-
-        if (h) {
-          n = $('<iframe src="javascript:0"/>').hide().insertAfter("body")[0].contentWindow;
-
-          q = function q() {
-            return a(n.document[c][l]);
-          };
-
-          o = function o(u, s) {
-            if (u !== s) {
-              var t = n.document;
-              t.open().close();
-              t[c].hash = "#" + u;
-            }
-          };
-
-          o(a());
-        }
-      }
-
-      m.start = function () {
-        if (r) {
-          return;
-        }
-
-        var t = a();
-        o || p();
-
-        (function s() {
-          var v = a(),
-              u = q(t);
-
-          if (v !== t) {
-            o(t = v, u);
-            $(i).trigger(d);
-          } else {
-            if (u !== t) {
-              i[c][l] = i[c][l].replace(/#.*/, "") + "#" + u;
-            }
-          }
-
-          r = setTimeout(s, $[d + "Delay"]);
-        })();
-      };
-
-      m.stop = function () {
-        if (!n) {
-          r && clearTimeout(r);
-          r = 0;
-        }
-      };
-
-      return m;
-    }();
-  })(jQuery, window);
-
-  return jQuery;
-}
-
 /**
  * @file SVG Icon Loader 2.0
  *
@@ -28816,7 +28544,7 @@ function loadStylesheets(stylesheets) {
 }
 
 var editor = {};
-var $$b = [jQueryPluginJSHotkeys, jQueryPluginBBQ, jQueryPluginSVGIcons, jQueryPluginJGraduate, jQueryPluginSpinButton, jQueryPluginSVG, jQueryContextMenu, jPicker].reduce(function (jq, func) {
+var $$b = [jQueryPluginJSHotkeys, jQueryPluginSVGIcons, jQueryPluginJGraduate, jQueryPluginSpinButton, jQueryPluginSVG, jQueryContextMenu, jPicker].reduce(function (jq, func) {
   return func(jq);
 }, jQuery);
 /*
@@ -29084,7 +28812,7 @@ defaultConfig = {
 */
 uiStrings$1 = editor.uiStrings = {};
 var svgCanvas,
-    urldata,
+    urldata = {},
     isReady = false,
     customExportImage = false,
     customExportPDF = false,
@@ -29141,7 +28869,7 @@ function _loadSvgString() {
   _loadSvgString = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee23(str) {
-    var _ref47,
+    var _ref49,
         noAlert,
         success,
         _args23 = arguments;
@@ -29150,7 +28878,7 @@ function _loadSvgString() {
       while (1) {
         switch (_context23.prev = _context23.next) {
           case 0:
-            _ref47 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref47.noAlert;
+            _ref49 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref49.noAlert;
             success = svgCanvas.setSvgString(str) !== false;
 
             if (!success) {
@@ -29386,12 +29114,12 @@ editor.setConfig = function (opts, cfgCfg) {
     }
   }
 
-  $$b.each(opts, function (key, val) {
-    if (!{}.hasOwnProperty.call(opts, key)) {
-      return;
-    } // Only allow prefs defined in defaultPrefs
+  Object.entries(opts).forEach(function (_ref4) {
+    var _ref5 = _slicedToArray(_ref4, 2),
+        key = _ref5[0],
+        val = _ref5[1];
 
-
+    // Only allow prefs defined in defaultPrefs or...
     if ({}.hasOwnProperty.call(defaultPrefs, key)) {
       if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || {}.hasOwnProperty.call(curPrefs, key))) {
         return;
@@ -29612,19 +29340,31 @@ editor.init = function () {
 
   (function () {
     // Load config/data from URL if given
-    urldata = $$b.deparam.querystring(true);
+    var _ref6 = new URL(location),
+        search = _ref6.search,
+        searchParams = _ref6.searchParams;
 
-    if (!$$b.isEmptyObject(urldata)) {
+    if (search) {
+      urldata = deparam(searchParams.toString(), true);
+      ['initStroke', 'initFill'].forEach(function (prop) {
+        if (searchParams.has("".concat(prop, "[color]"))) {
+          // Restore back to original non-deparamed value to avoid color
+          //  strings being converted to numbers
+          urldata[prop].color = searchParams.get("".concat(prop, "[color]"));
+        }
+      });
+
+      if (searchParams.has('bkgd_color')) {
+        urldata.bkgd_color = '#' + searchParams.get('bkgd_color');
+      }
+
       if (urldata.dimensions) {
         urldata.dimensions = urldata.dimensions.split(',');
       }
 
-      if (urldata.bkgd_color) {
-        urldata.bkgd_color = '#' + urldata.bkgd_color;
-      }
-
       if (urldata.extensions) {
-        // For security reasons, disallow cross-domain or cross-folder extensions via URL
+        // For security reasons, disallow cross-domain or cross-folder
+        //  extensions via URL
         urldata.extensions = urldata.extensions.match(/[:/\\]/) ? '' : urldata.extensions.split(',');
       } // Disallowing extension paths via URL for
       // security reasons, even for same-domain
@@ -29636,11 +29376,12 @@ editor.init = function () {
         if (urldata[pathConfig]) {
           delete urldata[pathConfig];
         }
-      });
+      }); // Note: `source` and `url` (as with `storagePrompt` later) are not
+      //  set on config but are used below
+
       editor.setConfig(urldata, {
         overwrite: false
-      }); // Note: source and url (as with storagePrompt later) are not set on config but are used below
-
+      });
       setupCurConfig();
 
       if (!curConfig.preventURLContentLoading) {
@@ -29649,12 +29390,9 @@ editor.init = function () {
 
         if (!source) {
           // urldata.source may have been null if it ended with '='
-          var _ref4 = new URL(location),
-              searchParams = _ref4.searchParams;
-
           var src = searchParams.get('source');
 
-          if (src.startsWith('data:')) {
+          if (src && src.startsWith('data:')) {
             source = src;
           }
         }
@@ -29682,9 +29420,9 @@ editor.init = function () {
       setupCurConfig();
       editor.loadContentAndPrefs();
     }
-
-    setupCurPrefs();
   })();
+
+  setupCurPrefs();
   /**
   * Called internally.
   * @param {string|Element|external:jQuery} elem
@@ -29692,7 +29430,6 @@ editor.init = function () {
   * @param {Float} forcedSize Not in use
   * @returns {void}
   */
-
 
   var setIcon = editor.setIcon = function (elem, iconId, forcedSize) {
     var icon = typeof iconId === 'string' ? $$b.getSvgIcon(iconId, true) : iconId.clone();
@@ -29718,10 +29455,10 @@ editor.init = function () {
   var extAndLocaleFunc =
   /*#__PURE__*/
   function () {
-    var _ref5 = _asyncToGenerator(
+    var _ref7 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee3() {
-      var _ref6, langParam, langData, _uiStrings$common, ok, cancel;
+      var _ref8, langParam, langData, _uiStrings$common, ok, cancel;
 
       return regeneratorRuntime.wrap(function _callee3$(_context3) {
         while (1) {
@@ -29731,9 +29468,9 @@ editor.init = function () {
               return editor.putLocale(editor.pref('lang'), goodLangs, curConfig);
 
             case 2:
-              _ref6 = _context3.sent;
-              langParam = _ref6.langParam;
-              langData = _ref6.langData;
+              _ref8 = _context3.sent;
+              langParam = _ref8.langParam;
+              langData = _ref8.langData;
               _context3.next = 7;
               return setLang(langParam, langData);
 
@@ -29750,7 +29487,7 @@ editor.init = function () {
               return Promise.all(curConfig.extensions.map(
               /*#__PURE__*/
               function () {
-                var _ref7 = _asyncToGenerator(
+                var _ref9 = _asyncToGenerator(
                 /*#__PURE__*/
                 regeneratorRuntime.mark(function _callee2(extname) {
                   var extName, url, imported, _imported$name, _name2, init, importLocale;
@@ -29818,7 +29555,7 @@ editor.init = function () {
                 }));
 
                 return function (_x2) {
-                  return _ref7.apply(this, arguments);
+                  return _ref9.apply(this, arguments);
                 };
               }()));
 
@@ -29870,7 +29607,7 @@ editor.init = function () {
     }));
 
     return function extAndLocaleFunc() {
-      return _ref5.apply(this, arguments);
+      return _ref7.apply(this, arguments);
     };
   }();
 
@@ -30364,7 +30101,7 @@ editor.init = function () {
             while (1) {
               switch (_context4.prev = _context4.next) {
                 case 0:
-                  getStylesheetPriority = function _ref9(stylesheetFile) {
+                  getStylesheetPriority = function _ref11(stylesheetFile) {
                     switch (stylesheetFile) {
                       case 'jgraduate/css/jPicker.css':
                         return 1;
@@ -30439,10 +30176,10 @@ editor.init = function () {
 
                   _context4.next = 11;
                   return loadStylesheets(stylesheets, {
-                    acceptErrors: function acceptErrors(_ref8) {
-                      var stylesheetURL = _ref8.stylesheetURL,
-                          reject = _ref8.reject,
-                          resolve = _ref8.resolve;
+                    acceptErrors: function acceptErrors(_ref10) {
+                      var stylesheetURL = _ref10.stylesheetURL,
+                          reject = _ref10.reject,
+                          resolve = _ref10.resolve;
 
                       if ($$b.loadingStylesheets.includes(stylesheetURL)) {
                         reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
@@ -30940,8 +30677,8 @@ editor.init = function () {
     _promptImgURL = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee18() {
-      var _ref33,
-          _ref33$cancelDeletes,
+      var _ref35,
+          _ref35$cancelDeletes,
           cancelDeletes,
           curhref,
           url,
@@ -30951,7 +30688,7 @@ editor.init = function () {
         while (1) {
           switch (_context18.prev = _context18.next) {
             case 0:
-              _ref33 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref33$cancelDeletes = _ref33.cancelDeletes, cancelDeletes = _ref33$cancelDeletes === void 0 ? false : _ref33$cancelDeletes;
+              _ref35 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref35$cancelDeletes = _ref35.cancelDeletes, cancelDeletes = _ref35$cancelDeletes === void 0 ? false : _ref35$cancelDeletes;
               curhref = svgCanvas.getHref(selectedElement);
               curhref = curhref.startsWith('data:') ? '' : curhref;
               _context18.next = 5;
@@ -31959,10 +31696,10 @@ editor.init = function () {
         // Get this button's options
         var idSel = '#' + this.getAttribute('id');
 
-        var _Object$entries$find = Object.entries(btnOpts).find(function (_ref10) {
-          var _ref11 = _slicedToArray(_ref10, 2),
-              _ = _ref11[0],
-              sel = _ref11[1].sel;
+        var _Object$entries$find = Object.entries(btnOpts).find(function (_ref12) {
+          var _ref13 = _slicedToArray(_ref12, 2),
+              _ = _ref13[0],
+              sel = _ref13[1].sel;
 
           return sel === idSel;
         }),
@@ -31989,10 +31726,10 @@ editor.init = function () {
           if (ev.type === 'keydown') {
             var flyoutIsSelected = $$b(options.parent + '_show').hasClass('tool_button_current');
             var currentOperation = $$b(options.parent + '_show').attr('data-curopt');
-            Object.entries(holders[opts.parent]).some(function (_ref12) {
-              var _ref13 = _slicedToArray(_ref12, 2),
-                  j = _ref13[0],
-                  tool = _ref13[1];
+            Object.entries(holders[opts.parent]).some(function (_ref14) {
+              var _ref15 = _slicedToArray(_ref14, 2),
+                  j = _ref15[0],
+                  tool = _ref15[1];
 
               if (tool.sel !== currentOperation) {
                 return false;
@@ -32205,7 +31942,7 @@ editor.init = function () {
   var extAdded =
   /*#__PURE__*/
   function () {
-    var _ref14 = _asyncToGenerator(
+    var _ref16 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee5(win, ext) {
       var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, altsObj, placementObj, holders;
@@ -32213,7 +31950,7 @@ editor.init = function () {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              prepResize = function _ref15() {
+              prepResize = function _ref17() {
                 if (resizeTimer) {
                   clearTimeout(resizeTimer);
                   resizeTimer = null;
@@ -32688,7 +32425,7 @@ editor.init = function () {
     }));
 
     return function extAdded(_x4, _x5) {
-      return _ref14.apply(this, arguments);
+      return _ref16.apply(this, arguments);
     };
   }();
   /**
@@ -32763,9 +32500,9 @@ editor.init = function () {
    * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
    * @returns {void}
    */
-  function (win, _ref16) {
-    var center = _ref16.center,
-        newCtr = _ref16.newCtr;
+  function (win, _ref18) {
+    var center = _ref18.center,
+        newCtr = _ref18.newCtr;
     updateCanvas(center, newCtr);
   });
   svgCanvas.bind('contextset', contextChanged);
@@ -33646,7 +33383,7 @@ editor.init = function () {
   var makeHyperlink =
   /*#__PURE__*/
   function () {
-    var _ref18 = _asyncToGenerator(
+    var _ref20 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee7() {
       var url;
@@ -33678,7 +33415,7 @@ editor.init = function () {
     }));
 
     return function makeHyperlink() {
-      return _ref18.apply(this, arguments);
+      return _ref20.apply(this, arguments);
     };
   }();
   /**
@@ -33801,7 +33538,7 @@ editor.init = function () {
   var clickClear =
   /*#__PURE__*/
   function () {
-    var _ref19 = _asyncToGenerator(
+    var _ref21 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee8() {
       var _curConfig$dimensions, x, y, ok;
@@ -33844,7 +33581,7 @@ editor.init = function () {
     }));
 
     return function clickClear() {
-      return _ref19.apply(this, arguments);
+      return _ref21.apply(this, arguments);
     };
   }();
   /**
@@ -33893,7 +33630,7 @@ editor.init = function () {
   var clickExport =
   /*#__PURE__*/
   function () {
-    var _ref20 = _asyncToGenerator(
+    var _ref22 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee9() {
       var imgType, exportWindowName, openExportWindow, chrome, quality;
@@ -33901,7 +33638,7 @@ editor.init = function () {
         while (1) {
           switch (_context9.prev = _context9.next) {
             case 0:
-              openExportWindow = function _ref21() {
+              openExportWindow = function _ref23() {
                 var loadingImage = uiStrings$1.notification.loadingImage;
 
                 if (curConfig.exportWindowType === 'new') {
@@ -33992,7 +33729,7 @@ editor.init = function () {
     }));
 
     return function clickExport() {
-      return _ref20.apply(this, arguments);
+      return _ref22.apply(this, arguments);
     };
   }();
   /**
@@ -34198,7 +33935,7 @@ editor.init = function () {
   var saveSourceEditor =
   /*#__PURE__*/
   function () {
-    var _ref22 = _asyncToGenerator(
+    var _ref24 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee10() {
       var saveChanges, ok;
@@ -34258,7 +33995,7 @@ editor.init = function () {
     }));
 
     return function saveSourceEditor() {
-      return _ref22.apply(this, arguments);
+      return _ref24.apply(this, arguments);
     };
   }();
   /**
@@ -34345,7 +34082,7 @@ editor.init = function () {
   _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee11() {
-    var color, lang, _ref24, langParam, langData;
+    var color, lang, _ref26, langParam, langData;
 
     return regeneratorRuntime.wrap(function _callee11$(_context11) {
       while (1) {
@@ -34366,9 +34103,9 @@ editor.init = function () {
             return editor.putLocale(lang, goodLangs, curConfig);
 
           case 6:
-            _ref24 = _context11.sent;
-            langParam = _ref24.langParam;
-            langData = _ref24.langData;
+            _ref26 = _context11.sent;
+            langParam = _ref26.langParam;
+            langData = _ref26.langData;
             _context11.next = 11;
             return setLang(langParam, langData);
 
@@ -34408,7 +34145,7 @@ editor.init = function () {
   var cancelOverlays =
   /*#__PURE__*/
   function () {
-    var _ref25 = _asyncToGenerator(
+    var _ref27 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee12() {
       var ok;
@@ -34479,7 +34216,7 @@ editor.init = function () {
     }));
 
     return function cancelOverlays() {
-      return _ref25.apply(this, arguments);
+      return _ref27.apply(this, arguments);
     };
   }();
 
@@ -36221,8 +35958,8 @@ editor.init = function () {
         // bitmap handling
         reader = new FileReader();
 
-        reader.onloadend = function (_ref28) {
-          var result = _ref28.target.result;
+        reader.onloadend = function (_ref30) {
+          var result = _ref30.target.result;
 
           /**
           * Insert the new image until we know its dimensions.
@@ -36274,7 +36011,7 @@ editor.init = function () {
     var open = $$b('<input type="file">').change(
     /*#__PURE__*/
     function () {
-      var _ref29 = _asyncToGenerator(
+      var _ref31 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee16(e) {
         var ok, reader;
@@ -36305,15 +36042,15 @@ editor.init = function () {
                   reader.onloadend =
                   /*#__PURE__*/
                   function () {
-                    var _ref31 = _asyncToGenerator(
+                    var _ref33 = _asyncToGenerator(
                     /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee15(_ref30) {
+                    regeneratorRuntime.mark(function _callee15(_ref32) {
                       var target;
                       return regeneratorRuntime.wrap(function _callee15$(_context15) {
                         while (1) {
                           switch (_context15.prev = _context15.next) {
                             case 0:
-                              target = _ref30.target;
+                              target = _ref32.target;
                               _context15.next = 3;
                               return loadSvgString(target.result);
 
@@ -36329,7 +36066,7 @@ editor.init = function () {
                     }));
 
                     return function (_x7) {
-                      return _ref31.apply(this, arguments);
+                      return _ref33.apply(this, arguments);
                     };
                   }();
 
@@ -36345,7 +36082,7 @@ editor.init = function () {
       }));
 
       return function (_x6) {
-        return _ref29.apply(this, arguments);
+        return _ref31.apply(this, arguments);
       };
     }());
     $$b('#tool_open').show();
@@ -36376,7 +36113,7 @@ editor.init = function () {
   var setLang = editor.setLang =
   /*#__PURE__*/
   function () {
-    var _ref32 = _asyncToGenerator(
+    var _ref34 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee17(lang, allStrings) {
       var oldLayerName, renameLayer, elems;
@@ -36484,7 +36221,7 @@ editor.init = function () {
     }));
 
     return function (_x8, _x9) {
-      return _ref32.apply(this, arguments);
+      return _ref34.apply(this, arguments);
     };
   }();
 
@@ -36578,9 +36315,9 @@ regeneratorRuntime.mark(function _callee20() {
         case 0:
           _context20.prev = 0;
           _context20.next = 3;
-          return Promise.all(callbacks.map(function (_ref35) {
-            var _ref36 = _slicedToArray(_ref35, 1),
-                cb = _ref36[0];
+          return Promise.all(callbacks.map(function (_ref37) {
+            var _ref38 = _slicedToArray(_ref37, 1),
+                cb = _ref38[0];
 
             return cb(); // eslint-disable-line promise/prefer-await-to-callbacks
           }));
@@ -36592,18 +36329,18 @@ regeneratorRuntime.mark(function _callee20() {
         case 5:
           _context20.prev = 5;
           _context20.t0 = _context20["catch"](0);
-          callbacks.forEach(function (_ref37) {
-            var _ref38 = _slicedToArray(_ref37, 3),
-                reject = _ref38[2];
+          callbacks.forEach(function (_ref39) {
+            var _ref40 = _slicedToArray(_ref39, 3),
+                reject = _ref40[2];
 
             reject();
           });
           throw _context20.t0;
 
         case 9:
-          callbacks.forEach(function (_ref39) {
-            var _ref40 = _slicedToArray(_ref39, 2),
-                resolve = _ref40[1];
+          callbacks.forEach(function (_ref41) {
+            var _ref42 = _slicedToArray(_ref41, 2),
+                resolve = _ref42[1];
 
             resolve();
           });
@@ -36624,8 +36361,8 @@ regeneratorRuntime.mark(function _callee20() {
 */
 
 editor.loadFromString = function (str) {
-  var _ref41 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      noAlert = _ref41.noAlert;
+  var _ref43 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      noAlert = _ref43.noAlert;
 
   return editor.ready(
   /*#__PURE__*/
@@ -36695,9 +36432,9 @@ editor.disableUI = function (featList) {// $(function () {
 
 
 editor.loadFromURL = function (url) {
-  var _ref43 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      cache = _ref43.cache,
-      noAlert = _ref43.noAlert;
+  var _ref45 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      cache = _ref45.cache,
+      noAlert = _ref45.noAlert;
 
   return editor.ready(function () {
     return new Promise(function (resolve, reject) {
@@ -36746,8 +36483,8 @@ editor.loadFromURL = function (url) {
 
 
 editor.loadFromDataURI = function (str) {
-  var _ref44 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      noAlert = _ref44.noAlert;
+  var _ref46 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      noAlert = _ref46.noAlert;
 
   return editor.ready(function () {
     var base64 = false;
@@ -36804,9 +36541,9 @@ var messageQueue = [];
  * @returns {void}
  */
 
-var messageListener = function messageListener(_ref45) {
-  var data = _ref45.data,
-      origin = _ref45.origin;
+var messageListener = function messageListener(_ref47) {
+  var data = _ref47.data,
+      origin = _ref47.origin;
   // eslint-disable-line no-shadow
   // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
   var messageObj = {

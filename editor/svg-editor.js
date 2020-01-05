@@ -744,7 +744,6 @@ editor.init = function () {
         urldata.dimensions = urldata.dimensions.split(',');
       }
 
-
       if (urldata.extensions) {
         // For security reasons, disallow cross-domain or cross-folder
         //  extensions via URL
@@ -774,7 +773,6 @@ editor.init = function () {
       if (!curConfig.preventURLContentLoading) {
         let {source} = urldata;
         if (!source) { // urldata.source may have been null if it ended with '='
-          const {searchParams} = new URL(location);
           const src = searchParams.get('source');
           if (src && src.startsWith('data:')) {
             source = src;
