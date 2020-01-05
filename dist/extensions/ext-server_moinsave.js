@@ -4909,15 +4909,15 @@ var svgEditorExtension_server_moinsave = (function () {
                     var _save = _asyncToGenerator(
                     /*#__PURE__*/
                     regeneratorRuntime.mark(function _callee(win, data) {
-                      var svg, qstr, _qstr$substr$split, _qstr$substr$split2, name, svgData, c, datauri, pngData;
+                      var svg, _ref2, pathname, name, svgData, c, datauri, pngData;
 
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
                           switch (_context.prev = _context.next) {
                             case 0:
                               svg = '<?xml version="1.0"?>\n' + data;
-                              qstr = $.param.querystring();
-                              _qstr$substr$split = qstr.substr(9).split('/+get/'), _qstr$substr$split2 = _slicedToArray(_qstr$substr$split, 2), name = _qstr$substr$split2[1];
+                              _ref2 = new URL(location), pathname = _ref2.pathname;
+                              name = pathname.replace(/\/+get\//, '');
                               svgData = encode64(svg);
 
                               if (!$('#export_canvas').length) {

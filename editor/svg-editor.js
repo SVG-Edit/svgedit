@@ -15,6 +15,12 @@
 * @borrows module:locale.setStrings as setStrings
 */
 
+/*
+* Dependencies to remove:
+*
+* 1. jQuery BBQ (for deparam)
+ */
+
 import './touch.js';
 import {NS} from './namespaces.js';
 import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from './browser.js';

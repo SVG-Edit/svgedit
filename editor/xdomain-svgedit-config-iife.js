@@ -28618,44 +28618,33 @@
             case 0:
               if (givenParam) {
                 langParam = givenParam;
-              } else {
-                langParam = $$a.pref('lang');
+              } else if (navigator.userLanguage) {
+                // Explorer
+                langParam = navigator.userLanguage;
+              } else if (navigator.language) {
+                // FF, Opera, ...
+                langParam = navigator.language;
+              }
 
-                if (!langParam) {
-                  if (navigator.userLanguage) {
-                    // Explorer
-                    langParam = navigator.userLanguage;
-                  } else if (navigator.language) {
-                    // FF, Opera, ...
-                    langParam = navigator.language;
-                  }
-                }
+              console.log('Lang: ' + langParam); // eslint-disable-line no-console
+              // Set to English if language is not in list of good langs
 
-                console.log('Lang: ' + langParam); // eslint-disable-line no-console
-                // Set to English if language is not in list of good langs
-
-                if (!goodLangs.includes(langParam) && langParam !== 'test') {
-                  langParam = 'en';
-                } // don't bother on first run if language is English
-                // The following line prevents setLang from running
-                //    extensions which depend on updated uiStrings,
-                //    so commenting it out.
-                // if (langParam.startsWith('en')) {return;}
-
+              if (!goodLangs.includes(langParam) && langParam !== 'test') {
+                langParam = 'en';
               }
 
               url = conf.langPath + 'lang.' + langParam + '.js';
               _context2.t0 = readLang;
-              _context2.next = 5;
+              _context2.next = 7;
               return importSetGlobalDefault(url, {
                 global: 'svgEditorLang_' + langParam.replace(/-/g, '_')
               });
 
-            case 5:
+            case 7:
               _context2.t1 = _context2.sent;
               return _context2.abrupt("return", (0, _context2.t0)(_context2.t1));
 
-            case 7:
+            case 9:
             case "end":
               return _context2.stop();
           }
@@ -29155,7 +29144,7 @@
     _loadSvgString = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee23(str) {
-      var _ref46,
+      var _ref47,
           noAlert,
           success,
           _args23 = arguments;
@@ -29164,7 +29153,7 @@
         while (1) {
           switch (_context23.prev = _context23.next) {
             case 0:
-              _ref46 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref46.noAlert;
+              _ref47 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref47.noAlert;
               success = svgCanvas.setSvgString(str) !== false;
 
               if (!success) {
@@ -29276,16 +29265,16 @@
   * @param {boolean} [mayBeEmpty] If value may be falsey.
   * @returns {string|void} If val is missing or falsey and `mayBeEmpty` is not set, the
   * value of the previously stored preference will be returned.
-  * @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
   * @todo Review whether any remaining existing direct references to
-  *  getting `curPrefs` can be changed to use `$.pref()` getting to ensure
-  *  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`); specifically, `bkgd_color` could be changed so that
-  *  the pref dialog has a button to auto-calculate background, but otherwise uses `$.pref()` to be able to get default prefs
-  *  or overridable settings
+  *  getting `curPrefs` can be changed to use `svgEditor.pref()` getting to ensure
+  *  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`);
+  *  specifically, `bkgd_color` could be changed so that the pref dialog has a
+  *  button to auto-calculate background, but otherwise uses `svgEditor.pref()` to
+  *  be able to get default prefs or overridable settings
   */
 
 
-  $$b.pref = function (key, val, mayBeEmpty) {
+  editor.pref = function (key, val, mayBeEmpty) {
     if (mayBeEmpty || val) {
       curPrefs[key] = val;
       /**
@@ -29414,7 +29403,7 @@
         if (cfgCfg.allowInitialUserOverride === true) {
           defaultPrefs[key] = val;
         } else {
-          $$b.pref(key, val);
+          editor.pref(key, val);
         }
       } else if (['extensions', 'stylesheets', 'allowedOrigins'].includes(key)) {
         if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || ['allowedOrigins', 'stylesheets'].includes(key) || key === 'extensions' && curConfig.lockExtensions)) {
@@ -29626,7 +29615,6 @@
 
     (function () {
       // Load config/data from URL if given
-      var src, qstr;
       urldata = $$b.deparam.querystring(true);
 
       if (!$$b.isEmptyObject(urldata)) {
@@ -29659,21 +29647,26 @@
         setupCurConfig();
 
         if (!curConfig.preventURLContentLoading) {
-          src = urldata.source;
-          qstr = $$b.param.querystring();
+          var _urldata = urldata,
+              source = _urldata.source;
 
-          if (!src) {
+          if (!source) {
             // urldata.source may have been null if it ended with '='
-            if (qstr.includes('source=data:')) {
-              src = qstr.match(/source=(data:[^&]*)/)[1]; // ({src} = qstr.match(/source=(?<src>data:[^&]*)/).groups);
+            var _ref4 = new URL(location),
+                searchParams = _ref4.searchParams;
+
+            var src = searchParams.get('source');
+
+            if (src.startsWith('data:')) {
+              source = src;
             }
           }
 
-          if (src) {
-            if (src.startsWith('data:')) {
-              editor.loadFromDataURI(src);
+          if (source) {
+            if (source.startsWith('data:')) {
+              editor.loadFromDataURI(source);
             } else {
-              editor.loadFromString(src);
+              editor.loadFromString(source);
             }
 
             return;
@@ -29728,22 +29721,22 @@
     var extAndLocaleFunc =
     /*#__PURE__*/
     function () {
-      var _ref4 = _asyncToGenerator(
+      var _ref5 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee3() {
-        var _ref5, langParam, langData, _uiStrings$common, ok, cancel;
+        var _ref6, langParam, langData, _uiStrings$common, ok, cancel;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.next = 2;
-                return editor.putLocale(null, goodLangs, curConfig);
+                return editor.putLocale(editor.pref('lang'), goodLangs, curConfig);
 
               case 2:
-                _ref5 = _context3.sent;
-                langParam = _ref5.langParam;
-                langData = _ref5.langData;
+                _ref6 = _context3.sent;
+                langParam = _ref6.langParam;
+                langData = _ref6.langData;
                 _context3.next = 7;
                 return setLang(langParam, langData);
 
@@ -29760,7 +29753,7 @@
                 return Promise.all(curConfig.extensions.map(
                 /*#__PURE__*/
                 function () {
-                  var _ref6 = _asyncToGenerator(
+                  var _ref7 = _asyncToGenerator(
                   /*#__PURE__*/
                   regeneratorRuntime.mark(function _callee2(extname) {
                     var extName, url, imported, _imported$name, _name2, init, importLocale;
@@ -29828,7 +29821,7 @@
                   }));
 
                   return function (_x2) {
-                    return _ref6.apply(this, arguments);
+                    return _ref7.apply(this, arguments);
                   };
                 }()));
 
@@ -29880,7 +29873,7 @@
       }));
 
       return function extAndLocaleFunc() {
-        return _ref4.apply(this, arguments);
+        return _ref5.apply(this, arguments);
       };
     }();
 
@@ -30014,7 +30007,7 @@
       scaleElements(elems, scale);
       hiddenPs.css('visibility', 'visible').hide(); // return;
 
-      $$b.pref('iconsize', size);
+      editor.pref('iconsize', size);
       $$b('#iconsize').val(size); // Change icon size
       // $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
       // .find('> svg, > img').each(function () {
@@ -30374,7 +30367,7 @@
               while (1) {
                 switch (_context4.prev = _context4.next) {
                   case 0:
-                    getStylesheetPriority = function _ref8(stylesheetFile) {
+                    getStylesheetPriority = function _ref9(stylesheetFile) {
                       switch (stylesheetFile) {
                         case 'jgraduate/css/jPicker.css':
                           return 1;
@@ -30402,7 +30395,7 @@
                       minHeight = tleft.offset().top + tleft.outerHeight();
                     }
 
-                    size = $$b.pref('iconsize');
+                    size = editor.pref('iconsize');
                     editor.setIconSize(size || ($$b(window).height() < minHeight ? 's' : 'm')); // Look for any missing flyout icons from plugins
 
                     $$b('.tools_flyout').each(function () {
@@ -30449,10 +30442,10 @@
 
                     _context4.next = 11;
                     return loadStylesheets(stylesheets, {
-                      acceptErrors: function acceptErrors(_ref7) {
-                        var stylesheetURL = _ref7.stylesheetURL,
-                            reject = _ref7.reject,
-                            resolve = _ref7.resolve;
+                      acceptErrors: function acceptErrors(_ref8) {
+                        var stylesheetURL = _ref8.stylesheetURL,
+                            reject = _ref8.reject,
+                            resolve = _ref8.resolve;
 
                         if ($$b.loadingStylesheets.includes(stylesheetURL)) {
                           reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
@@ -30739,7 +30732,7 @@
       a.click(); // Alert will only appear the first time saved OR the
       //   first time the bug is encountered
 
-      var done = $$b.pref('save_notice_done');
+      var done = editor.pref('save_notice_done');
 
       if (done !== 'all') {
         var note = uiStrings$1.notification.saveFromBrowser.replace('%s', 'SVG'); // Check if FF and has <defs/>
@@ -30748,13 +30741,13 @@
           if (svg.includes('<defs')) {
             // warning about Mozilla bug #308590 when applicable (seems to be fixed now in Feb 2013)
             note += '\n\n' + uiStrings$1.notification.defsFailOnSave;
-            $$b.pref('save_notice_done', 'all');
+            editor.pref('save_notice_done', 'all');
             done = 'all';
           } else {
-            $$b.pref('save_notice_done', 'part');
+            editor.pref('save_notice_done', 'part');
           }
         } else {
-          $$b.pref('save_notice_done', 'all');
+          editor.pref('save_notice_done', 'all');
         }
 
         if (done !== 'part') {
@@ -30782,7 +30775,7 @@
       }
 
       exportWindow.location.href = data.bloburl || data.datauri;
-      var done = $$b.pref('export_notice_done');
+      var done = editor.pref('export_notice_done');
 
       if (done !== 'all') {
         var note = uiStrings$1.notification.saveFromBrowser.replace('%s', data.type); // Check if there are issues
@@ -30794,7 +30787,7 @@
         // May want to find a way to deal with that without annoying the user
 
 
-        $$b.pref('export_notice_done', 'all');
+        editor.pref('export_notice_done', 'all');
         exportWindow.alert(note);
       }
     };
@@ -30924,9 +30917,9 @@
 
 
     function setBackground(color, url) {
-      // if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) { return; }
-      $$b.pref('bkgd_color', color);
-      $$b.pref('bkgd_url', url, true); // This should be done in svgcanvas.js for the borderRect fill
+      // if (color == editor.pref('bkgd_color') && url == editor.pref('bkgd_url')) { return; }
+      editor.pref('bkgd_color', color);
+      editor.pref('bkgd_url', url, true); // This should be done in svgcanvas.js for the borderRect fill
 
       svgCanvas.setBackground(color, url);
     }
@@ -30950,8 +30943,8 @@
       _promptImgURL = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee18() {
-        var _ref32,
-            _ref32$cancelDeletes,
+        var _ref33,
+            _ref33$cancelDeletes,
             cancelDeletes,
             curhref,
             url,
@@ -30961,7 +30954,7 @@
           while (1) {
             switch (_context18.prev = _context18.next) {
               case 0:
-                _ref32 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref32$cancelDeletes = _ref32.cancelDeletes, cancelDeletes = _ref32$cancelDeletes === void 0 ? false : _ref32$cancelDeletes;
+                _ref33 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref33$cancelDeletes = _ref33.cancelDeletes, cancelDeletes = _ref33$cancelDeletes === void 0 ? false : _ref33$cancelDeletes;
                 curhref = svgCanvas.getHref(selectedElement);
                 curhref = curhref.startsWith('data:') ? '' : curhref;
                 _context18.next = 5;
@@ -31969,10 +31962,10 @@
           // Get this button's options
           var idSel = '#' + this.getAttribute('id');
 
-          var _Object$entries$find = Object.entries(btnOpts).find(function (_ref9) {
-            var _ref10 = _slicedToArray(_ref9, 2),
-                _ = _ref10[0],
-                sel = _ref10[1].sel;
+          var _Object$entries$find = Object.entries(btnOpts).find(function (_ref10) {
+            var _ref11 = _slicedToArray(_ref10, 2),
+                _ = _ref11[0],
+                sel = _ref11[1].sel;
 
             return sel === idSel;
           }),
@@ -31999,10 +31992,10 @@
             if (ev.type === 'keydown') {
               var flyoutIsSelected = $$b(options.parent + '_show').hasClass('tool_button_current');
               var currentOperation = $$b(options.parent + '_show').attr('data-curopt');
-              Object.entries(holders[opts.parent]).some(function (_ref11) {
-                var _ref12 = _slicedToArray(_ref11, 2),
-                    j = _ref12[0],
-                    tool = _ref12[1];
+              Object.entries(holders[opts.parent]).some(function (_ref12) {
+                var _ref13 = _slicedToArray(_ref12, 2),
+                    j = _ref13[0],
+                    tool = _ref13[1];
 
                 if (tool.sel !== currentOperation) {
                   return false;
@@ -32215,7 +32208,7 @@
     var extAdded =
     /*#__PURE__*/
     function () {
-      var _ref13 = _asyncToGenerator(
+      var _ref14 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee5(win, ext) {
         var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, altsObj, placementObj, holders;
@@ -32223,7 +32216,7 @@
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                prepResize = function _ref14() {
+                prepResize = function _ref15() {
                   if (resizeTimer) {
                     clearTimeout(resizeTimer);
                     resizeTimer = null;
@@ -32232,7 +32225,7 @@
                   if (!resizeDone) {
                     resizeTimer = setTimeout(function () {
                       resizeDone = true;
-                      setIconSize($$b.pref('iconsize'));
+                      setIconSize(editor.pref('iconsize'));
                     }, 50);
                   }
                 };
@@ -32259,7 +32252,7 @@
                 }
 
                 // We check for this since the "lang" pref could have been set by storage
-                lang = $$b.pref('lang');
+                lang = editor.pref('lang');
                 _context5.next = 10;
                 return ext.langReady({
                   lang: lang,
@@ -32676,7 +32669,7 @@
                     callback: function callback(icons) {
                       // Non-ideal hack to make the icon match the current size
                       // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
-                      if ($$b.pref('iconsize') !== 'm') {
+                      if (editor.pref('iconsize') !== 'm') {
                         prepResize();
                       }
 
@@ -32698,7 +32691,7 @@
       }));
 
       return function extAdded(_x4, _x5) {
-        return _ref13.apply(this, arguments);
+        return _ref14.apply(this, arguments);
       };
     }();
     /**
@@ -32773,9 +32766,9 @@
      * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
      * @returns {void}
      */
-    function (win, _ref15) {
-      var center = _ref15.center,
-          newCtr = _ref15.newCtr;
+    function (win, _ref16) {
+      var center = _ref16.center,
+          newCtr = _ref16.newCtr;
       updateCanvas(center, newCtr);
     });
     svgCanvas.bind('contextset', contextChanged);
@@ -32804,8 +32797,8 @@
         $$b(this).addClass(curBg);
       });
     });
-    setBackground($$b.pref('bkgd_color'), $$b.pref('bkgd_url'));
-    $$b('#image_save_opts input').val([$$b.pref('img_save')]);
+    setBackground(editor.pref('bkgd_color'), editor.pref('bkgd_url'));
+    $$b('#image_save_opts input').val([editor.pref('img_save')]);
     /**
     * @type {module:jQuerySpinButton.ValueCallback}
     */
@@ -33656,7 +33649,7 @@
     var makeHyperlink =
     /*#__PURE__*/
     function () {
-      var _ref17 = _asyncToGenerator(
+      var _ref18 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee7() {
         var url;
@@ -33688,7 +33681,7 @@
       }));
 
       return function makeHyperlink() {
-        return _ref17.apply(this, arguments);
+        return _ref18.apply(this, arguments);
       };
     }();
     /**
@@ -33811,7 +33804,7 @@
     var clickClear =
     /*#__PURE__*/
     function () {
-      var _ref18 = _asyncToGenerator(
+      var _ref19 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee8() {
         var _curConfig$dimensions, x, y, ok;
@@ -33854,7 +33847,7 @@
       }));
 
       return function clickClear() {
-        return _ref18.apply(this, arguments);
+        return _ref19.apply(this, arguments);
       };
     }();
     /**
@@ -33888,7 +33881,7 @@
     var clickSave = function clickSave() {
       // In the future, more options can be provided here
       var saveOpts = {
-        images: $$b.pref('img_save'),
+        images: editor.pref('img_save'),
         round_digits: 6
       };
       svgCanvas.save(saveOpts);
@@ -33903,7 +33896,7 @@
     var clickExport =
     /*#__PURE__*/
     function () {
-      var _ref19 = _asyncToGenerator(
+      var _ref20 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee9() {
         var imgType, exportWindowName, openExportWindow, chrome, quality;
@@ -33911,7 +33904,7 @@
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
-                openExportWindow = function _ref20() {
+                openExportWindow = function _ref21() {
                   var loadingImage = uiStrings$1.notification.loadingImage;
 
                   if (curConfig.exportWindowType === 'new') {
@@ -34002,7 +33995,7 @@
       }));
 
       return function clickExport() {
-        return _ref19.apply(this, arguments);
+        return _ref20.apply(this, arguments);
       };
     }();
     /**
@@ -34126,7 +34119,7 @@
 
       docprops = true; // This selects the correct radio button by using the array notation
 
-      $$b('#image_save_opts input').val([$$b.pref('img_save')]); // update resolution option with actual resolution
+      $$b('#image_save_opts input').val([editor.pref('img_save')]); // update resolution option with actual resolution
 
       var res = svgCanvas.getResolution();
 
@@ -34155,7 +34148,7 @@
       $$b('#main_menu').hide(); // Update background color with current one
 
       var canvasBg = curPrefs.bkgd_color;
-      var url = $$b.pref('bkgd_url');
+      var url = editor.pref('bkgd_url');
       blocks.each(function () {
         var blk = $$b(this);
         var isBg = blk.css('background-color') === canvasBg;
@@ -34208,7 +34201,7 @@
     var saveSourceEditor =
     /*#__PURE__*/
     function () {
-      var _ref21 = _asyncToGenerator(
+      var _ref22 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee10() {
         var saveChanges, ok;
@@ -34268,7 +34261,7 @@
       }));
 
       return function saveSourceEditor() {
-        return _ref21.apply(this, arguments);
+        return _ref22.apply(this, arguments);
       };
     }();
     /**
@@ -34281,7 +34274,7 @@
       $$b('#svg_docprops').hide();
       $$b('#canvas_width,#canvas_height').removeAttr('disabled');
       $$b('#resolution')[0].selectedIndex = 0;
-      $$b('#image_save_opts input').val([$$b.pref('img_save')]);
+      $$b('#image_save_opts input').val([editor.pref('img_save')]);
       docprops = false;
     };
     /**
@@ -34338,7 +34331,7 @@
       } // Set image save option
 
 
-      $$b.pref('img_save', $$b('#image_save_opts :checked').val());
+      editor.pref('img_save', $$b('#image_save_opts :checked').val());
       updateCanvas();
       hideDocProperties();
       return true;
@@ -34355,7 +34348,7 @@
     _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee11() {
-      var color, lang, _ref23, langParam, langData;
+      var color, lang, _ref24, langParam, langData;
 
       return regeneratorRuntime.wrap(function _callee11$(_context11) {
         while (1) {
@@ -34367,7 +34360,7 @@
 
               lang = $$b('#lang_select').val();
 
-              if (!(lang !== $$b.pref('lang'))) {
+              if (!(lang && lang !== editor.pref('lang'))) {
                 _context11.next = 11;
                 break;
               }
@@ -34376,9 +34369,9 @@
               return editor.putLocale(lang, goodLangs, curConfig);
 
             case 6:
-              _ref23 = _context11.sent;
-              langParam = _ref23.langParam;
-              langData = _ref23.langData;
+              _ref24 = _context11.sent;
+              langParam = _ref24.langParam;
+              langData = _ref24.langData;
               _context11.next = 11;
               return setLang(langParam, langData);
 
@@ -34418,7 +34411,7 @@
     var cancelOverlays =
     /*#__PURE__*/
     function () {
-      var _ref24 = _asyncToGenerator(
+      var _ref25 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee12() {
         var ok;
@@ -34489,7 +34482,7 @@
       }));
 
       return function cancelOverlays() {
-        return _ref24.apply(this, arguments);
+        return _ref25.apply(this, arguments);
       };
     }();
 
@@ -34817,7 +34810,7 @@
           // Disable option
           $$b('#image_save_opts [value=embed]').attr('disabled', 'disabled');
           $$b('#image_save_opts input').val(['ref']);
-          $$b.pref('img_save', 'ref');
+          editor.pref('img_save', 'ref');
           $$b('#image_opt_embed').css('color', '#666').attr('title', uiStrings$1.notification.featNotSupported);
         }
       });
@@ -36231,8 +36224,8 @@
           // bitmap handling
           reader = new FileReader();
 
-          reader.onloadend = function (_ref27) {
-            var result = _ref27.target.result;
+          reader.onloadend = function (_ref28) {
+            var result = _ref28.target.result;
 
             /**
             * Insert the new image until we know its dimensions.
@@ -36284,7 +36277,7 @@
       var open = $$b('<input type="file">').change(
       /*#__PURE__*/
       function () {
-        var _ref28 = _asyncToGenerator(
+        var _ref29 = _asyncToGenerator(
         /*#__PURE__*/
         regeneratorRuntime.mark(function _callee16(e) {
           var ok, reader;
@@ -36315,15 +36308,15 @@
                     reader.onloadend =
                     /*#__PURE__*/
                     function () {
-                      var _ref30 = _asyncToGenerator(
+                      var _ref31 = _asyncToGenerator(
                       /*#__PURE__*/
-                      regeneratorRuntime.mark(function _callee15(_ref29) {
+                      regeneratorRuntime.mark(function _callee15(_ref30) {
                         var target;
                         return regeneratorRuntime.wrap(function _callee15$(_context15) {
                           while (1) {
                             switch (_context15.prev = _context15.next) {
                               case 0:
-                                target = _ref29.target;
+                                target = _ref30.target;
                                 _context15.next = 3;
                                 return loadSvgString(target.result);
 
@@ -36339,7 +36332,7 @@
                       }));
 
                       return function (_x7) {
-                        return _ref30.apply(this, arguments);
+                        return _ref31.apply(this, arguments);
                       };
                     }();
 
@@ -36355,7 +36348,7 @@
         }));
 
         return function (_x6) {
-          return _ref28.apply(this, arguments);
+          return _ref29.apply(this, arguments);
         };
       }());
       $$b('#tool_open').show();
@@ -36386,7 +36379,7 @@
     var setLang = editor.setLang =
     /*#__PURE__*/
     function () {
-      var _ref31 = _asyncToGenerator(
+      var _ref32 = _asyncToGenerator(
       /*#__PURE__*/
       regeneratorRuntime.mark(function _callee17(lang, allStrings) {
         var oldLayerName, renameLayer, elems;
@@ -36395,7 +36388,7 @@
             switch (_context17.prev = _context17.next) {
               case 0:
                 editor.langChanged = true;
-                $$b.pref('lang', lang);
+                editor.pref('lang', lang);
                 $$b('#lang_select').val(lang);
 
                 if (allStrings) {
@@ -36494,7 +36487,7 @@
       }));
 
       return function (_x8, _x9) {
-        return _ref31.apply(this, arguments);
+        return _ref32.apply(this, arguments);
       };
     }();
 
@@ -36588,9 +36581,9 @@
           case 0:
             _context20.prev = 0;
             _context20.next = 3;
-            return Promise.all(callbacks.map(function (_ref34) {
-              var _ref35 = _slicedToArray(_ref34, 1),
-                  cb = _ref35[0];
+            return Promise.all(callbacks.map(function (_ref35) {
+              var _ref36 = _slicedToArray(_ref35, 1),
+                  cb = _ref36[0];
 
               return cb(); // eslint-disable-line promise/prefer-await-to-callbacks
             }));
@@ -36602,18 +36595,18 @@
           case 5:
             _context20.prev = 5;
             _context20.t0 = _context20["catch"](0);
-            callbacks.forEach(function (_ref36) {
-              var _ref37 = _slicedToArray(_ref36, 3),
-                  reject = _ref37[2];
+            callbacks.forEach(function (_ref37) {
+              var _ref38 = _slicedToArray(_ref37, 3),
+                  reject = _ref38[2];
 
               reject();
             });
             throw _context20.t0;
 
           case 9:
-            callbacks.forEach(function (_ref38) {
-              var _ref39 = _slicedToArray(_ref38, 2),
-                  resolve = _ref39[1];
+            callbacks.forEach(function (_ref39) {
+              var _ref40 = _slicedToArray(_ref39, 2),
+                  resolve = _ref40[1];
 
               resolve();
             });
@@ -36634,8 +36627,8 @@
   */
 
   editor.loadFromString = function (str) {
-    var _ref40 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        noAlert = _ref40.noAlert;
+    var _ref41 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref41.noAlert;
 
     return editor.ready(
     /*#__PURE__*/
@@ -36705,9 +36698,9 @@
 
 
   editor.loadFromURL = function (url) {
-    var _ref42 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        cache = _ref42.cache,
-        noAlert = _ref42.noAlert;
+    var _ref43 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        cache = _ref43.cache,
+        noAlert = _ref43.noAlert;
 
     return editor.ready(function () {
       return new Promise(function (resolve, reject) {
@@ -36756,8 +36749,8 @@
 
 
   editor.loadFromDataURI = function (str) {
-    var _ref43 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        noAlert = _ref43.noAlert;
+    var _ref44 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref44.noAlert;
 
     return editor.ready(function () {
       var base64 = false;
@@ -36814,9 +36807,9 @@
    * @returns {void}
    */
 
-  var messageListener = function messageListener(_ref44) {
-    var data = _ref44.data,
-        origin = _ref44.origin;
+  var messageListener = function messageListener(_ref45) {
+    var data = _ref45.data,
+        origin = _ref45.origin;
     // eslint-disable-line no-shadow
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = {

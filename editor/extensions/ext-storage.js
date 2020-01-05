@@ -8,9 +8,7 @@
  *  The functionality was originally part of the SVG Editor, but moved to a
  *  separate extension to make the setting behavior optional, and adapted
  *  to inform the user of its setting of local data.
- * Dependencies:
  *
- * 1. jQuery BBQ (for deparam)
  * @license MIT
  *
  * @copyright 2010 Brett Zamir
@@ -20,6 +18,7 @@
  * @todo We might provide control of storage settings through the UI besides the
  *   initial (or URL-forced) dialog. *
 */
+
 export default {
   name: 'storage',
   init ({$}) {
@@ -51,6 +50,7 @@ export default {
      * Replace `storagePrompt` parameter within URL.
      * @param {string} val
      * @returns {void}
+     * @todo Replace the string manipulation with `searchParams.set`
      */
     function replaceStoragePrompt (val) {
       val = val ? 'storagePrompt=' + val : '';
@@ -166,7 +166,7 @@ export default {
     return {
       name: 'storage',
       async langReady ({importLocale}) {
-        const {storagePrompt} = $.deparam.querystring(true);
+        const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
 
         const confirmSetStorage = await importLocale();
         const {
@@ -190,13 +190,13 @@ export default {
           // If the URL has been explicitly set to always prompt the
           //  user (e.g., so one can be pointed to a URL where one
           // can alter one's settings, say to prevent future storage)...
-          storagePrompt === true ||
+          storagePrompt === 'true' ||
           (
             // ...or...if the URL at least doesn't explicitly prevent a
             //  storage prompt (as we use for users who
             // don't want to set cookies at all but who don't want
             // continual prompts about it)...
-            storagePrompt !== false &&
+            storagePrompt !== 'false' &&
             // ...and this user hasn't previously indicated a desire for storage
             !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)
           )
@@ -252,7 +252,7 @@ export default {
             //    the user does indicate a wish to store their info, we
             //    don't want ask them again upon page refresh so move
             //    them instead to a URL which does not always prompt
-            if (storagePrompt === true && checked) {
+            if (storagePrompt === 'true' && checked) {
               replaceStoragePrompt();
               return;
             }

@@ -89,15 +89,13 @@ var svgEditorExtension_storage = (function () {
    *  The functionality was originally part of the SVG Editor, but moved to a
    *  separate extension to make the setting behavior optional, and adapted
    *  to inform the user of its setting of local data.
-   * Dependencies:
    *
-   * 1. jQuery BBQ (for deparam)
    * @license MIT
    *
    * @copyright 2010 Brett Zamir
-   * @todo Revisit on whether to use $.pref over directly setting curConfig in all
-   *   extensions for a more public API (not only for extPath and imagePath,
-   *   but other currently used config in the extensions)
+   * @todo Revisit on whether to use `svgEditor.pref` over directly setting
+   * `curConfig` in all extensions for a more public API (not only for `extPath`
+   * and `imagePath`, but other currently used config in the extensions)
    * @todo We might provide control of storage settings through the UI besides the
    *   initial (or URL-forced) dialog. *
   */
@@ -122,6 +120,7 @@ var svgEditorExtension_storage = (function () {
        * Replace `storagePrompt` parameter within URL.
        * @param {string} val
        * @returns {void}
+       * @todo Replace the string manipulation with `searchParams.set`
        */
 
       function replaceStoragePrompt(val) {
@@ -257,14 +256,14 @@ var svgEditorExtension_storage = (function () {
           var _langReady = _asyncToGenerator(
           /*#__PURE__*/
           regeneratorRuntime.mark(function _callee(_ref4) {
-            var importLocale, _$$deparam$querystrin, storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight, _ref5, pref, checked;
+            var importLocale, storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight, _ref5, pref, checked;
 
             return regeneratorRuntime.wrap(function _callee$(_context) {
               while (1) {
                 switch (_context.prev = _context.next) {
                   case 0:
                     importLocale = _ref4.importLocale;
-                    _$$deparam$querystrin = $.deparam.querystring(true), storagePrompt = _$$deparam$querystrin.storagePrompt;
+                    storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
                     _context.next = 4;
                     return importLocale();
 
@@ -289,11 +288,11 @@ var svgEditorExtension_storage = (function () {
                     if (!(!forceStorage && ( // If the URL has been explicitly set to always prompt the
                     //  user (e.g., so one can be pointed to a URL where one
                     // can alter one's settings, say to prevent future storage)...
-                    storagePrompt === true || // ...or...if the URL at least doesn't explicitly prevent a
+                    storagePrompt === 'true' || // ...or...if the URL at least doesn't explicitly prevent a
                     //  storage prompt (as we use for users who
                     // don't want to set cookies at all but who don't want
                     // continual prompts about it)...
-                    storagePrompt !== false && // ...and this user hasn't previously indicated a desire for storage
+                    storagePrompt !== 'false' && // ...and this user hasn't previously indicated a desire for storage
                     !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/) // ...then show the storage prompt.
                     ))) {
                       _context.next = 44;
@@ -361,7 +360,7 @@ var svgEditorExtension_storage = (function () {
                     //    don't want ask them again upon page refresh so move
                     //    them instead to a URL which does not always prompt
 
-                    if (!(storagePrompt === true && checked)) {
+                    if (!(storagePrompt === 'true' && checked)) {
                       _context.next = 28;
                       break;
                     }
