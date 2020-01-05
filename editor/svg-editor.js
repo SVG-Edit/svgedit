@@ -773,7 +773,7 @@ editor.init = function () {
         if (!source) { // urldata.source may have been null if it ended with '='
           const {searchParams} = new URL(location);
           const src = searchParams.get('source');
-          if (src.startsWith('data:')) {
+          if (src && src.startsWith('data:')) {
             source = src;
           }
         }
