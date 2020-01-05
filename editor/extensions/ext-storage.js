@@ -40,7 +40,7 @@ export default {
       //  would thereby be set with an empty value, erasing any of the
       // user's prior work. To change this behavior so that no use of storage
       // or adding of new storage takes place regardless of settings, set
-      // the "noStorageOnLoad" config setting to true in svgedit-config-iife.js.
+      // the "noStorageOnLoad" config setting to true in svgedit-config-*.js.
       noStorageOnLoad,
       forceStorage
     } = svgEditor.curConfig;

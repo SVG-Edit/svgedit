@@ -743,8 +743,11 @@ editor.init = function () {
       }
 
       if (urldata.extensions) {
-        // For security reasons, disallow cross-domain or cross-folder extensions via URL
-        urldata.extensions = urldata.extensions.match(/[:/\\]/) ? '' : urldata.extensions.split(',');
+        // For security reasons, disallow cross-domain or cross-folder
+        //  extensions via URL
+        urldata.extensions = urldata.extensions.match(/[:/\\]/)
+          ? ''
+          : urldata.extensions.split(',');
       }
 
       // Disallowing extension paths via URL for
@@ -760,7 +763,9 @@ editor.init = function () {
         }
       });
 
-      editor.setConfig(urldata, {overwrite: false}); // Note: source and url (as with storagePrompt later) are not set on config but are used below
+      // Note: `source` and `url` (as with `storagePrompt` later) are not
+      //  set on config but are used below
+      editor.setConfig(urldata, {overwrite: false});
       setupCurConfig();
 
       if (!curConfig.preventURLContentLoading) {
