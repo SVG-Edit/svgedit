@@ -42,8 +42,9 @@ You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>
 
 You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svgedit/releases).
 
-For testing the latest version in `master`, you may use
-<https://raw.githack.com/SVG-Edit/svgedit/master/editor/svg-editor.html>.
+You may test the [latest version in `master`](https://svg-edit.github.io/svgedit/editor/svg-editor-es.html)
+which is the ESM version. (The [non-ESM version](https://svg-edit.github.io/svgedit/editor/svg-editor.html)
+on `master` may be updated less frequently.)
 
 ## Installation
 
