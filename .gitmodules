@@ -30,3 +30,55 @@
 	path = releases/svg-edit-4.0.0
 	url = https://github.com/SVG-Edit/svgedit.git
 	branch = release-v4.0.0
+[submodule "releases/svg-edit-3.2.0"]
+	path = releases/svg-edit-3.2.0
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.2.0
+[submodule "releases/svg-edit-3.1.1"]
+	path = releases/svg-edit-3.1.1
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.1.1
+[submodule "releases/svg-edit-3.1.0"]
+	path = releases/svg-edit-3.1.0
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.1.0
+[submodule "releases/svg-edit-3.0.1"]
+	path = releases/svg-edit-3.0.1
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.1
+[submodule "releases/svg-edit-3.0.0-rc.3"]
+	path = releases/svg-edit-3.0.0-rc.3
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.0-rc.3
+[submodule "releases/svg-edit-3.0.0-rc.2"]
+	path = releases/svg-edit-3.0.0-rc.2
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.0-rc.2
+[submodule "releases/svg-edit-3.0.0-rc.1"]
+	path = releases/svg-edit-3.0.0-rc.1
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.0-rc.1
+[submodule "releases/svg-edit-3.0.0-alpha.4"]
+	path = releases/svg-edit-3.0.0-alpha.4
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.0-alpha.4
+[submodule "releases/svg-edit-3.0.0-alpha.3"]
+	path = releases/svg-edit-3.0.0-alpha.3
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.0-alpha.3
+[submodule "releases/svg-edit-3.0.0-alpha.2"]
+	path = releases/svg-edit-3.0.0-alpha.2
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.0-alpha.2
+[submodule "releases/svg-edit-3.0.0-alpha.1"]
+	path = releases/svg-edit-3.0.0-alpha.1
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.0-alpha.1
+[submodule "releases/svg-edit-3.0.0"]
+	path = releases/svg-edit-3.0.0
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v3.0.0
+[submodule "releases/svg-edit-2.8"]
+	path = releases/svg-edit-2.8
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v2.8
