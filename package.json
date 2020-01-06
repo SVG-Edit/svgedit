@@ -170,7 +170,7 @@
     "remark-cli": "^7.0.1",
     "remark-lint-ordered-list-marker-value": "^1.0.4",
     "rimraf": "^3.0.0",
-    "rollup": "1.27.14",
+    "rollup": "1.28.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^5.1.3",
