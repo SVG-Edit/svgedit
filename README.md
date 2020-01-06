@@ -1,4 +1,4 @@
-# ![LOGO](https://svg-edit.github.io/svgedit/editor/images/logo.png) SVG-edit
+# ![LOGO](editor/images/logo.png) SVG-edit
 
 [![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
@@ -20,6 +20,9 @@
 
 SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
 works in any modern browser.
+
+![screenshot](docs/screenshot.png)
+
 
 ## Help wanted
 
