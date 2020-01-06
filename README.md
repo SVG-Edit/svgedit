@@ -51,7 +51,7 @@ For testing the latest version in `master`, you may use
 
 1. Clone or copy the repository contents (at least the `editor` directory).
     Please note that you should not do a recursive Git clone (i.e., with the
-    `--recurse` or `--recurse-submodules` flags), as you will get assorted
+    `--recursive` or `--recurse-submodules` flags), as you will get assorted
     past versions (which are available on the parent as branches anyways).
     (The reason these past versions are available as submodules is merely
     for convenience in hosting these versions, along with `master`, online
