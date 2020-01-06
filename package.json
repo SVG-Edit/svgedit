@@ -37,7 +37,7 @@
     "cypress:merge": "mochawesome-merge \"cypress/results/*.json\">mochawesome.json && marge mochawesome.json && node build/testing-badge.js",
     "cypress:run-only": "rimraf \"cypress/results/*\" && cypress run",
     "cypress:run-no-badge": "run-s -c cypress:run-only cypress:merge",
-    "cypress:run": "run-s cypress:run-no-badge coverage-badge",
+    "cypress:run": "run-s -c cypress:run-no-badge coverage-badge",
     "open-report-no-start": "open-cli http://localhost:8000/coverage/",
     "open-report": "run-p start open-report-no-start",
     "start-open-report": "run-p start open-report",
