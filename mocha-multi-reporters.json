@@ -5,5 +5,5 @@
     "html": false,
     "json": true
   },
-  "reporterEnabled": "spec, mochawesome"
+  "reporterEnabled": "mochawesome"
 }
