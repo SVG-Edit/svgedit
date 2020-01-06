@@ -15,3 +15,5 @@ instrumented
 .nyc_output
 mochawesome-report
 mochawesome.json
+
+.vscode
