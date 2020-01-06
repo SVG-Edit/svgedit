@@ -68,13 +68,13 @@ function _objectSpread2(target) {
     var source = arguments[i] != null ? arguments[i] : {};
 
     if (i % 2) {
-      ownKeys(source, true).forEach(function (key) {
+      ownKeys(Object(source), true).forEach(function (key) {
         _defineProperty(target, key, source[key]);
       });
     } else if (Object.getOwnPropertyDescriptors) {
       Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
     } else {
-      ownKeys(source).forEach(function (key) {
+      ownKeys(Object(source)).forEach(function (key) {
         Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
       });
     }
@@ -686,7 +686,10 @@ function _appendJMLOrText(node) {
 /**
 * @private
 * @static
-function _DOMfromJMLOrString (childNodeJML) {
+*/
+
+/**
+* function _DOMfromJMLOrString (childNodeJML) {
   if (typeof childNodeJML === 'string') {
     return doc.createTextNode(childNodeJML);
   }

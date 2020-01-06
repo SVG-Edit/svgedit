@@ -44,6 +44,7 @@
   approving storage
 - Testing: Produce mochawesome report
 - Testing: Cypress with multiple reporters in case we need
+- Build: Update underscore copy
 - npm: Add `underscore` to copy script
 - npm: Make `copy`, `compress-images`, `start-embedded`, `build-docs-remove`
   scripts cross-platform; add `start-allow-origin` script
