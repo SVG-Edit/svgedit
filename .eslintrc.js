@@ -8,38 +8,6 @@ module.exports = {
   },
   settings: {
     polyfills: [
-      "Array.isArray",
-      "Blob",
-      "console",
-      "Date.now",
-      "document.body",
-      "document.evaluate",
-      "document.head",
-      "document.importNode",
-      "document.querySelector", "document.querySelectorAll",
-      "DOMParser",
-      "Error",
-      "fetch",
-      "FileReader",
-      "history.pushState",
-      "history.replaceState",
-      "JSON",
-      "location.href",
-      "location.origin",
-      "CustomEvent",
-      "MutationObserver",
-      "Object.assign", "Object.defineProperty", "Object.defineProperties",
-      "Object.getOwnPropertyDescriptor",
-      "Object.entries", "Object.keys", "Object.values",
-      "Promise",
-      "Set",
-      "Uint8Array",
-      "URL",
-      "window.getComputedStyle",
-      "window.postMessage",
-      "window.scrollX", "window.scrollY",
-      "XMLHttpRequest",
-      "XMLSerializer"
     ],
     jsdoc: {
       additionalTagNames: {
@@ -69,16 +37,6 @@ module.exports = {
         "import/no-anonymous-default-export": ["off"]
       }
     },
-    // For extensions, `this` is generally assigned to be the more
-    //   descriptive `svgEditor`; they also have no need for importing outside
-    //   of SVG-Edit
-    {
-      files: ["editor/extensions/**/ext-*.js"],
-      rules: {
-        "consistent-this": ["error", "svgEditor"],
-        "import/no-anonymous-default-export": ["off"]
-      }
-    },
     // These browser files don't do importing or requiring
     {
       files: [
@@ -96,7 +54,17 @@ module.exports = {
       }
     },
     {
-      files: ['**/*.html'],
+      files: ['**/*.html', 'screencasts/**'],
+      globals: {
+        root: "off"
+      },
+      settings: {
+        polyfills: [
+          'document.querySelector',
+          'history.pushState',
+          'history.replaceState'
+        ]
+      },
       rules: {
         'import/unambiguous': 'off'
       }
@@ -105,6 +73,13 @@ module.exports = {
     //   our use of `jsdoc/check-examples` within `ash-nazg`)
     {
       files: ["**/*.md"],
+      settings: {
+        polyfills: [
+          // Tutorials
+          'console',
+          'location.href'
+        ]
+      },
       rules: {
         "eol-last": ["off"],
         "no-console": ["off"],
@@ -125,12 +100,69 @@ module.exports = {
     // Dis-apply Node rules mistakenly giving errors with browser files,
     //  and treating Node global `root` as being present for shadowing
     {
-      files: ["editor/**", "screencasts/**"],
+      files: ["editor/**"],
       globals: {
         root: "off"
       },
+      settings: {
+        polyfills: [
+          // These are the primary polyfills needed by regular users if not present,
+          //  e.g., with core-js-bundle; also those under extensions
+          'Array.isArray',
+          'Blob',
+          'console',
+          'CustomEvent',
+          'document.body',
+          'document.evaluate',
+          'document.head',
+          'document.importNode',
+          'document.querySelectorAll',
+          'DOMParser',
+          'Error',
+          'FileReader',
+          'JSON',
+          'location.href',
+          'MutationObserver',
+          'Object.assign',
+          'Object.defineProperty',
+          'Object.defineProperties',
+          'Object.entries',
+          'Object.getOwnPropertyDescriptor',
+          'Object.keys',
+          'Object.values',
+          'Promise',
+          'Promise.all',
+          'Set',
+          'Uint8Array',
+          'URL',
+          'URL.createObjectURL',
+          'XMLSerializer',
+          'XMLHttpRequest',
+          'window.getComputedStyle',
+          'window.scrollX',
+          'window.scrollY'
+        ]
+      },
       rules: {
         "node/no-unsupported-features/node-builtins": "off"
+      }
+    },
+    // For extensions, `this` is generally assigned to be the more
+    //   descriptive `svgEditor`; they also have no need for importing outside
+    //   of SVG-Edit
+    {
+      files: ["editor/extensions/**"],
+      settings: {
+        polyfills: [
+          'console',
+          'fetch',
+          'location.origin',
+          'window.postMessage'
+        ]
+      },
+      rules: {
+        "consistent-this": ["error", "svgEditor"],
+        "import/no-anonymous-default-export": ["off"]
       }
     },
     {
@@ -142,6 +174,12 @@ module.exports = {
       ],
       env: {
         node: true,
+      },
+      settings: {
+        polyfills: [
+          'console',
+          'Promise.resolve'
+        ]
       },
       globals: {
         require: true
@@ -176,10 +214,41 @@ module.exports = {
       ]
     },
     {
+      // Should probably have as external, but should still check
+      files: ['canvg/rgbcolor.js'],
+      settings: {
+        polyfills: [
+          'Object.assign',
+          'Object.keys'
+        ]
+      }
+    },
+    {
+      // Misc. probably to remove
+      files: ['firefox-extension/**', 'opera-widget/**'],
+      settings: {
+        polyfills: [
+          'console'
+        ]
+      }
+    },
+    {
       files: ["cypress/**"],
       extends: ["plugin:cypress/recommended"],
       env: {
         node: true
+      },
+      settings: {
+        polyfills: [
+          'console',
+          'Date.now',
+          'document.body',
+          'document.head',
+          'DOMParser',
+          'Object.keys',
+          'Object.entries',
+          'Promise'
+        ]
       },
       rules: {
         'no-console': 0,

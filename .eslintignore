@@ -23,6 +23,7 @@ editor/jspdf/underscore-min.js
 
 editor/extensions/mathjax
 
+# Todo: We should at least check `compat/compat` in our other files, however
 editor/external/*
 !editor/external/dom-polyfill
 editor/external/dom-polyfill/*
