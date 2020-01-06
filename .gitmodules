@@ -82,3 +82,7 @@
 	path = releases/svg-edit-2.8
 	url = https://github.com/SVG-Edit/svgedit.git
 	branch = release-v2.8
+[submodule "releases/latest"]
+	path = releases/latest
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v5.1.0
