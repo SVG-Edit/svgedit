@@ -2287,7 +2287,7 @@ const jPicker = function ($) {
   * @property {"left"|"center"|"right"|"screenCenter"|Float} window.position.x Relative px value
   * @property {"top"|"bottom"|"center"|Float} window.position.y Relative px value
   * @property {boolean} window.expandable Defaults to large static picker - set to `true` to make an expandable
-  * picker (small icon with popup) - set automatically when binded to input element
+  * picker (small icon with popup) - set automatically when binded to input element; added by `$.fn.jPicker`
   * @property {boolean} window.liveUpdate Set `false` if you want the user to have to click "OK" before the
   * binded input box updates values (always `true` for expandable picker)
   * @property {boolean} window.alphaSupport Set to `true` to enable alpha picking
@@ -2295,7 +2295,6 @@ const jPicker = function ($) {
   * not map directly to percentage integers - range 0-2
   * @property {boolean} window.updateInputColor Set to `false` to prevent binded input colors from changing
   * @property {boolean} [window.bindToInput] Added by `$.fn.jPicker`
-  * @property {boolean} [window.expandable] Added by `$.fn.jPicker`
   * @property {external:jQuery} [window.input] Added by `$.fn.jPicker`
   * @property {PlainObject} color
   * @property {"h"|"s"|"v"|"r"|"g"|"b"|"a"} color.mode Symbols stand for "h" (hue), "s" (saturation), "v" (value), "r" (red), "g" (green), "b" (blue), "a" (alpha)
