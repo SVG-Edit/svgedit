@@ -381,7 +381,7 @@ export default {
         const allLibs = imagelibStrings.select_lib;
 
         const libOpts = $('<ul id=imglib_opts>').appendTo(browser);
-        const frame = $('<iframe/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
+        const frame = $('<iframe src="javascript:0"/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
 
         const header = $('<h1>').prependTo(browser).text(allLibs).css({
           position: 'absolute',

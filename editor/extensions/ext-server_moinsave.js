@@ -22,7 +22,7 @@ export default {
     //    with `getBBox` in browser.js `supportsPathBBox_`)
     /* const target = */ $(
       `<iframe name="output_frame" title="${strings.hiddenframe}"
-        style="width: 0; height: 0;" src="#"/>`
+        style="width: 0; height: 0;" src="data:text/html;base64,PGh0bWw+PC9odG1sPg=="/>`
     ).appendTo('body');
 
     svgEditor.setCustomHandlers({
