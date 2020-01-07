@@ -24,6 +24,9 @@
     `url` is set within the URL)
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Optimization: Remove old build/tools closure/yuicompressor code
+- Optimization: Remove unmaintained chrome-app, firefox-extension,
+  opera-widget (an updated WebExtensions replacement (or such)
+  would be welcome.)
 - Localization: Add 'SVG-Edit Home Page' to locale files
 - Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
 - Docs: Add testing badge

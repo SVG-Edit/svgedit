@@ -61,8 +61,6 @@ module.exports = {
       'node_modules',
       'dist',
       'editor/external',
-      'firefox-extension',
-      'opera-widget',
       'screencasts',
       'test'
     ],

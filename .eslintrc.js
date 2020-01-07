@@ -44,10 +44,7 @@ module.exports = {
         "editor/redirect-on-no-module-support.js",
         "editor/extensions/imagelib/index.js",
         "editor/external/dom-polyfill/dom-polyfill.js",
-        "screencasts/svgopen2010/script.js",
-        "opera-widget/handlers.js",
-        "firefox-extension/handlers.js",
-        "firefox-extension/content/svg-edit-overlay.js"
+        "screencasts/svgopen2010/script.js"
       ],
       rules: {
         "import/unambiguous": ["off"]
@@ -220,15 +217,6 @@ module.exports = {
         polyfills: [
           'Object.assign',
           'Object.keys'
-        ]
-      }
-    },
-    {
-      // Misc. probably to remove
-      files: ['firefox-extension/**', 'opera-widget/**'],
-      settings: {
-        polyfills: [
-          'console'
         ]
       }
     },

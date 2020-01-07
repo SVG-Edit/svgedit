@@ -24,7 +24,7 @@
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
     "open-docs": "run-p start open-docs-no-start",
     "build-html": "npx babel-node --plugins @babel/plugin-transform-modules-commonjs build/build-html.js",
-    "compress-images": "imageoptim \"chrome-app/*.png\" \"editor/extensions/*.png\" \"editor/spinbtn/*.png\" \"editor/jgraduate/images/*.{png,gif}\" \"editor/images/*.png\"",
+    "compress-images": "imageoptim \"editor/extensions/*.png\" \"editor/spinbtn/*.png\" \"editor/jgraduate/images/*.{png,gif}\" \"editor/images/*.png\"",
     "copy": "copyfiles -f node_modules/load-stylesheets/dist/index-es.js editor/external/load-stylesheets && copyfiles -f node_modules/jamilih/dist/jml-es.js editor/external/jamilih && copyfiles -f node_modules/query-result/esm/index.js editor/external/query-result/esm && copyfiles -f node_modules/qr-manipulation/dist/index-es.js editor/external/qr-manipulation/dist && copyfiles -f node_modules/stackblur-canvas/dist/stackblur-es.js editor/external/stackblur-canvas/dist && copyfiles -f node_modules/regenerator-runtime/runtime.js editor/external/regenerator-runtime && copyfiles -f \"node_modules/core-js-bundle//minified*\" editor/external/core-js-bundle && copyfiles -f \"node_modules/underscore/underscore-*\" editor/jspdf && copyfiles -f \"node_modules/deparam/dist/deparam.esm.js\" editor/external/deparam",
     "remark": "remark -q -f .",
     "eslint-fix": "eslint --fix --ext js,md,html .",
