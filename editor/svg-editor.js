@@ -2945,7 +2945,6 @@ editor.init = function () {
       }
 
       let timer;
-      const pos = $(showSel).position();
 
       // Clicking the "show" icon should set the current mode
       shower.mousedown(function (evt) {
@@ -2953,6 +2952,7 @@ editor.init = function () {
           return false;
         }
         const holder = $(holdSel);
+        const pos = $(showSel).position();
         const l = pos.left + 34;
         const w = holder.width() * -1;
         const time = holder.data('shown_popop') ? 200 : 0;
