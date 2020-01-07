@@ -1910,11 +1910,14 @@ const mouseDown = function (evt) {
       }
     }
     break;
-  } case 'fhellipse':
+  }
+  case 'fhellipse':
   case 'fhrect':
   case 'fhpath':
     start.x = realX;
     start.y = realY;
+    controllPoint1 = {x: 0, y: 0};
+    controllPoint2 = {x: 0, y: 0};
     started = true;
     dAttr = realX + ',' + realY + ' ';
     // Commented out as doing nothing now:
