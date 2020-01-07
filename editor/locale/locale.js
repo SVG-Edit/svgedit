@@ -57,6 +57,7 @@ export const setStrings = function (type, obj, ids) {
   Object.entries(obj).forEach(([sel, val]) => {
     if (!val) {
       console.log(sel); // eslint-disable-line no-console
+      return; // keep old text when has no translation
     }
 
     if (ids) { sel = '#' + sel; }
