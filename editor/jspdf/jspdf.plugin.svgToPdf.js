@@ -219,7 +219,7 @@ const svgElementToPdf = function (element, pdf, options) {
       }
       pdf.setFontType(fontType);
       const pdfFontSize = node.hasAttribute('font-size')
-        ? parseInt(node.getAttribute('font-size'), 10)
+        ? parseInt(node.getAttribute('font-size'))
         : 16;
 
       /**
@@ -255,8 +255,8 @@ const svgElementToPdf = function (element, pdf, options) {
         case 'start': break;
         case 'default': node.setAttribute('text-anchor', 'start'); break;
         }
-        x = parseInt(node.getAttribute('x'), 10) - xOffset;
-        y = parseInt(node.getAttribute('y'), 10);
+        x = parseInt(node.getAttribute('x')) - xOffset;
+        y = parseInt(node.getAttribute('y'));
       }
       // console.log('fontSize:', pdfFontSize, 'text:', node.textContent);
       pdf.setFontSize(pdfFontSize).text(
