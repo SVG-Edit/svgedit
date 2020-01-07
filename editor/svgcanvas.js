@@ -7191,7 +7191,28 @@ this.setBackground = function (color, url) {
   const bg = getElem('canvasBackground');
   const border = $(bg).find('rect')[0];
   let bgImg = getElem('background_image');
-  border.setAttribute('fill', color);
+  let bgPattern = getElem('background_pattern');
+  border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
+  if (color === 'chessboard') {
+    if (!bgPattern) {
+      bgPattern = svgdoc.createElementNS(NS.SVG, 'foreignObject');
+      assignAttributes(bgPattern, {
+        id: 'background_pattern',
+        width: '100%',
+        height: '100%',
+        preserveAspectRatio: 'xMinYMin',
+        style: 'pointer-events:none'
+      });
+      const div = document.createElement('div');
+      assignAttributes(div, {
+        style: 'width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+      });
+      bgPattern.appendChild(div);
+      bg.append(bgPattern);
+    }
+  } else if (bgPattern) {
+    bgPattern.remove();
+  }
   if (url) {
     if (!bgImg) {
       bgImg = svgdoc.createElementNS(NS.SVG, 'image');

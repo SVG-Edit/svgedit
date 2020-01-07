@@ -3585,11 +3585,14 @@ editor.init = function () {
   $('#palette').append(str);
 
   // Set up editor background functionality
-  // TODO add checkerboard as "pattern"
-  const colorBlocks = ['#FFF', '#888', '#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
+  const colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
   str = '';
-  $.each(colorBlocks, function () {
-    str += '<div class="color_block" style="background-color:' + this + ';"></div>';
+  $.each(colorBlocks, function (i, e) {
+    if (e === 'chessboard') {
+      str += '<div class="color_block" data-bgcolor="' + e + '" style="background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>';
+    } else {
+      str += '<div class="color_block" data-bgcolor="' + e + '" style="background-color:' + e + ';"></div>';
+    }
   });
   $('#bg_blocks').append(str);
   const blocks = $('#bg_blocks div');
@@ -4731,9 +4734,8 @@ editor.init = function () {
     const url = editor.pref('bkgd_url');
     blocks.each(function () {
       const blk = $(this);
-      const isBg = blk.css('background-color') === canvasBg;
+      const isBg = blk.data('bgcolor') === canvasBg;
       blk.toggleClass(curBg, isBg);
-      if (isBg) { $('#canvas_bg_url').removeClass(curBg); }
     });
     if (!canvasBg) { blocks.eq(0).addClass(curBg); }
     if (url) {
@@ -4862,7 +4864,7 @@ editor.init = function () {
   */
   const savePreferences = editor.savePreferences = async function () {
     // Set background
-    const color = $('#bg_blocks div.cur_background').css('background-color') || '#FFF';
+    const color = $('#bg_blocks div.cur_background').data('bgcolor') || '#FFF';
     setBackground(color, $('#canvas_bg_url').val());
 
     // set language
