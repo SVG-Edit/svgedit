@@ -64,6 +64,7 @@ on `master` may be updated less frequently.)
 1. Otherwise, just add an iframe to your site, adding any extensions or
   configuration (see `docs/tutorials/ConfigOptions.md`
   ([ConfigOptions]{@tutorial ConfigOptions})) within the URL:
+
 ```html
 <iframe src="svgedit/editor/svg-editor.html?extensions="
     width="100%" height="100%"></iframe>
