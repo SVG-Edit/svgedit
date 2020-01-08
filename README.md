@@ -16,7 +16,7 @@
 
 [![Licenses badge](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/licenses-badge.svg?sanitize=true)](badges/licenses-badge.svg)
 [![Licenses dev badge](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/licenses-badge-dev.svg?sanitize=true)](badges/licenses-badge-dev.svg)
-[![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT)
+<!-- [![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT) -->
 
 [![issuehunt-to-marktext](https://issuehunt.io/static/embed/issuehunt-button-v1.svg)](https://issuehunt.io/r/SVG-Edit/svgedit)
 
