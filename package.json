@@ -46,6 +46,8 @@
     "instrument:copy-excluded": "node cypress/support/copy.js",
     "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js && npm run instrument:copy-excluded",
     "instrument": "rimraf instrumented && npx nyc instrument editor instrumented && npm run copy-instrumented",
+    "license-badge": "license-badger --uncategorizedLicenseTemplate \"\\${license} (\\${name} (\\${version}))\" --filteredTypes=nonempty --textTemplate \"License types\n(project, deps, and bundled devDeps)\" --packageJson --production badges/licenses-badge.svg",
+    "license-badge-dev": "license-badger --corrections --filteredTypes=nonempty --textTemplate \"License types\n(all devDeps)\" --allDevelopment badges/licenses-badge-dev.svg",
     "coverage-badge": "coveradge badges/coverage-badge",
     "open-cov": "npm-run-all instrument --parallel --race start cypress:open",
     "open-tests": "run-p start cypress:open",
@@ -94,7 +96,7 @@
     "Brett Zamir",
     "Fabien Jacq"
   ],
-  "license": "MIT",
+  "license": "(MIT AND Apache-2.0 AND CC-BY-SA-2.0 AND ISC AND LGPL-3.0-or-later AND X11)",
   "bugs": {
     "url": "https://github.com/SVG-Edit/svgedit/issues"
   },
@@ -161,6 +163,7 @@
     "imageoptim-cli": "^3.0.2",
     "jamilih": "^0.47.0",
     "jsdoc": "^3.6.3",
+    "license-badger": "^0.7.4",
     "load-stylesheets": "^0.9.0",
     "mocha": "^7.0.0",
     "mocha-badge-generator": "https://github.com/brettz9/mocha-badge-generator#updated-badge-up",

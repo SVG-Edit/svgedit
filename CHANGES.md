@@ -2,6 +2,13 @@
 
 ## 6.0.0 (unreleased)
 
+- License: Reflect actual license of library in `package.json` based
+  not only on licenses of repository as a whole (i.e., "MIT") but
+  individual component files; see `filesByLicense` in `licenseInfo.json`
+  for a map of license to these files within the repo with their own
+  licenses. See the new license badges on the README for a summary of
+  the licenses including either bundled devDependencies or all
+  `devDependencies` (we have no direct npm `dependencies` currently).
 - License: Relicense ext-mathjax from Apache-2.0 to MIT per
   <https://github.com/josegaert/ext-mathjax/issues/6>
 - License: Clarify in `@license` that `ext-server_moinsave.js` is
@@ -30,6 +37,11 @@
 - Localization: Add 'SVG-Edit Home Page' to locale files
 - Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
 - Docs: Add testing badge
+- Docs: Add license badges and `licenseInfo.json` (has a
+  `filesByLicense` map of files to licenses (not yet used programmatically)
+  and `bundledRootPackages` which is used by `license-badger` to know which
+  dev. packages are being bundled (added by `npm run copy`) for determining
+  summary of all licenses including bundled).
 - Docs: Reprioritize `docs` in commit lists (prioritize user-facing)
 - Refactoring: Switch from `$.param.querystring` to `URL`
 - Refactoring: Ensure file-global jsdoc tags are at beginning of file
