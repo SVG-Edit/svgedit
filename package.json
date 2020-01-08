@@ -47,7 +47,7 @@
     "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js && npm run instrument:copy-excluded",
     "instrument": "rimraf instrumented && npx nyc instrument editor instrumented && npm run copy-instrumented",
     "license-badge": "license-badger --uncategorizedLicenseTemplate \"\\${license} (\\${name} (\\${version}))\" --filteredTypes=nonempty --textTemplate \"License types\n(project, deps, and bundled devDeps)\" --packageJson --production badges/licenses-badge.svg",
-    "license-badge-dev": "license-badger --corrections --filteredTypes=nonempty --textTemplate \"License types\n(all devDeps)\" --allDevelopment badges/licenses-badge-dev.svg",
+    "license-badge-dev": "license-badger --corrections --filteredTypes=nonempty --licenseTypeColor \"weaklyProtective=CCCC00\" --textTemplate \"License types\n(all devDeps)\" --allDevelopment badges/licenses-badge-dev.svg",
     "coverage-badge": "coveradge badges/coverage-badge",
     "open-cov": "npm-run-all instrument --parallel --race start cypress:open",
     "open-tests": "run-p start cypress:open",
