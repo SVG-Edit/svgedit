@@ -15720,6 +15720,14 @@
           case 'fhpath':
             start.x = realX;
             start.y = realY;
+            controllPoint1 = {
+              x: 0,
+              y: 0
+            };
+            controllPoint2 = {
+              x: 0,
+              y: 0
+            };
             started = true;
             dAttr = realX + ',' + realY + ' '; // Commented out as doing nothing now:
             // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
@@ -21749,7 +21757,29 @@
       var bg = getElem('canvasBackground');
       var border = $$9(bg).find('rect')[0];
       var bgImg = getElem('background_image');
-      border.setAttribute('fill', color);
+      var bgPattern = getElem('background_pattern');
+      border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
+
+      if (color === 'chessboard') {
+        if (!bgPattern) {
+          bgPattern = svgdoc.createElementNS(NS.SVG, 'foreignObject');
+          assignAttributes(bgPattern, {
+            id: 'background_pattern',
+            width: '100%',
+            height: '100%',
+            preserveAspectRatio: 'xMinYMin',
+            style: 'pointer-events:none'
+          });
+          var div = document.createElement('div');
+          assignAttributes(div, {
+            style: 'pointer-events:none;width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+          });
+          bgPattern.appendChild(div);
+          bg.append(bgPattern);
+        }
+      } else if (bgPattern) {
+        bgPattern.remove();
+      }
 
       if (url) {
         if (!bgImg) {
@@ -27516,7 +27546,7 @@
     * @property {"left"|"center"|"right"|"screenCenter"|Float} window.position.x Relative px value
     * @property {"top"|"bottom"|"center"|Float} window.position.y Relative px value
     * @property {boolean} window.expandable Defaults to large static picker - set to `true` to make an expandable
-    * picker (small icon with popup) - set automatically when binded to input element
+    * picker (small icon with popup) - set automatically when binded to input element; added by `$.fn.jPicker`
     * @property {boolean} window.liveUpdate Set `false` if you want the user to have to click "OK" before the
     * binded input box updates values (always `true` for expandable picker)
     * @property {boolean} window.alphaSupport Set to `true` to enable alpha picking
@@ -27524,7 +27554,6 @@
     * not map directly to percentage integers - range 0-2
     * @property {boolean} window.updateInputColor Set to `false` to prevent binded input colors from changing
     * @property {boolean} [window.bindToInput] Added by `$.fn.jPicker`
-    * @property {boolean} [window.expandable] Added by `$.fn.jPicker`
     * @property {external:jQuery} [window.input] Added by `$.fn.jPicker`
     * @property {PlainObject} color
     * @property {"h"|"s"|"v"|"r"|"g"|"b"|"a"} color.mode Symbols stand for "h" (hue), "s" (saturation), "v" (value), "r" (red), "g" (green), "b" (blue), "a" (alpha)
@@ -27997,6 +28026,8 @@
 
       if (!val) {
         console.log(sel); // eslint-disable-line no-console
+
+        return; // keep old text when has no translation
       }
 
       if (ids) {
@@ -31791,8 +31822,7 @@
           shower.attr('data-curopt', btnOpts[0].sel);
         }
 
-        var timer;
-        var pos = $$b(showSel).position(); // Clicking the "show" icon should set the current mode
+        var timer; // Clicking the "show" icon should set the current mode
 
         shower.mousedown(function (evt) {
           if (shower.hasClass('disabled')) {
@@ -31800,6 +31830,7 @@
           }
 
           var holder = $$b(holdSel);
+          var pos = $$b(showSel).position();
           var l = pos.left + 34;
           var w = holder.width() * -1;
           var time = holder.data('shown_popop') ? 200 : 0;
@@ -32516,13 +32547,15 @@
       str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
     });
     $$b('#palette').append(str); // Set up editor background functionality
-    // TODO add checkerboard as "pattern"
 
-    var colorBlocks = ['#FFF', '#888', '#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
-
+    var colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
     str = '';
-    $$b.each(colorBlocks, function () {
-      str += '<div class="color_block" style="background-color:' + this + ';"></div>';
+    $$b.each(colorBlocks, function (i, e) {
+      if (e === 'chessboard') {
+        str += '<div class="color_block" data-bgcolor="' + e + '" style="background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>';
+      } else {
+        str += '<div class="color_block" data-bgcolor="' + e + '" style="background-color:' + e + ';"></div>';
+      }
     });
     $$b('#bg_blocks').append(str);
     var blocks = $$b('#bg_blocks div');
@@ -33888,12 +33921,8 @@
       var url = editor.pref('bkgd_url');
       blocks.each(function () {
         var blk = $$b(this);
-        var isBg = blk.css('background-color') === canvasBg;
+        var isBg = blk.data('bgcolor') === canvasBg;
         blk.toggleClass(curBg, isBg);
-
-        if (isBg) {
-          $$b('#canvas_bg_url').removeClass(curBg);
-        }
       });
 
       if (!canvasBg) {
@@ -34092,7 +34121,7 @@
           switch (_context11.prev = _context11.next) {
             case 0:
               // Set background
-              color = $$b('#bg_blocks div.cur_background').css('background-color') || '#FFF';
+              color = $$b('#bg_blocks div.cur_background').data('bgcolor') || '#FFF';
               setBackground(color, $$b('#canvas_bg_url').val()); // set language
 
               lang = $$b('#lang_select').val();

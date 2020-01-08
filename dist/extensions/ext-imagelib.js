@@ -79,7 +79,7 @@ var svgEditorExtension_imagelib = (function () {
                     browser = $('#imgbrowse');
                     var allLibs = imagelibStrings.select_lib;
                     var libOpts = $('<ul id=imglib_opts>').appendTo(browser);
-                    var frame = $('<iframe/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
+                    var frame = $('<iframe src="javascript:0"/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
                     var header = $('<h1>').prependTo(browser).text(allLibs).css({
                       position: 'absolute',
                       top: 0,

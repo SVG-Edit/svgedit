@@ -4903,7 +4903,7 @@ var svgEditorExtension_server_moinsave = (function () {
 
                 /* const target = */
 
-                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n        style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
+                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n        style=\"width: 0; height: 0;\" src=\"data:text/html;base64,PGh0bWw+PC9odG1sPg==\"/>")).appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function () {
                     var _save = _asyncToGenerator(

@@ -5038,7 +5038,7 @@ var svgEditorExtension_server_opensave = (function () {
                 cancelled = false; //  Hiding by size instead of display to avoid FF console errors
                 //    with `getBBox` in browser.js `supportsPathBBox_`)
 
-                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n          style=\"width: 0; height: 0;\" src=\"#\"/>")).appendTo('body');
+                $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n          style=\"width: 0; height: 0;\" src=\"data:text/html;base64,PGh0bWw+\"/>")).appendTo('body');
                 svgEditor.setCustomHandlers({
                   save: function save(win, data) {
                     var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,

@@ -591,6 +591,18 @@
                   pdf.setFont('courier');
                   break;
 
+                case 'times':
+                  pdf.setFont('times');
+                  break;
+
+                case 'courier':
+                  pdf.setFont('courier');
+                  break;
+
+                case 'helvetica':
+                  pdf.setFont('helvetica');
+                  break;
+
                 default:
                   node.setAttribute('font-family', 'sans-serif');
                   pdf.setFont('helvetica');

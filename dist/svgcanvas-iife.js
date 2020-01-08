@@ -15407,6 +15407,14 @@ var SvgCanvas = (function () {
           case 'fhpath':
             start.x = realX;
             start.y = realY;
+            controllPoint1 = {
+              x: 0,
+              y: 0
+            };
+            controllPoint2 = {
+              x: 0,
+              y: 0
+            };
             started = true;
             dAttr = realX + ',' + realY + ' '; // Commented out as doing nothing now:
             // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
@@ -21436,7 +21444,29 @@ var SvgCanvas = (function () {
       var bg = getElem('canvasBackground');
       var border = $$8(bg).find('rect')[0];
       var bgImg = getElem('background_image');
-      border.setAttribute('fill', color);
+      var bgPattern = getElem('background_pattern');
+      border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
+
+      if (color === 'chessboard') {
+        if (!bgPattern) {
+          bgPattern = svgdoc.createElementNS(NS.SVG, 'foreignObject');
+          assignAttributes(bgPattern, {
+            id: 'background_pattern',
+            width: '100%',
+            height: '100%',
+            preserveAspectRatio: 'xMinYMin',
+            style: 'pointer-events:none'
+          });
+          var div = document.createElement('div');
+          assignAttributes(div, {
+            style: 'pointer-events:none;width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+          });
+          bgPattern.appendChild(div);
+          bg.append(bgPattern);
+        }
+      } else if (bgPattern) {
+        bgPattern.remove();
+      }
 
       if (url) {
         if (!bgImg) {
