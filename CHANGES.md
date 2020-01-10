@@ -46,6 +46,8 @@
 - Refactoring: Switch from `$.param.querystring` to `URL`
 - Refactoring: Ensure file-global jsdoc tags are at beginning of file
 - Refactoring: Move `build-html` to `build` directory
+- Refactoring: Add favicon no-op to suppress favicon 404s until
+  loaded dynamically (might make configurable in future)
 - Linting (ESLint): Simplify regexes
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
 - Linting (ESLint): Update as per latest ash-nazg
