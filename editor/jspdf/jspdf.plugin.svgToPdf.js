@@ -32,6 +32,7 @@ const pdfSvgAttr = {
   circle: ['cx', 'cy', 'r', 'stroke', 'fill', 'stroke-width'],
   polygon: ['points', 'stroke', 'fill', 'stroke-width'],
   // polyline attributes are the same as those of polygon
+  path: ['d', 'stroke', 'fill', 'stroke-width'],
   text: ['x', 'y', 'font-size', 'font-family', 'text-anchor', 'font-weight', 'font-style', 'fill']
 };
 
@@ -78,6 +79,92 @@ const getLinesOptionsOfPoly = function (node) {
   return {x, y, lines};
 };
 
+const getLinesOptionsOfPath = function (node) {
+  const segList = node.pathSegList, n = segList.numberOfItems, opsList = [];
+  let ops = {
+    lines: []
+  };
+  const curr = {
+    x: 0,
+    y: 0
+  };
+  const start = {
+    x: 0,
+    y: 0
+  };
+  const toRelative = function (nums, relativeTo) {
+    const re = [];
+    for (let i = 0; i < nums.length - 1; i += 2) {
+      re[i] = nums[i] - relativeTo.x;
+      re[i + 1] = nums[i + 1] - relativeTo.y;
+    }
+    return re;
+  };
+  const curveQToC = function (nums) {
+    const a = 2 / 3;
+    const re = [
+      nums[0] * a,
+      nums[1] * a,
+      nums[2] + (nums[0] - nums[2]) * a,
+      nums[3] + (nums[1] - nums[3]) * a,
+      nums[2],
+      nums[3]
+    ];
+    return re;
+  };
+  for (let i = 0; i < n; i++) {
+    const seg = segList.getItem(i), letter = seg.pathSegTypeAsLetter;
+    const isRelative = letter >= 'a'; // lowercase letter
+    if (letter === 'M' || letter === 'm') {
+      if (ops.lines.length && Object.prototype.hasOwnProperty.call(ops, 'x')) {
+        opsList.push(ops);
+      }
+      ops = {
+        lines: [],
+        x: isRelative ? seg.x + curr.x : seg.x,
+        y: isRelative ? seg.y + curr.y : seg.y,
+        closed: false
+      };
+      start.x = ops.x;
+      start.y = ops.y;
+    } else if (letter === 'L') {
+      ops.lines.push(toRelative([seg.x, seg.y], curr));
+    } else if (letter === 'l') {
+      ops.lines.push([seg.x, seg.y]);
+    } else if (letter === 'Q') {
+      ops.lines.push(curveQToC(toRelative([seg.x1, seg.y1, seg.x, seg.y], curr)));
+    } else if (letter === 'q') {
+      ops.lines.push(curveQToC([seg.x1, seg.y1, seg.x, seg.y]));
+    } else if (letter === 'C') {
+      ops.lines.push(toRelative([seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y], curr));
+    } else if (letter === 'c') {
+      ops.lines.push([seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y]);
+    } else if (letter === 'Z' || letter === 'z') {
+      ops.closed = true;
+      curr.x = start.x;
+      curr.y = start.y;
+      continue;
+    } else {
+      // other path commands are not supported yet
+      ops = {
+        lines: []
+      };
+      continue;
+    }
+    if (isRelative) {
+      curr.x = seg.x + curr.x;
+      curr.y = seg.y + curr.y;
+    } else {
+      curr.x = seg.x;
+      curr.y = seg.y;
+    }
+  }
+  if (ops.lines.length && Object.prototype.hasOwnProperty.call(ops, 'x')) {
+    opsList.push(ops);
+  }
+  return opsList;
+};
+
 const svgElementToPdf = function (element, pdf, options) {
   // pdf is a jsPDF object
   // console.log('options =', options);
@@ -89,7 +176,7 @@ const svgElementToPdf = function (element, pdf, options) {
     // let hasStrokeColor = false;
     let hasFillColor = false;
     let fillRGB;
-    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'text'])) {
+    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'path', 'text'])) {
       const fillColor = node.getAttribute('fill');
       if (attributeIsNotEmpty(fillColor)) {
         fillRGB = new RGBColor(fillColor);
@@ -101,7 +188,7 @@ const svgElementToPdf = function (element, pdf, options) {
         }
       }
     }
-    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline'])) {
+    if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'path'])) {
       if (hasFillColor) {
         pdf.setFillColor(fillRGB.r, fillRGB.g, fillRGB.b);
       }
@@ -185,7 +272,20 @@ const svgElementToPdf = function (element, pdf, options) {
       }
       removeAttributes(node, pdfSvgAttr.polygon);
       break;
-    // TODO: path
+    } case 'path': {
+      const linesOptionsList = getLinesOptionsOfPath(node);
+      linesOptionsList.forEach(function (linesOptions) {
+        pdf.lines(
+          linesOptions.lines,
+          k * linesOptions.x,
+          k * linesOptions.y,
+          [k, k],
+          colorMode,
+          linesOptions.closed
+        );
+      });
+      removeAttributes(node, pdfSvgAttr.path);
+      break;
     } case 'text': {
       if (node.hasAttribute('font-family')) {
         switch ((node.getAttribute('font-family') || '').toLowerCase()) {
