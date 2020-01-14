@@ -687,6 +687,9 @@ const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
       }
     }
   }
+  if (!selectedElements.length) {
+    return;
+  }
   call('selected', selectedElements);
 
   if (showGrips || selectedElements.length === 1) {
