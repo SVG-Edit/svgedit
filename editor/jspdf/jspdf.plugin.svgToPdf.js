@@ -38,7 +38,7 @@ const pdfSvgAttr = {
 
 const attributeIsNotEmpty = function (node, attr) {
   const attVal = attr ? node.getAttribute(attr) : node;
-  return attVal !== '' && attVal !== null;
+  return attVal !== '' && attVal !== null && attVal !== 'null';
 };
 
 const nodeIs = function (node, possible) {
@@ -176,9 +176,10 @@ const svgElementToPdf = function (element, pdf, options) {
     // let hasStrokeColor = false;
     let hasFillColor = false;
     let fillRGB;
+    colorMode = null;
     if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'path', 'text'])) {
       const fillColor = node.getAttribute('fill');
-      if (attributeIsNotEmpty(fillColor)) {
+      if (attributeIsNotEmpty(fillColor) && node.getAttribute('fill-opacity') !== '0') {
         fillRGB = new RGBColor(fillColor);
         if (fillRGB.ok) {
           hasFillColor = true;
@@ -196,12 +197,12 @@ const svgElementToPdf = function (element, pdf, options) {
         pdf.setLineWidth(k * parseInt(node.getAttribute('stroke-width')));
       }
       const strokeColor = node.getAttribute('stroke');
-      if (attributeIsNotEmpty(strokeColor)) {
+      if (attributeIsNotEmpty(strokeColor) && node.getAttribute('stroke-width') !== '0' && node.getAttribute('stroke-opacity') !== '0') {
         const strokeRGB = new RGBColor(strokeColor);
         if (strokeRGB.ok) {
           // hasStrokeColor = true;
           pdf.setDrawColor(strokeRGB.r, strokeRGB.g, strokeRGB.b);
-          if (colorMode === 'F') {
+          if (hasFillColor) {
             colorMode = 'FD';
           } else {
             colorMode = 'S';
@@ -273,17 +274,33 @@ const svgElementToPdf = function (element, pdf, options) {
       removeAttributes(node, pdfSvgAttr.polygon);
       break;
     } case 'path': {
-      const linesOptionsList = getLinesOptionsOfPath(node);
-      linesOptionsList.forEach(function (linesOptions) {
-        pdf.lines(
-          linesOptions.lines,
-          k * linesOptions.x,
-          k * linesOptions.y,
-          [k, k],
-          colorMode,
-          linesOptions.closed
-        );
-      });
+      if (colorMode) {
+        const linesOptionsList = getLinesOptionsOfPath(node);
+        if (linesOptionsList.length > 0) {
+          linesOptionsList.forEach(function (linesOptions) {
+            pdf.lines(
+              linesOptions.lines,
+              k * linesOptions.x,
+              k * linesOptions.y,
+              [k, k],
+              null,
+              linesOptions.closed
+            );
+          });
+          // svg fill rule default is nonzero
+          const fillRule = node.getAttribute('fill-rule');
+          if (fillRule === 'evenodd') {
+            // f* : fill using even-odd rule
+            // B* : stroke and fill using even-odd rule
+            if (colorMode === 'F') {
+              colorMode = 'f*';
+            } else if (colorMode === 'FD') {
+              colorMode = 'B*';
+            }
+          }
+          pdf.internal.write(pdf.internal.getStyle(colorMode));
+        }
+      }
       removeAttributes(node, pdfSvgAttr.path);
       break;
     } case 'text': {
