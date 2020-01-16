@@ -1538,7 +1538,7 @@ export const convertPath = function (pth, toRel) {
       y2 = seg.y2 || 0;
 
     const type = seg.pathSegType;
-    let letter = pathMap[type]['to' + (toRel ? 'Lower' : 'Upper') + 'Case']();
+    let letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();
 
     switch (type) {
     case 1: // z,Z closepath (Z/z)
@@ -1553,30 +1553,34 @@ export const convertPath = function (pth, toRel) {
       // Fallthrough
     case 13: // relative horizontal line (h)
       if (toRel) {
+        y = 0;
         curx += x;
         letter = 'l';
       } else {
+        y = cury;
         x += curx;
         curx = x;
         letter = 'L';
       }
       // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[x, cury]]);
+      d += pathDSegment(letter, [[x, y]]);
       break;
     case 14: // absolute vertical line (V)
       y -= cury;
       // Fallthrough
     case 15: // relative vertical line (v)
       if (toRel) {
+        x = 0;
         cury += y;
         letter = 'l';
       } else {
+        x = curx;
         y += cury;
         cury = y;
         letter = 'L';
       }
       // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[curx, y]]);
+      d += pathDSegment(letter, [[x, y]]);
       break;
     case 2: // absolute move (M)
     case 4: // absolute line (L)
