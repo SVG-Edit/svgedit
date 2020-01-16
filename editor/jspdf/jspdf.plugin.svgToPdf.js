@@ -84,14 +84,8 @@ const getLinesOptionsOfPath = function (node) {
   let ops = {
     lines: []
   };
-  const curr = {
-    x: 0,
-    y: 0
-  };
-  const start = {
-    x: 0,
-    y: 0
-  };
+  const curr = {x: 0, y: 0};
+  const reflectControl = {x: 0, y: 0};
   const toRelative = function (nums, relativeTo) {
     const re = [];
     for (let i = 0; i < nums.length - 1; i += 2) {
@@ -112,52 +106,127 @@ const getLinesOptionsOfPath = function (node) {
     ];
     return re;
   };
-  for (let i = 0; i < n; i++) {
-    const seg = segList.getItem(i), letter = seg.pathSegTypeAsLetter;
+  for (let i = 0, letterPrev; i < n; i++) {
+    const seg = segList.getItem(i);
+    const {x1, y1, x2, y2, x, y, pathSegTypeAsLetter: letter} = seg;
     const isRelative = letter >= 'a'; // lowercase letter
-    if (letter === 'M' || letter === 'm') {
+    switch (letter) {
+    case 'M':
+    case 'm': {
       if (ops.lines.length && Object.prototype.hasOwnProperty.call(ops, 'x')) {
         opsList.push(ops);
       }
       ops = {
         lines: [],
-        x: isRelative ? seg.x + curr.x : seg.x,
-        y: isRelative ? seg.y + curr.y : seg.y,
+        x: isRelative ? x + curr.x : x,
+        y: isRelative ? y + curr.y : y,
         closed: false
       };
-      start.x = ops.x;
-      start.y = ops.y;
-    } else if (letter === 'L') {
-      ops.lines.push(toRelative([seg.x, seg.y], curr));
-    } else if (letter === 'l') {
-      ops.lines.push([seg.x, seg.y]);
-    } else if (letter === 'Q') {
-      ops.lines.push(curveQToC(toRelative([seg.x1, seg.y1, seg.x, seg.y], curr)));
-    } else if (letter === 'q') {
-      ops.lines.push(curveQToC([seg.x1, seg.y1, seg.x, seg.y]));
-    } else if (letter === 'C') {
-      ops.lines.push(toRelative([seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y], curr));
-    } else if (letter === 'c') {
-      ops.lines.push([seg.x1, seg.y1, seg.x2, seg.y2, seg.x, seg.y]);
-    } else if (letter === 'Z' || letter === 'z') {
+      ops.closed = false;
+      break;
+    }
+    case 'L': {
+      ops.lines.push(toRelative([x, y], curr));
+      break;
+    }
+    case 'l': {
+      ops.lines.push([x, y]);
+      break;
+    }
+    case 'H': {
+      ops.lines.push([x - curr.x, 0]);
+      break;
+    }
+    case 'h': {
+      ops.lines.push([x, 0]);
+      break;
+    }
+    case 'V': {
+      ops.lines.push([0, y - curr.y]);
+      break;
+    }
+    case 'v': {
+      ops.lines.push([0, y]);
+      break;
+    }
+    case 'Q': {
+      ops.lines.push(curveQToC(toRelative([x1, y1, x, y], curr)));
+      reflectControl.x = x - x1;
+      reflectControl.y = y - y1;
+      break;
+    }
+    case 'q': {
+      ops.lines.push(curveQToC([x1, y1, x, y]));
+      reflectControl.x = x - x1;
+      reflectControl.y = y - y1;
+      break;
+    }
+    case 'T': {
+      const p1 = letterPrev && 'QqTt'.includes(letterPrev) ? reflectControl : {x: 0, y: 0};
+      ops.lines.push(curveQToC([p1.x, p1.y, x - curr.x, y - curr.y]));
+      reflectControl.x = x - curr.x - p1.x;
+      reflectControl.y = y - curr.y - p1.y;
+      break;
+    }
+    case 't': {
+      const p1 = letterPrev && 'QqTt'.includes(letterPrev) ? reflectControl : {x: 0, y: 0};
+      ops.lines.push([p1.x, p1.y, x, y]);
+      reflectControl.x = x - p1.x;
+      reflectControl.y = y - p1.y;
+      break;
+    }
+    case 'C': {
+      ops.lines.push(toRelative([x1, y1, x2, y2, x, y], curr));
+      break;
+    }
+    case 'c': {
+      ops.lines.push([x1, y1, x2, y2, x, y]);
+      break;
+    }
+    case 'S':
+    case 's': {
+      const p1 = letterPrev && 'CcSs'.includes(letterPrev) ? reflectControl : {x: 0, y: 0};
+      if (isRelative) {
+        ops.lines.push([p1.x, p1.y, x2, y2, x, y]);
+      } else {
+        ops.lines.push([p1.x, p1.y].concat(toRelative([x2, y2, x, y], curr)));
+      }
+      reflectControl.x = x - x2;
+      reflectControl.y = y - y2;
+      break;
+    }
+    case 'A':
+    case 'a': {
+      // Not support command 'A' and 'a' yet. Treat it as straight line instead.
+      if (isRelative) {
+        ops.lines.push([x, y]);
+      } else {
+        ops.lines.push(toRelative([x, y], curr));
+      }
+      break;
+    }
+    case 'z':
+    case 'Z': {
       ops.closed = true;
-      curr.x = start.x;
-      curr.y = start.y;
-      continue;
-    } else {
-      // other path commands are not supported yet
-      ops = {
-        lines: []
-      };
-      continue;
+      break;
     }
-    if (isRelative) {
-      curr.x = seg.x + curr.x;
-      curr.y = seg.y + curr.y;
-    } else {
-      curr.x = seg.x;
-      curr.y = seg.y;
+    default: {
+      // throw new Error('Unknown path command ' + letter);
+      return opsList;
     }
+    }
+    if (letter === 'Z' || letter === 'z') {
+      curr.x = ops.x;
+      curr.y = ops.y;
+    } else {
+      if (letter !== 'V' && letter !== 'v') {
+        curr.x = isRelative ? x + curr.x : x;
+      }
+      if (letter !== 'H' && letter !== 'h') {
+        curr.y = isRelative ? y + curr.y : y;
+      }
+    }
+    letterPrev = letter;
   }
   if (ops.lines.length && Object.prototype.hasOwnProperty.call(ops, 'x')) {
     opsList.push(ops);
