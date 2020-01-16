@@ -5,6 +5,7 @@ import '../../../instrumented/svgpathseg.js';
 import {NS} from '../../../instrumented/namespaces.js';
 import * as utilities from '../../../instrumented/utilities.js';
 import * as pathModule from '../../../instrumented/path.js';
+import {init as unitsInit} from '../../../instrumented/units.js';
 
 describe('path', function () {
   /**
@@ -163,5 +164,20 @@ describe('path', function () {
     assert.equal(path.pathSegList.getItem(1).y2, 14);
     assert.equal(path.pathSegList.getItem(1).x, 15);
     assert.equal(path.pathSegList.getItem(1).y, 16);
+  });
+
+  it('Test svgedit.path.convertPath', function () {
+    unitsInit({
+      getRoundDigits () { return 5; }
+    });
+
+    const path = document.createElementNS(NS.SVG, 'path');
+    path.setAttribute('d', 'M40,55h20v20');
+
+    const abs = pathModule.convertPath(path);
+    assert.equal(abs, 'M40,55L60,55L60,75');
+
+    const rel = pathModule.convertPath(path, true);
+    assert.equal(rel, 'm40,55l20,0l0,20');
   });
 });
