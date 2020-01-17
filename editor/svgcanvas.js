@@ -3744,6 +3744,10 @@ this.svgToString = function (elem, indent) {
         let attrVal = toXml(attr.value);
         // remove bogus attributes added by Gecko
         if (mozAttrs.includes(attr.localName)) { continue; }
+        if (attrVal === 'null') {
+          const styleName = attr.localName.replace(/-[a-z]/g, (s) => s[1].toUpperCase());
+          if (Object.prototype.hasOwnProperty.call(elem.style, styleName)) { continue; }
+        }
         if (attrVal !== '') {
           if (attrVal.startsWith('pointer-events')) { continue; }
           if (attr.localName === 'class' && attrVal.startsWith('se_')) { continue; }
@@ -3786,7 +3790,7 @@ this.svgToString = function (elem, indent) {
         switch (child.nodeType) {
         case 1: // element node
           out.push('\n');
-          out.push(this.svgToString(childs.item(i), indent));
+          out.push(this.svgToString(child, indent));
           break;
         case 3: { // text node
           const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
@@ -4072,7 +4076,8 @@ this.exportPDF = async function (
       // We do not currently have these paths configurable as they are
       //   currently global-only, so not Rolled-up
       'jspdf/underscore-min.js',
-      'jspdf/jspdf.min.js'
+      // 'jspdf/jspdf.min.js',
+      '../../svgedit-myfix/editor/jspdf/jspdf-1.0.150.debug.js'
     ]);
 
     const modularVersion = !('svgEditor' in window) ||

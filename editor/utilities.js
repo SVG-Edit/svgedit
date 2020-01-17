@@ -1237,7 +1237,14 @@ export const assignAttributes = function (elem, attrs, suspendLength, unitCheck)
     const ns = (key.substr(0, 4) === 'xml:'
       ? NS.XML
       : key.substr(0, 6) === 'xlink:' ? NS.XLINK : null);
-
+    if (isNullish(value)) {
+      if (ns) {
+        elem.removeAttributeNS(ns, key);
+      } else {
+        elem.removeAttribute(key);
+      }
+      continue;
+    }
     if (ns) {
       elem.setAttributeNS(ns, key, value);
     } else if (!unitCheck) {
