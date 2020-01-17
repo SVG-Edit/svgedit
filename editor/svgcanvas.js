@@ -6358,8 +6358,10 @@ this.copySelectedElements = function () {
   localStorage.setItem('svgedit_clipboard', JSON.stringify(
     selectedElements.map(function (x) { return getJsonFromSvgElement(x); })
   ));
-
-  $('#cmenu_canvas').enableContextMenuItems('#paste,#paste_in_place');
+  let menu = $('#cmenu_canvas');
+  if (menu) {
+    menu.enableContextMenuItems('#paste,#paste_in_place');
+  }
 };
 
 /**
