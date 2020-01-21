@@ -165,7 +165,7 @@
     "license-badger": "^0.9.3",
     "load-stylesheets": "^0.9.0",
     "mocha": "^7.0.0",
-    "mocha-badge-generator": "https://github.com/brettz9/mocha-badge-generator#updated-badge-up",
+    "mocha-badge-generator": "^0.4.0",
     "mochawesome": "^4.1.0",
     "mochawesome-merge": "^4.0.0",
     "mochawesome-report-generator": "^4.1.0",
