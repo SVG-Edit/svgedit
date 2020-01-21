@@ -54,9 +54,8 @@
     "report": "npx nyc report",
     "report-summary": "npx nyc report --reporter=text-summary",
     "build-by-config": "rollup -c rollup-config.config.js",
-    "test-cov-prereport": "npm-run-all instrument --parallel --race start cypress:run",
-    "test-cov": "run-s -c test-cov-prereport report-summary",
     "test-cov-open": "npm-run-all instrument --parallel --race start cypress:run",
+    "test-cov": "run-s -c test-cov-open report-summary",
     "test-no-build": "run-s eslint build-html build-by-config && npm test",
     "prep": "run-s eslint build-html rollup build-by-config",
     "test": "run-p start cypress:run"
