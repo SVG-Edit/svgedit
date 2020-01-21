@@ -8,7 +8,7 @@ describe('Key commands', function () {
     visitAndApproveStorage();
   });
 
-  it('ctrl-A causes error', function () {
+  it('cmd-A on empty canvas should not cause an error', function () {
     cy.get('body').type('{cmd}a');
   });
 });
