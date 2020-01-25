@@ -6588,7 +6588,7 @@
           x2 = seg.x2 || 0,
           y2 = seg.y2 || 0;
       var type = seg.pathSegType;
-      var letter = pathMap[type]['to' + (toRel ? 'Lower' : 'Upper') + 'Case']();
+      var letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();
 
       switch (type) {
         case 1:
@@ -6610,16 +6610,18 @@
         case 13:
           // relative horizontal line (h)
           if (toRel) {
+            y = 0;
             curx += x;
             letter = 'l';
           } else {
+            y = cury;
             x += curx;
             curx = x;
             letter = 'L';
           } // Convert to "line" for easier editing
 
 
-          d += pathDSegment(letter, [[x, cury]]);
+          d += pathDSegment(letter, [[x, y]]);
           break;
 
         case 14:
@@ -6630,16 +6632,18 @@
         case 15:
           // relative vertical line (v)
           if (toRel) {
+            x = 0;
             cury += y;
             letter = 'l';
           } else {
+            x = curx;
             y += cury;
             cury = y;
             letter = 'L';
           } // Convert to "line" for easier editing
 
 
-          d += pathDSegment(letter, [[curx, y]]);
+          d += pathDSegment(letter, [[x, y]]);
           break;
 
         case 2: // absolute move (M)
@@ -9168,6 +9172,16 @@
           value = _Object$entries$_i[1];
 
       var ns = key.substr(0, 4) === 'xml:' ? NS.XML : key.substr(0, 6) === 'xlink:' ? NS.XLINK : null;
+
+      if (isNullish(value)) {
+        if (ns) {
+          elem.removeAttributeNS(ns, key);
+        } else {
+          elem.removeAttribute(key);
+        }
+
+        continue;
+      }
 
       if (ns) {
         elem.setAttributeNS(ns, key, value);
@@ -14323,6 +14337,10 @@
         }
       }
 
+      if (!selectedElements.length) {
+        return;
+      }
+
       call('selected', selectedElements);
 
       if (showGrips || selectedElements.length === 1) {
@@ -17747,6 +17765,16 @@
               continue;
             }
 
+            if (_attrVal === 'null') {
+              var styleName = _attr.localName.replace(/-[a-z]/g, function (s) {
+                return s[1].toUpperCase();
+              });
+
+              if (Object.prototype.hasOwnProperty.call(elem.style, styleName)) {
+                continue;
+              }
+            }
+
             if (_attrVal !== '') {
               if (_attrVal.startsWith('pointer-events')) {
                 continue;
@@ -17801,7 +17829,7 @@
               case 1:
                 // element node
                 out.push('\n');
-                out.push(this.svgToString(childs.item(_i4), indent));
+                out.push(this.svgToString(child, indent));
                 break;
 
               case 3:
@@ -18207,7 +18235,8 @@
                 _context3.next = 4;
                 return importScript([// We do not currently have these paths configurable as they are
                 //   currently global-only, so not Rolled-up
-                'jspdf/underscore-min.js', 'jspdf/jspdf.min.js']);
+                'jspdf/underscore-min.js', // 'jspdf/jspdf.min.js',
+                '../../svgedit-myfix/editor/jspdf/jspdf-1.0.150.debug.js']);
 
               case 4:
                 modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false; // Todo: Switch to `import()` when widely supported and available (also allow customization of path)

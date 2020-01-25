@@ -319,9 +319,10 @@ Other Todos:
 0. Support JsonML empty string element name to represent fragments?
 0. Redo browser testing of jml (including ensuring IE7 can work even if test framework can't work)
 */
-var win = typeof window !== 'undefined' && window;
-var doc = typeof document !== 'undefined' && document;
-var XmlSerializer = typeof XMLSerializer !== 'undefined' && XMLSerializer; // STATIC PROPERTIES
+// istanbul ignore next
+var win = typeof window !== 'undefined' && window; // istanbul ignore next
+
+var doc = typeof document !== 'undefined' && document || win && win.document; // STATIC PROPERTIES
 
 var possibleOptions = ['$plugins', // '$mode', // Todo (SVG/XML)
 // 'state', // Used internally
@@ -382,9 +383,12 @@ function _getHTMLNodeName(node) {
 
 
 function _applyAnyStylesheet(node) {
+  // Only used in IE
+  // istanbul ignore else
   if (!doc.createStyleSheet) {
     return;
-  }
+  } // istanbul ignore next
+
 
   if (_getHTMLNodeName(node) === 'style') {
     // IE
@@ -406,7 +410,9 @@ function _applyAnyStylesheet(node) {
 function _appendNode(parent, child) {
   var parentName = _getHTMLNodeName(parent);
 
-  var childName = _getHTMLNodeName(child);
+  var childName = _getHTMLNodeName(child); // IE only
+  // istanbul ignore if
+
 
   if (doc.createStyleSheet) {
     if (parentName === 'script') {
@@ -429,6 +435,7 @@ function _appendNode(parent, child) {
   try {
     parent.append(child); // IE9 is now ok with this
   } catch (e) {
+    // istanbul ignore next
     if (parentName === 'select' && childName === 'option') {
       try {
         // Since this is now DOM Level 4 standard behavior (and what IE7+ can handle), we try it first
@@ -439,7 +446,8 @@ function _appendNode(parent, child) {
       }
 
       return;
-    }
+    } // istanbul ignore next
+
 
     throw e;
   }
@@ -469,12 +477,14 @@ function _addEvent(el, type, handler, capturing) {
 
 
 function _createSafeReference(type, prefix, arg) {
-  // For security reasons related to innerHTML, we ensure this string only contains potential entity characters
+  // For security reasons related to innerHTML, we ensure this string only
+  //  contains potential entity characters
   if (!arg.match(/^[0-9A-Z_a-z]+$/)) {
     throw new TypeError('Bad ' + type);
   }
 
   var elContainer = doc.createElement('div'); // Todo: No workaround for XML?
+  // eslint-disable-next-line no-unsanitized/property
 
   elContainer.innerHTML = '&' + prefix + arg + ';';
   return doc.createTextNode(elContainer.innerHTML);
@@ -504,38 +514,44 @@ function _isNullish(o) {
 * @private
 * @static
 * @param {string|JamilihAttributes|JamilihArray|Element|DocumentFragment} item
-* @returns {"string"|"null"|"array"|"element"|"fragment"|"object"}
+* @returns {"string"|"null"|"array"|"element"|"fragment"|"object"|"symbol"|"function"|"number"|"boolean"}
 */
 
 
 function _getType(item) {
-  if (typeof item === 'string') {
-    return 'string';
-  }
+  var type = _typeof(item);
 
-  if (_typeof(item) === 'object') {
-    if (item === null) {
-      return 'null';
-    }
-
-    if (Array.isArray(item)) {
-      return 'array';
-    }
-
-    if ('nodeType' in item) {
-      if (item.nodeType === 1) {
-        return 'element';
+  switch (type) {
+    case 'object':
+      if (item === null) {
+        return 'null';
       }
 
-      if (item.nodeType === 11) {
-        return 'fragment';
+      if (Array.isArray(item)) {
+        return 'array';
       }
-    }
 
-    return 'object';
+      if ('nodeType' in item) {
+        switch (item.nodeType) {
+          case 1:
+            return 'element';
+
+          case 9:
+            return 'document';
+
+          case 11:
+            return 'fragment';
+
+          default:
+            return 'non-container node';
+        }
+      }
+
+    // Fallthrough
+
+    default:
+      return type;
   }
-
-  return undefined;
 }
 /**
 * @private
@@ -560,13 +576,15 @@ function _fragReducer(frag, node) {
 
 function _replaceDefiner(xmlnsObj) {
   return function (n0) {
-    var retStr = xmlnsObj[''] ? ' xmlns="' + xmlnsObj[''] + '"' : n0 || ''; // Preserve XHTML
+    var retStr = xmlnsObj[''] ? ' xmlns="' + xmlnsObj[''] + '"' : n0; // Preserve XHTML
 
-    for (var ns in xmlnsObj) {
-      if ({}.hasOwnProperty.call(xmlnsObj, ns)) {
-        if (ns !== '') {
-          retStr += ' xmlns:' + ns + '="' + xmlnsObj[ns] + '"';
-        }
+    for (var _i = 0, _Object$entries = Object.entries(xmlnsObj); _i < _Object$entries.length; _i++) {
+      var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+          ns = _Object$entries$_i[0],
+          xmlnsVal = _Object$entries$_i[1];
+
+      if (ns !== '') {
+        retStr += ' xmlns:' + ns + '="' + xmlnsVal + '"';
       }
     }
 
@@ -588,42 +606,16 @@ function _optsOrUndefinedJML() {
   return jml.apply(void 0, _toConsumableArray(args[0] === undefined ? args.slice(1) : args));
 }
 /**
-* @private
-* @static
-* @param {string} arg
-* @returns {Element}
-*/
-
-
-function _jmlSingleArg(arg) {
-  return jml(arg);
-}
-/**
 * @typedef {JamilihAttributes} AttributeArray
 * @property {string} 0 The key
 * @property {string} 1 The value
 */
 
 /**
-* @private
-* @static
-* @todo Deprecate as now there is predictable iteration order?
-* @param {AttributeArray} attArr
-* @returns {PlainObject}
-*/
-
-
-function _copyOrderedAtts(attArr) {
-  var obj = {}; // Todo: Fix if allow prefixed attributes
-
-  obj[attArr[0]] = attArr[1]; // array of ordered attribute-value arrays
-
-  return obj;
-}
-/**
 * @callback ChildrenToJMLCallback
 * @param {JamilihArray|Jamilih} childNodeJML
 * @param {Integer} i
+* @returns {void}
 */
 
 /**
@@ -688,8 +680,8 @@ function _appendJMLOrText(node) {
 * @static
 */
 
-/**
-* function _DOMfromJMLOrString (childNodeJML) {
+/*
+function _DOMfromJMLOrString (childNodeJML) {
   if (typeof childNodeJML === 'string') {
     return doc.createTextNode(childNodeJML);
   }
@@ -702,7 +694,7 @@ function _appendJMLOrText(node) {
 */
 
 /**
-* @typedef {PlainObject} JamilihAttributes
+* @typedef {PlainObject<string, string>} JamilihAttributes
 */
 
 /**
@@ -744,14 +736,11 @@ var jml = function jml() {
    */
 
   function _checkAtts(atts) {
-    var att;
+    var _loop = function _loop() {
+      var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+          att = _Object$entries2$_i[0],
+          attVal = _Object$entries2$_i[1];
 
-    for (att in atts) {
-      if (!{}.hasOwnProperty.call(atts, att)) {
-        continue;
-      }
-
-      var attVal = atts[att];
       att = att in ATTR_MAP ? ATTR_MAP[att] : att;
 
       if (NULLABLES.includes(att)) {
@@ -759,10 +748,10 @@ var jml = function jml() {
           elem[att] = attVal;
         }
 
-        continue;
+        return "continue";
       } else if (ATTR_DOM.includes(att)) {
         elem[att] = attVal;
-        continue;
+        return "continue";
       }
 
       switch (att) {
@@ -828,7 +817,7 @@ var jml = function jml() {
 
         case 'is':
           {
-            // Not yet supported in browsers
+            // Currently only in Chrome
             // Handled during element creation
             break;
           }
@@ -839,113 +828,136 @@ var jml = function jml() {
             break;
           }
 
+        /* istanbul ignore next */
+
         case '$define':
           {
-            var _ret = function () {
-              var localName = elem.localName.toLowerCase(); // Note: customized built-ins sadly not working yet
+            var localName = elem.localName.toLowerCase(); // Note: customized built-ins sadly not working yet
 
-              var customizedBuiltIn = !localName.includes('-');
-              var def = customizedBuiltIn ? elem.getAttribute('is') : localName;
+            var customizedBuiltIn = !localName.includes('-'); // We check attribute in case this is a preexisting DOM element
+            // const {is} = atts;
 
-              if (customElements.get(def)) {
-                return "break";
-              }
+            var is;
 
-              var getConstructor = function getConstructor(cnstrct) {
-                var baseClass = options && options["extends"] ? doc.createElement(options["extends"]).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
-                return cnstrct ?
-                /*#__PURE__*/
-                function (_baseClass) {
-                  _inherits(_class, _baseClass);
+            if (customizedBuiltIn) {
+              is = elem.getAttribute('is');
 
-                  function _class() {
-                    var _this;
-
-                    _classCallCheck(this, _class);
-
-                    _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).call(this));
-                    cnstrct.call(_assertThisInitialized(_this));
-                    return _this;
-                  }
-
-                  return _class;
-                }(baseClass) :
-                /*#__PURE__*/
-                function (_baseClass2) {
-                  _inherits(_class2, _baseClass2);
-
-                  function _class2() {
-                    _classCallCheck(this, _class2);
-
-                    return _possibleConstructorReturn(this, _getPrototypeOf(_class2).apply(this, arguments));
-                  }
-
-                  return _class2;
-                }(baseClass);
-              };
-
-              var cnstrctr = void 0,
-                  options = void 0,
-                  prototype = void 0;
-
-              if (Array.isArray(attVal)) {
-                if (attVal.length <= 2) {
-                  var _attVal = _slicedToArray(attVal, 2);
-
-                  cnstrctr = _attVal[0];
-                  options = _attVal[1];
-
-                  if (typeof options === 'string') {
-                    options = {
-                      "extends": options
-                    };
-                  } else if (!{}.hasOwnProperty.call(options, 'extends')) {
-                    prototype = options;
-                  }
-
-                  if (_typeof(cnstrctr) === 'object') {
-                    prototype = cnstrctr;
-                    cnstrctr = getConstructor();
-                  }
-                } else {
-                  var _attVal2 = _slicedToArray(attVal, 3);
-
-                  cnstrctr = _attVal2[0];
-                  prototype = _attVal2[1];
-                  options = _attVal2[2];
-
-                  if (typeof options === 'string') {
-                    options = {
-                      "extends": options
-                    };
-                  }
+              if (!is) {
+                if (!{}.hasOwnProperty.call(atts, 'is')) {
+                  throw new TypeError('Expected `is` with `$define` on built-in');
                 }
-              } else if (typeof attVal === 'function') {
-                cnstrctr = attVal;
+
+                elem.setAttribute('is', atts.is);
+                is = atts.is;
+              }
+            }
+
+            var def = customizedBuiltIn ? is : localName;
+
+            if (customElements.get(def)) {
+              break;
+            }
+
+            var getConstructor = function getConstructor(cnstrct) {
+              var baseClass = options && options["extends"] ? doc.createElement(options["extends"]).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
+              return cnstrct ?
+              /*#__PURE__*/
+              function (_baseClass) {
+                _inherits(_class, _baseClass);
+
+                function _class() {
+                  var _this;
+
+                  _classCallCheck(this, _class);
+
+                  _this = _possibleConstructorReturn(this, _getPrototypeOf(_class).call(this));
+                  cnstrct.call(_assertThisInitialized(_this));
+                  return _this;
+                }
+
+                return _class;
+              }(baseClass) :
+              /*#__PURE__*/
+              function (_baseClass2) {
+                _inherits(_class2, _baseClass2);
+
+                function _class2() {
+                  _classCallCheck(this, _class2);
+
+                  return _possibleConstructorReturn(this, _getPrototypeOf(_class2).apply(this, arguments));
+                }
+
+                return _class2;
+              }(baseClass);
+            };
+
+            var cnstrctr, options, mixin;
+
+            if (Array.isArray(attVal)) {
+              if (attVal.length <= 2) {
+                var _attVal = _slicedToArray(attVal, 2);
+
+                cnstrctr = _attVal[0];
+                options = _attVal[1];
+
+                if (typeof options === 'string') {
+                  // Todo: Allow creating a definition without using it;
+                  //  that may be the only reason to have a string here which
+                  //  differs from the `localName` anyways
+                  options = {
+                    "extends": options
+                  };
+                } else if (options && !{}.hasOwnProperty.call(options, 'extends')) {
+                  mixin = options;
+                }
+
+                if (_typeof(cnstrctr) === 'object') {
+                  mixin = cnstrctr;
+                  cnstrctr = getConstructor();
+                }
               } else {
-                prototype = attVal;
-                cnstrctr = getConstructor();
+                var _attVal2 = _slicedToArray(attVal, 3);
+
+                cnstrctr = _attVal2[0];
+                mixin = _attVal2[1];
+                options = _attVal2[2];
+
+                if (typeof options === 'string') {
+                  options = {
+                    "extends": options
+                  };
+                }
               }
+            } else if (typeof attVal === 'function') {
+              cnstrctr = attVal;
+            } else {
+              mixin = attVal;
+              cnstrctr = getConstructor();
+            }
 
-              if (!cnstrctr.toString().startsWith('class')) {
-                cnstrctr = getConstructor(cnstrctr);
-              }
+            if (!cnstrctr.toString().startsWith('class')) {
+              cnstrctr = getConstructor(cnstrctr);
+            }
 
-              if (!options && customizedBuiltIn) {
-                options = {
-                  "extends": localName
-                };
-              }
+            if (!options && customizedBuiltIn) {
+              options = {
+                "extends": localName
+              };
+            }
 
-              if (prototype) {
-                Object.assign(cnstrctr.prototype, prototype);
-              }
+            if (mixin) {
+              Object.entries(mixin).forEach(function (_ref) {
+                var _ref2 = _slicedToArray(_ref, 2),
+                    methodName = _ref2[0],
+                    method = _ref2[1];
 
-              customElements.define(def, cnstrctr, customizedBuiltIn ? options : undefined);
-              return "break";
-            }();
+                cnstrctr.prototype[methodName] = method;
+              });
+            } // console.log('def', def, '::', typeof options === 'object' ? options : undefined);
 
-            if (_ret === "break") break;
+
+            customElements.define(def, cnstrctr, _typeof(options) === 'object' ? options : undefined);
+            break;
           }
 
         case '$symbol':
@@ -1006,16 +1018,16 @@ var jml = function jml() {
             var _node2 = doc.implementation.createHTMLDocument();
 
             if (attVal.childNodes) {
-              // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
-              attVal.childNodes.forEach(_childrenToJML(_node2)); // Remove any extra nodes created by createHTMLDocument().
-
+              // Remove any extra nodes created by createHTMLDocument().
               var j = attVal.childNodes.length;
 
               while (_node2.childNodes[j]) {
                 var cn = _node2.childNodes[j];
-                cn.remove();
-                j++;
-              }
+                cn.remove(); // `j` should stay the same as removing will cause node to be present
+              } // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
+
+
+              attVal.childNodes.forEach(_childrenToJML(_node2));
             } else {
               if (attVal.$DOCTYPE) {
                 var dt = {
@@ -1034,15 +1046,15 @@ var jml = function jml() {
                 var meta = doc.createElement('meta');
                 meta.setAttribute('charset', 'utf-8');
                 head.append(meta);
-              }
 
-              if (attVal.title) {
-                _node2.title = attVal.title; // Appends after meta
-              }
+                if (attVal.title) {
+                  _node2.title = attVal.title; // Appends after meta
+                }
 
-              if (attVal.head) {
-                // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
-                attVal.head.forEach(_appendJML(head));
+                if (attVal.head) {
+                  // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
+                  attVal.head.forEach(_appendJML(head));
+                }
               }
 
               if (attVal.body) {
@@ -1057,84 +1069,30 @@ var jml = function jml() {
 
         case '$DOCTYPE':
           {
-            /*
-            // Todo:
-            if (attVal.internalSubset) {
-              node = {};
-            }
-            else
-            */
-            var _node3 = void 0;
-
-            if (attVal.entities || attVal.notations) {
-              _node3 = {
-                name: attVal.name,
-                nodeName: attVal.name,
-                nodeValue: null,
-                nodeType: 10,
-                // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
-                entities: attVal.entities.map(_jmlSingleArg),
-                // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
-                notations: attVal.notations.map(_jmlSingleArg),
-                publicId: attVal.publicId,
-                systemId: attVal.systemId // internalSubset: // Todo
-
-              };
-            } else {
-              _node3 = doc.implementation.createDocumentType(attVal.name, attVal.publicId || '', attVal.systemId || '');
-            }
+            var _node3 = doc.implementation.createDocumentType(attVal.name, attVal.publicId || '', attVal.systemId || '');
 
             nodes[nodes.length] = _node3;
-            break;
-          }
-
-        case '$ENTITY':
-          {
-            /*
-            // Todo: Should we auto-copy another node's properties/methods (like DocumentType) excluding or changing its non-entity node values?
-            const node = {
-              nodeName: attVal.name,
-              nodeValue: null,
-              publicId: attVal.publicId,
-              systemId: attVal.systemId,
-              notationName: attVal.notationName,
-              nodeType: 6,
-              childNodes: attVal.childNodes.map(_DOMfromJMLOrString)
-            };
-            */
-            break;
-          }
-
-        case '$NOTATION':
-          {
-            // Todo: We could add further properties/methods, but unlikely to be used as is.
-            var _node4 = {
-              nodeName: attVal[0],
-              publicID: attVal[1],
-              systemID: attVal[2],
-              nodeValue: null,
-              nodeType: 12
-            };
-            nodes[nodes.length] = _node4;
             break;
           }
 
         case '$on':
           {
             // Events
-            for (var p2 in attVal) {
-              if ({}.hasOwnProperty.call(attVal, p2)) {
-                var val = attVal[p2];
+            for (var _i3 = 0, _Object$entries3 = Object.entries(attVal); _i3 < _Object$entries3.length; _i3++) {
+              var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
+                  p2 = _Object$entries3$_i[0],
+                  val = _Object$entries3$_i[1];
 
-                if (typeof val === 'function') {
-                  val = [val, false];
-                }
-
-                if (typeof val[0] === 'function') {
-                  _addEvent(elem, p2, val[0], val[1]); // element, event name, handler, capturing
-
-                }
+              if (typeof val === 'function') {
+                val = [val, false];
               }
+
+              if (typeof val[0] !== 'function') {
+                throw new TypeError('Expect a function for `$on`');
+              }
+
+              _addEvent(elem, p2, val[0], val[1]); // element, event name, handler, capturing
+
             }
 
             break;
@@ -1150,44 +1108,41 @@ var jml = function jml() {
 
         case 'dataset':
           {
-            var _ret2 = function () {
-              // Map can be keyed with hyphenated or camel-cased properties
-              var recurse = function recurse(atVal, startProp) {
-                var prop = '';
-                var pastInitialProp = startProp !== '';
-                Object.keys(atVal).forEach(function (key) {
-                  var value = atVal[key];
+            // Map can be keyed with hyphenated or camel-cased properties
+            var recurse = function recurse(atVal, startProp) {
+              var prop = '';
+              var pastInitialProp = startProp !== '';
+              Object.keys(atVal).forEach(function (key) {
+                var value = atVal[key];
 
-                  if (pastInitialProp) {
-                    prop = startProp + key.replace(hyphenForCamelCase, _upperCase).replace(/^([a-z])/, _upperCase);
-                  } else {
-                    prop = startProp + key.replace(hyphenForCamelCase, _upperCase);
+                if (pastInitialProp) {
+                  prop = startProp + key.replace(hyphenForCamelCase, _upperCase).replace(/^([a-z])/, _upperCase);
+                } else {
+                  prop = startProp + key.replace(hyphenForCamelCase, _upperCase);
+                }
+
+                if (value === null || _typeof(value) !== 'object') {
+                  if (!_isNullish(value)) {
+                    elem.dataset[prop] = value;
                   }
 
-                  if (value === null || _typeof(value) !== 'object') {
-                    if (!_isNullish(value)) {
-                      elem.dataset[prop] = value;
-                    }
+                  prop = startProp;
+                  return;
+                }
 
-                    prop = startProp;
-                    return;
-                  }
+                recurse(value, prop);
+              });
+            };
 
-                  recurse(value, prop);
-                });
-              };
-
-              recurse(attVal, '');
-              return "break"; // Todo: Disable this by default unless configuration explicitly allows (for security)
-            }();
-
-            if (_ret2 === "break") break;
+            recurse(attVal, '');
+            break; // Todo: Disable this by default unless configuration explicitly allows (for security)
           }
         // #if IS_REMOVE
         // Don't remove this `if` block (for sake of no-innerHTML build)
 
         case 'innerHTML':
           if (!_isNullish(attVal)) {
+            // eslint-disable-next-line no-unsanitized/property
             elem.innerHTML = attVal;
           }
 
@@ -1225,14 +1180,18 @@ var jml = function jml() {
               }
 
               if (_typeof(attVal) === 'object') {
-                for (var _p in attVal) {
-                  if ({}.hasOwnProperty.call(attVal, _p) && !_isNullish(attVal[_p])) {
+                for (var _i4 = 0, _Object$entries4 = Object.entries(attVal); _i4 < _Object$entries4.length; _i4++) {
+                  var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
+                      _p = _Object$entries4$_i[0],
+                      styleVal = _Object$entries4$_i[1];
+
+                  if (!_isNullish(styleVal)) {
                     // Todo: Handle aggregate properties like "border"
                     if (_p === 'float') {
-                      elem.style.cssFloat = attVal[_p];
-                      elem.style.styleFloat = attVal[_p]; // Harmless though we could make conditional on older IE instead
+                      elem.style.cssFloat = styleVal;
+                      elem.style.styleFloat = styleVal; // Harmless though we could make conditional on older IE instead
                     } else {
-                      elem.style[_p.replace(hyphenForCamelCase, _upperCase)] = attVal[_p];
+                      elem.style[_p.replace(hyphenForCamelCase, _upperCase)] = styleVal;
                     }
                   }
                 }
@@ -1273,6 +1232,12 @@ var jml = function jml() {
             break;
           }
       }
+    };
+
+    for (var _i2 = 0, _Object$entries2 = Object.entries(atts); _i2 < _Object$entries2.length; _i2++) {
+      var _ret = _loop();
+
+      if (_ret === "continue") continue;
     }
   }
 
@@ -1303,7 +1268,7 @@ var jml = function jml() {
       }
 
       opts.$plugins.forEach(function (pluginObj) {
-        if (!pluginObj) {
+        if (!pluginObj || _typeof(pluginObj) !== 'object') {
           throw new TypeError('Plugin must be an object');
         }
 
@@ -1336,12 +1301,12 @@ var jml = function jml() {
       if (typeof dataVal[0] === 'string') {
         dataVal.forEach(function (dVal) {
           setMap(opts.$map[dVal]);
-        }); // Array of Map and non-map data object
-      } else {
-        map = dataVal[0] || defaultMap[0];
-        obj = dataVal[1] || defaultMap[1];
-      } // Map
+        });
+        return; // Array of Map and non-map data object
+      }
 
+      map = dataVal[0] || defaultMap[0];
+      obj = dataVal[1] || defaultMap[1]; // Map
     } else if (/^\[object (?:Weak)?Map\]$/.test([].toString.call(dataVal))) {
       map = dataVal;
       obj = defaultMap[1]; // Non-map data object
@@ -1356,10 +1321,11 @@ var jml = function jml() {
   for (var i = 0; i < argc; i++) {
     var arg = args[i];
 
-    switch (_getType(arg)) {
+    var type = _getType(arg);
+
+    switch (type) {
       default:
-        // Todo: Throw here instead?
-        break;
+        throw new TypeError('Unexpected type: ' + type);
 
       case 'null':
         // null always indicates a place-holder (only needed for last argument if want array returned)
@@ -1372,10 +1338,10 @@ var jml = function jml() {
           : nodes.reduce(_fragReducer, doc.createDocumentFragment()); // nodes;
         }
 
-        break;
+        throw new TypeError('`null` values not allowed except as final Jamilih argument');
 
       case 'string':
-        // Strings indicate elements
+        // Strings normally indicate elements
         switch (arg) {
           case '!':
             nodes[nodes.length] = doc.createComment(args[++i]);
@@ -1387,14 +1353,16 @@ var jml = function jml() {
               var procValue = args[++i];
               var val = procValue;
 
-              if (_typeof(val) === 'object') {
+              if (val && _typeof(val) === 'object') {
                 procValue = [];
 
-                for (var p in val) {
-                  if ({}.hasOwnProperty.call(val, p)) {
-                    procValue.push(p + '=' + '"' + // https://www.w3.org/TR/xml-stylesheet/#NT-PseudoAttValue
-                    val[p].replace(/"/g, '&quot;') + '"');
-                  }
+                for (var _i5 = 0, _Object$entries5 = Object.entries(val); _i5 < _Object$entries5.length; _i5++) {
+                  var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i5], 2),
+                      p = _Object$entries5$_i[0],
+                      procInstVal = _Object$entries5$_i[1];
+
+                  procValue.push(p + '=' + '"' + // https://www.w3.org/TR/xml-stylesheet/#NT-PseudoAttValue
+                  procInstVal.replace(/"/g, '&quot;') + '"');
                 }
 
                 procValue = procValue.join(' ');
@@ -1443,17 +1411,17 @@ var jml = function jml() {
             break;
 
           case '':
-            nodes[nodes.length] = doc.createDocumentFragment();
+            nodes[nodes.length] = elem = doc.createDocumentFragment();
             break;
 
           default:
             {
               // An element
               elStr = arg;
-              var atts = args[i + 1]; // Todo: Fix this to depend on XML/config, not availability of methods
+              var atts = args[i + 1];
 
               if (_getType(atts) === 'object' && atts.is) {
-                var is = atts.is;
+                var is = atts.is; // istanbul ignore else
 
                 if (doc.createElementNS) {
                   elem = doc.createElementNS(NS_HTML, elStr, {
@@ -1464,11 +1432,13 @@ var jml = function jml() {
                     is: is
                   });
                 }
-              } else if (doc.createElementNS) {
-                elem = doc.createElementNS(NS_HTML, elStr);
-              } else {
-                elem = doc.createElement(elStr);
-              }
+              } else
+                /* istanbul ignore else */
+                if (doc.createElementNS) {
+                  elem = doc.createElementNS(NS_HTML, elStr);
+                } else {
+                  elem = doc.createElement(elStr);
+                }
 
               nodes[nodes.length] = elem; // Add to parent
 
@@ -1498,17 +1468,16 @@ var jml = function jml() {
             // Also fix DOMParser to work with text/html
 
 
-            elem = nodes[nodes.length - 1] = new DOMParser().parseFromString(new XmlSerializer().serializeToString(elem) // Mozilla adds XHTML namespace
+            elem = nodes[nodes.length - 1] = new win.DOMParser().parseFromString(new win.XMLSerializer().serializeToString(elem) // Mozilla adds XHTML namespace
             .replace(' xmlns="' + NS_HTML + '"', replacer), 'application/xml').documentElement; // }catch(e) {alert(elem.outerHTML);throw e;}
-          } // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
+          }
 
+          _checkAtts(_atts);
 
-          var orderedArr = _atts.$a ? _atts.$a.map(_copyOrderedAtts) : [_atts]; // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
-
-          orderedArr.forEach(_checkAtts);
           break;
         }
 
+      case 'document':
       case 'fragment':
       case 'element':
         /*
@@ -1516,7 +1485,7 @@ var jml = function jml() {
         2) Individual elements (DOM elements or sequences of string[/object/array]) get added to parent first-in, first-added
         */
         if (i === 0) {
-          // Allow wrapping of element
+          // Allow wrapping of element, fragment, or document
           elem = arg;
         }
 
@@ -1549,8 +1518,8 @@ var jml = function jml() {
 
             var childContentType = _typeof(childContent);
 
-            if (childContent === undefined) {
-              throw String('Parent array:' + JSON.stringify(args) + '; child: ' + child + '; index:' + j);
+            if (_isNullish(childContent)) {
+              throw new TypeError('Bad children (parent array: ' + JSON.stringify(args) + '; child: ' + child + '; index:' + j + ')');
             }
 
             switch (childContentType) {
@@ -1593,50 +1562,71 @@ var jml = function jml() {
 };
 /**
 * Converts a DOM object or a string of HTML into a Jamilih object (or string).
-* @param {string|HTMLElement} [dom=document.documentElement] Defaults to converting the current document.
+* @param {string|HTMLElement} dom If a string, will parse as document
 * @param {PlainObject} [config] Configuration object
 * @param {boolean} [config.stringOutput=false] Whether to output the Jamilih object as a string.
+* @param {boolean} [config.reportInvalidState=true] If true (the default), will report invalid state errors
+* @param {boolean} [config.stripWhitespace=false] Strip whitespace for text nodes
 * @returns {JamilihArray|string} Array containing the elements which represent
 * a Jamilih object, or, if `stringOutput` is true, it will be the stringified
 * version of such an object
 */
 
 
-jml.toJML = function (dom, config) {
-  config = config || {
-    stringOutput: false
-  };
+jml.toJML = function (dom) {
+  var _ref3 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref3$stringOutput = _ref3.stringOutput,
+      stringOutput = _ref3$stringOutput === void 0 ? false : _ref3$stringOutput,
+      _ref3$reportInvalidSt = _ref3.reportInvalidState,
+      reportInvalidState = _ref3$reportInvalidSt === void 0 ? true : _ref3$reportInvalidSt,
+      _ref3$stripWhitespace = _ref3.stripWhitespace,
+      stripWhitespace = _ref3$stripWhitespace === void 0 ? false : _ref3$stripWhitespace;
 
   if (typeof dom === 'string') {
-    dom = new DOMParser().parseFromString(dom, 'text/html'); // todo: Give option for XML once implemented and change JSDoc to allow for Element
+    dom = new win.DOMParser().parseFromString(dom, 'text/html'); // todo: Give option for XML once implemented and change JSDoc to allow for Element
   }
+
   var ret = [];
   var parent = ret;
   var parentIdx = 0;
   /**
-   *
+   * @param {string} msg
    * @throws {DOMException}
    * @returns {void}
    */
 
-  function invalidStateError() {
+  function invalidStateError(msg) {
     // These are probably only necessary if working with text/html
-    // eslint-disable-next-line no-shadow
-    var DOMException = function DOMException() {
-      _classCallCheck(this, DOMException);
-    };
+    // eslint-disable-next-line no-shadow, unicorn/custom-error-definition
+    var DOMException =
+    /*#__PURE__*/
+    function (_Error) {
+      _inherits(DOMException, _Error);
 
-    {
+      function DOMException(message, name) {
+        var _this2;
+
+        _classCallCheck(this, DOMException);
+
+        _this2 = _possibleConstructorReturn(this, _getPrototypeOf(DOMException).call(this, message)); // eslint-disable-next-line unicorn/custom-error-definition
+
+        _this2.name = name;
+        return _this2;
+      }
+
+      return DOMException;
+    }(_wrapNativeSuper(Error));
+
+    if (reportInvalidState) {
       // INVALID_STATE_ERR per section 9.3 XHTML 5: http://www.w3.org/TR/html5/the-xhtml-syntax.html
-      // Since we can't instantiate without this (at least in Mozilla), this mimicks at least (good idea?)
-      var e = new DOMException();
+      var e = new DOMException(msg, 'INVALID_STATE_ERR');
       e.code = 11;
       throw e;
     }
   }
   /**
    *
-   * @param {DocumentType|Entity|Notation} obj
+   * @param {DocumentType|Entity} obj
    * @param {Node} node
    * @returns {void}
    */
@@ -1644,7 +1634,7 @@ jml.toJML = function (dom, config) {
 
   function addExternalID(obj, node) {
     if (node.systemId.includes('"') && node.systemId.includes("'")) {
-      invalidStateError();
+      invalidStateError('systemId cannot have both single and double quotes.');
     }
 
     var publicId = node.publicId,
@@ -1708,18 +1698,18 @@ jml.toJML = function (dom, config) {
 
     /*
     if ((node.prefix && node.prefix.includes(':')) || (node.localName && node.localName.includes(':'))) {
-      invalidStateError();
+      invalidStateError('Prefix cannot have a colon');
     }
     */
     var type = 'nodeType' in node ? node.nodeType : null;
     namespaces = _objectSpread2({}, namespaces);
-    var xmlChars = /([\t\n\r -\uD7FF\uE000-\uFFFD]|(?:[\uD800-\uDBFF](?![\uDC00-\uDFFF]))(?:(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))*$/; // eslint-disable-line no-control-regex
+    var xmlChars = /^([\t\n\r -\uD7FF\uE000-\uFFFD]|(?:[\uD800-\uDBFF](?![\uDC00-\uDFFF]))(?:(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))*$/; // eslint-disable-line no-control-regex
 
     if ([2, 3, 4, 7, 8].includes(type) && !xmlChars.test(node.nodeValue)) {
-      invalidStateError();
+      invalidStateError('Node has bad XML character value');
     }
 
-    var children, start, tmpParent, tmpParentIdx;
+    var tmpParent, tmpParentIdx;
     /**
      * @returns {void}
      */
@@ -1749,7 +1739,7 @@ jml.toJML = function (dom, config) {
           setChildren(); // Build child array since elements are, except at the top level, encapsulated in arrays
 
           set(nodeName);
-          start = {};
+          var start = {};
           var hasNamespaceDeclaration = false;
 
           if (namespaces[node.prefix || ''] !== node.namespaceURI) {
@@ -1759,6 +1749,8 @@ jml.toJML = function (dom, config) {
               start['xmlns:' + node.prefix] = node.namespaceURI;
             } else if (node.namespaceURI) {
               start.xmlns = node.namespaceURI;
+            } else {
+              start.xmlns = null;
             }
 
             hasNamespaceDeclaration = true;
@@ -1774,12 +1766,12 @@ jml.toJML = function (dom, config) {
             set(start);
           }
 
-          children = node.childNodes;
+          var childNodes = node.childNodes;
 
-          if (children.length) {
+          if (childNodes.length) {
             setChildren(); // Element children array container
 
-            _toConsumableArray(children).forEach(function (childNode) {
+            _toConsumableArray(childNodes).forEach(function (childNode) {
               parseDOM(childNode, namespaces);
             });
           }
@@ -1799,7 +1791,8 @@ jml.toJML = function (dom, config) {
 
       case 3:
         // TEXT
-        if (config.stripWhitespace && /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+$/.test(node.nodeValue)) {
+        if (stripWhitespace && /^[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+$/.test(node.nodeValue)) {
+          set('');
           return;
         }
 
@@ -1809,76 +1802,34 @@ jml.toJML = function (dom, config) {
       case 4:
         // CDATA
         if (node.nodeValue.includes(']]' + '>')) {
-          invalidStateError();
+          invalidStateError('CDATA cannot end with closing ]]>');
         }
 
         set(['![', node.nodeValue]);
         break;
 
       case 5:
-        // ENTITY REFERENCE (probably not used in browsers since already resolved)
+        // ENTITY REFERENCE (though not in browsers (was already resolved
+        //  anyways), ok to keep for parity with our "entity" shorthand)
         set(['&', node.nodeName]);
-        break;
-
-      case 6:
-        // ENTITY (would need to pass in directly)
-        setTemp();
-        start = {};
-
-        if (node.xmlEncoding || node.xmlVersion) {
-          // an external entity file?
-          start.$ENTITY = {
-            name: node.nodeName,
-            version: node.xmlVersion,
-            encoding: node.xmlEncoding
-          };
-        } else {
-          start.$ENTITY = {
-            name: node.nodeName
-          };
-
-          if (node.publicId || node.systemId) {
-            // External Entity?
-            addExternalID(start.$ENTITY, node);
-
-            if (node.notationName) {
-              start.$ENTITY.NDATA = node.notationName;
-            }
-          }
-        }
-
-        set(start);
-        children = node.childNodes;
-
-        if (children.length) {
-          start.$ENTITY.childNodes = []; // Set position to $ENTITY's childNodes array children
-
-          setObj('$ENTITY', 'childNodes');
-
-          _toConsumableArray(children).forEach(function (childNode) {
-            parseDOM(childNode, namespaces);
-          });
-        }
-
-        resetTemp();
         break;
 
       case 7:
         // PROCESSING INSTRUCTION
         if (/^xml$/i.test(node.target)) {
-          invalidStateError();
+          invalidStateError('Processing instructions cannot be "xml".');
         }
 
         if (node.target.includes('?>')) {
-          invalidStateError();
+          invalidStateError('Processing instruction targets cannot include ?>');
         }
 
         if (node.target.includes(':')) {
-          invalidStateError();
+          invalidStateError('The processing instruction target cannot include ":"');
         }
 
         if (node.data.includes('?>')) {
-          invalidStateError();
+          invalidStateError('Processing instruction data cannot include ?>');
         }
 
         set(['?', node.target, node.data]); // Todo: Could give option to attempt to convert value back into object if has pseudo-attributes
@@ -1888,7 +1839,7 @@ jml.toJML = function (dom, config) {
       case 8:
         // COMMENT
         if (node.nodeValue.includes('--') || node.nodeValue.length && node.nodeValue.lastIndexOf('-') === node.nodeValue.length - 1) {
-          invalidStateError();
+          invalidStateError('Comments cannot include --');
         }
 
         set(['!', node.nodeValue]);
@@ -1903,27 +1854,18 @@ jml.toJML = function (dom, config) {
               childNodes: []
             }
           };
-
-          if (config.xmlDeclaration) {
-            docObj.$document.xmlDeclaration = {
-              version: doc.xmlVersion,
-              encoding: doc.xmlEncoding,
-              standAlone: doc.xmlStandalone
-            };
-          }
-
           set(docObj); // doc.implementation.createHTMLDocument
           // Set position to fragment's array children
 
           setObj('$document', 'childNodes');
-          children = node.childNodes;
+          var _childNodes = node.childNodes;
 
-          if (!children.length) {
-            invalidStateError();
+          if (!_childNodes.length) {
+            invalidStateError('Documents must have a child node');
           } // set({$xmlDocument: []}); // doc.implementation.createDocument // Todo: use this conditionally
 
 
-          _toConsumableArray(children).forEach(function (childNode) {
+          _toConsumableArray(_childNodes).forEach(function (childNode) {
             // Can't just do documentElement as there may be doctype, comments, etc.
             // No need for setChildren, as we have already built the container array
             parseDOM(childNode, namespaces);
@@ -1938,84 +1880,44 @@ jml.toJML = function (dom, config) {
           // DOCUMENT TYPE
           setTemp(); // Can create directly by doc.implementation.createDocumentType
 
-          start = {
+          var _start = {
             $DOCTYPE: {
               name: node.name
             }
           };
-
-          if (node.internalSubset) {
-            start.internalSubset = node.internalSubset;
-          }
-
           var pubIdChar = /^( |\r|\n|[0-9A-Za-z]|[!#-%'-\/:;=\?@_])*$/; // eslint-disable-line no-control-regex
 
           if (!pubIdChar.test(node.publicId)) {
-            invalidStateError();
+            invalidStateError('A publicId must have valid characters.');
           }
 
-          addExternalID(start.$DOCTYPE, node); // Fit in internal subset along with entities?: probably don't need as these would only differ if from DTD, and we're not rebuilding the DTD
+          addExternalID(_start.$DOCTYPE, node); // Fit in internal subset along with entities?: probably don't need as these would only differ if from DTD, and we're not rebuilding the DTD
 
-          set(start); // Auto-generate the internalSubset instead? Avoid entities/notations in favor of array to preserve order?
-
-          var entities = node.entities; // Currently deprecated
-
-          if (entities && entities.length) {
-            start.$DOCTYPE.entities = [];
-            setObj('$DOCTYPE', 'entities');
-
-            _toConsumableArray(entities).forEach(function (entity) {
-              parseDOM(entity, namespaces);
-            }); // Reset for notations
-
-
-            parent = tmpParent;
-            parentIdx = tmpParentIdx + 1;
-          }
-
-          var notations = node.notations; // Currently deprecated
-
-          if (notations && notations.length) {
-            start.$DOCTYPE.notations = [];
-            setObj('$DOCTYPE', 'notations');
-
-            _toConsumableArray(notations).forEach(function (notation) {
-              parseDOM(notation, namespaces);
-            });
-          }
+          set(_start); // Auto-generate the internalSubset instead?
 
           resetTemp();
           break;
         }
 
       case 11:
-        // DOCUMENT FRAGMENT
-        setTemp();
-        set({
-          '#': []
-        }); // Set position to fragment's array children
+        {
+          // DOCUMENT FRAGMENT
+          setTemp();
+          set({
+            '#': []
+          }); // Set position to fragment's array children
 
-        setObj('#');
-        children = node.childNodes;
+          setObj('#');
+          var _childNodes2 = node.childNodes;
 
-        _toConsumableArray(children).forEach(function (childNode) {
-          // No need for setChildren, as we have already built the container array
-          parseDOM(childNode, namespaces);
-        });
+          _toConsumableArray(_childNodes2).forEach(function (childNode) {
+            // No need for setChildren, as we have already built the container array
+            parseDOM(childNode, namespaces);
+          });
 
-        resetTemp();
-        break;
-
-      case 12:
-        // NOTATION
-        start = {
-          $NOTATION: {
-            name: node.nodeName
-          }
-        };
-        addExternalID(start.$NOTATION, node);
-        set(start);
-        break;
+          resetTemp();
+          break;
+        }
 
       default:
         throw new TypeError('Not an XML type');
@@ -2024,7 +1926,7 @@ jml.toJML = function (dom, config) {
 
   parseDOM(dom, {});
 
-  if (config.stringOutput) {
+  if (stringOutput) {
     return JSON.stringify(ret[0]);
   }
 
@@ -2056,7 +1958,9 @@ jml.toDOM = function () {
 
 jml.toHTML = function () {
   // Todo: Replace this with version of jml() that directly builds a string
-  var ret = jml.apply(void 0, arguments); // Todo: deal with serialization of properties like 'selected', 'checked', 'value', 'defaultValue', 'for', 'dataset', 'on*', 'style'! (i.e., need to build a string ourselves)
+  var ret = jml.apply(void 0, arguments); // Todo: deal with serialization of properties like 'selected',
+  //  'checked', 'value', 'defaultValue', 'for', 'dataset', 'on*',
+  //  'style'! (i.e., need to build a string ourselves)
 
   return ret.outerHTML;
 };
@@ -2080,7 +1984,7 @@ jml.toDOMString = function () {
 
 jml.toXML = function () {
   var ret = jml.apply(void 0, arguments);
-  return new XmlSerializer().serializeToString(ret);
+  return new win.XMLSerializer().serializeToString(ret);
 };
 /**
  *
@@ -2178,6 +2082,17 @@ function (_WeakMap) {
 
 jml.Map = JamilihMap;
 jml.WeakMap = JamilihWeakMap;
+/**
+* @typedef {GenericArray} MapAndElementArray
+* @property {JamilihWeakMap|JamilihMap} 0
+* @property {Element} 1
+*/
+
+/**
+ * @param {GenericObject} obj
+ * @param {...JamilihArray} args
+ * @returns {MapAndElementArray}
+ */
 
 jml.weak = function (obj) {
   var map = new JamilihWeakMap();
@@ -2191,6 +2106,12 @@ jml.weak = function (obj) {
   }].concat(args));
   return [map, elem];
 };
+/**
+ * @param {any} obj
+ * @param {...JamilihArray} args
+ * @returns {MapAndElementArray}
+ */
+
 
 jml.strong = function (obj) {
   var map = new JamilihMap();
@@ -2204,11 +2125,26 @@ jml.strong = function (obj) {
   }].concat(args));
   return [map, elem];
 };
+/**
+ * @param {string|Element} elem If a string, will be interpreted as a selector
+ * @param {symbol|string} sym If a string, will be used with `Symbol.for`
+ * @returns {any} The value associated with the symbol
+ */
+
 
 jml.symbol = jml.sym = jml["for"] = function (elem, sym) {
   elem = typeof elem === 'string' ? $(elem) : elem;
   return elem[_typeof(sym) === 'symbol' ? sym : Symbol["for"](sym)];
 };
+/**
+ * @param {string|Element} elem If a string, will be interpreted as a selector
+ * @param {symbol|string|Map|WeakMap} symOrMap If a string, will be used with `Symbol.for`
+ * @param {string|any} methodName Can be `any` if the symbol or map directly
+ *   points to a function (it is then used as the first argument).
+ * @param {any[]} args
+ * @returns {any}
+ */
+
 
 jml.command = function (elem, symOrMap, methodName) {
   var _func3;
@@ -2242,33 +2178,30 @@ jml.command = function (elem, symOrMap, methodName) {
 
   return (_func3 = func)[methodName].apply(_func3, [elem].concat(args)); // return func[methodName].call(elem, ...args);
 };
+/**
+ * Expects properties `document`, `XMLSerializer`, and `DOMParser`.
+ * Also updates `body` with `document.body`.
+ * @param {Window} wind
+ * @returns {void}
+ */
+
 
 jml.setWindow = function (wind) {
   win = wind;
-};
+  doc = win.document;
 
-jml.setDocument = function (docum) {
-  doc = docum;
-
-  if (docum && docum.body) {
-    body = docum.body;
+  if (doc && doc.body) {
+    var _doc = doc;
+    body = _doc.body;
   }
 };
+/**
+ * @returns {Window}
+ */
 
-jml.setXMLSerializer = function (xmls) {
-  XmlSerializer = xmls;
-};
 
 jml.getWindow = function () {
   return win;
-};
-
-jml.getDocument = function () {
-  return doc;
-};
-
-jml.getXMLSerializer = function () {
-  return XmlSerializer;
 };
 /**
  * Does not run Jamilih so can be further processed.
@@ -2283,7 +2216,8 @@ function glue(jmlArray, glu) {
     arr.push(item, glu);
     return arr;
   }, []).slice(0, -1);
-}
+} // istanbul ignore next
+
 
 var body = doc && doc.body; // eslint-disable-line import/no-mutable-exports
 
