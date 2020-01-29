@@ -99,12 +99,14 @@ class Command {
 /**
  * History command for an element that had its DOM position changed.
  * @implements {module:history.HistoryCommand}
- * @param {Element} elem - The DOM element that was moved
- * @param {Element} oldNextSibling - The element's next sibling before it was moved
- * @param {Element} oldParent - The element's parent before it was moved
- * @param {string} [text] - An optional string visible to user related to this change
 */
 export class MoveElementCommand extends Command {
+  /**
+  * @param {Element} elem - The DOM element that was moved
+  * @param {Element} oldNextSibling - The element's next sibling before it was moved
+  * @param {Element} oldParent - The element's parent before it was moved
+  * @param {string} [text] - An optional string visible to user related to this change
+  */
   constructor (elem, oldNextSibling, oldParent, text) {
     super();
     this.elem = elem;
@@ -114,6 +116,9 @@ export class MoveElementCommand extends Command {
     this.newNextSibling = elem.nextSibling;
     this.newParent = elem.parentNode;
   }
+  /**
+   * @returns {"svgedit.history.MoveElementCommand"}
+   */
   type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.MoveElementCommand';
   }
@@ -167,11 +172,12 @@ MoveElementCommand.type = MoveElementCommand.prototype.type;
 /**
 * History command for an element that was added to the DOM.
 * @implements {module:history.HistoryCommand}
-*
-* @param {Element} elem - The newly added DOM element
-* @param {string} text - An optional string visible to user related to this change
 */
 export class InsertElementCommand extends Command {
+  /**
+   * @param {Element} elem - The newly added DOM element
+   * @param {string} text - An optional string visible to user related to this change
+  */
   constructor (elem, text) {
     super();
     this.elem = elem;
@@ -180,6 +186,9 @@ export class InsertElementCommand extends Command {
     this.nextSibling = this.elem.nextSibling;
   }
 
+  /**
+   * @returns {"svgedit.history.InsertElementCommand"}
+   */
   type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.InsertElementCommand';
   }
@@ -233,12 +242,14 @@ InsertElementCommand.type = InsertElementCommand.prototype.type;
 /**
 * History command for an element removed from the DOM.
 * @implements {module:history.HistoryCommand}
-* @param {Element} elem - The removed DOM element
-* @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
-* @param {Element} oldParent - The DOM element's parent
-* @param {string} [text] - An optional string visible to user related to this change
 */
 export class RemoveElementCommand extends Command {
+  /**
+  * @param {Element} elem - The removed DOM element
+  * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
+  * @param {Element} oldParent - The DOM element's parent
+  * @param {string} [text] - An optional string visible to user related to this change
+  */
   constructor (elem, oldNextSibling, oldParent, text) {
     super();
     this.elem = elem;
@@ -249,6 +260,9 @@ export class RemoveElementCommand extends Command {
     // special hack for webkit: remove this element's entry in the svgTransformLists map
     removeElementFromListMap(elem);
   }
+  /**
+   * @returns {"svgedit.history.RemoveElementCommand"}
+   */
   type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.RemoveElementCommand';
   }
@@ -317,11 +331,13 @@ RemoveElementCommand.type = RemoveElementCommand.prototype.type;
 * History command to make a change to an element.
 * Usually an attribute change, but can also be textcontent.
 * @implements {module:history.HistoryCommand}
-* @param {Element} elem - The DOM element that was changed
-* @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
-* @param {string} text - An optional string visible to user related to this change
 */
 export class ChangeElementCommand extends Command {
+  /**
+  * @param {Element} elem - The DOM element that was changed
+  * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
+  * @param {string} text - An optional string visible to user related to this change
+   */
   constructor (elem, attrs, text) {
     super();
     this.elem = elem;
@@ -338,6 +354,9 @@ export class ChangeElementCommand extends Command {
       }
     }
   }
+  /**
+   * @returns {"svgedit.history.ChangeElementCommand"}
+   */
   type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.ChangeElementCommand';
   }
@@ -473,6 +492,9 @@ export class BatchCommand extends Command {
     this.stack = [];
   }
 
+  /**
+   * @returns {"svgedit.history.BatchCommand"}
+   */
   type () { // eslint-disable-line class-methods-use-this
     return 'svgedit.history.BatchCommand';
   }

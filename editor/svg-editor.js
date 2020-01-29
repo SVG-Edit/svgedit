@@ -5078,7 +5078,14 @@ editor.init = function () {
       );
   };
 
+  /**
+   * Paint box class.
+   */
   class PaintBox {
+    /**
+     * @param {string|Element|external:jQuery} container
+     * @param {"fill"} type
+     */
     constructor (container, type) {
       const cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
       // set up gradients to be used for the buttons
@@ -5101,6 +5108,12 @@ editor.init = function () {
       this.paint = new $.jGraduate.Paint({solidColor: cur.color});
       this.type = type;
     }
+
+    /**
+     * @param {module:jGraduate~Paint} paint
+     * @param {boolean} apply
+     * @returns {void}
+     */
     setPaint (paint, apply) {
       this.paint = paint;
 
@@ -5131,6 +5144,10 @@ editor.init = function () {
       }
     }
 
+    /**
+     * @param {boolean} apply
+     * @returns {void}
+     */
     update (apply) {
       if (!selectedElement) { return; }
 
@@ -5189,6 +5206,9 @@ editor.init = function () {
       this.setPaint(paint);
     }
 
+    /**
+     * @returns {void}
+     */
     prep () {
       const ptype = this.paint.type;
 

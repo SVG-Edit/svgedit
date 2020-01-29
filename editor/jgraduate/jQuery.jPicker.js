@@ -72,11 +72,12 @@ const jPicker = function ($) {
   * Encapsulate slider functionality for the ColorMap and ColorBar -
   * could be useful to use a jQuery UI draggable for this with certain extensions.
   * @memberof module:jPicker
-  * @param {external:jQuery} bar
-  * @param {module:jPicker.SliderOptions} options
-  * @returns {void}
   */
   class Slider {
+    /**
+     * @param {external:jQuery} bar
+     * @param {module:jPicker.SliderOptions} options
+     */
     constructor (bar, options) {
       const that = this;
       /**
@@ -402,12 +403,14 @@ const jPicker = function ($) {
 
   /**
    * Controls for all the input elements for the typing in color values.
-   * @param {external:jQuery} picker
-   * @param {external:jQuery.jPicker.Color} color
-   * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
-   * @param {Float} alphaPrecision
    */
   class ColorValuePicker {
+    /**
+     * @param {external:jQuery} picker
+     * @param {external:jQuery.jPicker.Color} color
+     * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
+     * @param {Float} alphaPrecision
+     */
     constructor (picker, color, bindedHex, alphaPrecision) {
       const that = this; // private properties and methods
       const inputs = picker.find('td.Text input');

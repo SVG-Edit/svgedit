@@ -16,7 +16,7 @@
 * including the latest spec changes which were implemented in Firefox 43 and
 * Chrome 46.
 */
-/* eslint-disable no-shadow, class-methods-use-this */
+/* eslint-disable no-shadow, class-methods-use-this, jsdoc/require-jsdoc */
 // Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
 // Linting: We avoid `class-methods-use-this` as this is a polyfill that must
 //   follow the conventions

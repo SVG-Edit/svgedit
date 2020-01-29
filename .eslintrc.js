@@ -239,6 +239,7 @@ module.exports = {
         ]
       },
       rules: {
+        'jsdoc/require-jsdoc': 0,
         'no-console': 0,
         'import/unambiguous': 0,
       }

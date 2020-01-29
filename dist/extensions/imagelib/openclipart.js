@@ -582,7 +582,7 @@
   var doc = typeof document !== 'undefined' && document || win && win.document; // STATIC PROPERTIES
 
   var possibleOptions = ['$plugins', // '$mode', // Todo (SVG/XML)
-  // 'state', // Used internally
+  // '$state', // Used internally
   '$map' // Add any other options here
   ];
   var NS_HTML = 'http://www.w3.org/1999/xhtml',
@@ -661,9 +661,7 @@
 
 
   function _appendNode(parent, child) {
-    var parentName = _getHTMLNodeName(parent);
-
-    var childName = _getHTMLNodeName(child); // IE only
+    var parentName = _getHTMLNodeName(parent); // IE only
     // istanbul ignore if
 
 
@@ -689,6 +687,9 @@
       parent.append(child); // IE9 is now ok with this
     } catch (e) {
       // istanbul ignore next
+      var childName = _getHTMLNodeName(child); // istanbul ignore next
+
+
       if (parentName === 'select' && childName === 'option') {
         try {
           // Since this is now DOM Level 4 standard behavior (and what IE7+ can handle), we try it first
@@ -845,20 +846,6 @@
     };
   }
   /**
-   *
-   * @param {JamilihArray} args
-   * @returns {Element}
-   */
-
-
-  function _optsOrUndefinedJML() {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return jml.apply(void 0, _toConsumableArray$1(args[0] === undefined ? args.slice(1) : args));
-  }
-  /**
   * @typedef {JamilihAttributes} AttributeArray
   * @property {string} 0 The key
   * @property {string} 1 The value
@@ -883,7 +870,7 @@
     return function (childNodeJML, i) {
       var cn = node.childNodes[i];
       var j = Array.isArray(childNodeJML) ? jml.apply(void 0, _toConsumableArray$1(childNodeJML)) : jml(childNodeJML);
-      cn.parentNode.replaceChild(j, cn);
+      cn.replaceWith(j);
     };
   }
   /**
@@ -902,7 +889,11 @@
 
   function _appendJML(node) {
     return function (childJML) {
-      node.append(jml.apply(void 0, _toConsumableArray$1(childJML)));
+      if (Array.isArray(childJML)) {
+        node.append(jml.apply(void 0, _toConsumableArray$1(childJML)));
+      } else {
+        node.append(jml(childJML));
+      }
     };
   }
   /**
@@ -923,8 +914,10 @@
     return function (childJML) {
       if (typeof childJML === 'string') {
         node.append(childJML);
-      } else {
+      } else if (Array.isArray(childJML)) {
         node.append(jml.apply(void 0, _toConsumableArray$1(childJML)));
+      } else {
+        node.append(jml(childJML));
       }
     };
   }
@@ -970,15 +963,15 @@
    * Creates an XHTML or HTML element (XHTML is preferred, but only in browsers
    * that support); any element after element can be omitted, and any subsequent
    * type or types added afterwards.
-   * @param {JamilihArray} args
+   * @param {...JamilihArray} args
    * @returns {JamilihReturn} The newly created (and possibly already appended)
    *   element or array of elements
    */
 
 
   var jml = function jml() {
-    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
 
     var elem = doc.createDocumentFragment();
@@ -1021,7 +1014,8 @@
           case '#':
             {
               // Document fragment
-              nodes[nodes.length] = _optsOrUndefinedJML(opts, attVal);
+              opts.$state = 'fragmentChilden';
+              nodes[nodes.length] = jml(opts, attVal);
               break;
             }
 
@@ -1068,6 +1062,12 @@
               break;
             }
 
+          case '$state':
+            {
+              // Handled internally
+              break;
+            }
+
           case 'is':
             {
               // Currently only in Chrome
@@ -1100,6 +1100,7 @@
                     throw new TypeError('Expected `is` with `$define` on built-in');
                   }
 
+                  opts.$state = 'attributeValue';
                   elem.setAttribute('is', atts.is);
                   is = atts.is;
                 }
@@ -1412,6 +1413,7 @@
               break;
             }
 
+            opts.$state = 'attributeValue';
             elem.setAttribute(att, attVal);
             break;
 
@@ -1453,6 +1455,7 @@
                 } // setAttribute unfortunately erases any existing styles
 
 
+                opts.$state = 'attributeValue';
                 elem.setAttribute(att, attVal);
                 /*
                 // The following reorders which is troublesome for serialization, e.g., as used in our testing
@@ -1466,12 +1469,13 @@
                 break;
               }
 
-              var matchingPlugin = opts && opts.$plugins && opts.$plugins.find(function (p) {
+              var matchingPlugin = opts.$plugins && opts.$plugins.find(function (p) {
                 return p.name === att;
               });
 
               if (matchingPlugin) {
                 matchingPlugin.set({
+                  opts: opts,
                   element: elem,
                   attribute: {
                     name: att,
@@ -1481,6 +1485,7 @@
                 break;
               }
 
+              opts.$state = 'attributeValue';
               elem.setAttribute(att, attVal);
               break;
             }
@@ -1504,9 +1509,9 @@
     })) {
       opts = args[0];
 
-      if (opts.state !== 'child') {
+      if (opts.$state === undefined) {
         isRoot = true;
-        opts.state = 'child';
+        opts.$state = 'root';
       }
 
       if (opts.$map && !opts.$map.root && opts.$map.root !== false) {
@@ -1536,10 +1541,14 @@
       }
 
       args = args.slice(1);
+    } else {
+      opts = {
+        $state: undefined
+      };
     }
 
     var argc = args.length;
-    var defaultMap = opts && opts.$map && opts.$map.root;
+    var defaultMap = opts.$map && opts.$map.root;
 
     var setMap = function setMap(dataVal) {
       var map, obj; // Boolean indicating use of default map and object
@@ -1665,6 +1674,7 @@
 
             case '':
               nodes[nodes.length] = elem = doc.createDocumentFragment();
+              opts.$state = 'fragment';
               break;
 
             default:
@@ -1693,6 +1703,7 @@
                     elem = doc.createElement(elStr);
                   }
 
+                opts.$state = 'element';
                 nodes[nodes.length] = elem; // Add to parent
 
                 break;
@@ -1722,7 +1733,8 @@
 
 
               elem = nodes[nodes.length - 1] = new win.DOMParser().parseFromString(new win.XMLSerializer().serializeToString(elem) // Mozilla adds XHTML namespace
-              .replace(' xmlns="' + NS_HTML + '"', replacer), 'application/xml').documentElement; // }catch(e) {alert(elem.outerHTML);throw e;}
+              .replace(' xmlns="' + NS_HTML + '"', replacer), 'application/xml').documentElement;
+              opts.$state = 'element'; // }catch(e) {alert(elem.outerHTML);throw e;}
             }
 
             _checkAtts(_atts);
@@ -1740,6 +1752,7 @@
           if (i === 0) {
             // Allow wrapping of element, fragment, or document
             elem = arg;
+            opts.$state = 'element';
           }
 
           if (i === argc - 1 || i === argc - 2 && args[i + 1] === null) {
@@ -1787,10 +1800,14 @@
                 default:
                   if (Array.isArray(childContent)) {
                     // Arrays representing child elements
-                    _appendNode(elem, _optsOrUndefinedJML.apply(void 0, [opts].concat(_toConsumableArray$1(childContent))));
+                    opts.$state = 'children';
+
+                    _appendNode(elem, jml.apply(void 0, [opts].concat(_toConsumableArray$1(childContent))));
                   } else if (childContent['#']) {
                     // Fragment
-                    _appendNode(elem, _optsOrUndefinedJML(opts, childContent['#']));
+                    opts.$state = 'fragmentChildren';
+
+                    _appendNode(elem, jml(opts, childContent['#']));
                   } else {
                     // Single DOM element children
                     _appendNode(elem, childContent);
@@ -1807,7 +1824,7 @@
 
     var ret = nodes[0] || elem;
 
-    if (opts && isRoot && opts.$map && opts.$map.root) {
+    if (isRoot && opts.$map && opts.$map.root) {
       setMap(true);
     }
 
@@ -2193,7 +2210,7 @@
   };
   /**
    *
-   * @param {JamilihArray} args
+   * @param {...JamilihArray} args
    * @returns {JamilihReturn}
    */
 
@@ -2204,7 +2221,7 @@
   };
   /**
    *
-   * @param {JamilihArray} args
+   * @param {...JamilihArray} args
    * @returns {string}
    */
 
@@ -2219,7 +2236,7 @@
   };
   /**
    *
-   * @param {JamilihArray} args
+   * @param {...JamilihArray} args
    * @returns {string}
    */
 
@@ -2230,7 +2247,7 @@
   };
   /**
    *
-   * @param {JamilihArray} args
+   * @param {...JamilihArray} args
    * @returns {string}
    */
 
@@ -2241,7 +2258,7 @@
   };
   /**
    *
-   * @param {JamilihArray} args
+   * @param {...JamilihArray} args
    * @returns {string}
    */
 
@@ -2281,8 +2298,8 @@
 
         elem = typeof elem === 'string' ? $(elem) : elem;
 
-        for (var _len3 = arguments.length, args = new Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
-          args[_key3 - 2] = arguments[_key3];
+        for (var _len2 = arguments.length, args = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+          args[_key2 - 2] = arguments[_key2];
         }
 
         return (_this$get = this.get(elem))[methodName].apply(_this$get, [elem].concat(args));
@@ -2322,8 +2339,8 @@
 
         elem = typeof elem === 'string' ? $(elem) : elem;
 
-        for (var _len4 = arguments.length, args = new Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
-          args[_key4 - 2] = arguments[_key4];
+        for (var _len3 = arguments.length, args = new Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
+          args[_key3 - 2] = arguments[_key3];
         }
 
         return (_this$get2 = this.get(elem))[methodName].apply(_this$get2, [elem].concat(args));
@@ -2350,8 +2367,8 @@
   jml.weak = function (obj) {
     var map = new JamilihWeakMap();
 
-    for (var _len5 = arguments.length, args = new Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
-      args[_key5 - 1] = arguments[_key5];
+    for (var _len4 = arguments.length, args = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
+      args[_key4 - 1] = arguments[_key4];
     }
 
     var elem = jml.apply(void 0, [{
@@ -2369,8 +2386,8 @@
   jml.strong = function (obj) {
     var map = new JamilihMap();
 
-    for (var _len6 = arguments.length, args = new Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
-      args[_key6 - 1] = arguments[_key6];
+    for (var _len5 = arguments.length, args = new Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
+      args[_key5 - 1] = arguments[_key5];
     }
 
     var elem = jml.apply(void 0, [{
@@ -2405,8 +2422,8 @@
     elem = typeof elem === 'string' ? $(elem) : elem;
     var func;
 
-    for (var _len7 = arguments.length, args = new Array(_len7 > 3 ? _len7 - 3 : 0), _key7 = 3; _key7 < _len7; _key7++) {
-      args[_key7 - 3] = arguments[_key7];
+    for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key6 = 3; _key6 < _len6; _key6++) {
+      args[_key6 - 3] = arguments[_key6];
     }
 
     if (['symbol', 'string'].includes(_typeof$1(symOrMap))) {

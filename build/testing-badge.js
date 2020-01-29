@@ -3,6 +3,9 @@
 const EventEmitter = require('events');
 const BadgeGenerator = require('mocha-badge-generator');
 
+/**
+ * Mock the badge generator runner.
+ */
 class MockRunner extends EventEmitter {}
 
 const {stats: {passes, failures}} = require('../mochawesome.json');

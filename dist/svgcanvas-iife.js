@@ -202,7 +202,7 @@ var SvgCanvas = (function () {
   * Chrome 46.
   */
 
-  /* eslint-disable no-shadow, class-methods-use-this */
+  /* eslint-disable no-shadow, class-methods-use-this, jsdoc/require-jsdoc */
   // Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
   // Linting: We avoid `class-methods-use-this` as this is a polyfill that must
   //   follow the conventions
@@ -3934,10 +3934,6 @@ var SvgCanvas = (function () {
   /**
    * History command for an element that had its DOM position changed.
    * @implements {module:history.HistoryCommand}
-   * @param {Element} elem - The DOM element that was moved
-   * @param {Element} oldNextSibling - The element's next sibling before it was moved
-   * @param {Element} oldParent - The element's parent before it was moved
-   * @param {string} [text] - An optional string visible to user related to this change
   */
 
 
@@ -3946,6 +3942,12 @@ var SvgCanvas = (function () {
   function (_Command) {
     _inherits(MoveElementCommand, _Command);
 
+    /**
+    * @param {Element} elem - The DOM element that was moved
+    * @param {Element} oldNextSibling - The element's next sibling before it was moved
+    * @param {Element} oldParent - The element's parent before it was moved
+    * @param {string} [text] - An optional string visible to user related to this change
+    */
     function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
       var _this;
 
@@ -3960,6 +3962,10 @@ var SvgCanvas = (function () {
       _this.newParent = elem.parentNode;
       return _this;
     }
+    /**
+     * @returns {"svgedit.history.MoveElementCommand"}
+     */
+
 
     _createClass(MoveElementCommand, [{
       key: "type",
@@ -4025,9 +4031,6 @@ var SvgCanvas = (function () {
   /**
   * History command for an element that was added to the DOM.
   * @implements {module:history.HistoryCommand}
-  *
-  * @param {Element} elem - The newly added DOM element
-  * @param {string} text - An optional string visible to user related to this change
   */
 
   var InsertElementCommand =
@@ -4035,6 +4038,10 @@ var SvgCanvas = (function () {
   function (_Command2) {
     _inherits(InsertElementCommand, _Command2);
 
+    /**
+     * @param {Element} elem - The newly added DOM element
+     * @param {string} text - An optional string visible to user related to this change
+    */
     function InsertElementCommand(elem, text) {
       var _this2;
 
@@ -4047,6 +4054,10 @@ var SvgCanvas = (function () {
       _this2.nextSibling = _this2.elem.nextSibling;
       return _this2;
     }
+    /**
+     * @returns {"svgedit.history.InsertElementCommand"}
+     */
+
 
     _createClass(InsertElementCommand, [{
       key: "type",
@@ -4112,10 +4123,6 @@ var SvgCanvas = (function () {
   /**
   * History command for an element removed from the DOM.
   * @implements {module:history.HistoryCommand}
-  * @param {Element} elem - The removed DOM element
-  * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
-  * @param {Element} oldParent - The DOM element's parent
-  * @param {string} [text] - An optional string visible to user related to this change
   */
 
   var RemoveElementCommand =
@@ -4123,6 +4130,12 @@ var SvgCanvas = (function () {
   function (_Command3) {
     _inherits(RemoveElementCommand, _Command3);
 
+    /**
+    * @param {Element} elem - The removed DOM element
+    * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
+    * @param {Element} oldParent - The DOM element's parent
+    * @param {string} [text] - An optional string visible to user related to this change
+    */
     function RemoveElementCommand(elem, oldNextSibling, oldParent, text) {
       var _this3;
 
@@ -4137,6 +4150,10 @@ var SvgCanvas = (function () {
       removeElementFromListMap(elem);
       return _this3;
     }
+    /**
+     * @returns {"svgedit.history.RemoveElementCommand"}
+     */
+
 
     _createClass(RemoveElementCommand, [{
       key: "type",
@@ -4220,9 +4237,6 @@ var SvgCanvas = (function () {
   * History command to make a change to an element.
   * Usually an attribute change, but can also be textcontent.
   * @implements {module:history.HistoryCommand}
-  * @param {Element} elem - The DOM element that was changed
-  * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
-  * @param {string} text - An optional string visible to user related to this change
   */
 
   var ChangeElementCommand =
@@ -4230,6 +4244,11 @@ var SvgCanvas = (function () {
   function (_Command4) {
     _inherits(ChangeElementCommand, _Command4);
 
+    /**
+    * @param {Element} elem - The DOM element that was changed
+    * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
+    * @param {string} text - An optional string visible to user related to this change
+     */
     function ChangeElementCommand(elem, attrs, text) {
       var _this4;
 
@@ -4253,6 +4272,10 @@ var SvgCanvas = (function () {
 
       return _this4;
     }
+    /**
+     * @returns {"svgedit.history.ChangeElementCommand"}
+     */
+
 
     _createClass(ChangeElementCommand, [{
       key: "type",
@@ -4429,6 +4452,10 @@ var SvgCanvas = (function () {
       _this7.stack = [];
       return _this7;
     }
+    /**
+     * @returns {"svgedit.history.BatchCommand"}
+     */
+
 
     _createClass(BatchCommand, [{
       key: "type",
@@ -13050,6 +13077,9 @@ var SvgCanvas = (function () {
   var SelectorManager =
   /*#__PURE__*/
   function () {
+    /**
+     * Sets up properties and calls `initGroup`.
+     */
     function SelectorManager() {
       _classCallCheck(this, SelectorManager);
 

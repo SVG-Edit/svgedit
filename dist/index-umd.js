@@ -330,7 +330,7 @@
   * Chrome 46.
   */
 
-  /* eslint-disable no-shadow, class-methods-use-this */
+  /* eslint-disable no-shadow, class-methods-use-this, jsdoc/require-jsdoc */
   // Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
   // Linting: We avoid `class-methods-use-this` as this is a polyfill that must
   //   follow the conventions
@@ -3868,10 +3868,6 @@
   /**
    * History command for an element that had its DOM position changed.
    * @implements {module:history.HistoryCommand}
-   * @param {Element} elem - The DOM element that was moved
-   * @param {Element} oldNextSibling - The element's next sibling before it was moved
-   * @param {Element} oldParent - The element's parent before it was moved
-   * @param {string} [text] - An optional string visible to user related to this change
   */
 
 
@@ -3880,6 +3876,12 @@
   function (_Command) {
     _inherits(MoveElementCommand, _Command);
 
+    /**
+    * @param {Element} elem - The DOM element that was moved
+    * @param {Element} oldNextSibling - The element's next sibling before it was moved
+    * @param {Element} oldParent - The element's parent before it was moved
+    * @param {string} [text] - An optional string visible to user related to this change
+    */
     function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
       var _this;
 
@@ -3894,6 +3896,10 @@
       _this.newParent = elem.parentNode;
       return _this;
     }
+    /**
+     * @returns {"svgedit.history.MoveElementCommand"}
+     */
+
 
     _createClass(MoveElementCommand, [{
       key: "type",
@@ -3959,9 +3965,6 @@
   /**
   * History command for an element that was added to the DOM.
   * @implements {module:history.HistoryCommand}
-  *
-  * @param {Element} elem - The newly added DOM element
-  * @param {string} text - An optional string visible to user related to this change
   */
 
   var InsertElementCommand =
@@ -3969,6 +3972,10 @@
   function (_Command2) {
     _inherits(InsertElementCommand, _Command2);
 
+    /**
+     * @param {Element} elem - The newly added DOM element
+     * @param {string} text - An optional string visible to user related to this change
+    */
     function InsertElementCommand(elem, text) {
       var _this2;
 
@@ -3981,6 +3988,10 @@
       _this2.nextSibling = _this2.elem.nextSibling;
       return _this2;
     }
+    /**
+     * @returns {"svgedit.history.InsertElementCommand"}
+     */
+
 
     _createClass(InsertElementCommand, [{
       key: "type",
@@ -4046,10 +4057,6 @@
   /**
   * History command for an element removed from the DOM.
   * @implements {module:history.HistoryCommand}
-  * @param {Element} elem - The removed DOM element
-  * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
-  * @param {Element} oldParent - The DOM element's parent
-  * @param {string} [text] - An optional string visible to user related to this change
   */
 
   var RemoveElementCommand =
@@ -4057,6 +4064,12 @@
   function (_Command3) {
     _inherits(RemoveElementCommand, _Command3);
 
+    /**
+    * @param {Element} elem - The removed DOM element
+    * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
+    * @param {Element} oldParent - The DOM element's parent
+    * @param {string} [text] - An optional string visible to user related to this change
+    */
     function RemoveElementCommand(elem, oldNextSibling, oldParent, text) {
       var _this3;
 
@@ -4071,6 +4084,10 @@
       removeElementFromListMap(elem);
       return _this3;
     }
+    /**
+     * @returns {"svgedit.history.RemoveElementCommand"}
+     */
+
 
     _createClass(RemoveElementCommand, [{
       key: "type",
@@ -4154,9 +4171,6 @@
   * History command to make a change to an element.
   * Usually an attribute change, but can also be textcontent.
   * @implements {module:history.HistoryCommand}
-  * @param {Element} elem - The DOM element that was changed
-  * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
-  * @param {string} text - An optional string visible to user related to this change
   */
 
   var ChangeElementCommand =
@@ -4164,6 +4178,11 @@
   function (_Command4) {
     _inherits(ChangeElementCommand, _Command4);
 
+    /**
+    * @param {Element} elem - The DOM element that was changed
+    * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
+    * @param {string} text - An optional string visible to user related to this change
+     */
     function ChangeElementCommand(elem, attrs, text) {
       var _this4;
 
@@ -4187,6 +4206,10 @@
 
       return _this4;
     }
+    /**
+     * @returns {"svgedit.history.ChangeElementCommand"}
+     */
+
 
     _createClass(ChangeElementCommand, [{
       key: "type",
@@ -4363,6 +4386,10 @@
       _this7.stack = [];
       return _this7;
     }
+    /**
+     * @returns {"svgedit.history.BatchCommand"}
+     */
+
 
     _createClass(BatchCommand, [{
       key: "type",
@@ -13366,6 +13393,9 @@
   var SelectorManager =
   /*#__PURE__*/
   function () {
+    /**
+     * Sets up properties and calls `initGroup`.
+     */
     function SelectorManager() {
       _classCallCheck(this, SelectorManager);
 
@@ -24768,13 +24798,15 @@
     * Encapsulate slider functionality for the ColorMap and ColorBar -
     * could be useful to use a jQuery UI draggable for this with certain extensions.
     * @memberof module:jPicker
-    * @param {external:jQuery} bar
-    * @param {module:jPicker.SliderOptions} options
-    * @returns {void}
     */
 
 
-    var Slider = function Slider(bar, options) {
+    var Slider =
+    /**
+     * @param {external:jQuery} bar
+     * @param {module:jPicker.SliderOptions} options
+     */
+    function Slider(bar, options) {
       _classCallCheck(this, Slider);
 
       var that = this;
@@ -25180,14 +25212,17 @@
     };
     /**
      * Controls for all the input elements for the typing in color values.
+     */
+
+
+    var ColorValuePicker =
+    /**
      * @param {external:jQuery} picker
      * @param {external:jQuery.jPicker.Color} color
      * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
      * @param {Float} alphaPrecision
      */
-
-
-    var ColorValuePicker = function ColorValuePicker(picker, color, bindedHex, alphaPrecision) {
+    function ColorValuePicker(picker, color, bindedHex, alphaPrecision) {
       _classCallCheck(this, ColorValuePicker);
 
       var that = this; // private properties and methods
@@ -34423,10 +34458,18 @@
         $$b('#color_picker').hide();
       });
     };
+    /**
+     * Paint box class.
+     */
+
 
     var PaintBox =
     /*#__PURE__*/
     function () {
+      /**
+       * @param {string|Element|external:jQuery} container
+       * @param {"fill"} type
+       */
       function PaintBox(container, type) {
         _classCallCheck(this, PaintBox);
 
@@ -34444,6 +34487,12 @@
         });
         this.type = type;
       }
+      /**
+       * @param {module:jGraduate~Paint} paint
+       * @param {boolean} apply
+       * @returns {void}
+       */
+
 
       _createClass(PaintBox, [{
         key: "setPaint",
@@ -34477,6 +34526,11 @@
             svgCanvas.setPaintOpacity(this.type, this._paintOpacity, true);
           }
         }
+        /**
+         * @param {boolean} apply
+         * @returns {void}
+         */
+
       }, {
         key: "update",
         value: function update(apply) {
@@ -34546,6 +34600,10 @@
 
           this.setPaint(paint);
         }
+        /**
+         * @returns {void}
+         */
+
       }, {
         key: "prep",
         value: function prep() {
