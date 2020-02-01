@@ -89,11 +89,15 @@ var svgEditorExtension_shapes = (function () {
    */
   var extShapes = {
     name: 'shapes',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(_ref) {
+      var _this = this;
+
+      var $ = _ref.$,
+          importLocale = _ref.importLocale;
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
-        var $, importLocale, strings, svgEditor, canv, svgroot, lastBBox, categories, library, modeId, startClientPos, currentD, curShapeId, curShape, startX, startY, curLib, loadIcons, makeButtons, loadLibrary, buttons;
+      regeneratorRuntime.mark(function _callee() {
+        var strings, svgEditor, canv, svgroot, lastBBox, categories, library, modeId, startClientPos, currentD, curShapeId, curShape, startX, startY, curLib, loadIcons, makeButtons, loadLibrary, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -157,13 +161,12 @@ var svgEditorExtension_shapes = (function () {
                   $('#shape_buttons').empty().append(curLib.buttons);
                 };
 
-                $ = _ref.$, importLocale = _ref.importLocale;
-                _context.next = 6;
+                _context.next = 5;
                 return importLocale();
 
-              case 6:
+              case 5:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 canv = svgEditor.canvas;
                 svgroot = canv.getRootElem();
                 lastBBox = {}; // This populates the category list
@@ -408,20 +411,14 @@ var svgEditorExtension_shapes = (function () {
                   }
                 });
 
-              case 18:
+              case 17:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extShapes;

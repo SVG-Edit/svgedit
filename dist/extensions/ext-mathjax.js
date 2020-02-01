@@ -103,11 +103,15 @@ var svgEditorExtension_mathjax = (function () {
 
   var extMathjax = {
     name: 'mathjax',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(_ref) {
+      var _this = this;
+
+      var $ = _ref.$,
+          importLocale = _ref.importLocale;
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(_ref) {
-        var $, importLocale, strings, svgEditor, svgCanvas, mathjaxSrcSecure, uiStrings, math, locationX, locationY, mathjaxLoaded, saveMath, buttons;
+      regeneratorRuntime.mark(function _callee2() {
+        var strings, svgEditor, svgCanvas, mathjaxSrcSecure, uiStrings, math, locationX, locationY, mathjaxLoaded, saveMath, buttons;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -164,13 +168,12 @@ var svgEditorExtension_mathjax = (function () {
                   });
                 };
 
-                $ = _ref.$, importLocale = _ref.importLocale;
-                _context2.next = 4;
+                _context2.next = 3;
                 return importLocale();
 
-              case 4:
+              case 3:
                 strings = _context2.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas; // Configuration of the MathJax extention.
                 // This will be added to the head tag before MathJax is loaded.
 
@@ -222,8 +225,8 @@ var svgEditorExtension_mathjax = (function () {
                   type: 'mode',
                   icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
                   events: {
-                    click: function () {
-                      var _click = _asyncToGenerator(
+                    click: function click() {
+                      return _asyncToGenerator(
                       /*#__PURE__*/
                       regeneratorRuntime.mark(function _callee() {
                         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -307,14 +310,8 @@ var svgEditorExtension_mathjax = (function () {
                             }
                           }
                         }, _callee, null, [[7, 13]]);
-                      }));
-
-                      function click() {
-                        return _click.apply(this, arguments);
-                      }
-
-                      return click;
-                    }()
+                      }))();
+                    }
                   }
                 }];
                 return _context2.abrupt("return", {
@@ -353,20 +350,14 @@ var svgEditorExtension_mathjax = (function () {
                   }
                 });
 
-              case 12:
+              case 11:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee2);
+      }))();
+    }
   };
 
   return extMathjax;

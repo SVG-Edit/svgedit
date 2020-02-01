@@ -2,6 +2,8 @@ var svgEditorExtension_server_moinsave = (function () {
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -4880,22 +4882,26 @@ var svgEditorExtension_server_moinsave = (function () {
 
   var extServer_moinsave = {
     name: 'server_moinsave',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(_ref) {
+      var _this = this;
+
+      var $ = _ref.$,
+          encode64 = _ref.encode64,
+          importLocale = _ref.importLocale;
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(_ref) {
-        var $, encode64, importLocale, strings, svgEditor, svgCanvas, saveSvgAction;
+      regeneratorRuntime.mark(function _callee2() {
+        var strings, svgEditor, svgCanvas, saveSvgAction;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                $ = _ref.$, encode64 = _ref.encode64, importLocale = _ref.importLocale;
-                _context2.next = 3;
+                _context2.next = 2;
                 return importLocale();
 
-              case 3:
+              case 2:
                 strings = _context2.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 saveSvgAction = '/+modify'; // Create upload target (hidden iframe)
                 //  Hiding by size instead of display to avoid FF console errors
@@ -4905,10 +4911,10 @@ var svgEditorExtension_server_moinsave = (function () {
 
                 $("<iframe name=\"output_frame\" title=\"".concat(strings.hiddenframe, "\"\n        style=\"width: 0; height: 0;\" src=\"data:text/html;base64,PGh0bWw+PC9odG1sPg==\"/>")).appendTo('body');
                 svgEditor.setCustomHandlers({
-                  save: function () {
-                    var _save = _asyncToGenerator(
+                  save: function save(win, data) {
+                    return _asyncToGenerator(
                     /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee(win, data) {
+                    regeneratorRuntime.mark(function _callee() {
                       var svg, _ref2, pathname, name, svgData, c, datauri, pngData;
 
                       return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -4953,30 +4959,18 @@ var svgEditorExtension_server_moinsave = (function () {
                           }
                         }
                       }, _callee);
-                    }));
-
-                    function save(_x2, _x3) {
-                      return _save.apply(this, arguments);
-                    }
-
-                    return save;
-                  }()
+                    }))();
+                  }
                 });
 
-              case 9:
+              case 8:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee2);
+      }))();
+    }
   };
 
   return extServer_moinsave;

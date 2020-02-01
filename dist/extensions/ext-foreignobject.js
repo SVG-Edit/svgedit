@@ -47,10 +47,12 @@ var svgEditorExtension_foreignobject = (function () {
    */
   var extForeignobject = {
     name: 'foreignobject',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(S) {
+      regeneratorRuntime.mark(function _callee2() {
         var svgEditor, $, text2xml, NS, importLocale, svgCanvas, svgdoc, strings, properlySourceSizeTextArea, showPanel, toggleSourceButtons, selElems, started, newFO, editingforeign, setForeignString, showForeignEditor, setAttr, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -115,7 +117,7 @@ var svgEditorExtension_foreignobject = (function () {
                   $('#foreignObject_panel').toggle(on);
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 $ = S.$, text2xml = S.text2xml, NS = S.NS, importLocale = S.importLocale;
                 svgCanvas = svgEditor.canvas;
                 svgdoc = S.svgroot.parentNode.ownerDocument;
@@ -357,15 +359,9 @@ var svgEditorExtension_foreignobject = (function () {
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee2);
+      }))();
+    }
   };
 
   return extForeignobject;

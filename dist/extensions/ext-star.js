@@ -46,10 +46,12 @@ var svgEditorExtension_star = (function () {
    */
   var extStar = {
     name: 'star',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+      regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, $, importLocale, selElems, started, newFO, strings, showPanel, setAttr, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -71,7 +73,7 @@ var svgEditorExtension_star = (function () {
                   $('#star_panel').toggle(on);
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 $ = S.$, importLocale = S.importLocale; // {svgcontent},
 
@@ -284,15 +286,9 @@ var svgEditorExtension_star = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extStar;

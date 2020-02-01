@@ -49,10 +49,12 @@ var svgEditorExtension_connector = (function () {
    */
   var extConnector = {
     name: 'connector',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+      regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, getElem, $, svgroot, importLocale, addElem, selManager, connSel, elData, strings, startX, startY, curLine, startElem, endElem, seNs, svgcontent, started, connections, selElems, getBBintersect, getOffset, showPanel, setPoint, updateLine, findConnectors, updateConnectors, init, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -298,7 +300,7 @@ var svgEditorExtension_connector = (function () {
                   };
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 getElem = svgCanvas.getElem;
                 $ = S.$, svgroot = S.svgroot, importLocale = S.importLocale, addElem = svgCanvas.addSVGElementFromJson, selManager = S.selectorManager, connSel = '.se_connector', elData = $.data;
@@ -683,15 +685,9 @@ var svgEditorExtension_connector = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extConnector;

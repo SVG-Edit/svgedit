@@ -1,4 +1,6 @@
 function _typeof(obj) {
+  "@babel/helpers - typeof";
+
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
     _typeof = function (obj) {
       return typeof obj;
@@ -9493,13 +9495,13 @@ function importSetGlobal(_x, _x2) {
 function _importSetGlobal() {
   _importSetGlobal = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(url, _ref) {
+  regeneratorRuntime.mark(function _callee(url, _ref2) {
     var glob, returnDefault, modularVersion;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            glob = _ref.global, returnDefault = _ref.returnDefault;
+            glob = _ref2.global, returnDefault = _ref2.returnDefault;
             // Todo: Replace calls to this function with `import()` when supported
             modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
 
@@ -9589,9 +9591,9 @@ function importScript(url) {
 function importModule(url) {
   var atts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref2$returnDefault = _ref2.returnDefault,
-      returnDefault = _ref2$returnDefault === void 0 ? false : _ref2$returnDefault;
+  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      _ref$returnDefault = _ref.returnDefault,
+      returnDefault = _ref$returnDefault === void 0 ? false : _ref$returnDefault;
 
   if (Array.isArray(url)) {
     return Promise.all(url.map(function (u) {
@@ -14862,15 +14864,15 @@ function SvgCanvas(container, config) {
   this.addExtension =
   /*#__PURE__*/
   function () {
-    var _ref4 = _asyncToGenerator(
+    var _ref3 = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref3) {
+    regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref4) {
       var jq, importLocale, argObj, extObj;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              jq = _ref3.$, importLocale = _ref3.importLocale;
+              jq = _ref4.$, importLocale = _ref4.importLocale;
 
               if (!(typeof extInitFunc !== 'function')) {
                 _context.next = 3;
@@ -14933,7 +14935,7 @@ function SvgCanvas(container, config) {
     }));
 
     return function (_x, _x2, _x3) {
-      return _ref4.apply(this, arguments);
+      return _ref3.apply(this, arguments);
     };
   }();
   /**
@@ -30186,10 +30188,10 @@ editor.init = function () {
         '.stroke_tool div div .svg_icon': 20,
         '#tools_bottom label .svg_icon': 18
       },
-      callback: function () {
-        var _callback = _asyncToGenerator(
+      callback: function callback(icons) {
+        return _asyncToGenerator(
         /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee4(icons) {
+        regeneratorRuntime.mark(function _callee4() {
           var tleft, minHeight, size, getStylesheetPriority, stylesheets, idx, _stylesheets;
 
           return regeneratorRuntime.wrap(function _callee4$(_context4) {
@@ -30296,14 +30298,8 @@ editor.init = function () {
               }
             }
           }, _callee4);
-        }));
-
-        function callback(_x3) {
-          return _callback.apply(this, arguments);
-        }
-
-        return callback;
-      }()
+        }))();
+      }
     });
   }
   /**
@@ -30385,7 +30381,7 @@ editor.init = function () {
 
   var rIntervals = [];
 
-  for (var i = 0.1; i < 1E5; i *= 10) {
+  for (var i = 0.1; i < 1e5; i *= 10) {
     rIntervals.push(i);
     rIntervals.push(2 * i);
     rIntervals.push(5 * i);
@@ -32519,7 +32515,7 @@ editor.init = function () {
       }, _callee5);
     }));
 
-    return function extAdded(_x4, _x5) {
+    return function extAdded(_x3, _x4) {
       return _ref16.apply(this, arguments);
     };
   }();
@@ -36158,15 +36154,15 @@ editor.init = function () {
                   reader.onloadend =
                   /*#__PURE__*/
                   function () {
-                    var _ref33 = _asyncToGenerator(
+                    var _ref32 = _asyncToGenerator(
                     /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee15(_ref32) {
+                    regeneratorRuntime.mark(function _callee15(_ref33) {
                       var target;
                       return regeneratorRuntime.wrap(function _callee15$(_context15) {
                         while (1) {
                           switch (_context15.prev = _context15.next) {
                             case 0:
-                              target = _ref32.target;
+                              target = _ref33.target;
                               _context15.next = 3;
                               return loadSvgString(target.result);
 
@@ -36181,8 +36177,8 @@ editor.init = function () {
                       }, _callee15);
                     }));
 
-                    return function (_x7) {
-                      return _ref33.apply(this, arguments);
+                    return function (_x6) {
+                      return _ref32.apply(this, arguments);
                     };
                   }();
 
@@ -36197,7 +36193,7 @@ editor.init = function () {
         }, _callee16, this);
       }));
 
-      return function (_x6) {
+      return function (_x5) {
         return _ref31.apply(this, arguments);
       };
     }());
@@ -36336,7 +36332,7 @@ editor.init = function () {
       }, _callee17);
     }));
 
-    return function (_x8, _x9) {
+    return function (_x7, _x8) {
       return _ref34.apply(this, arguments);
     };
   }();

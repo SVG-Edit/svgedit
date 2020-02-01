@@ -2,6 +2,8 @@ var svgEditorExtension_server_opensave = (function () {
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -4880,11 +4882,17 @@ var svgEditorExtension_server_opensave = (function () {
 
   var extServer_opensave = {
     name: 'server_opensave',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(_ref) {
+      var _this = this;
+
+      var $ = _ref.$,
+          decode64 = _ref.decode64,
+          encode64 = _ref.encode64,
+          importLocale = _ref.importLocale;
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee5(_ref) {
-        var $, decode64, encode64, importLocale, strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, avoidClientSideDownload, avoidClientSideOpen, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
+      regeneratorRuntime.mark(function _callee5() {
+        var strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, avoidClientSideDownload, avoidClientSideOpen, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
 
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
@@ -5020,13 +5028,12 @@ var svgEditorExtension_server_opensave = (function () {
                   return title.trim().replace(/[/\\:*?"<>|]/g, '_');
                 };
 
-                $ = _ref.$, decode64 = _ref.decode64, encode64 = _ref.encode64, importLocale = _ref.importLocale;
-                _context5.next = 7;
+                _context5.next = 6;
                 return importLocale();
 
-              case 7:
+              case 6:
                 strings = _context5.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 _svgEditor$curConfig = svgEditor.curConfig, extPath = _svgEditor$curConfig.extPath, avoidClientSide = _svgEditor$curConfig.avoidClientSide, avoidClientSideDownload = _svgEditor$curConfig.avoidClientSideDownload, avoidClientSideOpen = _svgEditor$curConfig.avoidClientSideOpen, svgCanvas = svgEditor.canvas;
                 /**
                  *
@@ -5070,10 +5077,10 @@ var svgEditorExtension_server_opensave = (function () {
                     }).append("\n          <input type=\"hidden\" name=\"output_img\" value=\"".concat(datauri, "\">\n          <input type=\"hidden\" name=\"mime\" value=\"application/pdf\">\n          <input type=\"hidden\" name=\"filename\" value=\"").concat(xhtmlEscape(filename), "\">\n        ")).appendTo('body').submit().remove();
                   },
                   // Todo: Integrate this extension with a new built-in exportWindowType, "download"
-                  exportImage: function () {
-                    var _exportImage = _asyncToGenerator(
+                  exportImage: function exportImage(win, data) {
+                    return _asyncToGenerator(
                     /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee(win, data) {
+                    regeneratorRuntime.mark(function _callee() {
                       var issues, mimeType, quality, c, datauri, pre, note, filename, suffix;
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
@@ -5137,24 +5144,18 @@ var svgEditorExtension_server_opensave = (function () {
                           }
                         }
                       }, _callee);
-                    }));
-
-                    function exportImage(_x2, _x3) {
-                      return _exportImage.apply(this, arguments);
-                    }
-
-                    return exportImage;
-                  }()
+                    }))();
+                  }
                 }); // Do nothing if client support is found
 
                 if (!(window.FileReader && !avoidClientSideOpen)) {
-                  _context5.next = 16;
+                  _context5.next = 15;
                   break;
                 }
 
                 return _context5.abrupt("return");
 
-              case 16:
+              case 15:
                 // Change these to appropriate script file
                 openSvgAction = extPath + 'fileopen.php?type=load_svg';
                 importSvgAction = extPath + 'fileopen.php?type=import_svg';
@@ -5221,20 +5222,14 @@ var svgEditorExtension_server_opensave = (function () {
                 $('#tool_import').show().prepend(importSvgForm);
                 $('#tool_image').prepend(importImgForm);
 
-              case 30:
+              case 29:
               case "end":
                 return _context5.stop();
             }
           }
-        }, _callee5, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee5);
+      }))();
+    }
   };
 
   return extServer_opensave;

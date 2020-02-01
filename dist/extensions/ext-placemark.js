@@ -88,10 +88,12 @@ var svgEditorExtension_placemark = (function () {
    */
   var extPlacemark = {
     name: 'placemark',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+      regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, addElem, $, importLocale, selElems, started, newPM, strings, markerTypes, showPanel, getLinked, updateText, updateFont, addMarker, setMarker, colorChanged, updateReferences, setArrowFromButton, getTitle, addMarkerButtons, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -340,7 +342,7 @@ var svgEditorExtension_placemark = (function () {
                   $('#placemark_panel').toggle(on);
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 addElem = svgCanvas.addSVGElementFromJson;
                 $ = S.$, importLocale = S.importLocale; // {svgcontent},
@@ -700,15 +702,9 @@ var svgEditorExtension_placemark = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extPlacemark;

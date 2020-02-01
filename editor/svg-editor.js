@@ -1569,7 +1569,7 @@ editor.init = function () {
   const origTitle = $('title:first').text();
   // Make [1,2,5] array
   const rIntervals = [];
-  for (let i = 0.1; i < 1E5; i *= 10) {
+  for (let i = 0.1; i < 1e5; i *= 10) {
     rIntervals.push(i);
     rIntervals.push(2 * i);
     rIntervals.push(5 * i);

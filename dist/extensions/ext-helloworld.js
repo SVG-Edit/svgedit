@@ -95,22 +95,25 @@ var svgEditorExtension_helloworld = (function () {
   */
   var extHelloworld = {
     name: 'helloworld',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(_ref) {
+      var _this = this;
+
+      var $ = _ref.$,
+          importLocale = _ref.importLocale;
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
-        var $, importLocale, strings, svgEditor, svgCanvas;
+      regeneratorRuntime.mark(function _callee() {
+        var strings, svgEditor, svgCanvas;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                $ = _ref.$, importLocale = _ref.importLocale;
-                _context.next = 3;
+                _context.next = 2;
                 return importLocale();
 
-              case 3:
+              case 2:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 return _context.abrupt("return", {
                   name: strings.name,
@@ -176,20 +179,14 @@ var svgEditorExtension_helloworld = (function () {
                   }
                 });
 
-              case 7:
+              case 6:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extHelloworld;

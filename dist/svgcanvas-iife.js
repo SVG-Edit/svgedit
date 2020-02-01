@@ -2,6 +2,8 @@ var SvgCanvas = (function () {
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -11378,13 +11380,13 @@ var SvgCanvas = (function () {
   function _importSetGlobal() {
     _importSetGlobal = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee(url, _ref) {
+    regeneratorRuntime.mark(function _callee(url, _ref2) {
       var glob, returnDefault, modularVersion;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              glob = _ref.global, returnDefault = _ref.returnDefault;
+              glob = _ref2.global, returnDefault = _ref2.returnDefault;
               // Todo: Replace calls to this function with `import()` when supported
               modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
 
@@ -11474,9 +11476,9 @@ var SvgCanvas = (function () {
   function importModule(url) {
     var atts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-        _ref2$returnDefault = _ref2.returnDefault,
-        returnDefault = _ref2$returnDefault === void 0 ? false : _ref2$returnDefault;
+    var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+        _ref$returnDefault = _ref.returnDefault,
+        returnDefault = _ref$returnDefault === void 0 ? false : _ref$returnDefault;
 
     if (Array.isArray(url)) {
       return Promise.all(url.map(function (u) {
@@ -14552,15 +14554,15 @@ var SvgCanvas = (function () {
     this.addExtension =
     /*#__PURE__*/
     function () {
-      var _ref4 = _asyncToGenerator(
+      var _ref3 = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref3) {
+      regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref4) {
         var jq, importLocale, argObj, extObj;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                jq = _ref3.$, importLocale = _ref3.importLocale;
+                jq = _ref4.$, importLocale = _ref4.importLocale;
 
                 if (!(typeof extInitFunc !== 'function')) {
                   _context.next = 3;
@@ -14623,7 +14625,7 @@ var SvgCanvas = (function () {
       }));
 
       return function (_x, _x2, _x3) {
-        return _ref4.apply(this, arguments);
+        return _ref3.apply(this, arguments);
       };
     }();
     /**

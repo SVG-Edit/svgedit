@@ -2,6 +2,8 @@ var svgEditorExtension_xdomain_messaging = (function () {
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;

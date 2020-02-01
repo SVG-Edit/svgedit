@@ -69,10 +69,12 @@ var svgEditorExtension_markers = (function () {
   */
   var extMarkers = {
     name: 'markers',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3(S) {
+      regeneratorRuntime.mark(function _callee3() {
         var strings, svgEditor, $, svgCanvas, addElem, mtypes, markerPrefix, idPrefix, markerTypes, getLinked, setIcon, selElems, showPanel, addMarker, convertline, setMarker, colorChanged, updateReferences, triggerTextEntry, showTextPrompt, _showTextPrompt, setArrowFromButton, _setArrowFromButton, getTitle, buildButtonList, contextTools;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -178,7 +180,7 @@ var svgEditorExtension_markers = (function () {
                   return _setArrowFromButton.apply(this, arguments);
                 };
 
-                setArrowFromButton = function _ref13(_x3) {
+                setArrowFromButton = function _ref13(_x2) {
                   return _setArrowFromButton.apply(this, arguments);
                 };
 
@@ -217,7 +219,7 @@ var svgEditorExtension_markers = (function () {
                   return _showTextPrompt.apply(this, arguments);
                 };
 
-                showTextPrompt = function _ref11(_x2) {
+                showTextPrompt = function _ref11(_x) {
                   return _showTextPrompt.apply(this, arguments);
                 };
 
@@ -550,7 +552,7 @@ var svgEditorExtension_markers = (function () {
 
               case 17:
                 strings = _context3.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 $ = S.$;
                 svgCanvas = svgEditor.canvas;
                 addElem = svgCanvas.addSVGElementFromJson;
@@ -757,15 +759,9 @@ var svgEditorExtension_markers = (function () {
                 return _context3.stop();
             }
           }
-        }, _callee3, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee3);
+      }))();
+    }
   };
 
   return extMarkers;

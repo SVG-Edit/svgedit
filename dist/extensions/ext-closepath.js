@@ -49,22 +49,25 @@ var svgEditorExtension_closepath = (function () {
   // The button toggles whether the path is open or closed
   var extClosepath = {
     name: 'closepath',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(_ref) {
+      var _this = this;
+
+      var importLocale = _ref.importLocale,
+          $ = _ref.$;
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
-        var importLocale, $, strings, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
+      regeneratorRuntime.mark(function _callee() {
+        var strings, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                importLocale = _ref.importLocale, $ = _ref.$;
-                _context.next = 3;
+                _context.next = 2;
                 return importLocale();
 
-              case 3:
+              case 2:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
 
                 updateButton = function updateButton(path) {
                   var seglist = path.pathSegList,
@@ -154,20 +157,14 @@ var svgEditorExtension_closepath = (function () {
                   }
                 });
 
-              case 10:
+              case 9:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extClosepath;

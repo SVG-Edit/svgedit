@@ -47,11 +47,17 @@ var svgEditorExtension_grid = (function () {
    */
   var extGrid = {
     name: 'grid',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(_ref) {
+      var _this = this;
+
+      var $ = _ref.$,
+          NS = _ref.NS,
+          getTypeMap = _ref.getTypeMap,
+          importLocale = _ref.importLocale;
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
-        var $, NS, getTypeMap, importLocale, strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridDefs, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
+      regeneratorRuntime.mark(function _callee() {
+        var strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridDefs, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -113,13 +119,12 @@ var svgEditorExtension_grid = (function () {
                   svgCanvas.setHref(gridimg, datauri);
                 };
 
-                $ = _ref.$, NS = _ref.NS, getTypeMap = _ref.getTypeMap, importLocale = _ref.importLocale;
-                _context.next = 5;
+                _context.next = 4;
                 return importLocale();
 
-              case 5:
+              case 4:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 svgdoc = document.getElementById('svgcanvas').ownerDocument, assignAttributes = svgCanvas.assignAttributes, hcanvas = document.createElement('canvas'), canvBG = $('#canvasBackground'), units = getTypeMap(), intervals = [0.01, 0.1, 1, 10, 100, 1000];
                 showGrid = svgEditor.curConfig.showGrid || false;
@@ -207,20 +212,14 @@ var svgEditorExtension_grid = (function () {
                   })
                 });
 
-              case 27:
+              case 26:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extGrid;

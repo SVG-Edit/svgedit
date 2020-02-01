@@ -252,34 +252,34 @@ var svgEditorExtension_storage = (function () {
       var loaded = false;
       return {
         name: 'storage',
-        langReady: function () {
-          var _langReady = _asyncToGenerator(
+        langReady: function langReady(_ref4) {
+          var importLocale = _ref4.importLocale;
+          return _asyncToGenerator(
           /*#__PURE__*/
-          regeneratorRuntime.mark(function _callee(_ref4) {
-            var importLocale, storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight, _ref5, pref, checked;
+          regeneratorRuntime.mark(function _callee() {
+            var storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight, _ref5, pref, checked;
 
             return regeneratorRuntime.wrap(function _callee$(_context) {
               while (1) {
                 switch (_context.prev = _context.next) {
                   case 0:
-                    importLocale = _ref4.importLocale;
                     storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
-                    _context.next = 4;
+                    _context.next = 3;
                     return importLocale();
 
-                  case 4:
+                  case 3:
                     confirmSetStorage = _context.sent;
                     message = confirmSetStorage.message, storagePrefsAndContent = confirmSetStorage.storagePrefsAndContent, storagePrefsOnly = confirmSetStorage.storagePrefsOnly, storagePrefs = confirmSetStorage.storagePrefs, storageNoPrefsOrContent = confirmSetStorage.storageNoPrefsOrContent, storageNoPrefs = confirmSetStorage.storageNoPrefs, rememberLabel = confirmSetStorage.rememberLabel, rememberTooltip = confirmSetStorage.rememberTooltip; // No need to run this one-time dialog again just because the user
                     //   changes the language
 
                     if (!loaded) {
-                      _context.next = 8;
+                      _context.next = 7;
                       break;
                     }
 
                     return _context.abrupt("return");
 
-                  case 8:
+                  case 7:
                     loaded = true; // Note that the following can load even if "noStorageOnLoad" is
                     //   set to false; to avoid any chance of storage, avoid this
                     //   extension! (and to avoid using any prior storage, set the
@@ -295,7 +295,7 @@ var svgEditorExtension_storage = (function () {
                     storagePrompt !== 'false' && // ...and this user hasn't previously indicated a desire for storage
                     !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/) // ...then show the storage prompt.
                     ))) {
-                      _context.next = 44;
+                      _context.next = 43;
                       break;
                     }
 
@@ -331,20 +331,20 @@ var svgEditorExtension_storage = (function () {
                     // From svg-editor.js
 
                     svgEditor.storagePromptState = 'waiting';
-                    _context.next = 20;
+                    _context.next = 19;
                     return $.select(message, options, null, null, {
                       label: rememberLabel,
                       checked: true,
                       tooltip: rememberTooltip
                     });
 
-                  case 20:
+                  case 19:
                     _ref5 = _context.sent;
                     pref = _ref5.response;
                     checked = _ref5.checked;
 
                     if (!(pref && pref !== 'noPrefsOrContent')) {
-                      _context.next = 30;
+                      _context.next = 29;
                       break;
                     }
 
@@ -361,18 +361,18 @@ var svgEditorExtension_storage = (function () {
                     //    them instead to a URL which does not always prompt
 
                     if (!(storagePrompt === 'true' && checked)) {
-                      _context.next = 28;
+                      _context.next = 27;
                       break;
                     }
 
                     replaceStoragePrompt();
                     return _context.abrupt("return");
 
-                  case 28:
-                    _context.next = 35;
+                  case 27:
+                    _context.next = 34;
                     break;
 
-                  case 30:
+                  case 29:
                     // The user does not wish storage (or cancelled, which we treat equivalently)
                     removeStoragePrefCookie();
 
@@ -382,7 +382,7 @@ var svgEditorExtension_storage = (function () {
                     }
 
                     if (!(pref && checked)) {
-                      _context.next = 35;
+                      _context.next = 34;
                       break;
                     }
 
@@ -390,7 +390,7 @@ var svgEditorExtension_storage = (function () {
                     replaceStoragePrompt('false');
                     return _context.abrupt("return");
 
-                  case 35:
+                  case 34:
                     // Reset width/height of dialog (e.g., for use by Export)
                     $('#dialog_container')[0].style.width = oldContainerWidth;
                     $('#dialog_container')[0].style.marginLeft = oldContainerMarginLeft;
@@ -407,28 +407,22 @@ var svgEditorExtension_storage = (function () {
                     setupBeforeUnloadListener();
                     svgEditor.storagePromptState = 'closed';
                     updateCanvas(true);
-                    _context.next = 45;
+                    _context.next = 44;
                     break;
 
-                  case 44:
+                  case 43:
                     if (!noStorageOnLoad || forceStorage) {
                       setupBeforeUnloadListener();
                     }
 
-                  case 45:
+                  case 44:
                   case "end":
                     return _context.stop();
                 }
               }
             }, _callee);
-          }));
-
-          function langReady(_x) {
-            return _langReady.apply(this, arguments);
-          }
-
-          return langReady;
-        }()
+          }))();
+        }
       };
     }
   };

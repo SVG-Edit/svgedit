@@ -47,10 +47,12 @@ var svgEditorExtension_arrows = (function () {
    */
   var extArrows = {
     name: 'arrows',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(S) {
+      regeneratorRuntime.mark(function _callee2() {
         var strings, svgEditor, svgCanvas, addElem, nonce, $, prefix, selElems, arrowprefix, randomizeIds, setArrowNonce, unsetArrowNonce, pathdata, getLinked, showPanel, resetMarker, addMarker, setArrow, colorChanged, contextTools;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -266,7 +268,7 @@ var svgEditorExtension_arrows = (function () {
 
               case 10:
                 strings = _context2.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 // {svgcontent} = S,
                 addElem = svgCanvas.addSVGElementFromJson, nonce = S.nonce, $ = S.$, prefix = 'se_arrow_';
@@ -324,41 +326,36 @@ var svgEditorExtension_arrows = (function () {
 
                     $('#arrow_list option')[0].id = 'connector_no_arrow';
                   },
-                  addLangData: function () {
-                    var _addLangData = _asyncToGenerator(
+                  addLangData: function addLangData(_ref) {
+                    var lang = _ref.lang,
+                        importLocale = _ref.importLocale;
+                    return _asyncToGenerator(
                     /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee(_ref) {
-                      var lang, importLocale, _ref2, langList;
+                    regeneratorRuntime.mark(function _callee() {
+                      var _ref2, langList;
 
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
                           switch (_context.prev = _context.next) {
                             case 0:
-                              lang = _ref.lang, importLocale = _ref.importLocale;
-                              _context.next = 3;
+                              _context.next = 2;
                               return importLocale();
 
-                            case 3:
+                            case 2:
                               _ref2 = _context.sent;
                               langList = _ref2.langList;
                               return _context.abrupt("return", {
                                 data: langList
                               });
 
-                            case 6:
+                            case 5:
                             case "end":
                               return _context.stop();
                           }
                         }
                       }, _callee);
-                    }));
-
-                    function addLangData(_x2) {
-                      return _addLangData.apply(this, arguments);
-                    }
-
-                    return addLangData;
-                  }(),
+                    }))();
+                  },
                   selectedChanged: function selectedChanged(opts) {
                     // Use this to update the current selected elements
                     selElems = opts.elems;
@@ -397,15 +394,9 @@ var svgEditorExtension_arrows = (function () {
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee2);
+      }))();
+    }
   };
 
   return extArrows;

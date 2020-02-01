@@ -2,6 +2,8 @@ var svgEditorExtension_imagelib = (function () {
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -61,11 +63,17 @@ var svgEditorExtension_imagelib = (function () {
    */
   var extImagelib = {
     name: 'imagelib',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(_ref) {
+      var _this = this;
+
+      var $ = _ref.$,
+          decode64 = _ref.decode64,
+          importLocale = _ref.importLocale,
+          dropXMLInternalSubset = _ref.dropXMLInternalSubset;
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(_ref) {
-        var $, decode64, importLocale, dropXMLInternalSubset, imagelibStrings, modularVersion, svgEditor, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, onMessage, _onMessage, toggleMulti, showBrowser, buttons;
+      regeneratorRuntime.mark(function _callee2() {
+        var imagelibStrings, modularVersion, svgEditor, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, onMessage, _onMessage, toggleMulti, showBrowser, buttons;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -127,10 +135,10 @@ var svgEditorExtension_imagelib = (function () {
                     });
                     cancel.prepend($.getSvgIcon('cancel', true));
                     back.prepend($.getSvgIcon('tool_imagelib', true));
-                    imagelibStrings.imgLibs.forEach(function (_ref5) {
-                      var name = _ref5.name,
-                          url = _ref5.url,
-                          description = _ref5.description;
+                    imagelibStrings.imgLibs.forEach(function (_ref4) {
+                      var name = _ref4.name,
+                          url = _ref4.url,
+                          description = _ref4.description;
                       $('<li>').appendTo(libOpts).text(name).on('click touchend', function () {
                         frame.attr('src', url).show();
                         header.text(name);
@@ -188,13 +196,13 @@ var svgEditorExtension_imagelib = (function () {
                 _onMessage = function _ref9() {
                   _onMessage = _asyncToGenerator(
                   /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee(_ref4) {
+                  regeneratorRuntime.mark(function _callee(_ref5) {
                     var origin, response, id, type, hasName, hasHref, char1, secondpos, entry, curMeta, svgStr, imgStr, name, message, pre, src, title, xml, ok;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
-                            origin = _ref4.origin, response = _ref4.data;
+                            origin = _ref5.origin, response = _ref5.data;
 
                             if (!(!response || !['string', 'object'].includes(_typeof(response)))) {
                               _context.next = 3;
@@ -473,7 +481,7 @@ var svgEditorExtension_imagelib = (function () {
                   return _onMessage.apply(this, arguments);
                 };
 
-                onMessage = function _ref8(_x2) {
+                onMessage = function _ref8(_x) {
                   return _onMessage.apply(this, arguments);
                 };
 
@@ -498,14 +506,13 @@ var svgEditorExtension_imagelib = (function () {
                   $('#imgbrowse_holder').hide();
                 };
 
-                $ = _ref.$, decode64 = _ref.decode64, importLocale = _ref.importLocale, dropXMLInternalSubset = _ref.dropXMLInternalSubset;
-                _context2.next = 9;
+                _context2.next = 8;
                 return importLocale();
 
-              case 9:
+              case 8:
                 imagelibStrings = _context2.sent;
                 modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
-                svgEditor = this;
+                svgEditor = _this;
                 uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas, extIconsPath = svgEditor.curConfig.extIconsPath;
                 imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(function (_ref2) {
                   var name = _ref2.name,
@@ -564,20 +571,14 @@ var svgEditorExtension_imagelib = (function () {
                   }
                 });
 
-              case 22:
+              case 21:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee2);
+      }))();
+    }
   };
 
   return extImagelib;

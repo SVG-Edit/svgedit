@@ -46,10 +46,12 @@ var svgEditorExtension_polygon = (function () {
    */
   var extPolygon = {
     name: 'polygon',
-    init: function () {
-      var _init = _asyncToGenerator(
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+      regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, $, importLocale, editingitex, strings, selElems, started, newFO, showPanel, setAttr, cot, sec, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -79,7 +81,7 @@ var svgEditorExtension_polygon = (function () {
                   $('#polygon_panel').toggle(on);
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 $ = S.$, importLocale = S.importLocale, editingitex = false;
                 _context.next = 9;
@@ -299,15 +301,9 @@ var svgEditorExtension_polygon = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extPolygon;
