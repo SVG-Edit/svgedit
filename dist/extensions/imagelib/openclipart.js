@@ -255,13 +255,15 @@
   }
 
   function _typeof$1(obj) {
-    if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
-      _typeof$1 = function _typeof$1(obj) {
-        return _typeof(obj);
+    "@babel/helpers - typeof";
+
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof$1 = function _typeof(obj) {
+        return typeof obj;
       };
     } else {
-      _typeof$1 = function _typeof$1(obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
+      _typeof$1 = function _typeof(obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
       };
     }
 
@@ -610,7 +612,7 @@
   'value', 'willvalidate']); // Todo: Add more to this as useful for templating
   //   to avoid setting through nullish value
 
-  var NULLABLES = ['dir', // HTMLElement
+  var NULLABLES = ['autocomplete', 'dir', // HTMLElement
   'integrity', // script, link
   'lang', // HTMLElement
   'max', 'min', 'title' // HTMLElement

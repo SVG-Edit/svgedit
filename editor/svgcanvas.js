@@ -20,14 +20,14 @@
 import './svgpathseg.js';
 import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginDBox from './dbox.js';
-import * as draw from './draw.js'; // eslint-disable-line import/no-duplicates
+import * as draw from './draw.js';
 // eslint-disable-next-line no-duplicate-imports
 import {
   identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
   setCurrentLayer, renameCurrentLayer, setCurrentLayerPosition,
   setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
   leaveContext, setContext
-} from './draw.js'; // eslint-disable-line import/no-duplicates
+} from './draw.js';
 import * as pathModule from './path.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from './namespaces.js';
