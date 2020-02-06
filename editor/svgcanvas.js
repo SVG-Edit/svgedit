@@ -6412,9 +6412,9 @@ this.copySelectedElements = function () {
 * @returns {void}
 */
 this.pasteElements = function (type, x, y) {
-  let cb = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID));
-  if (!cb) return;
-  let len = cb.length;
+  let clipb = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID));
+  if (!clipb) return;
+  let len = clipb.length;
   if (!len) return;
 
   const pasted = [];
