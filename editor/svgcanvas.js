@@ -48,7 +48,7 @@ import {
   getMatrix, snapToAngle, isIdentity, rectsIntersect, transformBox
 } from './math.js';
 import {
-  convertToNum, convertAttrs, convertUnit, shortFloat, getTypeMap,
+  convertToNum, convertAttrs, convertUnit, shortFloat, getTypeMap, parseLengthValue,
   init as unitsInit
 } from './units.js';
 import {
@@ -4497,7 +4497,7 @@ const convertToGroup = this.convertToGroup = function (elem) {
 *     unsuccessful, `true` otherwise.
 */
 this.setSvgString = function (xmlString, preventUndo) {
-  try {
+  const main = () => {
     // convert string into XML document
     const newDoc = text2xml(xmlString);
     if (newDoc.firstElementChild &&
@@ -4593,6 +4593,7 @@ this.setSvgString = function (xmlString, preventUndo) {
     };
 
     let percs = false;
+    let baseUnit = null;
 
     // determine proper size
     if (content.attr('viewBox')) {
@@ -4601,6 +4602,7 @@ this.setSvgString = function (xmlString, preventUndo) {
       attrs.height = vb[3];
     // handle content that doesn't have a viewBox
     } else {
+      const unitsInUse = new Set();
       $.each(['width', 'height'], function (i, dim) {
         // Set to 100 if not given
         const val = content.attr(dim) || '100%';
@@ -4609,9 +4611,17 @@ this.setSvgString = function (xmlString, preventUndo) {
           // Use user units if percentage given
           percs = true;
         } else {
-          attrs[dim] = convertToNum(dim, val);
+          const parsed = parseLengthValue(dim, val);
+          unitsInUse.add(parsed.unit);
+          attrs[dim] = parsed.inPx;
         }
       });
+      if (unitsInUse.size === 1) {
+        const unit = [...unitsInUse][0];
+        if (['px','cm','mm','in','pt','pc','em','ex'].includes(unit)) {
+          baseUnit = unit;
+        }
+      }
     }
 
     // identify layers
@@ -4654,12 +4664,17 @@ this.setSvgString = function (xmlString, preventUndo) {
 
     if (!preventUndo) addCommandToHistory(batchCmd);
     call('changed', [svgcontent]);
+
+    return {
+      baseUnit: baseUnit,
+    };
+  };
+  try {
+    return main();
   } catch (e) {
     console.log(e); // eslint-disable-line no-console
     return false;
   }
-
-  return true;
 };
 
 /**

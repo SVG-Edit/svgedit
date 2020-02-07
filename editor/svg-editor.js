@@ -333,9 +333,10 @@ let svgCanvas, urldata = {},
  *   loading fails and `noAlert` is truthy.
  */
 async function loadSvgString (str, {noAlert} = {}) {
-  const success = svgCanvas.setSvgString(str) !== false;
+  const result = svgCanvas.setSvgString(str);
+  const success = result !== false;
   if (success) {
-    return;
+    return result;
   }
 
   if (!noAlert) {
@@ -6260,7 +6261,12 @@ editor.init = function () {
         $.process_cancel(uiStrings.notification.loadingImage);
         const reader = new FileReader();
         reader.onloadend = async function ({target}) {
-          await loadSvgString(target.result);
+          const result = await loadSvgString(target.result);
+          if (result && result.baseUnit) {
+            curConfig.baseUnit = result.baseUnit;
+            $('#base_unit').val(curConfig.baseUnit);
+            svgCanvas.setConfig(curConfig);
+          }
           updateCanvas();
         };
         reader.readAsText(this.files[0]);

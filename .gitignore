@@ -17,3 +17,4 @@ mochawesome-report
 mochawesome.json
 
 .vscode
+/.idea/
