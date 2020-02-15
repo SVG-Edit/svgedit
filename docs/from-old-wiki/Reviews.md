@@ -1,7 +1,7 @@
 
     [Short Introduction to SVG-edit](http://ehmdunque.altervista.org/i-informatica/manuali/Short_intro_SVG-edit.html) by Luigi D. CAPRA
     [Ohloh page](http://www.ohloh.net/p/svg-edit)
-    [Announcement](http://stick.gk2.sk/blog/2009/06/svg-edit-a-web-based-svg-editor/) on Pavol's blog
+    [Announcement](https://rusnak.io/svg-edit-a-web-based-svg-editor/) on Pavol's blog
     [How to embed in your web page](http://blog.codedread.com/archives/2009/06/19/embed-an-svg-editor-on-your-web-page/) from Jeff's blog
     [Firefox Add-On](https://addons.mozilla.org/en-US/firefox/addon/14186/) (dead link)
     [gjolesuns's review of Arbelos](http://giizii.com/?p=449)
