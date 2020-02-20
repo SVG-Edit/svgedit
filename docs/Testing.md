@@ -116,8 +116,17 @@ browser by the following commands:
 
 For ensuring tests are passing (and optionally checking coverage).
 
-You will most likely just need to use the top-level routines, but
-the components are explained here for reference.
+You will most likely just need to use one of these three top-level
+routines, but the components are explained here for reference.
+
+Note that you can configure Cypress through [its environmental variables](https://docs.cypress.io/guides/guides/environment-variables.html#Setting).
+We recommend [this approach](https://docs.cypress.io/guides/guides/environment-variables.html#Option-2-cypress-env-json)
+of adding to your own `cypress.env.json` at project root. You can set
+your own [configuration options](https://docs.cypress.io/guides/references/configuration.html#Options).
+Of particular interest may be setting `"video": false` if you wish to speed
+up the tests and are not concerned with being able to check this after
+running the headless tests (or during the running of headed tests in the
+case of `open-tests`/`cypress:open`).
 
 1. `npm test`. Headless testing comprised of:
     1. `npm run instrument` - You can call this alone if you don't
