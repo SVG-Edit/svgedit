@@ -112,9 +112,9 @@ browser by the following commands:
     1. `npm run open-cov-no-start` if you already have a `start`
         process running in another terminal tab.
 
-## Testing
+## Testing and coverage
 
-For ensuring tests are passing (and optionally checking coverage).
+For ensuring tests are passing and checking coverage.
 
 You will most likely just need to use one of these three top-level
 routines, but the components are explained here for reference.
