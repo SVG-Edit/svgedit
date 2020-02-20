@@ -14,3 +14,6 @@ trim_trailing_whitespace = true
 ; [app/public/css/**.styl]
 ; indent_style = tab
 ; indent_size = 2
+
+[*.md]
+indent_size = 4

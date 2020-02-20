@@ -29,6 +29,13 @@
 - Fix: Redirect paths for imagelib redirect checks
 - Fix: Ensure `setupCurPrefs` is run (including when `source` or
     `url` is set within the URL)
+- Fix: Pressing 'Ctrl+A' causes js error when canvas is empty (@cuixiping)
+- Fix: Path element cannot be exported to PDF; export path with
+    holes to PDF; export path element to PDF, support more path
+    commands; #269 (@cuixiping)
+- Fix: remove "null" attributes in svg source #76 (@cuixiping)
+- Fix: A bug of `convertPath` function when converting H and V to
+    relative (@cuixiping)
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
 - Optimization: Remove old build/tools closure/yuicompressor code
 - Optimization: Remove unmaintained chrome-app, firefox-extension,
@@ -43,6 +50,7 @@
   dev. packages are being bundled (added by `npm run copy`) for determining
   summary of all licenses including bundled).
 - Docs: Reprioritize `docs` in commit lists (prioritize user-facing)
+- Docs: Update Pavol's email address (@prusnak)
 - Refactoring: Switch from `$.param.querystring` to `URL`
 - Refactoring: Ensure file-global jsdoc tags are at beginning of file
 - Refactoring: Move `build-html` to `build` directory
@@ -61,7 +69,7 @@
   approving storage
 - Testing: Produce mochawesome report
 - Testing: Cypress with multiple reporters in case we need
-- Build: Update underscore copy
+- Build: Update underscore and core-js-bundle copies
 - npm: Add `underscore` to copy script
 - npm: Make `copy`, `compress-images`, `start-embedded`, `build-docs-remove`
   scripts cross-platform; add `start-allow-origin` script
@@ -72,7 +80,7 @@
   building docs and instrumenting)
 - npm: Update scripts to reflect removal of `all_tests.html`;
   remove `browser-test` script
-- npm: Rename `test-prep` to `prep`
+- npm: Rename `test-prep` to `prep` and other misc. script naming changes
 - npm: Update `package-lock.json`
 - npm: Update devDeps, peerDeps
 
