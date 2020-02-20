@@ -6353,33 +6353,35 @@ const CLIPBOARD_ID = 'svgedit_clipboard';
 
 /**
 * Flash the clipboard data momentarily on localStorage so all tabs can see.
+* @returns {void}
 */
-function flashStorage() {
+function flashStorage () {
   const data = sessionStorage.getItem(CLIPBOARD_ID);
   localStorage.setItem(CLIPBOARD_ID, data);
-  setTimeout(function() {
+  setTimeout(function () {
     localStorage.removeItem(CLIPBOARD_ID);
   }, 1);
 }
 
 /**
 * Transfers sessionStorage from one tab to another.
-* @param {Event} event Storage event.
+* @param {!Event} ev Storage event.
+* @returns {void}
 */
-function storageChange(event) {
-  if (!event.newValue) return;  // This is a call from removeItem.
-  if (event.key === CLIPBOARD_ID + '_startup') {
+function storageChange (ev) {
+  if (!ev.newValue) return; // This is a call from removeItem.
+  if (ev.key === CLIPBOARD_ID + '_startup') {
     // Another tab asked for our sessionStorage.
     localStorage.removeItem(CLIPBOARD_ID + '_startup');
     flashStorage();
-  } else if (event.key === CLIPBOARD_ID) {
+  } else if (ev.key === CLIPBOARD_ID) {
     // Another tab sent data.
-    sessionStorage.setItem(CLIPBOARD_ID, event.newValue);
+    sessionStorage.setItem(CLIPBOARD_ID, ev.newValue);
   }
 }
 
 // Listen for changes to localStorage.
-window.addEventListener("storage", storageChange, false);
+window.addEventListener('storage', storageChange, false);
 // Ask other tabs for sessionStorage (this is ONLY to trigger event).
 localStorage.setItem(CLIPBOARD_ID + '_startup', Math.random());
 
@@ -6389,13 +6391,13 @@ localStorage.setItem(CLIPBOARD_ID + '_startup', Math.random());
 * @returns {void}
 */
 this.copySelectedElements = function () {
-  const data = JSON.stringify(
-      selectedElements.map(function (x) { return getJsonFromSvgElement(x); }));
+  const data =
+      JSON.stringify(selectedElements.map((x) => getJsonFromSvgElement(x)));
   // Use sessionStorage for the clipboard data.
   sessionStorage.setItem(CLIPBOARD_ID, data);
   flashStorage();
 
-  let menu = $('#cmenu_canvas');
+  const menu = $('#cmenu_canvas');
   // Context menu might not exist (it is provided by editor.js).
   if (menu.enableContextMenuItems) {
     menu.enableContextMenuItems('#paste,#paste_in_place');
