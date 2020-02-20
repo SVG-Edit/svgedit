@@ -21,3 +21,4 @@
   - `Testing:`
   - `Build: `
   - `npm` - Updates to dependencies, npm version, etc.
+1. See [`Testing.md`](./Testing.md) for other information helpful for contributing.
