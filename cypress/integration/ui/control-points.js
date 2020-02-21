@@ -18,7 +18,7 @@ describe('UI - Control Points', function () {
     <title>Layer 1</title>
     <path d="m187,194a114,62 0 1 0 219,2" fill="#FF0000" stroke="#000000" stroke-width="5"/>
    </g>
-  </svg>`, {parseSpecialCharSequences: false});
+  </svg>`, {force: true, parseSpecialCharSequences: false});
     cy.get('#tool_source_save').click();
     cy.get('#svg_1').click().click();
 
