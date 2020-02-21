@@ -12,44 +12,31 @@
     published and taking into account `.npmignore`.
 
 ## Update the main project
-<!--
-1. Update the VERSION variable in Makefile.
--->
+
 1. Update `version` in `package.json` (and `package-lock.json` (via `npm i`)).
 1. Update the CHANGES file with a summary of all changes.
 1. Add new release info to `Recent news` section in README
-1. Commit these changes
-<!-- with `git commit -m "Updating Makefile and CHANGES for release X.Y.Z"`-->.
-1. Tag the version, prefixed by "v", e.g., `v5.1.0`.
+1. Commit these changes `git commit -m "Updating CHANGES for release X.Y.Z"`-->.
+1. Tag the version, prefixed by "v", e.g., `v6.0.0`.
 
 The above steps can be done on a fork and committed via a pull request.
 
-## Create the release on `SVG-Edit.github.io`
-<!--
-2. From the root directory run `make`.
-3. Copy `build/svg-edit-X.Y.Z/`, `build/svg-edit-X.Y.Z-src.tar.gz`, and `build/svg-edit-X.Y.Z.zip` to a temporary directory.
--->
+## Create the release as a submodule
 
-1. Go to a clone of the latest <https://github.com/SVG-Edit/SVG-Edit.github.io>.
-1. Run the `build.js` executable (`npm run build` if within the project root
-    directory); **Please note: this script currently assumes that one has this
-    repo within a folder that is in a sibling directory to a folder named
-    `svgedit` that is on the `master` branch and whose files and version info
-    will be copied over to the SVG-Edit.github.io repo in making the "latest"
-    and specific version builds**
-1. Commit these changes with `git commit -m "Updating files for release X.Y.Z"`.
-1. Switch back to the `master` branch with `git checkout master`.
-1. Ensure this step worked by visiting
+1. Create a branch for the release, e.g., `git branch release-v6.0.0`
+1. While still on `master`, add the branch to `.gitsubmodules`:
+    `VERSION=6.0.0 npm run add-release`
+
+1. Run `git submodule update --init --recursive`
+1. Commit these changes `git commit -m "Updating for release X.Y.Z"`-->.
+1. Push to `master`.
+1. Ensure the new release is available by visiting
     <https://svg-edit.github.io/svgedit/releases/svg-edit-X.Y.Z/editor/svg-editor.html>
     (and in an ES6-Module-compliant browser,
     <https://svg-edit.github.io/svgedit/releases/svg-edit-X.Y.Z/editor/svg-editor-es.html>).
 
-The above steps can be done on a fork and committed via a pull request.
-
 ## Create the release on GitHub
-<!--
-4. Attach the `svg-edit-X.Y.Z-src.tar.gz` and `build/svg-edit-X.Y.Z.zip` files to the release.
--->
+
 1. Go to <https://github.com/SVG-Edit/svgedit/releases> and select
   `Draft a new release`.
 1. Make the release target point at the tag where the <!-- makefile and -->
@@ -66,4 +53,6 @@ You will need to be a member of the SVG-Edit GitHub group to do this step.
 
 1. `npm publish`
 
-You will need to be a member of the npm group to do this step.
+You will need to be a member of the npm group to do this step. You can run
+`npm publish --dry-run` to confirm that the files being included are all desired,
+and add to `.npmignore` if not.

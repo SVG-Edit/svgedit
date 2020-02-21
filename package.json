@@ -13,6 +13,8 @@
     "node": ">=8.5.0"
   },
   "scripts": {
+    "add-release": "git submodule add -b \"release-v$VERSION\" https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$VERSION\" && git submodule set-branch -b \"release-v$VERSION\" releases/latest",
+
     "start-allow-origin": "static -p 8001 -H '{\"Access-Control-Allow-Origin\": \"*\"}'",
     "start-embedded": "run-p start start-allow-origin",
     "start": "echo \"Open file, e.g., to http://localhost:8000/editor/svg-editor-es.html\" && static -p 8000",
