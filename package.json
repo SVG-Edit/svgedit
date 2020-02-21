@@ -14,20 +14,16 @@
   },
   "scripts": {
     "add-release": "git submodule add -b \"release-v$VERSION\" https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$VERSION\" && git submodule set-branch -b \"release-v$VERSION\" releases/latest",
-
     "start-allow-origin": "static -p 8001 -H '{\"Access-Control-Allow-Origin\": \"*\"}'",
     "start-embedded": "run-p start start-allow-origin",
     "start": "echo \"Open file, e.g., to http://localhost:8000/editor/svg-editor-es.html\" && static -p 8000",
-
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
     "open-docs": "run-p start open-docs-no-start",
-
     "build-docs-remove": "rimraf \"docs/jsdoc/*\"",
     "build-docs-create": "jsdoc --pedantic -c docs/jsdoc-config.js editor",
     "build-docs": "run-s -c build-docs-remove build-docs-create",
     "build-and-open-docs-no-start": "run-s build-docs open-docs-no-start",
     "build-and-open-docs": "run-s build-docs open-docs",
-
     "open-embedded-no-start": "open-cli http://localhost:8000/editor/embedapi.html",
     "open-embedded": "run-p start-embedded open-embedded-no-start",
     "open-all-ext-no-start": "open-cli http://localhost:8000/editor/svg-editor-es.html?extensions=ext-arrows.js,ext-closepath.js,ext-foreignobject.js,ext-helloworld.js,ext-mathjax.js,ext-php_savefile.js,ext-server_moinsave.js,ext-server_opensave.js,ext-webappfind.js,ext-xdomain-messaging.js",
@@ -36,48 +32,38 @@
     "open-compiled": "run-p start open-compiled-no-start",
     "open-no-start": "open-cli http://localhost:8000/editor/svg-editor-es.html",
     "open": "run-p start open-no-start",
-
     "open-cov-no-start": "open-cli http://localhost:8000/coverage/",
     "open-cov": "run-p start open-cov-no-start",
-
     "instrument:replace-html": "frs-replace \"../svgedit-config-es.js\" \"svgedit-config-es.js\" -i instrumented/svg-editor-es.html -o instrumented/svg-editor-es.html",
     "instrument:replace-js": "frs-replace \"editor/svg-editor.js\" \"svg-editor.js\" -i svgedit-config-es.js -o instrumented/svgedit-config-es.js",
     "instrument:copy-excluded": "node cypress/support/copy.js",
     "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js && npm run instrument:copy-excluded",
     "instrument": "rimraf instrumented && nyc instrument editor instrumented && npm run copy-instrumented",
-
     "report": "nyc report",
     "report-summary": "nyc report --reporter=text-summary",
-
     "license-badge": "license-badger --uncategorizedLicenseTemplate \"\\${license} (\\${name} (\\${version}))\" --filteredTypes=nonempty --textTemplate \"License types\n(project, deps, and bundled devDeps)\" --packageJson --production badges/licenses-badge.svg",
     "license-badge-dev": "license-badger --corrections --filteredTypes=nonempty --textTemplate \"License types\n(all devDeps)\" --allDevelopment badges/licenses-badge-dev.svg",
     "license-badges": "run-p license-badge license-badge-dev",
     "coverage-badge": "coveradge badges/coverage-badge",
-
     "compress-images": "imageoptim \"editor/extensions/*.png\" \"editor/spinbtn/*.png\" \"editor/jgraduate/images/*.{png,gif}\" \"editor/images/*.png\"",
     "copy": "copyfiles -f node_modules/load-stylesheets/dist/index-es.js editor/external/load-stylesheets && copyfiles -f node_modules/jamilih/dist/jml-es.js editor/external/jamilih && copyfiles -f node_modules/query-result/esm/index.js editor/external/query-result/esm && copyfiles -f node_modules/qr-manipulation/dist/index-es.js editor/external/qr-manipulation/dist && copyfiles -f node_modules/stackblur-canvas/dist/stackblur-es.js editor/external/stackblur-canvas/dist && copyfiles -f node_modules/regenerator-runtime/runtime.js editor/external/regenerator-runtime && copyfiles -f \"node_modules/core-js-bundle//minified*\" editor/external/core-js-bundle && copyfiles -f \"node_modules/underscore/underscore-*\" editor/jspdf && copyfiles -f \"node_modules/deparam/dist/deparam.esm.js\" editor/external/deparam",
     "remark": "remark -q -f .",
-
     "build-html": "babel-node --plugins @babel/plugin-transform-modules-commonjs build/build-html.js",
     "eslint-fix": "eslint --fix --ext js,md,html .",
     "eslint": "eslint --ext js,md,html .",
     "rollup": "rollup -c",
-
     "build-by-config": "rollup -c rollup-config.config.js",
     "prep-no-core-rollup": "run-s eslint build-html build-by-config",
     "prep": "run-s prep-no-core-rollup rollup",
     "prepublishOnly": "npm run prep",
-
     "cypress:open-no-start": "cypress open",
     "cypress:open": "run-p start cypress:open-no-start",
     "open-tests": "run-s instrument cypress:open",
-
     "cypress:merge": "mochawesome-merge \"cypress/results/mochaw*.json\" > mochawesome.json && marge mochawesome.json && mbg --file ./mochawesome.json --badge_output badges/tests-badge.svg",
     "cypress:run-only": "rimraf \"cypress/results/mochaw*.json\" && rimraf \".nyc_output/*\" && cypress run",
     "cypress:run-no-badge": "run-s -c cypress:run-only cypress:merge",
     "cypress:run": "run-s -c cypress:run-no-badge coverage-badge",
     "test-only-no-report": "run-p start cypress:run",
-
     "test-only": "run-s -c test-only-no-report report",
     "test-no-cov-no-core-rollup": "run-s prep-no-core-rollup test-only",
     "test-no-cov": "run-s prep test-only",
@@ -150,6 +136,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.8.3",
     "@babel/plugin-transform-named-capturing-groups-regex": "^7.8.3",
     "@babel/preset-env": "^7.8.4",
+    "@babel/register": "^7.8.3",
     "@cypress/code-coverage": "^1.12.1",
     "@cypress/fiddle": "^1.4.0",
     "@mysticatea/eslint-plugin": "^13.0.0",
@@ -167,13 +154,16 @@
     "eslint-config-ash-nazg": "^17.2.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-array-func": "^3.1.3",
+    "eslint-plugin-chai-expect": "^2.1.0",
+    "eslint-plugin-chai-friendly": "^0.5.0",
     "eslint-plugin-compat": "^3.5.1",
-    "eslint-plugin-cypress": "^2.9.0",
+    "eslint-plugin-cypress": "^2.10.3",
     "eslint-plugin-eslint-comments": "^3.1.2",
     "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-jsdoc": "^21.0.0",
     "eslint-plugin-markdown": "^1.0.1",
+    "eslint-plugin-mocha": "^6.3.0",
     "eslint-plugin-no-unsanitized": "^3.0.2",
     "eslint-plugin-no-use-extend-native": "^0.4.1",
     "eslint-plugin-node": "^11.0.0",

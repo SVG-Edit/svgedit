@@ -32,3 +32,4 @@ editor/external/dom-polyfill/*
 
 mochawesome-report
 releases
+!.eslintrc.js
