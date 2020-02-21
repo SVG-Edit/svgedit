@@ -20842,18 +20842,62 @@
       canvas.copySelectedElements();
       canvas.deleteSelectedElements();
     };
+
+    var CLIPBOARD_ID = 'svgedit_clipboard';
+    /**
+    * Flash the clipboard data momentarily on localStorage so all tabs can see.
+    * @returns {void}
+    */
+
+    function flashStorage() {
+      var data = sessionStorage.getItem(CLIPBOARD_ID);
+      localStorage.setItem(CLIPBOARD_ID, data);
+      setTimeout(function () {
+        localStorage.removeItem(CLIPBOARD_ID);
+      }, 1);
+    }
+    /**
+    * Transfers sessionStorage from one tab to another.
+    * @param {!Event} ev Storage event.
+    * @returns {void}
+    */
+
+
+    function storageChange(ev) {
+      if (!ev.newValue) return; // This is a call from removeItem.
+
+      if (ev.key === CLIPBOARD_ID + '_startup') {
+        // Another tab asked for our sessionStorage.
+        localStorage.removeItem(CLIPBOARD_ID + '_startup');
+        flashStorage();
+      } else if (ev.key === CLIPBOARD_ID) {
+        // Another tab sent data.
+        sessionStorage.setItem(CLIPBOARD_ID, ev.newValue);
+      }
+    } // Listen for changes to localStorage.
+
+
+    window.addEventListener('storage', storageChange, false); // Ask other tabs for sessionStorage (this is ONLY to trigger event).
+
+    localStorage.setItem(CLIPBOARD_ID + '_startup', Math.random());
     /**
     * Remembers the current selected elements on the clipboard.
     * @function module:svgcanvas.SvgCanvas#copySelectedElements
     * @returns {void}
     */
 
-
     this.copySelectedElements = function () {
-      localStorage.setItem('svgedit_clipboard', JSON.stringify(selectedElements.map(function (x) {
+      var data = JSON.stringify(selectedElements.map(function (x) {
         return getJsonFromSvgElement(x);
-      })));
-      $$9('#cmenu_canvas').enableContextMenuItems('#paste,#paste_in_place');
+      })); // Use sessionStorage for the clipboard data.
+
+      sessionStorage.setItem(CLIPBOARD_ID, data);
+      flashStorage();
+      var menu = $$9('#cmenu_canvas'); // Context menu might not exist (it is provided by editor.js).
+
+      if (menu.enableContextMenuItems) {
+        menu.enableContextMenuItems('#paste,#paste_in_place');
+      }
     };
     /**
     * @function module:svgcanvas.SvgCanvas#pasteElements
@@ -20867,13 +20911,10 @@
 
 
     this.pasteElements = function (type, x, y) {
-      var clipb = JSON.parse(localStorage.getItem('svgedit_clipboard'));
+      var clipb = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID));
+      if (!clipb) return;
       var len = clipb.length;
-
-      if (!len) {
-        return;
-      }
-
+      if (!len) return;
       var pasted = [];
       var batchCmd = new BatchCommand$1('Paste elements'); // const drawing = getCurrentDrawing();
 
