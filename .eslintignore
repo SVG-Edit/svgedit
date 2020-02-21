@@ -31,3 +31,4 @@ editor/external/dom-polyfill/*
 !editor/external/dynamic-import-polyfill
 
 mochawesome-report
+releases

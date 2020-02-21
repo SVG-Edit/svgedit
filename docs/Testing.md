@@ -117,7 +117,9 @@ browser by the following commands:
 For ensuring tests are passing and checking coverage.
 
 You will most likely just need to use one of these three top-level
-routines, but the components are explained here for reference.
+routines along with `npm run test-only`, but the other components are explained
+here for reference. The most useful for regular development testing will probably
+be `npm run open-tests`.
 
 Note that you can configure Cypress through [its environmental variables](https://docs.cypress.io/guides/guides/environment-variables.html#Setting).
 We recommend [this approach](https://docs.cypress.io/guides/guides/environment-variables.html#Option-2-cypress-env-json)
@@ -136,12 +138,16 @@ case of `open-tests`/`cypress:open`).
         run `npm run instrument` upon making changes. Should normally
         not be run alone.
         1. `npm run prep` (see above)
-        1. `npm run test-only` - Includes a separate `report` step or
-            otherwise the tests will not show the results visibly on the
-            command line. This may be useful if you've instrumented and
+        1. `npm run test-only` - This may be useful if you've instrumented and
             run preparation steps after any code modifications, but just
             need to re-run tests (e.g., if one did not complete them for
-            some reason). See also `test-no-cov-no-core-rollup`.
+            some reason). Also should be useful if tests are only against
+            the ESM builds (as is currently the case), and you therefore
+            don't need `prep` (and you are not concerned at the moment with
+            accurate coverage, so you can skip `instrument`). This script
+            includes a separate `report` step or otherwise the tests will
+            not show the results visibly on the command line. See also
+            `test-no-cov-no-core-rollup`.
             1. `npm run test-only-no-report` - Should not be needed alone.
                 1. `npm start` - Starts the server
                 1. `npm run cypress:run` - Runs Cypress tests (`cypress run`).
@@ -156,7 +162,11 @@ case of `open-tests`/`cypress:open`).
     1. `instrument` (see above)
     1. `npm run test-no-cov-no-core-rollup`. As with `test-no-cov` but no
         `npm run rollup` routine (part of `prep`).
-1. `open-tests` (also as `cypress:open`)
-    1. `npm start`
-    1. `cypress:open-no-start`. Runs `cypress open`, the headed mode. Useful
-        for testing single files with hot reloading.
+1. `open-tests`
+    1. `instrument` (see above)
+    1. `cypress:open` - Useful without `instrument` if you are not concerned
+        at the moment with coverage. Note that the hot-reloading does not
+        currently reinstrument even if you ran through `open-tests`.
+        1. `npm start`
+        1. `cypress:open-no-start`. Runs `cypress open`, the headed mode. Useful
+            for testing single files with hot reloading.

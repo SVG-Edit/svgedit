@@ -68,7 +68,7 @@
 
     "cypress:open-no-start": "cypress open",
     "cypress:open": "run-p start cypress:open-no-start",
-    "open-tests": "npm run cypress:open",
+    "open-tests": "run-s instrument cypress:open",
 
     "cypress:merge": "mochawesome-merge \"cypress/results/mochaw*.json\" > mochawesome.json && marge mochawesome.json && mbg --file ./mochawesome.json --badge_output badges/tests-badge.svg",
     "cypress:run-only": "rimraf \"cypress/results/mochaw*.json\" && rimraf \".nyc_output/*\" && cypress run",
