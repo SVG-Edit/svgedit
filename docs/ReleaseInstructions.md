@@ -24,9 +24,10 @@ The above steps can be done on a fork and committed via a pull request.
 ## Create the release as a submodule
 
 1. Create a branch for the release, e.g., `git branch release-v6.0.0`
-1. While still on `master`, add the branch to `.gitsubmodules`:
+1. While still on `master`, run the following (changing the version). This
+    will add the branch to `.gitsubmodules` and have it point `latest` to
+    this new release:
     `VERSION=6.0.0 npm run add-release`
-1. Run `git submodule update --init --recursive`
 1. Commit these changes `git commit -m "Updating for release X.Y.Z"`-->.
 1. Push to `master`.
 1. Ensure the new release is available by visiting

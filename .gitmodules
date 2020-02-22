@@ -85,4 +85,8 @@
 [submodule "releases/latest"]
 	path = releases/latest
 	url = https://github.com/SVG-Edit/svgedit.git
-	branch = release-v5.1.0
+	branch = release-v6.0.0
+[submodule "releases/svg-edit-6.0.0"]
+	path = releases/svg-edit-6.0.0
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v6.0.0
