@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/index-umd.js",
   "module": "dist/index-es.js",
@@ -13,7 +13,10 @@
     "node": ">=8.5.0"
   },
   "scripts": {
-    "add-release": "git submodule add -b \"release-v$VERSION\" https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$VERSION\" && git config --file=.gitmodules submodule.releases/latest.branch \"release-v$VERSION\"",
+    "add-release": "git fetch --all && git submodule add --depth=1 -b \"release-v$VERSION\" https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$VERSION\" && git config --file=.gitmodules submodule.releases/latest.branch \"release-v$VERSION\"",
+    "submodules": "run-s submodules-init submodules-update",
+    "submodules-init": "echo \"Performing non-recursive init as don't want submodules to have their own releases!\" && git submodule update --init",
+    "submodules-update": "echo \"Performing non-recursive fetch as don't want submodules to have their own releases!\" git submodule foreach git fetch && git submodule foreach git submodule update --remote",
     "start-allow-origin": "static -p 8001 -H '{\"Access-Control-Allow-Origin\": \"*\"}'",
     "start-embedded": "run-p start start-allow-origin",
     "start": "echo \"Open file, e.g., to http://localhost:8000/editor/svg-editor-es.html\" && static -p 8000",
@@ -55,7 +58,7 @@
     "build-by-config": "rollup -c rollup-config.config.js",
     "prep-no-core-rollup": "run-s eslint build-html build-by-config",
     "prep": "run-s prep-no-core-rollup rollup",
-    "prepublishOnly": "npm run prep",
+    "prepublishOnly": "run-s license-badges copy build-docs prep",
     "cypress:open-no-start": "cypress open",
     "cypress:open": "run-p start cypress:open-no-start",
     "open-tests": "run-s instrument cypress:open",

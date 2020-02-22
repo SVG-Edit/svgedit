@@ -1,8 +1,31 @@
-# Testing
+# Development
+
+Note that this document goes roughly in order of increasing importance. This
+is done so you can see what is available and also see what scripts may be
+automatically run as part of the later-mentioned items.
+
+## Installing/Updating releases
+
+In order to allow old versions to be available along with the `master` version
+on our Github Pages-hosted repository, we have added old versions as submodules.
+
+Most users will therefore not want to clone recursively, but for developing,
+at least publishing, this may be necessary.
+
+- `npm run submodules`
+    - `npm run submodules-init`- This is a *non-recursive* init as we don't
+        want the submodules themselves to have their own releases!
+        (They will have `releases` with subfolders for versions, but
+        no contents.)
+    - `npm run submodules-update` - Fetches and merges *non-recursively* and
+        merges any changes into `master` (e.g., if an unreleased version branch
+        was first added but needed more added to it).
 
 ## Building docs
 
-This may be useful during testing. Build through `npm run build-docs`.
+Though the building of docs is automatically run before publishing,
+this may also be useful for reference during testing. Build through
+`npm run build-docs`.
 
 To start a server and open already built docs, use `npm run open-docs` (or
 `npm run open-docs-no-start` if you already have a `start` process
@@ -32,9 +55,14 @@ running in another terminal tab).
             unless a project is restrictive in terms of usage--i.e., if a
             dependency is not what is typically considered "open" source.)
 
+The above are run before publishing, but they should be checked whenever
+updating dependencies ([`npm-check-updates`](https://github.com/tjunnone/npm-check-updates)
+is recommended, especially as our repo is configured to ignore updating
+those packages which shouldn't be updated (see `.ncurc.js`)).
+
 (Note that the test and coverage badges are generated automatically during
 testing to ensure they are up to date, so you should not need to call those
-scripts directly.)
+scripts directly, and the license badges are updated before publishing.)
 
 ## Miscellaneous scripts
 
@@ -97,9 +125,9 @@ line, even when automated tests already exist for a type of editor.
 
 ## Reading/Opening test coverage reports
 
-For testing coverage reports (see "Testing"), you can open the HTML-based
-reports that are generated during the testing process (or when running
-`npm run instrument` directly) from the command line into your
+For testing coverage reports (see "Testing and coverage"), you can open
+the HTML-based reports that are generated during the testing process (or
+when running `npm run instrument` directly) from the command line into your
 browser by the following commands:
 
 1. Reading reports from the command line

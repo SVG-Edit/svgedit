@@ -5,7 +5,8 @@ npm run eslint
 ```
 
 This will query both JavaScript files and will query JavaScript within
-Markdown files. It will also check for some JSDoc issues.
+Markdown and HTML files. It will also check for some JSDoc issues,
+Mocha/chai-specific rules, etc.
 
 ## Atom usage
 

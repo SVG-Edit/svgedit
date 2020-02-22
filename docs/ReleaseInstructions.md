@@ -2,20 +2,24 @@
 
 ## Prepare
 
-1. `npm run browser-test` - Ensure build steps occur and tests are passing
-1. `npm start` and in another console window, `npm test` - This should
-    also be run, though currently accessibility tests are failing.
-1. `npm run build-docs` - Ensure JSDoc can build and is available for site
-    build (though not added to `master`, will be copied over in
-    the `SVG-Edit.github.io` steps and used in `npm publish` step).
-1. `npm pack --dry-run` to preview which files will be included once
-    published and taking into account `.npmignore`.
+1. `npm test` - Ensure build steps occur and tests are passing (note that
+    accessibility tests are currently failing).
+1. `npm publish --dry-run` to run the preparatory scripts to ensure the
+    necessary files are updated and also to see which files will be
+    included once published and taking into account `.npmignore`
+    (use `npm pack --dry-run` to see the files without the preparatory
+    steps).
 
 ## Update the main project
 
 1. Update `version` in `package.json` (and `package-lock.json` (via `npm i`)).
-1. Update the CHANGES file with a summary of all changes.
+1. Update the `CHANGES.md` file with a summary of all changes (adding the
+    version of the new release).
 1. Add new release info to `Recent news` section in README
+1. For major version changes, add a separate document for that version
+    to `docs/versions/X.Y.Z.md` to summarizethe changes (higher level
+    than the CHANGES file) and to indicate what is needed to update code
+    to work with the breaking changes.
 1. Commit these changes `git commit -m "Updating CHANGES for release X.Y.Z"`-->.
 1. Tag the version, prefixed by "v", e.g., `v6.0.0`.
 
@@ -53,6 +57,5 @@ You will need to be a member of the SVG-Edit GitHub group to do this step.
 
 1. `npm publish`
 
-You will need to be a member of the npm group to do this step. You can run
-`npm publish --dry-run` to confirm that the files being included are all desired,
-and add to `.npmignore` if not.
+You will need to be a member of the npm group to do this step. See above
+for `npm publish --dry-run`.

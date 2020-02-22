@@ -18,7 +18,7 @@
     dependency's updated new API
   - `Refactoring: `
   - `Linting (<type>):` - Linting by type, e.g., "ESLint"
-  - `Testing:`
+  - `Testing (<UI|Unit>):`
   - `Build: `
   - `npm` - Updates to dependencies, npm version, etc.
 1. See [`Testing.md`](./Testing.md) for other information helpful for contributing.

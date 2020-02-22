@@ -69,7 +69,7 @@ module.exports = {
       }
     },
     {
-      files: '.eslintrc.js',
+      files: ['.eslintrc.js', '.ncurc.js'],
       extends: [
         'plugin:node/recommended-script'
       ],

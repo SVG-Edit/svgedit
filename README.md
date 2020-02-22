@@ -25,7 +25,6 @@ works in any modern browser.
 
 ![screenshot](docs/screenshot.png)
 
-
 ## Help wanted
 
 While we have made some recent releases to SVG-edit for bug fixes,
@@ -148,6 +147,8 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
 
 ## Recent news
 
+- 2020-02-22 Published 6.0.0 License clarifications/updates, PDF export
+    improvements, clipboard `sessionStorage`, and other changes.
 - 2019-11-16 Published 5.1.0 Misc. fixes and refactoring
 - 2019-05-07 Published 5.0.0 Change from `@babel/polyfill`
 - 2019-04-03 Published 4.3.0 Fix for double click on gradient

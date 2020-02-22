@@ -1,6 +1,6 @@
 # SVG-Edit CHANGES
 
-## 6.0.0 (unreleased)
+## 6.0.0
 
 - License: Reflect actual license of library in `package.json` based
   not only on licenses of repository as a whole (i.e., "MIT") but
@@ -21,6 +21,8 @@
 - BREAKING CHANGE: `putLocale` (a function called automatically by
   `svg-editor.js`) no longer checks `pref`. Should not impact
   average consumers.
+- BREAKING CHANGE: Move clipboard from `localStorage` to `sessionStorage`
+    (@NeilFraser)
 - Fix: main menu style and text #371
 - Fix (Accessibility): Avoid duplicate IDs
 - Fix (openclipart browser): Redirect on lacking browser support
@@ -44,7 +46,6 @@
 - Localization: Add 'SVG-Edit Home Page' to locale files
 - Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
 - Docs: Add testing badge
-- Docs: Expand `Testing.md`.
 - Docs: Add license badges and `licenseInfo.json` (has a
   `filesByLicense` map of files to licenses (not yet used programmatically)
   and `bundledRootPackages` which is used by `license-badger` to know which
@@ -52,6 +53,8 @@
   summary of all licenses including bundled).
 - Docs: Reprioritize `docs` in commit lists (prioritize user-facing)
 - Docs: Update Pavol's email address (@prusnak)
+- Docs: Update Contributing, Testing (renamed to Development),
+    Linting and ReleaseInstructions
 - Refactoring: Switch from `$.param.querystring` to `URL`
 - Refactoring: Ensure file-global jsdoc tags are at beginning of file
 - Refactoring: Move `build-html` to `build` directory
@@ -61,6 +64,9 @@
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
 - Linting (ESLint): Update as per latest ash-nazg
 - Linting (ESLint): Add rules to check for file-level tags
+- Linting (ESLint): Check hidden rc files
+- Linting (ESLint): Add linting plugins (mocha, chai-expect, chai-friendly,
+    cypress)
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
 - Testing: Add map file for underscore
@@ -81,6 +87,8 @@
   building docs and instrumenting)
 - npm: Update scripts to reflect removal of `all_tests.html`;
   remove `browser-test` script
+- npm: Add `add-release` script
+- npm: Add `license-badges`, `build-docs`, and `copy` scripts to `prepublishOnly` script
 - npm: Rename `test-prep` to `prep` and other misc. script naming changes
 - npm: Update `package-lock.json`
 - npm: Update devDeps, peerDeps
