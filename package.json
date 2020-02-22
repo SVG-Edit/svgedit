@@ -13,7 +13,8 @@
     "node": ">=8.5.0"
   },
   "scripts": {
-    "add-release": "git fetch --all && git submodule add --depth=1 -b \"release-v$VERSION\" https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$VERSION\" && git config --file=.gitmodules submodule.releases/latest.branch \"release-v$VERSION\"",
+    "add-release": "git submodule add --depth=1 -b \"release-v$VERSION\" https://github.com/SVG-Edit/svgedit \"releases/svg-edit-$VERSION\"",
+    "add-new-release": "npm run add-release && git config --file=.gitmodules submodule.releases/latest.branch \"release-v$VERSION\"",
     "submodules": "run-s submodules-init submodules-update",
     "submodules-init": "echo \"Performing non-recursive init as don't want submodules to have their own releases!\" && git submodule update --init",
     "submodules-update": "echo \"Performing non-recursive fetch as don't want submodules to have their own releases!\" git submodule foreach git fetch && git submodule update --remote",
