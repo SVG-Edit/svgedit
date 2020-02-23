@@ -142,7 +142,7 @@
     "@babel/preset-env": "^7.8.4",
     "@babel/register": "^7.8.3",
     "@cypress/code-coverage": "^1.12.2",
-    "@cypress/fiddle": "^1.4.1",
+    "@cypress/fiddle": "^1.4.2",
     "@mysticatea/eslint-plugin": "^13.0.0",
     "axe-core": "^3.5.1",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
