@@ -180,7 +180,7 @@
     "imageoptim-cli": "^3.0.2",
     "jamilih": "^0.51.0",
     "jsdoc": "^3.6.3",
-    "license-badger": "^0.9.3",
+    "license-badger": "^0.11.1",
     "load-stylesheets": "^0.9.0",
     "mocha": "^7.0.1",
     "mocha-badge-generator": "git+https://github.com/brettz9/mocha-badge-generator.git#makeBadge",
