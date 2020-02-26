@@ -129,7 +129,7 @@ describe('Basic Module', function () {
         fu = document.getElementById('foreign-use'),
         nfu = document.getElementById('no-use');
 
-      assert.equal((u && u.nodeName === 'use'), true, 'Did not import <use> element');
+      assert.equal((u && u.nodeName), 'use', 'Did not import <use> element');
       assert.equal(fu, null, 'Removed <use> element that had a foreign href');
       assert.equal(nfu, null, 'Removed <use> element that had no href');
     });
@@ -145,7 +145,7 @@ describe('Basic Module', function () {
 
       const t = document.getElementById('the-text');
 
-      assert.equal((t && t.nodeName === 'text'), true, 'Did not import <text> element');
+      assert.equal((t && t.nodeName), 'text', 'Did not import <text> element');
       assert.equal(t.getAttribute('d'), null, 'Imported a <text> with a d attribute');
     });
 
@@ -159,7 +159,7 @@ describe('Basic Module', function () {
       );
       const attrVal = document.getElementById('se_test_elem').getAttributeNS('http://svg-edit.googlecode.com', 'foo');
 
-      assert.equal(attrVal === 'bar', true, 'Preserved namespaced attribute on import');
+      assert.strictEqual(attrVal, 'bar', true, 'Preserved namespaced attribute on import');
 
       const output = svgCanvas.getSvgString();
       // } catch(e) {console.log(e)}

@@ -207,7 +207,7 @@ describe('utilities performance', function () {
     }
     total = lastTime - start;
     const ave = total / count;
-    assert.ok(ave < 20, 'svgedit.utilities.getStrokedBBox average execution time is less than 20 ms');
+    assert.isBelow(ave, 20, 'svgedit.utilities.getStrokedBBox average execution time is less than 20 ms');
     console.log('Pass1 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',\t min/max ' + min + ' ' + max);
 
     // eslint-disable-next-line promise/avoid-new
@@ -229,7 +229,7 @@ describe('utilities performance', function () {
 
         total = lastTime - strt;
         const avg = total / ct;
-        assert.ok(avg < 2, 'svgedit.utilities.getStrokedBBox average execution time is less than 1 ms');
+        assert.isBelow(avg, 2, 'svgedit.utilities.getStrokedBBox average execution time is less than 1 ms');
         console.log('Pass2 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + avg.toFixed(1) + ',\t min/max ' + min + ' ' + max);
 
         resolve();
