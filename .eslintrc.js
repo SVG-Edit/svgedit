@@ -89,6 +89,11 @@ module.exports = {
         ]
       },
       rules: {
+        // Todo: Figure out why this is not enough to disable warning
+        //  for examples
+        // Used in examples of assert-close.js plugin
+        'mocha-cleanup/no-assertions-outside-it': 'off',
+
         'eol-last': ['off'],
         'no-console': ['off'],
         'no-undef': ['off'],
@@ -245,8 +250,11 @@ module.exports = {
       extends: [
         'plugin:cypress/recommended',
         'plugin:mocha/recommended',
-        'plugin:chai-friendly/recommended',
-        'plugin:chai-expect/recommended'
+        'plugin:mocha-cleanup/recommended-no-limits',
+        'plugin:@fintechstudios/chai-as-promised/recommended',
+        'plugin:chai-expect-keywords/recommended',
+        'plugin:chai-expect/recommended',
+        'plugin:chai-friendly/recommended'
       ],
       env: {
         node: true
@@ -264,6 +272,11 @@ module.exports = {
         ]
       },
       rules: {
+        'chai-expect-keywords/no-unsupported-keywords': [
+          'error', {
+            allowChaiDOM: true
+          }
+        ],
         // Would be good but seems necessary due to some bugs in Cypress
         //  in detecting visibility
         // 'cypress/no-force': 0,
@@ -272,11 +285,18 @@ module.exports = {
         // 'cypress/require-data-selectors': 0,
         'cypress/assertion-before-screenshot': 2,
 
+        // Conflicts with Cypress `should`
+        'mocha-cleanup/invalid-assertions': 0,
+
+        // Might see about working around, but convenient
+        'mocha-cleanup/no-expressions-in-assertions': 0,
+
         // Too oppressive when planning to extend a section
         'mocha/no-hooks-for-single-case': 0,
 
         // Would be good to enable but needs some refactoring
         'mocha/no-setup-in-describe': 0,
+        'mocha-cleanup/no-outside-declaration': 0,
 
         // Useful to ensure allowing `this.timeout()`, etc., but a little oppressive
         'mocha/no-mocha-arrows': 0,

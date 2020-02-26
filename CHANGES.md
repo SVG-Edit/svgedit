@@ -67,6 +67,9 @@
 - Linting (ESLint): Check hidden rc files
 - Linting (ESLint): Add linting plugins (mocha, chai-expect, chai-friendly,
     cypress)
+- Linting (ESLint): Add `@fintechstudieos/eslint-plugin-chai-as-promised`,
+    `eslint-plugin-chai-expect-keywords`, and `eslint-plugin-mocha-cleanup`
+    plugins
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
 - Testing: Add map file for underscore
