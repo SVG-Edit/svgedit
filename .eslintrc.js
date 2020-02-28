@@ -288,8 +288,11 @@ module.exports = {
         // Conflicts with Cypress `should`
         'mocha-cleanup/invalid-assertions': 0,
 
-        // Might see about working around, but convenient
-        'mocha-cleanup/no-expressions-in-assertions': 0,
+        // Might see about working around to avoid the option limitation,
+        //  but convenient
+        'mocha-cleanup/no-expressions-in-assertions': ['error', {
+          replacementsOnly: true
+        }],
 
         // Too oppressive when planning to extend a section
         'mocha/no-hooks-for-single-case': 0,
