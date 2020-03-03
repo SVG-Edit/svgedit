@@ -36,5 +36,9 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
+**Log**
+If applicable, copy any error logs in your browser console. This can be very
+helpful in identifying the problem.
+
 **Additional context**
 Add any other context about the problem here.
