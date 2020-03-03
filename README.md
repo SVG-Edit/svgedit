@@ -24,6 +24,7 @@ SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
 works in any modern browser.
 
 ![screenshot](docs/screenshot.png)
+[SVG](https://upload.wikimedia.org/wikipedia/commons/f/fd/Ghostscript_Tiger.svg)
 
 ## Help wanted
 
