@@ -21331,14 +21331,19 @@
           var oldParent = elem.parentNode; // Remove child title elements
 
           if (elem.tagName === 'title') {
-            var _elem2 = elem,
-                nextSibling = _elem2.nextSibling;
+            var nextSibling = elem.nextSibling;
             batchCmd.addSubCommand(new RemoveElementCommand$1(elem, nextSibling, oldParent));
             elem.remove();
             continue;
           }
 
-          children[i++] = elem = anchor.before(elem);
+          if (anchor) {
+            anchor.before(elem);
+          } else {
+            g.after(elem);
+          }
+
+          children[i++] = elem;
           batchCmd.addSubCommand(new MoveElementCommand$1(elem, oldNextSibling, oldParent));
         } // remove the group from the selection
 

@@ -6799,7 +6799,7 @@ this.ungroupSelectedElement = function () {
 
     let i = 0;
     while (g.firstChild) {
-      let elem = g.firstChild;
+      const elem = g.firstChild;
       const oldNextSibling = elem.nextSibling;
       const oldParent = elem.parentNode;
 
@@ -6811,7 +6811,12 @@ this.ungroupSelectedElement = function () {
         continue;
       }
 
-      children[i++] = elem = anchor.before(elem);
+      if (anchor) {
+        anchor.before(elem);
+      } else {
+        g.after(elem);
+      }
+      children[i++] = elem;
       batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
     }
 
