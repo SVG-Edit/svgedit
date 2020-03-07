@@ -55,9 +55,7 @@ var svgEditorExtension_panning = (function () {
       var _this = this;
 
       var importLocale = _ref.importLocale;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var strings, svgEditor, svgCanvas, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

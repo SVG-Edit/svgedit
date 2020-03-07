@@ -282,9 +282,7 @@
    * A class to parse color values.
    */
 
-  var RGBColor =
-  /*#__PURE__*/
-  function () {
+  var RGBColor = /*#__PURE__*/function () {
     /**
     * @param {string} colorString
     */

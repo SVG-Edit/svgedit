@@ -94,9 +94,7 @@ var svgEditorExtension_shapes = (function () {
 
       var $ = _ref.$,
           importLocale = _ref.importLocale;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var strings, svgEditor, canv, svgroot, lastBBox, categories, library, modeId, startClientPos, currentD, curShapeId, curShape, startX, startY, curLib, loadIcons, makeButtons, loadLibrary, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

@@ -51,9 +51,7 @@ var svgEditorExtension_webappfind = (function () {
 
       var importLocale = _ref.importLocale,
           $ = _ref.$;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var strings, svgEditor, saveMessage, readMessage, excludedMessages, pathID, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

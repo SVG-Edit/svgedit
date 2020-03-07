@@ -54,9 +54,7 @@ var svgEditorExtension_grid = (function () {
           NS = _ref.NS,
           getTypeMap = _ref.getTypeMap,
           importLocale = _ref.importLocale;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridDefs, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

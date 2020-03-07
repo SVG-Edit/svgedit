@@ -50,9 +50,7 @@ var svgEditorExtension_arrows = (function () {
     init: function init(S) {
       var _this = this;
 
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         var strings, svgEditor, svgCanvas, addElem, nonce, $, prefix, selElems, arrowprefix, randomizeIds, setArrowNonce, unsetArrowNonce, pathdata, getLinked, showPanel, resetMarker, addMarker, setArrow, colorChanged, contextTools;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -329,9 +327,7 @@ var svgEditorExtension_arrows = (function () {
                   addLangData: function addLangData(_ref) {
                     var lang = _ref.lang,
                         importLocale = _ref.importLocale;
-                    return _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee() {
+                    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                       var _ref2, langList;
 
                       return regeneratorRuntime.wrap(function _callee$(_context) {

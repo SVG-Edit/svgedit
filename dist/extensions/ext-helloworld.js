@@ -100,9 +100,7 @@ var svgEditorExtension_helloworld = (function () {
 
       var $ = _ref.$,
           importLocale = _ref.importLocale;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var strings, svgEditor, svgCanvas;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

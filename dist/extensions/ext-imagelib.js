@@ -70,9 +70,7 @@ var svgEditorExtension_imagelib = (function () {
           decode64 = _ref.decode64,
           importLocale = _ref.importLocale,
           dropXMLInternalSubset = _ref.dropXMLInternalSubset;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         var imagelibStrings, modularVersion, svgEditor, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, onMessage, _onMessage, toggleMulti, showBrowser, buttons;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -194,9 +192,7 @@ var svgEditorExtension_imagelib = (function () {
                 };
 
                 _onMessage = function _ref9() {
-                  _onMessage = _asyncToGenerator(
-                  /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee(_ref5) {
+                  _onMessage = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref5) {
                     var origin, response, id, type, hasName, hasHref, char1, secondpos, entry, curMeta, svgStr, imgStr, name, message, pre, src, title, xml, ok;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {

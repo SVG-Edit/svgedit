@@ -50,9 +50,7 @@ var svgEditorExtension_eyedropper = (function () {
     init: function init(S) {
       var _this = this;
 
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var strings, svgEditor, $, ChangeElementCommand, svgCanvas, addToHistory, currentStyle, getStyle, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

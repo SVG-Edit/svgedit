@@ -1175,9 +1175,7 @@
                    * Class wrapping base class.
                    */
 
-                  return cnstrct ?
-                  /*#__PURE__*/
-                  function (_baseClass) {
+                  return cnstrct ? /*#__PURE__*/function (_baseClass) {
                     _inherits$1(_class, _baseClass);
                     /**
                      * Calls user constructor.
@@ -1195,9 +1193,7 @@
                     }
 
                     return _class;
-                  }(baseClass) :
-                  /*#__PURE__*/
-                  function (_baseClass2) {
+                  }(baseClass) : /*#__PURE__*/function (_baseClass2) {
                     _inherits$1(_class2, _baseClass2);
 
                     function _class2() {
@@ -1956,9 +1952,7 @@
       /**
        * Polyfill for `DOMException`.
        */
-      var DOMException =
-      /*#__PURE__*/
-      function (_Error) {
+      var DOMException = /*#__PURE__*/function (_Error) {
         _inherits$1(DOMException, _Error);
         /* eslint-enable no-shadow, unicorn/custom-error-definition */
 
@@ -2367,9 +2361,7 @@
    */
 
 
-  var JamilihMap =
-  /*#__PURE__*/
-  function (_Map) {
+  var JamilihMap = /*#__PURE__*/function (_Map) {
     _inherits$1(JamilihMap, _Map);
 
     function JamilihMap() {
@@ -2430,9 +2422,7 @@
    */
 
 
-  var JamilihWeakMap =
-  /*#__PURE__*/
-  function (_WeakMap) {
+  var JamilihWeakMap = /*#__PURE__*/function (_WeakMap) {
     _inherits$1(JamilihWeakMap, _WeakMap);
 
     function JamilihWeakMap() {
@@ -2635,9 +2625,7 @@
    * OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
    * PERFORMANCE OF THIS SOFTWARE.
    */
-  var QueryResult =
-  /*#__PURE__*/
-  function (_Array) {
+  var QueryResult = /*#__PURE__*/function (_Array) {
     _inherits(QueryResult, _Array);
 
     function QueryResult() {
@@ -2647,7 +2635,7 @@
     }
 
     return QueryResult;
-  }(_wrapNativeSuper(Array));
+  }( /*#__PURE__*/_wrapNativeSuper(Array));
 
   var create = Object.create,
       defineProperty = Object.defineProperty;
@@ -3357,9 +3345,7 @@
   }
 
   function _processResults() {
-    _processResults = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee3(url) {
+    _processResults = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(url) {
       var queryLink, r, json, payload, _json$info, numResults, pages, currentPage, semiColonSep;
 
       return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -3440,9 +3426,7 @@
                     click: function click(e) {
                       var _this = this;
 
-                      return _asyncToGenerator(
-                      /*#__PURE__*/
-                      regeneratorRuntime.mark(function _callee2() {
+                      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
                         var svgurl, post, result, svg;
                         return regeneratorRuntime.wrap(function _callee2$(_context2) {
                           while (1) {
@@ -3565,9 +3549,7 @@
     id: 'openclipart',
     $custom: {
       $submit: function $submit() {
-        return _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee() {
+        return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
           var url;
           return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {

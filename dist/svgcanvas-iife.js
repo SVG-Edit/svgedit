@@ -211,9 +211,7 @@ var SvgCanvas = (function () {
   (function () {
     if (!('SVGPathSeg' in window)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
-      var _SVGPathSeg =
-      /*#__PURE__*/
-      function () {
+      var _SVGPathSeg = /*#__PURE__*/function () {
         function _SVGPathSeg(type, typeAsLetter, owningPathSegList) {
           _classCallCheck(this, _SVGPathSeg);
 
@@ -257,9 +255,7 @@ var SvgCanvas = (function () {
       _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS = 18;
       _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL = 19;
 
-      var _SVGPathSegClosePath =
-      /*#__PURE__*/
-      function (_SVGPathSeg2) {
+      var _SVGPathSegClosePath = /*#__PURE__*/function (_SVGPathSeg2) {
         _inherits(_SVGPathSegClosePath, _SVGPathSeg2);
 
         function _SVGPathSegClosePath(owningPathSegList) {
@@ -288,9 +284,7 @@ var SvgCanvas = (function () {
         return _SVGPathSegClosePath;
       }(_SVGPathSeg);
 
-      var _SVGPathSegMovetoAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg3) {
+      var _SVGPathSegMovetoAbs = /*#__PURE__*/function (_SVGPathSeg3) {
         _inherits(_SVGPathSegMovetoAbs, _SVGPathSeg3);
 
         function _SVGPathSegMovetoAbs(owningPathSegList, x, y) {
@@ -349,9 +343,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegMovetoRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg4) {
+      var _SVGPathSegMovetoRel = /*#__PURE__*/function (_SVGPathSeg4) {
         _inherits(_SVGPathSegMovetoRel, _SVGPathSeg4);
 
         function _SVGPathSegMovetoRel(owningPathSegList, x, y) {
@@ -410,9 +402,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegLinetoAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg5) {
+      var _SVGPathSegLinetoAbs = /*#__PURE__*/function (_SVGPathSeg5) {
         _inherits(_SVGPathSegLinetoAbs, _SVGPathSeg5);
 
         function _SVGPathSegLinetoAbs(owningPathSegList, x, y) {
@@ -471,9 +461,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegLinetoRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg6) {
+      var _SVGPathSegLinetoRel = /*#__PURE__*/function (_SVGPathSeg6) {
         _inherits(_SVGPathSegLinetoRel, _SVGPathSeg6);
 
         function _SVGPathSegLinetoRel(owningPathSegList, x, y) {
@@ -532,9 +520,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoCubicAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg7) {
+      var _SVGPathSegCurvetoCubicAbs = /*#__PURE__*/function (_SVGPathSeg7) {
         _inherits(_SVGPathSegCurvetoCubicAbs, _SVGPathSeg7);
 
         function _SVGPathSegCurvetoCubicAbs(owningPathSegList, x, y, x1, y1, x2, y2) {
@@ -641,9 +627,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoCubicRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg8) {
+      var _SVGPathSegCurvetoCubicRel = /*#__PURE__*/function (_SVGPathSeg8) {
         _inherits(_SVGPathSegCurvetoCubicRel, _SVGPathSeg8);
 
         function _SVGPathSegCurvetoCubicRel(owningPathSegList, x, y, x1, y1, x2, y2) {
@@ -750,9 +734,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg9) {
+      var _SVGPathSegCurvetoQuadraticAbs = /*#__PURE__*/function (_SVGPathSeg9) {
         _inherits(_SVGPathSegCurvetoQuadraticAbs, _SVGPathSeg9);
 
         function _SVGPathSegCurvetoQuadraticAbs(owningPathSegList, x, y, x1, y1) {
@@ -835,9 +817,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg10) {
+      var _SVGPathSegCurvetoQuadraticRel = /*#__PURE__*/function (_SVGPathSeg10) {
         _inherits(_SVGPathSegCurvetoQuadraticRel, _SVGPathSeg10);
 
         function _SVGPathSegCurvetoQuadraticRel(owningPathSegList, x, y, x1, y1) {
@@ -920,9 +900,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegArcAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg11) {
+      var _SVGPathSegArcAbs = /*#__PURE__*/function (_SVGPathSeg11) {
         _inherits(_SVGPathSegArcAbs, _SVGPathSeg11);
 
         function _SVGPathSegArcAbs(owningPathSegList, x, y, r1, r2, angle, largeArcFlag, sweepFlag) {
@@ -1041,9 +1019,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegArcRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg12) {
+      var _SVGPathSegArcRel = /*#__PURE__*/function (_SVGPathSeg12) {
         _inherits(_SVGPathSegArcRel, _SVGPathSeg12);
 
         function _SVGPathSegArcRel(owningPathSegList, x, y, r1, r2, angle, largeArcFlag, sweepFlag) {
@@ -1162,9 +1138,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegLinetoHorizontalAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg13) {
+      var _SVGPathSegLinetoHorizontalAbs = /*#__PURE__*/function (_SVGPathSeg13) {
         _inherits(_SVGPathSegLinetoHorizontalAbs, _SVGPathSeg13);
 
         function _SVGPathSegLinetoHorizontalAbs(owningPathSegList, x) {
@@ -1209,9 +1183,7 @@ var SvgCanvas = (function () {
         enumerable: true
       });
 
-      var _SVGPathSegLinetoHorizontalRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg14) {
+      var _SVGPathSegLinetoHorizontalRel = /*#__PURE__*/function (_SVGPathSeg14) {
         _inherits(_SVGPathSegLinetoHorizontalRel, _SVGPathSeg14);
 
         function _SVGPathSegLinetoHorizontalRel(owningPathSegList, x) {
@@ -1256,9 +1228,7 @@ var SvgCanvas = (function () {
         enumerable: true
       });
 
-      var _SVGPathSegLinetoVerticalAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg15) {
+      var _SVGPathSegLinetoVerticalAbs = /*#__PURE__*/function (_SVGPathSeg15) {
         _inherits(_SVGPathSegLinetoVerticalAbs, _SVGPathSeg15);
 
         function _SVGPathSegLinetoVerticalAbs(owningPathSegList, y) {
@@ -1303,9 +1273,7 @@ var SvgCanvas = (function () {
         enumerable: true
       });
 
-      var _SVGPathSegLinetoVerticalRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg16) {
+      var _SVGPathSegLinetoVerticalRel = /*#__PURE__*/function (_SVGPathSeg16) {
         _inherits(_SVGPathSegLinetoVerticalRel, _SVGPathSeg16);
 
         function _SVGPathSegLinetoVerticalRel(owningPathSegList, y) {
@@ -1350,9 +1318,7 @@ var SvgCanvas = (function () {
         enumerable: true
       });
 
-      var _SVGPathSegCurvetoCubicSmoothAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg17) {
+      var _SVGPathSegCurvetoCubicSmoothAbs = /*#__PURE__*/function (_SVGPathSeg17) {
         _inherits(_SVGPathSegCurvetoCubicSmoothAbs, _SVGPathSeg17);
 
         function _SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList, x, y, x2, y2) {
@@ -1435,9 +1401,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoCubicSmoothRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg18) {
+      var _SVGPathSegCurvetoCubicSmoothRel = /*#__PURE__*/function (_SVGPathSeg18) {
         _inherits(_SVGPathSegCurvetoCubicSmoothRel, _SVGPathSeg18);
 
         function _SVGPathSegCurvetoCubicSmoothRel(owningPathSegList, x, y, x2, y2) {
@@ -1520,9 +1484,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticSmoothAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg19) {
+      var _SVGPathSegCurvetoQuadraticSmoothAbs = /*#__PURE__*/function (_SVGPathSeg19) {
         _inherits(_SVGPathSegCurvetoQuadraticSmoothAbs, _SVGPathSeg19);
 
         function _SVGPathSegCurvetoQuadraticSmoothAbs(owningPathSegList, x, y) {
@@ -1581,9 +1543,7 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticSmoothRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg20) {
+      var _SVGPathSegCurvetoQuadraticSmoothRel = /*#__PURE__*/function (_SVGPathSeg20) {
         _inherits(_SVGPathSegCurvetoQuadraticSmoothRel, _SVGPathSeg20);
 
         function _SVGPathSegCurvetoQuadraticSmoothRel(owningPathSegList, x, y) {
@@ -1779,9 +1739,7 @@ var SvgCanvas = (function () {
 
     if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.prototype)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSegList
-      var SVGPathSegList =
-      /*#__PURE__*/
-      function () {
+      var SVGPathSegList = /*#__PURE__*/function () {
         function SVGPathSegList(pathElement) {
           _classCallCheck(this, SVGPathSegList);
 
@@ -1965,9 +1923,7 @@ var SvgCanvas = (function () {
 
             var owningPathSegList = this; // eslint-disable-line consistent-this
 
-            var Builder =
-            /*#__PURE__*/
-            function () {
+            var Builder = /*#__PURE__*/function () {
               function Builder() {
                 _classCallCheck(this, Builder);
 
@@ -1984,9 +1940,7 @@ var SvgCanvas = (function () {
               return Builder;
             }();
 
-            var Source =
-            /*#__PURE__*/
-            function () {
+            var Source = /*#__PURE__*/function () {
               function Source(string) {
                 _classCallCheck(this, Source);
 
@@ -3248,9 +3202,7 @@ var SvgCanvas = (function () {
   * @implements {module:SVGTransformList.SVGEditTransformList}
   */
 
-  var SVGTransformList =
-  /*#__PURE__*/
-  function () {
+  var SVGTransformList = /*#__PURE__*/function () {
     // eslint-disable-line no-shadow
 
     /**
@@ -3843,9 +3795,7 @@ var SvgCanvas = (function () {
   * Base class for commands.
   */
 
-  var Command =
-  /*#__PURE__*/
-  function () {
+  var Command = /*#__PURE__*/function () {
     function Command() {
       _classCallCheck(this, Command);
     }
@@ -3939,9 +3889,7 @@ var SvgCanvas = (function () {
   */
 
 
-  var MoveElementCommand =
-  /*#__PURE__*/
-  function (_Command) {
+  var MoveElementCommand = /*#__PURE__*/function (_Command) {
     _inherits(MoveElementCommand, _Command);
 
     /**
@@ -4035,9 +3983,7 @@ var SvgCanvas = (function () {
   * @implements {module:history.HistoryCommand}
   */
 
-  var InsertElementCommand =
-  /*#__PURE__*/
-  function (_Command2) {
+  var InsertElementCommand = /*#__PURE__*/function (_Command2) {
     _inherits(InsertElementCommand, _Command2);
 
     /**
@@ -4127,9 +4073,7 @@ var SvgCanvas = (function () {
   * @implements {module:history.HistoryCommand}
   */
 
-  var RemoveElementCommand =
-  /*#__PURE__*/
-  function (_Command3) {
+  var RemoveElementCommand = /*#__PURE__*/function (_Command3) {
     _inherits(RemoveElementCommand, _Command3);
 
     /**
@@ -4241,9 +4185,7 @@ var SvgCanvas = (function () {
   * @implements {module:history.HistoryCommand}
   */
 
-  var ChangeElementCommand =
-  /*#__PURE__*/
-  function (_Command4) {
+  var ChangeElementCommand = /*#__PURE__*/function (_Command4) {
     _inherits(ChangeElementCommand, _Command4);
 
     /**
@@ -4436,9 +4378,7 @@ var SvgCanvas = (function () {
   * @implements {module:history.HistoryCommand}
   */
 
-  var BatchCommand =
-  /*#__PURE__*/
-  function (_Command5) {
+  var BatchCommand = /*#__PURE__*/function (_Command5) {
     _inherits(BatchCommand, _Command5);
 
     /**
@@ -4564,9 +4504,7 @@ var SvgCanvas = (function () {
   *
   */
 
-  var UndoManager =
-  /*#__PURE__*/
-  function () {
+  var UndoManager = /*#__PURE__*/function () {
     /**
     * @param {module:history.HistoryEventHandler} historyEventHandler
     */
@@ -5705,9 +5643,7 @@ var SvgCanvas = (function () {
   *
   */
 
-  var Segment =
-  /*#__PURE__*/
-  function () {
+  var Segment = /*#__PURE__*/function () {
     /**
     * @param {Integer} index
     * @param {SVGPathSeg} item
@@ -5935,9 +5871,7 @@ var SvgCanvas = (function () {
   *
   */
 
-  var Path =
-  /*#__PURE__*/
-  function () {
+  var Path = /*#__PURE__*/function () {
     /**
     * @param {SVGPathElement} elem
     * @throws {Error} If constructed without a path element
@@ -9434,9 +9368,7 @@ var SvgCanvas = (function () {
    * @memberof module:layer
    */
 
-  var Layer =
-  /*#__PURE__*/
-  function () {
+  var Layer = /*#__PURE__*/function () {
     /**
     * @param {string} name - Layer name
     * @param {SVGGElement|null} group - An existing SVG group element or null.
@@ -9731,9 +9663,7 @@ var SvgCanvas = (function () {
    * @memberof module:history
    */
 
-  var HistoryRecordingService =
-  /*#__PURE__*/
-  function () {
+  var HistoryRecordingService = /*#__PURE__*/function () {
     /**
     * @param {history.UndoManager|null} undoManager - The undo manager.
     *     A value of `null` is valid for cases where no history recording is required.
@@ -9946,9 +9876,7 @@ var SvgCanvas = (function () {
    */
 
 
-  var Drawing =
-  /*#__PURE__*/
-  function () {
+  var Drawing = /*#__PURE__*/function () {
     /**
     * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
     *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
@@ -11378,9 +11306,7 @@ var SvgCanvas = (function () {
    */
 
   function _importSetGlobal() {
-    _importSetGlobal = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee(url, _ref2) {
+    _importSetGlobal = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url, _ref2) {
       var glob, returnDefault, modularVersion;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -12827,9 +12753,7 @@ var SvgCanvas = (function () {
   * Private class for DOM element selection boxes.
   */
 
-  var Selector =
-  /*#__PURE__*/
-  function () {
+  var Selector = /*#__PURE__*/function () {
     /**
     * @param {Integer} id - Internally identify the selector
     * @param {Element} elem - DOM element associated with this selector
@@ -13076,9 +13000,7 @@ var SvgCanvas = (function () {
   * Manage all selector objects (selection boxes).
   */
 
-  var SelectorManager =
-  /*#__PURE__*/
-  function () {
+  var SelectorManager = /*#__PURE__*/function () {
     /**
      * Sets up properties and calls `initGroup`.
      */
@@ -14551,12 +14473,8 @@ var SvgCanvas = (function () {
     */
 
 
-    this.addExtension =
-    /*#__PURE__*/
-    function () {
-      var _ref3 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref4) {
+    this.addExtension = /*#__PURE__*/function () {
+      var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref4) {
         var jq, importLocale, argObj, extObj;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -17769,12 +17687,8 @@ var SvgCanvas = (function () {
     * @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
     */
 
-    this.rasterExport =
-    /*#__PURE__*/
-    function () {
-      var _ref5 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
+    this.rasterExport = /*#__PURE__*/function () {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
         var opts,
             type,
             mimeType,
@@ -17917,12 +17831,8 @@ var SvgCanvas = (function () {
     */
 
 
-    this.exportPDF =
-    /*#__PURE__*/
-    function () {
-      var _ref7 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3(exportWindowName) {
+    this.exportPDF = /*#__PURE__*/function () {
+      var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(exportWindowName) {
         var outputType,
             modularVersion,
             res,

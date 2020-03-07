@@ -108,9 +108,7 @@ var svgEditorExtension_mathjax = (function () {
 
       var $ = _ref.$,
           importLocale = _ref.importLocale;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         var strings, svgEditor, svgCanvas, mathjaxSrcSecure, uiStrings, math, locationX, locationY, mathjaxLoaded, saveMath, buttons;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -226,9 +224,7 @@ var svgEditorExtension_mathjax = (function () {
                   icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
                   events: {
                     click: function click() {
-                      return _asyncToGenerator(
-                      /*#__PURE__*/
-                      regeneratorRuntime.mark(function _callee() {
+                      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                         return regeneratorRuntime.wrap(function _callee$(_context) {
                           while (1) {
                             switch (_context.prev = _context.next) {

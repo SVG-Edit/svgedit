@@ -72,9 +72,7 @@ var svgEditorExtension_markers = (function () {
     init: function init(S) {
       var _this = this;
 
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
         var strings, svgEditor, $, svgCanvas, addElem, mtypes, markerPrefix, idPrefix, markerTypes, getLinked, setIcon, selElems, showPanel, addMarker, convertline, setMarker, colorChanged, updateReferences, triggerTextEntry, showTextPrompt, _showTextPrompt, setArrowFromButton, _setArrowFromButton, getTitle, buildButtonList, contextTools;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -141,9 +139,7 @@ var svgEditorExtension_markers = (function () {
                 };
 
                 _setArrowFromButton = function _ref14() {
-                  _setArrowFromButton = _asyncToGenerator(
-                  /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee2(ev) {
+                  _setArrowFromButton = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(ev) {
                     var parts, pos, val;
                     return regeneratorRuntime.wrap(function _callee2$(_context2) {
                       while (1) {
@@ -185,9 +181,7 @@ var svgEditorExtension_markers = (function () {
                 };
 
                 _showTextPrompt = function _ref12() {
-                  _showTextPrompt = _asyncToGenerator(
-                  /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee(pos) {
+                  _showTextPrompt = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(pos) {
                     var def, txt;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {

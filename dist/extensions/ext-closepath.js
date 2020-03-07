@@ -54,9 +54,7 @@ var svgEditorExtension_closepath = (function () {
 
       var importLocale = _ref.importLocale,
           $ = _ref.$;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var strings, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

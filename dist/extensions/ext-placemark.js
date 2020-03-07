@@ -91,9 +91,7 @@ var svgEditorExtension_placemark = (function () {
     init: function init(S) {
       var _this = this;
 
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, addElem, $, importLocale, selElems, started, newPM, strings, markerTypes, showPanel, getLinked, updateText, updateFont, addMarker, setMarker, colorChanged, updateReferences, setArrowFromButton, getTitle, addMarkerButtons, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

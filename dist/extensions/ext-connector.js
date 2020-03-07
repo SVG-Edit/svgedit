@@ -52,9 +52,7 @@ var svgEditorExtension_connector = (function () {
     init: function init(S) {
       var _this = this;
 
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, getElem, $, svgroot, importLocale, addElem, selManager, connSel, elData, strings, startX, startY, curLine, startElem, endElem, seNs, svgcontent, started, connections, selElems, getBBintersect, getOffset, showPanel, setPoint, updateLine, findConnectors, updateConnectors, init, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

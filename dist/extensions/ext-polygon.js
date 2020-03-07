@@ -49,9 +49,7 @@ var svgEditorExtension_polygon = (function () {
     init: function init(S) {
       var _this = this;
 
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, $, importLocale, editingitex, strings, selElems, started, newFO, showPanel, setAttr, cot, sec, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

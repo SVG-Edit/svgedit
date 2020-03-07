@@ -441,9 +441,7 @@ var svgEditorExtension_server_opensave = (function () {
    * A class to parse color values.
    */
 
-  var RGBColor =
-  /*#__PURE__*/
-  function () {
+  var RGBColor = /*#__PURE__*/function () {
     /**
     * @param {string} colorString
     */
@@ -1122,9 +1120,7 @@ var svgEditorExtension_server_opensave = (function () {
       mathematical: 'alphabetic'
     };
 
-    svg.Property =
-    /*#__PURE__*/
-    function () {
+    svg.Property = /*#__PURE__*/function () {
       function Property(name, value) {
         _classCallCheck(this, Property);
 
@@ -1379,9 +1375,7 @@ var svgEditorExtension_server_opensave = (function () {
       });
     };
 
-    svg.Point =
-    /*#__PURE__*/
-    function () {
+    svg.Point = /*#__PURE__*/function () {
       function _class(x, y) {
         _classCallCheck(this, _class);
 
@@ -1424,9 +1418,7 @@ var svgEditorExtension_server_opensave = (function () {
     }; // bounding box
 
 
-    svg.BoundingBox =
-    /*#__PURE__*/
-    function () {
+    svg.BoundingBox = /*#__PURE__*/function () {
       function _class2(x1, y1, x2, y2) {
         _classCallCheck(this, _class2);
 
@@ -1579,9 +1571,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(); // transforms
 
 
-    svg.Transform =
-    /*#__PURE__*/
-    function () {
+    svg.Transform = /*#__PURE__*/function () {
       function _class3(v) {
         var _this6 = this;
 
@@ -1665,9 +1655,7 @@ var svgEditorExtension_server_opensave = (function () {
           }
         };
         Object.assign(this.Type, {
-          SkewBase:
-          /*#__PURE__*/
-          function (_this$Type$matrix) {
+          SkewBase: /*#__PURE__*/function (_this$Type$matrix) {
             _inherits(SkewBase, _this$Type$matrix);
 
             function SkewBase(s) {
@@ -1684,9 +1672,7 @@ var svgEditorExtension_server_opensave = (function () {
           }(this.Type.matrix)
         });
         Object.assign(this.Type, {
-          skewX:
-          /*#__PURE__*/
-          function (_this$Type$SkewBase) {
+          skewX: /*#__PURE__*/function (_this$Type$SkewBase) {
             _inherits(skewX, _this$Type$SkewBase);
 
             function skewX(s) {
@@ -1701,9 +1687,7 @@ var svgEditorExtension_server_opensave = (function () {
 
             return skewX;
           }(this.Type.SkewBase),
-          skewY:
-          /*#__PURE__*/
-          function (_this$Type$SkewBase2) {
+          skewY: /*#__PURE__*/function (_this$Type$SkewBase2) {
             _inherits(skewY, _this$Type$SkewBase2);
 
             function skewY(s) {
@@ -1802,9 +1786,7 @@ var svgEditorExtension_server_opensave = (function () {
     svg.Element = {};
     svg.EmptyProperty = new svg.Property('EMPTY', '');
 
-    svg.Element.ElementBase =
-    /*#__PURE__*/
-    function () {
+    svg.Element.ElementBase = /*#__PURE__*/function () {
       function _class4(node) {
         var _this7 = this;
 
@@ -2044,9 +2026,7 @@ var svgEditorExtension_server_opensave = (function () {
       return _class4;
     }();
 
-    svg.Element.RenderedElementBase =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB) {
+    svg.Element.RenderedElementBase = /*#__PURE__*/function (_svg$Element$ElementB) {
       _inherits(_class5, _svg$Element$ElementB);
 
       function _class5() {
@@ -2151,9 +2131,7 @@ var svgEditorExtension_server_opensave = (function () {
       return _class5;
     }(svg.Element.ElementBase);
 
-    svg.Element.PathElementBase =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered) {
+    svg.Element.PathElementBase = /*#__PURE__*/function (_svg$Element$Rendered) {
       _inherits(_class6, _svg$Element$Rendered);
 
       function _class6() {
@@ -2222,9 +2200,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.RenderedElementBase); // svg element
 
 
-    svg.Element.svg =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered2) {
+    svg.Element.svg = /*#__PURE__*/function (_svg$Element$Rendered2) {
       _inherits(_class7, _svg$Element$Rendered2);
 
       function _class7() {
@@ -2305,9 +2281,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.RenderedElementBase); // rect element
 
 
-    svg.Element.rect =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem) {
+    svg.Element.rect = /*#__PURE__*/function (_svg$Element$PathElem) {
       _inherits(_class8, _svg$Element$PathElem);
 
       function _class8() {
@@ -2352,9 +2326,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.PathElementBase); // circle element
 
 
-    svg.Element.circle =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem2) {
+    svg.Element.circle = /*#__PURE__*/function (_svg$Element$PathElem2) {
       _inherits(_class9, _svg$Element$PathElem2);
 
       function _class9() {
@@ -2386,9 +2358,7 @@ var svgEditorExtension_server_opensave = (function () {
 
     var KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
 
-    svg.Element.ellipse =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem3) {
+    svg.Element.ellipse = /*#__PURE__*/function (_svg$Element$PathElem3) {
       _inherits(_class10, _svg$Element$PathElem3);
 
       function _class10() {
@@ -2423,9 +2393,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.PathElementBase); // line element
 
 
-    svg.Element.line =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem4) {
+    svg.Element.line = /*#__PURE__*/function (_svg$Element$PathElem4) {
       _inherits(_class11, _svg$Element$PathElem4);
 
       function _class11() {
@@ -2465,9 +2433,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.PathElementBase); // polyline element
 
 
-    svg.Element.polyline =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem5) {
+    svg.Element.polyline = /*#__PURE__*/function (_svg$Element$PathElem5) {
       _inherits(_class12, _svg$Element$PathElem5);
 
       function _class12(node) {
@@ -2521,9 +2487,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.PathElementBase); // polygon element
 
 
-    svg.Element.polygon =
-    /*#__PURE__*/
-    function (_svg$Element$polyline) {
+    svg.Element.polygon = /*#__PURE__*/function (_svg$Element$polyline) {
       _inherits(_class13, _svg$Element$polyline);
 
       function _class13() {
@@ -2550,9 +2514,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.polyline); // path element
 
 
-    svg.Element.path =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem6) {
+    svg.Element.path = /*#__PURE__*/function (_svg$Element$PathElem6) {
       _inherits(_class14, _svg$Element$PathElem6);
 
       function _class14(node) {
@@ -2929,9 +2891,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.PathElementBase); // pattern element
 
 
-    svg.Element.pattern =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB2) {
+    svg.Element.pattern = /*#__PURE__*/function (_svg$Element$ElementB2) {
       _inherits(_class15, _svg$Element$ElementB2);
 
       function _class15() {
@@ -2980,9 +2940,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // marker element
 
 
-    svg.Element.marker =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB3) {
+    svg.Element.marker = /*#__PURE__*/function (_svg$Element$ElementB3) {
       _inherits(_class16, _svg$Element$ElementB3);
 
       function _class16() {
@@ -3020,9 +2978,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // definitions element
 
 
-    svg.Element.defs =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB4) {
+    svg.Element.defs = /*#__PURE__*/function (_svg$Element$ElementB4) {
       _inherits(_class17, _svg$Element$ElementB4);
 
       function _class17() {
@@ -3041,9 +2997,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // base for gradients
 
 
-    svg.Element.GradientBase =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB5) {
+    svg.Element.GradientBase = /*#__PURE__*/function (_svg$Element$ElementB5) {
       _inherits(_class18, _svg$Element$ElementB5);
 
       function _class18(node) {
@@ -3124,9 +3078,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // linear gradient element
 
 
-    svg.Element.linearGradient =
-    /*#__PURE__*/
-    function (_svg$Element$Gradient) {
+    svg.Element.linearGradient = /*#__PURE__*/function (_svg$Element$Gradient) {
       _inherits(_class19, _svg$Element$Gradient);
 
       function _class19() {
@@ -3161,9 +3113,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.GradientBase); // radial gradient element
 
 
-    svg.Element.radialGradient =
-    /*#__PURE__*/
-    function (_svg$Element$Gradient2) {
+    svg.Element.radialGradient = /*#__PURE__*/function (_svg$Element$Gradient2) {
       _inherits(_class20, _svg$Element$Gradient2);
 
       function _class20() {
@@ -3202,9 +3152,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.GradientBase); // gradient stop element
 
 
-    svg.Element.stop =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB6) {
+    svg.Element.stop = /*#__PURE__*/function (_svg$Element$ElementB6) {
       _inherits(_class21, _svg$Element$ElementB6);
 
       function _class21(node) {
@@ -3231,9 +3179,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // animation base element
 
 
-    svg.Element.AnimateBase =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB7) {
+    svg.Element.AnimateBase = /*#__PURE__*/function (_svg$Element$ElementB7) {
       _inherits(_class22, _svg$Element$ElementB7);
 
       function _class22(node) {
@@ -3348,9 +3294,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // animate element
 
 
-    svg.Element.animate =
-    /*#__PURE__*/
-    function (_svg$Element$AnimateB) {
+    svg.Element.animate = /*#__PURE__*/function (_svg$Element$AnimateB) {
       _inherits(_class23, _svg$Element$AnimateB);
 
       function _class23() {
@@ -3373,9 +3317,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.AnimateBase); // animate color element
 
 
-    svg.Element.animateColor =
-    /*#__PURE__*/
-    function (_svg$Element$AnimateB2) {
+    svg.Element.animateColor = /*#__PURE__*/function (_svg$Element$AnimateB2) {
       _inherits(_class24, _svg$Element$AnimateB2);
 
       function _class24() {
@@ -3407,9 +3349,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.AnimateBase); // animate transform element
 
 
-    svg.Element.animateTransform =
-    /*#__PURE__*/
-    function (_svg$Element$animate) {
+    svg.Element.animateTransform = /*#__PURE__*/function (_svg$Element$animate) {
       _inherits(_class25, _svg$Element$animate);
 
       function _class25() {
@@ -3437,9 +3377,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.animate); // font element
 
 
-    svg.Element.font =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB8) {
+    svg.Element.font = /*#__PURE__*/function (_svg$Element$ElementB8) {
       _inherits(_class26, _svg$Element$ElementB8);
 
       function _class26(node) {
@@ -3487,9 +3425,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // font-face element
 
 
-    svg.Element.fontface =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB9) {
+    svg.Element.fontface = /*#__PURE__*/function (_svg$Element$ElementB9) {
       _inherits(_class27, _svg$Element$ElementB9);
 
       function _class27(node) {
@@ -3508,9 +3444,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // missing-glyph element
 
 
-    svg.Element.missingglyph =
-    /*#__PURE__*/
-    function (_svg$Element$path) {
+    svg.Element.missingglyph = /*#__PURE__*/function (_svg$Element$path) {
       _inherits(_class28, _svg$Element$path);
 
       function _class28(node) {
@@ -3527,9 +3461,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.path); // glyph element
 
 
-    svg.Element.glyph =
-    /*#__PURE__*/
-    function (_svg$Element$path2) {
+    svg.Element.glyph = /*#__PURE__*/function (_svg$Element$path2) {
       _inherits(_class29, _svg$Element$path2);
 
       function _class29(node) {
@@ -3548,9 +3480,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.path); // text element
 
 
-    svg.Element.text =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered3) {
+    svg.Element.text = /*#__PURE__*/function (_svg$Element$Rendered3) {
       _inherits(_class30, _svg$Element$Rendered3);
 
       function _class30(node) {
@@ -3646,9 +3576,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.RenderedElementBase); // text base
 
 
-    svg.Element.TextElementBase =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered4) {
+    svg.Element.TextElementBase = /*#__PURE__*/function (_svg$Element$Rendered4) {
       _inherits(_class31, _svg$Element$Rendered4);
 
       function _class31() {
@@ -3772,9 +3700,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.RenderedElementBase); // tspan
 
 
-    svg.Element.tspan =
-    /*#__PURE__*/
-    function (_svg$Element$TextElem) {
+    svg.Element.tspan = /*#__PURE__*/function (_svg$Element$TextElem) {
       _inherits(_class32, _svg$Element$TextElem);
 
       function _class32(node) {
@@ -3798,9 +3724,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.TextElementBase); // tref
 
 
-    svg.Element.tref =
-    /*#__PURE__*/
-    function (_svg$Element$TextElem2) {
+    svg.Element.tref = /*#__PURE__*/function (_svg$Element$TextElem2) {
       _inherits(_class33, _svg$Element$TextElem2);
 
       function _class33() {
@@ -3822,9 +3746,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.TextElementBase); // a element
 
 
-    svg.Element.a =
-    /*#__PURE__*/
-    function (_svg$Element$TextElem3) {
+    svg.Element.a = /*#__PURE__*/function (_svg$Element$TextElem3) {
       _inherits(_class34, _svg$Element$TextElem3);
 
       function _class34(node) {
@@ -3884,9 +3806,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.TextElementBase); // image element
 
 
-    svg.Element.image =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered5) {
+    svg.Element.image = /*#__PURE__*/function (_svg$Element$Rendered5) {
       _inherits(_class35, _svg$Element$Rendered5);
 
       function _class35(node) {
@@ -3973,9 +3893,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.RenderedElementBase); // group element
 
 
-    svg.Element.g =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered6) {
+    svg.Element.g = /*#__PURE__*/function (_svg$Element$Rendered6) {
       _inherits(_class36, _svg$Element$Rendered6);
 
       function _class36() {
@@ -3999,9 +3917,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.RenderedElementBase); // symbol element
 
 
-    svg.Element.symbol =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered7) {
+    svg.Element.symbol = /*#__PURE__*/function (_svg$Element$Rendered7) {
       _inherits(_class37, _svg$Element$Rendered7);
 
       function _class37() {
@@ -4020,9 +3936,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.RenderedElementBase); // style element
 
 
-    svg.Element.style =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB10) {
+    svg.Element.style = /*#__PURE__*/function (_svg$Element$ElementB10) {
       _inherits(_class38, _svg$Element$ElementB10);
 
       function _class38(node) {
@@ -4100,9 +4014,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // use element
 
 
-    svg.Element.use =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered8) {
+    svg.Element.use = /*#__PURE__*/function (_svg$Element$Rendered8) {
       _inherits(_class39, _svg$Element$Rendered8);
 
       function _class39(node) {
@@ -4172,9 +4084,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.RenderedElementBase); // mask element
 
 
-    svg.Element.mask =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB11) {
+    svg.Element.mask = /*#__PURE__*/function (_svg$Element$ElementB11) {
       _inherits(_class40, _svg$Element$ElementB11);
 
       function _class40() {
@@ -4234,9 +4144,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // clip element
 
 
-    svg.Element.clipPath =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB12) {
+    svg.Element.clipPath = /*#__PURE__*/function (_svg$Element$ElementB12) {
       _inherits(_class41, _svg$Element$ElementB12);
 
       function _class41() {
@@ -4276,9 +4184,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // filters
 
 
-    svg.Element.filter =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB13) {
+    svg.Element.filter = /*#__PURE__*/function (_svg$Element$ElementB13) {
       _inherits(_class42, _svg$Element$ElementB13);
 
       function _class42() {
@@ -4330,9 +4236,7 @@ var svgEditorExtension_server_opensave = (function () {
       return _class42;
     }(svg.Element.ElementBase);
 
-    svg.Element.feMorphology =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB14) {
+    svg.Element.feMorphology = /*#__PURE__*/function (_svg$Element$ElementB14) {
       _inherits(_class43, _svg$Element$ElementB14);
 
       function _class43() {
@@ -4350,9 +4254,7 @@ var svgEditorExtension_server_opensave = (function () {
       return _class43;
     }(svg.Element.ElementBase);
 
-    svg.Element.feComposite =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB15) {
+    svg.Element.feComposite = /*#__PURE__*/function (_svg$Element$ElementB15) {
       _inherits(_class44, _svg$Element$ElementB15);
 
       function _class44() {
@@ -4399,9 +4301,7 @@ var svgEditorExtension_server_opensave = (function () {
       img[y * width * 4 + x * 4 + rgba] = val;
     }
 
-    svg.Element.feColorMatrix =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB16) {
+    svg.Element.feColorMatrix = /*#__PURE__*/function (_svg$Element$ElementB16) {
       _inherits(_class45, _svg$Element$ElementB16);
 
       function _class45(node) {
@@ -4476,9 +4376,7 @@ var svgEditorExtension_server_opensave = (function () {
       return _class45;
     }(svg.Element.ElementBase);
 
-    svg.Element.feGaussianBlur =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB17) {
+    svg.Element.feGaussianBlur = /*#__PURE__*/function (_svg$Element$ElementB17) {
       _inherits(_class46, _svg$Element$ElementB17);
 
       function _class46(node) {
@@ -4509,9 +4407,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // title element, do nothing
 
 
-    svg.Element.title =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB18) {
+    svg.Element.title = /*#__PURE__*/function (_svg$Element$ElementB18) {
       _inherits(_class47, _svg$Element$ElementB18);
 
       function _class47(node) {
@@ -4524,9 +4420,7 @@ var svgEditorExtension_server_opensave = (function () {
     }(svg.Element.ElementBase); // desc element, do nothing
 
 
-    svg.Element.desc =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB19) {
+    svg.Element.desc = /*#__PURE__*/function (_svg$Element$ElementB19) {
       _inherits(_class48, _svg$Element$ElementB19);
 
       function _class48(node) {
@@ -4538,9 +4432,7 @@ var svgEditorExtension_server_opensave = (function () {
       return _class48;
     }(svg.Element.ElementBase);
 
-    svg.Element.MISSING =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB20) {
+    svg.Element.MISSING = /*#__PURE__*/function (_svg$Element$ElementB20) {
       _inherits(_class49, _svg$Element$ElementB20);
 
       function _class49(node) {
@@ -4574,12 +4466,8 @@ var svgEditorExtension_server_opensave = (function () {
     }; // load from url
 
 
-    svg.load =
-    /*#__PURE__*/
-    function () {
-      var _ref12 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(ctx, url) {
+    svg.load = /*#__PURE__*/function () {
+      var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(ctx, url) {
         var dom;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -4889,9 +4777,7 @@ var svgEditorExtension_server_opensave = (function () {
           decode64 = _ref.decode64,
           encode64 = _ref.encode64,
           importLocale = _ref.importLocale;
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee5() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
         var strings, svgEditor, _svgEditor$curConfig, extPath, avoidClientSide, avoidClientSideDownload, avoidClientSideOpen, svgCanvas, getFileNameFromTitle, xhtmlEscape, clientDownloadSupport, saveSvgAction, saveImgAction, cancelled, openSvgAction, importSvgAction, importImgAction, openSvgForm, importSvgForm, importImgForm, rebuildInput;
 
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
@@ -4912,9 +4798,7 @@ var svgEditorExtension_server_opensave = (function () {
                   }
 
                   function _submit() {
-                    _submit = _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee4() {
+                    _submit = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
                       return regeneratorRuntime.wrap(function _callee4$(_context4) {
                         while (1) {
                           switch (_context4.prev = _context4.next) {
@@ -4940,11 +4824,7 @@ var svgEditorExtension_server_opensave = (function () {
                   }
 
                   if (form[0] === openSvgForm[0]) {
-                    inp.change(
-                    /*#__PURE__*/
-                    _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee2() {
+                    inp.change( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
                       var ok;
                       return regeneratorRuntime.wrap(function _callee2$(_context2) {
                         while (1) {
@@ -4976,11 +4856,7 @@ var svgEditorExtension_server_opensave = (function () {
                       }, _callee2);
                     })));
                   } else {
-                    inp.change(
-                    /*#__PURE__*/
-                    _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee3() {
+                    inp.change( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
                       return regeneratorRuntime.wrap(function _callee3$(_context3) {
                         while (1) {
                           switch (_context3.prev = _context3.next) {
@@ -5078,9 +4954,7 @@ var svgEditorExtension_server_opensave = (function () {
                   },
                   // Todo: Integrate this extension with a new built-in exportWindowType, "download"
                   exportImage: function exportImage(win, data) {
-                    return _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee() {
+                    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                       var issues, mimeType, quality, c, datauri, pre, note, filename, suffix;
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {

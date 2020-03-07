@@ -50,9 +50,7 @@ var svgEditorExtension_foreignobject = (function () {
     init: function init(S) {
       var _this = this;
 
-      return _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2() {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         var svgEditor, $, text2xml, NS, importLocale, svgCanvas, svgdoc, strings, properlySourceSizeTextArea, showPanel, toggleSourceButtons, selElems, started, newFO, editingforeign, setForeignString, showForeignEditor, setAttr, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -220,11 +218,7 @@ var svgEditorExtension_foreignobject = (function () {
                       // Create source save/cancel buttons
 
                       /* const save = */
-                      $('#tool_source_save').clone().hide().attr('id', 'foreign_save').unbind().appendTo('#tool_source_back').click(
-                      /*#__PURE__*/
-                      _asyncToGenerator(
-                      /*#__PURE__*/
-                      regeneratorRuntime.mark(function _callee() {
+                      $('#tool_source_save').clone().hide().attr('id', 'foreign_save').unbind().appendTo('#tool_source_back').click( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                         var ok;
                         return regeneratorRuntime.wrap(function _callee$(_context) {
                           while (1) {

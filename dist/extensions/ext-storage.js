@@ -254,9 +254,7 @@ var svgEditorExtension_storage = (function () {
         name: 'storage',
         langReady: function langReady(_ref4) {
           var importLocale = _ref4.importLocale;
-          return _asyncToGenerator(
-          /*#__PURE__*/
-          regeneratorRuntime.mark(function _callee() {
+          return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
             var storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight, _ref5, pref, checked;
 
             return regeneratorRuntime.wrap(function _callee$(_context) {
