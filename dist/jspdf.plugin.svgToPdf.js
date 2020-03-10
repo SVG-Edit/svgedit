@@ -909,7 +909,7 @@
                   };
                 }
 
-                document.body.removeChild(svg);
+                svg.remove();
               }
 
               return box.width;

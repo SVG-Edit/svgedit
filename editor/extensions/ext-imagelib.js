@@ -22,8 +22,12 @@ export default {
     imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(({name, url, description}) => {
       // Todo: Adopt some standard formatting library like `fluent.js` instead
       url = url
+        // Keep these regexes as is in prep. for switching to `u` flag
+        //  which will require escaping
+        // eslint-disable-next-line unicorn/better-regex
         .replace(/\{path\}/g, extIconsPath)
         .replace(
+          // eslint-disable-next-line unicorn/better-regex
           /\{modularVersion\}/g,
           modularVersion
             ? (imagelibStrings.moduleEnding || '-es')

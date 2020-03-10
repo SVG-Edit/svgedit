@@ -4511,7 +4511,9 @@ this.setSvgString = function (xmlString, preventUndo) {
 
     // remove old svg document
     const {nextSibling} = svgcontent;
-    const oldzoom = svgroot.removeChild(svgcontent);
+
+    svgcontent.remove();
+    const oldzoom = svgcontent;
     batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgroot));
 
     // set new svg document
@@ -6327,7 +6329,8 @@ this.deleteSelectedElements = function () {
     }
 
     const {nextSibling} = t;
-    const elem = parent.removeChild(t);
+    t.remove();
+    const elem = t;
     selectedCopy.push(selected); // for the copy
     batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
   }
@@ -6825,7 +6828,7 @@ this.ungroupSelectedElement = function () {
 
     // delete the group element (but make undo-able)
     const gNextSibling = g.nextSibling;
-    g = parent.removeChild(g);
+    g.remove();
     batchCmd.addSubCommand(new RemoveElementCommand(g, gNextSibling, parent));
 
     if (!batchCmd.isEmpty()) { addCommandToHistory(batchCmd); }

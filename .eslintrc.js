@@ -69,7 +69,7 @@ module.exports = {
       }
     },
     {
-      files: ['.eslintrc.js', '.ncurc.js'],
+      files: ['.eslintrc.js', '.ncurc.js', 'tools/mochawesome-cli.js'],
       extends: [
         'plugin:node/recommended-script'
       ],

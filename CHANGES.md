@@ -91,6 +91,7 @@
 - npm: Update scripts to reflect removal of `all_tests.html`;
   remove `browser-test` script
 - npm: Add `add-release` script
+- npm: Add reporting scripts (tests and coverage)
 - npm: Add `license-badges`, `build-docs`, and `copy` scripts to `prepublishOnly` script
 - npm: Rename `test-prep` to `prep` and other misc. script naming changes
 - npm: Update `package-lock.json`

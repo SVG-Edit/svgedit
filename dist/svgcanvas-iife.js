@@ -18338,7 +18338,8 @@ var SvgCanvas = (function () {
 
         var _svgcontent = svgcontent,
             nextSibling = _svgcontent.nextSibling;
-        var oldzoom = svgroot.removeChild(svgcontent);
+        svgcontent.remove();
+        var oldzoom = svgcontent;
         batchCmd.addSubCommand(new RemoveElementCommand$1(oldzoom, nextSibling, svgroot)); // set new svg document
         // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
 
@@ -20409,7 +20410,8 @@ var SvgCanvas = (function () {
 
         var _t = t,
             nextSibling = _t.nextSibling;
-        var elem = parent.removeChild(t);
+        t.remove();
+        var elem = t;
         selectedCopy.push(selected); // for the copy
 
         batchCmd.addSubCommand(new RemoveElementCommand$1(elem, nextSibling, parent));
@@ -20945,7 +20947,7 @@ var SvgCanvas = (function () {
         clearSelection(); // delete the group element (but make undo-able)
 
         var gNextSibling = g.nextSibling;
-        g = parent.removeChild(g);
+        g.remove();
         batchCmd.addSubCommand(new RemoveElementCommand$1(g, gNextSibling, parent));
 
         if (!batchCmd.isEmpty()) {

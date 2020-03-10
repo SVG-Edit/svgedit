@@ -428,7 +428,7 @@ const svgElementToPdf = function (element, pdf, options) {
           } catch (error) {
             box = {width: 0};
           }
-          document.body.removeChild(svg);
+          svg.remove();
         }
         return box.width;
       };
