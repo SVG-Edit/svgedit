@@ -2,6 +2,7 @@
 
 ## 6.0.0
 
+- Project: Add `FUNDING.yml` to accept contributions
 - License: Reflect actual license of library in `package.json` based
   not only on licenses of repository as a whole (i.e., "MIT") but
   individual component files; see `filesByLicense` in `licenseInfo.json`
