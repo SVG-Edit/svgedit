@@ -15,7 +15,9 @@
 [![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
 
 [![Licenses badge](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/licenses-badge.svg?sanitize=true)](badges/licenses-badge.svg)
+
 (see also [licenses for dev. deps.](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/licenses-badge-dev.svg?sanitize=true))
+
 (Note: The protective license `CC-BY-SA-2.0` is due to our containing at least
 one image under this stricter license; to avoid its conditions, we'd
 appreciate a replacement image. See [#377](https://github.com/SVG-Edit/svgedit/issues/377))
