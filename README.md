@@ -41,10 +41,13 @@ to join the project.
 
 ## Demo
 
-### [Try SVG-edit here](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
+### [Try SVG-edit here](https://svg-edit.github.io/svgedit/editor/svg-editor.html)
 
-See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
+<!-- See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
 (or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor-es.html)
+version, which requires a modern browser).
+-->
+See a working editor on [`master`](https://svg-edit.github.io/svgedit/editor/svg-editor.html) (or its [ES6-Module](https://svg-edit.github.io/svgedit/editor/svg-editor-es.html)
 version, which requires a modern browser).
 
 You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>
