@@ -4,7 +4,7 @@
 // See rollup-config.config.js instead for building the main (configurable)
 //   user entrance file
 import {join, basename} from 'path';
-import {lstatSync, readdirSync, copyFileSync} from 'fs';
+import {lstatSync, readdirSync, copyFileSync, mkdirSync} from 'fs';
 
 import babel from 'rollup-plugin-babel';
 import {terser} from 'rollup-plugin-terser';
@@ -183,6 +183,7 @@ export default [
   }),
   ...extensionFiles.map((extensionFile) => {
     if (extensionFile.match(/\.php$/)) {
+      mkdirSync('dist/extensions', {recursive: true});
       copyFileSync(
         join('editor/extensions', extensionFile),
         join('dist/extensions', extensionFile)
