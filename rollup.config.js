@@ -183,9 +183,7 @@ export default [
   }),
   ...extensionFiles.map((extensionFile) => {
     if (extensionFile.match(/\.php$/)) {
-      mkdirSync('dist/extensions', { recursive: true }, (err) => {
-        if (err) throw err;
-      });
+      mkdirSync('dist/extensions', {recursive: true});
       copyFileSync(
         join('editor/extensions', extensionFile),
         join('dist/extensions', extensionFile)
