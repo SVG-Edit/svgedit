@@ -7107,11 +7107,10 @@ var pathActions = function () {
             rubberBox = editorContext_.setRubberBox(editorContext_.selectorManager.getRubberBandBox());
           }
 
-          var _currentZoom = editorContext_.getCurrentZoom();
-
+          var currentZoom = editorContext_.getCurrentZoom();
           assignAttributes(rubberBox, {
-            x: startX * _currentZoom,
-            y: startY * _currentZoom,
+            x: startX * currentZoom,
+            y: startY * currentZoom,
             width: 0,
             height: 0,
             display: 'inline'
