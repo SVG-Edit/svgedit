@@ -50,17 +50,13 @@ var svgEditorExtension_grid = (function () {
     init: function init(_ref) {
       var _this = this;
 
-      var $ = _ref.$,
-          NS = _ref.NS,
-          getTypeMap = _ref.getTypeMap,
-          importLocale = _ref.importLocale;
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridDefs, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
+        var $, NS, getTypeMap, importLocale, strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridDefs, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                gridUpdate = function _ref3() {
+                gridUpdate = function _gridUpdate() {
                   if (showGrid) {
                     updateGrid(svgCanvas.getZoom());
                   }
@@ -69,7 +65,7 @@ var svgEditorExtension_grid = (function () {
                   $('#view_grid').toggleClass('push_button_pressed tool_button');
                 };
 
-                updateGrid = function _ref2(zoom) {
+                updateGrid = function _updateGrid(zoom) {
                   // TODO: Try this with <line> elements, then compare performance difference
                   var unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
 
@@ -117,10 +113,11 @@ var svgEditorExtension_grid = (function () {
                   svgCanvas.setHref(gridimg, datauri);
                 };
 
-                _context.next = 4;
+                $ = _ref.$, NS = _ref.NS, getTypeMap = _ref.getTypeMap, importLocale = _ref.importLocale;
+                _context.next = 5;
                 return importLocale();
 
-              case 4:
+              case 5:
                 strings = _context.sent;
                 svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
@@ -210,7 +207,7 @@ var svgEditorExtension_grid = (function () {
                   })
                 });
 
-              case 26:
+              case 27:
               case "end":
                 return _context.stop();
             }

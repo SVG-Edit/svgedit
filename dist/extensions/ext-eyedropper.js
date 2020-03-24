@@ -56,7 +56,7 @@ var svgEditorExtension_eyedropper = (function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                getStyle = function _ref(opts) {
+                getStyle = function _getStyle(opts) {
                   // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
                   var mode = svgCanvas.getMode();
 

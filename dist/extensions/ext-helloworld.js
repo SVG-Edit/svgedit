@@ -38,7 +38,7 @@ var svgEditorExtension_helloworld = (function () {
   }
 
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _arrayWithHoles(arr) {
@@ -46,10 +46,7 @@ var svgEditorExtension_helloworld = (function () {
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -75,8 +72,25 @@ var svgEditorExtension_helloworld = (function () {
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
@@ -98,18 +112,17 @@ var svgEditorExtension_helloworld = (function () {
     init: function init(_ref) {
       var _this = this;
 
-      var $ = _ref.$,
-          importLocale = _ref.importLocale;
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var strings, svgEditor, svgCanvas;
+        var $, importLocale, strings, svgEditor, svgCanvas;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                $ = _ref.$, importLocale = _ref.importLocale;
+                _context.next = 3;
                 return importLocale();
 
-              case 2:
+              case 3:
                 strings = _context.sent;
                 svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
@@ -177,7 +190,7 @@ var svgEditorExtension_helloworld = (function () {
                   }
                 });
 
-              case 6:
+              case 7:
               case "end":
                 return _context.stop();
             }

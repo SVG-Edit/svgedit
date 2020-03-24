@@ -54,17 +54,17 @@ var svgEditorExtension_panning = (function () {
     init: function init(_ref) {
       var _this = this;
 
-      var importLocale = _ref.importLocale;
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var strings, svgEditor, svgCanvas, buttons;
+        var importLocale, strings, svgEditor, svgCanvas, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                importLocale = _ref.importLocale;
+                _context.next = 3;
                 return importLocale();
 
-              case 2:
+              case 3:
                 strings = _context.sent;
                 svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
@@ -107,7 +107,7 @@ var svgEditorExtension_panning = (function () {
                   }
                 });
 
-              case 7:
+              case 8:
               case "end":
                 return _context.stop();
             }

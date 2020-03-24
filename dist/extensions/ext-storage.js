@@ -38,7 +38,7 @@ var svgEditorExtension_storage = (function () {
   }
 
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _arrayWithHoles(arr) {
@@ -46,10 +46,7 @@ var svgEditorExtension_storage = (function () {
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -75,8 +72,25 @@ var svgEditorExtension_storage = (function () {
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
@@ -253,31 +267,31 @@ var svgEditorExtension_storage = (function () {
       return {
         name: 'storage',
         langReady: function langReady(_ref4) {
-          var importLocale = _ref4.importLocale;
           return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-            var storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight, _ref5, pref, checked;
+            var importLocale, storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight, _yield$$$select, pref, checked;
 
             return regeneratorRuntime.wrap(function _callee$(_context) {
               while (1) {
                 switch (_context.prev = _context.next) {
                   case 0:
+                    importLocale = _ref4.importLocale;
                     storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
-                    _context.next = 3;
+                    _context.next = 4;
                     return importLocale();
 
-                  case 3:
+                  case 4:
                     confirmSetStorage = _context.sent;
                     message = confirmSetStorage.message, storagePrefsAndContent = confirmSetStorage.storagePrefsAndContent, storagePrefsOnly = confirmSetStorage.storagePrefsOnly, storagePrefs = confirmSetStorage.storagePrefs, storageNoPrefsOrContent = confirmSetStorage.storageNoPrefsOrContent, storageNoPrefs = confirmSetStorage.storageNoPrefs, rememberLabel = confirmSetStorage.rememberLabel, rememberTooltip = confirmSetStorage.rememberTooltip; // No need to run this one-time dialog again just because the user
                     //   changes the language
 
                     if (!loaded) {
-                      _context.next = 7;
+                      _context.next = 8;
                       break;
                     }
 
                     return _context.abrupt("return");
 
-                  case 7:
+                  case 8:
                     loaded = true; // Note that the following can load even if "noStorageOnLoad" is
                     //   set to false; to avoid any chance of storage, avoid this
                     //   extension! (and to avoid using any prior storage, set the
@@ -293,7 +307,7 @@ var svgEditorExtension_storage = (function () {
                     storagePrompt !== 'false' && // ...and this user hasn't previously indicated a desire for storage
                     !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/) // ...then show the storage prompt.
                     ))) {
-                      _context.next = 43;
+                      _context.next = 44;
                       break;
                     }
 
@@ -329,20 +343,20 @@ var svgEditorExtension_storage = (function () {
                     // From svg-editor.js
 
                     svgEditor.storagePromptState = 'waiting';
-                    _context.next = 19;
+                    _context.next = 20;
                     return $.select(message, options, null, null, {
                       label: rememberLabel,
                       checked: true,
                       tooltip: rememberTooltip
                     });
 
-                  case 19:
-                    _ref5 = _context.sent;
-                    pref = _ref5.response;
-                    checked = _ref5.checked;
+                  case 20:
+                    _yield$$$select = _context.sent;
+                    pref = _yield$$$select.response;
+                    checked = _yield$$$select.checked;
 
                     if (!(pref && pref !== 'noPrefsOrContent')) {
-                      _context.next = 29;
+                      _context.next = 30;
                       break;
                     }
 
@@ -359,18 +373,18 @@ var svgEditorExtension_storage = (function () {
                     //    them instead to a URL which does not always prompt
 
                     if (!(storagePrompt === 'true' && checked)) {
-                      _context.next = 27;
+                      _context.next = 28;
                       break;
                     }
 
                     replaceStoragePrompt();
                     return _context.abrupt("return");
 
-                  case 27:
-                    _context.next = 34;
+                  case 28:
+                    _context.next = 35;
                     break;
 
-                  case 29:
+                  case 30:
                     // The user does not wish storage (or cancelled, which we treat equivalently)
                     removeStoragePrefCookie();
 
@@ -380,7 +394,7 @@ var svgEditorExtension_storage = (function () {
                     }
 
                     if (!(pref && checked)) {
-                      _context.next = 34;
+                      _context.next = 35;
                       break;
                     }
 
@@ -388,7 +402,7 @@ var svgEditorExtension_storage = (function () {
                     replaceStoragePrompt('false');
                     return _context.abrupt("return");
 
-                  case 34:
+                  case 35:
                     // Reset width/height of dialog (e.g., for use by Export)
                     $('#dialog_container')[0].style.width = oldContainerWidth;
                     $('#dialog_container')[0].style.marginLeft = oldContainerMarginLeft;
@@ -405,15 +419,15 @@ var svgEditorExtension_storage = (function () {
                     setupBeforeUnloadListener();
                     svgEditor.storagePromptState = 'closed';
                     updateCanvas(true);
-                    _context.next = 44;
+                    _context.next = 45;
                     break;
 
-                  case 43:
+                  case 44:
                     if (!noStorageOnLoad || forceStorage) {
                       setupBeforeUnloadListener();
                     }
 
-                  case 44:
+                  case 45:
                   case "end":
                     return _context.stop();
                 }

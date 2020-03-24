@@ -49,18 +49,17 @@ var svgEditorExtension_webappfind = (function () {
     init: function init(_ref) {
       var _this = this;
 
-      var importLocale = _ref.importLocale,
-          $ = _ref.$;
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var strings, svgEditor, saveMessage, readMessage, excludedMessages, pathID, buttons;
+        var importLocale, $, strings, svgEditor, saveMessage, readMessage, excludedMessages, pathID, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                importLocale = _ref.importLocale, $ = _ref.$;
+                _context.next = 3;
                 return importLocale();
 
-              case 2:
+              case 3:
                 strings = _context.sent;
                 svgEditor = _this;
                 saveMessage = 'save', readMessage = 'read', excludedMessages = [readMessage, saveMessage];
@@ -162,7 +161,7 @@ var svgEditorExtension_webappfind = (function () {
                   })
                 });
 
-              case 8:
+              case 9:
               case "end":
                 return _context.stop();
             }

@@ -52,18 +52,17 @@ var svgEditorExtension_closepath = (function () {
     init: function init(_ref) {
       var _this = this;
 
-      var importLocale = _ref.importLocale,
-          $ = _ref.$;
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var strings, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
+        var importLocale, $, strings, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                importLocale = _ref.importLocale, $ = _ref.$;
+                _context.next = 3;
                 return importLocale();
 
-              case 2:
+              case 3:
                 strings = _context.sent;
                 svgEditor = _this;
 
@@ -155,7 +154,7 @@ var svgEditorExtension_closepath = (function () {
                   }
                 });
 
-              case 9:
+              case 10:
               case "end":
                 return _context.stop();
             }

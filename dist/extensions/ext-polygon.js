@@ -55,20 +55,20 @@ var svgEditorExtension_polygon = (function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                sec = function _ref4(n) {
+                sec = function _sec(n) {
                   return 1 / Math.cos(n);
                 };
 
-                cot = function _ref3(n) {
+                cot = function _cot(n) {
                   return 1 / Math.tan(n);
                 };
 
-                setAttr = function _ref2(attr, val) {
+                setAttr = function _setAttr(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
                   svgCanvas.call('changed', selElems);
                 };
 
-                showPanel = function _ref(on) {
+                showPanel = function _showPanel(on) {
                   var fcRules = $('#fc_rules');
 
                   if (!fcRules.length) {

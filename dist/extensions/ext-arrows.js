@@ -56,7 +56,7 @@ var svgEditorExtension_arrows = (function () {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                colorChanged = function _ref10(elem) {
+                colorChanged = function _colorChanged(elem) {
                   var color = elem.getAttribute('stroke');
                   var mtypes = ['start', 'mid', 'end'];
                   var defs = svgCanvas.findDefs();
@@ -122,7 +122,7 @@ var svgEditorExtension_arrows = (function () {
                   });
                 };
 
-                setArrow = function _ref9() {
+                setArrow = function _setArrow() {
                   resetMarker();
                   var type = this.value;
 
@@ -150,7 +150,7 @@ var svgEditorExtension_arrows = (function () {
                   svgCanvas.call('changed', selElems);
                 };
 
-                addMarker = function _ref8(dir, type, id) {
+                addMarker = function _addMarker(dir, type, id) {
                   // TODO: Make marker (or use?) per arrow type, since refX can be different
                   id = id || arrowprefix + dir;
                   var data = pathdata[dir];
@@ -191,14 +191,14 @@ var svgEditorExtension_arrows = (function () {
                   return marker;
                 };
 
-                resetMarker = function _ref7() {
+                resetMarker = function _resetMarker() {
                   var el = selElems[0];
                   el.removeAttribute('marker-start');
                   el.removeAttribute('marker-mid');
                   el.removeAttribute('marker-end');
                 };
 
-                showPanel = function _ref6(on) {
+                showPanel = function _showPanel(on) {
                   $('#arrow_panel').toggle(on);
 
                   if (on) {
@@ -230,7 +230,7 @@ var svgEditorExtension_arrows = (function () {
                   }
                 };
 
-                getLinked = function _ref5(elem, attr) {
+                getLinked = function _getLinked(elem, attr) {
                   var str = elem.getAttribute(attr);
 
                   if (!str) {
@@ -247,14 +247,14 @@ var svgEditorExtension_arrows = (function () {
                   return svgCanvas.getElem(m[1]); // return svgCanvas.getElem(m.groups.id);
                 };
 
-                unsetArrowNonce = function _ref4(win) {
+                unsetArrowNonce = function _unsetArrowNonce(win) {
                   randomizeIds = false;
                   arrowprefix = prefix;
                   pathdata.fw.id = arrowprefix + 'fw';
                   pathdata.bk.id = arrowprefix + 'bk';
                 };
 
-                setArrowNonce = function _ref3(win, n) {
+                setArrowNonce = function _setArrowNonce(win, n) {
                   randomizeIds = true;
                   arrowprefix = prefix + n + '_';
                   pathdata.fw.id = arrowprefix + 'fw';
@@ -325,26 +325,25 @@ var svgEditorExtension_arrows = (function () {
                     $('#arrow_list option')[0].id = 'connector_no_arrow';
                   },
                   addLangData: function addLangData(_ref) {
-                    var lang = _ref.lang,
-                        importLocale = _ref.importLocale;
                     return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-                      var _ref2, langList;
+                      var lang, importLocale, _yield$importLocale, langList;
 
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
                           switch (_context.prev = _context.next) {
                             case 0:
-                              _context.next = 2;
+                              lang = _ref.lang, importLocale = _ref.importLocale;
+                              _context.next = 3;
                               return importLocale();
 
-                            case 2:
-                              _ref2 = _context.sent;
-                              langList = _ref2.langList;
+                            case 3:
+                              _yield$importLocale = _context.sent;
+                              langList = _yield$importLocale.langList;
                               return _context.abrupt("return", {
                                 data: langList
                               });
 
-                            case 5:
+                            case 6:
                             case "end":
                               return _context.stop();
                           }

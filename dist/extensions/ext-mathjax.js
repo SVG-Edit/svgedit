@@ -106,15 +106,13 @@ var svgEditorExtension_mathjax = (function () {
     init: function init(_ref) {
       var _this = this;
 
-      var $ = _ref.$,
-          importLocale = _ref.importLocale;
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var strings, svgEditor, svgCanvas, mathjaxSrcSecure, uiStrings, math, locationX, locationY, mathjaxLoaded, saveMath, buttons;
+        var $, importLocale, strings, svgEditor, svgCanvas, mathjaxSrcSecure, uiStrings, math, locationX, locationY, mathjaxLoaded, saveMath, buttons;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                saveMath = function _ref2() {
+                saveMath = function _saveMath() {
                   var code = $('#mathjax_code_textarea').val(); // displaystyle to force MathJax NOT to use the inline style. Because it is
                   // less fancy!
 
@@ -166,10 +164,11 @@ var svgEditorExtension_mathjax = (function () {
                   });
                 };
 
-                _context2.next = 3;
+                $ = _ref.$, importLocale = _ref.importLocale;
+                _context2.next = 4;
                 return importLocale();
 
-              case 3:
+              case 4:
                 strings = _context2.sent;
                 svgEditor = _this;
                 svgCanvas = svgEditor.canvas; // Configuration of the MathJax extention.
@@ -346,7 +345,7 @@ var svgEditorExtension_mathjax = (function () {
                   }
                 });
 
-              case 11:
+              case 12:
               case "end":
                 return _context2.stop();
             }

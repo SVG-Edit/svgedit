@@ -55,12 +55,12 @@ var svgEditorExtension_star = (function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                setAttr = function _ref2(attr, val) {
+                setAttr = function _setAttr(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
                   svgCanvas.call('changed', selElems);
                 };
 
-                showPanel = function _ref(on) {
+                showPanel = function _showPanel(on) {
                   var fcRules = $('#fc_rules');
 
                   if (!fcRules.length) {

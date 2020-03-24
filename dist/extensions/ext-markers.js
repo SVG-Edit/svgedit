@@ -79,7 +79,7 @@ var svgEditorExtension_markers = (function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                buildButtonList = function _ref16() {
+                buildButtonList = function _buildButtonList() {
                   var buttons = []; // const i = 0;
 
                   /*
@@ -130,7 +130,7 @@ var svgEditorExtension_markers = (function () {
                   return buttons;
                 };
 
-                getTitle = function _ref15(id) {
+                getTitle = function _getTitle(id) {
                   var langList = strings.langList;
                   var item = langList.find(function (itm) {
                     return itm.id === id;
@@ -138,7 +138,7 @@ var svgEditorExtension_markers = (function () {
                   return item ? item.title : id;
                 };
 
-                _setArrowFromButton = function _ref14() {
+                _setArrowFromButton = function _setArrowFromButton3() {
                   _setArrowFromButton = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(ev) {
                     var parts, pos, val;
                     return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -176,11 +176,11 @@ var svgEditorExtension_markers = (function () {
                   return _setArrowFromButton.apply(this, arguments);
                 };
 
-                setArrowFromButton = function _ref13(_x2) {
+                setArrowFromButton = function _setArrowFromButton2(_x2) {
                   return _setArrowFromButton.apply(this, arguments);
                 };
 
-                _showTextPrompt = function _ref12() {
+                _showTextPrompt = function _showTextPrompt3() {
                   _showTextPrompt = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(pos) {
                     var def, txt;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -213,18 +213,18 @@ var svgEditorExtension_markers = (function () {
                   return _showTextPrompt.apply(this, arguments);
                 };
 
-                showTextPrompt = function _ref11(_x) {
+                showTextPrompt = function _showTextPrompt2(_x) {
                   return _showTextPrompt.apply(this, arguments);
                 };
 
-                triggerTextEntry = function _ref10(pos, val) {
+                triggerTextEntry = function _triggerTextEntry(pos, val) {
                   $('#' + pos + '_marker').val(val);
                   $('#' + pos + '_marker').change(); // const txtbox = $('#'+pos+'_marker');
                   // if (val.substr(0,1)=='\\') {txtbox.hide();}
                   // else {txtbox.show();}
                 };
 
-                updateReferences = function _ref9(el) {
+                updateReferences = function _updateReferences(el) {
                   $.each(mtypes, function (i, pos) {
                     var id = markerPrefix + pos + '_' + el.id;
                     var markerName = 'marker-' + pos;
@@ -256,7 +256,7 @@ var svgEditorExtension_markers = (function () {
                   });
                 };
 
-                colorChanged = function _ref8(elem) {
+                colorChanged = function _colorChanged(elem) {
                   var color = elem.getAttribute('stroke');
                   $.each(mtypes, function (i, pos) {
                     var marker = getLinked(elem, 'marker-' + pos);
@@ -289,7 +289,7 @@ var svgEditorExtension_markers = (function () {
                   });
                 };
 
-                setMarker = function _ref7() {
+                setMarker = function _setMarker() {
                   var poslist = {
                     start_marker: 'start',
                     mid_marker: 'mid',
@@ -330,7 +330,7 @@ var svgEditorExtension_markers = (function () {
                   setIcon(pos, val);
                 };
 
-                convertline = function _ref6(elem) {
+                convertline = function _convertline(elem) {
                   // this routine came from the connectors extension
                   // it is needed because midpoint markers don't work with line elements
                   if (elem.tagName !== 'line') {
@@ -374,7 +374,7 @@ var svgEditorExtension_markers = (function () {
                   return pline;
                 };
 
-                addMarker = function _ref5(id, val) {
+                addMarker = function _addMarker(id, val) {
                   var txtBoxBg = '#ffffff';
                   var txtBoxBorder = 'none';
                   var txtBoxStrokeWidth = 0;
@@ -478,7 +478,7 @@ var svgEditorExtension_markers = (function () {
                   return marker;
                 };
 
-                showPanel = function _ref4(on) {
+                showPanel = function _showPanel(on) {
                   $('#marker_panel').toggle(on);
 
                   if (on) {
@@ -514,7 +514,7 @@ var svgEditorExtension_markers = (function () {
                   }
                 };
 
-                setIcon = function _ref3(pos, id) {
+                setIcon = function _setIcon(pos, id) {
                   if (id.substr(0, 1) !== '\\') {
                     id = '\\textmarker';
                   }
@@ -524,7 +524,7 @@ var svgEditorExtension_markers = (function () {
                   $(ci).addClass('current').siblings().removeClass('current');
                 };
 
-                getLinked = function _ref2(elem, attr) {
+                getLinked = function _getLinked(elem, attr) {
                   var str = elem.getAttribute(attr);
 
                   if (!str) {

@@ -56,12 +56,12 @@ var svgEditorExtension_foreignobject = (function () {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                setAttr = function _ref6(attr, val) {
+                setAttr = function _setAttr(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
                   svgCanvas.call('changed', selElems);
                 };
 
-                showForeignEditor = function _ref5() {
+                showForeignEditor = function _showForeignEditor() {
                   var elt = selElems[0];
 
                   if (!elt || editingforeign) {
@@ -78,7 +78,7 @@ var svgEditorExtension_foreignobject = (function () {
                   $('#svg_source_textarea').focus();
                 };
 
-                setForeignString = function _ref4(xmlString) {
+                setForeignString = function _setForeignString(xmlString) {
                   var elt = selElems[0]; // The parent `Element` to append to
 
                   try {
@@ -99,12 +99,12 @@ var svgEditorExtension_foreignobject = (function () {
                   return true;
                 };
 
-                toggleSourceButtons = function _ref3(on) {
+                toggleSourceButtons = function _toggleSourceButtons(on) {
                   $('#tool_source_save, #tool_source_cancel').toggle(!on);
                   $('#foreign_save, #foreign_cancel').toggle(on);
                 };
 
-                showPanel = function _ref2(on) {
+                showPanel = function _showPanel(on) {
                   var fcRules = $('#fc_rules');
 
                   if (!fcRules.length) {
