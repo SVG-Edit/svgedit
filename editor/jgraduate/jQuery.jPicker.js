@@ -463,11 +463,11 @@ const jPicker = function ($) {
         case alpha && alpha.get(0):
           switch (e.keyCode) {
           case 38:
-            alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) + 1, 0, 100));
+            alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) + 1, 0, 100));
             color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
             return false;
           case 40:
-            alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) - 1, 0, 100));
+            alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) - 1, 0, 100));
             color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
             return false;
           }
@@ -563,7 +563,7 @@ const jPicker = function ($) {
           break;
         case ahex && ahex.get(0):
           ahex.val(ahex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2));
-          color.val('a', !isNullish(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
+          color.val('a', !isNullish(ahex.val()) ? Number.parseInt(ahex.val(), 16) : null, e.target);
           break;
         }
         return undefined;
@@ -1086,7 +1086,7 @@ const jPicker = function ($) {
       * @returns {Integer}
       */
       hexToInt (hex) {
-        return parseInt(hex, 16);
+        return Number.parseInt(hex, 16);
       },
       /**
       * @typedef {PlainObject} module:jPicker.HSV
@@ -1120,7 +1120,7 @@ const jPicker = function ($) {
           if (r === max) hsv.h = (g - b) / delta;
           else if (g === max) hsv.h = 2 + (b - r) / delta;
           else hsv.h = 4 + (r - g) / delta;
-          hsv.h = parseInt(hsv.h * 60);
+          hsv.h = Number.parseInt(hsv.h * 60);
           if (hsv.h < 0) hsv.h += 360;
         }
         hsv.s = (hsv.s * 100) | 0;
@@ -1251,7 +1251,7 @@ const jPicker = function ($) {
       } else {
         settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
       }
-      const isLessThanIE7 = parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
+      const isLessThanIE7 = Number.parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
       // set color mode and update visuals for the new color mode
       /**
        *
@@ -1802,8 +1802,8 @@ const jPicker = function ($) {
       function moveBarMouseDown (e) {
         // const {element} = settings.window, // local copies for YUI compressor
         //     {page} = settings.window;
-        elementStartX = parseInt(container.css('left'));
-        elementStartY = parseInt(container.css('top'));
+        elementStartX = Number.parseInt(container.css('left'));
+        elementStartY = Number.parseInt(container.css('top'));
         pageStartX = e.pageX;
         pageStartY = e.pageY;
         // bind events to document to move window - we will unbind these on mouseup
@@ -2000,7 +2000,7 @@ const jPicker = function ($) {
                       ? (popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0)) + 'px'
                       : win.position.x === 'screenCenter'
                         ? (($(document).width() >> 1) - 260) + 'px'
-                        : (popup.offset().left + parseInt(win.position.x)) + 'px',
+                        : (popup.offset().left + Number.parseInt(win.position.x)) + 'px',
               position: 'absolute',
               top: win.position.y === 'top'
                 ? (popup.offset().top - 312) + 'px'
@@ -2008,7 +2008,7 @@ const jPicker = function ($) {
                   ? (popup.offset().top - 156) + 'px'
                   : win.position.y === 'bottom'
                     ? (popup.offset().top + 25) + 'px'
-                    : (popup.offset().top + parseInt(win.position.y)) + 'px'
+                    : (popup.offset().top + Number.parseInt(win.position.y)) + 'px'
             }
           );
         } else {

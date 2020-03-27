@@ -61,7 +61,10 @@ module.exports = {
         polyfills: [
           'document.querySelector',
           'history.pushState',
-          'history.replaceState'
+          'history.replaceState',
+          'Number.parseFloat',
+          'Number.parseInt',
+          'Number.isNaN'
         ]
       },
       rules: {
@@ -136,6 +139,9 @@ module.exports = {
           'JSON',
           'location.href',
           'MutationObserver',
+          'Number.isNaN',
+          'Number.parseFloat',
+          'Number.parseInt',
           'Object.assign',
           'Object.defineProperty',
           'Object.defineProperties',
@@ -170,6 +176,9 @@ module.exports = {
           'console',
           'fetch',
           'location.origin',
+          'Number.isNaN',
+          'Number.parseFloat',
+          'Number.parseInt',
           'window.postMessage'
         ]
       },
@@ -231,6 +240,8 @@ module.exports = {
       files: ['canvg/rgbcolor.js'],
       settings: {
         polyfills: [
+          'Number.isNaN',
+          'Number.parseInt',
           'Object.assign',
           'Object.keys'
         ]
@@ -266,6 +277,7 @@ module.exports = {
           'document.body',
           'document.head',
           'DOMParser',
+          'Number.isNaN',
           'Object.keys',
           'Object.entries',
           'Promise'

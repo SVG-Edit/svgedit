@@ -140,7 +140,7 @@ export const shortFloat = function (val) {
   if (Array.isArray(val)) {
     return shortFloat(val[0]) + ',' + shortFloat(val[1]);
   }
-  return parseFloat(val).toFixed(digits) - 0;
+  return Number.parseFloat(val).toFixed(digits) - 0;
 };
 
 /**

@@ -172,7 +172,7 @@ export class SVGTransformList { // eslint-disable-line no-shadow
           */
           const mtx = svgroot.createSVGMatrix();
           Object.values(valArr).forEach(function (item, i) {
-            valArr[i] = parseFloat(item);
+            valArr[i] = Number.parseFloat(item);
             if (name === 'matrix') {
               mtx[letters[i]] = valArr[i];
             }

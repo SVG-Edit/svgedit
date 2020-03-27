@@ -224,7 +224,7 @@ function build (opts) {
     numValue () {
       if (!this.hasValue()) return 0;
 
-      let n = parseFloat(this.value);
+      let n = Number.parseFloat(this.value);
       if (String(this.value).endsWith('%')) {
         n /= 100.0;
       }
@@ -414,7 +414,7 @@ function build (opts) {
   // points and paths
   svg.ToNumberArray = function (s) {
     const a = svg.trim(svg.compressSpaces((s || '').replace(/,/g, ' '))).split(' ');
-    return a.map((_a) => parseFloat(_a));
+    return a.map((_a) => Number.parseFloat(_a));
   };
   svg.Point = class {
     constructor (x, y) {
@@ -1308,7 +1308,7 @@ function build (opts) {
         },
 
         getScalar () {
-          return parseFloat(this.getToken());
+          return Number.parseFloat(this.getToken());
         },
 
         nextCommand () {
@@ -1908,8 +1908,8 @@ function build (opts) {
       if (this.values.hasValue()) {
         const p = ret.progress * (this.values.value.length - 1);
         const lb = Math.floor(p), ub = Math.ceil(p);
-        ret.from = new svg.Property('from', parseFloat(this.values.value[lb]));
-        ret.to = new svg.Property('to', parseFloat(this.values.value[ub]));
+        ret.from = new svg.Property('from', Number.parseFloat(this.values.value[lb]));
+        ret.to = new svg.Property('to', Number.parseFloat(this.values.value[ub]));
         ret.progress = (p - lb) / (ub - lb);
       } else {
         ret.from = this.from;
@@ -1942,7 +1942,7 @@ function build (opts) {
         const r = from.r + (to.r - from.r) * p.progress;
         const g = from.g + (to.g - from.g) * p.progress;
         const b = from.b + (to.b - from.b) * p.progress;
-        return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')';
+        return 'rgb(' + Number.parseInt(r) + ',' + Number.parseInt(g) + ',' + Number.parseInt(b) + ')';
       }
       return this.attribute('from').value;
     }

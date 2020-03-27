@@ -146,8 +146,8 @@ export default function jQueryPluginSpinButton ($) {
       this.spinCfg = {
         // min: cfg.min ? Number(cfg.min) : null,
         // max: cfg.max ? Number(cfg.max) : null,
-        min: !isNaN(parseFloat(cfg.min)) ? Number(cfg.min) : null, // Fixes bug with min:0
-        max: !isNaN(parseFloat(cfg.max)) ? Number(cfg.max) : null,
+        min: !isNaN(Number.parseFloat(cfg.min)) ? Number(cfg.min) : null, // Fixes bug with min:0
+        max: !isNaN(Number.parseFloat(cfg.max)) ? Number(cfg.max) : null,
         step: cfg.step ? Number(cfg.step) : 1,
         stepfunc: cfg.stepfunc || false,
         page: cfg.page ? Number(cfg.page) : 10,

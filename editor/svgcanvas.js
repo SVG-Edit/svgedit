@@ -572,7 +572,7 @@ const getCurrentZoom = this.getZoom = function () { return currentZoom; };
 * @type {module:path.EditorContext#round}
 */
 const round = this.round = function (val) {
-  return parseInt(val * currentZoom) / currentZoom;
+  return Number.parseInt(val * currentZoom) / currentZoom;
 };
 
 selectInit(
@@ -1231,8 +1231,8 @@ const getIntersectionList = this.getIntersectionList = function (rect) {
   if (!isIE()) {
     if (typeof svgroot.getIntersectionList === 'function') {
       // Offset the bbox of the rubber box by the offset of the svgcontent element.
-      rubberBBox.x += parseInt(svgcontent.getAttribute('x'));
-      rubberBBox.y += parseInt(svgcontent.getAttribute('y'));
+      rubberBBox.x += Number.parseInt(svgcontent.getAttribute('x'));
+      rubberBBox.y += Number.parseInt(svgcontent.getAttribute('y'));
 
       resultList = svgroot.getIntersectionList(rubberBBox, parent);
     }
@@ -1498,7 +1498,7 @@ const ffClone = function (elem) {
 */
 this.setRotationAngle = function (val, preventUndo) {
   // ensure val is the proper type
-  val = parseFloat(val);
+  val = Number.parseFloat(val);
   const elem = selectedElements[0];
   const oldTransform = elem.getAttribute('transform');
   const bbox = utilsGetBBox(elem);
@@ -2849,7 +2849,7 @@ const mouseUp = function (evt) {
 
     let aniDur = 0.2;
     let cAni;
-    if (opacAni.beginElement && parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
+    if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
       cAni = $(opacAni).clone().attr({
         to: curShape.opacity,
         dur: aniDur

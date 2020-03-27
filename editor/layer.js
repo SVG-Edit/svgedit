@@ -120,7 +120,7 @@ class Layer {
     if (isNullish(opacity)) {
       return 1;
     }
-    return parseFloat(opacity);
+    return Number.parseFloat(opacity);
   }
 
   /**

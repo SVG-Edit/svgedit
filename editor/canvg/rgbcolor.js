@@ -158,7 +158,7 @@ const colorDefs = [
     // re: /^rgb\((?<r>\d{1,3}),\s*(?<g>\d{1,3}),\s*(?<b>\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
     process (_, ...bits) {
-      return bits.map((b) => parseInt(b));
+      return bits.map((b) => Number.parseInt(b));
     }
   },
   {
@@ -166,7 +166,7 @@ const colorDefs = [
     // re: /^(?<r>\w{2})(?<g>\w{2})(?<b>\w{2})$/,
     example: ['#00ff00', '336699'],
     process (_, ...bits) {
-      return bits.map((b) => parseInt(b, 16));
+      return bits.map((b) => Number.parseInt(b, 16));
     }
   },
   {
@@ -174,7 +174,7 @@ const colorDefs = [
     // re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
     example: ['#fb0', 'f0f'],
     process (_, ...bits) {
-      return bits.map((b) => parseInt(b + b, 16));
+      return bits.map((b) => Number.parseInt(b + b, 16));
     }
   }
 ];

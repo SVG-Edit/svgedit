@@ -661,8 +661,8 @@ export const getBBox = function (elem) {
         const bb = {
           width,
           height,
-          x: x + parseFloat(selected.getAttribute('x') || 0),
-          y: y + parseFloat(selected.getAttribute('y') || 0)
+          x: x + Number.parseFloat(selected.getAttribute('x') || 0),
+          y: y + Number.parseFloat(selected.getAttribute('y') || 0)
         };
         ret = bb;
       }

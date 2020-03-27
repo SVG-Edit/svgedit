@@ -969,7 +969,7 @@ editor.init = function () {
         const s = sides[i];
         let cur = el.data('orig_margin-' + s);
         if (Utils.isNullish(cur)) {
-          cur = parseInt(el.css('margin-' + s));
+          cur = Number.parseInt(el.css('margin-' + s));
           // Cache the original margin
           el.data('orig_margin-' + s, cur);
         }
@@ -1986,7 +1986,7 @@ editor.init = function () {
 
       // Create multiple canvases when necessary (due to browser limits)
       if (rulerLen >= limit) {
-        ctxArrNum = parseInt(rulerLen / limit) + 1;
+        ctxArrNum = Number.parseInt(rulerLen / limit) + 1;
         ctxArr = [];
         ctxArr[0] = ctx;
         let copy;
@@ -2903,7 +2903,7 @@ editor.init = function () {
                   options = tool;
                 } else {
                   // If flyout is selected, allow shift key to iterate through subitems
-                  j = parseInt(j);
+                  j = Number.parseInt(j);
                   // Use `allHolders` to include both extension `includeWith` and toolbarButtons
                   options = allHolders[opts.parent][j + 1] ||
                     holders[opts.parent][0];
@@ -3639,7 +3639,7 @@ editor.init = function () {
   */
   const changeRotationAngle = function (ctl) {
     svgCanvas.setRotationAngle(ctl.value);
-    $('#tool_reorient').toggleClass('disabled', parseInt(ctl.value) === 0);
+    $('#tool_reorient').toggleClass('disabled', Number.parseInt(ctl.value) === 0);
   };
 
   /**
@@ -4019,7 +4019,7 @@ editor.init = function () {
 
   editor.addDropDown('#opacity_dropdown', function () {
     if ($(this).find('div').length) { return; }
-    const perc = parseInt($(this).text().split('%')[0]);
+    const perc = Number.parseInt($(this).text().split('%')[0]);
     changeOpacity(false, perc);
   }, true);
 
@@ -4063,7 +4063,7 @@ editor.init = function () {
     if (val) {
       zoomChanged(window, val);
     } else {
-      changeZoom({value: parseFloat(item.text())});
+      changeZoom({value: Number.parseFloat(item.text())});
     }
   }, true);
 
@@ -4462,7 +4462,7 @@ editor.init = function () {
   const rotateSelected = function (cw, step) {
     if (Utils.isNullish(selectedElement) || multiselected) { return; }
     if (!cw) { step *= -1; }
-    const angle = parseFloat($('#angle').val()) + step;
+    const angle = Number.parseFloat($('#angle').val()) + step;
     svgCanvas.setRotationAngle(angle);
     updateContextPanel();
   };
@@ -4592,7 +4592,7 @@ editor.init = function () {
       if (!customExportImage) {
         openExportWindow();
       }
-      const quality = parseInt($('#image-slider').val()) / 100;
+      const quality = Number.parseInt($('#image-slider').val()) / 100;
       /* const results = */ await svgCanvas.rasterExport(imgType, quality, exportWindowName);
     }
   };
@@ -5184,7 +5184,7 @@ editor.init = function () {
         this._paintOpacity = 1;
         break;
       } default: {
-        this._paintOpacity = parseFloat(selectedElement.getAttribute(type + '-opacity'));
+        this._paintOpacity = Number.parseFloat(selectedElement.getAttribute(type + '-opacity'));
         if (isNaN(this._paintOpacity)) {
           this._paintOpacity = 1.0;
         }
@@ -5432,8 +5432,8 @@ editor.init = function () {
     const rulerX = $('#ruler_x');
     $('#sidepanels').width('+=' + delta);
     $('#layerpanel').width('+=' + delta);
-    rulerX.css('right', parseInt(rulerX.css('right')) + delta);
-    workarea.css('right', parseInt(workarea.css('right')) + delta);
+    rulerX.css('right', Number.parseInt(rulerX.css('right')) + delta);
+    workarea.css('right', Number.parseInt(workarea.css('right')) + delta);
     svgCanvas.runExtensions('workareaResized');
   };
 

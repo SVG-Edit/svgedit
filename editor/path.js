@@ -2003,7 +2003,7 @@ export const pathActions = (function () {
       let curPt;
       if (id.substr(0, 14) === 'pathpointgrip_') {
         // Select this point
-        curPt = path.cur_pt = parseInt(id.substr(14));
+        curPt = path.cur_pt = Number.parseInt(id.substr(14));
         path.dragging = [startX, startY];
         const seg = path.segs[curPt];
 

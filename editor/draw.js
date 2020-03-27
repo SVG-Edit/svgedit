@@ -253,7 +253,7 @@ export class Drawing {
       return false;
     }
     // extract the obj_num of this id
-    const num = parseInt(id.substr(front.length));
+    const num = Number.parseInt(id.substr(front.length));
 
     // if we didn't get a positive number or we already released this number
     // then return false.
