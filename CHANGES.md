@@ -1,6 +1,6 @@
 # SVG-Edit CHANGES
 
-## 6.0.0
+## 6.0.0 (unreleased)
 
 - Project: Add `FUNDING.yml` to accept contributions
 - License: Reflect actual license of library in `package.json` based
@@ -47,6 +47,7 @@
 - Localization: Add 'SVG-Edit Home Page' to locale files
 - Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
 - Docs: Add testing badge
+- Docs: Update coverage badge per latest coveradge
 - Docs: Add license badges and `licenseInfo.json` (has a
   `filesByLicense` map of files to licenses (not yet used programmatically)
   and `bundledRootPackages` which is used by `license-badger` to know which
