@@ -20,7 +20,7 @@ var svgEditorExtension_overview_window = (function () {
 
       if (isChrome()) {
         var verIndex = navigator.userAgent.indexOf('Chrome/') + 7;
-        var chromeVersion = parseInt(navigator.userAgent.substring(verIndex));
+        var chromeVersion = Number.parseInt(navigator.userAgent.substring(verIndex));
 
         if (chromeVersion < 49) {
           return undefined;
@@ -32,12 +32,12 @@ var svgEditorExtension_overview_window = (function () {
       $('#sidepanels').append(propsWindowHtml); // Define dynamic animation of the view box.
 
       var updateViewBox = function updateViewBox() {
-        var portHeight = parseFloat($('#workarea').css('height'));
-        var portWidth = parseFloat($('#workarea').css('width'));
+        var portHeight = Number.parseFloat($('#workarea').css('height'));
+        var portWidth = Number.parseFloat($('#workarea').css('width'));
         var portX = $('#workarea').scrollLeft();
         var portY = $('#workarea').scrollTop();
-        var windowWidth = parseFloat($('#svgcanvas').css('width'));
-        var windowHeight = parseFloat($('#svgcanvas').css('height'));
+        var windowWidth = Number.parseFloat($('#svgcanvas').css('width'));
+        var windowHeight = Number.parseFloat($('#svgcanvas').css('height'));
         var overviewWidth = $('#overviewMiniView').attr('width');
         var overviewHeight = $('#overviewMiniView').attr('height');
         var viewBoxX = portX / windowWidth * overviewWidth;
@@ -87,12 +87,12 @@ var svgEditorExtension_overview_window = (function () {
       overviewWindowGlobals.viewBoxDragging = false;
 
       var updateViewPortFromViewBox = function updateViewPortFromViewBox() {
-        var windowWidth = parseFloat($('#svgcanvas').css('width'));
-        var windowHeight = parseFloat($('#svgcanvas').css('height'));
+        var windowWidth = Number.parseFloat($('#svgcanvas').css('width'));
+        var windowHeight = Number.parseFloat($('#svgcanvas').css('height'));
         var overviewWidth = $('#overviewMiniView').attr('width');
         var overviewHeight = $('#overviewMiniView').attr('height');
-        var viewBoxX = parseFloat($('#overview_window_view_box').css('left'));
-        var viewBoxY = parseFloat($('#overview_window_view_box').css('top'));
+        var viewBoxX = Number.parseFloat($('#overview_window_view_box').css('left'));
+        var viewBoxY = Number.parseFloat($('#overview_window_view_box').css('top'));
         var portX = viewBoxX / overviewWidth * windowWidth;
         var portY = viewBoxY / overviewHeight * windowHeight;
         $('#workarea').scrollLeft(portX);
@@ -115,8 +115,8 @@ var svgEditorExtension_overview_window = (function () {
         var mouseY = evt.offsetY || evt.originalEvent.layerY;
         var overviewWidth = $('#overviewMiniView').attr('width');
         var overviewHeight = $('#overviewMiniView').attr('height');
-        var viewBoxWidth = parseFloat($('#overview_window_view_box').css('min-width'));
-        var viewBoxHeight = parseFloat($('#overview_window_view_box').css('min-height'));
+        var viewBoxWidth = Number.parseFloat($('#overview_window_view_box').css('min-width'));
+        var viewBoxHeight = Number.parseFloat($('#overview_window_view_box').css('min-height'));
         var viewBoxX = mouseX - 0.5 * viewBoxWidth;
         var viewBoxY = mouseY - 0.5 * viewBoxHeight; // deal with constraints
 

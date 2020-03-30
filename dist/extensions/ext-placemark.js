@@ -290,7 +290,7 @@ var svgEditorExtension_placemark = (function () {
 
                 updateFont = function _updateFont(font) {
                   font = font.split(' ');
-                  var fontSize = parseInt(font.pop());
+                  var fontSize = Number.parseInt(font.pop());
                   font = font.join(' ');
                   selElems.forEach(function (elem) {
                     if (elem && elem.getAttribute('class').includes('placemark')) {
@@ -504,7 +504,7 @@ var svgEditorExtension_placemark = (function () {
                       var id = svgCanvas.getNextId();
                       var items = $('#placemarkText').val().split(';');
                       var font = $('#placemarkFont').val().split(' ');
-                      var fontSize = parseInt(font.pop());
+                      var fontSize = Number.parseInt(font.pop());
                       font = font.join(' ');
                       var x0 = opts.start_x + 10,
                           y0 = opts.start_y + 10;

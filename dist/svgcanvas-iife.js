@@ -3404,7 +3404,7 @@ var SvgCanvas = (function () {
 
               var mtx = svgroot.createSVGMatrix();
               Object.values(valArr).forEach(function (item, i) {
-                valArr[i] = parseFloat(item);
+                valArr[i] = Number.parseFloat(item);
 
                 if (name === 'matrix') {
                   mtx[letters[i]] = valArr[i];
@@ -3813,7 +3813,7 @@ var SvgCanvas = (function () {
       return shortFloat(val[0]) + ',' + shortFloat(val[1]);
     }
 
-    return parseFloat(val).toFixed(digits) - 0;
+    return Number.parseFloat(val).toFixed(digits) - 0;
   };
   /**
   * Converts the number to given unit or baseUnit.
@@ -5009,8 +5009,8 @@ var SvgCanvas = (function () {
 
     min = min || 0;
     max = max || tlist.numberOfItems - 1;
-    min = parseInt(min);
-    max = parseInt(max);
+    min = Number.parseInt(min);
+    max = Number.parseInt(max);
 
     if (min > max) {
       var temp = max;
@@ -7290,7 +7290,7 @@ var SvgCanvas = (function () {
 
           if (id.substr(0, 14) === 'pathpointgrip_') {
             // Select this point
-            curPt = path.cur_pt = parseInt(id.substr(14));
+            curPt = path.cur_pt = Number.parseInt(id.substr(14));
             path.dragging = [startX, startY];
             var seg = path.segs[curPt]; // only clear selection if shift is not pressed (otherwise, add
             // node to selection)
@@ -8751,8 +8751,8 @@ var SvgCanvas = (function () {
             var bb = {
               width: width,
               height: height,
-              x: x + parseFloat(selected.getAttribute('x') || 0),
-              y: y + parseFloat(selected.getAttribute('y') || 0)
+              x: x + Number.parseFloat(selected.getAttribute('x') || 0),
+              y: y + Number.parseFloat(selected.getAttribute('y') || 0)
             };
             ret = bb;
           }
@@ -9628,7 +9628,7 @@ var SvgCanvas = (function () {
           return 1;
         }
 
-        return parseFloat(opacity);
+        return Number.parseFloat(opacity);
       }
       /**
        * Sets the opacity of this layer. If opacity is not a value between 0.0 and 1.0,
@@ -10215,7 +10215,7 @@ var SvgCanvas = (function () {
         } // extract the obj_num of this id
 
 
-        var num = parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
+        var num = Number.parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
         // then return false.
 
         if (typeof num !== 'number' || num <= 0 || this.releasedNums.includes(num)) {
@@ -11702,8 +11702,8 @@ var SvgCanvas = (function () {
         // therefore [T'] = [M_inv][T][M]
         var existing = transformListToTransform(selected).matrix,
             tNew = matrixMultiply(existing.inverse(), m, existing);
-        changes.x = parseFloat(changes.x) + tNew.e;
-        changes.y = parseFloat(changes.y) + tNew.f;
+        changes.x = Number.parseFloat(changes.x) + tNew.e;
+        changes.y = Number.parseFloat(changes.y) + tNew.f;
       } else {
         // we just absorb all matrices into the element and don't do any remapping
         var chlist = getTransformList(selected);
@@ -13967,7 +13967,7 @@ var SvgCanvas = (function () {
 
 
     var round = this.round = function (val) {
-      return parseInt(val * currentZoom) / currentZoom;
+      return Number.parseInt(val * currentZoom) / currentZoom;
     };
 
     init$6(curConfig,
@@ -14720,8 +14720,8 @@ var SvgCanvas = (function () {
       if (!isIE()) {
         if (typeof svgroot.getIntersectionList === 'function') {
           // Offset the bbox of the rubber box by the offset of the svgcontent element.
-          rubberBBox.x += parseInt(svgcontent.getAttribute('x'));
-          rubberBBox.y += parseInt(svgcontent.getAttribute('y'));
+          rubberBBox.x += Number.parseInt(svgcontent.getAttribute('x'));
+          rubberBBox.y += Number.parseInt(svgcontent.getAttribute('y'));
           resultList = svgroot.getIntersectionList(rubberBBox, parent);
         }
       }
@@ -15016,7 +15016,7 @@ var SvgCanvas = (function () {
 
     this.setRotationAngle = function (val, preventUndo) {
       // ensure val is the proper type
-      val = parseFloat(val);
+      val = Number.parseFloat(val);
       var elem = selectedElements[0];
       var oldTransform = elem.getAttribute('transform');
       var bbox = getBBox(elem);
@@ -16587,7 +16587,7 @@ var SvgCanvas = (function () {
           var aniDur = 0.2;
           var cAni;
 
-          if (opacAni.beginElement && parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
+          if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
             cAni = $$8(opacAni).clone().attr({
               to: curShape.opacity,
               dur: aniDur

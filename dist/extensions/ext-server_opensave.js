@@ -434,7 +434,7 @@ var svgEditorExtension_server_opensave = (function () {
       }
 
       return bits.map(function (b) {
-        return parseInt(b);
+        return Number.parseInt(b);
       });
     }
   }, {
@@ -447,7 +447,7 @@ var svgEditorExtension_server_opensave = (function () {
       }
 
       return bits.map(function (b) {
-        return parseInt(b, 16);
+        return Number.parseInt(b, 16);
       });
     }
   }, {
@@ -460,7 +460,7 @@ var svgEditorExtension_server_opensave = (function () {
       }
 
       return bits.map(function (b) {
-        return parseInt(b + b, 16);
+        return Number.parseInt(b + b, 16);
       });
     }
   }];
@@ -1170,7 +1170,7 @@ var svgEditorExtension_server_opensave = (function () {
         key: "numValue",
         value: function numValue() {
           if (!this.hasValue()) return 0;
-          var n = parseFloat(this.value);
+          var n = Number.parseFloat(this.value);
 
           if (String(this.value).endsWith('%')) {
             n /= 100.0;
@@ -1398,7 +1398,7 @@ var svgEditorExtension_server_opensave = (function () {
     svg.ToNumberArray = function (s) {
       var a = svg.trim(svg.compressSpaces((s || '').replace(/,/g, ' '))).split(' ');
       return a.map(function (_a) {
-        return parseFloat(_a);
+        return Number.parseFloat(_a);
       });
     };
 
@@ -2632,7 +2632,7 @@ var svgEditorExtension_server_opensave = (function () {
             return this.tokens[this.i];
           },
           getScalar: function getScalar() {
-            return parseFloat(this.getToken());
+            return Number.parseFloat(this.getToken());
           },
           nextCommand: function nextCommand() {
             this.previousCommand = this.command;
@@ -3347,8 +3347,8 @@ var svgEditorExtension_server_opensave = (function () {
             var p = ret.progress * (this.values.value.length - 1);
             var lb = Math.floor(p),
                 ub = Math.ceil(p);
-            ret.from = new svg.Property('from', parseFloat(this.values.value[lb]));
-            ret.to = new svg.Property('to', parseFloat(this.values.value[ub]));
+            ret.from = new svg.Property('from', Number.parseFloat(this.values.value[lb]));
+            ret.to = new svg.Property('to', Number.parseFloat(this.values.value[ub]));
             ret.progress = (p - lb) / (ub - lb);
           } else {
             ret.from = this.from;
@@ -3411,7 +3411,7 @@ var svgEditorExtension_server_opensave = (function () {
             var r = from.r + (to.r - from.r) * p.progress;
             var g = from.g + (to.g - from.g) * p.progress;
             var b = from.b + (to.b - from.b) * p.progress;
-            return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')';
+            return 'rgb(' + Number.parseInt(r) + ',' + Number.parseInt(g) + ',' + Number.parseInt(b) + ')';
           }
 
           return this.attribute('from').value;

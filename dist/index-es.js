@@ -3289,7 +3289,7 @@ var SVGTransformList = /*#__PURE__*/function () {
 
             var mtx = svgroot.createSVGMatrix();
             Object.values(valArr).forEach(function (item, i) {
-              valArr[i] = parseFloat(item);
+              valArr[i] = Number.parseFloat(item);
 
               if (name === 'matrix') {
                 mtx[letters[i]] = valArr[i];
@@ -3699,7 +3699,7 @@ var shortFloat = function shortFloat(val) {
     return shortFloat(val[0]) + ',' + shortFloat(val[1]);
   }
 
-  return parseFloat(val).toFixed(digits) - 0;
+  return Number.parseFloat(val).toFixed(digits) - 0;
 };
 /**
 * Converts the number to given unit or baseUnit.
@@ -4937,8 +4937,8 @@ var transformListToTransform = function transformListToTransform(tlist, min, max
 
   min = min || 0;
   max = max || tlist.numberOfItems - 1;
-  min = parseInt(min);
-  max = parseInt(max);
+  min = Number.parseInt(min);
+  max = Number.parseInt(max);
 
   if (min > max) {
     var temp = max;
@@ -7218,7 +7218,7 @@ var pathActions = function () {
 
         if (id.substr(0, 14) === 'pathpointgrip_') {
           // Select this point
-          curPt = path.cur_pt = parseInt(id.substr(14));
+          curPt = path.cur_pt = Number.parseInt(id.substr(14));
           path.dragging = [startX, startY];
           var seg = path.segs[curPt]; // only clear selection if shift is not pressed (otherwise, add
           // node to selection)
@@ -8679,8 +8679,8 @@ var getBBox = function getBBox(elem) {
           var bb = {
             width: width,
             height: height,
-            x: x + parseFloat(selected.getAttribute('x') || 0),
-            y: y + parseFloat(selected.getAttribute('y') || 0)
+            x: x + Number.parseFloat(selected.getAttribute('x') || 0),
+            y: y + Number.parseFloat(selected.getAttribute('y') || 0)
           };
           ret = bb;
         }
@@ -10148,7 +10148,7 @@ var Layer = /*#__PURE__*/function () {
         return 1;
       }
 
-      return parseFloat(opacity);
+      return Number.parseFloat(opacity);
     }
     /**
      * Sets the opacity of this layer. If opacity is not a value between 0.0 and 1.0,
@@ -10735,7 +10735,7 @@ var Drawing = /*#__PURE__*/function () {
       } // extract the obj_num of this id
 
 
-      var num = parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
+      var num = Number.parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
       // then return false.
 
       if (typeof num !== 'number' || num <= 0 || this.releasedNums.includes(num)) {
@@ -12012,8 +12012,8 @@ var remapElement = function remapElement(selected, changes, m) {
       // therefore [T'] = [M_inv][T][M]
       var existing = transformListToTransform(selected).matrix,
           tNew = matrixMultiply(existing.inverse(), m, existing);
-      changes.x = parseFloat(changes.x) + tNew.e;
-      changes.y = parseFloat(changes.y) + tNew.f;
+      changes.x = Number.parseFloat(changes.x) + tNew.e;
+      changes.y = Number.parseFloat(changes.y) + tNew.f;
     } else {
       // we just absorb all matrices into the element and don't do any remapping
       var chlist = getTransformList(selected);
@@ -14277,7 +14277,7 @@ function SvgCanvas(container, config) {
 
 
   var round = this.round = function (val) {
-    return parseInt(val * currentZoom) / currentZoom;
+    return Number.parseInt(val * currentZoom) / currentZoom;
   };
 
   init$6(curConfig,
@@ -15030,8 +15030,8 @@ function SvgCanvas(container, config) {
     if (!isIE()) {
       if (typeof svgroot.getIntersectionList === 'function') {
         // Offset the bbox of the rubber box by the offset of the svgcontent element.
-        rubberBBox.x += parseInt(svgcontent.getAttribute('x'));
-        rubberBBox.y += parseInt(svgcontent.getAttribute('y'));
+        rubberBBox.x += Number.parseInt(svgcontent.getAttribute('x'));
+        rubberBBox.y += Number.parseInt(svgcontent.getAttribute('y'));
         resultList = svgroot.getIntersectionList(rubberBBox, parent);
       }
     }
@@ -15326,7 +15326,7 @@ function SvgCanvas(container, config) {
 
   this.setRotationAngle = function (val, preventUndo) {
     // ensure val is the proper type
-    val = parseFloat(val);
+    val = Number.parseFloat(val);
     var elem = selectedElements[0];
     var oldTransform = elem.getAttribute('transform');
     var bbox = getBBox(elem);
@@ -16897,7 +16897,7 @@ function SvgCanvas(container, config) {
         var aniDur = 0.2;
         var cAni;
 
-        if (opacAni.beginElement && parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
+        if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
           cAni = $$9(opacAni).clone().attr({
             to: curShape.opacity,
             dur: aniDur
@@ -23233,7 +23233,7 @@ function jQueryPluginJGraduate($) {
 
                 for (var i = 0; i < 6; i += 2) {
                   // const ch = color.substr(i, 2);
-                  var inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
+                  var inv = (255 - Number.parseInt(color.substr(i, 2), 16)).toString(16);
                   if (inv.length < 2) inv = 0 + inv;
                   inverted += inv;
                 }
@@ -23256,14 +23256,14 @@ function jQueryPluginJGraduate($) {
         }
       }
 
-      var x1 = parseFloat(grad.getAttribute('x1') || 0.0),
-          y1 = parseFloat(grad.getAttribute('y1') || 0.0),
-          x2 = parseFloat(grad.getAttribute('x2') || 1.0),
-          y2 = parseFloat(grad.getAttribute('y2') || 0.0);
-      var cx = parseFloat(grad.getAttribute('cx') || 0.5),
-          cy = parseFloat(grad.getAttribute('cy') || 0.5),
-          fx = parseFloat(grad.getAttribute('fx') || cx),
-          fy = parseFloat(grad.getAttribute('fy') || cy);
+      var x1 = Number.parseFloat(grad.getAttribute('x1') || 0.0),
+          y1 = Number.parseFloat(grad.getAttribute('y1') || 0.0),
+          x2 = Number.parseFloat(grad.getAttribute('x2') || 1.0),
+          y2 = Number.parseFloat(grad.getAttribute('y2') || 0.0);
+      var cx = Number.parseFloat(grad.getAttribute('cx') || 0.5),
+          cy = Number.parseFloat(grad.getAttribute('cy') || 0.5),
+          fx = Number.parseFloat(grad.getAttribute('fx') || cx),
+          fy = Number.parseFloat(grad.getAttribute('fy') || cy);
       var previewRect = mkElem('rect', {
         id: id + '_jgraduate_rect',
         x: MARGINX,
@@ -23326,7 +23326,7 @@ function jQueryPluginJGraduate($) {
 
         attrInput[attr] = $('#' + id + '_jGraduate_' + attr).val(attrval).change(function () {
           // TODO: Support values < 0 and > 1 (zoomable preview?)
-          if (isNaN(parseFloat(this.value)) || this.value < 0) {
+          if (isNaN(Number.parseFloat(this.value)) || this.value < 0) {
             this.value = 0.0;
           } else if (this.value > 1) {
             this.value = 1.0;
@@ -23396,7 +23396,7 @@ function jQueryPluginJGraduate($) {
 
           var stopOpacity = Number(stop.getAttribute('stop-opacity')) || 1;
           var stopColor = stop.getAttribute('stop-color') || 1;
-          var thisAlpha = (parseFloat(stopOpacity) * 255).toString(16);
+          var thisAlpha = (Number.parseFloat(stopOpacity) * 255).toString(16);
 
           while (thisAlpha.length < 2) {
             thisAlpha = '0' + thisAlpha;
@@ -23754,7 +23754,7 @@ function jQueryPluginJGraduate($) {
         var _slider = slider,
             left = _slider.offset.left;
         var div = slider.parent;
-        var x = e.pageX - left - parseInt(div.css('border-left-width'));
+        var x = e.pageX - left - Number.parseInt(div.css('border-left-width'));
         if (x > SLIDERW) x = SLIDERW;
         if (x <= 0) x = 0;
         var posx = x - 5;
@@ -23769,7 +23769,7 @@ function jQueryPluginJGraduate($) {
             break;
 
           case 'opacity':
-            $this.paint.alpha = parseInt(x * 100);
+            $this.paint.alpha = Number.parseInt(x * 100);
             previewRect.setAttribute('fill-opacity', x);
             break;
 
@@ -24220,9 +24220,9 @@ function jQueryPluginSpinButton($) {
       this.spinCfg = {
         // min: cfg.min ? Number(cfg.min) : null,
         // max: cfg.max ? Number(cfg.max) : null,
-        min: !isNaN(parseFloat(cfg.min)) ? Number(cfg.min) : null,
+        min: !isNaN(Number.parseFloat(cfg.min)) ? Number(cfg.min) : null,
         // Fixes bug with min:0
-        max: !isNaN(parseFloat(cfg.max)) ? Number(cfg.max) : null,
+        max: !isNaN(Number.parseFloat(cfg.max)) ? Number(cfg.max) : null,
         step: cfg.step ? Number(cfg.step) : 1,
         stepfunc: cfg.stepfunc || false,
         page: cfg.page ? Number(cfg.page) : 10,
@@ -25301,12 +25301,12 @@ var jPicker = function jPicker($) {
         case alpha && alpha.get(0):
           switch (e.keyCode) {
             case 38:
-              alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) + 1, 0, 100));
+              alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) + 1, 0, 100));
               color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
               return false;
 
             case 40:
-              alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) - 1, 0, 100));
+              alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) - 1, 0, 100));
               color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
               return false;
           }
@@ -25423,7 +25423,7 @@ var jPicker = function jPicker($) {
 
         case ahex && ahex.get(0):
           ahex.val(ahex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2));
-          color.val('a', !isNullish$1(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
+          color.val('a', !isNullish$1(ahex.val()) ? Number.parseInt(ahex.val(), 16) : null, e.target);
           break;
       }
 
@@ -26093,7 +26093,7 @@ var jPicker = function jPicker($) {
       * @returns {Integer}
       */
       hexToInt: function hexToInt(hex) {
-        return parseInt(hex, 16);
+        return Number.parseInt(hex, 16);
       },
 
       /**
@@ -26136,7 +26136,7 @@ var jPicker = function jPicker($) {
         if (!hsv.s) hsv.h = 0;else {
           delta = max - min;
           if (r === max) hsv.h = (g - b) / delta;else if (g === max) hsv.h = 2 + (b - r) / delta;else hsv.h = 4 + (r - g) / delta;
-          hsv.h = parseInt(hsv.h * 60);
+          hsv.h = Number.parseInt(hsv.h * 60);
           if (hsv.h < 0) hsv.h += 360;
         }
         hsv.s = hsv.s * 100 | 0;
@@ -26308,7 +26308,7 @@ var jPicker = function jPicker($) {
         settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
       }
 
-      var isLessThanIE7 = parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
+      var isLessThanIE7 = Number.parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
       // set color mode and update visuals for the new color mode
 
       /**
@@ -27137,8 +27137,8 @@ var jPicker = function jPicker($) {
       function moveBarMouseDown(e) {
         // const {element} = settings.window, // local copies for YUI compressor
         //     {page} = settings.window;
-        elementStartX = parseInt(container.css('left'));
-        elementStartY = parseInt(container.css('top'));
+        elementStartX = Number.parseInt(container.css('left'));
+        elementStartY = Number.parseInt(container.css('top'));
         pageStartX = e.pageX;
         pageStartY = e.pageY; // bind events to document to move window - we will unbind these on mouseup
 
@@ -27320,9 +27320,9 @@ var jPicker = function jPicker($) {
           });
           container.css( // positions must be set and display set to absolute before source code injection or IE will size the container to fit the window
           {
-            left: win.position.x === 'left' ? popup.offset().left - 530 - (win.position.y === 'center' ? 25 : 0) + 'px' : win.position.x === 'center' ? popup.offset().left - 260 + 'px' : win.position.x === 'right' ? popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0) + 'px' : win.position.x === 'screenCenter' ? ($(document).width() >> 1) - 260 + 'px' : popup.offset().left + parseInt(win.position.x) + 'px',
+            left: win.position.x === 'left' ? popup.offset().left - 530 - (win.position.y === 'center' ? 25 : 0) + 'px' : win.position.x === 'center' ? popup.offset().left - 260 + 'px' : win.position.x === 'right' ? popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0) + 'px' : win.position.x === 'screenCenter' ? ($(document).width() >> 1) - 260 + 'px' : popup.offset().left + Number.parseInt(win.position.x) + 'px',
             position: 'absolute',
-            top: win.position.y === 'top' ? popup.offset().top - 312 + 'px' : win.position.y === 'center' ? popup.offset().top - 156 + 'px' : win.position.y === 'bottom' ? popup.offset().top + 25 + 'px' : popup.offset().top + parseInt(win.position.y) + 'px'
+            top: win.position.y === 'top' ? popup.offset().top - 312 + 'px' : win.position.y === 'center' ? popup.offset().top - 156 + 'px' : win.position.y === 'bottom' ? popup.offset().top + 25 + 'px' : popup.offset().top + Number.parseInt(win.position.y) + 'px'
           });
         } else {
           container = $(that);
@@ -29775,7 +29775,7 @@ editor.init = function () {
         var cur = el.data('orig_margin-' + s);
 
         if (isNullish(cur)) {
-          cur = parseInt(el.css('margin-' + s)); // Cache the original margin
+          cur = Number.parseInt(el.css('margin-' + s)); // Cache the original margin
 
           el.data('orig_margin-' + s, cur);
         }
@@ -30846,7 +30846,7 @@ editor.init = function () {
       $hcanv.siblings().remove(); // Create multiple canvases when necessary (due to browser limits)
 
       if (rulerLen >= limit) {
-        ctxArrNum = parseInt(rulerLen / limit) + 1;
+        ctxArrNum = Number.parseInt(rulerLen / limit) + 1;
         ctxArr = [];
         ctxArr[0] = ctx;
         var copy = void 0;
@@ -31820,7 +31820,7 @@ editor.init = function () {
                 options = tool;
               } else {
                 // If flyout is selected, allow shift key to iterate through subitems
-                j = parseInt(j); // Use `allHolders` to include both extension `includeWith` and toolbarButtons
+                j = Number.parseInt(j); // Use `allHolders` to include both extension `includeWith` and toolbarButtons
 
                 options = allHolders[opts.parent][j + 1] || holders[opts.parent][0];
               }
@@ -32648,7 +32648,7 @@ editor.init = function () {
 
   var changeRotationAngle = function changeRotationAngle(ctl) {
     svgCanvas.setRotationAngle(ctl.value);
-    $$b('#tool_reorient').toggleClass('disabled', parseInt(ctl.value) === 0);
+    $$b('#tool_reorient').toggleClass('disabled', Number.parseInt(ctl.value) === 0);
   };
   /**
   * @param {external:jQuery.fn.SpinButton} ctl Spin Button
@@ -33087,7 +33087,7 @@ editor.init = function () {
       return;
     }
 
-    var perc = parseInt($$b(this).text().split('%')[0]);
+    var perc = Number.parseInt($$b(this).text().split('%')[0]);
     changeOpacity(false, perc);
   }, true); // For slider usage, see: http://jqueryui.com/demos/slider/
 
@@ -33129,7 +33129,7 @@ editor.init = function () {
       zoomChanged(window, val);
     } else {
       changeZoom({
-        value: parseFloat(item.text())
+        value: Number.parseFloat(item.text())
       });
     }
   }, true);
@@ -33596,7 +33596,7 @@ editor.init = function () {
       step *= -1;
     }
 
-    var angle = parseFloat($$b('#angle').val()) + step;
+    var angle = Number.parseFloat($$b('#angle').val()) + step;
     svgCanvas.setRotationAngle(angle);
     updateContextPanel();
   };
@@ -33777,7 +33777,7 @@ editor.init = function () {
                 openExportWindow();
               }
 
-              quality = parseInt($$b('#image-slider').val()) / 100;
+              quality = Number.parseInt($$b('#image-slider').val()) / 100;
               /* const results = */
 
               _context9.next = 16;
@@ -34525,7 +34525,7 @@ editor.init = function () {
 
           default:
             {
-              this._paintOpacity = parseFloat(selectedElement.getAttribute(type + '-opacity'));
+              this._paintOpacity = Number.parseFloat(selectedElement.getAttribute(type + '-opacity'));
 
               if (isNaN(this._paintOpacity)) {
                 this._paintOpacity = 1.0;
@@ -34868,8 +34868,8 @@ editor.init = function () {
     var rulerX = $$b('#ruler_x');
     $$b('#sidepanels').width('+=' + delta);
     $$b('#layerpanel').width('+=' + delta);
-    rulerX.css('right', parseInt(rulerX.css('right')) + delta);
-    workarea.css('right', parseInt(workarea.css('right')) + delta);
+    rulerX.css('right', Number.parseInt(rulerX.css('right')) + delta);
+    workarea.css('right', Number.parseInt(workarea.css('right')) + delta);
     svgCanvas.runExtensions('workareaResized');
   };
   /**
