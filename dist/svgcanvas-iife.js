@@ -8214,10 +8214,10 @@ var SvgCanvas = (function () {
       var enc4 = chr3 & 63;
       /* eslint-enable no-bitwise */
 
-      if (isNaN(chr2)) {
+      if (Number.isNaN(chr2)) {
         enc3 = 64;
         enc4 = 64;
-      } else if (isNaN(chr3)) {
+      } else if (Number.isNaN(chr3)) {
         enc4 = 64;
       }
 

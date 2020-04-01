@@ -399,7 +399,7 @@
     return _setPrototypeOf$1(o, p);
   }
 
-  function isNativeReflectConstruct() {
+  function _isNativeReflectConstruct$1() {
     if (typeof Reflect === "undefined" || !Reflect.construct) return false;
     if (Reflect.construct.sham) return false;
     if (typeof Proxy === "function") return true;
@@ -413,7 +413,7 @@
   }
 
   function _construct$1(Parent, args, Class) {
-    if (isNativeReflectConstruct()) {
+    if (_isNativeReflectConstruct$1()) {
       _construct$1 = Reflect.construct;
     } else {
       _construct$1 = function _construct(Parent, args, Class) {
@@ -483,6 +483,23 @@
     return _assertThisInitialized$1(self);
   }
 
+  function _createSuper$1(Derived) {
+    return function () {
+      var Super = _getPrototypeOf$1(Derived),
+          result;
+
+      if (_isNativeReflectConstruct$1()) {
+        var NewTarget = _getPrototypeOf$1(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn$1(this, result);
+    };
+  }
+
   function _superPropBase(object, property) {
     while (!Object.prototype.hasOwnProperty.call(object, property)) {
       object = _getPrototypeOf$1(object);
@@ -514,21 +531,15 @@
   }
 
   function _slicedToArray$1(arr, i) {
-    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _nonIterableRest$1();
+    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$1(arr, i) || _nonIterableRest$1();
   }
 
   function _toConsumableArray$1(arr) {
-    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _nonIterableSpread$1();
+    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread$1();
   }
 
   function _arrayWithoutHoles$1(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
-        arr2[i] = arr[i];
-      }
-
-      return arr2;
-    }
+    if (Array.isArray(arr)) return _arrayLikeToArray$1(arr);
   }
 
   function _arrayWithHoles$1(arr) {
@@ -536,14 +547,11 @@
   }
 
   function _iterableToArray$1(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
   }
 
   function _iterableToArrayLimit$1(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -569,12 +577,31 @@
     return _arr;
   }
 
+  function _unsupportedIterableToArray$1(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray$1(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(n);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen);
+  }
+
+  function _arrayLikeToArray$1(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+
   function _nonIterableSpread$1() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _nonIterableRest$1() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
   /*
   Possible todos:
@@ -619,6 +646,8 @@
   var NS_HTML = 'http://www.w3.org/1999/xhtml',
       hyphenForCamelCase = /\x2D([a-z])/g;
   var ATTR_MAP = {
+    maxlength: 'maxLength',
+    minlength: 'minLength',
     readonly: 'readOnly'
   }; // We define separately from ATTR_DOM for clarity (and parity with JsonML) but no current need
   // We don't set attribute esp. for boolean atts as we want to allow setting of `undefined`
@@ -642,7 +671,7 @@
   var NULLABLES = ['autocomplete', 'dir', // HTMLElement
   'integrity', // script, link
   'lang', // HTMLElement
-  'max', 'min', 'title' // HTMLElement
+  'max', 'min', 'minLength', 'maxLength', 'title' // HTMLElement
   ];
 
   var $ = function $(sel) {
@@ -1192,18 +1221,20 @@
 
                 var def = customizedBuiltIn ? is : localName;
 
-                if (customElements.get(def)) {
+                if (window.customElements.get(def)) {
                   return "break";
                 }
 
                 var getConstructor = function getConstructor(cnstrct) {
-                  var baseClass = options && options["extends"] ? doc.createElement(options["extends"]).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : HTMLElement;
+                  var baseClass = options && options["extends"] ? doc.createElement(options["extends"]).constructor : customizedBuiltIn ? doc.createElement(localName).constructor : window.HTMLElement;
                   /**
                    * Class wrapping base class.
                    */
 
                   return cnstrct ? /*#__PURE__*/function (_baseClass) {
                     _inherits$1(_class, _baseClass);
+
+                    var _super = _createSuper$1(_class);
                     /**
                      * Calls user constructor.
                      */
@@ -1214,7 +1245,7 @@
 
                       _classCallCheck$1(this, _class);
 
-                      _this = _possibleConstructorReturn$1(this, _getPrototypeOf$1(_class).call(this));
+                      _this = _super.call(this);
                       cnstrct.call(_assertThisInitialized$1(_this));
                       return _this;
                     }
@@ -1223,10 +1254,12 @@
                   }(baseClass) : /*#__PURE__*/function (_baseClass2) {
                     _inherits$1(_class2, _baseClass2);
 
+                    var _super2 = _createSuper$1(_class2);
+
                     function _class2() {
                       _classCallCheck$1(this, _class2);
 
-                      return _possibleConstructorReturn$1(this, _getPrototypeOf$1(_class2).apply(this, arguments));
+                      return _super2.apply(this, arguments);
                     }
 
                     return _class2;
@@ -1304,7 +1337,7 @@
                 } // console.log('def', def, '::', typeof options === 'object' ? options : undefined);
 
 
-                customElements.define(def, cnstrctr, _typeof$1(options) === 'object' ? options : undefined);
+                window.customElements.define(def, cnstrctr, _typeof$1(options) === 'object' ? options : undefined);
                 return "break";
               }();
 
@@ -1981,6 +2014,8 @@
        */
       var DOMException = /*#__PURE__*/function (_Error) {
         _inherits$1(DOMException, _Error);
+
+        var _super3 = _createSuper$1(DOMException);
         /* eslint-enable no-shadow, unicorn/custom-error-definition */
 
         /**
@@ -1994,14 +2029,14 @@
 
           _classCallCheck$1(this, DOMException);
 
-          _this2 = _possibleConstructorReturn$1(this, _getPrototypeOf$1(DOMException).call(this, message)); // eslint-disable-next-line unicorn/custom-error-definition
+          _this2 = _super3.call(this, message); // eslint-disable-next-line unicorn/custom-error-definition
 
           _this2.name = name;
           return _this2;
         }
 
         return DOMException;
-      }(_wrapNativeSuper$1(Error));
+      }( /*#__PURE__*/_wrapNativeSuper$1(Error));
 
       if (reportInvalidState) {
         // INVALID_STATE_ERR per section 9.3 XHTML 5: http://www.w3.org/TR/html5/the-xhtml-syntax.html
@@ -2391,10 +2426,12 @@
   var JamilihMap = /*#__PURE__*/function (_Map) {
     _inherits$1(JamilihMap, _Map);
 
+    var _super4 = _createSuper$1(JamilihMap);
+
     function JamilihMap() {
       _classCallCheck$1(this, JamilihMap);
 
-      return _possibleConstructorReturn$1(this, _getPrototypeOf$1(JamilihMap).apply(this, arguments));
+      return _super4.apply(this, arguments);
     }
 
     _createClass(JamilihMap, [{
@@ -2443,7 +2480,7 @@
     }]);
 
     return JamilihMap;
-  }(_wrapNativeSuper$1(Map));
+  }( /*#__PURE__*/_wrapNativeSuper$1(Map));
   /**
    * Element-aware wrapper for `WeakMap`.
    */
@@ -2452,10 +2489,12 @@
   var JamilihWeakMap = /*#__PURE__*/function (_WeakMap) {
     _inherits$1(JamilihWeakMap, _WeakMap);
 
+    var _super5 = _createSuper$1(JamilihWeakMap);
+
     function JamilihWeakMap() {
       _classCallCheck$1(this, JamilihWeakMap);
 
-      return _possibleConstructorReturn$1(this, _getPrototypeOf$1(JamilihWeakMap).apply(this, arguments));
+      return _super5.apply(this, arguments);
     }
 
     _createClass(JamilihWeakMap, [{
@@ -2504,7 +2543,7 @@
     }]);
 
     return JamilihWeakMap;
-  }(_wrapNativeSuper$1(WeakMap));
+  }( /*#__PURE__*/_wrapNativeSuper$1(WeakMap));
 
   jml.Map = JamilihMap;
   jml.WeakMap = JamilihWeakMap;
