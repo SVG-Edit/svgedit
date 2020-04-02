@@ -58,6 +58,7 @@ module.exports = {
   recurseDepth: 10,
   source: {
     exclude: [
+      'cypress',
       'node_modules',
       'dist',
       'editor/external',
