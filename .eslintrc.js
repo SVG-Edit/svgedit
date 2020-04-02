@@ -229,13 +229,6 @@ module.exports = {
       }
     },
     {
-      extends: ['plugin:node/recommended-script'],
-      files: [
-        'cypress/support/build-coverage-badge.js',
-        'build/testing-badge.js'
-      ]
-    },
-    {
       // Should probably have as external, but should still check
       files: ['canvg/rgbcolor.js'],
       settings: {

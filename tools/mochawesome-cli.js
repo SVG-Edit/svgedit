@@ -20,6 +20,8 @@ const reporterFile = process.argv[2]
   ? process.argv[2].replace(/^--/u, '')
   : 'spec';
 
+const path = '../mochawesome.json';
+
 // eslint-disable-next-line import/no-dynamic-require
 const MochaReporter = require(`mocha/lib/reporters/${reporterFile}.js`);
 const Suite = require('mocha/lib/suite.js');
@@ -36,7 +38,8 @@ const {constants: {
   EVENT_TEST_PENDING
 }} = require('mocha/lib/runner.js');
 
-const {results, stats} = require('../mochawesome.json');
+// eslint-disable-next-line import/no-dynamic-require
+const {results, stats} = require(path);
 
 const runner = new Runner(
   new Suite('', null, true)
