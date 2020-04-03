@@ -93,9 +93,10 @@ module.exports = {
       },
       rules: {
         // Todo: Figure out why this is not enough to disable warning
-        //  for examples
+        //  for examples in my environment (but it is in others')
         // Used in examples of assert-close.js plugin
         'mocha-cleanup/no-assertions-outside-it': 'off',
+        'eslint-comments/no-unused-disable': 'warn',
 
         'eol-last': ['off'],
         'no-console': ['off'],
@@ -277,6 +278,11 @@ module.exports = {
         ]
       },
       rules: {
+        // These errors are caused in Cypress files if user has not yet instrumented
+        //  code; need to reinvestigate why we had to instrument separately from nyc mocha
+        'import/no-unresolved': 'warn',
+        'node/no-missing-import': 'warn',
+
         'chai-expect-keywords/no-unsupported-keywords': [
           'error', {
             allowChaiDOM: true
@@ -318,6 +324,13 @@ module.exports = {
     }
   ],
   rules: {
+    // check-examples is not picking up eslint config properly in some
+    //  environments; see also discussion above
+    //  `mocha-cleanup/no-assertions-outside-it`
+    'jsdoc/check-examples': ['warn', {
+      rejectExampleCodeRegex: '^`'
+    }],
+
     // https://github.com/sindresorhus/eslint-plugin-unicorn/issues/453
     'unicorn/regex-shorthand': 0,
     // The Babel transform seems to have a problem converting these

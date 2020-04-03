@@ -59,7 +59,7 @@
     "build-by-config": "rollup -c rollup-config.config.js",
     "prep-no-core-rollup": "run-s eslint build-html build-by-config",
     "prep": "run-s prep-no-core-rollup rollup",
-    "prepare": "run-s license-badges copy prep",
+    "prepublish": "run-s license-badges copy prep",
     "prepublishOnly": "run-s build-docs",
     "cypress:open-no-start": "cypress open",
     "cypress:open": "run-p start cypress:open-no-start",
