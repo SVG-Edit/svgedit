@@ -57,6 +57,7 @@
 - Docs: Update Pavol's email address (@prusnak)
 - Docs: Update Contributing, Testing (renamed to Development),
     Linting and ReleaseInstructions
+- Update: Cypress code coverage plugin
 - Refactoring: Switch from `$.param.querystring` to `URL`
 - Refactoring: Ensure file-global jsdoc tags are at beginning of file
 - Refactoring: Move `build-html` to `build` directory

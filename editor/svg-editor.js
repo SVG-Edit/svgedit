@@ -5185,7 +5185,7 @@ editor.init = function () {
         break;
       } default: {
         this._paintOpacity = Number.parseFloat(selectedElement.getAttribute(type + '-opacity'));
-        if (isNaN(this._paintOpacity)) {
+        if (Number.isNaN(this._paintOpacity)) {
           this._paintOpacity = 1.0;
         }
 
@@ -6421,7 +6421,7 @@ editor.init = function () {
 editor.ready = function (cb) { // eslint-disable-line promise/prefer-await-to-callbacks
   return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
     if (isReady) {
-      resolve(cb()); // eslint-disable-line callback-return, promise/prefer-await-to-callbacks
+      resolve(cb()); // eslint-disable-line node/callback-return, promise/prefer-await-to-callbacks
       return;
     }
     callbacks.push([cb, resolve, reject]);

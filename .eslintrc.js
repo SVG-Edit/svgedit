@@ -74,11 +74,8 @@ module.exports = {
     {
       files: ['.eslintrc.js', '.ncurc.js', 'tools/mochawesome-cli.js'],
       extends: [
-        'plugin:node/recommended-script'
-      ],
-      rules: {
-        'import/no-commonjs': 0
-      }
+        'ash-nazg/sauron-node-script'
+      ]
     },
     // Our Markdown rules (and used for JSDoc examples as well, by way of
     //   our use of `jsdoc/check-examples` within `ash-nazg`)
@@ -108,7 +105,9 @@ module.exports = {
         'node/no-missing-import': ['off'],
         'no-multi-spaces': 'off',
         'sonarjs/no-all-duplicated-branches': 'off',
-        'node/no-unpublished-import': ['error', {allowModules: ['@cypress/fiddle']}],
+        'node/no-unpublished-import': ['error', {
+          allowModules: ['@cypress/fiddle']
+        }],
         'no-alert': 'off',
         // Disable until may fix https://github.com/gajus/eslint-plugin-jsdoc/issues/211
         indent: 'off'
@@ -123,8 +122,9 @@ module.exports = {
       },
       settings: {
         polyfills: [
-          // These are the primary polyfills needed by regular users if not present,
-          //  e.g., with core-js-bundle; also those under extensions
+          // These are the primary polyfills needed by regular users if
+          //  not present, e.g., with core-js-bundle; also those under
+          //  extensions
           'Array.isArray',
           'Blob',
           'console',
@@ -244,11 +244,8 @@ module.exports = {
     {
       files: ['cypress/plugins/index.js'],
       extends: [
-        'plugin:node/recommended-script'
-      ],
-      rules: {
-        'import/no-commonjs': 0
-      }
+        'ash-nazg/sauron-node-script'
+      ]
     },
     {
       files: ['cypress/**'],
@@ -278,8 +275,9 @@ module.exports = {
         ]
       },
       rules: {
-        // These errors are caused in Cypress files if user has not yet instrumented
-        //  code; need to reinvestigate why we had to instrument separately from nyc mocha
+        // These errors are caused in Cypress files if user has not
+        //  yet instrumented code; need to reinvestigate why we had to
+        //  instrument separately from nyc mocha
         'import/no-unresolved': 'warn',
         'node/no-missing-import': 'warn',
 
@@ -312,7 +310,8 @@ module.exports = {
         'mocha/no-setup-in-describe': 0,
         'mocha-cleanup/no-outside-declaration': 0,
 
-        // Useful to ensure allowing `this.timeout()`, etc., but a little oppressive
+        // Useful to ensure allowing `this.timeout()`, etc., but a
+        //  little oppressive
         'mocha/no-mocha-arrows': 0,
         // Useful if enabling the regular `prefer-arrow-callback`
         // 'mocha/prefer-arrow-callback': 2
@@ -340,10 +339,10 @@ module.exports = {
     'unicorn/prefer-string-slice': 'off',
     'default-case': 'off',
     'require-unicode-regexp': 'off',
-    'max-len': ['off', {
+    'max-len': 'off', /* , {
       ignoreUrls: true,
       ignoreRegExpLiterals: true
-    }],
+    } */
     'unicorn/prefer-query-selector': 'off',
     'unicorn/prefer-node-append': 'off',
     'unicorn/no-zero-fractions': 'off',

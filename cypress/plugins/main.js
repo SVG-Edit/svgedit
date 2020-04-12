@@ -12,5 +12,6 @@ export default (on, config) => {
   // `config` is the resolved Cypress config
 
   // https://docs.cypress.io/guides/tooling/code-coverage.html#Install-the-plugin
-  on('task', codeCoverageTask);
+  codeCoverageTask(on, config);
+  return config;
 };
