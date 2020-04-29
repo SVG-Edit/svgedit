@@ -4185,7 +4185,7 @@ var SvgCanvas = (function () {
         }
 
         this.parent = this.elem.parentNode;
-        this.elem = this.elem.parentNode.removeChild(this.elem);
+        this.elem = this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
@@ -4262,7 +4262,7 @@ var SvgCanvas = (function () {
 
         removeElementFromListMap(this.elem);
         this.parent = this.elem.parentNode;
-        this.elem = this.parent.removeChild(this.elem);
+        this.elem = this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
@@ -9324,6 +9324,7 @@ var SvgCanvas = (function () {
     }, 9, null).singleNodeValue;
   } : function (id) {
     // jQuery lookup: twice as slow as xpath in FF
+    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
     return $$2(svgroot_).find('[id=' + id + ']')[0];
   };
   /**
@@ -9725,8 +9726,7 @@ var SvgCanvas = (function () {
     }, {
       key: "removeGroup",
       value: function removeGroup() {
-        var parent = this.group_.parentNode;
-        var group = parent.removeChild(this.group_);
+        var group = this.group_.remove();
         this.group_ = undefined;
         return group;
       }
@@ -10099,6 +10099,7 @@ var SvgCanvas = (function () {
           // querySelector lookup
           return this.svgElem_.querySelector('#' + id);
         } // jQuery lookup: twice as slow as xpath in FF
+        // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 
 
         return $$4(this.svgElem_).find('[id=' + id + ']')[0];

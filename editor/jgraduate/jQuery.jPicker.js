@@ -1735,6 +1735,7 @@ const jPicker = function ($) {
       * @returns {void}
       */
       function radioClicked (e) {
+        // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
         $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
         setColorMode.call(that, e.target.value);
       }

@@ -188,8 +188,7 @@ class Layer {
    * @returns {SVGGElement} The layer SVG group that was just removed.
    */
   removeGroup () {
-    const parent = this.group_.parentNode;
-    const group = parent.removeChild(this.group_);
+    const group = this.group_.remove();
     this.group_ = undefined;
     return group;
   }

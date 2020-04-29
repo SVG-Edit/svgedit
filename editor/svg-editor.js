@@ -5902,8 +5902,10 @@ editor.init = function () {
     let tool;
     const itool = curConfig.initTool,
       container = $('#tools_left, #svg_editor .tools_flyout'),
+      /* eslint-disable unicorn/no-fn-reference-in-iterator */
       preTool = container.find('#tool_' + itool),
       regTool = container.find('#' + itool);
+      /* eslint-enable unicorn/no-fn-reference-in-iterator */
     if (preTool.length) {
       tool = preTool;
     } else if (regTool.length) {

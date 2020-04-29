@@ -4116,7 +4116,7 @@
         }
 
         this.parent = this.elem.parentNode;
-        this.elem = this.elem.parentNode.removeChild(this.elem);
+        this.elem = this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
@@ -4193,7 +4193,7 @@
 
         removeElementFromListMap(this.elem);
         this.parent = this.elem.parentNode;
-        this.elem = this.parent.removeChild(this.elem);
+        this.elem = this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
@@ -9255,6 +9255,7 @@
     }, 9, null).singleNodeValue;
   } : function (id) {
     // jQuery lookup: twice as slow as xpath in FF
+    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
     return $$2(svgroot_).find('[id=' + id + ']')[0];
   };
   /**
@@ -10248,8 +10249,7 @@
     }, {
       key: "removeGroup",
       value: function removeGroup() {
-        var parent = this.group_.parentNode;
-        var group = parent.removeChild(this.group_);
+        var group = this.group_.remove();
         this.group_ = undefined;
         return group;
       }
@@ -10622,6 +10622,7 @@
           // querySelector lookup
           return this.svgElem_.querySelector('#' + id);
         } // jQuery lookup: twice as slow as xpath in FF
+        // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 
 
         return $$5(this.svgElem_).find('[id=' + id + ']')[0];
@@ -24646,6 +24647,7 @@
             try {
               for (_iterator.s(); !(_step = _iterator.n()).done;) {
                 var href = _step.value;
+                // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                 $(this).find('A[href="' + href + '"]').parent().addClass('disabled');
               }
             } catch (err) {
@@ -24681,6 +24683,7 @@
             try {
               for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
                 var href = _step2.value;
+                // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                 $(this).find('A[href="' + href + '"]').parent().removeClass('disabled');
               }
             } catch (err) {
@@ -27054,6 +27057,7 @@
 
 
         function radioClicked(e) {
+          // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
           $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
           setColorMode.call(that, e.target.value);
         }
@@ -34530,7 +34534,7 @@
               {
                 this._paintOpacity = Number.parseFloat(selectedElement.getAttribute(type + '-opacity'));
 
-                if (isNaN(this._paintOpacity)) {
+                if (Number.isNaN(this._paintOpacity)) {
                   this._paintOpacity = 1.0;
                 }
 
@@ -35673,8 +35677,11 @@
       var tool;
       var itool = curConfig.initTool,
           container = $$b('#tools_left, #svg_editor .tools_flyout'),
-          preTool = container.find('#tool_' + itool),
+
+      /* eslint-disable unicorn/no-fn-reference-in-iterator */
+      preTool = container.find('#tool_' + itool),
           regTool = container.find('#' + itool);
+      /* eslint-enable unicorn/no-fn-reference-in-iterator */
 
       if (preTool.length) {
         tool = preTool;
@@ -36339,7 +36346,7 @@
     return new Promise(function (resolve, reject) {
       // eslint-disable-line promise/avoid-new
       if (isReady) {
-        resolve(cb()); // eslint-disable-line callback-return, promise/prefer-await-to-callbacks
+        resolve(cb()); // eslint-disable-line node/callback-return, promise/prefer-await-to-callbacks
 
         return;
       }
