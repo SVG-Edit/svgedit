@@ -41,8 +41,8 @@ none.png
 open.png
 paste.png
 path.png
-polygon.png                     http://tango.freedesktop.org/static/cvs/tango-art-libre/22x22/tools/draw-polygon.png
-polygon.svg                     http://tango.freedesktop.org/static/cvs/tango-art-libre/22x22/tools/draw-polygon.svg
+polygon.png                     https://github.com/SVG-Edit/svgedit/issues/377
+polygon.svg                     https://github.com/SVG-Edit/svgedit/issues/377
 rect.png
 redo.png
 rotate.png

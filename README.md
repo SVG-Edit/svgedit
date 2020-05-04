@@ -18,9 +18,12 @@
 
 (see also [licenses for dev. deps.](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/licenses-badge-dev.svg?sanitize=true))
 
-(Note: The protective license `CC-BY-SA-2.0` is due to our containing at least
-one image under this stricter license; to avoid its conditions, we'd
-appreciate a replacement image. See [#377](https://github.com/SVG-Edit/svgedit/issues/377))
+(Note: The license provenance of the images in `/editor/images` may not be
+fully clear, even with the origin of some of the images listed as being from <http://tango.freedesktop.org/static/cvs/tango-art-libre/22x22/>. We would like to
+replace these images if their provenance cannot be determined or is found to
+be under a protective license. If you know of the original terms, or can help
+create SVG replacement images, please let us know at:
+[#377](https://github.com/SVG-Edit/svgedit/issues/377).)
 <!-- [![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT) -->
 
 [![issuehunt-to-marktext](https://issuehunt.io/static/embed/issuehunt-button-v1.svg)](https://issuehunt.io/r/SVG-Edit/svgedit)

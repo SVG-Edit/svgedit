@@ -10,12 +10,14 @@
   licenses. See the new license badges on the README for a summary of
   the licenses including either bundled devDependencies or all
   `devDependencies` (we have no direct npm `dependencies` currently).
+- License: Add note about unclear provenance of some images
 - License: Relicense ext-mathjax from Apache-2.0 to MIT per
   <https://github.com/josegaert/ext-mathjax/issues/6>
 - License: Clarify in `@license` that `ext-server_moinsave.js` is
   "(MIT OR GPL-2.0-or-later)" per subsequent text
 - License: Reorder license listing in `jquery.contextMenu.js` so
   that more permissive is noticeable first
+- License: Replace CC-BY-SA-2.0 polygon image (thanks, @mowijo !)
 - BREAKING CHANGE: Remove `$.pref` in favor of new `svgEditor.pref`
   (avoiding polluting jQuery). (Might be moved to own module in
   future.)
@@ -55,6 +57,7 @@
   summary of all licenses including bundled).
 - Docs: Reprioritize `docs` in commit lists (prioritize user-facing)
 - Docs: Update Pavol's email address (@prusnak)
+- Docs: Update license badges to reflect lack of (known) CC-BY-SA-2.0 usage
 - Docs: Update Contributing, Testing (renamed to Development),
     Linting and ReleaseInstructions
 - Update: Cypress code coverage plugin

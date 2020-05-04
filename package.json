@@ -114,7 +114,7 @@
     "Brett Zamir",
     "Fabien Jacq"
   ],
-  "license": "(MIT AND Apache-2.0 AND CC-BY-SA-2.0 AND ISC AND LGPL-3.0-or-later AND X11)",
+  "license": "(MIT AND Apache-2.0 AND ISC AND LGPL-3.0-or-later AND X11)",
   "bugs": {
     "url": "https://github.com/SVG-Edit/svgedit/issues"
   },
