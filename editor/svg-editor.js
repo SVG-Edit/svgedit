@@ -9,7 +9,7 @@
 * 2010 Jeff Schiller
 * 2010 Narendra Sisodiya
 * 2014 Brett Zamir
-* @exports module:SVGEditor
+* @module SVGEditor
 * @borrows module:locale.putLocale as putLocale
 * @borrows module:locale.readLang as readLang
 * @borrows module:locale.setStrings as setStrings
@@ -386,6 +386,7 @@ function getImportLocale ({defaultLang, defaultName}) {
 
 /**
 * Store and retrieve preferences.
+* @function module:SVGEditor.pref
 * @param {string} key The preference name to be retrieved or set
 * @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will
 * be made unless `mayBeEmpty` is set.
@@ -427,6 +428,7 @@ editor.setStrings = setStrings;
 *  storage. This will override URL settings (for security reasons) but
 *  not `svgedit-config-iife.js` configuration (unless initial user
 *  overriding is explicitly permitted there via `allowInitialUserOverride`).
+* @function module:SVGEditor.loadContentAndPrefs
 * @todo Split `allowInitialUserOverride` into `allowOverrideByURL` and
 *  `allowOverrideByUserStorage` so `svgedit-config-iife.js` can disallow some
 *  individual items for URL setting but allow for user storage AND/OR
@@ -477,6 +479,7 @@ editor.loadContentAndPrefs = function () {
 
 /**
 * Allows setting of preferences or configuration (including extensions).
+* @function module:SVGEditor.setConfig
 * @param {module:SVGEditor.Config|module:SVGEditor.Prefs} opts The preferences or configuration (including extensions). See the tutorial on {@tutorial ConfigOptions} for info on config and preferences.
 * @param {PlainObject} [cfgCfg] Describes configuration which applies to the
 *    particular batch of supplied options
@@ -617,6 +620,7 @@ editor.setConfig = function (opts, cfgCfg) {
 /**
 * Allows one to override default SVGEdit `open`, `save`, and
 * `export` editor behaviors.
+* @function module:SVGEditor.setCustomHandlers
 * @param {module:SVGEditor.CustomHandler} opts Extension mechanisms may call `setCustomHandlers` with three functions: `opts.open`, `opts.save`, and `opts.exportImage`
 * @returns {Promise<void>}
 */
@@ -643,15 +647,17 @@ editor.setCustomHandlers = function (opts) {
 };
 
 /**
-* @param {boolean} arg
-* @returns {void}
-*/
+ * @function module:SVGEditor.randomizeIds
+ * @param {boolean} arg
+ * @returns {void}
+ */
 editor.randomizeIds = function (arg) {
   svgCanvas.randomizeIds(arg);
 };
 
 /**
 * Auto-run after a Promise microtask.
+* @function module:SVGEditor.init
 * @returns {void}
 */
 editor.init = function () {
@@ -803,6 +809,7 @@ editor.init = function () {
 
   /**
   * Called internally.
+  * @function module:SVGEditor.setIcon
   * @param {string|Element|external:jQuery} elem
   * @param {string|external:jQuery} iconId
   * @param {Float} forcedSize Not in use
@@ -988,6 +995,7 @@ editor.init = function () {
 
   /**
   * Called internally.
+  * @function module:SVGEditor.setIconSize
   * @param {module:SVGEditor.IconSize} size
   * @returns {void}
   */
@@ -1831,7 +1839,7 @@ editor.init = function () {
   * - Removes the `tool_button_current` class from whatever tool currently has it.
   * - Hides any flyouts.
   * - Adds the `tool_button_current` class to the button passed in.
-  * @function module:SVGEDitor.toolButtonClick
+  * @function module:SVGEditor.toolButtonClick
   * @param {string|Element} button The DOM element or string selector representing the toolbar button
   * @param {boolean} noHiding Whether not to hide any flyouts
   * @returns {boolean} Whether the button was disabled or not
@@ -3868,9 +3876,10 @@ editor.init = function () {
     });
 
     /**
-    * @param {boolean} active
-    * @returns {void}
-    */
+     * @function module:SVGEditor.setPanning
+     * @param {boolean} active
+     * @returns {void}
+     */
     editor.setPanning = function (active) {
       svgCanvas.spaceKey = keypan = active;
     };
@@ -3965,6 +3974,7 @@ editor.init = function () {
    * @returns {void|boolean} Calls `preventDefault()` and `stopPropagation()`
   */
   /**
+   * @function module:SVGEditor.addDropDown
    * @param {Element|string} elem DOM Element or selector
    * @param {module:SVGEditor.DropDownCallback} callback Mouseup callback
    * @param {boolean} dropUp
@@ -6118,9 +6128,10 @@ editor.init = function () {
   };
 
   /**
-  * @returns {Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
-  *  and `false` after the user confirms.
-  */
+   * @function module:SVGEditor.openPrep
+   * @returns {boolean|Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
+   *  and `false` after the user confirms.
+   */
   editor.openPrep = function () {
     $('#main_menu').hide();
     if (undoMgr.getUndoStackSize() === 0) {
@@ -6417,6 +6428,7 @@ editor.init = function () {
 * Queues a callback to be invoked when the editor is ready (or
 *   to be invoked immediately if it is already ready--i.e.,
 *   if `runCallbacks` has been run).
+* @function module:SVGEditor.ready
 * @param {module:SVGEditor.ReadyCallback} cb Callback to be queued to invoke
 * @returns {Promise<ArbitraryCallbackResult>} Resolves when all callbacks, including the supplied have resolved
 */
@@ -6432,6 +6444,7 @@ editor.ready = function (cb) { // eslint-disable-line promise/prefer-await-to-ca
 
 /**
 * Invokes the callbacks previous set by `svgEditor.ready`
+* @function module:SVGEditor.runCallbacks
 * @returns {Promise<void>} Resolves to `undefined` if all callbacks succeeded and rejects otherwise
 */
 editor.runCallbacks = async function () {
@@ -6452,11 +6465,12 @@ editor.runCallbacks = async function () {
 };
 
 /**
-* @param {string} str The SVG string to load
-* @param {PlainObject} [opts={}]
-* @param {boolean} [opts.noAlert=false] Option to avoid alert to user and instead get rejected promise
-* @returns {Promise<void>}
-*/
+ * @function module:SVGEditor.loadFromString
+ * @param {string} str The SVG string to load
+ * @param {PlainObject} [opts={}]
+ * @param {boolean} [opts.noAlert=false] Option to avoid alert to user and instead get rejected promise
+ * @returns {Promise<void>}
+ */
 editor.loadFromString = function (str, {noAlert} = {}) {
   return editor.ready(async function () {
     try {
@@ -6471,6 +6485,7 @@ editor.loadFromString = function (str, {noAlert} = {}) {
 
 /**
 * Not presently in use.
+* @function module:SVGEditor.disableUI
 * @param {PlainObject} featList
 * @returns {void}
 */
@@ -6487,14 +6502,15 @@ editor.disableUI = function (featList) {
  * @returns {void}
  */
 /**
-* @param {string} url URL from which to load an SVG string via Ajax
-* @param {PlainObject} [opts={}] May contain properties: `cache`, `callback`
-* @param {boolean} [opts.cache]
-* @param {boolean} [opts.noAlert]
-* @returns {Promise<void>} Resolves to `undefined` or rejects upon bad loading of
-*   the SVG (or upon failure to parse the loaded string) when `noAlert` is
-*   enabled
-*/
+ * @function module:SVGEditor.loadFromURL
+ * @param {string} url URL from which to load an SVG string via Ajax
+ * @param {PlainObject} [opts={}] May contain properties: `cache`, `callback`
+ * @param {boolean} [opts.cache]
+ * @param {boolean} [opts.noAlert]
+ * @returns {Promise<void>} Resolves to `undefined` or rejects upon bad loading of
+ *   the SVG (or upon failure to parse the loaded string) when `noAlert` is
+ *   enabled
+ */
 editor.loadFromURL = function (url, {cache, noAlert} = {}) {
   return editor.ready(function () {
     return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
@@ -6529,6 +6545,7 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
 };
 
 /**
+* @function module:SVGEditor.loadFromDataURI
 * @param {string} str The Data URI to base64-decode (if relevant) and load
 * @param {PlainObject} [opts={}]
 * @param {boolean} [opts.noAlert]
@@ -6552,6 +6569,7 @@ editor.loadFromDataURI = function (str, {noAlert} = {}) {
 };
 
 /**
+ * @function module:SVGEditor.addExtension
  * @param {string} name Used internally; no need for i18n.
  * @param {module:svgcanvas.ExtensionInitCallback} init Config to be invoked on this module
  * @param {module:svgcanvas.ExtensionInitArgs} initArgs

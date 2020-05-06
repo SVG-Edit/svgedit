@@ -19,11 +19,11 @@ under `editor/extensions/`.
 **Q: How can I serve SVG graphic editor from my own server?**
 
 A: You need to download the latest version to your server and unzip.
-The exact commands/instructions are here: <http://howik.com/Improve_your_user%27s_experience_by_adding_svg_graphic_editor_to_your_website_in_less_than_2_minutes>
+The exact commands/instructions are here: {@link https://visihow.com/Improve_your_user's_experience_by_adding_svg_graphic_editor_to_your_website_in_less_than_2_minutes}
 
 **Q: How can I help?**
 
-A: See [Testing]{@tutorial Testing} and [ReleaseInstructions]{@tutorial ReleaseInstructions}
+A: See [Testing](../Testing.md) and [ReleaseInstructions](../ReleaseInstructions.md).
 
 <!-- The remaining should be moved to Editor.md as documentation,
   assuming they are still valid -->
