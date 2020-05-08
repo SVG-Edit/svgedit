@@ -1396,6 +1396,9 @@ export const isNullish = (val) => {
 * Overwrite methods for unit testing.
 * @function module:utilities.mock
 * @param {PlainObject} mockMethods
+* @param {module:utilities.getHref} mockMethods.getHref
+* @param {module:utilities.setHref} mockMethods.setHref
+* @param {module:utilities.getRotationAngle} mockMethods.getRotationAngle
 * @returns {void}
 */
 export const mock = ({

@@ -346,6 +346,7 @@ module.exports = {
     'unicorn/prefer-query-selector': 'off',
     'unicorn/prefer-node-append': 'off',
     'unicorn/no-zero-fractions': 'off',
+    'unicorn/prefer-number-properties': 'off',
     'jsdoc/require-file-overview': ['error', {
       tags: {
         file: {
