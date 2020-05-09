@@ -67,7 +67,9 @@ var svgEditorExtension_webappfind = (function () {
                 _this.canvas.bind('message',
                 /**
                 * @param {external:Window} win
-                * @param {module:svgcanvas.SvgCanvas#event:message} data
+                * @param {PlainObject} info
+                * @param {module:svgcanvas.SvgCanvas#event:message} info.data
+                * @param {string} info.origin
                 * @listens module:svgcanvas.SvgCanvas#event:message
                 * @throws {Error} Unexpected event type
                 * @returns {void}
