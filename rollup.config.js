@@ -6,7 +6,7 @@
 import {join, basename} from 'path';
 import {lstatSync, readdirSync, copyFileSync, mkdirSync} from 'fs';
 
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import {terser} from 'rollup-plugin-terser';
 import replace from 'rollup-plugin-re';
 
@@ -50,6 +50,7 @@ function getRollupObject ({minifying, format = 'umd'} = {}) {
     },
     plugins: [
       babel({
+        babelHelpers: 'bundled',
         plugins: [
           'transform-object-rest-spread',
           '@babel/plugin-transform-named-capturing-groups-regex'
@@ -86,6 +87,7 @@ export default [
       },
       plugins: [
         babel({
+          babelHelpers: 'bundled',
           plugins: ['transform-object-rest-spread']
         }),
         min ? terser() : null
@@ -101,7 +103,9 @@ export default [
         name: `svgEditorExtensionLocale_${basename(dir)}_${lang}`,
         file: `dist/extensions/ext-locale/${basename(dir)}/${file}`
       },
-      plugins: [babel()]
+      plugins: [babel({
+        babelHelpers: 'bundled'
+      })]
     };
   }),
   {
@@ -110,7 +114,9 @@ export default [
       format: 'iife',
       file: 'dist/redirect-on-lacking-support.js'
     },
-    plugins: [babel()]
+    plugins: [babel({
+      babelHelpers: 'bundled'
+    })]
   },
   {
     input: 'editor/jspdf/jspdf.plugin.svgToPdf.js',
@@ -118,7 +124,9 @@ export default [
       format: 'iife',
       file: 'dist/jspdf.plugin.svgToPdf.js'
     },
-    plugins: [babel()]
+    plugins: [babel({
+      babelHelpers: 'bundled'
+    })]
   },
   {
     input: 'editor/extensions/imagelib/index.js',
@@ -128,6 +136,7 @@ export default [
     },
     plugins: [
       babel({
+        babelHelpers: 'bundled',
         plugins: ['transform-object-rest-spread']
       })
     ]
@@ -140,6 +149,7 @@ export default [
     },
     plugins: [
       babel({
+        babelHelpers: 'bundled',
         plugins: ['transform-object-rest-spread']
       })
     ]
@@ -150,7 +160,9 @@ export default [
       format: 'iife',
       file: 'dist/dom-polyfill.js'
     },
-    plugins: [babel()]
+    plugins: [babel({
+      babelHelpers: 'bundled'
+    })]
   },
   {
     input: 'editor/canvg/canvg.js',
@@ -159,7 +171,9 @@ export default [
       name: 'canvg',
       file: 'dist/canvg.js'
     },
-    plugins: [babel()]
+    plugins: [babel({
+      babelHelpers: 'bundled'
+    })]
   },
   ...localeFiles.map((localeFile) => {
     // lang.*.js
@@ -177,7 +191,9 @@ export default [
       },
       plugins: [
         // Probably don't need here, but...
-        babel()
+        babel({
+          babelHelpers: 'bundled'
+        })
       ]
     };
   }),
@@ -229,6 +245,7 @@ export default [
           ]
         }),
         babel({
+          babelHelpers: 'bundled',
           plugins: ['transform-object-rest-spread']
         })
       ]

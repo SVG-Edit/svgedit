@@ -101,6 +101,8 @@
 - npm: Add `license-badges`, `build-docs`, and `copy` scripts to `prepublishOnly` script
 - npm: Rename `test-prep` to `prep` and other misc. script naming changes
 - npm: Update `package-lock.json`
+- npm: Update from deprecated `rollup-plugin-babel` to `@rollup/plugin-babel`
+    (and make `babelHelpers` explicit)
 - npm: Update devDeps, peerDeps
 
 ## 5.1.0
