@@ -1,5 +1,5 @@
 /* eslint-env node */
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import replace from 'rollup-plugin-re';
 
 const plugins = [
@@ -29,6 +29,7 @@ window.svgEditor.modules = false;
     ]
   }),
   babel({
+    babelHelpers: 'bundled',
     plugins: ['transform-object-rest-spread']
   })
 ];

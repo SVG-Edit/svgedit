@@ -161,7 +161,7 @@
     "cypress-multi-reporters": "^1.2.4",
     "deparam": "git+https://github.com/brettz9/deparam.git#updates",
     "eslint": "^7.0.0",
-    "eslint-config-ash-nazg": "^21.0.0",
+    "eslint-config-ash-nazg": "^22.0.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-array-func": "^3.1.5",
     "eslint-plugin-chai-expect": "^2.1.0",
@@ -207,10 +207,10 @@
     "remark-cli": "^8.0.0",
     "remark-lint-ordered-list-marker-value": "^2.0.0",
     "rimraf": "^3.0.2",
-    "rollup": "2.8.2",
+    "rollup": "2.9.0",
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^5.3.0",
-    "stackblur-canvas": "^2.2.0",
+    "stackblur-canvas": "^2.3.0",
     "typescript": "^3.8.3",
     "underscore": "^1.6.0"
   }
