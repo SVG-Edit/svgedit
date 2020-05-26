@@ -59,6 +59,22 @@
     }
   }
 
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
   function _extends() {
     _extends = Object.assign || function (target) {
       for (var i = 1; i < arguments.length; i++) {
@@ -211,6 +227,36 @@
     };
   }
 
+  function _superPropBase(object, property) {
+    while (!Object.prototype.hasOwnProperty.call(object, property)) {
+      object = _getPrototypeOf(object);
+      if (object === null) break;
+    }
+
+    return object;
+  }
+
+  function _get(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) {
+      _get = Reflect.get;
+    } else {
+      _get = function _get(target, property, receiver) {
+        var base = _superPropBase(target, property);
+
+        if (!base) return;
+        var desc = Object.getOwnPropertyDescriptor(base, property);
+
+        if (desc.get) {
+          return desc.get.call(receiver);
+        }
+
+        return desc.value;
+      };
+    }
+
+    return _get(target, property, receiver || target);
+  }
+
   function _slicedToArray(arr, i) {
     return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
@@ -283,328 +329,6 @@
     throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
-  function _typeof$1(obj) {
-    "@babel/helpers - typeof";
-
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof$1 = function _typeof(obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof$1 = function _typeof(obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof$1(obj);
-  }
-
-  function _classCallCheck$1(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
-
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-
-      if (i % 2) {
-        ownKeys(Object(source), true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(Object(source)).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-      }
-    }
-
-    return target;
-  }
-
-  function _inherits$1(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) _setPrototypeOf$1(subClass, superClass);
-  }
-
-  function _getPrototypeOf$1(o) {
-    _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-      return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return _getPrototypeOf$1(o);
-  }
-
-  function _setPrototypeOf$1(o, p) {
-    _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-      o.__proto__ = p;
-      return o;
-    };
-
-    return _setPrototypeOf$1(o, p);
-  }
-
-  function _isNativeReflectConstruct$1() {
-    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-    if (Reflect.construct.sham) return false;
-    if (typeof Proxy === "function") return true;
-
-    try {
-      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function _construct$1(Parent, args, Class) {
-    if (_isNativeReflectConstruct$1()) {
-      _construct$1 = Reflect.construct;
-    } else {
-      _construct$1 = function _construct(Parent, args, Class) {
-        var a = [null];
-        a.push.apply(a, args);
-        var Constructor = Function.bind.apply(Parent, a);
-        var instance = new Constructor();
-        if (Class) _setPrototypeOf$1(instance, Class.prototype);
-        return instance;
-      };
-    }
-
-    return _construct$1.apply(null, arguments);
-  }
-
-  function _isNativeFunction$1(fn) {
-    return Function.toString.call(fn).indexOf("[native code]") !== -1;
-  }
-
-  function _wrapNativeSuper$1(Class) {
-    var _cache = typeof Map === "function" ? new Map() : undefined;
-
-    _wrapNativeSuper$1 = function _wrapNativeSuper(Class) {
-      if (Class === null || !_isNativeFunction$1(Class)) return Class;
-
-      if (typeof Class !== "function") {
-        throw new TypeError("Super expression must either be null or a function");
-      }
-
-      if (typeof _cache !== "undefined") {
-        if (_cache.has(Class)) return _cache.get(Class);
-
-        _cache.set(Class, Wrapper);
-      }
-
-      function Wrapper() {
-        return _construct$1(Class, arguments, _getPrototypeOf$1(this).constructor);
-      }
-
-      Wrapper.prototype = Object.create(Class.prototype, {
-        constructor: {
-          value: Wrapper,
-          enumerable: false,
-          writable: true,
-          configurable: true
-        }
-      });
-      return _setPrototypeOf$1(Wrapper, Class);
-    };
-
-    return _wrapNativeSuper$1(Class);
-  }
-
-  function _assertThisInitialized$1(self) {
-    if (self === void 0) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return self;
-  }
-
-  function _possibleConstructorReturn$1(self, call) {
-    if (call && (_typeof(call) === "object" || typeof call === "function")) {
-      return call;
-    }
-
-    return _assertThisInitialized$1(self);
-  }
-
-  function _createSuper$1(Derived) {
-    return function () {
-      var Super = _getPrototypeOf$1(Derived),
-          result;
-
-      if (_isNativeReflectConstruct$1()) {
-        var NewTarget = _getPrototypeOf$1(this).constructor;
-
-        result = Reflect.construct(Super, arguments, NewTarget);
-      } else {
-        result = Super.apply(this, arguments);
-      }
-
-      return _possibleConstructorReturn$1(this, result);
-    };
-  }
-
-  function _superPropBase(object, property) {
-    while (!Object.prototype.hasOwnProperty.call(object, property)) {
-      object = _getPrototypeOf$1(object);
-      if (object === null) break;
-    }
-
-    return object;
-  }
-
-  function _get(target, property, receiver) {
-    if (typeof Reflect !== "undefined" && Reflect.get) {
-      _get = Reflect.get;
-    } else {
-      _get = function _get(target, property, receiver) {
-        var base = _superPropBase(target, property);
-
-        if (!base) return;
-        var desc = Object.getOwnPropertyDescriptor(base, property);
-
-        if (desc.get) {
-          return desc.get.call(receiver);
-        }
-
-        return desc.value;
-      };
-    }
-
-    return _get(target, property, receiver || target);
-  }
-
-  function _slicedToArray$1(arr, i) {
-    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$1(arr, i) || _nonIterableRest$1();
-  }
-
-  function _toConsumableArray$1(arr) {
-    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread$1();
-  }
-
-  function _arrayWithoutHoles$1(arr) {
-    if (Array.isArray(arr)) return _arrayLikeToArray$1(arr);
-  }
-
-  function _arrayWithHoles$1(arr) {
-    if (Array.isArray(arr)) return arr;
-  }
-
-  function _iterableToArray$1(iter) {
-    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
-  }
-
-  function _iterableToArrayLimit$1(arr, i) {
-    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _e = undefined;
-
-    try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"] != null) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  function _unsupportedIterableToArray$1(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray$1(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(n);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen);
-  }
-
-  function _arrayLikeToArray$1(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-
-    for (var i = 0, arr2 = new Array(len); i < len; i++) {
-      arr2[i] = arr[i];
-    }
-
-    return arr2;
-  }
-
-  function _nonIterableSpread$1() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
-  function _nonIterableRest$1() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
   /*
   Possible todos:
   0. Add XSLT to JML-string stylesheet (or even vice versa)
@@ -635,8 +359,6 @@
   0. Redo browser testing of jml (including ensuring IE7 can work even if test framework can't work)
   */
   // istanbul ignore next
-
-
   var win = typeof window !== 'undefined' && window; // istanbul ignore next
 
   var doc = typeof document !== 'undefined' && document || win && win.document; // STATIC PROPERTIES
@@ -797,7 +519,7 @@
     // For security reasons related to innerHTML, we ensure this string only
     //  contains potential entity characters
     if (!arg.match(/^[0-9A-Z_a-z]+$/)) {
-      throw new TypeError('Bad ' + type);
+      throw new TypeError("Bad ".concat(type, " reference; with prefix \"").concat(prefix, "\" and arg \"").concat(arg, "\""));
     }
 
     var elContainer = doc.createElement('div'); // Todo: No workaround for XML?
@@ -836,7 +558,7 @@
 
 
   function _getType(item) {
-    var type = _typeof$1(item);
+    var type = _typeof(item);
 
     switch (type) {
       case 'object':
@@ -896,7 +618,7 @@
       var retStr = xmlnsObj[''] ? ' xmlns="' + xmlnsObj[''] + '"' : n0; // Preserve XHTML
 
       for (var _i = 0, _Object$entries = Object.entries(xmlnsObj); _i < _Object$entries.length; _i++) {
-        var _Object$entries$_i = _slicedToArray$1(_Object$entries[_i], 2),
+        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
             ns = _Object$entries$_i[0],
             xmlnsVal = _Object$entries$_i[1];
 
@@ -932,7 +654,7 @@
   function _childrenToJML(node) {
     return function (childNodeJML, i) {
       var cn = node.childNodes[i];
-      var j = Array.isArray(childNodeJML) ? jml.apply(void 0, _toConsumableArray$1(childNodeJML)) : jml(childNodeJML);
+      var j = Array.isArray(childNodeJML) ? jml.apply(void 0, _toConsumableArray(childNodeJML)) : jml(childNodeJML);
       cn.replaceWith(j);
     };
   }
@@ -953,7 +675,7 @@
   function _appendJML(node) {
     return function (childJML) {
       if (Array.isArray(childJML)) {
-        node.append(jml.apply(void 0, _toConsumableArray$1(childJML)));
+        node.append(jml.apply(void 0, _toConsumableArray(childJML)));
       } else {
         node.append(jml(childJML));
       }
@@ -978,7 +700,7 @@
       if (typeof childJML === 'string') {
         node.append(childJML);
       } else if (Array.isArray(childJML)) {
-        node.append(jml.apply(void 0, _toConsumableArray$1(childJML)));
+        node.append(jml.apply(void 0, _toConsumableArray(childJML)));
       } else {
         node.append(jml(childJML));
       }
@@ -1039,7 +761,7 @@
   function checkPluginValue(elem, att, attVal, opts) {
     opts.$state = 'attributeValue';
 
-    if (attVal && _typeof$1(attVal) === 'object') {
+    if (attVal && _typeof(attVal) === 'object') {
       var matchingPlugin = getMatchingPlugin(opts, Object.keys(attVal)[0]);
 
       if (matchingPlugin) {
@@ -1092,7 +814,7 @@
 
     function _checkAtts(atts) {
       for (var _i2 = 0, _Object$entries2 = Object.entries(atts); _i2 < _Object$entries2.length; _i2++) {
-        var _Object$entries2$_i = _slicedToArray$1(_Object$entries2[_i2], 2),
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
             att = _Object$entries2$_i[0],
             attVal = _Object$entries2$_i[1];
 
@@ -1147,7 +869,7 @@
                 if (Array.isArray(template)) {
                   if (_getType(template[0]) === 'object') {
                     // Has attributes
-                    template = jml.apply(void 0, ['template'].concat(_toConsumableArray$1(template), [doc.body]));
+                    template = jml.apply(void 0, ['template'].concat(_toConsumableArray(template), [doc.body]));
                   } else {
                     // Array is for the children
                     template = jml('template', template, doc.body);
@@ -1212,7 +934,7 @@
 
                   if (!is) {
                     if (!{}.hasOwnProperty.call(atts, 'is')) {
-                      throw new TypeError('Expected `is` with `$define` on built-in');
+                      throw new TypeError("Expected `is` with `$define` on built-in; args: ".concat(JSON.stringify(args)));
                     }
 
                     atts.is = checkPluginValue(elem, 'is', atts.is, opts);
@@ -1234,32 +956,31 @@
                    */
 
                   return cnstrct ? /*#__PURE__*/function (_baseClass) {
-                    _inherits$1(_class, _baseClass);
+                    _inherits(_class, _baseClass);
 
-                    var _super = _createSuper$1(_class);
+                    var _super = _createSuper(_class);
+
                     /**
                      * Calls user constructor.
                      */
-
-
                     function _class() {
                       var _this;
 
-                      _classCallCheck$1(this, _class);
+                      _classCallCheck(this, _class);
 
                       _this = _super.call(this);
-                      cnstrct.call(_assertThisInitialized$1(_this));
+                      cnstrct.call(_assertThisInitialized(_this));
                       return _this;
                     }
 
                     return _class;
                   }(baseClass) : /*#__PURE__*/function (_baseClass2) {
-                    _inherits$1(_class2, _baseClass2);
+                    _inherits(_class2, _baseClass2);
 
-                    var _super2 = _createSuper$1(_class2);
+                    var _super2 = _createSuper(_class2);
 
                     function _class2() {
-                      _classCallCheck$1(this, _class2);
+                      _classCallCheck(this, _class2);
 
                       return _super2.apply(this, arguments);
                     }
@@ -1276,7 +997,7 @@
                   if (attVal.length <= 2) {
                     var _attVal3 = attVal;
 
-                    var _attVal4 = _slicedToArray$1(_attVal3, 2);
+                    var _attVal4 = _slicedToArray(_attVal3, 2);
 
                     cnstrctr = _attVal4[0];
                     options = _attVal4[1];
@@ -1292,14 +1013,14 @@
                       mixin = options;
                     }
 
-                    if (_typeof$1(cnstrctr) === 'object') {
+                    if (_typeof(cnstrctr) === 'object') {
                       mixin = cnstrctr;
                       cnstrctr = getConstructor();
                     }
                   } else {
                     var _attVal5 = attVal;
 
-                    var _attVal6 = _slicedToArray$1(_attVal5, 3);
+                    var _attVal6 = _slicedToArray(_attVal5, 3);
 
                     cnstrctr = _attVal6[0];
                     mixin = _attVal6[1];
@@ -1330,7 +1051,7 @@
 
                 if (mixin) {
                   Object.entries(mixin).forEach(function (_ref) {
-                    var _ref2 = _slicedToArray$1(_ref, 2),
+                    var _ref2 = _slicedToArray(_ref, 2),
                         methodName = _ref2[0],
                         method = _ref2[1];
 
@@ -1339,7 +1060,7 @@
                 } // console.log('def', def, '::', typeof options === 'object' ? options : undefined);
 
 
-                window.customElements.define(def, cnstrctr, _typeof$1(options) === 'object' ? options : undefined);
+                window.customElements.define(def, cnstrctr, _typeof(options) === 'object' ? options : undefined);
                 return "break";
               }();
 
@@ -1349,7 +1070,7 @@
           case '$symbol':
             {
               var _attVal7 = attVal,
-                  _attVal8 = _slicedToArray$1(_attVal7, 2),
+                  _attVal8 = _slicedToArray(_attVal7, 2),
                   symbol = _attVal8[0],
                   func = _attVal8[1];
 
@@ -1465,8 +1186,9 @@
           case '$on':
             {
               // Events
-              for (var _i3 = 0, _Object$entries3 = Object.entries(attVal); _i3 < _Object$entries3.length; _i3++) {
-                var _Object$entries3$_i = _slicedToArray$1(_Object$entries3[_i3], 2),
+              // Allow for no-op by defaulting to `{}`
+              for (var _i3 = 0, _Object$entries3 = Object.entries(attVal || {}); _i3 < _Object$entries3.length; _i3++) {
+                var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
                     p2 = _Object$entries3$_i[0],
                     val = _Object$entries3$_i[1];
 
@@ -1475,7 +1197,7 @@
                 }
 
                 if (typeof val[0] !== 'function') {
-                  throw new TypeError('Expect a function for `$on`');
+                  throw new TypeError("Expect a function for `$on`; args: ".concat(JSON.stringify(args)));
                 }
 
                 _addEvent(elem, p2, val[0], val[1]); // element, event name, handler, capturing
@@ -1511,7 +1233,7 @@
                       prop = startProp + key.replace(hyphenForCamelCase, _upperCase);
                     }
 
-                    if (value === null || _typeof$1(value) !== 'object') {
+                    if (value === null || _typeof(value) !== 'object') {
                       if (!_isNullish(value)) {
                         elem.dataset[prop] = value;
                       }
@@ -1578,9 +1300,9 @@
                   break;
                 }
 
-                if (_typeof$1(attVal) === 'object') {
+                if (_typeof(attVal) === 'object') {
                   for (var _i4 = 0, _Object$entries4 = Object.entries(attVal); _i4 < _Object$entries4.length; _i4++) {
-                    var _Object$entries4$_i = _slicedToArray$1(_Object$entries4[_i4], 2),
+                    var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
                         _p = _Object$entries4$_i[0],
                         styleVal = _Object$entries4$_i[1];
 
@@ -1657,20 +1379,20 @@
 
       if ('$plugins' in opts) {
         if (!Array.isArray(opts.$plugins)) {
-          throw new TypeError('$plugins must be an array');
+          throw new TypeError("`$plugins` must be an array; args: ".concat(JSON.stringify(args)));
         }
 
         opts.$plugins.forEach(function (pluginObj) {
-          if (!pluginObj || _typeof$1(pluginObj) !== 'object') {
-            throw new TypeError('Plugin must be an object');
+          if (!pluginObj || _typeof(pluginObj) !== 'object') {
+            throw new TypeError("Plugin must be an object; args: ".concat(JSON.stringify(args)));
           }
 
           if (!pluginObj.name || !pluginObj.name.startsWith('$_')) {
-            throw new TypeError('Plugin object name must be present and begin with `$_`');
+            throw new TypeError("Plugin object name must be present and begin with `$_`; args: ".concat(JSON.stringify(args)));
           }
 
           if (typeof pluginObj.set !== 'function') {
-            throw new TypeError('Plugin object must have a `set` method');
+            throw new TypeError("Plugin object must have a `set` method; args: ".concat(JSON.stringify(args)));
           }
         });
       }
@@ -1689,7 +1411,7 @@
       var map, obj; // Boolean indicating use of default map and object
 
       if (dataVal === true) {
-        var _defaultMap = _slicedToArray$1(defaultMap, 2);
+        var _defaultMap = _slicedToArray(defaultMap, 2);
 
         map = _defaultMap[0];
         obj = _defaultMap[1];
@@ -1722,7 +1444,7 @@
 
       switch (type) {
         default:
-          throw new TypeError('Unexpected type: ' + type);
+          throw new TypeError("Unexpected type: ".concat(type, "; arg: ").concat(arg, "; index ").concat(i, " on args: ").concat(JSON.stringify(args)));
 
         case 'null':
           // null always indicates a place-holder (only needed for last argument if want array returned)
@@ -1735,7 +1457,7 @@
             : nodes.reduce(_fragReducer, doc.createDocumentFragment()); // nodes;
           }
 
-          throw new TypeError('`null` values not allowed except as final Jamilih argument');
+          throw new TypeError("`null` values not allowed except as final Jamilih argument; index ".concat(i, " on args: ").concat(JSON.stringify(args)));
 
         case 'string':
           // Strings normally indicate elements
@@ -1750,11 +1472,11 @@
                 var procValue = args[++i];
                 var val = procValue;
 
-                if (val && _typeof$1(val) === 'object') {
+                if (val && _typeof(val) === 'object') {
                   procValue = [];
 
                   for (var _i5 = 0, _Object$entries5 = Object.entries(val); _i5 < _Object$entries5.length; _i5++) {
-                    var _Object$entries5$_i = _slicedToArray$1(_Object$entries5[_i5], 2),
+                    var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i5], 2),
                         p = _Object$entries5$_i[0],
                         procInstVal = _Object$entries5$_i[1];
 
@@ -1861,7 +1583,7 @@
               // Can't set namespaceURI dynamically, renameNode() is not supported, and setAttribute() doesn't work to change the namespace, so we resort to this hack
               var replacer = void 0;
 
-              if (_typeof$1(_atts.xmlns) === 'object') {
+              if (_typeof(_atts.xmlns) === 'object') {
                 replacer = _replaceDefiner(_atts.xmlns);
               } else {
                 replacer = ' xmlns="' + _atts.xmlns + '"';
@@ -1921,10 +1643,10 @@
               // Go through children array container to handle elements
               var childContent = child[j];
 
-              var childContentType = _typeof$1(childContent);
+              var childContentType = _typeof(childContent);
 
               if (_isNullish(childContent)) {
-                throw new TypeError('Bad children (parent array: ' + JSON.stringify(args) + '; child: ' + child + '; index:' + j + ')');
+                throw new TypeError("Bad children (parent array: ".concat(JSON.stringify(args), "; index ").concat(j, " of child: ").concat(JSON.stringify(child), ")"));
               }
 
               switch (childContentType) {
@@ -1941,7 +1663,7 @@
                     // Arrays representing child elements
                     opts.$state = 'children';
 
-                    _appendNode(elem, jml.apply(void 0, [opts].concat(_toConsumableArray$1(childContent))));
+                    _appendNode(elem, jml.apply(void 0, [opts].concat(_toConsumableArray(childContent))));
                   } else if (childContent['#']) {
                     // Fragment
                     opts.$state = 'fragmentChildren';
@@ -2015,21 +1737,20 @@
        * Polyfill for `DOMException`.
        */
       var DOMException = /*#__PURE__*/function (_Error) {
-        _inherits$1(DOMException, _Error);
+        _inherits(DOMException, _Error);
 
-        var _super3 = _createSuper$1(DOMException);
+        var _super3 = _createSuper(DOMException);
+
         /* eslint-enable no-shadow, unicorn/custom-error-definition */
 
         /**
          * @param {string} message
          * @param {string} name
          */
-
-
         function DOMException(message, name) {
           var _this2;
 
-          _classCallCheck$1(this, DOMException);
+          _classCallCheck(this, DOMException);
 
           _this2 = _super3.call(this, message); // eslint-disable-next-line unicorn/custom-error-definition
 
@@ -2038,7 +1759,7 @@
         }
 
         return DOMException;
-      }( /*#__PURE__*/_wrapNativeSuper$1(Error));
+      }( /*#__PURE__*/_wrapNativeSuper(Error));
 
       if (reportInvalidState) {
         // INVALID_STATE_ERR per section 9.3 XHTML 5: http://www.w3.org/TR/html5/the-xhtml-syntax.html
@@ -2125,7 +1846,7 @@
       }
       */
       var type = 'nodeType' in node ? node.nodeType : null;
-      namespaces = _objectSpread2({}, namespaces);
+      namespaces = _extends({}, namespaces);
       var xmlChars = /^([\t\n\r -\uD7FF\uE000-\uFFFD]|(?:[\uD800-\uDBFF](?![\uDC00-\uDFFF]))(?:(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))*$/; // eslint-disable-line no-control-regex
 
       if ([2, 3, 4, 7, 8].includes(type) && !xmlChars.test(node.nodeValue)) {
@@ -2180,7 +1901,7 @@
             }
 
             if (node.attributes.length) {
-              set(_toConsumableArray$1(node.attributes).reduce(function (obj, att) {
+              set(_toConsumableArray(node.attributes).reduce(function (obj, att) {
                 obj[att.name] = att.value; // Attr.nodeName and Attr.nodeValue are deprecated as of DOM4 as Attr no longer inherits from Node, so we can safely use name and value
 
                 return obj;
@@ -2194,7 +1915,7 @@
             if (childNodes.length) {
               setChildren(); // Element children array container
 
-              _toConsumableArray$1(childNodes).forEach(function (childNode) {
+              _toConsumableArray(childNodes).forEach(function (childNode) {
                 parseDOM(childNode, namespaces);
               });
             }
@@ -2288,7 +2009,7 @@
             } // set({$xmlDocument: []}); // doc.implementation.createDocument // Todo: use this conditionally
 
 
-            _toConsumableArray$1(_childNodes).forEach(function (childNode) {
+            _toConsumableArray(_childNodes).forEach(function (childNode) {
               // Can't just do documentElement as there may be doctype, comments, etc.
               // No need for setChildren, as we have already built the container array
               parseDOM(childNode, namespaces);
@@ -2333,7 +2054,7 @@
             setObj('#');
             var _childNodes2 = node.childNodes;
 
-            _toConsumableArray$1(_childNodes2).forEach(function (childNode) {
+            _toConsumableArray(_childNodes2).forEach(function (childNode) {
               // No need for setChildren, as we have already built the container array
               parseDOM(childNode, namespaces);
             });
@@ -2426,12 +2147,12 @@
 
 
   var JamilihMap = /*#__PURE__*/function (_Map) {
-    _inherits$1(JamilihMap, _Map);
+    _inherits(JamilihMap, _Map);
 
-    var _super4 = _createSuper$1(JamilihMap);
+    var _super4 = _createSuper(JamilihMap);
 
     function JamilihMap() {
-      _classCallCheck$1(this, JamilihMap);
+      _classCallCheck(this, JamilihMap);
 
       return _super4.apply(this, arguments);
     }
@@ -2445,7 +2166,7 @@
        */
       value: function get(elem) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return _get(_getPrototypeOf$1(JamilihMap.prototype), "get", this).call(this, elem);
+        return _get(_getPrototypeOf(JamilihMap.prototype), "get", this).call(this, elem);
       }
       /**
        * @param {string|Element} elem
@@ -2457,7 +2178,7 @@
       key: "set",
       value: function set(elem, value) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return _get(_getPrototypeOf$1(JamilihMap.prototype), "set", this).call(this, elem, value);
+        return _get(_getPrototypeOf(JamilihMap.prototype), "set", this).call(this, elem, value);
       }
       /**
        * @param {string|Element} elem
@@ -2482,19 +2203,19 @@
     }]);
 
     return JamilihMap;
-  }( /*#__PURE__*/_wrapNativeSuper$1(Map));
+  }( /*#__PURE__*/_wrapNativeSuper(Map));
   /**
    * Element-aware wrapper for `WeakMap`.
    */
 
 
   var JamilihWeakMap = /*#__PURE__*/function (_WeakMap) {
-    _inherits$1(JamilihWeakMap, _WeakMap);
+    _inherits(JamilihWeakMap, _WeakMap);
 
-    var _super5 = _createSuper$1(JamilihWeakMap);
+    var _super5 = _createSuper(JamilihWeakMap);
 
     function JamilihWeakMap() {
-      _classCallCheck$1(this, JamilihWeakMap);
+      _classCallCheck(this, JamilihWeakMap);
 
       return _super5.apply(this, arguments);
     }
@@ -2508,7 +2229,7 @@
        */
       value: function get(elem) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return _get(_getPrototypeOf$1(JamilihWeakMap.prototype), "get", this).call(this, elem);
+        return _get(_getPrototypeOf(JamilihWeakMap.prototype), "get", this).call(this, elem);
       }
       /**
        * @param {string|Element} elem
@@ -2520,7 +2241,7 @@
       key: "set",
       value: function set(elem, value) {
         elem = typeof elem === 'string' ? $(elem) : elem;
-        return _get(_getPrototypeOf$1(JamilihWeakMap.prototype), "set", this).call(this, elem, value);
+        return _get(_getPrototypeOf(JamilihWeakMap.prototype), "set", this).call(this, elem, value);
       }
       /**
        * @param {string|Element} elem
@@ -2545,7 +2266,7 @@
     }]);
 
     return JamilihWeakMap;
-  }( /*#__PURE__*/_wrapNativeSuper$1(WeakMap));
+  }( /*#__PURE__*/_wrapNativeSuper(WeakMap));
 
   jml.Map = JamilihMap;
   jml.WeakMap = JamilihWeakMap;
@@ -2601,7 +2322,7 @@
 
   jml.symbol = jml.sym = jml["for"] = function (elem, sym) {
     elem = typeof elem === 'string' ? $(elem) : elem;
-    return elem[_typeof$1(sym) === 'symbol' ? sym : Symbol["for"](sym)];
+    return elem[_typeof(sym) === 'symbol' ? sym : Symbol["for"](sym)];
   };
   /**
    * @param {string|Element} elem If a string, will be interpreted as a selector
@@ -2623,7 +2344,7 @@
       args[_key6 - 3] = arguments[_key6];
     }
 
-    if (['symbol', 'string'].includes(_typeof$1(symOrMap))) {
+    if (['symbol', 'string'].includes(_typeof(symOrMap))) {
       var _func;
 
       func = jml.sym(elem, symOrMap);
@@ -2848,29 +2569,29 @@
     return this;
   });
 
-  function _typeof$2(obj) {
+  function _typeof$1(obj) {
     if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
-      _typeof$2 = function _typeof$1(obj) {
+      _typeof$1 = function _typeof$1(obj) {
         return _typeof(obj);
       };
     } else {
-      _typeof$2 = function _typeof$1(obj) {
+      _typeof$1 = function _typeof$1(obj) {
         return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
       };
     }
 
-    return _typeof$2(obj);
+    return _typeof$1(obj);
   }
 
-  function _slicedToArray$2(arr, i) {
-    return _arrayWithHoles$2(arr) || _iterableToArrayLimit$2(arr, i) || _nonIterableRest$2();
+  function _slicedToArray$1(arr, i) {
+    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _nonIterableRest$1();
   }
 
-  function _toConsumableArray$2(arr) {
-    return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _nonIterableSpread$2();
+  function _toConsumableArray$1(arr) {
+    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _nonIterableSpread$1();
   }
 
-  function _arrayWithoutHoles$2(arr) {
+  function _arrayWithoutHoles$1(arr) {
     if (Array.isArray(arr)) {
       for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
         arr2[i] = arr[i];
@@ -2880,15 +2601,15 @@
     }
   }
 
-  function _arrayWithHoles$2(arr) {
+  function _arrayWithHoles$1(arr) {
     if (Array.isArray(arr)) return arr;
   }
 
-  function _iterableToArray$2(iter) {
+  function _iterableToArray$1(iter) {
     if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
   }
 
-  function _iterableToArrayLimit$2(arr, i) {
+  function _iterableToArrayLimit$1(arr, i) {
     if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
       return;
     }
@@ -2918,16 +2639,16 @@
     return _arr;
   }
 
-  function _nonIterableSpread$2() {
+  function _nonIterableSpread$1() {
     throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
 
-  function _nonIterableRest$2() {
+  function _nonIterableRest$1() {
     throw new TypeError("Invalid attempt to destructure non-iterable instance");
   }
 
   function convertToString(content, type) {
-    switch (_typeof$2(content)) {
+    switch (_typeof$1(content)) {
       case 'object':
         {
           if (!content) {
@@ -2950,7 +2671,7 @@
             case 11:
               {
                 // DOCUMENT_FRAGMENT_NODE
-                return _toConsumableArray$2(content.childNodes).reduce(function (s, node) {
+                return _toConsumableArray$1(content.childNodes).reduce(function (s, node) {
                   return s + convertToString(node, type);
                 }, '');
               }
@@ -2976,12 +2697,12 @@
         }
 
       default:
-        throw new TypeError('Bad content for ' + type + '; type: ' + _typeof$2(content));
+        throw new TypeError('Bad content for ' + type + '; type: ' + _typeof$1(content));
     }
   }
 
   function convertToDOM(content, type, avoidClone) {
-    switch (_typeof$2(content)) {
+    switch (_typeof$1(content)) {
       case 'object':
         {
           if (!content) {
@@ -3018,7 +2739,7 @@
         }
 
       default:
-        throw new TypeError('Bad content for ' + type + '; type: ' + _typeof$2(content));
+        throw new TypeError('Bad content for ' + type + '; type: ' + _typeof$1(content));
     }
   }
 
@@ -3032,7 +2753,7 @@
 
       var cbOrContent = args[0];
 
-      switch (_typeof$2(cbOrContent)) {
+      switch (_typeof$1(cbOrContent)) {
         case 'function':
           {
             this.forEach(function (node, i) {
@@ -3045,7 +2766,7 @@
         default:
           {
             this.forEach(function (node, i, arr) {
-              node[type].apply(node, _toConsumableArray$2(args.flatMap(function (content) {
+              node[type].apply(node, _toConsumableArray$1(args.flatMap(function (content) {
                 return convertToDOM(content, type, i === arr.length - 1);
               })));
             });
@@ -3061,7 +2782,7 @@
     return function (cbOrContent) {
       var _this2 = this;
 
-      switch (_typeof$2(cbOrContent)) {
+      switch (_typeof$1(cbOrContent)) {
         case 'function':
           {
             this.forEach(function (node, i) {
@@ -3106,7 +2827,7 @@
 
   var insertTo = function insertTo(method) {
     var $ = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (sel) {
-      return _toConsumableArray$2(document.querySelectorAll(sel));
+      return _toConsumableArray$1(document.querySelectorAll(sel));
     };
     var type = {
       appendTo: 'append',
@@ -3122,7 +2843,7 @@
         }
 
         target = Array.isArray(target) ? target : [target];
-        node[type].apply(node, _toConsumableArray$2(target.flatMap(function (content) {
+        node[type].apply(node, _toConsumableArray$1(target.flatMap(function (content) {
           return convertToDOM(content, toType, i === arr.length - 1);
         })));
       });
@@ -3173,7 +2894,7 @@
     var _this3 = this;
 
     if (valueOrCb === undefined) {
-      switch (_typeof$2(attributeNameOrAtts)) {
+      switch (_typeof$1(attributeNameOrAtts)) {
         case 'string':
           {
             return this[0].hasAttribute(attributeNameOrAtts) ? this[0].getAttribute(attributeNameOrAtts) : undefined;
@@ -3184,7 +2905,7 @@
             if (attributeNameOrAtts) {
               this.forEach(function (node, i) {
                 Object.entries(attributeNameOrAtts).forEach(function (_ref) {
-                  var _ref2 = _slicedToArray$2(_ref, 2),
+                  var _ref2 = _slicedToArray$1(_ref, 2),
                       att = _ref2[0],
                       val = _ref2[1];
 
@@ -3198,12 +2919,12 @@
 
         default:
           {
-            throw new TypeError('Unexpected type for attribute name: ' + _typeof$2(attributeNameOrAtts));
+            throw new TypeError('Unexpected type for attribute name: ' + _typeof$1(attributeNameOrAtts));
           }
       }
     }
 
-    switch (_typeof$2(valueOrCb)) {
+    switch (_typeof$1(valueOrCb)) {
       case 'function':
         {
           this.forEach(function (node, i) {
@@ -3237,7 +2958,7 @@
 
       default:
         {
-          throw new TypeError('Unexpected type for attribute name: ' + _typeof$2(attributeNameOrAtts));
+          throw new TypeError('Unexpected type for attribute name: ' + _typeof$1(attributeNameOrAtts));
         }
     }
 
@@ -3246,7 +2967,7 @@
 
   var removeAttr = function removeAttr(attributeName) {
     if (typeof attributeName !== 'string') {
-      throw new TypeError('Unexpected type for attribute name: ' + _typeof$2(attributeName));
+      throw new TypeError('Unexpected type for attribute name: ' + _typeof$1(attributeName));
     }
 
     this.forEach(function (node) {
@@ -3258,7 +2979,7 @@
     return function (cbOrContent) {
       var _this4 = this;
 
-      switch (_typeof$2(cbOrContent)) {
+      switch (_typeof$1(cbOrContent)) {
         case 'function':
           {
             this.forEach(function (node, i) {
@@ -3266,7 +2987,7 @@
 
               var ret = cbOrContent.call(_this4, i, node.className);
 
-              (_node$classList = node.classList)[type].apply(_node$classList, _toConsumableArray$2(ret.split(' ')));
+              (_node$classList = node.classList)[type].apply(_node$classList, _toConsumableArray$1(ret.split(' ')));
             });
             break;
           }
@@ -3283,7 +3004,7 @@
             this.forEach(function (node) {
               var _node$classList2;
 
-              (_node$classList2 = node.classList)[type].apply(_node$classList2, _toConsumableArray$2(cbOrContent.split(' ')));
+              (_node$classList2 = node.classList)[type].apply(_node$classList2, _toConsumableArray$1(cbOrContent.split(' ')));
             });
             break;
           }
@@ -3305,7 +3026,7 @@
   var toggleClass = function toggleClass(classNameOrCb, state) {
     var _this5 = this;
 
-    switch (typeof cbOrContent === "undefined" ? "undefined" : _typeof$2(cbOrContent)) {
+    switch (typeof cbOrContent === "undefined" ? "undefined" : _typeof$1(cbOrContent)) {
       case 'function':
         {
           if (typeof state === 'boolean') {
@@ -3314,7 +3035,7 @@
 
               var ret = classNameOrCb.call(_this5, i, node.className, state);
 
-              (_node$classList3 = node.classList).toggle.apply(_node$classList3, _toConsumableArray$2(ret.split(' ')).concat([state]));
+              (_node$classList3 = node.classList).toggle.apply(_node$classList3, _toConsumableArray$1(ret.split(' ')).concat([state]));
             });
           } else {
             this.forEach(function (node, i) {
@@ -3322,7 +3043,7 @@
 
               var ret = classNameOrCb.call(_this5, i, node.className, state);
 
-              (_node$classList4 = node.classList).toggle.apply(_node$classList4, _toConsumableArray$2(ret.split(' ')));
+              (_node$classList4 = node.classList).toggle.apply(_node$classList4, _toConsumableArray$1(ret.split(' ')));
             });
           }
 
@@ -3335,13 +3056,13 @@
             this.forEach(function (node) {
               var _node$classList5;
 
-              (_node$classList5 = node.classList).toggle.apply(_node$classList5, _toConsumableArray$2(classNameOrCb.split(' ')).concat([state]));
+              (_node$classList5 = node.classList).toggle.apply(_node$classList5, _toConsumableArray$1(classNameOrCb.split(' ')).concat([state]));
             });
           } else {
             this.forEach(function (node) {
               var _node$classList6;
 
-              (_node$classList6 = node.classList).toggle.apply(_node$classList6, _toConsumableArray$2(classNameOrCb.split(' ')));
+              (_node$classList6 = node.classList).toggle.apply(_node$classList6, _toConsumableArray$1(classNameOrCb.split(' ')));
             });
           }
 

@@ -10298,7 +10298,7 @@ function addLayerClass(elem) {
  *
  * The following will record history: insert, batch, insert.
  * @example
- * hrService = new history.HistoryRecordingService(this.undoMgr);
+ * hrService = new HistoryRecordingService(this.undoMgr);
  * hrService.insertElement(elem, text);         // add simple command to history.
  * hrService.startBatchCommand('create two elements');
  * hrService.changeElement(elem, attrs, text);  // add to batchCommand

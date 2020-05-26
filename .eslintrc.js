@@ -60,6 +60,7 @@ module.exports = {
       settings: {
         polyfills: [
           'document.querySelector',
+          'history',
           'history.pushState',
           'history.replaceState',
           'Number.parseFloat',
@@ -130,6 +131,7 @@ module.exports = {
           'console',
           'CustomEvent',
           'document.body',
+          'document.createElementNS',
           'document.evaluate',
           'document.head',
           'document.importNode',
@@ -138,7 +140,9 @@ module.exports = {
           'Error',
           'FileReader',
           'JSON',
+          'KeyboardEvent',
           'location.href',
+          'MouseEvent',
           'MutationObserver',
           'Number.isNaN',
           'Number.parseFloat',
@@ -159,6 +163,7 @@ module.exports = {
           'XMLSerializer',
           'XMLHttpRequest',
           'window.getComputedStyle',
+          'window.parent',
           'window.scrollX',
           'window.scrollY'
         ]
@@ -266,6 +271,7 @@ module.exports = {
           'console',
           'Date.now',
           'document.body',
+          'document.createElementNS',
           'document.head',
           'DOMParser',
           'Number.isNaN',
