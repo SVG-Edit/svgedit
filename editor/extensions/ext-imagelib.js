@@ -1,5 +1,5 @@
 /**
- * ext-imagelib.js
+ * @file ext-imagelib.js
  *
  * @license MIT
  *
@@ -22,8 +22,12 @@ export default {
     imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(({name, url, description}) => {
       // Todo: Adopt some standard formatting library like `fluent.js` instead
       url = url
+        // Keep these regexes as is in prep. for switching to `u` flag
+        //  which will require escaping
+        // eslint-disable-next-line unicorn/better-regex
         .replace(/\{path\}/g, extIconsPath)
         .replace(
+          // eslint-disable-next-line unicorn/better-regex
           /\{modularVersion\}/g,
           modularVersion
             ? (imagelibStrings.moduleEnding || '-es')
@@ -75,8 +79,43 @@ export default {
     let transferStopped = false;
     let preview, submit;
 
-    // Receive `postMessage` data
-    window.addEventListener('message', async function ({origin, data: response}) { // eslint-disable-line no-shadow
+    /**
+     * Contains the SVG to insert.
+     * @typedef {PlainObject} ImageLibMessage
+     * @property {"imagelib"} namespace Required to distinguish from any other messages of app.
+     * @property {string} href Set to same value as previous `ImageLibMetaMessage` `id`.
+     * @property {string} data The response (as an SVG string or URL)
+    */
+
+    /**
+     * Used for setting meta-data before images are retrieved.
+     * @typedef {PlainObject} ImageLibMetaMessage
+     * @property {"imagelib"} namespace Required to distinguish from any other messages of app.
+     * @property {string} name If the subsequent response is an SVG string or if `preview_url`
+     *   is present, will be used as the title for the preview image. When an
+     *   SVG string is present, will default to the first `<title>`'s contents or
+     *   "(SVG #<Length of response>)" if none is present. Otherwise, if `preview_url`
+     *   is present, will default to the empty string. Though `name` may be falsy,
+     *   it is always expected to be present for meta messages.
+     * @property {string} id Identifier (the expected `href` for a subsequent response message);
+     * used for ensuring the subsequent response can be tied to this `ImageLibMetaMessage` object.
+     * @property {string} [preview_url] When import mode is multiple, used to set an image
+     * source along with the name/title. If the subsequent response is an SVG string
+     * and there is no `preview_url`, the default will just be to show the
+     * name/title. If the response is not an SVG string, the default will be to
+     * show that response (i.e., the URL).
+     * @property {string} entry Set automatically with div holding retrieving
+     * message (until ready to delete)
+     * @todo Should use a separate Map instead of `entry`
+    */
+
+    /**
+     * @param {PlainObject} cfg
+     * @param {string} cfg.origin
+     * @param {ImageLibMetaMessage|ImageLibMessage|string} cfg.data String is deprecated when parsed to JSON `ImageLibMessage`
+     * @returns {void}
+     */
+    async function onMessage ({origin, data: response}) { // eslint-disable-line no-shadow
       if (!response || !['string', 'object'].includes(typeof response)) {
         // Do nothing
         return;
@@ -150,7 +189,6 @@ export default {
 
         if (mode !== 'm') {
           await $.process_cancel(message);
-          // eslint-disable-next-line require-atomic-updates
           transferStopped = true;
           // Should a message be sent back to the frame?
 
@@ -233,7 +271,7 @@ export default {
                   $(this).html(
                     $('<span>').append(
                       $('<img>').attr('src', curMeta.preview_url),
-                      document.createTextNode(title)
+                      title
                     )
                   );
                 } else {
@@ -251,11 +289,9 @@ export default {
         } else {
           if (curMeta && curMeta.preview_url) {
             title = curMeta.name || '';
-          }
-          if (curMeta && curMeta.preview_url) {
             entry = $('<span>').append(
               $('<img>').attr('src', curMeta.preview_url),
-              document.createTextNode(title)
+              title
             );
           } else {
             entry = $('<img>').attr('src', response);
@@ -286,7 +322,10 @@ export default {
         break;
       }
       }
-    }, true);
+    }
+
+    // Receive `postMessage` data
+    window.addEventListener('message', onMessage, true);
 
     /**
     * @param {boolean} show
@@ -346,7 +385,7 @@ export default {
         const allLibs = imagelibStrings.select_lib;
 
         const libOpts = $('<ul id=imglib_opts>').appendTo(browser);
-        const frame = $('<iframe/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
+        const frame = $('<iframe src="javascript:0"/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
 
         const header = $('<h1>').prependTo(browser).text(allLibs).css({
           position: 'absolute',

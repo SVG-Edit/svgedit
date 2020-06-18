@@ -32,13 +32,13 @@ import './commands.js';
 import '@cypress/fiddle';
 
 /**
- * COVERAGE
+ * COVERAGE.
  * @see https://docs.cypress.io/guides/tooling/code-coverage.html#Install-the-plugin
  */
 import '@cypress/code-coverage/support.js';
 
 /**
- * ACCESSIBILITY
+ * ACCESSIBILITY.
  * @see https://www.npmjs.com/package/cypress-axe
  */
 import 'cypress-axe';

@@ -129,6 +129,7 @@ var svgEditorLang_he = (function () {
       reorient_path: 'Reorient path',
       ungroup: 'אלמנטים פרק קבוצה',
       docprops: 'מאפייני מסמך',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: 'הזז למטה',
       move_top: 'עבור לראש הדף',
       node_clone: 'Clone Node',

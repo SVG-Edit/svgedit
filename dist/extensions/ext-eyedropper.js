@@ -38,7 +38,7 @@ var svgEditorExtension_eyedropper = (function () {
   }
 
   /**
-   * ext-eyedropper.js
+   * @file ext-eyedropper.js
    *
    * @license MIT
    *
@@ -47,16 +47,16 @@ var svgEditorExtension_eyedropper = (function () {
    */
   var extEyedropper = {
     name: 'eyedropper',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var strings, svgEditor, $, ChangeElementCommand, svgCanvas, addToHistory, currentStyle, getStyle, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                getStyle = function _ref(opts) {
+                getStyle = function _getStyle(opts) {
                   // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
                   var mode = svgCanvas.getMode();
 
@@ -91,7 +91,7 @@ var svgEditorExtension_eyedropper = (function () {
 
               case 3:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 $ = S.$, ChangeElementCommand = S.ChangeElementCommand, svgCanvas = svgEditor.canvas, addToHistory = function addToHistory(cmd) {
                   svgCanvas.undoMgr.addCommandToHistory(cmd);
                 }, currentStyle = {
@@ -192,15 +192,9 @@ var svgEditorExtension_eyedropper = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extEyedropper;

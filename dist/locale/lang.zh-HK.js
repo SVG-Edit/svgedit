@@ -129,6 +129,7 @@ var svgEditorLang_zh_HK = (function () {
       reorient_path: 'Reorient path',
       ungroup: 'Ungroup Elements',
       docprops: '文档属性',
+      editor_homepage: 'SVG-Edit 主页',
       move_bottom: '移至底部',
       move_top: '移动到顶部',
       node_clone: 'Clone Node',

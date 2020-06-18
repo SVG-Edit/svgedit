@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Manipulating coordinates
+ * Manipulating coordinates.
  * @module coords
  * @license MIT
  */
@@ -111,8 +111,8 @@ export const remapElement = function (selected, changes, m) {
       // therefore [T'] = [M_inv][T][M]
       const existing = transformListToTransform(selected).matrix,
         tNew = matrixMultiply(existing.inverse(), m, existing);
-      changes.x = parseFloat(changes.x) + tNew.e;
-      changes.y = parseFloat(changes.y) + tNew.f;
+      changes.x = Number.parseFloat(changes.x) + tNew.e;
+      changes.y = Number.parseFloat(changes.y) + tNew.f;
     } else {
       // we just absorb all matrices into the element and don't do any remapping
       const chlist = getTransformList(selected);

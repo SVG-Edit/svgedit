@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-fn-reference-in-iterator */
 /**
- * ext-connector.js
+ * @file ext-connector.js
  *
  * @license MIT
  *

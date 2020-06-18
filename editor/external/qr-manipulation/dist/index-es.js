@@ -37,6 +37,10 @@ function _iterableToArray(iter) {
 }
 
 function _iterableToArrayLimit(arr, i) {
+  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+    return;
+  }
+
   var _arr = [];
   var _n = true;
   var _d = false;
@@ -100,18 +104,18 @@ function convertToString(content, type) {
             }
 
           case undefined:
-            {
-              // Array of nodes, QueryResult objects
-              // if (Array.isArray(content)) {
-              if (typeof content.reduce === 'function') {
-                return content.reduce(function (s, node) {
-                  return s + convertToString(node, type);
-                }, '');
-              }
+            // Array of nodes, QueryResult objects
+            // if (Array.isArray(content)) {
+            if (typeof content.reduce === 'function') {
+              return content.reduce(function (s, node) {
+                return s + convertToString(node, type);
+              }, '');
             }
+
+            break;
         }
 
-        return;
+        return undefined;
       }
 
     case 'string':
@@ -536,4 +540,4 @@ var manipulation = function manipulation($, jml) {
   return $;
 };
 
-export { after, before, append, prepend, html, text, insertTo, clone, empty, remove, attr, removeAttr, addClass, removeClass, hasClass, toggleClass, manipulation };
+export { addClass, after, append, attr, before, clone, empty, hasClass, html, insertTo, manipulation, prepend, remove, removeAttr, removeClass, text, toggleClass };

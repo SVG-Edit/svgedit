@@ -38,7 +38,7 @@ var svgEditorExtension_grid = (function () {
   }
 
   /**
-   * ext-grid.js
+   * @file ext-grid.js
    *
    * @license Apache-2.0
    *
@@ -47,16 +47,16 @@ var svgEditorExtension_grid = (function () {
    */
   var extGrid = {
     name: 'grid',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
+    init: function init(_ref) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var $, NS, getTypeMap, importLocale, strings, svgEditor, svgCanvas, svgdoc, assignAttributes, hcanvas, canvBG, units, intervals, showGrid, canvasGrid, gridDefs, gridPattern, gridimg, gridBox, updateGrid, gridUpdate, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                gridUpdate = function _ref3() {
+                gridUpdate = function _gridUpdate() {
                   if (showGrid) {
                     updateGrid(svgCanvas.getZoom());
                   }
@@ -65,7 +65,7 @@ var svgEditorExtension_grid = (function () {
                   $('#view_grid').toggleClass('push_button_pressed tool_button');
                 };
 
-                updateGrid = function _ref2(zoom) {
+                updateGrid = function _updateGrid(zoom) {
                   // TODO: Try this with <line> elements, then compare performance difference
                   var unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
 
@@ -119,7 +119,7 @@ var svgEditorExtension_grid = (function () {
 
               case 5:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 svgdoc = document.getElementById('svgcanvas').ownerDocument, assignAttributes = svgCanvas.assignAttributes, hcanvas = document.createElement('canvas'), canvBG = $('#canvasBackground'), units = getTypeMap(), intervals = [0.01, 0.1, 1, 10, 100, 1000];
                 showGrid = svgEditor.curConfig.showGrid || false;
@@ -212,15 +212,9 @@ var svgEditorExtension_grid = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extGrid;

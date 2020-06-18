@@ -69,27 +69,27 @@ let listMap_ = {};
 * @returns {SVGTransform}
 */
 /**
-* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* DOES NOT THROW DOMException, INDEX_SIZE_ERR.
 * @function module:SVGTransformList.SVGEditTransformList#getItem
 * @param {Integer} index unsigned long
 * @returns {SVGTransform}
 */
 /**
-* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* DOES NOT THROW DOMException, INDEX_SIZE_ERR.
 * @function module:SVGTransformList.SVGEditTransformList#insertItemBefore
 * @param {SVGTransform} newItem
 * @param {Integer} index unsigned long
 * @returns {SVGTransform}
 */
 /**
-* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* DOES NOT THROW DOMException, INDEX_SIZE_ERR.
 * @function module:SVGTransformList.SVGEditTransformList#replaceItem
 * @param {SVGTransform} newItem
 * @param {Integer} index unsigned long
 * @returns {SVGTransform}
 */
 /**
-* (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+* DOES NOT THROW DOMException, INDEX_SIZE_ERR.
 * @function module:SVGTransformList.SVGEditTransformList#removeItem
 * @param {Integer} index unsigned long
 * @returns {SVGTransform}
@@ -100,14 +100,14 @@ let listMap_ = {};
 * @returns {SVGTransform}
 */
 /**
-* NOT IMPLEMENTED
+* NOT IMPLEMENTED.
 * @ignore
 * @function module:SVGTransformList.SVGEditTransformList#createSVGTransformFromMatrix
 * @param {SVGMatrix} matrix
 * @returns {SVGTransform}
 */
 /**
-* NOT IMPLEMENTED
+* NOT IMPLEMENTED.
 * @ignore
 * @function module:SVGTransformList.SVGEditTransformList#consolidate
 * @returns {SVGTransform}
@@ -172,7 +172,7 @@ export class SVGTransformList { // eslint-disable-line no-shadow
           */
           const mtx = svgroot.createSVGMatrix();
           Object.values(valArr).forEach(function (item, i) {
-            valArr[i] = parseFloat(item);
+            valArr[i] = Number.parseFloat(item);
             if (name === 'matrix') {
               mtx[letters[i]] = valArr[i];
             }
@@ -383,6 +383,7 @@ export const getTransformList = function (elem) {
 /**
 * @callback module:SVGTransformList.removeElementFromListMap
 * @param {Element} elem
+* @returns {void}
 */
 /**
 * Replace `removeElementFromListMap` for unit-testing.

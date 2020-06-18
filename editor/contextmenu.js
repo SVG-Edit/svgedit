@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Adds context menu functionality
+ * Adds context menu functionality.
  * @module contextmenu
  * @license Apache-2.0
  * @author Adam Bender
@@ -16,6 +16,8 @@ let contextMenuExtensions = {};
  * Signature depends on what the user adds; in the case of our uses with
  * SVGEditor, no parameters are passed nor anything expected for a return.
  * @callback module:contextmenu.MenuItemAction
+ * @param {...args} args
+ * @returns {any}
 */
 
 /**

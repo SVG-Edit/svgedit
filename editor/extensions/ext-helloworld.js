@@ -1,5 +1,5 @@
 /**
- * ext-helloworld.js
+ * @file ext-helloworld.js
  *
  * @license MIT
  *

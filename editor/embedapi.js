@@ -1,5 +1,6 @@
 /**
-* Handles underlying communication between the embedding window and the editor frame
+* Handles underlying communication between the embedding window and the
+* editor frame.
 * @module EmbeddedSVGEdit
 */
 
@@ -36,7 +37,10 @@ function getCallbackSetter (funcName) {
 * avoid using JSON parsing (and its limitations) in the case
 * of same domain control.
 * @param {module:EmbeddedSVGEdit.EmbeddedSVGEdit} t The `this` value
-* @param {JSON} data
+* @param {PlainObject} data
+* @param {JSON} data.result
+* @param {string} data.error
+* @param {Integer} data.id
 * @returns {void}
 */
 function addCallback (t, {result, error, id: callbackID}) {

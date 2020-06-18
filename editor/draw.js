@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Tools for drawing
+ * Tools for drawing.
  * @module draw
  * @license MIT
  * @copyright 2011 Jeff Schiller
@@ -156,6 +156,7 @@ export class Drawing {
       return this.svgElem_.querySelector('#' + id);
     }
     // jQuery lookup: twice as slow as xpath in FF
+    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
     return $(this.svgElem_).find('[id=' + id + ']')[0];
   }
 
@@ -253,7 +254,7 @@ export class Drawing {
       return false;
     }
     // extract the obj_num of this id
-    const num = parseInt(id.substr(front.length));
+    const num = Number.parseInt(id.substr(front.length));
 
     // if we didn't get a positive number or we already released this number
     // then return false.
@@ -697,7 +698,7 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 // Layer API Functions
 
 /**
-* Group: Layers
+* Group: Layers.
 */
 
 /**
@@ -738,7 +739,7 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
  * @returns {void}
 */
 /**
- * Run the callback function associated with the given event
+ * Run the callback function associated with the given event.
  * @function module:draw.DrawCanvasInit#call
  * @param {"changed"|"contextset"} ev - String with the event name
  * @param {module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset} arg - Argument to pass through to the callback

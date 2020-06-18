@@ -38,7 +38,7 @@ var svgEditorExtension_arrows = (function () {
   }
 
   /**
-   * ext-arrows.js
+   * @file ext-arrows.js
    *
    * @license MIT
    *
@@ -47,16 +47,16 @@ var svgEditorExtension_arrows = (function () {
    */
   var extArrows = {
     name: 'arrows',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(S) {
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         var strings, svgEditor, svgCanvas, addElem, nonce, $, prefix, selElems, arrowprefix, randomizeIds, setArrowNonce, unsetArrowNonce, pathdata, getLinked, showPanel, resetMarker, addMarker, setArrow, colorChanged, contextTools;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                colorChanged = function _ref10(elem) {
+                colorChanged = function _colorChanged(elem) {
                   var color = elem.getAttribute('stroke');
                   var mtypes = ['start', 'mid', 'end'];
                   var defs = svgCanvas.findDefs();
@@ -122,7 +122,7 @@ var svgEditorExtension_arrows = (function () {
                   });
                 };
 
-                setArrow = function _ref9() {
+                setArrow = function _setArrow() {
                   resetMarker();
                   var type = this.value;
 
@@ -150,7 +150,7 @@ var svgEditorExtension_arrows = (function () {
                   svgCanvas.call('changed', selElems);
                 };
 
-                addMarker = function _ref8(dir, type, id) {
+                addMarker = function _addMarker(dir, type, id) {
                   // TODO: Make marker (or use?) per arrow type, since refX can be different
                   id = id || arrowprefix + dir;
                   var data = pathdata[dir];
@@ -191,14 +191,14 @@ var svgEditorExtension_arrows = (function () {
                   return marker;
                 };
 
-                resetMarker = function _ref7() {
+                resetMarker = function _resetMarker() {
                   var el = selElems[0];
                   el.removeAttribute('marker-start');
                   el.removeAttribute('marker-mid');
                   el.removeAttribute('marker-end');
                 };
 
-                showPanel = function _ref6(on) {
+                showPanel = function _showPanel(on) {
                   $('#arrow_panel').toggle(on);
 
                   if (on) {
@@ -230,7 +230,7 @@ var svgEditorExtension_arrows = (function () {
                   }
                 };
 
-                getLinked = function _ref5(elem, attr) {
+                getLinked = function _getLinked(elem, attr) {
                   var str = elem.getAttribute(attr);
 
                   if (!str) {
@@ -247,14 +247,14 @@ var svgEditorExtension_arrows = (function () {
                   return svgCanvas.getElem(m[1]); // return svgCanvas.getElem(m.groups.id);
                 };
 
-                unsetArrowNonce = function _ref4(win) {
+                unsetArrowNonce = function _unsetArrowNonce(win) {
                   randomizeIds = false;
                   arrowprefix = prefix;
                   pathdata.fw.id = arrowprefix + 'fw';
                   pathdata.bk.id = arrowprefix + 'bk';
                 };
 
-                setArrowNonce = function _ref3(win, n) {
+                setArrowNonce = function _setArrowNonce(win, n) {
                   randomizeIds = true;
                   arrowprefix = prefix + n + '_';
                   pathdata.fw.id = arrowprefix + 'fw';
@@ -266,7 +266,7 @@ var svgEditorExtension_arrows = (function () {
 
               case 10:
                 strings = _context2.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 // {svgcontent} = S,
                 addElem = svgCanvas.addSVGElementFromJson, nonce = S.nonce, $ = S.$, prefix = 'se_arrow_';
@@ -324,11 +324,9 @@ var svgEditorExtension_arrows = (function () {
 
                     $('#arrow_list option')[0].id = 'connector_no_arrow';
                   },
-                  addLangData: function () {
-                    var _addLangData = _asyncToGenerator(
-                    /*#__PURE__*/
-                    regeneratorRuntime.mark(function _callee(_ref) {
-                      var lang, importLocale, _ref2, langList;
+                  addLangData: function addLangData(_ref) {
+                    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                      var lang, importLocale, _yield$importLocale, langList;
 
                       return regeneratorRuntime.wrap(function _callee$(_context) {
                         while (1) {
@@ -339,8 +337,8 @@ var svgEditorExtension_arrows = (function () {
                               return importLocale();
 
                             case 3:
-                              _ref2 = _context.sent;
-                              langList = _ref2.langList;
+                              _yield$importLocale = _context.sent;
+                              langList = _yield$importLocale.langList;
                               return _context.abrupt("return", {
                                 data: langList
                               });
@@ -351,14 +349,8 @@ var svgEditorExtension_arrows = (function () {
                           }
                         }
                       }, _callee);
-                    }));
-
-                    function addLangData(_x2) {
-                      return _addLangData.apply(this, arguments);
-                    }
-
-                    return addLangData;
-                  }(),
+                    }))();
+                  },
                   selectedChanged: function selectedChanged(opts) {
                     // Use this to update the current selected elements
                     selElems = opts.elems;
@@ -397,15 +389,9 @@ var svgEditorExtension_arrows = (function () {
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee2);
+      }))();
+    }
   };
 
   return extArrows;

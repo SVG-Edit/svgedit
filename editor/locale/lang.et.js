@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Lõhu Elements',
     docprops: 'Dokumendi omadused',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Liiguta alla',
     move_top: 'Liiguta üles',
     node_clone: 'Clone Node',

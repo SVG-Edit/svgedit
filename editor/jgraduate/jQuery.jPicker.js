@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
 /**
- * jPicker (Adapted from version 1.1.6)
+ * @file jPicker (Adapted from version 1.1.6)
  *
  * jQuery Plugin for Photoshop style color picker
  *
@@ -72,11 +72,12 @@ const jPicker = function ($) {
   * Encapsulate slider functionality for the ColorMap and ColorBar -
   * could be useful to use a jQuery UI draggable for this with certain extensions.
   * @memberof module:jPicker
-  * @param {external:jQuery} bar
-  * @param {module:jPicker.SliderOptions} options
-  * @returns {void}
   */
   class Slider {
+    /**
+     * @param {external:jQuery} bar
+     * @param {module:jPicker.SliderOptions} options
+     */
     constructor (bar, options) {
       const that = this;
       /**
@@ -402,12 +403,14 @@ const jPicker = function ($) {
 
   /**
    * Controls for all the input elements for the typing in color values.
-   * @param {external:jQuery} picker
-   * @param {external:jQuery.jPicker.Color} color
-   * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
-   * @param {Float} alphaPrecision
    */
   class ColorValuePicker {
+    /**
+     * @param {external:jQuery} picker
+     * @param {external:jQuery.jPicker.Color} color
+     * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
+     * @param {Float} alphaPrecision
+     */
     constructor (picker, color, bindedHex, alphaPrecision) {
       const that = this; // private properties and methods
       const inputs = picker.find('td.Text input');
@@ -460,11 +463,11 @@ const jPicker = function ($) {
         case alpha && alpha.get(0):
           switch (e.keyCode) {
           case 38:
-            alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) + 1, 0, 100));
+            alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) + 1, 0, 100));
             color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
             return false;
           case 40:
-            alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) - 1, 0, 100));
+            alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) - 1, 0, 100));
             color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
             return false;
           }
@@ -560,7 +563,7 @@ const jPicker = function ($) {
           break;
         case ahex && ahex.get(0):
           ahex.val(ahex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2));
-          color.val('a', !isNullish(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
+          color.val('a', !isNullish(ahex.val()) ? Number.parseInt(ahex.val(), 16) : null, e.target);
           break;
         }
         return undefined;
@@ -690,13 +693,15 @@ const jPicker = function ($) {
   * @property {string} [ahex]
   */
 
+  /* eslint-disable jsdoc/require-property */
   /**
   * @namespace {PlainObject} jPicker
   * @memberof external:jQuery
   */
   $.jPicker = /** @lends external:jQuery.jPicker */ {
+    /* eslint-enable jsdoc/require-property */
     /**
-    * Array holding references to each active instance of the jPicker control
+    * Array holding references to each active instance of the jPicker control.
     * @type {external:jQuery.fn.$.fn.jPicker[]}
     */
     List: [],
@@ -1004,7 +1009,7 @@ const jPicker = function ($) {
       }
     },
     /**
-    * color conversion methods  - make public to give use to external scripts
+    * Color conversion methods  - make public to give use to external scripts.
     * @namespace
     */
     ColorMethods: {
@@ -1081,7 +1086,7 @@ const jPicker = function ($) {
       * @returns {Integer}
       */
       hexToInt (hex) {
-        return parseInt(hex, 16);
+        return Number.parseInt(hex, 16);
       },
       /**
       * @typedef {PlainObject} module:jPicker.HSV
@@ -1115,7 +1120,7 @@ const jPicker = function ($) {
           if (r === max) hsv.h = (g - b) / delta;
           else if (g === max) hsv.h = 2 + (b - r) / delta;
           else hsv.h = 4 + (r - g) / delta;
-          hsv.h = parseInt(hsv.h * 60);
+          hsv.h = Number.parseInt(hsv.h * 60);
           if (hsv.h < 0) hsv.h += 360;
         }
         hsv.s = (hsv.s * 100) | 0;
@@ -1183,13 +1188,15 @@ const jPicker = function ($) {
     }
   };
   const {Color, List, ColorMethods} = $.jPicker; // local copies for YUI compressor
+  /* eslint-disable jsdoc/require-returns */
   /**
    * @function external:jQuery.fn.jPicker
    * @see {@link external:jQuery.fn.$.fn.jPicker}
    */
+  /* eslint-enable jsdoc/require-returns */
 
   /**
-  * Will be bound to active {@link jQuery.jPicker.Color}
+  * Will be bound to active {@link jQuery.jPicker.Color}.
   * @callback module:jPicker.LiveCallback
   * @param {external:jQuery} ui
   * @param {Element} context
@@ -1244,7 +1251,7 @@ const jPicker = function ($) {
       } else {
         settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
       }
-      const isLessThanIE7 = parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
+      const isLessThanIE7 = Number.parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
       // set color mode and update visuals for the new color mode
       /**
        *
@@ -1728,6 +1735,7 @@ const jPicker = function ($) {
       * @returns {void}
       */
       function radioClicked (e) {
+        // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
         $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
         setColorMode.call(that, e.target.value);
       }
@@ -1795,8 +1803,8 @@ const jPicker = function ($) {
       function moveBarMouseDown (e) {
         // const {element} = settings.window, // local copies for YUI compressor
         //     {page} = settings.window;
-        elementStartX = parseInt(container.css('left'));
-        elementStartY = parseInt(container.css('top'));
+        elementStartX = Number.parseInt(container.css('left'));
+        elementStartY = Number.parseInt(container.css('top'));
         pageStartX = e.pageX;
         pageStartY = e.pageY;
         // bind events to document to move window - we will unbind these on mouseup
@@ -1993,7 +2001,7 @@ const jPicker = function ($) {
                       ? (popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0)) + 'px'
                       : win.position.x === 'screenCenter'
                         ? (($(document).width() >> 1) - 260) + 'px'
-                        : (popup.offset().left + parseInt(win.position.x)) + 'px',
+                        : (popup.offset().left + Number.parseInt(win.position.x)) + 'px',
               position: 'absolute',
               top: win.position.y === 'top'
                 ? (popup.offset().top - 312) + 'px'
@@ -2001,7 +2009,7 @@ const jPicker = function ($) {
                   ? (popup.offset().top - 156) + 'px'
                   : win.position.y === 'bottom'
                     ? (popup.offset().top + 25) + 'px'
-                    : (popup.offset().top + parseInt(win.position.y)) + 'px'
+                    : (popup.offset().top + Number.parseInt(win.position.y)) + 'px'
             }
           );
         } else {
@@ -2283,7 +2291,7 @@ const jPicker = function ($) {
   * @property {"left"|"center"|"right"|"screenCenter"|Float} window.position.x Relative px value
   * @property {"top"|"bottom"|"center"|Float} window.position.y Relative px value
   * @property {boolean} window.expandable Defaults to large static picker - set to `true` to make an expandable
-  * picker (small icon with popup) - set automatically when binded to input element
+  * picker (small icon with popup) - set automatically when binded to input element; added by `$.fn.jPicker`
   * @property {boolean} window.liveUpdate Set `false` if you want the user to have to click "OK" before the
   * binded input box updates values (always `true` for expandable picker)
   * @property {boolean} window.alphaSupport Set to `true` to enable alpha picking
@@ -2291,7 +2299,6 @@ const jPicker = function ($) {
   * not map directly to percentage integers - range 0-2
   * @property {boolean} window.updateInputColor Set to `false` to prevent binded input colors from changing
   * @property {boolean} [window.bindToInput] Added by `$.fn.jPicker`
-  * @property {boolean} [window.expandable] Added by `$.fn.jPicker`
   * @property {external:jQuery} [window.input] Added by `$.fn.jPicker`
   * @property {PlainObject} color
   * @property {"h"|"s"|"v"|"r"|"g"|"b"|"a"} color.mode Symbols stand for "h" (hue), "s" (saturation), "v" (value), "r" (red), "g" (green), "b" (blue), "a" (alpha)
@@ -2329,8 +2336,8 @@ const jPicker = function ($) {
   * @property {string} localization.tooltips.hex.alpha
   */
   /**
-  * jPicker defaults - you can change anything in this section (such as the
-  * clientPath to your images) without fear of breaking the program
+  * The jPicker defaults - you can change anything in this section (such as the
+  * clientPath to your images) without fear of breaking the program.
   * @namespace {external:jQuery.fn.jPickerOptions} defaults
   * @memberof external:jQuery.fn.$.fn.jPicker
   * @borrows external:jQuery.fn.jPickerOptions as external:jQuery.fn.jPicker.defaults

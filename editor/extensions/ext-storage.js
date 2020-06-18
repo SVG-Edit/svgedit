@@ -1,5 +1,5 @@
 /**
- * ext-storage.js
+ * @file ext-storage.js
  *
  * This extension allows automatic saving of the SVG canvas contents upon
  *  page unload (which can later be automatically retrieved upon future
@@ -8,18 +8,17 @@
  *  The functionality was originally part of the SVG Editor, but moved to a
  *  separate extension to make the setting behavior optional, and adapted
  *  to inform the user of its setting of local data.
- * Dependencies:
  *
- * 1. jQuery BBQ (for deparam)
  * @license MIT
  *
  * @copyright 2010 Brett Zamir
- * @todo Revisit on whether to use $.pref over directly setting curConfig in all
- *   extensions for a more public API (not only for extPath and imagePath,
- *   but other currently used config in the extensions)
+ * @todo Revisit on whether to use `svgEditor.pref` over directly setting
+ * `curConfig` in all extensions for a more public API (not only for `extPath`
+ * and `imagePath`, but other currently used config in the extensions)
  * @todo We might provide control of storage settings through the UI besides the
  *   initial (or URL-forced) dialog. *
 */
+
 export default {
   name: 'storage',
   init ({$}) {
@@ -41,7 +40,7 @@ export default {
       //  would thereby be set with an empty value, erasing any of the
       // user's prior work. To change this behavior so that no use of storage
       // or adding of new storage takes place regardless of settings, set
-      // the "noStorageOnLoad" config setting to true in svgedit-config-iife.js.
+      // the "noStorageOnLoad" config setting to true in svgedit-config-*.js.
       noStorageOnLoad,
       forceStorage
     } = svgEditor.curConfig;
@@ -51,6 +50,7 @@ export default {
      * Replace `storagePrompt` parameter within URL.
      * @param {string} val
      * @returns {void}
+     * @todo Replace the string manipulation with `searchParams.set`
      */
     function replaceStoragePrompt (val) {
       val = val ? 'storagePrompt=' + val : '';
@@ -166,7 +166,7 @@ export default {
     return {
       name: 'storage',
       async langReady ({importLocale}) {
-        const {storagePrompt} = $.deparam.querystring(true);
+        const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
 
         const confirmSetStorage = await importLocale();
         const {
@@ -190,13 +190,13 @@ export default {
           // If the URL has been explicitly set to always prompt the
           //  user (e.g., so one can be pointed to a URL where one
           // can alter one's settings, say to prevent future storage)...
-          storagePrompt === true ||
+          storagePrompt === 'true' ||
           (
             // ...or...if the URL at least doesn't explicitly prevent a
             //  storage prompt (as we use for users who
             // don't want to set cookies at all but who don't want
             // continual prompts about it)...
-            storagePrompt !== false &&
+            storagePrompt !== 'false' &&
             // ...and this user hasn't previously indicated a desire for storage
             !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)
           )
@@ -247,13 +247,12 @@ export default {
             // doesn't even want to remember their not wanting
             // storage, so we don't set the cookie or continue on with
             //  setting storage on beforeunload
-            // eslint-disable-next-line require-atomic-updates
             document.cookie = 'svgeditstore=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
             // If the URL was configured to always insist on a prompt, if
             //    the user does indicate a wish to store their info, we
             //    don't want ask them again upon page refresh so move
             //    them instead to a URL which does not always prompt
-            if (storagePrompt === true && checked) {
+            if (storagePrompt === 'true' && checked) {
               replaceStoragePrompt();
               return;
             }

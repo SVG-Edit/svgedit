@@ -1,5 +1,5 @@
 /**
- * ext-placemark.js
+ * @file ext-placemark.js
  *
  *
  * @copyright 2010 CloudCanvas, Inc. All rights reserved
@@ -106,7 +106,7 @@ export default {
      */
     function updateFont (font) {
       font = font.split(' ');
-      const fontSize = parseInt(font.pop());
+      const fontSize = Number.parseInt(font.pop());
       font = font.join(' ');
       selElems.forEach((elem) => {
         if (elem && elem.getAttribute('class').includes('placemark')) {
@@ -356,7 +356,7 @@ export default {
           const id = svgCanvas.getNextId();
           const items = $('#placemarkText').val().split(';');
           let font = $('#placemarkFont').val().split(' ');
-          const fontSize = parseInt(font.pop());
+          const fontSize = Number.parseInt(font.pop());
           font = font.join(' ');
           const x0 = opts.start_x + 10, y0 = opts.start_y + 10;
           let maxlen = 0;

@@ -1,5 +1,5 @@
 /**
- * jGraduate 0.4
+ * @file jGraduate 0.4
  *
  * jQuery Plugin for a gradient picker
  *
@@ -17,6 +17,7 @@
  * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
 
+/* eslint-disable jsdoc/require-property */
 /**
   * The jQuery namespace.
   * @external jQuery
@@ -27,6 +28,7 @@
  * @memberof external:jQuery
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
+/* eslint-enable jsdoc/require-property */
 
 const ns = {
   svg: 'http://www.w3.org/2000/svg',
@@ -59,11 +61,11 @@ export default function jQueryPluginJGraduate ($) {
 
   /**
   * @typedef {PlainObject} module:jGraduate.jGraduatePaintOptions
-  * @param {Float} [alpha]
-  * @param {module:jGraduate~Paint} [copy] Copy paint object
-  * @param {SVGLinearGradientElement} [linearGradient]
-  * @param {SVGRadialGradientElement} [radialGradient]
-  * @param {string} [solidColor]
+  * @property {Float} [alpha]
+  * @property {module:jGraduate~Paint} [copy] Copy paint object
+  * @property {SVGLinearGradientElement} [linearGradient]
+  * @property {SVGRadialGradientElement} [radialGradient]
+  * @property {string} [solidColor]
   */
 
   /**
@@ -84,13 +86,13 @@ export default function jQueryPluginJGraduate ($) {
          */
         this.type = options.copy.type;
         /**
-         * Represents opacity (0-100)
+         * Represents opacity (0-100).
          * @name module:jGraduate~Paint#alpha
          * @type {Float}
          */
         this.alpha = options.copy.alpha;
         /**
-         * Represents #RRGGBB hex of color
+         * Represents #RRGGBB hex of color.
          * @name module:jGraduate~Paint#solidColor
          * @type {string}
          */
@@ -144,11 +146,14 @@ export default function jQueryPluginJGraduate ($) {
       }
     }
   }
+
+  /* eslint-disable jsdoc/require-property */
   /**
   * @namespace {PlainObject} jGraduate
   * @memberof external:jQuery
   */
   $.jGraduate = /** @lends external:jQuery.jGraduate */ {
+    /* eslint-enable jsdoc/require-property */
     /**
     * @class external:jQuery.jGraduate.Paint
     * @see module:jGraduate~Paint
@@ -164,7 +169,7 @@ export default function jQueryPluginJGraduate ($) {
   */
   $.fn.jGraduateDefaults = /** @lends external:jQuery.fn.jGraduateDefaults */ {
     /**
-    * Creates an object with a 'none' color
+    * Creates an object with a 'none' color.
     * @type {external:jQuery.jGraduate.Paint}
     * @see module:jGraduate.Options
     */
@@ -510,7 +515,7 @@ export default function jQueryPluginJGraduate ($) {
             let inverted = '';
             for (let i = 0; i < 6; i += 2) {
               // const ch = color.substr(i, 2);
-              let inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
+              let inv = (255 - Number.parseInt(color.substr(i, 2), 16)).toString(16);
               if (inv.length < 2) inv = 0 + inv;
               inverted += inv;
             }
@@ -530,15 +535,15 @@ export default function jQueryPluginJGraduate ($) {
         }
       }
 
-      const x1 = parseFloat(grad.getAttribute('x1') || 0.0),
-        y1 = parseFloat(grad.getAttribute('y1') || 0.0),
-        x2 = parseFloat(grad.getAttribute('x2') || 1.0),
-        y2 = parseFloat(grad.getAttribute('y2') || 0.0);
+      const x1 = Number.parseFloat(grad.getAttribute('x1') || 0.0),
+        y1 = Number.parseFloat(grad.getAttribute('y1') || 0.0),
+        x2 = Number.parseFloat(grad.getAttribute('x2') || 1.0),
+        y2 = Number.parseFloat(grad.getAttribute('y2') || 0.0);
 
-      const cx = parseFloat(grad.getAttribute('cx') || 0.5),
-        cy = parseFloat(grad.getAttribute('cy') || 0.5),
-        fx = parseFloat(grad.getAttribute('fx') || cx),
-        fy = parseFloat(grad.getAttribute('fy') || cy);
+      const cx = Number.parseFloat(grad.getAttribute('cx') || 0.5),
+        cy = Number.parseFloat(grad.getAttribute('cy') || 0.5),
+        fx = Number.parseFloat(grad.getAttribute('fx') || cx),
+        fy = Number.parseFloat(grad.getAttribute('fy') || cy);
 
       const previewRect = mkElem('rect', {
         id: id + '_jgraduate_rect',
@@ -612,7 +617,7 @@ export default function jQueryPluginJGraduate ($) {
           .val(attrval)
           .change(function () {
             // TODO: Support values < 0 and > 1 (zoomable preview?)
-            if (isNaN(parseFloat(this.value)) || this.value < 0) {
+            if (isNaN(Number.parseFloat(this.value)) || this.value < 0) {
               this.value = 0.0;
             } else if (this.value > 1) {
               this.value = 1.0;
@@ -687,7 +692,7 @@ export default function jQueryPluginJGraduate ($) {
           const colorhandle = this; // eslint-disable-line consistent-this
           let stopOpacity = Number(stop.getAttribute('stop-opacity')) || 1;
           let stopColor = stop.getAttribute('stop-color') || 1;
-          let thisAlpha = (parseFloat(stopOpacity) * 255).toString(16);
+          let thisAlpha = (Number.parseFloat(stopOpacity) * 255).toString(16);
           while (thisAlpha.length < 2) { thisAlpha = '0' + thisAlpha; }
           colr = stopColor.substr(1) + thisAlpha;
           $('#' + id + '_jGraduate_stopPicker').css({left: 100, bottom: 15}).jPicker({
@@ -1047,7 +1052,7 @@ export default function jQueryPluginJGraduate ($) {
       const setSlider = function (e) {
         const {offset: {left}} = slider;
         const div = slider.parent;
-        let x = (e.pageX - left - parseInt(div.css('border-left-width')));
+        let x = (e.pageX - left - Number.parseInt(div.css('border-left-width')));
         if (x > SLIDERW) x = SLIDERW;
         if (x <= 0) x = 0;
         const posx = x - 5;
@@ -1061,7 +1066,7 @@ export default function jQueryPluginJGraduate ($) {
           curGradient.setAttribute('r', x);
           break;
         case 'opacity':
-          $this.paint.alpha = parseInt(x * 100);
+          $this.paint.alpha = Number.parseInt(x * 100);
           previewRect.setAttribute('fill-opacity', x);
           break;
         case 'ellip':

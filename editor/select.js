@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * DOM element selection box tools
+ * DOM element selection box tools.
  * @module select
  * @license MIT
  *
@@ -261,6 +261,9 @@ export class Selector {
 * Manage all selector objects (selection boxes).
 */
 export class SelectorManager {
+  /**
+   * Sets up properties and calls `initGroup`.
+   */
   constructor () {
     // this will hold the <g> element that contains all selector rects/grips
     this.selectorParentGroup = null;

@@ -40,7 +40,7 @@ var svgEditorExtension_connector = (function () {
   /* eslint-disable unicorn/no-fn-reference-in-iterator */
 
   /**
-   * ext-connector.js
+   * @file ext-connector.js
    *
    * @license MIT
    *
@@ -49,16 +49,16 @@ var svgEditorExtension_connector = (function () {
    */
   var extConnector = {
     name: 'connector',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, getElem, $, svgroot, importLocale, addElem, selManager, connSel, elData, strings, startX, startY, curLine, startElem, endElem, seNs, svgcontent, started, connections, selElems, getBBintersect, getOffset, showPanel, setPoint, updateLine, findConnectors, updateConnectors, init, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                init = function _ref9() {
+                init = function _init() {
                   // Make sure all connectors have data set
                   $(svgcontent).find('*').each(function () {
                     var conn = this.getAttributeNS(seNs, 'connector');
@@ -74,7 +74,7 @@ var svgEditorExtension_connector = (function () {
                   }); // updateConnectors();
                 };
 
-                updateConnectors = function _ref8(elems) {
+                updateConnectors = function _updateConnectors(elems) {
                   // Updates connector lines based on selected elements
                   // Is not used on mousemove, as it runs getStrokedBBox every time,
                   // which isn't necessary there.
@@ -126,7 +126,7 @@ var svgEditorExtension_connector = (function () {
                   }
                 };
 
-                findConnectors = function _ref7() {
+                findConnectors = function _findConnectors() {
                   var elems = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : selElems;
                   var connectors = $(svgcontent).find(connSel);
                   connections = []; // Loop through connectors to see if one is connected to the element
@@ -186,7 +186,7 @@ var svgEditorExtension_connector = (function () {
                   });
                 };
 
-                updateLine = function _ref6(diffX, diffY) {
+                updateLine = function _updateLine(diffX, diffY) {
                   // Update line with element
                   var i = connections.length;
 
@@ -216,7 +216,7 @@ var svgEditorExtension_connector = (function () {
                   }
                 };
 
-                setPoint = function _ref5(elem, pos, x, y, setMid) {
+                setPoint = function _setPoint(elem, pos, x, y, setMid) {
                   var pts = elem.points;
                   var pt = svgroot.createSVGPoint();
                   pt.x = x;
@@ -250,7 +250,7 @@ var svgEditorExtension_connector = (function () {
                   }
                 };
 
-                showPanel = function _ref4(on) {
+                showPanel = function _showPanel(on) {
                   var connRules = $('#connector_rules');
 
                   if (!connRules.length) {
@@ -261,7 +261,7 @@ var svgEditorExtension_connector = (function () {
                   $('#connector_panel').toggle(on);
                 };
 
-                getOffset = function _ref3(side, line) {
+                getOffset = function _getOffset(side, line) {
                   var giveOffset = line.getAttribute('marker-' + side); // const giveOffset = $(line).data(side+'_off');
                   // TODO: Make this number (5) be based on marker width/height
 
@@ -269,7 +269,7 @@ var svgEditorExtension_connector = (function () {
                   return giveOffset ? size : 0;
                 };
 
-                getBBintersect = function _ref2(x, y, bb, offset) {
+                getBBintersect = function _getBBintersect(x, y, bb, offset) {
                   if (offset) {
                     offset -= 0;
                     bb = $.extend({}, bb);
@@ -298,7 +298,7 @@ var svgEditorExtension_connector = (function () {
                   };
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 getElem = svgCanvas.getElem;
                 $ = S.$, svgroot = S.svgroot, importLocale = S.importLocale, addElem = svgCanvas.addSVGElementFromJson, selManager = S.selectorManager, connSel = '.se_connector', elData = $.data;
@@ -683,15 +683,9 @@ var svgEditorExtension_connector = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extConnector;

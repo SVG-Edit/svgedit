@@ -1,5 +1,5 @@
 /**
- * ext-shapes.js
+ * @file ext-shapes.js
  *
  * @license MIT
  *

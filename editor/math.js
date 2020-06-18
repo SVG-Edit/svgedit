@@ -1,5 +1,5 @@
 /**
- * Mathematical utilities
+ * Mathematical utilities.
  * @module math
  * @license MIT
  *
@@ -158,8 +158,8 @@ export const transformListToTransform = function (tlist, min, max) {
   }
   min = min || 0;
   max = max || (tlist.numberOfItems - 1);
-  min = parseInt(min);
-  max = parseInt(max);
+  min = Number.parseInt(min);
+  max = Number.parseInt(max);
   if (min > max) { const temp = max; max = min; min = temp; }
   let m = svg.createSVGMatrix();
   for (let i = min; i <= max; ++i) {

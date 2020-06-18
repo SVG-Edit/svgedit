@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorientează Traiectoria',
     ungroup: 'Anulare Grupare Elemente',
     docprops: 'Proprietăţile Documentului',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Mutare în jos',
     move_top: 'Mutare în sus',
     node_clone: 'Clonează Punct',

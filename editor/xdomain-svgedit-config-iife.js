@@ -2,6 +2,8 @@
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -122,6 +124,19 @@
     return _setPrototypeOf(o, p);
   }
 
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -138,20 +153,35 @@
     return _assertThisInitialized(self);
   }
 
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+    return function () {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
+  }
+
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
   }
 
   function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
   }
 
   function _arrayWithHoles(arr) {
@@ -159,14 +189,11 @@
   }
 
   function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -192,12 +219,84 @@
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _createForOfIteratorHelper(o) {
+    if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
+      if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) {
+        var i = 0;
+
+        var F = function () {};
+
+        return {
+          s: F,
+          n: function () {
+            if (i >= o.length) return {
+              done: true
+            };
+            return {
+              done: false,
+              value: o[i++]
+            };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: F
+        };
+      }
+
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    var it,
+        normalCompletion = true,
+        didErr = false,
+        err;
+    return {
+      s: function () {
+        it = o[Symbol.iterator]();
+      },
+      n: function () {
+        var step = it.next();
+        normalCompletion = step.done;
+        return step;
+      },
+      e: function (e) {
+        didErr = true;
+        err = e;
+      },
+      f: function () {
+        try {
+          if (!normalCompletion && it.return != null) it.return();
+        } finally {
+          if (didErr) throw err;
+        }
+      }
+    };
   }
 
   // http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
@@ -269,13 +368,13 @@
   document.addEventListener('touchcancel', touchHandler, true);
 
   /**
-   * Namespaces or tools therefor
+   * Namespaces or tools therefor.
    * @module namespaces
    * @license MIT
   */
 
   /**
-  * Common namepaces constants in alpha order
+  * Common namepaces constants in alpha order.
   * @enum {string}
   * @type {PlainObject}
   * @memberof module:namespaces
@@ -327,16 +426,14 @@
   * Chrome 46.
   */
 
-  /* eslint-disable no-shadow, class-methods-use-this */
+  /* eslint-disable no-shadow, class-methods-use-this, jsdoc/require-jsdoc */
   // Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
   // Linting: We avoid `class-methods-use-this` as this is a polyfill that must
   //   follow the conventions
   (function () {
     if (!('SVGPathSeg' in window)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
-      var _SVGPathSeg =
-      /*#__PURE__*/
-      function () {
+      var _SVGPathSeg = /*#__PURE__*/function () {
         function _SVGPathSeg(type, typeAsLetter, owningPathSegList) {
           _classCallCheck(this, _SVGPathSeg);
 
@@ -380,15 +477,15 @@
       _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS = 18;
       _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL = 19;
 
-      var _SVGPathSegClosePath =
-      /*#__PURE__*/
-      function (_SVGPathSeg2) {
+      var _SVGPathSegClosePath = /*#__PURE__*/function (_SVGPathSeg2) {
         _inherits(_SVGPathSegClosePath, _SVGPathSeg2);
+
+        var _super = _createSuper(_SVGPathSegClosePath);
 
         function _SVGPathSegClosePath(owningPathSegList) {
           _classCallCheck(this, _SVGPathSegClosePath);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegClosePath).call(this, _SVGPathSeg.PATHSEG_CLOSEPATH, 'z', owningPathSegList));
+          return _super.call(this, _SVGPathSeg.PATHSEG_CLOSEPATH, 'z', owningPathSegList);
         }
 
         _createClass(_SVGPathSegClosePath, [{
@@ -411,17 +508,17 @@
         return _SVGPathSegClosePath;
       }(_SVGPathSeg);
 
-      var _SVGPathSegMovetoAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg3) {
+      var _SVGPathSegMovetoAbs = /*#__PURE__*/function (_SVGPathSeg3) {
         _inherits(_SVGPathSegMovetoAbs, _SVGPathSeg3);
+
+        var _super2 = _createSuper(_SVGPathSegMovetoAbs);
 
         function _SVGPathSegMovetoAbs(owningPathSegList, x, y) {
           var _this;
 
           _classCallCheck(this, _SVGPathSegMovetoAbs);
 
-          _this = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegMovetoAbs).call(this, _SVGPathSeg.PATHSEG_MOVETO_ABS, 'M', owningPathSegList));
+          _this = _super2.call(this, _SVGPathSeg.PATHSEG_MOVETO_ABS, 'M', owningPathSegList);
           _this._x = x;
           _this._y = y;
           return _this;
@@ -472,17 +569,17 @@
         }
       });
 
-      var _SVGPathSegMovetoRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg4) {
+      var _SVGPathSegMovetoRel = /*#__PURE__*/function (_SVGPathSeg4) {
         _inherits(_SVGPathSegMovetoRel, _SVGPathSeg4);
+
+        var _super3 = _createSuper(_SVGPathSegMovetoRel);
 
         function _SVGPathSegMovetoRel(owningPathSegList, x, y) {
           var _this2;
 
           _classCallCheck(this, _SVGPathSegMovetoRel);
 
-          _this2 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegMovetoRel).call(this, _SVGPathSeg.PATHSEG_MOVETO_REL, 'm', owningPathSegList));
+          _this2 = _super3.call(this, _SVGPathSeg.PATHSEG_MOVETO_REL, 'm', owningPathSegList);
           _this2._x = x;
           _this2._y = y;
           return _this2;
@@ -533,17 +630,17 @@
         }
       });
 
-      var _SVGPathSegLinetoAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg5) {
+      var _SVGPathSegLinetoAbs = /*#__PURE__*/function (_SVGPathSeg5) {
         _inherits(_SVGPathSegLinetoAbs, _SVGPathSeg5);
+
+        var _super4 = _createSuper(_SVGPathSegLinetoAbs);
 
         function _SVGPathSegLinetoAbs(owningPathSegList, x, y) {
           var _this3;
 
           _classCallCheck(this, _SVGPathSegLinetoAbs);
 
-          _this3 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_ABS, 'L', owningPathSegList));
+          _this3 = _super4.call(this, _SVGPathSeg.PATHSEG_LINETO_ABS, 'L', owningPathSegList);
           _this3._x = x;
           _this3._y = y;
           return _this3;
@@ -594,17 +691,17 @@
         }
       });
 
-      var _SVGPathSegLinetoRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg6) {
+      var _SVGPathSegLinetoRel = /*#__PURE__*/function (_SVGPathSeg6) {
         _inherits(_SVGPathSegLinetoRel, _SVGPathSeg6);
+
+        var _super5 = _createSuper(_SVGPathSegLinetoRel);
 
         function _SVGPathSegLinetoRel(owningPathSegList, x, y) {
           var _this4;
 
           _classCallCheck(this, _SVGPathSegLinetoRel);
 
-          _this4 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoRel).call(this, _SVGPathSeg.PATHSEG_LINETO_REL, 'l', owningPathSegList));
+          _this4 = _super5.call(this, _SVGPathSeg.PATHSEG_LINETO_REL, 'l', owningPathSegList);
           _this4._x = x;
           _this4._y = y;
           return _this4;
@@ -655,17 +752,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoCubicAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg7) {
+      var _SVGPathSegCurvetoCubicAbs = /*#__PURE__*/function (_SVGPathSeg7) {
         _inherits(_SVGPathSegCurvetoCubicAbs, _SVGPathSeg7);
+
+        var _super6 = _createSuper(_SVGPathSegCurvetoCubicAbs);
 
         function _SVGPathSegCurvetoCubicAbs(owningPathSegList, x, y, x1, y1, x2, y2) {
           var _this5;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicAbs);
 
-          _this5 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS, 'C', owningPathSegList));
+          _this5 = _super6.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS, 'C', owningPathSegList);
           _this5._x = x;
           _this5._y = y;
           _this5._x1 = x1;
@@ -764,17 +861,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoCubicRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg8) {
+      var _SVGPathSegCurvetoCubicRel = /*#__PURE__*/function (_SVGPathSeg8) {
         _inherits(_SVGPathSegCurvetoCubicRel, _SVGPathSeg8);
+
+        var _super7 = _createSuper(_SVGPathSegCurvetoCubicRel);
 
         function _SVGPathSegCurvetoCubicRel(owningPathSegList, x, y, x1, y1, x2, y2) {
           var _this6;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicRel);
 
-          _this6 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL, 'c', owningPathSegList));
+          _this6 = _super7.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL, 'c', owningPathSegList);
           _this6._x = x;
           _this6._y = y;
           _this6._x1 = x1;
@@ -873,17 +970,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg9) {
+      var _SVGPathSegCurvetoQuadraticAbs = /*#__PURE__*/function (_SVGPathSeg9) {
         _inherits(_SVGPathSegCurvetoQuadraticAbs, _SVGPathSeg9);
+
+        var _super8 = _createSuper(_SVGPathSegCurvetoQuadraticAbs);
 
         function _SVGPathSegCurvetoQuadraticAbs(owningPathSegList, x, y, x1, y1) {
           var _this7;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticAbs);
 
-          _this7 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS, 'Q', owningPathSegList));
+          _this7 = _super8.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS, 'Q', owningPathSegList);
           _this7._x = x;
           _this7._y = y;
           _this7._x1 = x1;
@@ -958,17 +1055,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg10) {
+      var _SVGPathSegCurvetoQuadraticRel = /*#__PURE__*/function (_SVGPathSeg10) {
         _inherits(_SVGPathSegCurvetoQuadraticRel, _SVGPathSeg10);
+
+        var _super9 = _createSuper(_SVGPathSegCurvetoQuadraticRel);
 
         function _SVGPathSegCurvetoQuadraticRel(owningPathSegList, x, y, x1, y1) {
           var _this8;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticRel);
 
-          _this8 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL, 'q', owningPathSegList));
+          _this8 = _super9.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL, 'q', owningPathSegList);
           _this8._x = x;
           _this8._y = y;
           _this8._x1 = x1;
@@ -1043,17 +1140,17 @@
         }
       });
 
-      var _SVGPathSegArcAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg11) {
+      var _SVGPathSegArcAbs = /*#__PURE__*/function (_SVGPathSeg11) {
         _inherits(_SVGPathSegArcAbs, _SVGPathSeg11);
+
+        var _super10 = _createSuper(_SVGPathSegArcAbs);
 
         function _SVGPathSegArcAbs(owningPathSegList, x, y, r1, r2, angle, largeArcFlag, sweepFlag) {
           var _this9;
 
           _classCallCheck(this, _SVGPathSegArcAbs);
 
-          _this9 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegArcAbs).call(this, _SVGPathSeg.PATHSEG_ARC_ABS, 'A', owningPathSegList));
+          _this9 = _super10.call(this, _SVGPathSeg.PATHSEG_ARC_ABS, 'A', owningPathSegList);
           _this9._x = x;
           _this9._y = y;
           _this9._r1 = r1;
@@ -1164,17 +1261,17 @@
         }
       });
 
-      var _SVGPathSegArcRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg12) {
+      var _SVGPathSegArcRel = /*#__PURE__*/function (_SVGPathSeg12) {
         _inherits(_SVGPathSegArcRel, _SVGPathSeg12);
+
+        var _super11 = _createSuper(_SVGPathSegArcRel);
 
         function _SVGPathSegArcRel(owningPathSegList, x, y, r1, r2, angle, largeArcFlag, sweepFlag) {
           var _this10;
 
           _classCallCheck(this, _SVGPathSegArcRel);
 
-          _this10 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegArcRel).call(this, _SVGPathSeg.PATHSEG_ARC_REL, 'a', owningPathSegList));
+          _this10 = _super11.call(this, _SVGPathSeg.PATHSEG_ARC_REL, 'a', owningPathSegList);
           _this10._x = x;
           _this10._y = y;
           _this10._r1 = r1;
@@ -1285,17 +1382,17 @@
         }
       });
 
-      var _SVGPathSegLinetoHorizontalAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg13) {
+      var _SVGPathSegLinetoHorizontalAbs = /*#__PURE__*/function (_SVGPathSeg13) {
         _inherits(_SVGPathSegLinetoHorizontalAbs, _SVGPathSeg13);
+
+        var _super12 = _createSuper(_SVGPathSegLinetoHorizontalAbs);
 
         function _SVGPathSegLinetoHorizontalAbs(owningPathSegList, x) {
           var _this11;
 
           _classCallCheck(this, _SVGPathSegLinetoHorizontalAbs);
 
-          _this11 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoHorizontalAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS, 'H', owningPathSegList));
+          _this11 = _super12.call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS, 'H', owningPathSegList);
           _this11._x = x;
           return _this11;
         }
@@ -1332,17 +1429,17 @@
         enumerable: true
       });
 
-      var _SVGPathSegLinetoHorizontalRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg14) {
+      var _SVGPathSegLinetoHorizontalRel = /*#__PURE__*/function (_SVGPathSeg14) {
         _inherits(_SVGPathSegLinetoHorizontalRel, _SVGPathSeg14);
+
+        var _super13 = _createSuper(_SVGPathSegLinetoHorizontalRel);
 
         function _SVGPathSegLinetoHorizontalRel(owningPathSegList, x) {
           var _this12;
 
           _classCallCheck(this, _SVGPathSegLinetoHorizontalRel);
 
-          _this12 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoHorizontalRel).call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL, 'h', owningPathSegList));
+          _this12 = _super13.call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL, 'h', owningPathSegList);
           _this12._x = x;
           return _this12;
         }
@@ -1379,17 +1476,17 @@
         enumerable: true
       });
 
-      var _SVGPathSegLinetoVerticalAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg15) {
+      var _SVGPathSegLinetoVerticalAbs = /*#__PURE__*/function (_SVGPathSeg15) {
         _inherits(_SVGPathSegLinetoVerticalAbs, _SVGPathSeg15);
+
+        var _super14 = _createSuper(_SVGPathSegLinetoVerticalAbs);
 
         function _SVGPathSegLinetoVerticalAbs(owningPathSegList, y) {
           var _this13;
 
           _classCallCheck(this, _SVGPathSegLinetoVerticalAbs);
 
-          _this13 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoVerticalAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS, 'V', owningPathSegList));
+          _this13 = _super14.call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS, 'V', owningPathSegList);
           _this13._y = y;
           return _this13;
         }
@@ -1426,17 +1523,17 @@
         enumerable: true
       });
 
-      var _SVGPathSegLinetoVerticalRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg16) {
+      var _SVGPathSegLinetoVerticalRel = /*#__PURE__*/function (_SVGPathSeg16) {
         _inherits(_SVGPathSegLinetoVerticalRel, _SVGPathSeg16);
+
+        var _super15 = _createSuper(_SVGPathSegLinetoVerticalRel);
 
         function _SVGPathSegLinetoVerticalRel(owningPathSegList, y) {
           var _this14;
 
           _classCallCheck(this, _SVGPathSegLinetoVerticalRel);
 
-          _this14 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoVerticalRel).call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL, 'v', owningPathSegList));
+          _this14 = _super15.call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL, 'v', owningPathSegList);
           _this14._y = y;
           return _this14;
         }
@@ -1473,17 +1570,17 @@
         enumerable: true
       });
 
-      var _SVGPathSegCurvetoCubicSmoothAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg17) {
+      var _SVGPathSegCurvetoCubicSmoothAbs = /*#__PURE__*/function (_SVGPathSeg17) {
         _inherits(_SVGPathSegCurvetoCubicSmoothAbs, _SVGPathSeg17);
+
+        var _super16 = _createSuper(_SVGPathSegCurvetoCubicSmoothAbs);
 
         function _SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList, x, y, x2, y2) {
           var _this15;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicSmoothAbs);
 
-          _this15 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicSmoothAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS, 'S', owningPathSegList));
+          _this15 = _super16.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS, 'S', owningPathSegList);
           _this15._x = x;
           _this15._y = y;
           _this15._x2 = x2;
@@ -1558,17 +1655,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoCubicSmoothRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg18) {
+      var _SVGPathSegCurvetoCubicSmoothRel = /*#__PURE__*/function (_SVGPathSeg18) {
         _inherits(_SVGPathSegCurvetoCubicSmoothRel, _SVGPathSeg18);
+
+        var _super17 = _createSuper(_SVGPathSegCurvetoCubicSmoothRel);
 
         function _SVGPathSegCurvetoCubicSmoothRel(owningPathSegList, x, y, x2, y2) {
           var _this16;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicSmoothRel);
 
-          _this16 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicSmoothRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL, 's', owningPathSegList));
+          _this16 = _super17.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL, 's', owningPathSegList);
           _this16._x = x;
           _this16._y = y;
           _this16._x2 = x2;
@@ -1643,17 +1740,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticSmoothAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg19) {
+      var _SVGPathSegCurvetoQuadraticSmoothAbs = /*#__PURE__*/function (_SVGPathSeg19) {
         _inherits(_SVGPathSegCurvetoQuadraticSmoothAbs, _SVGPathSeg19);
+
+        var _super18 = _createSuper(_SVGPathSegCurvetoQuadraticSmoothAbs);
 
         function _SVGPathSegCurvetoQuadraticSmoothAbs(owningPathSegList, x, y) {
           var _this17;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticSmoothAbs);
 
-          _this17 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticSmoothAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS, 'T', owningPathSegList));
+          _this17 = _super18.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS, 'T', owningPathSegList);
           _this17._x = x;
           _this17._y = y;
           return _this17;
@@ -1704,17 +1801,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticSmoothRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg20) {
+      var _SVGPathSegCurvetoQuadraticSmoothRel = /*#__PURE__*/function (_SVGPathSeg20) {
         _inherits(_SVGPathSegCurvetoQuadraticSmoothRel, _SVGPathSeg20);
+
+        var _super19 = _createSuper(_SVGPathSegCurvetoQuadraticSmoothRel);
 
         function _SVGPathSegCurvetoQuadraticSmoothRel(owningPathSegList, x, y) {
           var _this18;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticSmoothRel);
 
-          _this18 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticSmoothRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL, 't', owningPathSegList));
+          _this18 = _super19.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL, 't', owningPathSegList);
           _this18._x = x;
           _this18._y = y;
           return _this18;
@@ -1902,9 +1999,7 @@
 
     if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.prototype)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSegList
-      var SVGPathSegList =
-      /*#__PURE__*/
-      function () {
+      var SVGPathSegList = /*#__PURE__*/function () {
         function SVGPathSegList(pathElement) {
           _classCallCheck(this, SVGPathSegList);
 
@@ -2088,9 +2183,7 @@
 
             var owningPathSegList = this; // eslint-disable-line consistent-this
 
-            var Builder =
-            /*#__PURE__*/
-            function () {
+            var Builder = /*#__PURE__*/function () {
               function Builder() {
                 _classCallCheck(this, Builder);
 
@@ -2107,9 +2200,7 @@
               return Builder;
             }();
 
-            var Source =
-            /*#__PURE__*/
-            function () {
+            var Source = /*#__PURE__*/function () {
               function Source(string) {
                 _classCallCheck(this, Source);
 
@@ -2650,7 +2741,7 @@
   var isChrome_ = userAgent.includes('Chrome/');
   var isWindows_ = userAgent.includes('Windows');
   var isMac_ = userAgent.includes('Macintosh');
-  var isTouch_ = 'ontouchstart' in window;
+  var isTouch_ = ('ontouchstart' in window);
 
   var supportsSelectors_ = function () {
     return Boolean(svg.querySelector);
@@ -2906,7 +2997,7 @@
   };
 
   /**
-   * jQuery module to work with SVG attributes
+   * A jQuery module to work with SVG attributes.
    * @module jQueryAttr
    * @license MIT
    */
@@ -3076,14 +3167,14 @@
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#getItem
   * @param {Integer} index unsigned long
   * @returns {SVGTransform}
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#insertItemBefore
   * @param {SVGTransform} newItem
   * @param {Integer} index unsigned long
@@ -3091,7 +3182,7 @@
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#replaceItem
   * @param {SVGTransform} newItem
   * @param {Integer} index unsigned long
@@ -3099,7 +3190,7 @@
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#removeItem
   * @param {Integer} index unsigned long
   * @returns {SVGTransform}
@@ -3112,7 +3203,7 @@
   */
 
   /**
-  * NOT IMPLEMENTED
+  * NOT IMPLEMENTED.
   * @ignore
   * @function module:SVGTransformList.SVGEditTransformList#createSVGTransformFromMatrix
   * @param {SVGMatrix} matrix
@@ -3120,7 +3211,7 @@
   */
 
   /**
-  * NOT IMPLEMENTED
+  * NOT IMPLEMENTED.
   * @ignore
   * @function module:SVGTransformList.SVGEditTransformList#consolidate
   * @returns {SVGTransform}
@@ -3134,9 +3225,7 @@
   * @implements {module:SVGTransformList.SVGEditTransformList}
   */
 
-  var SVGTransformList =
-  /*#__PURE__*/
-  function () {
+  var SVGTransformList = /*#__PURE__*/function () {
     // eslint-disable-line no-shadow
 
     /**
@@ -3205,7 +3294,7 @@
 
               var mtx = svgroot.createSVGMatrix();
               Object.values(valArr).forEach(function (item, i) {
-                valArr[i] = parseFloat(item);
+                valArr[i] = Number.parseFloat(item);
 
                 if (name === 'matrix') {
                   mtx[letters[i]] = valArr[i];
@@ -3472,7 +3561,7 @@
   };
 
   /**
-   * Tools for working with units
+   * Tools for working with units.
    * @module units
    * @license MIT
    *
@@ -3576,7 +3665,7 @@
     };
   };
   /**
-  * Group: Unit conversion functions
+  * Group: Unit conversion functions.
   */
 
   /**
@@ -3615,7 +3704,7 @@
       return shortFloat(val[0]) + ',' + shortFloat(val[1]);
     }
 
-    return parseFloat(val).toFixed(digits) - 0;
+    return Number.parseFloat(val).toFixed(digits) - 0;
   };
   /**
   * Converts the number to given unit or baseUnit.
@@ -3758,7 +3847,7 @@
   };
 
   /**
-  * Group: Undo/Redo history management
+  * Group: Undo/Redo history management.
   */
 
   var HistoryEventTypes = {
@@ -3772,9 +3861,7 @@
   * Base class for commands.
   */
 
-  var Command =
-  /*#__PURE__*/
-  function () {
+  var Command = /*#__PURE__*/function () {
     function Command() {
       _classCallCheck(this, Command);
     }
@@ -3801,43 +3888,43 @@
   */
 
   /**
-   * Applies
+   * Applies.
    *
    * @function module:history.HistoryCommand#apply
-   * @param {module:history.HistoryEventHandler}
+   * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {void|true}
    */
 
   /**
    *
-   * Unapplies
+   * Unapplies.
    * @function module:history.HistoryCommand#unapply
-   * @param {module:history.HistoryEventHandler}
+   * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {void|true}
    */
 
   /**
-   * Returns the elements
+   * Returns the elements.
    * @function module:history.HistoryCommand#elements
    * @returns {Element[]}
    */
 
   /**
-   * Gets the text
+   * Gets the text.
    * @function module:history.HistoryCommand#getText
    * @returns {string}
    */
 
   /**
-   * Gives the type
+   * Gives the type.
    * @function module:history.HistoryCommand.type
    * @returns {string}
    */
 
   /**
-   * Gives the type
+   * Gives the type.
    * @function module:history.HistoryCommand#type
    * @returns {string}
   */
@@ -3865,24 +3952,26 @@
   /**
    * History command for an element that had its DOM position changed.
    * @implements {module:history.HistoryCommand}
-   * @param {Element} elem - The DOM element that was moved
-   * @param {Element} oldNextSibling - The element's next sibling before it was moved
-   * @param {Element} oldParent - The element's parent before it was moved
-   * @param {string} [text] - An optional string visible to user related to this change
   */
 
 
-  var MoveElementCommand =
-  /*#__PURE__*/
-  function (_Command) {
+  var MoveElementCommand = /*#__PURE__*/function (_Command) {
     _inherits(MoveElementCommand, _Command);
 
+    var _super = _createSuper(MoveElementCommand);
+
+    /**
+    * @param {Element} elem - The DOM element that was moved
+    * @param {Element} oldNextSibling - The element's next sibling before it was moved
+    * @param {Element} oldParent - The element's parent before it was moved
+    * @param {string} [text] - An optional string visible to user related to this change
+    */
     function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
       var _this;
 
       _classCallCheck(this, MoveElementCommand);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(MoveElementCommand).call(this));
+      _this = _super.call(this);
       _this.elem = elem;
       _this.text = text ? 'Move ' + elem.tagName + ' to ' + text : 'Move ' + elem.tagName;
       _this.oldNextSibling = oldNextSibling;
@@ -3891,6 +3980,10 @@
       _this.newParent = elem.parentNode;
       return _this;
     }
+    /**
+     * @returns {"svgedit.history.MoveElementCommand"}
+     */
+
 
     _createClass(MoveElementCommand, [{
       key: "type",
@@ -3956,28 +4049,33 @@
   /**
   * History command for an element that was added to the DOM.
   * @implements {module:history.HistoryCommand}
-  *
-  * @param {Element} elem - The newly added DOM element
-  * @param {string} text - An optional string visible to user related to this change
   */
 
-  var InsertElementCommand =
-  /*#__PURE__*/
-  function (_Command2) {
+  var InsertElementCommand = /*#__PURE__*/function (_Command2) {
     _inherits(InsertElementCommand, _Command2);
 
+    var _super2 = _createSuper(InsertElementCommand);
+
+    /**
+     * @param {Element} elem - The newly added DOM element
+     * @param {string} text - An optional string visible to user related to this change
+    */
     function InsertElementCommand(elem, text) {
       var _this2;
 
       _classCallCheck(this, InsertElementCommand);
 
-      _this2 = _possibleConstructorReturn(this, _getPrototypeOf(InsertElementCommand).call(this));
+      _this2 = _super2.call(this);
       _this2.elem = elem;
       _this2.text = text || 'Create ' + elem.tagName;
       _this2.parent = elem.parentNode;
       _this2.nextSibling = _this2.elem.nextSibling;
       return _this2;
     }
+    /**
+     * @returns {"svgedit.history.InsertElementCommand"}
+     */
+
 
     _createClass(InsertElementCommand, [{
       key: "type",
@@ -4020,7 +4118,7 @@
         }
 
         this.parent = this.elem.parentNode;
-        this.elem = this.elem.parentNode.removeChild(this.elem);
+        this.elem = this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
@@ -4043,23 +4141,25 @@
   /**
   * History command for an element removed from the DOM.
   * @implements {module:history.HistoryCommand}
-  * @param {Element} elem - The removed DOM element
-  * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
-  * @param {Element} oldParent - The DOM element's parent
-  * @param {string} [text] - An optional string visible to user related to this change
   */
 
-  var RemoveElementCommand =
-  /*#__PURE__*/
-  function (_Command3) {
+  var RemoveElementCommand = /*#__PURE__*/function (_Command3) {
     _inherits(RemoveElementCommand, _Command3);
 
+    var _super3 = _createSuper(RemoveElementCommand);
+
+    /**
+    * @param {Element} elem - The removed DOM element
+    * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
+    * @param {Element} oldParent - The DOM element's parent
+    * @param {string} [text] - An optional string visible to user related to this change
+    */
     function RemoveElementCommand(elem, oldNextSibling, oldParent, text) {
       var _this3;
 
       _classCallCheck(this, RemoveElementCommand);
 
-      _this3 = _possibleConstructorReturn(this, _getPrototypeOf(RemoveElementCommand).call(this));
+      _this3 = _super3.call(this);
       _this3.elem = elem;
       _this3.text = text || 'Delete ' + elem.tagName;
       _this3.nextSibling = oldNextSibling;
@@ -4068,6 +4168,10 @@
       removeElementFromListMap(elem);
       return _this3;
     }
+    /**
+     * @returns {"svgedit.history.RemoveElementCommand"}
+     */
+
 
     _createClass(RemoveElementCommand, [{
       key: "type",
@@ -4091,7 +4195,7 @@
 
         removeElementFromListMap(this.elem);
         this.parent = this.elem.parentNode;
-        this.elem = this.parent.removeChild(this.elem);
+        this.elem = this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
@@ -4151,22 +4255,24 @@
   * History command to make a change to an element.
   * Usually an attribute change, but can also be textcontent.
   * @implements {module:history.HistoryCommand}
-  * @param {Element} elem - The DOM element that was changed
-  * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
-  * @param {string} text - An optional string visible to user related to this change
   */
 
-  var ChangeElementCommand =
-  /*#__PURE__*/
-  function (_Command4) {
+  var ChangeElementCommand = /*#__PURE__*/function (_Command4) {
     _inherits(ChangeElementCommand, _Command4);
 
+    var _super4 = _createSuper(ChangeElementCommand);
+
+    /**
+    * @param {Element} elem - The DOM element that was changed
+    * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
+    * @param {string} text - An optional string visible to user related to this change
+     */
     function ChangeElementCommand(elem, attrs, text) {
       var _this4;
 
       _classCallCheck(this, ChangeElementCommand);
 
-      _this4 = _possibleConstructorReturn(this, _getPrototypeOf(ChangeElementCommand).call(this));
+      _this4 = _super4.call(this);
       _this4.elem = elem;
       _this4.text = text ? 'Change ' + elem.tagName + ' ' + text : 'Change ' + elem.tagName;
       _this4.newValues = {};
@@ -4184,6 +4290,10 @@
 
       return _this4;
     }
+    /**
+     * @returns {"svgedit.history.ChangeElementCommand"}
+     */
+
 
     _createClass(ChangeElementCommand, [{
       key: "type",
@@ -4342,10 +4452,10 @@
   * @implements {module:history.HistoryCommand}
   */
 
-  var BatchCommand =
-  /*#__PURE__*/
-  function (_Command5) {
+  var BatchCommand = /*#__PURE__*/function (_Command5) {
     _inherits(BatchCommand, _Command5);
+
+    var _super5 = _createSuper(BatchCommand);
 
     /**
     * @param {string} [text] - An optional string visible to user related to this change
@@ -4355,11 +4465,15 @@
 
       _classCallCheck(this, BatchCommand);
 
-      _this7 = _possibleConstructorReturn(this, _getPrototypeOf(BatchCommand).call(this));
+      _this7 = _super5.call(this);
       _this7.text = text || 'Batch Command';
       _this7.stack = [];
       return _this7;
     }
+    /**
+     * @returns {"svgedit.history.BatchCommand"}
+     */
+
 
     _createClass(BatchCommand, [{
       key: "type",
@@ -4466,9 +4580,7 @@
   *
   */
 
-  var UndoManager =
-  /*#__PURE__*/
-  function () {
+  var UndoManager = /*#__PURE__*/function () {
     /**
     * @param {module:history.HistoryEventHandler} historyEventHandler
     */
@@ -4666,7 +4778,7 @@
   });
 
   /**
-   * Mathematical utilities
+   * Mathematical utilities.
    * @module math
    * @license MIT
    *
@@ -4830,8 +4942,8 @@
 
     min = min || 0;
     max = max || tlist.numberOfItems - 1;
-    min = parseInt(min);
-    max = parseInt(max);
+    min = Number.parseInt(min);
+    max = Number.parseInt(max);
 
     if (min > max) {
       var temp = max;
@@ -4962,7 +5074,7 @@
   */
 
   /**
-  * Object with the following keys/values
+  * Object with the following keys/values.
   * @typedef {PlainObject} module:path.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
   * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -4991,7 +5103,7 @@
   */
 
   /**
-   * Note: This doesn't round to an integer necessarily
+   * Note: This doesn't round to an integer necessarily.
    * @function module:path.EditorContext#round
    * @param {Float} val
    * @returns {Float} Rounded value to nearest value based on `currentZoom`
@@ -5089,19 +5201,19 @@
    */
 
   /**
-   * Returns the last created DOM element ID string
+   * Returns the last created DOM element ID string.
    * @function module:path.EditorContext#getId
    * @returns {string}
    */
 
   /**
-   * Creates and returns a unique ID string for a DOM element
+   * Creates and returns a unique ID string for a DOM element.
    * @function module:path.EditorContext#getNextId
    * @returns {string}
   */
 
   /**
-   * Gets the desired element from a mouse event
+   * Gets the desired element from a mouse event.
    * @function module:path.EditorContext#getMouseTarget
    * @param {external:MouseEvent} evt - Event object from the mouse event
    * @returns {Element} DOM element we want
@@ -5607,9 +5719,7 @@
   *
   */
 
-  var Segment =
-  /*#__PURE__*/
-  function () {
+  var Segment = /*#__PURE__*/function () {
     /**
     * @param {Integer} index
     * @param {SVGPathSeg} item
@@ -5837,9 +5947,7 @@
   *
   */
 
-  var Path =
-  /*#__PURE__*/
-  function () {
+  var Path = /*#__PURE__*/function () {
     /**
     * @param {SVGPathElement} elem
     * @throws {Error} If constructed without a path element
@@ -6552,7 +6660,7 @@
     }
   };
   /**
-  * This is how we map paths to our preferred relative segment types
+  * This is how we map paths to our preferred relative segment types.
   * @name module:path.pathMap
   * @type {GenericArray}
   */
@@ -6585,7 +6693,7 @@
           x2 = seg.x2 || 0,
           y2 = seg.y2 || 0;
       var type = seg.pathSegType;
-      var letter = pathMap[type]['to' + (toRel ? 'Lower' : 'Upper') + 'Case']();
+      var letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();
 
       switch (type) {
         case 1:
@@ -6607,16 +6715,18 @@
         case 13:
           // relative horizontal line (h)
           if (toRel) {
+            y = 0;
             curx += x;
             letter = 'l';
           } else {
+            y = cury;
             x += curx;
             curx = x;
             letter = 'L';
           } // Convert to "line" for easier editing
 
 
-          d += pathDSegment(letter, [[x, cury]]);
+          d += pathDSegment(letter, [[x, y]]);
           break;
 
         case 14:
@@ -6627,16 +6737,18 @@
         case 15:
           // relative vertical line (v)
           if (toRel) {
+            x = 0;
             cury += y;
             letter = 'l';
           } else {
+            x = curx;
             y += cury;
             cury = y;
             letter = 'L';
           } // Convert to "line" for easier editing
 
 
-          d += pathDSegment(letter, [[curx, y]]);
+          d += pathDSegment(letter, [[x, y]]);
           break;
 
         case 2: // absolute move (M)
@@ -6805,15 +6917,18 @@
 
     return segment;
   }
+  /* eslint-disable jsdoc/require-property */
+
   /**
-  * Group: Path edit functions
-  * Functions relating to editing path elements
+  * Group: Path edit functions.
+  * Functions relating to editing path elements.
   * @namespace {PlainObject} pathActions
   * @memberof module:path
   */
 
 
   var pathActions = function () {
+    /* eslint-enable jsdoc/require-property */
     var subpath = false;
     var newPoint, firstCtrl;
     var currentPath = null;
@@ -7108,7 +7223,7 @@
 
           if (id.substr(0, 14) === 'pathpointgrip_') {
             // Select this point
-            curPt = path.cur_pt = parseInt(id.substr(14));
+            curPt = path.cur_pt = Number.parseInt(id.substr(14));
             path.dragging = [startX, startY];
             var seg = path.segs[curPt]; // only clear selection if shift is not pressed (otherwise, add
             // node to selection)
@@ -7140,11 +7255,10 @@
               rubberBox = editorContext_.setRubberBox(editorContext_.selectorManager.getRubberBandBox());
             }
 
-            var _currentZoom = editorContext_.getCurrentZoom();
-
+            var currentZoom = editorContext_.getCurrentZoom();
             assignAttributes(rubberBox, {
-              x: startX * _currentZoom,
-              y: startY * _currentZoom,
+              x: startX * currentZoom,
+              y: startY * currentZoom,
               width: 0,
               height: 0,
               display: 'inline'
@@ -7790,14 +7904,18 @@
 
           path.endChanges('Delete path node(s)');
         },
+
+        /* eslint-disable jsdoc/require-returns */
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
-        * Smooth polyline into path
+        * Smooth polyline into path.
         * @function module:path.pathActions.smoothPolylineIntoPath
         * @see module:path~smoothPolylineIntoPath
         */
         smoothPolylineIntoPath: smoothPolylineIntoPath,
+
+        /* eslint-enable jsdoc/require-returns */
 
         /**
         * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
@@ -7868,14 +7986,18 @@
             editorContext_.resetD(elem);
           }
         },
+
+        /* eslint-disable jsdoc/require-returns */
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
-        * Convert a path to one with only absolute or relative values
+        * Convert a path to one with only absolute or relative values.
         * @function module:path.pathActions.convertPath
         * @see module:path.convertPath
         */
         convertPath: convertPath
+        /* eslint-enable jsdoc/require-returns */
+
       }
     );
   }(); // end pathActions
@@ -7892,7 +8014,7 @@
   var domcontainer_ = null;
   var svgroot_ = null;
   /**
-  * Object with the following keys/values
+  * Object with the following keys/values.
   * @typedef {PlainObject} module:utilities.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
   * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -7916,7 +8038,7 @@
   /**
    * Create a new SVG element based on the given object keys/values and add it
    * to the current layer.
-   * The element will be run through `cleanupElement` before being returned
+   * The element will be run through `cleanupElement` before being returned.
    * @function module:utilities.EditorContext#addSVGElementFromJson
    * @param {module:utilities.SVGElementJSON} data
    * @returns {Element} The new element
@@ -7966,13 +8088,13 @@
   };
   /**
    * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}.
-   * @function module:utilities.dropXMLInteralSubset
+   * @function module:utilities.dropXMLInternalSubset
    * @param {string} str String to be processed
    * @returns {string} The string with entity declarations in the internal subset removed
    * @todo This might be needed in other places `parseFromString` is used even without LGTM flagging
    */
 
-  var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
+  var dropXMLInternalSubset = function dropXMLInternalSubset(str) {
     return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
   };
   /**
@@ -8025,10 +8147,10 @@
       var enc4 = chr3 & 63;
       /* eslint-enable no-bitwise */
 
-      if (isNaN(chr2)) {
+      if (Number.isNaN(chr2)) {
         enc3 = 64;
         enc4 = 64;
-      } else if (isNaN(chr3)) {
+      } else if (Number.isNaN(chr3)) {
         enc4 = 64;
       }
 
@@ -8562,8 +8684,8 @@
             var bb = {
               width: width,
               height: height,
-              x: x + parseFloat(selected.getAttribute('x') || 0),
-              y: y + parseFloat(selected.getAttribute('y') || 0)
+              x: x + Number.parseFloat(selected.getAttribute('x') || 0),
+              y: y + Number.parseFloat(selected.getAttribute('y') || 0)
             };
             ret = bb;
           }
@@ -9135,6 +9257,7 @@
     }, 9, null).singleNodeValue;
   } : function (id) {
     // jQuery lookup: twice as slow as xpath in FF
+    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
     return $$2(svgroot_).find('[id=' + id + ']')[0];
   };
   /**
@@ -9154,6 +9277,16 @@
           value = _Object$entries$_i[1];
 
       var ns = key.substr(0, 4) === 'xml:' ? NS.XML : key.substr(0, 6) === 'xlink:' ? NS.XLINK : null;
+
+      if (isNullish(value)) {
+        if (ns) {
+          elem.removeAttributeNS(ns, key);
+        } else {
+          elem.removeAttribute(key);
+        }
+
+        continue;
+      }
 
       if (ns) {
         elem.setAttributeNS(ns, key, value);
@@ -9313,7 +9446,7 @@
   /* globals jQuery */
 
   /**
-   * Adds context menu functionality
+   * Adds context menu functionality.
    * @module contextmenu
    * @license Apache-2.0
    * @author Adam Bender
@@ -9367,11 +9500,12 @@
     });
   };
 
-  // MIT License
-  // From: https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js
+  /* eslint-disable jsdoc/require-file-overview */
 
   /**
+   * Adapted from {@link https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js}.
    * @module importModule
+   * @license MIT
    */
 
   /**
@@ -9441,9 +9575,7 @@
    */
 
   function _importSetGlobal() {
-    _importSetGlobal = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee(url, _ref) {
+    _importSetGlobal = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url, _ref) {
       var glob, returnDefault, modularVersion;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -9596,6 +9728,94 @@
       script.src = URL.createObjectURL(blob);
       document.head.append(script);
     });
+  }
+
+  /**
+   * Created by alexey2baranov on 28.01.17.
+   */
+
+  /*
+   An extraction of the deparam method from Ben Alman's jQuery BBQ
+   http://benalman.com/projects/jquery-bbq-plugin/
+   */
+  var coerce_types = {
+    'true': !0,
+    'false': !1,
+    'null': null
+  };
+
+  function deparam(params, coerce) {
+    // console.log(params)
+    var obj = {}; // Iterate over all name=value pairs.
+
+    params.replace(/\+/g, ' ').split('&').forEach(function (v) {
+      var param = v.split('=');
+      var key = decodeURIComponent(param[0]),
+          // If key is more complex than 'foo', like 'a[]' or 'a[b][c]', split it
+      // into its component parts.
+      keys = key.split(']['),
+          keys_last = keys.length - 1; // If the first keys part contains [ and the last ends with ], then []
+      // are correctly balanced.
+
+      if (/\[/.test(keys[0]) && /\]$/.test(keys[keys_last])) {
+        // Remove the trailing ] from the last keys part.
+        keys[keys_last] = keys[keys_last].replace(/\]$/, ''); // Split first keys part into two parts on the [ and add them back onto
+        // the beginning of the keys array.
+
+        keys = keys.shift().split('[').concat(keys);
+        keys_last = keys.length - 1;
+      } else {
+        // Basic 'foo' style key.
+        keys_last = 0;
+      } // Are we dealing with a name=value pair, or just a name?
+
+
+      if (param.length >= 2) {
+        var val = decodeURIComponent(param.slice(1).join('=')); // Coerce values.
+
+        if (coerce) {
+          val = val && !isNaN(val) ? +val // number
+          : val === 'undefined' ? undefined // undefined
+          : coerce_types[val] !== undefined ? coerce_types[val] // true, false, null
+          : val; // string
+        }
+
+        if (keys_last) {
+          var cur = obj; // Complex key, build deep object structure based on a few rules:
+          // * The 'cur' pointer starts at the object top-level.
+          // * [] = array push (n is set to array length), [n] = array if n is
+          //   numeric, otherwise object.
+          // * If at the last keys part, set the value.
+          // * For each keys part, if the current level is undefined create an
+          //   object or array based on the type of the next keys part.
+          // * Move the 'cur' pointer to the next level.
+          // * Rinse & repeat.
+
+          for (var i = 0; i <= keys_last; i++) {
+            key = keys[i] === '' ? cur.length : keys[i];
+            cur = cur[key] = i < keys_last ? cur[key] || (keys[i + 1] && isNaN(keys[i + 1]) ? {} : []) : val;
+          }
+        } else {
+          // Simple key, even simpler rules, since only scalars and shallow
+          // arrays are allowed.
+          if (Array.isArray(obj[key])) {
+            // val is already an array, so push on the next value.
+            obj[key].push(val);
+          } else if (obj[key] !== undefined) {
+            // val isn't an array, but since a second value has been specified,
+            // convert val into an array.
+            obj[key] = [obj[key], val];
+          } else {
+            // val is a scalar.
+            obj[key] = val;
+          }
+        }
+      } else if (key) {
+        // No value was defined, so set something meaningful.
+        obj[key] = coerce ? undefined : '';
+      }
+    });
+    return obj;
   }
 
   /**
@@ -9816,9 +10036,7 @@
    * @memberof module:layer
    */
 
-  var Layer =
-  /*#__PURE__*/
-  function () {
+  var Layer = /*#__PURE__*/function () {
     /**
     * @param {string} name - Layer name
     * @param {SVGGElement|null} group - An existing SVG group element or null.
@@ -9936,7 +10154,7 @@
           return 1;
         }
 
-        return parseFloat(opacity);
+        return Number.parseFloat(opacity);
       }
       /**
        * Sets the opacity of this layer. If opacity is not a value between 0.0 and 1.0,
@@ -9961,28 +10179,18 @@
     }, {
       key: "appendChildren",
       value: function appendChildren(children) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        var _iterator = _createForOfIteratorHelper(children),
+            _step;
 
         try {
-          for (var _iterator = children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
             var child = _step.value;
             this.group_.append(child);
           }
         } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
+          _iterator.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-              _iterator["return"]();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
+          _iterator.f();
         }
       }
       /**
@@ -10043,8 +10251,7 @@
     }, {
       key: "removeGroup",
       value: function removeGroup() {
-        var parent = this.group_.parentNode;
-        var group = parent.removeChild(this.group_);
+        var group = this.group_.remove();
         this.group_ = undefined;
         return group;
       }
@@ -10094,7 +10301,7 @@
    *
    * The following will record history: insert, batch, insert.
    * @example
-   * hrService = new history.HistoryRecordingService(this.undoMgr);
+   * hrService = new HistoryRecordingService(this.undoMgr);
    * hrService.insertElement(elem, text);         // add simple command to history.
    * hrService.startBatchCommand('create two elements');
    * hrService.changeElement(elem, attrs, text);  // add to batchCommand
@@ -10113,9 +10320,7 @@
    * @memberof module:history
    */
 
-  var HistoryRecordingService =
-  /*#__PURE__*/
-  function () {
+  var HistoryRecordingService = /*#__PURE__*/function () {
     /**
     * @param {history.UndoManager|null} undoManager - The undo manager.
     *     A value of `null` is valid for cases where no history recording is required.
@@ -10328,9 +10533,7 @@
    */
 
 
-  var Drawing =
-  /*#__PURE__*/
-  function () {
+  var Drawing = /*#__PURE__*/function () {
     /**
     * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
     *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
@@ -10421,6 +10624,7 @@
           // querySelector lookup
           return this.svgElem_.querySelector('#' + id);
         } // jQuery lookup: twice as slow as xpath in FF
+        // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 
 
         return $$5(this.svgElem_).find('[id=' + id + ']')[0];
@@ -10537,7 +10741,7 @@
         } // extract the obj_num of this id
 
 
-        var num = parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
+        var num = Number.parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
         // then return false.
 
         if (typeof num !== 'number' || num <= 0 || this.releasedNums.includes(num)) {
@@ -11071,7 +11275,7 @@
   }; // Layer API Functions
 
   /**
-  * Group: Layers
+  * Group: Layers.
   */
 
   /**
@@ -11119,7 +11323,7 @@
   */
 
   /**
-   * Run the callback function associated with the given event
+   * Run the callback function associated with the given event.
    * @function module:draw.DrawCanvasInit#call
    * @param {"changed"|"contextset"} ev - String with the event name
    * @param {module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset} arg - Argument to pass through to the callback
@@ -11443,7 +11647,7 @@
 
   /**
    * This defines which elements and attributes that we support (or at least
-   * don't remove)
+   * don't remove).
    * @type {PlainObject}
    */
 
@@ -11814,8 +12018,8 @@
         // therefore [T'] = [M_inv][T][M]
         var existing = transformListToTransform(selected).matrix,
             tNew = matrixMultiply(existing.inverse(), m, existing);
-        changes.x = parseFloat(changes.x) + tNew.e;
-        changes.y = parseFloat(changes.y) + tNew.f;
+        changes.x = Number.parseFloat(changes.x) + tNew.e;
+        changes.y = Number.parseFloat(changes.y) + tNew.f;
       } else {
         // we just absorb all matrices into the element and don't do any remapping
         var chlist = getTransformList(selected);
@@ -12997,9 +13201,7 @@
   * Private class for DOM element selection boxes.
   */
 
-  var Selector =
-  /*#__PURE__*/
-  function () {
+  var Selector = /*#__PURE__*/function () {
     /**
     * @param {Integer} id - Internally identify the selector
     * @param {Element} elem - DOM element associated with this selector
@@ -13246,9 +13448,10 @@
   * Manage all selector objects (selection boxes).
   */
 
-  var SelectorManager =
-  /*#__PURE__*/
-  function () {
+  var SelectorManager = /*#__PURE__*/function () {
+    /**
+     * Sets up properties and calls `initGroup`.
+     */
     function SelectorManager() {
       _classCallCheck(this, SelectorManager);
 
@@ -13654,7 +13857,7 @@
     var svgroot = svgdoc.importNode(text2xml('<svg id="svgroot" xmlns="' + NS.SVG + '" xlinkns="' + NS.XLINK + '" ' + 'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' + '<defs>' + '<filter id="canvashadow" filterUnits="objectBoundingBox">' + '<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>' + '<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>' + '<feMerge>' + '<feMergeNode in="offsetBlur"/>' + '<feMergeNode in="SourceGraphic"/>' + '</feMerge>' + '</filter>' + '</defs>' + '</svg>').documentElement, true);
     container.append(svgroot);
     /**
-     * The actual element that represents the final output SVG element
+     * The actual element that represents the final output SVG element.
      * @name module:svgcanvas~svgcontent
      * @type {SVGSVGElement}
      */
@@ -13699,7 +13902,7 @@
       idprefix = p;
     };
     /**
-    * Current draw.Drawing object
+    * Current `draw.Drawing` object.
     * @type {module:draw.Drawing}
     * @name module:svgcanvas.SvgCanvas#current_drawing_
     */
@@ -13716,7 +13919,7 @@
       return canvas.current_drawing_;
     };
     /**
-    * Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
+    * Float displaying the current zoom level (1 = 100%, .5 = 50%, etc.).
     * @type {Float}
     */
 
@@ -13852,8 +14055,8 @@
       return curConfig.baseUnit;
     };
     /**
-    * initialize from units.js.
-    * Send in an object implementing the ElementContainer interface (see units.js)
+    * Initialize from units.js.
+    * Send in an object implementing the ElementContainer interface (see units.js).
     */
 
 
@@ -14080,12 +14283,12 @@
 
 
     var round = this.round = function (val) {
-      return parseInt(val * currentZoom) / currentZoom;
+      return Number.parseInt(val * currentZoom) / currentZoom;
     };
 
     init$6(curConfig,
     /**
-    * Export to select.js
+    * Export to select.js.
     * @implements {module:select.SVGFactory}
     */
     {
@@ -14101,7 +14304,7 @@
       getCurrentZoom: getCurrentZoom
     });
     /**
-    * This object manages selectors for us
+    * This object manages selectors for us.
     * @name module:svgcanvas.SvgCanvas#selectorManager
     * @type {module:select.SelectorManager}
     */
@@ -14218,6 +14421,10 @@
             sel.showGrips(false);
           }
         }
+      }
+
+      if (!selectedElements.length) {
+        return;
       }
 
       call('selected', selectedElements);
@@ -14697,8 +14904,8 @@
 
     /**
     * @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
-    * @param {external:jQuery} initArgs.$
-    * @param {module:SVGEditor~ImportLocale} initArgs.importLocale
+    * @property {external:jQuery} $
+    * @property {module:SVGEditor~ImportLocale} importLocale
     */
 
     /**
@@ -14714,12 +14921,8 @@
     */
 
 
-    this.addExtension =
-    /*#__PURE__*/
-    function () {
-      var _ref4 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref3) {
+    this.addExtension = /*#__PURE__*/function () {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref3) {
         var jq, importLocale, argObj, extObj;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -14774,8 +14977,7 @@
 
                 if (extObj) {
                   extObj.name = name;
-                } // eslint-disable-next-line require-atomic-updates
-
+                }
 
                 extensions[name] = extObj;
                 return _context.abrupt("return", call('extension_added', extObj));
@@ -14834,8 +15036,8 @@
       if (!isIE()) {
         if (typeof svgroot.getIntersectionList === 'function') {
           // Offset the bbox of the rubber box by the offset of the svgcontent element.
-          rubberBBox.x += parseInt(svgcontent.getAttribute('x'));
-          rubberBBox.y += parseInt(svgcontent.getAttribute('y'));
+          rubberBBox.x += Number.parseInt(svgcontent.getAttribute('x'));
+          rubberBBox.y += Number.parseInt(svgcontent.getAttribute('y'));
           resultList = svgroot.getIntersectionList(rubberBBox, parent);
         }
       }
@@ -14919,26 +15121,26 @@
     var events = {};
     canvas.call = call;
     /**
-     * Array of what was changed (elements, layers)
+     * Array of what was changed (elements, layers).
      * @event module:svgcanvas.SvgCanvas#event:changed
      * @type {Element[]}
      */
 
     /**
-     * Array of selected elements
+     * Array of selected elements.
      * @event module:svgcanvas.SvgCanvas#event:selected
      * @type {Element[]}
      */
 
     /**
-     * Array of selected elements
+     * Array of selected elements.
      * @event module:svgcanvas.SvgCanvas#event:transition
      * @type {Element[]}
      */
 
     /**
      * The Element is always `SVGGElement`?
-     * If not `null`, will be the set current group element
+     * If not `null`, will be the set current group element.
      * @event module:svgcanvas.SvgCanvas#event:contextset
      * @type {null|Element}
      */
@@ -14999,7 +15201,7 @@
      */
 
     /**
-     * SVG canvas converted to string
+     * SVG canvas converted to string.
      * @event module:svgcanvas.SvgCanvas#event:saved
      * @type {string}
      */
@@ -15043,7 +15245,7 @@
 
     /**
      * The promise return, if present, resolves to `undefined`
-     *  (`extension_added`, `exported`, `saved`)
+     *  (`extension_added`, `exported`, `saved`).
      * @typedef {Promise<void>|void} module:svgcanvas.EventHandlerReturn
     */
 
@@ -15130,7 +15332,7 @@
 
     this.setRotationAngle = function (val, preventUndo) {
       // ensure val is the proper type
-      val = parseFloat(val);
+      val = Number.parseFloat(val);
       var elem = selectedElements[0];
       var oldTransform = elem.getAttribute('transform');
       var bbox = getBBox(elem);
@@ -15222,7 +15424,7 @@
 
     var rootSctm = null;
     /**
-    * Group: Selection
+    * Group: Selection.
     */
     // TODO: do we need to worry about selectedBBoxes here?
 
@@ -15468,12 +15670,11 @@
               if (!rightClick) {
                 // insert a dummy transform so if the element(s) are moved it will have
                 // a transform to use for its translate
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
+                var _iterator = _createForOfIteratorHelper(selectedElements),
+                    _step;
 
                 try {
-                  for (var _iterator = selectedElements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                  for (_iterator.s(); !(_step = _iterator.n()).done;) {
                     var selectedElement = _step.value;
 
                     if (isNullish(selectedElement)) {
@@ -15489,18 +15690,9 @@
                     }
                   }
                 } catch (err) {
-                  _didIteratorError = true;
-                  _iteratorError = err;
+                  _iterator.e(err);
                 } finally {
-                  try {
-                    if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                      _iterator["return"]();
-                    }
-                  } finally {
-                    if (_didIteratorError) {
-                      throw _iteratorError;
-                    }
-                  }
+                  _iterator.f();
                 }
               }
             } else if (!rightClick) {
@@ -15621,6 +15813,14 @@
           case 'fhpath':
             start.x = realX;
             start.y = realY;
+            controllPoint1 = {
+              x: 0,
+              y: 0
+            };
+            controllPoint2 = {
+              x: 0,
+              y: 0
+            };
             started = true;
             dAttr = realX + ',' + realY + ' '; // Commented out as doing nothing now:
             // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
@@ -15789,7 +15989,7 @@
             break;
         }
         /**
-         * The main (left) mouse button is held down on the canvas area
+         * The main (left) mouse button is held down on the canvas area.
          * @event module:svgcanvas.SvgCanvas#event:ext_mouseDown
          * @type {PlainObject}
          * @property {MouseEvent} event The event object
@@ -16332,7 +16532,7 @@
             }
         }
         /**
-        * The mouse has moved on the canvas area
+        * The mouse has moved on the canvas area.
         * @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
         * @type {PlainObject}
         * @property {MouseEvent} event The event object
@@ -16649,7 +16849,7 @@
             }
         }
         /**
-        * The main (left) mouse button is released (anywhere)
+        * The main (left) mouse button is released (anywhere).
         * @event module:svgcanvas.SvgCanvas#event:ext_mouseUp
         * @type {PlainObject}
         * @property {MouseEvent} event The event object
@@ -16703,7 +16903,7 @@
           var aniDur = 0.2;
           var cAni;
 
-          if (opacAni.beginElement && parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
+          if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
             cAni = $$9(opacAni).clone().attr({
               to: curShape.opacity,
               dur: aniDur
@@ -16878,15 +17078,18 @@
         call('zoomDone');
       });
     })();
+    /* eslint-disable jsdoc/require-property */
+
     /**
     * Group: Text edit functions
-    * Functions relating to editing text elements
+    * Functions relating to editing text elements.
     * @namespace {PlainObject} textActions
     * @memberof module:svgcanvas.SvgCanvas#
     */
 
 
     var textActions = canvas.textActions = function () {
+      /* eslint-enable jsdoc/require-property */
       var curtext;
       var textinput;
       var cursor;
@@ -17404,7 +17607,7 @@
       );
     }();
     /**
-    * Group: Serialization
+    * Group: Serialization.
     */
 
     /**
@@ -17634,6 +17837,16 @@
               continue;
             }
 
+            if (_attrVal === 'null') {
+              var styleName = _attr.localName.replace(/-[a-z]/g, function (s) {
+                return s[1].toUpperCase();
+              });
+
+              if (Object.prototype.hasOwnProperty.call(elem.style, styleName)) {
+                continue;
+              }
+            }
+
             if (_attrVal !== '') {
               if (_attrVal.startsWith('pointer-events')) {
                 continue;
@@ -17688,7 +17901,7 @@
               case 1:
                 // element node
                 out.push('\n');
-                out.push(this.svgToString(childs.item(_i4), indent));
+                out.push(this.svgToString(child, indent));
                 break;
 
               case 3:
@@ -17747,7 +17960,7 @@
     }; // end svgToString()
 
     /**
-     * Function to run when image data is found
+     * Function to run when image data is found.
      * @callback module:svgcanvas.ImageEmbeddedCallback
      * @param {string|false} result Data URL
      * @returns {void}
@@ -17912,12 +18125,8 @@
     * @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
     */
 
-    this.rasterExport =
-    /*#__PURE__*/
-    function () {
-      var _ref5 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
+    this.rasterExport = /*#__PURE__*/function () {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
         var opts,
             type,
             mimeType,
@@ -17925,7 +18134,7 @@
             issues,
             issueCodes,
             svg,
-            _ref6,
+            _yield$importSetGloba,
             c,
             _args2 = arguments;
 
@@ -17950,8 +18159,8 @@
                 });
 
               case 8:
-                _ref6 = _context2.sent;
-                canvg = _ref6.canvg;
+                _yield$importSetGloba = _context2.sent;
+                canvg = _yield$importSetGloba.canvg;
 
               case 10:
                 if (!$$9('#export_canvas').length) {
@@ -18060,12 +18269,8 @@
     */
 
 
-    this.exportPDF =
-    /*#__PURE__*/
-    function () {
-      var _ref7 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3(exportWindowName) {
+    this.exportPDF = /*#__PURE__*/function () {
+      var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(exportWindowName) {
         var outputType,
             modularVersion,
             res,
@@ -18094,7 +18299,8 @@
                 _context3.next = 4;
                 return importScript([// We do not currently have these paths configurable as they are
                 //   currently global-only, so not Rolled-up
-                'jspdf/underscore-min.js', 'jspdf/jspdf.min.js']);
+                'jspdf/underscore-min.js', // 'jspdf/jspdf.min.js',
+                '../../svgedit-myfix/editor/jspdf/jspdf-1.0.150.debug.js']);
 
               case 4:
                 modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false; // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
@@ -18154,7 +18360,7 @@
       }));
 
       return function (_x7) {
-        return _ref7.apply(this, arguments);
+        return _ref6.apply(this, arguments);
       };
     }();
     /**
@@ -18570,7 +18776,8 @@
 
         var _svgcontent = svgcontent,
             nextSibling = _svgcontent.nextSibling;
-        var oldzoom = svgroot.removeChild(svgcontent);
+        svgcontent.remove();
+        var oldzoom = svgcontent;
         batchCmd.addSubCommand(new RemoveElementCommand$1(oldzoom, nextSibling, svgroot)); // set new svg document
         // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
 
@@ -18805,29 +19012,20 @@
           }
 
           var attrs = svg.attributes;
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+
+          var _iterator2 = _createForOfIteratorHelper(attrs),
+              _step2;
 
           try {
-            for (var _iterator2 = attrs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
               var attr = _step2.value;
               // Ok for `NamedNodeMap`
               symbol.setAttribute(attr.nodeName, attr.value);
             }
           } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
+            _iterator2.e(err);
           } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-                _iterator2["return"]();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
+            _iterator2.f();
           }
 
           symbol.id = getNextId(); // Store data
@@ -18883,10 +19081,10 @@
       leaveContext: leaveContext,
       setContext: setContext
     };
-    Object.entries(dr).forEach(function (_ref8) {
-      var _ref9 = _slicedToArray(_ref8, 2),
-          prop = _ref9[0],
-          propVal = _ref9[1];
+    Object.entries(dr).forEach(function (_ref7) {
+      var _ref8 = _slicedToArray(_ref7, 2),
+          prop = _ref8[0],
+          propVal = _ref8[1];
 
       canvas[prop] = propVal;
     });
@@ -18920,7 +19118,7 @@
       }
     });
     /**
-    * Group: Document functions
+    * Group: Document functions.
     */
 
     /**
@@ -19050,12 +19248,12 @@
 
       elem = $$9(elem).data('gsvg') || $$9(elem).data('symbol') || elem;
       var childs = elem.childNodes;
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+
+      var _iterator3 = _createForOfIteratorHelper(childs),
+          _step3;
 
       try {
-        for (var _iterator3 = childs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
           var child = _step3.value;
 
           if (child.nodeName === 'title') {
@@ -19063,18 +19261,9 @@
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _iterator3.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-            _iterator3["return"]();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
+        _iterator3.f();
       }
 
       return '';
@@ -19140,12 +19329,12 @@
       var docTitle = false,
           oldTitle = '';
       var batchCmd = new BatchCommand$1('Change Image Title');
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+
+      var _iterator4 = _createForOfIteratorHelper(childs),
+          _step4;
 
       try {
-        for (var _iterator4 = childs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
           var child = _step4.value;
 
           if (child.nodeName === 'title') {
@@ -19155,18 +19344,9 @@
           }
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _iterator4.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-            _iterator4["return"]();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
+        _iterator4.f();
       }
 
       if (!docTitle) {
@@ -19387,7 +19567,7 @@
     */
 
     /**
-    * The bottom panel was updated
+    * The bottom panel was updated.
     * @event module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate
     * @type {PlainObject}
     * @property {boolean} nofill Indicates fill is disabled
@@ -19395,7 +19575,7 @@
     */
 
     /**
-    * The element selection has changed (elements were added/removed from selection)
+    * The element selection has changed (elements were added/removed from selection).
     * @event module:svgcanvas.SvgCanvas#event:ext_selectedChanged
     * @type {PlainObject}
     * @property {Element[]} elems Array of the newly selected elements
@@ -19412,14 +19592,14 @@
     */
 
     /**
-    * One or more elements were changed
+    * One or more elements were changed.
     * @event module:svgcanvas.SvgCanvas#event:ext_elementChanged
     * @type {PlainObject}
     * @property {Element[]} elems Array of the affected elements
     */
 
     /**
-    * Invoked as soon as the locale is ready
+    * Invoked as soon as the locale is ready.
     * @event module:svgcanvas.SvgCanvas#event:ext_langReady
     * @type {PlainObject}
     * @property {string} lang The two-letter language code
@@ -19442,13 +19622,13 @@
     */
 
     /**
-     * Called when new image is created
+     * Called when new image is created.
      * @event module:svgcanvas.SvgCanvas#event:ext_onNewDocument
      * @type {void}
      */
 
     /**
-     * Called when sidepanel is resized or toggled
+     * Called when sidepanel is resized or toggled.
      * @event module:svgcanvas.SvgCanvas#event:ext_workareaResized
      * @type {void}
     */
@@ -19509,7 +19689,7 @@
       currentMode = name;
     };
     /**
-    * Group: Element Styling
+    * Group: Element Styling.
     */
 
     /**
@@ -20382,7 +20562,7 @@
       canvas.ungroupSelectedElement();
     };
     /**
-    * Group: Element manipulation
+    * Group: Element manipulation.
     */
 
     /**
@@ -20641,7 +20821,8 @@
 
         var _t = t,
             nextSibling = _t.nextSibling;
-        var elem = parent.removeChild(t);
+        t.remove();
+        var elem = t;
         selectedCopy.push(selected); // for the copy
 
         batchCmd.addSubCommand(new RemoveElementCommand$1(elem, nextSibling, parent));
@@ -20668,18 +20849,62 @@
       canvas.copySelectedElements();
       canvas.deleteSelectedElements();
     };
+
+    var CLIPBOARD_ID = 'svgedit_clipboard';
+    /**
+    * Flash the clipboard data momentarily on localStorage so all tabs can see.
+    * @returns {void}
+    */
+
+    function flashStorage() {
+      var data = sessionStorage.getItem(CLIPBOARD_ID);
+      localStorage.setItem(CLIPBOARD_ID, data);
+      setTimeout(function () {
+        localStorage.removeItem(CLIPBOARD_ID);
+      }, 1);
+    }
+    /**
+    * Transfers sessionStorage from one tab to another.
+    * @param {!Event} ev Storage event.
+    * @returns {void}
+    */
+
+
+    function storageChange(ev) {
+      if (!ev.newValue) return; // This is a call from removeItem.
+
+      if (ev.key === CLIPBOARD_ID + '_startup') {
+        // Another tab asked for our sessionStorage.
+        localStorage.removeItem(CLIPBOARD_ID + '_startup');
+        flashStorage();
+      } else if (ev.key === CLIPBOARD_ID) {
+        // Another tab sent data.
+        sessionStorage.setItem(CLIPBOARD_ID, ev.newValue);
+      }
+    } // Listen for changes to localStorage.
+
+
+    window.addEventListener('storage', storageChange, false); // Ask other tabs for sessionStorage (this is ONLY to trigger event).
+
+    localStorage.setItem(CLIPBOARD_ID + '_startup', Math.random());
     /**
     * Remembers the current selected elements on the clipboard.
     * @function module:svgcanvas.SvgCanvas#copySelectedElements
     * @returns {void}
     */
 
-
     this.copySelectedElements = function () {
-      localStorage.setItem('svgedit_clipboard', JSON.stringify(selectedElements.map(function (x) {
+      var data = JSON.stringify(selectedElements.map(function (x) {
         return getJsonFromSvgElement(x);
-      })));
-      $$9('#cmenu_canvas').enableContextMenuItems('#paste,#paste_in_place');
+      })); // Use sessionStorage for the clipboard data.
+
+      sessionStorage.setItem(CLIPBOARD_ID, data);
+      flashStorage();
+      var menu = $$9('#cmenu_canvas'); // Context menu might not exist (it is provided by editor.js).
+
+      if (menu.enableContextMenuItems) {
+        menu.enableContextMenuItems('#paste,#paste_in_place');
+      }
     };
     /**
     * @function module:svgcanvas.SvgCanvas#pasteElements
@@ -20693,13 +20918,10 @@
 
 
     this.pasteElements = function (type, x, y) {
-      var clipb = JSON.parse(localStorage.getItem('svgedit_clipboard'));
+      var clipb = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID));
+      if (!clipb) return;
       var len = clipb.length;
-
-      if (!len) {
-        return;
-      }
-
+      if (!len) return;
       var pasted = [];
       var batchCmd = new BatchCommand$1('Paste elements'); // const drawing = getCurrentDrawing();
 
@@ -20731,7 +20953,7 @@
       clipb.forEach(checkIDs); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
 
       /**
-      * Triggered when `pasteElements` is called from a paste action (context menu or key)
+      * Triggered when `pasteElements` is called from a paste action (context menu or key).
       * @event module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
       * @type {PlainObject}
       * @property {module:svgcanvas.SVGAsJSON[]} elems
@@ -21116,14 +21338,19 @@
           var oldParent = elem.parentNode; // Remove child title elements
 
           if (elem.tagName === 'title') {
-            var _elem2 = elem,
-                nextSibling = _elem2.nextSibling;
+            var nextSibling = elem.nextSibling;
             batchCmd.addSubCommand(new RemoveElementCommand$1(elem, nextSibling, oldParent));
             elem.remove();
             continue;
           }
 
-          children[i++] = elem = parent.insertBefore(elem, anchor);
+          if (anchor) {
+            anchor.before(elem);
+          } else {
+            g.after(elem);
+          }
+
+          children[i++] = elem;
           batchCmd.addSubCommand(new MoveElementCommand$1(elem, oldNextSibling, oldParent));
         } // remove the group from the selection
 
@@ -21131,7 +21358,7 @@
         clearSelection(); // delete the group element (but make undo-able)
 
         var gNextSibling = g.nextSibling;
-        g = parent.removeChild(g);
+        g.remove();
         batchCmd.addSubCommand(new RemoveElementCommand$1(g, gNextSibling, parent));
 
         if (!batchCmd.isEmpty()) {
@@ -21535,7 +21762,7 @@
       this.moveSelectedElements(dx, dy);
     };
     /**
-    * Group: Additional editor tools
+    * Group: Additional editor tools.
     */
 
     /**
@@ -21647,7 +21874,29 @@
       var bg = getElem('canvasBackground');
       var border = $$9(bg).find('rect')[0];
       var bgImg = getElem('background_image');
-      border.setAttribute('fill', color);
+      var bgPattern = getElem('background_pattern');
+      border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
+
+      if (color === 'chessboard') {
+        if (!bgPattern) {
+          bgPattern = svgdoc.createElementNS(NS.SVG, 'foreignObject');
+          assignAttributes(bgPattern, {
+            id: 'background_pattern',
+            width: '100%',
+            height: '100%',
+            preserveAspectRatio: 'xMinYMin',
+            style: 'pointer-events:none'
+          });
+          var div = document.createElement('div');
+          assignAttributes(div, {
+            style: 'pointer-events:none;width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+          });
+          bgPattern.appendChild(div);
+          bg.append(bgPattern);
+        }
+      } else if (bgPattern) {
+        bgPattern.remove();
+      }
 
       if (url) {
         if (!bgImg) {
@@ -21720,7 +21969,7 @@
     * @property {module:history.HistoryCommand} BatchCommand
     * @property {module:history.HistoryCommand} ChangeElementCommand
     * @property {module:utilities.decode64} decode64
-    * @property {module:utilities.dropXMLInteralSubset} dropXMLInteralSubset
+    * @property {module:utilities.dropXMLInternalSubset} dropXMLInternalSubset
     * @property {module:utilities.encode64} encode64
     * @property {module:svgcanvas~ffClone} ffClone
     * @property {module:svgcanvas~findDuplicateGradient} findDuplicateGradient
@@ -21762,7 +22011,7 @@
         BatchCommand: BatchCommand$1,
         ChangeElementCommand: ChangeElementCommand$1,
         decode64: decode64,
-        dropXMLInteralSubset: dropXMLInteralSubset,
+        dropXMLInternalSubset: dropXMLInternalSubset,
         encode64: encode64,
         ffClone: ffClone,
         findDefs: findDefs,
@@ -21950,369 +22199,8 @@
     return b;
   }
 
-  /*
-   * Todo: Update to latest at https://github.com/cowboy/jquery-bbq ?
-   * jQuery BBQ: Back Button & Query Library - v1.2.1 - 2/17/2010
-   * http://benalman.com/projects/jquery-bbq-plugin/
-   *
-   * Copyright (c) 2010 "Cowboy" Ben Alman
-   * Dual licensed under the MIT and GPL licenses.
-   * http://benalman.com/about/license/
-   */
-  // For sake of modules, added this wrapping export and changed `this` to `window`
-  function jQueryPluginBBQ (jQuery) {
-    (function ($, p) {
-      var i,
-          m = Array.prototype.slice,
-          r = decodeURIComponent,
-          a = $.param,
-          c,
-          l,
-          v,
-          b = $.bbq = $.bbq || {},
-          q,
-          u,
-          j,
-          e = $.event.special,
-          d = "hashchange",
-          A = "querystring",
-          D = "fragment",
-          y = "elemUrlAttr",
-          g = "location",
-          k = "href",
-          t = "src",
-          x = /^.*\?|#.*$/g,
-          w = /^.*\#/,
-          h,
-          C = {};
-
-      function E(F) {
-        return typeof F === "string";
-      }
-
-      function B(G) {
-        var F = m.call(arguments, 1);
-        return function () {
-          return G.apply(this, F.concat(m.call(arguments)));
-        };
-      }
-
-      function n(F) {
-        return F.replace(/^[^#]*#?(.*)$/, "$1");
-      }
-
-      function o(F) {
-        return F.replace(/(?:^[^?#]*\?([^#]*).*$)?.*/, "$1");
-      }
-
-      function f(H, M, F, I, G) {
-        var O, L, K, N, J;
-
-        if (I !== i) {
-          K = F.match(H ? /^([^#]*)\#?(.*)$/ : /^([^#?]*)\??([^#]*)(#?.*)/);
-          J = K[3] || "";
-
-          if (G === 2 && E(I)) {
-            L = I.replace(H ? w : x, "");
-          } else {
-            N = l(K[2]);
-            I = E(I) ? l[H ? D : A](I) : I;
-            L = G === 2 ? I : G === 1 ? $.extend({}, I, N) : $.extend({}, N, I);
-            L = a(L);
-
-            if (H) {
-              L = L.replace(h, r);
-            }
-          }
-
-          O = K[1] + (H ? "#" : L || !K[1] ? "?" : "") + L + J;
-        } else {
-          O = M(F !== i ? F : p[g][k]);
-        }
-
-        return O;
-      }
-
-      a[A] = B(f, 0, o);
-      a[D] = c = B(f, 1, n);
-
-      c.noEscape = function (G) {
-        G = G || "";
-        var F = $.map(G.split(""), encodeURIComponent);
-        h = new RegExp(F.join("|"), "g");
-      };
-
-      c.noEscape(",/");
-
-      $.deparam = l = function l(I, F) {
-        var H = {},
-            G = {
-          "true": !0,
-          "false": !1,
-          "null": null
-        };
-        $.each(I.replace(/\+/g, " ").split("&"), function (L, Q) {
-          var K = Q.split("="),
-              P = r(K[0]),
-              J,
-              O = H,
-              M = 0,
-              R = P.split("]["),
-              N = R.length - 1;
-
-          if (/\[/.test(R[0]) && /\]$/.test(R[N])) {
-            R[N] = R[N].replace(/\]$/, "");
-            R = R.shift().split("[").concat(R);
-            N = R.length - 1;
-          } else {
-            N = 0;
-          }
-
-          if (K.length === 2) {
-            J = r(K[1]);
-
-            if (F) {
-              J = J && !isNaN(J) ? +J : J === "undefined" ? i : G[J] !== i ? G[J] : J;
-            }
-
-            if (N) {
-              for (; M <= N; M++) {
-                P = R[M] === "" ? O.length : R[M];
-                O = O[P] = M < N ? O[P] || (R[M + 1] && isNaN(R[M + 1]) ? {} : []) : J;
-              }
-            } else {
-              if ($.isArray(H[P])) {
-                H[P].push(J);
-              } else {
-                if (H[P] !== i) {
-                  H[P] = [H[P], J];
-                } else {
-                  H[P] = J;
-                }
-              }
-            }
-          } else {
-            if (P) {
-              H[P] = F ? i : "";
-            }
-          }
-        });
-        return H;
-      };
-
-      function z(H, F, G) {
-        if (F === i || typeof F === "boolean") {
-          G = F;
-          F = a[H ? D : A]();
-        } else {
-          F = E(F) ? F.replace(H ? w : x, "") : F;
-        }
-
-        return l(F, G);
-      }
-
-      l[A] = B(z, 0);
-      l[D] = v = B(z, 1);
-      $[y] || ($[y] = function (F) {
-        return $.extend(C, F);
-      })({
-        a: k,
-        base: k,
-        iframe: t,
-        img: t,
-        input: t,
-        form: "action",
-        link: k,
-        script: t
-      });
-      j = $[y];
-
-      function s(I, G, H, F) {
-        if (!E(H) && _typeof(H) !== "object") {
-          F = H;
-          H = G;
-          G = i;
-        }
-
-        return this.each(function () {
-          var L = $(this),
-              J = G || j()[(this.nodeName || "").toLowerCase()] || "",
-              K = J && L.attr(J) || "";
-          L.attr(J, a[I](K, H, F));
-        });
-      }
-
-      $.fn[A] = B(s, A);
-      $.fn[D] = B(s, D);
-
-      b.pushState = q = function q(I, F) {
-        if (E(I) && /^#/.test(I) && F === i) {
-          F = 2;
-        }
-
-        var H = I !== i,
-            G = c(p[g][k], H ? I : {}, H ? F : 2);
-        p[g][k] = G + (/#/.test(G) ? "" : "#");
-      };
-
-      b.getState = u = function u(F, G) {
-        return F === i || typeof F === "boolean" ? v(F) : v(G)[F];
-      };
-
-      b.removeState = function (F) {
-        var G = {};
-
-        if (F !== i) {
-          G = u();
-          $.each($.isArray(F) ? F : arguments, function (I, H) {
-            delete G[H];
-          });
-        }
-
-        q(G, 2);
-      };
-
-      e[d] = $.extend(e[d], {
-        add: function add(F) {
-          var H;
-
-          function G(J) {
-            var I = J[D] = c();
-
-            J.getState = function (K, L) {
-              return K === i || typeof K === "boolean" ? l(I, K) : l(I, L)[K];
-            };
-
-            H.apply(this, arguments);
-          }
-
-          if ($.isFunction(F)) {
-            H = F;
-            return G;
-          } else {
-            H = F.handler;
-            F.handler = G;
-          }
-        }
-      });
-    })(jQuery, window);
-    /*
-     * jQuery hashchange event - v1.2 - 2/11/2010
-     * http://benalman.com/projects/jquery-hashchange-plugin/
-     *
-     * Copyright (c) 2010 "Cowboy" Ben Alman
-     * Dual licensed under the MIT and GPL licenses.
-     * http://benalman.com/about/license/
-     */
-
-
-    (function ($, i, b) {
-      var j,
-          k = $.event.special,
-          c = "location",
-          d = "hashchange",
-          l = "href",
-          f = $.browser,
-          g = document.documentMode,
-          h = f.msie && (g === b || g < 8),
-          e = "on" + d in i && !h;
-
-      function a(m) {
-        m = m || i[c][l];
-        return m.replace(/^[^#]*#?(.*)$/, "$1");
-      }
-
-      $[d + "Delay"] = 100;
-      k[d] = $.extend(k[d], {
-        setup: function setup() {
-          if (e) {
-            return false;
-          }
-
-          $(j.start);
-        },
-        teardown: function teardown() {
-          if (e) {
-            return false;
-          }
-
-          $(j.stop);
-        }
-      });
-
-      j = function () {
-        var m = {},
-            r,
-            n,
-            o,
-            q;
-
-        function p() {
-          o = q = function q(s) {
-            return s;
-          };
-
-          if (h) {
-            n = $('<iframe src="javascript:0"/>').hide().insertAfter("body")[0].contentWindow;
-
-            q = function q() {
-              return a(n.document[c][l]);
-            };
-
-            o = function o(u, s) {
-              if (u !== s) {
-                var t = n.document;
-                t.open().close();
-                t[c].hash = "#" + u;
-              }
-            };
-
-            o(a());
-          }
-        }
-
-        m.start = function () {
-          if (r) {
-            return;
-          }
-
-          var t = a();
-          o || p();
-
-          (function s() {
-            var v = a(),
-                u = q(t);
-
-            if (v !== t) {
-              o(t = v, u);
-              $(i).trigger(d);
-            } else {
-              if (u !== t) {
-                i[c][l] = i[c][l].replace(/#.*/, "") + "#" + u;
-              }
-            }
-
-            r = setTimeout(s, $[d + "Delay"]);
-          })();
-        };
-
-        m.stop = function () {
-          if (!n) {
-            r && clearTimeout(r);
-            r = 0;
-          }
-        };
-
-        return m;
-      }();
-    })(jQuery, window);
-
-    return jQuery;
-  }
-
-  // Todo: Move to own module (and have it import a modular base64 encoder)
   /**
-   * SVG Icon Loader 2.0
+   * @file SVG Icon Loader 2.0
    *
    * jQuery Plugin for loading SVG icons from a single file
    *
@@ -22396,7 +22284,6 @@
     });
   });
   */
-
   var isOpera$1 = Boolean(window.opera);
 
   var fixIDs = function fixIDs(svgEl, svgNum, force) {
@@ -22459,6 +22346,7 @@
   /**
   * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
   * @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
+  * @returns {void}
   */
 
   /**
@@ -22472,13 +22360,13 @@
     var svgIcons = {};
     /**
      * Map of raster images with each key being the SVG icon ID
-     *   to replace, and the value the image file name
+     *   to replace, and the value the image file name.
      * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Fallback
     */
 
     /**
      * Map of raster images with each key being the SVG icon ID
-     *   whose `alt` will be set, and the value being the `alt` text
+     *   whose `alt` will be set, and the value being the `alt` text.
      * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Alts
     */
 
@@ -22893,7 +22781,7 @@
   }
 
   /**
-   * jGraduate 0.4
+   * @file jGraduate 0.4
    *
    * jQuery Plugin for a gradient picker
    *
@@ -22911,6 +22799,8 @@
    * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
   */
 
+  /* eslint-disable jsdoc/require-property */
+
   /**
     * The jQuery namespace.
     * @external jQuery
@@ -22922,6 +22812,8 @@
    * @memberof external:jQuery
    * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
    */
+
+  /* eslint-enable jsdoc/require-property */
   var ns = {
     svg: 'http://www.w3.org/2000/svg',
     xlink: 'http://www.w3.org/1999/xlink'
@@ -22959,11 +22851,11 @@
     }
     /**
     * @typedef {PlainObject} module:jGraduate.jGraduatePaintOptions
-    * @param {Float} [alpha]
-    * @param {module:jGraduate~Paint} [copy] Copy paint object
-    * @param {SVGLinearGradientElement} [linearGradient]
-    * @param {SVGRadialGradientElement} [radialGradient]
-    * @param {string} [solidColor]
+    * @property {Float} [alpha]
+    * @property {module:jGraduate~Paint} [copy] Copy paint object
+    * @property {SVGLinearGradientElement} [linearGradient]
+    * @property {SVGRadialGradientElement} [radialGradient]
+    * @property {string} [solidColor]
     */
 
     /**
@@ -22988,14 +22880,14 @@
          */
         this.type = options.copy.type;
         /**
-         * Represents opacity (0-100)
+         * Represents opacity (0-100).
          * @name module:jGraduate~Paint#alpha
          * @type {Float}
          */
 
         this.alpha = options.copy.alpha;
         /**
-         * Represents #RRGGBB hex of color
+         * Represents #RRGGBB hex of color.
          * @name module:jGraduate~Paint#solidColor
          * @type {string}
          */
@@ -23051,6 +22943,8 @@
         this.radialGradient = null;
       }
     };
+    /* eslint-disable jsdoc/require-property */
+
     /**
     * @namespace {PlainObject} jGraduate
     * @memberof external:jQuery
@@ -23060,6 +22954,8 @@
     $.jGraduate =
     /** @lends external:jQuery.jGraduate */
     {
+      /* eslint-enable jsdoc/require-property */
+
       /**
       * @class external:jQuery.jGraduate.Paint
       * @see module:jGraduate~Paint
@@ -23077,7 +22973,7 @@
     /** @lends external:jQuery.fn.jGraduateDefaults */
     {
       /**
-      * Creates an object with a 'none' color
+      * Creates an object with a 'none' color.
       * @type {external:jQuery.jGraduate.Paint}
       * @see module:jGraduate.Options
       */
@@ -23343,7 +23239,7 @@
 
                   for (var i = 0; i < 6; i += 2) {
                     // const ch = color.substr(i, 2);
-                    var inv = (255 - parseInt(color.substr(i, 2), 16)).toString(16);
+                    var inv = (255 - Number.parseInt(color.substr(i, 2), 16)).toString(16);
                     if (inv.length < 2) inv = 0 + inv;
                     inverted += inv;
                   }
@@ -23366,14 +23262,14 @@
           }
         }
 
-        var x1 = parseFloat(grad.getAttribute('x1') || 0.0),
-            y1 = parseFloat(grad.getAttribute('y1') || 0.0),
-            x2 = parseFloat(grad.getAttribute('x2') || 1.0),
-            y2 = parseFloat(grad.getAttribute('y2') || 0.0);
-        var cx = parseFloat(grad.getAttribute('cx') || 0.5),
-            cy = parseFloat(grad.getAttribute('cy') || 0.5),
-            fx = parseFloat(grad.getAttribute('fx') || cx),
-            fy = parseFloat(grad.getAttribute('fy') || cy);
+        var x1 = Number.parseFloat(grad.getAttribute('x1') || 0.0),
+            y1 = Number.parseFloat(grad.getAttribute('y1') || 0.0),
+            x2 = Number.parseFloat(grad.getAttribute('x2') || 1.0),
+            y2 = Number.parseFloat(grad.getAttribute('y2') || 0.0);
+        var cx = Number.parseFloat(grad.getAttribute('cx') || 0.5),
+            cy = Number.parseFloat(grad.getAttribute('cy') || 0.5),
+            fx = Number.parseFloat(grad.getAttribute('fx') || cx),
+            fy = Number.parseFloat(grad.getAttribute('fy') || cy);
         var previewRect = mkElem('rect', {
           id: id + '_jgraduate_rect',
           x: MARGINX,
@@ -23436,7 +23332,7 @@
 
           attrInput[attr] = $('#' + id + '_jGraduate_' + attr).val(attrval).change(function () {
             // TODO: Support values < 0 and > 1 (zoomable preview?)
-            if (isNaN(parseFloat(this.value)) || this.value < 0) {
+            if (isNaN(Number.parseFloat(this.value)) || this.value < 0) {
               this.value = 0.0;
             } else if (this.value > 1) {
               this.value = 1.0;
@@ -23506,7 +23402,7 @@
 
             var stopOpacity = Number(stop.getAttribute('stop-opacity')) || 1;
             var stopColor = stop.getAttribute('stop-color') || 1;
-            var thisAlpha = (parseFloat(stopOpacity) * 255).toString(16);
+            var thisAlpha = (Number.parseFloat(stopOpacity) * 255).toString(16);
 
             while (thisAlpha.length < 2) {
               thisAlpha = '0' + thisAlpha;
@@ -23864,7 +23760,7 @@
           var _slider = slider,
               left = _slider.offset.left;
           var div = slider.parent;
-          var x = e.pageX - left - parseInt(div.css('border-left-width'));
+          var x = e.pageX - left - Number.parseInt(div.css('border-left-width'));
           if (x > SLIDERW) x = SLIDERW;
           if (x <= 0) x = 0;
           var posx = x - 5;
@@ -23879,7 +23775,7 @@
               break;
 
             case 'opacity':
-              $this.paint.alpha = parseInt(x * 100);
+              $this.paint.alpha = Number.parseInt(x * 100);
               previewRect.setAttribute('fill-opacity', x);
               break;
 
@@ -24176,55 +24072,57 @@
   }
 
   /**
-   * SpinButton control
+   * SpinButton control.
    *
    * Adds bells and whistles to any ordinary textbox to
    * make it look and feel like a SpinButton Control.
    *
-   * Supplies {@link external:jQuery.fn.SpinButton} (and also {@link external:jQuery.loadingStylesheets})
+   * Supplies {@link external:jQuery.fn.SpinButton} (and also {@link external:jQuery.loadingStylesheets}).
    *
-   * Originally written by George Adamson, Software Unity (george.jquery@softwareunity.com) August 2006.
-   * - Added min/max options
-   * - Added step size option
-   * - Added bigStep (page up/down) option
+   * Originally written by George Adamson, Software Unity (george.jquery@softwareunity.com) August 2006:
+   * - Added min/max options.
+   * - Added step size option.
+   * - Added bigStep (page up/down) option.
    *
    * Modifications made by Mark Gibson, (mgibson@designlinks.net) September 2006:
-   * - Converted to jQuery plugin
-   * - Allow limited or unlimited min/max values
-   * - Allow custom class names, and add class to input element
-   * - Removed global vars
-   * - Reset (to original or through config) when invalid value entered
-   * - Repeat whilst holding mouse button down (with initial pause, like keyboard repeat)
-   * - Support mouse wheel in Firefox
-   * - Fix double click in IE
-   * - Refactored some code and renamed some vars
+   * - Converted to jQuery plugin.
+   * - Allow limited or unlimited min/max values.
+   * - Allow custom class names, and add class to input element.
+   * - Removed global vars.
+   * - Reset (to original or through config) when invalid value entered.
+   * - Repeat whilst holding mouse button down (with initial pause, like keyboard repeat).
+   * - Support mouse wheel in Firefox.
+   * - Fix double click in IE.
+   * - Refactored some code and renamed some vars.
    *
    * Modifications by Jeff Schiller, June 2009:
    * - provide callback function for when the value changes based on the following
-   *   {@link https://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html}
+   *   {@link https://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html}.
    *
    * Modifications by Jeff Schiller, July 2009:
-   * - improve styling for widget in Opera
-   * - consistent key-repeat handling cross-browser
+   * - improve styling for widget in Opera.
+   * - consistent key-repeat handling cross-browser.
    *
    * Modifications by Alexis Deveria, October 2009:
-   * - provide "stepfunc" callback option to allow custom function to run when changing a value
+   * - provide "stepfunc" callback option to allow custom function to run when changing a value.
    * - Made adjustValue(0) only run on certain keyup events, not all.
    *
-   * Tested in IE6, Opera9, Firefox 1.5
+   * Tested in IE6, Opera9, Firefox 1.5.
    *
-   * | Version | Date | Author | Notes
-   * |---------|------|--------|------|
-   * | v1.0 | 11 Aug 2006 | George Adamson | First release
-   * | v1.1 | Aug 2006 | George Adamson | Minor enhancements
-   * | v1.2 | 27 Sep 2006 | Mark Gibson | Major enhancements
-   * | v1.3a | 28 Sep 2006 | George Adamson | Minor enhancements
-   * | v1.4 | 18 Jun 2009 | Jeff Schiller | Added callback function
-   * | v1.5 | 06 Jul 2009 | Jeff Schiller | Fixes for Opera.
-   * | v1.6 | 13 Oct 2009 | Alexis Deveria | Added stepfunc function
-   * | v1.7 | 21 Oct 2009 | Alexis Deveria | Minor fixes.<br />Fast-repeat for keys and live updating as you type.
-   * | v1.8 | 12 Jan 2010 | Benjamin Thomas | Fixes for mouseout behavior.<br />Added smallStep
+   * | Version | Date | Author | Notes |
+   * |---------|------|--------|-------|
+   * | v1.0 | 11 Aug 2006 | George Adamson | First release |
+   * | v1.1 | Aug 2006 | George Adamson | Minor enhancements |
+   * | v1.2 | 27 Sep 2006 | Mark Gibson | Major enhancements |
+   * | v1.3a | 28 Sep 2006 | George Adamson | Minor enhancements |
+   * | v1.4 | 18 Jun 2009 | Jeff Schiller | Added callback function |
+   * | v1.5 | 06 Jul 2009 | Jeff Schiller | Fixes for Opera. |
+   * | v1.6 | 13 Oct 2009 | Alexis Deveria | Added stepfunc function |
+   * | v1.7 | 21 Oct 2009 | Alexis Deveria | Minor fixes.<br />Fast-repeat for keys and live updating as you type. |
+   * | v1.8 | 12 Jan 2010 | Benjamin Thomas | Fixes for mouseout behavior.<br />Added smallStep |
    * | v1.9 | 20 May 2018 | Brett Zamir | Avoid SVGEdit dependency via `stateObj` config;<br />convert to ES6 module |
+   * .
+   *
    * @module jQuerySpinButton
    * @example
     // Create group of settings to initialise spinbutton(s). (Optional)
@@ -24328,9 +24226,9 @@
         this.spinCfg = {
           // min: cfg.min ? Number(cfg.min) : null,
           // max: cfg.max ? Number(cfg.max) : null,
-          min: !isNaN(parseFloat(cfg.min)) ? Number(cfg.min) : null,
+          min: !isNaN(Number.parseFloat(cfg.min)) ? Number(cfg.min) : null,
           // Fixes bug with min:0
-          max: !isNaN(parseFloat(cfg.max)) ? Number(cfg.max) : null,
+          max: !isNaN(Number.parseFloat(cfg.max)) ? Number(cfg.max) : null,
           step: cfg.step ? Number(cfg.step) : 1,
           stepfunc: cfg.stepfunc || false,
           page: cfg.page ? Number(cfg.page) : 10,
@@ -24546,28 +24444,11 @@
   }
 
   /**
-   * jQuery Context Menu Plugin
-   * Cory S.N. LaViska
-   * A Beautiful Site ({@link https://abeautifulsite.net/})
-   * Modified by Alexis Deveria
-   *
-   * More info: {@link https://abeautifulsite.net/2008/09/jquery-context-menu-plugin/}
-   *
-   * @module jQueryContextMenu
-   * @todo Update to latest version and adapt (and needs jQuery update as well): {@link https://github.com/swisnl/jQuery-contextMenu}
-   * @version 1.0.1
-   *
-   * @license (MIT OR GPL-2.0-or-later)
-   *
-   * This plugin is dual-licensed under the GNU General Public License
-   *   and the MIT License and is copyright A Beautiful Site, LLC.
-   *
-  */
-  /**
   * @callback module:jQueryContextMenu.jQueryContextMenuListener
   * @param {string} href The `href` value after the first character (for bypassing an initial `#`)
   * @param {external:jQuery} srcElement The wrapped jQuery srcElement
   * @param {{x: Float, y: Float, docX: Float, docY: Float}} coords
+  * @returns {void}
   */
 
   /**
@@ -24761,28 +24642,20 @@
         $(this).each(function () {
           if (o !== undefined) {
             var d = o.split(',');
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
+
+            var _iterator = _createForOfIteratorHelper(d),
+                _step;
 
             try {
-              for (var _iterator = d[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              for (_iterator.s(); !(_step = _iterator.n()).done;) {
                 var href = _step.value;
+                // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                 $(this).find('A[href="' + href + '"]').parent().addClass('disabled');
               }
             } catch (err) {
-              _didIteratorError = true;
-              _iteratorError = err;
+              _iterator.e(err);
             } finally {
-              try {
-                if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                  _iterator["return"]();
-                }
-              } finally {
-                if (_didIteratorError) {
-                  throw _iteratorError;
-                }
-              }
+              _iterator.f();
             }
           }
         });
@@ -24805,28 +24678,20 @@
         $(this).each(function () {
           if (o !== undefined) {
             var d = o.split(',');
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
+
+            var _iterator2 = _createForOfIteratorHelper(d),
+                _step2;
 
             try {
-              for (var _iterator2 = d[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
                 var href = _step2.value;
+                // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                 $(this).find('A[href="' + href + '"]').parent().removeClass('disabled');
               }
             } catch (err) {
-              _didIteratorError2 = true;
-              _iteratorError2 = err;
+              _iterator2.e(err);
             } finally {
-              try {
-                if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-                  _iterator2["return"]();
-                }
-              } finally {
-                if (_didIteratorError2) {
-                  throw _iteratorError2;
-                }
-              }
+              _iterator2.f();
             }
           }
         });
@@ -24877,7 +24742,7 @@
   /* eslint-disable no-bitwise */
 
   /**
-   * jPicker (Adapted from version 1.1.6)
+   * @file jPicker (Adapted from version 1.1.6)
    *
    * jQuery Plugin for Photoshop style color picker
    *
@@ -24954,13 +24819,15 @@
     * Encapsulate slider functionality for the ColorMap and ColorBar -
     * could be useful to use a jQuery UI draggable for this with certain extensions.
     * @memberof module:jPicker
-    * @param {external:jQuery} bar
-    * @param {module:jPicker.SliderOptions} options
-    * @returns {void}
     */
 
 
-    var Slider = function Slider(bar, options) {
+    var Slider =
+    /**
+     * @param {external:jQuery} bar
+     * @param {module:jPicker.SliderOptions} options
+     */
+    function Slider(bar, options) {
       _classCallCheck(this, Slider);
 
       var that = this;
@@ -25366,14 +25233,17 @@
     };
     /**
      * Controls for all the input elements for the typing in color values.
+     */
+
+
+    var ColorValuePicker =
+    /**
      * @param {external:jQuery} picker
      * @param {external:jQuery.jPicker.Color} color
      * @param {external:jQuery.fn.$.fn.jPicker} bindedHex
      * @param {Float} alphaPrecision
      */
-
-
-    var ColorValuePicker = function ColorValuePicker(picker, color, bindedHex, alphaPrecision) {
+    function ColorValuePicker(picker, color, bindedHex, alphaPrecision) {
       _classCallCheck(this, ColorValuePicker);
 
       var that = this; // private properties and methods
@@ -25439,12 +25309,12 @@
           case alpha && alpha.get(0):
             switch (e.keyCode) {
               case 38:
-                alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) + 1, 0, 100));
+                alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) + 1, 0, 100));
                 color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
                 return false;
 
               case 40:
-                alpha.val(setValueInRange.call(that, parseFloat(alpha.val()) - 1, 0, 100));
+                alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) - 1, 0, 100));
                 color.val('a', toFixedNumeric(alpha.val() * 255 / 100, alphaPrecision), e.target);
                 return false;
             }
@@ -25561,7 +25431,7 @@
 
           case ahex && ahex.get(0):
             ahex.val(ahex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2));
-            color.val('a', !isNullish$1(ahex.val()) ? parseInt(ahex.val(), 16) : null, e.target);
+            color.val('a', !isNullish$1(ahex.val()) ? Number.parseInt(ahex.val(), 16) : null, e.target);
             break;
         }
 
@@ -25725,6 +25595,8 @@
     * @property {string} [ahex]
     */
 
+    /* eslint-disable jsdoc/require-property */
+
     /**
     * @namespace {PlainObject} jPicker
     * @memberof external:jQuery
@@ -25734,8 +25606,10 @@
     $.jPicker =
     /** @lends external:jQuery.jPicker */
     {
+      /* eslint-enable jsdoc/require-property */
+
       /**
-      * Array holding references to each active instance of the jPicker control
+      * Array holding references to each active instance of the jPicker control.
       * @type {external:jQuery.fn.$.fn.jPicker[]}
       */
       List: [],
@@ -26129,7 +26003,7 @@
       },
 
       /**
-      * color conversion methods  - make public to give use to external scripts
+      * Color conversion methods  - make public to give use to external scripts.
       * @namespace
       */
       ColorMethods: {
@@ -26227,7 +26101,7 @@
         * @returns {Integer}
         */
         hexToInt: function hexToInt(hex) {
-          return parseInt(hex, 16);
+          return Number.parseInt(hex, 16);
         },
 
         /**
@@ -26270,7 +26144,7 @@
           if (!hsv.s) hsv.h = 0;else {
             delta = max - min;
             if (r === max) hsv.h = (g - b) / delta;else if (g === max) hsv.h = 2 + (b - r) / delta;else hsv.h = 4 + (r - g) / delta;
-            hsv.h = parseInt(hsv.h * 60);
+            hsv.h = Number.parseInt(hsv.h * 60);
             if (hsv.h < 0) hsv.h += 360;
           }
           hsv.s = hsv.s * 100 | 0;
@@ -26358,13 +26232,17 @@
         List = _$$jPicker.List,
         ColorMethods = _$$jPicker.ColorMethods; // local copies for YUI compressor
 
+    /* eslint-disable jsdoc/require-returns */
+
     /**
      * @function external:jQuery.fn.jPicker
      * @see {@link external:jQuery.fn.$.fn.jPicker}
      */
 
+    /* eslint-enable jsdoc/require-returns */
+
     /**
-    * Will be bound to active {@link jQuery.jPicker.Color}
+    * Will be bound to active {@link jQuery.jPicker.Color}.
     * @callback module:jPicker.LiveCallback
     * @param {external:jQuery} ui
     * @param {Element} context
@@ -26438,7 +26316,7 @@
           settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
         }
 
-        var isLessThanIE7 = parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
+        var isLessThanIE7 = Number.parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
         // set color mode and update visuals for the new color mode
 
         /**
@@ -27181,6 +27059,7 @@
 
 
         function radioClicked(e) {
+          // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
           $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
           setColorMode.call(that, e.target.value);
         }
@@ -27267,8 +27146,8 @@
         function moveBarMouseDown(e) {
           // const {element} = settings.window, // local copies for YUI compressor
           //     {page} = settings.window;
-          elementStartX = parseInt(container.css('left'));
-          elementStartY = parseInt(container.css('top'));
+          elementStartX = Number.parseInt(container.css('left'));
+          elementStartY = Number.parseInt(container.css('top'));
           pageStartX = e.pageX;
           pageStartY = e.pageY; // bind events to document to move window - we will unbind these on mouseup
 
@@ -27450,9 +27329,9 @@
             });
             container.css( // positions must be set and display set to absolute before source code injection or IE will size the container to fit the window
             {
-              left: win.position.x === 'left' ? popup.offset().left - 530 - (win.position.y === 'center' ? 25 : 0) + 'px' : win.position.x === 'center' ? popup.offset().left - 260 + 'px' : win.position.x === 'right' ? popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0) + 'px' : win.position.x === 'screenCenter' ? ($(document).width() >> 1) - 260 + 'px' : popup.offset().left + parseInt(win.position.x) + 'px',
+              left: win.position.x === 'left' ? popup.offset().left - 530 - (win.position.y === 'center' ? 25 : 0) + 'px' : win.position.x === 'center' ? popup.offset().left - 260 + 'px' : win.position.x === 'right' ? popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0) + 'px' : win.position.x === 'screenCenter' ? ($(document).width() >> 1) - 260 + 'px' : popup.offset().left + Number.parseInt(win.position.x) + 'px',
               position: 'absolute',
-              top: win.position.y === 'top' ? popup.offset().top - 312 + 'px' : win.position.y === 'center' ? popup.offset().top - 156 + 'px' : win.position.y === 'bottom' ? popup.offset().top + 25 + 'px' : popup.offset().top + parseInt(win.position.y) + 'px'
+              top: win.position.y === 'top' ? popup.offset().top - 312 + 'px' : win.position.y === 'center' ? popup.offset().top - 156 + 'px' : win.position.y === 'bottom' ? popup.offset().top + 25 + 'px' : popup.offset().top + Number.parseInt(win.position.y) + 'px'
             });
           } else {
             container = $(that);
@@ -27756,7 +27635,7 @@
     * @property {"left"|"center"|"right"|"screenCenter"|Float} window.position.x Relative px value
     * @property {"top"|"bottom"|"center"|Float} window.position.y Relative px value
     * @property {boolean} window.expandable Defaults to large static picker - set to `true` to make an expandable
-    * picker (small icon with popup) - set automatically when binded to input element
+    * picker (small icon with popup) - set automatically when binded to input element; added by `$.fn.jPicker`
     * @property {boolean} window.liveUpdate Set `false` if you want the user to have to click "OK" before the
     * binded input box updates values (always `true` for expandable picker)
     * @property {boolean} window.alphaSupport Set to `true` to enable alpha picking
@@ -27764,7 +27643,6 @@
     * not map directly to percentage integers - range 0-2
     * @property {boolean} window.updateInputColor Set to `false` to prevent binded input colors from changing
     * @property {boolean} [window.bindToInput] Added by `$.fn.jPicker`
-    * @property {boolean} [window.expandable] Added by `$.fn.jPicker`
     * @property {external:jQuery} [window.input] Added by `$.fn.jPicker`
     * @property {PlainObject} color
     * @property {"h"|"s"|"v"|"r"|"g"|"b"|"a"} color.mode Symbols stand for "h" (hue), "s" (saturation), "v" (value), "r" (red), "g" (green), "b" (blue), "a" (alpha)
@@ -27803,8 +27681,8 @@
     */
 
     /**
-    * jPicker defaults - you can change anything in this section (such as the
-    * clientPath to your images) without fear of breaking the program
+    * The jPicker defaults - you can change anything in this section (such as the
+    * clientPath to your images) without fear of breaking the program.
     * @namespace {external:jQuery.fn.jPickerOptions} defaults
     * @memberof external:jQuery.fn.$.fn.jPicker
     * @borrows external:jQuery.fn.jPickerOptions as external:jQuery.fn.jPicker.defaults
@@ -28237,6 +28115,8 @@
 
       if (!val) {
         console.log(sel); // eslint-disable-line no-console
+
+        return; // keep old text when has no translation
       }
 
       if (ids) {
@@ -28278,7 +28158,7 @@
   };
   /**
   * The "data" property is generally set to an an array of objects with
-  *   "id" and "title" or "textContent" properties
+  *   "id" and "title" or "textContent" properties.
   * @typedef {PlainObject} module:locale.AddLangExtensionLocaleData
   * @property {module:locale.LocaleStrings[]} data See {@tutorial LocaleDocs}
   */
@@ -28318,12 +28198,8 @@
   * @returns {Promise<module:locale.LangAndData>} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
   */
 
-  var readLang =
-  /*#__PURE__*/
-  function () {
-    var _ref3 = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee(langData) {
+  var readLang = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(langData) {
       var more, _langData, tools, properties, config, layers, common, ui, opts, ariaLabels;
 
       return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -28399,6 +28275,8 @@
                 tool_import: tools.import_doc,
                 tool_open: tools.open_doc,
                 tool_save: tools.save_doc,
+                tool_editor_prefs: config.editor_prefs,
+                tool_editor_homepage: tools.editor_homepage,
                 svginfo_units_rulers: config.units_and_rulers,
                 svginfo_rulers_onoff: config.show_rulers,
                 svginfo_unit: config.base_unit,
@@ -28571,12 +28449,8 @@
    * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
   */
 
-  var putLocale =
-  /*#__PURE__*/
-  function () {
-    var _ref8 = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee2(givenParam, goodLangs, conf) {
+  var putLocale = /*#__PURE__*/function () {
+    var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(givenParam, goodLangs, conf) {
       var url;
       return regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
@@ -28584,44 +28458,33 @@
             case 0:
               if (givenParam) {
                 langParam = givenParam;
-              } else {
-                langParam = $$a.pref('lang');
+              } else if (navigator.userLanguage) {
+                // Explorer
+                langParam = navigator.userLanguage;
+              } else if (navigator.language) {
+                // FF, Opera, ...
+                langParam = navigator.language;
+              }
 
-                if (!langParam) {
-                  if (navigator.userLanguage) {
-                    // Explorer
-                    langParam = navigator.userLanguage;
-                  } else if (navigator.language) {
-                    // FF, Opera, ...
-                    langParam = navigator.language;
-                  }
-                }
+              console.log('Lang: ' + langParam); // eslint-disable-line no-console
+              // Set to English if language is not in list of good langs
 
-                console.log('Lang: ' + langParam); // eslint-disable-line no-console
-                // Set to English if language is not in list of good langs
-
-                if (!goodLangs.includes(langParam) && langParam !== 'test') {
-                  langParam = 'en';
-                } // don't bother on first run if language is English
-                // The following line prevents setLang from running
-                //    extensions which depend on updated uiStrings,
-                //    so commenting it out.
-                // if (langParam.startsWith('en')) {return;}
-
+              if (!goodLangs.includes(langParam) && langParam !== 'test') {
+                langParam = 'en';
               }
 
               url = conf.langPath + 'lang.' + langParam + '.js';
               _context2.t0 = readLang;
-              _context2.next = 5;
+              _context2.next = 7;
               return importSetGlobalDefault(url, {
                 global: 'svgEditorLang_' + langParam.replace(/-/g, '_')
               });
 
-            case 5:
+            case 7:
               _context2.t1 = _context2.sent;
               return _context2.abrupt("return", (0, _context2.t0)(_context2.t1));
 
-            case 7:
+            case 9:
             case "end":
               return _context2.stop();
           }
@@ -28795,24 +28658,8 @@
     }));
   }
 
-  /**
-  * The main module for the visual SVG Editor
-  *
-  * @license MIT
-  *
-  * @copyright 2010 Alexis Deveria
-  * 2010 Pavol Rusnak
-  * 2010 Jeff Schiller
-  * 2010 Narendra Sisodiya
-  * 2014 Brett Zamir
-  * @exports module:SVGEditor
-  * @borrows module:locale.putLocale as putLocale
-  * @borrows module:locale.readLang as readLang
-  * @borrows module:locale.setStrings as setStrings
-  */
-
   var editor = {};
-  var $$b = [jQueryPluginJSHotkeys, jQueryPluginBBQ, jQueryPluginSVGIcons, jQueryPluginJGraduate, jQueryPluginSpinButton, jQueryPluginSVG, jQueryContextMenu, jPicker].reduce(function (jq, func) {
+  var $$b = [jQueryPluginJSHotkeys, jQueryPluginSVGIcons, jQueryPluginJGraduate, jQueryPluginSpinButton, jQueryPluginSVG, jQueryContextMenu, jPicker].reduce(function (jq, func) {
     return func(jq);
   }, jQuery);
   /*
@@ -28821,6 +28668,7 @@
   }
   */
 
+  var homePage = 'https://github.com/SVG-Edit/svgedit';
   var stylesheet = 'svg-editor.css';
 
   if (!$$b.loadingStylesheets.includes(stylesheet)) {
@@ -28875,7 +28723,7 @@
   */
 
   /**
-  * Preferences
+  * Preferences.
   * @interface module:SVGEditor.Prefs
   * @property {string} [lang="en"] Two-letter language code. The language must exist in the Editor Preferences language list. Defaults to "en" if `locale.js` detection does not detect another language.
   * @property {module:SVGEditor.IconSize} [iconsize="s"|"m"] Size of the toolbar icons. Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise.
@@ -28899,13 +28747,13 @@
     // EDITOR OPTIONS (DIALOG)
 
     /**
-    * Default to "en" if locale.js detection does not detect another language
+    * Default to "en" if locale.js detection does not detect another language.
     */
     lang: '',
 
     /**
-    * Will default to 's' if the window height is smaller than the minimum height and
-    * 'm' otherwise
+    * Will default to 's' if the window height is smaller than the minimum
+    * height and 'm' otherwise.
     */
     iconsize: '',
     bkgd_color: '#FFF',
@@ -29073,13 +28921,13 @@
   },
 
   /**
-  * LOCALE
+  * LOCALE.
   * @name module:SVGEditor.uiStrings
   * @type {PlainObject}
   */
   uiStrings$1 = editor.uiStrings = {};
   var svgCanvas,
-      urldata,
+      urldata = {},
       isReady = false,
       customExportImage = false,
       customExportPDF = false,
@@ -29133,10 +28981,8 @@
 
 
   function _loadSvgString() {
-    _loadSvgString = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee23(str) {
-      var _ref46,
+    _loadSvgString = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee23(str) {
+      var _ref42,
           noAlert,
           success,
           _args23 = arguments;
@@ -29145,7 +28991,7 @@
         while (1) {
           switch (_context23.prev = _context23.next) {
             case 0:
-              _ref46 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref46.noAlert;
+              _ref42 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref42.noAlert;
               success = svgCanvas.setSvgString(str) !== false;
 
               if (!success) {
@@ -29191,80 +29037,79 @@
      * @param {string} [localeInfo.lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
      * @returns {Promise<module:locale.LocaleStrings>} Resolves to {@link module:locale.LocaleStrings}
      */
-    return (
-      /*#__PURE__*/
-      function () {
-        var _importLocaleDefaulting = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee() {
-          var _ref2,
-              _ref2$name,
-              name,
-              _ref2$lang,
-              lang,
-              importLocale,
-              _args = arguments;
+    return /*#__PURE__*/function () {
+      var _importLocaleDefaulting = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var _ref2,
+            _ref2$name,
+            name,
+            _ref2$lang,
+            lang,
+            importLocale,
+            _args = arguments;
 
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  importLocale = function _ref3(language) {
-                    var url = "".concat(curConfig.extPath, "ext-locale/").concat(name, "/").concat(language, ".js");
-                    return importSetGlobalDefault(url, {
-                      global: "svgEditorExtensionLocale_".concat(name, "_").concat(language.replace(/-/g, '_'))
-                    });
-                  };
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                importLocale = function _importLocale(language) {
+                  var url = "".concat(curConfig.extPath, "ext-locale/").concat(name, "/").concat(language, ".js");
+                  return importSetGlobalDefault(url, {
+                    global: "svgEditorExtensionLocale_".concat(name, "_").concat(language.replace(/-/g, '_'))
+                  });
+                };
 
-                  _ref2 = _args.length > 0 && _args[0] !== undefined ? _args[0] : {}, _ref2$name = _ref2.name, name = _ref2$name === void 0 ? defaultName : _ref2$name, _ref2$lang = _ref2.lang, lang = _ref2$lang === void 0 ? defaultLang : _ref2$lang;
-                  _context.prev = 2;
-                  _context.next = 5;
-                  return importLocale(lang);
+                _ref2 = _args.length > 0 && _args[0] !== undefined ? _args[0] : {}, _ref2$name = _ref2.name, name = _ref2$name === void 0 ? defaultName : _ref2$name, _ref2$lang = _ref2.lang, lang = _ref2$lang === void 0 ? defaultLang : _ref2$lang;
+                _context.prev = 2;
+                _context.next = 5;
+                return importLocale(lang);
 
-                case 5:
-                  return _context.abrupt("return", _context.sent);
+              case 5:
+                return _context.abrupt("return", _context.sent);
 
-                case 8:
-                  _context.prev = 8;
-                  _context.t0 = _context["catch"](2);
-                  return _context.abrupt("return", importLocale('en'));
+              case 8:
+                _context.prev = 8;
+                _context.t0 = _context["catch"](2);
+                return _context.abrupt("return", importLocale('en'));
 
-                case 11:
-                case "end":
-                  return _context.stop();
-              }
+              case 11:
+              case "end":
+                return _context.stop();
             }
-          }, _callee, null, [[2, 8]]);
-        }));
+          }
+        }, _callee, null, [[2, 8]]);
+      }));
 
-        function importLocaleDefaulting() {
-          return _importLocaleDefaulting.apply(this, arguments);
-        }
+      function importLocaleDefaulting() {
+        return _importLocaleDefaulting.apply(this, arguments);
+      }
 
-        return importLocaleDefaulting;
-      }()
-    );
+      return importLocaleDefaulting;
+    }();
   }
   /**
-  * EXPORTS
+  * EXPORTS.
   */
 
   /**
   * Store and retrieve preferences.
+  * @function module:SVGEditor.pref
   * @param {string} key The preference name to be retrieved or set
-  * @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will be made.
-  * @returns {string|void} If val is missing or falsey, the value of the previously stored preference will be returned.
-  * @todo Can we change setting on the jQuery namespace (onto editor) to avoid conflicts?
+  * @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will
+  * be made unless `mayBeEmpty` is set.
+  * @param {boolean} [mayBeEmpty] If value may be falsey.
+  * @returns {string|void} If val is missing or falsey and `mayBeEmpty` is not set, the
+  * value of the previously stored preference will be returned.
   * @todo Review whether any remaining existing direct references to
-  *  getting `curPrefs` can be changed to use `$.pref()` getting to ensure
-  *  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`); specifically, `bkgd_color` could be changed so that
-  *  the pref dialog has a button to auto-calculate background, but otherwise uses `$.pref()` to be able to get default prefs
-  *  or overridable settings
+  *  getting `curPrefs` can be changed to use `svgEditor.pref()` getting to ensure
+  *  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`);
+  *  specifically, `bkgd_color` could be changed so that the pref dialog has a
+  *  button to auto-calculate background, but otherwise uses `svgEditor.pref()` to
+  *  be able to get default prefs or overridable settings
   */
 
 
-  $$b.pref = function (key, val) {
-    if (val) {
+  editor.pref = function (key, val, mayBeEmpty) {
+    if (mayBeEmpty || val) {
       curPrefs[key] = val;
       /**
       * @name curPrefs
@@ -29294,6 +29139,7 @@
   *  storage. This will override URL settings (for security reasons) but
   *  not `svgedit-config-iife.js` configuration (unless initial user
   *  overriding is explicitly permitted there via `allowInitialUserOverride`).
+  * @function module:SVGEditor.loadContentAndPrefs
   * @todo Split `allowInitialUserOverride` into `allowOverrideByURL` and
   *  `allowOverrideByUserStorage` so `svgedit-config-iife.js` can disallow some
   *  individual items for URL setting but allow for user storage AND/OR
@@ -29340,6 +29186,7 @@
   };
   /**
   * Allows setting of preferences or configuration (including extensions).
+  * @function module:SVGEditor.setConfig
   * @param {module:SVGEditor.Config|module:SVGEditor.Prefs} opts The preferences or configuration (including extensions). See the tutorial on {@tutorial ConfigOptions} for info on config and preferences.
   * @param {PlainObject} [cfgCfg] Describes configuration which applies to the
   *    particular batch of supplied options
@@ -29378,12 +29225,12 @@
       }
     }
 
-    $$b.each(opts, function (key, val) {
-      if (!{}.hasOwnProperty.call(opts, key)) {
-        return;
-      } // Only allow prefs defined in defaultPrefs
+    Object.entries(opts).forEach(function (_ref3) {
+      var _ref4 = _slicedToArray(_ref3, 2),
+          key = _ref4[0],
+          val = _ref4[1];
 
-
+      // Only allow prefs defined in defaultPrefs or...
       if ({}.hasOwnProperty.call(defaultPrefs, key)) {
         if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || {}.hasOwnProperty.call(curPrefs, key))) {
           return;
@@ -29392,7 +29239,7 @@
         if (cfgCfg.allowInitialUserOverride === true) {
           defaultPrefs[key] = val;
         } else {
-          $$b.pref(key, val);
+          editor.pref(key, val);
         }
       } else if (['extensions', 'stylesheets', 'allowedOrigins'].includes(key)) {
         if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || ['allowedOrigins', 'stylesheets'].includes(key) || key === 'extensions' && curConfig.lockExtensions)) {
@@ -29432,7 +29279,7 @@
     editor.curConfig = curConfig; // Update exported value
   };
   /**
-  * All methods are optional
+  * All methods are optional.
   * @interface module:SVGEditor.CustomHandler
   * @type {PlainObject}
   */
@@ -29451,7 +29298,7 @@
   * Its responsibilities are:
   *  - accept the string contents of the current document
   *  - invoke a file chooser dialog in 'save' mode
-  *  - save the file to location chosen by the user
+  *  - save the file to location chosen by the user.
   * @function module:SVGEditor.CustomHandler#save
   * @param {external:Window} win
   * @param {module:svgcanvas.SvgCanvas#event:saved} svgStr A string of the SVG
@@ -29484,6 +29331,7 @@
   /**
   * Allows one to override default SVGEdit `open`, `save`, and
   * `export` editor behaviors.
+  * @function module:SVGEditor.setCustomHandlers
   * @param {module:SVGEditor.CustomHandler} opts Extension mechanisms may call `setCustomHandlers` with three functions: `opts.open`, `opts.save`, and `opts.exportImage`
   * @returns {Promise<void>}
   */
@@ -29514,9 +29362,10 @@
     });
   };
   /**
-  * @param {boolean} arg
-  * @returns {void}
-  */
+   * @function module:SVGEditor.randomizeIds
+   * @param {boolean} arg
+   * @returns {void}
+   */
 
 
   editor.randomizeIds = function (arg) {
@@ -29524,6 +29373,7 @@
   };
   /**
   * Auto-run after a Promise microtask.
+  * @function module:SVGEditor.init
   * @returns {void}
   */
 
@@ -29604,20 +29454,31 @@
 
     (function () {
       // Load config/data from URL if given
-      var src, qstr;
-      urldata = $$b.deparam.querystring(true);
+      var _URL = new URL(location),
+          search = _URL.search,
+          searchParams = _URL.searchParams;
 
-      if (!$$b.isEmptyObject(urldata)) {
+      if (search) {
+        urldata = deparam(searchParams.toString(), true);
+        ['initStroke', 'initFill'].forEach(function (prop) {
+          if (searchParams.has("".concat(prop, "[color]"))) {
+            // Restore back to original non-deparamed value to avoid color
+            //  strings being converted to numbers
+            urldata[prop].color = searchParams.get("".concat(prop, "[color]"));
+          }
+        });
+
+        if (searchParams.has('bkgd_color')) {
+          urldata.bkgd_color = '#' + searchParams.get('bkgd_color');
+        }
+
         if (urldata.dimensions) {
           urldata.dimensions = urldata.dimensions.split(',');
         }
 
-        if (urldata.bkgd_color) {
-          urldata.bkgd_color = '#' + urldata.bkgd_color;
-        }
-
         if (urldata.extensions) {
-          // For security reasons, disallow cross-domain or cross-folder extensions via URL
+          // For security reasons, disallow cross-domain or cross-folder
+          //  extensions via URL
           urldata.extensions = urldata.extensions.match(/[:/\\]/) ? '' : urldata.extensions.split(',');
         } // Disallowing extension paths via URL for
         // security reasons, even for same-domain
@@ -29629,29 +29490,32 @@
           if (urldata[pathConfig]) {
             delete urldata[pathConfig];
           }
-        });
+        }); // Note: `source` and `url` (as with `storagePrompt` later) are not
+        //  set on config but are used below
+
         editor.setConfig(urldata, {
           overwrite: false
-        }); // Note: source and url (as with storagePrompt later) are not set on config but are used below
-
+        });
         setupCurConfig();
 
         if (!curConfig.preventURLContentLoading) {
-          src = urldata.source;
-          qstr = $$b.param.querystring();
+          var _urldata = urldata,
+              source = _urldata.source;
 
-          if (!src) {
+          if (!source) {
             // urldata.source may have been null if it ended with '='
-            if (qstr.includes('source=data:')) {
-              src = qstr.match(/source=(data:[^&]*)/)[1]; // ({src} = qstr.match(/source=(?<src>data:[^&]*)/).groups);
+            var src = searchParams.get('source');
+
+            if (src && src.startsWith('data:')) {
+              source = src;
             }
           }
 
-          if (src) {
-            if (src.startsWith('data:')) {
-              editor.loadFromDataURI(src);
+          if (source) {
+            if (source.startsWith('data:')) {
+              editor.loadFromDataURI(source);
             } else {
-              editor.loadFromString(src);
+              editor.loadFromString(source);
             }
 
             return;
@@ -29670,17 +29534,17 @@
         setupCurConfig();
         editor.loadContentAndPrefs();
       }
-
-      setupCurPrefs();
     })();
+
+    setupCurPrefs();
     /**
     * Called internally.
+    * @function module:SVGEditor.setIcon
     * @param {string|Element|external:jQuery} elem
     * @param {string|external:jQuery} iconId
     * @param {Float} forcedSize Not in use
     * @returns {void}
     */
-
 
     var setIcon = editor.setIcon = function (elem, iconId, forcedSize) {
       var icon = typeof iconId === 'string' ? $$b.getSvgIcon(iconId, true) : iconId.clone();
@@ -29703,25 +29567,21 @@
      */
 
 
-    var extAndLocaleFunc =
-    /*#__PURE__*/
-    function () {
-      var _ref4 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3() {
-        var _ref5, langParam, langData, _uiStrings$common, ok, cancel;
+    var extAndLocaleFunc = /*#__PURE__*/function () {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+        var _yield$editor$putLoca, langParam, langData, _uiStrings$common, ok, cancel;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.next = 2;
-                return editor.putLocale(null, goodLangs, curConfig);
+                return editor.putLocale(editor.pref('lang'), goodLangs, curConfig);
 
               case 2:
-                _ref5 = _context3.sent;
-                langParam = _ref5.langParam;
-                langData = _ref5.langData;
+                _yield$editor$putLoca = _context3.sent;
+                langParam = _yield$editor$putLoca.langParam;
+                langData = _yield$editor$putLoca.langData;
                 _context3.next = 7;
                 return setLang(langParam, langData);
 
@@ -29735,12 +29595,8 @@
 
                 _context3.prev = 10;
                 _context3.next = 13;
-                return Promise.all(curConfig.extensions.map(
-                /*#__PURE__*/
-                function () {
-                  var _ref6 = _asyncToGenerator(
-                  /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee2(extname) {
+                return Promise.all(curConfig.extensions.map( /*#__PURE__*/function () {
+                  var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(extname) {
                     var extName, url, imported, _imported$name, _name2, init, importLocale;
 
                     return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -29858,7 +29714,7 @@
       }));
 
       return function extAndLocaleFunc() {
-        return _ref4.apply(this, arguments);
+        return _ref5.apply(this, arguments);
       };
     }();
 
@@ -29935,7 +29791,7 @@
           var cur = el.data('orig_margin-' + s);
 
           if (isNullish(cur)) {
-            cur = parseInt(el.css('margin-' + s)); // Cache the original margin
+            cur = Number.parseInt(el.css('margin-' + s)); // Cache the original margin
 
             el.data('orig_margin-' + s, cur);
           }
@@ -29954,6 +29810,7 @@
     };
     /**
     * Called internally.
+    * @function module:SVGEditor.setIconSize
     * @param {module:SVGEditor.IconSize} size
     * @returns {void}
     */
@@ -29992,7 +29849,7 @@
       scaleElements(elems, scale);
       hiddenPs.css('visibility', 'visible').hide(); // return;
 
-      $$b.pref('iconsize', size);
+      editor.pref('iconsize', size);
       $$b('#iconsize').val(size); // Change icon size
       // $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
       // .find('> svg, > img').each(function () {
@@ -30251,17 +30108,20 @@
           warning: 'warning.png',
           node_delete: 'node_delete.png',
           node_clone: 'node_clone.png',
-          globe_link: 'globe_link.png'
+          globe_link: 'globe_link.png',
+          config: 'config.png'
         },
         placement: {
           '#logo': 'logo',
           '#tool_clear div,#layer_new': 'new_image',
           '#tool_save div': 'save',
           '#tool_export div': 'export',
-          '#tool_open div div': 'open',
-          '#tool_import div div': 'import',
+          '#tool_open div': 'open',
+          '#tool_import div': 'import',
           '#tool_source': 'source',
           '#tool_docprops > div': 'docprops',
+          '#tool_editor_prefs > div': 'config',
+          '#tool_editor_homepage > div': 'globe_link',
           '#tool_wireframe': 'wireframe',
           '#tool_undo': 'undo',
           '#tool_redo': 'redo',
@@ -30339,17 +30199,15 @@
           '.stroke_tool div div .svg_icon': 20,
           '#tools_bottom label .svg_icon': 18
         },
-        callback: function () {
-          var _callback = _asyncToGenerator(
-          /*#__PURE__*/
-          regeneratorRuntime.mark(function _callee4(icons) {
+        callback: function callback(icons) {
+          return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
             var tleft, minHeight, size, getStylesheetPriority, stylesheets, idx, _stylesheets;
 
             return regeneratorRuntime.wrap(function _callee4$(_context4) {
               while (1) {
                 switch (_context4.prev = _context4.next) {
                   case 0:
-                    getStylesheetPriority = function _ref8(stylesheetFile) {
+                    getStylesheetPriority = function _getStylesheetPriorit(stylesheetFile) {
                       switch (stylesheetFile) {
                         case 'jgraduate/css/jPicker.css':
                           return 1;
@@ -30377,7 +30235,7 @@
                       minHeight = tleft.offset().top + tleft.outerHeight();
                     }
 
-                    size = $$b.pref('iconsize');
+                    size = editor.pref('iconsize');
                     editor.setIconSize(size || ($$b(window).height() < minHeight ? 's' : 'm')); // Look for any missing flyout icons from plugins
 
                     $$b('.tools_flyout').each(function () {
@@ -30449,14 +30307,8 @@
                 }
               }
             }, _callee4);
-          }));
-
-          function callback(_x3) {
-            return _callback.apply(this, arguments);
-          }
-
-          return callback;
-        }()
+          }))();
+        }
       });
     }
     /**
@@ -30538,7 +30390,7 @@
 
     var rIntervals = [];
 
-    for (var i = 0.1; i < 1E5; i *= 10) {
+    for (var i = 0.1; i < 1e5; i *= 10) {
       rIntervals.push(i);
       rIntervals.push(2 * i);
       rIntervals.push(5 * i);
@@ -30714,7 +30566,7 @@
       a.click(); // Alert will only appear the first time saved OR the
       //   first time the bug is encountered
 
-      var done = $$b.pref('save_notice_done');
+      var done = editor.pref('save_notice_done');
 
       if (done !== 'all') {
         var note = uiStrings$1.notification.saveFromBrowser.replace('%s', 'SVG'); // Check if FF and has <defs/>
@@ -30723,13 +30575,13 @@
           if (svg.includes('<defs')) {
             // warning about Mozilla bug #308590 when applicable (seems to be fixed now in Feb 2013)
             note += '\n\n' + uiStrings$1.notification.defsFailOnSave;
-            $$b.pref('save_notice_done', 'all');
+            editor.pref('save_notice_done', 'all');
             done = 'all';
           } else {
-            $$b.pref('save_notice_done', 'part');
+            editor.pref('save_notice_done', 'part');
           }
         } else {
-          $$b.pref('save_notice_done', 'all');
+          editor.pref('save_notice_done', 'all');
         }
 
         if (done !== 'part') {
@@ -30757,7 +30609,7 @@
       }
 
       exportWindow.location.href = data.bloburl || data.datauri;
-      var done = $$b.pref('export_notice_done');
+      var done = editor.pref('export_notice_done');
 
       if (done !== 'all') {
         var note = uiStrings$1.notification.saveFromBrowser.replace('%s', data.type); // Check if there are issues
@@ -30769,7 +30621,7 @@
         // May want to find a way to deal with that without annoying the user
 
 
-        $$b.pref('export_notice_done', 'all');
+        editor.pref('export_notice_done', 'all');
         exportWindow.alert(note);
       }
     };
@@ -30817,7 +30669,7 @@
     * - Removes the `tool_button_current` class from whatever tool currently has it.
     * - Hides any flyouts.
     * - Adds the `tool_button_current` class to the button passed in.
-    * @function module:SVGEDitor.toolButtonClick
+    * @function module:SVGEditor.toolButtonClick
     * @param {string|Element} button The DOM element or string selector representing the toolbar button
     * @param {boolean} noHiding Whether not to hide any flyouts
     * @returns {boolean} Whether the button was disabled or not
@@ -30899,9 +30751,9 @@
 
 
     function setBackground(color, url) {
-      // if (color == $.pref('bkgd_color') && url == $.pref('bkgd_url')) { return; }
-      $$b.pref('bkgd_color', color);
-      $$b.pref('bkgd_url', url); // This should be done in svgcanvas.js for the borderRect fill
+      // if (color == editor.pref('bkgd_color') && url == editor.pref('bkgd_url')) { return; }
+      editor.pref('bkgd_color', color);
+      editor.pref('bkgd_url', url, true); // This should be done in svgcanvas.js for the borderRect fill
 
       svgCanvas.setBackground(color, url);
     }
@@ -30922,11 +30774,9 @@
 
 
     function _promptImgURL() {
-      _promptImgURL = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee18() {
-        var _ref32,
-            _ref32$cancelDeletes,
+      _promptImgURL = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee18() {
+        var _ref28,
+            _ref28$cancelDeletes,
             cancelDeletes,
             curhref,
             url,
@@ -30936,7 +30786,7 @@
           while (1) {
             switch (_context18.prev = _context18.next) {
               case 0:
-                _ref32 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref32$cancelDeletes = _ref32.cancelDeletes, cancelDeletes = _ref32$cancelDeletes === void 0 ? false : _ref32$cancelDeletes;
+                _ref28 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref28$cancelDeletes = _ref28.cancelDeletes, cancelDeletes = _ref28$cancelDeletes === void 0 ? false : _ref28$cancelDeletes;
                 curhref = svgCanvas.getHref(selectedElement);
                 curhref = curhref.startsWith('data:') ? '' : curhref;
                 _context18.next = 5;
@@ -31013,7 +30863,7 @@
         $hcanv.siblings().remove(); // Create multiple canvases when necessary (due to browser limits)
 
         if (rulerLen >= limit) {
-          ctxArrNum = parseInt(rulerLen / limit) + 1;
+          ctxArrNum = Number.parseInt(rulerLen / limit) + 1;
           ctxArr = [];
           ctxArr[0] = ctx;
           var copy = void 0;
@@ -31944,10 +31794,10 @@
           // Get this button's options
           var idSel = '#' + this.getAttribute('id');
 
-          var _Object$entries$find = Object.entries(btnOpts).find(function (_ref9) {
-            var _ref10 = _slicedToArray(_ref9, 2),
-                _ = _ref10[0],
-                sel = _ref10[1].sel;
+          var _Object$entries$find = Object.entries(btnOpts).find(function (_ref8) {
+            var _ref9 = _slicedToArray(_ref8, 2),
+                _ = _ref9[0],
+                sel = _ref9[1].sel;
 
             return sel === idSel;
           }),
@@ -31974,10 +31824,10 @@
             if (ev.type === 'keydown') {
               var flyoutIsSelected = $$b(options.parent + '_show').hasClass('tool_button_current');
               var currentOperation = $$b(options.parent + '_show').attr('data-curopt');
-              Object.entries(holders[opts.parent]).some(function (_ref11) {
-                var _ref12 = _slicedToArray(_ref11, 2),
-                    j = _ref12[0],
-                    tool = _ref12[1];
+              Object.entries(holders[opts.parent]).some(function (_ref10) {
+                var _ref11 = _slicedToArray(_ref10, 2),
+                    j = _ref11[0],
+                    tool = _ref11[1];
 
                 if (tool.sel !== currentOperation) {
                   return false;
@@ -31987,7 +31837,7 @@
                   options = tool;
                 } else {
                   // If flyout is selected, allow shift key to iterate through subitems
-                  j = parseInt(j); // Use `allHolders` to include both extension `includeWith` and toolbarButtons
+                  j = Number.parseInt(j); // Use `allHolders` to include both extension `includeWith` and toolbarButtons
 
                   options = allHolders[opts.parent][j + 1] || holders[opts.parent][0];
                 }
@@ -32036,8 +31886,7 @@
           shower.attr('data-curopt', btnOpts[0].sel);
         }
 
-        var timer;
-        var pos = $$b(showSel).position(); // Clicking the "show" icon should set the current mode
+        var timer; // Clicking the "show" icon should set the current mode
 
         shower.mousedown(function (evt) {
           if (shower.hasClass('disabled')) {
@@ -32045,6 +31894,7 @@
           }
 
           var holder = $$b(holdSel);
+          var pos = $$b(showSel).position();
           var l = pos.left + 34;
           var w = holder.width() * -1;
           var time = holder.data('shown_popop') ? 200 : 0;
@@ -32187,18 +32037,14 @@
      * @returns {Promise<void>|void} Resolves to `undefined`
      */
 
-    var extAdded =
-    /*#__PURE__*/
-    function () {
-      var _ref13 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee5(win, ext) {
+    var extAdded = /*#__PURE__*/function () {
+      var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(win, ext) {
         var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, altsObj, placementObj, holders;
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                prepResize = function _ref14() {
+                prepResize = function _prepResize() {
                   if (resizeTimer) {
                     clearTimeout(resizeTimer);
                     resizeTimer = null;
@@ -32207,7 +32053,7 @@
                   if (!resizeDone) {
                     resizeTimer = setTimeout(function () {
                       resizeDone = true;
-                      setIconSize($$b.pref('iconsize'));
+                      setIconSize(editor.pref('iconsize'));
                     }, 50);
                   }
                 };
@@ -32234,7 +32080,7 @@
                 }
 
                 // We check for this since the "lang" pref could have been set by storage
-                lang = $$b.pref('lang');
+                lang = editor.pref('lang');
                 _context5.next = 10;
                 return ext.langReady({
                   lang: lang,
@@ -32651,7 +32497,7 @@
                     callback: function callback(icons) {
                       // Non-ideal hack to make the icon match the current size
                       // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
-                      if ($$b.pref('iconsize') !== 'm') {
+                      if (editor.pref('iconsize') !== 'm') {
                         prepResize();
                       }
 
@@ -32672,8 +32518,8 @@
         }, _callee5);
       }));
 
-      return function extAdded(_x4, _x5) {
-        return _ref13.apply(this, arguments);
+      return function extAdded(_x3, _x4) {
+        return _ref12.apply(this, arguments);
       };
     }();
     /**
@@ -32748,9 +32594,9 @@
      * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
      * @returns {void}
      */
-    function (win, _ref15) {
-      var center = _ref15.center,
-          newCtr = _ref15.newCtr;
+    function (win, _ref13) {
+      var center = _ref13.center,
+          newCtr = _ref13.newCtr;
       updateCanvas(center, newCtr);
     });
     svgCanvas.bind('contextset', contextChanged);
@@ -32761,13 +32607,15 @@
       str += '<div class="palette_item" style="background-color: ' + item + ';" data-rgb="' + item + '"></div>';
     });
     $$b('#palette').append(str); // Set up editor background functionality
-    // TODO add checkerboard as "pattern"
 
-    var colorBlocks = ['#FFF', '#888', '#000']; // ,'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP%2F%2F%2F9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG%2Bgq4jM3IFLJgpswNly%2FXkcBpIiVaInlLJr9FZWAQA7)'];
-
+    var colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
     str = '';
-    $$b.each(colorBlocks, function () {
-      str += '<div class="color_block" style="background-color:' + this + ';"></div>';
+    $$b.each(colorBlocks, function (i, e) {
+      if (e === 'chessboard') {
+        str += '<div class="color_block" data-bgcolor="' + e + '" style="background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>';
+      } else {
+        str += '<div class="color_block" data-bgcolor="' + e + '" style="background-color:' + e + ';"></div>';
+      }
     });
     $$b('#bg_blocks').append(str);
     var blocks = $$b('#bg_blocks div');
@@ -32779,8 +32627,8 @@
         $$b(this).addClass(curBg);
       });
     });
-    setBackground($$b.pref('bkgd_color'), $$b.pref('bkgd_url'));
-    $$b('#image_save_opts input').val([$$b.pref('img_save')]);
+    setBackground(editor.pref('bkgd_color'), editor.pref('bkgd_url'));
+    $$b('#image_save_opts input').val([editor.pref('img_save')]);
     /**
     * @type {module:jQuerySpinButton.ValueCallback}
     */
@@ -32817,7 +32665,7 @@
 
     var changeRotationAngle = function changeRotationAngle(ctl) {
       svgCanvas.setRotationAngle(ctl.value);
-      $$b('#tool_reorient').toggleClass('disabled', parseInt(ctl.value) === 0);
+      $$b('#tool_reorient').toggleClass('disabled', Number.parseInt(ctl.value) === 0);
     };
     /**
     * @param {external:jQuery.fn.SpinButton} ctl Spin Button
@@ -32881,11 +32729,7 @@
     }); // fired when user wants to move elements to another layer
 
     var promptMoveLayerOnce = false;
-    $$b('#selLayerNames').change(
-    /*#__PURE__*/
-    _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee6() {
+    $$b('#selLayerNames').change( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
       var destLayer, confirmStr, moveToLayer, ok;
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
@@ -33096,9 +32940,10 @@
         }
       });
       /**
-      * @param {boolean} active
-      * @returns {void}
-      */
+       * @function module:SVGEditor.setPanning
+       * @param {boolean} active
+       * @returns {void}
+       */
 
       editor.setPanning = function (active) {
         svgCanvas.spaceKey = keypan = active;
@@ -33187,7 +33032,7 @@
     // TODO: Group UI functions into a public editor.ui interface.
 
     /**
-     * See {@link http://api.jquery.com/bind/#bind-eventType-eventData-handler}
+     * See {@link http://api.jquery.com/bind/#bind-eventType-eventData-handler}.
      * @callback module:SVGEditor.DropDownCallback
      * @param {external:jQuery.Event} ev See {@link http://api.jquery.com/Types/#Event}
      * @listens external:jQuery.Event
@@ -33195,6 +33040,7 @@
     */
 
     /**
+     * @function module:SVGEditor.addDropDown
      * @param {Element|string} elem DOM Element or selector
      * @param {module:SVGEditor.DropDownCallback} callback Mouseup callback
      * @param {boolean} dropUp
@@ -33260,7 +33106,7 @@
         return;
       }
 
-      var perc = parseInt($$b(this).text().split('%')[0]);
+      var perc = Number.parseInt($$b(this).text().split('%')[0]);
       changeOpacity(false, perc);
     }, true); // For slider usage, see: http://jqueryui.com/demos/slider/
 
@@ -33302,7 +33148,7 @@
         zoomChanged(window, val);
       } else {
         changeZoom({
-          value: parseFloat(item.text())
+          value: Number.parseFloat(item.text())
         });
       }
     }, true);
@@ -33628,12 +33474,8 @@
     */
 
 
-    var makeHyperlink =
-    /*#__PURE__*/
-    function () {
-      var _ref17 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee7() {
+    var makeHyperlink = /*#__PURE__*/function () {
+      var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
         var url;
         return regeneratorRuntime.wrap(function _callee7$(_context7) {
           while (1) {
@@ -33663,7 +33505,7 @@
       }));
 
       return function makeHyperlink() {
-        return _ref17.apply(this, arguments);
+        return _ref15.apply(this, arguments);
       };
     }();
     /**
@@ -33773,7 +33615,7 @@
         step *= -1;
       }
 
-      var angle = parseFloat($$b('#angle').val()) + step;
+      var angle = Number.parseFloat($$b('#angle').val()) + step;
       svgCanvas.setRotationAngle(angle);
       updateContextPanel();
     };
@@ -33783,12 +33625,8 @@
      */
 
 
-    var clickClear =
-    /*#__PURE__*/
-    function () {
-      var _ref18 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee8() {
+    var clickClear = /*#__PURE__*/function () {
+      var _ref16 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
         var _curConfig$dimensions, x, y, ok;
 
         return regeneratorRuntime.wrap(function _callee8$(_context8) {
@@ -33829,7 +33667,7 @@
       }));
 
       return function clickClear() {
-        return _ref18.apply(this, arguments);
+        return _ref16.apply(this, arguments);
       };
     }();
     /**
@@ -33863,7 +33701,7 @@
     var clickSave = function clickSave() {
       // In the future, more options can be provided here
       var saveOpts = {
-        images: $$b.pref('img_save'),
+        images: editor.pref('img_save'),
         round_digits: 6
       };
       svgCanvas.save(saveOpts);
@@ -33875,18 +33713,14 @@
     * @returns {Promise<void>} Resolves to `undefined`
     */
 
-    var clickExport =
-    /*#__PURE__*/
-    function () {
-      var _ref19 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee9() {
+    var clickExport = /*#__PURE__*/function () {
+      var _ref17 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
         var imgType, exportWindowName, openExportWindow, chrome, quality;
         return regeneratorRuntime.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
               case 0:
-                openExportWindow = function _ref20() {
+                openExportWindow = function _openExportWindow() {
                   var loadingImage = uiStrings$1.notification.loadingImage;
 
                   if (curConfig.exportWindowType === 'new') {
@@ -33962,7 +33796,7 @@
                   openExportWindow();
                 }
 
-                quality = parseInt($$b('#image-slider').val()) / 100;
+                quality = Number.parseInt($$b('#image-slider').val()) / 100;
                 /* const results = */
 
                 _context9.next = 16;
@@ -33977,7 +33811,7 @@
       }));
 
       return function clickExport() {
-        return _ref19.apply(this, arguments);
+        return _ref17.apply(this, arguments);
       };
     }();
     /**
@@ -34101,7 +33935,7 @@
 
       docprops = true; // This selects the correct radio button by using the array notation
 
-      $$b('#image_save_opts input').val([$$b.pref('img_save')]); // update resolution option with actual resolution
+      $$b('#image_save_opts input').val([editor.pref('img_save')]); // update resolution option with actual resolution
 
       var res = svgCanvas.getResolution();
 
@@ -34130,15 +33964,11 @@
       $$b('#main_menu').hide(); // Update background color with current one
 
       var canvasBg = curPrefs.bkgd_color;
-      var url = $$b.pref('bkgd_url');
+      var url = editor.pref('bkgd_url');
       blocks.each(function () {
         var blk = $$b(this);
-        var isBg = blk.css('background-color') === canvasBg;
+        var isBg = blk.data('bgcolor') === canvasBg;
         blk.toggleClass(curBg, isBg);
-
-        if (isBg) {
-          $$b('#canvas_bg_url').removeClass(curBg);
-        }
       });
 
       if (!canvasBg) {
@@ -34160,6 +33990,15 @@
     */
 
 
+    var openHomePage = function openHomePage() {
+      window.open(homePage, '_blank');
+    };
+    /**
+    *
+    * @returns {void}
+    */
+
+
     var hideSourceEditor = function hideSourceEditor() {
       $$b('#svg_source_editor').hide();
       editingsource = false;
@@ -34171,12 +34010,8 @@
     */
 
 
-    var saveSourceEditor =
-    /*#__PURE__*/
-    function () {
-      var _ref21 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee10() {
+    var saveSourceEditor = /*#__PURE__*/function () {
+      var _ref18 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
         var saveChanges, ok;
         return regeneratorRuntime.wrap(function _callee10$(_context10) {
           while (1) {
@@ -34234,7 +34069,7 @@
       }));
 
       return function saveSourceEditor() {
-        return _ref21.apply(this, arguments);
+        return _ref18.apply(this, arguments);
       };
     }();
     /**
@@ -34247,7 +34082,7 @@
       $$b('#svg_docprops').hide();
       $$b('#canvas_width,#canvas_height').removeAttr('disabled');
       $$b('#resolution')[0].selectedIndex = 0;
-      $$b('#image_save_opts input').val([$$b.pref('img_save')]);
+      $$b('#image_save_opts input').val([editor.pref('img_save')]);
       docprops = false;
     };
     /**
@@ -34304,7 +34139,7 @@
       } // Set image save option
 
 
-      $$b.pref('img_save', $$b('#image_save_opts :checked').val());
+      editor.pref('img_save', $$b('#image_save_opts :checked').val());
       updateCanvas();
       hideDocProperties();
       return true;
@@ -34316,24 +34151,20 @@
     */
 
 
-    var savePreferences = editor.savePreferences =
-    /*#__PURE__*/
-    _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee11() {
-      var color, lang, _ref23, langParam, langData;
+    var savePreferences = editor.savePreferences = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
+      var color, lang, _yield$editor$putLoca2, langParam, langData;
 
       return regeneratorRuntime.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
               // Set background
-              color = $$b('#bg_blocks div.cur_background').css('background-color') || '#FFF';
+              color = $$b('#bg_blocks div.cur_background').data('bgcolor') || '#FFF';
               setBackground(color, $$b('#canvas_bg_url').val()); // set language
 
               lang = $$b('#lang_select').val();
 
-              if (!(lang !== $$b.pref('lang'))) {
+              if (!(lang && lang !== editor.pref('lang'))) {
                 _context11.next = 11;
                 break;
               }
@@ -34342,30 +34173,25 @@
               return editor.putLocale(lang, goodLangs, curConfig);
 
             case 6:
-              _ref23 = _context11.sent;
-              langParam = _ref23.langParam;
-              langData = _ref23.langData;
+              _yield$editor$putLoca2 = _context11.sent;
+              langParam = _yield$editor$putLoca2.langParam;
+              langData = _yield$editor$putLoca2.langData;
               _context11.next = 11;
               return setLang(langParam, langData);
 
             case 11:
               // set icon size
-              setIconSize($$b('#iconsize').val());
-              /* eslint-disable require-atomic-updates */
-              // set grid setting
+              setIconSize($$b('#iconsize').val()); // set grid setting
 
               curConfig.gridSnapping = $$b('#grid_snapping_on')[0].checked;
               curConfig.snappingStep = $$b('#grid_snapping_step').val();
               curConfig.gridColor = $$b('#grid_color').val();
               curConfig.showRulers = $$b('#show_rulers')[0].checked;
-              /* eslint-enable require-atomic-updates */
-
               $$b('#rulers').toggle(curConfig.showRulers);
 
               if (curConfig.showRulers) {
                 updateRulers();
-              } // eslint-disable-next-line require-atomic-updates
-
+              }
 
               curConfig.baseUnit = $$b('#base_unit').val();
               svgCanvas.setConfig(curConfig);
@@ -34386,12 +34212,8 @@
     * @returns {Promise<void>} Resolves to `undefined`
     */
 
-    var cancelOverlays =
-    /*#__PURE__*/
-    function () {
-      var _ref24 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee12() {
+    var cancelOverlays = /*#__PURE__*/function () {
+      var _ref20 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
         var ok;
         return regeneratorRuntime.wrap(function _callee12$(_context12) {
           while (1) {
@@ -34460,7 +34282,7 @@
       }));
 
       return function cancelOverlays() {
-        return _ref24.apply(this, arguments);
+        return _ref20.apply(this, arguments);
       };
     }();
 
@@ -34603,10 +34425,16 @@
         $$b('#color_picker').hide();
       });
     };
+    /**
+     * Paint box class.
+     */
 
-    var PaintBox =
-    /*#__PURE__*/
-    function () {
+
+    var PaintBox = /*#__PURE__*/function () {
+      /**
+       * @param {string|Element|external:jQuery} container
+       * @param {"fill"} type
+       */
       function PaintBox(container, type) {
         _classCallCheck(this, PaintBox);
 
@@ -34624,6 +34452,12 @@
         });
         this.type = type;
       }
+      /**
+       * @param {module:jGraduate~Paint} paint
+       * @param {boolean} apply
+       * @returns {void}
+       */
+
 
       _createClass(PaintBox, [{
         key: "setPaint",
@@ -34657,6 +34491,11 @@
             svgCanvas.setPaintOpacity(this.type, this._paintOpacity, true);
           }
         }
+        /**
+         * @param {boolean} apply
+         * @returns {void}
+         */
+
       }, {
         key: "update",
         value: function update(apply) {
@@ -34705,9 +34544,9 @@
 
             default:
               {
-                this._paintOpacity = parseFloat(selectedElement.getAttribute(type + '-opacity'));
+                this._paintOpacity = Number.parseFloat(selectedElement.getAttribute(type + '-opacity'));
 
-                if (isNaN(this._paintOpacity)) {
+                if (Number.isNaN(this._paintOpacity)) {
                   this._paintOpacity = 1.0;
                 }
 
@@ -34726,6 +34565,10 @@
 
           this.setPaint(paint);
         }
+        /**
+         * @returns {void}
+         */
+
       }, {
         key: "prep",
         value: function prep() {
@@ -34788,7 +34631,7 @@
           // Disable option
           $$b('#image_save_opts [value=embed]').attr('disabled', 'disabled');
           $$b('#image_save_opts input').val(['ref']);
-          $$b.pref('img_save', 'ref');
+          editor.pref('img_save', 'ref');
           $$b('#image_opt_embed').css('color', '#666').attr('title', uiStrings$1.notification.featNotSupported);
         }
       });
@@ -34830,11 +34673,7 @@
       $$b(this).removeClass('push_button_pressed').addClass('push_button');
     }); // ask for a layer name
 
-    $$b('#layer_new').click(
-    /*#__PURE__*/
-    _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee13() {
+    $$b('#layer_new').click( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee13() {
       var uniqName, i, newName;
       return regeneratorRuntime.wrap(function _callee13$(_context13) {
         while (1) {
@@ -34913,9 +34752,7 @@
 
 
     function _cloneLayer() {
-      _cloneLayer = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee19() {
+      _cloneLayer = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee19() {
         var name, newName;
         return regeneratorRuntime.wrap(function _callee19$(_context19) {
           while (1) {
@@ -34993,11 +34830,7 @@
     $$b('#layer_down').click(function () {
       moveLayer(1);
     });
-    $$b('#layer_rename').click(
-    /*#__PURE__*/
-    _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee14() {
+    $$b('#layer_rename').click( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee14() {
       var oldName, newName;
       return regeneratorRuntime.wrap(function _callee14$(_context14) {
         while (1) {
@@ -35054,8 +34887,8 @@
       var rulerX = $$b('#ruler_x');
       $$b('#sidepanels').width('+=' + delta);
       $$b('#layerpanel').width('+=' + delta);
-      rulerX.css('right', parseInt(rulerX.css('right')) + delta);
-      workarea.css('right', parseInt(workarea.css('right')) + delta);
+      rulerX.css('right', Number.parseInt(rulerX.css('right')) + delta);
+      workarea.css('right', Number.parseInt(workarea.css('right')) + delta);
       svgCanvas.runExtensions('workareaResized');
     };
     /**
@@ -35232,12 +35065,16 @@
 
     $$b('input,select').attr('autocomplete', 'off');
     var dialogSelectors = ['#tool_source_cancel', '#tool_docprops_cancel', '#tool_prefs_cancel', '.overlay'];
+    /* eslint-disable jsdoc/require-property */
+
     /**
-     * Associate all button actions as well as non-button keyboard shortcuts
+     * Associate all button actions as well as non-button keyboard shortcuts.
      * @namespace {PlainObject} module:SVGEditor~Actions
      */
 
     var Actions = function () {
+      /* eslint-enable jsdoc/require-property */
+
       /**
       * @typedef {PlainObject} module:SVGEditor.ToolButton
       * @property {string} sel The CSS selector for the tool
@@ -35395,18 +35232,31 @@
       }, {
         sel: '#tool_docprops',
         fn: showDocProperties,
-        evt: 'mouseup'
+        evt: 'click'
       }, {
         sel: '#tool_prefs_save',
         fn: savePreferences,
         evt: 'click'
       }, {
-        sel: '#tool_prefs_option',
+        sel: '#tool_editor_prefs',
+        fn: showPreferences,
+        evt: 'click'
+      }, {
+        sel: '#tool_editor_homepage',
+        fn: openHomePage,
+        evt: 'click'
+      }, {
+        sel: '#tool_open',
         fn: function fn() {
-          showPreferences();
-          return false;
+          window.dispatchEvent(new CustomEvent('openImage'));
         },
-        evt: 'mouseup'
+        evt: 'click'
+      }, {
+        sel: '#tool_import',
+        fn: function fn() {
+          window.dispatchEvent(new CustomEvent('importImage'));
+        },
+        evt: 'click'
       }, {
         sel: '#tool_delete,#tool_delete_multi',
         fn: deleteSelected,
@@ -35839,8 +35689,11 @@
       var tool;
       var itool = curConfig.initTool,
           container = $$b('#tools_left, #svg_editor .tools_flyout'),
-          preTool = container.find('#tool_' + itool),
+
+      /* eslint-disable unicorn/no-fn-reference-in-iterator */
+      preTool = container.find('#tool_' + itool),
           regTool = container.find('#' + itool);
+      /* eslint-enable unicorn/no-fn-reference-in-iterator */
 
       if (preTool.length) {
         tool = preTool;
@@ -36083,9 +35936,10 @@
       return uiStrings$1;
     };
     /**
-    * @returns {Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
-    *  and `false` after the user confirms.
-    */
+     * @function module:SVGEditor.openPrep
+     * @returns {boolean|Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
+     *  and `false` after the user confirms.
+     */
 
 
     editor.openPrep = function () {
@@ -36185,8 +36039,8 @@
           // bitmap handling
           reader = new FileReader();
 
-          reader.onloadend = function (_ref27) {
-            var result = _ref27.target.result;
+          reader.onloadend = function (_ref23) {
+            var result = _ref23.target.result;
 
             /**
             * Insert the new image until we know its dimensions.
@@ -36235,12 +36089,8 @@
       workarea[0].addEventListener('dragover', onDragOver);
       workarea[0].addEventListener('dragleave', onDragLeave);
       workarea[0].addEventListener('drop', importImage);
-      var open = $$b('<input type="file">').change(
-      /*#__PURE__*/
-      function () {
-        var _ref28 = _asyncToGenerator(
-        /*#__PURE__*/
-        regeneratorRuntime.mark(function _callee16(e) {
+      var open = $$b('<input type="file">').change( /*#__PURE__*/function () {
+        var _ref24 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee16(e) {
           var ok, reader;
           return regeneratorRuntime.wrap(function _callee16$(_context16) {
             while (1) {
@@ -36266,18 +36116,14 @@
                     $$b.process_cancel(uiStrings$1.notification.loadingImage);
                     reader = new FileReader();
 
-                    reader.onloadend =
-                    /*#__PURE__*/
-                    function () {
-                      var _ref30 = _asyncToGenerator(
-                      /*#__PURE__*/
-                      regeneratorRuntime.mark(function _callee15(_ref29) {
+                    reader.onloadend = /*#__PURE__*/function () {
+                      var _ref26 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(_ref25) {
                         var target;
                         return regeneratorRuntime.wrap(function _callee15$(_context15) {
                           while (1) {
                             switch (_context15.prev = _context15.next) {
                               case 0:
-                                target = _ref29.target;
+                                target = _ref25.target;
                                 _context15.next = 3;
                                 return loadSvgString(target.result);
 
@@ -36292,8 +36138,8 @@
                         }, _callee15);
                       }));
 
-                      return function (_x7) {
-                        return _ref30.apply(this, arguments);
+                      return function (_x6) {
+                        return _ref26.apply(this, arguments);
                       };
                     }();
 
@@ -36308,13 +36154,19 @@
           }, _callee16, this);
         }));
 
-        return function (_x6) {
-          return _ref28.apply(this, arguments);
+        return function (_x5) {
+          return _ref24.apply(this, arguments);
         };
       }());
-      $$b('#tool_open').show().prepend(open);
+      $$b('#tool_open').show();
+      $$b(window).on('openImage', function () {
+        return open.click();
+      });
       var imgImport = $$b('<input type="file">').change(importImage);
-      $$b('#tool_import').show().prepend(imgImport);
+      $$b('#tool_import').show();
+      $$b(window).on('importImage', function () {
+        return imgImport.click();
+      });
     }
 
     updateCanvas(true); //  const revnums = 'svg-editor.js ($Rev$) ';
@@ -36331,19 +36183,15 @@
     * @returns {Promise<void>} A Promise which resolves to `undefined`
     */
 
-    var setLang = editor.setLang =
-    /*#__PURE__*/
-    function () {
-      var _ref31 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee17(lang, allStrings) {
+    var setLang = editor.setLang = /*#__PURE__*/function () {
+      var _ref27 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee17(lang, allStrings) {
         var oldLayerName, renameLayer, elems;
         return regeneratorRuntime.wrap(function _callee17$(_context17) {
           while (1) {
             switch (_context17.prev = _context17.next) {
               case 0:
                 editor.langChanged = true;
-                $$b.pref('lang', lang);
+                editor.pref('lang', lang);
                 $$b('#lang_select').val(lang);
 
                 if (allStrings) {
@@ -36394,7 +36242,6 @@
                 }));
 
               case 15:
-                // eslint-disable-next-line require-atomic-updates
                 extsPreLang.length = 0;
                 _context17.next = 19;
                 break;
@@ -36442,8 +36289,8 @@
         }, _callee17);
       }));
 
-      return function (_x8, _x9) {
-        return _ref31.apply(this, arguments);
+      return function (_x7, _x8) {
+        return _ref27.apply(this, arguments);
       };
     }();
 
@@ -36502,6 +36349,7 @@
   * Queues a callback to be invoked when the editor is ready (or
   *   to be invoked immediately if it is already ready--i.e.,
   *   if `runCallbacks` has been run).
+  * @function module:SVGEditor.ready
   * @param {module:SVGEditor.ReadyCallback} cb Callback to be queued to invoke
   * @returns {Promise<ArbitraryCallbackResult>} Resolves when all callbacks, including the supplied have resolved
   */
@@ -36512,7 +36360,7 @@
     return new Promise(function (resolve, reject) {
       // eslint-disable-line promise/avoid-new
       if (isReady) {
-        resolve(cb()); // eslint-disable-line callback-return, promise/prefer-await-to-callbacks
+        resolve(cb()); // eslint-disable-line node/callback-return, promise/prefer-await-to-callbacks
 
         return;
       }
@@ -36522,24 +36370,21 @@
   };
   /**
   * Invokes the callbacks previous set by `svgEditor.ready`
+  * @function module:SVGEditor.runCallbacks
   * @returns {Promise<void>} Resolves to `undefined` if all callbacks succeeded and rejects otherwise
   */
 
 
-  editor.runCallbacks =
-  /*#__PURE__*/
-  _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee20() {
+  editor.runCallbacks = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee20() {
     return regeneratorRuntime.wrap(function _callee20$(_context20) {
       while (1) {
         switch (_context20.prev = _context20.next) {
           case 0:
             _context20.prev = 0;
             _context20.next = 3;
-            return Promise.all(callbacks.map(function (_ref34) {
-              var _ref35 = _slicedToArray(_ref34, 1),
-                  cb = _ref35[0];
+            return Promise.all(callbacks.map(function (_ref30) {
+              var _ref31 = _slicedToArray(_ref30, 1),
+                  cb = _ref31[0];
 
               return cb(); // eslint-disable-line promise/prefer-await-to-callbacks
             }));
@@ -36551,18 +36396,18 @@
           case 5:
             _context20.prev = 5;
             _context20.t0 = _context20["catch"](0);
-            callbacks.forEach(function (_ref36) {
-              var _ref37 = _slicedToArray(_ref36, 3),
-                  reject = _ref37[2];
+            callbacks.forEach(function (_ref32) {
+              var _ref33 = _slicedToArray(_ref32, 3),
+                  reject = _ref33[2];
 
               reject();
             });
             throw _context20.t0;
 
           case 9:
-            callbacks.forEach(function (_ref38) {
-              var _ref39 = _slicedToArray(_ref38, 2),
-                  resolve = _ref39[1];
+            callbacks.forEach(function (_ref34) {
+              var _ref35 = _slicedToArray(_ref34, 2),
+                  resolve = _ref35[1];
 
               resolve();
             });
@@ -36576,21 +36421,18 @@
     }, _callee20, null, [[0, 5]]);
   }));
   /**
-  * @param {string} str The SVG string to load
-  * @param {PlainObject} [opts={}]
-  * @param {boolean} [opts.noAlert=false] Option to avoid alert to user and instead get rejected promise
-  * @returns {Promise<void>}
-  */
+   * @function module:SVGEditor.loadFromString
+   * @param {string} str The SVG string to load
+   * @param {PlainObject} [opts={}]
+   * @param {boolean} [opts.noAlert=false] Option to avoid alert to user and instead get rejected promise
+   * @returns {Promise<void>}
+   */
 
   editor.loadFromString = function (str) {
-    var _ref40 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        noAlert = _ref40.noAlert;
+    var _ref36 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref36.noAlert;
 
-    return editor.ready(
-    /*#__PURE__*/
-    _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee21() {
+    return editor.ready( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee21() {
       return regeneratorRuntime.wrap(function _callee21$(_context21) {
         while (1) {
           switch (_context21.prev = _context21.next) {
@@ -36626,6 +36468,7 @@
   };
   /**
   * Not presently in use.
+  * @function module:SVGEditor.disableUI
   * @param {PlainObject} featList
   * @returns {void}
   */
@@ -36643,20 +36486,21 @@
    */
 
   /**
-  * @param {string} url URL from which to load an SVG string via Ajax
-  * @param {PlainObject} [opts={}] May contain properties: `cache`, `callback`
-  * @param {boolean} [opts.cache]
-  * @param {boolean} [opts.noAlert]
-  * @returns {Promise<void>} Resolves to `undefined` or rejects upon bad loading of
-  *   the SVG (or upon failure to parse the loaded string) when `noAlert` is
-  *   enabled
-  */
+   * @function module:SVGEditor.loadFromURL
+   * @param {string} url URL from which to load an SVG string via Ajax
+   * @param {PlainObject} [opts={}] May contain properties: `cache`, `callback`
+   * @param {boolean} [opts.cache]
+   * @param {boolean} [opts.noAlert]
+   * @returns {Promise<void>} Resolves to `undefined` or rejects upon bad loading of
+   *   the SVG (or upon failure to parse the loaded string) when `noAlert` is
+   *   enabled
+   */
 
 
   editor.loadFromURL = function (url) {
-    var _ref42 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        cache = _ref42.cache,
-        noAlert = _ref42.noAlert;
+    var _ref38 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        cache = _ref38.cache,
+        noAlert = _ref38.noAlert;
 
     return editor.ready(function () {
       return new Promise(function (resolve, reject) {
@@ -36697,6 +36541,7 @@
     });
   };
   /**
+  * @function module:SVGEditor.loadFromDataURI
   * @param {string} str The Data URI to base64-decode (if relevant) and load
   * @param {PlainObject} [opts={}]
   * @param {boolean} [opts.noAlert]
@@ -36705,8 +36550,8 @@
 
 
   editor.loadFromDataURI = function (str) {
-    var _ref43 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        noAlert = _ref43.noAlert;
+    var _ref39 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        noAlert = _ref39.noAlert;
 
     return editor.ready(function () {
       var base64 = false;
@@ -36729,6 +36574,7 @@
     });
   };
   /**
+   * @function module:SVGEditor.addExtension
    * @param {string} name Used internally; no need for i18n.
    * @param {module:svgcanvas.ExtensionInitCallback} init Config to be invoked on this module
    * @param {module:svgcanvas.ExtensionInitArgs} initArgs
@@ -36763,9 +36609,9 @@
    * @returns {void}
    */
 
-  var messageListener = function messageListener(_ref44) {
-    var data = _ref44.data,
-        origin = _ref44.origin;
+  var messageListener = function messageListener(_ref40) {
+    var data = _ref40.data,
+        origin = _ref40.origin;
     // eslint-disable-line no-shadow
     // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     var messageObj = {
@@ -36785,9 +36631,7 @@
   window.addEventListener('message', messageListener); // Run init once DOM is loaded
   // jQuery(editor.init);
 
-  _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee22() {
+  _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee22() {
     return regeneratorRuntime.wrap(function _callee22$(_context22) {
       while (1) {
         switch (_context22.prev = _context22.next) {

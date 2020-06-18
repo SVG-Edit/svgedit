@@ -2,6 +2,8 @@ var SvgCanvas = (function () {
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -104,6 +106,19 @@ var SvgCanvas = (function () {
     return _setPrototypeOf(o, p);
   }
 
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -120,20 +135,35 @@ var SvgCanvas = (function () {
     return _assertThisInitialized(self);
   }
 
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+    return function () {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
+  }
+
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
   }
 
   function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
   }
 
   function _arrayWithHoles(arr) {
@@ -141,14 +171,11 @@ var SvgCanvas = (function () {
   }
 
   function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -174,12 +201,84 @@ var SvgCanvas = (function () {
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _createForOfIteratorHelper(o) {
+    if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
+      if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) {
+        var i = 0;
+
+        var F = function () {};
+
+        return {
+          s: F,
+          n: function () {
+            if (i >= o.length) return {
+              done: true
+            };
+            return {
+              done: false,
+              value: o[i++]
+            };
+          },
+          e: function (e) {
+            throw e;
+          },
+          f: F
+        };
+      }
+
+      throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+    }
+
+    var it,
+        normalCompletion = true,
+        didErr = false,
+        err;
+    return {
+      s: function () {
+        it = o[Symbol.iterator]();
+      },
+      n: function () {
+        var step = it.next();
+        normalCompletion = step.done;
+        return step;
+      },
+      e: function (e) {
+        didErr = true;
+        err = e;
+      },
+      f: function () {
+        try {
+          if (!normalCompletion && it.return != null) it.return();
+        } finally {
+          if (didErr) throw err;
+        }
+      }
+    };
   }
 
   /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
@@ -202,16 +301,14 @@ var SvgCanvas = (function () {
   * Chrome 46.
   */
 
-  /* eslint-disable no-shadow, class-methods-use-this */
+  /* eslint-disable no-shadow, class-methods-use-this, jsdoc/require-jsdoc */
   // Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
   // Linting: We avoid `class-methods-use-this` as this is a polyfill that must
   //   follow the conventions
   (function () {
     if (!('SVGPathSeg' in window)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
-      var _SVGPathSeg =
-      /*#__PURE__*/
-      function () {
+      var _SVGPathSeg = /*#__PURE__*/function () {
         function _SVGPathSeg(type, typeAsLetter, owningPathSegList) {
           _classCallCheck(this, _SVGPathSeg);
 
@@ -255,15 +352,15 @@ var SvgCanvas = (function () {
       _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS = 18;
       _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL = 19;
 
-      var _SVGPathSegClosePath =
-      /*#__PURE__*/
-      function (_SVGPathSeg2) {
+      var _SVGPathSegClosePath = /*#__PURE__*/function (_SVGPathSeg2) {
         _inherits(_SVGPathSegClosePath, _SVGPathSeg2);
+
+        var _super = _createSuper(_SVGPathSegClosePath);
 
         function _SVGPathSegClosePath(owningPathSegList) {
           _classCallCheck(this, _SVGPathSegClosePath);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegClosePath).call(this, _SVGPathSeg.PATHSEG_CLOSEPATH, 'z', owningPathSegList));
+          return _super.call(this, _SVGPathSeg.PATHSEG_CLOSEPATH, 'z', owningPathSegList);
         }
 
         _createClass(_SVGPathSegClosePath, [{
@@ -286,17 +383,17 @@ var SvgCanvas = (function () {
         return _SVGPathSegClosePath;
       }(_SVGPathSeg);
 
-      var _SVGPathSegMovetoAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg3) {
+      var _SVGPathSegMovetoAbs = /*#__PURE__*/function (_SVGPathSeg3) {
         _inherits(_SVGPathSegMovetoAbs, _SVGPathSeg3);
+
+        var _super2 = _createSuper(_SVGPathSegMovetoAbs);
 
         function _SVGPathSegMovetoAbs(owningPathSegList, x, y) {
           var _this;
 
           _classCallCheck(this, _SVGPathSegMovetoAbs);
 
-          _this = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegMovetoAbs).call(this, _SVGPathSeg.PATHSEG_MOVETO_ABS, 'M', owningPathSegList));
+          _this = _super2.call(this, _SVGPathSeg.PATHSEG_MOVETO_ABS, 'M', owningPathSegList);
           _this._x = x;
           _this._y = y;
           return _this;
@@ -347,17 +444,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegMovetoRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg4) {
+      var _SVGPathSegMovetoRel = /*#__PURE__*/function (_SVGPathSeg4) {
         _inherits(_SVGPathSegMovetoRel, _SVGPathSeg4);
+
+        var _super3 = _createSuper(_SVGPathSegMovetoRel);
 
         function _SVGPathSegMovetoRel(owningPathSegList, x, y) {
           var _this2;
 
           _classCallCheck(this, _SVGPathSegMovetoRel);
 
-          _this2 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegMovetoRel).call(this, _SVGPathSeg.PATHSEG_MOVETO_REL, 'm', owningPathSegList));
+          _this2 = _super3.call(this, _SVGPathSeg.PATHSEG_MOVETO_REL, 'm', owningPathSegList);
           _this2._x = x;
           _this2._y = y;
           return _this2;
@@ -408,17 +505,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegLinetoAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg5) {
+      var _SVGPathSegLinetoAbs = /*#__PURE__*/function (_SVGPathSeg5) {
         _inherits(_SVGPathSegLinetoAbs, _SVGPathSeg5);
+
+        var _super4 = _createSuper(_SVGPathSegLinetoAbs);
 
         function _SVGPathSegLinetoAbs(owningPathSegList, x, y) {
           var _this3;
 
           _classCallCheck(this, _SVGPathSegLinetoAbs);
 
-          _this3 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_ABS, 'L', owningPathSegList));
+          _this3 = _super4.call(this, _SVGPathSeg.PATHSEG_LINETO_ABS, 'L', owningPathSegList);
           _this3._x = x;
           _this3._y = y;
           return _this3;
@@ -469,17 +566,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegLinetoRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg6) {
+      var _SVGPathSegLinetoRel = /*#__PURE__*/function (_SVGPathSeg6) {
         _inherits(_SVGPathSegLinetoRel, _SVGPathSeg6);
+
+        var _super5 = _createSuper(_SVGPathSegLinetoRel);
 
         function _SVGPathSegLinetoRel(owningPathSegList, x, y) {
           var _this4;
 
           _classCallCheck(this, _SVGPathSegLinetoRel);
 
-          _this4 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoRel).call(this, _SVGPathSeg.PATHSEG_LINETO_REL, 'l', owningPathSegList));
+          _this4 = _super5.call(this, _SVGPathSeg.PATHSEG_LINETO_REL, 'l', owningPathSegList);
           _this4._x = x;
           _this4._y = y;
           return _this4;
@@ -530,17 +627,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoCubicAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg7) {
+      var _SVGPathSegCurvetoCubicAbs = /*#__PURE__*/function (_SVGPathSeg7) {
         _inherits(_SVGPathSegCurvetoCubicAbs, _SVGPathSeg7);
+
+        var _super6 = _createSuper(_SVGPathSegCurvetoCubicAbs);
 
         function _SVGPathSegCurvetoCubicAbs(owningPathSegList, x, y, x1, y1, x2, y2) {
           var _this5;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicAbs);
 
-          _this5 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS, 'C', owningPathSegList));
+          _this5 = _super6.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS, 'C', owningPathSegList);
           _this5._x = x;
           _this5._y = y;
           _this5._x1 = x1;
@@ -639,17 +736,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoCubicRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg8) {
+      var _SVGPathSegCurvetoCubicRel = /*#__PURE__*/function (_SVGPathSeg8) {
         _inherits(_SVGPathSegCurvetoCubicRel, _SVGPathSeg8);
+
+        var _super7 = _createSuper(_SVGPathSegCurvetoCubicRel);
 
         function _SVGPathSegCurvetoCubicRel(owningPathSegList, x, y, x1, y1, x2, y2) {
           var _this6;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicRel);
 
-          _this6 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL, 'c', owningPathSegList));
+          _this6 = _super7.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL, 'c', owningPathSegList);
           _this6._x = x;
           _this6._y = y;
           _this6._x1 = x1;
@@ -748,17 +845,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg9) {
+      var _SVGPathSegCurvetoQuadraticAbs = /*#__PURE__*/function (_SVGPathSeg9) {
         _inherits(_SVGPathSegCurvetoQuadraticAbs, _SVGPathSeg9);
+
+        var _super8 = _createSuper(_SVGPathSegCurvetoQuadraticAbs);
 
         function _SVGPathSegCurvetoQuadraticAbs(owningPathSegList, x, y, x1, y1) {
           var _this7;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticAbs);
 
-          _this7 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS, 'Q', owningPathSegList));
+          _this7 = _super8.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS, 'Q', owningPathSegList);
           _this7._x = x;
           _this7._y = y;
           _this7._x1 = x1;
@@ -833,17 +930,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg10) {
+      var _SVGPathSegCurvetoQuadraticRel = /*#__PURE__*/function (_SVGPathSeg10) {
         _inherits(_SVGPathSegCurvetoQuadraticRel, _SVGPathSeg10);
+
+        var _super9 = _createSuper(_SVGPathSegCurvetoQuadraticRel);
 
         function _SVGPathSegCurvetoQuadraticRel(owningPathSegList, x, y, x1, y1) {
           var _this8;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticRel);
 
-          _this8 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL, 'q', owningPathSegList));
+          _this8 = _super9.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL, 'q', owningPathSegList);
           _this8._x = x;
           _this8._y = y;
           _this8._x1 = x1;
@@ -918,17 +1015,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegArcAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg11) {
+      var _SVGPathSegArcAbs = /*#__PURE__*/function (_SVGPathSeg11) {
         _inherits(_SVGPathSegArcAbs, _SVGPathSeg11);
+
+        var _super10 = _createSuper(_SVGPathSegArcAbs);
 
         function _SVGPathSegArcAbs(owningPathSegList, x, y, r1, r2, angle, largeArcFlag, sweepFlag) {
           var _this9;
 
           _classCallCheck(this, _SVGPathSegArcAbs);
 
-          _this9 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegArcAbs).call(this, _SVGPathSeg.PATHSEG_ARC_ABS, 'A', owningPathSegList));
+          _this9 = _super10.call(this, _SVGPathSeg.PATHSEG_ARC_ABS, 'A', owningPathSegList);
           _this9._x = x;
           _this9._y = y;
           _this9._r1 = r1;
@@ -1039,17 +1136,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegArcRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg12) {
+      var _SVGPathSegArcRel = /*#__PURE__*/function (_SVGPathSeg12) {
         _inherits(_SVGPathSegArcRel, _SVGPathSeg12);
+
+        var _super11 = _createSuper(_SVGPathSegArcRel);
 
         function _SVGPathSegArcRel(owningPathSegList, x, y, r1, r2, angle, largeArcFlag, sweepFlag) {
           var _this10;
 
           _classCallCheck(this, _SVGPathSegArcRel);
 
-          _this10 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegArcRel).call(this, _SVGPathSeg.PATHSEG_ARC_REL, 'a', owningPathSegList));
+          _this10 = _super11.call(this, _SVGPathSeg.PATHSEG_ARC_REL, 'a', owningPathSegList);
           _this10._x = x;
           _this10._y = y;
           _this10._r1 = r1;
@@ -1160,17 +1257,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegLinetoHorizontalAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg13) {
+      var _SVGPathSegLinetoHorizontalAbs = /*#__PURE__*/function (_SVGPathSeg13) {
         _inherits(_SVGPathSegLinetoHorizontalAbs, _SVGPathSeg13);
+
+        var _super12 = _createSuper(_SVGPathSegLinetoHorizontalAbs);
 
         function _SVGPathSegLinetoHorizontalAbs(owningPathSegList, x) {
           var _this11;
 
           _classCallCheck(this, _SVGPathSegLinetoHorizontalAbs);
 
-          _this11 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoHorizontalAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS, 'H', owningPathSegList));
+          _this11 = _super12.call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS, 'H', owningPathSegList);
           _this11._x = x;
           return _this11;
         }
@@ -1207,17 +1304,17 @@ var SvgCanvas = (function () {
         enumerable: true
       });
 
-      var _SVGPathSegLinetoHorizontalRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg14) {
+      var _SVGPathSegLinetoHorizontalRel = /*#__PURE__*/function (_SVGPathSeg14) {
         _inherits(_SVGPathSegLinetoHorizontalRel, _SVGPathSeg14);
+
+        var _super13 = _createSuper(_SVGPathSegLinetoHorizontalRel);
 
         function _SVGPathSegLinetoHorizontalRel(owningPathSegList, x) {
           var _this12;
 
           _classCallCheck(this, _SVGPathSegLinetoHorizontalRel);
 
-          _this12 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoHorizontalRel).call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL, 'h', owningPathSegList));
+          _this12 = _super13.call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL, 'h', owningPathSegList);
           _this12._x = x;
           return _this12;
         }
@@ -1254,17 +1351,17 @@ var SvgCanvas = (function () {
         enumerable: true
       });
 
-      var _SVGPathSegLinetoVerticalAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg15) {
+      var _SVGPathSegLinetoVerticalAbs = /*#__PURE__*/function (_SVGPathSeg15) {
         _inherits(_SVGPathSegLinetoVerticalAbs, _SVGPathSeg15);
+
+        var _super14 = _createSuper(_SVGPathSegLinetoVerticalAbs);
 
         function _SVGPathSegLinetoVerticalAbs(owningPathSegList, y) {
           var _this13;
 
           _classCallCheck(this, _SVGPathSegLinetoVerticalAbs);
 
-          _this13 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoVerticalAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS, 'V', owningPathSegList));
+          _this13 = _super14.call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS, 'V', owningPathSegList);
           _this13._y = y;
           return _this13;
         }
@@ -1301,17 +1398,17 @@ var SvgCanvas = (function () {
         enumerable: true
       });
 
-      var _SVGPathSegLinetoVerticalRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg16) {
+      var _SVGPathSegLinetoVerticalRel = /*#__PURE__*/function (_SVGPathSeg16) {
         _inherits(_SVGPathSegLinetoVerticalRel, _SVGPathSeg16);
+
+        var _super15 = _createSuper(_SVGPathSegLinetoVerticalRel);
 
         function _SVGPathSegLinetoVerticalRel(owningPathSegList, y) {
           var _this14;
 
           _classCallCheck(this, _SVGPathSegLinetoVerticalRel);
 
-          _this14 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoVerticalRel).call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL, 'v', owningPathSegList));
+          _this14 = _super15.call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL, 'v', owningPathSegList);
           _this14._y = y;
           return _this14;
         }
@@ -1348,17 +1445,17 @@ var SvgCanvas = (function () {
         enumerable: true
       });
 
-      var _SVGPathSegCurvetoCubicSmoothAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg17) {
+      var _SVGPathSegCurvetoCubicSmoothAbs = /*#__PURE__*/function (_SVGPathSeg17) {
         _inherits(_SVGPathSegCurvetoCubicSmoothAbs, _SVGPathSeg17);
+
+        var _super16 = _createSuper(_SVGPathSegCurvetoCubicSmoothAbs);
 
         function _SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList, x, y, x2, y2) {
           var _this15;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicSmoothAbs);
 
-          _this15 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicSmoothAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS, 'S', owningPathSegList));
+          _this15 = _super16.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS, 'S', owningPathSegList);
           _this15._x = x;
           _this15._y = y;
           _this15._x2 = x2;
@@ -1433,17 +1530,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoCubicSmoothRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg18) {
+      var _SVGPathSegCurvetoCubicSmoothRel = /*#__PURE__*/function (_SVGPathSeg18) {
         _inherits(_SVGPathSegCurvetoCubicSmoothRel, _SVGPathSeg18);
+
+        var _super17 = _createSuper(_SVGPathSegCurvetoCubicSmoothRel);
 
         function _SVGPathSegCurvetoCubicSmoothRel(owningPathSegList, x, y, x2, y2) {
           var _this16;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicSmoothRel);
 
-          _this16 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicSmoothRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL, 's', owningPathSegList));
+          _this16 = _super17.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL, 's', owningPathSegList);
           _this16._x = x;
           _this16._y = y;
           _this16._x2 = x2;
@@ -1518,17 +1615,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticSmoothAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg19) {
+      var _SVGPathSegCurvetoQuadraticSmoothAbs = /*#__PURE__*/function (_SVGPathSeg19) {
         _inherits(_SVGPathSegCurvetoQuadraticSmoothAbs, _SVGPathSeg19);
+
+        var _super18 = _createSuper(_SVGPathSegCurvetoQuadraticSmoothAbs);
 
         function _SVGPathSegCurvetoQuadraticSmoothAbs(owningPathSegList, x, y) {
           var _this17;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticSmoothAbs);
 
-          _this17 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticSmoothAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS, 'T', owningPathSegList));
+          _this17 = _super18.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS, 'T', owningPathSegList);
           _this17._x = x;
           _this17._y = y;
           return _this17;
@@ -1579,17 +1676,17 @@ var SvgCanvas = (function () {
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticSmoothRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg20) {
+      var _SVGPathSegCurvetoQuadraticSmoothRel = /*#__PURE__*/function (_SVGPathSeg20) {
         _inherits(_SVGPathSegCurvetoQuadraticSmoothRel, _SVGPathSeg20);
+
+        var _super19 = _createSuper(_SVGPathSegCurvetoQuadraticSmoothRel);
 
         function _SVGPathSegCurvetoQuadraticSmoothRel(owningPathSegList, x, y) {
           var _this18;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticSmoothRel);
 
-          _this18 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticSmoothRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL, 't', owningPathSegList));
+          _this18 = _super19.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL, 't', owningPathSegList);
           _this18._x = x;
           _this18._y = y;
           return _this18;
@@ -1777,9 +1874,7 @@ var SvgCanvas = (function () {
 
     if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.prototype)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSegList
-      var SVGPathSegList =
-      /*#__PURE__*/
-      function () {
+      var SVGPathSegList = /*#__PURE__*/function () {
         function SVGPathSegList(pathElement) {
           _classCallCheck(this, SVGPathSegList);
 
@@ -1963,9 +2058,7 @@ var SvgCanvas = (function () {
 
             var owningPathSegList = this; // eslint-disable-line consistent-this
 
-            var Builder =
-            /*#__PURE__*/
-            function () {
+            var Builder = /*#__PURE__*/function () {
               function Builder() {
                 _classCallCheck(this, Builder);
 
@@ -1982,9 +2075,7 @@ var SvgCanvas = (function () {
               return Builder;
             }();
 
-            var Source =
-            /*#__PURE__*/
-            function () {
+            var Source = /*#__PURE__*/function () {
               function Source(string) {
                 _classCallCheck(this, Source);
 
@@ -2510,7 +2601,7 @@ var SvgCanvas = (function () {
   })();
 
   /**
-   * jQuery module to work with SVG attributes
+   * A jQuery module to work with SVG attributes.
    * @module jQueryAttr
    * @license MIT
    */
@@ -2813,13 +2904,13 @@ var SvgCanvas = (function () {
   }
 
   /**
-   * Namespaces or tools therefor
+   * Namespaces or tools therefor.
    * @module namespaces
    * @license MIT
   */
 
   /**
-  * Common namepaces constants in alpha order
+  * Common namepaces constants in alpha order.
   * @enum {string}
   * @type {PlainObject}
   * @memberof module:namespaces
@@ -2867,7 +2958,7 @@ var SvgCanvas = (function () {
   var isChrome_ = userAgent.includes('Chrome/');
   var isWindows_ = userAgent.includes('Windows');
   var isMac_ = userAgent.includes('Macintosh');
-  var isTouch_ = 'ontouchstart' in window;
+  var isTouch_ = ('ontouchstart' in window);
 
   var supportsSelectors_ = function () {
     return Boolean(svg.querySelector);
@@ -3188,14 +3279,14 @@ var SvgCanvas = (function () {
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#getItem
   * @param {Integer} index unsigned long
   * @returns {SVGTransform}
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#insertItemBefore
   * @param {SVGTransform} newItem
   * @param {Integer} index unsigned long
@@ -3203,7 +3294,7 @@ var SvgCanvas = (function () {
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#replaceItem
   * @param {SVGTransform} newItem
   * @param {Integer} index unsigned long
@@ -3211,7 +3302,7 @@ var SvgCanvas = (function () {
   */
 
   /**
-  * (DOES NOT THROW DOMException, INDEX_SIZE_ERR)
+  * DOES NOT THROW DOMException, INDEX_SIZE_ERR.
   * @function module:SVGTransformList.SVGEditTransformList#removeItem
   * @param {Integer} index unsigned long
   * @returns {SVGTransform}
@@ -3224,7 +3315,7 @@ var SvgCanvas = (function () {
   */
 
   /**
-  * NOT IMPLEMENTED
+  * NOT IMPLEMENTED.
   * @ignore
   * @function module:SVGTransformList.SVGEditTransformList#createSVGTransformFromMatrix
   * @param {SVGMatrix} matrix
@@ -3232,7 +3323,7 @@ var SvgCanvas = (function () {
   */
 
   /**
-  * NOT IMPLEMENTED
+  * NOT IMPLEMENTED.
   * @ignore
   * @function module:SVGTransformList.SVGEditTransformList#consolidate
   * @returns {SVGTransform}
@@ -3246,9 +3337,7 @@ var SvgCanvas = (function () {
   * @implements {module:SVGTransformList.SVGEditTransformList}
   */
 
-  var SVGTransformList =
-  /*#__PURE__*/
-  function () {
+  var SVGTransformList = /*#__PURE__*/function () {
     // eslint-disable-line no-shadow
 
     /**
@@ -3317,7 +3406,7 @@ var SvgCanvas = (function () {
 
               var mtx = svgroot.createSVGMatrix();
               Object.values(valArr).forEach(function (item, i) {
-                valArr[i] = parseFloat(item);
+                valArr[i] = Number.parseFloat(item);
 
                 if (name === 'matrix') {
                   mtx[letters[i]] = valArr[i];
@@ -3584,7 +3673,7 @@ var SvgCanvas = (function () {
   };
 
   /**
-   * Tools for working with units
+   * Tools for working with units.
    * @module units
    * @license MIT
    *
@@ -3687,7 +3776,7 @@ var SvgCanvas = (function () {
     };
   };
   /**
-  * Group: Unit conversion functions
+  * Group: Unit conversion functions.
   */
 
   /**
@@ -3726,7 +3815,7 @@ var SvgCanvas = (function () {
       return shortFloat(val[0]) + ',' + shortFloat(val[1]);
     }
 
-    return parseFloat(val).toFixed(digits) - 0;
+    return Number.parseFloat(val).toFixed(digits) - 0;
   };
   /**
   * Converts the number to given unit or baseUnit.
@@ -3827,7 +3916,7 @@ var SvgCanvas = (function () {
   };
 
   /**
-  * Group: Undo/Redo history management
+  * Group: Undo/Redo history management.
   */
 
   var HistoryEventTypes = {
@@ -3841,9 +3930,7 @@ var SvgCanvas = (function () {
   * Base class for commands.
   */
 
-  var Command =
-  /*#__PURE__*/
-  function () {
+  var Command = /*#__PURE__*/function () {
     function Command() {
       _classCallCheck(this, Command);
     }
@@ -3870,43 +3957,43 @@ var SvgCanvas = (function () {
   */
 
   /**
-   * Applies
+   * Applies.
    *
    * @function module:history.HistoryCommand#apply
-   * @param {module:history.HistoryEventHandler}
+   * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {void|true}
    */
 
   /**
    *
-   * Unapplies
+   * Unapplies.
    * @function module:history.HistoryCommand#unapply
-   * @param {module:history.HistoryEventHandler}
+   * @param {module:history.HistoryEventHandler} handler
    * @fires module:history~Command#event:history
    * @returns {void|true}
    */
 
   /**
-   * Returns the elements
+   * Returns the elements.
    * @function module:history.HistoryCommand#elements
    * @returns {Element[]}
    */
 
   /**
-   * Gets the text
+   * Gets the text.
    * @function module:history.HistoryCommand#getText
    * @returns {string}
    */
 
   /**
-   * Gives the type
+   * Gives the type.
    * @function module:history.HistoryCommand.type
    * @returns {string}
    */
 
   /**
-   * Gives the type
+   * Gives the type.
    * @function module:history.HistoryCommand#type
    * @returns {string}
   */
@@ -3934,24 +4021,26 @@ var SvgCanvas = (function () {
   /**
    * History command for an element that had its DOM position changed.
    * @implements {module:history.HistoryCommand}
-   * @param {Element} elem - The DOM element that was moved
-   * @param {Element} oldNextSibling - The element's next sibling before it was moved
-   * @param {Element} oldParent - The element's parent before it was moved
-   * @param {string} [text] - An optional string visible to user related to this change
   */
 
 
-  var MoveElementCommand =
-  /*#__PURE__*/
-  function (_Command) {
+  var MoveElementCommand = /*#__PURE__*/function (_Command) {
     _inherits(MoveElementCommand, _Command);
 
+    var _super = _createSuper(MoveElementCommand);
+
+    /**
+    * @param {Element} elem - The DOM element that was moved
+    * @param {Element} oldNextSibling - The element's next sibling before it was moved
+    * @param {Element} oldParent - The element's parent before it was moved
+    * @param {string} [text] - An optional string visible to user related to this change
+    */
     function MoveElementCommand(elem, oldNextSibling, oldParent, text) {
       var _this;
 
       _classCallCheck(this, MoveElementCommand);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(MoveElementCommand).call(this));
+      _this = _super.call(this);
       _this.elem = elem;
       _this.text = text ? 'Move ' + elem.tagName + ' to ' + text : 'Move ' + elem.tagName;
       _this.oldNextSibling = oldNextSibling;
@@ -3960,6 +4049,10 @@ var SvgCanvas = (function () {
       _this.newParent = elem.parentNode;
       return _this;
     }
+    /**
+     * @returns {"svgedit.history.MoveElementCommand"}
+     */
+
 
     _createClass(MoveElementCommand, [{
       key: "type",
@@ -4025,28 +4118,33 @@ var SvgCanvas = (function () {
   /**
   * History command for an element that was added to the DOM.
   * @implements {module:history.HistoryCommand}
-  *
-  * @param {Element} elem - The newly added DOM element
-  * @param {string} text - An optional string visible to user related to this change
   */
 
-  var InsertElementCommand =
-  /*#__PURE__*/
-  function (_Command2) {
+  var InsertElementCommand = /*#__PURE__*/function (_Command2) {
     _inherits(InsertElementCommand, _Command2);
 
+    var _super2 = _createSuper(InsertElementCommand);
+
+    /**
+     * @param {Element} elem - The newly added DOM element
+     * @param {string} text - An optional string visible to user related to this change
+    */
     function InsertElementCommand(elem, text) {
       var _this2;
 
       _classCallCheck(this, InsertElementCommand);
 
-      _this2 = _possibleConstructorReturn(this, _getPrototypeOf(InsertElementCommand).call(this));
+      _this2 = _super2.call(this);
       _this2.elem = elem;
       _this2.text = text || 'Create ' + elem.tagName;
       _this2.parent = elem.parentNode;
       _this2.nextSibling = _this2.elem.nextSibling;
       return _this2;
     }
+    /**
+     * @returns {"svgedit.history.InsertElementCommand"}
+     */
+
 
     _createClass(InsertElementCommand, [{
       key: "type",
@@ -4089,7 +4187,7 @@ var SvgCanvas = (function () {
         }
 
         this.parent = this.elem.parentNode;
-        this.elem = this.elem.parentNode.removeChild(this.elem);
+        this.elem = this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
@@ -4112,23 +4210,25 @@ var SvgCanvas = (function () {
   /**
   * History command for an element removed from the DOM.
   * @implements {module:history.HistoryCommand}
-  * @param {Element} elem - The removed DOM element
-  * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
-  * @param {Element} oldParent - The DOM element's parent
-  * @param {string} [text] - An optional string visible to user related to this change
   */
 
-  var RemoveElementCommand =
-  /*#__PURE__*/
-  function (_Command3) {
+  var RemoveElementCommand = /*#__PURE__*/function (_Command3) {
     _inherits(RemoveElementCommand, _Command3);
 
+    var _super3 = _createSuper(RemoveElementCommand);
+
+    /**
+    * @param {Element} elem - The removed DOM element
+    * @param {Node} oldNextSibling - The DOM element's nextSibling when it was in the DOM
+    * @param {Element} oldParent - The DOM element's parent
+    * @param {string} [text] - An optional string visible to user related to this change
+    */
     function RemoveElementCommand(elem, oldNextSibling, oldParent, text) {
       var _this3;
 
       _classCallCheck(this, RemoveElementCommand);
 
-      _this3 = _possibleConstructorReturn(this, _getPrototypeOf(RemoveElementCommand).call(this));
+      _this3 = _super3.call(this);
       _this3.elem = elem;
       _this3.text = text || 'Delete ' + elem.tagName;
       _this3.nextSibling = oldNextSibling;
@@ -4137,6 +4237,10 @@ var SvgCanvas = (function () {
       removeElementFromListMap(elem);
       return _this3;
     }
+    /**
+     * @returns {"svgedit.history.RemoveElementCommand"}
+     */
+
 
     _createClass(RemoveElementCommand, [{
       key: "type",
@@ -4160,7 +4264,7 @@ var SvgCanvas = (function () {
 
         removeElementFromListMap(this.elem);
         this.parent = this.elem.parentNode;
-        this.elem = this.parent.removeChild(this.elem);
+        this.elem = this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
@@ -4220,22 +4324,24 @@ var SvgCanvas = (function () {
   * History command to make a change to an element.
   * Usually an attribute change, but can also be textcontent.
   * @implements {module:history.HistoryCommand}
-  * @param {Element} elem - The DOM element that was changed
-  * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
-  * @param {string} text - An optional string visible to user related to this change
   */
 
-  var ChangeElementCommand =
-  /*#__PURE__*/
-  function (_Command4) {
+  var ChangeElementCommand = /*#__PURE__*/function (_Command4) {
     _inherits(ChangeElementCommand, _Command4);
 
+    var _super4 = _createSuper(ChangeElementCommand);
+
+    /**
+    * @param {Element} elem - The DOM element that was changed
+    * @param {module:history.CommandAttributes} attrs - Attributes to be changed with the values they had *before* the change
+    * @param {string} text - An optional string visible to user related to this change
+     */
     function ChangeElementCommand(elem, attrs, text) {
       var _this4;
 
       _classCallCheck(this, ChangeElementCommand);
 
-      _this4 = _possibleConstructorReturn(this, _getPrototypeOf(ChangeElementCommand).call(this));
+      _this4 = _super4.call(this);
       _this4.elem = elem;
       _this4.text = text ? 'Change ' + elem.tagName + ' ' + text : 'Change ' + elem.tagName;
       _this4.newValues = {};
@@ -4253,6 +4359,10 @@ var SvgCanvas = (function () {
 
       return _this4;
     }
+    /**
+     * @returns {"svgedit.history.ChangeElementCommand"}
+     */
+
 
     _createClass(ChangeElementCommand, [{
       key: "type",
@@ -4411,10 +4521,10 @@ var SvgCanvas = (function () {
   * @implements {module:history.HistoryCommand}
   */
 
-  var BatchCommand =
-  /*#__PURE__*/
-  function (_Command5) {
+  var BatchCommand = /*#__PURE__*/function (_Command5) {
     _inherits(BatchCommand, _Command5);
+
+    var _super5 = _createSuper(BatchCommand);
 
     /**
     * @param {string} [text] - An optional string visible to user related to this change
@@ -4424,11 +4534,15 @@ var SvgCanvas = (function () {
 
       _classCallCheck(this, BatchCommand);
 
-      _this7 = _possibleConstructorReturn(this, _getPrototypeOf(BatchCommand).call(this));
+      _this7 = _super5.call(this);
       _this7.text = text || 'Batch Command';
       _this7.stack = [];
       return _this7;
     }
+    /**
+     * @returns {"svgedit.history.BatchCommand"}
+     */
+
 
     _createClass(BatchCommand, [{
       key: "type",
@@ -4535,9 +4649,7 @@ var SvgCanvas = (function () {
   *
   */
 
-  var UndoManager =
-  /*#__PURE__*/
-  function () {
+  var UndoManager = /*#__PURE__*/function () {
     /**
     * @param {module:history.HistoryEventHandler} historyEventHandler
     */
@@ -4735,7 +4847,7 @@ var SvgCanvas = (function () {
   });
 
   /**
-   * Mathematical utilities
+   * Mathematical utilities.
    * @module math
    * @license MIT
    *
@@ -4899,8 +5011,8 @@ var SvgCanvas = (function () {
 
     min = min || 0;
     max = max || tlist.numberOfItems - 1;
-    min = parseInt(min);
-    max = parseInt(max);
+    min = Number.parseInt(min);
+    max = Number.parseInt(max);
 
     if (min > max) {
       var temp = max;
@@ -5031,7 +5143,7 @@ var SvgCanvas = (function () {
   */
 
   /**
-  * Object with the following keys/values
+  * Object with the following keys/values.
   * @typedef {PlainObject} module:path.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
   * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -5060,7 +5172,7 @@ var SvgCanvas = (function () {
   */
 
   /**
-   * Note: This doesn't round to an integer necessarily
+   * Note: This doesn't round to an integer necessarily.
    * @function module:path.EditorContext#round
    * @param {Float} val
    * @returns {Float} Rounded value to nearest value based on `currentZoom`
@@ -5158,19 +5270,19 @@ var SvgCanvas = (function () {
    */
 
   /**
-   * Returns the last created DOM element ID string
+   * Returns the last created DOM element ID string.
    * @function module:path.EditorContext#getId
    * @returns {string}
    */
 
   /**
-   * Creates and returns a unique ID string for a DOM element
+   * Creates and returns a unique ID string for a DOM element.
    * @function module:path.EditorContext#getNextId
    * @returns {string}
   */
 
   /**
-   * Gets the desired element from a mouse event
+   * Gets the desired element from a mouse event.
    * @function module:path.EditorContext#getMouseTarget
    * @param {external:MouseEvent} evt - Event object from the mouse event
    * @returns {Element} DOM element we want
@@ -5676,9 +5788,7 @@ var SvgCanvas = (function () {
   *
   */
 
-  var Segment =
-  /*#__PURE__*/
-  function () {
+  var Segment = /*#__PURE__*/function () {
     /**
     * @param {Integer} index
     * @param {SVGPathSeg} item
@@ -5906,9 +6016,7 @@ var SvgCanvas = (function () {
   *
   */
 
-  var Path =
-  /*#__PURE__*/
-  function () {
+  var Path = /*#__PURE__*/function () {
     /**
     * @param {SVGPathElement} elem
     * @throws {Error} If constructed without a path element
@@ -6621,7 +6729,7 @@ var SvgCanvas = (function () {
     }
   };
   /**
-  * This is how we map paths to our preferred relative segment types
+  * This is how we map paths to our preferred relative segment types.
   * @name module:path.pathMap
   * @type {GenericArray}
   */
@@ -6654,7 +6762,7 @@ var SvgCanvas = (function () {
           x2 = seg.x2 || 0,
           y2 = seg.y2 || 0;
       var type = seg.pathSegType;
-      var letter = pathMap[type]['to' + (toRel ? 'Lower' : 'Upper') + 'Case']();
+      var letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();
 
       switch (type) {
         case 1:
@@ -6676,16 +6784,18 @@ var SvgCanvas = (function () {
         case 13:
           // relative horizontal line (h)
           if (toRel) {
+            y = 0;
             curx += x;
             letter = 'l';
           } else {
+            y = cury;
             x += curx;
             curx = x;
             letter = 'L';
           } // Convert to "line" for easier editing
 
 
-          d += pathDSegment(letter, [[x, cury]]);
+          d += pathDSegment(letter, [[x, y]]);
           break;
 
         case 14:
@@ -6696,16 +6806,18 @@ var SvgCanvas = (function () {
         case 15:
           // relative vertical line (v)
           if (toRel) {
+            x = 0;
             cury += y;
             letter = 'l';
           } else {
+            x = curx;
             y += cury;
             cury = y;
             letter = 'L';
           } // Convert to "line" for easier editing
 
 
-          d += pathDSegment(letter, [[curx, y]]);
+          d += pathDSegment(letter, [[x, y]]);
           break;
 
         case 2: // absolute move (M)
@@ -6874,15 +6986,18 @@ var SvgCanvas = (function () {
 
     return segment;
   }
+  /* eslint-disable jsdoc/require-property */
+
   /**
-  * Group: Path edit functions
-  * Functions relating to editing path elements
+  * Group: Path edit functions.
+  * Functions relating to editing path elements.
   * @namespace {PlainObject} pathActions
   * @memberof module:path
   */
 
 
   var pathActions = function () {
+    /* eslint-enable jsdoc/require-property */
     var subpath = false;
     var newPoint, firstCtrl;
     var currentPath = null;
@@ -7177,7 +7292,7 @@ var SvgCanvas = (function () {
 
           if (id.substr(0, 14) === 'pathpointgrip_') {
             // Select this point
-            curPt = path.cur_pt = parseInt(id.substr(14));
+            curPt = path.cur_pt = Number.parseInt(id.substr(14));
             path.dragging = [startX, startY];
             var seg = path.segs[curPt]; // only clear selection if shift is not pressed (otherwise, add
             // node to selection)
@@ -7209,11 +7324,10 @@ var SvgCanvas = (function () {
               rubberBox = editorContext_.setRubberBox(editorContext_.selectorManager.getRubberBandBox());
             }
 
-            var _currentZoom = editorContext_.getCurrentZoom();
-
+            var currentZoom = editorContext_.getCurrentZoom();
             assignAttributes(rubberBox, {
-              x: startX * _currentZoom,
-              y: startY * _currentZoom,
+              x: startX * currentZoom,
+              y: startY * currentZoom,
               width: 0,
               height: 0,
               display: 'inline'
@@ -7859,14 +7973,18 @@ var SvgCanvas = (function () {
 
           path.endChanges('Delete path node(s)');
         },
+
+        /* eslint-disable jsdoc/require-returns */
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
-        * Smooth polyline into path
+        * Smooth polyline into path.
         * @function module:path.pathActions.smoothPolylineIntoPath
         * @see module:path~smoothPolylineIntoPath
         */
         smoothPolylineIntoPath: smoothPolylineIntoPath,
+
+        /* eslint-enable jsdoc/require-returns */
 
         /**
         * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
@@ -7937,14 +8055,18 @@ var SvgCanvas = (function () {
             editorContext_.resetD(elem);
           }
         },
+
+        /* eslint-disable jsdoc/require-returns */
         // Can't seem to use `@borrows` here, so using `@see`
 
         /**
-        * Convert a path to one with only absolute or relative values
+        * Convert a path to one with only absolute or relative values.
         * @function module:path.pathActions.convertPath
         * @see module:path.convertPath
         */
         convertPath: convertPath
+        /* eslint-enable jsdoc/require-returns */
+
       }
     );
   }(); // end pathActions
@@ -7961,7 +8083,7 @@ var SvgCanvas = (function () {
   var domcontainer_ = null;
   var svgroot_ = null;
   /**
-  * Object with the following keys/values
+  * Object with the following keys/values.
   * @typedef {PlainObject} module:utilities.SVGElementJSON
   * @property {string} element - Tag name of the SVG element to create
   * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -7985,7 +8107,7 @@ var SvgCanvas = (function () {
   /**
    * Create a new SVG element based on the given object keys/values and add it
    * to the current layer.
-   * The element will be run through `cleanupElement` before being returned
+   * The element will be run through `cleanupElement` before being returned.
    * @function module:utilities.EditorContext#addSVGElementFromJson
    * @param {module:utilities.SVGElementJSON} data
    * @returns {Element} The new element
@@ -8035,13 +8157,13 @@ var SvgCanvas = (function () {
   };
   /**
    * Used to prevent the [Billion laughs attack]{@link https://en.wikipedia.org/wiki/Billion_laughs_attack}.
-   * @function module:utilities.dropXMLInteralSubset
+   * @function module:utilities.dropXMLInternalSubset
    * @param {string} str String to be processed
    * @returns {string} The string with entity declarations in the internal subset removed
    * @todo This might be needed in other places `parseFromString` is used even without LGTM flagging
    */
 
-  var dropXMLInteralSubset = function dropXMLInteralSubset(str) {
+  var dropXMLInternalSubset = function dropXMLInternalSubset(str) {
     return str.replace(/(<!DOCTYPE\s+\w*\s*\[).*(\?]>)/, '$1$2'); // return str.replace(/(?<doctypeOpen><!DOCTYPE\s+\w*\s*\[).*(?<doctypeClose>\?\]>)/, '$<doctypeOpen>$<doctypeClose>');
   };
   /**
@@ -8094,10 +8216,10 @@ var SvgCanvas = (function () {
       var enc4 = chr3 & 63;
       /* eslint-enable no-bitwise */
 
-      if (isNaN(chr2)) {
+      if (Number.isNaN(chr2)) {
         enc3 = 64;
         enc4 = 64;
-      } else if (isNaN(chr3)) {
+      } else if (Number.isNaN(chr3)) {
         enc4 = 64;
       }
 
@@ -8631,8 +8753,8 @@ var SvgCanvas = (function () {
             var bb = {
               width: width,
               height: height,
-              x: x + parseFloat(selected.getAttribute('x') || 0),
-              y: y + parseFloat(selected.getAttribute('y') || 0)
+              x: x + Number.parseFloat(selected.getAttribute('x') || 0),
+              y: y + Number.parseFloat(selected.getAttribute('y') || 0)
             };
             ret = bb;
           }
@@ -9204,6 +9326,7 @@ var SvgCanvas = (function () {
     }, 9, null).singleNodeValue;
   } : function (id) {
     // jQuery lookup: twice as slow as xpath in FF
+    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
     return $$2(svgroot_).find('[id=' + id + ']')[0];
   };
   /**
@@ -9223,6 +9346,16 @@ var SvgCanvas = (function () {
           value = _Object$entries$_i[1];
 
       var ns = key.substr(0, 4) === 'xml:' ? NS.XML : key.substr(0, 6) === 'xlink:' ? NS.XLINK : null;
+
+      if (isNullish(value)) {
+        if (ns) {
+          elem.removeAttributeNS(ns, key);
+        } else {
+          elem.removeAttribute(key);
+        }
+
+        continue;
+      }
 
       if (ns) {
         elem.setAttributeNS(ns, key, value);
@@ -9380,9 +9513,7 @@ var SvgCanvas = (function () {
    * @memberof module:layer
    */
 
-  var Layer =
-  /*#__PURE__*/
-  function () {
+  var Layer = /*#__PURE__*/function () {
     /**
     * @param {string} name - Layer name
     * @param {SVGGElement|null} group - An existing SVG group element or null.
@@ -9500,7 +9631,7 @@ var SvgCanvas = (function () {
           return 1;
         }
 
-        return parseFloat(opacity);
+        return Number.parseFloat(opacity);
       }
       /**
        * Sets the opacity of this layer. If opacity is not a value between 0.0 and 1.0,
@@ -9525,28 +9656,18 @@ var SvgCanvas = (function () {
     }, {
       key: "appendChildren",
       value: function appendChildren(children) {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        var _iterator = _createForOfIteratorHelper(children),
+            _step;
 
         try {
-          for (var _iterator = children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
             var child = _step.value;
             this.group_.append(child);
           }
         } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
+          _iterator.e(err);
         } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-              _iterator["return"]();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
+          _iterator.f();
         }
       }
       /**
@@ -9607,8 +9728,7 @@ var SvgCanvas = (function () {
     }, {
       key: "removeGroup",
       value: function removeGroup() {
-        var parent = this.group_.parentNode;
-        var group = parent.removeChild(this.group_);
+        var group = this.group_.remove();
         this.group_ = undefined;
         return group;
       }
@@ -9658,7 +9778,7 @@ var SvgCanvas = (function () {
    *
    * The following will record history: insert, batch, insert.
    * @example
-   * hrService = new history.HistoryRecordingService(this.undoMgr);
+   * hrService = new HistoryRecordingService(this.undoMgr);
    * hrService.insertElement(elem, text);         // add simple command to history.
    * hrService.startBatchCommand('create two elements');
    * hrService.changeElement(elem, attrs, text);  // add to batchCommand
@@ -9677,9 +9797,7 @@ var SvgCanvas = (function () {
    * @memberof module:history
    */
 
-  var HistoryRecordingService =
-  /*#__PURE__*/
-  function () {
+  var HistoryRecordingService = /*#__PURE__*/function () {
     /**
     * @param {history.UndoManager|null} undoManager - The undo manager.
     *     A value of `null` is valid for cases where no history recording is required.
@@ -9892,9 +10010,7 @@ var SvgCanvas = (function () {
    */
 
 
-  var Drawing =
-  /*#__PURE__*/
-  function () {
+  var Drawing = /*#__PURE__*/function () {
     /**
     * @param {SVGSVGElement} svgElem - The SVG DOM Element that this JS object
     *     encapsulates.  If the svgElem has a se:nonce attribute on it, then
@@ -9985,6 +10101,7 @@ var SvgCanvas = (function () {
           // querySelector lookup
           return this.svgElem_.querySelector('#' + id);
         } // jQuery lookup: twice as slow as xpath in FF
+        // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 
 
         return $$4(this.svgElem_).find('[id=' + id + ']')[0];
@@ -10101,7 +10218,7 @@ var SvgCanvas = (function () {
         } // extract the obj_num of this id
 
 
-        var num = parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
+        var num = Number.parseInt(id.substr(front.length)); // if we didn't get a positive number or we already released this number
         // then return false.
 
         if (typeof num !== 'number' || num <= 0 || this.releasedNums.includes(num)) {
@@ -10635,7 +10752,7 @@ var SvgCanvas = (function () {
   }; // Layer API Functions
 
   /**
-  * Group: Layers
+  * Group: Layers.
   */
 
   /**
@@ -10683,7 +10800,7 @@ var SvgCanvas = (function () {
   */
 
   /**
-   * Run the callback function associated with the given event
+   * Run the callback function associated with the given event.
    * @function module:draw.DrawCanvasInit#call
    * @param {"changed"|"contextset"} ev - String with the event name
    * @param {module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset} arg - Argument to pass through to the callback
@@ -11007,7 +11124,7 @@ var SvgCanvas = (function () {
 
   /**
    * This defines which elements and attributes that we support (or at least
-   * don't remove)
+   * don't remove).
    * @type {PlainObject}
    */
 
@@ -11269,11 +11386,12 @@ var SvgCanvas = (function () {
     }
   };
 
-  // MIT License
-  // From: https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js
+  /* eslint-disable jsdoc/require-file-overview */
 
   /**
+   * Adapted from {@link https://github.com/uupaa/dynamic-import-polyfill/blob/master/importModule.js}.
    * @module importModule
+   * @license MIT
    */
 
   /**
@@ -11323,9 +11441,7 @@ var SvgCanvas = (function () {
    */
 
   function _importSetGlobal() {
-    _importSetGlobal = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee(url, _ref) {
+    _importSetGlobal = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url, _ref) {
       var glob, returnDefault, modularVersion;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -11589,8 +11705,8 @@ var SvgCanvas = (function () {
         // therefore [T'] = [M_inv][T][M]
         var existing = transformListToTransform(selected).matrix,
             tNew = matrixMultiply(existing.inverse(), m, existing);
-        changes.x = parseFloat(changes.x) + tNew.e;
-        changes.y = parseFloat(changes.y) + tNew.f;
+        changes.x = Number.parseFloat(changes.x) + tNew.e;
+        changes.y = Number.parseFloat(changes.y) + tNew.f;
       } else {
         // we just absorb all matrices into the element and don't do any remapping
         var chlist = getTransformList(selected);
@@ -12772,9 +12888,7 @@ var SvgCanvas = (function () {
   * Private class for DOM element selection boxes.
   */
 
-  var Selector =
-  /*#__PURE__*/
-  function () {
+  var Selector = /*#__PURE__*/function () {
     /**
     * @param {Integer} id - Internally identify the selector
     * @param {Element} elem - DOM element associated with this selector
@@ -13021,9 +13135,10 @@ var SvgCanvas = (function () {
   * Manage all selector objects (selection boxes).
   */
 
-  var SelectorManager =
-  /*#__PURE__*/
-  function () {
+  var SelectorManager = /*#__PURE__*/function () {
+    /**
+     * Sets up properties and calls `initGroup`.
+     */
     function SelectorManager() {
       _classCallCheck(this, SelectorManager);
 
@@ -13429,7 +13544,7 @@ var SvgCanvas = (function () {
     var svgroot = svgdoc.importNode(text2xml('<svg id="svgroot" xmlns="' + NS.SVG + '" xlinkns="' + NS.XLINK + '" ' + 'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' + '<defs>' + '<filter id="canvashadow" filterUnits="objectBoundingBox">' + '<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>' + '<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>' + '<feMerge>' + '<feMergeNode in="offsetBlur"/>' + '<feMergeNode in="SourceGraphic"/>' + '</feMerge>' + '</filter>' + '</defs>' + '</svg>').documentElement, true);
     container.append(svgroot);
     /**
-     * The actual element that represents the final output SVG element
+     * The actual element that represents the final output SVG element.
      * @name module:svgcanvas~svgcontent
      * @type {SVGSVGElement}
      */
@@ -13474,7 +13589,7 @@ var SvgCanvas = (function () {
       idprefix = p;
     };
     /**
-    * Current draw.Drawing object
+    * Current `draw.Drawing` object.
     * @type {module:draw.Drawing}
     * @name module:svgcanvas.SvgCanvas#current_drawing_
     */
@@ -13491,7 +13606,7 @@ var SvgCanvas = (function () {
       return canvas.current_drawing_;
     };
     /**
-    * Float displaying the current zoom level (1 = 100%, .5 = 50%, etc)
+    * Float displaying the current zoom level (1 = 100%, .5 = 50%, etc.).
     * @type {Float}
     */
 
@@ -13627,8 +13742,8 @@ var SvgCanvas = (function () {
       return curConfig.baseUnit;
     };
     /**
-    * initialize from units.js.
-    * Send in an object implementing the ElementContainer interface (see units.js)
+    * Initialize from units.js.
+    * Send in an object implementing the ElementContainer interface (see units.js).
     */
 
 
@@ -13855,12 +13970,12 @@ var SvgCanvas = (function () {
 
 
     var round = this.round = function (val) {
-      return parseInt(val * currentZoom) / currentZoom;
+      return Number.parseInt(val * currentZoom) / currentZoom;
     };
 
     init$6(curConfig,
     /**
-    * Export to select.js
+    * Export to select.js.
     * @implements {module:select.SVGFactory}
     */
     {
@@ -13876,7 +13991,7 @@ var SvgCanvas = (function () {
       getCurrentZoom: getCurrentZoom
     });
     /**
-    * This object manages selectors for us
+    * This object manages selectors for us.
     * @name module:svgcanvas.SvgCanvas#selectorManager
     * @type {module:select.SelectorManager}
     */
@@ -13993,6 +14108,10 @@ var SvgCanvas = (function () {
             sel.showGrips(false);
           }
         }
+      }
+
+      if (!selectedElements.length) {
+        return;
       }
 
       call('selected', selectedElements);
@@ -14472,8 +14591,8 @@ var SvgCanvas = (function () {
 
     /**
     * @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
-    * @param {external:jQuery} initArgs.$
-    * @param {module:SVGEditor~ImportLocale} initArgs.importLocale
+    * @property {external:jQuery} $
+    * @property {module:SVGEditor~ImportLocale} importLocale
     */
 
     /**
@@ -14489,12 +14608,8 @@ var SvgCanvas = (function () {
     */
 
 
-    this.addExtension =
-    /*#__PURE__*/
-    function () {
-      var _ref4 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref3) {
+    this.addExtension = /*#__PURE__*/function () {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(name, extInitFunc, _ref3) {
         var jq, importLocale, argObj, extObj;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -14549,8 +14664,7 @@ var SvgCanvas = (function () {
 
                 if (extObj) {
                   extObj.name = name;
-                } // eslint-disable-next-line require-atomic-updates
-
+                }
 
                 extensions[name] = extObj;
                 return _context.abrupt("return", call('extension_added', extObj));
@@ -14609,8 +14723,8 @@ var SvgCanvas = (function () {
       if (!isIE()) {
         if (typeof svgroot.getIntersectionList === 'function') {
           // Offset the bbox of the rubber box by the offset of the svgcontent element.
-          rubberBBox.x += parseInt(svgcontent.getAttribute('x'));
-          rubberBBox.y += parseInt(svgcontent.getAttribute('y'));
+          rubberBBox.x += Number.parseInt(svgcontent.getAttribute('x'));
+          rubberBBox.y += Number.parseInt(svgcontent.getAttribute('y'));
           resultList = svgroot.getIntersectionList(rubberBBox, parent);
         }
       }
@@ -14694,26 +14808,26 @@ var SvgCanvas = (function () {
     var events = {};
     canvas.call = call;
     /**
-     * Array of what was changed (elements, layers)
+     * Array of what was changed (elements, layers).
      * @event module:svgcanvas.SvgCanvas#event:changed
      * @type {Element[]}
      */
 
     /**
-     * Array of selected elements
+     * Array of selected elements.
      * @event module:svgcanvas.SvgCanvas#event:selected
      * @type {Element[]}
      */
 
     /**
-     * Array of selected elements
+     * Array of selected elements.
      * @event module:svgcanvas.SvgCanvas#event:transition
      * @type {Element[]}
      */
 
     /**
      * The Element is always `SVGGElement`?
-     * If not `null`, will be the set current group element
+     * If not `null`, will be the set current group element.
      * @event module:svgcanvas.SvgCanvas#event:contextset
      * @type {null|Element}
      */
@@ -14774,7 +14888,7 @@ var SvgCanvas = (function () {
      */
 
     /**
-     * SVG canvas converted to string
+     * SVG canvas converted to string.
      * @event module:svgcanvas.SvgCanvas#event:saved
      * @type {string}
      */
@@ -14818,7 +14932,7 @@ var SvgCanvas = (function () {
 
     /**
      * The promise return, if present, resolves to `undefined`
-     *  (`extension_added`, `exported`, `saved`)
+     *  (`extension_added`, `exported`, `saved`).
      * @typedef {Promise<void>|void} module:svgcanvas.EventHandlerReturn
     */
 
@@ -14905,7 +15019,7 @@ var SvgCanvas = (function () {
 
     this.setRotationAngle = function (val, preventUndo) {
       // ensure val is the proper type
-      val = parseFloat(val);
+      val = Number.parseFloat(val);
       var elem = selectedElements[0];
       var oldTransform = elem.getAttribute('transform');
       var bbox = getBBox(elem);
@@ -14997,7 +15111,7 @@ var SvgCanvas = (function () {
 
     var rootSctm = null;
     /**
-    * Group: Selection
+    * Group: Selection.
     */
     // TODO: do we need to worry about selectedBBoxes here?
 
@@ -15243,12 +15357,11 @@ var SvgCanvas = (function () {
               if (!rightClick) {
                 // insert a dummy transform so if the element(s) are moved it will have
                 // a transform to use for its translate
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
+                var _iterator = _createForOfIteratorHelper(selectedElements),
+                    _step;
 
                 try {
-                  for (var _iterator = selectedElements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                  for (_iterator.s(); !(_step = _iterator.n()).done;) {
                     var selectedElement = _step.value;
 
                     if (isNullish(selectedElement)) {
@@ -15264,18 +15377,9 @@ var SvgCanvas = (function () {
                     }
                   }
                 } catch (err) {
-                  _didIteratorError = true;
-                  _iteratorError = err;
+                  _iterator.e(err);
                 } finally {
-                  try {
-                    if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                      _iterator["return"]();
-                    }
-                  } finally {
-                    if (_didIteratorError) {
-                      throw _iteratorError;
-                    }
-                  }
+                  _iterator.f();
                 }
               }
             } else if (!rightClick) {
@@ -15396,6 +15500,14 @@ var SvgCanvas = (function () {
           case 'fhpath':
             start.x = realX;
             start.y = realY;
+            controllPoint1 = {
+              x: 0,
+              y: 0
+            };
+            controllPoint2 = {
+              x: 0,
+              y: 0
+            };
             started = true;
             dAttr = realX + ',' + realY + ' '; // Commented out as doing nothing now:
             // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
@@ -15564,7 +15676,7 @@ var SvgCanvas = (function () {
             break;
         }
         /**
-         * The main (left) mouse button is held down on the canvas area
+         * The main (left) mouse button is held down on the canvas area.
          * @event module:svgcanvas.SvgCanvas#event:ext_mouseDown
          * @type {PlainObject}
          * @property {MouseEvent} event The event object
@@ -16107,7 +16219,7 @@ var SvgCanvas = (function () {
             }
         }
         /**
-        * The mouse has moved on the canvas area
+        * The mouse has moved on the canvas area.
         * @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
         * @type {PlainObject}
         * @property {MouseEvent} event The event object
@@ -16424,7 +16536,7 @@ var SvgCanvas = (function () {
             }
         }
         /**
-        * The main (left) mouse button is released (anywhere)
+        * The main (left) mouse button is released (anywhere).
         * @event module:svgcanvas.SvgCanvas#event:ext_mouseUp
         * @type {PlainObject}
         * @property {MouseEvent} event The event object
@@ -16478,7 +16590,7 @@ var SvgCanvas = (function () {
           var aniDur = 0.2;
           var cAni;
 
-          if (opacAni.beginElement && parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
+          if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
             cAni = $$8(opacAni).clone().attr({
               to: curShape.opacity,
               dur: aniDur
@@ -16653,15 +16765,18 @@ var SvgCanvas = (function () {
         call('zoomDone');
       });
     })();
+    /* eslint-disable jsdoc/require-property */
+
     /**
     * Group: Text edit functions
-    * Functions relating to editing text elements
+    * Functions relating to editing text elements.
     * @namespace {PlainObject} textActions
     * @memberof module:svgcanvas.SvgCanvas#
     */
 
 
     var textActions = canvas.textActions = function () {
+      /* eslint-enable jsdoc/require-property */
       var curtext;
       var textinput;
       var cursor;
@@ -17179,7 +17294,7 @@ var SvgCanvas = (function () {
       );
     }();
     /**
-    * Group: Serialization
+    * Group: Serialization.
     */
 
     /**
@@ -17409,6 +17524,16 @@ var SvgCanvas = (function () {
               continue;
             }
 
+            if (_attrVal === 'null') {
+              var styleName = _attr.localName.replace(/-[a-z]/g, function (s) {
+                return s[1].toUpperCase();
+              });
+
+              if (Object.prototype.hasOwnProperty.call(elem.style, styleName)) {
+                continue;
+              }
+            }
+
             if (_attrVal !== '') {
               if (_attrVal.startsWith('pointer-events')) {
                 continue;
@@ -17463,7 +17588,7 @@ var SvgCanvas = (function () {
               case 1:
                 // element node
                 out.push('\n');
-                out.push(this.svgToString(childs.item(_i4), indent));
+                out.push(this.svgToString(child, indent));
                 break;
 
               case 3:
@@ -17522,7 +17647,7 @@ var SvgCanvas = (function () {
     }; // end svgToString()
 
     /**
-     * Function to run when image data is found
+     * Function to run when image data is found.
      * @callback module:svgcanvas.ImageEmbeddedCallback
      * @param {string|false} result Data URL
      * @returns {void}
@@ -17687,12 +17812,8 @@ var SvgCanvas = (function () {
     * @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
     */
 
-    this.rasterExport =
-    /*#__PURE__*/
-    function () {
-      var _ref5 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
+    this.rasterExport = /*#__PURE__*/function () {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(imgType, quality, exportWindowName) {
         var opts,
             type,
             mimeType,
@@ -17700,7 +17821,7 @@ var SvgCanvas = (function () {
             issues,
             issueCodes,
             svg,
-            _ref6,
+            _yield$importSetGloba,
             c,
             _args2 = arguments;
 
@@ -17725,8 +17846,8 @@ var SvgCanvas = (function () {
                 });
 
               case 8:
-                _ref6 = _context2.sent;
-                canvg = _ref6.canvg;
+                _yield$importSetGloba = _context2.sent;
+                canvg = _yield$importSetGloba.canvg;
 
               case 10:
                 if (!$$8('#export_canvas').length) {
@@ -17835,12 +17956,8 @@ var SvgCanvas = (function () {
     */
 
 
-    this.exportPDF =
-    /*#__PURE__*/
-    function () {
-      var _ref7 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee3(exportWindowName) {
+    this.exportPDF = /*#__PURE__*/function () {
+      var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(exportWindowName) {
         var outputType,
             modularVersion,
             res,
@@ -17869,7 +17986,8 @@ var SvgCanvas = (function () {
                 _context3.next = 4;
                 return importScript([// We do not currently have these paths configurable as they are
                 //   currently global-only, so not Rolled-up
-                'jspdf/underscore-min.js', 'jspdf/jspdf.min.js']);
+                'jspdf/underscore-min.js', // 'jspdf/jspdf.min.js',
+                '../../svgedit-myfix/editor/jspdf/jspdf-1.0.150.debug.js']);
 
               case 4:
                 modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false; // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
@@ -17929,7 +18047,7 @@ var SvgCanvas = (function () {
       }));
 
       return function (_x7) {
-        return _ref7.apply(this, arguments);
+        return _ref6.apply(this, arguments);
       };
     }();
     /**
@@ -18345,7 +18463,8 @@ var SvgCanvas = (function () {
 
         var _svgcontent = svgcontent,
             nextSibling = _svgcontent.nextSibling;
-        var oldzoom = svgroot.removeChild(svgcontent);
+        svgcontent.remove();
+        var oldzoom = svgcontent;
         batchCmd.addSubCommand(new RemoveElementCommand$1(oldzoom, nextSibling, svgroot)); // set new svg document
         // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
 
@@ -18580,29 +18699,20 @@ var SvgCanvas = (function () {
           }
 
           var attrs = svg.attributes;
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+
+          var _iterator2 = _createForOfIteratorHelper(attrs),
+              _step2;
 
           try {
-            for (var _iterator2 = attrs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
               var attr = _step2.value;
               // Ok for `NamedNodeMap`
               symbol.setAttribute(attr.nodeName, attr.value);
             }
           } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
+            _iterator2.e(err);
           } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-                _iterator2["return"]();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
+            _iterator2.f();
           }
 
           symbol.id = getNextId(); // Store data
@@ -18658,10 +18768,10 @@ var SvgCanvas = (function () {
       leaveContext: leaveContext,
       setContext: setContext
     };
-    Object.entries(dr).forEach(function (_ref8) {
-      var _ref9 = _slicedToArray(_ref8, 2),
-          prop = _ref9[0],
-          propVal = _ref9[1];
+    Object.entries(dr).forEach(function (_ref7) {
+      var _ref8 = _slicedToArray(_ref7, 2),
+          prop = _ref8[0],
+          propVal = _ref8[1];
 
       canvas[prop] = propVal;
     });
@@ -18695,7 +18805,7 @@ var SvgCanvas = (function () {
       }
     });
     /**
-    * Group: Document functions
+    * Group: Document functions.
     */
 
     /**
@@ -18825,12 +18935,12 @@ var SvgCanvas = (function () {
 
       elem = $$8(elem).data('gsvg') || $$8(elem).data('symbol') || elem;
       var childs = elem.childNodes;
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+
+      var _iterator3 = _createForOfIteratorHelper(childs),
+          _step3;
 
       try {
-        for (var _iterator3 = childs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
           var child = _step3.value;
 
           if (child.nodeName === 'title') {
@@ -18838,18 +18948,9 @@ var SvgCanvas = (function () {
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _iterator3.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-            _iterator3["return"]();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
+        _iterator3.f();
       }
 
       return '';
@@ -18915,12 +19016,12 @@ var SvgCanvas = (function () {
       var docTitle = false,
           oldTitle = '';
       var batchCmd = new BatchCommand$1('Change Image Title');
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+
+      var _iterator4 = _createForOfIteratorHelper(childs),
+          _step4;
 
       try {
-        for (var _iterator4 = childs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
           var child = _step4.value;
 
           if (child.nodeName === 'title') {
@@ -18930,18 +19031,9 @@ var SvgCanvas = (function () {
           }
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _iterator4.e(err);
       } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-            _iterator4["return"]();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
+        _iterator4.f();
       }
 
       if (!docTitle) {
@@ -19162,7 +19254,7 @@ var SvgCanvas = (function () {
     */
 
     /**
-    * The bottom panel was updated
+    * The bottom panel was updated.
     * @event module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate
     * @type {PlainObject}
     * @property {boolean} nofill Indicates fill is disabled
@@ -19170,7 +19262,7 @@ var SvgCanvas = (function () {
     */
 
     /**
-    * The element selection has changed (elements were added/removed from selection)
+    * The element selection has changed (elements were added/removed from selection).
     * @event module:svgcanvas.SvgCanvas#event:ext_selectedChanged
     * @type {PlainObject}
     * @property {Element[]} elems Array of the newly selected elements
@@ -19187,14 +19279,14 @@ var SvgCanvas = (function () {
     */
 
     /**
-    * One or more elements were changed
+    * One or more elements were changed.
     * @event module:svgcanvas.SvgCanvas#event:ext_elementChanged
     * @type {PlainObject}
     * @property {Element[]} elems Array of the affected elements
     */
 
     /**
-    * Invoked as soon as the locale is ready
+    * Invoked as soon as the locale is ready.
     * @event module:svgcanvas.SvgCanvas#event:ext_langReady
     * @type {PlainObject}
     * @property {string} lang The two-letter language code
@@ -19217,13 +19309,13 @@ var SvgCanvas = (function () {
     */
 
     /**
-     * Called when new image is created
+     * Called when new image is created.
      * @event module:svgcanvas.SvgCanvas#event:ext_onNewDocument
      * @type {void}
      */
 
     /**
-     * Called when sidepanel is resized or toggled
+     * Called when sidepanel is resized or toggled.
      * @event module:svgcanvas.SvgCanvas#event:ext_workareaResized
      * @type {void}
     */
@@ -19284,7 +19376,7 @@ var SvgCanvas = (function () {
       currentMode = name;
     };
     /**
-    * Group: Element Styling
+    * Group: Element Styling.
     */
 
     /**
@@ -20157,7 +20249,7 @@ var SvgCanvas = (function () {
       canvas.ungroupSelectedElement();
     };
     /**
-    * Group: Element manipulation
+    * Group: Element manipulation.
     */
 
     /**
@@ -20416,7 +20508,8 @@ var SvgCanvas = (function () {
 
         var _t = t,
             nextSibling = _t.nextSibling;
-        var elem = parent.removeChild(t);
+        t.remove();
+        var elem = t;
         selectedCopy.push(selected); // for the copy
 
         batchCmd.addSubCommand(new RemoveElementCommand$1(elem, nextSibling, parent));
@@ -20443,18 +20536,62 @@ var SvgCanvas = (function () {
       canvas.copySelectedElements();
       canvas.deleteSelectedElements();
     };
+
+    var CLIPBOARD_ID = 'svgedit_clipboard';
+    /**
+    * Flash the clipboard data momentarily on localStorage so all tabs can see.
+    * @returns {void}
+    */
+
+    function flashStorage() {
+      var data = sessionStorage.getItem(CLIPBOARD_ID);
+      localStorage.setItem(CLIPBOARD_ID, data);
+      setTimeout(function () {
+        localStorage.removeItem(CLIPBOARD_ID);
+      }, 1);
+    }
+    /**
+    * Transfers sessionStorage from one tab to another.
+    * @param {!Event} ev Storage event.
+    * @returns {void}
+    */
+
+
+    function storageChange(ev) {
+      if (!ev.newValue) return; // This is a call from removeItem.
+
+      if (ev.key === CLIPBOARD_ID + '_startup') {
+        // Another tab asked for our sessionStorage.
+        localStorage.removeItem(CLIPBOARD_ID + '_startup');
+        flashStorage();
+      } else if (ev.key === CLIPBOARD_ID) {
+        // Another tab sent data.
+        sessionStorage.setItem(CLIPBOARD_ID, ev.newValue);
+      }
+    } // Listen for changes to localStorage.
+
+
+    window.addEventListener('storage', storageChange, false); // Ask other tabs for sessionStorage (this is ONLY to trigger event).
+
+    localStorage.setItem(CLIPBOARD_ID + '_startup', Math.random());
     /**
     * Remembers the current selected elements on the clipboard.
     * @function module:svgcanvas.SvgCanvas#copySelectedElements
     * @returns {void}
     */
 
-
     this.copySelectedElements = function () {
-      localStorage.setItem('svgedit_clipboard', JSON.stringify(selectedElements.map(function (x) {
+      var data = JSON.stringify(selectedElements.map(function (x) {
         return getJsonFromSvgElement(x);
-      })));
-      $$8('#cmenu_canvas').enableContextMenuItems('#paste,#paste_in_place');
+      })); // Use sessionStorage for the clipboard data.
+
+      sessionStorage.setItem(CLIPBOARD_ID, data);
+      flashStorage();
+      var menu = $$8('#cmenu_canvas'); // Context menu might not exist (it is provided by editor.js).
+
+      if (menu.enableContextMenuItems) {
+        menu.enableContextMenuItems('#paste,#paste_in_place');
+      }
     };
     /**
     * @function module:svgcanvas.SvgCanvas#pasteElements
@@ -20468,13 +20605,10 @@ var SvgCanvas = (function () {
 
 
     this.pasteElements = function (type, x, y) {
-      var clipb = JSON.parse(localStorage.getItem('svgedit_clipboard'));
+      var clipb = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID));
+      if (!clipb) return;
       var len = clipb.length;
-
-      if (!len) {
-        return;
-      }
-
+      if (!len) return;
       var pasted = [];
       var batchCmd = new BatchCommand$1('Paste elements'); // const drawing = getCurrentDrawing();
 
@@ -20506,7 +20640,7 @@ var SvgCanvas = (function () {
       clipb.forEach(checkIDs); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
 
       /**
-      * Triggered when `pasteElements` is called from a paste action (context menu or key)
+      * Triggered when `pasteElements` is called from a paste action (context menu or key).
       * @event module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
       * @type {PlainObject}
       * @property {module:svgcanvas.SVGAsJSON[]} elems
@@ -20891,14 +21025,19 @@ var SvgCanvas = (function () {
           var oldParent = elem.parentNode; // Remove child title elements
 
           if (elem.tagName === 'title') {
-            var _elem2 = elem,
-                nextSibling = _elem2.nextSibling;
+            var nextSibling = elem.nextSibling;
             batchCmd.addSubCommand(new RemoveElementCommand$1(elem, nextSibling, oldParent));
             elem.remove();
             continue;
           }
 
-          children[i++] = elem = parent.insertBefore(elem, anchor);
+          if (anchor) {
+            anchor.before(elem);
+          } else {
+            g.after(elem);
+          }
+
+          children[i++] = elem;
           batchCmd.addSubCommand(new MoveElementCommand$1(elem, oldNextSibling, oldParent));
         } // remove the group from the selection
 
@@ -20906,7 +21045,7 @@ var SvgCanvas = (function () {
         clearSelection(); // delete the group element (but make undo-able)
 
         var gNextSibling = g.nextSibling;
-        g = parent.removeChild(g);
+        g.remove();
         batchCmd.addSubCommand(new RemoveElementCommand$1(g, gNextSibling, parent));
 
         if (!batchCmd.isEmpty()) {
@@ -21310,7 +21449,7 @@ var SvgCanvas = (function () {
       this.moveSelectedElements(dx, dy);
     };
     /**
-    * Group: Additional editor tools
+    * Group: Additional editor tools.
     */
 
     /**
@@ -21422,7 +21561,29 @@ var SvgCanvas = (function () {
       var bg = getElem('canvasBackground');
       var border = $$8(bg).find('rect')[0];
       var bgImg = getElem('background_image');
-      border.setAttribute('fill', color);
+      var bgPattern = getElem('background_pattern');
+      border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
+
+      if (color === 'chessboard') {
+        if (!bgPattern) {
+          bgPattern = svgdoc.createElementNS(NS.SVG, 'foreignObject');
+          assignAttributes(bgPattern, {
+            id: 'background_pattern',
+            width: '100%',
+            height: '100%',
+            preserveAspectRatio: 'xMinYMin',
+            style: 'pointer-events:none'
+          });
+          var div = document.createElement('div');
+          assignAttributes(div, {
+            style: 'pointer-events:none;width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+          });
+          bgPattern.appendChild(div);
+          bg.append(bgPattern);
+        }
+      } else if (bgPattern) {
+        bgPattern.remove();
+      }
 
       if (url) {
         if (!bgImg) {
@@ -21495,7 +21656,7 @@ var SvgCanvas = (function () {
     * @property {module:history.HistoryCommand} BatchCommand
     * @property {module:history.HistoryCommand} ChangeElementCommand
     * @property {module:utilities.decode64} decode64
-    * @property {module:utilities.dropXMLInteralSubset} dropXMLInteralSubset
+    * @property {module:utilities.dropXMLInternalSubset} dropXMLInternalSubset
     * @property {module:utilities.encode64} encode64
     * @property {module:svgcanvas~ffClone} ffClone
     * @property {module:svgcanvas~findDuplicateGradient} findDuplicateGradient
@@ -21537,7 +21698,7 @@ var SvgCanvas = (function () {
         BatchCommand: BatchCommand$1,
         ChangeElementCommand: ChangeElementCommand$1,
         decode64: decode64,
-        dropXMLInteralSubset: dropXMLInteralSubset,
+        dropXMLInternalSubset: dropXMLInternalSubset,
         encode64: encode64,
         ffClone: ffClone,
         findDefs: findDefs,
@@ -21565,7 +21726,7 @@ var SvgCanvas = (function () {
       return obj;
     };
   } // End constructor
-  ; // End class
+;   // End class
 
   return SvgCanvas;
 

@@ -1,4 +1,4 @@
-# ![alt text](https://svg-edit.github.io/svgedit/images/logo48x48.svg "svg-edit logo of a pencil") SVG-edit
+# ![LOGO](editor/images/logo.png) SVG-edit
 
 [![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
@@ -7,18 +7,32 @@
 <!-- [![Actions Status](https://github.com/SVG-Edit/svgedit/workflows/Node%20CI/badge.svg)](https://github.com/SVG-Edit/svgedit/actions)
 [![Actions Status](https://github.com/SVG-Edit/svgedit/workflows/Coverage/badge.svg)](https://github.com/SVG-Edit/svgedit/actions)
 -->
-[![coverage badge](coverage-badge.svg)](coverage-badge.svg)
+[![Tests badge](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/tests-badge.svg?sanitize=true)](badges/tests-badge.svg)
+[![Coverage badge](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/coverage-badge.svg?sanitize=true)](badges/coverage-badge.svg)
 
 [![Known Vulnerabilities](https://snyk.io/test/github/SVG-Edit/svgedit/badge.svg)](https://snyk.io/test/github/SVG-Edit/svgedit)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/alerts)
 [![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/SVG-Edit/svgedit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SVG-Edit/svgedit/context:javascript)
 
-[![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT)
+[![Licenses badge](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/licenses-badge.svg?sanitize=true)](badges/licenses-badge.svg)
+
+(see also [licenses for dev. deps.](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/licenses-badge-dev.svg?sanitize=true))
+
+(Note: The license provenance of the images in `/editor/images` may not be
+fully clear, even with the origin of some of the images listed as being from <http://tango.freedesktop.org/static/cvs/tango-art-libre/22x22/>. We would like to
+replace these images if their provenance cannot be determined or is found to
+be under a protective license. If you know of the original terms, or can help
+create SVG replacement images, please let us know at:
+[#377](https://github.com/SVG-Edit/svgedit/issues/377).)
+<!-- [![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT) -->
 
 [![issuehunt-to-marktext](https://issuehunt.io/static/embed/issuehunt-button-v1.svg)](https://issuehunt.io/r/SVG-Edit/svgedit)
 
 SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
 works in any modern browser.
+
+![screenshot](docs/screenshot.png)
+[SVG](https://upload.wikimedia.org/wikipedia/commons/f/fd/Ghostscript_Tiger.svg)
 
 ## Help wanted
 
@@ -30,10 +44,13 @@ to join the project.
 
 ## Demo
 
-### [Try SVG-edit here](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
+### [Try SVG-edit here](https://svg-edit.github.io/svgedit/editor/svg-editor.html)
 
-See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
+<!-- See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
 (or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor-es.html)
+version, which requires a modern browser).
+-->
+See a working editor on [`master`](https://svg-edit.github.io/svgedit/editor/svg-editor.html) (or its [ES6-Module](https://svg-edit.github.io/svgedit/editor/svg-editor-es.html)
 version, which requires a modern browser).
 
 You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>
@@ -41,18 +58,26 @@ You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>
 
 You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svgedit/releases).
 
-For testing the latest version in `master`, you may use
-<https://raw.githack.com/SVG-Edit/svgedit/master/editor/svg-editor.html>.
+You may test the [latest version in `master`](https://svg-edit.github.io/svgedit/editor/svg-editor-es.html)
+which is the ESM version. (The [non-ESM version](https://svg-edit.github.io/svgedit/editor/svg-editor.html)
+on `master` may be updated less frequently.)
 
 ## Installation
 
 ### Quick install
 
 1. Clone or copy the repository contents (at least the `editor` directory).
+    Please note that you should not do a recursive Git clone (i.e., with the
+    `--recursive` or `--recurse-submodules` flags), as you will get assorted
+    past versions (which are available on the parent as branches anyways).
+    (The reason these past versions are available as submodules is merely
+    for convenience in hosting these versions, along with `master`, online
+    on Github Pages.)
 1. If you need programmatic customization, see its section below.
 1. Otherwise, just add an iframe to your site, adding any extensions or
   configuration (see `docs/tutorials/ConfigOptions.md`
   ([ConfigOptions]{@tutorial ConfigOptions})) within the URL:
+
 ```html
 <iframe src="svgedit/editor/svg-editor.html?extensions="
     width="100%" height="100%"></iframe>
@@ -134,6 +159,8 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
 
 ## Recent news
 
+- 2020-02-22 Published 6.0.0 License clarifications/updates, PDF export
+    improvements, clipboard `sessionStorage`, and other changes.
 - 2019-11-16 Published 5.1.0 Misc. fixes and refactoring
 - 2019-05-07 Published 5.0.0 Change from `@babel/polyfill`
 - 2019-04-03 Published 4.3.0 Fix for double click on gradient

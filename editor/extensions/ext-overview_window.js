@@ -1,5 +1,5 @@
 /**
- * ext-overview_window.js
+ * @file ext-overview_window.js
  *
  * @license MIT
  *
@@ -14,7 +14,7 @@ export default {
     // https://code.google.com/p/chromium/issues/detail?id=565120.
     if (isChrome()) {
       const verIndex = navigator.userAgent.indexOf('Chrome/') + 7;
-      const chromeVersion = parseInt(navigator.userAgent.substring(verIndex));
+      const chromeVersion = Number.parseInt(navigator.userAgent.substring(verIndex));
       if (chromeVersion < 49) {
         return undefined;
       }
@@ -37,12 +37,12 @@ export default {
 
     // Define dynamic animation of the view box.
     const updateViewBox = function () {
-      const portHeight = parseFloat($('#workarea').css('height'));
-      const portWidth = parseFloat($('#workarea').css('width'));
+      const portHeight = Number.parseFloat($('#workarea').css('height'));
+      const portWidth = Number.parseFloat($('#workarea').css('width'));
       const portX = $('#workarea').scrollLeft();
       const portY = $('#workarea').scrollTop();
-      const windowWidth = parseFloat($('#svgcanvas').css('width'));
-      const windowHeight = parseFloat($('#svgcanvas').css('height'));
+      const windowWidth = Number.parseFloat($('#svgcanvas').css('width'));
+      const windowHeight = Number.parseFloat($('#svgcanvas').css('height'));
       const overviewWidth = $('#overviewMiniView').attr('width');
       const overviewHeight = $('#overviewMiniView').attr('height');
 
@@ -93,12 +93,12 @@ export default {
     // Set up the overview window as a controller for the view port.
     overviewWindowGlobals.viewBoxDragging = false;
     const updateViewPortFromViewBox = function () {
-      const windowWidth = parseFloat($('#svgcanvas').css('width'));
-      const windowHeight = parseFloat($('#svgcanvas').css('height'));
+      const windowWidth = Number.parseFloat($('#svgcanvas').css('width'));
+      const windowHeight = Number.parseFloat($('#svgcanvas').css('height'));
       const overviewWidth = $('#overviewMiniView').attr('width');
       const overviewHeight = $('#overviewMiniView').attr('height');
-      const viewBoxX = parseFloat($('#overview_window_view_box').css('left'));
-      const viewBoxY = parseFloat($('#overview_window_view_box').css('top'));
+      const viewBoxX = Number.parseFloat($('#overview_window_view_box').css('left'));
+      const viewBoxY = Number.parseFloat($('#overview_window_view_box').css('top'));
 
       const portX = viewBoxX / overviewWidth * windowWidth;
       const portY = viewBoxY / overviewHeight * windowHeight;
@@ -118,8 +118,8 @@ export default {
       const mouseY = (evt.offsetY || evt.originalEvent.layerY);
       const overviewWidth = $('#overviewMiniView').attr('width');
       const overviewHeight = $('#overviewMiniView').attr('height');
-      const viewBoxWidth = parseFloat($('#overview_window_view_box').css('min-width'));
-      const viewBoxHeight = parseFloat($('#overview_window_view_box').css('min-height'));
+      const viewBoxWidth = Number.parseFloat($('#overview_window_view_box').css('min-width'));
+      const viewBoxHeight = Number.parseFloat($('#overview_window_view_box').css('min-height'));
 
       let viewBoxX = mouseX - 0.5 * viewBoxWidth;
       let viewBoxY = mouseY - 0.5 * viewBoxHeight;

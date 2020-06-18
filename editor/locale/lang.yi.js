@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'ונגראָופּ עלעמענץ',
     docprops: 'דאָקומענט פּראָפּערטיעס',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'מאַך צו באָטטאָם',
     move_top: 'באַוועגן צו Top',
     node_clone: 'Clone Node',

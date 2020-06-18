@@ -126,6 +126,7 @@ export default {
     reorient_path: '調整路徑',
     ungroup: '取消群組',
     docprops: '文件屬性',
+    editor_homepage: 'SVG-Edit 主頁',
     move_bottom: '移至底部',
     move_top: '移動到頂部',
     node_clone: '增加節點',

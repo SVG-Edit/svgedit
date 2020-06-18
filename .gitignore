@@ -1,16 +1,20 @@
 ignore
 node_modules
 
-build/
-
 svgedit-custom.css
 
 docs/jsdoc
 
+cypress/results
 cypress/screenshots
 cypress/videos
 cypress.env.json
 
-coverage/**
-instrumented/**
+coverage
+instrumented
 .nyc_output
+mochawesome-report
+mochawesome.json
+
+.vscode
+.eslintcache

@@ -2,54 +2,45 @@
 
 ## Prepare
 
-1. `npm run browser-test` - Ensure build steps occur and tests are passing
-1. `npm start` and in another console window, `npm test` - This should
-    also be run, though currently accessibility tests are failing.
-1. `npm run build-docs` - Ensure JSDoc can build and is available for site
-    build (though not added to `master`, will be copied over in `gh-pages`
-    steps and used in `npm publish` step).
-1. `npm pack --dry-run` to preview which files will be included once
-    published and taking into account `.npmignore`.
+1. `npm test` - Ensure build steps occur and tests are passing (note that
+    accessibility tests are currently failing).
+1. `npm publish --dry-run` to run the preparatory scripts to ensure the
+    necessary files are updated and also to see which files will be
+    included once published and taking into account `.npmignore`
+    (use `npm pack --dry-run` to see the files without the preparatory
+    steps).
 
 ## Update the main project
-<!--
-1. Update the VERSION variable in Makefile.
--->
+
 1. Update `version` in `package.json` (and `package-lock.json` (via `npm i`)).
-1. Update the CHANGES file with a summary of all changes.
+1. Update the `CHANGES.md` file with a summary of all changes (adding the
+    version of the new release).
 1. Add new release info to `Recent news` section in README
-1. Commit these changes
-<!-- with `git commit -m "Updating Makefile and CHANGES for release X.Y.Z"`-->.
-1. Tag the version, prefixed by "v", e.g., `v5.1.0`.
+1. For major version changes, add a separate document for that version
+    to `docs/versions/X.Y.Z.md` to summarizethe changes (higher level
+    than the CHANGES file) and to indicate what is needed to update code
+    to work with the breaking changes.
+1. Commit these changes `git commit -m "Updating CHANGES for release X.Y.Z"`-->.
+1. Tag the version, prefixed by "v", e.g., `v6.0.0`.
 
 The above steps can be done on a fork and committed via a pull request.
 
-## Create the release on `gh-pages`
-<!--
-2. From the root directory run `make`.
-3. Copy `build/svg-edit-X.Y.Z/`, `build/svg-edit-X.Y.Z-src.tar.gz`, and `build/svg-edit-X.Y.Z.zip` to a temporary directory.
--->
+## Create the release as a submodule
 
-1. Switch to the `gh-pages` branch with `git checkout gh-pages`.
-1. Run the `build.js` executable (`npm run build` if within the project root
-    directory); **Please note: this script is only available on `gh-pages` and
-    currently assumes that one has the `gh-pages` branch checked out within
-    a folder that is in a sibling directory to a folder named `svgedit` that
-    is on the `master` branch and whose files and version info will be copied
-    over to `gh-pages` in making the "latest" and specific version builds**
-1. Commit these changes with `git commit -m "Updating files for release X.Y.Z"`.
-1. Switch back to the `master` branch with `git checkout master`.
-1. Ensure this step worked by visiting
+1. Create a branch for the release, e.g., `git branch release-v6.0.0`
+1. While still on `master`, run the following (changing the version). This
+    will add the branch to `.gitsubmodules` and have it point `latest` to
+    this new release:
+    `VERSION=6.0.0 npm run add-release`
+1. Commit these changes `git commit -m "Updating for release X.Y.Z"`-->.
+1. Push to `master`.
+1. Ensure the new release is available by visiting
     <https://svg-edit.github.io/svgedit/releases/svg-edit-X.Y.Z/editor/svg-editor.html>
     (and in an ES6-Module-compliant browser,
     <https://svg-edit.github.io/svgedit/releases/svg-edit-X.Y.Z/editor/svg-editor-es.html>).
 
-The above steps can be done on a fork and committed via a pull request.
-
 ## Create the release on GitHub
-<!--
-4. Attach the `svg-edit-X.Y.Z-src.tar.gz` and `build/svg-edit-X.Y.Z.zip` files to the release.
--->
+
 1. Go to <https://github.com/SVG-Edit/svgedit/releases> and select
   `Draft a new release`.
 1. Make the release target point at the tag where the <!-- makefile and -->
@@ -66,4 +57,5 @@ You will need to be a member of the SVG-Edit GitHub group to do this step.
 
 1. `npm publish`
 
-You will need to be a member of the npm group to do this step.
+You will need to be a member of the npm group to do this step. See above
+for `npm publish --dry-run`.

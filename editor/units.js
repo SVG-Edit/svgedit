@@ -1,5 +1,5 @@
 /**
- * Tools for working with units
+ * Tools for working with units.
  * @module units
  * @license MIT
  *
@@ -105,7 +105,7 @@ export const init = function (elementContainer) {
 };
 
 /**
-* Group: Unit conversion functions
+* Group: Unit conversion functions.
 */
 
 /**
@@ -140,7 +140,7 @@ export const shortFloat = function (val) {
   if (Array.isArray(val)) {
     return shortFloat(val[0]) + ',' + shortFloat(val[1]);
   }
-  return parseFloat(val).toFixed(digits) - 0;
+  return Number.parseFloat(val).toFixed(digits) - 0;
 };
 
 /**

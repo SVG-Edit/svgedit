@@ -1,6 +1,6 @@
 /* globals MathJax */
 /**
- * ext-mathjax.js
+ * @file ext-mathjax.js
  *
  * @license MIT
  *

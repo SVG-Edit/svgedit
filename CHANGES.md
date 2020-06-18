@@ -1,22 +1,109 @@
 # SVG-Edit CHANGES
 
-## ?
+## 6.0.0 (unreleased)
 
+- Project: Add `FUNDING.yml` to accept contributions
+- License: Reflect actual license of library in `package.json` based
+  not only on licenses of repository as a whole (i.e., "MIT") but
+  individual component files; see `filesByLicense` in `licenseInfo.json`
+  for a map of license to these files within the repo with their own
+  licenses. See the new license badges on the README for a summary of
+  the licenses including either bundled devDependencies or all
+  `devDependencies` (we have no direct npm `dependencies` currently).
+- License: Add note about unclear provenance of some images
 - License: Relicense ext-mathjax from Apache-2.0 to MIT per
   <https://github.com/josegaert/ext-mathjax/issues/6>
 - License: Clarify in `@license` that `ext-server_moinsave.js` is
   "(MIT OR GPL-2.0-or-later)" per subsequent text
 - License: Reorder license listing in `jquery.contextMenu.js` so
   that more permissive is noticeable first
+- License: Replace CC-BY-SA-2.0 polygon image (thanks, @mowijo !)
+- BREAKING CHANGE: Remove `$.pref` in favor of new `svgEditor.pref`
+  (avoiding polluting jQuery). (Might be moved to own module in
+  future.)
+- BREAKING CHANGE: `putLocale` (a function called automatically by
+  `svg-editor.js`) no longer checks `pref`. Should not impact
+  average consumers.
+- BREAKING CHANGE: Move clipboard from `localStorage` to `sessionStorage`
+    (@NeilFraser)
+- Fix: main menu style and text #371
 - Fix (Accessibility): Avoid duplicate IDs
+- Fix (openclipart browser): Redirect on lacking browser support
+- Fix: Misspelling for `dropXMLInternalSubset` method (also fixes
+    use in imagelib when defaulting to image's title)
+- Fix: Redirect paths for imagelib redirect checks
+- Fix: Ensure `setupCurPrefs` is run (including when `source` or
+    `url` is set within the URL)
+- Fix: Pressing 'Ctrl+A' causes js error when canvas is empty (@cuixiping)
+- Fix: Path element cannot be exported to PDF; export path with
+    holes to PDF; export path element to PDF, support more path
+    commands; #269 (@cuixiping)
+- Fix: remove "null" attributes in svg source #76 (@cuixiping)
+- Fix: A bug of `convertPath` function when converting H and V to
+    relative (@cuixiping)
 - Optimization: Remove unused `jquery-ui-1.8.custom.min.js` file
+- Optimization: Remove old build/tools closure/yuicompressor code
+- Optimization: Remove unmaintained chrome-app, firefox-extension,
+  opera-widget (an updated WebExtensions replacement (or such)
+  would be welcome.)
+- Localization: Add 'SVG-Edit Home Page' to locale files
+- Docs: Remove outdated info on jsdoc linting (now just part of eslint config)
+- Docs: Add testing badge
+- Docs: Update coverage badge per latest coveradge
+- Docs: Add license badges and `licenseInfo.json` (has a
+  `filesByLicense` map of files to licenses (not yet used programmatically)
+  and `bundledRootPackages` which is used by `license-badger` to know which
+  dev. packages are being bundled (added by `npm run copy`) for determining
+  summary of all licenses including bundled).
+- Docs: Reprioritize `docs` in commit lists (prioritize user-facing)
+- Docs: Update Pavol's email address (@prusnak)
+- Docs: Update license badges to reflect lack of (known) CC-BY-SA-2.0 usage
+- Docs: Update Contributing, Testing (renamed to Development),
+    Linting and ReleaseInstructions
+- Update: Cypress code coverage plugin
+- Refactoring: Switch from `$.param.querystring` to `URL`
+- Refactoring: Ensure file-global jsdoc tags are at beginning of file
+- Refactoring: Move `build-html` to `build` directory
+- Refactoring: Add favicon no-op to suppress favicon 404s until
+  loaded dynamically (might make configurable in future)
 - Linting (ESLint): Simplify regexes
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
+- Linting (ESLint): Update as per latest ash-nazg
+- Linting (ESLint): Add rules to check for file-level tags
+- Linting (ESLint): Check hidden rc files
+- Linting (ESLint): Add linting plugins (mocha, chai-expect, chai-friendly,
+    cypress)
+- Linting (ESLint): Add `@fintechstudieos/eslint-plugin-chai-as-promised`,
+    `eslint-plugin-chai-expect-keywords`, and `eslint-plugin-mocha-cleanup`
+    plugins
 - Testing: Switch to Cypress with code coverage for UI testing;
   use ESM version for faster debugging
 - Testing: Add map file for underscore
+- Testing: Separate tests into unit/ui; split UI tests by specific domain;
+  setup browser-bug folder and ui issues folder
+- Testing: Create test utilities for selecting English and visiting and
+  approving storage
+- Testing: Produce mochawesome report
+- Testing: Cypress with multiple reporters in case we need
+- Build: Update underscore and core-js-bundle copies
+- npm: Add `underscore` to copy script
+- npm: Make `copy`, `compress-images`, `start-embedded`, `build-docs-remove`
+  scripts cross-platform; add `start-allow-origin` script
+- npm: Rename open script to open-tests, and add `open` script for opening
+  instance of svgedit
+- npm: Ensure starting server for open scripts
+- npm/Linting: Add `--cache` to speed up subsequent linting
+- npm: Fix scripts for Windows development (needed for
+  building docs and instrumenting)
 - npm: Update scripts to reflect removal of `all_tests.html`;
   remove `browser-test` script
+- npm: Add `add-release` script
+- npm: Add reporting scripts (tests and coverage)
+- npm: Add `license-badges`, `build-docs`, and `copy` scripts to `prepublishOnly` script
+- npm: Rename `test-prep` to `prep` and other misc. script naming changes
+- npm: Update `package-lock.json`
+- npm: Update from deprecated `rollup-plugin-babel` to `@rollup/plugin-babel`
+    (and make `babelHelpers` explicit)
 - npm: Update devDeps, peerDeps
 
 ## 5.1.0

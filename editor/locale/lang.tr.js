@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Çöz Elemanları',
     docprops: 'Belge Özellikleri',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Altına gider',
     move_top: 'Üste taşı',
     node_clone: 'Clone Node',

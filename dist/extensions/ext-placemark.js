@@ -38,7 +38,7 @@ var svgEditorExtension_placemark = (function () {
   }
 
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _arrayWithHoles(arr) {
@@ -46,10 +46,7 @@ var svgEditorExtension_placemark = (function () {
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -75,12 +72,29 @@ var svgEditorExtension_placemark = (function () {
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
-   * ext-placemark.js
+   * @file ext-placemark.js
    *
    *
    * @copyright 2010 CloudCanvas, Inc. All rights reserved
@@ -88,16 +102,16 @@ var svgEditorExtension_placemark = (function () {
    */
   var extPlacemark = {
     name: 'placemark',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, addElem, $, importLocale, selElems, started, newPM, strings, markerTypes, showPanel, getLinked, updateText, updateFont, addMarker, setMarker, colorChanged, updateReferences, setArrowFromButton, getTitle, addMarkerButtons, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                addMarkerButtons = function _ref11(buttons) {
+                addMarkerButtons = function _addMarkerButtons(buttons) {
                   Object.keys(markerTypes).forEach(function (id) {
                     var title = getTitle(String(id));
                     buttons.push({
@@ -117,7 +131,7 @@ var svgEditorExtension_placemark = (function () {
                   return buttons;
                 };
 
-                getTitle = function _ref10(id) {
+                getTitle = function _getTitle(id) {
                   var langList = strings.langList;
                   var item = langList.find(function (itm) {
                     return itm.id === id;
@@ -125,7 +139,7 @@ var svgEditorExtension_placemark = (function () {
                   return item ? item.title : id;
                 };
 
-                setArrowFromButton = function _ref9(ev) {
+                setArrowFromButton = function _setArrowFromButton(ev) {
                   var parts = this.id.split('_');
                   var val = parts[2];
 
@@ -136,7 +150,7 @@ var svgEditorExtension_placemark = (function () {
                   $('#placemark_marker').attr('value', val);
                 };
 
-                updateReferences = function _ref8(el) {
+                updateReferences = function _updateReferences(el) {
                   var id = 'placemark_marker_' + el.id;
                   var markerName = 'marker-start';
                   var marker = getLinked(el, markerName);
@@ -161,7 +175,7 @@ var svgEditorExtension_placemark = (function () {
                   }
                 };
 
-                colorChanged = function _ref7(el) {
+                colorChanged = function _colorChanged(el) {
                   var color = el.getAttribute('stroke');
                   var marker = getLinked(el, 'marker-start'); // console.log(marker);
 
@@ -192,7 +206,7 @@ var svgEditorExtension_placemark = (function () {
                   }
                 };
 
-                setMarker = function _ref6(el, val) {
+                setMarker = function _setMarker(el, val) {
                   var markerName = 'marker-start';
                   var marker = getLinked(el, markerName);
 
@@ -214,7 +228,7 @@ var svgEditorExtension_placemark = (function () {
                   svgCanvas.call('changed', [el]);
                 };
 
-                addMarker = function _ref5(id, val) {
+                addMarker = function _addMarker(id, val) {
                   var marker = svgCanvas.getElem(id);
 
                   if (marker) {
@@ -274,9 +288,9 @@ var svgEditorExtension_placemark = (function () {
                   return marker;
                 };
 
-                updateFont = function _ref4(font) {
+                updateFont = function _updateFont(font) {
                   font = font.split(' ');
-                  var fontSize = parseInt(font.pop());
+                  var fontSize = Number.parseInt(font.pop());
                   font = font.join(' ');
                   selElems.forEach(function (elem) {
                     if (elem && elem.getAttribute('class').includes('placemark')) {
@@ -296,7 +310,7 @@ var svgEditorExtension_placemark = (function () {
                   });
                 };
 
-                updateText = function _ref3(txt) {
+                updateText = function _updateText(txt) {
                   var items = txt.split(';');
                   selElems.forEach(function (elem) {
                     if (elem && elem.getAttribute('class').includes('placemark')) {
@@ -314,7 +328,7 @@ var svgEditorExtension_placemark = (function () {
                   });
                 };
 
-                getLinked = function _ref2(elem, attr) {
+                getLinked = function _getLinked(elem, attr) {
                   if (!elem) {
                     return null;
                   }
@@ -336,11 +350,11 @@ var svgEditorExtension_placemark = (function () {
                   return svgCanvas.getElem(m[1]); // return svgCanvas.getElem(m.groups.id);
                 };
 
-                showPanel = function _ref(on) {
+                showPanel = function _showPanel(on) {
                   $('#placemark_panel').toggle(on);
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 addElem = svgCanvas.addSVGElementFromJson;
                 $ = S.$, importLocale = S.importLocale; // {svgcontent},
@@ -490,7 +504,7 @@ var svgEditorExtension_placemark = (function () {
                       var id = svgCanvas.getNextId();
                       var items = $('#placemarkText').val().split(';');
                       var font = $('#placemarkFont').val().split(' ');
-                      var fontSize = parseInt(font.pop());
+                      var fontSize = Number.parseInt(font.pop());
                       font = font.join(' ');
                       var x0 = opts.start_x + 10,
                           y0 = opts.start_y + 10;
@@ -700,15 +714,9 @@ var svgEditorExtension_placemark = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extPlacemark;

@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorient pot',
     ungroup: 'Razdruži elemente',
     docprops: 'Lastnosti dokumenta',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Premakni na dno',
     move_top: 'Premakni na vrh',
     node_clone: 'Kloniraj oglišče',

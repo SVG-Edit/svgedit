@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorient path',
     ungroup: 'Ungroup Елементи',
     docprops: 'Својства на документот',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Move to bottom',
     move_top: 'Поместување на почетокот',
     node_clone: 'Clone Node',

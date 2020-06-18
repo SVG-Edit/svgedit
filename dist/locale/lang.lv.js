@@ -129,6 +129,7 @@ var svgEditorLang_lv = (function () {
       reorient_path: 'Reorient path',
       ungroup: 'Atgrupēt Elements',
       docprops: 'Document Properties',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: 'Pārvietot uz leju',
       move_top: 'Pārvietot uz augšu',
       node_clone: 'Clone Node',

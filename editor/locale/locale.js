@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-fn-reference-in-iterator */
 /* globals jQuery */
 /**
- * Localizing script for SVG-edit UI
+ * Localizing script for SVG-edit UI.
  * @module locale
  * @license MIT
  *
@@ -11,11 +11,12 @@
  */
 
 /**
- * Used, for example, in the ImageLibs extension, to present libraries (with name/URL/description) in order
+ * Used, for example, in the ImageLibs extension, to present libraries
+ * (with name/URL/description) in order.
  * @typedef {GenericArray<module:locale.LocaleStrings>} module:locale.LocaleArray
 */
 /**
- * The string keys of the object are two-letter language codes
+ * The string keys of the object are two-letter language codes.
  * @tutorial LocaleDocs
  * @typedef {PlainObject<string, string|module:locale.LocaleStrings|module:locale.LocaleArray>} module:locale.LocaleStrings
  */
@@ -56,6 +57,7 @@ export const setStrings = function (type, obj, ids) {
   Object.entries(obj).forEach(([sel, val]) => {
     if (!val) {
       console.log(sel); // eslint-disable-line no-console
+      return; // keep old text when has no translation
     }
 
     if (ids) { sel = '#' + sel; }
@@ -91,7 +93,7 @@ export const setStrings = function (type, obj, ids) {
 
 /**
 * The "data" property is generally set to an an array of objects with
-*   "id" and "title" or "textContent" properties
+*   "id" and "title" or "textContent" properties.
 * @typedef {PlainObject} module:locale.AddLangExtensionLocaleData
 * @property {module:locale.LocaleStrings[]} data See {@tutorial LocaleDocs}
 */
@@ -205,6 +207,8 @@ export const readLang = async function (langData) {
     tool_import: tools.import_doc,
     tool_open: tools.open_doc,
     tool_save: tools.save_doc,
+    tool_editor_prefs: config.editor_prefs,
+    tool_editor_homepage: tools.editor_homepage,
 
     svginfo_units_rulers: config.units_and_rulers,
     svginfo_rulers_onoff: config.show_rulers,
@@ -371,28 +375,17 @@ export const readLang = async function (langData) {
 export const putLocale = async function (givenParam, goodLangs, conf) {
   if (givenParam) {
     langParam = givenParam;
-  } else {
-    langParam = $.pref('lang');
-    if (!langParam) {
-      if (navigator.userLanguage) { // Explorer
-        langParam = navigator.userLanguage;
-      } else if (navigator.language) { // FF, Opera, ...
-        langParam = navigator.language;
-      }
-    }
+  } else if (navigator.userLanguage) { // Explorer
+    langParam = navigator.userLanguage;
+  } else if (navigator.language) { // FF, Opera, ...
+    langParam = navigator.language;
+  }
 
-    console.log('Lang: ' + langParam); // eslint-disable-line no-console
+  console.log('Lang: ' + langParam); // eslint-disable-line no-console
 
-    // Set to English if language is not in list of good langs
-    if (!goodLangs.includes(langParam) && langParam !== 'test') {
-      langParam = 'en';
-    }
-
-    // don't bother on first run if language is English
-    // The following line prevents setLang from running
-    //    extensions which depend on updated uiStrings,
-    //    so commenting it out.
-    // if (langParam.startsWith('en')) {return;}
+  // Set to English if language is not in list of good langs
+  if (!goodLangs.includes(langParam) && langParam !== 'test') {
+    langParam = 'en';
   }
 
   const url = conf.langPath + 'lang.' + langParam + '.js';

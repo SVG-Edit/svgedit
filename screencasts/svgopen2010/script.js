@@ -33,12 +33,12 @@ const query = function (qry, root) {
 };
 
 const ua = navigator.userAgent;
-const isFF = parseFloat(ua.split('Firefox/')[1]) || undefined;
-const isWK = parseFloat(ua.split('WebKit/')[1]) || undefined;
-const isOpera = parseFloat(ua.split('Opera/')[1]) || undefined;
+const isFF = Number.parseFloat(ua.split('Firefox/')[1]) || undefined;
+const isWK = Number.parseFloat(ua.split('WebKit/')[1]) || undefined;
+const isOpera = Number.parseFloat(ua.split('Opera/')[1]) || undefined;
 
 const canTransition = (function () {
-  const ver = parseFloat(ua.split('Version/')[1]) || undefined;
+  const ver = Number.parseFloat(ua.split('Version/')[1]) || undefined;
   // test to determine if this browser can handle CSS transitions.
   const cachedCanTransition =
     (isWK || (isFF && isFF > 3.6) || (isOpera && ver >= 10.5));
@@ -158,9 +158,9 @@ const SlideShow = function (slides) {
 
   const h = window.location.hash;
   try {
-    this.current = parseInt(h.split('#slide')[1]);
-  } catch (e) { /* squeltch */ }
-  this.current = isNaN(this.current) ? 1 : this.current;
+    this.current = Number.parseInt(h.split('#slide')[1]);
+  } catch (e) { /* squelch */ }
+  this.current = Number.isNaN(this.current) ? 1 : this.current;
   const that = this;
   doc.addEventListener('keydown',
     function (e) { that.handleKeys(e); });

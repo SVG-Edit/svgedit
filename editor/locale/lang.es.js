@@ -126,6 +126,7 @@ export default {
     reorient_path: 'Reorientar el trazado',
     ungroup: 'Desagrupar objetos',
     docprops: 'Propiedades del documento',
+    editor_homepage: 'SVG-Edit Home Page',
     move_bottom: 'Mover abajo',
     move_top: 'Mover arriba',
     node_clone: 'Clonar nodo',

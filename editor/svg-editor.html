@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build-html.js to build -->
+<!-- AUTO-GENERATED FROM svg-editor-es.html; DO NOT EDIT; use build/build-html.js to build -->
 <html>
 <head>
     <meta charset="utf-8" />
@@ -7,6 +7,10 @@
     <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- No-op until loaded dynamically (could make configurable) -->
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+
     <!-- STYLESHEETS (others loaded dynamically) -->
     <style id="styleoverrides" media="screen"></style>
 
@@ -109,15 +113,11 @@
           New Image (N)
         </li>
         <li id="tool_open" style="display:none;">
-          <div id="fileinputs">
-            <div></div>
-          </div>
+          <div></div>
           Open SVG
         </li>
         <li id="tool_import" style="display:none;">
-          <div id="fileinputs_import">
-            <div></div>
-          </div>
+          <div></div>
           Import Image
         </li>
         <li id="tool_save">
@@ -132,15 +132,15 @@
           <div></div>
           Document Properties (D)
         </li>
+        <li id="tool_editor_prefs">
+          <div></div>
+          Editor Preferences
+        </li>
+        <li id="tool_editor_homepage">
+          <div></div>
+          SVG-Edit Home Page
+        </li>
       </ul>
-      <p>
-        <a href="https://github.com/SVG-Edit/svgedit" target="_blank">
-          SVG-edit Home Page
-        </a>
-      </p>
-      <button id="tool_prefs_option">
-        Editor Options
-      </button>
     </div>
   </div>
   <div id="tools_top" class="tools_panel">
@@ -367,6 +367,9 @@
             <li style="font-family:cursive">Cursive</li>
             <li style="font-family:fantasy">Fantasy</li>
             <li style="font-family:monospace">Monospace</li>
+            <li style="font-family:courier">Courier</li>
+            <li style="font-family:helvetica">Helvetica</li>
+            <li style="font-family:times">Times</li>
           </ul>
         </div>
       </div>

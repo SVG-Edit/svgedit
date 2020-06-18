@@ -38,7 +38,7 @@ var svgEditorExtension_polygon = (function () {
   }
 
   /**
-   * ext-polygon.js
+   * @file ext-polygon.js
    *
    *
    * @copyright 2010 CloudCanvas, Inc. All rights reserved
@@ -46,29 +46,29 @@ var svgEditorExtension_polygon = (function () {
    */
   var extPolygon = {
     name: 'polygon',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, $, importLocale, editingitex, strings, selElems, started, newFO, showPanel, setAttr, cot, sec, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                sec = function _ref4(n) {
+                sec = function _sec(n) {
                   return 1 / Math.cos(n);
                 };
 
-                cot = function _ref3(n) {
+                cot = function _cot(n) {
                   return 1 / Math.tan(n);
                 };
 
-                setAttr = function _ref2(attr, val) {
+                setAttr = function _setAttr(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
                   svgCanvas.call('changed', selElems);
                 };
 
-                showPanel = function _ref(on) {
+                showPanel = function _showPanel(on) {
                   var fcRules = $('#fc_rules');
 
                   if (!fcRules.length) {
@@ -79,7 +79,7 @@ var svgEditorExtension_polygon = (function () {
                   $('#polygon_panel').toggle(on);
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 $ = S.$, importLocale = S.importLocale, editingitex = false;
                 _context.next = 9;
@@ -299,15 +299,9 @@ var svgEditorExtension_polygon = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extPolygon;

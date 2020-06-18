@@ -46,17 +46,17 @@ $(document).bind('svgEditorReady', function () {
 ```
 
 If you are acting within the frame, you may use `svgEditor.ready`
-(see [Within-frame events](#Editor-within-frame-events-svgEditor) below).
+(see "Editor (within-frame) events (`svgEditor`)" below).
 
 ## Editor (within-frame) events (`svgEditor`)
 
 ### `svgEditor.canvas`
 
-- Canvas object. See [Canvas events](#Canvas-events).
+- Canvas object. See "Canvas events".
 
 ### `svgEditor.canvas.bind(eventName, function () {})`
 
-- Method for listening to canvas events. See [Canvas events](#Canvas-events).
+- Method for listening to canvas events. See "Canvas events".
 
 ### `svgEditor.ready(function () {})`
 

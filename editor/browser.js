@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Browser detection
+ * Browser detection.
  * @module browser
  * @license MIT
  *

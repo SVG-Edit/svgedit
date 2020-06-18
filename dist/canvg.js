@@ -1,20 +1,6 @@
 var canvg = (function (exports) {
   'use strict';
 
-  function _typeof(obj) {
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
-  }
-
   function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
     try {
       var info = gen[key](arg);
@@ -104,7 +90,7 @@ var canvg = (function (exports) {
     return _setPrototypeOf(o, p);
   }
 
-  function isNativeReflectConstruct() {
+  function _isNativeReflectConstruct() {
     if (typeof Reflect === "undefined" || !Reflect.construct) return false;
     if (Reflect.construct.sham) return false;
     if (typeof Proxy === "function") return true;
@@ -118,7 +104,7 @@ var canvg = (function (exports) {
   }
 
   function _construct(Parent, args, Class) {
-    if (isNativeReflectConstruct()) {
+    if (_isNativeReflectConstruct()) {
       _construct = Reflect.construct;
     } else {
       _construct = function _construct(Parent, args, Class) {
@@ -148,6 +134,25 @@ var canvg = (function (exports) {
     }
 
     return _assertThisInitialized(self);
+  }
+
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+    return function () {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
   }
 
   function _superPropBase(object, property) {
@@ -181,19 +186,15 @@ var canvg = (function (exports) {
   }
 
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
   }
 
   function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
   }
 
   function _arrayWithHoles(arr) {
@@ -201,14 +202,11 @@ var canvg = (function (exports) {
   }
 
   function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -234,16 +232,33 @@ var canvg = (function (exports) {
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
-   * For parsing color values
+   * For parsing color values.
    * @module RGBColor
    * @author Stoyan Stefanov <sstoo@gmail.com>
    * @see https://www.phpied.com/rgb-color-parser-in-javascript/
@@ -405,7 +420,7 @@ var canvg = (function (exports) {
       }
 
       return bits.map(function (b) {
-        return parseInt(b);
+        return Number.parseInt(b);
       });
     }
   }, {
@@ -418,7 +433,7 @@ var canvg = (function (exports) {
       }
 
       return bits.map(function (b) {
-        return parseInt(b, 16);
+        return Number.parseInt(b, 16);
       });
     }
   }, {
@@ -431,7 +446,7 @@ var canvg = (function (exports) {
       }
 
       return bits.map(function (b) {
-        return parseInt(b + b, 16);
+        return Number.parseInt(b + b, 16);
       });
     }
   }];
@@ -439,9 +454,7 @@ var canvg = (function (exports) {
    * A class to parse color values.
    */
 
-  var RGBColor =
-  /*#__PURE__*/
-  function () {
+  var RGBColor = /*#__PURE__*/function () {
     /**
     * @param {string} colorString
     */
@@ -563,18 +576,20 @@ var canvg = (function (exports) {
     return RGBColor;
   }();
 
-  function _typeof$1(obj) {
-    if (typeof Symbol === "function" && _typeof(Symbol.iterator) === "symbol") {
-      _typeof$1 = function _typeof$1(obj) {
-        return _typeof(obj);
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function _typeof(obj) {
+        return typeof obj;
       };
     } else {
-      _typeof$1 = function _typeof$1(obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof(obj);
+      _typeof = function _typeof(obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
       };
     }
 
-    return _typeof$1(obj);
+    return _typeof(obj);
   }
 
   function _classCallCheck$1(instance, Constructor) {
@@ -582,6 +597,8 @@ var canvg = (function (exports) {
       throw new TypeError("Cannot call a class as a function");
     }
   }
+  /* eslint-disable no-bitwise, unicorn/prefer-query-selector */
+
   /**
   * StackBlur - a fast almost Gaussian Blur For Canvas
   *
@@ -590,9 +607,9 @@ var canvg = (function (exports) {
   * mario@quasimondo.de
   *
   * Or support me on flattr:
-  * {@link https://flattr.com/thing/72791/StackBlur-a-fast-almost-Gaussian-Blur-Effect-for-CanvasJavascript}
+  * {@link https://flattr.com/thing/72791/StackBlur-a-fast-almost-Gaussian-Blur-Effect-for-CanvasJavascript}.
+  *
   * @module StackBlur
-  * @version 0.5
   * @author Mario Klingemann
   * Contact: mario@quasimondo.com
   * Website: {@link http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html}
@@ -622,6 +639,8 @@ var canvg = (function (exports) {
   * OTHER DEALINGS IN THE SOFTWARE.
   */
 
+  /* eslint-disable max-len */
+
 
   var mulTable = [512, 512, 456, 512, 328, 456, 335, 512, 405, 328, 271, 456, 388, 335, 292, 512, 454, 405, 364, 328, 298, 271, 496, 456, 420, 388, 360, 335, 312, 292, 273, 512, 482, 454, 428, 405, 383, 364, 345, 328, 312, 298, 284, 271, 259, 496, 475, 456, 437, 420, 404, 388, 374, 360, 347, 335, 323, 312, 302, 292, 282, 273, 265, 512, 497, 482, 468, 454, 441, 428, 417, 405, 394, 383, 373, 364, 354, 345, 337, 328, 320, 312, 305, 298, 291, 284, 278, 271, 265, 259, 507, 496, 485, 475, 465, 456, 446, 437, 428, 420, 412, 404, 396, 388, 381, 374, 367, 360, 354, 347, 341, 335, 329, 323, 318, 312, 307, 302, 297, 292, 287, 282, 278, 273, 269, 265, 261, 512, 505, 497, 489, 482, 475, 468, 461, 454, 447, 441, 435, 428, 422, 417, 411, 405, 399, 394, 389, 383, 378, 373, 368, 364, 359, 354, 350, 345, 341, 337, 332, 328, 324, 320, 316, 312, 309, 305, 301, 298, 294, 291, 287, 284, 281, 278, 274, 271, 268, 265, 262, 259, 257, 507, 501, 496, 491, 485, 480, 475, 470, 465, 460, 456, 451, 446, 442, 437, 433, 428, 424, 420, 416, 412, 408, 404, 400, 396, 392, 388, 385, 381, 377, 374, 370, 367, 363, 360, 357, 354, 350, 347, 344, 341, 338, 335, 332, 329, 326, 323, 320, 318, 315, 312, 310, 307, 304, 302, 299, 297, 294, 292, 289, 287, 285, 282, 280, 278, 275, 273, 271, 269, 267, 265, 263, 261, 259];
   var shgTable = [9, 11, 12, 13, 13, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
@@ -641,8 +660,8 @@ var canvg = (function (exports) {
       canvas = document.getElementById(canvas);
     }
 
-    if (!canvas || _typeof$1(canvas) !== 'object' || !('getContext' in canvas)) {
-      throw new TypeError('Expecting canvas with `getContext` method in processCanvasRGB(A) calls!');
+    if (!canvas || _typeof(canvas) !== 'object' || !('getContext' in canvas)) {
+      throw new TypeError('Expecting canvas with `getContext` method ' + 'in processCanvasRGB(A) calls!');
     }
 
     var context = canvas.getContext('2d');
@@ -885,7 +904,11 @@ var canvg = (function (exports) {
    */
 
 
-  var BlurStack = function BlurStack() {
+  var BlurStack =
+  /**
+   * Set properties.
+   */
+  function BlurStack() {
     _classCallCheck$1(this, BlurStack);
 
     this.r = 0;
@@ -911,17 +934,17 @@ var canvg = (function (exports) {
 
   /**
   * @typedef {PlainObject} module:canvg.CanvgOptions
-  * @property {boolean} opts.ignoreMouse true => ignore mouse events
-  * @property {boolean} opts.ignoreAnimation true => ignore animations
-  * @property {boolean} opts.ignoreDimensions true => does not try to resize canvas
-  * @property {boolean} opts.ignoreClear true => does not clear canvas
-  * @property {Integer} opts.offsetX int => draws at a x offset
-  * @property {Integer} opts.offsetY int => draws at a y offset
-  * @property {Integer} opts.scaleWidth int => scales horizontally to width
-  * @property {Integer} opts.scaleHeight int => scales vertically to height
-  * @property {module:canvg.ForceRedraw} opts.forceRedraw function => will call the function on every frame, if it returns true, will redraw
-  * @property {boolean} opts.log Adds log function
-  * @property {boolean} opts.useCORS Whether to set CORS `crossOrigin` for the image to `Anonymous`
+  * @property {boolean} ignoreMouse true => ignore mouse events
+  * @property {boolean} ignoreAnimation true => ignore animations
+  * @property {boolean} ignoreDimensions true => does not try to resize canvas
+  * @property {boolean} ignoreClear true => does not clear canvas
+  * @property {Integer} offsetX int => draws at a x offset
+  * @property {Integer} offsetY int => draws at a y offset
+  * @property {Integer} scaleWidth int => scales horizontally to width
+  * @property {Integer} scaleHeight int => scales vertically to height
+  * @property {module:canvg.ForceRedraw} forceRedraw function => will call the function on every frame, if it returns true, will redraw
+  * @property {boolean} log Adds log function
+  * @property {boolean} useCORS Whether to set CORS `crossOrigin` for the image to `Anonymous`
   */
 
   /**
@@ -1120,9 +1143,7 @@ var canvg = (function (exports) {
       mathematical: 'alphabetic'
     };
 
-    svg.Property =
-    /*#__PURE__*/
-    function () {
+    svg.Property = /*#__PURE__*/function () {
       function Property(name, value) {
         _classCallCheck(this, Property);
 
@@ -1145,7 +1166,7 @@ var canvg = (function (exports) {
         key: "numValue",
         value: function numValue() {
           if (!this.hasValue()) return 0;
-          var n = parseFloat(this.value);
+          var n = Number.parseFloat(this.value);
 
           if (String(this.value).endsWith('%')) {
             n /= 100.0;
@@ -1373,13 +1394,11 @@ var canvg = (function (exports) {
     svg.ToNumberArray = function (s) {
       var a = svg.trim(svg.compressSpaces((s || '').replace(/,/g, ' '))).split(' ');
       return a.map(function (_a) {
-        return parseFloat(_a);
+        return Number.parseFloat(_a);
       });
     };
 
-    svg.Point =
-    /*#__PURE__*/
-    function () {
+    svg.Point = /*#__PURE__*/function () {
       function _class(x, y) {
         _classCallCheck(this, _class);
 
@@ -1422,9 +1441,7 @@ var canvg = (function (exports) {
     }; // bounding box
 
 
-    svg.BoundingBox =
-    /*#__PURE__*/
-    function () {
+    svg.BoundingBox = /*#__PURE__*/function () {
       function _class2(x1, y1, x2, y2) {
         _classCallCheck(this, _class2);
 
@@ -1577,9 +1594,7 @@ var canvg = (function (exports) {
     }(); // transforms
 
 
-    svg.Transform =
-    /*#__PURE__*/
-    function () {
+    svg.Transform = /*#__PURE__*/function () {
       function _class3(v) {
         var _this6 = this;
 
@@ -1663,17 +1678,17 @@ var canvg = (function (exports) {
           }
         };
         Object.assign(this.Type, {
-          SkewBase:
-          /*#__PURE__*/
-          function (_this$Type$matrix) {
+          SkewBase: /*#__PURE__*/function (_this$Type$matrix) {
             _inherits(SkewBase, _this$Type$matrix);
+
+            var _super = _createSuper(SkewBase);
 
             function SkewBase(s) {
               var _this3;
 
               _classCallCheck(this, SkewBase);
 
-              _this3 = _possibleConstructorReturn(this, _getPrototypeOf(SkewBase).call(this, s));
+              _this3 = _super.call(this, s);
               _this3.angle = new svg.Property('angle', s);
               return _this3;
             }
@@ -1682,34 +1697,34 @@ var canvg = (function (exports) {
           }(this.Type.matrix)
         });
         Object.assign(this.Type, {
-          skewX:
-          /*#__PURE__*/
-          function (_this$Type$SkewBase) {
+          skewX: /*#__PURE__*/function (_this$Type$SkewBase) {
             _inherits(skewX, _this$Type$SkewBase);
+
+            var _super2 = _createSuper(skewX);
 
             function skewX(s) {
               var _this4;
 
               _classCallCheck(this, skewX);
 
-              _this4 = _possibleConstructorReturn(this, _getPrototypeOf(skewX).call(this, s));
+              _this4 = _super2.call(this, s);
               _this4.m = [1, 0, Math.tan(_this4.angle.toRadians()), 1, 0, 0];
               return _this4;
             }
 
             return skewX;
           }(this.Type.SkewBase),
-          skewY:
-          /*#__PURE__*/
-          function (_this$Type$SkewBase2) {
+          skewY: /*#__PURE__*/function (_this$Type$SkewBase2) {
             _inherits(skewY, _this$Type$SkewBase2);
+
+            var _super3 = _createSuper(skewY);
 
             function skewY(s) {
               var _this5;
 
               _classCallCheck(this, skewY);
 
-              _this5 = _possibleConstructorReturn(this, _getPrototypeOf(skewY).call(this, s));
+              _this5 = _super3.call(this, s);
               _this5.m = [1, Math.tan(_this5.angle.toRadians()), 0, 1, 0, 0];
               return _this5;
             }
@@ -1800,9 +1815,7 @@ var canvg = (function (exports) {
     svg.Element = {};
     svg.EmptyProperty = new svg.Property('EMPTY', '');
 
-    svg.Element.ElementBase =
-    /*#__PURE__*/
-    function () {
+    svg.Element.ElementBase = /*#__PURE__*/function () {
       function _class4(node) {
         var _this7 = this;
 
@@ -2042,15 +2055,15 @@ var canvg = (function (exports) {
       return _class4;
     }();
 
-    svg.Element.RenderedElementBase =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB) {
+    svg.Element.RenderedElementBase = /*#__PURE__*/function (_svg$Element$ElementB) {
       _inherits(_class5, _svg$Element$ElementB);
+
+      var _super4 = _createSuper(_class5);
 
       function _class5() {
         _classCallCheck(this, _class5);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class5).apply(this, arguments));
+        return _super4.apply(this, arguments);
       }
 
       _createClass(_class5, [{
@@ -2149,15 +2162,15 @@ var canvg = (function (exports) {
       return _class5;
     }(svg.Element.ElementBase);
 
-    svg.Element.PathElementBase =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered) {
+    svg.Element.PathElementBase = /*#__PURE__*/function (_svg$Element$Rendered) {
       _inherits(_class6, _svg$Element$Rendered);
+
+      var _super5 = _createSuper(_class6);
 
       function _class6() {
         _classCallCheck(this, _class6);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class6).apply(this, arguments));
+        return _super5.apply(this, arguments);
       }
 
       _createClass(_class6, [{
@@ -2220,15 +2233,15 @@ var canvg = (function (exports) {
     }(svg.Element.RenderedElementBase); // svg element
 
 
-    svg.Element.svg =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered2) {
+    svg.Element.svg = /*#__PURE__*/function (_svg$Element$Rendered2) {
       _inherits(_class7, _svg$Element$Rendered2);
+
+      var _super6 = _createSuper(_class7);
 
       function _class7() {
         _classCallCheck(this, _class7);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class7).apply(this, arguments));
+        return _super6.apply(this, arguments);
       }
 
       _createClass(_class7, [{
@@ -2303,15 +2316,15 @@ var canvg = (function (exports) {
     }(svg.Element.RenderedElementBase); // rect element
 
 
-    svg.Element.rect =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem) {
+    svg.Element.rect = /*#__PURE__*/function (_svg$Element$PathElem) {
       _inherits(_class8, _svg$Element$PathElem);
+
+      var _super7 = _createSuper(_class8);
 
       function _class8() {
         _classCallCheck(this, _class8);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class8).apply(this, arguments));
+        return _super7.apply(this, arguments);
       }
 
       _createClass(_class8, [{
@@ -2350,15 +2363,15 @@ var canvg = (function (exports) {
     }(svg.Element.PathElementBase); // circle element
 
 
-    svg.Element.circle =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem2) {
+    svg.Element.circle = /*#__PURE__*/function (_svg$Element$PathElem2) {
       _inherits(_class9, _svg$Element$PathElem2);
+
+      var _super8 = _createSuper(_class9);
 
       function _class9() {
         _classCallCheck(this, _class9);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class9).apply(this, arguments));
+        return _super8.apply(this, arguments);
       }
 
       _createClass(_class9, [{
@@ -2384,15 +2397,15 @@ var canvg = (function (exports) {
 
     var KAPPA = 4 * ((Math.sqrt(2) - 1) / 3);
 
-    svg.Element.ellipse =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem3) {
+    svg.Element.ellipse = /*#__PURE__*/function (_svg$Element$PathElem3) {
       _inherits(_class10, _svg$Element$PathElem3);
+
+      var _super9 = _createSuper(_class10);
 
       function _class10() {
         _classCallCheck(this, _class10);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class10).apply(this, arguments));
+        return _super9.apply(this, arguments);
       }
 
       _createClass(_class10, [{
@@ -2421,15 +2434,15 @@ var canvg = (function (exports) {
     }(svg.Element.PathElementBase); // line element
 
 
-    svg.Element.line =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem4) {
+    svg.Element.line = /*#__PURE__*/function (_svg$Element$PathElem4) {
       _inherits(_class11, _svg$Element$PathElem4);
+
+      var _super10 = _createSuper(_class11);
 
       function _class11() {
         _classCallCheck(this, _class11);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class11).apply(this, arguments));
+        return _super10.apply(this, arguments);
       }
 
       _createClass(_class11, [{
@@ -2463,17 +2476,17 @@ var canvg = (function (exports) {
     }(svg.Element.PathElementBase); // polyline element
 
 
-    svg.Element.polyline =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem5) {
+    svg.Element.polyline = /*#__PURE__*/function (_svg$Element$PathElem5) {
       _inherits(_class12, _svg$Element$PathElem5);
+
+      var _super11 = _createSuper(_class12);
 
       function _class12(node) {
         var _this8;
 
         _classCallCheck(this, _class12);
 
-        _this8 = _possibleConstructorReturn(this, _getPrototypeOf(_class12).call(this, node));
+        _this8 = _super11.call(this, node);
         _this8.points = svg.CreatePath(_this8.attribute('points').value);
         return _this8;
       }
@@ -2519,15 +2532,15 @@ var canvg = (function (exports) {
     }(svg.Element.PathElementBase); // polygon element
 
 
-    svg.Element.polygon =
-    /*#__PURE__*/
-    function (_svg$Element$polyline) {
+    svg.Element.polygon = /*#__PURE__*/function (_svg$Element$polyline) {
       _inherits(_class13, _svg$Element$polyline);
+
+      var _super12 = _createSuper(_class13);
 
       function _class13() {
         _classCallCheck(this, _class13);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class13).apply(this, arguments));
+        return _super12.apply(this, arguments);
       }
 
       _createClass(_class13, [{
@@ -2548,17 +2561,17 @@ var canvg = (function (exports) {
     }(svg.Element.polyline); // path element
 
 
-    svg.Element.path =
-    /*#__PURE__*/
-    function (_svg$Element$PathElem6) {
+    svg.Element.path = /*#__PURE__*/function (_svg$Element$PathElem6) {
       _inherits(_class14, _svg$Element$PathElem6);
+
+      var _super13 = _createSuper(_class14);
 
       function _class14(node) {
         var _this9;
 
         _classCallCheck(this, _class14);
 
-        _this9 = _possibleConstructorReturn(this, _getPrototypeOf(_class14).call(this, node));
+        _this9 = _super13.call(this, node);
 
         var d = _this9.attribute('d').value // TODO: convert to real lexer based on https://www.w3.org/TR/SVG11/paths.html#PathDataBNF
         .replace(/,/gm, ' ') // get rid of all commas
@@ -2615,7 +2628,7 @@ var canvg = (function (exports) {
             return this.tokens[this.i];
           },
           getScalar: function getScalar() {
-            return parseFloat(this.getToken());
+            return Number.parseFloat(this.getToken());
           },
           nextCommand: function nextCommand() {
             this.previousCommand = this.command;
@@ -2927,15 +2940,15 @@ var canvg = (function (exports) {
     }(svg.Element.PathElementBase); // pattern element
 
 
-    svg.Element.pattern =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB2) {
+    svg.Element.pattern = /*#__PURE__*/function (_svg$Element$ElementB2) {
       _inherits(_class15, _svg$Element$ElementB2);
+
+      var _super14 = _createSuper(_class15);
 
       function _class15() {
         _classCallCheck(this, _class15);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class15).apply(this, arguments));
+        return _super14.apply(this, arguments);
       }
 
       _createClass(_class15, [{
@@ -2978,15 +2991,15 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // marker element
 
 
-    svg.Element.marker =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB3) {
+    svg.Element.marker = /*#__PURE__*/function (_svg$Element$ElementB3) {
       _inherits(_class16, _svg$Element$ElementB3);
+
+      var _super15 = _createSuper(_class16);
 
       function _class16() {
         _classCallCheck(this, _class16);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class16).apply(this, arguments));
+        return _super15.apply(this, arguments);
       }
 
       _createClass(_class16, [{
@@ -3018,15 +3031,15 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // definitions element
 
 
-    svg.Element.defs =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB4) {
+    svg.Element.defs = /*#__PURE__*/function (_svg$Element$ElementB4) {
       _inherits(_class17, _svg$Element$ElementB4);
+
+      var _super16 = _createSuper(_class17);
 
       function _class17() {
         _classCallCheck(this, _class17);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class17).apply(this, arguments));
+        return _super16.apply(this, arguments);
       }
 
       _createClass(_class17, [{
@@ -3039,17 +3052,17 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // base for gradients
 
 
-    svg.Element.GradientBase =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB5) {
+    svg.Element.GradientBase = /*#__PURE__*/function (_svg$Element$ElementB5) {
       _inherits(_class18, _svg$Element$ElementB5);
+
+      var _super17 = _createSuper(_class18);
 
       function _class18(node) {
         var _this10;
 
         _classCallCheck(this, _class18);
 
-        _this10 = _possibleConstructorReturn(this, _getPrototypeOf(_class18).call(this, node));
+        _this10 = _super17.call(this, node);
         _this10.gradientUnits = _this10.attribute('gradientUnits').valueOrDefault('objectBoundingBox');
         _this10.stops = [];
 
@@ -3122,15 +3135,15 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // linear gradient element
 
 
-    svg.Element.linearGradient =
-    /*#__PURE__*/
-    function (_svg$Element$Gradient) {
+    svg.Element.linearGradient = /*#__PURE__*/function (_svg$Element$Gradient) {
       _inherits(_class19, _svg$Element$Gradient);
+
+      var _super18 = _createSuper(_class19);
 
       function _class19() {
         _classCallCheck(this, _class19);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class19).apply(this, arguments));
+        return _super18.apply(this, arguments);
       }
 
       _createClass(_class19, [{
@@ -3159,15 +3172,15 @@ var canvg = (function (exports) {
     }(svg.Element.GradientBase); // radial gradient element
 
 
-    svg.Element.radialGradient =
-    /*#__PURE__*/
-    function (_svg$Element$Gradient2) {
+    svg.Element.radialGradient = /*#__PURE__*/function (_svg$Element$Gradient2) {
       _inherits(_class20, _svg$Element$Gradient2);
+
+      var _super19 = _createSuper(_class20);
 
       function _class20() {
         _classCallCheck(this, _class20);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class20).apply(this, arguments));
+        return _super19.apply(this, arguments);
       }
 
       _createClass(_class20, [{
@@ -3200,17 +3213,17 @@ var canvg = (function (exports) {
     }(svg.Element.GradientBase); // gradient stop element
 
 
-    svg.Element.stop =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB6) {
+    svg.Element.stop = /*#__PURE__*/function (_svg$Element$ElementB6) {
       _inherits(_class21, _svg$Element$ElementB6);
+
+      var _super20 = _createSuper(_class21);
 
       function _class21(node) {
         var _this11;
 
         _classCallCheck(this, _class21);
 
-        _this11 = _possibleConstructorReturn(this, _getPrototypeOf(_class21).call(this, node));
+        _this11 = _super20.call(this, node);
         _this11.offset = _this11.attribute('offset').numValue();
         if (_this11.offset < 0) _this11.offset = 0;
         if (_this11.offset > 1) _this11.offset = 1;
@@ -3229,17 +3242,17 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // animation base element
 
 
-    svg.Element.AnimateBase =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB7) {
+    svg.Element.AnimateBase = /*#__PURE__*/function (_svg$Element$ElementB7) {
       _inherits(_class22, _svg$Element$ElementB7);
+
+      var _super21 = _createSuper(_class22);
 
       function _class22(node) {
         var _this12;
 
         _classCallCheck(this, _class22);
 
-        _this12 = _possibleConstructorReturn(this, _getPrototypeOf(_class22).call(this, node));
+        _this12 = _super21.call(this, node);
         svg.Animations.push(_assertThisInitialized(_this12));
         _this12.duration = 0.0;
         _this12.begin = _this12.attribute('begin').toMilliseconds();
@@ -3330,8 +3343,8 @@ var canvg = (function (exports) {
             var p = ret.progress * (this.values.value.length - 1);
             var lb = Math.floor(p),
                 ub = Math.ceil(p);
-            ret.from = new svg.Property('from', parseFloat(this.values.value[lb]));
-            ret.to = new svg.Property('to', parseFloat(this.values.value[ub]));
+            ret.from = new svg.Property('from', Number.parseFloat(this.values.value[lb]));
+            ret.to = new svg.Property('to', Number.parseFloat(this.values.value[ub]));
             ret.progress = (p - lb) / (ub - lb);
           } else {
             ret.from = this.from;
@@ -3346,15 +3359,15 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // animate element
 
 
-    svg.Element.animate =
-    /*#__PURE__*/
-    function (_svg$Element$AnimateB) {
+    svg.Element.animate = /*#__PURE__*/function (_svg$Element$AnimateB) {
       _inherits(_class23, _svg$Element$AnimateB);
+
+      var _super22 = _createSuper(_class23);
 
       function _class23() {
         _classCallCheck(this, _class23);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class23).apply(this, arguments));
+        return _super22.apply(this, arguments);
       }
 
       _createClass(_class23, [{
@@ -3371,15 +3384,15 @@ var canvg = (function (exports) {
     }(svg.Element.AnimateBase); // animate color element
 
 
-    svg.Element.animateColor =
-    /*#__PURE__*/
-    function (_svg$Element$AnimateB2) {
+    svg.Element.animateColor = /*#__PURE__*/function (_svg$Element$AnimateB2) {
       _inherits(_class24, _svg$Element$AnimateB2);
+
+      var _super23 = _createSuper(_class24);
 
       function _class24() {
         _classCallCheck(this, _class24);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class24).apply(this, arguments));
+        return _super23.apply(this, arguments);
       }
 
       _createClass(_class24, [{
@@ -3394,7 +3407,7 @@ var canvg = (function (exports) {
             var r = from.r + (to.r - from.r) * p.progress;
             var g = from.g + (to.g - from.g) * p.progress;
             var b = from.b + (to.b - from.b) * p.progress;
-            return 'rgb(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ')';
+            return 'rgb(' + Number.parseInt(r) + ',' + Number.parseInt(g) + ',' + Number.parseInt(b) + ')';
           }
 
           return this.attribute('from').value;
@@ -3405,15 +3418,15 @@ var canvg = (function (exports) {
     }(svg.Element.AnimateBase); // animate transform element
 
 
-    svg.Element.animateTransform =
-    /*#__PURE__*/
-    function (_svg$Element$animate) {
+    svg.Element.animateTransform = /*#__PURE__*/function (_svg$Element$animate) {
       _inherits(_class25, _svg$Element$animate);
+
+      var _super24 = _createSuper(_class25);
 
       function _class25() {
         _classCallCheck(this, _class25);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class25).apply(this, arguments));
+        return _super24.apply(this, arguments);
       }
 
       _createClass(_class25, [{
@@ -3435,17 +3448,17 @@ var canvg = (function (exports) {
     }(svg.Element.animate); // font element
 
 
-    svg.Element.font =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB8) {
+    svg.Element.font = /*#__PURE__*/function (_svg$Element$ElementB8) {
       _inherits(_class26, _svg$Element$ElementB8);
+
+      var _super25 = _createSuper(_class26);
 
       function _class26(node) {
         var _this13;
 
         _classCallCheck(this, _class26);
 
-        _this13 = _possibleConstructorReturn(this, _getPrototypeOf(_class26).call(this, node));
+        _this13 = _super25.call(this, node);
         _this13.horizAdvX = _this13.attribute('horiz-adv-x').numValue();
         _this13.isRTL = false;
         _this13.isArabic = false;
@@ -3485,17 +3498,17 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // font-face element
 
 
-    svg.Element.fontface =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB9) {
+    svg.Element.fontface = /*#__PURE__*/function (_svg$Element$ElementB9) {
       _inherits(_class27, _svg$Element$ElementB9);
+
+      var _super26 = _createSuper(_class27);
 
       function _class27(node) {
         var _this14;
 
         _classCallCheck(this, _class27);
 
-        _this14 = _possibleConstructorReturn(this, _getPrototypeOf(_class27).call(this, node));
+        _this14 = _super26.call(this, node);
         _this14.ascent = _this14.attribute('ascent').value;
         _this14.descent = _this14.attribute('descent').value;
         _this14.unitsPerEm = _this14.attribute('units-per-em').numValue();
@@ -3506,17 +3519,17 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // missing-glyph element
 
 
-    svg.Element.missingglyph =
-    /*#__PURE__*/
-    function (_svg$Element$path) {
+    svg.Element.missingglyph = /*#__PURE__*/function (_svg$Element$path) {
       _inherits(_class28, _svg$Element$path);
+
+      var _super27 = _createSuper(_class28);
 
       function _class28(node) {
         var _this15;
 
         _classCallCheck(this, _class28);
 
-        _this15 = _possibleConstructorReturn(this, _getPrototypeOf(_class28).call(this, node));
+        _this15 = _super27.call(this, node);
         _this15.horizAdvX = 0;
         return _this15;
       }
@@ -3525,17 +3538,17 @@ var canvg = (function (exports) {
     }(svg.Element.path); // glyph element
 
 
-    svg.Element.glyph =
-    /*#__PURE__*/
-    function (_svg$Element$path2) {
+    svg.Element.glyph = /*#__PURE__*/function (_svg$Element$path2) {
       _inherits(_class29, _svg$Element$path2);
+
+      var _super28 = _createSuper(_class29);
 
       function _class29(node) {
         var _this16;
 
         _classCallCheck(this, _class29);
 
-        _this16 = _possibleConstructorReturn(this, _getPrototypeOf(_class29).call(this, node));
+        _this16 = _super28.call(this, node);
         _this16.horizAdvX = _this16.attribute('horiz-adv-x').numValue();
         _this16.unicode = _this16.attribute('unicode').value;
         _this16.arabicForm = _this16.attribute('arabic-form').value;
@@ -3546,15 +3559,15 @@ var canvg = (function (exports) {
     }(svg.Element.path); // text element
 
 
-    svg.Element.text =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered3) {
+    svg.Element.text = /*#__PURE__*/function (_svg$Element$Rendered3) {
       _inherits(_class30, _svg$Element$Rendered3);
+
+      var _super29 = _createSuper(_class30);
 
       function _class30(node) {
         _classCallCheck(this, _class30);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class30).call(this, node, true));
+        return _super29.call(this, node, true);
       }
 
       _createClass(_class30, [{
@@ -3644,15 +3657,15 @@ var canvg = (function (exports) {
     }(svg.Element.RenderedElementBase); // text base
 
 
-    svg.Element.TextElementBase =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered4) {
+    svg.Element.TextElementBase = /*#__PURE__*/function (_svg$Element$Rendered4) {
       _inherits(_class31, _svg$Element$Rendered4);
+
+      var _super30 = _createSuper(_class31);
 
       function _class31() {
         _classCallCheck(this, _class31);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class31).apply(this, arguments));
+        return _super30.apply(this, arguments);
       }
 
       _createClass(_class31, [{
@@ -3770,17 +3783,17 @@ var canvg = (function (exports) {
     }(svg.Element.RenderedElementBase); // tspan
 
 
-    svg.Element.tspan =
-    /*#__PURE__*/
-    function (_svg$Element$TextElem) {
+    svg.Element.tspan = /*#__PURE__*/function (_svg$Element$TextElem) {
       _inherits(_class32, _svg$Element$TextElem);
+
+      var _super31 = _createSuper(_class32);
 
       function _class32(node) {
         var _this18;
 
         _classCallCheck(this, _class32);
 
-        _this18 = _possibleConstructorReturn(this, _getPrototypeOf(_class32).call(this, node, true));
+        _this18 = _super31.call(this, node, true);
         _this18.text = node.nodeValue || node.text || '';
         return _this18;
       }
@@ -3796,15 +3809,15 @@ var canvg = (function (exports) {
     }(svg.Element.TextElementBase); // tref
 
 
-    svg.Element.tref =
-    /*#__PURE__*/
-    function (_svg$Element$TextElem2) {
+    svg.Element.tref = /*#__PURE__*/function (_svg$Element$TextElem2) {
       _inherits(_class33, _svg$Element$TextElem2);
+
+      var _super32 = _createSuper(_class33);
 
       function _class33() {
         _classCallCheck(this, _class33);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class33).apply(this, arguments));
+        return _super32.apply(this, arguments);
       }
 
       _createClass(_class33, [{
@@ -3820,17 +3833,17 @@ var canvg = (function (exports) {
     }(svg.Element.TextElementBase); // a element
 
 
-    svg.Element.a =
-    /*#__PURE__*/
-    function (_svg$Element$TextElem3) {
+    svg.Element.a = /*#__PURE__*/function (_svg$Element$TextElem3) {
       _inherits(_class34, _svg$Element$TextElem3);
+
+      var _super33 = _createSuper(_class34);
 
       function _class34(node) {
         var _this19;
 
         _classCallCheck(this, _class34);
 
-        _this19 = _possibleConstructorReturn(this, _getPrototypeOf(_class34).call(this, node));
+        _this19 = _super33.call(this, node);
         _this19.hasText = true;
 
         _toConsumableArray(node.childNodes).forEach(function (childNode) {
@@ -3882,17 +3895,17 @@ var canvg = (function (exports) {
     }(svg.Element.TextElementBase); // image element
 
 
-    svg.Element.image =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered5) {
+    svg.Element.image = /*#__PURE__*/function (_svg$Element$Rendered5) {
       _inherits(_class35, _svg$Element$Rendered5);
+
+      var _super34 = _createSuper(_class35);
 
       function _class35(node) {
         var _this20;
 
         _classCallCheck(this, _class35);
 
-        _this20 = _possibleConstructorReturn(this, _getPrototypeOf(_class35).call(this, node));
+        _this20 = _super34.call(this, node);
 
         var href = _this20.getHrefAttribute().value;
 
@@ -3971,15 +3984,15 @@ var canvg = (function (exports) {
     }(svg.Element.RenderedElementBase); // group element
 
 
-    svg.Element.g =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered6) {
+    svg.Element.g = /*#__PURE__*/function (_svg$Element$Rendered6) {
       _inherits(_class36, _svg$Element$Rendered6);
+
+      var _super35 = _createSuper(_class36);
 
       function _class36() {
         _classCallCheck(this, _class36);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class36).apply(this, arguments));
+        return _super35.apply(this, arguments);
       }
 
       _createClass(_class36, [{
@@ -3997,15 +4010,15 @@ var canvg = (function (exports) {
     }(svg.Element.RenderedElementBase); // symbol element
 
 
-    svg.Element.symbol =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered7) {
+    svg.Element.symbol = /*#__PURE__*/function (_svg$Element$Rendered7) {
       _inherits(_class37, _svg$Element$Rendered7);
+
+      var _super36 = _createSuper(_class37);
 
       function _class37() {
         _classCallCheck(this, _class37);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class37).apply(this, arguments));
+        return _super36.apply(this, arguments);
       }
 
       _createClass(_class37, [{
@@ -4018,17 +4031,17 @@ var canvg = (function (exports) {
     }(svg.Element.RenderedElementBase); // style element
 
 
-    svg.Element.style =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB10) {
+    svg.Element.style = /*#__PURE__*/function (_svg$Element$ElementB10) {
       _inherits(_class38, _svg$Element$ElementB10);
+
+      var _super37 = _createSuper(_class38);
 
       function _class38(node) {
         var _this21;
 
         _classCallCheck(this, _class38);
 
-        _this21 = _possibleConstructorReturn(this, _getPrototypeOf(_class38).call(this, node)); // text, or spaces then CDATA
+        _this21 = _super37.call(this, node); // text, or spaces then CDATA
 
         var css = '';
 
@@ -4098,17 +4111,17 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // use element
 
 
-    svg.Element.use =
-    /*#__PURE__*/
-    function (_svg$Element$Rendered8) {
+    svg.Element.use = /*#__PURE__*/function (_svg$Element$Rendered8) {
       _inherits(_class39, _svg$Element$Rendered8);
+
+      var _super38 = _createSuper(_class39);
 
       function _class39(node) {
         var _this22;
 
         _classCallCheck(this, _class39);
 
-        _this22 = _possibleConstructorReturn(this, _getPrototypeOf(_class39).call(this, node));
+        _this22 = _super38.call(this, node);
         _this22._el = _this22.getHrefAttribute().getDefinition();
         return _this22;
       }
@@ -4170,15 +4183,15 @@ var canvg = (function (exports) {
     }(svg.Element.RenderedElementBase); // mask element
 
 
-    svg.Element.mask =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB11) {
+    svg.Element.mask = /*#__PURE__*/function (_svg$Element$ElementB11) {
       _inherits(_class40, _svg$Element$ElementB11);
+
+      var _super39 = _createSuper(_class40);
 
       function _class40() {
         _classCallCheck(this, _class40);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class40).apply(this, arguments));
+        return _super39.apply(this, arguments);
       }
 
       _createClass(_class40, [{
@@ -4232,15 +4245,15 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // clip element
 
 
-    svg.Element.clipPath =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB12) {
+    svg.Element.clipPath = /*#__PURE__*/function (_svg$Element$ElementB12) {
       _inherits(_class41, _svg$Element$ElementB12);
+
+      var _super40 = _createSuper(_class41);
 
       function _class41() {
         _classCallCheck(this, _class41);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class41).apply(this, arguments));
+        return _super40.apply(this, arguments);
       }
 
       _createClass(_class41, [{
@@ -4274,15 +4287,15 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // filters
 
 
-    svg.Element.filter =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB13) {
+    svg.Element.filter = /*#__PURE__*/function (_svg$Element$ElementB13) {
       _inherits(_class42, _svg$Element$ElementB13);
+
+      var _super41 = _createSuper(_class42);
 
       function _class42() {
         _classCallCheck(this, _class42);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class42).apply(this, arguments));
+        return _super41.apply(this, arguments);
       }
 
       _createClass(_class42, [{
@@ -4328,15 +4341,15 @@ var canvg = (function (exports) {
       return _class42;
     }(svg.Element.ElementBase);
 
-    svg.Element.feMorphology =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB14) {
+    svg.Element.feMorphology = /*#__PURE__*/function (_svg$Element$ElementB14) {
       _inherits(_class43, _svg$Element$ElementB14);
+
+      var _super42 = _createSuper(_class43);
 
       function _class43() {
         _classCallCheck(this, _class43);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class43).apply(this, arguments));
+        return _super42.apply(this, arguments);
       }
 
       _createClass(_class43, [{
@@ -4348,15 +4361,15 @@ var canvg = (function (exports) {
       return _class43;
     }(svg.Element.ElementBase);
 
-    svg.Element.feComposite =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB15) {
+    svg.Element.feComposite = /*#__PURE__*/function (_svg$Element$ElementB15) {
       _inherits(_class44, _svg$Element$ElementB15);
+
+      var _super43 = _createSuper(_class44);
 
       function _class44() {
         _classCallCheck(this, _class44);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class44).apply(this, arguments));
+        return _super43.apply(this, arguments);
       }
 
       _createClass(_class44, [{
@@ -4397,17 +4410,17 @@ var canvg = (function (exports) {
       img[y * width * 4 + x * 4 + rgba] = val;
     }
 
-    svg.Element.feColorMatrix =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB16) {
+    svg.Element.feColorMatrix = /*#__PURE__*/function (_svg$Element$ElementB16) {
       _inherits(_class45, _svg$Element$ElementB16);
+
+      var _super44 = _createSuper(_class45);
 
       function _class45(node) {
         var _this23;
 
         _classCallCheck(this, _class45);
 
-        _this23 = _possibleConstructorReturn(this, _getPrototypeOf(_class45).call(this, node));
+        _this23 = _super44.call(this, node);
         var matrix = svg.ToNumberArray(_this23.attribute('values').value);
 
         switch (_this23.attribute('type').valueOrDefault('matrix')) {
@@ -4474,17 +4487,17 @@ var canvg = (function (exports) {
       return _class45;
     }(svg.Element.ElementBase);
 
-    svg.Element.feGaussianBlur =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB17) {
+    svg.Element.feGaussianBlur = /*#__PURE__*/function (_svg$Element$ElementB17) {
       _inherits(_class46, _svg$Element$ElementB17);
+
+      var _super45 = _createSuper(_class46);
 
       function _class46(node) {
         var _this24;
 
         _classCallCheck(this, _class46);
 
-        _this24 = _possibleConstructorReturn(this, _getPrototypeOf(_class46).call(this, node));
+        _this24 = _super45.call(this, node);
         _this24.blurRadius = Math.floor(_this24.attribute('stdDeviation').numValue());
         _this24.extraFilterDistance = _this24.blurRadius;
         return _this24;
@@ -4507,46 +4520,46 @@ var canvg = (function (exports) {
     }(svg.Element.ElementBase); // title element, do nothing
 
 
-    svg.Element.title =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB18) {
+    svg.Element.title = /*#__PURE__*/function (_svg$Element$ElementB18) {
       _inherits(_class47, _svg$Element$ElementB18);
+
+      var _super46 = _createSuper(_class47);
 
       function _class47(node) {
         _classCallCheck(this, _class47);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class47).call(this));
+        return _super46.call(this);
       }
 
       return _class47;
     }(svg.Element.ElementBase); // desc element, do nothing
 
 
-    svg.Element.desc =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB19) {
+    svg.Element.desc = /*#__PURE__*/function (_svg$Element$ElementB19) {
       _inherits(_class48, _svg$Element$ElementB19);
+
+      var _super47 = _createSuper(_class48);
 
       function _class48(node) {
         _classCallCheck(this, _class48);
 
-        return _possibleConstructorReturn(this, _getPrototypeOf(_class48).call(this));
+        return _super47.call(this);
       }
 
       return _class48;
     }(svg.Element.ElementBase);
 
-    svg.Element.MISSING =
-    /*#__PURE__*/
-    function (_svg$Element$ElementB20) {
+    svg.Element.MISSING = /*#__PURE__*/function (_svg$Element$ElementB20) {
       _inherits(_class49, _svg$Element$ElementB20);
+
+      var _super48 = _createSuper(_class49);
 
       function _class49(node) {
         var _this25;
 
         _classCallCheck(this, _class49);
 
-        _this25 = _possibleConstructorReturn(this, _getPrototypeOf(_class49).call(this));
+        _this25 = _super48.call(this);
         svg.log('ERROR: Element \'' + node.nodeName + '\' not yet implemented.');
         return _this25;
       }
@@ -4572,12 +4585,8 @@ var canvg = (function (exports) {
     }; // load from url
 
 
-    svg.load =
-    /*#__PURE__*/
-    function () {
-      var _ref12 = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(ctx, url) {
+    svg.load = /*#__PURE__*/function () {
+      var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(ctx, url) {
         var dom;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {

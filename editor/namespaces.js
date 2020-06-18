@@ -1,11 +1,11 @@
 /**
- * Namespaces or tools therefor
+ * Namespaces or tools therefor.
  * @module namespaces
  * @license MIT
 */
 
 /**
-* Common namepaces constants in alpha order
+* Common namepaces constants in alpha order.
 * @enum {string}
 * @type {PlainObject}
 * @memberof module:namespaces

@@ -1,5 +1,5 @@
 /**
- * ext-markers.js
+ * @file ext-markers.js
  *
  * @license Apache-2.0
  *

@@ -38,17 +38,18 @@ var svgEditorExtension_webappfind = (function () {
   }
 
   /**
-  * Depends on Firefox add-on and executables from {@link https://github.com/brettz9/webappfind}
+  * Depends on Firefox add-on and executables from
+  * {@link https://github.com/brettz9/webappfind}.
   * @author Brett Zamir
   * @license MIT
   * @todo See WebAppFind Readme for SVG-related todos
   */
   var extWebappfind = {
     name: 'webappfind',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
+    init: function init(_ref) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var importLocale, $, strings, svgEditor, saveMessage, readMessage, excludedMessages, pathID, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -60,12 +61,15 @@ var svgEditorExtension_webappfind = (function () {
 
               case 3:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 saveMessage = 'save', readMessage = 'read', excludedMessages = [readMessage, saveMessage];
-                this.canvas.bind('message',
+
+                _this.canvas.bind('message',
                 /**
                 * @param {external:Window} win
-                * @param {module:svgcanvas.SvgCanvas#event:message} data
+                * @param {PlainObject} info
+                * @param {module:svgcanvas.SvgCanvas#event:message} info.data
+                * @param {string} info.origin
                 * @listens module:svgcanvas.SvgCanvas#event:message
                 * @throws {Error} Unexpected event type
                 * @returns {void}
@@ -124,6 +128,7 @@ var svgEditorExtension_webappfind = (function () {
                 );
                 */
 
+
                 buttons = [{
                   id: 'webappfind_save',
                   //
@@ -163,15 +168,9 @@ var svgEditorExtension_webappfind = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extWebappfind;

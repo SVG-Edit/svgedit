@@ -1,5 +1,5 @@
 /**
- * jQuery Context Menu Plugin
+ * @file jQuery Context Menu Plugin
  * Cory S.N. LaViska
  * A Beautiful Site ({@link https://abeautifulsite.net/})
  * Modified by Alexis Deveria
@@ -23,6 +23,7 @@ import {isMac} from '../browser.js';
 * @param {string} href The `href` value after the first character (for bypassing an initial `#`)
 * @param {external:jQuery} srcElement The wrapped jQuery srcElement
 * @param {{x: Float, y: Float, docX: Float, docY: Float}} coords
+* @returns {void}
 */
 
 /**
@@ -192,6 +193,7 @@ function jQueryContextMenu ($) {
         if (o !== undefined) {
           const d = o.split(',');
           for (const href of d) {
+            // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
             $(this).find('A[href="' + href + '"]').parent().addClass('disabled');
           }
         }
@@ -215,6 +217,7 @@ function jQueryContextMenu ($) {
         if (o !== undefined) {
           const d = o.split(',');
           for (const href of d) {
+            // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
             $(this).find('A[href="' + href + '"]').parent().removeClass('disabled');
           }
         }

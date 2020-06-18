@@ -1,7 +1,5 @@
-// Todo: Move to own module (and have it import a modular base64 encoder)
-import {encode64} from '../utilities.js';
 /**
- * SVG Icon Loader 2.0
+ * @file SVG Icon Loader 2.0
  *
  * jQuery Plugin for loading SVG icons from a single file
  *
@@ -86,6 +84,9 @@ $(function () {
 });
 */
 
+// Todo: Move to own module (and have it import a modular base64 encoder)
+import {encode64} from '../utilities.js';
+
 const isOpera = Boolean(window.opera);
 
 const fixIDs = function (svgEl, svgNum, force) {
@@ -149,6 +150,7 @@ const fixIDs = function (svgEl, svgNum, force) {
 /**
 * @callback module:jQuerySVGIcons.SVGIconsLoadedCallback
 * @param {PlainObject<string, external:jQuery>} svgIcons IDs keyed to jQuery objects of images
+* @returns {void}
 */
 
 /**
@@ -161,12 +163,12 @@ export default function jQueryPluginSVGIcons ($) {
 
   /**
    * Map of raster images with each key being the SVG icon ID
-   *   to replace, and the value the image file name
+   *   to replace, and the value the image file name.
    * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Fallback
   */
   /**
    * Map of raster images with each key being the SVG icon ID
-   *   whose `alt` will be set, and the value being the `alt` text
+   *   whose `alt` will be set, and the value being the `alt` text.
    * @typedef {PlainObject<string, string>} external:jQuery.svgIcons.Alts
   */
   /**

@@ -2,6 +2,8 @@ var svgEditorExtension_imagelib = (function () {
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -52,7 +54,7 @@ var svgEditorExtension_imagelib = (function () {
   }
 
   /**
-   * ext-imagelib.js
+   * @file ext-imagelib.js
    *
    * @license MIT
    *
@@ -61,16 +63,17 @@ var svgEditorExtension_imagelib = (function () {
    */
   var extImagelib = {
     name: 'imagelib',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(_ref) {
-        var $, decode64, importLocale, dropXMLInternalSubset, imagelibStrings, modularVersion, svgEditor, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, toggleMulti, showBrowser, buttons;
+    init: function init(_ref) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        var $, decode64, importLocale, dropXMLInternalSubset, imagelibStrings, modularVersion, svgEditor, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, onMessage, _onMessage, toggleMulti, showBrowser, buttons;
+
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                showBrowser = function _ref10() {
+                showBrowser = function _showBrowser() {
                   var browser = $('#imgbrowse');
 
                   if (!browser.length) {
@@ -78,7 +81,7 @@ var svgEditorExtension_imagelib = (function () {
                     browser = $('#imgbrowse');
                     var allLibs = imagelibStrings.select_lib;
                     var libOpts = $('<ul id=imglib_opts>').appendTo(browser);
-                    var frame = $('<iframe/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
+                    var frame = $('<iframe src="javascript:0"/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
                     var header = $('<h1>').prependTo(browser).text(allLibs).css({
                       position: 'absolute',
                       top: 0,
@@ -126,10 +129,10 @@ var svgEditorExtension_imagelib = (function () {
                     });
                     cancel.prepend($.getSvgIcon('cancel', true));
                     back.prepend($.getSvgIcon('tool_imagelib', true));
-                    imagelibStrings.imgLibs.forEach(function (_ref6) {
-                      var name = _ref6.name,
-                          url = _ref6.url,
-                          description = _ref6.description;
+                    imagelibStrings.imgLibs.forEach(function (_ref5) {
+                      var name = _ref5.name,
+                          url = _ref5.url,
+                          description = _ref5.description;
                       $('<li>').appendTo(libOpts).text(name).on('click touchend', function () {
                         frame.attr('src', url).show();
                         header.text(name);
@@ -142,7 +145,7 @@ var svgEditorExtension_imagelib = (function () {
                   }
                 };
 
-                toggleMulti = function _ref9(show) {
+                toggleMulti = function _toggleMulti(show) {
                   $('#lib_framewrap, #imglib_opts').css({
                     right: show ? 200 : 10
                   });
@@ -184,73 +187,8 @@ var svgEditorExtension_imagelib = (function () {
                   submit.toggle(show);
                 };
 
-                importImage = function _ref8(url) {
-                  var newImage = svgCanvas.addSVGElementFromJson({
-                    element: 'image',
-                    attr: {
-                      x: 0,
-                      y: 0,
-                      width: 0,
-                      height: 0,
-                      id: svgCanvas.getNextId(),
-                      style: 'pointer-events:inherit'
-                    }
-                  });
-                  svgCanvas.clearSelection();
-                  svgCanvas.addToSelection([newImage]);
-                  svgCanvas.setImageURL(url);
-                };
-
-                closeBrowser = function _ref7() {
-                  $('#imgbrowse_holder').hide();
-                };
-
-                $ = _ref.$, decode64 = _ref.decode64, importLocale = _ref.importLocale, dropXMLInternalSubset = _ref.dropXMLInternalSubset;
-                _context2.next = 7;
-                return importLocale();
-
-              case 7:
-                imagelibStrings = _context2.sent;
-                modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
-                svgEditor = this;
-                uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas, extIconsPath = svgEditor.curConfig.extIconsPath;
-                imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(function (_ref2) {
-                  var name = _ref2.name,
-                      url = _ref2.url,
-                      description = _ref2.description;
-                  // Todo: Adopt some standard formatting library like `fluent.js` instead
-                  url = url.replace(/\{path\}/g, extIconsPath).replace(/\{modularVersion\}/g, modularVersion ? imagelibStrings.moduleEnding || '-es' : '');
-                  return {
-                    name: name,
-                    url: url,
-                    description: description
-                  };
-                });
-                allowedImageLibOrigins = imagelibStrings.imgLibs.map(function (_ref3) {
-                  var url = _ref3.url;
-
-                  try {
-                    return new URL(url).origin;
-                  } catch (err) {
-                    return location.origin;
-                  }
-                });
-                /**
-                *
-                * @returns {void}
-                */
-
-                pending = {};
-                mode = 's';
-                multiArr = [];
-                transferStopped = false;
-                // Receive `postMessage` data
-                window.addEventListener('message',
-                /*#__PURE__*/
-                function () {
-                  var _ref5 = _asyncToGenerator(
-                  /*#__PURE__*/
-                  regeneratorRuntime.mark(function _callee(_ref4) {
+                _onMessage = function _onMessage3() {
+                  _onMessage = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref4) {
                     var origin, response, id, type, hasName, hasHref, char1, secondpos, entry, curMeta, svgStr, imgStr, name, message, pre, src, title, xml, ok;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {
@@ -365,7 +303,6 @@ var svgEditorExtension_imagelib = (function () {
                             return $.process_cancel(message);
 
                           case 39:
-                            // eslint-disable-next-line require-atomic-updates
                             transferStopped = true; // Should a message be sent back to the frame?
 
                             $('#dialog_box').hide();
@@ -462,7 +399,7 @@ var svgEditorExtension_imagelib = (function () {
                                 preview.children().each(function () {
                                   if ($(this).data('id') === id) {
                                     if (curMeta.preview_url) {
-                                      $(this).html($('<span>').append($('<img>').attr('src', curMeta.preview_url), document.createTextNode(title)));
+                                      $(this).html($('<span>').append($('<img>').attr('src', curMeta.preview_url), title));
                                     } else {
                                       $(this).text(title);
                                     }
@@ -477,10 +414,7 @@ var svgEditorExtension_imagelib = (function () {
                             } else {
                               if (curMeta && curMeta.preview_url) {
                                 title = curMeta.name || '';
-                              }
-
-                              if (curMeta && curMeta.preview_url) {
-                                entry = $('<span>').append($('<img>').attr('src', curMeta.preview_url), document.createTextNode(title));
+                                entry = $('<span>').append($('<img>').attr('src', curMeta.preview_url), title);
                               } else {
                                 entry = $('<img>').attr('src', response);
                               }
@@ -536,11 +470,79 @@ var svgEditorExtension_imagelib = (function () {
                       }
                     }, _callee, null, [[3, 20]]);
                   }));
+                  return _onMessage.apply(this, arguments);
+                };
 
-                  return function (_x2) {
-                    return _ref5.apply(this, arguments);
+                onMessage = function _onMessage2(_x) {
+                  return _onMessage.apply(this, arguments);
+                };
+
+                importImage = function _importImage(url) {
+                  var newImage = svgCanvas.addSVGElementFromJson({
+                    element: 'image',
+                    attr: {
+                      x: 0,
+                      y: 0,
+                      width: 0,
+                      height: 0,
+                      id: svgCanvas.getNextId(),
+                      style: 'pointer-events:inherit'
+                    }
+                  });
+                  svgCanvas.clearSelection();
+                  svgCanvas.addToSelection([newImage]);
+                  svgCanvas.setImageURL(url);
+                };
+
+                closeBrowser = function _closeBrowser() {
+                  $('#imgbrowse_holder').hide();
+                };
+
+                $ = _ref.$, decode64 = _ref.decode64, importLocale = _ref.importLocale, dropXMLInternalSubset = _ref.dropXMLInternalSubset;
+                _context2.next = 9;
+                return importLocale();
+
+              case 9:
+                imagelibStrings = _context2.sent;
+                modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
+                svgEditor = _this;
+                uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas, extIconsPath = svgEditor.curConfig.extIconsPath;
+                imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(function (_ref2) {
+                  var name = _ref2.name,
+                      url = _ref2.url,
+                      description = _ref2.description;
+                  // Todo: Adopt some standard formatting library like `fluent.js` instead
+                  url = url // Keep these regexes as is in prep. for switching to `u` flag
+                  //  which will require escaping
+                  // eslint-disable-next-line unicorn/better-regex
+                  .replace(/\{path\}/g, extIconsPath).replace( // eslint-disable-next-line unicorn/better-regex
+                  /\{modularVersion\}/g, modularVersion ? imagelibStrings.moduleEnding || '-es' : '');
+                  return {
+                    name: name,
+                    url: url,
+                    description: description
                   };
-                }(), true);
+                });
+                allowedImageLibOrigins = imagelibStrings.imgLibs.map(function (_ref3) {
+                  var url = _ref3.url;
+
+                  try {
+                    return new URL(url).origin;
+                  } catch (err) {
+                    return location.origin;
+                  }
+                });
+                /**
+                *
+                * @returns {void}
+                */
+
+                pending = {};
+                mode = 's';
+                multiArr = [];
+                transferStopped = false;
+                // Receive `postMessage` data
+                window.addEventListener('message', onMessage, true);
                 /**
                 * @param {boolean} show
                 * @returns {void}
@@ -566,20 +568,14 @@ var svgEditorExtension_imagelib = (function () {
                   }
                 });
 
-              case 20:
+              case 22:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee2);
+      }))();
+    }
   };
 
   return extImagelib;

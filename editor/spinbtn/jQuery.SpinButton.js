@@ -1,53 +1,55 @@
 /**
- * SpinButton control
+ * SpinButton control.
  *
  * Adds bells and whistles to any ordinary textbox to
  * make it look and feel like a SpinButton Control.
  *
- * Supplies {@link external:jQuery.fn.SpinButton} (and also {@link external:jQuery.loadingStylesheets})
+ * Supplies {@link external:jQuery.fn.SpinButton} (and also {@link external:jQuery.loadingStylesheets}).
  *
- * Originally written by George Adamson, Software Unity (george.jquery@softwareunity.com) August 2006.
- * - Added min/max options
- * - Added step size option
- * - Added bigStep (page up/down) option
+ * Originally written by George Adamson, Software Unity (george.jquery@softwareunity.com) August 2006:
+ * - Added min/max options.
+ * - Added step size option.
+ * - Added bigStep (page up/down) option.
  *
  * Modifications made by Mark Gibson, (mgibson@designlinks.net) September 2006:
- * - Converted to jQuery plugin
- * - Allow limited or unlimited min/max values
- * - Allow custom class names, and add class to input element
- * - Removed global vars
- * - Reset (to original or through config) when invalid value entered
- * - Repeat whilst holding mouse button down (with initial pause, like keyboard repeat)
- * - Support mouse wheel in Firefox
- * - Fix double click in IE
- * - Refactored some code and renamed some vars
+ * - Converted to jQuery plugin.
+ * - Allow limited or unlimited min/max values.
+ * - Allow custom class names, and add class to input element.
+ * - Removed global vars.
+ * - Reset (to original or through config) when invalid value entered.
+ * - Repeat whilst holding mouse button down (with initial pause, like keyboard repeat).
+ * - Support mouse wheel in Firefox.
+ * - Fix double click in IE.
+ * - Refactored some code and renamed some vars.
  *
  * Modifications by Jeff Schiller, June 2009:
  * - provide callback function for when the value changes based on the following
- *   {@link https://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html}
+ *   {@link https://www.mail-archive.com/jquery-en@googlegroups.com/msg36070.html}.
  *
  * Modifications by Jeff Schiller, July 2009:
- * - improve styling for widget in Opera
- * - consistent key-repeat handling cross-browser
+ * - improve styling for widget in Opera.
+ * - consistent key-repeat handling cross-browser.
  *
  * Modifications by Alexis Deveria, October 2009:
- * - provide "stepfunc" callback option to allow custom function to run when changing a value
+ * - provide "stepfunc" callback option to allow custom function to run when changing a value.
  * - Made adjustValue(0) only run on certain keyup events, not all.
  *
- * Tested in IE6, Opera9, Firefox 1.5
+ * Tested in IE6, Opera9, Firefox 1.5.
  *
- * | Version | Date | Author | Notes
- * |---------|------|--------|------|
- * | v1.0 | 11 Aug 2006 | George Adamson | First release
- * | v1.1 | Aug 2006 | George Adamson | Minor enhancements
- * | v1.2 | 27 Sep 2006 | Mark Gibson | Major enhancements
- * | v1.3a | 28 Sep 2006 | George Adamson | Minor enhancements
- * | v1.4 | 18 Jun 2009 | Jeff Schiller | Added callback function
- * | v1.5 | 06 Jul 2009 | Jeff Schiller | Fixes for Opera.
- * | v1.6 | 13 Oct 2009 | Alexis Deveria | Added stepfunc function
- * | v1.7 | 21 Oct 2009 | Alexis Deveria | Minor fixes.<br />Fast-repeat for keys and live updating as you type.
- * | v1.8 | 12 Jan 2010 | Benjamin Thomas | Fixes for mouseout behavior.<br />Added smallStep
+ * | Version | Date | Author | Notes |
+ * |---------|------|--------|-------|
+ * | v1.0 | 11 Aug 2006 | George Adamson | First release |
+ * | v1.1 | Aug 2006 | George Adamson | Minor enhancements |
+ * | v1.2 | 27 Sep 2006 | Mark Gibson | Major enhancements |
+ * | v1.3a | 28 Sep 2006 | George Adamson | Minor enhancements |
+ * | v1.4 | 18 Jun 2009 | Jeff Schiller | Added callback function |
+ * | v1.5 | 06 Jul 2009 | Jeff Schiller | Fixes for Opera. |
+ * | v1.6 | 13 Oct 2009 | Alexis Deveria | Added stepfunc function |
+ * | v1.7 | 21 Oct 2009 | Alexis Deveria | Minor fixes.<br />Fast-repeat for keys and live updating as you type. |
+ * | v1.8 | 12 Jan 2010 | Benjamin Thomas | Fixes for mouseout behavior.<br />Added smallStep |
  * | v1.9 | 20 May 2018 | Brett Zamir | Avoid SVGEdit dependency via `stateObj` config;<br />convert to ES6 module |
+ * .
+ *
  * @module jQuerySpinButton
  * @example
   // Create group of settings to initialise spinbutton(s). (Optional)
@@ -144,8 +146,8 @@ export default function jQueryPluginSpinButton ($) {
       this.spinCfg = {
         // min: cfg.min ? Number(cfg.min) : null,
         // max: cfg.max ? Number(cfg.max) : null,
-        min: !isNaN(parseFloat(cfg.min)) ? Number(cfg.min) : null, // Fixes bug with min:0
-        max: !isNaN(parseFloat(cfg.max)) ? Number(cfg.max) : null,
+        min: !isNaN(Number.parseFloat(cfg.min)) ? Number(cfg.min) : null, // Fixes bug with min:0
+        max: !isNaN(Number.parseFloat(cfg.max)) ? Number(cfg.max) : null,
         step: cfg.step ? Number(cfg.step) : 1,
         stepfunc: cfg.stepfunc || false,
         page: cfg.page ? Number(cfg.page) : 10,

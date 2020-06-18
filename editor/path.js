@@ -1,6 +1,6 @@
 /* globals jQuery */
 /**
- * Path functionality
+ * Path functionality.
  * @module path
  * @license MIT
  *
@@ -86,7 +86,7 @@ let editorContext_ = null;
 */
 
 /**
-* Object with the following keys/values
+* Object with the following keys/values.
 * @typedef {PlainObject} module:path.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
 * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
@@ -111,7 +111,7 @@ let editorContext_ = null;
  * @returns {void}
 */
 /**
- * Note: This doesn't round to an integer necessarily
+ * Note: This doesn't round to an integer necessarily.
  * @function module:path.EditorContext#round
  * @param {Float} val
  * @returns {Float} Rounded value to nearest value based on `currentZoom`
@@ -193,17 +193,17 @@ let editorContext_ = null;
  * @returns {Float} The current zoom level
  */
 /**
- * Returns the last created DOM element ID string
+ * Returns the last created DOM element ID string.
  * @function module:path.EditorContext#getId
  * @returns {string}
  */
 /**
- * Creates and returns a unique ID string for a DOM element
+ * Creates and returns a unique ID string for a DOM element.
  * @function module:path.EditorContext#getNextId
  * @returns {string}
 */
 /**
- * Gets the desired element from a mouse event
+ * Gets the desired element from a mouse event.
  * @function module:path.EditorContext#getMouseTarget
  * @param {external:MouseEvent} evt - Event object from the mouse event
  * @returns {Element} DOM element we want
@@ -1503,7 +1503,7 @@ export const reorientGrads = function (elem, m) {
 };
 
 /**
-* This is how we map paths to our preferred relative segment types
+* This is how we map paths to our preferred relative segment types.
 * @name module:path.pathMap
 * @type {GenericArray}
 */
@@ -1538,7 +1538,7 @@ export const convertPath = function (pth, toRel) {
       y2 = seg.y2 || 0;
 
     const type = seg.pathSegType;
-    let letter = pathMap[type]['to' + (toRel ? 'Lower' : 'Upper') + 'Case']();
+    let letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();
 
     switch (type) {
     case 1: // z,Z closepath (Z/z)
@@ -1553,30 +1553,34 @@ export const convertPath = function (pth, toRel) {
       // Fallthrough
     case 13: // relative horizontal line (h)
       if (toRel) {
+        y = 0;
         curx += x;
         letter = 'l';
       } else {
+        y = cury;
         x += curx;
         curx = x;
         letter = 'L';
       }
       // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[x, cury]]);
+      d += pathDSegment(letter, [[x, y]]);
       break;
     case 14: // absolute vertical line (V)
       y -= cury;
       // Fallthrough
     case 15: // relative vertical line (v)
       if (toRel) {
+        x = 0;
         cury += y;
         letter = 'l';
       } else {
+        x = curx;
         y += cury;
         cury = y;
         letter = 'L';
       }
       // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[curx, y]]);
+      d += pathDSegment(letter, [[x, y]]);
       break;
     case 2: // absolute move (M)
     case 4: // absolute line (L)
@@ -1697,13 +1701,15 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
   return segment;
 }
 
+/* eslint-disable jsdoc/require-property */
 /**
-* Group: Path edit functions
-* Functions relating to editing path elements
+* Group: Path edit functions.
+* Functions relating to editing path elements.
 * @namespace {PlainObject} pathActions
 * @memberof module:path
 */
 export const pathActions = (function () {
+  /* eslint-enable jsdoc/require-property */
   let subpath = false;
   let newPoint, firstCtrl;
 
@@ -1997,7 +2003,7 @@ export const pathActions = (function () {
       let curPt;
       if (id.substr(0, 14) === 'pathpointgrip_') {
         // Select this point
-        curPt = path.cur_pt = parseInt(id.substr(14));
+        curPt = path.cur_pt = Number.parseInt(id.substr(14));
         path.dragging = [startX, startY];
         const seg = path.segs[curPt];
 
@@ -2636,13 +2642,15 @@ export const pathActions = (function () {
       }
       path.endChanges('Delete path node(s)');
     },
+    /* eslint-disable jsdoc/require-returns */
     // Can't seem to use `@borrows` here, so using `@see`
     /**
-    * Smooth polyline into path
+    * Smooth polyline into path.
     * @function module:path.pathActions.smoothPolylineIntoPath
     * @see module:path~smoothPolylineIntoPath
     */
     smoothPolylineIntoPath,
+    /* eslint-enable jsdoc/require-returns */
     /**
     * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
     * @returns {void}
@@ -2700,13 +2708,15 @@ export const pathActions = (function () {
       }
       if (isWebkit()) { editorContext_.resetD(elem); }
     },
+    /* eslint-disable jsdoc/require-returns */
     // Can't seem to use `@borrows` here, so using `@see`
     /**
-    * Convert a path to one with only absolute or relative values
+    * Convert a path to one with only absolute or relative values.
     * @function module:path.pathActions.convertPath
     * @see module:path.convertPath
     */
     convertPath
+    /* eslint-enable jsdoc/require-returns */
   });
 })();
 // end pathActions

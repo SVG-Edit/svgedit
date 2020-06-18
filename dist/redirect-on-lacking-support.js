@@ -2,6 +2,8 @@
   'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -68,6 +70,19 @@
     return _setPrototypeOf(o, p);
   }
 
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -82,6 +97,25 @@
     }
 
     return _assertThisInitialized(self);
+  }
+
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+    return function () {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
   }
 
   /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
@@ -104,16 +138,14 @@
   * Chrome 46.
   */
 
-  /* eslint-disable no-shadow, class-methods-use-this */
+  /* eslint-disable no-shadow, class-methods-use-this, jsdoc/require-jsdoc */
   // Linting: We avoid `no-shadow` as ESLint thinks these are still available globals
   // Linting: We avoid `class-methods-use-this` as this is a polyfill that must
   //   follow the conventions
   (function () {
     if (!('SVGPathSeg' in window)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSeg
-      var _SVGPathSeg =
-      /*#__PURE__*/
-      function () {
+      var _SVGPathSeg = /*#__PURE__*/function () {
         function _SVGPathSeg(type, typeAsLetter, owningPathSegList) {
           _classCallCheck(this, _SVGPathSeg);
 
@@ -157,15 +189,15 @@
       _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS = 18;
       _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL = 19;
 
-      var _SVGPathSegClosePath =
-      /*#__PURE__*/
-      function (_SVGPathSeg2) {
+      var _SVGPathSegClosePath = /*#__PURE__*/function (_SVGPathSeg2) {
         _inherits(_SVGPathSegClosePath, _SVGPathSeg2);
+
+        var _super = _createSuper(_SVGPathSegClosePath);
 
         function _SVGPathSegClosePath(owningPathSegList) {
           _classCallCheck(this, _SVGPathSegClosePath);
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegClosePath).call(this, _SVGPathSeg.PATHSEG_CLOSEPATH, 'z', owningPathSegList));
+          return _super.call(this, _SVGPathSeg.PATHSEG_CLOSEPATH, 'z', owningPathSegList);
         }
 
         _createClass(_SVGPathSegClosePath, [{
@@ -188,17 +220,17 @@
         return _SVGPathSegClosePath;
       }(_SVGPathSeg);
 
-      var _SVGPathSegMovetoAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg3) {
+      var _SVGPathSegMovetoAbs = /*#__PURE__*/function (_SVGPathSeg3) {
         _inherits(_SVGPathSegMovetoAbs, _SVGPathSeg3);
+
+        var _super2 = _createSuper(_SVGPathSegMovetoAbs);
 
         function _SVGPathSegMovetoAbs(owningPathSegList, x, y) {
           var _this;
 
           _classCallCheck(this, _SVGPathSegMovetoAbs);
 
-          _this = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegMovetoAbs).call(this, _SVGPathSeg.PATHSEG_MOVETO_ABS, 'M', owningPathSegList));
+          _this = _super2.call(this, _SVGPathSeg.PATHSEG_MOVETO_ABS, 'M', owningPathSegList);
           _this._x = x;
           _this._y = y;
           return _this;
@@ -249,17 +281,17 @@
         }
       });
 
-      var _SVGPathSegMovetoRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg4) {
+      var _SVGPathSegMovetoRel = /*#__PURE__*/function (_SVGPathSeg4) {
         _inherits(_SVGPathSegMovetoRel, _SVGPathSeg4);
+
+        var _super3 = _createSuper(_SVGPathSegMovetoRel);
 
         function _SVGPathSegMovetoRel(owningPathSegList, x, y) {
           var _this2;
 
           _classCallCheck(this, _SVGPathSegMovetoRel);
 
-          _this2 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegMovetoRel).call(this, _SVGPathSeg.PATHSEG_MOVETO_REL, 'm', owningPathSegList));
+          _this2 = _super3.call(this, _SVGPathSeg.PATHSEG_MOVETO_REL, 'm', owningPathSegList);
           _this2._x = x;
           _this2._y = y;
           return _this2;
@@ -310,17 +342,17 @@
         }
       });
 
-      var _SVGPathSegLinetoAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg5) {
+      var _SVGPathSegLinetoAbs = /*#__PURE__*/function (_SVGPathSeg5) {
         _inherits(_SVGPathSegLinetoAbs, _SVGPathSeg5);
+
+        var _super4 = _createSuper(_SVGPathSegLinetoAbs);
 
         function _SVGPathSegLinetoAbs(owningPathSegList, x, y) {
           var _this3;
 
           _classCallCheck(this, _SVGPathSegLinetoAbs);
 
-          _this3 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_ABS, 'L', owningPathSegList));
+          _this3 = _super4.call(this, _SVGPathSeg.PATHSEG_LINETO_ABS, 'L', owningPathSegList);
           _this3._x = x;
           _this3._y = y;
           return _this3;
@@ -371,17 +403,17 @@
         }
       });
 
-      var _SVGPathSegLinetoRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg6) {
+      var _SVGPathSegLinetoRel = /*#__PURE__*/function (_SVGPathSeg6) {
         _inherits(_SVGPathSegLinetoRel, _SVGPathSeg6);
+
+        var _super5 = _createSuper(_SVGPathSegLinetoRel);
 
         function _SVGPathSegLinetoRel(owningPathSegList, x, y) {
           var _this4;
 
           _classCallCheck(this, _SVGPathSegLinetoRel);
 
-          _this4 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoRel).call(this, _SVGPathSeg.PATHSEG_LINETO_REL, 'l', owningPathSegList));
+          _this4 = _super5.call(this, _SVGPathSeg.PATHSEG_LINETO_REL, 'l', owningPathSegList);
           _this4._x = x;
           _this4._y = y;
           return _this4;
@@ -432,17 +464,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoCubicAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg7) {
+      var _SVGPathSegCurvetoCubicAbs = /*#__PURE__*/function (_SVGPathSeg7) {
         _inherits(_SVGPathSegCurvetoCubicAbs, _SVGPathSeg7);
+
+        var _super6 = _createSuper(_SVGPathSegCurvetoCubicAbs);
 
         function _SVGPathSegCurvetoCubicAbs(owningPathSegList, x, y, x1, y1, x2, y2) {
           var _this5;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicAbs);
 
-          _this5 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS, 'C', owningPathSegList));
+          _this5 = _super6.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS, 'C', owningPathSegList);
           _this5._x = x;
           _this5._y = y;
           _this5._x1 = x1;
@@ -541,17 +573,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoCubicRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg8) {
+      var _SVGPathSegCurvetoCubicRel = /*#__PURE__*/function (_SVGPathSeg8) {
         _inherits(_SVGPathSegCurvetoCubicRel, _SVGPathSeg8);
+
+        var _super7 = _createSuper(_SVGPathSegCurvetoCubicRel);
 
         function _SVGPathSegCurvetoCubicRel(owningPathSegList, x, y, x1, y1, x2, y2) {
           var _this6;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicRel);
 
-          _this6 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL, 'c', owningPathSegList));
+          _this6 = _super7.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL, 'c', owningPathSegList);
           _this6._x = x;
           _this6._y = y;
           _this6._x1 = x1;
@@ -650,17 +682,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg9) {
+      var _SVGPathSegCurvetoQuadraticAbs = /*#__PURE__*/function (_SVGPathSeg9) {
         _inherits(_SVGPathSegCurvetoQuadraticAbs, _SVGPathSeg9);
+
+        var _super8 = _createSuper(_SVGPathSegCurvetoQuadraticAbs);
 
         function _SVGPathSegCurvetoQuadraticAbs(owningPathSegList, x, y, x1, y1) {
           var _this7;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticAbs);
 
-          _this7 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS, 'Q', owningPathSegList));
+          _this7 = _super8.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_ABS, 'Q', owningPathSegList);
           _this7._x = x;
           _this7._y = y;
           _this7._x1 = x1;
@@ -735,17 +767,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg10) {
+      var _SVGPathSegCurvetoQuadraticRel = /*#__PURE__*/function (_SVGPathSeg10) {
         _inherits(_SVGPathSegCurvetoQuadraticRel, _SVGPathSeg10);
+
+        var _super9 = _createSuper(_SVGPathSegCurvetoQuadraticRel);
 
         function _SVGPathSegCurvetoQuadraticRel(owningPathSegList, x, y, x1, y1) {
           var _this8;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticRel);
 
-          _this8 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL, 'q', owningPathSegList));
+          _this8 = _super9.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_REL, 'q', owningPathSegList);
           _this8._x = x;
           _this8._y = y;
           _this8._x1 = x1;
@@ -820,17 +852,17 @@
         }
       });
 
-      var _SVGPathSegArcAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg11) {
+      var _SVGPathSegArcAbs = /*#__PURE__*/function (_SVGPathSeg11) {
         _inherits(_SVGPathSegArcAbs, _SVGPathSeg11);
+
+        var _super10 = _createSuper(_SVGPathSegArcAbs);
 
         function _SVGPathSegArcAbs(owningPathSegList, x, y, r1, r2, angle, largeArcFlag, sweepFlag) {
           var _this9;
 
           _classCallCheck(this, _SVGPathSegArcAbs);
 
-          _this9 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegArcAbs).call(this, _SVGPathSeg.PATHSEG_ARC_ABS, 'A', owningPathSegList));
+          _this9 = _super10.call(this, _SVGPathSeg.PATHSEG_ARC_ABS, 'A', owningPathSegList);
           _this9._x = x;
           _this9._y = y;
           _this9._r1 = r1;
@@ -941,17 +973,17 @@
         }
       });
 
-      var _SVGPathSegArcRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg12) {
+      var _SVGPathSegArcRel = /*#__PURE__*/function (_SVGPathSeg12) {
         _inherits(_SVGPathSegArcRel, _SVGPathSeg12);
+
+        var _super11 = _createSuper(_SVGPathSegArcRel);
 
         function _SVGPathSegArcRel(owningPathSegList, x, y, r1, r2, angle, largeArcFlag, sweepFlag) {
           var _this10;
 
           _classCallCheck(this, _SVGPathSegArcRel);
 
-          _this10 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegArcRel).call(this, _SVGPathSeg.PATHSEG_ARC_REL, 'a', owningPathSegList));
+          _this10 = _super11.call(this, _SVGPathSeg.PATHSEG_ARC_REL, 'a', owningPathSegList);
           _this10._x = x;
           _this10._y = y;
           _this10._r1 = r1;
@@ -1062,17 +1094,17 @@
         }
       });
 
-      var _SVGPathSegLinetoHorizontalAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg13) {
+      var _SVGPathSegLinetoHorizontalAbs = /*#__PURE__*/function (_SVGPathSeg13) {
         _inherits(_SVGPathSegLinetoHorizontalAbs, _SVGPathSeg13);
+
+        var _super12 = _createSuper(_SVGPathSegLinetoHorizontalAbs);
 
         function _SVGPathSegLinetoHorizontalAbs(owningPathSegList, x) {
           var _this11;
 
           _classCallCheck(this, _SVGPathSegLinetoHorizontalAbs);
 
-          _this11 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoHorizontalAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS, 'H', owningPathSegList));
+          _this11 = _super12.call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_ABS, 'H', owningPathSegList);
           _this11._x = x;
           return _this11;
         }
@@ -1109,17 +1141,17 @@
         enumerable: true
       });
 
-      var _SVGPathSegLinetoHorizontalRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg14) {
+      var _SVGPathSegLinetoHorizontalRel = /*#__PURE__*/function (_SVGPathSeg14) {
         _inherits(_SVGPathSegLinetoHorizontalRel, _SVGPathSeg14);
+
+        var _super13 = _createSuper(_SVGPathSegLinetoHorizontalRel);
 
         function _SVGPathSegLinetoHorizontalRel(owningPathSegList, x) {
           var _this12;
 
           _classCallCheck(this, _SVGPathSegLinetoHorizontalRel);
 
-          _this12 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoHorizontalRel).call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL, 'h', owningPathSegList));
+          _this12 = _super13.call(this, _SVGPathSeg.PATHSEG_LINETO_HORIZONTAL_REL, 'h', owningPathSegList);
           _this12._x = x;
           return _this12;
         }
@@ -1156,17 +1188,17 @@
         enumerable: true
       });
 
-      var _SVGPathSegLinetoVerticalAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg15) {
+      var _SVGPathSegLinetoVerticalAbs = /*#__PURE__*/function (_SVGPathSeg15) {
         _inherits(_SVGPathSegLinetoVerticalAbs, _SVGPathSeg15);
+
+        var _super14 = _createSuper(_SVGPathSegLinetoVerticalAbs);
 
         function _SVGPathSegLinetoVerticalAbs(owningPathSegList, y) {
           var _this13;
 
           _classCallCheck(this, _SVGPathSegLinetoVerticalAbs);
 
-          _this13 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoVerticalAbs).call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS, 'V', owningPathSegList));
+          _this13 = _super14.call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_ABS, 'V', owningPathSegList);
           _this13._y = y;
           return _this13;
         }
@@ -1203,17 +1235,17 @@
         enumerable: true
       });
 
-      var _SVGPathSegLinetoVerticalRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg16) {
+      var _SVGPathSegLinetoVerticalRel = /*#__PURE__*/function (_SVGPathSeg16) {
         _inherits(_SVGPathSegLinetoVerticalRel, _SVGPathSeg16);
+
+        var _super15 = _createSuper(_SVGPathSegLinetoVerticalRel);
 
         function _SVGPathSegLinetoVerticalRel(owningPathSegList, y) {
           var _this14;
 
           _classCallCheck(this, _SVGPathSegLinetoVerticalRel);
 
-          _this14 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegLinetoVerticalRel).call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL, 'v', owningPathSegList));
+          _this14 = _super15.call(this, _SVGPathSeg.PATHSEG_LINETO_VERTICAL_REL, 'v', owningPathSegList);
           _this14._y = y;
           return _this14;
         }
@@ -1250,17 +1282,17 @@
         enumerable: true
       });
 
-      var _SVGPathSegCurvetoCubicSmoothAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg17) {
+      var _SVGPathSegCurvetoCubicSmoothAbs = /*#__PURE__*/function (_SVGPathSeg17) {
         _inherits(_SVGPathSegCurvetoCubicSmoothAbs, _SVGPathSeg17);
+
+        var _super16 = _createSuper(_SVGPathSegCurvetoCubicSmoothAbs);
 
         function _SVGPathSegCurvetoCubicSmoothAbs(owningPathSegList, x, y, x2, y2) {
           var _this15;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicSmoothAbs);
 
-          _this15 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicSmoothAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS, 'S', owningPathSegList));
+          _this15 = _super16.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_ABS, 'S', owningPathSegList);
           _this15._x = x;
           _this15._y = y;
           _this15._x2 = x2;
@@ -1335,17 +1367,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoCubicSmoothRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg18) {
+      var _SVGPathSegCurvetoCubicSmoothRel = /*#__PURE__*/function (_SVGPathSeg18) {
         _inherits(_SVGPathSegCurvetoCubicSmoothRel, _SVGPathSeg18);
+
+        var _super17 = _createSuper(_SVGPathSegCurvetoCubicSmoothRel);
 
         function _SVGPathSegCurvetoCubicSmoothRel(owningPathSegList, x, y, x2, y2) {
           var _this16;
 
           _classCallCheck(this, _SVGPathSegCurvetoCubicSmoothRel);
 
-          _this16 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoCubicSmoothRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL, 's', owningPathSegList));
+          _this16 = _super17.call(this, _SVGPathSeg.PATHSEG_CURVETO_CUBIC_SMOOTH_REL, 's', owningPathSegList);
           _this16._x = x;
           _this16._y = y;
           _this16._x2 = x2;
@@ -1420,17 +1452,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticSmoothAbs =
-      /*#__PURE__*/
-      function (_SVGPathSeg19) {
+      var _SVGPathSegCurvetoQuadraticSmoothAbs = /*#__PURE__*/function (_SVGPathSeg19) {
         _inherits(_SVGPathSegCurvetoQuadraticSmoothAbs, _SVGPathSeg19);
+
+        var _super18 = _createSuper(_SVGPathSegCurvetoQuadraticSmoothAbs);
 
         function _SVGPathSegCurvetoQuadraticSmoothAbs(owningPathSegList, x, y) {
           var _this17;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticSmoothAbs);
 
-          _this17 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticSmoothAbs).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS, 'T', owningPathSegList));
+          _this17 = _super18.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS, 'T', owningPathSegList);
           _this17._x = x;
           _this17._y = y;
           return _this17;
@@ -1481,17 +1513,17 @@
         }
       });
 
-      var _SVGPathSegCurvetoQuadraticSmoothRel =
-      /*#__PURE__*/
-      function (_SVGPathSeg20) {
+      var _SVGPathSegCurvetoQuadraticSmoothRel = /*#__PURE__*/function (_SVGPathSeg20) {
         _inherits(_SVGPathSegCurvetoQuadraticSmoothRel, _SVGPathSeg20);
+
+        var _super19 = _createSuper(_SVGPathSegCurvetoQuadraticSmoothRel);
 
         function _SVGPathSegCurvetoQuadraticSmoothRel(owningPathSegList, x, y) {
           var _this18;
 
           _classCallCheck(this, _SVGPathSegCurvetoQuadraticSmoothRel);
 
-          _this18 = _possibleConstructorReturn(this, _getPrototypeOf(_SVGPathSegCurvetoQuadraticSmoothRel).call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL, 't', owningPathSegList));
+          _this18 = _super19.call(this, _SVGPathSeg.PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL, 't', owningPathSegList);
           _this18._x = x;
           _this18._y = y;
           return _this18;
@@ -1679,9 +1711,7 @@
 
     if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.prototype)) {
       // Spec: https://www.w3.org/TR/SVG11/single-page.html#paths-InterfaceSVGPathSegList
-      var SVGPathSegList =
-      /*#__PURE__*/
-      function () {
+      var SVGPathSegList = /*#__PURE__*/function () {
         function SVGPathSegList(pathElement) {
           _classCallCheck(this, SVGPathSegList);
 
@@ -1865,9 +1895,7 @@
 
             var owningPathSegList = this; // eslint-disable-line consistent-this
 
-            var Builder =
-            /*#__PURE__*/
-            function () {
+            var Builder = /*#__PURE__*/function () {
               function Builder() {
                 _classCallCheck(this, Builder);
 
@@ -1884,9 +1912,7 @@
               return Builder;
             }();
 
-            var Source =
-            /*#__PURE__*/
-            function () {
+            var Source = /*#__PURE__*/function () {
               function Source(string) {
                 _classCallCheck(this, Source);
 
@@ -2412,13 +2438,13 @@
   })();
 
   /**
-   * Namespaces or tools therefor
+   * Namespaces or tools therefor.
    * @module namespaces
    * @license MIT
   */
 
   /**
-  * Common namepaces constants in alpha order
+  * Common namepaces constants in alpha order.
   * @enum {string}
   * @type {PlainObject}
   * @memberof module:namespaces

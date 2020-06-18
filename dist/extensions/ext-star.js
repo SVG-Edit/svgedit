@@ -38,7 +38,7 @@ var svgEditorExtension_star = (function () {
   }
 
   /**
-   * ext-star.js
+   * @file ext-star.js
    *
    *
    * @copyright 2010 CloudCanvas, Inc. All rights reserved
@@ -46,21 +46,21 @@ var svgEditorExtension_star = (function () {
    */
   var extStar = {
     name: 'star',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(S) {
+    init: function init(S) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var svgEditor, svgCanvas, $, importLocale, selElems, started, newFO, strings, showPanel, setAttr, buttons, contextTools;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                setAttr = function _ref2(attr, val) {
+                setAttr = function _setAttr(attr, val) {
                   svgCanvas.changeSelectedAttribute(attr, val);
                   svgCanvas.call('changed', selElems);
                 };
 
-                showPanel = function _ref(on) {
+                showPanel = function _showPanel(on) {
                   var fcRules = $('#fc_rules');
 
                   if (!fcRules.length) {
@@ -71,7 +71,7 @@ var svgEditorExtension_star = (function () {
                   $('#star_panel').toggle(on);
                 };
 
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 $ = S.$, importLocale = S.importLocale; // {svgcontent},
 
@@ -284,15 +284,9 @@ var svgEditorExtension_star = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extStar;

@@ -130,6 +130,7 @@ var svgEditorLang_pl = (function () {
       reorient_path: 'Zresetuj obwiednię',
       ungroup: 'Rozgrupuj elementy',
       docprops: 'Właściwości dokumentu',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: 'Przenieś pod spód',
       move_top: 'Przenieś na wierzch',
       node_clone: 'Klonuj węzeł',

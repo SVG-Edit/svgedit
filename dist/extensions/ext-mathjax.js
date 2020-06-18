@@ -103,16 +103,16 @@ var svgEditorExtension_mathjax = (function () {
 
   var extMathjax = {
     name: 'mathjax',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee2(_ref) {
+    init: function init(_ref) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         var $, importLocale, strings, svgEditor, svgCanvas, mathjaxSrcSecure, uiStrings, math, locationX, locationY, mathjaxLoaded, saveMath, buttons;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                saveMath = function _ref2() {
+                saveMath = function _saveMath() {
                   var code = $('#mathjax_code_textarea').val(); // displaystyle to force MathJax NOT to use the inline style. Because it is
                   // less fancy!
 
@@ -170,7 +170,7 @@ var svgEditorExtension_mathjax = (function () {
 
               case 4:
                 strings = _context2.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas; // Configuration of the MathJax extention.
                 // This will be added to the head tag before MathJax is loaded.
 
@@ -222,10 +222,8 @@ var svgEditorExtension_mathjax = (function () {
                   type: 'mode',
                   icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
                   events: {
-                    click: function () {
-                      var _click = _asyncToGenerator(
-                      /*#__PURE__*/
-                      regeneratorRuntime.mark(function _callee() {
+                    click: function click() {
+                      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                         return regeneratorRuntime.wrap(function _callee$(_context) {
                           while (1) {
                             switch (_context.prev = _context.next) {
@@ -307,14 +305,8 @@ var svgEditorExtension_mathjax = (function () {
                             }
                           }
                         }, _callee, null, [[7, 13]]);
-                      }));
-
-                      function click() {
-                        return _click.apply(this, arguments);
-                      }
-
-                      return click;
-                    }()
+                      }))();
+                    }
                   }
                 }];
                 return _context2.abrupt("return", {
@@ -358,15 +350,9 @@ var svgEditorExtension_mathjax = (function () {
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee2);
+      }))();
+    }
   };
 
   return extMathjax;

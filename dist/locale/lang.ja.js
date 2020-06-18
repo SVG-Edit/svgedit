@@ -129,6 +129,7 @@ var svgEditorLang_ja = (function () {
       reorient_path: '現在の角度を０度とする',
       ungroup: 'グループ化を解除',
       docprops: '文書のプロパティ',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: '奥に移動',
       move_top: '手前に移動',
       node_clone: 'ノードを複製',

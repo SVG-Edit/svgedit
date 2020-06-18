@@ -38,7 +38,7 @@ var svgEditorExtension_shapes = (function () {
   }
 
   function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
   function _arrayWithHoles(arr) {
@@ -46,10 +46,7 @@ var svgEditorExtension_shapes = (function () {
   }
 
   function _iterableToArrayLimit(arr, i) {
-    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-      return;
-    }
-
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -75,12 +72,29 @@ var svgEditorExtension_shapes = (function () {
     return _arr;
   }
 
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
-   * ext-shapes.js
+   * @file ext-shapes.js
    *
    * @license MIT
    *
@@ -89,16 +103,16 @@ var svgEditorExtension_shapes = (function () {
    */
   var extShapes = {
     name: 'shapes',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
+    init: function init(_ref) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var $, importLocale, strings, svgEditor, canv, svgroot, lastBBox, categories, library, modeId, startClientPos, currentD, curShapeId, curShape, startX, startY, curLib, loadIcons, makeButtons, loadLibrary, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                loadLibrary = function _ref8(catId) {
+                loadLibrary = function _loadLibrary(catId) {
                   var lib = library[catId];
 
                   if (!lib) {
@@ -124,7 +138,7 @@ var svgEditorExtension_shapes = (function () {
                   loadIcons();
                 };
 
-                makeButtons = function _ref7(cat, shapes) {
+                makeButtons = function _makeButtons(cat, shapes) {
                   var size = curLib.size || 300;
                   var fill = curLib.fill || false;
                   var off = size * 0.05;
@@ -153,7 +167,7 @@ var svgEditorExtension_shapes = (function () {
                   });
                 };
 
-                loadIcons = function _ref6() {
+                loadIcons = function _loadIcons() {
                   $('#shape_buttons').empty().append(curLib.buttons);
                 };
 
@@ -163,7 +177,7 @@ var svgEditorExtension_shapes = (function () {
 
               case 6:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 canv = svgEditor.canvas;
                 svgroot = canv.getRootElem();
                 lastBBox = {}; // This populates the category list
@@ -413,15 +427,9 @@ var svgEditorExtension_shapes = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extShapes;

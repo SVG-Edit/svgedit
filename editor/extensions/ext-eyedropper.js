@@ -1,5 +1,5 @@
 /**
- * ext-eyedropper.js
+ * @file ext-eyedropper.js
  *
  * @license MIT
  *

@@ -38,7 +38,7 @@ var svgEditorExtension_panning = (function () {
   }
 
   /**
-   * ext-panning.js
+   * @file ext-panning.js
    *
    * @license MIT
    *
@@ -51,10 +51,10 @@ var svgEditorExtension_panning = (function () {
   */
   var extPanning = {
     name: 'panning',
-    init: function () {
-      var _init = _asyncToGenerator(
-      /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee(_ref) {
+    init: function init(_ref) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var importLocale, strings, svgEditor, svgCanvas, buttons;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -66,7 +66,7 @@ var svgEditorExtension_panning = (function () {
 
               case 3:
                 strings = _context.sent;
-                svgEditor = this;
+                svgEditor = _this;
                 svgCanvas = svgEditor.canvas;
                 buttons = [{
                   id: 'ext-panning',
@@ -112,15 +112,9 @@ var svgEditorExtension_panning = (function () {
                 return _context.stop();
             }
           }
-        }, _callee, this);
-      }));
-
-      function init(_x) {
-        return _init.apply(this, arguments);
-      }
-
-      return init;
-    }()
+        }, _callee);
+      }))();
+    }
   };
 
   return extPanning;

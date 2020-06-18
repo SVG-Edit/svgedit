@@ -129,6 +129,7 @@ var svgEditorLang_sr = (function () {
       reorient_path: 'Reorient path',
       ungroup: 'Разгрупирање Елементи',
       docprops: 'Особине документа',
+      editor_homepage: 'SVG-Edit Home Page',
       move_bottom: 'Премести на доле',
       move_top: 'Премести на врх',
       node_clone: 'Clone Node',

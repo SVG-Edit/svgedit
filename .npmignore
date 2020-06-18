@@ -2,8 +2,10 @@ ignore
 screencasts
 
 .github/ISSUE_TEMPLATE/bug_report.md
+gh-disabled-workflows
 build
 lgtm.yml
+.travis.yml
 
 cypress/**
 cypress.env.json
@@ -11,3 +13,10 @@ cypress.env.json
 coverage/**
 .nyc_output
 instrumented/**
+mochawesome-report/**
+mochawesome.json
+
+releases
+
+tools
+.eslintcache
