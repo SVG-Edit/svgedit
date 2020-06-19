@@ -2887,9 +2887,6 @@ const dblClick = function (evt) {
   const evtTarget = evt.target;
   const parent = evtTarget.parentNode;
 
-  // Do nothing if already in current group
-  if (parent === currentGroup) { return; }
-
   let mouseTarget = getMouseTarget(evt);
   const {tagName} = mouseTarget;
 
@@ -2897,6 +2894,9 @@ const dblClick = function (evt) {
     const pt = transformPoint(evt.pageX, evt.pageY, rootSctm);
     textActions.select(mouseTarget, pt.x, pt.y);
   }
+
+  // Do nothing if already in current group
+  if (parent === currentGroup) { return; }
 
   if ((tagName === 'g' || tagName === 'a') &&
     getRotationAngle(mouseTarget)
