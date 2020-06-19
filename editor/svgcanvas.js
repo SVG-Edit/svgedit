@@ -692,10 +692,8 @@ const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
   }
   call('selected', selectedElements);
 
-  if (showGrips || selectedElements.length === 1) {
-    selectorManager.requestSelector(selectedElements[0]).showGrips(true);
-  } else {
-    selectorManager.requestSelector(selectedElements[0]).showGrips(false);
+  if (selectedElements.length === 1) {
+    selectorManager.requestSelector(selectedElements[0]).showGrips(showGrips);
   }
 
   // make sure the elements are in the correct order
