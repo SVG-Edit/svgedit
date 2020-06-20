@@ -139,7 +139,7 @@ var canvg = (function (exports) {
   function _createSuper(Derived) {
     var hasNativeReflectConstruct = _isNativeReflectConstruct();
 
-    return function () {
+    return function _createSuperInternal() {
       var Super = _getPrototypeOf(Derived),
           result;
 
@@ -2025,13 +2025,13 @@ var canvg = (function (exports) {
 
       }, {
         key: "setContext",
-        value: function setContext(ctx) {} // OVERRIDE ME!
-        // base clear context
+        value: function setContext(ctx) {// OVERRIDE ME!
+        } // base clear context
 
       }, {
         key: "clearContext",
-        value: function clearContext(ctx) {} // OVERRIDE ME!
-        // base render children
+        value: function clearContext(ctx) {// OVERRIDE ME!
+        } // base render children
 
       }, {
         key: "renderChildren",

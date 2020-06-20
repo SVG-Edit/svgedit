@@ -1,11 +1,12 @@
-/* eslint-disable no-console, compat/compat */
+/* eslint-disable no-console, compat/compat -- Node script, not browser */
 // Filed the following to support this file's functionality:
 //    https://github.com/cypress-io/cypress/issues/6585
 
 // Todo: Show /test (i.e., `unit.js`) test results at beginning?
 
 // See https://github.com/jsdoc/jsdoc/issues/1750 to create such tags
-/* eslint "jsdoc/check-tag-names": ["error", {definedTags: ["cli-arg"]}] */
+/* eslint "jsdoc/check-tag-names": ["error", {definedTags: ["cli-arg"]}] --
+  we want a custom tag */
 /**
  * @file A CLI reporter against after-the-fact compiled (merged Mochawesome)
  * Mocha results.
@@ -22,7 +23,7 @@ const reporterFile = process.argv[2]
 
 const path = '../mochawesome.json';
 
-// eslint-disable-next-line import/no-dynamic-require
+// eslint-disable-next-line import/no-dynamic-require -- Allow CLI to change
 const MochaReporter = require(`mocha/lib/reporters/${reporterFile}.js`);
 const Suite = require('mocha/lib/suite.js');
 const Test = require('mocha/lib/test.js');
@@ -38,7 +39,8 @@ const {constants: {
   EVENT_TEST_PENDING
 }} = require('mocha/lib/runner.js');
 
-// eslint-disable-next-line import/no-dynamic-require
+// eslint-disable-next-line max-len -- Won't let us make next line multiline
+// eslint-disable-next-line import/no-dynamic-require -- Not fixed now, but may allow changing
 const {results, stats} = require(path);
 
 const runner = new Runner(
@@ -48,7 +50,7 @@ runner.stats = stats;
 
 console.log('Mocha results:');
 
-// eslint-disable-next-line no-new
+// eslint-disable-next-line no-new -- Has side effects
 new MochaReporter(runner);
 
 runner.emit(EVENT_RUN_BEGIN);
