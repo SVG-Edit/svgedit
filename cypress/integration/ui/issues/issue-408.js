@@ -3,12 +3,12 @@ import {
 } from '../../../support/ui-test-helper.js';
 
 // See https://github.com/SVG-Edit/svgedit/issues/408
-describe('Fix issue 408: does not throw when showing/saving svg content', function () {
+describe('Fix issue 408', function () {
   beforeEach(() => {
     visitAndApproveStorage();
   });
 
-  it('should set rectangle selection after click', function () {
+  it('should not throw when showing/saving svg content', function () {
     cy.get('#tool_source').click();
     cy.get('#svg_source_textarea')
       .type('{selectall}')
