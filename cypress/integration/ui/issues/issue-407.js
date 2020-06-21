@@ -3,12 +3,12 @@ import {
 } from '../../../support/ui-test-helper.js';
 
 // See https://github.com/SVG-Edit/svgedit/issues/407
-describe('Fix issue 407: can enter edit on text child', function () {
+describe('Fix issue 407', function () {
   beforeEach(() => {
     visitAndApproveStorage();
   });
 
-  it('should set rectangle selection after click', function () {
+  it('can enter edit on text child', function () {
     cy.get('#tool_source').click();
     cy.get('#svg_source_textarea')
       .type('{selectall}')
