@@ -573,18 +573,19 @@ export default {
       },
       elementChanged (opts) {
         let elem = opts.elems[0];
-        if (elem && elem.tagName === 'svg' && elem.id === 'svgcontent') {
+        if (!elem) return;
+        if (elem.tagName === 'svg' && elem.id === 'svgcontent') {
           // Update svgcontent (can change on import)
           svgcontent = elem;
           init();
         }
 
         // Has marker, so change offset
-        if (elem && (
+        if (
           elem.getAttribute('marker-start') ||
           elem.getAttribute('marker-mid') ||
           elem.getAttribute('marker-end')
-        )) {
+        ) {
           const start = elem.getAttribute('marker-start');
           const mid = elem.getAttribute('marker-mid');
           const end = elem.getAttribute('marker-end');
