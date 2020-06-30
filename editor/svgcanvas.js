@@ -516,7 +516,7 @@ const undoMgr = canvas.undoMgr = new UndoManager({
         } else if (!isApply) {
           restoreRefElems(cmd.elem);
         }
-        if (cmd.elem.tagName === 'use') {
+        if (cmd.elem && cmd.elem.tagName === 'use') {
           setUseData(cmd.elem);
         }
       } else if (cmdType === ChangeElementCommand.type()) {
