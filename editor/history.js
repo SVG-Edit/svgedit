@@ -223,7 +223,7 @@ export class InsertElementCommand extends Command {
     }
 
     this.parent = this.elem.parentNode;
-    this.elem = this.elem.remove();
+    this.elem.remove();
 
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
@@ -280,7 +280,7 @@ export class RemoveElementCommand extends Command {
 
     removeElementFromListMap(this.elem);
     this.parent = this.elem.parentNode;
-    this.elem = this.elem.remove();
+    this.elem.remove();
 
     if (handler) {
       handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);

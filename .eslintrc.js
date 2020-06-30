@@ -380,6 +380,9 @@ module.exports = {
           preventDuplicates: true
         }
       }
-    }]
+    }],
+
+    // Disable for now
+    'eslint-comments/require-description': 0
   }
 };

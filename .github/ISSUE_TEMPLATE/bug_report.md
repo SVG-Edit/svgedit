@@ -1,6 +1,7 @@
 ---
 name: Bug report
 about: Create a report in case we may be able to help
+labels: bug - unconfirmed
 
 ---
 **PLEASE NOTE: This project is not currently being actively developed due to the core developers having moved on, and the only remaining maintainer merely applying occasional minor PRs or tweaks to keep the project alive. While you can file an issue, you should not expect any action, even if we label the issue.**
