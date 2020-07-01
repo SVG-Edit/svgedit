@@ -3730,6 +3730,9 @@ var SvgCanvas = (function () {
    * @function module:units.ElementContainer#getRoundDigits
    * @returns {Integer} The number of digits number should be rounded to
    */
+  // Todo[eslint-plugin-jsdoc@>=29.0.0]: See if parsing fixed to allow '%'
+
+  /* eslint-disable jsdoc/valid-types */
 
   /**
    * @typedef {PlainObject} module:units.TypeMap
@@ -3743,6 +3746,8 @@ var SvgCanvas = (function () {
    * @property {Integer} px
    * @property {0} %
    */
+
+  /* eslint-enable jsdoc/valid-types */
 
   /**
    * Initializes this module.
