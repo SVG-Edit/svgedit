@@ -49,6 +49,7 @@ export default {
     */
     function closeBrowser () {
       $('#imgbrowse_holder').hide();
+      document.activeElement.blur(); // make sure focus is the body to correct issue #417
     }
 
     /**
