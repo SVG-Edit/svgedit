@@ -5626,20 +5626,13 @@ editor.init = function () {
     const toolButtons = [
       {sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
       {sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
-      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true],
-        parent: '#tools_line', prepend: true},
-      {sel: '#tool_rect', fn: clickRect, evt: 'mouseup',
-        key: ['R', true], parent: '#tools_rect', icon: 'rect'},
-      {sel: '#tool_square', fn: clickSquare, evt: 'mouseup',
-        parent: '#tools_rect', icon: 'square'},
-      {sel: '#tool_fhrect', fn: clickFHRect, evt: 'mouseup',
-        parent: '#tools_rect', icon: 'fh_rect'},
-      {sel: '#tool_ellipse', fn: clickEllipse, evt: 'mouseup',
-        key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
-      {sel: '#tool_circle', fn: clickCircle, evt: 'mouseup',
-        parent: '#tools_ellipse', icon: 'circle'},
-      {sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup',
-        parent: '#tools_ellipse', icon: 'fh_ellipse'},
+      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true], parent: '#tools_line', prepend: true},
+      {sel: '#tool_rect', fn: clickRect, evt: 'mouseup', key: ['R', true], parent: '#tools_rect', icon: 'rect'},
+      {sel: '#tool_square', fn: clickSquare, evt: 'mouseup', parent: '#tools_rect', icon: 'square'},
+      {sel: '#tool_fhrect', fn: clickFHRect, evt: 'mouseup', parent: '#tools_rect', icon: 'fh_rect'},
+      {sel: '#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
+      {sel: '#tool_circle', fn: clickCircle, evt: 'mouseup', parent: '#tools_ellipse', icon: 'circle'},
+      {sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup', parent: '#tools_ellipse', icon: 'fh_ellipse'},
       {sel: '#tool_path', fn: clickPath, evt: 'click', key: ['P', true]},
       {sel: '#tool_text', fn: clickText, evt: 'click', key: ['T', true]},
       {sel: '#tool_image', fn: clickImage, evt: 'mouseup'},
@@ -5668,8 +5661,7 @@ editor.init = function () {
         },
         hidekey: true
       },
-      {sel: dialogSelectors.join(','), fn: cancelOverlays, evt: 'click',
-        key: ['esc', false, false], hidekey: true},
+      {sel: dialogSelectors.join(','), fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
       {sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
       {sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
       {sel: '#tool_docprops', fn: showDocProperties, evt: 'click'},
@@ -5678,8 +5670,7 @@ editor.init = function () {
       {sel: '#tool_editor_homepage', fn: openHomePage, evt: 'click'},
       {sel: '#tool_open', fn () { window.dispatchEvent(new CustomEvent('openImage')); }, evt: 'click'},
       {sel: '#tool_import', fn () { window.dispatchEvent(new CustomEvent('importImage')); }, evt: 'click'},
-      {sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected,
-        evt: 'click', key: ['del/backspace', true]},
+      {sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
       {sel: '#tool_reorient', fn: reorientPath, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_node_clone', fn: clonePathNode, evt: 'click'},
@@ -5706,7 +5697,6 @@ editor.init = function () {
       {sel: '#copy_save_done', fn: cancelOverlays, evt: 'click'},
 
       // Shortcuts not associated with buttons
-
       {key: 'ctrl+left', fn () { rotateSelected(0, 1); }},
       {key: 'ctrl+right', fn () { rotateSelected(1, 1); }},
       {key: 'ctrl+shift+left', fn () { rotateSelected(0, 5); }},
@@ -5740,7 +5730,6 @@ editor.init = function () {
       {key: modKey + 'z', fn: clickUndo},
       {key: modKey + 'shift+z', fn: clickRedo},
       {key: modKey + 'y', fn: clickRedo},
-
       {key: modKey + 'x', fn: cutSelected},
       {key: modKey + 'c', fn: copySelected},
       {key: modKey + 'v', fn: pasteInCenter}
@@ -5759,20 +5748,21 @@ editor.init = function () {
        */
       setAll () {
         const flyouts = {};
+        const keyHandler = {}; // will contain the action for each pressed key
 
-        $.each(toolButtons, function (i, opts) {
+        toolButtons.forEach((opts) => {
           // Bind function to button
           let btn;
           if (opts.sel) {
-            btn = $(opts.sel);
-            if (!btn.length) { return true; } // Skip if markup does not exist
+            btn = document.querySelector(opts.sel);
+            if (btn === null) { return true; } // Skip if markup does not exist
             if (opts.evt) {
               // `touch.js` changes `touchstart` to `mousedown`,
               //   so we must map tool button click events as well
               if (isTouch() && opts.evt === 'click') {
                 opts.evt = 'mousedown';
               }
-              btn[opts.evt](opts.fn);
+              btn.addEventListener(opts.evt, opts.fn);
             }
 
             // Add to parent flyout menu, if able to be displayed
@@ -5782,7 +5772,7 @@ editor.init = function () {
                 fH = makeFlyoutHolder(opts.parent.substr(1));
               }
               if (opts.prepend) {
-                btn[0].style.margin = 'initial';
+                btn.style.margin = 'initial';
               }
               fH[opts.prepend ? 'prepend' : 'append'](btn);
 
@@ -5796,41 +5786,37 @@ editor.init = function () {
           // Bind function to shortcut key
           if (opts.key) {
             // Set shortcut based on options
-            let keyval,
-              // disInInp = true,
-              pd = false;
+            let keyval = opts.key;
+            let pd = false;
             if (Array.isArray(opts.key)) {
               keyval = opts.key[0];
               if (opts.key.length > 1) { pd = opts.key[1]; }
-              // if (opts.key.length > 2) { disInInp = opts.key[2]; }
-            } else {
-              keyval = opts.key;
             }
             keyval = String(keyval);
-
             const {fn} = opts;
-            $.each(keyval.split('/'), function (j, key) {
-              $(document).bind('keydown', key, function (e) {
-                fn();
-                if (pd) {
-                  e.preventDefault();
-                }
-                // Prevent default on ALL keys?
-                return false;
-              });
-            });
+            keyval.split('/').forEach((key) => { keyHandler[key] = {fn, pd}; });
 
             // Put shortcut in title
-            if (opts.sel && !opts.hidekey && btn.attr('title')) {
-              const newTitle = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
+            if (opts.sel && !opts.hidekey && btn.title) {
+              const newTitle = `${btn.title.split('[')[0]} (${keyval})`;
               keyAssocs[keyval] = opts.sel;
               // Disregard for menu items
-              if (!btn.parents('#main_menu').length) {
-                btn.attr('title', newTitle);
+              if (btn.closest('#main_menu') === null) {
+                btn.title = newTitle;
               }
             }
           }
           return true;
+        });
+        // register the keydown event
+        document.addEventListener('keydown', (e) => {
+          const key = `${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toLowerCase()}`;
+          console.log(key);
+          if (!keyHandler[key]) return;
+          keyHandler[key].fn();
+          if (keyHandler[key].pd) {
+            e.preventDefault();
+          }
         });
 
         // Setup flyouts
