@@ -4123,7 +4123,7 @@
         }
 
         this.parent = this.elem.parentNode;
-        this.elem = this.elem.remove();
+        this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
@@ -4200,7 +4200,7 @@
 
         removeElementFromListMap(this.elem);
         this.parent = this.elem.parentNode;
-        this.elem = this.elem.remove();
+        this.elem.remove();
 
         if (handler) {
           handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
@@ -10256,7 +10256,8 @@
     }, {
       key: "removeGroup",
       value: function removeGroup() {
-        var group = this.group_.remove();
+        var group = this.group_;
+        this.group_.remove();
         this.group_ = undefined;
         return group;
       }
@@ -14229,7 +14230,7 @@
               restoreRefElems(cmd.elem);
             }
 
-            if (cmd.elem.tagName === 'use') {
+            if (cmd.elem && cmd.elem.tagName === 'use') {
               setUseData(cmd.elem);
             }
           } else if (cmdType === ChangeElementCommand$1.type()) {
@@ -14434,10 +14435,8 @@
 
       call('selected', selectedElements);
 
-      if (showGrips || selectedElements.length === 1) {
-        selectorManager.requestSelector(selectedElements[0]).showGrips(true);
-      } else {
-        selectorManager.requestSelector(selectedElements[0]).showGrips(false);
+      if (selectedElements.length === 1) {
+        selectorManager.requestSelector(selectedElements[0]).showGrips(showGrips);
       } // make sure the elements are in the correct order
       // See: https://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
 
@@ -16951,12 +16950,7 @@
 
       var dblClick = function dblClick(evt) {
         var evtTarget = evt.target;
-        var parent = evtTarget.parentNode; // Do nothing if already in current group
-
-        if (parent === currentGroup) {
-          return;
-        }
-
+        var parent = evtTarget.parentNode;
         var mouseTarget = getMouseTarget(evt);
         var _mouseTarget = mouseTarget,
             tagName = _mouseTarget.tagName;
@@ -16964,6 +16958,11 @@
         if (tagName === 'text' && currentMode !== 'textedit') {
           var pt = transformPoint(evt.pageX, evt.pageY, rootSctm);
           textActions.select(mouseTarget, pt.x, pt.y);
+        } // Do nothing if already in current group
+
+
+        if (parent === currentGroup) {
+          return;
         }
 
         if ((tagName === 'g' || tagName === 'a') && getRotationAngle(mouseTarget)) {

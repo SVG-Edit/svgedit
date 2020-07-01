@@ -597,15 +597,16 @@ var svgEditorExtension_connector = (function () {
                   },
                   elementChanged: function elementChanged(opts) {
                     var elem = opts.elems[0];
+                    if (!elem) return;
 
-                    if (elem && elem.tagName === 'svg' && elem.id === 'svgcontent') {
+                    if (elem.tagName === 'svg' && elem.id === 'svgcontent') {
                       // Update svgcontent (can change on import)
                       svgcontent = elem;
                       init();
                     } // Has marker, so change offset
 
 
-                    if (elem && (elem.getAttribute('marker-start') || elem.getAttribute('marker-mid') || elem.getAttribute('marker-end'))) {
+                    if (elem.getAttribute('marker-start') || elem.getAttribute('marker-mid') || elem.getAttribute('marker-end')) {
                       var start = elem.getAttribute('marker-start');
                       var mid = elem.getAttribute('marker-mid');
                       var end = elem.getAttribute('marker-end');
