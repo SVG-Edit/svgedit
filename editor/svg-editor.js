@@ -5811,7 +5811,6 @@ editor.init = function () {
         // register the keydown event
         document.addEventListener('keydown', (e) => {
           const key = `${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toLowerCase()}`;
-          console.log(key);
           if (!keyHandler[key]) return;
           keyHandler[key].fn();
           if (keyHandler[key].pd) {
