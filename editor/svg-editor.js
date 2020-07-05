@@ -5626,13 +5626,20 @@ editor.init = function () {
     const toolButtons = [
       {sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
       {sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
-      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true], parent: '#tools_line', prepend: true},
-      {sel: '#tool_rect', fn: clickRect, evt: 'mouseup', key: ['R', true], parent: '#tools_rect', icon: 'rect'},
-      {sel: '#tool_square', fn: clickSquare, evt: 'mouseup', parent: '#tools_rect', icon: 'square'},
-      {sel: '#tool_fhrect', fn: clickFHRect, evt: 'mouseup', parent: '#tools_rect', icon: 'fh_rect'},
-      {sel: '#tool_ellipse', fn: clickEllipse, evt: 'mouseup', key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
-      {sel: '#tool_circle', fn: clickCircle, evt: 'mouseup', parent: '#tools_ellipse', icon: 'circle'},
-      {sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup', parent: '#tools_ellipse', icon: 'fh_ellipse'},
+      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true],
+        parent: '#tools_line', prepend: true},
+      {sel: '#tool_rect', fn: clickRect, evt: 'mouseup',
+        key: ['R', true], parent: '#tools_rect', icon: 'rect'},
+      {sel: '#tool_square', fn: clickSquare, evt: 'mouseup',
+        parent: '#tools_rect', icon: 'square'},
+      {sel: '#tool_fhrect', fn: clickFHRect, evt: 'mouseup',
+        parent: '#tools_rect', icon: 'fh_rect'},
+      {sel: '#tool_ellipse', fn: clickEllipse, evt: 'mouseup',
+        key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
+      {sel: '#tool_circle', fn: clickCircle, evt: 'mouseup',
+        parent: '#tools_ellipse', icon: 'circle'},
+      {sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup',
+        parent: '#tools_ellipse', icon: 'fh_ellipse'},
       {sel: '#tool_path', fn: clickPath, evt: 'click', key: ['P', true]},
       {sel: '#tool_text', fn: clickText, evt: 'click', key: ['T', true]},
       {sel: '#tool_image', fn: clickImage, evt: 'mouseup'},
@@ -5661,7 +5668,8 @@ editor.init = function () {
         },
         hidekey: true
       },
-      {sel: dialogSelectors.join(','), fn: cancelOverlays, evt: 'click', key: ['esc', false, false], hidekey: true},
+      {sel: dialogSelectors.join(','), fn: cancelOverlays, evt: 'click',
+        key: ['esc', false, false], hidekey: true},
       {sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
       {sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
       {sel: '#tool_docprops', fn: showDocProperties, evt: 'click'},
@@ -5670,7 +5678,8 @@ editor.init = function () {
       {sel: '#tool_editor_homepage', fn: openHomePage, evt: 'click'},
       {sel: '#tool_open', fn () { window.dispatchEvent(new CustomEvent('openImage')); }, evt: 'click'},
       {sel: '#tool_import', fn () { window.dispatchEvent(new CustomEvent('importImage')); }, evt: 'click'},
-      {sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
+      {sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected,
+        evt: 'click', key: ['del/backspace', true]},
       {sel: '#tool_reorient', fn: reorientPath, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_node_clone', fn: clonePathNode, evt: 'click'},
@@ -5697,6 +5706,7 @@ editor.init = function () {
       {sel: '#copy_save_done', fn: cancelOverlays, evt: 'click'},
 
       // Shortcuts not associated with buttons
+
       {key: 'ctrl+left', fn () { rotateSelected(0, 1); }},
       {key: 'ctrl+right', fn () { rotateSelected(1, 1); }},
       {key: 'ctrl+shift+left', fn () { rotateSelected(0, 5); }},
@@ -5730,6 +5740,7 @@ editor.init = function () {
       {key: modKey + 'z', fn: clickUndo},
       {key: modKey + 'shift+z', fn: clickRedo},
       {key: modKey + 'y', fn: clickRedo},
+
       {key: modKey + 'x', fn: cutSelected},
       {key: modKey + 'c', fn: copySelected},
       {key: modKey + 'v', fn: pasteInCenter}
