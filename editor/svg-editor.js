@@ -5759,20 +5759,21 @@ editor.init = function () {
        */
       setAll () {
         const flyouts = {};
+        const keyHandler = {}; // will contain the action for each pressed key
 
-        $.each(toolButtons, function (i, opts) {
+        toolButtons.forEach((opts) => {
           // Bind function to button
           let btn;
           if (opts.sel) {
-            btn = $(opts.sel);
-            if (!btn.length) { return true; } // Skip if markup does not exist
+            btn = document.querySelector(opts.sel);
+            if (btn === null) { return true; } // Skip if markup does not exist
             if (opts.evt) {
               // `touch.js` changes `touchstart` to `mousedown`,
               //   so we must map tool button click events as well
               if (isTouch() && opts.evt === 'click') {
                 opts.evt = 'mousedown';
               }
-              btn[opts.evt](opts.fn);
+              btn.addEventListener(opts.evt, opts.fn);
             }
 
             // Add to parent flyout menu, if able to be displayed
@@ -5782,7 +5783,7 @@ editor.init = function () {
                 fH = makeFlyoutHolder(opts.parent.substr(1));
               }
               if (opts.prepend) {
-                btn[0].style.margin = 'initial';
+                btn.style.margin = 'initial';
               }
               fH[opts.prepend ? 'prepend' : 'append'](btn);
 
@@ -5796,41 +5797,36 @@ editor.init = function () {
           // Bind function to shortcut key
           if (opts.key) {
             // Set shortcut based on options
-            let keyval,
-              // disInInp = true,
-              pd = false;
+            let keyval = opts.key;
+            let pd = false;
             if (Array.isArray(opts.key)) {
               keyval = opts.key[0];
               if (opts.key.length > 1) { pd = opts.key[1]; }
-              // if (opts.key.length > 2) { disInInp = opts.key[2]; }
-            } else {
-              keyval = opts.key;
             }
             keyval = String(keyval);
-
             const {fn} = opts;
-            $.each(keyval.split('/'), function (j, key) {
-              $(document).bind('keydown', key, function (e) {
-                fn();
-                if (pd) {
-                  e.preventDefault();
-                }
-                // Prevent default on ALL keys?
-                return false;
-              });
-            });
+            keyval.split('/').forEach((key) => { keyHandler[key] = {fn, pd}; });
 
             // Put shortcut in title
-            if (opts.sel && !opts.hidekey && btn.attr('title')) {
-              const newTitle = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
+            if (opts.sel && !opts.hidekey && btn.title) {
+              const newTitle = `${btn.title.split('[')[0]} (${keyval})`;
               keyAssocs[keyval] = opts.sel;
               // Disregard for menu items
-              if (!btn.parents('#main_menu').length) {
-                btn.attr('title', newTitle);
+              if (btn.closest('#main_menu') === null) {
+                btn.title = newTitle;
               }
             }
           }
           return true;
+        });
+        // register the keydown event
+        document.addEventListener('keydown', (e) => {
+          const key = `${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toLowerCase()}`;
+          if (!keyHandler[key]) return;
+          keyHandler[key].fn();
+          if (keyHandler[key].pd) {
+            e.preventDefault();
+          }
         });
 
         // Setup flyouts
