@@ -5821,8 +5821,13 @@ editor.init = function () {
         });
         // register the keydown event
         document.addEventListener('keydown', (e) => {
+          // only track keyboard shortcuts for the body containing the SVG-Editor
+          if (e.target.nodeName !== 'BODY') return;
+          // normalize key
           const key = `${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toLowerCase()}`;
+          // return if no shortcut defined for this key
           if (!keyHandler[key]) return;
+          // launch associated handler and preventDefault if necessary
           keyHandler[key].fn();
           if (keyHandler[key].pd) {
             e.preventDefault();
