@@ -1,6 +1,11 @@
 os: linux
 dist: xenial
 language: ruby
+node_js:
+  - 14
+  # Reenable later if doing more than linting (i.e., testing)
+  # - 12
+  # - 10
 notifications:
   email: false
 
