@@ -496,6 +496,7 @@ var svgEditorExtension_imagelib = (function () {
 
                 closeBrowser = function _closeBrowser() {
                   $('#imgbrowse_holder').hide();
+                  document.activeElement.blur(); // make sure focus is the body to correct issue #417
                 };
 
                 $ = _ref.$, decode64 = _ref.decode64, importLocale = _ref.importLocale, dropXMLInternalSubset = _ref.dropXMLInternalSubset;

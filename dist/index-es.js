@@ -35526,14 +35526,16 @@ editor.init = function () {
        */
       setAll: function setAll() {
         var flyouts = {};
-        $$b.each(toolButtons, function (i, opts) {
+        var keyHandler = {}; // will contain the action for each pressed key
+
+        toolButtons.forEach(function (opts) {
           // Bind function to button
           var btn;
 
           if (opts.sel) {
-            btn = $$b(opts.sel);
+            btn = document.querySelector(opts.sel);
 
-            if (!btn.length) {
+            if (btn === null) {
               return true;
             } // Skip if markup does not exist
 
@@ -35545,7 +35547,7 @@ editor.init = function () {
                 opts.evt = 'mousedown';
               }
 
-              btn[opts.evt](opts.fn);
+              btn.addEventListener(opts.evt, opts.fn);
             } // Add to parent flyout menu, if able to be displayed
 
 
@@ -35557,7 +35559,7 @@ editor.init = function () {
               }
 
               if (opts.prepend) {
-                btn[0].style.margin = 'initial';
+                btn.style.margin = 'initial';
               }
 
               fH[opts.prepend ? 'prepend' : 'append'](btn);
@@ -35573,47 +35575,52 @@ editor.init = function () {
 
           if (opts.key) {
             // Set shortcut based on options
-            var keyval,
-                // disInInp = true,
-            pd = false;
+            var keyval = opts.key;
+            var pd = false;
 
             if (Array.isArray(opts.key)) {
               keyval = opts.key[0];
 
               if (opts.key.length > 1) {
                 pd = opts.key[1];
-              } // if (opts.key.length > 2) { disInInp = opts.key[2]; }
-
-            } else {
-              keyval = opts.key;
+              }
             }
 
             keyval = String(keyval);
             var fn = opts.fn;
-            $$b.each(keyval.split('/'), function (j, key) {
-              $$b(document).bind('keydown', key, function (e) {
-                fn();
-
-                if (pd) {
-                  e.preventDefault();
-                } // Prevent default on ALL keys?
-
-
-                return false;
-              });
+            keyval.split('/').forEach(function (key) {
+              keyHandler[key] = {
+                fn: fn,
+                pd: pd
+              };
             }); // Put shortcut in title
 
-            if (opts.sel && !opts.hidekey && btn.attr('title')) {
-              var newTitle = btn.attr('title').split('[')[0] + ' (' + keyval + ')';
+            if (opts.sel && !opts.hidekey && btn.title) {
+              var newTitle = "".concat(btn.title.split('[')[0], " (").concat(keyval, ")");
               keyAssocs[keyval] = opts.sel; // Disregard for menu items
 
-              if (!btn.parents('#main_menu').length) {
-                btn.attr('title', newTitle);
+              if (btn.closest('#main_menu') === null) {
+                btn.title = newTitle;
               }
             }
           }
 
           return true;
+        }); // register the keydown event
+
+        document.addEventListener('keydown', function (e) {
+          // only track keyboard shortcuts for the body containing the SVG-Editor
+          if (e.target.nodeName !== 'BODY') return; // normalize key
+
+          var key = "".concat(e.metaKey ? 'meta+' : '').concat(e.ctrlKey ? 'ctrl+' : '').concat(e.key.toLowerCase()); // return if no shortcut defined for this key
+
+          if (!keyHandler[key]) return; // launch associated handler and preventDefault if necessary
+
+          keyHandler[key].fn();
+
+          if (keyHandler[key].pd) {
+            e.preventDefault();
+          }
         }); // Setup flyouts
 
         setupFlyouts(flyouts); // Misc additional actions
