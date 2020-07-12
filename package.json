@@ -13,8 +13,8 @@
     "node": ">=8.5.0"
   },
   "scripts": {
-    "add-release": "git submodule add --depth=1 -b \"release-v$VERSION\" https://github.com/SVG-Edit/svgedit \"releases/svg-edit-$VERSION\"",
-    "add-new-release": "npm run add-release && git config --file=.gitmodules submodule.releases/latest.branch \"release-v$VERSION\"",
+    "add-release": "cross-var git submodule add --depth=1 -b \"release-v$npm_package_version\" -- https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$npm_package_version\"",
+    "add-new-release": "npm run add-release && cross-var git config --file=.gitmodules submodule.releases/latest.branch \"release-v$npm_package_version\"",
     "submodules": "run-s submodules-init submodules-update",
     "submodules-init": "echo \"Performing non-recursive init as don't want submodules to have their own releases!\" && git submodule update --init",
     "submodules-update": "echo \"Performing non-recursive fetch as don't want submodules to have their own releases!\" git submodule foreach git fetch && git submodule update --remote",
@@ -156,6 +156,7 @@
     "copyfiles": "^2.3.0",
     "core-js-bundle": "^3.6.5",
     "coveradge": "^0.6.0",
+    "cross-var": "^1.1.0",
     "cypress": "^4.9.0",
     "cypress-axe": "^0.8.1",
     "cypress-multi-reporters": "^1.4.0",
