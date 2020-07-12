@@ -20,7 +20,13 @@
 import './svgpathseg.js';
 import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginDBox from './dbox.js';
+
+/* eslint-disable import/no-namespace -- Keeping namespaced to help distinguish
+  utilities from local functions until we split canvas into separate files */
+import * as pathModule from './path.js';
+import * as hstry from './history.js';
 import * as draw from './draw.js';
+/* eslint-enable import/no-namespace */
 // eslint-disable-next-line no-duplicate-imports
 import {
   identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
@@ -28,7 +34,6 @@ import {
   setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
   leaveContext, setContext
 } from './draw.js';
-import * as pathModule from './path.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from './namespaces.js';
 import {importSetGlobal, importScript} from './external/dynamic-import-polyfill/importModule.js';
@@ -42,7 +47,6 @@ import {
   init as utilsInit, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible,
   isNullish
 } from './utilities.js';
-import * as hstry from './history.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
   getMatrix, snapToAngle, isIdentity, rectsIntersect, transformBox

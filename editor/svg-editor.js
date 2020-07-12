@@ -18,6 +18,10 @@
 import './touch.js';
 import {NS} from './namespaces.js';
 import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from './browser.js';
+
+// Until we split this into smaller files, this helps distinguish utilities
+//   from local methods
+// eslint-disable-next-line import/no-namespace
 import * as Utils from './utilities.js';
 import {getTypeMap, convertUnit, isValidUnit} from './units.js';
 import {
