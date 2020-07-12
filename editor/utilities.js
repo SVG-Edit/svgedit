@@ -1408,3 +1408,6 @@ export const mock = ({
   setHref = setHrefUser;
   getRotationAngle = getRotationAngleUser;
 };
+
+export const $q = (sel) => document.querySelector(sel);
+export const $qq = (sel) => [...document.querySelectorAll(sel)];

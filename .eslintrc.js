@@ -137,6 +137,7 @@ module.exports = {
           'document.evaluate',
           'document.head',
           'document.importNode',
+          'document.querySelector',
           'document.querySelectorAll',
           'DOMParser',
           'Error',

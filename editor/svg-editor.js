@@ -45,6 +45,8 @@ import {
 } from './locale/locale.js';
 import loadStylesheets from './external/load-stylesheets/index-es.js';
 
+const {$q} = Utils;
+
 const editor = {};
 
 const $ = [
@@ -5765,7 +5767,7 @@ editor.init = function () {
           // Bind function to button
           let btn;
           if (opts.sel) {
-            btn = document.querySelector(opts.sel);
+            btn = $q(opts.sel);
             if (btn === null) { return true; } // Skip if markup does not exist
             if (opts.evt) {
               // `touch.js` changes `touchstart` to `mousedown`,
