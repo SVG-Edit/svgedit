@@ -1,3 +1,5 @@
+os: linux
+dist: xenial
 language: ruby
 rvm:
   - 2.3
