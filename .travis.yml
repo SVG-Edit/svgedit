@@ -4,8 +4,8 @@ dist: xenial
 notifications:
   email: false
 
-script:
-  - npm run eslint
+git:
+  submodules: false
 
 jobs:
   include:
@@ -20,3 +20,5 @@ jobs:
         # Reenable later if doing more than linting (i.e., testing)
         # - 12
         # - 10
+      script:
+        - npm run eslint
