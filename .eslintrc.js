@@ -292,8 +292,8 @@ module.exports = {
         // These errors are caused in Cypress files if user has not
         //  yet instrumented code; need to reinvestigate why we had to
         //  instrument separately from nyc mocha
-        'import/no-unresolved': 'warn',
-        'node/no-missing-import': 'warn',
+        'import/no-unresolved': ['error', {ignore: ['/instrumented/']}],
+        'node/no-missing-import': 'off',
 
         'chai-expect-keywords/no-unsupported-keywords': [
           'error', {
