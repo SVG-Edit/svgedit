@@ -85,7 +85,7 @@ $(function () {
 */
 
 // Todo: Move to own module (and have it import a modular base64 encoder)
-import {encode64} from '../utilities.js';
+import {encode64} from '../../common/utilities.js';
 
 const isOpera = Boolean(window.opera);
 

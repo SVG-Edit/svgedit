@@ -17,16 +17,13 @@
 
 // Todo: Obtain/adapt latest jsPDF to utilize ES Module for `jsPDF`/avoid global
 
-import './svgpathseg.js';
-import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import '../common/svgpathseg.js';
+import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginDBox from './dbox.js';
 
-/* eslint-disable import/no-namespace -- Keeping namespaced to help distinguish
-  utilities from local functions until we split canvas into separate files */
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
 import * as draw from './draw.js';
-/* eslint-enable import/no-namespace */
 // eslint-disable-next-line no-duplicate-imports
 import {
   identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
@@ -35,8 +32,8 @@ import {
   leaveContext, setContext
 } from './draw.js';
 import {sanitizeSvg} from './sanitize.js';
-import {getReverseNS, NS} from './namespaces.js';
-import {importSetGlobal, importScript} from './external/dynamic-import-polyfill/importModule.js';
+import {getReverseNS, NS} from '../common/namespaces.js';
+import {importSetGlobal, importScript} from '../external/dynamic-import-polyfill/importModule.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
@@ -46,22 +43,22 @@ import {
   getVisibleElements, dropXMLInternalSubset,
   init as utilsInit, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible,
   isNullish
-} from './utilities.js';
+} from '../common/utilities.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
   getMatrix, snapToAngle, isIdentity, rectsIntersect, transformBox
-} from './math.js';
+} from '../common/math.js';
 import {
   convertToNum, convertAttrs, convertUnit, shortFloat, getTypeMap,
   init as unitsInit
-} from './units.js';
+} from '../common/units.js';
 import {
   isGecko, isChrome, isIE, isWebkit, supportsNonScalingStroke, supportsGoodTextCharPos
-} from './browser.js'; // , supportsEditableText
+} from '../common/browser.js'; // , supportsEditableText
 import {
   getTransformList, resetListMap,
   SVGTransformList as SVGEditTransformList
-} from './svgtransformlist.js';
+} from '../common/svgtransformlist.js';
 import {
   remapElement,
   init as coordsInit

@@ -16,7 +16,7 @@
  *   and the MIT License and is copyright A Beautiful Site, LLC.
  *
 */
-import {isMac} from '../browser.js';
+import {isMac} from '../../common/browser.js';
 
 /**
 * @callback module:jQueryContextMenu.jQueryContextMenuListener

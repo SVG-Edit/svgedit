@@ -121,23 +121,7 @@
   },
   "homepage": "https://github.com/SVG-Edit/svgedit#readme",
   "browserslist": [
-    "cover 100%",
-    "last 3 Chrome versions",
-    "last 3 Firefox versions",
-    "last 3 Edge versions",
-    "last 3 Safari versions",
-    "last 3 ios_saf versions",
-    "last 3 Android versions",
-    "last 3 Opera versions",
-    "last 3 IE versions",
-    "last 3 op_mini versions",
-    "last 3 bb versions",
-    "last 3 op_mob versions",
-    "last 3 and_chr versions",
-    "last 3 and_ff versions",
-    "last 3 ie_mob versions",
-    "last 3 and_uc versions",
-    "last 3 Samsung versions"
+    "> 2%"
   ],
   "dependencies": {},
   "devDependencies": {

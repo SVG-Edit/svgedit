@@ -7,23 +7,23 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import './svgpathseg.js';
-import {NS} from './namespaces.js';
-import {getTransformList} from './svgtransformlist.js';
-import {shortFloat} from './units.js';
+import '../common/svgpathseg.js';
+import {NS} from '../common/namespaces.js';
+import {getTransformList} from '../common/svgtransformlist.js';
+import {shortFloat} from '../common/units.js';
 import {ChangeElementCommand, BatchCommand} from './history.js';
 import {
   transformPoint, getMatrix, snapToAngle, rectsIntersect,
   transformListToTransform
-} from './math.js';
+} from '../common/math.js';
 import {
   assignAttributes, getElem, getRotationAngle, getBBox,
   getRefElem, findDefs, snapToGrid, isNullish,
   getBBox as utilsGetBBox
-} from './utilities.js';
+} from '../common/utilities.js';
 import {
   supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
-} from './browser.js';
+} from '../common/browser.js';
 
 const $ = jQuery;
 

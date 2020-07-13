@@ -25,7 +25,7 @@
  * @typedef {PlainObject<string, string>} module:locale.LocaleSelectorValue
  */
 
-import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
+import {importSetGlobalDefault} from '../../external/dynamic-import-polyfill/importModule.js';
 
 const $ = jQuery;
 

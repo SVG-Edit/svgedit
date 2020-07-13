@@ -1,3 +1,4 @@
+/* eslint-disable node/no-unsupported-features/node-builtins */
 /* globals jQuery */
 /**
 * The main module for the visual SVG Editor.
@@ -16,38 +17,37 @@
 */
 
 import './touch.js';
-import {NS} from './namespaces.js';
-import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from './browser.js';
+import {NS} from '../common/namespaces.js';
+import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from '../common/browser.js';
 
 // Until we split this into smaller files, this helps distinguish utilities
 //   from local methods
-// eslint-disable-next-line import/no-namespace
-import * as Utils from './utilities.js';
-import {getTypeMap, convertUnit, isValidUnit} from './units.js';
+import * as Utils from '../common/utilities.js';
+import {getTypeMap, convertUnit, isValidUnit} from '../common/units.js';
 import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
-import {importSetGlobalDefault} from './external/dynamic-import-polyfill/importModule.js';
-import deparam from './external/deparam/deparam.esm.js';
+import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
+import deparam from '../external/deparam/deparam.esm.js';
 
-import SvgCanvas from './svgcanvas.js';
-import Layer from './layer.js';
+import SvgCanvas from '../svgcanvas/svgcanvas.js';
+import Layer from '../common/layer.js';
 
 import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
 import jQueryPluginSVGIcons from './svgicons/jQuery.svgIcons.js';
 import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
 import jQueryPluginSpinButton from './spinbtn/jQuery.SpinButton.js';
-import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
 import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
-import jQueryPluginDBox from './dbox.js';
+import jQueryPluginDBox from '../svgcanvas/dbox.js';
 
 import {
   readLang, putLocale,
   setStrings,
   init as localeInit
 } from './locale/locale.js';
-import loadStylesheets from './external/load-stylesheets/index-es.js';
+import loadStylesheets from '../external/load-stylesheets/index-es.js';
 
 const {$q} = Utils;
 

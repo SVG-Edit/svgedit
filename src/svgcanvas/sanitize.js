@@ -6,9 +6,9 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {getReverseNS, NS} from './namespaces.js';
-import {isGecko} from './browser.js';
-import {getHref, setHref, getUrlFromAttr} from './utilities.js';
+import {getReverseNS, NS} from '../common/namespaces.js';
+import {isGecko} from '../common/browser.js';
+import {getHref, setHref, getUrlFromAttr} from '../common/utilities.js';
 
 const REVERSE_NS = getReverseNS();
 

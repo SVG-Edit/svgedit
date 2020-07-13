@@ -6,15 +6,17 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import Layer from './layer.js';
+import Layer from '../common/layer.js';
 import HistoryRecordingService from './historyrecording.js';
 
-import {NS} from './namespaces.js';
-import {isOpera} from './browser.js';
+import {NS} from '../common/namespaces.js';
+import {isOpera} from '../common/browser.js';
 import {
-  toXml, getElem,
+  toXml, getElem
+} from '../common/utilities.js';
+import {
   copyElem as utilCopyElem
-} from './utilities.js';
+} from './copy-elem.js';
 import {
   BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
 } from './history.js';

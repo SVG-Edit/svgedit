@@ -7,10 +7,10 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {isTouch, isWebkit} from './browser.js'; // , isOpera
-import {getRotationAngle, getBBox, getStrokedBBox, isNullish} from './utilities.js';
-import {transformListToTransform, transformBox, transformPoint} from './math.js';
-import {getTransformList} from './svgtransformlist.js';
+import {isTouch, isWebkit} from '../common/browser.js'; // , isOpera
+import {getRotationAngle, getBBox, getStrokedBBox, isNullish} from '../common/utilities.js';
+import {transformListToTransform, transformBox, transformPoint} from '../common/math.js';
+import {getTransformList} from '../common/svgtransformlist.js';
 
 const $ = jQuery;
 

@@ -18,7 +18,7 @@ For default config and extensions (and available options) available to
 `setConfig()`, see the file `docs/tutorials/ConfigOptions.md`
 */
 
-import svgEditor from './editor/svg-editor.js';
+import svgEditor from './src/editor/svg-editor.js';
 
 // URL OVERRIDE CONFIG
 svgEditor.setConfig({

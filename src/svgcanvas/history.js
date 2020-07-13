@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * For command history tracking and undo functionality.
  * @module history
@@ -5,8 +6,8 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import {getHref, setHref, getRotationAngle, isNullish} from './utilities.js';
-import {removeElementFromListMap} from './svgtransformlist.js';
+import {getHref, setHref, getRotationAngle, isNullish} from '../common/utilities.js';
+import {removeElementFromListMap} from '../common/svgtransformlist.js';
 
 /**
 * Group: Undo/Redo history management.
@@ -261,7 +262,7 @@ export class RemoveElementCommand extends Command {
       removeElementFromListMap(this.elem);
       if (isNullish(this.nextSibling)) {
         if (window.console) {
-          console.log('Error: reference element was lost'); // eslint-disable-line no-console
+          console.error('Reference element was lost');
         }
       }
       this.parent.insertBefore(this.elem, this.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`

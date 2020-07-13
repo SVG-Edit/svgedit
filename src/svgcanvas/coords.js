@@ -5,14 +5,14 @@
  * @license MIT
  */
 
-import './svgpathseg.js';
+import '../common/svgpathseg.js';
 import {
   snapToGrid, assignAttributes, getBBox, getRefElem, findDefs
-} from './utilities.js';
+} from '../common/utilities.js';
 import {
   transformPoint, transformListToTransform, matrixMultiply, transformBox
-} from './math.js';
-import {getTransformList} from './svgtransformlist.js';
+} from '../common/math.js';
+import {getTransformList} from '../common/svgtransformlist.js';
 
 const $ = jQuery;
 

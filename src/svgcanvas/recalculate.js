@@ -5,18 +5,18 @@
  * @license MIT
  */
 
-import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
-import {NS} from './namespaces.js';
-import {convertToNum} from './units.js';
-import {isWebkit} from './browser.js';
-import {getTransformList} from './svgtransformlist.js';
-import {getRotationAngle, getHref, getBBox, getRefElem, isNullish} from './utilities.js';
+import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import {NS} from '../common/namespaces.js';
+import {convertToNum} from '../common/units.js';
+import {isWebkit} from '../common/browser.js';
+import {getTransformList} from '../common/svgtransformlist.js';
+import {getRotationAngle, getHref, getBBox, getRefElem, isNullish} from '../common/utilities.js';
 import {BatchCommand, ChangeElementCommand} from './history.js';
 import {remapElement} from './coords.js';
 import {
   isIdentity, matrixMultiply, transformPoint, transformListToTransform,
   hasMatrixTransform
-} from './math.js';
+} from '../common/math.js';
 
 const $ = jQueryPluginSVG(jQuery);
 
