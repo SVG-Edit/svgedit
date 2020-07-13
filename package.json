@@ -13,8 +13,9 @@
     "node": ">=8.5.0"
   },
   "scripts": {
-    "add-release": "cross-var git submodule add --depth=1 -b \"release-v$npm_package_version\" -- https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$npm_package_version\"",
-    "add-new-release": "npm run add-release && cross-var git config --file=.gitmodules submodule.releases/latest.branch \"release-v$npm_package_version\"",
+    "add-release": "git submodule add --depth=1 -b \"release-v$npm_config_release\" -- https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$npm_config_release\"",
+    "add-new-release": "cross-var npm run add-release --release=$npm_package_version && cross-var git config --file=.gitmodules submodule.releases/latest.branch \"release-v$npm_package_version\"",
+    "remove-release": "git submodule deinit -f \"releases/svg-edit-$npm_config_release\" && rm -rf .git/modules/releases/svg-edit-$npm_config_release && git rm -f releases/svg-edit-$npm_config_release",
     "submodules": "run-s submodules-init submodules-update",
     "submodules-init": "echo \"Performing non-recursive init as don't want submodules to have their own releases!\" && git submodule update --init",
     "submodules-update": "echo \"Performing non-recursive fetch as don't want submodules to have their own releases!\" && git submodule foreach git fetch && git submodule update --remote && git submodule foreach git merge origin master",
