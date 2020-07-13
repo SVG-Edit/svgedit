@@ -505,17 +505,17 @@ const undoMgr = canvas.undoMgr = new UndoManager({
       call('changed', elems);
       const cmdType = cmd.type();
       const isApply = (eventType === EventTypes.AFTER_APPLY);
-      if (cmdType === MoveElementCommand.type()) {
+      if (cmdType === 'MoveElementCommand') {
         const parent = isApply ? cmd.newParent : cmd.oldParent;
         if (parent === svgcontent) {
           draw.identifyLayers();
         }
-      } else if (cmdType === InsertElementCommand.type() ||
-          cmdType === RemoveElementCommand.type()) {
+      } else if (cmdType === 'InsertElementCommand' ||
+          cmdType === 'RemoveElementCommand') {
         if (cmd.parent === svgcontent) {
           draw.identifyLayers();
         }
-        if (cmdType === InsertElementCommand.type()) {
+        if (cmdType === 'InsertElementCommand') {
           if (isApply) { restoreRefElems(cmd.elem); }
         } else if (!isApply) {
           restoreRefElems(cmd.elem);
@@ -523,7 +523,7 @@ const undoMgr = canvas.undoMgr = new UndoManager({
         if (cmd.elem && cmd.elem.tagName === 'use') {
           setUseData(cmd.elem);
         }
-      } else if (cmdType === ChangeElementCommand.type()) {
+      } else if (cmdType === 'ChangeElementCommand') {
         // if we are changing layer names, re-identify all layers
         if (cmd.elem.tagName === 'title' &&
           cmd.elem.parentNode.parentNode === svgcontent
