@@ -1,3 +1,7 @@
+[submodule "releases/svg-edit-2.8"]
+	path = releases/svg-edit-2.8
+	url = https://github.com/SVG-Edit/svgedit.git
+	branch = release-v2.8
 [submodule "releases/svg-edit-2.8.1"]
 	path = releases/svg-edit-2.8.1
 	url = https://github.com/SVG-Edit/svgedit.git
@@ -74,10 +78,6 @@
 	path = releases/svg-edit-5.0.0
 	url = https://github.com/SVG-Edit/svgedit.git
 	branch = release-v5.0.0
-[submodule "releases/svg-edit-2.8"]
-	path = releases/svg-edit-2.8
-	url = https://github.com/SVG-Edit/svgedit.git
-	branch = release-v2.8
 [submodule "releases/svg-edit-5.1.0"]
 	path = releases/svg-edit-5.1.0
 	url = https://github.com/SVG-Edit/svgedit.git
