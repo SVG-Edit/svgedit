@@ -55,7 +55,7 @@
     "remark": "remark -q -f .",
     "build-html": "babel-node --plugins @babel/plugin-transform-modules-commonjs build/build-html.js",
     "eslint-fix": "eslint --cache --fix --ext js,md,html .",
-    "eslint": "eslint --cache --ext js,md,html .",
+    "eslint": "eslint --max-warnings 0 --cache --ext js,md,html .",
     "rollup": "rollup -c",
     "build-by-config": "rollup -c rollup-config.config.js",
     "prep-no-core-rollup": "run-s eslint build-html build-by-config",
