@@ -1,8 +1,8 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/namespaces.js';
-import * as transformlist from '../../../instrumented/svgtransformlist.js';
-import {disableSupportsNativeTransformLists} from '../../../instrumented/browser.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
+import {disableSupportsNativeTransformLists} from '../../../instrumented/common/browser.js';
 
 import almostEqualsPlugin from '../../support/assert-almostEquals.js';
 import expectOutOfBoundsExceptionPlugin from '../../support/assert-expectOutOfBoundsException.js';

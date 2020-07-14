@@ -1,8 +1,8 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/namespaces.js';
-import * as draw from '../../../instrumented/draw.js';
-import * as units from '../../../instrumented/units.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as draw from '../../../instrumented/svgcanvas/draw.js';
+import * as units from '../../../instrumented/common/units.js';
 
 describe('draw.Drawing', function () {
   const addOwnSpies = (obj) => {

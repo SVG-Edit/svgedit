@@ -1,5 +1,5 @@
-import '../../../instrumented/jquery.min.js';
-import * as contextmenu from '../../../instrumented/contextmenu.js';
+import '../../../instrumented/editor/jquery.min.js';
+import * as contextmenu from '../../../instrumented/editor/contextmenu.js';
 
 describe('contextmenu', function () {
   /**

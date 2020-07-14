@@ -1,7 +1,7 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/namespaces.js';
-import * as math from '../../../instrumented/math.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as math from '../../../instrumented/common/math.js';
 
 describe('math', function () {
   const svg = document.createElementNS(NS.SVG, 'svg');

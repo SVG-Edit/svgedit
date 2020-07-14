@@ -1,10 +1,10 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import '../../../instrumented/svgpathseg.js';
-import {NS} from '../../../instrumented/namespaces.js';
-import * as utilities from '../../../instrumented/utilities.js';
-import * as transformlist from '../../../instrumented/svgtransformlist.js';
-import * as math from '../../../instrumented/math.js';
+import '../../../instrumented/common/svgpathseg.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as utilities from '../../../instrumented/common/utilities.js';
+import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
+import * as math from '../../../instrumented/common/math.js';
 
 describe('utilities performance', function () {
   let currentLayer, groupWithMatrixTransform, textWithMatrixTransform;
