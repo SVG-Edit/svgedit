@@ -56,7 +56,6 @@ let typeMap_ = {};
  * @returns {Integer} The number of digits number should be rounded to
  */
 
-// Todo[eslint-plugin-jsdoc@>=29.0.0]: See if parsing fixed to allow '%'
 /* eslint-disable jsdoc/valid-types */
 /**
  * @typedef {PlainObject} module:units.TypeMap
