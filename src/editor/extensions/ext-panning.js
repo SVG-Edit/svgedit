@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-panning.js
  *
@@ -13,6 +14,7 @@ export default {
   name: 'panning',
   async init ({importLocale}) {
     const strings = await importLocale();
+    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const buttons = [{

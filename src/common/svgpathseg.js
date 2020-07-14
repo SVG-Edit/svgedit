@@ -1,3 +1,4 @@
+/* eslint-disable import/unambiguous */
 /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
     SVGPathSegMovetoRel, SVGPathSegLinetoRel, SVGPathSegLinetoAbs,
     SVGPathSegLinetoHorizontalRel, SVGPathSegLinetoHorizontalAbs,

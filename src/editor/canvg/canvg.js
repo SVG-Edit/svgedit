@@ -10,7 +10,7 @@
  */
 
 import RGBColor from './rgbcolor.js';
-import {canvasRGBA} from '../external/stackblur-canvas/dist/stackblur-es.js';
+import {canvasRGBA} from '../../external/stackblur-canvas/dist/stackblur-es.js';
 
 /**
  * Whether a value is `null` or `undefined`.

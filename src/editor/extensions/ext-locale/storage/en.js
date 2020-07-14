@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 export default {
   message: 'By default and where supported, SVG-Edit can store your editor ' +
   'preferences and SVG content locally on your machine so you do not ' +

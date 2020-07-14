@@ -1,6 +1,6 @@
-import {jml, body, nbsp} from '../../external/jamilih/jml-es.js';
-import $ from '../../external/query-result/esm/index.js';
-import {manipulation} from '../../external/qr-manipulation/dist/index-es.js';
+import {jml, body, nbsp} from '../../../external/jamilih/jml-es.js';
+import $ from '../../../external/query-result/esm/index.js';
+import {manipulation} from '../../../external/qr-manipulation/dist/index-es.js';
 
 manipulation($, jml);
 
@@ -248,6 +248,7 @@ jml('div', [
     id: 'openclipart',
     $custom: {
       async $submit () {
+        // eslint-disable-next-line node/no-unsupported-features/node-builtins
         const url = new URL(baseAPIURL);
         [
           'query', 'sort', 'amount', 'page', 'byids'

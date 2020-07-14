@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-helloworld.js
  *
@@ -17,6 +18,7 @@ export default {
   async init ({$, importLocale}) {
     // See `/editor/extensions/ext-locale/helloworld/`
     const strings = await importLocale();
+    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     return {

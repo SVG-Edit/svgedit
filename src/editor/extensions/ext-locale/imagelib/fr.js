@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 export default {
   select_lib: "Choisir une bibliothèque d'images",
   show_list: 'show_list',

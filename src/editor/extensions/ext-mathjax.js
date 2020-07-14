@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /* globals MathJax */
 /**
  * @file ext-mathjax.js
@@ -8,12 +9,13 @@
  *
  */
 // Todo: Wait for Mathjax 3.0 to get ES Module/avoid global
-import {importScript} from '../external/dynamic-import-polyfill/importModule.js';
+import {importScript} from '../../external/dynamic-import-polyfill/importModule.js';
 
 export default {
   name: 'mathjax',
   async init ({$, importLocale}) {
     const strings = await importLocale();
+    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
 

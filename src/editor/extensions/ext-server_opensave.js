@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-server_opensave.js
  *
@@ -12,6 +13,7 @@ export default {
   name: 'server_opensave',
   async init ({$, decode64, encode64, importLocale}) {
     const strings = await importLocale();
+    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const {
       curConfig: {

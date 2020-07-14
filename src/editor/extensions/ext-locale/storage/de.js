@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 export default {
   message: 'Standardmäßig kann SVG-Edit Ihre Editor-Einstellungen ' +
   'und die SVG-Inhalte lokal auf Ihrem Gerät abspeichern. So brauchen Sie ' +

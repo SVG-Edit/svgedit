@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-placemark.js
  *
@@ -8,6 +9,7 @@
 export default {
   name: 'placemark',
   async init (S) {
+    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const addElem = svgCanvas.addSVGElementFromJson;

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-grid.js
  *
@@ -11,6 +12,7 @@ export default {
   name: 'grid',
   async init ({$, NS, getTypeMap, importLocale}) {
     const strings = await importLocale();
+    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const svgdoc = document.getElementById('svgcanvas').ownerDocument,

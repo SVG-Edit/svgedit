@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-closepath.js
  *
@@ -6,7 +7,7 @@
  * @copyright 2010 Jeff Schiller
  *
  */
-import '../svgpathseg.js';
+import '../../common/svgpathseg.js';
 
 // This extension adds a simple button to the contextual panel for paths
 // The button toggles whether the path is open or closed
@@ -14,6 +15,7 @@ export default {
   name: 'closepath',
   async init ({importLocale, $}) {
     const strings = await importLocale();
+    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     let selElems;
     const updateButton = function (path) {

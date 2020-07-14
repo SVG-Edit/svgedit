@@ -1,3 +1,4 @@
+/* eslint-disable import/unambiguous */
 // http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
 /**
  *

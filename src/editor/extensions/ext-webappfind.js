@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /**
 * Depends on Firefox add-on and executables from
 * {@link https://github.com/brettz9/webappfind}.
@@ -10,6 +11,7 @@ export default {
   name: 'webappfind',
   async init ({importLocale, $}) {
     const strings = await importLocale();
+    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const saveMessage = 'save',
       readMessage = 'read',

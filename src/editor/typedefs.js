@@ -1,3 +1,4 @@
+/* eslint-disable import/unambiguous */
 /**
 * @typedef {number} Float
 */
