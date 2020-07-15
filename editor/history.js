@@ -419,6 +419,7 @@ export class BatchCommand extends Command {
   apply (handler) {
     super.apply(handler, () => {
       this.stack.forEach((stackItem) => {
+        // eslint-disable-next-line no-console
         console.assert(stackItem, 'stack item should not be null');
         stackItem && stackItem.apply(handler);
       });
@@ -434,6 +435,7 @@ export class BatchCommand extends Command {
   unapply (handler) {
     super.unapply(handler, () => {
       this.stack.forEach((stackItem) => {
+        // eslint-disable-next-line no-console
         console.assert(stackItem, 'stack item should not be null');
         stackItem && stackItem.unapply(handler);
       });
@@ -464,6 +466,7 @@ export class BatchCommand extends Command {
   * @returns {void}
   */
   addSubCommand (cmd) {
+    // eslint-disable-next-line no-console
     console.assert(cmd !== null, 'cmd should not be null');
     this.stack.push(cmd);
   }

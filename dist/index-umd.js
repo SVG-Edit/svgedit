@@ -175,6 +175,36 @@
     };
   }
 
+  function _superPropBase(object, property) {
+    while (!Object.prototype.hasOwnProperty.call(object, property)) {
+      object = _getPrototypeOf(object);
+      if (object === null) break;
+    }
+
+    return object;
+  }
+
+  function _get(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) {
+      _get = Reflect.get;
+    } else {
+      _get = function _get(target, property, receiver) {
+        var base = _superPropBase(target, property);
+
+        if (!base) return;
+        var desc = Object.getOwnPropertyDescriptor(base, property);
+
+        if (desc.get) {
+          return desc.get.call(receiver);
+        }
+
+        return desc.value;
+      };
+    }
+
+    return _get(target, property, receiver || target);
+  }
+
   function _slicedToArray(arr, i) {
     return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
@@ -3622,7 +3652,7 @@
    * @function module:units.ElementContainer#getRoundDigits
    * @returns {Integer} The number of digits number should be rounded to
    */
-  // Todo[eslint-plugin-jsdoc@>=29.0.0]: See if parsing fixed to allow '%'
+  // Todo[eslint-plugin-jsdoc@>=30.0.0]: See if parsing fixed to allow '%'
 
   /* eslint-disable jsdoc/valid-types */
 
@@ -3865,8 +3895,7 @@
     AFTER_APPLY: 'after_apply',
     BEFORE_UNAPPLY: 'before_unapply',
     AFTER_UNAPPLY: 'after_unapply'
-  }; // const removedElements = {};
-
+  };
   /**
   * Base class for commands.
   */
@@ -3884,6 +3913,51 @@
       */
       value: function getText() {
         return this.text;
+      }
+      /**
+       * @param {module:history.HistoryEventHandler} handler
+       * @param {callback} applyFunction
+       * @returns {void}
+      */
+
+    }, {
+      key: "apply",
+      value: function apply(handler, applyFunction) {
+        handler && handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
+        applyFunction(handler);
+        handler && handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
+      }
+      /**
+       * @param {module:history.HistoryEventHandler} handler
+       * @param {callback} unapplyFunction
+       * @returns {void}
+      */
+
+    }, {
+      key: "unapply",
+      value: function unapply(handler, unapplyFunction) {
+        handler && handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
+        unapplyFunction();
+        handler && handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
+      }
+      /**
+       * @returns {Element[]} Array with element associated with this command
+       * This function needs to be surcharged if multiple elements are returned.
+      */
+
+    }, {
+      key: "elements",
+      value: function elements() {
+        return [this.elem];
+      }
+      /**
+        * @returns {string} String with element associated with this command
+      */
+
+    }, {
+      key: "type",
+      value: function type() {
+        return this.constructor.name;
       }
     }]);
 
@@ -3932,12 +4006,6 @@
    * @function module:history.HistoryCommand.type
    * @returns {string}
    */
-
-  /**
-   * Gives the type.
-   * @function module:history.HistoryCommand#type
-   * @returns {string}
-  */
 
   /**
    * @event module:history~Command#event:history
@@ -3991,36 +4059,21 @@
       return _this;
     }
     /**
-     * @returns {"svgedit.history.MoveElementCommand"}
-     */
+     * Re-positions the element.
+     * @param {module:history.HistoryEventHandler} handler
+     * @fires module:history~Command#event:history
+     * @returns {void}
+    */
 
 
     _createClass(MoveElementCommand, [{
-      key: "type",
-      value: function type() {
-        // eslint-disable-line class-methods-use-this
-        return 'svgedit.history.MoveElementCommand';
-      }
-      /**
-       * Re-positions the element.
-       * @param {module:history.HistoryEventHandler} handler
-       * @fires module:history~Command#event:history
-       * @returns {void}
-      */
-
-    }, {
       key: "apply",
       value: function apply(handler) {
-        // TODO(codedread): Refactor this common event code into a base HistoryCommand class.
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
-        }
+        var _this2 = this;
 
-        this.elem = this.newParent.insertBefore(this.elem, this.newNextSibling);
-
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
-        }
+        _get(_getPrototypeOf(MoveElementCommand.prototype), "apply", this).call(this, handler, function () {
+          _this2.elem = _this2.newParent.insertBefore(_this2.elem, _this2.newNextSibling);
+        });
       }
       /**
        * Positions the element back to its original location.
@@ -4032,30 +4085,16 @@
     }, {
       key: "unapply",
       value: function unapply(handler) {
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
-        }
+        var _this3 = this;
 
-        this.elem = this.oldParent.insertBefore(this.elem, this.oldNextSibling);
-
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
-        }
-      }
-      /**
-      * @returns {Element[]} Array with element associated with this command
-      */
-
-    }, {
-      key: "elements",
-      value: function elements() {
-        return [this.elem];
+        _get(_getPrototypeOf(MoveElementCommand.prototype), "unapply", this).call(this, handler, function () {
+          _this3.elem = _this3.oldParent.insertBefore(_this3.elem, _this3.oldNextSibling);
+        });
       }
     }]);
 
     return MoveElementCommand;
   }(Command);
-  MoveElementCommand.type = MoveElementCommand.prototype.type;
   /**
   * History command for an element that was added to the DOM.
   * @implements {module:history.HistoryCommand}
@@ -4071,47 +4110,33 @@
      * @param {string} text - An optional string visible to user related to this change
     */
     function InsertElementCommand(elem, text) {
-      var _this2;
+      var _this4;
 
       _classCallCheck(this, InsertElementCommand);
 
-      _this2 = _super2.call(this);
-      _this2.elem = elem;
-      _this2.text = text || 'Create ' + elem.tagName;
-      _this2.parent = elem.parentNode;
-      _this2.nextSibling = _this2.elem.nextSibling;
-      return _this2;
+      _this4 = _super2.call(this);
+      _this4.elem = elem;
+      _this4.text = text || 'Create ' + elem.tagName;
+      _this4.parent = elem.parentNode;
+      _this4.nextSibling = _this4.elem.nextSibling;
+      return _this4;
     }
     /**
-     * @returns {"svgedit.history.InsertElementCommand"}
-     */
+    * Re-inserts the new element.
+    * @param {module:history.HistoryEventHandler} handler
+    * @fires module:history~Command#event:history
+    * @returns {void}
+    */
 
 
     _createClass(InsertElementCommand, [{
-      key: "type",
-      value: function type() {
-        // eslint-disable-line class-methods-use-this
-        return 'svgedit.history.InsertElementCommand';
-      }
-      /**
-      * Re-inserts the new element.
-      * @param {module:history.HistoryEventHandler} handler
-      * @fires module:history~Command#event:history
-      * @returns {void}
-      */
-
-    }, {
       key: "apply",
       value: function apply(handler) {
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
-        }
+        var _this5 = this;
 
-        this.elem = this.parent.insertBefore(this.elem, this.nextSibling);
-
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
-        }
+        _get(_getPrototypeOf(InsertElementCommand.prototype), "apply", this).call(this, handler, function () {
+          _this5.elem = _this5.parent.insertBefore(_this5.elem, _this5.nextSibling);
+        });
       }
       /**
       * Removes the element.
@@ -4123,31 +4148,18 @@
     }, {
       key: "unapply",
       value: function unapply(handler) {
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
-        }
+        var _this6 = this;
 
-        this.parent = this.elem.parentNode;
-        this.elem.remove();
+        _get(_getPrototypeOf(InsertElementCommand.prototype), "unapply", this).call(this, handler, function () {
+          _this6.parent = _this6.elem.parentNode;
 
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
-        }
-      }
-      /**
-      * @returns {Element[]} Array with element associated with this command
-      */
-
-    }, {
-      key: "elements",
-      value: function elements() {
-        return [this.elem];
+          _this6.elem.remove();
+        });
       }
     }]);
 
     return InsertElementCommand;
   }(Command);
-  InsertElementCommand.type = InsertElementCommand.prototype.type;
   /**
   * History command for an element removed from the DOM.
   * @implements {module:history.HistoryCommand}
@@ -4165,51 +4177,38 @@
     * @param {string} [text] - An optional string visible to user related to this change
     */
     function RemoveElementCommand(elem, oldNextSibling, oldParent, text) {
-      var _this3;
+      var _this7;
 
       _classCallCheck(this, RemoveElementCommand);
 
-      _this3 = _super3.call(this);
-      _this3.elem = elem;
-      _this3.text = text || 'Delete ' + elem.tagName;
-      _this3.nextSibling = oldNextSibling;
-      _this3.parent = oldParent; // special hack for webkit: remove this element's entry in the svgTransformLists map
+      _this7 = _super3.call(this);
+      _this7.elem = elem;
+      _this7.text = text || 'Delete ' + elem.tagName;
+      _this7.nextSibling = oldNextSibling;
+      _this7.parent = oldParent; // special hack for webkit: remove this element's entry in the svgTransformLists map
 
       removeElementFromListMap(elem);
-      return _this3;
+      return _this7;
     }
     /**
-     * @returns {"svgedit.history.RemoveElementCommand"}
-     */
+    * Re-removes the new element.
+    * @param {module:history.HistoryEventHandler} handler
+    * @fires module:history~Command#event:history
+    * @returns {void}
+    */
 
 
     _createClass(RemoveElementCommand, [{
-      key: "type",
-      value: function type() {
-        // eslint-disable-line class-methods-use-this
-        return 'svgedit.history.RemoveElementCommand';
-      }
-      /**
-      * Re-removes the new element.
-      * @param {module:history.HistoryEventHandler} handler
-      * @fires module:history~Command#event:history
-      * @returns {void}
-      */
-
-    }, {
       key: "apply",
       value: function apply(handler) {
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
-        }
+        var _this8 = this;
 
-        removeElementFromListMap(this.elem);
-        this.parent = this.elem.parentNode;
-        this.elem.remove();
+        _get(_getPrototypeOf(RemoveElementCommand.prototype), "apply", this).call(this, handler, function () {
+          removeElementFromListMap(_this8.elem);
+          _this8.parent = _this8.elem.parentNode;
 
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
-        }
+          _this8.elem.remove();
+        });
       }
       /**
       * Re-adds the new element.
@@ -4221,38 +4220,25 @@
     }, {
       key: "unapply",
       value: function unapply(handler) {
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
-        }
+        var _this9 = this;
 
-        removeElementFromListMap(this.elem);
+        _get(_getPrototypeOf(RemoveElementCommand.prototype), "unapply", this).call(this, handler, function () {
+          removeElementFromListMap(_this9.elem);
 
-        if (isNullish(this.nextSibling)) {
-          if (window.console) {
-            console.log('Error: reference element was lost'); // eslint-disable-line no-console
+          if (isNullish(_this9.nextSibling)) {
+            if (window.console) {
+              console.log('Error: reference element was lost'); // eslint-disable-line no-console
+            }
           }
-        }
 
-        this.parent.insertBefore(this.elem, this.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
+          _this9.parent.insertBefore(_this9.elem, _this9.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
 
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
-        }
-      }
-      /**
-      * @returns {Element[]} Array with element associated with this command
-      */
-
-    }, {
-      key: "elements",
-      value: function elements() {
-        return [this.elem];
+        });
       }
     }]);
 
     return RemoveElementCommand;
   }(Command);
-  RemoveElementCommand.type = RemoveElementCommand.prototype.type;
   /**
   * @typedef {"#text"|"#href"|string} module:history.CommandAttributeName
   */
@@ -4278,182 +4264,148 @@
     * @param {string} text - An optional string visible to user related to this change
      */
     function ChangeElementCommand(elem, attrs, text) {
-      var _this4;
+      var _this10;
 
       _classCallCheck(this, ChangeElementCommand);
 
-      _this4 = _super4.call(this);
-      _this4.elem = elem;
-      _this4.text = text ? 'Change ' + elem.tagName + ' ' + text : 'Change ' + elem.tagName;
-      _this4.newValues = {};
-      _this4.oldValues = attrs;
+      _this10 = _super4.call(this);
+      _this10.elem = elem;
+      _this10.text = text ? 'Change ' + elem.tagName + ' ' + text : 'Change ' + elem.tagName;
+      _this10.newValues = {};
+      _this10.oldValues = attrs;
 
       for (var attr in attrs) {
         if (attr === '#text') {
-          _this4.newValues[attr] = elem.textContent;
+          _this10.newValues[attr] = elem.textContent;
         } else if (attr === '#href') {
-          _this4.newValues[attr] = getHref(elem);
+          _this10.newValues[attr] = getHref(elem);
         } else {
-          _this4.newValues[attr] = elem.getAttribute(attr);
+          _this10.newValues[attr] = elem.getAttribute(attr);
         }
       }
 
-      return _this4;
+      return _this10;
     }
     /**
-     * @returns {"svgedit.history.ChangeElementCommand"}
-     */
+    * Performs the stored change action.
+    * @param {module:history.HistoryEventHandler} handler
+    * @fires module:history~Command#event:history
+    * @returns {void}
+    */
 
 
     _createClass(ChangeElementCommand, [{
-      key: "type",
-      value: function type() {
-        // eslint-disable-line class-methods-use-this
-        return 'svgedit.history.ChangeElementCommand';
-      }
-      /**
-      * Performs the stored change action.
-      * @param {module:history.HistoryEventHandler} handler
-      * @fires module:history~Command#event:history
-      * @returns {true}
-      */
-
-    }, {
       key: "apply",
       value: function apply(handler) {
-        var _this5 = this;
+        var _this11 = this;
 
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
-        }
+        _get(_getPrototypeOf(ChangeElementCommand.prototype), "apply", this).call(this, handler, function () {
+          var bChangedTransform = false;
+          Object.entries(_this11.newValues).forEach(function (_ref) {
+            var _ref2 = _slicedToArray(_ref, 2),
+                attr = _ref2[0],
+                value = _ref2[1];
 
-        var bChangedTransform = false;
-        Object.entries(this.newValues).forEach(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 2),
-              attr = _ref2[0],
-              value = _ref2[1];
-
-          if (value) {
-            if (attr === '#text') {
-              _this5.elem.textContent = value;
-            } else if (attr === '#href') {
-              setHref(_this5.elem, value);
+            if (value) {
+              if (attr === '#text') {
+                _this11.elem.textContent = value;
+              } else if (attr === '#href') {
+                setHref(_this11.elem, value);
+              } else {
+                _this11.elem.setAttribute(attr, value);
+              }
+            } else if (attr === '#text') {
+              _this11.elem.textContent = '';
             } else {
-              _this5.elem.setAttribute(attr, value);
+              _this11.elem.setAttribute(attr, '');
+
+              _this11.elem.removeAttribute(attr);
             }
-          } else if (attr === '#text') {
-            _this5.elem.textContent = '';
-          } else {
-            _this5.elem.setAttribute(attr, '');
 
-            _this5.elem.removeAttribute(attr);
-          }
+            if (attr === 'transform') {
+              bChangedTransform = true;
+            }
+          }); // relocate rotational transform, if necessary
 
-          if (attr === 'transform') {
-            bChangedTransform = true;
-          }
-        }); // relocate rotational transform, if necessary
+          if (!bChangedTransform) {
+            var angle = getRotationAngle(_this11.elem);
 
-        if (!bChangedTransform) {
-          var angle = getRotationAngle(this.elem);
+            if (angle) {
+              var bbox = _this11.elem.getBBox();
 
-          if (angle) {
-            var bbox = this.elem.getBBox();
-            var cx = bbox.x + bbox.width / 2,
-                cy = bbox.y + bbox.height / 2;
-            var rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('');
+              var cx = bbox.x + bbox.width / 2;
+              var cy = bbox.y + bbox.height / 2;
+              var rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('');
 
-            if (rotate !== this.elem.getAttribute('transform')) {
-              this.elem.setAttribute('transform', rotate);
+              if (rotate !== _this11.elem.getAttribute('transform')) {
+                _this11.elem.setAttribute('transform', rotate);
+              }
             }
           }
-        }
-
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
-        }
-
-        return true;
+        });
       }
       /**
       * Reverses the stored change action.
       * @param {module:history.HistoryEventHandler} handler
       * @fires module:history~Command#event:history
-      * @returns {true}
+      * @returns {void}
       */
 
     }, {
       key: "unapply",
       value: function unapply(handler) {
-        var _this6 = this;
+        var _this12 = this;
 
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
-        }
+        _get(_getPrototypeOf(ChangeElementCommand.prototype), "unapply", this).call(this, handler, function () {
+          var bChangedTransform = false;
+          Object.entries(_this12.oldValues).forEach(function (_ref3) {
+            var _ref4 = _slicedToArray(_ref3, 2),
+                attr = _ref4[0],
+                value = _ref4[1];
 
-        var bChangedTransform = false;
-        Object.entries(this.oldValues).forEach(function (_ref3) {
-          var _ref4 = _slicedToArray(_ref3, 2),
-              attr = _ref4[0],
-              value = _ref4[1];
-
-          if (value) {
-            if (attr === '#text') {
-              _this6.elem.textContent = value;
-            } else if (attr === '#href') {
-              setHref(_this6.elem, value);
+            if (value) {
+              if (attr === '#text') {
+                _this12.elem.textContent = value;
+              } else if (attr === '#href') {
+                setHref(_this12.elem, value);
+              } else {
+                _this12.elem.setAttribute(attr, value);
+              }
+            } else if (attr === '#text') {
+              _this12.elem.textContent = '';
             } else {
-              _this6.elem.setAttribute(attr, value);
+              _this12.elem.removeAttribute(attr);
             }
-          } else if (attr === '#text') {
-            _this6.elem.textContent = '';
-          } else {
-            _this6.elem.removeAttribute(attr);
-          }
 
-          if (attr === 'transform') {
-            bChangedTransform = true;
-          }
-        }); // relocate rotational transform, if necessary
-
-        if (!bChangedTransform) {
-          var angle = getRotationAngle(this.elem);
-
-          if (angle) {
-            var bbox = this.elem.getBBox();
-            var cx = bbox.x + bbox.width / 2,
-                cy = bbox.y + bbox.height / 2;
-            var rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('');
-
-            if (rotate !== this.elem.getAttribute('transform')) {
-              this.elem.setAttribute('transform', rotate);
+            if (attr === 'transform') {
+              bChangedTransform = true;
             }
-          }
-        } // Remove transformlist to prevent confusion that causes bugs like 575.
+          }); // relocate rotational transform, if necessary
+
+          if (!bChangedTransform) {
+            var angle = getRotationAngle(_this12.elem);
+
+            if (angle) {
+              var bbox = _this12.elem.getBBox();
+
+              var cx = bbox.x + bbox.width / 2,
+                  cy = bbox.y + bbox.height / 2;
+              var rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('');
+
+              if (rotate !== _this12.elem.getAttribute('transform')) {
+                _this12.elem.setAttribute('transform', rotate);
+              }
+            }
+          } // Remove transformlist to prevent confusion that causes bugs like 575.
 
 
-        removeElementFromListMap(this.elem);
-
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
-        }
-
-        return true;
-      }
-      /**
-      * @returns {Element[]} Array with element associated with this command
-      */
-
-    }, {
-      key: "elements",
-      value: function elements() {
-        return [this.elem];
+          removeElementFromListMap(_this12.elem);
+        });
       }
     }]);
 
     return ChangeElementCommand;
-  }(Command);
-  ChangeElementCommand.type = ChangeElementCommand.prototype.type; // TODO: create a 'typing' command object that tracks changes in text
+  }(Command); // TODO: create a 'typing' command object that tracks changes in text
   // if a new Typing command is created and the top command on the stack is also a Typing
   // and they both affect the same element, then collapse the two commands into one
 
@@ -4471,49 +4423,35 @@
     * @param {string} [text] - An optional string visible to user related to this change
     */
     function BatchCommand(text) {
-      var _this7;
+      var _this13;
 
       _classCallCheck(this, BatchCommand);
 
-      _this7 = _super5.call(this);
-      _this7.text = text || 'Batch Command';
-      _this7.stack = [];
-      return _this7;
+      _this13 = _super5.call(this);
+      _this13.text = text || 'Batch Command';
+      _this13.stack = [];
+      return _this13;
     }
     /**
-     * @returns {"svgedit.history.BatchCommand"}
-     */
+    * Runs "apply" on all subcommands.
+    * @param {module:history.HistoryEventHandler} handler
+    * @fires module:history~Command#event:history
+    * @returns {void}
+    */
 
 
     _createClass(BatchCommand, [{
-      key: "type",
-      value: function type() {
-        // eslint-disable-line class-methods-use-this
-        return 'svgedit.history.BatchCommand';
-      }
-      /**
-      * Runs "apply" on all subcommands.
-      * @param {module:history.HistoryEventHandler} handler
-      * @fires module:history~Command#event:history
-      * @returns {void}
-      */
-
-    }, {
       key: "apply",
       value: function apply(handler) {
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_APPLY, this);
-        }
+        var _this14 = this;
 
-        var len = this.stack.length;
-
-        for (var i = 0; i < len; ++i) {
-          this.stack[i].apply(handler);
-        }
-
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_APPLY, this);
-        }
+        _get(_getPrototypeOf(BatchCommand.prototype), "apply", this).call(this, handler, function () {
+          _this14.stack.forEach(function (stackItem) {
+            // eslint-disable-next-line no-console
+            console.assert(stackItem, 'stack item should not be null');
+            stackItem && stackItem.apply(handler);
+          });
+        });
       }
       /**
       * Runs "unapply" on all subcommands.
@@ -4525,17 +4463,15 @@
     }, {
       key: "unapply",
       value: function unapply(handler) {
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.BEFORE_UNAPPLY, this);
-        }
+        var _this15 = this;
 
-        for (var i = this.stack.length - 1; i >= 0; i--) {
-          this.stack[i].unapply(handler);
-        }
-
-        if (handler) {
-          handler.handleHistoryEvent(HistoryEventTypes.AFTER_UNAPPLY, this);
-        }
+        _get(_getPrototypeOf(BatchCommand.prototype), "unapply", this).call(this, handler, function () {
+          _this15.stack.forEach(function (stackItem) {
+            // eslint-disable-next-line no-console
+            console.assert(stackItem, 'stack item should not be null');
+            stackItem && stackItem.unapply(handler);
+          });
+        });
       }
       /**
       * Iterate through all our subcommands.
@@ -4549,6 +4485,7 @@
         var cmd = this.stack.length;
 
         while (cmd--) {
+          if (!this.stack[cmd]) continue;
           var thisElems = this.stack[cmd].elements();
           var elem = thisElems.length;
 
@@ -4570,6 +4507,8 @@
     }, {
       key: "addSubCommand",
       value: function addSubCommand(cmd) {
+        // eslint-disable-next-line no-console
+        console.assert(cmd !== null, 'cmd should not be null');
         this.stack.push(cmd);
       }
       /**
@@ -4585,7 +4524,6 @@
 
     return BatchCommand;
   }(Command);
-  BatchCommand.type = BatchCommand.prototype.type;
   /**
   *
   */
@@ -8016,8 +7954,8 @@
 
   var KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='; // Much faster than running getBBox() every time
 
-  var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
-  var visElemsArr = visElems.split(','); // const hidElems = 'clipPath,defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
+  var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use,clipPath';
+  var visElemsArr = visElems.split(','); // const hidElems = 'defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 
   var editorContext_$1 = null;
   var domdoc_ = null;
@@ -9451,6 +9389,9 @@
 
   var isNullish = function isNullish(val) {
     return val === null || val === undefined;
+  };
+  var $q = function $q(sel) {
+    return document.querySelector(sel);
   };
 
   /* globals jQuery */
@@ -14216,18 +14157,18 @@
           var cmdType = cmd.type();
           var isApply = eventType === EventTypes.AFTER_APPLY;
 
-          if (cmdType === MoveElementCommand$1.type()) {
+          if (cmdType === 'MoveElementCommand') {
             var parent = isApply ? cmd.newParent : cmd.oldParent;
 
             if (parent === svgcontent) {
               identifyLayers();
             }
-          } else if (cmdType === InsertElementCommand$1.type() || cmdType === RemoveElementCommand$1.type()) {
+          } else if (cmdType === 'InsertElementCommand' || cmdType === 'RemoveElementCommand') {
             if (cmd.parent === svgcontent) {
               identifyLayers();
             }
 
-            if (cmdType === InsertElementCommand$1.type()) {
+            if (cmdType === 'InsertElementCommand') {
               if (isApply) {
                 restoreRefElems(cmd.elem);
               }
@@ -14238,7 +14179,7 @@
             if (cmd.elem && cmd.elem.tagName === 'use') {
               setUseData(cmd.elem);
             }
-          } else if (cmdType === ChangeElementCommand$1.type()) {
+          } else if (cmdType === 'ChangeElementCommand') {
             // if we are changing layer names, re-identify all layers
             if (cmd.elem.tagName === 'title' && cmd.elem.parentNode.parentNode === svgcontent) {
               identifyLayers();
@@ -28667,6 +28608,7 @@
     }));
   }
 
+  var $q$1 = $q;
   var editor = {};
   var $$b = [jQueryPluginJSHotkeys, jQueryPluginSVGIcons, jQueryPluginJGraduate, jQueryPluginSpinButton, jQueryPluginSVG, jQueryContextMenu, jPicker].reduce(function (jq, func) {
     return func(jq);
@@ -35539,7 +35481,7 @@
             var btn;
 
             if (opts.sel) {
-              btn = document.querySelector(opts.sel);
+              btn = $q$1(opts.sel);
 
               if (btn === null) {
                 return true;
