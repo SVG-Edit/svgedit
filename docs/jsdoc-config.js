@@ -61,7 +61,7 @@ module.exports = {
       'cypress',
       'node_modules',
       'dist',
-      'editor/external',
+      'external',
       'screencasts',
       'test'
     ],

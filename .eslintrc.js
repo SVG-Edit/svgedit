@@ -47,7 +47,7 @@ module.exports = {
         'src/editor/typedefs.js',
         'src/editor/redirect-on-no-module-support.js',
         'src/editor/extensions/imagelib/index.js',
-        'src/editor/external/dom-polyfill/dom-polyfill.js',
+        'src/external/dom-polyfill/dom-polyfill.js',
         'docs/screencasts/svgopen2010/script.js'
       ],
       rules: {
@@ -121,7 +121,7 @@ module.exports = {
     // Dis-apply Node rules mistakenly giving errors with browser files,
     //  and treating Node global `root` as being present for shadowing
     {
-      files: ['src/editor/**'],
+      files: ['src/editor/**', 'src/external/**'],
       globals: {
         root: 'off'
       },

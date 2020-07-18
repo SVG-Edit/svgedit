@@ -3,18 +3,18 @@ import fs from 'promise-fs';
 
 const filesAndReplacements = [
   {
-    input: 'editor/svg-editor-es.html',
-    output: 'editor/xdomain-svg-editor-es.html',
+    input: 'src/editor/svg-editor-es.html',
+    output: 'src/editor/xdomain-svg-editor-es.html',
     replacements: [
       [
-        '<script type="module" src="../svgedit-config-es.js"></script>',
+        '<script type="module" src="../../svgedit-config-es.js"></script>',
         '<script type="module" src="xdomain-svgedit-config-es.js"></script>'
       ]
     ]
   },
   {
-    input: 'editor/xdomain-svg-editor-es.html',
-    output: 'editor/xdomain-svg-editor.html',
+    input: 'src/editor/xdomain-svg-editor-es.html',
+    output: 'src/editor/xdomain-svg-editor.html',
     replacements: [
       [
         '<!DOCTYPE html>',
@@ -23,15 +23,15 @@ const filesAndReplacements = [
       ],
       [
         '<script type="module" src="redirect-on-lacking-support.js"></script>',
-        '<script defer="defer" src="../dist/redirect-on-lacking-support.js"></script>'
+        '<script defer="defer" src="../../dist/redirect-on-lacking-support.js"></script>'
       ],
       [
         '<script type="module" src="xdomain-svgedit-config-es.js"></script>',
         '<script defer="defer" src="xdomain-svgedit-config-iife.js"></script>'
       ],
       [
-        '<script src="external/dom-polyfill/dom-polyfill.js"></script>',
-        '<script src="../dist/dom-polyfill.js"></script>'
+        '<script src="../external/dom-polyfill/dom-polyfill.js"></script>',
+        '<script src="../../dist/dom-polyfill.js"></script>'
       ],
       [
         '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
@@ -41,8 +41,8 @@ const filesAndReplacements = [
   },
   // Now that file has copied, we can replace the DOCTYPE in xdomain
   {
-    input: 'editor/xdomain-svg-editor-es.html',
-    output: 'editor/xdomain-svg-editor-es.html',
+    input: 'src/editor/xdomain-svg-editor-es.html',
+    output: 'src/editor/xdomain-svg-editor-es.html',
     replacements: [
       [
         '<!DOCTYPE html>',
@@ -52,8 +52,8 @@ const filesAndReplacements = [
     ]
   },
   {
-    input: 'editor/svg-editor-es.html',
-    output: 'editor/svg-editor.html',
+    input: 'src/editor/svg-editor-es.html',
+    output: 'src/editor/svg-editor.html',
     replacements: [
       [
         '<!DOCTYPE html>',
@@ -62,15 +62,15 @@ const filesAndReplacements = [
       ],
       [
         '<script type="module" src="redirect-on-lacking-support.js"></script>',
-        '<script defer="defer" src="../dist/redirect-on-lacking-support.js"></script>'
+        '<script defer="defer" src="../../dist/redirect-on-lacking-support.js"></script>'
       ],
       [
-        '<script type="module" src="../svgedit-config-es.js"></script>',
-        '<script defer="defer" src="../svgedit-config-iife.js"></script>'
+        '<script type="module" src="../../svgedit-config-es.js"></script>',
+        '<script defer="defer" src="../../svgedit-config-iife.js"></script>'
       ],
       [
-        '<script src="external/dom-polyfill/dom-polyfill.js"></script>',
-        '<script src="../dist/dom-polyfill.js"></script>'
+        '<script src="../external/dom-polyfill/dom-polyfill.js"></script>',
+        '<script src="../../dist/dom-polyfill.js"></script>'
       ],
       [
         '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
@@ -79,8 +79,8 @@ const filesAndReplacements = [
     ]
   },
   {
-    input: 'editor/extensions/imagelib/openclipart-es.html',
-    output: 'editor/extensions/imagelib/openclipart.html',
+    input: 'src/editor/extensions/imagelib/openclipart-es.html',
+    output: 'src/editor/extensions/imagelib/openclipart.html',
     replacements: [
       [
         '<!DOCTYPE html>',
@@ -89,11 +89,11 @@ const filesAndReplacements = [
       ],
       [
         '<script src="../../external/dom-polyfill/dom-polyfill.js"></script>',
-        '<script src="../../../dist/dom-polyfill.js"></script>'
+        '<script src="../../../../dist/dom-polyfill.js"></script>'
       ],
       [
         '<script type="module" src="openclipart.js"></script>',
-        '<script defer="defer" src="../../../dist/extensions/imagelib/openclipart.js"></script>'
+        '<script defer="defer" src="../../../../dist/extensions/imagelib/openclipart.js"></script>'
       ],
       [
         '<script nomodule="" src="redirect-on-no-module-support.js"></script>',
@@ -102,8 +102,8 @@ const filesAndReplacements = [
     ]
   },
   {
-    input: 'editor/extensions/imagelib/index-es.html',
-    output: 'editor/extensions/imagelib/index.html',
+    input: 'src/editor/extensions/imagelib/index-es.html',
+    output: 'src/editor/extensions/imagelib/index.html',
     replacements: [
       [
         '<!DOCTYPE html>',
@@ -112,7 +112,7 @@ const filesAndReplacements = [
       ],
       [
         '<script type="module" src="index.js"></script>',
-        '<script defer="defer" src="../../../dist/extensions/imagelib/index.js"></script>'
+        '<script defer="defer" src="../../../../dist/extensions/imagelib/index.js"></script>'
       ],
       [
         '<script nomodule="" src="redirect-on-no-module-support.js"></script>',

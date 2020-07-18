@@ -40,9 +40,9 @@
     "open-cov-no-start": "open-cli http://localhost:8000/coverage/",
     "open-cov": "run-p start open-cov-no-start",
     "instrument:replace-html": "frs-replace \"../svgedit-config-es.js\" \"svgedit-config-es.js\" -i instrumented/svg-editor-es.html -o instrumented/svg-editor-es.html",
-    "instrument:replace-js": "frs-replace \"editor/svg-editor.js\" \"svg-editor.js\" -i svgedit-config-es.js -o instrumented/svgedit-config-es.js",
+    "instrument:replace-js": "frs-replace \"src/editor/svg-editor.js\" \"svg-editor.js\" -i svgedit-config-es.js -o instrumented/svgedit-config-es.js",
     "instrument:copy-excluded": "node cypress/support/copy.js",
-    "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js && npm run instrument:copy-excluded",
+    "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"src/editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js && npm run instrument:copy-excluded",
     "instrument": "rimraf instrumented && nyc instrument editor instrumented && npm run copy-instrumented",
     "report": "run-s report-no-mochawesome mochawesome-cli",
     "report-summary": "run-s report-text-summary mochawesome-cli-dot",
@@ -50,8 +50,8 @@
     "license-badge-dev": "license-badger --corrections --filteredTypes=nonempty --textTemplate \"License types\n(all devDeps)\" --allDevelopment badges/licenses-badge-dev.svg",
     "license-badges": "run-s license-badge license-badge-dev",
     "coverage-badge": "coveradge badges/coverage-badge",
-    "compress-images": "imageoptim \"editor/extensions/*.png\" \"editor/spinbtn/*.png\" \"editor/jgraduate/images/*.{png,gif}\" \"editor/images/*.png\"",
-    "copy": "copyfiles -f node_modules/load-stylesheets/dist/index-es.js editor/external/load-stylesheets && copyfiles -f node_modules/jamilih/dist/jml-es.js editor/external/jamilih && copyfiles -f node_modules/query-result/esm/index.js editor/external/query-result/esm && copyfiles -f node_modules/qr-manipulation/dist/index-es.js editor/external/qr-manipulation/dist && copyfiles -f node_modules/stackblur-canvas/dist/stackblur-es.js editor/external/stackblur-canvas/dist && copyfiles -f node_modules/regenerator-runtime/runtime.js editor/external/regenerator-runtime && copyfiles -f \"node_modules/core-js-bundle//minified*\" editor/external/core-js-bundle && copyfiles -f \"node_modules/underscore/underscore-*\" editor/jspdf && copyfiles -f \"node_modules/deparam/dist/deparam.esm.js\" editor/external/deparam",
+    "compress-images": "imageoptim \"src/editor/extensions/*.png\" \"src/editor/spinbtn/*.png\" \"src/editor/jgraduate/images/*.{png,gif}\" \"src/editor/images/*.png\"",
+    "copy": "copyfiles -f node_modules/load-stylesheets/dist/index-es.js src/external/load-stylesheets && copyfiles -f node_modules/jamilih/dist/jml-es.js editor/external/jamilih && copyfiles -f node_modules/query-result/esm/index.js editor/external/query-result/esm && copyfiles -f node_modules/qr-manipulation/dist/index-es.js editor/external/qr-manipulation/dist && copyfiles -f node_modules/stackblur-canvas/dist/stackblur-es.js editor/external/stackblur-canvas/dist && copyfiles -f node_modules/regenerator-runtime/runtime.js editor/external/regenerator-runtime && copyfiles -f \"node_modules/core-js-bundle//minified*\" editor/external/core-js-bundle && copyfiles -f \"node_modules/underscore/underscore-*\" editor/jspdf && copyfiles -f \"node_modules/deparam/dist/deparam.esm.js\" editor/external/deparam",
     "remark": "remark -q -f .",
     "build-html": "babel-node --plugins @babel/plugin-transform-modules-commonjs build/build-html.js",
     "eslint-fix": "eslint --cache --fix --ext js,md,html .",
@@ -83,13 +83,13 @@
   },
   "nyc": {
     "exclude": [
-      "editor/external/**",
-      "editor/jquery.min.js",
-      "editor/jquery-ui/**",
-      "editor/js-hotkeys/**",
-      "editor/jspdf/jspdf.min.js",
-      "editor/jspdf/underscore-min.js",
-      "editor/spinbtn/**"
+      "src/external/**",
+      "src/editor/jquery.min.js",
+      "src/editor/jquery-ui/**",
+      "src/editor/js-hotkeys/**",
+      "src/editor/jspdf/jspdf.min.js",
+      "src/editor/jspdf/underscore-min.js",
+      "src/editor/spinbtn/**"
     ],
     "reporter": [
       "json-summary",
