@@ -1,98 +1,6 @@
 var svgEditorExtension_storage = (function () {
   'use strict';
 
-  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-    try {
-      var info = gen[key](arg);
-      var value = info.value;
-    } catch (error) {
-      reject(error);
-      return;
-    }
-
-    if (info.done) {
-      resolve(value);
-    } else {
-      Promise.resolve(value).then(_next, _throw);
-    }
-  }
-
-  function _asyncToGenerator(fn) {
-    return function () {
-      var self = this,
-          args = arguments;
-      return new Promise(function (resolve, reject) {
-        var gen = fn.apply(self, args);
-
-        function _next(value) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-        }
-
-        function _throw(err) {
-          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-        }
-
-        _next(undefined);
-      });
-    };
-  }
-
-  function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-  }
-
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
-  }
-
-  function _iterableToArrayLimit(arr, i) {
-    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _e = undefined;
-
-    try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"] != null) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-  }
-
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-
-    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
   /**
    * @file ext-storage.js
    *
@@ -115,21 +23,35 @@ var svgEditorExtension_storage = (function () {
   */
   var extStorage = {
     name: 'storage',
-    init: function init(_ref) {
-      var $ = _ref.$;
-      var svgEditor = this;
-      var svgCanvas = svgEditor.canvas; // We could empty any already-set data for users when they decline storage,
+
+    init({
+      $
+    }) {
+      const svgEditor = this;
+      const svgCanvas = svgEditor.canvas; // We could empty any already-set data for users when they decline storage,
       //  but it would be a risk for users who wanted to store but accidentally
       // said "no"; instead, we'll let those who already set it, delete it themselves;
       // to change, set the "emptyStorageOnDecline" config setting to true
       // in svgedit-config-iife.js/svgedit-config-es.js.
 
-      var _svgEditor$curConfig = svgEditor.curConfig,
-          emptyStorageOnDecline = _svgEditor$curConfig.emptyStorageOnDecline,
-          noStorageOnLoad = _svgEditor$curConfig.noStorageOnLoad,
-          forceStorage = _svgEditor$curConfig.forceStorage;
-      var storage = svgEditor.storage,
-          updateCanvas = svgEditor.updateCanvas;
+      const {
+        emptyStorageOnDecline,
+        // When the code in svg-editor.js prevents local storage on load per
+        //  user request, we also prevent storing on unload here so as to
+        //  avoid third-party sites making XSRF requests or providing links
+        // which would cause the user's local storage not to load and then
+        // upon page unload (such as the user closing the window), the storage
+        //  would thereby be set with an empty value, erasing any of the
+        // user's prior work. To change this behavior so that no use of storage
+        // or adding of new storage takes place regardless of settings, set
+        // the "noStorageOnLoad" config setting to true in svgedit-config-*.js.
+        noStorageOnLoad,
+        forceStorage
+      } = svgEditor.curConfig;
+      const {
+        storage,
+        updateCanvas
+      } = svgEditor;
       /**
        * Replace `storagePrompt` parameter within URL.
        * @param {string} val
@@ -139,7 +61,7 @@ var svgEditorExtension_storage = (function () {
 
       function replaceStoragePrompt(val) {
         val = val ? 'storagePrompt=' + val : '';
-        var loc = top.location; // Allow this to work with the embedded editor as well
+        const loc = top.location; // Allow this to work with the embedded editor as well
 
         if (loc.href.includes('storagePrompt=')) {
           /*
@@ -164,7 +86,7 @@ var svgEditorExtension_storage = (function () {
 
       function setSVGContentStorage(val) {
         if (storage) {
-          var name = 'svgedit-' + svgEditor.curConfig.canvasName;
+          const name = 'svgedit-' + svgEditor.curConfig.canvasName;
 
           if (!val) {
             storage.removeItem(name);
@@ -200,7 +122,7 @@ var svgEditorExtension_storage = (function () {
 
       function emptyStorage() {
         setSVGContentStorage('');
-        Object.keys(svgEditor.curPrefs).forEach(function (name) {
+        Object.keys(svgEditor.curPrefs).forEach(name => {
           name = 'svg-edit-' + name;
 
           if (storage) {
@@ -238,13 +160,11 @@ var svgEditorExtension_storage = (function () {
           }); // No need for explicit saving at all once storage is on
           // svgEditor.showSaveWarning = false;
 
-          var curPrefs = svgEditor.curPrefs;
-          Object.entries(curPrefs).forEach(function (_ref2) {
-            var _ref3 = _slicedToArray(_ref2, 2),
-                key = _ref3[0],
-                val = _ref3[1];
-
-            var store = val !== undefined;
+          const {
+            curPrefs
+          } = svgEditor;
+          Object.entries(curPrefs).forEach(([key, val]) => {
+            const store = val !== undefined;
             key = 'svg-edit-' + key;
 
             if (!store) {
@@ -263,180 +183,147 @@ var svgEditorExtension_storage = (function () {
         });
       }
 
-      var loaded = false;
+      let loaded = false;
       return {
         name: 'storage',
-        langReady: function langReady(_ref4) {
-          return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-            var importLocale, storagePrompt, confirmSetStorage, message, storagePrefsAndContent, storagePrefsOnly, storagePrefs, storageNoPrefsOrContent, storageNoPrefs, rememberLabel, rememberTooltip, options, oldContainerWidth, oldContainerMarginLeft, oldContentHeight, oldContainerHeight, _yield$$$select, pref, checked;
 
-            return regeneratorRuntime.wrap(function _callee$(_context) {
-              while (1) {
-                switch (_context.prev = _context.next) {
-                  case 0:
-                    importLocale = _ref4.importLocale;
-                    storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
-                    _context.next = 4;
-                    return importLocale();
+        async langReady({
+          importLocale
+        }) {
+          const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
+          const confirmSetStorage = await importLocale();
+          const {
+            message,
+            storagePrefsAndContent,
+            storagePrefsOnly,
+            storagePrefs,
+            storageNoPrefsOrContent,
+            storageNoPrefs,
+            rememberLabel,
+            rememberTooltip
+          } = confirmSetStorage; // No need to run this one-time dialog again just because the user
+          //   changes the language
 
-                  case 4:
-                    confirmSetStorage = _context.sent;
-                    message = confirmSetStorage.message, storagePrefsAndContent = confirmSetStorage.storagePrefsAndContent, storagePrefsOnly = confirmSetStorage.storagePrefsOnly, storagePrefs = confirmSetStorage.storagePrefs, storageNoPrefsOrContent = confirmSetStorage.storageNoPrefsOrContent, storageNoPrefs = confirmSetStorage.storageNoPrefs, rememberLabel = confirmSetStorage.rememberLabel, rememberTooltip = confirmSetStorage.rememberTooltip; // No need to run this one-time dialog again just because the user
-                    //   changes the language
+          if (loaded) {
+            return;
+          }
 
-                    if (!loaded) {
-                      _context.next = 8;
-                      break;
-                    }
+          loaded = true; // Note that the following can load even if "noStorageOnLoad" is
+          //   set to false; to avoid any chance of storage, avoid this
+          //   extension! (and to avoid using any prior storage, set the
+          //   config option "noStorageOnLoad" to true).
 
-                    return _context.abrupt("return");
+          if (!forceStorage && ( // If the URL has been explicitly set to always prompt the
+          //  user (e.g., so one can be pointed to a URL where one
+          // can alter one's settings, say to prevent future storage)...
+          storagePrompt === 'true' || // ...or...if the URL at least doesn't explicitly prevent a
+          //  storage prompt (as we use for users who
+          // don't want to set cookies at all but who don't want
+          // continual prompts about it)...
+          storagePrompt !== 'false' && // ...and this user hasn't previously indicated a desire for storage
+          !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/) // ...then show the storage prompt.
+          )) {
+            const options = [];
 
-                  case 8:
-                    loaded = true; // Note that the following can load even if "noStorageOnLoad" is
-                    //   set to false; to avoid any chance of storage, avoid this
-                    //   extension! (and to avoid using any prior storage, set the
-                    //   config option "noStorageOnLoad" to true).
-
-                    if (!(!forceStorage && ( // If the URL has been explicitly set to always prompt the
-                    //  user (e.g., so one can be pointed to a URL where one
-                    // can alter one's settings, say to prevent future storage)...
-                    storagePrompt === 'true' || // ...or...if the URL at least doesn't explicitly prevent a
-                    //  storage prompt (as we use for users who
-                    // don't want to set cookies at all but who don't want
-                    // continual prompts about it)...
-                    storagePrompt !== 'false' && // ...and this user hasn't previously indicated a desire for storage
-                    !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/) // ...then show the storage prompt.
-                    ))) {
-                      _context.next = 44;
-                      break;
-                    }
-
-                    options = [];
-
-                    if (storage) {
-                      options.unshift({
-                        value: 'prefsAndContent',
-                        text: storagePrefsAndContent
-                      }, {
-                        value: 'prefsOnly',
-                        text: storagePrefsOnly
-                      }, {
-                        value: 'noPrefsOrContent',
-                        text: storageNoPrefsOrContent
-                      });
-                    } else {
-                      options.unshift({
-                        value: 'prefsOnly',
-                        text: storagePrefs
-                      }, {
-                        value: 'noPrefsOrContent',
-                        text: storageNoPrefs
-                      });
-                    } // Hack to temporarily provide a wide and high enough dialog
+            if (storage) {
+              options.unshift({
+                value: 'prefsAndContent',
+                text: storagePrefsAndContent
+              }, {
+                value: 'prefsOnly',
+                text: storagePrefsOnly
+              }, {
+                value: 'noPrefsOrContent',
+                text: storageNoPrefsOrContent
+              });
+            } else {
+              options.unshift({
+                value: 'prefsOnly',
+                text: storagePrefs
+              }, {
+                value: 'noPrefsOrContent',
+                text: storageNoPrefs
+              });
+            } // Hack to temporarily provide a wide and high enough dialog
 
 
-                    oldContainerWidth = $('#dialog_container')[0].style.width, oldContainerMarginLeft = $('#dialog_container')[0].style.marginLeft, oldContentHeight = $('#dialog_content')[0].style.height, oldContainerHeight = $('#dialog_container')[0].style.height;
-                    $('#dialog_content')[0].style.height = '120px';
-                    $('#dialog_container')[0].style.height = '170px';
-                    $('#dialog_container')[0].style.width = '800px';
-                    $('#dialog_container')[0].style.marginLeft = '-400px'; // Open select-with-checkbox dialog
-                    // From svg-editor.js
+            const oldContainerWidth = $('#dialog_container')[0].style.width,
+                  oldContainerMarginLeft = $('#dialog_container')[0].style.marginLeft,
+                  oldContentHeight = $('#dialog_content')[0].style.height,
+                  oldContainerHeight = $('#dialog_container')[0].style.height;
+            $('#dialog_content')[0].style.height = '120px';
+            $('#dialog_container')[0].style.height = '170px';
+            $('#dialog_container')[0].style.width = '800px';
+            $('#dialog_container')[0].style.marginLeft = '-400px'; // Open select-with-checkbox dialog
+            // From svg-editor.js
 
-                    svgEditor.storagePromptState = 'waiting';
-                    _context.next = 20;
-                    return $.select(message, options, null, null, {
-                      label: rememberLabel,
-                      checked: true,
-                      tooltip: rememberTooltip
-                    });
+            svgEditor.storagePromptState = 'waiting';
+            const {
+              response: pref,
+              checked
+            } = await $.select(message, options, null, null, {
+              label: rememberLabel,
+              checked: true,
+              tooltip: rememberTooltip
+            });
 
-                  case 20:
-                    _yield$$$select = _context.sent;
-                    pref = _yield$$$select.response;
-                    checked = _yield$$$select.checked;
+            if (pref && pref !== 'noPrefsOrContent') {
+              // Regardless of whether the user opted
+              // to remember the choice (and move to a URL which won't
+              // ask them again), we have to assume the user
+              // doesn't even want to remember their not wanting
+              // storage, so we don't set the cookie or continue on with
+              //  setting storage on beforeunload
+              document.cookie = 'svgeditstore=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
+              // If the URL was configured to always insist on a prompt, if
+              //    the user does indicate a wish to store their info, we
+              //    don't want ask them again upon page refresh so move
+              //    them instead to a URL which does not always prompt
 
-                    if (!(pref && pref !== 'noPrefsOrContent')) {
-                      _context.next = 30;
-                      break;
-                    }
-
-                    // Regardless of whether the user opted
-                    // to remember the choice (and move to a URL which won't
-                    // ask them again), we have to assume the user
-                    // doesn't even want to remember their not wanting
-                    // storage, so we don't set the cookie or continue on with
-                    //  setting storage on beforeunload
-                    document.cookie = 'svgeditstore=' + encodeURIComponent(pref) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'; // 'prefsAndContent' | 'prefsOnly'
-                    // If the URL was configured to always insist on a prompt, if
-                    //    the user does indicate a wish to store their info, we
-                    //    don't want ask them again upon page refresh so move
-                    //    them instead to a URL which does not always prompt
-
-                    if (!(storagePrompt === 'true' && checked)) {
-                      _context.next = 28;
-                      break;
-                    }
-
-                    replaceStoragePrompt();
-                    return _context.abrupt("return");
-
-                  case 28:
-                    _context.next = 35;
-                    break;
-
-                  case 30:
-                    // The user does not wish storage (or cancelled, which we treat equivalently)
-                    removeStoragePrefCookie();
-
-                    if (pref && // If the user explicitly expresses wish for no storage
-                    emptyStorageOnDecline) {
-                      emptyStorage();
-                    }
-
-                    if (!(pref && checked)) {
-                      _context.next = 35;
-                      break;
-                    }
-
-                    // Open a URL which won't set storage and won't prompt user about storage
-                    replaceStoragePrompt('false');
-                    return _context.abrupt("return");
-
-                  case 35:
-                    // Reset width/height of dialog (e.g., for use by Export)
-                    $('#dialog_container')[0].style.width = oldContainerWidth;
-                    $('#dialog_container')[0].style.marginLeft = oldContainerMarginLeft;
-                    $('#dialog_content')[0].style.height = oldContentHeight;
-                    $('#dialog_container')[0].style.height = oldContainerHeight; // It should be enough to (conditionally) add to storage on
-                    //   beforeunload, but if we wished to update immediately,
-                    //   we might wish to try setting:
-                    //       svgEditor.setConfig({noStorageOnLoad: true});
-                    //   and then call:
-                    //       svgEditor.loadContentAndPrefs();
-                    // We don't check for noStorageOnLoad here because
-                    //   the prompt gives the user the option to store data
-
-                    setupBeforeUnloadListener();
-                    svgEditor.storagePromptState = 'closed';
-                    updateCanvas(true);
-                    _context.next = 45;
-                    break;
-
-                  case 44:
-                    if (!noStorageOnLoad || forceStorage) {
-                      setupBeforeUnloadListener();
-                    }
-
-                  case 45:
-                  case "end":
-                    return _context.stop();
-                }
+              if (storagePrompt === 'true' && checked) {
+                replaceStoragePrompt();
+                return;
               }
-            }, _callee);
-          }))();
+            } else {
+              // The user does not wish storage (or cancelled, which we treat equivalently)
+              removeStoragePrefCookie();
+
+              if (pref && // If the user explicitly expresses wish for no storage
+              emptyStorageOnDecline) {
+                emptyStorage();
+              }
+
+              if (pref && checked) {
+                // Open a URL which won't set storage and won't prompt user about storage
+                replaceStoragePrompt('false');
+                return;
+              }
+            } // Reset width/height of dialog (e.g., for use by Export)
+
+
+            $('#dialog_container')[0].style.width = oldContainerWidth;
+            $('#dialog_container')[0].style.marginLeft = oldContainerMarginLeft;
+            $('#dialog_content')[0].style.height = oldContentHeight;
+            $('#dialog_container')[0].style.height = oldContainerHeight; // It should be enough to (conditionally) add to storage on
+            //   beforeunload, but if we wished to update immediately,
+            //   we might wish to try setting:
+            //       svgEditor.setConfig({noStorageOnLoad: true});
+            //   and then call:
+            //       svgEditor.loadContentAndPrefs();
+            // We don't check for noStorageOnLoad here because
+            //   the prompt gives the user the option to store data
+
+            setupBeforeUnloadListener();
+            svgEditor.storagePromptState = 'closed';
+            updateCanvas(true);
+          } else if (!noStorageOnLoad || forceStorage) {
+            setupBeforeUnloadListener();
+          }
         }
+
       };
     }
+
   };
 
   return extStorage;
