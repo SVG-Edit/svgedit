@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/node-builtins */
 /* globals jQuery */
 /**
 * The main module for the visual SVG Editor.
@@ -22,6 +21,7 @@ import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from '../common/brows
 
 // Until we split this into smaller files, this helps distinguish utilities
 //   from local methods
+// eslint-disable-next-line import/no-namespace
 import * as Utils from '../common/utilities.js';
 import {getTypeMap, convertUnit, isValidUnit} from '../common/units.js';
 import {

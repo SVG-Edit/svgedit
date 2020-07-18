@@ -32,7 +32,7 @@ module.exports = {
     // Locales have no need for importing outside of SVG-Edit
     {
       files: [
-        'editor/locale/lang.*.js', 'editor/extensions/ext-locale/**',
+        'src/editor/locale/lang.*.js', 'src/editor/extensions/ext-locale/**',
         'docs/tutorials/ExtensionDocs.md'
       ],
       rules: {
@@ -42,18 +42,20 @@ module.exports = {
     // These browser files don't do importing or requiring
     {
       files: [
-        'editor/svgpathseg.js', 'editor/touch.js', 'editor/typedefs.js',
-        'editor/redirect-on-no-module-support.js',
-        'editor/extensions/imagelib/index.js',
-        'editor/external/dom-polyfill/dom-polyfill.js',
-        'screencasts/svgopen2010/script.js'
+        'src/editor/svgpathseg.js',
+        'src/editor/touch.js',
+        'src/editor/typedefs.js',
+        'src/editor/redirect-on-no-module-support.js',
+        'src/editor/extensions/imagelib/index.js',
+        'src/editor/external/dom-polyfill/dom-polyfill.js',
+        'docs/screencasts/svgopen2010/script.js'
       ],
       rules: {
         'import/unambiguous': ['off']
       }
     },
     {
-      files: ['**/*.html', 'screencasts/**'],
+      files: ['**/*.html', 'docs/screencasts/**'],
       globals: {
         root: 'off'
       },
@@ -119,7 +121,7 @@ module.exports = {
     // Dis-apply Node rules mistakenly giving errors with browser files,
     //  and treating Node global `root` as being present for shadowing
     {
-      files: ['editor/**'],
+      files: ['src/editor/**'],
       globals: {
         root: 'off'
       },
@@ -184,7 +186,7 @@ module.exports = {
     //   descriptive `svgEditor`; they also have no need for importing outside
     //   of SVG-Edit
     {
-      files: ['editor/extensions/**'],
+      files: ['src/editor/extensions/**'],
       settings: {
         polyfills: [
           'console',
@@ -244,7 +246,7 @@ module.exports = {
     },
     {
       // Should probably have as external, but should still check
-      files: ['canvg/rgbcolor.js'],
+      files: ['src/editor/canvg/rgbcolor.js'],
       settings: {
         polyfills: [
           'Number.isNaN',

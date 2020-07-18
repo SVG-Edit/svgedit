@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-imagelib.js
  *
@@ -16,7 +15,6 @@ export default {
       !window.svgEditor ||
       window.svgEditor.modules !== false;
 
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
 
     const {uiStrings, canvas: svgCanvas, curConfig: {extIconsPath}} = svgEditor;
@@ -39,7 +37,6 @@ export default {
     });
     const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({url}) => {
       try {
-        // eslint-disable-next-line node/no-unsupported-features/node-builtins
         return new URL(url).origin;
       } catch (err) {
         return location.origin;

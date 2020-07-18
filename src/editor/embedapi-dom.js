@@ -101,7 +101,6 @@ iframe[0].src = frameBase + framePath +
     : ''); // Append arguments to this file onto the iframe
 
 iframe[0].addEventListener('load', function () {
-  // eslint-disable-next-line node/no-unsupported-features/node-builtins
   svgCanvas = new EmbeddedSVGEdit(frame, [new URL(frameBase).origin]);
   // Hide main button, as we will be controlling new, load, save, etc. from the host document
   let doc;

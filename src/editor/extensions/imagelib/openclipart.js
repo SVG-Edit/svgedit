@@ -248,7 +248,6 @@ jml('div', [
     id: 'openclipart',
     $custom: {
       async $submit () {
-        // eslint-disable-next-line node/no-unsupported-features/node-builtins
         const url = new URL(baseAPIURL);
         [
           'query', 'sort', 'amount', 'page', 'byids'

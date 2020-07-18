@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-polygon.js
  *
@@ -9,7 +8,6 @@
 export default {
   name: 'polygon',
   async init (S) {
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const {$, importLocale} = S, // {svgcontent}

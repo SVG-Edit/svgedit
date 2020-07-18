@@ -1,11 +1,9 @@
-/* eslint-disable import/no-anonymous-default-export */
 // TODO: Might add support for "exportImage" custom
 //   handler as in "ext-server_opensave.js" (and in savefile.php)
 
 export default {
   name: 'php_savefile',
   init ({$}) {
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const {
       curConfig: {extPath},

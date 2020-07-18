@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-server_moinsave.js
  *
@@ -14,7 +13,6 @@ export default {
   name: 'server_moinsave',
   async init ({$, encode64, importLocale}) {
     const strings = await importLocale();
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const saveSvgAction = '/+modify';
@@ -30,7 +28,6 @@ export default {
     svgEditor.setCustomHandlers({
       async save (win, data) {
         const svg = '<?xml version="1.0"?>\n' + data;
-        // eslint-disable-next-line node/no-unsupported-features/node-builtins
         const {pathname} = new URL(location);
         const name = pathname.replace(/\/+get\//, '');
         const svgData = encode64(svg);

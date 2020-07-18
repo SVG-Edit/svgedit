@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-star.js
  *
@@ -9,7 +8,6 @@
 export default {
   name: 'star',
   async init (S) {
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
 

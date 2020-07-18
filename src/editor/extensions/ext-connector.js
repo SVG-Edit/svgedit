@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /* eslint-disable unicorn/no-fn-reference-in-iterator */
 /**
  * @file ext-connector.js
@@ -12,7 +11,6 @@
 export default {
   name: 'connector',
   async init (S) {
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const {getElem} = svgCanvas;

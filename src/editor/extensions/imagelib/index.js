@@ -1,4 +1,3 @@
-/* eslint-disable import/unambiguous */
 /* globals jQuery */
 const $ = jQuery;
 $('a').click(function () {

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-arrows.js
  *
@@ -12,7 +11,6 @@ export default {
   name: 'arrows',
   async init (S) {
     const strings = await S.importLocale();
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
     const // {svgcontent} = S,

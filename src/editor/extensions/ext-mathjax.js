@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /* globals MathJax */
 /**
  * @file ext-mathjax.js
@@ -15,7 +14,6 @@ export default {
   name: 'mathjax',
   async init ({$, importLocale}) {
     const strings = await importLocale();
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
 

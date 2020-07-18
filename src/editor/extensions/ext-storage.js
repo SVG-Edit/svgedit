@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-storage.js
  *
@@ -23,7 +22,6 @@
 export default {
   name: 'storage',
   init ({$}) {
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const svgCanvas = svgEditor.canvas;
 
@@ -168,7 +166,6 @@ export default {
     return {
       name: 'storage',
       async langReady ({importLocale}) {
-        // eslint-disable-next-line node/no-unsupported-features/node-builtins
         const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
 
         const confirmSetStorage = await importLocale();

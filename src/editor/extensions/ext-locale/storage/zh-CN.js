@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 export default {
   message: '默认情况下, SVG-Edit 在本地保存配置参数和画布内容. 如果基于隐私考虑, ' +
   '您可以勾选以下选项修改配置.',

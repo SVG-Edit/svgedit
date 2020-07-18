@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-foreignobject.js
  *
@@ -11,7 +10,6 @@
 export default {
   name: 'foreignobject',
   async init (S) {
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const {$, text2xml, NS, importLocale} = S;
     const svgCanvas = svgEditor.canvas;

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-closepath.js
  *
@@ -15,7 +14,6 @@ export default {
   name: 'closepath',
   async init ({importLocale, $}) {
     const strings = await importLocale();
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     let selElems;
     const updateButton = function (path) {

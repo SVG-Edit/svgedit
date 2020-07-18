@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 /**
  * @file ext-shapes.js
  *
@@ -11,7 +10,6 @@ export default {
   name: 'shapes',
   async init ({$, importLocale}) {
     const strings = await importLocale();
-    // eslint-disable-next-line consistent-this
     const svgEditor = this;
     const canv = svgEditor.canvas;
     const svgroot = canv.getRootElem();

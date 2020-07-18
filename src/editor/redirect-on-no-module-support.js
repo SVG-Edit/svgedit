@@ -1,4 +1,3 @@
-/* eslint-disable import/unambiguous */
 // This file should only load if the user's browser doesn't support ESM
 // This file will be stripped from the non-modular versions
 
