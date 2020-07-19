@@ -158,7 +158,6 @@ export class Drawing {
       return this.svgElem_.querySelector('#' + id);
     }
     // jQuery lookup: twice as slow as xpath in FF
-    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
     return $(this.svgElem_).find('[id=' + id + ']')[0];
   }
 

@@ -193,7 +193,6 @@ function jQueryContextMenu ($) {
         if (o !== undefined) {
           const d = o.split(',');
           for (const href of d) {
-            // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
             $(this).find('A[href="' + href + '"]').parent().addClass('disabled');
           }
         }
@@ -217,7 +216,6 @@ function jQueryContextMenu ($) {
         if (o !== undefined) {
           const d = o.split(',');
           for (const href of d) {
-            // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
             $(this).find('A[href="' + href + '"]').parent().removeClass('disabled');
           }
         }

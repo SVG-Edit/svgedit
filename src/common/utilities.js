@@ -1220,7 +1220,6 @@ export const getElem = (supportsSelectors())
     }
     : function (id) {
       // jQuery lookup: twice as slow as xpath in FF
-      // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
       return $(svgroot_).find('[id=' + id + ']')[0];
     };
 

@@ -8,7 +8,10 @@
 * @param {PlainObject} [strings.cancel]
 * @returns {external:jQuery}
 */
-export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cancel'}) {
+export default function jQueryPluginDBox ($, {
+  ok: okString = 'Ok',
+  cancel: cancelString = 'Cancel'
+} = {}) {
   // This sets up alternative dialog boxes. They mostly work the same way as
   // their UI counterparts, expect instead of returning the result, a callback
   // needs to be included that returns the result as its first parameter.
@@ -72,11 +75,11 @@ export default function jQueryPluginDBox ($, strings = {ok: 'Ok', cancel: 'Cance
       .toggleClass('prompt', (type === 'prompt'));
     btnHolder.empty();
 
-    const ok = $('<input type="button" data-ok="" value="' + strings.ok + '">').appendTo(btnHolder);
+    const ok = $('<input type="button" data-ok="" value="' + okString + '">').appendTo(btnHolder);
 
     return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
       if (type !== 'alert') {
-        $('<input type="button" value="' + strings.cancel + '">')
+        $('<input type="button" value="' + cancelString + '">')
           .appendTo(btnHolder)
           .click(function () {
             box.hide();

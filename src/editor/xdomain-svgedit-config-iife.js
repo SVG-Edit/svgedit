@@ -4829,7 +4829,6 @@
     }, 9, null).singleNodeValue;
   } : function (id) {
     // jQuery lookup: twice as slow as xpath in FF
-    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
     return $$1(svgroot_).find('[id=' + id + ']')[0];
   };
   /**
@@ -5398,10 +5397,10 @@
   * @param {PlainObject} [strings.cancel]
   * @returns {external:jQuery}
   */
-  function jQueryPluginDBox($, strings = {
-    ok: 'Ok',
-    cancel: 'Cancel'
-  }) {
+  function jQueryPluginDBox($, {
+    ok: okString = 'Ok',
+    cancel: cancelString = 'Cancel'
+  } = {}) {
     // This sets up alternative dialog boxes. They mostly work the same way as
     // their UI counterparts, expect instead of returning the result, a callback
     // needs to be included that returns the result as its first parameter.
@@ -5466,11 +5465,11 @@
     function dbox(type, msg, defaultVal, opts, changeListener, checkbox) {
       dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>').toggleClass('prompt', type === 'prompt');
       btnHolder.empty();
-      const ok = $('<input type="button" data-ok="" value="' + strings.ok + '">').appendTo(btnHolder);
+      const ok = $('<input type="button" data-ok="" value="' + okString + '">').appendTo(btnHolder);
       return new Promise((resolve, reject) => {
         // eslint-disable-line promise/avoid-new
         if (type !== 'alert') {
-          $('<input type="button" value="' + strings.cancel + '">').appendTo(btnHolder).click(function () {
+          $('<input type="button" value="' + cancelString + '">').appendTo(btnHolder).click(function () {
             box.hide();
             resolve(false);
           });
@@ -9931,7 +9930,6 @@
         // querySelector lookup
         return this.svgElem_.querySelector('#' + id);
       } // jQuery lookup: twice as slow as xpath in FF
-      // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 
 
       return $$6(this.svgElem_).find('[id=' + id + ']')[0];
@@ -23752,7 +23750,6 @@
             const d = o.split(',');
 
             for (const href of d) {
-              // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
               $(this).find('A[href="' + href + '"]').parent().addClass('disabled');
             }
           }
@@ -23778,7 +23775,6 @@
             const d = o.split(',');
 
             for (const href of d) {
-              // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
               $(this).find('A[href="' + href + '"]').parent().removeClass('disabled');
             }
           }
@@ -26166,7 +26162,6 @@
 
 
         function radioClicked(e) {
-          // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
           $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
           setColorMode.call(that, e.target.value);
         }
@@ -34418,11 +34413,8 @@
       let tool;
       const itool = curConfig.initTool,
             container = $$c('#tools_left, #svg_editor .tools_flyout'),
-
-      /* eslint-disable unicorn/no-fn-reference-in-iterator */
-      preTool = container.find('#tool_' + itool),
+            preTool = container.find('#tool_' + itool),
             regTool = container.find('#' + itool);
-      /* eslint-enable unicorn/no-fn-reference-in-iterator */
 
       if (preTool.length) {
         tool = preTool;

@@ -2218,10 +2218,10 @@ var SvgCanvas = (function () {
   * @param {PlainObject} [strings.cancel]
   * @returns {external:jQuery}
   */
-  function jQueryPluginDBox($, strings = {
-    ok: 'Ok',
-    cancel: 'Cancel'
-  }) {
+  function jQueryPluginDBox($, {
+    ok: okString = 'Ok',
+    cancel: cancelString = 'Cancel'
+  } = {}) {
     // This sets up alternative dialog boxes. They mostly work the same way as
     // their UI counterparts, expect instead of returning the result, a callback
     // needs to be included that returns the result as its first parameter.
@@ -2286,11 +2286,11 @@ var SvgCanvas = (function () {
     function dbox(type, msg, defaultVal, opts, changeListener, checkbox) {
       dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>').toggleClass('prompt', type === 'prompt');
       btnHolder.empty();
-      const ok = $('<input type="button" data-ok="" value="' + strings.ok + '">').appendTo(btnHolder);
+      const ok = $('<input type="button" data-ok="" value="' + okString + '">').appendTo(btnHolder);
       return new Promise((resolve, reject) => {
         // eslint-disable-line promise/avoid-new
         if (type !== 'alert') {
-          $('<input type="button" value="' + strings.cancel + '">').appendTo(btnHolder).click(function () {
+          $('<input type="button" value="' + cancelString + '">').appendTo(btnHolder).click(function () {
             box.hide();
             resolve(false);
           });
@@ -4635,7 +4635,6 @@ var SvgCanvas = (function () {
     }, 9, null).singleNodeValue;
   } : function (id) {
     // jQuery lookup: twice as slow as xpath in FF
-    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
     return $$1(svgroot_).find('[id=' + id + ']')[0];
   };
   /**
@@ -9336,7 +9335,6 @@ var SvgCanvas = (function () {
         // querySelector lookup
         return this.svgElem_.querySelector('#' + id);
       } // jQuery lookup: twice as slow as xpath in FF
-      // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 
 
       return $$5(this.svgElem_).find('[id=' + id + ']')[0];
