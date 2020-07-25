@@ -22,7 +22,7 @@ export const HistoryEventTypes = {
 /**
 * Base class for commands.
 */
-class Command {
+export class Command {
   /**
   * @returns {string}
   */
@@ -434,7 +434,7 @@ export class BatchCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      this.stack.forEach((stackItem) => {
+      this.stack.reverse().forEach((stackItem) => {
         console.assert(stackItem, 'stack item should not be null');
         stackItem && stackItem.unapply(handler);
       });
