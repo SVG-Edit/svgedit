@@ -1,8 +1,6 @@
 var svgEditorExtension_connector = (function () {
   'use strict';
 
-  /* eslint-disable unicorn/no-fn-reference-in-iterator */
-
   /**
    * @file ext-connector.js
    *

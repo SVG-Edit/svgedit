@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.svgEditor = factory());
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.svgEditor = factory());
 }(this, (function () { 'use strict';
 
   // http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
@@ -4832,7 +4832,7 @@
     }, 9, null).singleNodeValue;
   } : function (id) {
     // jQuery lookup: twice as slow as xpath in FF
-    return $$1(svgroot_).find('[id=' + id + ']')[0];
+    return $$1(svgroot_).find(`[id=${id}]`)[0];
   };
   /**
   * Assigns multiple attributes to an element.
@@ -5727,7 +5727,6 @@
    * @implements {module:history.HistoryCommand}
   */
 
-
   class MoveElementCommand extends Command {
     /**
     * @param {Element} elem - The DOM element that was moved
@@ -6057,7 +6056,7 @@
 
     unapply(handler) {
       super.unapply(handler, () => {
-        this.stack.forEach(stackItem => {
+        this.stack.reverse().forEach(stackItem => {
           console.assert(stackItem, 'stack item should not be null');
           stackItem && stackItem.unapply(handler);
         });
@@ -6288,6 +6287,7 @@
   var hstry = /*#__PURE__*/Object.freeze({
     __proto__: null,
     HistoryEventTypes: HistoryEventTypes,
+    Command: Command,
     MoveElementCommand: MoveElementCommand,
     InsertElementCommand: InsertElementCommand,
     RemoveElementCommand: RemoveElementCommand,
@@ -12959,7 +12959,7 @@
 
   const getSelectorManager = () => selectorManager_;
 
-  /* eslint-disable indent, unicorn/no-fn-reference-in-iterator */
+  /* eslint-disable indent */
   let $$a = jQueryPluginSVG(jQuery);
   const {
     MoveElementCommand: MoveElementCommand$1,
@@ -27227,7 +27227,7 @@
     return $;
   };
 
-  /* eslint-disable unicorn/no-fn-reference-in-iterator */
+  /* globals jQuery */
   const $$b = jQuery;
   let langParam;
   /**
