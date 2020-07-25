@@ -62,7 +62,7 @@
     "prep": "run-s prep-no-core-rollup rollup",
     "prepublishOnly": "run-s license-badges copy prep build-docs",
     "cypress:open-no-start": "cypress open",
-    "cy:instrument": "rm -rf instrumented && cp -r src instrumented && nyc instrument --compact false src instrumented",
+    "cy:instrument": "rimraf instrumented && cp -r src instrumented && nyc instrument --compact false src instrumented",
     "cypress:open": "run-p start cypress:open-no-start",
     "open-tests": "run-s cy:instrument cypress:open",
     "cypress:merge": "mochawesome-merge \"cypress/results/mochaw*.json\" > mochawesome.json && marge mochawesome.json && mbg --file ./mochawesome.json --badge_output badges/tests-badge.svg",

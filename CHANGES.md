@@ -72,6 +72,7 @@
 - Refactoring: Move `build-html` to `build` directory
 - Refactoring: Add favicon no-op to suppress favicon 404s until
   loaded dynamically (might make configurable in future)
+- Refactoring: create a src folder and subfolders for svgcanvas, editor, common and externals.
 - Linting (ESLint): Simplify regexes
 - Linting (ESLint): Replace `innerHTML` with `textContent` from old demo
 - Linting (ESLint): Update as per latest ash-nazg
