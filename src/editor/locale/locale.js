@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-fn-reference-in-iterator */
 /* globals jQuery */
 /**
  * Localizing script for SVG-edit UI.

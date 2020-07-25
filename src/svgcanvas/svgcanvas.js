@@ -1,4 +1,4 @@
-/* eslint-disable indent, unicorn/no-fn-reference-in-iterator */
+/* eslint-disable indent */
 /* globals jQuery, jsPDF */
 /**
  * Numerous tools for working with the editor's "canvas".

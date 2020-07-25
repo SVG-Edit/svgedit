@@ -360,6 +360,7 @@ module.exports = {
       ignoreRegExpLiterals: true
     } */
     'unicorn/prefer-query-selector': 'off',
+    'unicorn/no-fn-reference-in-iterator': 'off',
     'unicorn/prefer-node-append': 'off',
     'unicorn/no-zero-fractions': 'off',
     'unicorn/prefer-number-properties': 'off',
