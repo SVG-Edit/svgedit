@@ -79,7 +79,7 @@
     "test-no-cov-no-core-rollup": "run-s prep-no-core-rollup test-only",
     "test-no-cov": "run-s prep test-only",
     "test-no-core-rollup": "run-s instrument test-no-cov-no-core-rollup",
-    "test": "run-s instrument test-no-cov"
+    "test": "run-s cy:instrument test-no-cov"
   },
   "nyc": {
     "exclude": [
