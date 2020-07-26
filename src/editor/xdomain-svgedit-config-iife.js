@@ -20866,14 +20866,10 @@
     * @returns {void}
     */
 
+          if (elem.children) elem.children.forEach(child => checkIDs(child));
+        }
 
-    this.pasteElements = function (type, x, y) {
-      var clipb = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID));
-      if (!clipb) return;
-      var len = clipb.length;
-      if (!len) return;
-      var pasted = [];
-      var batchCmd = new BatchCommand$1('Paste elements'); // const drawing = getCurrentDrawing();
+        clipb.forEach(elem => checkIDs(elem)); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
 
       /**
       * @typedef {PlainObject<string, string>} module:svgcanvas.ChangedIDs
