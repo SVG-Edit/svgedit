@@ -142,7 +142,7 @@ if (config) {
 // Array with width/height of canvas
 const {dimensions} = curConfig;
 
-const canvas = this; // eslint-disable-line consistent-this
+const canvas = this;
 
 // "document" element associated with the container (same as window.document using default svg-editor.js)
 // NOTE: This is not actually a SVG document, but an HTML document.
@@ -4287,7 +4287,7 @@ const convertGradients = this.convertGradients = function (elem) {
   }
 
   elems.each(function () {
-    const grad = this; // eslint-disable-line consistent-this
+    const grad = this;
     if ($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
       // TODO: Support more than one element with this ref by duplicating parent grad
       const fillStrokeElems = $(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
@@ -4538,7 +4538,7 @@ this.setSvgString = function (xmlString, preventUndo) {
 
     // change image href vals if possible
     content.find('image').each(function () {
-      const image = this; // eslint-disable-line consistent-this
+      const image = this;
       preventClickDefault(image);
       const val = getHref(this);
       if (val) {
@@ -6917,7 +6917,7 @@ this.moveUpDownSelected = function (dir) {
       }
       return true;
     }
-    closest = this; // eslint-disable-line consistent-this
+    closest = this;
     return false;
   });
   if (!closest) { return; }

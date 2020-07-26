@@ -897,7 +897,7 @@ export class Path {
     this.elem = elem;
     this.segs = [];
     this.selected_pts = [];
-    path = this; // eslint-disable-line consistent-this
+    path = this;
 
     this.init();
   }
@@ -2152,7 +2152,7 @@ export const pathActions = (function () {
       } else {
         path.selected_pts = [];
         path.eachSeg(function (i) {
-          const seg = this; // eslint-disable-line consistent-this
+          const seg = this;
           if (!seg.next && !seg.prev) { return; }
 
           // const {item} = seg;

@@ -1,4 +1,4 @@
-/* eslint-disable import/unambiguous */
+/* eslint-disable import/unambiguous, max-len */
 /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
     SVGPathSegMovetoRel, SVGPathSegLinetoRel, SVGPathSegLinetoAbs,
     SVGPathSegLinetoHorizontalRel, SVGPathSegLinetoHorizontalAbs,
@@ -596,7 +596,7 @@ if (!('SVGPathSegList' in window) || !('appendItem' in window.SVGPathSegList.pro
         return [];
       }
 
-      const owningPathSegList = this; // eslint-disable-line consistent-this
+      const owningPathSegList = this;
 
       class Builder {
         constructor () {

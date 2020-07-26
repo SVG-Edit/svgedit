@@ -328,6 +328,7 @@ export default function jQueryPluginJGraduate ($) {
       }
 
       $this.addClass('jGraduate_Picker');
+      /* eslint-disable max-len */
       $this.html(
         '<ul class="jGraduate_tabs">' +
           '<li class="jGraduate_tab_color jGraduate_tab_current" data-type="col">Solid Color</li>' +
@@ -434,7 +435,7 @@ export default function jQueryPluginJGraduate ($) {
           '<input type="button" id="' + id + '_jGraduate_Cancel" class="jGraduate_Cancel" value="Cancel"/>' +
         '</div>'
       );
-
+      /* eslint-enable max-len */
       // --------------
       // Set up all the SVG elements (the gradient, stops and rectangle)
       const MAX = 256,
@@ -689,7 +690,7 @@ export default function jQueryPluginJGraduate ($) {
           return false;
         }).data('stop', stop).data('bg', pathbg).dblclick(function () {
           $('div.jGraduate_LightBox').show();
-          const colorhandle = this; // eslint-disable-line consistent-this
+          const colorhandle = this;
           let stopOpacity = Number(stop.getAttribute('stop-opacity')) || 1;
           let stopColor = stop.getAttribute('stop-color') || 1;
           let thisAlpha = (Number.parseFloat(stopOpacity) * 255).toString(16);

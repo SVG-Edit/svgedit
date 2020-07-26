@@ -1,6 +1,42 @@
 var svgEditorExtension_arrows = (function () {
   'use strict';
 
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
   /**
    * @file ext-arrows.js
    *
@@ -11,361 +47,350 @@ var svgEditorExtension_arrows = (function () {
    */
   var extArrows = {
     name: 'arrows',
+    init: function init(S) {
+      var _this = this;
 
-    async init(S) {
-      const strings = await S.importLocale();
-      const svgEditor = this;
-      const svgCanvas = svgEditor.canvas;
-      const // {svgcontent} = S,
-      addElem = svgCanvas.addSVGElementFromJson,
-            {
-        nonce,
-        $
-      } = S,
-            prefix = 'se_arrow_';
-      let selElems,
-          arrowprefix,
-          randomizeIds = S.randomize_ids;
-      /**
-      * @param {Window} win
-      * @param {!(string|Integer)} n
-      * @returns {void}
-      */
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        var strings, svgEditor, svgCanvas, addElem, nonce, $, prefix, selElems, arrowprefix, randomizeIds, setArrowNonce, unsetArrowNonce, pathdata, getLinked, showPanel, resetMarker, addMarker, setArrow, colorChanged, contextTools;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                colorChanged = function _colorChanged(elem) {
+                  var color = elem.getAttribute('stroke');
+                  var mtypes = ['start', 'mid', 'end'];
+                  var defs = svgCanvas.findDefs();
+                  $.each(mtypes, function (i, type) {
+                    var marker = getLinked(elem, 'marker-' + type);
 
-      function setArrowNonce(win, n) {
-        randomizeIds = true;
-        arrowprefix = prefix + n + '_';
-        pathdata.fw.id = arrowprefix + 'fw';
-        pathdata.bk.id = arrowprefix + 'bk';
-      }
-      /**
-      * @param {Window} win
-      * @returns {void}
-      */
+                    if (!marker) {
+                      return;
+                    }
 
+                    var curColor = $(marker).children().attr('fill');
+                    var curD = $(marker).children().attr('d');
 
-      function unsetArrowNonce(win) {
-        randomizeIds = false;
-        arrowprefix = prefix;
-        pathdata.fw.id = arrowprefix + 'fw';
-        pathdata.bk.id = arrowprefix + 'bk';
-      }
+                    if (curColor === color) {
+                      return;
+                    }
 
-      svgCanvas.bind('setnonce', setArrowNonce);
-      svgCanvas.bind('unsetnonce', unsetArrowNonce);
+                    var allMarkers = $(defs).find('marker');
+                    var newMarker = null; // Different color, check if already made
 
-      if (randomizeIds) {
-        arrowprefix = prefix + nonce + '_';
-      } else {
-        arrowprefix = prefix;
-      }
+                    allMarkers.each(function () {
+                      var attrs = $(this).children().attr(['fill', 'd']);
 
-      const pathdata = {
-        fw: {
-          d: 'm0,0l10,5l-10,5l5,-5l-5,-5z',
-          refx: 8,
-          id: arrowprefix + 'fw'
-        },
-        bk: {
-          d: 'm10,0l-10,5l10,5l-5,-5l5,-5z',
-          refx: 2,
-          id: arrowprefix + 'bk'
-        }
-      };
-      /**
-       * Gets linked element.
-       * @param {Element} elem
-       * @param {string} attr
-       * @returns {Element}
-      */
+                      if (attrs.fill === color && attrs.d === curD) {
+                        // Found another marker with this color and this path
+                        newMarker = this;
+                      }
+                    });
 
-      function getLinked(elem, attr) {
-        const str = elem.getAttribute(attr);
+                    if (!newMarker) {
+                      // Create a new marker with this color
+                      var lastId = marker.id;
+                      var dir = lastId.includes('_fw') ? 'fw' : 'bk';
+                      newMarker = addMarker(dir, type, arrowprefix + dir + allMarkers.length);
+                      $(newMarker).children().attr('fill', color);
+                    }
 
-        if (!str) {
-          return null;
-        }
+                    $(elem).attr('marker-' + type, 'url(#' + newMarker.id + ')'); // Check if last marker can be removed
 
-        const m = str.match(/\(#(.*)\)/); // const m = str.match(/\(#(?<id>.+)\)/);
-        // if (!m || !m.groups.id) {
+                    var remove = true;
+                    $(S.svgcontent).find('line, polyline, path, polygon').each(function () {
+                      var element = this;
+                      $.each(mtypes, function (j, mtype) {
+                        if ($(element).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
+                          remove = false;
+                          return remove;
+                        }
 
-        if (!m || m.length !== 2) {
-          return null;
-        }
+                        return undefined;
+                      });
 
-        return svgCanvas.getElem(m[1]); // return svgCanvas.getElem(m.groups.id);
-      }
-      /**
-      * @param {boolean} on
-      * @returns {void}
-      */
+                      if (!remove) {
+                        return false;
+                      }
+
+                      return undefined;
+                    }); // Not found, so can safely remove
+
+                    if (remove) {
+                      $(marker).remove();
+                    }
+                  });
+                };
+
+                setArrow = function _setArrow() {
+                  resetMarker();
+                  var type = this.value;
+
+                  if (type === 'none') {
+                    return;
+                  } // Set marker on element
 
 
-      function showPanel(on) {
-        $('#arrow_panel').toggle(on);
+                  var dir = 'fw';
 
-        if (on) {
-          const el = selElems[0];
-          const end = el.getAttribute('marker-end');
-          const start = el.getAttribute('marker-start');
-          const mid = el.getAttribute('marker-mid');
-          let val;
+                  if (type === 'mid_bk') {
+                    type = 'mid';
+                    dir = 'bk';
+                  } else if (type === 'both') {
+                    addMarker('bk', type);
+                    svgCanvas.changeSelectedAttribute('marker-start', 'url(#' + pathdata.bk.id + ')');
+                    type = 'end';
+                    dir = 'fw';
+                  } else if (type === 'start') {
+                    dir = 'bk';
+                  }
 
-          if (end && start) {
-            val = 'both';
-          } else if (end) {
-            val = 'end';
-          } else if (start) {
-            val = 'start';
-          } else if (mid) {
-            val = 'mid';
+                  addMarker(dir, type);
+                  svgCanvas.changeSelectedAttribute('marker-' + type, 'url(#' + pathdata[dir].id + ')');
+                  svgCanvas.call('changed', selElems);
+                };
 
-            if (mid.includes('bk')) {
-              val = 'mid_bk';
+                addMarker = function _addMarker(dir, type, id) {
+                  // TODO: Make marker (or use?) per arrow type, since refX can be different
+                  id = id || arrowprefix + dir;
+                  var data = pathdata[dir];
+
+                  if (type === 'mid') {
+                    data.refx = 5;
+                  }
+
+                  var marker = svgCanvas.getElem(id);
+
+                  if (!marker) {
+                    marker = addElem({
+                      element: 'marker',
+                      attr: {
+                        viewBox: '0 0 10 10',
+                        id: id,
+                        refY: 5,
+                        markerUnits: 'strokeWidth',
+                        markerWidth: 5,
+                        markerHeight: 5,
+                        orient: 'auto',
+                        style: 'pointer-events:none' // Currently needed for Opera
+
+                      }
+                    });
+                    var arrow = addElem({
+                      element: 'path',
+                      attr: {
+                        d: data.d,
+                        fill: '#000000'
+                      }
+                    });
+                    marker.append(arrow);
+                    svgCanvas.findDefs().append(marker);
+                  }
+
+                  marker.setAttribute('refX', data.refx);
+                  return marker;
+                };
+
+                resetMarker = function _resetMarker() {
+                  var el = selElems[0];
+                  el.removeAttribute('marker-start');
+                  el.removeAttribute('marker-mid');
+                  el.removeAttribute('marker-end');
+                };
+
+                showPanel = function _showPanel(on) {
+                  $('#arrow_panel').toggle(on);
+
+                  if (on) {
+                    var el = selElems[0];
+                    var end = el.getAttribute('marker-end');
+                    var start = el.getAttribute('marker-start');
+                    var mid = el.getAttribute('marker-mid');
+                    var val;
+
+                    if (end && start) {
+                      val = 'both';
+                    } else if (end) {
+                      val = 'end';
+                    } else if (start) {
+                      val = 'start';
+                    } else if (mid) {
+                      val = 'mid';
+
+                      if (mid.includes('bk')) {
+                        val = 'mid_bk';
+                      }
+                    }
+
+                    if (!start && !mid && !end) {
+                      val = 'none';
+                    }
+
+                    $('#arrow_list').val(val);
+                  }
+                };
+
+                getLinked = function _getLinked(elem, attr) {
+                  var str = elem.getAttribute(attr);
+
+                  if (!str) {
+                    return null;
+                  }
+
+                  var m = str.match(/\(#(.*)\)/); // const m = str.match(/\(#(?<id>.+)\)/);
+                  // if (!m || !m.groups.id) {
+
+                  if (!m || m.length !== 2) {
+                    return null;
+                  }
+
+                  return svgCanvas.getElem(m[1]); // return svgCanvas.getElem(m.groups.id);
+                };
+
+                unsetArrowNonce = function _unsetArrowNonce(win) {
+                  randomizeIds = false;
+                  arrowprefix = prefix;
+                  pathdata.fw.id = arrowprefix + 'fw';
+                  pathdata.bk.id = arrowprefix + 'bk';
+                };
+
+                setArrowNonce = function _setArrowNonce(win, n) {
+                  randomizeIds = true;
+                  arrowprefix = prefix + n + '_';
+                  pathdata.fw.id = arrowprefix + 'fw';
+                  pathdata.bk.id = arrowprefix + 'bk';
+                };
+
+                _context2.next = 10;
+                return S.importLocale();
+
+              case 10:
+                strings = _context2.sent;
+                svgEditor = _this;
+                svgCanvas = svgEditor.canvas;
+                // {svgcontent} = S,
+                addElem = svgCanvas.addSVGElementFromJson, nonce = S.nonce, $ = S.$, prefix = 'se_arrow_';
+                randomizeIds = S.randomize_ids;
+                /**
+                * @param {Window} win
+                * @param {!(string|Integer)} n
+                * @returns {void}
+                */
+
+                svgCanvas.bind('setnonce', setArrowNonce);
+                svgCanvas.bind('unsetnonce', unsetArrowNonce);
+
+                if (randomizeIds) {
+                  arrowprefix = prefix + nonce + '_';
+                } else {
+                  arrowprefix = prefix;
+                }
+
+                pathdata = {
+                  fw: {
+                    d: 'm0,0l10,5l-10,5l5,-5l-5,-5z',
+                    refx: 8,
+                    id: arrowprefix + 'fw'
+                  },
+                  bk: {
+                    d: 'm10,0l-10,5l10,5l-5,-5l5,-5z',
+                    refx: 2,
+                    id: arrowprefix + 'bk'
+                  }
+                };
+                /**
+                 * Gets linked element.
+                 * @param {Element} elem
+                 * @param {string} attr
+                 * @returns {Element}
+                */
+
+                contextTools = [{
+                  type: 'select',
+                  panel: 'arrow_panel',
+                  id: 'arrow_list',
+                  defval: 'none',
+                  events: {
+                    change: setArrow
+                  }
+                }];
+                return _context2.abrupt("return", {
+                  name: strings.name,
+                  context_tools: strings.contextTools.map(function (contextTool, i) {
+                    return Object.assign(contextTools[i], contextTool);
+                  }),
+                  callback: function callback() {
+                    $('#arrow_panel').hide(); // Set ID so it can be translated in locale file
+
+                    $('#arrow_list option')[0].id = 'connector_no_arrow';
+                  },
+                  addLangData: function addLangData(_ref) {
+                    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                      var lang, importLocale, _yield$importLocale, langList;
+
+                      return regeneratorRuntime.wrap(function _callee$(_context) {
+                        while (1) {
+                          switch (_context.prev = _context.next) {
+                            case 0:
+                              lang = _ref.lang, importLocale = _ref.importLocale;
+                              _context.next = 3;
+                              return importLocale();
+
+                            case 3:
+                              _yield$importLocale = _context.sent;
+                              langList = _yield$importLocale.langList;
+                              return _context.abrupt("return", {
+                                data: langList
+                              });
+
+                            case 6:
+                            case "end":
+                              return _context.stop();
+                          }
+                        }
+                      }, _callee);
+                    }))();
+                  },
+                  selectedChanged: function selectedChanged(opts) {
+                    // Use this to update the current selected elements
+                    selElems = opts.elems;
+                    var markerElems = ['line', 'path', 'polyline', 'polygon'];
+                    var i = selElems.length;
+
+                    while (i--) {
+                      var elem = selElems[i];
+
+                      if (elem && markerElems.includes(elem.tagName)) {
+                        if (opts.selectedElement && !opts.multiselected) {
+                          showPanel(true);
+                        } else {
+                          showPanel(false);
+                        }
+                      } else {
+                        showPanel(false);
+                      }
+                    }
+                  },
+                  elementChanged: function elementChanged(opts) {
+                    var elem = opts.elems[0];
+
+                    if (elem && (elem.getAttribute('marker-start') || elem.getAttribute('marker-mid') || elem.getAttribute('marker-end'))) {
+                      // const start = elem.getAttribute('marker-start');
+                      // const mid = elem.getAttribute('marker-mid');
+                      // const end = elem.getAttribute('marker-end');
+                      // Has marker, so see if it should match color
+                      colorChanged(elem);
+                    }
+                  }
+                });
+
+              case 21:
+              case "end":
+                return _context2.stop();
             }
           }
-
-          if (!start && !mid && !end) {
-            val = 'none';
-          }
-
-          $('#arrow_list').val(val);
-        }
-      }
-      /**
-      *
-      * @returns {void}
-      */
-
-
-      function resetMarker() {
-        const el = selElems[0];
-        el.removeAttribute('marker-start');
-        el.removeAttribute('marker-mid');
-        el.removeAttribute('marker-end');
-      }
-      /**
-      * @param {"bk"|"fw"} dir
-      * @param {"both"|"mid"|"end"|"start"} type
-      * @param {string} id
-      * @returns {Element}
-      */
-
-
-      function addMarker(dir, type, id) {
-        // TODO: Make marker (or use?) per arrow type, since refX can be different
-        id = id || arrowprefix + dir;
-        const data = pathdata[dir];
-
-        if (type === 'mid') {
-          data.refx = 5;
-        }
-
-        let marker = svgCanvas.getElem(id);
-
-        if (!marker) {
-          marker = addElem({
-            element: 'marker',
-            attr: {
-              viewBox: '0 0 10 10',
-              id,
-              refY: 5,
-              markerUnits: 'strokeWidth',
-              markerWidth: 5,
-              markerHeight: 5,
-              orient: 'auto',
-              style: 'pointer-events:none' // Currently needed for Opera
-
-            }
-          });
-          const arrow = addElem({
-            element: 'path',
-            attr: {
-              d: data.d,
-              fill: '#000000'
-            }
-          });
-          marker.append(arrow);
-          svgCanvas.findDefs().append(marker);
-        }
-
-        marker.setAttribute('refX', data.refx);
-        return marker;
-      }
-      /**
-      *
-      * @returns {void}
-      */
-
-
-      function setArrow() {
-        resetMarker();
-        let type = this.value;
-
-        if (type === 'none') {
-          return;
-        } // Set marker on element
-
-
-        let dir = 'fw';
-
-        if (type === 'mid_bk') {
-          type = 'mid';
-          dir = 'bk';
-        } else if (type === 'both') {
-          addMarker('bk', type);
-          svgCanvas.changeSelectedAttribute('marker-start', 'url(#' + pathdata.bk.id + ')');
-          type = 'end';
-          dir = 'fw';
-        } else if (type === 'start') {
-          dir = 'bk';
-        }
-
-        addMarker(dir, type);
-        svgCanvas.changeSelectedAttribute('marker-' + type, 'url(#' + pathdata[dir].id + ')');
-        svgCanvas.call('changed', selElems);
-      }
-      /**
-      * @param {Element} elem
-      * @returns {void}
-      */
-
-
-      function colorChanged(elem) {
-        const color = elem.getAttribute('stroke');
-        const mtypes = ['start', 'mid', 'end'];
-        const defs = svgCanvas.findDefs();
-        $.each(mtypes, function (i, type) {
-          const marker = getLinked(elem, 'marker-' + type);
-
-          if (!marker) {
-            return;
-          }
-
-          const curColor = $(marker).children().attr('fill');
-          const curD = $(marker).children().attr('d');
-
-          if (curColor === color) {
-            return;
-          }
-
-          const allMarkers = $(defs).find('marker');
-          let newMarker = null; // Different color, check if already made
-
-          allMarkers.each(function () {
-            const attrs = $(this).children().attr(['fill', 'd']);
-
-            if (attrs.fill === color && attrs.d === curD) {
-              // Found another marker with this color and this path
-              newMarker = this; // eslint-disable-line consistent-this
-            }
-          });
-
-          if (!newMarker) {
-            // Create a new marker with this color
-            const lastId = marker.id;
-            const dir = lastId.includes('_fw') ? 'fw' : 'bk';
-            newMarker = addMarker(dir, type, arrowprefix + dir + allMarkers.length);
-            $(newMarker).children().attr('fill', color);
-          }
-
-          $(elem).attr('marker-' + type, 'url(#' + newMarker.id + ')'); // Check if last marker can be removed
-
-          let remove = true;
-          $(S.svgcontent).find('line, polyline, path, polygon').each(function () {
-            const element = this; // eslint-disable-line consistent-this
-
-            $.each(mtypes, function (j, mtype) {
-              if ($(element).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
-                remove = false;
-                return remove;
-              }
-
-              return undefined;
-            });
-
-            if (!remove) {
-              return false;
-            }
-
-            return undefined;
-          }); // Not found, so can safely remove
-
-          if (remove) {
-            $(marker).remove();
-          }
-        });
-      }
-
-      const contextTools = [{
-        type: 'select',
-        panel: 'arrow_panel',
-        id: 'arrow_list',
-        defval: 'none',
-        events: {
-          change: setArrow
-        }
-      }];
-      return {
-        name: strings.name,
-        context_tools: strings.contextTools.map((contextTool, i) => {
-          return Object.assign(contextTools[i], contextTool);
-        }),
-
-        callback() {
-          $('#arrow_panel').hide(); // Set ID so it can be translated in locale file
-
-          $('#arrow_list option')[0].id = 'connector_no_arrow';
-        },
-
-        async addLangData({
-          lang,
-          importLocale
-        }) {
-          const {
-            langList
-          } = await importLocale();
-          return {
-            data: langList
-          };
-        },
-
-        selectedChanged(opts) {
-          // Use this to update the current selected elements
-          selElems = opts.elems;
-          const markerElems = ['line', 'path', 'polyline', 'polygon'];
-          let i = selElems.length;
-
-          while (i--) {
-            const elem = selElems[i];
-
-            if (elem && markerElems.includes(elem.tagName)) {
-              if (opts.selectedElement && !opts.multiselected) {
-                showPanel(true);
-              } else {
-                showPanel(false);
-              }
-            } else {
-              showPanel(false);
-            }
-          }
-        },
-
-        elementChanged(opts) {
-          const elem = opts.elems[0];
-
-          if (elem && (elem.getAttribute('marker-start') || elem.getAttribute('marker-mid') || elem.getAttribute('marker-end'))) {
-            // const start = elem.getAttribute('marker-start');
-            // const mid = elem.getAttribute('marker-mid');
-            // const end = elem.getAttribute('marker-end');
-            // Has marker, so see if it should match color
-            colorChanged(elem);
-          }
-        }
-
-      };
+        }, _callee2);
+      }))();
     }
-
   };
 
   return extArrows;

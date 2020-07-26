@@ -10,7 +10,7 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=8.5.0"
+    "node": ">=10"
   },
   "scripts": {
     "add-release": "git submodule add --depth=1 -b \"release-v$npm_config_release\" -- https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$npm_config_release\"",
@@ -39,11 +39,6 @@
     "open": "run-p start open-no-start",
     "open-cov-no-start": "open-cli http://localhost:8000/coverage/",
     "open-cov": "run-p start open-cov-no-start",
-    "instrument:replace-html": "frs-replace \"../svgedit-config-es.js\" \"svgedit-config-es.js\" -i instrumented/svg-editor-es.html -o instrumented/svg-editor-es.html",
-    "instrument:replace-js": "frs-replace \"src/editor/svg-editor.js\" \"svg-editor.js\" -i svgedit-config-es.js -o instrumented/svgedit-config-es.js",
-    "instrument:copy-excluded": "node cypress/support/copy.js",
-    "copy-instrumented": "copyfiles -e \"**/*.js\" -u 1 \"src/editor/**/*\" instrumented && npm run instrument:replace-html && npm run instrument:replace-js && npm run instrument:copy-excluded",
-    "instrument": "rimraf instrumented && nyc instrument editor instrumented && npm run copy-instrumented",
     "report": "run-s report-no-mochawesome mochawesome-cli",
     "report-summary": "run-s report-text-summary mochawesome-cli-dot",
     "license-badge": "license-badger --uncategorizedLicenseTemplate \"\\${license} (\\${name} (\\${version}))\" --filteredTypes=nonempty --textTemplate \"License types\n(project, deps, and bundled devDeps)\" --packageJson --production badges/licenses-badge.svg",
@@ -54,17 +49,17 @@
     "copy": "copyfiles -f node_modules/load-stylesheets/dist/index-es.js src/external/load-stylesheets && copyfiles -f node_modules/jamilih/dist/jml-es.js editor/external/jamilih && copyfiles -f node_modules/query-result/esm/index.js editor/external/query-result/esm && copyfiles -f node_modules/qr-manipulation/dist/index-es.js editor/external/qr-manipulation/dist && copyfiles -f node_modules/stackblur-canvas/dist/stackblur-es.js editor/external/stackblur-canvas/dist && copyfiles -f node_modules/regenerator-runtime/runtime.js editor/external/regenerator-runtime && copyfiles -f \"node_modules/core-js-bundle//minified*\" editor/external/core-js-bundle && copyfiles -f \"node_modules/underscore/underscore-*\" editor/jspdf && copyfiles -f \"node_modules/deparam/dist/deparam.esm.js\" editor/external/deparam",
     "remark": "remark -q -f .",
     "build-html": "babel-node --plugins @babel/plugin-transform-modules-commonjs build/build-html.js",
-    "eslint-fix": "eslint --cache --fix --ext js,md,html .",
-    "eslint": "eslint --max-warnings 0 --cache --ext js,md,html .",
+    "eslint-fix": "eslint --fix --ext js,md,html src",
+    "eslint": "eslint --ext js,html src",
     "rollup": "rollup -c",
     "build-by-config": "rollup -c rollup-config.config.js",
     "prep-no-core-rollup": "run-s eslint build-html build-by-config",
     "prep": "run-s prep-no-core-rollup rollup",
     "prepublishOnly": "run-s license-badges copy prep build-docs",
     "cypress:open-no-start": "cypress open",
-    "cy:instrument": "rimraf instrumented && cp -r src instrumented && nyc instrument --compact false src instrumented",
+    "cypress:instrument": "rimraf instrumented && cp -r src instrumented && nyc instrument --compact false src instrumented",
     "cypress:open": "run-p start cypress:open-no-start",
-    "open-tests": "run-s cy:instrument cypress:open",
+    "open-tests": "run-s cypress:instrument cypress:open",
     "cypress:merge": "mochawesome-merge \"cypress/results/mochaw*.json\" > mochawesome.json && marge mochawesome.json && mbg --file ./mochawesome.json --badge_output badges/tests-badge.svg",
     "cypress:run-only": "rimraf \"cypress/results/mochaw*.json\" && rimraf \".nyc_output/*\" && cypress run",
     "cypress:run-no-badge": "run-s -c cypress:run-only cypress:merge",
@@ -78,10 +73,14 @@
     "test-only": "run-s -c test-only-no-report report",
     "test-no-cov-no-core-rollup": "run-s prep-no-core-rollup test-only",
     "test-no-cov": "run-s prep test-only",
-    "test-no-core-rollup": "run-s instrument test-no-cov-no-core-rollup",
-    "test": "run-s cy:instrument test-no-cov"
+    "test-no-core-rollup": "run-s cypress:instrument test-no-cov-no-core-rollup",
+    "test": "run-s cypress:instrument test-no-cov"
   },
   "nyc": {
+    "statements": 37.51,
+    "branches": 28.8,
+    "lines": 38.46,
+    "functions":  47.27,
     "exclude": [
       "src/external/**",
       "src/editor/jquery.min.js",
@@ -122,7 +121,13 @@
   },
   "homepage": "https://github.com/SVG-Edit/svgedit#readme",
   "browserslist": [
-    "> 2%"
+    ">0%",
+    "not Opera < 59",
+    "not IE < 12",
+    "not Chrome < 75",
+    "not FireFox < 68",
+    "not Safari < 10",
+    "not ios_saf < 10"
   ],
   "dependencies": {},
   "devDependencies": {

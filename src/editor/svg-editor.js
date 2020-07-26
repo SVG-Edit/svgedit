@@ -21,7 +21,6 @@ import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from '../common/brows
 
 // Until we split this into smaller files, this helps distinguish utilities
 //   from local methods
-// eslint-disable-next-line import/no-namespace
 import * as Utils from '../common/utilities.js';
 import {getTypeMap, convertUnit, isValidUnit} from '../common/units.js';
 import {
@@ -4124,7 +4123,7 @@ editor.init = function () {
     };
 
     $('#svg_editor').find('button, select, input:not(#text)').focus(function () {
-      inp = this; // eslint-disable-line consistent-this
+      inp = this;
       uiContext = 'toolbars';
       workarea.mousedown(unfocus);
     }).blur(function () {

@@ -35,53 +35,53 @@ This will return the icon (as jQuery object) with a given ID.
  * @copyright (c) 2009 Alexis Deveria
  * {@link http://a.deveria.com}
  * @example
-$(function () {
-  $.svgIcons('my_icon_set.svg'); // The SVG file that contains all icons
-  // No options have been set, so all icons will automatically be inserted
-  // into HTML elements that match the same IDs.
-});
-
-* @example
-$(function () {
-  // The SVG file that contains all icons
-  $.svgIcons('my_icon_set.svg', {
-    callback (icons) { // Custom callback function that sets click
-                  // events for each icon
-      $.each(icons, function (id, icon) {
-        icon.click(function () {
-          alert('You clicked on the icon with id ' + id);
-        });
-      });
-    }
+  $(function () {
+     $.svgIcons('my_icon_set.svg'); // The SVG file that contains all icons
+     // No options have been set, so all icons will automatically be inserted
+     // into HTML elements that match the same IDs.
   });
-});
 
-* @example
-$(function () {
-  // The SVGZ file that contains all icons
-  $.svgIcons('my_icon_set.svgz', {
-    w: 32,  // All icons will be 32px wide
-    h: 32,  // All icons will be 32px high
-    fallback_path: 'icons/',  // All fallback files can be found here
-    fallback: {
-      '#open_icon': 'open.png',  // The "open.png" will be appended to the
-                    // HTML element with ID "open_icon"
-      '#close_icon': 'close.png',
-      '#save_icon': 'save.png'
-    },
-    placement: {'.open_icon': 'open'}, // The "open" icon will be added
-                    // to all elements with class "open_icon"
-    resize: {
-      '#save_icon .svg_icon': 64  // The "save" icon will be resized to 64 x 64px
-    },
+  * @example
+  $(function () {
+     // The SVG file that contains all icons
+     $.svgIcons('my_icon_set.svg', {
+       callback (icons) { // Custom callback function that sets click
+         // events for each icon
+         $.each(icons, function (id, icon) {
+           icon.click(function () {
+             alert('You clicked on the icon with id ' + id); // eslint-disable-line no-alert
+           });
+         });
+       }
+     });
+   });
 
-    callback (icons) { // Sets background color for "close" icon
-      icons.close.css('background', 'red');
-    },
+  * @example
+   $(function () {
+     // The SVGZ file that contains all icons
+     $.svgIcons('my_icon_set.svgz', {
+       w: 32, // All icons will be 32px wide
+       h: 32, // All icons will be 32px high
+       fallback_path: 'icons/', // All fallback files can be found here
+       fallback: {
+         '#open_icon': 'open.png', // The "open.png" will be appended to the
+         // HTML element with ID "open_icon"
+         '#close_icon': 'close.png',
+         '#save_icon': 'save.png'
+       },
+       placement: {'.open_icon': 'open'}, // The "open" icon will be added
+       // to all elements with class "open_icon"
+       resize: {
+         '#save_icon .svg_icon': 64 // The "save" icon will be resized to 64 x 64px
+       },
 
-    svgz: true // Indicates that an SVGZ file is being used
-  });
-});
+       callback (icons) { // Sets background color for "close" icon
+         icons.close.css('background', 'red');
+       },
+
+       svgz: true // Indicates that an SVGZ file is being used
+     });
+   });
 */
 
 // Todo: Move to own module (and have it import a modular base64 encoder)

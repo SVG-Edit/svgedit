@@ -1,4 +1,3 @@
-// eslint-disable-next-line mocha/no-skipped-tests
 describe.skip('UI - Accessibility', function () {
   beforeEach(() => {
     cy.visit('/instrumented/editor/svg-editor-es.html');
@@ -26,6 +25,15 @@ describe.skip('UI - Accessibility', function () {
       locale: Object
       */
     });
-    cy.checkA11y();
+    cy.checkA11y(
+      {},
+      {
+        rules: {
+          'label-title-only': { enabled: false },
+          'page-has-heading-one': { enabled: false },
+          'region': { enabled: false },
+          'scrollable-region-focusable': { enabled: false },
+        }
+      });
   });
 });

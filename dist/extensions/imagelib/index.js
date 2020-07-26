@@ -20,14 +20,12 @@
   }
 
   /* globals jQuery */
-  const $ = jQuery;
+  var $ = jQuery;
   $('a').click(function () {
-    const {
-      href
-    } = this;
-    const target = window.parent;
+    var href = this.href;
+    var target = window.parent;
 
-    const post = message => {
+    var post = function post(message) {
       // Todo: Make origin customizable as set by opening window
       // Todo: If dropping IE9, avoid stringifying
       target.postMessage(JSON.stringify(_extends({
@@ -44,15 +42,15 @@
     });
 
     if (!href.includes('.svg')) {
-      const img = new Image();
+      var img = new Image();
       img.addEventListener('load', function () {
-        const canvas = document.createElement('canvas');
+        var canvas = document.createElement('canvas');
         canvas.width = this.width;
         canvas.height = this.height; // load the raster image into the canvas
 
         canvas.getContext('2d').drawImage(this, 0, 0); // retrieve the data: URL
 
-        let data;
+        var data;
 
         try {
           data = canvas.toDataURL();
@@ -65,8 +63,8 @@
         }
 
         post({
-          href,
-          data
+          href: href,
+          data: data
         });
       });
       img.src = href;
@@ -74,8 +72,8 @@
       // Do ajax request for image's href value
       $.get(href, function (data) {
         post({
-          href,
-          data
+          href: href,
+          data: data
         });
       }, 'html'); // 'html' is necessary to keep returned data as a string
     }

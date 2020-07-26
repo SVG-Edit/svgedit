@@ -1,6 +1,100 @@
 (function () {
   'use strict';
 
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
   /**
    * For parsing color values.
    * @module RGBColor
@@ -8,7 +102,7 @@
    * @see https://www.phpied.com/rgb-color-parser-in-javascript/
    * @license MIT
   */
-  const simpleColors = {
+  var simpleColors = {
     aliceblue: 'f0f8ff',
     antiquewhite: 'faebd7',
     aqua: '00ffff',
@@ -154,43 +248,59 @@
     yellowgreen: '9acd32'
   }; // array of color definition objects
 
-  const colorDefs = [{
+  var colorDefs = [{
     re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
     // re: /^rgb\((?<r>\d{1,3}),\s*(?<g>\d{1,3}),\s*(?<b>\d{1,3})\)$/,
     example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
+    process: function process(_) {
+      for (var _len = arguments.length, bits = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        bits[_key - 1] = arguments[_key];
+      }
 
-    process(_, ...bits) {
-      return bits.map(b => Number.parseInt(b));
+      return bits.map(function (b) {
+        return Number.parseInt(b);
+      });
     }
-
   }, {
     re: /^(\w{2})(\w{2})(\w{2})$/,
     // re: /^(?<r>\w{2})(?<g>\w{2})(?<b>\w{2})$/,
     example: ['#00ff00', '336699'],
+    process: function process(_) {
+      for (var _len2 = arguments.length, bits = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        bits[_key2 - 1] = arguments[_key2];
+      }
 
-    process(_, ...bits) {
-      return bits.map(b => Number.parseInt(b, 16));
+      return bits.map(function (b) {
+        return Number.parseInt(b, 16);
+      });
     }
-
   }, {
     re: /^(\w)(\w)(\w)$/,
     // re: /^(?<r>\w{1})(?<g>\w{1})(?<b>\w{1})$/,
     example: ['#fb0', 'f0f'],
+    process: function process(_) {
+      for (var _len3 = arguments.length, bits = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+        bits[_key3 - 1] = arguments[_key3];
+      }
 
-    process(_, ...bits) {
-      return bits.map(b => Number.parseInt(b + b, 16));
+      return bits.map(function (b) {
+        return Number.parseInt(b + b, 16);
+      });
     }
-
   }];
   /**
    * A class to parse color values.
    */
 
-  class RGBColor {
+  var RGBColor = /*#__PURE__*/function () {
     /**
     * @param {string} colorString
     */
-    constructor(colorString) {
+    function RGBColor(colorString) {
+      var _this = this;
+
+      _classCallCheck(this, RGBColor);
+
       this.ok = false; // strip any leading #
 
       if (colorString.charAt(0) === '#') {
@@ -208,20 +318,24 @@
       // search through the definitions to find a match
 
 
-      colorDefs.forEach(({
-        re,
-        process: processor
-      }) => {
-        const bits = re.exec(colorString);
+      colorDefs.forEach(function (_ref) {
+        var re = _ref.re,
+            processor = _ref.process;
+        var bits = re.exec(colorString);
 
         if (bits) {
-          const [r, g, b] = processor(...bits);
-          Object.assign(this, {
-            r,
-            g,
-            b
+          var _processor = processor.apply(void 0, _toConsumableArray(bits)),
+              _processor2 = _slicedToArray(_processor, 3),
+              r = _processor2[0],
+              g = _processor2[1],
+              b = _processor2[2];
+
+          Object.assign(_this, {
+            r: r,
+            g: g,
+            b: b
           });
-          this.ok = true;
+          _this.ok = true;
         }
       }); // validate/cleanup values
 
@@ -235,75 +349,73 @@
     */
 
 
-    toRGB() {
-      return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
-    }
-    /**
-    * @returns {string}
-    */
-
-
-    toHex() {
-      let r = this.r.toString(16);
-      let g = this.g.toString(16);
-      let b = this.b.toString(16);
-
-      if (r.length === 1) {
-        r = '0' + r;
+    _createClass(RGBColor, [{
+      key: "toRGB",
+      value: function toRGB() {
+        return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
       }
+      /**
+      * @returns {string}
+      */
 
-      if (g.length === 1) {
-        g = '0' + g;
-      }
+    }, {
+      key: "toHex",
+      value: function toHex() {
+        var r = this.r.toString(16);
+        var g = this.g.toString(16);
+        var b = this.b.toString(16);
 
-      if (b.length === 1) {
-        b = '0' + b;
-      }
-
-      return '#' + r + g + b;
-    }
-    /**
-    * Offers a bulleted list of help.
-    * @returns {HTMLUListElement}
-    */
-
-
-    static getHelpXML() {
-      const examples = [// add regexps
-      ...colorDefs.flatMap(({
-        example
-      }) => {
-        return example;
-      }), // add type-in colors
-      ...Object.keys(simpleColors)];
-      const xml = document.createElement('ul');
-      xml.setAttribute('id', 'rgbcolor-examples');
-      xml.append(...examples.map(example => {
-        try {
-          const listItem = document.createElement('li');
-          const listColor = new RGBColor(example);
-          const exampleDiv = document.createElement('div');
-          exampleDiv.style.cssText = `
-  margin: 3px;
-  border: 1px solid black;
-  background: ${listColor.toHex()};
-  color: ${listColor.toHex()};`;
-          exampleDiv.append('test');
-          const listItemValue = ` ${example} -> ${listColor.toRGB()} -> ${listColor.toHex()}`;
-          listItem.append(exampleDiv, listItemValue);
-          return listItem;
-        } catch (e) {
-          return '';
+        if (r.length === 1) {
+          r = '0' + r;
         }
-      }));
-      return xml;
-    }
 
-  }
+        if (g.length === 1) {
+          g = '0' + g;
+        }
 
-  /* globals jsPDF */
-  const jsPDFAPI = jsPDF.API;
-  const pdfSvgAttr = {
+        if (b.length === 1) {
+          b = '0' + b;
+        }
+
+        return '#' + r + g + b;
+      }
+      /**
+      * Offers a bulleted list of help.
+      * @returns {HTMLUListElement}
+      */
+
+    }], [{
+      key: "getHelpXML",
+      value: function getHelpXML() {
+        var examples = [].concat(_toConsumableArray(colorDefs.flatMap(function (_ref2) {
+          var example = _ref2.example;
+          return example;
+        })), _toConsumableArray(Object.keys(simpleColors)));
+        var xml = document.createElement('ul');
+        xml.setAttribute('id', 'rgbcolor-examples');
+        xml.append.apply(xml, _toConsumableArray(examples.map(function (example) {
+          try {
+            var listItem = document.createElement('li');
+            var listColor = new RGBColor(example);
+            var exampleDiv = document.createElement('div');
+            exampleDiv.style.cssText = "\n  margin: 3px;\n  border: 1px solid black;\n  background: ".concat(listColor.toHex(), ";\n  color: ").concat(listColor.toHex(), ";");
+            exampleDiv.append('test');
+            var listItemValue = " ".concat(example, " -> ").concat(listColor.toRGB(), " -> ").concat(listColor.toHex());
+            listItem.append(exampleDiv, listItemValue);
+            return listItem;
+          } catch (e) {
+            return '';
+          }
+        })));
+        return xml;
+      }
+    }]);
+
+    return RGBColor;
+  }();
+
+  var jsPDFAPI = jsPDF.API;
+  var pdfSvgAttr = {
     // allowed attributes. all others are removed from the preview.
     g: ['stroke', 'fill', 'stroke-width'],
     line: ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width'],
@@ -316,35 +428,37 @@
     text: ['x', 'y', 'font-size', 'font-family', 'text-anchor', 'font-weight', 'font-style', 'fill']
   };
 
-  const attributeIsNotEmpty = function (node, attr) {
-    const attVal = attr ? node.getAttribute(attr) : node;
+  var attributeIsNotEmpty = function attributeIsNotEmpty(node, attr) {
+    var attVal = attr ? node.getAttribute(attr) : node;
     return attVal !== '' && attVal !== null && attVal !== 'null';
   };
 
-  const nodeIs = function (node, possible) {
+  var nodeIs = function nodeIs(node, possible) {
     return possible.includes(node.tagName.toLowerCase());
   };
 
-  const removeAttributes = function (node, attributes) {
-    const toRemove = [];
+  var removeAttributes = function removeAttributes(node, attributes) {
+    var toRemove = [];
     [].forEach.call(node.attributes, function (a) {
       if (attributeIsNotEmpty(a) && !attributes.includes(a.name.toLowerCase())) {
         toRemove.push(a.name);
       }
     });
-    toRemove.forEach(a => {
+    toRemove.forEach(function (a) {
       node.removeAttribute(a.name);
     });
   };
 
-  const numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE]\d+|[eE][+-]\d+|)/g;
+  var numRgx = /[+-]?(?:\d+\.\d*|\d+|\.\d+)(?:[eE]\d+|[eE][+-]\d+|)/g;
 
-  const getLinesOptionsOfPoly = function (node) {
-    let nums = node.getAttribute('points');
+  var getLinesOptionsOfPoly = function getLinesOptionsOfPoly(node) {
+    var nums = node.getAttribute('points');
     nums = nums && nums.match(numRgx) || [];
 
     if (nums && nums.length) {
-      nums = nums.map(n => Number(n));
+      nums = nums.map(function (n) {
+        return Number(n);
+      });
 
       if (nums.length % 2) {
         nums.length--;
@@ -357,40 +471,43 @@
       return undefined;
     }
 
-    const [x, y] = nums,
-          lines = [];
+    var _nums = nums,
+        _nums2 = _slicedToArray(_nums, 2),
+        x = _nums2[0],
+        y = _nums2[1],
+        lines = [];
 
-    for (let i = 2; i < nums.length; i += 2) {
+    for (var i = 2; i < nums.length; i += 2) {
       lines.push([nums[i] - nums[i - 2], nums[i + 1] - nums[i - 1]]);
     }
 
     return {
-      x,
-      y,
-      lines
+      x: x,
+      y: y,
+      lines: lines
     };
   };
 
-  const getLinesOptionsOfPath = function (node) {
-    const segList = node.pathSegList,
-          n = segList.numberOfItems,
-          opsList = [];
-    let ops = {
+  var getLinesOptionsOfPath = function getLinesOptionsOfPath(node) {
+    var segList = node.pathSegList,
+        n = segList.numberOfItems,
+        opsList = [];
+    var ops = {
       lines: []
     };
-    const curr = {
+    var curr = {
       x: 0,
       y: 0
     };
-    const reflectControl = {
+    var reflectControl = {
       x: 0,
       y: 0
     };
 
-    const toRelative = function (nums, relativeTo) {
-      const re = [];
+    var toRelative = function toRelative(nums, relativeTo) {
+      var re = [];
 
-      for (let i = 0; i < nums.length - 1; i += 2) {
+      for (var i = 0; i < nums.length - 1; i += 2) {
         re[i] = nums[i] - relativeTo.x;
         re[i + 1] = nums[i + 1] - relativeTo.y;
       }
@@ -398,24 +515,22 @@
       return re;
     };
 
-    const curveQToC = function (nums) {
-      const a = 2 / 3;
-      const re = [nums[0] * a, nums[1] * a, nums[2] + (nums[0] - nums[2]) * a, nums[3] + (nums[1] - nums[3]) * a, nums[2], nums[3]];
+    var curveQToC = function curveQToC(nums) {
+      var a = 2 / 3;
+      var re = [nums[0] * a, nums[1] * a, nums[2] + (nums[0] - nums[2]) * a, nums[3] + (nums[1] - nums[3]) * a, nums[2], nums[3]];
       return re;
     };
 
-    for (let i = 0, letterPrev; i < n; i++) {
-      const seg = segList.getItem(i);
-      const {
-        x1,
-        y1,
-        x2,
-        y2,
-        x,
-        y,
-        pathSegTypeAsLetter: letter
-      } = seg;
-      const isRelative = letter >= 'a'; // lowercase letter
+    for (var i = 0, letterPrev; i < n; i++) {
+      var seg = segList.getItem(i);
+      var x1 = seg.x1,
+          y1 = seg.y1,
+          x2 = seg.x2,
+          y2 = seg.y2,
+          x = seg.x,
+          y = seg.y,
+          letter = seg.pathSegTypeAsLetter;
+      var isRelative = letter >= 'a'; // lowercase letter
 
       switch (letter) {
         case 'M':
@@ -489,7 +604,7 @@
 
         case 'T':
           {
-            const p1 = letterPrev && 'QqTt'.includes(letterPrev) ? reflectControl : {
+            var p1 = letterPrev && 'QqTt'.includes(letterPrev) ? reflectControl : {
               x: 0,
               y: 0
             };
@@ -501,13 +616,14 @@
 
         case 't':
           {
-            const p1 = letterPrev && 'QqTt'.includes(letterPrev) ? reflectControl : {
+            var _p = letterPrev && 'QqTt'.includes(letterPrev) ? reflectControl : {
               x: 0,
               y: 0
             };
-            ops.lines.push([p1.x, p1.y, x, y]);
-            reflectControl.x = x - p1.x;
-            reflectControl.y = y - p1.y;
+
+            ops.lines.push([_p.x, _p.y, x, y]);
+            reflectControl.x = x - _p.x;
+            reflectControl.y = y - _p.y;
             break;
           }
 
@@ -526,15 +642,15 @@
         case 'S':
         case 's':
           {
-            const p1 = letterPrev && 'CcSs'.includes(letterPrev) ? reflectControl : {
+            var _p2 = letterPrev && 'CcSs'.includes(letterPrev) ? reflectControl : {
               x: 0,
               y: 0
             };
 
             if (isRelative) {
-              ops.lines.push([p1.x, p1.y, x2, y2, x, y]);
+              ops.lines.push([_p2.x, _p2.y, x2, y2, x, y]);
             } else {
-              ops.lines.push([p1.x, p1.y].concat(toRelative([x2, y2, x, y], curr)));
+              ops.lines.push([_p2.x, _p2.y].concat(toRelative([x2, y2, x, y], curr)));
             }
 
             reflectControl.x = x - x2;
@@ -592,21 +708,21 @@
     return opsList;
   };
 
-  const svgElementToPdf = function (element, pdf, options) {
+  var svgElementToPdf = function svgElementToPdf(element, pdf, options) {
     // pdf is a jsPDF object
     // console.log('options =', options);
-    const remove = options.removeInvalid === undefined ? false : options.removeInvalid;
-    const k = options.scale === undefined ? 1.0 : options.scale;
-    let colorMode = null;
+    var remove = options.removeInvalid === undefined ? false : options.removeInvalid;
+    var k = options.scale === undefined ? 1.0 : options.scale;
+    var colorMode = null;
     [].forEach.call(element.children, function (node) {
       // console.log('passing: ', node);
       // let hasStrokeColor = false;
-      let hasFillColor = false;
-      let fillRGB;
+      var hasFillColor = false;
+      var fillRGB;
       colorMode = null;
 
       if (nodeIs(node, ['g', 'line', 'rect', 'ellipse', 'circle', 'polygon', 'polyline', 'path', 'text'])) {
-        const fillColor = node.getAttribute('fill');
+        var fillColor = node.getAttribute('fill');
 
         if (attributeIsNotEmpty(fillColor) && node.getAttribute('fill-opacity') !== '0') {
           fillRGB = new RGBColor(fillColor);
@@ -629,10 +745,10 @@
           pdf.setLineWidth(k * Number.parseInt(node.getAttribute('stroke-width')));
         }
 
-        const strokeColor = node.getAttribute('stroke');
+        var strokeColor = node.getAttribute('stroke');
 
         if (attributeIsNotEmpty(strokeColor) && node.getAttribute('stroke-width') !== '0' && node.getAttribute('stroke-opacity') !== '0') {
-          const strokeRGB = new RGBColor(strokeColor);
+          var strokeRGB = new RGBColor(strokeColor);
 
           if (strokeRGB.ok) {
             // hasStrokeColor = true;
@@ -649,7 +765,7 @@
         }
       }
 
-      const tag = node.tagName.toLowerCase();
+      var tag = node.tagName.toLowerCase();
 
       switch (tag) {
         case 'svg':
@@ -682,7 +798,7 @@
         case 'polygon':
         case 'polyline':
           {
-            const linesOptions = getLinesOptionsOfPoly(node);
+            var linesOptions = getLinesOptionsOfPoly(node);
 
             if (linesOptions) {
               pdf.lines(linesOptions.lines, k * linesOptions.x, k * linesOptions.y, [k, k], colorMode, tag === 'polygon' // polygon is closed, polyline is not closed
@@ -696,14 +812,14 @@
         case 'path':
           {
             if (colorMode) {
-              const linesOptionsList = getLinesOptionsOfPath(node);
+              var linesOptionsList = getLinesOptionsOfPath(node);
 
               if (linesOptionsList.length > 0) {
                 linesOptionsList.forEach(function (linesOptions) {
                   pdf.lines(linesOptions.lines, k * linesOptions.x, k * linesOptions.y, [k, k], null, linesOptions.closed);
                 }); // svg fill rule default is nonzero
 
-                const fillRule = node.getAttribute('fill-rule');
+                var fillRule = node.getAttribute('fill-rule');
 
                 if (fillRule === 'evenodd') {
                   // f* : fill using even-odd rule
@@ -757,7 +873,7 @@
               pdf.setTextColor(fillRGB.r, fillRGB.g, fillRGB.b);
             }
 
-            let fontType = '';
+            var fontType = '';
 
             if (node.hasAttribute('font-weight')) {
               if (node.getAttribute('font-weight') === 'bold') {
@@ -776,22 +892,22 @@
             }
 
             pdf.setFontType(fontType);
-            const pdfFontSize = node.hasAttribute('font-size') ? Number.parseInt(node.getAttribute('font-size')) : 16;
+            var pdfFontSize = node.hasAttribute('font-size') ? Number.parseInt(node.getAttribute('font-size')) : 16;
             /**
              *
              * @param {Element} elem
              * @returns {Float}
              */
 
-            const getWidth = elem => {
-              let box;
+            var getWidth = function getWidth(elem) {
+              var box;
 
               try {
                 box = elem.getBBox(); // Firefox on MacOS will raise error here
               } catch (err) {
                 // copy and append to body so that getBBox is available
-                const nodeCopy = elem.cloneNode(true);
-                const svg = elem.ownerSVGElement.cloneNode(false);
+                var nodeCopy = elem.cloneNode(true);
+                var svg = elem.ownerSVGElement.cloneNode(false);
                 svg.appendChild(nodeCopy);
                 document.body.appendChild(svg);
 
@@ -810,7 +926,7 @@
             }; // TODO: use more accurate positioning!!
 
 
-            let x,
+            var x,
                 y,
                 xOffset = 0;
 

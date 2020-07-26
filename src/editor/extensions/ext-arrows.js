@@ -222,7 +222,7 @@ export default {
           const attrs = $(this).children().attr(['fill', 'd']);
           if (attrs.fill === color && attrs.d === curD) {
             // Found another marker with this color and this path
-            newMarker = this; // eslint-disable-line consistent-this
+            newMarker = this;
           }
         });
 
@@ -241,7 +241,7 @@ export default {
         // Check if last marker can be removed
         let remove = true;
         $(S.svgcontent).find('line, polyline, path, polygon').each(function () {
-          const element = this; // eslint-disable-line consistent-this
+          const element = this;
           $.each(mtypes, function (j, mtype) {
             if ($(element).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
               remove = false;

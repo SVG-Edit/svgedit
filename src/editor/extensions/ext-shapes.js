@@ -17,7 +17,7 @@ export default {
 
     // This populates the category list
     const {categories} = strings;
-
+    /* eslint-disable max-len */
     const library = {
       basic: {
         data: {
@@ -54,7 +54,7 @@ export default {
         buttons: []
       }
     };
-
+    /* eslint-enable max-len */
     const modeId = 'shapelib';
     const startClientPos = {};
 

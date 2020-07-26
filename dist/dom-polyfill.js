@@ -1,6 +1,22 @@
 (function () {
   'use strict';
 
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
   // From https://github.com/inexorabletash/polyfill/blob/master/dom.js
 
   /**
@@ -15,7 +31,7 @@
    */
   function mixin(o, ps) {
     if (!o) return;
-    Object.keys(ps).forEach(p => {
+    Object.keys(ps).forEach(function (p) {
       if (p in o || p in o.prototype) {
         return;
       }
@@ -36,8 +52,8 @@
 
 
   function convertNodesIntoANode(nodes) {
-    nodes = nodes.map(node => {
-      const isNode = node && typeof node === 'object' && 'nodeType' in node;
+    nodes = nodes.map(function (node) {
+      var isNode = node && _typeof(node) === 'object' && 'nodeType' in node;
       return isNode ? node : document.createTextNode(node);
     });
 
@@ -45,24 +61,30 @@
       return nodes[0];
     }
 
-    const node = document.createDocumentFragment();
-    nodes.forEach(n => {
+    var node = document.createDocumentFragment();
+    nodes.forEach(function (n) {
       node.appendChild(n);
     });
     return node;
   }
 
-  const ParentNode = {
-    prepend(...nodes) {
+  var ParentNode = {
+    prepend: function prepend() {
+      for (var _len = arguments.length, nodes = new Array(_len), _key = 0; _key < _len; _key++) {
+        nodes[_key] = arguments[_key];
+      }
+
       nodes = convertNodesIntoANode(nodes);
       this.insertBefore(nodes, this.firstChild);
     },
+    append: function append() {
+      for (var _len2 = arguments.length, nodes = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        nodes[_key2] = arguments[_key2];
+      }
 
-    append(...nodes) {
       nodes = convertNodesIntoANode(nodes);
       this.appendChild(nodes);
     }
-
   };
   mixin(Document || HTMLDocument, ParentNode); // HTMLDocument for IE8
 
@@ -70,44 +92,54 @@
   mixin(Element, ParentNode); // Mixin ChildNode
   // https://dom.spec.whatwg.org/#interface-childnode
 
-  const ChildNode = {
-    before(...nodes) {
-      const parent = this.parentNode;
+  var ChildNode = {
+    before: function before() {
+      var parent = this.parentNode;
       if (!parent) return;
-      let viablePreviousSibling = this.previousSibling;
+      var viablePreviousSibling = this.previousSibling;
+
+      for (var _len3 = arguments.length, nodes = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        nodes[_key3] = arguments[_key3];
+      }
 
       while (nodes.includes(viablePreviousSibling)) {
         viablePreviousSibling = viablePreviousSibling.previousSibling;
       }
 
-      const node = convertNodesIntoANode(nodes);
+      var node = convertNodesIntoANode(nodes);
       parent.insertBefore(node, viablePreviousSibling ? viablePreviousSibling.nextSibling : parent.firstChild);
     },
-
-    after(...nodes) {
-      const parent = this.parentNode;
+    after: function after() {
+      var parent = this.parentNode;
       if (!parent) return;
-      let viableNextSibling = this.nextSibling;
+      var viableNextSibling = this.nextSibling;
+
+      for (var _len4 = arguments.length, nodes = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        nodes[_key4] = arguments[_key4];
+      }
 
       while (nodes.includes(viableNextSibling)) {
         viableNextSibling = viableNextSibling.nextSibling;
       }
 
-      const node = convertNodesIntoANode(nodes); // eslint-disable-next-line unicorn/prefer-modern-dom-apis
+      var node = convertNodesIntoANode(nodes); // eslint-disable-next-line unicorn/prefer-modern-dom-apis
 
       parent.insertBefore(node, viableNextSibling);
     },
-
-    replaceWith(...nodes) {
-      const parent = this.parentNode;
+    replaceWith: function replaceWith() {
+      var parent = this.parentNode;
       if (!parent) return;
-      let viableNextSibling = this.nextSibling;
+      var viableNextSibling = this.nextSibling;
+
+      for (var _len5 = arguments.length, nodes = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        nodes[_key5] = arguments[_key5];
+      }
 
       while (nodes.includes(viableNextSibling)) {
         viableNextSibling = viableNextSibling.nextSibling;
       }
 
-      const node = convertNodesIntoANode(nodes);
+      var node = convertNodesIntoANode(nodes);
 
       if (this.parentNode === parent) {
         parent.replaceChild(node, this);
@@ -116,15 +148,13 @@
         parent.insertBefore(node, viableNextSibling);
       }
     },
-
-    remove() {
+    remove: function remove() {
       if (!this.parentNode) {
         return;
       }
 
       this.parentNode.removeChild(this); // eslint-disable-line unicorn/prefer-node-remove
     }
-
   };
   mixin(DocumentType, ChildNode);
   mixin(Element, ChildNode);

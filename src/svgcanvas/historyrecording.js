@@ -25,12 +25,12 @@ import {
  * The following will record history: insert, batch, insert.
  * @example
  * hrService = new HistoryRecordingService(this.undoMgr);
- * hrService.insertElement(elem, text);         // add simple command to history.
+ * hrService.insertElement(elem, text); // add simple command to history.
  * hrService.startBatchCommand('create two elements');
- * hrService.changeElement(elem, attrs, text);  // add to batchCommand
+ * hrService.changeElement(elem, attrs, text); // add to batchCommand
  * hrService.changeElement(elem, attrs2, text); // add to batchCommand
- * hrService.endBatchCommand();                  // add batch command with two change commands to history.
- * hrService.insertElement(elem, text);         // add simple command to history.
+ * hrService.endBatchCommand(); // add batch command with two change commands to history.
+ * hrService.insertElement(elem, text); // add simple command to history.
  *
  * @example
  * // Note that all functions return this, so commands can be chained, like so:

@@ -54,14 +54,14 @@
  * @example
   // Create group of settings to initialise spinbutton(s). (Optional)
   const myOptions = {
-    min: 0, // Set lower limit.
-    max: 100, // Set upper limit.
-    step: 1, // Set increment size.
-    smallStep: 0.5, // Set shift-click increment size.
-    stateObj: {tool_scale: 1}, // Object to allow passing in live-updating scale
-    spinClass: mySpinBtnClass, // CSS class to style the spinbutton. (Class also specifies url of the up/down button image.)
-    upClass: mySpinUpClass, // CSS class for style when mouse over up button.
-    downClass: mySpinDnClass // CSS class for style when mouse over down button.
+     min: 0, // Set lower limit.
+     max: 100, // Set upper limit.
+     step: 1, // Set increment size.
+     smallStep: 0.5, // Set shift-click increment size.
+     stateObj: {tool_scale: 1}, // Object to allow passing in live-updating scale
+     spinClass: mySpinBtnClass, // CSS class to style the spinbutton. (Class also specifies url of the up/down button image.)
+     upClass: mySpinUpClass, // CSS class for style when mouse over up button.
+     downClass: mySpinDnClass // CSS class for style when mouse over down button.
   };
 
   $(function () {
