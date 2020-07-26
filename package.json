@@ -77,10 +77,10 @@
     "test": "run-s cypress:instrument test-no-cov"
   },
   "nyc": {
-    "statements": 37.51,
-    "branches": 28.8,
-    "lines": 38.46,
-    "functions":  47.27,
+    "statements": 37,
+    "branches": 28,
+    "lines": 38,
+    "functions":  47,
     "exclude": [
       "src/external/**",
       "src/editor/jquery.min.js",
