@@ -1,4 +1,4 @@
-describe.skip('UI - Accessibility', function () {
+describe('UI - Accessibility', function () {
   beforeEach(() => {
     cy.visit('/instrumented/editor/svg-editor-es.html');
     cy.injectAxe();
