@@ -20866,10 +20866,14 @@
     * @returns {void}
     */
 
-          if (elem.children) elem.children.forEach(child => checkIDs(child));
-        }
 
-        clipb.forEach(elem => checkIDs(elem)); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
+    this.pasteElements = function (type, x, y) {
+      var clipb = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID));
+      if (!clipb) return;
+      var len = clipb.length;
+      if (!len) return;
+      var pasted = [];
+      var batchCmd = new BatchCommand$1('Paste elements'); // const drawing = getCurrentDrawing();
 
       /**
       * @typedef {PlainObject<string, string>} module:svgcanvas.ChangedIDs
@@ -20893,10 +20897,14 @@
           elem.attr.id = changedIDs[elem.attr.id];
         }
 
-        if (elem.children) elem.children.forEach(checkIDs);
+        if (elem.children) elem.children.forEach(function (child) {
+          return checkIDs(child);
+        });
       }
 
-      clipb.forEach(checkIDs); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
+      clipb.forEach(function (elem) {
+        return checkIDs(elem);
+      }); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
 
       /**
       * Triggered when `pasteElements` is called from a paste action (context menu or key).
