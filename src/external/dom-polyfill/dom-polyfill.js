@@ -42,6 +42,7 @@ function convertNodesIntoANode (nodes) {
   }
   const node = document.createDocumentFragment();
   nodes.forEach((n) => {
+    // // eslint-disable-next-line unicorn/prefer-node-append
     node.appendChild(n);
   });
   return node;
@@ -54,6 +55,7 @@ const ParentNode = {
   },
   append (...nodes) {
     nodes = convertNodesIntoANode(nodes);
+    // // eslint-disable-next-line unicorn/prefer-node-append
     this.appendChild(nodes);
   }
 };

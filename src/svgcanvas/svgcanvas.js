@@ -6443,9 +6443,9 @@ this.pasteElements = function (type, x, y) {
       changedIDs[elem.attr.id] = getNextId();
       elem.attr.id = changedIDs[elem.attr.id];
     }
-    if (elem.children) elem.children.forEach(checkIDs);
+    if (elem.children) elem.children.forEach((child) => checkIDs(child));
   }
-  clipb.forEach(checkIDs);
+  clipb.forEach((elem) => checkIDs(elem));
 
   // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
   /**

@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/check-examples */
 import assertionWrapper from './assertion-wrapper.js';
 
 /**

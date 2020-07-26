@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.svgEditor = factory());
+  (global = global || self, global.svgEditor = factory());
 }(this, (function () { 'use strict';
 
   // http://ross.posterous.com/2008/08/19/iphone-touch-events-in-javascript/
@@ -20038,10 +20038,10 @@
             elem.attr.id = changedIDs[elem.attr.id];
           }
 
-          if (elem.children) elem.children.forEach(checkIDs);
+          if (elem.children) elem.children.forEach(child => checkIDs(child));
         }
 
-        clipb.forEach(checkIDs); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
+        clipb.forEach(elem => checkIDs(elem)); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
 
         /**
         * Triggered when `pasteElements` is called from a paste action (context menu or key).

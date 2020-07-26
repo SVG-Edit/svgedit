@@ -19620,10 +19620,10 @@ var SvgCanvas = (function () {
             elem.attr.id = changedIDs[elem.attr.id];
           }
 
-          if (elem.children) elem.children.forEach(checkIDs);
+          if (elem.children) elem.children.forEach(child => checkIDs(child));
         }
 
-        clipb.forEach(checkIDs); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
+        clipb.forEach(elem => checkIDs(elem)); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
 
         /**
         * Triggered when `pasteElements` is called from a paste action (context menu or key).

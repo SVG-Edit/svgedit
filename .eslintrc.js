@@ -17,15 +17,6 @@ module.exports = {
         customTags: []
       },
       augmentsExtendsReplacesDocs: true
-      // Todo: Figure out why this is not working and why seem to have to
-      //    disable for all Markdown:
-      /*
-      baseConfig: {
-        rules: {
-          'no-multi-spaces': 'off'
-        }
-      }
-      */
     }
   },
   overrides: [
@@ -342,12 +333,15 @@ module.exports = {
     // check-examples is not picking up eslint config properly in some
     //  environments; see also discussion above
     //  `mocha-cleanup/no-assertions-outside-it`
-    'jsdoc/check-examples': ['warn', {
-      rejectExampleCodeRegex: '^`'
-    }],
+    /*
+    'jsdoc/check-examples': ['error', {baseConfig: {
+      rules: {
+        'no-multi-spaces': 'off'
+      }
+    }}],
+    */
+    'jsdoc/check-examples': 'off',
 
-    // https://github.com/sindresorhus/eslint-plugin-unicorn/issues/453
-    'unicorn/regex-shorthand': 0,
     // The Babel transform seems to have a problem converting these
     'prefer-named-capture-group': 'off',
     // Override these `ash-nazg/sauron` rules which are difficult for us
@@ -360,10 +354,16 @@ module.exports = {
       ignoreRegExpLiterals: true
     } */
     'unicorn/prefer-query-selector': 'off',
+
+    // Might re-enable if the following is implemented:
+    // https://github.com/sindresorhus/eslint-plugin-unicorn/issues/787
     'unicorn/no-fn-reference-in-iterator': 'off',
     'unicorn/prefer-node-append': 'off',
+
     'unicorn/no-zero-fractions': 'off',
     'unicorn/prefer-number-properties': 'off',
+    'eslint-comments/require-description': 'off',
+
     'jsdoc/require-file-overview': ['error', {
       tags: {
         file: {
@@ -391,9 +391,6 @@ module.exports = {
           preventDuplicates: true
         }
       }
-    }],
-
-    // Disable for now
-    'eslint-comments/require-description': 0
+    }]
   }
 };
