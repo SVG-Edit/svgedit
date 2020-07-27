@@ -80,7 +80,7 @@
     "statements": 37,
     "branches": 28,
     "lines": 38,
-    "functions":  47,
+    "functions": 47,
     "exclude": [
       "src/external/**",
       "src/editor/jquery.min.js",
