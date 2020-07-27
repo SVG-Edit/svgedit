@@ -1799,10 +1799,21 @@ var svgEditorExtension_server_opensave = (function () {
         ctx.translate(-scaleMin * refX.toPixels('x'), -scaleMin * refY.toPixels('y'));
       } else {
         // align
-        if (align.startsWith('xMid') && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
-        if (align.endsWith('YMid') && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
-        if (align.startsWith('xMax') && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) ctx.translate(width - desiredWidth, 0);
-        if (align.endsWith('YMax') && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) ctx.translate(0, height - desiredHeight);
+        if (align.startsWith('xMid') && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) {
+          ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
+        }
+
+        if (align.endsWith('YMid') && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) {
+          ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
+        }
+
+        if (align.startsWith('xMax') && (meetOrSlice === 'meet' && scaleMin === scaleY || meetOrSlice === 'slice' && scaleMax === scaleY)) {
+          ctx.translate(width - desiredWidth, 0);
+        }
+
+        if (align.endsWith('YMax') && (meetOrSlice === 'meet' && scaleMin === scaleX || meetOrSlice === 'slice' && scaleMax === scaleX)) {
+          ctx.translate(0, height - desiredHeight);
+        }
       } // scale
 
 
@@ -3022,7 +3033,11 @@ var svgEditorExtension_server_opensave = (function () {
           tempSvg.render(ctx);
           ctx.restore();
           if (this.attribute('markerUnits').valueOrDefault('strokeWidth') === 'strokeWidth') ctx.scale(1 / ctx.lineWidth, 1 / ctx.lineWidth);
-          if (this.attribute('orient').valueOrDefault('auto') === 'auto') ctx.rotate(-angle);
+
+          if (this.attribute('orient').valueOrDefault('auto') === 'auto') {
+            ctx.rotate(-angle);
+          }
+
           ctx.translate(-point.x, -point.y);
         }
       }]);
@@ -4156,7 +4171,8 @@ var svgEditorExtension_server_opensave = (function () {
             var tempSvg = element;
 
             if (element.type === 'symbol') {
-              // render me using a temporary svg element in symbol cases (https://www.w3.org/TR/SVG/struct.html#UseElement)
+              // render me using a temporary svg element in symbol cases
+              //  (https://www.w3.org/TR/SVG/struct.html#UseElement)
               tempSvg = new svg.Element.svg();
               tempSvg.type = 'svg';
               tempSvg.attributes.viewBox = new svg.Property('viewBox', element.attribute('viewBox').value);
@@ -4167,8 +4183,13 @@ var svgEditorExtension_server_opensave = (function () {
 
             if (tempSvg.type === 'svg') {
               // if symbol or svg, inherit width/height from me
-              if (this.attribute('width').hasValue()) tempSvg.attributes.width = new svg.Property('width', this.attribute('width').value);
-              if (this.attribute('height').hasValue()) tempSvg.attributes.height = new svg.Property('height', this.attribute('height').value);
+              if (this.attribute('width').hasValue()) {
+                tempSvg.attributes.width = new svg.Property('width', this.attribute('width').value);
+              }
+
+              if (this.attribute('height').hasValue()) {
+                tempSvg.attributes.height = new svg.Property('height', this.attribute('height').value);
+              }
             }
 
             var oldParent = tempSvg.parent;
@@ -4783,9 +4804,9 @@ var svgEditorExtension_server_opensave = (function () {
           svg.Mouse.runEvents(); // run and clear our events
         }
       }, 1000 / svg.FRAMERATE); // Todo: Replace with an image loading Promise utility?
+      // eslint-disable-next-line promise/avoid-new
 
       return new Promise(function (resolve, reject) {
-        // eslint-disable-line promise/avoid-new
         if (svg.ImagesLoaded()) {
           waitingForImages = false;
           draw(resolve);

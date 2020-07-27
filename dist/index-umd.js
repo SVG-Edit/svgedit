@@ -9927,9 +9927,9 @@
    * an existing group element or, with three parameters, will create a new layer group element.
    *
    * @example
-   * const l1 = new Layer('name', group);          // Use the existing group for this layer.
+   * const l1 = new Layer('name', group); // Use the existing group for this layer.
    * const l2 = new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
-   * const l3 = new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
+   * const l3 = new Layer('name', null, svgElem); // Create a new group and add it to the DOM as the last layer.
    * @memberof module:layer
    */
 
@@ -17930,8 +17930,8 @@
 
     this.embedImage = function (src) {
       // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
+      // eslint-disable-next-line promise/avoid-new
       return new Promise(function (resolve, reject) {
-        // eslint-disable-line promise/avoid-new
         // load in the image and once it's loaded, get the dimensions
         $$a(new Image()).load(function (response, status, xhr) {
           if (status === 'error') {
@@ -18131,7 +18131,6 @@
 
               case 16:
                 return _context2.abrupt("return", new Promise(function (resolve, reject) {
-                  // eslint-disable-line promise/avoid-new
                   var dataURLType = type.toLowerCase();
                   var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
                   var bloburl;
@@ -21845,7 +21844,7 @@
           });
           var div = document.createElement('div');
           assignAttributes(div, {
-            style: 'pointer-events:none;width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+            style: 'pointer-events:none;width:100%;height:100%;' + 'background-image:url(data:image/gif;base64,' + 'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' + 'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
           });
           bgPattern.appendChild(div);
           bg.append(bgPattern);
@@ -22462,7 +22461,7 @@
         elems = $(svgdoc.firstChild).children(); // .getElementsByTagName('foreignContent');
 
         if (!opts.no_img) {
-          var testSrc = dataPre + 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNzUiIGhlaWdodD0iMjc1Ij48L3N2Zz4%3D';
+          var testSrc = dataPre + 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zd' + 'mciIHdpZHRoPSIyNzUiIGhlaWdodD0iMjc1Ij48L3N2Zz4%3D';
           testImg = $(new Image()).attr({
             src: testSrc,
             width: 0,
@@ -23335,7 +23334,7 @@
           }
 
           if (opac === null) opac = 1;
-          var pickerD = 'M-6.2,0.9c3.6-4,6.7-4.3,6.7-12.4c-0.2,7.9,3.1,8.8,6.5,12.4c3.5,3.8,2.9,9.6,0,12.3c-3.1,2.8-10.4,2.7-13.2,0C-9.6,9.9-9.4,4.4-6.2,0.9z';
+          var pickerD = 'M-6.2,0.9c3.6-4,6.7-4.3,6.7-12.4c-0.2,7.9,' + '3.1,8.8,6.5,12.4c3.5,3.8,2.9,9.6,0,12.3c-3.1,2.8-10.4,' + '2.7-13.2,0C-9.6,9.9-9.4,4.4-6.2,0.9z';
           var pathbg = mkElem('path', {
             d: pickerD,
             fill: 'url(#jGraduate_trans)',
@@ -24097,8 +24096,8 @@
     };
 
     $(function () {
-      // Initialise INPUT element(s) as SpinButtons: (passing options if desired)
-      $('#myInputElement').SpinButton(myOptions);
+       // Initialise INPUT element(s) as SpinButtons: (passing options if desired)
+       $('#myInputElement').SpinButton(myOptions);
     });
    */
 
@@ -32569,7 +32568,7 @@
     str = '';
     $$c.each(colorBlocks, function (i, e) {
       if (e === 'chessboard') {
-        str += '<div class="color_block" data-bgcolor="' + e + '" style="background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>';
+        str += '<div class="color_block" data-bgcolor="' + e + '" style="background-image:url(data:image/gif;base64,' + 'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' + 'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>';
       } else {
         str += '<div class="color_block" data-bgcolor="' + e + '" style="background-color:' + e + ';"></div>';
       }

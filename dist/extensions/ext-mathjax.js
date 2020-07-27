@@ -207,7 +207,7 @@ var svgEditorExtension_mathjax = (function () {
                   mathjax: {
                     embed_svg: 'Save as mathematics',
                     embed_mathml: 'Save as figure',
-                    svg_save_warning: 'The math will be transformed into a figure is manipulatable like everything else. You will not be able to manipulate the TeX-code anymore. ',
+                    svg_save_warning: 'The math will be transformed into a figure is ' + 'manipulatable like everything else. You will not be able to ' + 'manipulate the TeX-code anymore.',
                     mathml_save_warning: 'Advised. The math will be saved as a figure.',
                     title: 'Mathematics code editor'
                   }
@@ -237,7 +237,7 @@ var svgEditorExtension_mathjax = (function () {
                                   break;
                                 }
 
-                                $('<div id="mathjax">' + '<!-- Here is where MathJax creates the math -->' + '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' + '$${}$$' + '</div>' + '<div id="mathjax_overlay"></div>' + '<div id="mathjax_container">' + '<div id="tool_mathjax_back" class="toolbar_button">' + '<button id="tool_mathjax_save">OK</button>' + '<button id="tool_mathjax_cancel">Cancel</button>' + '</div>' + '<fieldset>' + '<legend id="mathjax_legend">Mathematics Editor</legend>' + '<label>' + '<span id="mathjax_explication">Please type your mathematics in ' + '<a href="https://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX</a> code.</span></label>' + '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' + '</fieldset>' + '</div>' + '</div>').insertAfter('#svg_prefs').hide(); // Make the MathEditor draggable.
+                                $('<div id="mathjax">' + '<!-- Here is where MathJax creates the math -->' + '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' + '$${}$$' + '</div>' + '<div id="mathjax_overlay"></div>' + '<div id="mathjax_container">' + '<div id="tool_mathjax_back" class="toolbar_button">' + '<button id="tool_mathjax_save">OK</button>' + '<button id="tool_mathjax_cancel">Cancel</button>' + '</div>' + '<fieldset>' + '<legend id="mathjax_legend">Mathematics Editor</legend>' + '<label>' + '<span id="mathjax_explication">Please type your mathematics in ' + '<a href="https://en.wikipedia.org/wiki/Help:' + 'Displaying_a_formula" target="_blank">TeX</a> code.' + '</span></label>' + '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' + '</fieldset>' + '</div>' + '</div>').insertAfter('#svg_prefs').hide(); // Make the MathEditor draggable.
 
                                 $('#mathjax_container').draggable({
                                   cancel: 'button,fieldset',

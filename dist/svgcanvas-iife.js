@@ -9398,9 +9398,9 @@ var SvgCanvas = (function () {
    * an existing group element or, with three parameters, will create a new layer group element.
    *
    * @example
-   * const l1 = new Layer('name', group);          // Use the existing group for this layer.
+   * const l1 = new Layer('name', group); // Use the existing group for this layer.
    * const l2 = new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
-   * const l3 = new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
+   * const l3 = new Layer('name', null, svgElem); // Create a new group and add it to the DOM as the last layer.
    * @memberof module:layer
    */
 
@@ -17611,8 +17611,8 @@ var SvgCanvas = (function () {
 
     this.embedImage = function (src) {
       // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
+      // eslint-disable-next-line promise/avoid-new
       return new Promise(function (resolve, reject) {
-        // eslint-disable-line promise/avoid-new
         // load in the image and once it's loaded, get the dimensions
         $$9(new Image()).load(function (response, status, xhr) {
           if (status === 'error') {
@@ -17812,7 +17812,6 @@ var SvgCanvas = (function () {
 
               case 16:
                 return _context2.abrupt("return", new Promise(function (resolve, reject) {
-                  // eslint-disable-line promise/avoid-new
                   var dataURLType = type.toLowerCase();
                   var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
                   var bloburl;
@@ -21526,7 +21525,7 @@ var SvgCanvas = (function () {
           });
           var div = document.createElement('div');
           assignAttributes(div, {
-            style: 'pointer-events:none;width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+            style: 'pointer-events:none;width:100%;height:100%;' + 'background-image:url(data:image/gif;base64,' + 'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' + 'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
           });
           bgPattern.appendChild(div);
           bg.append(bgPattern);
