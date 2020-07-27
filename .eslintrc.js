@@ -10,6 +10,57 @@ module.exports = {
     browser: true,
     es6: true
   },
+  settings: {
+    polyfills: [
+      // These are the primary polyfills needed by regular users if
+      //  not present, e.g., with core-js-bundle; also those under
+      //  extensions
+      // 'Array.isArray',
+      // 'Blob',
+      // 'console',
+      // 'CustomEvent',
+      // 'document.body',
+      // 'document.createElementNS',
+      // 'document.evaluate',
+      // 'document.head',
+      // 'document.importNode',
+      // 'document.querySelector',
+      // 'document.querySelectorAll',
+      // 'DOMParser',
+      // 'Error',
+      'fetch',
+      // 'FileReader',
+      // 'JSON',
+      // 'KeyboardEvent',
+      // 'location.href',
+      // 'location.origin',
+      // 'MouseEvent',
+      // 'MutationObserver',
+      // 'navigator',
+      // 'Number.isNaN',
+      // 'Number.parseFloat',
+      // 'Number.parseInt',
+      // 'Object.assign',
+      // 'Object.defineProperty',
+      // 'Object.defineProperties',
+      // 'Object.entries',
+      // 'Object.getOwnPropertyDescriptor',
+      // 'Object.keys',
+      // 'Object.values',
+      'Promise',
+      'Promise.all',
+      // 'Set',
+      'Uint8Array',
+      'URL',
+      // 'URL.createObjectURL',
+      // 'XMLSerializer',
+      // 'XMLHttpRequest',
+      // 'window.getComputedStyle',
+      // 'window.parent',
+      // 'window.scrollX',
+      // 'window.scrollY'
+    ]
+  },
   rules: {
     // check-examples is not picking up eslint config properly in some
     //  environments; see also discussion above
@@ -63,7 +114,7 @@ module.exports = {
     'unicorn/no-zero-fractions': 'off',
     'unicorn/prefer-number-properties': 'off',
     'eslint-comments/require-description': 'off',
-    'compat/compat': 'warn',
+    'compat/compat': 'error',
     'consistent-this': 'off',
     'import/no-anonymous-default-export': 'off',
      'node/no-unsupported-features/node-builtins': 'warn',

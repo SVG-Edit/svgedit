@@ -65,8 +65,8 @@
   };
 
   $(function () {
-    // Initialise INPUT element(s) as SpinButtons: (passing options if desired)
-    $('#myInputElement').SpinButton(myOptions);
+     // Initialise INPUT element(s) as SpinButtons: (passing options if desired)
+     $('#myInputElement').SpinButton(myOptions);
   });
  */
 /**

@@ -17,9 +17,9 @@ const $ = jQuery;
  * an existing group element or, with three parameters, will create a new layer group element.
  *
  * @example
- * const l1 = new Layer('name', group);          // Use the existing group for this layer.
+ * const l1 = new Layer('name', group); // Use the existing group for this layer.
  * const l2 = new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
- * const l3 = new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
+ * const l3 = new Layer('name', null, svgElem); // Create a new group and add it to the DOM as the last layer.
  * @memberof module:layer
  */
 class Layer {

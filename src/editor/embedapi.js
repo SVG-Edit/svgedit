@@ -105,11 +105,11 @@ svgCanvas.setSvgString('string');
 
 // Or if a callback is needed:
 svgCanvas.setSvgString('string')(function (data, error) {
-  if (error) {
+     if (error) {
      // There was an error
-  } else {
+     } else {
      // Handle data
-  }
+     }
 });
 
 // Everything is done with the same API as the real svg-edit,
