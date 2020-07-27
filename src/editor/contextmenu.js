@@ -44,7 +44,10 @@ const menuItemIsValid = function (menuItem) {
 export const add = function (menuItem) {
   // menuItem: {id, label, shortcut, action}
   if (!menuItemIsValid(menuItem)) {
-    throw new TypeError('Menu items must be defined and have at least properties: id, label, action, where action must be a function');
+    throw new TypeError(
+      'Menu items must be defined and have at least properties: ' +
+      'id, label, action, where action must be a function'
+    );
   }
   if (menuItem.id in contextMenuExtensions) {
     throw new Error('Cannot add extension "' + menuItem.id + '", an extension by that name already exists"');

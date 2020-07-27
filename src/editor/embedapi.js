@@ -71,7 +71,11 @@ function messageListener (e) {
     e.source !== this.frame.contentWindow ||
     (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin))
   ) {
-    console.log(`The origin ${e.origin} was not whitelisted as an origin from which responses may be received by this ${window.origin} script.`); // eslint-disable-line no-console
+    // eslint-disable-next-line no-console -- Info for developers
+    console.error(
+      `The origin ${e.origin} was not whitelisted as an origin from ` +
+      `which responses may be received by this ${window.origin} script.`
+    );
     return;
   }
   addCallback(this, data);

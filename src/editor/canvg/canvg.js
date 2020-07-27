@@ -637,7 +637,9 @@ function build (opts) {
         }
       });
 
-      const data = svg.trim(svg.compressSpaces(v)).replace(/\)([a-zA-Z])/g, ') $1').replace(/\)(\s?,\s?)/g, ') ').split(/\s(?=[a-z])/);
+      const data = svg.trim(svg.compressSpaces(v)).replace(
+        /\)([a-zA-Z])/g, ') $1'
+      ).replace(/\)(\s?,\s?)/g, ') ').split(/\s(?=[a-z])/);
       this.transforms = data.map((d) => {
         const type = svg.trim(d.split('(')[0]);
         const s = d.split('(')[1].replace(')', '');
@@ -688,10 +690,25 @@ function build (opts) {
       ctx.translate(-scaleMin * refX.toPixels('x'), -scaleMin * refY.toPixels('y'));
     } else {
       // align
-      if (align.startsWith('xMid') && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
-      if (align.endsWith('YMid') && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
-      if (align.startsWith('xMax') && ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) ctx.translate(width - desiredWidth, 0);
-      if (align.endsWith('YMax') && ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) ctx.translate(0, height - desiredHeight);
+      if (align.startsWith('xMid') &&
+        ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) {
+        ctx.translate(width / 2.0 - desiredWidth / 2.0, 0);
+      }
+      if (align.endsWith('YMid') &&
+        ((meetOrSlice === 'meet' && scaleMin === scaleX) || (meetOrSlice === 'slice' && scaleMax === scaleX))) {
+        ctx.translate(0, height / 2.0 - desiredHeight / 2.0);
+      }
+      if (align.startsWith('xMax') &&
+        ((meetOrSlice === 'meet' && scaleMin === scaleY) || (meetOrSlice === 'slice' && scaleMax === scaleY))) {
+        ctx.translate(width - desiredWidth, 0);
+      }
+      if (align.endsWith('YMax') &&
+        ((meetOrSlice === 'meet' && scaleMin === scaleX) ||
+          (meetOrSlice === 'slice' && scaleMax === scaleX)
+        )
+      ) {
+        ctx.translate(0, height - desiredHeight);
+      }
     }
 
     // scale
@@ -1634,19 +1651,37 @@ function build (opts) {
 
       // render me using a temporary svg element
       const tempSvg = new svg.Element.svg();
-      tempSvg.attributes.viewBox = new svg.Property('viewBox', this.attribute('viewBox').value);
-      tempSvg.attributes.refX = new svg.Property('refX', this.attribute('refX').value);
-      tempSvg.attributes.refY = new svg.Property('refY', this.attribute('refY').value);
-      tempSvg.attributes.width = new svg.Property('width', this.attribute('markerWidth').value);
-      tempSvg.attributes.height = new svg.Property('height', this.attribute('markerHeight').value);
-      tempSvg.attributes.fill = new svg.Property('fill', this.attribute('fill').valueOrDefault('black'));
-      tempSvg.attributes.stroke = new svg.Property('stroke', this.attribute('stroke').valueOrDefault('none'));
+      tempSvg.attributes.viewBox = new svg.Property(
+        'viewBox', this.attribute('viewBox').value
+      );
+      tempSvg.attributes.refX = new svg.Property(
+        'refX', this.attribute('refX').value
+      );
+      tempSvg.attributes.refY = new svg.Property(
+        'refY', this.attribute('refY').value
+      );
+      tempSvg.attributes.width = new svg.Property(
+        'width', this.attribute('markerWidth').value
+      );
+      tempSvg.attributes.height = new svg.Property(
+        'height', this.attribute('markerHeight').value
+      );
+      tempSvg.attributes.fill = new svg.Property(
+        'fill', this.attribute('fill').valueOrDefault('black')
+      );
+      tempSvg.attributes.stroke = new svg.Property(
+        'stroke', this.attribute('stroke').valueOrDefault('none')
+      );
       tempSvg.children = this.children;
       tempSvg.render(ctx);
 
       ctx.restore();
-      if (this.attribute('markerUnits').valueOrDefault('strokeWidth') === 'strokeWidth') ctx.scale(1 / ctx.lineWidth, 1 / ctx.lineWidth);
-      if (this.attribute('orient').valueOrDefault('auto') === 'auto') ctx.rotate(-angle);
+      if (this.attribute('markerUnits').valueOrDefault('strokeWidth') ===
+        'strokeWidth'
+      ) ctx.scale(1 / ctx.lineWidth, 1 / ctx.lineWidth);
+      if (this.attribute('orient').valueOrDefault('auto') === 'auto') {
+        ctx.rotate(-angle);
+      }
       ctx.translate(-point.x, -point.y);
     }
   };
@@ -2246,8 +2281,17 @@ function build (opts) {
       if (this.hasText) {
         // render as text element
         super.renderChildren(ctx);
-        const fontSize = new svg.Property('fontSize', svg.Font.Parse(svg.ctx.font).fontSize);
-        svg.Mouse.checkBoundingBox(this, new svg.BoundingBox(this.x, this.y - fontSize.toPixels('y'), this.x + this.measureText(ctx), this.y));
+        const fontSize = new svg.Property(
+          'fontSize', svg.Font.Parse(svg.ctx.font).fontSize
+        );
+        svg.Mouse.checkBoundingBox(
+          this, new svg.BoundingBox(
+            this.x,
+            this.y - fontSize.toPixels('y'),
+            this.x + this.measureText(ctx),
+            this.y
+          )
+        );
       } else {
         // render as temporary group
         const g = new svg.Element.g();
@@ -2445,18 +2489,33 @@ function build (opts) {
       if (!isNullish(element)) {
         let tempSvg = element;
         if (element.type === 'symbol') {
-          // render me using a temporary svg element in symbol cases (https://www.w3.org/TR/SVG/struct.html#UseElement)
+          // render me using a temporary svg element in symbol cases
+          //  (https://www.w3.org/TR/SVG/struct.html#UseElement)
           tempSvg = new svg.Element.svg();
           tempSvg.type = 'svg';
-          tempSvg.attributes.viewBox = new svg.Property('viewBox', element.attribute('viewBox').value);
-          tempSvg.attributes.preserveAspectRatio = new svg.Property('preserveAspectRatio', element.attribute('preserveAspectRatio').value);
-          tempSvg.attributes.overflow = new svg.Property('overflow', element.attribute('overflow').value);
+          tempSvg.attributes.viewBox = new svg.Property(
+            'viewBox', element.attribute('viewBox').value
+          );
+          tempSvg.attributes.preserveAspectRatio = new svg.Property(
+            'preserveAspectRatio', element.attribute('preserveAspectRatio').value
+          );
+          tempSvg.attributes.overflow = new svg.Property(
+            'overflow', element.attribute('overflow').value
+          );
           tempSvg.children = element.children;
         }
         if (tempSvg.type === 'svg') {
           // if symbol or svg, inherit width/height from me
-          if (this.attribute('width').hasValue()) tempSvg.attributes.width = new svg.Property('width', this.attribute('width').value);
-          if (this.attribute('height').hasValue()) tempSvg.attributes.height = new svg.Property('height', this.attribute('height').value);
+          if (this.attribute('width').hasValue()) {
+            tempSvg.attributes.width = new svg.Property(
+              'width', this.attribute('width').value
+            );
+          }
+          if (this.attribute('height').hasValue()) {
+            tempSvg.attributes.height = new svg.Property(
+              'height', this.attribute('height').value
+            );
+          }
         }
         const oldParent = tempSvg.parent;
         tempSvg.parent = null;
@@ -2907,7 +2966,8 @@ function build (opts) {
       }
     }, 1000 / svg.FRAMERATE);
     // Todo: Replace with an image loading Promise utility?
-    return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
+    // eslint-disable-next-line promise/avoid-new
+    return new Promise((resolve, reject) => {
       if (svg.ImagesLoaded()) {
         waitingForImages = false;
         draw(resolve);

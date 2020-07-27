@@ -156,7 +156,8 @@ const svgdoc = container.ownerDocument;
 const svgroot = svgdoc.importNode(
   text2xml(
     '<svg id="svgroot" xmlns="' + NS.SVG + '" xlinkns="' + NS.XLINK + '" ' +
-      'width="' + dimensions[0] + '" height="' + dimensions[1] + '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
+      'width="' + dimensions[0] + '" height="' + dimensions[1] +
+        '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
       '<defs>' +
         '<filter id="canvashadow" filterUnits="objectBoundingBox">' +
           '<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>' +
@@ -2433,7 +2434,9 @@ const mouseMove = function (evt) {
         bSpline = getBsplinePoint(nextParameter);
         nextPos = bSpline;
         bSpline = getBsplinePoint(parameter);
-        sumDistance += Math.sqrt((nextPos.x - bSpline.x) * (nextPos.x - bSpline.x) + (nextPos.y - bSpline.y) * (nextPos.y - bSpline.y));
+        sumDistance += Math.sqrt((nextPos.x - bSpline.x) *
+          (nextPos.x - bSpline.x) + (nextPos.y - bSpline.y) *
+          (nextPos.y - bSpline.y));
         if (sumDistance > THRESHOLD_DIST) {
           sumDistance -= THRESHOLD_DIST;
 
@@ -3841,7 +3844,8 @@ this.svgToString = function (elem, indent) {
 */
 this.embedImage = function (src) {
   // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
-  return new Promise(function (resolve, reject) { // eslint-disable-line promise/avoid-new
+  // eslint-disable-next-line promise/avoid-new
+  return new Promise(function (resolve, reject) {
     // load in the image and once it's loaded, get the dimensions
     $(new Image()).load(function (response, status, xhr) {
       if (status === 'error') {
@@ -3999,7 +4003,8 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
 
   await canvg(c, svg);
   // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
-  return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
+  // eslint-disable-next-line promise/avoid-new
+  return new Promise((resolve, reject) => {
     const dataURLType = type.toLowerCase();
     const datauri = quality
       ? c.toDataURL('image/' + dataURLType, quality)
@@ -6148,7 +6153,10 @@ this.convertToPath = function (elem, getBBox) {
     opacity: curShape.opacity,
     visibility: 'hidden'
   };
-  return convertToPath(elem, attrs, addSVGElementFromJson, pathActions, clearSelection, addToSelection, hstry, addCommandToHistory);
+  return convertToPath(
+    elem, attrs, addSVGElementFromJson, pathActions,
+    clearSelection, addToSelection, hstry, addCommandToHistory
+  );
 };
 
 /**
@@ -7263,7 +7271,10 @@ this.setBackground = function (color, url) {
       });
       const div = document.createElement('div');
       assignAttributes(div, {
-        style: 'pointer-events:none;width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+        style: 'pointer-events:none;width:100%;height:100%;' +
+          'background-image:url(data:image/gif;base64,' +
+          'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
+          'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
       });
       bgPattern.appendChild(div);
       bg.append(bgPattern);

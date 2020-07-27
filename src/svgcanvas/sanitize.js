@@ -151,7 +151,9 @@ export const sanitizeSvg = function (node) {
       const attrNsURI = attr.namespaceURI;
       // Check that an attribute with the correct localName in the correct namespace is on
       // our whitelist or is a namespace declaration for one of our allowed namespaces
-      if (!({}.hasOwnProperty.call(allowedAttrsNS, attrLocalName) && attrNsURI === allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS) &&
+      if (!({}.hasOwnProperty.call(allowedAttrsNS, attrLocalName) &&
+        attrNsURI === allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS
+      ) &&
         !(attrNsURI === NS.XMLNS && REVERSE_NS[attr.value])) {
         // TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
         // Bypassing the whitelist to allow se: prefixes.

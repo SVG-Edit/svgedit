@@ -53,8 +53,11 @@ export default {
       rightarrow:
         {element: 'path', attr: {d: 'M100,50 L0,90 L30,50 L0,10 Z'}},
       textmarker:
-        {element: 'text', attr: {x: 0, y: 0, 'stroke-width': 0, stroke: 'none', 'font-size': 75, 'font-family': 'serif', 'text-anchor': 'left',
-          'xml:space': 'preserve'}},
+        {element: 'text', attr: {
+          x: 0, y: 0, 'stroke-width': 0, stroke: 'none',
+          'font-size': 75, 'font-family': 'serif', 'text-anchor': 'left',
+          'xml:space': 'preserve'
+        }},
       forwardslash:
         {element: 'path', attr: {d: 'M30,100 L70,0'}},
       reverseslash:

@@ -59,7 +59,9 @@ export default {
       mathjax: {
         embed_svg: 'Save as mathematics',
         embed_mathml: 'Save as figure',
-        svg_save_warning: 'The math will be transformed into a figure is manipulatable like everything else. You will not be able to manipulate the TeX-code anymore. ',
+        svg_save_warning: 'The math will be transformed into a figure is ' +
+          'manipulatable like everything else. You will not be able to ' +
+          'manipulate the TeX-code anymore.',
         mathml_save_warning: 'Advised. The math will be saved as a figure.',
         title: 'Mathematics code editor'
       }
@@ -149,7 +151,9 @@ export default {
                     '<legend id="mathjax_legend">Mathematics Editor</legend>' +
                     '<label>' +
                       '<span id="mathjax_explication">Please type your mathematics in ' +
-                      '<a href="https://en.wikipedia.org/wiki/Help:Displaying_a_formula" target="_blank">TeX</a> code.</span></label>' +
+                      '<a href="https://en.wikipedia.org/wiki/Help:' +
+                        'Displaying_a_formula" target="_blank">TeX</a> code.' +
+                        '</span></label>' +
                     '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
                   '</fieldset>' +
                 '</div>' +

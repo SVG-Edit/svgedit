@@ -476,7 +476,11 @@ editor.loadContentAndPrefs = function () {
     } else if (window.widget) {
       defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
     } else {
-      const result = document.cookie.match(new RegExp('(?:^|;\\s*)' + Utils.regexEscape(encodeURIComponent(storeKey)) + '=([^;]+)'));
+      const result = document.cookie.match(
+        new RegExp('(?:^|;\\s*)' + Utils.regexEscape(
+          encodeURIComponent(storeKey)
+        ) + '=([^;]+)')
+      );
       defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
     }
   });
@@ -3602,7 +3606,10 @@ editor.init = function () {
   str = '';
   $.each(colorBlocks, function (i, e) {
     if (e === 'chessboard') {
-      str += '<div class="color_block" data-bgcolor="' + e + '" style="background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>';
+      str += '<div class="color_block" data-bgcolor="' + e +
+        '" style="background-image:url(data:image/gif;base64,' +
+        'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
+        'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>';
     } else {
       str += '<div class="color_block" data-bgcolor="' + e + '" style="background-color:' + e + ';"></div>';
     }

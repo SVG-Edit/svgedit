@@ -30,7 +30,12 @@ function handleSvgData (data, error) {
 * @returns {void}
 */
 function loadSvg () {
-  const svgexample = '<svg width="640" height="480" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g><title>Layer 1</title><rect stroke-width="5" stroke="#000000" fill="#FF0000" id="svg_1" height="35" width="51" y="35" x="32"/><ellipse ry="15" rx="24" stroke-width="5" stroke="#000000" fill="#0000ff" id="svg_2" cy="60" cx="66"/></g></svg>';
+  const svgexample = '<svg width="640" height="480" xmlns:xlink="' +
+    'http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">' +
+    '<g><title>Layer 1</title><rect stroke-width="5" stroke="#000000" ' +
+    'fill="#FF0000" id="svg_1" height="35" width="51" y="35" x="32"/>' +
+    '<ellipse ry="15" rx="24" stroke-width="5" stroke="#000000" ' +
+      'fill="#0000ff" id="svg_2" cy="60" cx="66"/></g></svg>';
   svgCanvas.setSvgString(svgexample);
 }
 

@@ -170,7 +170,11 @@ export default {
         // TODO: Needs to be done after orig icon loads
         setTimeout(function () {
           // Create source save/cancel buttons
-          /* const save = */ $('#tool_source_save').clone().hide().attr('id', 'polygon_save').unbind().appendTo('#tool_source_back').click(function () {
+          /* const save = */ $('#tool_source_save').clone().hide().attr(
+            'id', 'polygon_save'
+          ).unbind().appendTo(
+            '#tool_source_back'
+          ).click(function () {
             if (!editingitex) {
               return;
             }
@@ -188,7 +192,9 @@ export default {
             // setSelectMode();
           });
 
-          /* const cancel = */ $('#tool_source_cancel').clone().hide().attr('id', 'polygon_cancel').unbind().appendTo('#tool_source_back').click(function () {
+          /* const cancel = */ $('#tool_source_cancel').clone().hide().attr(
+            'id', 'polygon_cancel'
+          ).unbind().appendTo('#tool_source_back').click(function () {
             endChanges();
           });
         }, 3000);

@@ -502,10 +502,10 @@ export const getPathBBox = function (path) {
 
   const getCalc = function (j, P1, P2, P3) {
     return function (t) {
-      return 1 - Math.pow(t, 3) * P0[j] +
-        3 * 1 - Math.pow(t, 2) * t * P1[j] +
-        3 * (1 - t) * Math.pow(t, 2) * P2[j] +
-        Math.pow(t, 3) * P3[j];
+      return 1 - t ** 3 * P0[j] +
+        3 * 1 - t ** 2 * t * P1[j] +
+        3 * (1 - t) * t ** 2 * P2[j] +
+        t ** 3 * P3[j];
     };
   };
 
@@ -538,7 +538,7 @@ export const getPathBBox = function (path) {
           }
           continue;
         }
-        const b2ac = Math.pow(b, 2) - 4 * c * a;
+        const b2ac = b ** 2 - 4 * c * a;
         if (b2ac < 0) { continue; }
         const t1 = (-b + Math.sqrt(b2ac)) / (2 * a);
         if (t1 > 0 && t1 < 1) { bounds[j].push(calc(t1)); }
@@ -888,7 +888,10 @@ export const getBBoxOfElementAsPath = function (elem, addSVGElementFromJson, pat
 * @param {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory} addCommandToHistory - see [canvas.addCommandToHistory]{@link module:svgcanvas~addCommandToHistory}
 * @returns {SVGPathElement|null} The converted path element or null if the DOM element was not recognized.
 */
-export const convertToPath = function (elem, attrs, addSVGElementFromJson, pathActions, clearSelection, addToSelection, hstry, addCommandToHistory) {
+export const convertToPath = function (
+  elem, attrs, addSVGElementFromJson, pathActions,
+  clearSelection, addToSelection, hstry, addCommandToHistory
+) {
   const batchCmd = new hstry.BatchCommand('Convert element to Path');
 
   // Any attribute on the element not covered by the passed-in attributes

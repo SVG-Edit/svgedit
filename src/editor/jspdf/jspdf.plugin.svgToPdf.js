@@ -266,7 +266,10 @@ const svgElementToPdf = function (element, pdf, options) {
         pdf.setLineWidth(k * Number.parseInt(node.getAttribute('stroke-width')));
       }
       const strokeColor = node.getAttribute('stroke');
-      if (attributeIsNotEmpty(strokeColor) && node.getAttribute('stroke-width') !== '0' && node.getAttribute('stroke-opacity') !== '0') {
+      if (attributeIsNotEmpty(strokeColor) &&
+        node.getAttribute('stroke-width') !== '0' &&
+        node.getAttribute('stroke-opacity') !== '0'
+      ) {
         const strokeRGB = new RGBColor(strokeColor);
         if (strokeRGB.ok) {
           // hasStrokeColor = true;

@@ -294,7 +294,9 @@ export default function jQueryPluginSVGIcons ($) {
       elems = $(svgdoc.firstChild).children(); // .getElementsByTagName('foreignContent');
 
       if (!opts.no_img) {
-        const testSrc = dataPre + 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNzUiIGhlaWdodD0iMjc1Ij48L3N2Zz4%3D';
+        const testSrc = dataPre +
+          'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zd' +
+          'mciIHdpZHRoPSIyNzUiIGhlaWdodD0iMjc1Ij48L3N2Zz4%3D';
 
         testImg = $(new Image()).attr({
           src: testSrc,
