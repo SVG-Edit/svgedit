@@ -7,8 +7,8 @@ dist
 docs/jsdoc
 archive
 
-svgedit-config-es.js
-svgedit-config-iife.js
+src/svgedit-config-es.js
+src/svgedit-config-iife.js
 svgedit-custom.css
 src/editor/xdomain-svgedit-config-iife.js
 

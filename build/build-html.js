@@ -7,7 +7,7 @@ const filesAndReplacements = [
     output: 'src/editor/xdomain-svg-editor-es.html',
     replacements: [
       [
-        '<script type="module" src="../../svgedit-config-es.js"></script>',
+        '<script type="module" src="../svgedit-config-es.js"></script>',
         '<script type="module" src="xdomain-svgedit-config-es.js"></script>'
       ]
     ]
@@ -65,8 +65,8 @@ const filesAndReplacements = [
         '<script defer="defer" src="../../dist/redirect-on-lacking-support.js"></script>'
       ],
       [
-        '<script type="module" src="../../svgedit-config-es.js"></script>',
-        '<script defer="defer" src="../../svgedit-config-iife.js"></script>'
+        '<script type="module" src="../svgedit-config-es.js"></script>',
+        '<script defer="defer" src="../svgedit-config-iife.js"></script>'
       ],
       [
         '<script src="../external/dom-polyfill/dom-polyfill.js"></script>',
