@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-  extends: ['eslint:recommended', 'ash-nazg/sauron-node'],
+  extends: ['ash-nazg/sauron-node'],
   parserOptions: {
-    "ecmaVersion": 10,
+    "ecmaVersion": 2020,
     sourceType: 'module'
   },
   env: {
