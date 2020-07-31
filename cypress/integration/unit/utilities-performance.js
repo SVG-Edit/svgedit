@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import '../../../instrumented/editor/jquery.min.js';
 
 import '../../../instrumented/common/svgpathseg.js';

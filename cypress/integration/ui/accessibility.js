@@ -29,11 +29,12 @@ describe('UI - Accessibility', function () {
       {},
       {
         rules: {
-          'label-title-only': { enabled: false },
-          'page-has-heading-one': { enabled: false },
-          'region': { enabled: false },
-          'scrollable-region-focusable': { enabled: false },
+          'label-title-only': {enabled: false},
+          'page-has-heading-one': {enabled: false},
+          region: {enabled: false},
+          'scrollable-region-focusable': {enabled: false}
         }
-      });
+      }
+    );
   });
 });

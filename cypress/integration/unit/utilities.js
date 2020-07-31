@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import '../../../instrumented/editor/jquery.min.js';
 
 import * as browser from '../../../instrumented/common/browser.js';

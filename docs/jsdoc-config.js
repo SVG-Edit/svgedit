@@ -65,6 +65,7 @@ module.exports = {
       'screencasts',
       'test'
     ],
+    // eslint-disable-next-line max-len
     excludePattern: 'svgedit-config-*|build-html.js|rollup*|external/babel-polyfill|extensions/mathjax|imagelib/jquery.min.js|jspdf/jspdf.min.js|jspdf/underscore-min.js|jquery-ui|jquery.min.js|js-hotkeys'
   },
   sourceType: 'module',

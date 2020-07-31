@@ -34,7 +34,6 @@ window.svgEditor.modules = false;
   })
 ];
 
-/* eslint-disable import/no-anonymous-default-export */
 export default [
   {
     input: 'svgedit-config-es.js',
@@ -53,4 +52,3 @@ export default [
     plugins
   }
 ];
-/* eslint-enable import/no-anonymous-default-export */
