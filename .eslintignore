@@ -10,7 +10,7 @@ archive
 src/svgedit-config-es.js
 src/svgedit-config-iife.js
 svgedit-custom.css
-src/editor/xdomain-svgedit-config-iife.js
+src/xdomain-svgedit-config-iife.js
 
 # Vendor/minified files
 src/editor/jquery.min.js
