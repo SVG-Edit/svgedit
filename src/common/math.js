@@ -21,7 +21,6 @@
 
 import {NS} from './namespaces.js';
 import {getTransformList} from './svgtransformlist.js';
-import {isNullish} from './utilities.js';
 
 // Constants
 const NEAR_ZERO = 1e-14;
@@ -152,7 +151,7 @@ export const transformBox = function (l, t, w, h, m) {
  * @returns {SVGTransform} A single matrix transform object
 */
 export const transformListToTransform = function (tlist, min, max) {
-  if (isNullish(tlist)) {
+  if (!tlist) {
     // Or should tlist = null have been prevented before this?
     return svg.createSVGTransformFromMatrix(svg.createSVGMatrix());
   }

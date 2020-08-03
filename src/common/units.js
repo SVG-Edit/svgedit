@@ -7,7 +7,6 @@
  */
 
 import {NS} from './namespaces.js';
-import {isNullish} from './utilities.js';
 
 const wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
 const hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
@@ -306,7 +305,7 @@ export const isValidUnit = function (attr, val, selectedElement) {
     // not already present
     try {
       const elem = elementContainer_.getElement(val);
-      result = (isNullish(elem) || elem === selectedElement);
+      result = (!elem || elem === selectedElement);
     } catch (e) {}
     return result;
   }
