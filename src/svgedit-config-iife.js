@@ -22202,7 +22202,7 @@
            // events for each icon
            $.each(icons, function (id, icon) {
              icon.click(function () {
-               alert('You clicked on the icon with id ' + id); // eslint-disable-line no-alert
+               alert('You clicked on the icon with id ' + id);
              });
            });
          }
@@ -36615,6 +36615,8 @@
   }))();
 
   //  TO BUILD AN IIFE VERSION OF THIS FILE (AS CAN WORK ON OLDER BROWSERS),
+  window.svgEditor = editor;
+  window.svgEditor.modules = false; // URL OVERRIDE CONFIG
 
   editor.setConfig({
     /**

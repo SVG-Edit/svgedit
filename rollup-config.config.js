@@ -36,10 +36,10 @@ window.svgEditor.modules = false;
 
 export default [
   {
-    input: 'svgedit-config-es.js',
+    input: 'src/svgedit-config-es.js',
     output: {
       format: 'iife',
-      file: 'svgedit-config-iife.js'
+      file: 'src/svgedit-config-iife.js'
     },
     plugins
   },
