@@ -675,10 +675,10 @@ editor.init = function () {
     window.svgEditor.modules !== false;
   if (!modularVersion) {
     Object.assign(defaultConfig, {
-      langPath: '../dist/locale/',
-      extPath: '../dist/extensions/',
-      canvgPath: '../dist/',
-      jspdfPath: '../dist/'
+      langPath: '../../dist/locale/',
+      extPath: '../../dist/extensions/',
+      canvgPath: '../../dist/',
+      jspdfPath: '../../dist/'
     });
   }
 

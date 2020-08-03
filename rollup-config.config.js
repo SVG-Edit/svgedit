@@ -47,7 +47,7 @@ export default [
     input: 'src/editor/xdomain-svgedit-config-es.js',
     output: {
       format: 'iife',
-      file: 'src/editor/xdomain-svgedit-config-iife.js'
+      file: 'src/xdomain-svgedit-config-iife.js'
     },
     plugins
   }
