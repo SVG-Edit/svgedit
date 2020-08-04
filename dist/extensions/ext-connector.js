@@ -37,8 +37,6 @@ var svgEditorExtension_connector = (function () {
     };
   }
 
-  /* eslint-disable unicorn/no-fn-reference-in-iterator */
-
   /**
    * @file ext-connector.js
    *

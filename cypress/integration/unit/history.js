@@ -1,9 +1,9 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/namespaces.js';
-import * as transformlist from '../../../instrumented/svgtransformlist.js';
-import * as utilities from '../../../instrumented/utilities.js';
-import * as hstory from '../../../instrumented/history.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
+import * as utilities from '../../../instrumented/common/utilities.js';
+import * as hstory from '../../../instrumented/svgcanvas/history.js';
 
 describe('history', function () {
   // TODO(codedread): Write tests for handling history events.
@@ -20,11 +20,17 @@ describe('history', function () {
   // const svg = document.createElementNS(NS.SVG, 'svg');
   let undoMgr = null;
 
-  class MockCommand {
-    constructor (optText) { this.text_ = optText; }
-    apply () { /* */ } // eslint-disable-line class-methods-use-this
-    unapply () { /* */ } // eslint-disable-line class-methods-use-this
-    getText () { return this.text_; }
+  class MockCommand extends hstory.Command {
+    constructor (optText) {
+      super();
+      this.text = optText;
+    }
+    apply (handler) {
+      super.apply(handler, () => { /* */ });
+    }
+    unapply (handler) {
+      super.unapply(handler, () => { /* */ });
+    }
     elements () { return []; } // eslint-disable-line class-methods-use-this
   }
 
@@ -482,17 +488,17 @@ describe('history', function () {
 
   it('Test BatchCommand', function () {
     let concatResult = '';
-    MockCommand.prototype.apply = function () { concatResult += this.text_; };
+    MockCommand.prototype.apply = function (handler) { concatResult += this.text; };
 
     const batch = new hstory.BatchCommand();
     assert.ok(batch.unapply);
     assert.ok(batch.apply);
     assert.ok(batch.addSubCommand);
     assert.ok(batch.isEmpty);
-    assert.equal(typeof batch.unapply, typeof function () { /* */ });
-    assert.equal(typeof batch.apply, typeof function () { /* */ });
-    assert.equal(typeof batch.addSubCommand, typeof function () { /* */ });
-    assert.equal(typeof batch.isEmpty, typeof function () { /* */ });
+    assert.equal(typeof batch.unapply, 'function');
+    assert.equal(typeof batch.apply, 'function');
+    assert.equal(typeof batch.addSubCommand, 'function');
+    assert.equal(typeof batch.isEmpty, 'function');
 
     assert.ok(batch.isEmpty());
 
@@ -506,8 +512,9 @@ describe('history', function () {
     assert.equal(concatResult, 'abc');
 
     MockCommand.prototype.apply = function () { /* */ };
-    MockCommand.prototype.unapply = function () { concatResult += this.text_; };
+    MockCommand.prototype.unapply = function () { concatResult += this.text; };
     concatResult = '';
+    assert.ok(!concatResult);
     batch.unapply();
     assert.equal(concatResult, 'cba');
 

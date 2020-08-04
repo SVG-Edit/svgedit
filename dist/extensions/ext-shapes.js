@@ -183,6 +183,8 @@ var svgEditorExtension_shapes = (function () {
                 lastBBox = {}; // This populates the category list
 
                 categories = strings.categories;
+                /* eslint-disable max-len */
+
                 library = {
                   basic: {
                     data: {
@@ -218,6 +220,8 @@ var svgEditorExtension_shapes = (function () {
                     buttons: []
                   }
                 };
+                /* eslint-enable max-len */
+
                 modeId = 'shapelib';
                 startClientPos = {};
                 curLib = library.basic;

@@ -1,8 +1,9 @@
-import '../../../instrumented/jquery.min.js';
+/* eslint-disable max-len */
+import '../../../instrumented/editor/jquery.min.js';
 
-import * as browser from '../../../instrumented/browser.js';
-import * as utilities from '../../../instrumented/utilities.js';
-import {NS} from '../../../instrumented/namespaces.js';
+import * as browser from '../../../instrumented/common/browser.js';
+import * as utilities from '../../../instrumented/common/utilities.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
 
 describe('utilities', function () {
   /**

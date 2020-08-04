@@ -3,7 +3,6 @@
 
 import codeCoverageTask from '@cypress/code-coverage/task.js';
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config

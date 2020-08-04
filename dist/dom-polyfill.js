@@ -63,6 +63,7 @@
 
     var node = document.createDocumentFragment();
     nodes.forEach(function (n) {
+      // // eslint-disable-next-line unicorn/prefer-node-append
       node.appendChild(n);
     });
     return node;
@@ -82,7 +83,8 @@
         nodes[_key2] = arguments[_key2];
       }
 
-      nodes = convertNodesIntoANode(nodes);
+      nodes = convertNodesIntoANode(nodes); // // eslint-disable-next-line unicorn/prefer-node-append
+
       this.appendChild(nodes);
     }
   };

@@ -82,7 +82,7 @@ var svgEditorExtension_arrows = (function () {
 
                       if (attrs.fill === color && attrs.d === curD) {
                         // Found another marker with this color and this path
-                        newMarker = this; // eslint-disable-line consistent-this
+                        newMarker = this;
                       }
                     });
 
@@ -98,8 +98,7 @@ var svgEditorExtension_arrows = (function () {
 
                     var remove = true;
                     $(S.svgcontent).find('line, polyline, path, polygon').each(function () {
-                      var element = this; // eslint-disable-line consistent-this
-
+                      var element = this;
                       $.each(mtypes, function (j, mtype) {
                         if ($(element).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
                           remove = false;

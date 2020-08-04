@@ -1,8 +1,8 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/namespaces.js';
-import * as draw from '../../../instrumented/draw.js';
-import * as units from '../../../instrumented/units.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as draw from '../../../instrumented/svgcanvas/draw.js';
+import * as units from '../../../instrumented/common/units.js';
 
 describe('draw.Drawing', function () {
   const addOwnSpies = (obj) => {
@@ -20,6 +20,7 @@ describe('draw.Drawing', function () {
   const PATH_ATTR = {
     // clone will convert relative to absolute, so the test for equality fails.
     // d:    'm7.38867,57.38867c0,-27.62431 22.37569,-50 50,-50c27.62431,0 50,22.37569 50,50c0,27.62431 -22.37569,50 -50,50c-27.62431,0 -50,-22.37569 -50,-50z',
+    // eslint-disable-next-line max-len
     d: 'M7.389,57.389C7.389,29.764 29.764,7.389 57.389,7.389C85.013,7.389 107.389,29.764 107.389,57.389C107.389,85.013 85.013,107.389 57.389,107.389C29.764,107.389 7.389,85.013 7.389,57.389z',
     transform: 'rotate(45 57.388671875000036,57.388671874999986) ',
     'stroke-width': '5',

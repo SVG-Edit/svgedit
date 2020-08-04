@@ -1,6 +1,6 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import * as units from '../../../instrumented/units.js';
+import * as units from '../../../instrumented/common/units.js';
 
 describe('units', function () {
   /**

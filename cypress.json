@@ -1,6 +1,7 @@
 {
   "baseUrl": "http://localhost:8000",
   "reporter": "cypress-multi-reporters",
+  "video": false,
   "reporterOptions": {
     "configFile": "mocha-multi-reporters.json"
   }

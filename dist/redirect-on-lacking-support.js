@@ -118,6 +118,8 @@
     };
   }
 
+  /* eslint-disable import/unambiguous, max-len */
+
   /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
       SVGPathSegMovetoRel, SVGPathSegLinetoRel, SVGPathSegLinetoAbs,
       SVGPathSegLinetoHorizontalRel, SVGPathSegLinetoHorizontalAbs,
@@ -1893,7 +1895,7 @@
               return [];
             }
 
-            var owningPathSegList = this; // eslint-disable-line consistent-this
+            var owningPathSegList = this;
 
             var Builder = /*#__PURE__*/function () {
               function Builder() {

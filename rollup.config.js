@@ -10,8 +10,8 @@ import babel from '@rollup/plugin-babel';
 import {terser} from 'rollup-plugin-terser';
 import replace from 'rollup-plugin-re';
 
-const localeFiles = readdirSync('editor/locale');
-const extensionFiles = readdirSync('editor/extensions');
+const localeFiles = readdirSync('src/editor/locale');
+const extensionFiles = readdirSync('src/editor/extensions');
 
 const isDirectory = (source) => {
   return lstatSync(source).isDirectory();
@@ -19,7 +19,7 @@ const isDirectory = (source) => {
 const getDirectories = (source) => {
   return readdirSync(source).map((nme) => join(source, nme)).filter((i) => isDirectory(i));
 };
-const extensionLocaleDirs = getDirectories('editor/extensions/ext-locale');
+const extensionLocaleDirs = getDirectories('src/editor/extensions/ext-locale');
 const extensionLocaleFiles = [];
 extensionLocaleDirs.forEach((dir) => {
   readdirSync(dir).forEach((file) => {
@@ -41,7 +41,7 @@ extensionLocaleDirs.forEach((dir) => {
  */
 function getRollupObject ({minifying, format = 'umd'} = {}) {
   const nonMinified = {
-    input: 'editor/svg-editor.js',
+    input: 'src/editor/svg-editor.js',
     output: {
       format,
       sourcemap: minifying,
@@ -78,7 +78,7 @@ export default [
   // **/
   ...[true, false].map((min) => {
     return {
-      input: 'editor/svgcanvas.js',
+      input: 'src/svgcanvas/svgcanvas.js',
       output: {
         format: 'iife',
         sourcemap: min,
@@ -109,7 +109,7 @@ export default [
     };
   }),
   {
-    input: 'editor/redirect-on-lacking-support.js',
+    input: 'src/editor/redirect-on-lacking-support.js',
     output: {
       format: 'iife',
       file: 'dist/redirect-on-lacking-support.js'
@@ -119,7 +119,7 @@ export default [
     })]
   },
   {
-    input: 'editor/jspdf/jspdf.plugin.svgToPdf.js',
+    input: 'src/editor/jspdf/jspdf.plugin.svgToPdf.js',
     output: {
       format: 'iife',
       file: 'dist/jspdf.plugin.svgToPdf.js'
@@ -129,7 +129,7 @@ export default [
     })]
   },
   {
-    input: 'editor/extensions/imagelib/index.js',
+    input: 'src/editor/extensions/imagelib/index.js',
     output: {
       format: 'iife',
       file: 'dist/extensions/imagelib/index.js'
@@ -142,7 +142,7 @@ export default [
     ]
   },
   {
-    input: 'editor/extensions/imagelib/openclipart.js',
+    input: 'src/editor/extensions/imagelib/openclipart.js',
     output: {
       format: 'iife',
       file: 'dist/extensions/imagelib/openclipart.js'
@@ -155,7 +155,7 @@ export default [
     ]
   },
   {
-    input: 'editor/external/dom-polyfill/dom-polyfill.js',
+    input: 'src/external/dom-polyfill/dom-polyfill.js',
     output: {
       format: 'iife',
       file: 'dist/dom-polyfill.js'
@@ -165,7 +165,7 @@ export default [
     })]
   },
   {
-    input: 'editor/canvg/canvg.js',
+    input: 'src/editor/canvg/canvg.js',
     output: {
       format: 'iife',
       name: 'canvg',
@@ -183,7 +183,7 @@ export default [
       return undefined;
     }
     return {
-      input: 'editor/locale/' + localeFile,
+      input: 'src/editor/locale/' + localeFile,
       output: {
         format: 'iife',
         name: 'svgEditorLang_' + lang[1].replace(/-/g, '_'),
@@ -201,7 +201,7 @@ export default [
     if (extensionFile.match(/\.php$/)) {
       mkdirSync('dist/extensions', {recursive: true});
       copyFileSync(
-        join('editor/extensions', extensionFile),
+        join('src/editor/extensions', extensionFile),
         join('dist/extensions', extensionFile)
       );
       return undefined;
@@ -212,7 +212,7 @@ export default [
       return undefined;
     }
     return {
-      input: 'editor/extensions/' + extensionFile,
+      input: 'src/editor/extensions/' + extensionFile,
       output: {
         format: 'iife',
         name: 'svgEditorExtension_' + extensionName[1].replace(/-/g, '_'),

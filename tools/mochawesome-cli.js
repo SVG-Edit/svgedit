@@ -1,4 +1,4 @@
-/* eslint-disable no-console, compat/compat -- Node script, not browser */
+/* eslint-disable no-console -- mocha script can use the console */
 // Filed the following to support this file's functionality:
 //    https://github.com/cypress-io/cypress/issues/6585
 

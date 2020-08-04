@@ -34,23 +34,21 @@ window.svgEditor.modules = false;
   })
 ];
 
-/* eslint-disable import/no-anonymous-default-export */
 export default [
   {
-    input: 'svgedit-config-es.js',
+    input: 'src/svgedit-config-es.js',
     output: {
       format: 'iife',
-      file: 'svgedit-config-iife.js'
+      file: 'src/svgedit-config-iife.js'
     },
     plugins
   },
   {
-    input: 'editor/xdomain-svgedit-config-es.js',
+    input: 'src/editor/xdomain-svgedit-config-es.js',
     output: {
       format: 'iife',
-      file: 'editor/xdomain-svgedit-config-iife.js'
+      file: 'src/xdomain-svgedit-config-iife.js'
     },
     plugins
   }
 ];
-/* eslint-enable import/no-anonymous-default-export */

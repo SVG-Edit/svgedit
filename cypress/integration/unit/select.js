@@ -1,7 +1,7 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import * as select from '../../../instrumented/select.js';
-import {NS} from '../../../instrumented/namespaces.js';
+import * as select from '../../../instrumented/svgcanvas/select.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
 
 describe('select', function () {
   const sandbox = document.createElement('div');

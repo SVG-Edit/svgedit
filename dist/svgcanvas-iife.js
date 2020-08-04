@@ -313,6 +313,8 @@ var SvgCanvas = (function () {
     };
   }
 
+  /* eslint-disable import/unambiguous, max-len */
+
   /* globals SVGPathSeg, SVGPathSegMovetoRel, SVGPathSegMovetoAbs,
       SVGPathSegMovetoRel, SVGPathSegLinetoRel, SVGPathSegLinetoAbs,
       SVGPathSegLinetoHorizontalRel, SVGPathSegLinetoHorizontalAbs,
@@ -2088,7 +2090,7 @@ var SvgCanvas = (function () {
               return [];
             }
 
-            var owningPathSegList = this; // eslint-disable-line consistent-this
+            var owningPathSegList = this;
 
             var Builder = /*#__PURE__*/function () {
               function Builder() {
@@ -2741,10 +2743,12 @@ var SvgCanvas = (function () {
   * @returns {external:jQuery}
   */
   function jQueryPluginDBox($) {
-    var strings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
-      ok: 'Ok',
-      cancel: 'Cancel'
-    };
+    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref$ok = _ref.ok,
+        okString = _ref$ok === void 0 ? 'Ok' : _ref$ok,
+        _ref$cancel = _ref.cancel,
+        cancelString = _ref$cancel === void 0 ? 'Cancel' : _ref$cancel;
+
     // This sets up alternative dialog boxes. They mostly work the same way as
     // their UI counterparts, expect instead of returning the result, a callback
     // needs to be included that returns the result as its first parameter.
@@ -2809,11 +2813,11 @@ var SvgCanvas = (function () {
     function dbox(type, msg, defaultVal, opts, changeListener, checkbox) {
       dialogContent.html('<p>' + msg.replace(/\n/g, '</p><p>') + '</p>').toggleClass('prompt', type === 'prompt');
       btnHolder.empty();
-      var ok = $('<input type="button" data-ok="" value="' + strings.ok + '">').appendTo(btnHolder);
+      var ok = $('<input type="button" data-ok="" value="' + okString + '">').appendTo(btnHolder);
       return new Promise(function (resolve, reject) {
         // eslint-disable-line promise/avoid-new
         if (type !== 'alert') {
-          $('<input type="button" value="' + strings.cancel + '">').appendTo(btnHolder).click(function () {
+          $('<input type="button" value="' + cancelString + '">').appendTo(btnHolder).click(function () {
             box.hide();
             resolve(false);
           });
@@ -3705,6 +3709,253 @@ var SvgCanvas = (function () {
   };
 
   /**
+   * Tools for working with units.
+   * @module units
+   * @license MIT
+   *
+   * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
+   */
+  var wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
+  var hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
+
+  /*
+  const unitNumMap = {
+    '%': 2,
+    em: 3,
+    ex: 4,
+    px: 5,
+    cm: 6,
+    mm: 7,
+    in: 8,
+    pt: 9,
+    pc: 10
+  };
+  */
+  // Container of elements.
+
+  var elementContainer_; // Stores mapping of unit type to user coordinates.
+
+  var typeMap_ = {};
+  /**
+   * @interface module:units.ElementContainer
+   */
+
+  /**
+   * @function module:units.ElementContainer#getBaseUnit
+   * @returns {string} The base unit type of the container ('em')
+   */
+
+  /**
+   * @function module:units.ElementContainer#getElement
+   * @returns {?Element} An element in the container given an id
+   */
+
+  /**
+   * @function module:units.ElementContainer#getHeight
+   * @returns {Float} The container's height
+   */
+
+  /**
+   * @function module:units.ElementContainer#getWidth
+   * @returns {Float} The container's width
+   */
+
+  /**
+   * @function module:units.ElementContainer#getRoundDigits
+   * @returns {Integer} The number of digits number should be rounded to
+   */
+
+  /* eslint-disable jsdoc/valid-types */
+
+  /**
+   * @typedef {PlainObject} module:units.TypeMap
+   * @property {Float} em
+   * @property {Float} ex
+   * @property {Float} in
+   * @property {Float} cm
+   * @property {Float} mm
+   * @property {Float} pt
+   * @property {Float} pc
+   * @property {Integer} px
+   * @property {0} %
+   */
+
+  /* eslint-enable jsdoc/valid-types */
+
+  /**
+   * Initializes this module.
+   *
+   * @function module:units.init
+   * @param {module:units.ElementContainer} elementContainer - An object implementing the ElementContainer interface.
+   * @returns {void}
+   */
+
+  var init = function init(elementContainer) {
+    elementContainer_ = elementContainer; // Get correct em/ex values by creating a temporary SVG.
+
+    var svg = document.createElementNS(NS.SVG, 'svg');
+    document.body.append(svg);
+    var rect = document.createElementNS(NS.SVG, 'rect');
+    rect.setAttribute('width', '1em');
+    rect.setAttribute('height', '1ex');
+    rect.setAttribute('x', '1in');
+    svg.append(rect);
+    var bb = rect.getBBox();
+    svg.remove();
+    var inch = bb.x;
+    typeMap_ = {
+      em: bb.width,
+      ex: bb.height,
+      "in": inch,
+      cm: inch / 2.54,
+      mm: inch / 25.4,
+      pt: inch / 72,
+      pc: inch / 6,
+      px: 1,
+      '%': 0
+    };
+  };
+  /**
+  * Group: Unit conversion functions.
+  */
+
+  /**
+   * @function module:units.getTypeMap
+   * @returns {module:units.TypeMap} The unit object with values for each unit
+  */
+
+  var getTypeMap = function getTypeMap() {
+    return typeMap_;
+  };
+  /**
+  * @typedef {GenericArray} module:units.CompareNumbers
+  * @property {Integer} length 2
+  * @property {Float} 0
+  * @property {Float} 1
+  */
+
+  /**
+  * Rounds a given value to a float with number of digits defined in
+  * `round_digits` of `saveOptions`
+  *
+  * @function module:units.shortFloat
+  * @param {string|Float|module:units.CompareNumbers} val - The value (or Array of two numbers) to be rounded
+  * @returns {Float|string} If a string/number was given, returns a Float. If an array, return a string
+  * with comma-separated floats
+  */
+
+  var shortFloat = function shortFloat(val) {
+    var digits = elementContainer_.getRoundDigits();
+
+    if (!isNaN(val)) {
+      return Number(Number(val).toFixed(digits));
+    }
+
+    if (Array.isArray(val)) {
+      return shortFloat(val[0]) + ',' + shortFloat(val[1]);
+    }
+
+    return Number.parseFloat(val).toFixed(digits) - 0;
+  };
+  /**
+  * Converts the number to given unit or baseUnit.
+  * @function module:units.convertUnit
+  * @param {string|Float} val
+  * @param {"em"|"ex"|"in"|"cm"|"mm"|"pt"|"pc"|"px"|"%"} [unit]
+  * @returns {Float}
+  */
+
+  var convertUnit = function convertUnit(val, unit) {
+    unit = unit || elementContainer_.getBaseUnit(); // baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
+    // const val = baseVal.valueInSpecifiedUnits;
+    // baseVal.convertToSpecifiedUnits(1);
+
+    return shortFloat(val / typeMap_[unit]);
+  };
+  /**
+  * Sets an element's attribute based on the unit in its current value.
+  *
+  * @function module:units.setUnitAttr
+  * @param {Element} elem - DOM element to be changed
+  * @param {string} attr - Name of the attribute associated with the value
+  * @param {string} val - Attribute value to convert
+  * @returns {void}
+  */
+
+  var setUnitAttr = function setUnitAttr(elem, attr, val) {
+    //  if (!isNaN(val)) {
+    // New value is a number, so check currently used unit
+    // const oldVal = elem.getAttribute(attr);
+    // Enable this for alternate mode
+    // if (oldVal !== null && (isNaN(oldVal) || elementContainer_.getBaseUnit() !== 'px')) {
+    //   // Old value was a number, so get unit, then convert
+    //   let unit;
+    //   if (oldVal.substr(-1) === '%') {
+    //     const res = getResolution();
+    //     unit = '%';
+    //     val *= 100;
+    //     if (wAttrs.includes(attr)) {
+    //       val = val / res.w;
+    //     } else if (hAttrs.includes(attr)) {
+    //       val = val / res.h;
+    //     } else {
+    //       return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+    //     }
+    //   } else {
+    //     if (elementContainer_.getBaseUnit() !== 'px') {
+    //       unit = elementContainer_.getBaseUnit();
+    //     } else {
+    //       unit = oldVal.substr(-2);
+    //     }
+    //     val = val / typeMap_[unit];
+    //   }
+    //
+    // val += unit;
+    // }
+    // }
+    elem.setAttribute(attr, val);
+  };
+  /**
+  * Converts given values to numbers. Attributes must be supplied in
+  * case a percentage is given.
+  *
+  * @function module:units.convertToNum
+  * @param {string} attr - Name of the attribute associated with the value
+  * @param {string} val - Attribute value to convert
+  * @returns {Float} The converted number
+  */
+
+  var convertToNum = function convertToNum(attr, val) {
+    // Return a number if that's what it already is
+    if (!isNaN(val)) {
+      return val - 0;
+    }
+
+    if (val.substr(-1) === '%') {
+      // Deal with percentage, depends on attribute
+      var _num = val.substr(0, val.length - 1) / 100;
+
+      var width = elementContainer_.getWidth();
+      var height = elementContainer_.getHeight();
+
+      if (wAttrs.includes(attr)) {
+        return _num * width;
+      }
+
+      if (hAttrs.includes(attr)) {
+        return _num * height;
+      }
+
+      return _num * Math.sqrt(width * width + height * height) / Math.sqrt(2);
+    }
+
+    var unit = val.substr(-2);
+    var num = val.substr(0, val.length - 2); // Note that this multiplication turns the string into a number
+
+    return num * typeMap_[unit];
+  };
+
+  /**
    * Mathematical utilities.
    * @module math
    * @license MIT
@@ -3862,7 +4113,7 @@ var SvgCanvas = (function () {
   */
 
   var transformListToTransform = function transformListToTransform(tlist, min, max) {
-    if (isNullish(tlist)) {
+    if (!tlist) {
       // Or should tlist = null have been prevented before this?
       return svg$1.createSVGTransformFromMatrix(svg$1.createSVGMatrix());
     }
@@ -4014,7 +4265,7 @@ var SvgCanvas = (function () {
   * @returns {void}
   */
 
-  var init = function init(editorContext) {
+  var init$1 = function init(editorContext) {
     editorContext_ = editorContext;
     domdoc_ = editorContext.getDOMDocument();
     domcontainer_ = editorContext.getDOMContainer();
@@ -5191,8 +5442,7 @@ var SvgCanvas = (function () {
     }, 9, null).singleNodeValue;
   } : function (id) {
     // jQuery lookup: twice as slow as xpath in FF
-    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
-    return $$1(svgroot_).find('[id=' + id + ']')[0];
+    return $$1(svgroot_).find("[id=".concat(id, "]"))[0];
   };
   /**
   * Assigns multiple attributes to an element.
@@ -5305,58 +5555,6 @@ var SvgCanvas = (function () {
    */
 
   /**
-   * Create a clone of an element, updating its ID and its children's IDs when needed.
-   * @function module:utilities.copyElem
-   * @param {Element} el - DOM element to clone
-   * @param {module:utilities.GetNextID} getNextId - The getter of the next unique ID.
-   * @returns {Element} The cloned element
-   */
-
-  var copyElem = function copyElem(el, getNextId) {
-    // manually create a copy of the element
-    var newEl = document.createElementNS(el.namespaceURI, el.nodeName);
-    $$1.each(el.attributes, function (i, attr) {
-      if (attr.localName !== '-moz-math-font-style') {
-        newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
-      }
-    }); // set the copied element's new id
-
-    newEl.removeAttribute('id');
-    newEl.id = getNextId(); // Opera's "d" value needs to be reset for Opera/Win/non-EN
-    // Also needed for webkit (else does not keep curved segments on clone)
-
-    if (isWebkit() && el.nodeName === 'path') {
-      var fixedD = convertPath(el);
-      newEl.setAttribute('d', fixedD);
-    } // now create copies of all children
-
-
-    $$1.each(el.childNodes, function (i, child) {
-      switch (child.nodeType) {
-        case 1:
-          // element node
-          newEl.append(copyElem(child, getNextId));
-          break;
-
-        case 3:
-          // text node
-          newEl.textContent = child.nodeValue;
-          break;
-      }
-    });
-
-    if ($$1(el).data('gsvg')) {
-      $$1(newEl).data('gsvg', newEl.firstChild);
-    } else if ($$1(el).data('symbol')) {
-      var ref = $$1(el).data('symbol');
-      $$1(newEl).data('ref', ref).data('symbol', ref);
-    } else if (newEl.tagName === 'image') {
-      preventClickDefault(newEl);
-    }
-
-    return newEl;
-  };
-  /**
    * Whether a value is `null` or `undefined`.
    * @param {any} val
    * @returns {boolean}
@@ -5364,254 +5562,6 @@ var SvgCanvas = (function () {
 
   var isNullish = function isNullish(val) {
     return val === null || val === undefined;
-  };
-
-  /**
-   * Tools for working with units.
-   * @module units
-   * @license MIT
-   *
-   * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
-   */
-  var wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
-  var hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
-
-  /*
-  const unitNumMap = {
-    '%': 2,
-    em: 3,
-    ex: 4,
-    px: 5,
-    cm: 6,
-    mm: 7,
-    in: 8,
-    pt: 9,
-    pc: 10
-  };
-  */
-  // Container of elements.
-
-  var elementContainer_; // Stores mapping of unit type to user coordinates.
-
-  var typeMap_ = {};
-  /**
-   * @interface module:units.ElementContainer
-   */
-
-  /**
-   * @function module:units.ElementContainer#getBaseUnit
-   * @returns {string} The base unit type of the container ('em')
-   */
-
-  /**
-   * @function module:units.ElementContainer#getElement
-   * @returns {?Element} An element in the container given an id
-   */
-
-  /**
-   * @function module:units.ElementContainer#getHeight
-   * @returns {Float} The container's height
-   */
-
-  /**
-   * @function module:units.ElementContainer#getWidth
-   * @returns {Float} The container's width
-   */
-
-  /**
-   * @function module:units.ElementContainer#getRoundDigits
-   * @returns {Integer} The number of digits number should be rounded to
-   */
-  // Todo[eslint-plugin-jsdoc@>=30.0.0]: See if parsing fixed to allow '%'
-
-  /* eslint-disable jsdoc/valid-types */
-
-  /**
-   * @typedef {PlainObject} module:units.TypeMap
-   * @property {Float} em
-   * @property {Float} ex
-   * @property {Float} in
-   * @property {Float} cm
-   * @property {Float} mm
-   * @property {Float} pt
-   * @property {Float} pc
-   * @property {Integer} px
-   * @property {0} %
-   */
-
-  /* eslint-enable jsdoc/valid-types */
-
-  /**
-   * Initializes this module.
-   *
-   * @function module:units.init
-   * @param {module:units.ElementContainer} elementContainer - An object implementing the ElementContainer interface.
-   * @returns {void}
-   */
-
-  var init$1 = function init(elementContainer) {
-    elementContainer_ = elementContainer; // Get correct em/ex values by creating a temporary SVG.
-
-    var svg = document.createElementNS(NS.SVG, 'svg');
-    document.body.append(svg);
-    var rect = document.createElementNS(NS.SVG, 'rect');
-    rect.setAttribute('width', '1em');
-    rect.setAttribute('height', '1ex');
-    rect.setAttribute('x', '1in');
-    svg.append(rect);
-    var bb = rect.getBBox();
-    svg.remove();
-    var inch = bb.x;
-    typeMap_ = {
-      em: bb.width,
-      ex: bb.height,
-      "in": inch,
-      cm: inch / 2.54,
-      mm: inch / 25.4,
-      pt: inch / 72,
-      pc: inch / 6,
-      px: 1,
-      '%': 0
-    };
-  };
-  /**
-  * Group: Unit conversion functions.
-  */
-
-  /**
-   * @function module:units.getTypeMap
-   * @returns {module:units.TypeMap} The unit object with values for each unit
-  */
-
-  var getTypeMap = function getTypeMap() {
-    return typeMap_;
-  };
-  /**
-  * @typedef {GenericArray} module:units.CompareNumbers
-  * @property {Integer} length 2
-  * @property {Float} 0
-  * @property {Float} 1
-  */
-
-  /**
-  * Rounds a given value to a float with number of digits defined in
-  * `round_digits` of `saveOptions`
-  *
-  * @function module:units.shortFloat
-  * @param {string|Float|module:units.CompareNumbers} val - The value (or Array of two numbers) to be rounded
-  * @returns {Float|string} If a string/number was given, returns a Float. If an array, return a string
-  * with comma-separated floats
-  */
-
-  var shortFloat = function shortFloat(val) {
-    var digits = elementContainer_.getRoundDigits();
-
-    if (!isNaN(val)) {
-      return Number(Number(val).toFixed(digits));
-    }
-
-    if (Array.isArray(val)) {
-      return shortFloat(val[0]) + ',' + shortFloat(val[1]);
-    }
-
-    return Number.parseFloat(val).toFixed(digits) - 0;
-  };
-  /**
-  * Converts the number to given unit or baseUnit.
-  * @function module:units.convertUnit
-  * @param {string|Float} val
-  * @param {"em"|"ex"|"in"|"cm"|"mm"|"pt"|"pc"|"px"|"%"} [unit]
-  * @returns {Float}
-  */
-
-  var convertUnit = function convertUnit(val, unit) {
-    unit = unit || elementContainer_.getBaseUnit(); // baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
-    // const val = baseVal.valueInSpecifiedUnits;
-    // baseVal.convertToSpecifiedUnits(1);
-
-    return shortFloat(val / typeMap_[unit]);
-  };
-  /**
-  * Sets an element's attribute based on the unit in its current value.
-  *
-  * @function module:units.setUnitAttr
-  * @param {Element} elem - DOM element to be changed
-  * @param {string} attr - Name of the attribute associated with the value
-  * @param {string} val - Attribute value to convert
-  * @returns {void}
-  */
-
-  var setUnitAttr = function setUnitAttr(elem, attr, val) {
-    //  if (!isNaN(val)) {
-    // New value is a number, so check currently used unit
-    // const oldVal = elem.getAttribute(attr);
-    // Enable this for alternate mode
-    // if (oldVal !== null && (isNaN(oldVal) || elementContainer_.getBaseUnit() !== 'px')) {
-    //   // Old value was a number, so get unit, then convert
-    //   let unit;
-    //   if (oldVal.substr(-1) === '%') {
-    //     const res = getResolution();
-    //     unit = '%';
-    //     val *= 100;
-    //     if (wAttrs.includes(attr)) {
-    //       val = val / res.w;
-    //     } else if (hAttrs.includes(attr)) {
-    //       val = val / res.h;
-    //     } else {
-    //       return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-    //     }
-    //   } else {
-    //     if (elementContainer_.getBaseUnit() !== 'px') {
-    //       unit = elementContainer_.getBaseUnit();
-    //     } else {
-    //       unit = oldVal.substr(-2);
-    //     }
-    //     val = val / typeMap_[unit];
-    //   }
-    //
-    // val += unit;
-    // }
-    // }
-    elem.setAttribute(attr, val);
-  };
-  /**
-  * Converts given values to numbers. Attributes must be supplied in
-  * case a percentage is given.
-  *
-  * @function module:units.convertToNum
-  * @param {string} attr - Name of the attribute associated with the value
-  * @param {string} val - Attribute value to convert
-  * @returns {Float} The converted number
-  */
-
-  var convertToNum = function convertToNum(attr, val) {
-    // Return a number if that's what it already is
-    if (!isNaN(val)) {
-      return val - 0;
-    }
-
-    if (val.substr(-1) === '%') {
-      // Deal with percentage, depends on attribute
-      var _num = val.substr(0, val.length - 1) / 100;
-
-      var width = elementContainer_.getWidth();
-      var height = elementContainer_.getHeight();
-
-      if (wAttrs.includes(attr)) {
-        return _num * width;
-      }
-
-      if (hAttrs.includes(attr)) {
-        return _num * height;
-      }
-
-      return _num * Math.sqrt(width * width + height * height) / Math.sqrt(2);
-    }
-
-    var unit = val.substr(-2);
-    var num = val.substr(0, val.length - 2); // Note that this multiplication turns the string into a number
-
-    return num * typeMap_[unit];
   };
 
   /**
@@ -5759,7 +5709,6 @@ var SvgCanvas = (function () {
    * History command for an element that had its DOM position changed.
    * @implements {module:history.HistoryCommand}
   */
-
 
   var MoveElementCommand = /*#__PURE__*/function (_Command) {
     _inherits(MoveElementCommand, _Command);
@@ -5955,7 +5904,7 @@ var SvgCanvas = (function () {
 
           if (isNullish(_this9.nextSibling)) {
             if (window.console) {
-              console.log('Error: reference element was lost'); // eslint-disable-line no-console
+              console.error('Reference element was lost');
             }
           }
 
@@ -6175,7 +6124,6 @@ var SvgCanvas = (function () {
 
         _get(_getPrototypeOf(BatchCommand.prototype), "apply", this).call(this, handler, function () {
           _this14.stack.forEach(function (stackItem) {
-            // eslint-disable-next-line no-console
             console.assert(stackItem, 'stack item should not be null');
             stackItem && stackItem.apply(handler);
           });
@@ -6194,8 +6142,7 @@ var SvgCanvas = (function () {
         var _this15 = this;
 
         _get(_getPrototypeOf(BatchCommand.prototype), "unapply", this).call(this, handler, function () {
-          _this15.stack.forEach(function (stackItem) {
-            // eslint-disable-next-line no-console
+          _this15.stack.reverse().forEach(function (stackItem) {
             console.assert(stackItem, 'stack item should not be null');
             stackItem && stackItem.unapply(handler);
           });
@@ -6235,7 +6182,6 @@ var SvgCanvas = (function () {
     }, {
       key: "addSubCommand",
       value: function addSubCommand(cmd) {
-        // eslint-disable-next-line no-console
         console.assert(cmd !== null, 'cmd should not be null');
         this.stack.push(cmd);
       }
@@ -6445,6 +6391,7 @@ var SvgCanvas = (function () {
   var hstry = /*#__PURE__*/Object.freeze({
     __proto__: null,
     HistoryEventTypes: HistoryEventTypes,
+    Command: Command,
     MoveElementCommand: MoveElementCommand,
     InsertElementCommand: InsertElementCommand,
     RemoveElementCommand: RemoveElementCommand,
@@ -7406,8 +7353,7 @@ var SvgCanvas = (function () {
       this.elem = elem;
       this.segs = [];
       this.selected_pts = [];
-      path = this; // eslint-disable-line consistent-this
-
+      path = this;
       this.init();
     }
     /**
@@ -8820,7 +8766,7 @@ var SvgCanvas = (function () {
           } else {
             path.selected_pts = [];
             path.eachSeg(function (i) {
-              var seg = this; // eslint-disable-line consistent-this
+              var seg = this;
 
               if (!seg.next && !seg.prev) {
                 return;
@@ -9452,9 +9398,9 @@ var SvgCanvas = (function () {
    * an existing group element or, with three parameters, will create a new layer group element.
    *
    * @example
-   * const l1 = new Layer('name', group);          // Use the existing group for this layer.
+   * const l1 = new Layer('name', group); // Use the existing group for this layer.
    * const l2 = new Layer('name', group, svgElem); // Create a new group and add it to the DOM after group.
-   * const l3 = new Layer('name', null, svgElem);  // Create a new group and add it to the DOM as the last layer.
+   * const l3 = new Layer('name', null, svgElem); // Create a new group and add it to the DOM as the last layer.
    * @memberof module:layer
    */
 
@@ -9725,12 +9671,12 @@ var SvgCanvas = (function () {
    * The following will record history: insert, batch, insert.
    * @example
    * hrService = new HistoryRecordingService(this.undoMgr);
-   * hrService.insertElement(elem, text);         // add simple command to history.
+   * hrService.insertElement(elem, text); // add simple command to history.
    * hrService.startBatchCommand('create two elements');
-   * hrService.changeElement(elem, attrs, text);  // add to batchCommand
+   * hrService.changeElement(elem, attrs, text); // add to batchCommand
    * hrService.changeElement(elem, attrs2, text); // add to batchCommand
-   * hrService.endBatchCommand();                  // add batch command with two change commands to history.
-   * hrService.insertElement(elem, text);         // add simple command to history.
+   * hrService.endBatchCommand(); // add batch command with two change commands to history.
+   * hrService.insertElement(elem, text); // add simple command to history.
    *
    * @example
    * // Note that all functions return this, so commands can be chained, like so:
@@ -9905,7 +9851,63 @@ var SvgCanvas = (function () {
 
   HistoryRecordingService.NO_HISTORY = new HistoryRecordingService();
 
-  var $$4 = jQuery;
+  /* globals jQuery */
+
+  var $$4 = jQueryPluginSVG(jQuery);
+  /**
+   * Create a clone of an element, updating its ID and its children's IDs when needed.
+   * @function module:utilities.copyElem
+   * @param {Element} el - DOM element to clone
+   * @param {module:utilities.GetNextID} getNextId - The getter of the next unique ID.
+   * @returns {Element} The cloned element
+   */
+
+  var copyElem = function copyElem(el, getNextId) {
+    // manually create a copy of the element
+    var newEl = document.createElementNS(el.namespaceURI, el.nodeName);
+    $$4.each(el.attributes, function (i, attr) {
+      if (attr.localName !== '-moz-math-font-style') {
+        newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
+      }
+    }); // set the copied element's new id
+
+    newEl.removeAttribute('id');
+    newEl.id = getNextId(); // Opera's "d" value needs to be reset for Opera/Win/non-EN
+    // Also needed for webkit (else does not keep curved segments on clone)
+
+    if (isWebkit() && el.nodeName === 'path') {
+      var fixedD = convertPath(el);
+      newEl.setAttribute('d', fixedD);
+    } // now create copies of all children
+
+
+    $$4.each(el.childNodes, function (i, child) {
+      switch (child.nodeType) {
+        case 1:
+          // element node
+          newEl.append(copyElem(child, getNextId));
+          break;
+
+        case 3:
+          // text node
+          newEl.textContent = child.nodeValue;
+          break;
+      }
+    });
+
+    if ($$4(el).data('gsvg')) {
+      $$4(newEl).data('gsvg', newEl.firstChild);
+    } else if ($$4(el).data('symbol')) {
+      var ref = $$4(el).data('symbol');
+      $$4(newEl).data('ref', ref).data('symbol', ref);
+    } else if (newEl.tagName === 'image') {
+      preventClickDefault(newEl);
+    }
+
+    return newEl;
+  };
+
+  var $$5 = jQuery;
   var visElems$1 = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
   var RandomizeModes = {
     LET_DOCUMENT_DECIDE: 0,
@@ -9932,8 +9934,8 @@ var SvgCanvas = (function () {
 
 
   function findLayerNameInGroup(group) {
-    return $$4('title', group).text() || (isOpera() && group.querySelectorAll // Hack for Opera 10.60
-    ? $$4(group.querySelectorAll('title')).text() : '');
+    return $$5('title', group).text() || (isOpera() && group.querySelectorAll // Hack for Opera 10.60
+    ? $$5(group.querySelectorAll('title')).text() : '');
   }
   /**
    * Given a set of names, return a new unique name.
@@ -10047,10 +10049,9 @@ var SvgCanvas = (function () {
           // querySelector lookup
           return this.svgElem_.querySelector('#' + id);
         } // jQuery lookup: twice as slow as xpath in FF
-        // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 
 
-        return $$4(this.svgElem_).find('[id=' + id + ']')[0];
+        return $$5(this.svgElem_).find('[id=' + id + ']')[0];
       }
       /**
        * @returns {SVGSVGElement}
@@ -10327,7 +10328,7 @@ var SvgCanvas = (function () {
       key: "mergeLayer",
       value: function mergeLayer(hrService) {
         var currentGroup = this.current_layer.getGroup();
-        var prevGroup = $$4(currentGroup).prev()[0];
+        var prevGroup = $$5(currentGroup).prev()[0];
 
         if (!prevGroup) {
           return;
@@ -11054,7 +11055,7 @@ var SvgCanvas = (function () {
 
     canvas_.setCurrentGroup(elem); // Disable other elements
 
-    $$4(elem).parentsUntil('#svgcontent').andSelf().siblings().each(function () {
+    $$5(elem).parentsUntil('#svgcontent').andSelf().siblings().each(function () {
       var opac = this.getAttribute('opacity') || 1; // Store the original's opacity
 
       canvas_.elData(this, 'orig_opac', opac);
@@ -11073,6 +11074,8 @@ var SvgCanvas = (function () {
    * don't remove).
    * @type {PlainObject}
    */
+
+  /* eslint-disable max-len */
 
   var svgWhiteList_ = {
     // SVG Elements
@@ -11141,7 +11144,9 @@ var SvgCanvas = (function () {
     munderover: [],
     none: [],
     semantics: []
-  }; // Produce a Namespace-aware version of svgWhitelist
+  };
+  /* eslint-enable max-len */
+  // Produce a Namespace-aware version of svgWhitelist
 
   var svgWhiteListNS_ = {};
   Object.entries(svgWhiteList_).forEach(function (_ref) {
@@ -11542,7 +11547,7 @@ var SvgCanvas = (function () {
     });
   }
 
-  var $$5 = jQuery; // this is how we map paths to our preferred relative segment types
+  var $$6 = jQuery; // this is how we map paths to our preferred relative segment types
 
   var pathMap$1 = [0, 'z', 'M', 'm', 'L', 'l', 'C', 'c', 'Q', 'q', 'A', 'a', 'H', 'h', 'V', 'v', 'S', 's', 'T', 't'];
   /**
@@ -11751,7 +11756,7 @@ var SvgCanvas = (function () {
 
       case 'g':
         {
-          var gsvg = $$5(selected).data('gsvg');
+          var gsvg = $$6(selected).data('gsvg');
 
           if (gsvg) {
             assignAttributes(gsvg, changes, 1000, true);
@@ -11932,7 +11937,7 @@ var SvgCanvas = (function () {
   };
 
   /* globals jQuery */
-  var $$6 = jQueryPluginSVG(jQuery);
+  var $$7 = jQueryPluginSVG(jQuery);
   var context_;
   /**
   * @interface module:recalculate.EditorContext
@@ -12099,7 +12104,7 @@ var SvgCanvas = (function () {
     } // Grouped SVG element
 
 
-    var gsvg = $$6(selected).data('gsvg'); // we know we have some transforms, so set up return variable
+    var gsvg = $$7(selected).data('gsvg'); // we know we have some transforms, so set up return variable
 
     var batchCmd = new BatchCommand('Transform'); // store initial values that will be affected by reducing the transform list
 
@@ -12161,23 +12166,23 @@ var SvgCanvas = (function () {
 
 
     if (attrs.length) {
-      changes = $$6(selected).attr(attrs);
-      $$6.each(changes, function (attr, val) {
+      changes = $$7(selected).attr(attrs);
+      $$7.each(changes, function (attr, val) {
         changes[attr] = convertToNum(attr, val);
       });
     } else if (gsvg) {
       // GSVG exception
       changes = {
-        x: $$6(gsvg).attr('x') || 0,
-        y: $$6(gsvg).attr('y') || 0
+        x: $$7(gsvg).attr('x') || 0,
+        y: $$7(gsvg).attr('y') || 0
       };
     } // if we haven't created an initial array in polygon/polyline/path, then
     // make a copy of initial values and include the transform
 
 
     if (isNullish(initial)) {
-      initial = $$6.extend(true, {}, changes);
-      $$6.each(initial, function (attr, val) {
+      initial = $$7.extend(true, {}, changes);
+      $$7.each(initial, function (attr, val) {
         initial[attr] = convertToNum(attr, val);
       });
     } // save the start transform value too
@@ -12679,7 +12684,7 @@ var SvgCanvas = (function () {
 
         switch (selected.tagName) {
           case 'line':
-            changes = $$6(selected).attr(['x1', 'y1', 'x2', 'y2']);
+            changes = $$7(selected).attr(['x1', 'y1', 'x2', 'y2']);
           // Fallthrough
 
           case 'polyline':
@@ -12771,8 +12776,8 @@ var SvgCanvas = (function () {
 
             if (_child4.tagName === 'tspan') {
               var tspanChanges = {
-                x: $$6(_child4).attr('x') || 0,
-                y: $$6(_child4).attr('y') || 0
+                x: $$7(_child4).attr('x') || 0,
+                y: $$7(_child4).attr('y') || 0
               };
               remapElement(_child4, tspanChanges, _m5);
             }
@@ -12824,7 +12829,7 @@ var SvgCanvas = (function () {
     return batchCmd;
   };
 
-  var $$7 = jQuery;
+  var $$8 = jQuery;
   var svgFactory_;
   var config_;
   var selectorManager_; // A Singleton
@@ -12958,7 +12963,7 @@ var SvgCanvas = (function () {
         // TODO: getBBox doesn't exclude 'gsvg' and calls getStrokedBBox for any 'g'. Should getBBox be updated?
 
 
-        if (tagName === 'g' && !$$7.data(selected, 'gsvg')) {
+        if (tagName === 'g' && !$$8.data(selected, 'gsvg')) {
           // The bbox for a group does not include stroke vals, so we
           // get the bbox based on its children.
           var strokedBbox = getStrokedBBox([selected.childNodes]);
@@ -13163,8 +13168,8 @@ var SvgCanvas = (function () {
               'pointer-events': 'all'
             }
           });
-          $$7.data(grip, 'dir', dir);
-          $$7.data(grip, 'type', 'resize');
+          $$8.data(grip, 'dir', dir);
+          $$8.data(grip, 'type', 'resize');
           _this.selectorGrips[dir] = _this.selectorGripsGroup.appendChild(grip);
         }); // add rotator elems
 
@@ -13187,9 +13192,9 @@ var SvgCanvas = (function () {
             style: 'cursor:url(' + config_.imgPath + 'rotate.png) 12 12, auto;'
           }
         }));
-        $$7.data(this.rotateGrip, 'type', 'rotate');
+        $$8.data(this.rotateGrip, 'type', 'rotate');
 
-        if ($$7('#canvasBackground').length) {
+        if ($$8('#canvasBackground').length) {
           return;
         }
 
@@ -13393,7 +13398,7 @@ var SvgCanvas = (function () {
     return selectorManager_;
   };
 
-  var $$8 = jQueryPluginSVG(jQuery);
+  var $$9 = jQueryPluginSVG(jQuery);
   var MoveElementCommand$1 = MoveElementCommand,
       InsertElementCommand$1 = InsertElementCommand,
       RemoveElementCommand$1 = RemoveElementCommand,
@@ -13471,13 +13476,12 @@ var SvgCanvas = (function () {
     }; // Update config with new one if given
 
     if (config) {
-      $$8.extend(curConfig, config);
+      $$9.extend(curConfig, config);
     } // Array with width/height of canvas
 
 
     var dimensions = curConfig.dimensions;
-    var canvas = this; // eslint-disable-line consistent-this
-    // "document" element associated with the container (same as window.document using default svg-editor.js)
+    var canvas = this; // "document" element associated with the container (same as window.document using default svg-editor.js)
     // NOTE: This is not actually a SVG document, but an HTML document.
 
     var svgdoc = container.ownerDocument; // This is a container for the document being edited, not the document itself.
@@ -13503,9 +13507,9 @@ var SvgCanvas = (function () {
     */
 
     var clearSvgContentElement = canvas.clearSvgContentElement = function () {
-      $$8(svgcontent).empty(); // TODO: Clear out all other attributes first?
+      $$9(svgcontent).empty(); // TODO: Clear out all other attributes first?
 
-      $$8(svgcontent).attr({
+      $$9(svgcontent).attr({
         id: 'svgcontent',
         width: dimensions[0],
         height: dimensions[1],
@@ -13576,8 +13580,8 @@ var SvgCanvas = (function () {
         opacity: curConfig.initOpacity
       }
     };
-    allProperties.text = $$8.extend(true, {}, allProperties.shape);
-    $$8.extend(allProperties.text, {
+    allProperties.text = $$9.extend(true, {}, allProperties.shape);
+    $$9.extend(allProperties.text, {
       fill: '#000000',
       stroke_width: curConfig.text && curConfig.text.stroke_width,
       font_size: curConfig.text && curConfig.text.font_size,
@@ -13693,7 +13697,7 @@ var SvgCanvas = (function () {
     */
 
 
-    init$1(
+    init(
     /**
     * @implements {module:units.ElementContainer}
     */
@@ -13740,7 +13744,7 @@ var SvgCanvas = (function () {
       return svgroot;
     };
 
-    init(
+    init$1(
     /**
     * @implements {module:utilities.EditorContext}
     */
@@ -14129,7 +14133,7 @@ var SvgCanvas = (function () {
         return svgroot;
       }
 
-      var $target = $$8(mouseTarget); // If it's a selection grip, return the grip parent
+      var $target = $$9(mouseTarget); // If it's a selection grip, return the grip parent
 
       if ($target.closest('#selectorParentGroup').length) {
         // While we could instead have just returned mouseTarget,
@@ -14261,10 +14265,10 @@ var SvgCanvas = (function () {
     var uiStrings = {};
     var visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
     var refAttrs = ['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'];
-    var elData = $$8.data; // Animation element to change the opacity of any newly created element
+    var elData = $$9.data; // Animation element to change the opacity of any newly created element
 
     var opacAni = document.createElementNS(NS.SVG, 'animate');
-    $$8(opacAni).attr({
+    $$9(opacAni).attr({
       attributeName: 'opacity',
       begin: 'indefinite',
       dur: 1,
@@ -14273,7 +14277,7 @@ var SvgCanvas = (function () {
 
     var restoreRefElems = function restoreRefElems(elem) {
       // Look for missing reference elements, restore any found
-      var attrs = $$8(elem).attr(refAttrs);
+      var attrs = $$9(elem).attr(refAttrs);
       Object.values(attrs).forEach(function (val) {
         if (val && val.startsWith('url(')) {
           var id = getUrlFromAttr(val).substr(1);
@@ -14386,7 +14390,7 @@ var SvgCanvas = (function () {
 
     var runExtensions = this.runExtensions = function (action, vars, returnArray, nameFilter) {
       var result = returnArray ? [] : false;
-      $$8.each(extensions, function (name, ext) {
+      $$9.each(extensions, function (name, ext) {
         if (nameFilter && !nameFilter(name)) {
           return;
         }
@@ -14592,7 +14596,7 @@ var SvgCanvas = (function () {
                  * @type {module:svgcanvas.ExtensionArgumentObject}
                  * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
                  */
-                argObj = $$8.extend(canvas.getPrivateMethods(), {
+                argObj = $$9.extend(canvas.getPrivateMethods(), {
                   $: jq,
                   importLocale: importLocale,
                   svgroot: svgroot,
@@ -14719,11 +14723,11 @@ var SvgCanvas = (function () {
 
     var getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function (parent) {
       if (!parent) {
-        parent = $$8(svgcontent).children(); // Prevent layers from being included
+        parent = $$9(svgcontent).children(); // Prevent layers from being included
       }
 
       var contentElems = [];
-      $$8(parent).children().each(function (i, elem) {
+      $$9(parent).children().each(function (i, elem) {
         if (elem.getBBox) {
           contentElems.push({
             elem: elem,
@@ -14744,7 +14748,7 @@ var SvgCanvas = (function () {
     var groupSvgElem = this.groupSvgElem = function (elem) {
       var g = document.createElementNS(NS.SVG, 'g');
       elem.replaceWith(g);
-      $$8(g).append(elem).data('gsvg', elem)[0].id = getNextId();
+      $$9(g).append(elem).data('gsvg', elem)[0].id = getNextId();
     }; // Set scope for these functions
     // Object to contain editor event names and callback functions
 
@@ -15125,7 +15129,7 @@ var SvgCanvas = (function () {
 
       if (currentLayer) {
         currentMode = 'select';
-        selectOnly($$8(currentGroup || currentLayer).children());
+        selectOnly($$9(currentGroup || currentLayer).children());
       }
     };
 
@@ -15218,7 +15222,7 @@ var SvgCanvas = (function () {
           canvas.cloneSelectedElements(0, 0);
         }
 
-        rootSctm = $$8('#svgcontent g')[0].getScreenCTM().inverse();
+        rootSctm = $$9('#svgcontent g')[0].getScreenCTM().inverse();
         var pt = transformPoint(evt.pageX, evt.pageY, rootSctm),
             mouseX = pt.x * currentZoom,
             mouseY = pt.y * currentZoom;
@@ -15374,9 +15378,9 @@ var SvgCanvas = (function () {
               startY = y; // Getting the BBox from the selection box, since we know we
               // want to orient around it
 
-              initBbox = getBBox($$8('#selectedBox0')[0]);
+              initBbox = getBBox($$9('#selectedBox0')[0]);
               var bb = {};
-              $$8.each(initBbox, function (key, val) {
+              $$9.each(initBbox, function (key, val) {
                 bb[key] = val / currentZoom;
               });
               initBbox = bb; // append three dummy transforms to the tlist so that
@@ -15638,7 +15642,7 @@ var SvgCanvas = (function () {
           start_y: startY,
           selectedElements: selectedElements
         }, true);
-        $$8.each(extResult, function (i, r) {
+        $$9.each(extResult, function (i, r) {
           if (r && r.started) {
             started = true;
           }
@@ -15987,7 +15991,7 @@ var SvgCanvas = (function () {
 
           case 'circle':
             {
-              c = $$8(shape).attr(['cx', 'cy']);
+              c = $$9(shape).attr(['cx', 'cy']);
               var _c = c;
               cx = _c.cx;
               cy = _c.cy;
@@ -16003,7 +16007,7 @@ var SvgCanvas = (function () {
 
           case 'ellipse':
             {
-              c = $$8(shape).attr(['cx', 'cy']);
+              c = $$9(shape).attr(['cx', 'cy']);
               var _c2 = c;
               cx = _c2.cx;
               cy = _c2.cy;
@@ -16372,7 +16376,7 @@ var SvgCanvas = (function () {
             }
 
           case 'line':
-            attrs = $$8(element).attr(['x1', 'x2', 'y1', 'y2']);
+            attrs = $$9(element).attr(['x1', 'x2', 'y1', 'y2']);
             keep = attrs.x1 !== attrs.x2 || attrs.y1 !== attrs.y2;
             break;
 
@@ -16380,7 +16384,7 @@ var SvgCanvas = (function () {
           case 'square':
           case 'rect':
           case 'image':
-            attrs = $$8(element).attr(['width', 'height']); // Image should be kept regardless of size (use inherit dimensions later)
+            attrs = $$9(element).attr(['width', 'height']); // Image should be kept regardless of size (use inherit dimensions later)
 
             keep = attrs.width || attrs.height || currentMode === 'image';
             break;
@@ -16390,7 +16394,7 @@ var SvgCanvas = (function () {
             break;
 
           case 'ellipse':
-            attrs = $$8(element).attr(['rx', 'ry']);
+            attrs = $$9(element).attr(['rx', 'ry']);
             keep = attrs.rx || attrs.ry;
             break;
 
@@ -16496,7 +16500,7 @@ var SvgCanvas = (function () {
           mouse_x: mouseX,
           mouse_y: mouseY
         }, true);
-        $$8.each(extResult, function (i, r) {
+        $$9.each(extResult, function (i, r) {
           if (r) {
             keep = r.keep || keep;
             element = r.element;
@@ -16535,7 +16539,7 @@ var SvgCanvas = (function () {
           var cAni;
 
           if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
-            cAni = $$8(opacAni).clone().attr({
+            cAni = $$9(opacAni).clone().attr({
               to: curShape.opacity,
               dur: aniDur
             }).appendTo(element);
@@ -16622,10 +16626,10 @@ var SvgCanvas = (function () {
       // TODO(codedread): Figure out why after the Closure compiler, the window mouseup is ignored.
 
 
-      $$8(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas).dblclick(dblClick).mouseup(mouseUp); // $(window).mouseup(mouseUp);
+      $$9(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas).dblclick(dblClick).mouseup(mouseUp); // $(window).mouseup(mouseUp);
       // TODO(rafaelcastrocouto): User preference for shift key and zoom factor
 
-      $$8(container).bind('mousewheel DOMMouseScroll',
+      $$9(container).bind('mousewheel DOMMouseScroll',
       /**
        * @param {Event} e
        * @fires module:svgcanvas.SvgCanvas#event:updateCanvas
@@ -16639,8 +16643,8 @@ var SvgCanvas = (function () {
 
         e.preventDefault();
         var evt = e.originalEvent;
-        rootSctm = $$8('#svgcontent g')[0].getScreenCTM().inverse();
-        var workarea = $$8('#workarea');
+        rootSctm = $$9('#svgcontent g')[0].getScreenCTM().inverse();
+        var workarea = $$9('#workarea');
         var scrbar = 15;
         var rulerwidth = curConfig.showRulers ? 16 : 0; // mouse relative to content area in content pixels
 
@@ -16701,7 +16705,7 @@ var SvgCanvas = (function () {
           y: topLeftNewCanvas.y - rulerwidth + editorFullH / 2
         };
         canvas.setZoom(zoomlevel);
-        $$8('#zoom').val((zoomlevel * 100).toFixed(1));
+        $$9('#zoom').val((zoomlevel * 100).toFixed(1));
         call('updateCanvas', {
           center: false,
           newCtr: newCtr
@@ -16740,7 +16744,7 @@ var SvgCanvas = (function () {
 
       function setCursor(index) {
         var empty = textinput.value === '';
-        $$8(textinput).focus();
+        $$9(textinput).focus();
 
         if (!arguments.length) {
           if (empty) {
@@ -16973,7 +16977,7 @@ var SvgCanvas = (function () {
 
       function selectAll(evt) {
         setSelection(0, curtext.textContent.length);
-        $$8(this).unbind(evt);
+        $$9(this).unbind(evt);
       }
       /**
        *
@@ -16998,9 +17002,9 @@ var SvgCanvas = (function () {
         var last = (m ? m[0].length : 0) + index;
         setSelection(first, last); // Set tripleclick
 
-        $$8(evt.target).click(selectAll);
+        $$9(evt.target).click(selectAll);
         setTimeout(function () {
-          $$8(evt.target).unbind('click', selectAll);
+          $$9(evt.target).unbind('click', selectAll);
         }, 300);
       }
 
@@ -17094,7 +17098,7 @@ var SvgCanvas = (function () {
             // const sel = selector.selectorRect;
 
             textActions.init();
-            $$8(curtext).css('cursor', 'text'); // if (supportsEditableText()) {
+            $$9(curtext).css('cursor', 'text'); // if (supportsEditableText()) {
             //   curtext.setAttribute('editable', 'simple');
             //   return;
             // }
@@ -17122,18 +17126,18 @@ var SvgCanvas = (function () {
             blinker = null;
 
             if (selblock) {
-              $$8(selblock).attr('display', 'none');
+              $$9(selblock).attr('display', 'none');
             }
 
             if (cursor) {
-              $$8(cursor).attr('visibility', 'hidden');
+              $$9(cursor).attr('visibility', 'hidden');
             }
 
-            $$8(curtext).css('cursor', 'move');
+            $$9(curtext).css('cursor', 'move');
 
             if (selectElem) {
               clearSelection();
-              $$8(curtext).css('cursor', 'move');
+              $$9(curtext).css('cursor', 'move');
               call('selected', [curtext]);
               addToSelection([curtext], true);
             }
@@ -17143,7 +17147,7 @@ var SvgCanvas = (function () {
               canvas.deleteSelectedElements();
             }
 
-            $$8(textinput).blur();
+            $$9(textinput).blur();
             curtext = false; // if (supportsEditableText()) {
             //   curtext.removeAttribute('editable');
             // }
@@ -17194,7 +17198,7 @@ var SvgCanvas = (function () {
             chardata = [];
             chardata.length = len;
             textinput.focus();
-            $$8(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
+            $$9(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
 
             if (!len) {
               end = {
@@ -17284,7 +17288,7 @@ var SvgCanvas = (function () {
         }
       }
 
-      var defelems = $$8(defs).find('linearGradient, radialGradient, filter, marker, svg, symbol');
+      var defelems = $$9(defs).find('linearGradient, radialGradient, filter, marker, svg, symbol');
       i = defelems.length;
 
       while (i--) {
@@ -17315,7 +17319,7 @@ var SvgCanvas = (function () {
 
       pathActions$1.clear(true); // Keep SVG-Edit comment on top
 
-      $$8.each(svgcontent.childNodes, function (i, node) {
+      $$9.each(svgcontent.childNodes, function (i, node) {
         if (i && node.nodeType === 8 && node.data.includes('Created with')) {
           svgcontent.firstChild.before(node);
         }
@@ -17328,7 +17332,7 @@ var SvgCanvas = (function () {
 
       var nakedSvgs = []; // Unwrap gsvg if it has no special attributes (only id and style)
 
-      $$8(svgcontent).find('g:data(gsvg)').each(function () {
+      $$9(svgcontent).find('g:data(gsvg)').each(function () {
         var attrs = this.attributes;
         var len = attrs.length;
 
@@ -17342,13 +17346,13 @@ var SvgCanvas = (function () {
         if (len <= 0) {
           var svg = this.firstChild;
           nakedSvgs.push(svg);
-          $$8(this).replaceWith(svg);
+          $$9(this).replaceWith(svg);
         }
       });
       var output = this.svgToString(svgcontent, 0); // Rewrap gsvg
 
       if (nakedSvgs.length) {
-        $$8(nakedSvgs).each(function () {
+        $$9(nakedSvgs).each(function () {
           groupSvgElem(this);
         });
       }
@@ -17409,7 +17413,7 @@ var SvgCanvas = (function () {
           out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="' + NS.SVG + '"');
           var nsuris = {}; // Check elements for namespaces, add if found
 
-          $$8(elem).find('*').andSelf().each(function () {
+          $$9(elem).find('*').andSelf().each(function () {
             // const el = this;
             // for some elements have no attribute
             var uri = this.namespaceURI;
@@ -17419,7 +17423,7 @@ var SvgCanvas = (function () {
               out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
             }
 
-            $$8.each(this.attributes, function (i, attr) {
+            $$9.each(this.attributes, function (i, attr) {
               var u = attr.namespaceURI;
 
               if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
@@ -17607,10 +17611,10 @@ var SvgCanvas = (function () {
 
     this.embedImage = function (src) {
       // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
+      // eslint-disable-next-line promise/avoid-new
       return new Promise(function (resolve, reject) {
-        // eslint-disable-line promise/avoid-new
         // load in the image and once it's loaded, get the dimensions
-        $$8(new Image()).load(function (response, status, xhr) {
+        $$9(new Image()).load(function (response, status, xhr) {
           if (status === 'error') {
             reject(new Error('Error loading image: ' + xhr.status + ' ' + xhr.statusText));
             return;
@@ -17673,7 +17677,7 @@ var SvgCanvas = (function () {
       clearSelection(); // Update save options if provided
 
       if (opts) {
-        $$8.extend(saveOptions, opts);
+        $$9.extend(saveOptions, opts);
       }
 
       saveOptions.apply = true; // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
@@ -17705,13 +17709,13 @@ var SvgCanvas = (function () {
         foreignObject: uiStrings.exportNoforeignObject,
         '[stroke-dasharray]': uiStrings.exportNoDashArray
       };
-      var content = $$8(svgcontent); // Add font/text check if Canvas Text API is not implemented
+      var content = $$9(svgcontent); // Add font/text check if Canvas Text API is not implemented
 
-      if (!('font' in $$8('<canvas>')[0].getContext('2d'))) {
+      if (!('font' in $$9('<canvas>')[0].getContext('2d'))) {
         issueList.text = uiStrings.exportNoText;
       }
 
-      $$8.each(issueList, function (sel, descr) {
+      $$9.each(issueList, function (sel, descr) {
         if (content.find(sel).length) {
           issueCodes.push(sel);
           issues.push(descr);
@@ -17794,13 +17798,13 @@ var SvgCanvas = (function () {
                 canvg = _yield$importSetGloba.canvg;
 
               case 10:
-                if (!$$8('#export_canvas').length) {
-                  $$8('<canvas>', {
+                if (!$$9('#export_canvas').length) {
+                  $$9('<canvas>', {
                     id: 'export_canvas'
                   }).hide().appendTo('body');
                 }
 
-                c = $$8('#export_canvas')[0];
+                c = $$9('#export_canvas')[0];
                 c.width = canvas.contentW;
                 c.height = canvas.contentH;
                 _context2.next = 16;
@@ -17808,7 +17812,6 @@ var SvgCanvas = (function () {
 
               case 16:
                 return _context2.abrupt("return", new Promise(function (resolve, reject) {
-                  // eslint-disable-line promise/avoid-new
                   var dataURLType = type.toLowerCase();
                   var datauri = quality ? c.toDataURL('image/' + dataURLType, quality) : c.toDataURL('image/' + dataURLType);
                   var bloburl;
@@ -18063,7 +18066,7 @@ var SvgCanvas = (function () {
           // to other elements
 
 
-          $$8.each(refAttrs, function (i, attr) {
+          $$9.each(refAttrs, function (i, attr) {
             var attrnode = n.getAttributeNode(attr);
 
             if (attrnode) {
@@ -18147,7 +18150,7 @@ var SvgCanvas = (function () {
 
 
     var setUseData = this.setUseData = function (parent) {
-      var elems = $$8(parent);
+      var elems = $$9(parent);
 
       if (parent.tagName !== 'use') {
         elems = elems.find('use');
@@ -18161,10 +18164,10 @@ var SvgCanvas = (function () {
           return;
         }
 
-        $$8(this).data('ref', refElem);
+        $$9(this).data('ref', refElem);
 
         if (refElem.tagName === 'symbol' || refElem.tagName === 'svg') {
-          $$8(this).data('symbol', refElem).data('ref', refElem);
+          $$9(this).data('symbol', refElem).data('ref', refElem);
         }
       });
     };
@@ -18177,21 +18180,21 @@ var SvgCanvas = (function () {
 
 
     var convertGradients = this.convertGradients = function (elem) {
-      var elems = $$8(elem).find('linearGradient, radialGradient');
+      var elems = $$9(elem).find('linearGradient, radialGradient');
 
       if (!elems.length && isWebkit()) {
         // Bug in webkit prevents regular *Gradient selector search
-        elems = $$8(elem).find('*').filter(function () {
+        elems = $$9(elem).find('*').filter(function () {
           return this.tagName.includes('Gradient');
         });
       }
 
       elems.each(function () {
-        var grad = this; // eslint-disable-line consistent-this
+        var grad = this;
 
-        if ($$8(grad).attr('gradientUnits') === 'userSpaceOnUse') {
+        if ($$9(grad).attr('gradientUnits') === 'userSpaceOnUse') {
           // TODO: Support more than one element with this ref by duplicating parent grad
-          var fillStrokeElems = $$8(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
+          var fillStrokeElems = $$9(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
 
           if (!fillStrokeElems.length) {
             return;
@@ -18206,7 +18209,7 @@ var SvgCanvas = (function () {
           }
 
           if (grad.tagName === 'linearGradient') {
-            var gCoords = $$8(grad).attr(['x1', 'y1', 'x2', 'y2']); // If has transform, convert
+            var gCoords = $$9(grad).attr(['x1', 'y1', 'x2', 'y2']); // If has transform, convert
 
             var tlist = grad.gradientTransform.baseVal;
 
@@ -18221,7 +18224,7 @@ var SvgCanvas = (function () {
               grad.removeAttribute('gradientTransform');
             }
 
-            $$8(grad).attr({
+            $$9(grad).attr({
               x1: (gCoords.x1 - bb.x) / bb.width,
               y1: (gCoords.y1 - bb.y) / bb.height,
               x2: (gCoords.x2 - bb.x) / bb.width,
@@ -18266,16 +18269,16 @@ var SvgCanvas = (function () {
         elem = selectedElements[0];
       }
 
-      var $elem = $$8(elem);
+      var $elem = $$9(elem);
       var batchCmd = new BatchCommand$1();
       var ts;
 
       if ($elem.data('gsvg')) {
         // Use the gsvg as the new group
         var svg = elem.firstChild;
-        var pt = $$8(svg).attr(['x', 'y']);
-        $$8(elem.firstChild.firstChild).unwrap();
-        $$8(elem).removeData('gsvg');
+        var pt = $$9(svg).attr(['x', 'y']);
+        $$9(elem.firstChild.firstChild).unwrap();
+        $$9(elem).removeData('gsvg');
         var tlist = getTransformList(elem);
         var xform = svgroot.createSVGTransform();
         xform.setTranslate(pt.x, pt.y);
@@ -18301,7 +18304,7 @@ var SvgCanvas = (function () {
         batchCmd.addSubCommand(new RemoveElementCommand$1($elem[0], $elem[0].nextSibling, $elem[0].parentNode));
         $elem.remove(); // See if other elements reference this symbol
 
-        var hasMore = $$8(svgcontent).find('use:data(symbol)').length;
+        var hasMore = $$9(svgcontent).find('use:data(symbol)').length;
         var g = svgdoc.createElementNS(NS.SVG, 'g');
         var childs = elem.childNodes;
         var i;
@@ -18312,8 +18315,8 @@ var SvgCanvas = (function () {
 
 
         if (isGecko()) {
-          var dupeGrads = $$8(findDefs()).children('linearGradient,radialGradient,pattern').clone();
-          $$8(g).append(dupeGrads);
+          var dupeGrads = $$9(findDefs()).children('linearGradient,radialGradient,pattern').clone();
+          $$9(g).append(dupeGrads);
         }
 
         if (ts) {
@@ -18324,7 +18327,7 @@ var SvgCanvas = (function () {
         uniquifyElems(g); // Put the dupe gradients back into <defs> (after uniquifying them)
 
         if (isGecko()) {
-          $$8(findDefs()).append($$8(g).find('linearGradient,radialGradient,pattern'));
+          $$9(findDefs()).append($$9(g).find('linearGradient,radialGradient,pattern'));
         } // now give the g itself a new id
 
 
@@ -18361,7 +18364,7 @@ var SvgCanvas = (function () {
           }
         }); // Give ID for any visible element missing one
 
-        $$8(g).find(visElems).each(function () {
+        $$9(g).find(visElems).each(function () {
           if (!this.id) {
             this.id = getNextId();
           }
@@ -18419,7 +18422,7 @@ var SvgCanvas = (function () {
         }
 
         svgroot.append(svgcontent);
-        var content = $$8(svgcontent);
+        var content = $$9(svgcontent);
         canvas.current_drawing_ = new Drawing(svgcontent, idprefix); // retrieve or set the nonce
 
         var nonce = getCurrentDrawing().getNonce();
@@ -18432,8 +18435,7 @@ var SvgCanvas = (function () {
 
 
         content.find('image').each(function () {
-          var image = this; // eslint-disable-line consistent-this
-
+          var image = this;
           preventClickDefault(image);
           var val = getHref(this);
 
@@ -18445,7 +18447,7 @@ var SvgCanvas = (function () {
               if (m) {
                 var url = decodeURIComponent(m[1]); // const url = decodeURIComponent(m.groups.url);
 
-                $$8(new Image()).load(function () {
+                $$9(new Image()).load(function () {
                   image.setAttributeNS(NS.XLINK, 'xlink:href', url);
                 }).attr('src', url);
               }
@@ -18458,7 +18460,7 @@ var SvgCanvas = (function () {
 
         content.find('svg').each(function () {
           // Skip if it's in a <defs>
-          if ($$8(this).closest('defs').length) {
+          if ($$9(this).closest('defs').length) {
             return;
           }
 
@@ -18467,7 +18469,7 @@ var SvgCanvas = (function () {
           var pa = this.parentNode;
 
           if (pa.childNodes.length === 1 && pa.nodeName === 'g') {
-            $$8(pa).data('gsvg', this);
+            $$9(pa).data('gsvg', this);
             pa.id = pa.id || getNextId();
           } else {
             groupSvgElem(this);
@@ -18493,7 +18495,7 @@ var SvgCanvas = (function () {
           attrs.width = vb[2];
           attrs.height = vb[3]; // handle content that doesn't have a viewBox
         } else {
-          $$8.each(['width', 'height'], function (i, dim) {
+          $$9.each(['width', 'height'], function (i, dim) {
             // Set to 100 if not given
             var val = content.attr(dim) || '100%';
 
@@ -18580,7 +18582,7 @@ var SvgCanvas = (function () {
         var useExisting = false; // Look for symbol and make sure symbol exists in image
 
         if (importIds[uid]) {
-          if ($$8(importIds[uid].symbol).parents('#svgroot').length) {
+          if ($$9(importIds[uid].symbol).parents('#svgroot').length) {
             useExisting = true;
           }
         }
@@ -18634,7 +18636,7 @@ var SvgCanvas = (function () {
             // Move all gradients into root for Firefox, workaround for this bug:
             // https://bugzilla.mozilla.org/show_bug.cgi?id=353575
             // TODO: Make this properly undo-able.
-            $$8(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
+            $$9(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
           }
 
           while (svg.firstChild) {
@@ -18677,7 +18679,7 @@ var SvgCanvas = (function () {
         clearSelection();
         useEl.setAttribute('transform', ts);
         recalculateDimensions(useEl);
-        $$8(useEl).data('symbol', symbol).data('ref', symbol);
+        $$9(useEl).data('symbol', symbol).data('ref', symbol);
         addToSelection([useEl]); // TODO: Find way to add this in a recalculateDimensions-parsable way
         // if (vb[0] !== 0 || vb[1] !== 0) {
         //   ts = 'translate(' + (-vb[0]) + ',' + (-vb[1]) + ') ' + ts;
@@ -18848,7 +18850,7 @@ var SvgCanvas = (function () {
 
     this.setUiStrings = function (strs) {
       Object.assign(uiStrings, strs.notification);
-      $$8 = jQueryPluginDBox($$8, strs.common);
+      $$9 = jQueryPluginDBox($$9, strs.common);
       setUiStrings(strs);
     };
     /**
@@ -18877,7 +18879,7 @@ var SvgCanvas = (function () {
         return undefined;
       }
 
-      elem = $$8(elem).data('gsvg') || $$8(elem).data('symbol') || elem;
+      elem = $$9(elem).data('gsvg') || $$9(elem).data('symbol') || elem;
       var childs = elem.childNodes;
 
       var _iterator3 = _createForOfIteratorHelper(childs),
@@ -18910,8 +18912,8 @@ var SvgCanvas = (function () {
 
     this.setGroupTitle = function (val) {
       var elem = selectedElements[0];
-      elem = $$8(elem).data('gsvg') || elem;
-      var ts = $$8(elem).children('title');
+      elem = $$9(elem).data('gsvg') || elem;
+      var ts = $$9(elem).children('title');
       var batchCmd = new BatchCommand$1('Set Label');
       var title;
 
@@ -18931,7 +18933,7 @@ var SvgCanvas = (function () {
         // Add title element
         title = svgdoc.createElementNS(NS.SVG, 'title');
         title.textContent = val;
-        $$8(elem).prepend(title);
+        $$9(elem).prepend(title);
         batchCmd.addSubCommand(new InsertElementCommand$1(title));
       }
 
@@ -19040,7 +19042,7 @@ var SvgCanvas = (function () {
           addToSelection(visEls);
           var dx = [],
               dy = [];
-          $$8.each(visEls, function (i, item) {
+          $$9.each(visEls, function (i, item) {
             dx.push(bbox.x * -1);
             dy.push(bbox.y * -1);
           });
@@ -19093,7 +19095,7 @@ var SvgCanvas = (function () {
 
 
     this.getOffset = function () {
-      return $$8(svgcontent).attr(['x', 'y']);
+      return $$9(svgcontent).attr(['x', 'y']);
     };
     /**
      * @typedef {PlainObject} module:svgcanvas.ZoomAndBBox
@@ -19153,7 +19155,7 @@ var SvgCanvas = (function () {
               return undefined;
             }
 
-            var selectedElems = $$8.map(selectedElements, function (n) {
+            var selectedElems = $$9.map(selectedElements, function (n) {
               if (n) {
                 return n;
               }
@@ -19284,7 +19286,7 @@ var SvgCanvas = (function () {
       var res = getResolution();
       svgcontent.setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel);
       currentZoom = zoomLevel;
-      $$8.each(selectedElements, function (i, elem) {
+      $$9.each(selectedElements, function (i, elem) {
         if (!elem) {
           return;
         }
@@ -19434,7 +19436,7 @@ var SvgCanvas = (function () {
 
     var findDuplicateGradient = function findDuplicateGradient(grad) {
       var defs = findDefs();
-      var existingGrads = $$8(defs).find('linearGradient, radialGradient');
+      var existingGrads = $$9(defs).find('linearGradient, radialGradient');
       var i = existingGrads.length;
       var radAttrs = ['r', 'cx', 'cy', 'fx', 'fy'];
 
@@ -19447,10 +19449,10 @@ var SvgCanvas = (function () {
           }
         } else {
           var _ret = function () {
-            var gradAttrs = $$8(grad).attr(radAttrs);
-            var ogAttrs = $$8(og).attr(radAttrs);
+            var gradAttrs = $$9(grad).attr(radAttrs);
+            var ogAttrs = $$9(og).attr(radAttrs);
             var diff = false;
-            $$8.each(radAttrs, function (j, attr) {
+            $$9.each(radAttrs, function (j, attr) {
               if (gradAttrs[attr] !== ogAttrs[attr]) {
                 diff = true;
               }
@@ -19502,7 +19504,7 @@ var SvgCanvas = (function () {
 
     this.setPaint = function (type, paint) {
       // make a copy
-      var p = new $$8.jGraduate.Paint(paint);
+      var p = new $$9.jGraduate.Paint(paint);
       this.setPaintOpacity(type, p.alpha / 100, true); // now set the current paint object
 
       curProperties[type + '_paint'] = p;
@@ -20080,7 +20082,7 @@ var SvgCanvas = (function () {
         return;
       }
 
-      var attrs = $$8(elem).attr(['width', 'height']);
+      var attrs = $$9(elem).attr(['width', 'height']);
       var setsize = !attrs.width || !attrs.height;
       var curHref = getHref(elem); // Do nothing if no URL change or size change
 
@@ -20093,9 +20095,9 @@ var SvgCanvas = (function () {
       batchCmd.addSubCommand(new ChangeElementCommand$1(elem, {
         '#href': curHref
       }));
-      $$8(new Image()).load(function () {
-        var changes = $$8(elem).attr(['width', 'height']);
-        $$8(elem).attr({
+      $$9(new Image()).load(function () {
+        var changes = $$9(elem).attr(['width', 'height']);
+        $$9(elem).attr({
           width: this.width,
           height: this.height
         });
@@ -20122,7 +20124,7 @@ var SvgCanvas = (function () {
 
       if (elem.tagName !== 'a') {
         // See if parent is an anchor
-        var parentsA = $$8(elem).parents('a');
+        var parentsA = $$9(elem).parents('a');
 
         if (parentsA.length) {
           elem = parentsA[0];
@@ -20221,7 +20223,7 @@ var SvgCanvas = (function () {
     this.convertToPath = function (elem, getBBox) {
       if (isNullish(elem)) {
         var elems = selectedElements;
-        $$8.each(elems, function (i, el) {
+        $$9.each(elems, function (i, el) {
           if (el) {
             canvas.convertToPath(el);
           }
@@ -20531,7 +20533,7 @@ var SvgCanvas = (function () {
 
       sessionStorage.setItem(CLIPBOARD_ID, data);
       flashStorage();
-      var menu = $$8('#cmenu_canvas'); // Context menu might not exist (it is provided by editor.js).
+      var menu = $$9('#cmenu_canvas'); // Context menu might not exist (it is provided by editor.js).
 
       if (menu.enableContextMenuItems) {
         menu.enableContextMenuItems('#paste,#paste_in_place');
@@ -20578,10 +20580,14 @@ var SvgCanvas = (function () {
           elem.attr.id = changedIDs[elem.attr.id];
         }
 
-        if (elem.children) elem.children.forEach(checkIDs);
+        if (elem.children) elem.children.forEach(function (child) {
+          return checkIDs(child);
+        });
       }
 
-      clipb.forEach(checkIDs); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
+      clipb.forEach(function (elem) {
+        return checkIDs(elem);
+      }); // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
 
       /**
       * Triggered when `pasteElements` is called from a paste action (context menu or key).
@@ -20636,7 +20642,7 @@ var SvgCanvas = (function () {
             cy = ctrY - (bbox.y + bbox.height / 2),
             dx = [],
             dy = [];
-        $$8.each(pasted, function (i, item) {
+        $$9.each(pasted, function (i, item) {
           dx.push(cx);
           dy.push(cy);
         });
@@ -20745,7 +20751,7 @@ var SvgCanvas = (function () {
       // then set the child's attribute
 
       var gangle = getRotationAngle(g);
-      var gattrs = $$8(g).attr(['filter', 'opacity']);
+      var gattrs = $$9(g).attr(['filter', 'opacity']);
       var gfilter, gblur, changes;
       var drawing = getCurrentDrawing();
 
@@ -20929,7 +20935,7 @@ var SvgCanvas = (function () {
         return;
       }
 
-      if ($$8(g).data('gsvg') || $$8(g).data('symbol')) {
+      if ($$9(g).data('gsvg') || $$9(g).data('symbol')) {
         // Is svg, so actually convert to group
         convertToGroup(g);
         return;
@@ -20938,12 +20944,12 @@ var SvgCanvas = (function () {
       if (g.tagName === 'use') {
         // Somehow doesn't have data set, so retrieve
         var symbol = getElem(getHref(g).substr(1));
-        $$8(g).data('symbol', symbol).data('ref', symbol);
+        $$9(g).data('symbol', symbol).data('ref', symbol);
         convertToGroup(g);
         return;
       }
 
-      var parentsA = $$8(g).parents('a');
+      var parentsA = $$9(g).parents('a');
 
       if (parentsA.length) {
         g = parentsA[0];
@@ -21086,13 +21092,13 @@ var SvgCanvas = (function () {
       curBBoxes = [];
       var closest, foundCur; // jQuery sorts this list
 
-      var list = $$8(getIntersectionList(getStrokedBBoxDefaultVisible([selected]))).toArray();
+      var list = $$9(getIntersectionList(getStrokedBBoxDefaultVisible([selected]))).toArray();
 
       if (dir === 'Down') {
         list.reverse();
       }
 
-      $$8.each(list, function () {
+      $$9.each(list, function () {
         if (!foundCur) {
           if (this === selected) {
             foundCur = true;
@@ -21101,8 +21107,7 @@ var SvgCanvas = (function () {
           return true;
         }
 
-        closest = this; // eslint-disable-line consistent-this
-
+        closest = this;
         return false;
       });
 
@@ -21113,7 +21118,7 @@ var SvgCanvas = (function () {
       var t = selected;
       var oldParent = t.parentNode;
       var oldNextSibling = t.nextSibling;
-      $$8(closest)[dir === 'Down' ? 'before' : 'after'](t); // If the element actually moved position, add the command and fire the changed
+      $$9(closest)[dir === 'Down' ? 'before' : 'after'](t); // If the element actually moved position, add the command and fire the changed
       // event handler.
 
       if (oldNextSibling !== t.nextSibling) {
@@ -21221,7 +21226,7 @@ var SvgCanvas = (function () {
        */
 
       function sortfunction(a, b) {
-        return $$8(b).index() - $$8(a).index();
+        return $$9(b).index() - $$9(a).index();
       }
 
       selectedElements.sort(sortfunction);
@@ -21431,7 +21436,7 @@ var SvgCanvas = (function () {
     this.updateCanvas = function (w, h) {
       svgroot.setAttribute('width', w);
       svgroot.setAttribute('height', h);
-      var bg = $$8('#canvasBackground')[0];
+      var bg = $$9('#canvasBackground')[0];
       var oldX = svgcontent.getAttribute('x');
       var oldY = svgcontent.getAttribute('y');
       var x = (w - this.contentW * currentZoom) / 2;
@@ -21503,7 +21508,7 @@ var SvgCanvas = (function () {
 
     this.setBackground = function (color, url) {
       var bg = getElem('canvasBackground');
-      var border = $$8(bg).find('rect')[0];
+      var border = $$9(bg).find('rect')[0];
       var bgImg = getElem('background_image');
       var bgPattern = getElem('background_pattern');
       border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
@@ -21520,7 +21525,7 @@ var SvgCanvas = (function () {
           });
           var div = document.createElement('div');
           assignAttributes(div, {
-            style: 'pointer-events:none;width:100%;height:100%;background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+            style: 'pointer-events:none;width:100%;height:100%;' + 'background-image:url(data:image/gif;base64,' + 'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' + 'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
           });
           bgPattern.appendChild(div);
           bg.append(bgPattern);
