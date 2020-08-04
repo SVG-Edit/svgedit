@@ -44,13 +44,13 @@ to join the project.
 
 ## Demo
 
-### [Try SVG-edit here](https://svg-edit.github.io/svgedit/editor/svg-editor.html)
+### [Try SVG-edit here](https://svg-edit.github.io/svgedit/src/editor/svg-editor.html)
 
 <!-- See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
 (or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor-es.html)
 version, which requires a modern browser).
 -->
-See a working editor on [`master`](https://svg-edit.github.io/svgedit/editor/svg-editor.html) (or its [ES6-Module](https://svg-edit.github.io/svgedit/editor/svg-editor-es.html)
+See a working editor on [`master`](https://svg-edit.github.io/svgedit/src/editor/svg-editor.html) (or its [ES6-Module](https://svg-edit.github.io/svgedit/src/editor/svg-editor-es.html)
 version, which requires a modern browser).
 
 You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>
@@ -58,8 +58,8 @@ You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>
 
 You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svgedit/releases).
 
-You may test the [latest version in `master`](https://svg-edit.github.io/svgedit/editor/svg-editor-es.html)
-which is the ESM version. (The [non-ESM version](https://svg-edit.github.io/svgedit/editor/svg-editor.html)
+You may test the [latest version in `master`](https://svg-edit.github.io/svgedit/src/editor/svg-editor-es.html)
+which is the ESM version. (The [non-ESM version](https://svg-edit.github.io/svgedit/src/editor/svg-editor.html)
 on `master` may be updated less frequently.)
 
 ## Installation
@@ -79,7 +79,7 @@ on `master` may be updated less frequently.)
   ([ConfigOptions]{@tutorial ConfigOptions})) within the URL:
 
 ```html
-<iframe src="svgedit/editor/svg-editor.html?extensions="
+<iframe src="svgedit/src/editor/svg-editor.html?extensions="
     width="100%" height="100%"></iframe>
 ```
 
@@ -107,7 +107,7 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
 1. Create your npm package: `npm init` (complete the fields).
 1. Install SVG-edit into your package:
   `npm i --save svgedit`.
-1. Look within `node_modules/svgedit/`, e.g., `node_modules/svgedit/editor/svg-editor.html`
+1. Look within `node_modules/svgedit/`, e.g., `node_modules/svgedit/src/editor/svg-editor.html`
   for the files your package needs and use accordingly (from outside of
   `node_modules`).
 1. If you want to publish your own work, you can use `npm publish`.
