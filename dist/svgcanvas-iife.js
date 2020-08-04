@@ -3709,6 +3709,253 @@ var SvgCanvas = (function () {
   };
 
   /**
+   * Tools for working with units.
+   * @module units
+   * @license MIT
+   *
+   * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
+   */
+  var wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
+  var hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
+
+  /*
+  const unitNumMap = {
+    '%': 2,
+    em: 3,
+    ex: 4,
+    px: 5,
+    cm: 6,
+    mm: 7,
+    in: 8,
+    pt: 9,
+    pc: 10
+  };
+  */
+  // Container of elements.
+
+  var elementContainer_; // Stores mapping of unit type to user coordinates.
+
+  var typeMap_ = {};
+  /**
+   * @interface module:units.ElementContainer
+   */
+
+  /**
+   * @function module:units.ElementContainer#getBaseUnit
+   * @returns {string} The base unit type of the container ('em')
+   */
+
+  /**
+   * @function module:units.ElementContainer#getElement
+   * @returns {?Element} An element in the container given an id
+   */
+
+  /**
+   * @function module:units.ElementContainer#getHeight
+   * @returns {Float} The container's height
+   */
+
+  /**
+   * @function module:units.ElementContainer#getWidth
+   * @returns {Float} The container's width
+   */
+
+  /**
+   * @function module:units.ElementContainer#getRoundDigits
+   * @returns {Integer} The number of digits number should be rounded to
+   */
+
+  /* eslint-disable jsdoc/valid-types */
+
+  /**
+   * @typedef {PlainObject} module:units.TypeMap
+   * @property {Float} em
+   * @property {Float} ex
+   * @property {Float} in
+   * @property {Float} cm
+   * @property {Float} mm
+   * @property {Float} pt
+   * @property {Float} pc
+   * @property {Integer} px
+   * @property {0} %
+   */
+
+  /* eslint-enable jsdoc/valid-types */
+
+  /**
+   * Initializes this module.
+   *
+   * @function module:units.init
+   * @param {module:units.ElementContainer} elementContainer - An object implementing the ElementContainer interface.
+   * @returns {void}
+   */
+
+  var init = function init(elementContainer) {
+    elementContainer_ = elementContainer; // Get correct em/ex values by creating a temporary SVG.
+
+    var svg = document.createElementNS(NS.SVG, 'svg');
+    document.body.append(svg);
+    var rect = document.createElementNS(NS.SVG, 'rect');
+    rect.setAttribute('width', '1em');
+    rect.setAttribute('height', '1ex');
+    rect.setAttribute('x', '1in');
+    svg.append(rect);
+    var bb = rect.getBBox();
+    svg.remove();
+    var inch = bb.x;
+    typeMap_ = {
+      em: bb.width,
+      ex: bb.height,
+      "in": inch,
+      cm: inch / 2.54,
+      mm: inch / 25.4,
+      pt: inch / 72,
+      pc: inch / 6,
+      px: 1,
+      '%': 0
+    };
+  };
+  /**
+  * Group: Unit conversion functions.
+  */
+
+  /**
+   * @function module:units.getTypeMap
+   * @returns {module:units.TypeMap} The unit object with values for each unit
+  */
+
+  var getTypeMap = function getTypeMap() {
+    return typeMap_;
+  };
+  /**
+  * @typedef {GenericArray} module:units.CompareNumbers
+  * @property {Integer} length 2
+  * @property {Float} 0
+  * @property {Float} 1
+  */
+
+  /**
+  * Rounds a given value to a float with number of digits defined in
+  * `round_digits` of `saveOptions`
+  *
+  * @function module:units.shortFloat
+  * @param {string|Float|module:units.CompareNumbers} val - The value (or Array of two numbers) to be rounded
+  * @returns {Float|string} If a string/number was given, returns a Float. If an array, return a string
+  * with comma-separated floats
+  */
+
+  var shortFloat = function shortFloat(val) {
+    var digits = elementContainer_.getRoundDigits();
+
+    if (!isNaN(val)) {
+      return Number(Number(val).toFixed(digits));
+    }
+
+    if (Array.isArray(val)) {
+      return shortFloat(val[0]) + ',' + shortFloat(val[1]);
+    }
+
+    return Number.parseFloat(val).toFixed(digits) - 0;
+  };
+  /**
+  * Converts the number to given unit or baseUnit.
+  * @function module:units.convertUnit
+  * @param {string|Float} val
+  * @param {"em"|"ex"|"in"|"cm"|"mm"|"pt"|"pc"|"px"|"%"} [unit]
+  * @returns {Float}
+  */
+
+  var convertUnit = function convertUnit(val, unit) {
+    unit = unit || elementContainer_.getBaseUnit(); // baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
+    // const val = baseVal.valueInSpecifiedUnits;
+    // baseVal.convertToSpecifiedUnits(1);
+
+    return shortFloat(val / typeMap_[unit]);
+  };
+  /**
+  * Sets an element's attribute based on the unit in its current value.
+  *
+  * @function module:units.setUnitAttr
+  * @param {Element} elem - DOM element to be changed
+  * @param {string} attr - Name of the attribute associated with the value
+  * @param {string} val - Attribute value to convert
+  * @returns {void}
+  */
+
+  var setUnitAttr = function setUnitAttr(elem, attr, val) {
+    //  if (!isNaN(val)) {
+    // New value is a number, so check currently used unit
+    // const oldVal = elem.getAttribute(attr);
+    // Enable this for alternate mode
+    // if (oldVal !== null && (isNaN(oldVal) || elementContainer_.getBaseUnit() !== 'px')) {
+    //   // Old value was a number, so get unit, then convert
+    //   let unit;
+    //   if (oldVal.substr(-1) === '%') {
+    //     const res = getResolution();
+    //     unit = '%';
+    //     val *= 100;
+    //     if (wAttrs.includes(attr)) {
+    //       val = val / res.w;
+    //     } else if (hAttrs.includes(attr)) {
+    //       val = val / res.h;
+    //     } else {
+    //       return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
+    //     }
+    //   } else {
+    //     if (elementContainer_.getBaseUnit() !== 'px') {
+    //       unit = elementContainer_.getBaseUnit();
+    //     } else {
+    //       unit = oldVal.substr(-2);
+    //     }
+    //     val = val / typeMap_[unit];
+    //   }
+    //
+    // val += unit;
+    // }
+    // }
+    elem.setAttribute(attr, val);
+  };
+  /**
+  * Converts given values to numbers. Attributes must be supplied in
+  * case a percentage is given.
+  *
+  * @function module:units.convertToNum
+  * @param {string} attr - Name of the attribute associated with the value
+  * @param {string} val - Attribute value to convert
+  * @returns {Float} The converted number
+  */
+
+  var convertToNum = function convertToNum(attr, val) {
+    // Return a number if that's what it already is
+    if (!isNaN(val)) {
+      return val - 0;
+    }
+
+    if (val.substr(-1) === '%') {
+      // Deal with percentage, depends on attribute
+      var _num = val.substr(0, val.length - 1) / 100;
+
+      var width = elementContainer_.getWidth();
+      var height = elementContainer_.getHeight();
+
+      if (wAttrs.includes(attr)) {
+        return _num * width;
+      }
+
+      if (hAttrs.includes(attr)) {
+        return _num * height;
+      }
+
+      return _num * Math.sqrt(width * width + height * height) / Math.sqrt(2);
+    }
+
+    var unit = val.substr(-2);
+    var num = val.substr(0, val.length - 2); // Note that this multiplication turns the string into a number
+
+    return num * typeMap_[unit];
+  };
+
+  /**
    * Mathematical utilities.
    * @module math
    * @license MIT
@@ -3866,7 +4113,7 @@ var SvgCanvas = (function () {
   */
 
   var transformListToTransform = function transformListToTransform(tlist, min, max) {
-    if (isNullish(tlist)) {
+    if (!tlist) {
       // Or should tlist = null have been prevented before this?
       return svg$1.createSVGTransformFromMatrix(svg$1.createSVGMatrix());
     }
@@ -4018,7 +4265,7 @@ var SvgCanvas = (function () {
   * @returns {void}
   */
 
-  var init = function init(editorContext) {
+  var init$1 = function init(editorContext) {
     editorContext_ = editorContext;
     domdoc_ = editorContext.getDOMDocument();
     domcontainer_ = editorContext.getDOMContainer();
@@ -5315,253 +5562,6 @@ var SvgCanvas = (function () {
 
   var isNullish = function isNullish(val) {
     return val === null || val === undefined;
-  };
-
-  /**
-   * Tools for working with units.
-   * @module units
-   * @license MIT
-   *
-   * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
-   */
-  var wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
-  var hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
-
-  /*
-  const unitNumMap = {
-    '%': 2,
-    em: 3,
-    ex: 4,
-    px: 5,
-    cm: 6,
-    mm: 7,
-    in: 8,
-    pt: 9,
-    pc: 10
-  };
-  */
-  // Container of elements.
-
-  var elementContainer_; // Stores mapping of unit type to user coordinates.
-
-  var typeMap_ = {};
-  /**
-   * @interface module:units.ElementContainer
-   */
-
-  /**
-   * @function module:units.ElementContainer#getBaseUnit
-   * @returns {string} The base unit type of the container ('em')
-   */
-
-  /**
-   * @function module:units.ElementContainer#getElement
-   * @returns {?Element} An element in the container given an id
-   */
-
-  /**
-   * @function module:units.ElementContainer#getHeight
-   * @returns {Float} The container's height
-   */
-
-  /**
-   * @function module:units.ElementContainer#getWidth
-   * @returns {Float} The container's width
-   */
-
-  /**
-   * @function module:units.ElementContainer#getRoundDigits
-   * @returns {Integer} The number of digits number should be rounded to
-   */
-
-  /* eslint-disable jsdoc/valid-types */
-
-  /**
-   * @typedef {PlainObject} module:units.TypeMap
-   * @property {Float} em
-   * @property {Float} ex
-   * @property {Float} in
-   * @property {Float} cm
-   * @property {Float} mm
-   * @property {Float} pt
-   * @property {Float} pc
-   * @property {Integer} px
-   * @property {0} %
-   */
-
-  /* eslint-enable jsdoc/valid-types */
-
-  /**
-   * Initializes this module.
-   *
-   * @function module:units.init
-   * @param {module:units.ElementContainer} elementContainer - An object implementing the ElementContainer interface.
-   * @returns {void}
-   */
-
-  var init$1 = function init(elementContainer) {
-    elementContainer_ = elementContainer; // Get correct em/ex values by creating a temporary SVG.
-
-    var svg = document.createElementNS(NS.SVG, 'svg');
-    document.body.append(svg);
-    var rect = document.createElementNS(NS.SVG, 'rect');
-    rect.setAttribute('width', '1em');
-    rect.setAttribute('height', '1ex');
-    rect.setAttribute('x', '1in');
-    svg.append(rect);
-    var bb = rect.getBBox();
-    svg.remove();
-    var inch = bb.x;
-    typeMap_ = {
-      em: bb.width,
-      ex: bb.height,
-      "in": inch,
-      cm: inch / 2.54,
-      mm: inch / 25.4,
-      pt: inch / 72,
-      pc: inch / 6,
-      px: 1,
-      '%': 0
-    };
-  };
-  /**
-  * Group: Unit conversion functions.
-  */
-
-  /**
-   * @function module:units.getTypeMap
-   * @returns {module:units.TypeMap} The unit object with values for each unit
-  */
-
-  var getTypeMap = function getTypeMap() {
-    return typeMap_;
-  };
-  /**
-  * @typedef {GenericArray} module:units.CompareNumbers
-  * @property {Integer} length 2
-  * @property {Float} 0
-  * @property {Float} 1
-  */
-
-  /**
-  * Rounds a given value to a float with number of digits defined in
-  * `round_digits` of `saveOptions`
-  *
-  * @function module:units.shortFloat
-  * @param {string|Float|module:units.CompareNumbers} val - The value (or Array of two numbers) to be rounded
-  * @returns {Float|string} If a string/number was given, returns a Float. If an array, return a string
-  * with comma-separated floats
-  */
-
-  var shortFloat = function shortFloat(val) {
-    var digits = elementContainer_.getRoundDigits();
-
-    if (!isNaN(val)) {
-      return Number(Number(val).toFixed(digits));
-    }
-
-    if (Array.isArray(val)) {
-      return shortFloat(val[0]) + ',' + shortFloat(val[1]);
-    }
-
-    return Number.parseFloat(val).toFixed(digits) - 0;
-  };
-  /**
-  * Converts the number to given unit or baseUnit.
-  * @function module:units.convertUnit
-  * @param {string|Float} val
-  * @param {"em"|"ex"|"in"|"cm"|"mm"|"pt"|"pc"|"px"|"%"} [unit]
-  * @returns {Float}
-  */
-
-  var convertUnit = function convertUnit(val, unit) {
-    unit = unit || elementContainer_.getBaseUnit(); // baseVal.convertToSpecifiedUnits(unitNumMap[unit]);
-    // const val = baseVal.valueInSpecifiedUnits;
-    // baseVal.convertToSpecifiedUnits(1);
-
-    return shortFloat(val / typeMap_[unit]);
-  };
-  /**
-  * Sets an element's attribute based on the unit in its current value.
-  *
-  * @function module:units.setUnitAttr
-  * @param {Element} elem - DOM element to be changed
-  * @param {string} attr - Name of the attribute associated with the value
-  * @param {string} val - Attribute value to convert
-  * @returns {void}
-  */
-
-  var setUnitAttr = function setUnitAttr(elem, attr, val) {
-    //  if (!isNaN(val)) {
-    // New value is a number, so check currently used unit
-    // const oldVal = elem.getAttribute(attr);
-    // Enable this for alternate mode
-    // if (oldVal !== null && (isNaN(oldVal) || elementContainer_.getBaseUnit() !== 'px')) {
-    //   // Old value was a number, so get unit, then convert
-    //   let unit;
-    //   if (oldVal.substr(-1) === '%') {
-    //     const res = getResolution();
-    //     unit = '%';
-    //     val *= 100;
-    //     if (wAttrs.includes(attr)) {
-    //       val = val / res.w;
-    //     } else if (hAttrs.includes(attr)) {
-    //       val = val / res.h;
-    //     } else {
-    //       return val / Math.sqrt((res.w*res.w) + (res.h*res.h))/Math.sqrt(2);
-    //     }
-    //   } else {
-    //     if (elementContainer_.getBaseUnit() !== 'px') {
-    //       unit = elementContainer_.getBaseUnit();
-    //     } else {
-    //       unit = oldVal.substr(-2);
-    //     }
-    //     val = val / typeMap_[unit];
-    //   }
-    //
-    // val += unit;
-    // }
-    // }
-    elem.setAttribute(attr, val);
-  };
-  /**
-  * Converts given values to numbers. Attributes must be supplied in
-  * case a percentage is given.
-  *
-  * @function module:units.convertToNum
-  * @param {string} attr - Name of the attribute associated with the value
-  * @param {string} val - Attribute value to convert
-  * @returns {Float} The converted number
-  */
-
-  var convertToNum = function convertToNum(attr, val) {
-    // Return a number if that's what it already is
-    if (!isNaN(val)) {
-      return val - 0;
-    }
-
-    if (val.substr(-1) === '%') {
-      // Deal with percentage, depends on attribute
-      var _num = val.substr(0, val.length - 1) / 100;
-
-      var width = elementContainer_.getWidth();
-      var height = elementContainer_.getHeight();
-
-      if (wAttrs.includes(attr)) {
-        return _num * width;
-      }
-
-      if (hAttrs.includes(attr)) {
-        return _num * height;
-      }
-
-      return _num * Math.sqrt(width * width + height * height) / Math.sqrt(2);
-    }
-
-    var unit = val.substr(-2);
-    var num = val.substr(0, val.length - 2); // Note that this multiplication turns the string into a number
-
-    return num * typeMap_[unit];
   };
 
   /**
@@ -13697,7 +13697,7 @@ var SvgCanvas = (function () {
     */
 
 
-    init$1(
+    init(
     /**
     * @implements {module:units.ElementContainer}
     */
@@ -13744,7 +13744,7 @@ var SvgCanvas = (function () {
       return svgroot;
     };
 
-    init(
+    init$1(
     /**
     * @implements {module:utilities.EditorContext}
     */

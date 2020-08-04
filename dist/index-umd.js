@@ -3878,7 +3878,7 @@
 
       try {
         var elem = elementContainer_.getElement(val);
-        result = isNullish(elem) || elem === selectedElement;
+        result = !elem || elem === selectedElement;
       } catch (e) {}
 
       return result;
@@ -4045,7 +4045,7 @@
   */
 
   var transformListToTransform = function transformListToTransform(tlist, min, max) {
-    if (isNullish(tlist)) {
+    if (!tlist) {
       // Or should tlist = null have been prevented before this?
       return svg$1.createSVGTransformFromMatrix(svg$1.createSVGMatrix());
     }
@@ -29339,10 +29339,10 @@
 
     if (!modularVersion) {
       Object.assign(defaultConfig, {
-        langPath: '../dist/locale/',
-        extPath: '../dist/extensions/',
-        canvgPath: '../dist/',
-        jspdfPath: '../dist/'
+        langPath: '../../dist/locale/',
+        extPath: '../../dist/extensions/',
+        canvgPath: '../../dist/',
+        jspdfPath: '../../dist/'
       });
     } // const host = location.hostname,
     //  onWeb = host && host.includes('.');
