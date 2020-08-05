@@ -26,7 +26,7 @@ src/editor/extensions/mathjax
 
 # Todo: We should at least check `compat/compat` in our other files, however
 ## Two "external" items are modified locally, so we undo their ignoring
-src/external/*
+src/external/**/*
 !src/external/dom-polyfill
 src/external/dom-polyfill/*
 !src/external/dom-polyfill/dom-polyfill.js
