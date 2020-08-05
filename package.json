@@ -118,7 +118,8 @@
       "post-commit": "run-if-changed",
       "post-checkout": "run-if-changed",
       "post-merge": "run-if-changed",
-      "post-rewrite": "run-if-changed"
+      "post-rewrite": "run-if-changed",
+      "pre-commit": "lint-staged"
     }
   },
   "repository": {
