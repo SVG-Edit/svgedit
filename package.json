@@ -45,6 +45,7 @@
     "license-badge-dev": "license-badger --corrections --filteredTypes=nonempty --textTemplate \"License types\n(all devDeps)\" --allDevelopment badges/licenses-badge-dev.svg",
     "license-badges": "run-s license-badge license-badge-dev",
     "coverage-badge": "coveradge badges/coverage-badge",
+    "imageoptim": "imageoptim",
     "compress-images": "imageoptim \"src/editor/extensions/*.png\" \"src/editor/spinbtn/*.png\" \"src/editor/jgraduate/images/*.{png,gif}\" \"src/editor/images/*.png\"",
     "copy": "copyfiles -f node_modules/load-stylesheets/dist/index-es.js src/external/load-stylesheets && copyfiles -f node_modules/jamilih/dist/jml-es.js src/external/jamilih && copyfiles -f node_modules/query-result/esm/index.js src/external/query-result/esm && copyfiles -f node_modules/qr-manipulation/dist/index-es.js src/external/qr-manipulation/dist && copyfiles -f node_modules/stackblur-canvas/dist/stackblur-es.js src/external/stackblur-canvas/dist && copyfiles -f node_modules/regenerator-runtime/runtime.js src/external/regenerator-runtime && copyfiles -f \"node_modules/core-js-bundle//minified*\" src/external/core-js-bundle && copyfiles -f \"node_modules/underscore/underscore-*\" src/editor/jspdf && copyfiles -f \"node_modules/deparam/dist/deparam.esm.js\" src/external/deparam",
     "remark": "remark -q -f .",
@@ -105,6 +106,10 @@
     "src/**/*.{js,md,html}": "npm run eslint-arg --"
   },
   "run-if-changed": {
+    "src/editor/extensions/*.png": "npm run imageoptim --",
+    "src/editor/spinbtn/*.png": "npm run imageoptim --",
+    "src/editor/jgraduate/images/*.{png,gif}": "npm run imageoptim --",
+    "src/editor/images/*.png": "npm run imageoptim --",
     "src": "npm run prep-no-eslint",
     ".babelrc.json": "npm run prep-no-eslint",
     "rollup.config.js": "npm run prep-no-eslint",
