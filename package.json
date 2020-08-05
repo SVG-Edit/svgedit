@@ -54,8 +54,9 @@
     "eslint": "eslint --ext js,html,md .",
     "rollup": "rollup -c",
     "build-by-config": "rollup -c rollup-config.config.js",
-    "prep-no-core-rollup": "run-s eslint build-html build-by-config",
-    "prep": "run-s prep-no-core-rollup rollup",
+    "prep-no-core-rollup": "run-s build-html build-by-config",
+    "prep": "run-s eslint prep-no-eslint",
+    "prep-no-eslint": "run-s prep-no-core-rollup rollup",
     "prepublishOnly": "run-s license-badges copy prep build-docs",
     "cypress:open-no-start": "cypress open",
     "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && nyc instrument --compact=false src instrumented",
@@ -72,9 +73,9 @@
     "report-summary-mocha-full": "run-s report-text-summary mochawesome-cli",
     "test-only-no-report": "run-p start cypress:run",
     "test-only": "run-s -c test-only-no-report report",
-    "test-no-cov-no-core-rollup": "run-s prep-no-core-rollup test-only",
+    "test-no-cov-no-core-rollup": "run-s eslint prep-no-core-rollup test-only",
     "test-no-cov": "run-s prep test-only",
-    "test-no-core-rollup": "run-s cypress:instrument test-no-cov-no-core-rollup",
+    "test-no-core-rollup": "run-s eslint cypress:instrument test-no-cov-no-core-rollup",
     "test": "run-s cypress:instrument test-only"
   },
   "nyc": {
@@ -97,17 +98,20 @@
       "html"
     ]
   },
+  "lint-staged": {
+    ".eslintignore": "npm run eslint --",
+    ".eslintrc.js": "npm run eslint --",
+    "src/**/*.{js,md,html}": "npm run eslint --"
+  },
   "run-if-changed": {
-    ".eslintignore": "npm run eslint",
-    ".eslintrc.js": "npm run eslint",
-    "src": "npm run prep",
-    ".babelrc.json": "npm run prep",
-    "rollup.config.js": "npm run prep",
-    "rollup-config.config.js": "npm run prep",
+    "src": "npm run prep-no-eslint",
+    ".babelrc.json": "npm run prep-no-eslint",
+    "rollup.config.js": "npm run prep-no-eslint",
+    "rollup-config.config.js": "npm run prep-no-eslint",
     "build": "npm run build-html",
     "docs": "npm run build-docs",
     "licenseInfo.json": "npm run license-badges",
-    "package-lock.json": "run-s install-offline prepublishOnly"
+    "package-lock.json": "run-s install-offline run-s license-badges copy prep-no-eslint build-docs"
   },
   "husky": {
     "hooks": {
@@ -203,6 +207,7 @@
     "jamilih": "^0.53.2",
     "jsdoc": "^3.6.5",
     "license-badger": "^0.18.0",
+    "lint-staged": "^10.2.11",
     "load-stylesheets": "^0.9.0",
     "mocha": "^8.1.1",
     "mocha-badge-generator": "^0.8.0",
