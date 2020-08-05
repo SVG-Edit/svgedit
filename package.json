@@ -110,10 +110,10 @@
   },
   "husky": {
     "hooks": {
-        "post-commit": "run-if-changed",
-        "post-checkout": "run-if-changed",
-        "post-merge": "run-if-changed",
-        "post-rewrite": "run-if-changed"
+      "post-commit": "run-if-changed",
+      "post-checkout": "run-if-changed",
+      "post-merge": "run-if-changed",
+      "post-rewrite": "run-if-changed"
     }
   },
   "repository": {
@@ -151,7 +151,7 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.11.0",
+    "@babel/core": "^7.11.1",
     "@babel/node": "^7.10.5",
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "@babel/plugin-transform-named-capturing-groups-regex": "^7.10.4",
@@ -170,7 +170,7 @@
     "coveradge": "^0.6.0",
     "cp-cli": "^2.0.0",
     "cross-var": "^1.1.0",
-    "cypress": "^4.11.0",
+    "cypress": "^4.12.0",
     "cypress-axe": "^0.8.1",
     "cypress-multi-reporters": "^1.4.0",
     "deparam": "git+https://github.com/brettz9/deparam.git#updates",
@@ -186,7 +186,7 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-html": "^6.0.2",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jsdoc": "^30.1.0",
+    "eslint-plugin-jsdoc": "^30.2.1",
     "eslint-plugin-markdown": "^1.0.2",
     "eslint-plugin-mocha": "^7.0.1",
     "eslint-plugin-mocha-cleanup": "^1.8.0",
@@ -203,7 +203,7 @@
     "jsdoc": "^3.6.5",
     "license-badger": "^0.18.0",
     "load-stylesheets": "^0.9.0",
-    "mocha": "^8.1.0",
+    "mocha": "^8.1.1",
     "mocha-badge-generator": "^0.8.0",
     "mochawesome": "^6.1.1",
     "mochawesome-merge": "^4.1.0",
