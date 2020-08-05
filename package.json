@@ -52,6 +52,7 @@
     "install-offline": "npm install --prefer-offline --no-audit",
     "eslint-fix": "eslint --fix --ext js,md,html src",
     "eslint": "eslint --ext js,html,md .",
+    "eslint-arg": "eslint --ext js,html,md",
     "rollup": "rollup -c",
     "build-by-config": "rollup -c rollup-config.config.js",
     "prep-no-core-rollup": "run-s build-html build-by-config",
@@ -99,9 +100,9 @@
     ]
   },
   "lint-staged": {
-    ".eslintignore": "npm run eslint --",
-    ".eslintrc.js": "npm run eslint --",
-    "src/**/*.{js,md,html}": "npm run eslint --"
+    ".eslintignore": "npm run eslint-arg --",
+    ".eslintrc.js": "npm run eslint-arg --",
+    "src/**/*.{js,md,html}": "npm run eslint-arg --"
   },
   "run-if-changed": {
     "src": "npm run prep-no-eslint",
