@@ -103,13 +103,13 @@
   "lint-staged": {
     ".eslintignore": "npm run eslint-arg --",
     ".eslintrc.js": "npm run eslint-arg --",
-    "src/**/*.{js,md,html}": "npm run eslint-arg --"
-  },
-  "run-if-changed": {
+    "src/**/*.{js,md,html}": "npm run eslint-arg --",
     "src/editor/extensions/*.png": "npm run imageoptim --",
     "src/editor/spinbtn/*.png": "npm run imageoptim --",
     "src/editor/jgraduate/images/*.{png,gif}": "npm run imageoptim --",
-    "src/editor/images/*.png": "npm run imageoptim --",
+    "src/editor/images/*.png": "npm run imageoptim --"
+  },
+  "run-if-changed": {
     "src": "npm run prep-no-eslint",
     ".babelrc.json": "npm run prep-no-eslint",
     "rollup.config.js": "npm run prep-no-eslint",
