@@ -96,6 +96,17 @@
       "html"
     ]
   },
+  "husky": {
+    "hooks": {
+        "post-commit": "run-if-changed",
+        "post-checkout": "run-if-changed",
+        "post-merge": "run-if-changed",
+        "post-rewrite": "run-if-changed"
+    }
+  },
+  "run-if-changed": {
+    "package-lock.json": "npm install --prefer-offline --no-audit && npm run prepublishOnly"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SVG-Edit/svgedit.git"
@@ -140,6 +151,7 @@
     "@cypress/code-coverage": "^3.8.1",
     "@cypress/fiddle": "^1.18.2",
     "@fintechstudios/eslint-plugin-chai-as-promised": "^3.0.2",
+    "@hkdobrev/run-if-changed": "^0.3.1",
     "@mysticatea/eslint-plugin": "^13.0.0",
     "@rollup/plugin-babel": "^5.1.0",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
@@ -176,6 +188,7 @@
     "eslint-plugin-sonarjs": "^0.5.0",
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-unicorn": "^21.0.0",
+    "husky": "^4.2.5",
     "imageoptim-cli": "^3.0.2",
     "jamilih": "^0.53.2",
     "jsdoc": "^3.6.5",
