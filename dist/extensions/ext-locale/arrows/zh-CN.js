@@ -1,13 +1,10 @@
-var svgEditorExtensionLocale_arrows_zh_CN = (function () {
-  'use strict';
-
-  var zhCN = {
-    name: '箭头',
-    langList: [{
-      id: 'arrow_none',
-      textContent: '无箭头'
-    }],
-    contextTools: [{
+export default {
+  name: '箭头',
+  langList: [
+    {id: 'arrow_none', textContent: '无箭头'}
+  ],
+  contextTools: [
+    {
       title: '选择箭头类型',
       options: {
         none: '无箭头',
@@ -17,9 +14,6 @@ var svgEditorExtensionLocale_arrows_zh_CN = (function () {
         mid: '--&gt;--',
         mid_bk: '--&lt;--'
       }
-    }]
-  };
-
-  return zhCN;
-
-}());
+    }
+  ]
+};

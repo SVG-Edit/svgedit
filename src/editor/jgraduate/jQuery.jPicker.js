@@ -41,22 +41,10 @@ const isNullish = (val) => {
 
 /**
 * @function module:jPicker.jPicker
-* @param {external:jQuery} $ The jQuery object to wrap (with {@link external:jQuery.loadingStylesheets}, {@link external:jQuery.fn.$.fn.jPicker}, {@link external:jQuery.fn.$.fn.jPicker.defaults})
+* @param {external:jQuery} $ The jQuery object, {@link external:jQuery.fn.$.fn.jPicker}, {@link external:jQuery.fn.$.fn.jPicker.defaults})
 * @returns {external:jQuery}
 */
 const jPicker = function ($) {
-  if (!$.loadingStylesheets) {
-    /**
-    * @name loadingStylesheets
-    * @type {string[]}
-    * @memberof external:jQuery
-    */
-    $.loadingStylesheets = [];
-  }
-  const stylesheet = 'jgraduate/css/jPicker.css';
-  if (!$.loadingStylesheets.includes(stylesheet)) {
-    $.loadingStylesheets.push(stylesheet);
-  }
   /**
   * @typedef {PlainObject} module:jPicker.SliderOptions
   * @property {external:jQuery|PlainObject} arrow

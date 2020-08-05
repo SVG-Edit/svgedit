@@ -1,17 +1,14 @@
-var svgEditorExtensionLocale_polygon_en = (function () {
-  'use strict';
-
-  var en = {
-    name: 'polygon',
-    buttons: [{
+export default {
+  name: 'polygon',
+  buttons: [
+    {
       title: 'Polygon Tool'
-    }],
-    contextTools: [{
+    }
+  ],
+  contextTools: [
+    {
       title: 'Number of Sides',
       label: 'sides'
-    }]
-  };
-
-  return en;
-
-}());
+    }
+  ]
+};

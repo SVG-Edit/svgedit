@@ -1,13 +1,10 @@
-var svgEditorExtensionLocale_arrows_fr = (function () {
-  'use strict';
-
-  var fr = {
-    name: 'Arrows',
-    langList: [{
-      id: 'arrow_none',
-      textContent: 'Sans flèche'
-    }],
-    contextTools: [{
+export default {
+  name: 'Arrows',
+  langList: [
+    {id: 'arrow_none', textContent: 'Sans flèche'}
+  ],
+  contextTools: [
+    {
       title: 'Select arrow type',
       options: {
         none: 'No arrow',
@@ -17,9 +14,6 @@ var svgEditorExtensionLocale_arrows_fr = (function () {
         mid: '--&gt;--',
         mid_bk: '--&lt;--'
       }
-    }]
-  };
-
-  return fr;
-
-}());
+    }
+  ]
+};

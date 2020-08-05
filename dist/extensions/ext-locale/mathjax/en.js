@@ -1,13 +1,8 @@
-var svgEditorExtensionLocale_mathjax_en = (function () {
-  'use strict';
-
-  var en = {
-    name: 'MathJax',
-    buttons: [{
+export default {
+  name: 'MathJax',
+  buttons: [
+    {
       title: 'Add Mathematics'
-    }]
-  };
-
-  return en;
-
-}());
+    }
+  ]
+};

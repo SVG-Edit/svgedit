@@ -4,7 +4,7 @@
  * Adds bells and whistles to any ordinary textbox to
  * make it look and feel like a SpinButton Control.
  *
- * Supplies {@link external:jQuery.fn.SpinButton} (and also {@link external:jQuery.loadingStylesheets}).
+ * Supplies {@link external:jQuery.fn.SpinButton}).
  *
  * Originally written by George Adamson, Software Unity (george.jquery@softwareunity.com) August 2006:
  * - Added min/max options.
@@ -75,13 +75,6 @@
  * @returns {external:jQuery}
 */
 export default function jQueryPluginSpinButton ($) {
-  if (!$.loadingStylesheets) {
-    $.loadingStylesheets = [];
-  }
-  const stylesheet = 'spinbtn/jQuery.SpinButton.css';
-  if (!$.loadingStylesheets.includes(stylesheet)) {
-    $.loadingStylesheets.push(stylesheet);
-  }
   /**
   * @callback module:jQuerySpinButton.StepCallback
   * @param {external:jQuery} thisArg Value of `this`

@@ -51,14 +51,6 @@ if (!window.console) {
 * @returns {external:jQuery}
 */
 export default function jQueryPluginJGraduate ($) {
-  if (!$.loadingStylesheets) {
-    $.loadingStylesheets = [];
-  }
-  const stylesheet = 'jgraduate/css/jGraduate.css';
-  if (!$.loadingStylesheets.includes(stylesheet)) {
-    $.loadingStylesheets.push(stylesheet);
-  }
-
   /**
   * @typedef {PlainObject} module:jGraduate.jGraduatePaintOptions
   * @property {Float} [alpha]
