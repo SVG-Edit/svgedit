@@ -22827,15 +22827,6 @@ if (!window.console) {
 
 
 function jQueryPluginJGraduate($) {
-  if (!$.loadingStylesheets) {
-    $.loadingStylesheets = [];
-  }
-
-  var stylesheet = 'jgraduate/css/jGraduate.css';
-
-  if (!$.loadingStylesheets.includes(stylesheet)) {
-    $.loadingStylesheets.push(stylesheet);
-  }
   /**
   * @typedef {PlainObject} module:jGraduate.jGraduatePaintOptions
   * @property {Float} [alpha]
@@ -22848,8 +22839,6 @@ function jQueryPluginJGraduate($) {
   /**
   * @memberof module:jGraduate~
   */
-
-
   var Paint =
   /**
    * @param {module:jGraduate.jGraduatePaintOptions} [opt]
@@ -24067,7 +24056,7 @@ function jQueryPluginJGraduate($) {
  * Adds bells and whistles to any ordinary textbox to
  * make it look and feel like a SpinButton Control.
  *
- * Supplies {@link external:jQuery.fn.SpinButton} (and also {@link external:jQuery.loadingStylesheets}).
+ * Supplies {@link external:jQuery.fn.SpinButton}).
  *
  * Originally written by George Adamson, Software Unity (george.jquery@softwareunity.com) August 2006:
  * - Added min/max options.
@@ -24139,15 +24128,6 @@ function jQueryPluginJGraduate($) {
  * @returns {external:jQuery}
 */
 function jQueryPluginSpinButton($) {
-  if (!$.loadingStylesheets) {
-    $.loadingStylesheets = [];
-  }
-
-  var stylesheet = 'spinbtn/jQuery.SpinButton.css';
-
-  if (!$.loadingStylesheets.includes(stylesheet)) {
-    $.loadingStylesheets.push(stylesheet);
-  }
   /**
   * @callback module:jQuerySpinButton.StepCallback
   * @param {external:jQuery} thisArg Value of `this`
@@ -24185,8 +24165,6 @@ function jQueryPluginSpinButton($) {
   * @param {module:jQuerySpinButton.SpinButtonConfig} cfg
   * @returns {external:jQuery}
   */
-
-
   $.fn.SpinButton = function (cfg) {
     cfg = cfg || {};
     /**
@@ -24772,26 +24750,12 @@ var isNullish$1 = function isNullish(val) {
 };
 /**
 * @function module:jPicker.jPicker
-* @param {external:jQuery} $ The jQuery object to wrap (with {@link external:jQuery.loadingStylesheets}, {@link external:jQuery.fn.$.fn.jPicker}, {@link external:jQuery.fn.$.fn.jPicker.defaults})
+* @param {external:jQuery} $ The jQuery object, {@link external:jQuery.fn.$.fn.jPicker}, {@link external:jQuery.fn.$.fn.jPicker.defaults})
 * @returns {external:jQuery}
 */
 
 
 var jPicker = function jPicker($) {
-  if (!$.loadingStylesheets) {
-    /**
-    * @name loadingStylesheets
-    * @type {string[]}
-    * @memberof external:jQuery
-    */
-    $.loadingStylesheets = [];
-  }
-
-  var stylesheet = 'jgraduate/css/jPicker.css';
-
-  if (!$.loadingStylesheets.includes(stylesheet)) {
-    $.loadingStylesheets.push(stylesheet);
-  }
   /**
   * @typedef {PlainObject} module:jPicker.SliderOptions
   * @property {external:jQuery|PlainObject} arrow
@@ -24808,8 +24772,6 @@ var jPicker = function jPicker($) {
   * could be useful to use a jQuery UI draggable for this with certain extensions.
   * @memberof module:jPicker
   */
-
-
   var Slider =
   /**
    * @param {external:jQuery} bar
@@ -28484,194 +28446,12 @@ var putLocale = /*#__PURE__*/function () {
   };
 }();
 
-function _slicedToArray$1(arr, i) {
-  return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _nonIterableRest$1();
-}
-
-function _arrayWithHoles$1(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-
-function _iterableToArrayLimit$1(arr, i) {
-  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-    return;
-  }
-
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _e = undefined;
-
-  try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-
-  return _arr;
-}
-
-function _nonIterableRest$1() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance");
-}
-
-function loadStylesheets(stylesheets) {
-  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      beforeDefault = _ref.before,
-      afterDefault = _ref.after,
-      faviconDefault = _ref.favicon,
-      canvasDefault = _ref.canvas,
-      _ref$image = _ref.image,
-      imageDefault = _ref$image === void 0 ? true : _ref$image,
-      acceptErrors = _ref.acceptErrors;
-
-  stylesheets = Array.isArray(stylesheets) ? stylesheets : [stylesheets];
-
-  function setupLink(stylesheetURL) {
-    var options = {};
-
-    if (Array.isArray(stylesheetURL)) {
-      var _stylesheetURL = stylesheetURL;
-
-      var _stylesheetURL2 = _slicedToArray$1(_stylesheetURL, 2);
-
-      stylesheetURL = _stylesheetURL2[0];
-      var _stylesheetURL2$ = _stylesheetURL2[1];
-      options = _stylesheetURL2$ === void 0 ? {} : _stylesheetURL2$;
-    }
-
-    var _options = options,
-        _options$favicon = _options.favicon,
-        favicon = _options$favicon === void 0 ? faviconDefault : _options$favicon;
-    var _options2 = options,
-        _options2$before = _options2.before,
-        before = _options2$before === void 0 ? beforeDefault : _options2$before,
-        _options2$after = _options2.after,
-        after = _options2$after === void 0 ? afterDefault : _options2$after,
-        _options2$canvas = _options2.canvas,
-        canvas = _options2$canvas === void 0 ? canvasDefault : _options2$canvas,
-        _options2$image = _options2.image,
-        image = _options2$image === void 0 ? imageDefault : _options2$image;
-
-    function addLink() {
-      if (before) {
-        before.before(link);
-      } else if (after) {
-        after.after(link);
-      } else {
-        // eslint-disable-next-line unicorn/prefer-node-append
-        document.head.appendChild(link);
-      }
-    }
-
-    var link = document.createElement('link'); // eslint-disable-next-line promise/avoid-new
-
-    return new Promise(function (resolve, reject) {
-      var rej = reject;
-
-      if (acceptErrors) {
-        rej = typeof acceptErrors === 'function' ? function (error) {
-          acceptErrors({
-            error: error,
-            stylesheetURL: stylesheetURL,
-            options: options,
-            resolve: resolve,
-            reject: reject
-          });
-        } : resolve;
-      }
-
-      if (stylesheetURL.endsWith('.css')) {
-        favicon = false;
-      } else if (stylesheetURL.endsWith('.ico')) {
-        favicon = true;
-      }
-
-      if (favicon) {
-        link.rel = 'shortcut icon';
-        link.type = 'image/x-icon';
-
-        if (image === false) {
-          link.href = stylesheetURL;
-          addLink();
-          resolve(link);
-          return;
-        }
-
-        var cnv = document.createElement('canvas');
-        cnv.width = 16;
-        cnv.height = 16;
-        var context = cnv.getContext('2d');
-        var img = document.createElement('img');
-        img.addEventListener('error', function (error) {
-          reject(error);
-        });
-        img.addEventListener('load', function () {
-          context.drawImage(img, 0, 0);
-          link.href = canvas ? cnv.toDataURL('image/x-icon') : stylesheetURL;
-          addLink();
-          resolve(link);
-        });
-        img.src = stylesheetURL;
-        return;
-      }
-
-      link.rel = 'stylesheet';
-      link.type = 'text/css';
-      link.href = stylesheetURL;
-      addLink();
-      link.addEventListener('error', function (error) {
-        rej(error);
-      });
-      link.addEventListener('load', function () {
-        resolve(link);
-      });
-    });
-  }
-
-  return Promise.all(stylesheets.map(function (stylesheetURL) {
-    return setupLink(stylesheetURL);
-  }));
-}
-
 var $q$1 = $q;
 var editor = {};
 var $$c = [jQueryPluginJSHotkeys, jQueryPluginSVGIcons, jQueryPluginJGraduate, jQueryPluginSpinButton, jQueryPluginSVG, jQueryContextMenu, jPicker].reduce(function (jq, func) {
   return func(jq);
 }, jQuery);
-/*
-if (!$.loadingStylesheets) {
-  $.loadingStylesheets = [];
-}
-*/
-
-var homePage = 'https://github.com/SVG-Edit/svgedit';
-var stylesheet = 'svg-editor.css';
-
-if (!$$c.loadingStylesheets.includes(stylesheet)) {
-  $$c.loadingStylesheets.push(stylesheet);
-}
-
-var favicon = 'images/logo.png';
-
-if ($$c.loadingStylesheets.some(function (item) {
-  return !Array.isArray(item) || item[0] !== favicon;
-})) {
-  $$c.loadingStylesheets.push([favicon, {
-    favicon: true
-  }]);
-} // EDITOR PROPERTIES: (defined below)
+var homePage = 'https://github.com/SVG-Edit/svgedit'; // EDITOR PROPERTIES: (defined below)
 //    curPrefs, curConfig, canvas, storage, uiStrings
 //
 // STATE MAINTENANCE PROPERTIES
@@ -28679,7 +28459,6 @@ if ($$c.loadingStylesheets.some(function (item) {
 /**
 * @type {Float}
 */
-
 
 editor.tool_scale = 1; // Dependent on icon size, so any use to making configurable instead? Used by `jQuery.SpinButton.js`
 
@@ -28794,7 +28573,6 @@ defaultExtensions = ['ext-connector.js', 'ext-eyedropper.js', 'ext-grid.js', 'ex
 * @property {boolean} [avoidClientSideDownload=false] Used by `ext-server_opensave.js`; set to `true` if you wish to always save to server and not only as fallback when client support is lacking
 * @property {boolean} [avoidClientSideOpen=false] Used by `ext-server_opensave.js`; set to `true` if you wish to always open from the server and not only as fallback when FileReader client support is lacking
 * @property {string[]} [extensions=module:SVGEditor~defaultExtensions] Extensions to load on startup. Use an array in `setConfig` and comma separated file names in the URL. Extension names must begin with "ext-". Note that as of version 2.7, paths containing "/", "\", or ":", are disallowed for security reasons. Although previous versions of this list would entirely override the default list, as of version 2.7, the defaults will always be added to this explicit list unless the configuration `noDefaultExtensions` is included.
-* @property {module:SVGEditor.Stylesheet[]} [stylesheets=["@default"]] An array of required stylesheets to load in parallel; include the value `"@default"` within this array to ensure all default stylesheets are loaded.
 * @property {string[]} [allowedOrigins=[]] Used by `ext-xdomain-messaging.js` to indicate which origins are permitted for cross-domain messaging (e.g., between the embedded editor and main editor code). Besides explicit domains, one might add '*' to allow all domains (not recommended for privacy/data integrity of your user's content!), `window.location.origin` for allowing the same origin (should be safe if you trust all apps on your domain), 'null' to allow `file:///` URL usage
 * @property {null|PlainObject} [colorPickerCSS=null] Object of CSS properties mapped to values (for jQuery) to apply to the color picker. See {@link http://api.jquery.com/css/#css-properties}. A `null` value (the default) will cause the CSS to default to `left` with a position equal to that of the `fill_color` or `stroke_color` element minus 140, and a `bottom` equal to 40
 * @property {string} [paramurl] This was available via URL only. Allowed an un-encoded URL within the query string (use "url" or "source" with a data: URI instead)
@@ -28927,7 +28705,6 @@ curConfig = {
   // We do not put on defaultConfig to simplify object copying
   //   procedures (we obtain instead from defaultExtensions)
   extensions: [],
-  stylesheets: [],
 
   /**
   * Can use `location.origin` to indicate the current
@@ -28970,7 +28747,7 @@ function loadSvgString(_x) {
 
 function _loadSvgString() {
   _loadSvgString = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee23(str) {
-    var _ref42,
+    var _ref41,
         noAlert,
         success,
         _args23 = arguments;
@@ -28979,7 +28756,7 @@ function _loadSvgString() {
       while (1) {
         switch (_context23.prev = _context23.next) {
           case 0:
-            _ref42 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref42.noAlert;
+            _ref41 = _args23.length > 1 && _args23[1] !== undefined ? _args23[1] : {}, noAlert = _ref41.noAlert;
             success = svgCanvas.setSvgString(str) !== false;
 
             if (!success) {
@@ -29229,8 +29006,8 @@ editor.setConfig = function (opts, cfgCfg) {
       } else {
         editor.pref(key, val);
       }
-    } else if (['extensions', 'stylesheets', 'allowedOrigins'].includes(key)) {
-      if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || ['allowedOrigins', 'stylesheets'].includes(key) || key === 'extensions' && curConfig.lockExtensions)) {
+    } else if (['extensions', 'allowedOrigins'].includes(key)) {
+      if (cfgCfg.overwrite === false && (curConfig.preventAllURLConfig || ['allowedOrigins'].includes(key) || key === 'extensions' && curConfig.lockExtensions)) {
         return;
       }
 
@@ -29430,7 +29207,7 @@ editor.init = function () {
     } // ...and remove any dupes
 
 
-    ['extensions', 'stylesheets', 'allowedOrigins'].forEach(function (cfg) {
+    ['extensions', 'allowedOrigins'].forEach(function (cfg) {
       curConfig[cfg] = $$c.grep(curConfig[cfg], function (n, i) {
         // Supposedly faster than filter per http://amandeep1986.blogspot.hk/2015/02/jquery-grep-vs-js-filter.html
         return i === curConfig[cfg].indexOf(n);
@@ -29838,43 +29615,9 @@ editor.init = function () {
     hiddenPs.css('visibility', 'visible').hide(); // return;
 
     editor.pref('iconsize', size);
-    $$c('#iconsize').val(size); // Change icon size
-    // $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open')
-    // .find('> svg, > img').each(function () {
-    //   this.setAttribute('width',size_num);
-    //   this.setAttribute('height',size_num);
-    // });
-    //
-    // $.resizeSvgIcons({
-    //   '.flyout_arrow_horiz > svg, .flyout_arrow_horiz > img': size_num / 5,
-    //   '#logo > svg, #logo > img': size_num * 1.3,
-    //   '#tools_bottom .icon_label > *': (size_num === 16 ? 18 : size_num * .75)
-    // });
-    // if (size != 's') {
-    //   $.resizeSvgIcons({'#layerbuttons svg, #layerbuttons img': size_num * .6});
-    // }
-    // Note that all rules will be prefixed with '#svg_editor' when parsed
+    $$c('#iconsize').val(size); // Note that all rules will be prefixed with '#svg_editor' when parsed
 
     var cssResizeRules = {
-      // '.tool_button,\
-      // .push_button,\
-      // .tool_button_current,\
-      // .push_button_pressed,\
-      // .disabled,\
-      // .icon_label,\
-      // .tools_flyout .tool_button': {
-      //   width: {s: '16px', l: '32px', xl: '48px'},
-      //   height: {s: '16px', l: '32px', xl: '48px'},
-      //   padding: {s: '1px', l: '2px', xl: '3px'}
-      // },
-      // '.tool_sep': {
-      //   height: {s: '16px', l: '32px', xl: '48px'},
-      //   margin: {s: '2px 2px', l: '2px 5px', xl: '2px 8px'}
-      // },
-      // '#main_icon': {
-      //   width: {s: '31px', l: '53px', xl: '75px'},
-      //   height: {s: '22px', l: '42px', xl: '64px'}
-      // },
       '#tools_top': {
         left: 50 + $$c('#main_button').width(),
         height: 72
@@ -29886,89 +29629,7 @@ editor.init = function () {
       'div#workarea': {
         left: 38,
         top: 74
-      } // '#tools_bottom': {
-      //   left: {s: '27px', l: '46px', xl: '65px'},
-      //   height: {s: '58px', l: '98px', xl: '145px'}
-      // },
-      // '#color_tools': {
-      //   'border-spacing': {s: '0 1px'},
-      //   'margin-top': {s: '-1px'}
-      // },
-      // '#color_tools .icon_label': {
-      //   width: {l:'43px', xl: '60px'}
-      // },
-      // '.color_tool': {
-      //   height: {s: '20px'}
-      // },
-      // '#tool_opacity': {
-      //   top: {s: '1px'},
-      //   height: {s: 'auto', l:'auto', xl:'auto'}
-      // },
-      // '#tools_top input, #tools_bottom input': {
-      //   'margin-top': {s: '2px', l: '4px', xl: '5px'},
-      //   height: {s: 'auto', l: 'auto', xl: 'auto'},
-      //   border: {s: '1px solid #555', l: 'auto', xl: 'auto'},
-      //   'font-size': {s: '.9em', l: '1.2em', xl: '1.4em'}
-      // },
-      // '#zoom_panel': {
-      //   'margin-top': {s: '3px', l: '4px', xl: '5px'}
-      // },
-      // '#copyright, #tools_bottom .label': {
-      //   'font-size': {l: '1.5em', xl: '2em'},
-      //   'line-height': {s: '15px'}
-      // },
-      // '#tools_bottom_2': {
-      //   width: {l: '295px', xl: '355px'},
-      //   top: {s: '4px'}
-      // },
-      // '#tools_top > div, #tools_top': {
-      //   'line-height': {s: '17px', l: '34px', xl: '50px'}
-      // },
-      // '.dropdown button': {
-      //   height: {s: '18px', l: '34px', xl: '40px'},
-      //   'line-height': {s: '18px', l: '34px', xl: '40px'},
-      //   'margin-top': {s: '3px'}
-      // },
-      // '#tools_top label, #tools_bottom label': {
-      //   'font-size': {s: '1em', l: '1.5em', xl: '2em'},
-      //   height: {s: '25px', l: '42px', xl: '64px'}
-      // },
-      // 'div.toolset': {
-      //   height: {s: '25px', l: '42px', xl: '64px'}
-      // },
-      // '#tool_bold, #tool_italic': {
-      //   'font-size': {s: '1.5em', l: '3em', xl: '4.5em'}
-      // },
-      // '#sidepanels': {
-      //   top: {s: '50px', l: '88px', xl: '125px'},
-      //   bottom: {s: '51px', l: '68px', xl: '65px'}
-      // },
-      // '#layerbuttons': {
-      //   width: {l: '130px', xl: '175px'},
-      //   height: {l: '24px', xl: '30px'}
-      // },
-      // '#layerlist': {
-      //   width: {l: '128px', xl: '150px'}
-      // },
-      // '.layer_button': {
-      //   width: {l: '19px', xl: '28px'},
-      //   height: {l: '19px', xl: '28px'}
-      // },
-      // 'input.spin-button': {
-      //   'background-image': {l: 'url('images/spinbtn_updn_big.png')', xl: 'url('images/spinbtn_updn_big.png')'},
-      //   'background-position': {l: '100% -5px', xl: '100% -2px'},
-      //   'padding-right': {l: '24px', xl: '24px' }
-      // },
-      // 'input.spin-button.up': {
-      //   'background-position': {l: '100% -45px', xl: '100% -42px'}
-      // },
-      // 'input.spin-button.down': {
-      //   'background-position': {l: '100% -85px', xl: '100% -82px'}
-      // },
-      // '#position_opts': {
-      //   width: {all: (size_num*4) +'px'}
-      // }
-
+      }
     };
     var ruleElem = $$c('#tool_size_rules');
 
@@ -30189,31 +29850,11 @@ editor.init = function () {
       },
       callback: function callback(icons) {
         return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-          var tleft, minHeight, size, getStylesheetPriority, stylesheets, idx, _stylesheets;
-
+          var tleft, minHeight, size;
           return regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
               switch (_context4.prev = _context4.next) {
                 case 0:
-                  getStylesheetPriority = function _getStylesheetPriorit(stylesheetFile) {
-                    switch (stylesheetFile) {
-                      case 'jgraduate/css/jPicker.css':
-                        return 1;
-
-                      case 'jgraduate/css/jGraduate.css':
-                        return 2;
-
-                      case 'svg-editor.css':
-                        return 3;
-
-                      case 'spinbtn/jQuery.SpinButton.css':
-                        return 4;
-
-                      default:
-                        return Infinity;
-                    }
-                  };
-
                   $$c('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
                     $$c(this).parent().prepend(this);
                   });
@@ -30240,56 +29881,11 @@ editor.init = function () {
                       }
                     }
                   });
-                  /**
-                   * Since stylesheets may be added out of order, we indicate the desired order
-                   *   for defaults and others after them (in an indeterminate order).
-                   * @param {string} stylesheetFile
-                   * @returns {Integer|PositiveInfinity}
-                   */
-
-                  stylesheets = $$c.loadingStylesheets.sort(function (a, b) {
-                    var priorityA = getStylesheetPriority(a);
-                    var priorityB = getStylesheetPriority(b);
-
-                    if (priorityA === priorityB) {
-                      return 0;
-                    }
-
-                    return priorityA > priorityB;
-                  });
-
-                  if (curConfig.stylesheets.length) {
-                    // Ensure a copy with unique items
-                    stylesheets = _toConsumableArray(new Set(curConfig.stylesheets));
-                    idx = stylesheets.indexOf('@default');
-
-                    if (idx > -1) {
-                      (_stylesheets = stylesheets).splice.apply(_stylesheets, [idx, 1].concat(_toConsumableArray($$c.loadingStylesheets)));
-                    }
-                  }
-
-                  _context4.next = 11;
-                  return loadStylesheets(stylesheets, {
-                    acceptErrors: function acceptErrors(_ref7) {
-                      var stylesheetURL = _ref7.stylesheetURL,
-                          reject = _ref7.reject,
-                          resolve = _ref7.resolve;
-
-                      if ($$c.loadingStylesheets.includes(stylesheetURL)) {
-                        reject(new Error("Missing expected stylesheet: ".concat(stylesheetURL)));
-                        return;
-                      }
-
-                      resolve();
-                    }
-                  });
-
-                case 11:
                   $$c('#svg_container')[0].style.visibility = 'visible';
-                  _context4.next = 14;
+                  _context4.next = 9;
                   return editor.runCallbacks();
 
-                case 14:
+                case 9:
                 case "end":
                   return _context4.stop();
               }
@@ -30763,8 +30359,8 @@ editor.init = function () {
 
   function _promptImgURL() {
     _promptImgURL = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee18() {
-      var _ref28,
-          _ref28$cancelDeletes,
+      var _ref27,
+          _ref27$cancelDeletes,
           cancelDeletes,
           curhref,
           url,
@@ -30774,7 +30370,7 @@ editor.init = function () {
         while (1) {
           switch (_context18.prev = _context18.next) {
             case 0:
-              _ref28 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref28$cancelDeletes = _ref28.cancelDeletes, cancelDeletes = _ref28$cancelDeletes === void 0 ? false : _ref28$cancelDeletes;
+              _ref27 = _args18.length > 0 && _args18[0] !== undefined ? _args18[0] : {}, _ref27$cancelDeletes = _ref27.cancelDeletes, cancelDeletes = _ref27$cancelDeletes === void 0 ? false : _ref27$cancelDeletes;
               curhref = svgCanvas.getHref(selectedElement);
               curhref = curhref.startsWith('data:') ? '' : curhref;
               _context18.next = 5;
@@ -31782,10 +31378,10 @@ editor.init = function () {
         // Get this button's options
         var idSel = '#' + this.getAttribute('id');
 
-        var _Object$entries$find = Object.entries(btnOpts).find(function (_ref8) {
-          var _ref9 = _slicedToArray(_ref8, 2),
-              _ = _ref9[0],
-              sel = _ref9[1].sel;
+        var _Object$entries$find = Object.entries(btnOpts).find(function (_ref7) {
+          var _ref8 = _slicedToArray(_ref7, 2),
+              _ = _ref8[0],
+              sel = _ref8[1].sel;
 
           return sel === idSel;
         }),
@@ -31812,10 +31408,10 @@ editor.init = function () {
           if (ev.type === 'keydown') {
             var flyoutIsSelected = $$c(options.parent + '_show').hasClass('tool_button_current');
             var currentOperation = $$c(options.parent + '_show').attr('data-curopt');
-            Object.entries(holders[opts.parent]).some(function (_ref10) {
-              var _ref11 = _slicedToArray(_ref10, 2),
-                  j = _ref11[0],
-                  tool = _ref11[1];
+            Object.entries(holders[opts.parent]).some(function (_ref9) {
+              var _ref10 = _slicedToArray(_ref9, 2),
+                  j = _ref10[0],
+                  tool = _ref10[1];
 
               if (tool.sel !== currentOperation) {
                 return false;
@@ -32026,7 +31622,7 @@ editor.init = function () {
    */
 
   var extAdded = /*#__PURE__*/function () {
-    var _ref12 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(win, ext) {
+    var _ref11 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(win, ext) {
       var cbCalled, resizeDone, lang, prepResize, runCallback, btnSelects, svgicons, fallbackObj, altsObj, placementObj, holders;
       return regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
@@ -32507,7 +32103,7 @@ editor.init = function () {
     }));
 
     return function extAdded(_x3, _x4) {
-      return _ref12.apply(this, arguments);
+      return _ref11.apply(this, arguments);
     };
   }();
   /**
@@ -32582,9 +32178,9 @@ editor.init = function () {
    * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
    * @returns {void}
    */
-  function (win, _ref13) {
-    var center = _ref13.center,
-        newCtr = _ref13.newCtr;
+  function (win, _ref12) {
+    var center = _ref12.center,
+        newCtr = _ref12.newCtr;
     updateCanvas(center, newCtr);
   });
   svgCanvas.bind('contextset', contextChanged);
@@ -33462,7 +33058,7 @@ editor.init = function () {
 
 
   var makeHyperlink = /*#__PURE__*/function () {
-    var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
+    var _ref14 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
       var url;
       return regeneratorRuntime.wrap(function _callee7$(_context7) {
         while (1) {
@@ -33492,7 +33088,7 @@ editor.init = function () {
     }));
 
     return function makeHyperlink() {
-      return _ref15.apply(this, arguments);
+      return _ref14.apply(this, arguments);
     };
   }();
   /**
@@ -33613,7 +33209,7 @@ editor.init = function () {
 
 
   var clickClear = /*#__PURE__*/function () {
-    var _ref16 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+    var _ref15 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
       var _curConfig$dimensions, x, y, ok;
 
       return regeneratorRuntime.wrap(function _callee8$(_context8) {
@@ -33654,7 +33250,7 @@ editor.init = function () {
     }));
 
     return function clickClear() {
-      return _ref16.apply(this, arguments);
+      return _ref15.apply(this, arguments);
     };
   }();
   /**
@@ -33701,7 +33297,7 @@ editor.init = function () {
   */
 
   var clickExport = /*#__PURE__*/function () {
-    var _ref17 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
+    var _ref16 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
       var imgType, exportWindowName, openExportWindow, chrome, quality;
       return regeneratorRuntime.wrap(function _callee9$(_context9) {
         while (1) {
@@ -33798,7 +33394,7 @@ editor.init = function () {
     }));
 
     return function clickExport() {
-      return _ref17.apply(this, arguments);
+      return _ref16.apply(this, arguments);
     };
   }();
   /**
@@ -33998,7 +33594,7 @@ editor.init = function () {
 
 
   var saveSourceEditor = /*#__PURE__*/function () {
-    var _ref18 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
+    var _ref17 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
       var saveChanges, ok;
       return regeneratorRuntime.wrap(function _callee10$(_context10) {
         while (1) {
@@ -34056,7 +33652,7 @@ editor.init = function () {
     }));
 
     return function saveSourceEditor() {
-      return _ref18.apply(this, arguments);
+      return _ref17.apply(this, arguments);
     };
   }();
   /**
@@ -34200,7 +33796,7 @@ editor.init = function () {
   */
 
   var cancelOverlays = /*#__PURE__*/function () {
-    var _ref20 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
+    var _ref19 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
       var ok;
       return regeneratorRuntime.wrap(function _callee12$(_context12) {
         while (1) {
@@ -34269,7 +33865,7 @@ editor.init = function () {
     }));
 
     return function cancelOverlays() {
-      return _ref20.apply(this, arguments);
+      return _ref19.apply(this, arguments);
     };
   }();
 
@@ -36030,8 +35626,8 @@ editor.init = function () {
         // bitmap handling
         reader = new FileReader();
 
-        reader.onloadend = function (_ref23) {
-          var result = _ref23.target.result;
+        reader.onloadend = function (_ref22) {
+          var result = _ref22.target.result;
 
           /**
           * Insert the new image until we know its dimensions.
@@ -36081,7 +35677,7 @@ editor.init = function () {
     workarea[0].addEventListener('dragleave', onDragLeave);
     workarea[0].addEventListener('drop', importImage);
     var open = $$c('<input type="file">').change( /*#__PURE__*/function () {
-      var _ref24 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee16(e) {
+      var _ref23 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee16(e) {
         var ok, reader;
         return regeneratorRuntime.wrap(function _callee16$(_context16) {
           while (1) {
@@ -36108,13 +35704,13 @@ editor.init = function () {
                   reader = new FileReader();
 
                   reader.onloadend = /*#__PURE__*/function () {
-                    var _ref26 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(_ref25) {
+                    var _ref25 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee15(_ref24) {
                       var target;
                       return regeneratorRuntime.wrap(function _callee15$(_context15) {
                         while (1) {
                           switch (_context15.prev = _context15.next) {
                             case 0:
-                              target = _ref25.target;
+                              target = _ref24.target;
                               _context15.next = 3;
                               return loadSvgString(target.result);
 
@@ -36130,7 +35726,7 @@ editor.init = function () {
                     }));
 
                     return function (_x6) {
-                      return _ref26.apply(this, arguments);
+                      return _ref25.apply(this, arguments);
                     };
                   }();
 
@@ -36146,7 +35742,7 @@ editor.init = function () {
       }));
 
       return function (_x5) {
-        return _ref24.apply(this, arguments);
+        return _ref23.apply(this, arguments);
       };
     }());
     $$c('#tool_open').show();
@@ -36175,7 +35771,7 @@ editor.init = function () {
   */
 
   var setLang = editor.setLang = /*#__PURE__*/function () {
-    var _ref27 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee17(lang, allStrings) {
+    var _ref26 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee17(lang, allStrings) {
       var oldLayerName, renameLayer, elems;
       return regeneratorRuntime.wrap(function _callee17$(_context17) {
         while (1) {
@@ -36281,7 +35877,7 @@ editor.init = function () {
     }));
 
     return function (_x7, _x8) {
-      return _ref27.apply(this, arguments);
+      return _ref26.apply(this, arguments);
     };
   }();
 
@@ -36373,9 +35969,9 @@ editor.runCallbacks = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRu
         case 0:
           _context20.prev = 0;
           _context20.next = 3;
-          return Promise.all(callbacks.map(function (_ref30) {
-            var _ref31 = _slicedToArray(_ref30, 1),
-                cb = _ref31[0];
+          return Promise.all(callbacks.map(function (_ref29) {
+            var _ref30 = _slicedToArray(_ref29, 1),
+                cb = _ref30[0];
 
             return cb(); // eslint-disable-line promise/prefer-await-to-callbacks
           }));
@@ -36387,18 +35983,18 @@ editor.runCallbacks = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRu
         case 5:
           _context20.prev = 5;
           _context20.t0 = _context20["catch"](0);
-          callbacks.forEach(function (_ref32) {
-            var _ref33 = _slicedToArray(_ref32, 3),
-                reject = _ref33[2];
+          callbacks.forEach(function (_ref31) {
+            var _ref32 = _slicedToArray(_ref31, 3),
+                reject = _ref32[2];
 
             reject();
           });
           throw _context20.t0;
 
         case 9:
-          callbacks.forEach(function (_ref34) {
-            var _ref35 = _slicedToArray(_ref34, 2),
-                resolve = _ref35[1];
+          callbacks.forEach(function (_ref33) {
+            var _ref34 = _slicedToArray(_ref33, 2),
+                resolve = _ref34[1];
 
             resolve();
           });
@@ -36420,8 +36016,8 @@ editor.runCallbacks = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRu
  */
 
 editor.loadFromString = function (str) {
-  var _ref36 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      noAlert = _ref36.noAlert;
+  var _ref35 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      noAlert = _ref35.noAlert;
 
   return editor.ready( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee21() {
     return regeneratorRuntime.wrap(function _callee21$(_context21) {
@@ -36489,9 +36085,9 @@ editor.disableUI = function (featList) {// $(function () {
 
 
 editor.loadFromURL = function (url) {
-  var _ref38 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      cache = _ref38.cache,
-      noAlert = _ref38.noAlert;
+  var _ref37 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      cache = _ref37.cache,
+      noAlert = _ref37.noAlert;
 
   return editor.ready(function () {
     return new Promise(function (resolve, reject) {
@@ -36541,8 +36137,8 @@ editor.loadFromURL = function (url) {
 
 
 editor.loadFromDataURI = function (str) {
-  var _ref39 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      noAlert = _ref39.noAlert;
+  var _ref38 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      noAlert = _ref38.noAlert;
 
   return editor.ready(function () {
     var base64 = false;
@@ -36600,9 +36196,9 @@ var messageQueue = [];
  * @returns {void}
  */
 
-var messageListener = function messageListener(_ref40) {
-  var data = _ref40.data,
-      origin = _ref40.origin;
+var messageListener = function messageListener(_ref39) {
+  var data = _ref39.data,
+      origin = _ref39.origin;
   // eslint-disable-line no-shadow
   // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
   var messageObj = {
@@ -36683,10 +36279,6 @@ editor.setConfig({
   // noDefaultExtensions can only be meaningfully used in
   //  `svgedit-config-es.js` or in the URL
   noDefaultExtensions: false
-}); // STYLESHEET CONFIG
-
-editor.setConfig({
-  stylesheets: ['@default', '../svgedit-custom.css']
 }); // OTHER CONFIG
 
 editor.setConfig({// canvasName: 'default',
