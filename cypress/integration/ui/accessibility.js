@@ -1,6 +1,6 @@
 describe('UI - Accessibility', function () {
   beforeEach(() => {
-    cy.visit('/instrumented/editor/svg-editor-es.html');
+    cy.visit('/instrumented/editor');
     cy.injectAxe();
   });
 
