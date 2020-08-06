@@ -47,18 +47,9 @@
     "coverage-badge": "coveradge badges/coverage-badge",
     "imageoptim": "imageoptim",
     "compress-images": "imageoptim \"src/editor/extensions/*.png\" \"src/editor/spinbtn/*.png\" \"src/editor/jgraduate/images/*.{png,gif}\" \"src/editor/images/*.png\"",
-    "copy": "copyfiles -f node_modules/load-stylesheets/dist/index-es.js src/external/load-stylesheets && copyfiles -f node_modules/jamilih/dist/jml-es.js src/external/jamilih && copyfiles -f node_modules/query-result/esm/index.js src/external/query-result/esm && copyfiles -f node_modules/qr-manipulation/dist/index-es.js src/external/qr-manipulation/dist && copyfiles -f node_modules/stackblur-canvas/dist/stackblur-es.js src/external/stackblur-canvas/dist && copyfiles -f node_modules/regenerator-runtime/runtime.js src/external/regenerator-runtime && copyfiles -f \"node_modules/core-js-bundle//minified*\" src/external/core-js-bundle && copyfiles -f \"node_modules/underscore/underscore-*\" src/editor/jspdf && copyfiles -f \"node_modules/deparam/dist/deparam.esm.js\" src/external/deparam",
     "remark": "remark -q -f .",
-    "build-html": "babel-node --plugins @babel/plugin-transform-modules-commonjs build/build-html.js",
     "install-offline": "npm install --prefer-offline --no-audit",
-    "eslint-fix": "eslint --fix --ext js,md,html src",
     "eslint": "eslint --ext js,html,md .",
-    "eslint-arg": "eslint --ext js,html,md",
-    "rollup": "rollup -c",
-    "build-by-config": "rollup -c rollup-config.config.js",
-    "prep-no-core-rollup": "run-s build-html build-by-config",
-    "prep": "run-s eslint prep-no-eslint",
-    "prep-no-eslint": "run-s prep-no-core-rollup rollup",
     "prepublishOnly": "run-s license-badges copy prep build-docs",
     "cypress:open-no-start": "cypress open",
     "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && nyc instrument --compact=false src instrumented",
@@ -78,7 +69,8 @@
     "test-no-cov-no-core-rollup": "run-s eslint prep-no-core-rollup test-only",
     "test-no-cov": "run-s prep test-only",
     "test-no-core-rollup": "run-s eslint cypress:instrument test-no-cov-no-core-rollup",
-    "test": "run-s cypress:instrument test-only"
+    "test": "run-s cypress:instrument test-only",
+    "build": "rollup -c"
   },
   "nyc": {
     "statements": 45,
