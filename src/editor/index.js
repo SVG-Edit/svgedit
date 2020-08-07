@@ -76,7 +76,7 @@ svgEditor.setConfig({
   // no_save_warning: false,
   // PATH CONFIGURATION
   // imgPath: 'images/',
-  // langPath: 'locale/',
+  // langPath: '/src/editor/locale/',
   // extPath: 'extensions/',
   // jGraduatePath: 'jgraduate/images/',
   /*

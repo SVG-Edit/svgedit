@@ -93,9 +93,9 @@
     ]
   },
   "lint-staged": {
-    ".eslintignore": "npm run eslint-arg --",
-    ".eslintrc.js": "npm run eslint-arg --",
-    "src/**/*.{js,md,html}": "npm run eslint-arg --",
+    ".eslintignore": "npm run eslint",
+    ".eslintrc.js": "npm run eslint",
+    "src/**/*.{js,md,html}": "npm run eslint",
     "src/editor/extensions/*.png": "npm run imageoptim --",
     "src/editor/spinbtn/*.png": "npm run imageoptim --",
     "src/editor/jgraduate/images/*.{png,gif}": "npm run imageoptim --",

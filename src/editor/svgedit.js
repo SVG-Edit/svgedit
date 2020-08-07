@@ -26,7 +26,6 @@ import {getTypeMap, convertUnit, isValidUnit} from '../common/units.js';
 import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
-import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
 import deparam from '../external/deparam/deparam.esm.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
@@ -237,13 +236,13 @@ const callbacks = [],
     no_save_warning: false,
     // PATH CONFIGURATION
     // The following path configuration items are disallowed in the URL (as should any future path configurations)
-    langPath: 'locale/', // Default will be changed if this is a non-modular load
-    extPath: 'extensions/', // Default will be changed if this is a non-modular load
-    canvgPath: 'canvg/', // Default will be changed if this is a non-modular load
-    jspdfPath: 'jspdf/', // Default will be changed if this is a non-modular load
-    imgPath: 'images/',
-    jGraduatePath: 'jgraduate/images/',
-    extIconsPath: 'extensions/',
+    langPath: '/src/editor/locale/', // Default will be changed if this is a non-modular load
+    extPath: '/src/editor/extensions/', // Default will be changed if this is a non-modular load
+    canvgPath: '/src/editor/canvg/', // Default will be changed if this is a non-modular load
+    jspdfPath: '/src/editor/jspdf/', // Default will be changed if this is a non-modular load
+    imgPath: '/src/editor/images/',
+    jGraduatePath: '/src/editor/jgraduate/images/',
+    extIconsPath: '/src/editor/extensions/',
     // DOCUMENT PROPERTIES
     // Change the following to a preference (already in the Document Properties dialog)?
     dimensions: [640, 480],
@@ -351,11 +350,11 @@ function getImportLocale ({defaultLang, defaultName}) {
      * @param {string} language
      * @returns {Promise<module:locale.LocaleStrings>} Resolves to {@link module:locale.LocaleStrings}
      */
-    function importLocale (language) {
+    async function importLocale (language) {
       const url = `${curConfig.extPath}ext-locale/${name}/${language}.js`;
-      return importSetGlobalDefault(url, {
-        global: `svgEditorExtensionLocale_${name}_${language.replace(/-/g, '_')}`
-      });
+      // eslint-disable-next-line node/no-unsupported-features/es-syntax
+      const locale = await import(url);
+      return locale.default;
     }
     try {
       return await importLocale(lang);
@@ -836,14 +835,13 @@ editor.init = function () {
     try {
       await Promise.all(
         curConfig.extensions.map(async (extname) => {
-          const extName = extname.match(/^ext-(.+)\.js/);
+          const extensionName = extname.match(/^ext-(.+)\.js/);
           // const {extName} = extname.match(/^ext-(?<extName>.+)\.js/).groups;
-          if (!extName) { // Ensure URL cannot specify some other unintended file in the extPath
+          if (!extensionName) { // Ensure URL cannot specify some other unintended file in the extPath
             return undefined;
           }
           const url = curConfig.extPath + extname;
-          // Todo: Replace this with `return import(url);` when
-          //   `import()` widely supported
+
           /**
            * @tutorial ExtensionDocs
            * @typedef {PlainObject} module:SVGEditor.ExtensionObject
@@ -854,11 +852,9 @@ editor.init = function () {
             /**
              * @type {module:SVGEditor.ExtensionObject}
              */
-            const imported = await importSetGlobalDefault(url, {
-              global: 'svgEditorExtension_' + extName[1].replace(/-/g, '_')
-              // global: 'svgEditorExtension_' + extName.replace(/-/g, '_')
-            });
-            const {name = extName[1], init} = imported;
+            // eslint-disable-next-line node/no-unsupported-features/es-syntax
+            const imported = await import(url);
+            const {name = extensionName[1], init} = imported.default;
             // const {name = extName, init} = imported;
             const importLocale = getImportLocale({defaultLang: langParam, defaultName: name});
             return editor.addExtension(name, (init && init.bind(editor)), {$, importLocale});

@@ -33,7 +33,6 @@ import {
 } from './draw.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
-import {importSetGlobal, importScript} from '../external/dynamic-import-polyfill/importModule.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
@@ -3990,9 +3989,8 @@ this.rasterExport = async function (imgType, quality, exportWindowName, opts = {
   const svg = this.svgCanvasToString();
 
   if (!canvg) {
-    ({canvg} = await importSetGlobal(curConfig.canvgPath + 'canvg.js', {
-      global: 'canvg'
-    }));
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    ({canvg} = await import(curConfig.canvgPath + 'canvg.js').default);
   }
   if (!$('#export_canvas').length) {
     $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
@@ -4076,24 +4074,12 @@ this.exportPDF = async function (
 ) {
   if (!window.jsPDF) {
     // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
-    await importScript([
-      // We do not currently have these paths configurable as they are
-      //   currently global-only, so not Rolled-up
-      'jspdf/underscore-min.js',
-      // 'jspdf/jspdf.min.js',
-      '../../svgedit-myfix/editor/jspdf/jspdf-1.0.150.debug.js'
-    ]);
-
-    const modularVersion = !('svgEditor' in window) ||
-      !window.svgEditor ||
-      window.svgEditor.modules !== false;
-    // Todo: Switch to `import()` when widely supported and available (also allow customization of path)
-    await importScript(curConfig.jspdfPath + 'jspdf.plugin.svgToPdf.js', {
-      type: modularVersion
-        ? 'module'
-        : 'text/javascript'
-    });
-    // await importModule('jspdf/jspdf.plugin.svgToPdf.js');
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import('../editor/jspdf/underscore-min.js');
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import('../editor/jspdf/jspdf.min.js');
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import('../editor/jspdf/jspdf.plugin.svgToPdf.js');
   }
 
   const res = getResolution();
