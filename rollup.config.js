@@ -3,24 +3,32 @@ import rimraf from 'rimraf';
 import babel from '@rollup/plugin-babel';
 import copy from 'rollup-plugin-copy';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 // eslint-disable-next-line no-console
 rimraf('./dist', () => console.info('recreating dist'));
 
 const config = {
   input: 'src/editor/index.js',
+  preserveEntrySignatures: false,
   output: [
     {
       format: 'es',
-      file: 'dist/editor/index.js'
+      file: 'dist/editor/index.js',
+      inlineDynamicImports: true,
+      sourcemap: true
+      // dir: 'dist/editor'
     },
     {
       format: 'iife',
-      file: 'dist/editor/index-iife.js'
+      file: 'dist/editor/index-iife.js',
+      inlineDynamicImports: true
     },
     {
       format: 'umd',
-      file: 'dist/editor/index-umd.js'
+      file: 'dist/editor/index-umd.js',
+      inlineDynamicImports: true
     }
   ],
   plugins: [
@@ -59,8 +67,13 @@ const config = {
         {src: 'src/editor/svgedit.css', dest: 'dist/editor'}
       ]
     }),
-    nodeResolve(),
-    babel({babelHelpers: 'bundled'})
+    commonjs(),
+    babel({babelHelpers: 'bundled'}),
+    nodePolyfills(),
+    nodeResolve({
+      browser: true,
+      preferBuiltins: true
+    })
   ]
 };
 

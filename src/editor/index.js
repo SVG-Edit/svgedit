@@ -18,6 +18,10 @@ For default config and extensions (and available options) available to
 `setConfig()`, see the file `docs/tutorials/ConfigOptions.md`
 */
 
+// eslint-disable-next-line node/file-extension-in-import
+import 'core-js/stable';
+// eslint-disable-next-line node/file-extension-in-import
+import 'regenerator-runtime/runtime';
 import svgEditor from './svgedit.js';
 
 // URL OVERRIDE CONFIG

@@ -7,8 +7,6 @@
  * @copyright 2013 Jo Segaert
  *
  */
-// Todo: Wait for Mathjax 3.0 to get ES Module/avoid global
-import {importScript} from '../../external/dynamic-import-polyfill/importModule.js';
 
 export default {
   name: 'mathjax',
@@ -204,7 +202,8 @@ export default {
             // We use `extIconsPath` here for now as it does not vary with
             //  the modular type as does `extPath`
             try {
-              await importScript(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure);
+              // eslint-disable-next-line node/no-unsupported-features/es-syntax
+              await import(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure);
               // When MathJax is loaded get the div where the math will be rendered.
               MathJax.Hub.queue.Push(function () {
                 math = MathJax.Hub.getAllJax('#mathjax_creator')[0];

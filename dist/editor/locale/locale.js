@@ -24,8 +24,6 @@
  * @typedef {PlainObject<string, string>} module:locale.LocaleSelectorValue
  */
 
-import {importSetGlobalDefault} from '../../external/dynamic-import-polyfill/importModule.js';
-
 const $ = jQuery;
 
 let langParam;
@@ -388,11 +386,7 @@ export const putLocale = async function (givenParam, goodLangs, conf) {
   }
 
   const url = conf.langPath + 'lang.' + langParam + '.js';
-  return readLang(
-    // Todo: Replace this with `return import(url);` when
-    //   `import()` widely supported
-    await importSetGlobalDefault(url, {
-      global: 'svgEditorLang_' + langParam.replace(/-/g, '_')
-    })
-  );
+  // eslint-disable-next-line node/no-unsupported-features/es-syntax
+  const module = await import(url);
+  return readLang(module.default);
 };
