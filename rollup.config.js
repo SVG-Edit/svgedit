@@ -42,13 +42,15 @@ const config = {
           src: 'src/editor/index.html',
           dest: 'dist/editor',
           rename: 'index-iife.html',
-          transform: (contents) => contents.toString().replace('index.js', 'index-iife.js')
+          transform: (contents) => contents.toString()
+            .replace('<script type="module" src="index.js">', '<script defer="defer" src="index-iife.js">')
         },
         {
           src: 'src/editor/index.html',
           dest: 'dist/editor',
           rename: 'index-umd.html',
-          transform: (contents) => contents.toString().replace('index.js', 'index-umd.js')
+          transform: (contents) => contents.toString()
+            .replace('<script type="module" src="index.js">', '<script src="index-umd.js">')
         },
         {src: 'src/editor/locale', dest: 'dist/editor'},
         {src: 'src/editor/extensions', dest: 'dist/editor'},

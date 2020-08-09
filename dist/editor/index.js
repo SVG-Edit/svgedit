@@ -24438,8 +24438,9 @@ function SvgCanvas(container, config) {
   var dimensions = curConfig.dimensions;
   var canvas = this; // "document" element associated with the container (same as window.document using default svg-editor.js)
   // NOTE: This is not actually a SVG document, but an HTML document.
+  // JFH const svgdoc = container.ownerDocument;
 
-  var svgdoc = container.ownerDocument; // This is a container for the document being edited, not the document itself.
+  var svgdoc = window.document; // This is a container for the document being edited, not the document itself.
 
   /**
    * @name module:svgcanvas~svgroot

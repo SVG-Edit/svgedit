@@ -145,7 +145,8 @@ const canvas = this;
 
 // "document" element associated with the container (same as window.document using default svg-editor.js)
 // NOTE: This is not actually a SVG document, but an HTML document.
-const svgdoc = container.ownerDocument;
+// JFH const svgdoc = container.ownerDocument;
+const svgdoc = window.document;
 
 // This is a container for the document being edited, not the document itself.
 /**
