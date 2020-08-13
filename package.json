@@ -109,7 +109,7 @@
     "build": "npm run build-html",
     "docs": "npm run build-docs",
     "licenseInfo.json": "npm run license-badges",
-    "package-lock.json": "run-s install-offline run-s license-badges copy prep-no-eslint build-docs"
+    "package-lock.json": "run-s install-offline license-badges copy prep-no-eslint build-docs"
   },
   "husky": {
     "hooks": {
