@@ -1132,7 +1132,8 @@
                 while (_node2.childNodes[j]) {
                   var cn = _node2.childNodes[j];
                   cn.remove(); // `j` should stay the same as removing will cause node to be present
-                }
+                } // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
+
 
                 attVal.childNodes.forEach(_childrenToJML(_node2));
               } else {
@@ -1159,11 +1160,13 @@
                   }
 
                   if (attVal.head) {
+                    // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                     attVal.head.forEach(_appendJML(head));
                   }
                 }
 
                 if (attVal.body) {
+                  // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
                   attVal.body.forEach(_appendJMLOrText(_body));
                 }
               }
@@ -1450,7 +1453,7 @@
             // Todo: Fix to allow application of stylesheets of style tags within fragments?
 
 
-            return nodes.length <= 1 ? nodes[0] // eslint-disable-next-line
+            return nodes.length <= 1 ? nodes[0] // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
             : nodes.reduce(_fragReducer, doc.createDocumentFragment()); // nodes;
           }
 

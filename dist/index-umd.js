@@ -35957,7 +35957,6 @@
         $$c.process_cancel(uiStrings$1.notification.loadingImage);
         e.stopPropagation();
         e.preventDefault();
-        $$c('#workarea').removeAttr('style');
         $$c('#main_menu').hide();
         var file = e.type === 'drop' ? e.dataTransfer.files[0] : this.files[0];
 
