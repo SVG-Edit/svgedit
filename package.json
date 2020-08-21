@@ -25,7 +25,7 @@
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
     "open-docs": "run-p start open-docs-no-start",
     "build-docs-remove": "rimraf \"docs/jsdoc/*\"",
-    "build-docs-create": "jsdoc --pedantic -c docs/jsdoc-config.js editor",
+    "build-docs-create": "jsdoc --pedantic -c docs/jsdoc-config.js src/editor",
     "build-docs": "run-s -c build-docs-remove build-docs-create",
     "build-and-open-docs-no-start": "run-s build-docs open-docs-no-start",
     "build-and-open-docs": "run-s build-docs open-docs",
