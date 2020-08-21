@@ -6008,7 +6008,6 @@ editor.init = function () {
       $.process_cancel(uiStrings.notification.loadingImage);
       e.stopPropagation();
       e.preventDefault();
-      $('#workarea').removeAttr('style');
       $('#main_menu').hide();
       const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
       if (!file) {
