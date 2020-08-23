@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'foreignObject',
   buttons: [
     {
@@ -23,3 +23,5 @@ export default {
     }
   ]
 };
+
+export default en;

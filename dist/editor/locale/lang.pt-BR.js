@@ -1,4 +1,4 @@
-export default {
+var lang_ptBR = {
   lang: 'pt-BR',
   dir: 'ltr',
   common: {
@@ -215,3 +215,5 @@ export default {
     exportNoText: 'Text may not appear as expected'
   }
 };
+
+export default lang_ptBR;

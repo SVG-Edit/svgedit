@@ -1,4 +1,4 @@
-export default {
+var lang_fa = {
   lang: 'fa',
   dir: 'rtl',
   common: {
@@ -216,3 +216,5 @@ export default {
     exportNoText: 'Text may not appear as expected'
   }
 };
+
+export default lang_fa;

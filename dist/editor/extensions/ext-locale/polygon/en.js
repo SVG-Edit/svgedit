@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'polygon',
   buttons: [
     {
@@ -12,3 +12,5 @@ export default {
     }
   ]
 };
+
+export default en;

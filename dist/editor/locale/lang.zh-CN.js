@@ -1,4 +1,4 @@
-export default {
+var lang_zhCN = {
   lang: 'zh-CN',
   dir: 'ltr',
   common: {
@@ -216,3 +216,5 @@ export default {
     exportNoText: 'Text may not appear as expected'
   }
 };
+
+export default lang_zhCN;

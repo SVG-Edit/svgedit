@@ -1,4 +1,4 @@
-export default {
+var lang_de = {
   lang: 'de',
   dir: 'ltr',
   common: {
@@ -216,3 +216,5 @@ export default {
     exportNoText: 'Text may not appear as expected'
   }
 };
+
+export default lang_de;

@@ -1,4 +1,4 @@
-export default {
+var fr = {
   name: 'Connector',
   langList: [
     {id: 'mode_connect', title: 'Connecter deux objets'}
@@ -9,3 +9,5 @@ export default {
     }
   ]
 };
+
+export default fr;

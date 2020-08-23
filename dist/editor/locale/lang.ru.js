@@ -1,4 +1,4 @@
-export default {
+var lang_ru = {
   lang: 'ru',
   dir: 'ltr',
   common: {
@@ -216,3 +216,5 @@ export default {
     exportNoText: 'Текст может показываться не так как должен'
   }
 };
+
+export default lang_ru;

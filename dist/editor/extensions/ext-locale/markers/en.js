@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'Markers',
   langList: [
     {id: 'nomarker', title: 'No Marker'},
@@ -44,3 +44,5 @@ export default {
     }
   ]
 };
+
+export default en;

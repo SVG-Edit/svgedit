@@ -384,8 +384,7 @@ export const putLocale = async function (givenParam, goodLangs, conf) {
   if (!goodLangs.includes(langParam) && langParam !== 'test') {
     langParam = 'en';
   }
-
-  const url = conf.langPath + 'lang.' + langParam + '.js';
+  const url = `${conf.langPath}lang.${langParam}.js`;
   // eslint-disable-next-line node/no-unsupported-features/es-syntax
   const module = await import(url);
   return readLang(module.default);

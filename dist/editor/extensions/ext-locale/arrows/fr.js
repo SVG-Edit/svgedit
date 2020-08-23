@@ -1,4 +1,4 @@
-export default {
+var fr = {
   name: 'Arrows',
   langList: [
     {id: 'arrow_none', textContent: 'Sans flèche'}
@@ -17,3 +17,5 @@ export default {
     }
   ]
 };
+
+export default fr;

@@ -1,4 +1,4 @@
-export default {
+var en = {
   loading: 'Loading...',
   categories: {
     basic: 'Basic',
@@ -22,3 +22,5 @@ export default {
     }
   ]
 };
+
+export default en;

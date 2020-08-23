@@ -1,4 +1,4 @@
-export default {
+var fr = {
   message: "Par défaut et si supporté, SVG-Edit peut stocker les préférences de l'éditeur " +
   "et le contenu SVG localement sur votre machine de sorte que vous n'ayez pas besoin de les " +
   'rajouter chaque fois que vous chargez SVG-Edit. Si, pour des raisons de confidentialité, ' +
@@ -12,3 +12,5 @@ export default {
   rememberLabel: 'Remember this choice?',
   rememberTooltip: "Si vous choisissez de désactiver le stockage en mémorisant le choix, l'URL va changer afin que la question ne vous soit plus reposée."
 };
+
+export default fr;

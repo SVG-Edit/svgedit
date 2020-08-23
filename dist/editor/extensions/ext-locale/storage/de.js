@@ -1,4 +1,4 @@
-export default {
+var de = {
   message: 'Standardmäßig kann SVG-Edit Ihre Editor-Einstellungen ' +
   'und die SVG-Inhalte lokal auf Ihrem Gerät abspeichern. So brauchen Sie ' +
   'nicht jedes Mal die SVG neu laden. Falls Sie aus Datenschutzgründen ' +
@@ -12,3 +12,5 @@ export default {
   rememberLabel: 'Remember this choice?',
   rememberTooltip: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
 };
+
+export default de;

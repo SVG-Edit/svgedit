@@ -1,4 +1,4 @@
-export default {
+var lang_pl = {
   lang: 'pl',
   dir: 'ltr',
   author: 'Aleksander Lurie',
@@ -217,3 +217,5 @@ export default {
     exportNoText: 'Text may not appear as expected'
   }
 };
+
+export default lang_pl;

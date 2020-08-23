@@ -156,8 +156,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.10.4",
     "core-js": "^3.6.5",
-    "regenerator-runtime": "^0.13.7",
-    "systemjs": "^6.5.0"
+    "regenerator-runtime": "^0.13.7"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
@@ -233,6 +232,7 @@
     "query-result": "git+https://github.com/WebReflection/query-result.git",
     "remark-cli": "^8.0.1",
     "remark-lint-ordered-list-marker-value": "^2.0.1",
+    "requirejs": "^2.3.6",
     "rimraf": "^3.0.2",
     "rollup": "2.23.0",
     "rollup-plugin-copy": "^3.3.0",
@@ -240,6 +240,7 @@
     "rollup-plugin-re": "^1.0.7",
     "rollup-plugin-terser": "^6.1.0",
     "stackblur-canvas": "^2.3.0",
+    "systemjs": "^6.5.0",
     "typescript": "^3.9.7",
     "underscore": "^1.10.2"
   }

@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'Arrows',
   langList: [
     {id: 'arrow_none', textContent: 'No arrow'}
@@ -17,3 +17,5 @@ export default {
     }
   ]
 };
+
+export default en;

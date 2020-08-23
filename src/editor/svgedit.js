@@ -236,13 +236,13 @@ const callbacks = [],
     no_save_warning: false,
     // PATH CONFIGURATION
     // The following path configuration items are disallowed in the URL (as should any future path configurations)
-    langPath: '/src/editor/locale/', // Default will be changed if this is a non-modular load
-    extPath: '/src/editor/extensions/', // Default will be changed if this is a non-modular load
-    canvgPath: '/src/editor/canvg/', // Default will be changed if this is a non-modular load
-    jspdfPath: '/src/editor/jspdf/', // Default will be changed if this is a non-modular load
-    imgPath: '/src/editor/images/',
-    jGraduatePath: '/src/editor/jgraduate/images/',
-    extIconsPath: '/src/editor/extensions/',
+    langPath: './locale/', // Default will be changed if this is a non-modular load
+    extPath: './extensions/', // Default will be changed if this is a non-modular load
+    canvgPath: './canvg/', // Default will be changed if this is a non-modular load
+    jspdfPath: './jspdf/', // Default will be changed if this is a non-modular load
+    imgPath: './images/',
+    jGraduatePath: './images/',
+    extIconsPath: './extensions/',
     // DOCUMENT PROPERTIES
     // Change the following to a preference (already in the Document Properties dialog)?
     dimensions: [640, 480],
@@ -649,18 +649,6 @@ editor.randomizeIds = function (arg) {
 * @returns {void}
 */
 editor.init = function () {
-  const modularVersion = !('svgEditor' in window) ||
-    !window.svgEditor ||
-    window.svgEditor.modules !== false;
-  if (!modularVersion) {
-    Object.assign(defaultConfig, {
-      langPath: '../../dist/locale/',
-      extPath: '../../dist/extensions/',
-      canvgPath: '../../dist/',
-      jspdfPath: '../../dist/'
-    });
-  }
-
   // const host = location.hostname,
   //  onWeb = host && host.includes('.');
   // Some FF versions throw security errors here when directly accessing

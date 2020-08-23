@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'eyedropper',
   buttons: [
     {
@@ -7,3 +7,5 @@ export default {
     }
   ]
 };
+
+export default en;

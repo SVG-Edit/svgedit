@@ -1,4 +1,4 @@
-export default {
+var en = {
   message: 'By default and where supported, SVG-Edit can store your editor ' +
   'preferences and SVG content locally on your machine so you do not ' +
   'need to add these back each time you load SVG-Edit. If, for privacy ' +
@@ -12,3 +12,5 @@ export default {
   rememberLabel: 'Remember this choice?',
   rememberTooltip: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
 };
+
+export default en;

@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'star',
   buttons: [
     {
@@ -20,3 +20,5 @@ export default {
     }
   ]
 };
+
+export default en;

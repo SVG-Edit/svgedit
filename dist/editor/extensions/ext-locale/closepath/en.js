@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'ClosePath',
   buttons: [
     {
@@ -9,3 +9,5 @@ export default {
     }
   ]
 };
+
+export default en;

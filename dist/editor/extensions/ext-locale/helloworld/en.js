@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'Hello World',
   text: 'Hello World!\n\nYou clicked here: {x}, {y}',
   buttons: [
@@ -7,3 +7,5 @@ export default {
     }
   ]
 };
+
+export default en;

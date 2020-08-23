@@ -1,4 +1,4 @@
-export default {
+var fr = {
   select_lib: "Choisir une bibliothèque d'images",
   show_list: 'show_list',
   import_single: 'import_single',
@@ -31,3 +31,5 @@ export default {
     */
   ]
 };
+
+export default fr;

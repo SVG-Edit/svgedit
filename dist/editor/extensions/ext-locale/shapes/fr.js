@@ -1,4 +1,4 @@
-export default {
+var fr = {
   loading: 'Loading...',
   categories: {
     basic: 'Basic',
@@ -22,3 +22,5 @@ export default {
     }
   ]
 };
+
+export default fr;

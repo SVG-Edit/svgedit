@@ -1,4 +1,4 @@
-export default {
+var en = {
   name: 'MathJax',
   buttons: [
     {
@@ -6,3 +6,5 @@ export default {
     }
   ]
 };
+
+export default en;

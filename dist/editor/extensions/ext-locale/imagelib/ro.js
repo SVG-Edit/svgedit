@@ -1,4 +1,4 @@
-export default {
+var ro = {
   select_lib: 'Select an image library',
   show_list: 'Show library list',
   import_single: 'Import single',
@@ -31,3 +31,5 @@ export default {
     */
   ]
 };
+
+export default ro;
