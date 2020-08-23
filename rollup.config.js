@@ -96,25 +96,6 @@ const config = [{
   ]
 }];
 
-// template for locale
-const localeConfig = {
-  input: '<<<locale-file>>>',
-  treeshake: false,
-  output: [
-    {
-      format: 'es',
-      dir: 'dist/editor/locale',
-      inlineDynamicImports: true
-    },
-    {
-      format: 'system',
-      dir: 'dist/editor/system/locale',
-      inlineDynamicImports: true
-    }
-  ],
-  plugins: []
-};
-
 extensionFiles.forEach((extensionFile) => {
   const extensionName = extensionFile.match(/^ext-(.+?)\.js$/);
   extensionName && config.push(
@@ -150,7 +131,23 @@ extensionFiles.forEach((extensionFile) => {
 localeFiles.forEach((localeFile) => {
   const localeRegex = /^lang\.([\w-]+?)\.js$/;
   const lang = localeFile.match(localeRegex);
-  lang && config.push({...localeConfig, input: `./src/editor/locale/${localeFile}`});
+  lang && config.push({
+    input: `./src/editor/locale/${localeFile}`,
+    treeshake: false,
+    output: [
+      {
+        format: 'es',
+        dir: 'dist/editor/locale',
+        inlineDynamicImports: true
+      },
+      {
+        format: 'system',
+        dir: 'dist/editor/system/locale',
+        inlineDynamicImports: true
+      }
+    ],
+    plugins: []
+  });
 });
 
 extensionLocaleFiles.forEach(([dir, file]) => {
