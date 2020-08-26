@@ -6,6 +6,9 @@
  * @copyright 2010 Christian Tzurcanu, 2010 Alexis Deveria
  *
  */
+
+import './ext-shapes.xml';
+
 export default {
   name: 'shapes',
   async init ({$, importLocale}) {

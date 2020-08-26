@@ -7,6 +7,8 @@
  *
  */
 
+import './grid-icon.xml';
+
 export default {
   name: 'grid',
   async init ({$, NS, getTypeMap, importLocale}) {

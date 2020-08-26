@@ -7,6 +7,7 @@ import copy from 'rollup-plugin-copy';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
+import url from '@rollup/plugin-url'; // for XML/SVG files
 
 const isDirectory = (source) => {
   return lstatSync(source).isDirectory();
@@ -116,6 +117,11 @@ extensionFiles.forEach((extensionFile) => {
         }
       ],
       plugins: [
+        url({
+          include: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif', '**/*.xml'],
+          limit: 0,
+          fileName: '[name][extname]'
+        }),
         nodeResolve({
           browser: true,
           preferBuiltins: true
@@ -164,7 +170,7 @@ extensionLocaleFiles.forEach(([dir, file]) => {
         },
         {
           format: 'system',
-          file: `dist/editor/system/extensions/ext-locale/${basename(dir)}.js`,
+          file: `dist/editor/system/extensions/ext-locale/${basename(dir)}/${lang}.js`,
           inlineDynamicImports: true
         }
       ],

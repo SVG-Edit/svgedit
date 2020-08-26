@@ -9,6 +9,9 @@
 /*
   This is a very basic SVG-Edit extension to let tablet/mobile devices pan without problem
 */
+
+import './ext-panning.xml';
+
 export default {
   name: 'panning',
   async init ({importLocale}) {

@@ -5,6 +5,9 @@
  * @copyright 2010 CloudCanvas, Inc. All rights reserved
  *
  */
+
+import './polygon-icons.svg';
+
 export default {
   name: 'polygon',
   async init (S) {

@@ -7,6 +7,8 @@
  *
  */
 
+import './eyedropper-icon.xml';
+
 export default {
   name: 'eyedropper',
   async init (S) {

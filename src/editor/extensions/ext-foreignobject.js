@@ -7,6 +7,8 @@
  *
  */
 
+import './foreignobject-icons.xml';
+
 export default {
   name: 'foreignobject',
   async init (S) {

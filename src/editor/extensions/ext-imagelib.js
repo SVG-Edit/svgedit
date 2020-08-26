@@ -6,6 +6,9 @@
  * @copyright 2010 Alexis Deveria
  *
  */
+
+import './ext-imagelib.xml';
+
 export default {
   name: 'imagelib',
   async init ({$, decode64, importLocale, dropXMLInternalSubset}) {

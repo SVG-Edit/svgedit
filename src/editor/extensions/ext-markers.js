@@ -28,6 +28,9 @@
  *    add support for dimension extension lines
  *
 */
+
+import './markers-icons.xml';
+
 export default {
   name: 'markers',
   async init (S) {

@@ -5,6 +5,9 @@
  * @copyright 2010 CloudCanvas, Inc. All rights reserved
  *
  */
+
+import './star-icons.svg';
+
 export default {
   name: 'star',
   async init (S) {
