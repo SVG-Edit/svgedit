@@ -160,7 +160,6 @@ const callbacks = [],
   * @property {string} [langPath="locale/"] The path where the language files are located, with trailing slash. Default will be changed to `../dist/locale/` if this is a modular load. Note that as of version 2.7, this is not configurable by URL for security reasons.
   * @property {string} [extPath="extensions/"] The path used for extension files, with trailing slash. Default will be changed to `../dist/extensions/` if this is a modular load. Note that as of version 2.7, this is not configurable by URL for security reasons.
   * @property {string} [canvgPath="canvg/"] The path used for `canvg` files, with trailing slash. Default will be changed to `../dist/` if this is a modular load.
-  * @property {string} [jspdfPath="jspdf/"] The path used for `jsPDF` files, with trailing slash. Default will be changed to `../dist/` if this is a modular load.
   * @property {string} [extIconsPath="extensions/"] The path used for extension icons, with trailing slash.
   * @property {string} [jGraduatePath="jgraduate/images/"] The path where jGraduate images are located. Note that as of version 2.7, this is not configurable by URL for security reasons.
   * @property {boolean} [preventAllURLConfig=false] Set to `true` to override the ability for URLs to set non-content configuration (including extension config). Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
@@ -239,7 +238,6 @@ const callbacks = [],
     langPath: './locale/', // Default will be changed if this is a non-modular load
     extPath: './extensions/', // Default will be changed if this is a non-modular load
     canvgPath: './canvg/', // Default will be changed if this is a non-modular load
-    jspdfPath: './jspdf/', // Default will be changed if this is a non-modular load
     imgPath: './images/',
     jGraduatePath: './images/',
     extIconsPath: './extensions/',
@@ -739,7 +737,7 @@ editor.init = function () {
       // ones given potential to interact in undesirable
       // ways with other script resources
       [
-        'langPath', 'extPath', 'canvgPath', 'jspdfPath',
+        'langPath', 'extPath', 'canvgPath',
         'imgPath', 'jGraduatePath', 'extIconsPath'
       ].forEach(function (pathConfig) {
         if (urldata[pathConfig]) {
