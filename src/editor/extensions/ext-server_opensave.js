@@ -6,7 +6,7 @@
  * @copyright 2010 Alexis Deveria
  *
  */
-import {canvg} from '../canvg/canvg.js';
+import {canvg} from '../../external/canvg/canvg.js';
 
 export default {
   name: 'server_opensave',
