@@ -71,14 +71,14 @@ scripts directly, and the license badges are updated before publishing.)
     to be done frequently.
 1. `npm run remark` - For linting Markdown. Not of high enough priority
     currently to put into an automated routine.
-1. `npm run eslint` and `npm run eslint-fix` - For linting (or fixing)
+1. `npm run lint` and `npm run eslint-fix` - For linting (or fixing)
     linting errors. The non-fix version will be run automatically during
     testing.
 1. `npm run prep` - Run during `npm test` but may be useful to run
     `npm run prep` as needed if normally testing through
     `npm run test-only` which doesn't do the preparation. Composed of:
     1. `npm run prep-no-core-rollup`
-        1. `npm run eslint` (see above)
+        1. `npm run lint` (see above)
         1. `npm run build-html` - Copies ESM HTML pages, replacing references
             to ESM scripts to compiled/rolled up scripts.
         1. `npm run build-by-config` - Runs the Rollup routines for

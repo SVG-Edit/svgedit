@@ -22,4 +22,4 @@ jobs:
         # - 12
         # - 10
       script:
-        - npm run eslint
+        - npm run lint

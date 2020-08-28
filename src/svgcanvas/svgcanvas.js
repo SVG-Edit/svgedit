@@ -17,6 +17,8 @@
 import {jsPDF} from 'jspdf';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
 
+import {canvg} from '../external/canvg/canvg.js';
+
 import '../common/svgpathseg.js';
 import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginDBox from './dbox.js';
@@ -3952,10 +3954,9 @@ function hideCursor () {
       return {issues, issueCodes};
     }
 
-    let canvg;
     /**
-* @typedef {"feGaussianBlur"|"foreignObject"|"[stroke-dasharray]"|"text"} module:svgcanvas.IssueCode
-*/
+      * @typedef {"feGaussianBlur"|"foreignObject"|"[stroke-dasharray]"|"text"} module:svgcanvas.IssueCode
+    */
     /**
 * @typedef {PlainObject} module:svgcanvas.ImageExportedResults
 * @property {string} datauri Contents as a Data URL
@@ -3989,10 +3990,6 @@ function hideCursor () {
       const {issues, issueCodes} = getIssues();
       const svg = this.svgCanvasToString();
 
-      if (!canvg) {
-        // eslint-disable-next-line node/no-unsupported-features/es-syntax
-        ({canvg} = await import(curConfig.canvgPath + 'canvg.js').default);
-      }
       if (!$('#export_canvas').length) {
         $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
       }

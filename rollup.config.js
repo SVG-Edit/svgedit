@@ -1,4 +1,9 @@
 /* eslint-env node */
+// This rollup script is run by the command:
+// 'npm run build'
+// For developers, it's advised to run the command in watch mode:
+// 'npm run build -- -w"
+
 import {join, basename} from 'path';
 import {lstatSync, readdirSync} from 'fs';
 import rimraf from 'rimraf';
@@ -9,6 +14,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import url from '@rollup/plugin-url'; // for XML/SVG files
 
+// utilities functions
 const isDirectory = (source) => {
   return lstatSync(source).isDirectory();
 };
@@ -16,6 +22,7 @@ const getDirectories = (source) => {
   return readdirSync(source).map((nme) => join(source, nme)).filter((i) => isDirectory(i));
 };
 
+// capture the list of files to build for locale, extensions and ext-locales
 const localeFiles = readdirSync('src/editor/locale');
 const extensionFiles = readdirSync('src/editor/extensions');
 
@@ -27,10 +34,11 @@ extensionLocaleDirs.forEach((dir) => {
   });
 });
 
+// remove existing distribution
 // eslint-disable-next-line no-console
 rimraf('./dist', () => console.info('recreating dist'));
 
-// main config: build svgedit and
+// config for svgedit core module
 const config = [{
   input: 'src/editor/index.js',
   output: [
@@ -73,8 +81,6 @@ const config = [{
           dest: 'dist/editor/system'
         },
         {src: 'src/editor/images', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/common', dest: 'dist'},
-        {src: 'src/external', dest: 'dist'},
         {src: 'src/editor/jquery.min.js', dest: ['dist/editor', 'dist/editor/system']},
         {src: 'src/editor/jquery-ui', dest: ['dist/editor', 'dist/editor/system']},
         {src: 'src/editor/jgraduate', dest: ['dist/editor', 'dist/editor/system']},

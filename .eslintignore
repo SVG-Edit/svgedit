@@ -32,6 +32,7 @@ src/external/dom-polyfill/*
 !src/external/dom-polyfill/dom-polyfill.js
 !src/external/dynamic-import-polyfill
 
+jsconfig.json
 mochawesome-report
 releases
 !.eslintrc.js
