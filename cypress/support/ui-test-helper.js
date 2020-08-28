@@ -4,7 +4,7 @@ export const approveStorage = () => {
 };
 
 export const visitAndApproveStorage = () => {
-  cy.visit('/instrumented/editor');
+  cy.visit('/instrumented/editor/system');
   approveStorage();
 };
 
