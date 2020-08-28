@@ -13,6 +13,10 @@
     "node": ">=10"
   },
   "scripts": {
+    "lint": "eslint --ext js,html,md .",
+    "test": "run-s cypress:instrument test-only",
+    "build": "rollup -c",
+    "start": "echo \"Open file, e.g., to http://localhost:8000/dist/editor\" && static -p 8000",
     "add-release": "git submodule add --depth=1 -b \"release-v$npm_config_release\" -- https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$npm_config_release\"",
     "add-new-release": "cross-var npm run add-release --release=$npm_package_version && cross-var git config --file=.gitmodules submodule.releases/latest.branch \"release-v$npm_package_version\"",
     "remove-release": "git submodule deinit -f \"releases/svg-edit-$npm_config_release\" && rm -rf .git/modules/releases/svg-edit-$npm_config_release && git rm -f releases/svg-edit-$npm_config_release",
@@ -21,7 +25,6 @@
     "submodules-update": "echo \"Performing non-recursive fetch as don't want submodules to have their own releases!\" && git submodule foreach git fetch && git submodule update --remote && git submodule foreach git merge origin master",
     "start-allow-origin": "static -p 8001 -H '{\"Access-Control-Allow-Origin\": \"*\"}'",
     "start-embedded": "run-p start start-allow-origin",
-    "start": "echo \"Open file, e.g., to http://localhost:8000/src/editor/svg-editor-es.html\" && static -p 8000",
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
     "open-docs": "run-p start open-docs-no-start",
     "build-docs-remove": "rimraf \"docs/jsdoc/*\"",
@@ -49,7 +52,6 @@
     "compress-images": "imageoptim \"src/editor/extensions/*.png\" \"src/editor/spinbtn/*.png\" \"src/editor/jgraduate/images/*.{png,gif}\" \"src/editor/images/*.png\"",
     "remark": "remark -q -f .",
     "install-offline": "npm install --prefer-offline --no-audit",
-    "eslint": "eslint --ext js,html,md .",
     "prepublishOnly": "run-s license-badges copy prep build-docs",
     "cypress:open-no-start": "cypress open",
     "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && nyc instrument --compact=false src instrumented",
@@ -68,9 +70,7 @@
     "test-only": "run-s -c test-only-no-report report",
     "test-no-cov-no-core-rollup": "run-s eslint prep-no-core-rollup test-only",
     "test-no-cov": "run-s prep test-only",
-    "test-no-core-rollup": "run-s eslint cypress:instrument test-no-cov-no-core-rollup",
-    "test": "run-s cypress:instrument test-only",
-    "build": "rollup -c"
+    "test-no-core-rollup": "run-s eslint cypress:instrument test-no-cov-no-core-rollup"
   },
   "nyc": {
     "statements": 45,
@@ -93,9 +93,9 @@
     ]
   },
   "lint-staged": {
-    ".eslintignore": "npm run eslint",
-    ".eslintrc.js": "npm run eslint",
-    "src/**/*.{js,md,html}": "npm run eslint",
+    ".eslintignore": "npm run lint",
+    ".eslintrc.js": "npm run lint",
+    "src/**/*.{js,md,html}": "npm run lint",
     "src/editor/extensions/*.png": "npm run imageoptim --",
     "src/editor/spinbtn/*.png": "npm run imageoptim --",
     "src/editor/jgraduate/images/*.{png,gif}": "npm run imageoptim --",
