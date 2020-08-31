@@ -1746,7 +1746,7 @@ System.register([], function (exports) {
                     buttons = [{
                       id: 'webappfind_save',
                       //
-                      icon: svgEditor.curConfig.extIconsPath + 'webappfind.png',
+                      icon: 'webappfind.png',
                       type: 'app_menu',
                       position: 4,
                       // Before 0-based index position 4 (after the regular "Save Image (S)")
@@ -1771,7 +1771,7 @@ System.register([], function (exports) {
                     }];
                     return _context.abrupt("return", {
                       name: strings.name,
-                      svgicons: svgEditor.curConfig.extIconsPath + 'webappfind-icon.svg',
+                      svgicons: 'webappfind-icon.svg',
                       buttons: strings.buttons.map(function (button, i) {
                         return Object.assign(buttons[i], button);
                       })

@@ -1646,9 +1646,19 @@ function _wrapRegExp(re, groups) {
   return _wrapRegExp.apply(this, arguments);
 }
 
-var extPanning = "ext-panning.xml";
+/**
+ * @file ext-panning.js
+ *
+ * @license MIT
+ *
+ * @copyright 2013 Luis Aguirre
+ *
+ */
 
-var extPanning$1 = {
+/*
+  This is a very basic SVG-Edit extension to let tablet/mobile devices pan without problem
+*/
+var extPanning = {
   name: 'panning',
   init: function init(_ref) {
     var _this = this;
@@ -1669,7 +1679,7 @@ var extPanning$1 = {
               svgCanvas = svgEditor.canvas;
               buttons = [{
                 id: 'ext-panning',
-                icon: svgEditor.curConfig.extIconsPath + 'panning.png',
+                icon: 'panning.png',
                 type: 'mode',
                 events: {
                   click: function click() {
@@ -1679,7 +1689,7 @@ var extPanning$1 = {
               }];
               return _context.abrupt("return", {
                 name: strings.name,
-                svgicons: svgEditor.curConfig.extIconsPath + 'ext-panning.xml',
+                svgicons: 'ext-panning.xml',
                 buttons: strings.buttons.map(function (button, i) {
                   return Object.assign(buttons[i], button);
                 }),
@@ -1716,5 +1726,5 @@ var extPanning$1 = {
   }
 };
 
-export default extPanning$1;
+export default extPanning;
 //# sourceMappingURL=ext-panning.js.map

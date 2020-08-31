@@ -16,7 +16,7 @@
     "lint": "eslint --ext js,html,md .",
     "test": "run-s cypress:instrument test-only",
     "build": "rollup -c",
-    "start": "echo \"Open file, e.g., to http://localhost:8000/dist/editor\" && static -p 8000",
+    "start": "echo \"Open file, e.g., to http://localhost:8000/dist/editor\" && es-dev-server",
     "add-release": "git submodule add --depth=1 -b \"release-v$npm_config_release\" -- https://github.com/SVG-Edit/svgedit.git \"releases/svg-edit-$npm_config_release\"",
     "add-new-release": "cross-var npm run add-release --release=$npm_package_version && cross-var git config --file=.gitmodules submodule.releases/latest.branch \"release-v$npm_package_version\"",
     "remove-release": "git submodule deinit -f \"releases/svg-edit-$npm_config_release\" && rm -rf .git/modules/releases/svg-edit-$npm_config_release && git rm -f releases/svg-edit-$npm_config_release",
@@ -54,7 +54,7 @@
     "install-offline": "npm install --prefer-offline --no-audit",
     "prepublishOnly": "run-s license-badges copy prep build-docs",
     "cypress:open-no-start": "cypress open",
-    "cypress:instrument": "rimraf instrumented && cp-cli dist instrumented && nyc instrument --compact=false src instrumented",
+    "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && nyc instrument --compact=false src instrumented",
     "cypress:open": "run-p start cypress:open-no-start",
     "open-tests": "run-s cypress:instrument cypress:open",
     "cypress:merge": "mochawesome-merge \"cypress/results/mochaw*.json\" > mochawesome.json && marge mochawesome.json && mbg --file ./mochawesome.json --badge_output badges/tests-badge.svg",
@@ -72,33 +72,10 @@
     "test-no-cov": "run-s prep test-only",
     "test-no-core-rollup": "run-s eslint cypress:instrument test-no-cov-no-core-rollup"
   },
-  "nyc": {
-    "statements": 45,
-    "branches": 34,
-    "lines": 46,
-    "functions": 45,
-    "exclude": [
-      "src/external/**",
-      "src/editor/jquery.min.js",
-      "src/editor/jquery-ui/**",
-      "src/editor/js-hotkeys/**",
-      "src/editor/jspdf/jspdf.min.js",
-      "src/editor/jspdf/underscore-min.js",
-      "src/editor/spinbtn/**"
-    ],
-    "reporter": [
-      "json-summary",
-      "text",
-      "html"
-    ]
-  },
   "lint-staged": {
     ".eslintignore": "npm run lint",
     ".eslintrc.js": "npm run lint",
     "src/**/*.{js,md,html}": "npm run lint",
-    "src/editor/extensions/*.png": "npm run imageoptim --",
-    "src/editor/spinbtn/*.png": "npm run imageoptim --",
-    "src/editor/jgraduate/images/*.{png,gif}": "npm run imageoptim --",
     "src/editor/images/*.png": "npm run imageoptim --"
   },
   "run-if-changed": {
@@ -176,6 +153,7 @@
     "@mysticatea/eslint-plugin": "^13.0.0",
     "@rollup/plugin-babel": "^5.2.0",
     "@rollup/plugin-commonjs": "^15.0.0",
+    "@rollup/plugin-dynamic-import-vars": "^1.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-replace": "^2.3.3",
     "@rollup/plugin-url": "^5.0.1",
@@ -190,6 +168,9 @@
     "cypress-axe": "^0.8.1",
     "cypress-multi-reporters": "^1.4.0",
     "deparam": "git+https://github.com/brettz9/deparam.git#updates",
+    "es-dev-commonjs-transformer": "^0.2.0",
+    "es-dev-server": "^1.57.4",
+    "es-dev-server-rollup": "0.0.8",
     "eslint": "^7.7.0",
     "eslint-config-ash-nazg": "^22.7.0",
     "eslint-config-standard": "^14.1.1",
@@ -236,7 +217,7 @@
     "remark-lint-ordered-list-marker-value": "^2.0.1",
     "requirejs": "^2.3.6",
     "rimraf": "^3.0.2",
-    "rollup": "2.26.7",
+    "rollup": "2.26.8",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "rollup-plugin-re": "^1.0.7",

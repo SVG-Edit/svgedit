@@ -6,8 +6,6 @@
  *
  */
 
-import './star-icons.svg';
-
 export default {
   name: 'star',
   async init (S) {
@@ -69,7 +67,7 @@ export default {
     */
     const buttons = [{
       id: 'tool_star',
-      icon: svgEditor.curConfig.extIconsPath + 'star.png',
+      icon: 'star.png',
       type: 'mode',
       position: 12,
       events: {
@@ -111,7 +109,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'star-icons.svg',
+      svgicons: 'star-icons.svg',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

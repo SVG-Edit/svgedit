@@ -1646,8 +1646,13 @@ function _wrapRegExp(re, groups) {
   return _wrapRegExp.apply(this, arguments);
 }
 
-var starIcons = "star-icons.svg";
-
+/**
+ * @file ext-star.js
+ *
+ *
+ * @copyright 2010 CloudCanvas, Inc. All rights reserved
+ *
+ */
 var extStar = {
   name: 'star',
   init: function init(S) {
@@ -1695,7 +1700,7 @@ var extStar = {
               */
               buttons = [{
                 id: 'tool_star',
-                icon: svgEditor.curConfig.extIconsPath + 'star.png',
+                icon: 'star.png',
                 type: 'mode',
                 position: 12,
                 events: {
@@ -1736,7 +1741,7 @@ var extStar = {
               }];
               return _context.abrupt("return", {
                 name: strings.name,
-                svgicons: svgEditor.curConfig.extIconsPath + 'star-icons.svg',
+                svgicons: 'star-icons.svg',
                 buttons: strings.buttons.map(function (button, i) {
                   return Object.assign(buttons[i], button);
                 }),

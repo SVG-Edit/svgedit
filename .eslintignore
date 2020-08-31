@@ -7,10 +7,10 @@ dist
 docs/jsdoc
 archive
 
-src/svgedit-config-es.js
-src/svgedit-config-iife.js
+es-dev-server.config.js
+nyc.config.js
+
 svgedit-custom.css
-src/xdomain-svgedit-config-iife.js
 
 # Vendor/minified files
 src/editor/jquery.min.js

@@ -1651,8 +1651,14 @@ System.register([], function (exports) {
         return _wrapRegExp.apply(this, arguments);
       }
 
-      var foreignobjectIcons = "foreignobject-icons.xml";
-
+      /**
+       * @file ext-foreignobject.js
+       *
+       * @license Apache-2.0
+       *
+       * @copyright 2010 Jacques Distler, 2010 Alexis Deveria
+       *
+       */
       var extForeignobject = exports('default', {
         name: 'foreignobject',
         init: function init(S) {
@@ -1753,7 +1759,7 @@ System.register([], function (exports) {
 
                     buttons = [{
                       id: 'tool_foreign',
-                      icon: svgEditor.curConfig.extIconsPath + 'foreignobject-tool.png',
+                      icon: 'foreignobject-tool.png',
                       type: 'mode',
                       events: {
                         click: function click() {
@@ -1762,7 +1768,7 @@ System.register([], function (exports) {
                       }
                     }, {
                       id: 'edit_foreign',
-                      icon: svgEditor.curConfig.extIconsPath + 'foreignobject-edit.png',
+                      icon: 'foreignobject-edit.png',
                       type: 'context',
                       panel: 'foreignObject_panel',
                       events: {
@@ -1804,7 +1810,7 @@ System.register([], function (exports) {
                     }];
                     return _context2.abrupt("return", {
                       name: strings.name,
-                      svgicons: svgEditor.curConfig.extIconsPath + 'foreignobject-icons.xml',
+                      svgicons: 'foreignobject-icons.xml',
                       buttons: strings.buttons.map(function (button, i) {
                         return Object.assign(buttons[i], button);
                       }),

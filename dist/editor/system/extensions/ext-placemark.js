@@ -1675,7 +1675,7 @@ System.register([], function (exports) {
                         buttons.push({
                           id: 'placemark_marker_' + id,
                           svgicon: id,
-                          icon: svgEditor.curConfig.extIconsPath + 'markers-' + id + '.png',
+                          icon: 'markers-' + id + '.png',
                           title: title,
                           type: 'context',
                           events: {
@@ -1999,7 +1999,7 @@ System.register([], function (exports) {
 
                     buttons = [{
                       id: 'tool_placemark',
-                      icon: svgEditor.curConfig.extIconsPath + 'placemark.png',
+                      icon: 'placemark.png',
                       type: 'mode',
                       position: 12,
                       events: {
@@ -2042,7 +2042,7 @@ System.register([], function (exports) {
                     }];
                     return _context.abrupt("return", {
                       name: strings.name,
-                      svgicons: svgEditor.curConfig.extIconsPath + 'placemark-icons.xml',
+                      svgicons: 'placemark-icons.xml',
                       buttons: addMarkerButtons(strings.buttons.map(function (button, i) {
                         return Object.assign(buttons[i], button);
                       })),

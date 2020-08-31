@@ -7,8 +7,6 @@
  *
  */
 
-import './grid-icon.xml';
-
 export default {
   name: 'grid',
   async init ({$, NS, getTypeMap, importLocale}) {
@@ -140,7 +138,7 @@ export default {
     }
     const buttons = [{
       id: 'view_grid',
-      icon: svgEditor.curConfig.extIconsPath + 'grid.png',
+      icon: 'grid.png',
       type: 'context',
       panel: 'editor_panel',
       events: {
@@ -152,7 +150,7 @@ export default {
     }];
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'grid-icon.xml',
+      svgicons: 'grid-icon.xml',
 
       zoomChanged (zoom) {
         if (showGrid) { updateGrid(zoom); }

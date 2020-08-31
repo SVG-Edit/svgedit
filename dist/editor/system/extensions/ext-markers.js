@@ -1651,8 +1651,36 @@ System.register([], function (exports) {
         return _wrapRegExp.apply(this, arguments);
       }
 
-      var markersIcons = "markers-icons.xml";
-
+      /**
+       * @file ext-markers.js
+       *
+       * @license Apache-2.0
+       *
+       * @copyright 2010 Will Schleter based on ext-arrows.js by Copyright(c) 2010 Alexis Deveria
+       *
+       * This extension provides for the addition of markers to the either end
+       * or the middle of a line, polyline, path, polygon.
+       *
+       * Markers may be either a graphic or arbitary text
+       *
+       * to simplify the coding and make the implementation as robust as possible,
+       * markers are not shared - every object has its own set of markers.
+       * this relationship is maintained by a naming convention between the
+       * ids of the markers and the ids of the object
+       *
+       * The following restrictions exist for simplicty of use and programming
+       *    objects and their markers to have the same color
+       *    marker size is fixed
+       *    text marker font, size, and attributes are fixed
+       *    an application specific attribute - se_type - is added to each marker element
+       *        to store the type of marker
+       *
+       * @todo
+       *    remove some of the restrictions above
+       *    add option for keeping text aligned to horizontal
+       *    add support for dimension extension lines
+       *
+      */
       var extMarkers = exports('default', {
         name: 'markers',
         init: function init(S) {
@@ -1700,7 +1728,7 @@ System.register([], function (exports) {
                           buttons.push({
                             id: idPrefix + pos + '_' + id,
                             svgicon: id,
-                            icon: svgEditor.curConfig.extIconsPath + 'markers-' + id + '.png',
+                            icon: 'markers-' + id + '.png',
                             title: title,
                             type: 'context',
                             events: {
@@ -2284,7 +2312,7 @@ System.register([], function (exports) {
                     }];
                     return _context3.abrupt("return", {
                       name: strings.name,
-                      svgicons: svgEditor.curConfig.extIconsPath + 'markers-icons.xml',
+                      svgicons: 'markers-icons.xml',
                       callback: function callback() {
                         $('#marker_panel').addClass('toolset').hide();
                       },

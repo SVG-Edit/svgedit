@@ -1651,15 +1651,21 @@ System.register([], function (exports) {
         return _wrapRegExp.apply(this, arguments);
       }
 
-      var extImagelib = "ext-imagelib.xml";
-
-      var extImagelib$1 = exports('default', {
+      /**
+       * @file ext-imagelib.js
+       *
+       * @license MIT
+       *
+       * @copyright 2010 Alexis Deveria
+       *
+       */
+      var extImagelib = exports('default', {
         name: 'imagelib',
         init: function init(_ref) {
           var _this = this;
 
           return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-            var $, decode64, importLocale, dropXMLInternalSubset, imagelibStrings, modularVersion, svgEditor, uiStrings, svgCanvas, extIconsPath, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, onMessage, _onMessage, toggleMulti, showBrowser, buttons;
+            var $, decode64, importLocale, dropXMLInternalSubset, imagelibStrings, modularVersion, svgEditor, uiStrings, svgCanvas, allowedImageLibOrigins, closeBrowser, importImage, pending, mode, multiArr, transferStopped, preview, submit, onMessage, _onMessage, toggleMulti, showBrowser, buttons;
 
             return regeneratorRuntime.wrap(function _callee2$(_context2) {
               while (1) {
@@ -2099,7 +2105,7 @@ System.register([], function (exports) {
                     imagelibStrings = _context2.sent;
                     modularVersion = !('svgEditor' in window) || !window.svgEditor || window.svgEditor.modules !== false;
                     svgEditor = _this;
-                    uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas, extIconsPath = svgEditor.curConfig.extIconsPath;
+                    uiStrings = svgEditor.uiStrings, svgCanvas = svgEditor.canvas;
                     imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(function (_ref2) {
                       var name = _ref2.name,
                           url = _ref2.url,
@@ -2107,8 +2113,7 @@ System.register([], function (exports) {
                       // Todo: Adopt some standard formatting library like `fluent.js` instead
                       url = url // Keep these regexes as is in prep. for switching to `u` flag
                       //  which will require escaping
-                      // eslint-disable-next-line unicorn/better-regex
-                      .replace(/\{path\}/g, extIconsPath).replace( // eslint-disable-next-line unicorn/better-regex
+                      .replace( // eslint-disable-next-line unicorn/better-regex
                       /\{modularVersion\}/g, modularVersion ? imagelibStrings.moduleEnding || '-es' : '');
                       return {
                         name: name,
@@ -2145,14 +2150,14 @@ System.register([], function (exports) {
                       id: 'tool_imagelib',
                       type: 'app_menu',
                       // _flyout
-                      icon: extIconsPath + 'imagelib.png',
+                      icon: 'imagelib.png',
                       position: 4,
                       events: {
                         mouseup: showBrowser
                       }
                     }];
                     return _context2.abrupt("return", {
-                      svgicons: extIconsPath + 'ext-imagelib.xml',
+                      svgicons: 'ext-imagelib.xml',
                       buttons: imagelibStrings.buttons.map(function (button, i) {
                         return Object.assign(buttons[i], button);
                       }),

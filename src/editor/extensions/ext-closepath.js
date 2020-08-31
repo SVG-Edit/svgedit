@@ -14,7 +14,6 @@ export default {
   name: 'closepath',
   async init ({importLocale, $}) {
     const strings = await importLocale();
-    const svgEditor = this;
     let selElems;
     const updateButton = function (path) {
       const seglist = path.pathSegList,
@@ -49,7 +48,7 @@ export default {
     const buttons = [
       {
         id: 'tool_openpath',
-        icon: svgEditor.curConfig.extIconsPath + 'openpath.png',
+        icon: 'openpath.png',
         type: 'context',
         panel: 'closepath_panel',
         events: {
@@ -60,7 +59,7 @@ export default {
       },
       {
         id: 'tool_closepath',
-        icon: svgEditor.curConfig.extIconsPath + 'closepath.png',
+        icon: 'closepath.png',
         type: 'context',
         panel: 'closepath_panel',
         events: {
@@ -73,7 +72,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'closepath_icons.svg',
+      svgicons: 'closepath_icons.svg',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

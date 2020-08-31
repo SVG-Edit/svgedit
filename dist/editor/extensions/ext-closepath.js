@@ -3972,10 +3972,8 @@ function _wrapRegExp(re, groups) {
 var extClosepath = {
   name: 'closepath',
   init: function init(_ref) {
-    var _this = this;
-
     return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      var importLocale, $, strings, svgEditor, selElems, updateButton, showPanel, toggleClosed, buttons;
+      var importLocale, $, strings, selElems, updateButton, showPanel, toggleClosed, buttons;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -3986,7 +3984,6 @@ var extClosepath = {
 
             case 3:
               strings = _context.sent;
-              svgEditor = _this;
 
               updateButton = function updateButton(path) {
                 var seglist = path.pathSegList,
@@ -4028,7 +4025,7 @@ var extClosepath = {
 
               buttons = [{
                 id: 'tool_openpath',
-                icon: svgEditor.curConfig.extIconsPath + 'openpath.png',
+                icon: 'openpath.png',
                 type: 'context',
                 panel: 'closepath_panel',
                 events: {
@@ -4038,7 +4035,7 @@ var extClosepath = {
                 }
               }, {
                 id: 'tool_closepath',
-                icon: svgEditor.curConfig.extIconsPath + 'closepath.png',
+                icon: 'closepath.png',
                 type: 'context',
                 panel: 'closepath_panel',
                 events: {
@@ -4049,7 +4046,7 @@ var extClosepath = {
               }];
               return _context.abrupt("return", {
                 name: strings.name,
-                svgicons: svgEditor.curConfig.extIconsPath + 'closepath_icons.svg',
+                svgicons: 'closepath_icons.svg',
                 buttons: strings.buttons.map(function (button, i) {
                   return Object.assign(buttons[i], button);
                 }),
@@ -4076,7 +4073,7 @@ var extClosepath = {
                 }
               });
 
-            case 10:
+            case 9:
             case "end":
               return _context.stop();
           }

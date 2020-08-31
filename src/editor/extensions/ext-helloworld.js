@@ -23,7 +23,7 @@ export default {
       name: strings.name,
       // For more notes on how to make an icon file, see the source of
       // the helloworld-icon.xml
-      svgicons: svgEditor.curConfig.extIconsPath + 'helloworld-icon.xml',
+      svgicons: 'helloworld-icon.xml',
 
       // Multiple buttons can be added in this array
       buttons: [{
@@ -31,7 +31,7 @@ export default {
         id: 'hello_world',
 
         // Fallback, e.g., for `file:///` access
-        icon: svgEditor.curConfig.extIconsPath + 'helloworld.png',
+        icon: 'helloworld.png',
 
         // This indicates that the button will be added to the "mode"
         // button panel on the left side

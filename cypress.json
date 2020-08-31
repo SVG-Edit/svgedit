@@ -4,5 +4,7 @@
   "video": false,
   "reporterOptions": {
     "configFile": "mocha-multi-reporters.json"
-  }
+  },
+  "defaultCommandTimeout":	10000,
+  "pageLoadTimeout": 120000
 }

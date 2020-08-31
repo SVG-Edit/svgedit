@@ -7,8 +7,6 @@
  *
  */
 
-import './ext-shapes.xml';
-
 export default {
   name: 'shapes',
   async init ({$, importLocale}) {
@@ -128,7 +126,7 @@ export default {
 
       if (!lib) {
         $('#shape_buttons').html(strings.loading);
-        $.getJSON(svgEditor.curConfig.extIconsPath + 'shapelib/' + catId + '.json', function (result) {
+        $.getJSON('./shapelib/' + catId + '.json', function (result) {
           curLib = library[catId] = {
             data: result.data,
             size: result.size,
@@ -145,7 +143,7 @@ export default {
     }
     const buttons = [{
       id: 'tool_shapelib',
-      icon: svgEditor.curConfig.extIconsPath + 'shapes.png',
+      icon: 'shapes.png',
       type: 'mode_flyout', // _flyout
       position: 6,
       events: {
@@ -156,7 +154,7 @@ export default {
     }];
 
     return {
-      svgicons: svgEditor.curConfig.extIconsPath + 'ext-shapes.xml',
+      svgicons: 'ext-shapes.xml',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

@@ -124,7 +124,7 @@ export default {
     const buttons = [{
       id: 'tool_mathjax',
       type: 'mode',
-      icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
+      icon: 'mathjax.png',
       events: {
         async click () {
           // Set the mode.
@@ -203,7 +203,7 @@ export default {
             //  the modular type as does `extPath`
             try {
               // eslint-disable-next-line node/no-unsupported-features/es-syntax
-              await import(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure);
+              await import(mathjaxSrcSecure);
               // When MathJax is loaded get the div where the math will be rendered.
               MathJax.Hub.queue.Push(function () {
                 math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
@@ -222,7 +222,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'mathjax-icons.xml',
+      svgicons: 'mathjax-icons.xml',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

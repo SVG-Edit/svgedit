@@ -13,6 +13,7 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import url from '@rollup/plugin-url'; // for XML/SVG files
+import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 
 // utilities functions
 const isDirectory = (source) => {
@@ -22,8 +23,7 @@ const getDirectories = (source) => {
   return readdirSync(source).map((nme) => join(source, nme)).filter((i) => isDirectory(i));
 };
 
-// capture the list of files to build for locale, extensions and ext-locales
-const localeFiles = readdirSync('src/editor/locale');
+// capture the list of files to build for extensions and ext-locales
 const extensionFiles = readdirSync('src/editor/extensions');
 
 const extensionLocaleDirs = getDirectories('src/editor/extensions/ext-locale');
@@ -98,6 +98,7 @@ const config = [{
       preferBuiltins: true
     }),
     commonjs(),
+    dynamicImportVars({include: './src/editor/locale.js'}),
     babel({babelHelpers: 'bundled'}),
     nodePolyfills()
   ]
@@ -138,28 +139,6 @@ extensionFiles.forEach((extensionFile) => {
       ]
     }
   );
-});
-
-localeFiles.forEach((localeFile) => {
-  const localeRegex = /^lang\.([\w-]+?)\.js$/;
-  const lang = localeFile.match(localeRegex);
-  lang && config.push({
-    input: `./src/editor/locale/${localeFile}`,
-    treeshake: false,
-    output: [
-      {
-        format: 'es',
-        dir: 'dist/editor/locale',
-        inlineDynamicImports: true
-      },
-      {
-        format: 'system',
-        dir: 'dist/editor/system/locale',
-        inlineDynamicImports: true
-      }
-    ],
-    plugins: []
-  });
 });
 
 extensionLocaleFiles.forEach(([dir, file]) => {

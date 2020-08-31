@@ -1646,8 +1646,14 @@ function _wrapRegExp(re, groups) {
   return _wrapRegExp.apply(this, arguments);
 }
 
-var gridIcon = "grid-icon.xml";
-
+/**
+ * @file ext-grid.js
+ *
+ * @license Apache-2.0
+ *
+ * @copyright 2010 Redou Mine, 2010 Alexis Deveria
+ *
+ */
 var extGrid = {
   name: 'grid',
   init: function init(_ref) {
@@ -1782,7 +1788,7 @@ var extGrid = {
 
               buttons = [{
                 id: 'view_grid',
-                icon: svgEditor.curConfig.extIconsPath + 'grid.png',
+                icon: 'grid.png',
                 type: 'context',
                 panel: 'editor_panel',
                 events: {
@@ -1794,7 +1800,7 @@ var extGrid = {
               }];
               return _context.abrupt("return", {
                 name: strings.name,
-                svgicons: svgEditor.curConfig.extIconsPath + 'grid-icon.xml',
+                svgicons: 'grid-icon.xml',
                 zoomChanged: function zoomChanged(zoom) {
                   if (showGrid) {
                     updateGrid(zoom);

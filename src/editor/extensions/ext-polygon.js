@@ -6,8 +6,6 @@
  *
  */
 
-import './polygon-icons.svg';
-
 export default {
   name: 'polygon',
   async init (S) {
@@ -131,7 +129,7 @@ export default {
     */
     const buttons = [{
       id: 'tool_polygon',
-      icon: svgEditor.curConfig.extIconsPath + 'polygon.png',
+      icon: 'polygon.png',
       type: 'mode',
       position: 11,
       events: {
@@ -155,7 +153,7 @@ export default {
     }];
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'polygon-icons.svg',
+      svgicons: 'polygon-icons.svg',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

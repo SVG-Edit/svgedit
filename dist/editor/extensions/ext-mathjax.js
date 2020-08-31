@@ -1775,7 +1775,7 @@ var extMathjax = {
               buttons = [{
                 id: 'tool_mathjax',
                 type: 'mode',
-                icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
+                icon: 'mathjax.png',
                 events: {
                   click: function click() {
                     return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -1833,7 +1833,7 @@ var extMathjax = {
 
                               _context.prev = 7;
                               _context.next = 10;
-                              return import(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure);
+                              return import(mathjaxSrcSecure);
 
                             case 10:
                               // When MathJax is loaded get the div where the math will be rendered.
@@ -1866,7 +1866,7 @@ var extMathjax = {
               }];
               return _context2.abrupt("return", {
                 name: strings.name,
-                svgicons: svgEditor.curConfig.extIconsPath + 'mathjax-icons.xml',
+                svgicons: 'mathjax-icons.xml',
                 buttons: strings.buttons.map(function (button, i) {
                   return Object.assign(buttons[i], button);
                 }),

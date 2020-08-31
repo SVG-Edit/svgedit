@@ -1651,9 +1651,15 @@ System.register([], function (exports) {
         return _wrapRegExp.apply(this, arguments);
       }
 
-      var extShapes = "ext-shapes.xml";
-
-      var extShapes$1 = exports('default', {
+      /**
+       * @file ext-shapes.js
+       *
+       * @license MIT
+       *
+       * @copyright 2010 Christian Tzurcanu, 2010 Alexis Deveria
+       *
+       */
+      var extShapes = exports('default', {
         name: 'shapes',
         init: function init(_ref) {
           var _this = this;
@@ -1669,7 +1675,7 @@ System.register([], function (exports) {
 
                       if (!lib) {
                         $('#shape_buttons').html(strings.loading);
-                        $.getJSON(svgEditor.curConfig.extIconsPath + 'shapelib/' + catId + '.json', function (result) {
+                        $.getJSON('./shapelib/' + catId + '.json', function (result) {
                           curLib = library[catId] = {
                             data: result.data,
                             size: result.size,
@@ -1784,7 +1790,7 @@ System.register([], function (exports) {
 
                     buttons = [{
                       id: 'tool_shapelib',
-                      icon: svgEditor.curConfig.extIconsPath + 'shapes.png',
+                      icon: 'shapes.png',
                       type: 'mode_flyout',
                       // _flyout
                       position: 6,
@@ -1795,7 +1801,7 @@ System.register([], function (exports) {
                       }
                     }];
                     return _context.abrupt("return", {
-                      svgicons: svgEditor.curConfig.extIconsPath + 'ext-shapes.xml',
+                      svgicons: 'ext-shapes.xml',
                       buttons: strings.buttons.map(function (button, i) {
                         return Object.assign(buttons[i], button);
                       }),

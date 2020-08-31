@@ -7,8 +7,6 @@
  *
  */
 
-import './eyedropper-icon.xml';
-
 export default {
   name: 'eyedropper',
   async init (S) {
@@ -64,7 +62,7 @@ export default {
     const buttons = [
       {
         id: 'tool_eyedropper',
-        icon: svgEditor.curConfig.extIconsPath + 'eyedropper.png',
+        icon: 'eyedropper.png',
         type: 'mode',
         events: {
           click () {
@@ -76,7 +74,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'eyedropper-icon.xml',
+      svgicons: 'eyedropper-icon.xml',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

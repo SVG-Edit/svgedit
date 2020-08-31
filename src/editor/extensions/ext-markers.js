@@ -29,8 +29,6 @@
  *
 */
 
-import './markers-icons.xml';
-
 export default {
   name: 'markers',
   async init (S) {
@@ -500,7 +498,7 @@ export default {
           buttons.push({
             id: idPrefix + pos + '_' + id,
             svgicon: id,
-            icon: svgEditor.curConfig.extIconsPath + 'markers-' + id + '.png',
+            icon: 'markers-' + id + '.png',
             title,
             type: 'context',
             events: {click: setArrowFromButton},
@@ -557,7 +555,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'markers-icons.xml',
+      svgicons: 'markers-icons.xml',
       callback () {
         $('#marker_panel').addClass('toolset').hide();
       },

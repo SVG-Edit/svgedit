@@ -44,7 +44,7 @@ import {
   readLang, putLocale,
   setStrings,
   init as localeInit
-} from './locale/locale.js';
+} from './locale.js';
 
 const {$q} = Utils;
 
@@ -157,10 +157,7 @@ const callbacks = [],
   * @property {string} [canvasName="default"] Used to namespace storage provided via `ext-storage.js`; you can use this if you wish to have multiple independent instances of SVG Edit on the same domain
   * @property {boolean} [no_save_warning=false] If `true`, prevents the warning dialog box from appearing when closing/reloading the page. Mostly useful for testing.
   * @property {string} [imgPath="images/"] The path where the SVG icons are located, with trailing slash. Note that as of version 2.7, this is not configurable by URL for security reasons.
-  * @property {string} [langPath="locale/"] The path where the language files are located, with trailing slash. Default will be changed to `../dist/locale/` if this is a modular load. Note that as of version 2.7, this is not configurable by URL for security reasons.
   * @property {string} [extPath="extensions/"] The path used for extension files, with trailing slash. Default will be changed to `../dist/extensions/` if this is a modular load. Note that as of version 2.7, this is not configurable by URL for security reasons.
-  * @property {string} [extIconsPath="extensions/"] The path used for extension icons, with trailing slash.
-  * @property {string} [jGraduatePath="jgraduate/images/"] The path where jGraduate images are located. Note that as of version 2.7, this is not configurable by URL for security reasons.
   * @property {boolean} [preventAllURLConfig=false] Set to `true` to override the ability for URLs to set non-content configuration (including extension config). Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
   * @property {boolean} [preventURLContentLoading=false] Set to `true` to override the ability for URLs to set URL-based SVG content. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
   * @property {boolean} [lockExtensions=false] Set to `true` to override the ability for URLs to set their own extensions; disallowed in URL setting. There is no need for this when `preventAllURLConfig` is used. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
@@ -234,11 +231,8 @@ const callbacks = [],
     no_save_warning: false,
     // PATH CONFIGURATION
     // The following path configuration items are disallowed in the URL (as should any future path configurations)
-    langPath: './locale/', // Default will be changed if this is a non-modular load
     extPath: './extensions/', // Default will be changed if this is a non-modular load
     imgPath: './images/',
-    jGraduatePath: './images/',
-    extIconsPath: './extensions/',
     // DOCUMENT PROPERTIES
     // Change the following to a preference (already in the Document Properties dialog)?
     dimensions: [640, 480],
@@ -734,7 +728,7 @@ editor.init = function () {
       // security reasons, even for same-domain
       // ones given potential to interact in undesirable
       // ways with other script resources
-      ['langPath', 'extPath', 'imgPath', 'jGraduatePath', 'extIconsPath']
+      ['extPath', 'imgPath']
         .forEach(function (pathConfig) {
           if (urldata[pathConfig]) {
             delete urldata[pathConfig];
@@ -804,9 +798,7 @@ editor.init = function () {
    */
   const extAndLocaleFunc = async function () {
     // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
-    const {langParam, langData} = await editor.putLocale(
-      editor.pref('lang'), goodLangs, curConfig
-    );
+    const {langParam, langData} = await editor.putLocale(editor.pref('lang'), goodLangs);
     await setLang(langParam, langData);
 
     const {ok, cancel} = uiStrings.common;
@@ -3299,7 +3291,7 @@ editor.init = function () {
 
       if (svgicons) {
         return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
-          $.svgIcons(svgicons, {
+          $.svgIcons(`${curConfig.imgPath}${svgicons}`, {
             w: 24, h: 24,
             id_match: false,
             no_img: (!isWebkit()),
@@ -4687,7 +4679,7 @@ editor.init = function () {
     // set language
     const lang = $('#lang_select').val();
     if (lang && lang !== editor.pref('lang')) {
-      const {langParam, langData} = await editor.putLocale(lang, goodLangs, curConfig);
+      const {langParam, langData} = await editor.putLocale(lang, goodLangs);
       await setLang(langParam, langData);
     }
 
@@ -4878,9 +4870,10 @@ editor.init = function () {
       .css(curConfig.colorPickerCSS || {left: pos.left - 140, bottom: 40})
       .jGraduate(
         {
+          images: {clientPath: './jgraduate/images/'},
           paint,
           window: {pickerTitle: title},
-          images: {clientPath: curConfig.jGraduatePath},
+          // images: {clientPath: curConfig.imgPath},
           newstop: 'inverse'
         },
         function (p) {

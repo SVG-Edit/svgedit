@@ -276,7 +276,7 @@ export default {
         buttons.push({
           id: 'placemark_marker_' + id,
           svgicon: id,
-          icon: svgEditor.curConfig.extIconsPath + 'markers-' + id + '.png',
+          icon: 'markers-' + id + '.png',
           title,
           type: 'context',
           events: {click: setArrowFromButton},
@@ -290,7 +290,7 @@ export default {
 
     const buttons = [{
       id: 'tool_placemark',
-      icon: svgEditor.curConfig.extIconsPath + 'placemark.png',
+      icon: 'placemark.png',
       type: 'mode',
       position: 12,
       events: {
@@ -335,7 +335,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'placemark-icons.xml',
+      svgicons: 'placemark-icons.xml',
       buttons: addMarkerButtons(strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       })),

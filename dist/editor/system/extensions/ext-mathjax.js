@@ -1780,7 +1780,7 @@ System.register([], function (exports, module) {
                     buttons = [{
                       id: 'tool_mathjax',
                       type: 'mode',
-                      icon: svgEditor.curConfig.extIconsPath + 'mathjax.png',
+                      icon: 'mathjax.png',
                       events: {
                         click: function click() {
                           return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -1838,7 +1838,7 @@ System.register([], function (exports, module) {
 
                                     _context.prev = 7;
                                     _context.next = 10;
-                                    return module.import(svgEditor.curConfig.extIconsPath + mathjaxSrcSecure);
+                                    return module.import(mathjaxSrcSecure);
 
                                   case 10:
                                     // When MathJax is loaded get the div where the math will be rendered.
@@ -1871,7 +1871,7 @@ System.register([], function (exports, module) {
                     }];
                     return _context2.abrupt("return", {
                       name: strings.name,
-                      svgicons: svgEditor.curConfig.extIconsPath + 'mathjax-icons.xml',
+                      svgicons: 'mathjax-icons.xml',
                       buttons: strings.buttons.map(function (button, i) {
                         return Object.assign(buttons[i], button);
                       }),

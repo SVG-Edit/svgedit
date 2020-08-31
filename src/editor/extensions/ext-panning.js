@@ -10,8 +10,6 @@
   This is a very basic SVG-Edit extension to let tablet/mobile devices pan without problem
 */
 
-import './ext-panning.xml';
-
 export default {
   name: 'panning',
   async init ({importLocale}) {
@@ -20,7 +18,7 @@ export default {
     const svgCanvas = svgEditor.canvas;
     const buttons = [{
       id: 'ext-panning',
-      icon: svgEditor.curConfig.extIconsPath + 'panning.png',
+      icon: 'panning.png',
       type: 'mode',
       events: {
         click () {
@@ -30,7 +28,7 @@ export default {
     }];
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'ext-panning.xml',
+      svgicons: 'ext-panning.xml',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

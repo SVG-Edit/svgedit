@@ -1651,8 +1651,13 @@ System.register([], function (exports) {
         return _wrapRegExp.apply(this, arguments);
       }
 
-      var polygonIcons = "polygon-icons.svg";
-
+      /**
+       * @file ext-polygon.js
+       *
+       *
+       * @copyright 2010 CloudCanvas, Inc. All rights reserved
+       *
+       */
       var extPolygon = exports('default', {
         name: 'polygon',
         init: function init(S) {
@@ -1743,7 +1748,7 @@ System.register([], function (exports) {
                     */
                     buttons = [{
                       id: 'tool_polygon',
-                      icon: svgEditor.curConfig.extIconsPath + 'polygon.png',
+                      icon: 'polygon.png',
                       type: 'mode',
                       position: 11,
                       events: {
@@ -1767,7 +1772,7 @@ System.register([], function (exports) {
                     }];
                     return _context.abrupt("return", {
                       name: strings.name,
-                      svgicons: svgEditor.curConfig.extIconsPath + 'polygon-icons.svg',
+                      svgicons: 'polygon-icons.svg',
                       buttons: strings.buttons.map(function (button, i) {
                         return Object.assign(buttons[i], button);
                       }),

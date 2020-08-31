@@ -7,8 +7,6 @@
  *
  */
 
-import './ext-imagelib.xml';
-
 export default {
   name: 'imagelib',
   async init ({$, decode64, importLocale, dropXMLInternalSubset}) {
@@ -20,15 +18,13 @@ export default {
 
     const svgEditor = this;
 
-    const {uiStrings, canvas: svgCanvas, curConfig: {extIconsPath}} = svgEditor;
+    const {uiStrings, canvas: svgCanvas} = svgEditor;
 
     imagelibStrings.imgLibs = imagelibStrings.imgLibs.map(({name, url, description}) => {
       // Todo: Adopt some standard formatting library like `fluent.js` instead
       url = url
         // Keep these regexes as is in prep. for switching to `u` flag
         //  which will require escaping
-        // eslint-disable-next-line unicorn/better-regex
-        .replace(/\{path\}/g, extIconsPath)
         .replace(
           // eslint-disable-next-line unicorn/better-regex
           /\{modularVersion\}/g,
@@ -466,7 +462,7 @@ export default {
     const buttons = [{
       id: 'tool_imagelib',
       type: 'app_menu', // _flyout
-      icon: extIconsPath + 'imagelib.png',
+      icon: 'imagelib.png',
       position: 4,
       events: {
         mouseup: showBrowser
@@ -474,7 +470,7 @@ export default {
     }];
 
     return {
-      svgicons: extIconsPath + 'ext-imagelib.xml',
+      svgicons: 'ext-imagelib.xml',
       buttons: imagelibStrings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

@@ -366,7 +366,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.imgPath + 'conn.svg',
+      svgicons: 'conn.svg',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

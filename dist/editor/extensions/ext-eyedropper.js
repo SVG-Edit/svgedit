@@ -1646,8 +1646,14 @@ function _wrapRegExp(re, groups) {
   return _wrapRegExp.apply(this, arguments);
 }
 
-var eyedropperIcon = "eyedropper-icon.xml";
-
+/**
+ * @file ext-eyedropper.js
+ *
+ * @license MIT
+ *
+ * @copyright 2010 Jeff Schiller
+ *
+ */
 var extEyedropper = {
   name: 'eyedropper',
   init: function init(S) {
@@ -1716,7 +1722,7 @@ var extEyedropper = {
 
               buttons = [{
                 id: 'tool_eyedropper',
-                icon: svgEditor.curConfig.extIconsPath + 'eyedropper.png',
+                icon: 'eyedropper.png',
                 type: 'mode',
                 events: {
                   click: function click() {
@@ -1726,7 +1732,7 @@ var extEyedropper = {
               }];
               return _context.abrupt("return", {
                 name: strings.name,
-                svgicons: svgEditor.curConfig.extIconsPath + 'eyedropper-icon.xml',
+                svgicons: 'eyedropper-icon.xml',
                 buttons: strings.buttons.map(function (button, i) {
                   return Object.assign(buttons[i], button);
                 }),

@@ -7,8 +7,6 @@
  *
  */
 
-import './foreignobject-icons.xml';
-
 export default {
   name: 'foreignobject',
   async init (S) {
@@ -108,7 +106,7 @@ export default {
 
     const buttons = [{
       id: 'tool_foreign',
-      icon: svgEditor.curConfig.extIconsPath + 'foreignobject-tool.png',
+      icon: 'foreignobject-tool.png',
       type: 'mode',
       events: {
         click () {
@@ -117,7 +115,7 @@ export default {
       }
     }, {
       id: 'edit_foreign',
-      icon: svgEditor.curConfig.extIconsPath + 'foreignobject-edit.png',
+      icon: 'foreignobject-edit.png',
       type: 'context',
       panel: 'foreignObject_panel',
       events: {
@@ -163,7 +161,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: svgEditor.curConfig.extIconsPath + 'foreignobject-icons.xml',
+      svgicons: 'foreignobject-icons.xml',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),
