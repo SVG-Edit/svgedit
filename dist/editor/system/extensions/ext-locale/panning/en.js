@@ -1,17 +1,1 @@
-System.register([], function (exports) {
-  'use strict';
-  return {
-    execute: function () {
-
-      var en = exports('default', {
-        name: 'Extension Panning',
-        buttons: [
-          {
-            title: 'Panning'
-          }
-        ]
-      });
-
-    }
-  };
-});
+System.register([],(function(n){"use strict";return{execute:function(){n("default",{name:"Extension Panning",buttons:[{title:"Panning"}]})}}}));

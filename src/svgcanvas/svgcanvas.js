@@ -14,7 +14,7 @@
 `convertToGroup` use of `:data()` selector
 */
 
-import {jsPDF} from 'jspdf';
+import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
 
 import {canvg} from '../external/canvg/canvg.js';

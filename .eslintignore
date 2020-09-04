@@ -7,6 +7,12 @@ dist
 docs/jsdoc
 archive
 
+jsconfig.json
+mochawesome-report
+releases
+!.eslintrc.js
+!.ncurc.js
+
 es-dev-server.config.js
 nyc.config.js
 
@@ -32,8 +38,3 @@ src/external/dom-polyfill/*
 !src/external/dom-polyfill/dom-polyfill.js
 !src/external/dynamic-import-polyfill
 
-jsconfig.json
-mochawesome-report
-releases
-!.eslintrc.js
-!.ncurc.js

@@ -14,6 +14,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import url from '@rollup/plugin-url'; // for XML/SVG files
 import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
+import {terser} from 'rollup-plugin-terser';
 
 // utilities functions
 const isDirectory = (source) => {
@@ -100,7 +101,8 @@ const config = [{
     commonjs(),
     dynamicImportVars({include: './src/editor/locale.js'}),
     babel({babelHelpers: 'bundled'}),
-    nodePolyfills()
+    nodePolyfills(),
+    terser({keep_fnames: true})
   ]
 }];
 
@@ -135,7 +137,8 @@ extensionFiles.forEach((extensionFile) => {
         }),
         commonjs(),
         babel({babelHelpers: 'bundled'}),
-        nodePolyfills()
+        nodePolyfills(),
+        terser({keep_fnames: true})
       ]
     }
   );
@@ -159,7 +162,7 @@ extensionLocaleFiles.forEach(([dir, file]) => {
           inlineDynamicImports: true
         }
       ],
-      plugins: []
+      plugins: [terser({keep_fnames: true})]
     }
   );
 });

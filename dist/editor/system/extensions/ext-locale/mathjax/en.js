@@ -1,17 +1,1 @@
-System.register([], function (exports) {
-  'use strict';
-  return {
-    execute: function () {
-
-      var en = exports('default', {
-        name: 'MathJax',
-        buttons: [
-          {
-            title: 'Add Mathematics'
-          }
-        ]
-      });
-
-    }
-  };
-});
+System.register([],(function(t){"use strict";return{execute:function(){t("default",{name:"MathJax",buttons:[{title:"Add Mathematics"}]})}}}));
