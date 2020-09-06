@@ -1,1 +1,0 @@
-System.register([],(function(t){"use strict";return{execute:function(){t("default",{name:"Connector",langList:[{id:"mode_connect",title:"Connect two objects"}],buttons:[{title:"Connect two objects"}]})}}}));

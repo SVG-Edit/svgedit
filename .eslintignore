@@ -28,7 +28,7 @@ src/editor/js-hotkeys
 src/editor/jspdf/jspdf.min.js
 src/editor/jspdf/underscore-min.js
 
-src/editor/extensions/mathjax
+src/editor/extensions/ext-mathjax/mathjax
 
 # Todo: We should at least check `compat/compat` in our other files, however
 ## Two "external" items are modified locally, so we undo their ignoring

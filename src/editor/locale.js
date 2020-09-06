@@ -103,19 +103,6 @@ export const setStrings = function (type, obj, ids) {
  * @param {string} langParam
  * @returns {module:locale.AddLangExtensionLocaleData}
 */
-
-let editor_;
-/**
- * Sets the current editor instance (on which `addLangData`) exists.
- * @function init
- * @memberof module:locale
- * @param {module:locale.LocaleEditorInit} editor
- * @returns {void}
-*/
-export const init = (editor) => {
-  editor_ = editor;
-};
-
 /**
 * @typedef {PlainObject} module:locale.LangAndData
 * @property {string} langParam
@@ -128,17 +115,7 @@ export const init = (editor) => {
 * @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
 * @returns {Promise<module:locale.LangAndData>} Resolves to [`LangAndData`]{@link module:locale.LangAndData}
 */
-export const readLang = async function (langData) {
-  const more = await editor_.addLangData(langParam);
-  $.each(more, function (i, m) {
-    if (m.data) {
-      langData = $.merge(langData, m.data);
-    }
-  });
-
-  // Old locale file, do nothing for now.
-  if (!langData.tools) { return undefined; }
-
+export const readLang = function (langData) {
   const {
     tools,
     // misc,

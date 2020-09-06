@@ -129,7 +129,7 @@ module.exports = {
     // and translations may need a longer line length
     {
       files: [
-        'src/editor/locale/lang.*.js', 'src/editor/extensions/ext-locale/**',
+        'src/editor/locale/lang.*.js', 'src/editor/extensions/*/locale/**',
         'docs/tutorials/ExtensionDocs.md'
       ],
       rules: {
@@ -144,7 +144,7 @@ module.exports = {
         'src/editor/touch.js',
         'src/editor/typedefs.js',
         'src/editor/redirect-on-no-module-support.js',
-        'src/editor/extensions/imagelib/index.js',
+        'src/editor/extensions/ext-imagelib/index.js',
         'src/external/dom-polyfill/dom-polyfill.js',
         'screencasts/svgopen2010/script.js'
       ],

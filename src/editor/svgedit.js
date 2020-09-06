@@ -42,8 +42,7 @@ import jQueryPluginDBox from '../svgcanvas/dbox.js';
 
 import {
   readLang, putLocale,
-  setStrings,
-  init as localeInit
+  setStrings
 } from './locale.js';
 
 const {$q} = Utils;
@@ -130,17 +129,17 @@ const callbacks = [],
   * @type {string[]}
   */
   defaultExtensions = [
-    'ext-connector.js',
-    'ext-eyedropper.js',
-    'ext-grid.js',
-    'ext-imagelib.js',
-    'ext-markers.js',
-    'ext-overview_window.js',
-    'ext-panning.js',
-    'ext-polygon.js',
-    'ext-shapes.js',
-    'ext-star.js',
-    'ext-storage.js'
+    'ext-connector',
+    'ext-eyedropper',
+    'ext-grid',
+    'ext-imagelib',
+    'ext-markers',
+    'ext-overview_window',
+    'ext-panning',
+    'ext-polygon',
+    'ext-shapes',
+    'ext-star',
+    'ext-storage'
   ],
   /**
   * @typedef {"@default"|string} module:SVGEditor.Stylesheet `@default` will automatically load all of the default CSS paths for SVGEditor
@@ -157,7 +156,7 @@ const callbacks = [],
   * @property {string} [canvasName="default"] Used to namespace storage provided via `ext-storage.js`; you can use this if you wish to have multiple independent instances of SVG Edit on the same domain
   * @property {boolean} [no_save_warning=false] If `true`, prevents the warning dialog box from appearing when closing/reloading the page. Mostly useful for testing.
   * @property {string} [imgPath="images/"] The path where the SVG icons are located, with trailing slash. Note that as of version 2.7, this is not configurable by URL for security reasons.
-  * @property {string} [extPath="extensions/"] The path used for extension files, with trailing slash. Default will be changed to `../dist/extensions/` if this is a modular load. Note that as of version 2.7, this is not configurable by URL for security reasons.
+  * @property {string} [extPath="extensions/"] The path used for extension files, with trailing slash. Note that as of version 2.7, this is not configurable by URL for security reasons.
   * @property {boolean} [preventAllURLConfig=false] Set to `true` to override the ability for URLs to set non-content configuration (including extension config). Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
   * @property {boolean} [preventURLContentLoading=false] Set to `true` to override the ability for URLs to set URL-based SVG content. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
   * @property {boolean} [lockExtensions=false] Set to `true` to override the ability for URLs to set their own extensions; disallowed in URL setting. There is no need for this when `preventAllURLConfig` is used. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
@@ -231,7 +230,7 @@ const callbacks = [],
     no_save_warning: false,
     // PATH CONFIGURATION
     // The following path configuration items are disallowed in the URL (as should any future path configurations)
-    extPath: './extensions/', // Default will be changed if this is a non-modular load
+    extPath: './extensions/',
     imgPath: './images/',
     // DOCUMENT PROPERTIES
     // Change the following to a preference (already in the Document Properties dialog)?
@@ -317,41 +316,6 @@ async function loadSvgString (str, {noAlert} = {}) {
     return;
   }
   throw new Error('Error loading SVG');
-}
-
-/**
- * @function module:SVGEditor~getImportLocale
- * @param {PlainObject} defaults
- * @param {string} defaults.defaultLang
- * @param {string} defaults.defaultName
- * @returns {module:SVGEditor~ImportLocale}
- */
-function getImportLocale ({defaultLang, defaultName}) {
-  /**
-   * @function module:SVGEditor~ImportLocale
-   * @param {PlainObject} localeInfo
-   * @param {string} [localeInfo.name] Defaults to `defaultName` of {@link module:SVGEditor~getImportLocale}
-   * @param {string} [localeInfo.lang=defaultLang] Defaults to `defaultLang` of {@link module:SVGEditor~getImportLocale}
-   * @returns {Promise<module:locale.LocaleStrings>} Resolves to {@link module:locale.LocaleStrings}
-   */
-  return async function importLocaleDefaulting ({name = defaultName, lang = defaultLang} = {}) {
-    /**
-     *
-     * @param {string} language
-     * @returns {Promise<module:locale.LocaleStrings>} Resolves to {@link module:locale.LocaleStrings}
-     */
-    async function importLocale (language) {
-      const url = `${curConfig.extPath}ext-locale/${name}/${language}.js`;
-      // eslint-disable-next-line node/no-unsupported-features/es-syntax
-      const locale = await import(url);
-      return locale.default;
-    }
-    try {
-      return await importLocale(lang);
-    } catch (err) {
-      return importLocale('en');
-    }
-  };
 }
 
 /**
@@ -797,7 +761,6 @@ editor.init = function () {
    * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
    */
   const extAndLocaleFunc = async function () {
-    // const lang = ('lang' in curPrefs) ? curPrefs.lang : null;
     const {langParam, langData} = await editor.putLocale(editor.pref('lang'), goodLangs);
     await setLang(langParam, langData);
 
@@ -809,13 +772,6 @@ editor.init = function () {
     try {
       await Promise.all(
         curConfig.extensions.map(async (extname) => {
-          const extensionName = extname.match(/^ext-(.+)\.js/);
-          // const {extName} = extname.match(/^ext-(?<extName>.+)\.js/).groups;
-          if (!extensionName) { // Ensure URL cannot specify some other unintended file in the extPath
-            return undefined;
-          }
-          const url = curConfig.extPath + extname;
-
           /**
            * @tutorial ExtensionDocs
            * @typedef {PlainObject} module:SVGEditor.ExtensionObject
@@ -826,16 +782,14 @@ editor.init = function () {
             /**
              * @type {module:SVGEditor.ExtensionObject}
              */
+            const url = `${curConfig.extPath}${extname}/${extname}.js`;
             // eslint-disable-next-line node/no-unsupported-features/es-syntax
             const imported = await import(url);
-            const {name = extensionName[1], init} = imported.default;
-            // const {name = extName, init} = imported;
-            const importLocale = getImportLocale({defaultLang: langParam, defaultName: name});
-            return editor.addExtension(name, (init && init.bind(editor)), {$, importLocale});
+            const {name = extname, init} = imported.default;
+            return editor.addExtension(name, (init && init.bind(editor)), {$, langParam});
           } catch (err) {
             // Todo: Add config to alert any errors
-            console.log(err); // eslint-disable-line no-console
-            console.error('Extension failed to load: ' + extname + '; ' + err); // eslint-disable-line no-console
+            console.error('Extension failed to load: ' + extname + '; ', err); // eslint-disable-line no-console
             return undefined;
           }
         })
@@ -2874,33 +2828,18 @@ editor.init = function () {
     }
   };
 
-  const extsPreLang = [];
   /**
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
    * @listens module:svgcanvas.SvgCanvas#event:extension_added
    * @returns {Promise<void>|void} Resolves to `undefined`
    */
-  const extAdded = async function (win, ext) {
+  const extAdded = function (win, ext) {
     if (!ext) {
       return undefined;
     }
     let cbCalled = false;
     let resizeDone = false;
-
-    if (ext.langReady) {
-      if (editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
-        const lang = editor.pref('lang');
-        await ext.langReady({
-          lang,
-          uiStrings,
-          importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})
-        });
-        loadedExtensionNames.push(ext.name);
-      } else {
-        extsPreLang.push(ext);
-      }
-    }
 
     /**
      * Clear resize timer if present and if not previously performed,
@@ -6090,16 +6029,15 @@ editor.init = function () {
   //  revnums += svgCanvas.getVersion();
   //  $('#copyright')[0].setAttribute('title', revnums);
 
-  const loadedExtensionNames = [];
   /**
   * @function module:SVGEditor.setLang
   * @param {string} lang The language code
   * @param {module:locale.LocaleStrings} allStrings See {@tutorial LocaleDocs}
   * @fires module:svgcanvas.SvgCanvas#event:ext_langReady
   * @fires module:svgcanvas.SvgCanvas#event:ext_langChanged
-  * @returns {Promise<void>} A Promise which resolves to `undefined`
+  * @returns {void} A Promise which resolves to `undefined`
   */
-  const setLang = editor.setLang = async function (lang, allStrings) {
+  const setLang = editor.setLang = function (lang, allStrings) {
     editor.langChanged = true;
     editor.pref('lang', lang);
     $('#lang_select').val(lang);
@@ -6127,28 +6065,6 @@ editor.init = function () {
       populateLayers();
     }
 
-    // In case extensions loaded before the locale, now we execute a callback on them
-    if (extsPreLang.length) {
-      await Promise.all(extsPreLang.map((ext) => {
-        loadedExtensionNames.push(ext.name);
-        return ext.langReady({
-          lang,
-          uiStrings,
-          importLocale: getImportLocale({defaultLang: lang, defaultName: ext.name})
-        });
-      }));
-      extsPreLang.length = 0;
-    } else {
-      loadedExtensionNames.forEach((loadedExtensionName) => {
-        svgCanvas.runExtension(
-          loadedExtensionName,
-          'langReady',
-          /** @type {module:svgcanvas.SvgCanvas#event:ext_langReady} */ {
-            lang, uiStrings, importLocale: getImportLocale({defaultLang: lang, defaultName: loadedExtensionName})
-          }
-        );
-      });
-    }
     svgCanvas.runExtensions('langChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_langChanged} */ lang);
 
     // Update flyout tooltips
@@ -6171,51 +6087,9 @@ editor.init = function () {
       $('#tool_pos' + this.id.substr(10))[0].title = this.title;
     });
   };
-  localeInit(
-    /**
-    * @implements {module:locale.LocaleEditorInit}
-    */
-    {
-      /**
-      * Gets an array of results from extensions with a `addLangData` method,
-      * returning an object with a `data` property set to its locales (to be
-      * merged with regular locales).
-      * @param {string} langParam
-      * @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
-      * @todo Can we forego this in favor of `langReady` (or forego `langReady`)?
-      * @returns {module:locale.AddLangExtensionLocaleData[]}
-      */
-      addLangData (langParam) {
-        return svgCanvas.runExtensions(
-          'addLangData',
-          /**
-           * @function
-           * @type {module:svgcanvas.ExtensionVarBuilder}
-           * @param {string} name
-           * @returns {module:svgcanvas.SvgCanvas#event:ext_addLangData}
-           */
-          (name) => { // We pass in a function as we don't know the extension name here when defining this `addLangData` method
-            return {
-              lang: langParam,
-              importLocale: getImportLocale({defaultLang: langParam, defaultName: name})
-            };
-          },
-          true
-        );
-      },
-      curConfig
-    }
-  );
+
   // Load extensions
-  // Bit of a hack to run extensions in local Opera/IE9
-  if (document.location.protocol === 'file:') {
-    setTimeout(extAndLocaleFunc, 100);
-  } else {
-    // Returns a promise (if we wanted to fire 'extensions-loaded' event,
-    //   potentially useful to hide interface as some extension locales
-    //   are only available after this)
-    extAndLocaleFunc();
-  }
+  extAndLocaleFunc();
 };
 
 /**

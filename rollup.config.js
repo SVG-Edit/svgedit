@@ -16,24 +16,16 @@ import url from '@rollup/plugin-url'; // for XML/SVG files
 import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 import {terser} from 'rollup-plugin-terser';
 
-// utilities functions
-const isDirectory = (source) => {
-  return lstatSync(source).isDirectory();
-};
+// utility function
 const getDirectories = (source) => {
+  const isDirectory = (dir) => {
+    return lstatSync(dir).isDirectory();
+  };
   return readdirSync(source).map((nme) => join(source, nme)).filter((i) => isDirectory(i));
 };
 
 // capture the list of files to build for extensions and ext-locales
-const extensionFiles = readdirSync('src/editor/extensions');
-
-const extensionLocaleDirs = getDirectories('src/editor/extensions/ext-locale');
-const extensionLocaleFiles = [];
-extensionLocaleDirs.forEach((dir) => {
-  readdirSync(dir).forEach((file) => {
-    extensionLocaleFiles.push([dir, file]);
-  });
-});
+const extensionDirs = getDirectories('src/editor/extensions');
 
 // remove existing distribution
 // eslint-disable-next-line no-console
@@ -106,22 +98,21 @@ const config = [{
   ]
 }];
 
-extensionFiles.forEach((extensionFile) => {
-  const extensionName = extensionFile.match(/^ext-(.+?)\.js$/);
+extensionDirs.forEach((extensionDir) => {
+  const extensionName = basename(extensionDir);
   extensionName && config.push(
     {
-      input: `./src/editor/extensions/${extensionFile}`,
-      treeshake: false,
+      input: `./src/editor/extensions/${extensionName}/${extensionName}.js`,
       output: [
         {
           format: 'es',
-          dir: 'dist/editor/extensions',
+          dir: `dist/editor/extensions/${extensionName}`,
           inlineDynamicImports: true,
           sourcemap: true
         },
         {
           format: 'system',
-          dir: 'dist/editor/system/extensions',
+          dir: `dist/editor/system/extensions/${extensionName}`,
           inlineDynamicImports: true
         }
       ],
@@ -136,33 +127,11 @@ extensionFiles.forEach((extensionFile) => {
           preferBuiltins: true
         }),
         commonjs(),
+        dynamicImportVars({include: `dist/editor/system/extensions/${extensionName}${extensionName}.js`}),
         babel({babelHelpers: 'bundled'}),
         nodePolyfills(),
         terser({keep_fnames: true})
       ]
-    }
-  );
-});
-
-extensionLocaleFiles.forEach(([dir, file]) => {
-  const lang = file.replace(/\.js$/, '').replace(/-/g, '_');
-  config.push(
-    {
-      input: join(dir, file),
-      treeshake: false,
-      output: [
-        {
-          format: 'es',
-          file: `dist/editor/extensions/ext-locale/${basename(dir)}/${lang}.js`,
-          inlineDynamicImports: true
-        },
-        {
-          format: 'system',
-          file: `dist/editor/system/extensions/ext-locale/${basename(dir)}/${lang}.js`,
-          inlineDynamicImports: true
-        }
-      ],
-      plugins: [terser({keep_fnames: true})]
     }
   );
 });
