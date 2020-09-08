@@ -18,8 +18,8 @@ For default config and extensions (and available options) available to
 `setConfig()`, see the file `docs/tutorials/ConfigOptions.md`
 */
 
-import 'core-js/stable/index.js';
-import 'regenerator-runtime/runtime.js';
+// import 'core-js/stable/index.js';
+// import 'regenerator-runtime/runtime.js';
 import svgEditor from './svgedit.js';
 
 // URL OVERRIDE CONFIG

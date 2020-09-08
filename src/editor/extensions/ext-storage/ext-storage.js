@@ -165,10 +165,10 @@ export default {
     let loaded = false;
     return {
       name: 'storage',
-      async langReady ({importLocale}) {
+      async langReady ({lang}) {
         const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
-
-        const confirmSetStorage = await importLocale();
+        // eslint-disable-next-line node/no-unsupported-features/es-syntax
+        const {default: confirmSetStorage} = await import(`./locale/${lang}.js`);
         const {
           message, storagePrefsAndContent, storagePrefsOnly,
           storagePrefs, storageNoPrefsOrContent, storageNoPrefs,

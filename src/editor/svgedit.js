@@ -2834,13 +2834,19 @@ editor.init = function () {
    * @listens module:svgcanvas.SvgCanvas#event:extension_added
    * @returns {Promise<void>|void} Resolves to `undefined`
    */
-  const extAdded = function (win, ext) {
+  const extAdded = async (win, ext) => {
     if (!ext) {
       return undefined;
     }
     let cbCalled = false;
     let resizeDone = false;
 
+    if (ext.langReady) {
+      if (editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
+        const lang = editor.pref('lang');
+        await ext.langReady({lang});
+      }
+    }
     /**
      * Clear resize timer if present and if not previously performed,
      *   perform an icon resize.
