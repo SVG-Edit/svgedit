@@ -44,7 +44,6 @@ export default {
       // mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
       // Had been on https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js
       // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js
-      mathjaxSrcSecure = 'mathjax/MathJax.min.js?config=TeX-AMS-MML_SVG.js',
       {uiStrings} = svgEditor;
     let
       math,
@@ -183,7 +182,7 @@ export default {
 
             try {
               // eslint-disable-next-line node/no-unsupported-features/es-syntax
-              await import(mathjaxSrcSecure);
+              await import('./mathjax/MathJax.min.js'); // ?config=TeX-AMS-MML_SVG.js');
               // When MathJax is loaded get the div where the math will be rendered.
               MathJax.Hub.queue.Push(function () {
                 math = MathJax.Hub.getAllJax('#mathjax_creator')[0];

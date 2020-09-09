@@ -92,12 +92,13 @@ const config = [{
     }),
     commonjs(),
     dynamicImportVars({include: './src/editor/locale.js'}),
-    babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}),
+    babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}), // exclude core-js to avoid circular dependencies.
     nodePolyfills(),
     terser({keep_fnames: true})
   ]
 }];
 
+// config for dynamic extensions
 extensionDirs.forEach((extensionDir) => {
   const extensionName = basename(extensionDir);
   extensionName && config.push(
@@ -127,7 +128,7 @@ extensionDirs.forEach((extensionDir) => {
           preferBuiltins: true
         }),
         commonjs(),
-        dynamicImportVars({include: `dist/editor/system/extensions/${extensionName}${extensionName}.js`}),
+        dynamicImportVars({include: `src/editor/extensions/${extensionName}/${extensionName}.js`}),
         babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}),
         nodePolyfills(),
         terser({keep_fnames: true})
