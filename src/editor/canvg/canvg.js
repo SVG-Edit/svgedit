@@ -670,7 +670,8 @@ function build (opts) {
 
   // aspect ratio
   svg.AspectRatio = function (ctx, aspectRatio, width, desiredWidth, height, desiredHeight, minX, minY, refX, refY) {
-    // aspect ratio - https://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute
+   //aspect ratio -https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio
+
     aspectRatio = svg.compressSpaces(aspectRatio);
     aspectRatio = aspectRatio.replace(/^defer\s/, ''); // ignore defer
     const align = aspectRatio.split(' ')[0] || 'xMidYMid';
