@@ -9,6 +9,6 @@ module.exports = {
   moduleDirs: ['./node_modules'],
   compatibility: 'none',
   plugins: [
-    wrapRollupPlugin(commonjs())
+    wrapRollupPlugin(commonjs({exclude: ['src/editor/system', 'dist/editor/system/**']})) // excluding transformation of the systemJS bundle
   ]
 };
