@@ -1,8 +1,6 @@
 /* eslint-env node */
 // This rollup script is run by the command:
 // 'npm run build'
-// For developers, it's advised to run the command in watch mode:
-// 'npm run build -- -w"
 
 import {join, basename} from 'path';
 import {lstatSync, readdirSync} from 'fs';
@@ -94,7 +92,7 @@ const config = [{
     dynamicImportVars({include: './src/editor/locale.js'}),
     babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}), // exclude core-js to avoid circular dependencies.
     nodePolyfills(),
-    terser({keep_fnames: true})
+    terser({keep_fnames: true}) // keep_fnames is needed to avoid an error when calling extensions.
   ]
 }];
 
@@ -127,7 +125,7 @@ extensionDirs.forEach((extensionDir) => {
           browser: true,
           preferBuiltins: true
         }),
-        commonjs(),
+        commonjs({exclude: `src/editor/extensions/${extensionName}/${extensionName}.js`}),
         dynamicImportVars({include: `src/editor/extensions/${extensionName}/${extensionName}.js`}),
         babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}),
         nodePolyfills(),
