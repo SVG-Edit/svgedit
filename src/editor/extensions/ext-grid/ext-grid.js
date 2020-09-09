@@ -6,13 +6,13 @@
  * @copyright 2010 Redou Mine, 2010 Alexis Deveria
  *
  */
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'grid',
   async init ({$, NS, getTypeMap}) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('grid', svgEditor.curPrefs.lang);
     const svgCanvas = svgEditor.canvas;
     const svgdoc = document.getElementById('svgcanvas').ownerDocument,
       {assignAttributes} = svgCanvas,

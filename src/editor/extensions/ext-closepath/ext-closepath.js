@@ -6,6 +6,7 @@
  * @copyright 2010 Jeff Schiller
  *
  */
+import {loadExtensionTranslation} from '../../locale.js';
 import '../../../common/svgpathseg.js';
 
 // This extension adds a simple button to the contextual panel for paths
@@ -13,7 +14,8 @@ import '../../../common/svgpathseg.js';
 export default {
   name: 'closepath',
   async init ({importLocale, $}) {
-    const strings = await importLocale();
+    const svgEditor = this;
+    const strings = await loadExtensionTranslation('closepath', svgEditor.curPrefs.lang);
     let selElems;
     const updateButton = function (path) {
       const seglist = path.pathSegList,

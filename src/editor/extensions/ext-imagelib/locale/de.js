@@ -12,7 +12,7 @@ export default {
   imgLibs: [
     {
       name: 'Demo library (local)',
-      url: '{path}imagelib/index.html',
+      url: 'extensions/ext-imagelib/index.html',
       description: 'Demonstration library for SVG-edit on this server'
     },
     {

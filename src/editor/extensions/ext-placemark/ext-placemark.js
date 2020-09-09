@@ -5,6 +5,8 @@
  * @copyright 2010 CloudCanvas, Inc. All rights reserved
  *
  */
+import {loadExtensionTranslation} from '../../locale.js';
+
 export default {
   name: 'placemark',
   async init (S) {
@@ -22,8 +24,7 @@ export default {
       // newFOG, newFOGParent, newDef, newImageName, newMaskID,
       // undoCommand = 'Not image',
       // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('placemark', svgEditor.curPrefs.lang);
     const markerTypes = {
       nomarker: {},
       forwardslash:

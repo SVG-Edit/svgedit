@@ -6,13 +6,13 @@
  * @copyright 2010 Alexis Deveria
  *
  */
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'arrows',
   async init (S) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('arrows', svgEditor.curPrefs.lang);
     const svgCanvas = svgEditor.canvas;
     const
       addElem = svgCanvas.addSVGElementFromJson,

@@ -7,13 +7,13 @@
  * @copyright 2013 Jo Segaert
  *
  */
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'mathjax',
   async init ({$}) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('mathjax', svgEditor.curPrefs.lang);
     const svgCanvas = svgEditor.canvas;
 
     // Configuration of the MathJax extention.

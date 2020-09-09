@@ -6,13 +6,13 @@
  * @copyright 2010 Alexis Deveria
  *
  */
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'imagelib',
   async init ({$, decode64, dropXMLInternalSubset}) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: imagelibStrings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const imagelibStrings = await loadExtensionTranslation('imagelib', svgEditor.curPrefs.lang);
 
     const {uiStrings, canvas: svgCanvas} = svgEditor;
 

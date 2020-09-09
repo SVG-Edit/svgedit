@@ -9,13 +9,13 @@
 /*
   This is a very basic SVG-Edit extension to let tablet/mobile devices pan without problem
 */
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'panning',
   async init ({importLocale}) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('panning', svgEditor.curPrefs.lang);
     const svgCanvas = svgEditor.canvas;
     const buttons = [{
       id: 'ext-panning',

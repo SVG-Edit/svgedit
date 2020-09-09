@@ -3,6 +3,7 @@
 *  but an API common for cross-domain and same domain use can be found
 *  in embedapi.js with a demo at embedapi.html.
 */
+
 export default {
   name: 'xdomain-messaging',
   init () {

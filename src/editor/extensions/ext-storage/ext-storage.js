@@ -19,6 +19,8 @@
  *   initial (or URL-forced) dialog. *
 */
 
+import {loadExtensionTranslation} from '../../locale.js';
+
 export default {
   name: 'storage',
   init ({$}) {
@@ -167,13 +169,12 @@ export default {
       name: 'storage',
       async langReady ({lang}) {
         const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
-        // eslint-disable-next-line node/no-unsupported-features/es-syntax
-        const {default: confirmSetStorage} = await import(`./locale/${lang}.js`);
+        const strings = await loadExtensionTranslation('storage', svgEditor.curPrefs.lang);
         const {
           message, storagePrefsAndContent, storagePrefsOnly,
           storagePrefs, storageNoPrefsOrContent, storageNoPrefs,
           rememberLabel, rememberTooltip
-        } = confirmSetStorage;
+        } = strings;
 
         // No need to run this one-time dialog again just because the user
         //   changes the language

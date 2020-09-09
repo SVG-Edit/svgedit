@@ -5,6 +5,7 @@
  * @copyright 2010 CloudCanvas, Inc. All rights reserved
  *
  */
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'polygon',
@@ -14,8 +15,7 @@ export default {
     const {$} = S, // {svgcontent}
       // addElem = svgCanvas.addSVGElementFromJson,
       editingitex = false;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('polygon', svgEditor.curPrefs.lang);
     let selElems,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       // newFOG, newFOGParent, newDef, newImageName, newMaskID, modeChangeG,

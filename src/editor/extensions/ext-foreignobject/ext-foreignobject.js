@@ -7,6 +7,8 @@
  *
  */
 
+import {loadExtensionTranslation} from '../../locale.js';
+
 export default {
   name: 'foreignobject',
   async init (S) {
@@ -17,8 +19,8 @@ export default {
       // {svgcontent} = S,
       // addElem = svgCanvas.addSVGElementFromJson,
       svgdoc = S.svgroot.parentNode.ownerDocument;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+
+    const strings = await loadExtensionTranslation('foreignobject', svgEditor.curPrefs.lang);
 
     const properlySourceSizeTextArea = function () {
       // TODO: remove magic numbers here and get values from CSS

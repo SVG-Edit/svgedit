@@ -6,13 +6,13 @@
  * @copyright 2010 Christian Tzurcanu, 2010 Alexis Deveria
  *
  */
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'shapes',
   async init ({$}) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('shapes', svgEditor.curPrefs.lang);
     const canv = svgEditor.canvas;
     const svgroot = canv.getRootElem();
     let lastBBox = {};

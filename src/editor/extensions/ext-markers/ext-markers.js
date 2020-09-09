@@ -28,13 +28,13 @@
  *    add support for dimension extension lines
  *
 */
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'markers',
   async init (S) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('markers', svgEditor.curPrefs.lang);
     const {$} = S;
     const svgCanvas = svgEditor.canvas;
     const // {svgcontent} = S,

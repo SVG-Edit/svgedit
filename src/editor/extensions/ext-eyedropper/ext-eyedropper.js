@@ -7,12 +7,13 @@
  *
  */
 
+import {loadExtensionTranslation} from '../../locale.js';
+
 export default {
   name: 'eyedropper',
   async init (S) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('eyedropper', svgEditor.curPrefs.lang);
     const {$, ChangeElementCommand} = S, // , svgcontent,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       svgCanvas = svgEditor.canvas,

@@ -7,13 +7,13 @@
  *
  */
 import {canvg} from '../../../external/canvg/canvg.js';
+import {loadExtensionTranslation} from '../../locale.js';
 
 export default {
   name: 'server_opensave',
   async init ({$, decode64, encode64}) {
     const svgEditor = this;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const {default: strings} = await import(`./locale/${svgEditor.curPrefs.lang}.js`);
+    const strings = await loadExtensionTranslation('server_opensave', svgEditor.curPrefs.lang);
     const {
       curConfig: {
         extPath,
