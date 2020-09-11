@@ -19,7 +19,19 @@
  *   initial (or URL-forced) dialog. *
 */
 
-import {loadExtensionTranslation} from '../../locale.js';
+const loadExtensionTranslation = async function (lang) {
+  let translationModule;
+  try {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.error(`Missing translation (${lang}) - using 'en'`);
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/en.js`);
+  }
+  return translationModule.default;
+};
 
 export default {
   name: 'storage',
@@ -169,7 +181,7 @@ export default {
       name: 'storage',
       async langReady ({lang}) {
         const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
-        const strings = await loadExtensionTranslation('storage', svgEditor.curPrefs.lang);
+        const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
         const {
           message, storagePrefsAndContent, storagePrefsOnly,
           storagePrefs, storageNoPrefsOrContent, storageNoPrefs,

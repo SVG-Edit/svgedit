@@ -12,13 +12,26 @@
 *  the left ("mode") panel. Clicking on the button, and then the canvas
 *  will show the user the point on the canvas that was clicked on.
 */
-import {loadExtensionTranslation} from '../../locale.js';
+
+const loadExtensionTranslation = async function (lang) {
+  let translationModule;
+  try {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.error(`Missing translation (${lang}) - using 'en'`);
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/en.js`);
+  }
+  return translationModule.default;
+};
 
 export default {
   name: 'helloworld',
   async init ({$, importLocale}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation('helloworld', svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
     const svgCanvas = svgEditor.canvas;
     return {
       name: strings.name,

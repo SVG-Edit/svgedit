@@ -25,19 +25,28 @@ const getDirectories = (source) => {
 // capture the list of files to build for extensions and ext-locales
 const extensionDirs = getDirectories('src/editor/extensions');
 
+const dest = ['dist/editor', 'dist/editor/system'];
+
 // remove existing distribution
 // eslint-disable-next-line no-console
 rimraf('./dist', () => console.info('recreating dist'));
 
 // config for svgedit core module
 const config = [{
-  input: 'src/editor/index.js',
+  input: ['src/editor/index.js'],
   output: [
     {
       format: 'es',
       inlineDynamicImports: true,
       sourcemap: true,
-      dir: 'dist/editor'
+      file: 'dist/editor/index.js'
+    },
+    {
+      format: 'es',
+      inlineDynamicImports: true,
+      sourcemap: true,
+      file: 'dist/editor/xdomain-index.js',
+      intro: 'const XDOMAIN = true;'
     },
     {
       format: 'system',
@@ -54,7 +63,14 @@ const config = [{
         },
         {
           src: 'src/editor/index.html',
-          dest: 'dist/editor/system',
+          dest: 'dist/editor',
+          rename: 'xdomain-index.html',
+          transform: (contents) => contents.toString()
+            .replace('<script type="module" src="index.js">', '<script type="module" src="xdomain-index.js">')
+        },
+        {
+          src: 'src/editor/index.html',
+          dest: ['dist/editor/system'],
           rename: 'index.html',
           transform: (contents) => contents.toString()
             .replace('<script type="module" src="index.js">',
@@ -71,17 +87,17 @@ const config = [{
           src: ['node_modules/systemjs/dist/s.min.js', 'node_modules/systemjs/dist/s.min.js.map'],
           dest: 'dist/editor/system'
         },
-        {src: 'src/editor/images', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/jquery.min.js', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/jquery-ui', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/jgraduate', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/spinbtn', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/embedapi.html', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/embedapi.js', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/browser-not-supported.html', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/redirect-on-lacking-support.js', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/redirect-on-no-module-support.js', dest: ['dist/editor', 'dist/editor/system']},
-        {src: 'src/editor/svgedit.css', dest: ['dist/editor', 'dist/editor/system']}
+        {src: 'src/editor/images', dest},
+        {src: 'src/editor/jquery.min.js', dest},
+        {src: 'src/editor/jquery-ui', dest},
+        {src: 'src/editor/jgraduate', dest},
+        {src: 'src/editor/spinbtn', dest},
+        {src: 'src/editor/embedapi.html', dest},
+        {src: 'src/editor/embedapi.js', dest},
+        {src: 'src/editor/browser-not-supported.html', dest},
+        {src: 'src/editor/redirect-on-lacking-support.js', dest},
+        {src: 'src/editor/redirect-on-no-module-support.js', dest},
+        {src: 'src/editor/svgedit.css', dest}
       ]
     }),
     nodeResolve({
@@ -89,7 +105,7 @@ const config = [{
       preferBuiltins: true
     }),
     commonjs(),
-    dynamicImportVars({include: './src/editor/locale.js'}),
+    dynamicImportVars({include: `src/editor/locale.js`}),
     babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}), // exclude core-js to avoid circular dependencies.
     nodePolyfills(),
     terser({keep_fnames: true}) // keep_fnames is needed to avoid an error when calling extensions.

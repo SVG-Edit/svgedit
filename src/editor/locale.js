@@ -364,24 +364,3 @@ export const putLocale = async function (givenParam, goodLangs) {
   const module = await import(`./locale/lang.${langParam}.js`);
   return readLang(module.default);
 };
-
-/**
- *
- * @function module:locale.loadExtensionTranslation
- * @param {string} extensionName
- * @param {string} lang
- * @returns {string} lang will will returned if the translation exists else it will be 'en'
-*/
-export const loadExtensionTranslation = async function (extensionName, lang) {
-  let translationModule;
-  try {
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    translationModule = await import(`./extensions/ext-${extensionName}/locale/${lang}.js`);
-  } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) for extension ${extensionName} - using 'en'`);
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    translationModule = await import(`./extensions/ext-${extensionName}/locale/en.js`);
-  }
-  return translationModule.default;
-};

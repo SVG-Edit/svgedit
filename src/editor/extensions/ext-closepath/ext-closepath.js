@@ -6,8 +6,21 @@
  * @copyright 2010 Jeff Schiller
  *
  */
-import {loadExtensionTranslation} from '../../locale.js';
 import '../../../common/svgpathseg.js';
+
+const loadExtensionTranslation = async function (lang) {
+  let translationModule;
+  try {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.error(`Missing translation (${lang}) - using 'en'`);
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/en.js`);
+  }
+  return translationModule.default;
+};
 
 // This extension adds a simple button to the contextual panel for paths
 // The button toggles whether the path is open or closed
@@ -15,7 +28,7 @@ export default {
   name: 'closepath',
   async init ({importLocale, $}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation('closepath', svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
     let selElems;
     const updateButton = function (path) {
       const seglist = path.pathSegList,

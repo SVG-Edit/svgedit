@@ -7,13 +7,25 @@
  *
  */
 
-import {loadExtensionTranslation} from '../../locale.js';
+const loadExtensionTranslation = async function (lang) {
+  let translationModule;
+  try {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.error(`Missing translation (${lang}) - using 'en'`);
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/en.js`);
+  }
+  return translationModule.default;
+};
 
 export default {
   name: 'eyedropper',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation('eyedropper', svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
     const {$, ChangeElementCommand} = S, // , svgcontent,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       svgCanvas = svgEditor.canvas,

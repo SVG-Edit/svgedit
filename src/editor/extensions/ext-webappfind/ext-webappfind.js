@@ -5,13 +5,26 @@
 * @license MIT
 * @todo See WebAppFind Readme for SVG-related todos
 */
-import {loadExtensionTranslation} from '../../locale.js';
+
+const loadExtensionTranslation = async function (lang) {
+  let translationModule;
+  try {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.error(`Missing translation (${lang}) - using 'en'`);
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/en.js`);
+  }
+  return translationModule.default;
+};
 
 export default {
   name: 'webappfind',
   async init ({$}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation('webappfind', svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
     const saveMessage = 'save',
       readMessage = 'read',
       excludedMessages = [readMessage, saveMessage];

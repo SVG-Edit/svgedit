@@ -7,7 +7,19 @@
  *
  */
 
-import {loadExtensionTranslation} from '../../locale.js';
+const loadExtensionTranslation = async function (lang) {
+  let translationModule;
+  try {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.error(`Missing translation (${lang}) - using 'en'`);
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    translationModule = await import(`./locale/en.js`);
+  }
+  return translationModule.default;
+};
 
 export default {
   name: 'foreignobject',
@@ -20,7 +32,7 @@ export default {
       // addElem = svgCanvas.addSVGElementFromJson,
       svgdoc = S.svgroot.parentNode.ownerDocument;
 
-    const strings = await loadExtensionTranslation('foreignobject', svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
 
     const properlySourceSizeTextArea = function () {
       // TODO: remove magic numbers here and get values from CSS
