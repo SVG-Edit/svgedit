@@ -5,6 +5,10 @@
   "reporterOptions": {
     "configFile": "mocha-multi-reporters.json"
   },
+  "ignoreTestFiles": [
+    "**/__snapshots__/*",
+    "**/__image_snapshots__/*"
+  ],
   "defaultCommandTimeout":	10000,
   "pageLoadTimeout": 120000
 }
