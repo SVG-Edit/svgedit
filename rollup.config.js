@@ -13,6 +13,8 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 import url from '@rollup/plugin-url'; // for XML/SVG files
 import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 import {terser} from 'rollup-plugin-terser';
+import progress from 'rollup-plugin-progress';
+import filesize from 'rollup-plugin-filesize';
 
 // utility function
 const getDirectories = (source) => {
@@ -55,6 +57,7 @@ const config = [{
     }
   ],
   plugins: [
+    progress(),
     copy({
       targets: [
         {
@@ -108,7 +111,8 @@ const config = [{
     dynamicImportVars({include: `src/editor/locale.js`}),
     babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}), // exclude core-js to avoid circular dependencies.
     nodePolyfills(),
-    terser({keep_fnames: true}) // keep_fnames is needed to avoid an error when calling extensions.
+    terser({keep_fnames: true}), // keep_fnames is needed to avoid an error when calling extensions.
+    filesize()
   ]
 }];
 
@@ -132,6 +136,7 @@ extensionDirs.forEach((extensionDir) => {
         }
       ],
       plugins: [
+        progress(),
         url({
           include: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif', '**/*.xml'],
           limit: 0,

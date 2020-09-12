@@ -1,25 +1,9 @@
-//  TO BUILD AN IIFE VERSION OF THIS FILE (AS CAN WORK ON OLDER BROWSERS),
-//   RUN THE FOLLOWING ON THE COMMAND LINE FROM THE PROJECT ROOT:
-//   `npm run build-by-config`. REPEAT AFTER ANY MODIFICATIONS
-//   TO svgedit-config-es.js.
-
-/*
-The svgedit-config-es.js file is intended for the setting of configuration
-  or preferences which must run early on; if this is not needed, it is
-  recommended that you create an extension instead (for greater
-  reusability and modularity). This file needs to be in the parent
-  folder of the editor folder. It is referenced in the code as
-  '../svgedit-config-es.js'.
-*/
-
 // CONFIG AND EXTENSION SETTING
 /*
 For default config and extensions (and available options) available to
 `setConfig()`, see the file `docs/tutorials/ConfigOptions.md`
 */
 
-// import 'core-js/stable/index.js';
-// import 'regenerator-runtime/runtime.js';
 import svgEditor from './svgedit.js';
 
 // URL OVERRIDE CONFIG
@@ -36,12 +20,15 @@ svgEditor.setConfig({
   // lockExtensions: true,
 });
 
-svgEditor.setConfig({
-  /*
-  Provide default values here which differ from that of the editor but
-    which the URL can override
-  */
-}, {allowInitialUserOverride: true});
+svgEditor.setConfig(
+  {
+    // Indicate pref settings here if you wish to allow user storage or URL
+    //   settings to be able to override your default preferences (unless
+    //   other config options have already explicitly prevented one or the
+    //   other)
+  },
+  {allowInitialUserOverride: true}
+);
 
 // EXTENSION CONFIG
 svgEditor.setConfig({
@@ -137,12 +124,17 @@ svgEditor.setConfig({
   // save_notice_done: false,
   // export_notice_done: false
 });
-svgEditor.setConfig(
-  {
-    // Indicate pref settings here if you wish to allow user storage or URL
-    //   settings to be able to override your default preferences (unless
-    //   other config options have already explicitly prevented one or the
-    //   other)
-  },
-  {allowInitialUserOverride: true}
-);
+
+// Variable XDOMAIN below is created by Rollup for the Xdomain build (see rollup.config.js)
+/* globals XDOMAIN */
+try { // try clause to avoid js to complain if XDOMAIN undefined
+  if (XDOMAIN) {
+    svgEditor.setConfig({
+      canvasName: 'xdomain', // Namespace this
+      allowedOrigins: ['*']
+    });
+    // eslint-disable-next-line no-console
+    console.info('xdomain config activated');
+  }
+} catch (error) {
+}
