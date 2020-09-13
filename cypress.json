@@ -10,5 +10,10 @@
     "**/__image_snapshots__/*"
   ],
   "defaultCommandTimeout":	10000,
-  "pageLoadTimeout": 120000
+  "pageLoadTimeout": 120000,
+  "cypress-plugin-snapshots": {
+    "autoCleanUp": true,
+    "prettier": false,
+    "updateSnapshots": false
+  }
 }
