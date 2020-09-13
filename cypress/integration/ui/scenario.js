@@ -2,13 +2,19 @@ import {
   visitAndApproveStorage
 } from '../../support/ui-test-helper.js';
 
+const testSnapshot = () => {
+  cy.get('#tool_source').click({force: true});
+  cy.get('#svg_source_textarea').invoke('val').toMatchSnapshot();
+  cy.get('#tool_source_save').click({force: true});
+};
+
 describe('use various parts of svg-edit', function () {
   before(() => {
     visitAndApproveStorage();
   });
 
   it('check tool_source', function () {
-    cy.get('#tool_source').click();
+    cy.get('#tool_source').click({force: true});
     cy.get('#svg_source_textarea')
       .type('{selectall}', {force: true})
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
@@ -17,8 +23,8 @@ describe('use various parts of svg-edit', function () {
         <rect id="rect" fill="#FF0000" height="70" stroke="#000000" stroke-width="5" width="94" x="69.5" y="51.5"/>
        </g>
      </svg>`, {parseSpecialCharSequences: false});
-    cy.get('#tool_source_save').click();
-    cy.get('#svgcontent').toMatchSnapshot();
+    cy.get('#tool_source_save').click({force: true});
+    testSnapshot();
   });
   /*
   it('check tool_fhpath', function () {
@@ -40,23 +46,26 @@ describe('use various parts of svg-edit', function () {
       .trigger('mouseup', {force: true});
     // svgedit use the #text text field to capture the text
     // cy.get('#text').type('1234', {force: true});
-    cy.get('#text').type('A', {force: true});
-    cy.get('#svgcontent').toMatchSnapshot();
+    cy.get('#text').type('B', {force: true});
+    testSnapshot();
   });
 
   it('check tool_clone', function () {
+    cy.get('#svg_1').click({force: true});
     cy.get('#tool_clone')
       .click({force: true});
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_italic', function () {
+    cy.get('#svg_1').click({force: true});
     cy.get('#tool_italic')
       .click({force: true});
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_bold', function () {
+    cy.get('#svg_1').click({force: true});
     cy.get('#tool_bold')
       .click({force: true});
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
 });
