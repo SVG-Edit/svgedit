@@ -6,7 +6,6 @@
  * @copyright 2010 Jeff Schiller
  *
  */
-import '../../../common/svgpathseg.js';
 
 const loadExtensionTranslation = async function (lang) {
   let translationModule;

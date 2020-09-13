@@ -5,7 +5,6 @@
  * @license MIT
  */
 
-import '../common/svgpathseg.js';
 import {
   snapToGrid, assignAttributes, getBBox, getRefElem, findDefs
 } from '../common/utilities.js';

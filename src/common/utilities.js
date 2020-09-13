@@ -7,7 +7,6 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import './svgpathseg.js';
 import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import {NS} from './namespaces.js';
 import {getTransformList} from './svgtransformlist.js';

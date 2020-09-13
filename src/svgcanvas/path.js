@@ -7,7 +7,6 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import '../common/svgpathseg.js';
 import {NS} from '../common/namespaces.js';
 import {getTransformList} from '../common/svgtransformlist.js';
 import {shortFloat} from '../common/units.js';
