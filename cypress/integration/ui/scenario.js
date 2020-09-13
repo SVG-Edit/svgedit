@@ -20,24 +20,43 @@ describe('use various parts of svg-edit', function () {
     cy.get('#tool_source_save').click();
     cy.get('#svgcontent').toMatchSnapshot();
   });
-
+  /*
   it('check tool_fhpath', function () {
     cy.get('#tool_fhpath')
       .click({force: true});
-    cy.get('#svgcontent')
-      .trigger('mousedown', 'center')
-      .trigger('mousemove', {clientX: 200, clientY: 200, bubbles: true, cancelable: true})
-      .trigger('mousemove', {clientX: 20, clientY: 20, bubbles: true, cancelable: true})
+    cy.get('#rect')
+      .trigger('mousemove', 200, 200, {force: true})
+      .trigger('mousedown', 200, 200, {force: true})
+      .trigger('mousemove', 20, 20, {force: true})
       .trigger('mouseup', {force: true});
     cy.get('#svgcontent').toMatchSnapshot();
   });
+*/
   it('check tool_text', function () {
     cy.get('#tool_text')
       .click({force: true});
-    cy.get('#svgcontent')
-      .trigger('mousedown', 'center');
+    cy.get('#rect')
+      .trigger('mousedown', 'center', {force: true})
+      .trigger('mouseup', {force: true});
     // svgedit use the #text text field to capture the text
-    cy.get('#text').type('1234', {force: true});
+    // cy.get('#text').type('1234', {force: true});
+    cy.get('#text').type('A', {force: true});
+    cy.get('#svgcontent').toMatchSnapshot();
+  });
+
+  it('check tool_clone', function () {
+    cy.get('#tool_clone')
+      .click({force: true});
+    cy.get('#svgcontent').toMatchSnapshot();
+  });
+  it('check tool_italic', function () {
+    cy.get('#tool_italic')
+      .click({force: true});
+    cy.get('#svgcontent').toMatchSnapshot();
+  });
+  it('check tool_bold', function () {
+    cy.get('#tool_bold')
+      .click({force: true});
     cy.get('#svgcontent').toMatchSnapshot();
   });
 });
