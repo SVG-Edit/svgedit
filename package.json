@@ -60,7 +60,7 @@
     "prepublishOnly": "run-s license-badges copy prep build-docs",
     "open-tests": "run-s cypress:instrument cypress:open",
     "cypress:merge": "mochawesome-merge \"cypress/results/mochaw*.json\" > mochawesome.json && marge mochawesome.json && mbg --file ./mochawesome.json --badge_output badges/tests-badge.svg",
-    "cypress:run-only": "rimraf \"cypress/results/mochaw*.json\" && rimraf \".nyc_output/*\" && cypress run",
+    "cypress:run-only": "rimraf \"cypress/results/mochaw*.json\" && rimraf \".nyc_output/*\" && cypress run -q",
     "cypress:run-no-badge": "run-s -c cypress:run-only cypress:merge",
     "cypress:run": "run-s -n -c cypress:run-no-badge report-summary-mocha-full coverage-badge",
     "mochawesome-cli": "node tools/mochawesome-cli.js",
