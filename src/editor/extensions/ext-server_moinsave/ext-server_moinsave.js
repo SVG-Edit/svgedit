@@ -7,7 +7,7 @@
  *  adopted for moinmoins item storage. It sends in one post png and svg data
  *  (I agree to dual license my work to additional GPLv2 or later)
  */
-import {canvg} from '../../../external/canvg/canvg.js';
+import {Canvg as canvg} from 'canvg';
 
 const loadExtensionTranslation = async function (lang) {
   let translationModule;

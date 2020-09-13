@@ -15,6 +15,9 @@
 * @borrows module:locale.setStrings as setStrings
 */
 
+// eslint-disable-next-line node/no-unpublished-import
+import deparam from 'deparam';
+
 import './touch.js';
 import {NS} from '../common/namespaces.js';
 import {isWebkit, isChrome, isGecko, isIE, isMac, isTouch} from '../common/browser.js';
@@ -26,7 +29,6 @@ import {getTypeMap, convertUnit, isValidUnit} from '../common/units.js';
 import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
-import deparam from '../external/deparam/deparam.esm.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import Layer from '../common/layer.js';

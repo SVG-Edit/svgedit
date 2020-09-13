@@ -6,7 +6,7 @@
  * @copyright 2010 Alexis Deveria
  *
  */
-import {canvg} from '../../../external/canvg/canvg.js';
+import {Canvg as canvg} from 'canvg';
 
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
