@@ -145,7 +145,6 @@ module.exports = {
         'src/editor/typedefs.js',
         'src/editor/redirect-on-no-module-support.js',
         'src/editor/extensions/ext-imagelib/index.js',
-        'src/external/dom-polyfill/dom-polyfill.js',
         'screencasts/svgopen2010/script.js'
       ],
       rules: {
