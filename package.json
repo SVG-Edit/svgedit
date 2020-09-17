@@ -14,6 +14,7 @@
   },
   "scripts": {
     "lint": "eslint --ext js,html,md .",
+    "lint-arg": "eslint --ext js,html,md",
     "test": "run-s cypress:instrument test-only",
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
@@ -77,7 +78,7 @@
   "lint-staged": {
     ".eslintignore": "npm run lint",
     ".eslintrc.js": "npm run lint",
-    "src/**/*.{js,md,html}": "npm run lint",
+    "src/**/*.{js,md,html}": "npm run lint-arg --",
     "src/editor/images/*.png": "npm run imageoptim --"
   },
   "run-if-changed": {
