@@ -4,6 +4,8 @@ For default config and extensions (and available options) available to
 `setConfig()`, see the file `docs/tutorials/ConfigOptions.md`
 */
 
+import './jquery.min.js';
+import './jquery-ui/jquery-ui-1.8.17.custom.min.js';
 import svgEditor from './svgedit.js';
 
 // URL OVERRIDE CONFIG
