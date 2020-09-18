@@ -91,15 +91,12 @@ const config = [{
           dest: 'dist/editor/system'
         },
         {src: 'src/editor/images', dest},
-        {src: 'src/editor/jquery.min.js', dest},
-        {src: 'src/editor/jquery-ui', dest},
         {src: 'src/editor/jgraduate', dest},
         {src: 'src/editor/spinbtn', dest},
         {src: 'src/editor/embedapi.html', dest},
         {src: 'src/editor/embedapi.js', dest},
         {src: 'src/editor/browser-not-supported.html', dest},
         {src: 'src/editor/redirect-on-lacking-support.js', dest},
-        {src: 'src/editor/redirect-on-no-module-support.js', dest},
         {src: 'src/editor/svgedit.css', dest}
       ]
     }),

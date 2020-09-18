@@ -16,28 +16,12 @@
 
     <!-- SCRIPTS -->
 
-    <!-- As yet no ES6 Module support -->
-    <!--{if jquery_release}>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <!{else}-->
-    <script src="jquery.min.js"></script>
-    <!--{endif}-->
-
-    <!-- As yet no ES6 Module support -->
-    <script src="jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
-
+    <!-- Lacking browser support -->
+    <script type="module" src="./redirect-on-lacking-support.js"></script>
 
     <!-- If you do not wish to add extensions by URL, you can add calls
       within the following file to svgEditor.setConfig -->
     <script type="module" src="index.js"></script>
-
-    <!-- FEEDS -->
-    <link rel="alternate" type="application/atom+xml"
-      title="SVG-edit General Discussion"
-      href="https://groups.google.com/group/svg-edit/feed/atom_v1_0_msgs.xml"/>
-    <link rel="alternate" type="application/atom+xml"
-      title="SVG-edit Updates (Commits)"
-      href="https://github.com/SVG-Edit/svgedit/commits/master.atom"/>
 
     <title>SVG-edit</title>
 </head>
