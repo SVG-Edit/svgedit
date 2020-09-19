@@ -17,7 +17,7 @@
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
 [context.release-v5.1.0]
-  publish = "editor/"
+  publish = "/"
   command = "echo 'already built'"
 
 # Production context: all deploys from the Production branch set in your site's
