@@ -18,8 +18,8 @@ import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
 
 import {Canvg as canvg} from 'canvg';
+import 'pathseg';
 
-import '../common/svgpathseg.js';
 import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginDBox from './dbox.js';
 

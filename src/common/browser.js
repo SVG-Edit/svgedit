@@ -10,7 +10,8 @@
 // Dependencies:
 // 1) jQuery (for $.alert())
 
-import './svgpathseg.js';
+import 'pathseg';
+
 import {NS} from './namespaces.js';
 
 const $ = jQuery;

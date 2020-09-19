@@ -138,6 +138,7 @@
     "canvg": "^3.0.6",
     "core-js": "^3.6.5",
     "jspdf": "^2.1.1",
+    "pathseg": "^1.2.0",
     "regenerator-runtime": "^0.13.7",
     "svg2pdf.js": "^2.0.0"
   },
