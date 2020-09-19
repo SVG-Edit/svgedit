@@ -13,7 +13,7 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 import url from '@rollup/plugin-url'; // for XML/SVG files
 import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 import {terser} from 'rollup-plugin-terser';
-import progress from 'rollup-plugin-progress';
+// import progress from 'rollup-plugin-progress';
 import filesize from 'rollup-plugin-filesize';
 
 // utility function
@@ -57,7 +57,7 @@ const config = [{
     }
   ],
   plugins: [
-    progress(),
+    // progress(),
     copy({
       targets: [
         {
@@ -133,7 +133,7 @@ extensionDirs.forEach((extensionDir) => {
         }
       ],
       plugins: [
-        progress(),
+        // progress(),
         url({
           include: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif', '**/*.xml'],
           limit: 0,

@@ -122,7 +122,8 @@ module.exports = {
     'consistent-this': 'off',
     'import/no-anonymous-default-export': 'off',
     'node/no-unsupported-features/node-builtins': 'warn',
-    'prefer-exponentiation-operator': 'warn'
+    'prefer-exponentiation-operator': 'warn',
+    'node/no-unsupported-features/es-syntax': 'off'
   },
   overrides: [
     // Locales have no need for importing outside of SVG-Edit

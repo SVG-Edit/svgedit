@@ -360,7 +360,6 @@ export const putLocale = async function (givenParam, goodLangs) {
   if (!goodLangs.includes(langParam) && langParam !== 'test') {
     langParam = 'en';
   }
-  // eslint-disable-next-line node/no-unsupported-features/es-syntax
   const module = await import(`./locale/lang.${langParam}.js`);
   return readLang(module.default);
 };

@@ -784,7 +784,6 @@ editor.init = function () {
              * @type {module:SVGEditor.ExtensionObject}
              */
             const url = `${curConfig.extPath}${extname}/${extname}.js`;
-            // eslint-disable-next-line node/no-unsupported-features/es-syntax
             const imported = await import(url);
             const {name = extname, init} = imported.default;
             return editor.addExtension(name, (init && init.bind(editor)), {$, langParam});

@@ -11,12 +11,10 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
     translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
     console.error(`Missing translation (${lang}) - using 'en'`);
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
     translationModule = await import(`./locale/en.js`);
   }
   return translationModule.default;
@@ -194,7 +192,6 @@ export default {
             $('body').addClass('tex2jax_ignore');
 
             try {
-              // eslint-disable-next-line node/no-unsupported-features/es-syntax
               await import('./mathjax/MathJax.min.js'); // ?config=TeX-AMS-MML_SVG.js');
               // When MathJax is loaded get the div where the math will be rendered.
               MathJax.Hub.queue.Push(function () {
