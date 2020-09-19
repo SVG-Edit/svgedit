@@ -220,8 +220,6 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
  * Join us on `#svg-edit` on `freenode.net` (or use the
     [web client](https://webchat.freenode.net/?channels=svg-edit)).
 
-<!-- 
 # Hosting
 SVGedit versions are deployed to:
 [![Deploys by Netlify](https://www.netlify.com)](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)
--->
