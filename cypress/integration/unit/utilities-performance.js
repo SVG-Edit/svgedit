@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
+import 'pathseg';
 import '../../../instrumented/editor/jquery.min.js';
 
-import '../../../instrumented/common/svgpathseg.js';
 import {NS} from '../../../instrumented/common/namespaces.js';
 import * as utilities from '../../../instrumented/common/utilities.js';
 import * as transformlist from '../../../instrumented/common/svgtransformlist.js';

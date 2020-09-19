@@ -140,7 +140,6 @@ module.exports = {
     // These browser files don't do importing or requiring
     {
       files: [
-        'src/editor/svgpathseg.js',
         'src/editor/touch.js',
         'src/editor/typedefs.js',
         'src/editor/redirect-on-no-module-support.js',

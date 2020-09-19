@@ -1,7 +1,9 @@
 // eslint-disable-next-line node/no-unpublished-import
 import {jml, body, nbsp} from 'jamilih';
-import $ from '../../../external/query-result/esm/index.js';
-import {manipulation} from '../../../external/qr-manipulation/dist/index-es.js';
+// eslint-disable-next-line node/no-unpublished-import
+import $ from 'query-result';
+// eslint-disable-next-line node/no-unpublished-import
+import {manipulation} from 'qr-manipulation';
 
 manipulation($, jml);
 

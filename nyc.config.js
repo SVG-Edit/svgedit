@@ -11,7 +11,6 @@ module.exports = {
     'editor/jquery-ui/**',
     'editor/js-hotkeys/**',
     'editor/contextmenu/**',
-    'external/**/*.js',
     'editor/spinbtn'
   ],
   "reporter": [

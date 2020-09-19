@@ -30,4 +30,3 @@ src/editor/jspdf/underscore-min.js
 
 src/editor/extensions/ext-mathjax/mathjax
 
-src/external/**/*

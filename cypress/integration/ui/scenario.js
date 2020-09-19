@@ -27,7 +27,6 @@ describe('use various parts of svg-edit', function () {
     cy.get('#tool_source_save').click({force: true});
     testSnapshot();
   });
-  /*
   it('check tool_fhpath', function () {
     cy.get('#tool_fhpath')
       .click({force: true});
@@ -38,7 +37,6 @@ describe('use various parts of svg-edit', function () {
       .trigger('mouseup', {force: true});
     cy.get('#svgcontent').toMatchSnapshot();
   });
-*/
   it('check tool_text', function () {
     cy.get('#tool_text')
       .click({force: true});

@@ -37,7 +37,6 @@ import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
 import jQueryPluginSVGIcons from './svgicons/jQuery.svgIcons.js';
 import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
 import jQueryPluginSpinButton from './spinbtn/jQuery.SpinButton.js';
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import jQueryPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
 import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import jQueryPluginDBox from '../svgcanvas/dbox.js';
@@ -53,7 +52,7 @@ const editor = {};
 
 const $ = [
   jQueryPluginJSHotkeys, jQueryPluginSVGIcons, jQueryPluginJGraduate,
-  jQueryPluginSpinButton, jQueryPluginSVG, jQueryPluginContextMenu, jQueryPluginJPicker
+  jQueryPluginSpinButton, jQueryPluginContextMenu, jQueryPluginJPicker
 ].reduce((jq, func) => func(jq), jQuery);
 
 const homePage = 'https://github.com/SVG-Edit/svgedit';
