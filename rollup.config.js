@@ -2,7 +2,7 @@
 // This rollup script is run by the command:
 // 'npm run build'
 
-import {join, basename} from 'path';
+import path from 'path';
 import {lstatSync, readdirSync} from 'fs';
 import rimraf from 'rimraf';
 import babel from '@rollup/plugin-babel';
@@ -21,7 +21,7 @@ const getDirectories = (source) => {
   const isDirectory = (dir) => {
     return lstatSync(dir).isDirectory();
   };
-  return readdirSync(source).map((nme) => join(source, nme)).filter((i) => isDirectory(i));
+  return readdirSync(source).map((nme) => path.join(source, nme)).filter((i) => isDirectory(i));
 };
 
 // capture the list of files to build for extensions and ext-locales
@@ -116,7 +116,7 @@ const config = [{
 
 // config for dynamic extensions
 extensionDirs.forEach((extensionDir) => {
-  const extensionName = basename(extensionDir);
+  const extensionName = path.basename(extensionDir);
   extensionName && config.push(
     {
       input: `./src/editor/extensions/${extensionName}/${extensionName}.js`,
