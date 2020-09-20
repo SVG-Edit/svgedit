@@ -91,6 +91,7 @@ const config = [{
           dest: 'dist/editor/system'
         },
         {src: 'src/editor/images', dest},
+        {src: 'src/editor/shapelib', dest},
         {src: 'src/editor/jgraduate', dest},
         {src: 'src/editor/spinbtn', dest},
         {src: 'src/editor/embedapi.html', dest},
