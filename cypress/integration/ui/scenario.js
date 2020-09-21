@@ -67,4 +67,10 @@ describe('use various parts of svg-edit', function () {
       .click({force: true});
     testSnapshot();
   });
+  it('check change color', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('[data-rgb="#ffff00"]')
+      .click({force: true});
+    testSnapshot();
+  });
 });
