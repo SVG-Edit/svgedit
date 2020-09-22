@@ -1,14 +1,9 @@
-/* globals jQuery */
 /**
  * Adds context menu functionality.
  * @module contextmenu
  * @license Apache-2.0
  * @author Adam Bender
  */
-// Dependencies:
-// 1) jQuery (for dom injection of context menus)
-
-const $ = jQuery;
 
 let contextMenuExtensions = {};
 
@@ -84,12 +79,11 @@ const injectExtendedContextMenuItemIntoDom = function (menuItem) {
   if (!Object.keys(contextMenuExtensions).length) {
     // all menuItems appear at the bottom of the menu in their own container.
     // if this is the first extension menu we need to add the separator.
-    $('#cmenu_canvas').append("<li class='separator'>");
+    document.getElementById('cmenu_canvas').appendChild(`<li class='separator'>`);
   }
   const shortcut = menuItem.shortcut || '';
-  $('#cmenu_canvas').append("<li class='disabled'><a href='#" + menuItem.id + "'>" +
-    menuItem.label + "<span class='shortcut'>" +
-    shortcut + '</span></a></li>');
+  document.getElementById('cmenu_canvas').appendChild(`
+    <li class='disabled'><a href='#${menuItem.id}'>${menuItem.label}<span class='shortcut'>${shortcut}</span></a></li>`);
 };
 
 /**
