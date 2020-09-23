@@ -222,4 +222,4 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
 
 # Hosting
 SVGedit versions are deployed to:
-[![Deploys by Netlify](https://www.netlify.com)](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)
+[![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)](https://www.netlify.com)
