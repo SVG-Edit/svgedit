@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Browser detection.
  * @module browser
@@ -10,10 +9,9 @@
 // Dependencies:
 // 1) jQuery (for $.alert())
 
-import './svgpathseg.js';
-import {NS} from './namespaces.js';
+import 'pathseg';
 
-const $ = jQuery;
+import {NS} from './namespaces.js';
 
 const supportsSVG_ = (function () {
 return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
@@ -122,22 +120,6 @@ return (bbox.width === 15);
 const supportsEditableText_ = (function () {
 // TODO: Find better way to check support for this
 return isOpera_;
-}());
-
-const supportsGoodDecimals_ = (function () {
-// Correct decimals on clone attributes (Opera < 10.5/win/non-en)
-const rect = document.createElementNS(NS.SVG, 'rect');
-rect.setAttribute('x', 0.1);
-const crect = rect.cloneNode(false);
-const retValue = (!crect.getAttribute('x').includes(','));
-if (!retValue) {
-  // Todo: i18nize or remove
-  $.alert(
-    'NOTE: This version of Opera is known to contain bugs in SVG-edit.\n' +
-    'Please upgrade to the <a href="http://opera.com">latest version</a> in which the problems have been fixed.'
-  );
-}
-return retValue;
 }());
 
 const supportsNonScalingStroke_ = (function () {
@@ -256,12 +238,6 @@ export const supportsGoodTextCharPos = () => supportsGoodTextCharPos_;
  * @returns {boolean}
 */
 export const supportsEditableText = () => supportsEditableText_;
-
-/**
- * @function module:browser.supportsGoodDecimals
- * @returns {boolean}
-*/
-export const supportsGoodDecimals = () => supportsGoodDecimals_;
 
 /**
 * @function module:browser.supportsNonScalingStroke

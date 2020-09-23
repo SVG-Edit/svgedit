@@ -7,10 +7,16 @@ dist
 docs/jsdoc
 archive
 
-src/svgedit-config-es.js
-src/svgedit-config-iife.js
+jsconfig.json
+mochawesome-report
+releases
+!.eslintrc.js
+!.ncurc.js
+
+es-dev-server.config.js
+nyc.config.js
+
 svgedit-custom.css
-src/xdomain-svgedit-config-iife.js
 
 # Vendor/minified files
 src/editor/jquery.min.js
@@ -22,17 +28,5 @@ src/editor/js-hotkeys
 src/editor/jspdf/jspdf.min.js
 src/editor/jspdf/underscore-min.js
 
-src/editor/extensions/mathjax
+src/editor/extensions/ext-mathjax/mathjax
 
-# Todo: We should at least check `compat/compat` in our other files, however
-## Two "external" items are modified locally, so we undo their ignoring
-src/external/**/*
-!src/external/dom-polyfill
-src/external/dom-polyfill/*
-!src/external/dom-polyfill/dom-polyfill.js
-!src/external/dynamic-import-polyfill
-
-mochawesome-report
-releases
-!.eslintrc.js
-!.ncurc.js

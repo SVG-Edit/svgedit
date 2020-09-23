@@ -5,7 +5,6 @@ screencasts
 gh-disabled-workflows
 build
 lgtm.yml
-.travis.yml
 
 cypress/**
 cypress.env.json

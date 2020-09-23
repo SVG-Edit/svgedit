@@ -122,14 +122,15 @@ module.exports = {
     'consistent-this': 'off',
     'import/no-anonymous-default-export': 'off',
     'node/no-unsupported-features/node-builtins': 'warn',
-    'prefer-exponentiation-operator': 'warn'
+    'prefer-exponentiation-operator': 'warn',
+    'node/no-unsupported-features/es-syntax': 'off'
   },
   overrides: [
     // Locales have no need for importing outside of SVG-Edit
     // and translations may need a longer line length
     {
       files: [
-        'src/editor/locale/lang.*.js', 'src/editor/extensions/ext-locale/**',
+        'src/editor/locale/lang.*.js', 'src/editor/extensions/*/locale/**',
         'docs/tutorials/ExtensionDocs.md'
       ],
       rules: {
@@ -140,12 +141,10 @@ module.exports = {
     // These browser files don't do importing or requiring
     {
       files: [
-        'src/editor/svgpathseg.js',
         'src/editor/touch.js',
         'src/editor/typedefs.js',
         'src/editor/redirect-on-no-module-support.js',
-        'src/editor/extensions/imagelib/index.js',
-        'src/external/dom-polyfill/dom-polyfill.js',
+        'src/editor/extensions/ext-imagelib/index.js',
         'screencasts/svgopen2010/script.js'
       ],
       rules: {

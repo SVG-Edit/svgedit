@@ -42,3 +42,10 @@ import '@cypress/code-coverage/support.js';
  * @see https://www.npmjs.com/package/cypress-axe
  */
 import 'cypress-axe';
+
+/*****
+ * SNAPSHOTS
+ * @see https://www.npmjs.com/package/cypress-plugin-snapshots
+ */
+
+import 'cypress-plugin-snapshots/commands.js';

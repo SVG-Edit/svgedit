@@ -18,3 +18,4 @@ mochawesome.json
 
 .vscode
 .eslintcache
+.DS_Store

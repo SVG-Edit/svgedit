@@ -1,7 +1,7 @@
 ## Command line
 
 ```
-npm run eslint
+npm run lint
 ```
 
 This will query both JavaScript files and will query JavaScript within
