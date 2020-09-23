@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Localizing script for SVG-edit UI.
  * @module locale
@@ -24,8 +23,6 @@
  * @typedef {PlainObject<string, string>} module:locale.LocaleSelectorValue
  */
 
-const $ = jQuery;
-
 let langParam;
 
 /**
@@ -50,7 +47,7 @@ let langParam;
 */
 export const setStrings = function (type, obj, ids) {
   // Root element to look for element from
-  const parent = $('#svg_editor').parent();
+  const parent = document.getElementById('svg_editor').parentNode;
   Object.entries(obj).forEach(([sel, val]) => {
     if (!val) {
       console.log(sel); // eslint-disable-line no-console
@@ -58,16 +55,16 @@ export const setStrings = function (type, obj, ids) {
     }
 
     if (ids) { sel = '#' + sel; }
-    const $elem = parent.find(sel);
-    if ($elem.length) {
-      const elem = $elem[0];
+    const elems = parent.querySelectorAll(sel);
+    if (elems.length) {
+      const elem = elems[0];
 
       switch (type) {
       case 'aria-label':
         elem.setAttribute('aria-label', val);
         break;
       case 'content':
-        [...elem.childNodes].some((node) => {
+        [...elems].some((node) => {
           if (node.nodeType === 3 /* Node.TEXT_NODE */ &&
             node.textContent.trim()
           ) {
