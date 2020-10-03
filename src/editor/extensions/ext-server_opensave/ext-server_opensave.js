@@ -27,7 +27,6 @@ export default {
     const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
     const {
       curConfig: {
-        extPath,
         avoidClientSide, // Deprecated
         avoidClientSideDownload, avoidClientSideOpen
       },
@@ -76,8 +75,8 @@ export default {
       return false;
     }
     const
-      saveSvgAction = extPath + 'filesave.php',
-      saveImgAction = extPath + 'filesave.php';
+      saveSvgAction = './filesave.php',
+      saveImgAction = './filesave.php';
       // Create upload target (hidden iframe)
 
     let cancelled = false;
@@ -174,9 +173,9 @@ export default {
     if (window.FileReader && !avoidClientSideOpen) { return; }
 
     // Change these to appropriate script file
-    const openSvgAction = extPath + 'fileopen.php?type=load_svg';
-    const importSvgAction = extPath + 'fileopen.php?type=import_svg';
-    const importImgAction = extPath + 'fileopen.php?type=import_img';
+    const openSvgAction = './fileopen.php?type=load_svg';
+    const importSvgAction = './fileopen.php?type=import_svg';
+    const importImgAction = './fileopen.php?type=import_img';
 
     // Set up function for PHP uploader to use
     svgEditor.processFile = function (str64, type) {

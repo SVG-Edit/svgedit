@@ -157,7 +157,6 @@ const callbacks = [],
   * @property {string} [canvasName="default"] Used to namespace storage provided via `ext-storage.js`; you can use this if you wish to have multiple independent instances of SVG Edit on the same domain
   * @property {boolean} [no_save_warning=false] If `true`, prevents the warning dialog box from appearing when closing/reloading the page. Mostly useful for testing.
   * @property {string} [imgPath="images/"] The path where the SVG icons are located, with trailing slash. Note that as of version 2.7, this is not configurable by URL for security reasons.
-  * @property {string} [extPath="extensions/"] The path used for extension files, with trailing slash. Note that as of version 2.7, this is not configurable by URL for security reasons.
   * @property {boolean} [preventAllURLConfig=false] Set to `true` to override the ability for URLs to set non-content configuration (including extension config). Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
   * @property {boolean} [preventURLContentLoading=false] Set to `true` to override the ability for URLs to set URL-based SVG content. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
   * @property {boolean} [lockExtensions=false] Set to `true` to override the ability for URLs to set their own extensions; disallowed in URL setting. There is no need for this when `preventAllURLConfig` is used. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
@@ -231,7 +230,6 @@ const callbacks = [],
     no_save_warning: false,
     // PATH CONFIGURATION
     // The following path configuration items are disallowed in the URL (as should any future path configurations)
-    extPath: './extensions/',
     imgPath: './images/',
     // DOCUMENT PROPERTIES
     // Change the following to a preference (already in the Document Properties dialog)?
@@ -693,7 +691,7 @@ editor.init = function () {
       // security reasons, even for same-domain
       // ones given potential to interact in undesirable
       // ways with other script resources
-      ['extPath', 'imgPath']
+      ['userExtensions', 'imgPath']
         .forEach(function (pathConfig) {
           if (urldata[pathConfig]) {
             delete urldata[pathConfig];
@@ -771,6 +769,7 @@ editor.init = function () {
     setIcons(); // Wait for dbox as needed for i18n
 
     try {
+      // load standard extensions
       await Promise.all(
         curConfig.extensions.map(async (extname) => {
           /**
@@ -783,13 +782,35 @@ editor.init = function () {
             /**
              * @type {module:SVGEditor.ExtensionObject}
              */
-            const url = `${curConfig.extPath}${extname}/${extname}.js`;
-            const imported = await import(url);
+            const imported = await import(`./extensions/${extname}/${extname}.js`);
             const {name = extname, init} = imported.default;
             return editor.addExtension(name, (init && init.bind(editor)), {$, langParam});
           } catch (err) {
             // Todo: Add config to alert any errors
             console.error('Extension failed to load: ' + extname + '; ', err); // eslint-disable-line no-console
+            return undefined;
+          }
+        })
+      );
+      // load user extensions (given as pathNames)
+      await Promise.all(
+        curConfig.userExtensions.map(async (extPathName) => {
+          /**
+           * @tutorial ExtensionDocs
+           * @typedef {PlainObject} module:SVGEditor.ExtensionObject
+           * @property {string} [name] Name of the extension. Used internally; no need for i18n. Defaults to extension name without beginning "ext-" or ending ".js".
+           * @property {module:svgcanvas.ExtensionInitCallback} [init]
+           */
+          try {
+            /**
+             * @type {module:SVGEditor.ExtensionObject}
+             */
+            const imported = await import(extPathName);
+            const {name, init} = imported.default;
+            return editor.addExtension(name, (init && init.bind(editor)), {$, langParam});
+          } catch (err) {
+            // Todo: Add config to alert any errors
+            console.error('Extension failed to load: ' + extPathName + '; ', err); // eslint-disable-line no-console
             return undefined;
           }
         })

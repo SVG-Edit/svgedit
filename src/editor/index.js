@@ -35,7 +35,8 @@ svgEditor.setConfig(
 // EXTENSION CONFIG
 svgEditor.setConfig({
   extensions: [],
-  noDefaultExtensions: false
+  noDefaultExtensions: false,
+  userExtensions: []
 });
 
 // OTHER CONFIG
@@ -60,7 +61,6 @@ svgEditor.setConfig({
   // no_save_warning: false,
   // PATH CONFIGURATION
   // imgPath: 'images/',
-  // extPath: 'extensions/',
   /*
   Uncomment the following to allow at least same domain (embedded) access,
   including `file:///` access.

@@ -6,7 +6,6 @@ export default {
   init ({$}) {
     const svgEditor = this;
     const {
-      curConfig: {extPath},
       canvas: svgCanvas
     } = svgEditor;
     /**
@@ -17,7 +16,7 @@ export default {
       const title = svgCanvas.getDocumentTitle();
       return title.trim();
     }
-    const saveSvgAction = extPath + 'savefile.php';
+    const saveSvgAction = './savefile.php';
     svgEditor.setCustomHandlers({
       save (win, data) {
         const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
