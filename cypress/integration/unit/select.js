@@ -81,10 +81,10 @@ describe('select', function () {
     assert.ok(select.init);
     assert.ok(select.getSelectorManager);
     assert.equal(typeof select, typeof {});
-    assert.equal(typeof select.Selector, typeof function () { /* */ });
-    assert.equal(typeof select.SelectorManager, typeof function () { /* */ });
-    assert.equal(typeof select.init, typeof function () { /* */ });
-    assert.equal(typeof select.getSelectorManager, typeof function () { /* */ });
+    assert.equal(typeof select.Selector, typeof function () { /* empty fn */ });
+    assert.equal(typeof select.SelectorManager, typeof function () { /* empty fn */ });
+    assert.equal(typeof select.init, typeof function () { /* empty fn */ });
+    assert.equal(typeof select.getSelectorManager, typeof function () { /* empty fn */ });
   });
 
   it('Test Selector DOM structure', function () {

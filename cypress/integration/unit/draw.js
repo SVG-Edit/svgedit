@@ -44,7 +44,7 @@ describe('draw.Drawing', function () {
   const getCurrentDrawing = function () {
     return currentDrawing_;
   };
-  const setCurrentGroup = (cg) => { /* */ };
+  const setCurrentGroup = (cg) => { /* empty fn */ };
   draw.init(
     /**
     * @implements {module:draw.DrawCanvasInit}
@@ -149,7 +149,7 @@ describe('draw.Drawing', function () {
     assert.equal(typeof draw, typeof {});
 
     assert.ok(draw.Drawing);
-    assert.equal(typeof draw.Drawing, typeof function () { /* */ });
+    assert.equal(typeof draw.Drawing, typeof function () { /* empty fn */ });
   });
 
   it('Test document creation', function () {
@@ -288,7 +288,7 @@ describe('draw.Drawing', function () {
 
   it('Test getNumLayers', function () {
     const drawing = new draw.Drawing(svg);
-    assert.equal(typeof drawing.getNumLayers, typeof function () { /* */ });
+    assert.equal(typeof drawing.getNumLayers, typeof function () { /* empty fn */ });
     assert.equal(drawing.getNumLayers(), 0);
 
     setupSVGWith3Layers(svg);
@@ -304,7 +304,7 @@ describe('draw.Drawing', function () {
     const drawing = new draw.Drawing(svg);
     drawing.identifyLayers();
 
-    assert.equal(typeof drawing.hasLayer, typeof function () { /* */ });
+    assert.equal(typeof drawing.hasLayer, typeof function () { /* empty fn */ });
     assert.ok(!drawing.hasLayer('invalid-layer'));
 
     assert.ok(drawing.hasLayer(LAYER3));
@@ -412,7 +412,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.getCurrentLayer);
-    assert.equal(typeof drawing.getCurrentLayer, typeof function () { /* */ });
+    assert.equal(typeof drawing.getCurrentLayer, typeof function () { /* empty fn */ });
     assert.ok(drawing.getCurrentLayer());
     assert.equal(drawing.getCurrentLayer(), drawing.all_layers[2].getGroup());
 
@@ -425,7 +425,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.setCurrentLayer);
-    assert.equal(typeof drawing.setCurrentLayer, typeof function () { /* */ });
+    assert.equal(typeof drawing.setCurrentLayer, typeof function () { /* empty fn */ });
 
     drawing.setCurrentLayer(LAYER2);
     assert.equal(drawing.getCurrentLayerName(), LAYER2);
@@ -451,7 +451,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.setCurrentLayerName);
-    assert.equal(typeof drawing.setCurrentLayerName, typeof function () { /* */ });
+    assert.equal(typeof drawing.setCurrentLayerName, typeof function () { /* empty fn */ });
 
     const oldName = drawing.getCurrentLayerName();
     const newName = 'New Name';
@@ -473,9 +473,9 @@ describe('draw.Drawing', function () {
 
   it('Test createLayer()', function () {
     const mockHrService = {
-      startBatchCommand () { /**/ },
-      endBatchCommand () { /**/ },
-      insertElement () { /**/ }
+      startBatchCommand () { /* empty fn */ },
+      endBatchCommand () { /* empty fn */ },
+      insertElement () { /* empty fn */ }
     };
     addOwnSpies(mockHrService);
 
@@ -484,7 +484,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.createLayer);
-    assert.equal(typeof drawing.createLayer, typeof function () { /* */ });
+    assert.equal(typeof drawing.createLayer, typeof function () { /* empty fn */ });
 
     const NEW_LAYER_NAME = 'Layer A';
     const layerG = drawing.createLayer(NEW_LAYER_NAME, mockHrService);
@@ -503,10 +503,10 @@ describe('draw.Drawing', function () {
 
   it('Test mergeLayer()', function () {
     const mockHrService = {
-      startBatchCommand () { /**/ },
-      endBatchCommand () { /**/ },
-      moveElement () { /**/ },
-      removeElement () { /**/ }
+      startBatchCommand () { /* empty fn */ },
+      endBatchCommand () { /* empty fn */ },
+      moveElement () { /* empty fn */ },
+      removeElement () { /* empty fn */ }
     };
     addOwnSpies(mockHrService);
 
@@ -519,7 +519,7 @@ describe('draw.Drawing', function () {
     assert.equal(drawing.getCurrentLayer(), layers[2]);
 
     assert.ok(drawing.mergeLayer);
-    assert.equal(typeof drawing.mergeLayer, typeof function () { /* */ });
+    assert.equal(typeof drawing.mergeLayer, typeof function () { /* empty fn */ });
 
     drawing.mergeLayer(mockHrService);
 
@@ -540,10 +540,10 @@ describe('draw.Drawing', function () {
 
   it('Test mergeLayer() when no previous layer to merge', function () {
     const mockHrService = {
-      startBatchCommand () { /**/ },
-      endBatchCommand () { /**/ },
-      moveElement () { /**/ },
-      removeElement () { /**/ }
+      startBatchCommand () { /* empty fn */ },
+      endBatchCommand () { /* empty fn */ },
+      moveElement () { /* empty fn */ },
+      removeElement () { /* empty fn */ }
     };
     addOwnSpies(mockHrService);
 
@@ -573,10 +573,10 @@ describe('draw.Drawing', function () {
 
   it('Test mergeAllLayers()', function () {
     const mockHrService = {
-      startBatchCommand () { /**/ },
-      endBatchCommand () { /**/ },
-      moveElement () { /**/ },
-      removeElement () { /**/ }
+      startBatchCommand () { /* empty fn */ },
+      endBatchCommand () { /* empty fn */ },
+      moveElement () { /* empty fn */ },
+      removeElement () { /* empty fn */ }
     };
     addOwnSpies(mockHrService);
 
@@ -591,7 +591,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.mergeAllLayers);
-    assert.equal(typeof drawing.mergeAllLayers, typeof function () { /* */ });
+    assert.equal(typeof drawing.mergeAllLayers, typeof function () { /* empty fn */ });
 
     drawing.mergeAllLayers(mockHrService);
 
@@ -616,9 +616,9 @@ describe('draw.Drawing', function () {
 
   it('Test cloneLayer()', function () {
     const mockHrService = {
-      startBatchCommand () { /**/ },
-      endBatchCommand () { /**/ },
-      insertElement () { /**/ }
+      startBatchCommand () { /* empty fn */ },
+      endBatchCommand () { /* empty fn */ },
+      insertElement () { /* empty fn */ }
     };
     addOwnSpies(mockHrService);
 
@@ -630,7 +630,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.cloneLayer);
-    assert.equal(typeof drawing.cloneLayer, typeof function () { /* */ });
+    assert.equal(typeof drawing.cloneLayer, typeof function () { /* empty fn */ });
 
     const clone = drawing.cloneLayer('clone', mockHrService);
 
@@ -670,7 +670,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.getLayerVisibility);
-    assert.equal(typeof drawing.getLayerVisibility, typeof function () { /* */ });
+    assert.equal(typeof drawing.getLayerVisibility, typeof function () { /* empty fn */ });
     assert.ok(drawing.getLayerVisibility(LAYER1));
     assert.ok(drawing.getLayerVisibility(LAYER2));
     assert.ok(drawing.getLayerVisibility(LAYER3));
@@ -684,7 +684,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.setLayerVisibility);
-    assert.equal(typeof drawing.setLayerVisibility, typeof function () { /* */ });
+    assert.equal(typeof drawing.setLayerVisibility, typeof function () { /* empty fn */ });
 
     drawing.setLayerVisibility(LAYER3, false);
     drawing.setLayerVisibility(LAYER2, true);
@@ -706,7 +706,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.getLayerOpacity);
-    assert.equal(typeof drawing.getLayerOpacity, typeof function () { /* */ });
+    assert.equal(typeof drawing.getLayerOpacity, typeof function () { /* empty fn */ });
     assert.strictEqual(drawing.getLayerOpacity(LAYER1), 1.0);
     assert.strictEqual(drawing.getLayerOpacity(LAYER2), 1.0);
     assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
@@ -720,7 +720,7 @@ describe('draw.Drawing', function () {
     drawing.identifyLayers();
 
     assert.ok(drawing.setLayerOpacity);
-    assert.equal(typeof drawing.setLayerOpacity, typeof function () { /* */ });
+    assert.equal(typeof drawing.setLayerOpacity, typeof function () { /* empty fn */ });
 
     drawing.setLayerOpacity(LAYER1, 0.4);
     drawing.setLayerOpacity(LAYER2, 'invalid-string');
