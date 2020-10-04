@@ -36,7 +36,10 @@ svgEditor.setConfig(
 svgEditor.setConfig({
   extensions: [],
   noDefaultExtensions: false,
-  userExtensions: []
+  // in addition to standard extensions, it is possible to add user extensions.
+  // they behave exactly like all extensions but they can be anywhere
+  // so the full relative path needs to specified for each user extensions.
+  userExtensions: [/* '../ext-helloworld/ext-helloworld.js' */]
 });
 
 // OTHER CONFIG

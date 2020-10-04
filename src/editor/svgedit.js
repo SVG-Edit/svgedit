@@ -277,6 +277,7 @@ let svgCanvas, urldata = {},
     // We do not put on defaultConfig to simplify object copying
     //   procedures (we obtain instead from defaultExtensions)
     extensions: [],
+    userExtensions: [],
     /**
     * Can use `location.origin` to indicate the current
     * origin. Can contain a '*' to allow all domains or 'null' (as
@@ -469,7 +470,7 @@ editor.setConfig = function (opts, cfgCfg) {
       } else {
         editor.pref(key, val);
       }
-    } else if (['extensions', 'allowedOrigins'].includes(key)) {
+    } else if (['extensions', 'userExtensions', 'allowedOrigins'].includes(key)) {
       if (cfgCfg.overwrite === false &&
         (
           curConfig.preventAllURLConfig ||
@@ -4387,7 +4388,7 @@ editor.init = function () {
   * @returns {void}
   */
   const clickImport = function () {
-    /* */
+    /* empty fn */
   };
 
   /**
