@@ -783,7 +783,7 @@ editor.init = function () {
             /**
              * @type {module:SVGEditor.ExtensionObject}
              */
-            const imported = await import(`./extensions/${extname}/${extname}.js`);
+            const imported = await import(`./extensions/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`);
             const {name = extname, init} = imported.default;
             return editor.addExtension(name, (init && init.bind(editor)), {$, langParam});
           } catch (err) {
@@ -806,7 +806,7 @@ editor.init = function () {
             /**
              * @type {module:SVGEditor.ExtensionObject}
              */
-            const imported = await import(extPathName);
+            const imported = await import(encodeURI(extPathName));
             const {name, init} = imported.default;
             return editor.addExtension(name, (init && init.bind(editor)), {$, langParam});
           } catch (err) {

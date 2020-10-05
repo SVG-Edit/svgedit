@@ -357,6 +357,6 @@ export const putLocale = async function (givenParam, goodLangs) {
   if (!goodLangs.includes(langParam) && langParam !== 'test') {
     langParam = 'en';
   }
-  const module = await import(`./locale/lang.${langParam}.js`);
+  const module = await import(`./locale/lang.${encodeURIComponent(langParam)}.js`);
   return readLang(module.default);
 };
