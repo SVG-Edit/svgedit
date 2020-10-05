@@ -24,7 +24,7 @@ let cbid = 0;
 function getCallbackSetter (funcName) {
   return function (...args) {
     const that = this, // New callback
-      callbackID = this.send(funcName, args, function () { /* */ }); // The callback (currently it's nothing, but will be set later)
+      callbackID = this.send(funcName, args, function () { /* empty */ }); // The callback (currently it's nothing, but will be set later)
 
     return function (newCallback) {
       that.callbacks[callbackID] = newCallback; // Set callback
