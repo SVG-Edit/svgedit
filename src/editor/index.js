@@ -35,7 +35,11 @@ svgEditor.setConfig(
 // EXTENSION CONFIG
 svgEditor.setConfig({
   extensions: [],
-  noDefaultExtensions: false
+  noDefaultExtensions: false,
+  // in addition to standard extensions, it is possible to add user extensions.
+  // they behave exactly like all extensions but they can be anywhere
+  // so the full relative path needs to specified for each user extensions.
+  userExtensions: [/* '../ext-helloworld/ext-helloworld.js' */]
 });
 
 // OTHER CONFIG
@@ -60,7 +64,6 @@ svgEditor.setConfig({
   // no_save_warning: false,
   // PATH CONFIGURATION
   // imgPath: 'images/',
-  // extPath: 'extensions/',
   /*
   Uncomment the following to allow at least same domain (embedded) access,
   including `file:///` access.

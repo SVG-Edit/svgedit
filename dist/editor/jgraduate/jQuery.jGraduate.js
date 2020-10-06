@@ -37,8 +37,8 @@ const ns = {
 
 if (!window.console) {
   window.console = {
-    log (str) { /* */ },
-    dir (str) { /* */ }
+    log (str) { /* empty fn */ },
+    dir (str) { /* empty fn */ }
   };
 }
 

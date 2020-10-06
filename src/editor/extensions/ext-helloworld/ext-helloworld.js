@@ -16,7 +16,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
-    translationModule = await import(`./locale/${lang}.js`);
+    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
     console.error(`Missing translation (${lang}) - using 'en'`);

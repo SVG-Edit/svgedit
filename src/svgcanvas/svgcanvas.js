@@ -82,13 +82,13 @@ const {
 
 if (!window.console) {
   window.console = {};
-  window.console.log = function (str) { /* */ };
-  window.console.dir = function (str) { /* */ };
+  window.console.log = function (str) { /* empty fn */ };
+  window.console.dir = function (str) { /* empty fn */ };
 }
 
 if (window.opera) {
   window.console.log = function (str) { window.opera.postError(str); };
-  window.console.dir = function (str) { /* */ };
+  window.console.dir = function (str) { /* empty fn */ };
 }
 
 // Reenable after fixing eslint-plugin-jsdoc to handle
@@ -3890,7 +3890,7 @@ function hideCursor () {
 * @returns {void}
 */
     this.open = function () {
-      /* */
+      /* empty fn */
     };
 
     /**

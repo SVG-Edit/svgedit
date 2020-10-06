@@ -123,7 +123,15 @@ module.exports = {
     'import/no-anonymous-default-export': 'off',
     'node/no-unsupported-features/node-builtins': 'warn',
     'prefer-exponentiation-operator': 'warn',
-    'node/no-unsupported-features/es-syntax': 'off'
+    'node/no-unsupported-features/es-syntax': 'off',
+    'no-unsanitized/method': [
+      'error',
+      {
+        escape: {
+          methods: ['encodeURIComponent', 'encodeURI']
+        }
+      }
+    ]
   },
   overrides: [
     // Locales have no need for importing outside of SVG-Edit

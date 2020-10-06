@@ -54,7 +54,7 @@ describe('recalculate', function () {
       {
         getSVGRoot () { return svg; },
         getStartTransform () { return ''; },
-        setStartTransform () { /* */ }
+        setStartTransform () { /* empty fn */ }
       }
     );
   }
