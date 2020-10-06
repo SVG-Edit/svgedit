@@ -1,7 +1,7 @@
 # Introduction
 
-SVG-Edit has support for extensions (as of v2.5). This is a guide for
-creating SVG-Edit extensions.
+SVG-Edit has support for extensions. This is a guide for creating
+SVG-Edit extensions.
 
 ## Means to have extensions loaded
 
@@ -9,11 +9,13 @@ SVG-Edit extensions are standalone JavaScript files that can be either
 included in the HTML file, loaded using `setConfig`, or indicated through
 the URL (see [ConfigOptions]{@tutorial ConfigOptions} for usage).
 
-Note that, as of v3.0, if you create a `svgedit-config-iife.js` file in
-the project root directory (`config.js` in the `editor` directory for
-v2.8), this will be used to execute commands before extensions are loaded,
+`svgedit-config-iife.js` in the `src` directory (if
+through Git clone, by running `npm run build-by-config`) is the file used
+by `svg-editor.html` to execute commands before extensions are loaded,
 e.g., if you wish to make configuration changes which affect extension
-loading behavior. Normally, however, it should be preferable for modularity
+loading behavior.
+
+Normally, however, it should be preferable for modularity
 to use the extension mechanism, as this can allow you or users to customize
 which extensions are loaded (whereas `svgedit-config-iife.js` will always
 run if present).

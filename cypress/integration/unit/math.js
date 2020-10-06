@@ -1,7 +1,7 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/namespaces.js';
-import * as math from '../../../instrumented/math.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as math from '../../../instrumented/common/math.js';
 
 describe('math', function () {
   const svg = document.createElementNS(NS.SVG, 'svg');
@@ -11,9 +11,9 @@ describe('math', function () {
     assert.ok(math.transformPoint);
     assert.ok(math.isIdentity);
     assert.ok(math.matrixMultiply);
-    assert.equal(typeof math.transformPoint, typeof function () { /* */ });
-    assert.equal(typeof math.isIdentity, typeof function () { /* */ });
-    assert.equal(typeof math.matrixMultiply, typeof function () { /* */ });
+    assert.equal(typeof math.transformPoint, typeof function () { /* empty fn */ });
+    assert.equal(typeof math.isIdentity, typeof function () { /* empty fn */ });
+    assert.equal(typeof math.matrixMultiply, typeof function () { /* empty fn */ });
   });
 
   it('Test svgedit.math.transformPoint() function', function () {

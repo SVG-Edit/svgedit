@@ -11,11 +11,10 @@
     "deparam"
   ],
   "filesByLicense": {
-    "(MIT OR GPL-2.0)": ["editor/jquery-ui/jquery-ui-1.8.17.custom.min.js", "editor/jquerybbq/jquery.bbq.min.js", "editor/js-hotkeys/jquery.hotkeys.min.js"],
-    "(MIT OR GPL-2.0-or-later)": ["editor/contextmenu/jQuery.contextMenu.js", "editor/extensions/ext-server_moinsave.js"],
-    "Apache-2.0": ["editor/contextmenu.js", "editor/extensions/ext-foreignobject.js", "editor/extensions/ext-grid.js", "editor/extensions/ext-markers.js", "screencasts/svgopen2010/index.html", "editor/jgraduate/jQuery.jGraduate.js", "editor/extensions/mathjax/MathJax.min.js", "editor/extensions/mathjax/TeX-AMS-MML_SVG.js"],
-    "ISC": ["editor/external/query-result/esm/index.js"],
-    "LGPL-3.0-or-later": ["editor/jspdf/jspdf.plugin.svgToPdf.js"],
-    "X11": ["editor/jspdf/jspdf.min.js"]
+    "(MIT OR GPL-2.0)": ["src/editor/jquery-ui/jquery-ui-1.8.17.custom.min.js", "src/editor/jquerybbq/jquery.bbq.min.js", "src/editor/js-hotkeys/jquery.hotkeys.min.js"],
+    "(MIT OR GPL-2.0-or-later)": ["src/editor/contextmenu/jQuery.contextMenu.js", "src/editor/extensions/ext-server_moinsave.js"],
+    "Apache-2.0": ["src/editor/contextmenu.js", "src/editor/extensions/ext-foreignobject.js", "src/editor/extensions/ext-grid.js", "src/editor/extensions/ext-markers.js", "screencasts/svgopen2010/index.html", "src/editor/jgraduate/jQuery.jGraduate.js", "src/editor/extensions/mathjax/MathJax.min.js", "src/editor/extensions/mathjax/TeX-AMS-MML_SVG.js"],
+    "LGPL-3.0-or-later": ["src/editor/jspdf/jspdf.plugin.svgToPdf.js"],
+    "X11": ["src/editor/jspdf/jspdf.min.js"]
   }
 }

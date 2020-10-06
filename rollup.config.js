@@ -1,254 +1,157 @@
 /* eslint-env node */
+// This rollup script is run by the command:
+// 'npm run build'
 
-// NOTE:
-// See rollup-config.config.js instead for building the main (configurable)
-//   user entrance file
-import {join, basename} from 'path';
-import {lstatSync, readdirSync, copyFileSync, mkdirSync} from 'fs';
-
+import path from 'path';
+import {lstatSync, readdirSync} from 'fs';
+import rimraf from 'rimraf';
 import babel from '@rollup/plugin-babel';
+import copy from 'rollup-plugin-copy';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
+import url from '@rollup/plugin-url'; // for XML/SVG files
+import dynamicImportVars from '@rollup/plugin-dynamic-import-vars';
 import {terser} from 'rollup-plugin-terser';
-import replace from 'rollup-plugin-re';
+// import progress from 'rollup-plugin-progress';
+import filesize from 'rollup-plugin-filesize';
 
-const localeFiles = readdirSync('editor/locale');
-const extensionFiles = readdirSync('editor/extensions');
-
-const isDirectory = (source) => {
-  return lstatSync(source).isDirectory();
-};
+// utility function
 const getDirectories = (source) => {
-  return readdirSync(source).map((nme) => join(source, nme)).filter((i) => isDirectory(i));
+  const isDirectory = (dir) => {
+    return lstatSync(dir).isDirectory();
+  };
+  return readdirSync(source).map((nme) => path.join(source, nme)).filter((i) => isDirectory(i));
 };
-const extensionLocaleDirs = getDirectories('editor/extensions/ext-locale');
-const extensionLocaleFiles = [];
-extensionLocaleDirs.forEach((dir) => {
-  readdirSync(dir).forEach((file) => {
-    extensionLocaleFiles.push([dir, file]);
-  });
+
+// capture the list of files to build for extensions and ext-locales
+const extensionDirs = getDirectories('src/editor/extensions');
+
+const dest = ['dist/editor', 'dist/editor/system'];
+
+// remove existing distribution
+// eslint-disable-next-line no-console
+rimraf('./dist', () => console.info('recreating dist'));
+
+// config for svgedit core module
+const config = [{
+  input: ['src/editor/index.js'],
+  output: [
+    {
+      format: 'es',
+      inlineDynamicImports: true,
+      sourcemap: true,
+      file: 'dist/editor/index.js'
+    },
+    {
+      format: 'es',
+      inlineDynamicImports: true,
+      sourcemap: true,
+      file: 'dist/editor/xdomain-index.js',
+      intro: 'const XDOMAIN = true;'
+    },
+    {
+      format: 'system',
+      dir: 'dist/editor/system',
+      inlineDynamicImports: true
+    }
+  ],
+  plugins: [
+    // progress(),
+    copy({
+      targets: [
+        {
+          src: 'src/editor/index.html',
+          dest: 'dist/editor'
+        },
+        {
+          src: 'src/editor/index.html',
+          dest: 'dist/editor',
+          rename: 'xdomain-index.html',
+          transform: (contents) => contents.toString()
+            .replace('<script type="module" src="index.js">', '<script type="module" src="xdomain-index.js">')
+        },
+        {
+          src: 'src/editor/index.html',
+          dest: ['dist/editor/system'],
+          rename: 'index.html',
+          transform: (contents) => contents.toString()
+            .replace('<script type="module" src="index.js">',
+              `<script>
+              const systemJsLoaderTag = document.createElement('script');
+              systemJsLoaderTag.src = './s.min.js';
+              systemJsLoaderTag.addEventListener('load', function () {
+                System.import('./index.js');
+                });
+              document.head.appendChild(systemJsLoaderTag);
+              `)
+        },
+        {
+          src: ['node_modules/systemjs/dist/s.min.js', 'node_modules/systemjs/dist/s.min.js.map'],
+          dest: 'dist/editor/system'
+        },
+        {src: 'src/editor/images', dest},
+        {src: 'src/editor/shapelib', dest},
+        {src: 'src/editor/jgraduate', dest},
+        {src: 'src/editor/spinbtn', dest},
+        {src: 'src/editor/embedapi.html', dest},
+        {src: 'src/editor/embedapi.js', dest},
+        {src: 'src/editor/browser-not-supported.html', dest},
+        {src: 'src/editor/redirect-on-lacking-support.js', dest},
+        {src: 'src/editor/svgedit.css', dest}
+      ]
+    }),
+    nodeResolve({
+      browser: true,
+      preferBuiltins: true
+    }),
+    commonjs(),
+    dynamicImportVars({include: `src/editor/locale.js`}),
+    babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}), // exclude core-js to avoid circular dependencies.
+    nodePolyfills(),
+    terser({keep_fnames: true}), // keep_fnames is needed to avoid an error when calling extensions.
+    filesize()
+  ]
+}];
+
+// config for dynamic extensions
+extensionDirs.forEach((extensionDir) => {
+  const extensionName = path.basename(extensionDir);
+  extensionName && config.push(
+    {
+      input: `./src/editor/extensions/${extensionName}/${extensionName}.js`,
+      output: [
+        {
+          format: 'es',
+          dir: `dist/editor/extensions/${extensionName}`,
+          inlineDynamicImports: true,
+          sourcemap: true
+        },
+        {
+          format: 'system',
+          dir: `dist/editor/system/extensions/${extensionName}`,
+          inlineDynamicImports: true
+        }
+      ],
+      plugins: [
+        // progress(),
+        url({
+          include: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif', '**/*.xml'],
+          limit: 0,
+          fileName: '[name][extname]'
+        }),
+        nodeResolve({
+          browser: true,
+          preferBuiltins: true
+        }),
+        commonjs({exclude: `src/editor/extensions/${extensionName}/${extensionName}.js`}),
+        dynamicImportVars({include: `src/editor/extensions/${extensionName}/${extensionName}.js`}),
+        babel({babelHelpers: 'bundled', exclude: [/\/core-js\//]}),
+        nodePolyfills(),
+        terser({keep_fnames: true})
+      ]
+    }
+  );
 });
 
-/**
- * @external RollupConfig
- * @type {PlainObject}
- * @see {@link https://rollupjs.org/guide/en#big-list-of-options}
- */
-
-/**
- * @param {PlainObject} [config={}]
- * @param {boolean} [config.minifying]
- * @param {string} [config.format='umd']
- * @returns {external:RollupConfig}
- */
-function getRollupObject ({minifying, format = 'umd'} = {}) {
-  const nonMinified = {
-    input: 'editor/svg-editor.js',
-    output: {
-      format,
-      sourcemap: minifying,
-      file: `dist/index-${format}${minifying ? '.min' : ''}.js`,
-      name: 'svgEditor'
-    },
-    plugins: [
-      babel({
-        babelHelpers: 'bundled',
-        plugins: [
-          'transform-object-rest-spread',
-          '@babel/plugin-transform-named-capturing-groups-regex'
-        ]
-      })
-    ]
-  };
-  if (minifying) {
-    nonMinified.plugins.push(terser());
-  }
-  return nonMinified;
-}
-
-// For debugging
-// getRollupObject; // eslint-disable-line no-unused-expressions
-
-export default [
-  // The first four are for those not using our HTML (though
-  //    not currently recommended)
-  /**/
-  getRollupObject(),
-  getRollupObject({minifying: true}),
-  getRollupObject({minifying: true, format: 'es'}),
-  getRollupObject({minifying: false, format: 'es'}),
-  // **/
-  ...[true, false].map((min) => {
-    return {
-      input: 'editor/svgcanvas.js',
-      output: {
-        format: 'iife',
-        sourcemap: min,
-        name: 'SvgCanvas',
-        file: `dist/svgcanvas-iife${min ? '.min' : ''}.js`
-      },
-      plugins: [
-        babel({
-          babelHelpers: 'bundled',
-          plugins: ['transform-object-rest-spread']
-        }),
-        min ? terser() : null
-      ]
-    };
-  }),
-  ...extensionLocaleFiles.map(([dir, file]) => {
-    const lang = file.replace(/\.js$/, '').replace(/-/g, '_');
-    return {
-      input: join(dir, file),
-      output: {
-        format: 'iife',
-        name: `svgEditorExtensionLocale_${basename(dir)}_${lang}`,
-        file: `dist/extensions/ext-locale/${basename(dir)}/${file}`
-      },
-      plugins: [babel({
-        babelHelpers: 'bundled'
-      })]
-    };
-  }),
-  {
-    input: 'editor/redirect-on-lacking-support.js',
-    output: {
-      format: 'iife',
-      file: 'dist/redirect-on-lacking-support.js'
-    },
-    plugins: [babel({
-      babelHelpers: 'bundled'
-    })]
-  },
-  {
-    input: 'editor/jspdf/jspdf.plugin.svgToPdf.js',
-    output: {
-      format: 'iife',
-      file: 'dist/jspdf.plugin.svgToPdf.js'
-    },
-    plugins: [babel({
-      babelHelpers: 'bundled'
-    })]
-  },
-  {
-    input: 'editor/extensions/imagelib/index.js',
-    output: {
-      format: 'iife',
-      file: 'dist/extensions/imagelib/index.js'
-    },
-    plugins: [
-      babel({
-        babelHelpers: 'bundled',
-        plugins: ['transform-object-rest-spread']
-      })
-    ]
-  },
-  {
-    input: 'editor/extensions/imagelib/openclipart.js',
-    output: {
-      format: 'iife',
-      file: 'dist/extensions/imagelib/openclipart.js'
-    },
-    plugins: [
-      babel({
-        babelHelpers: 'bundled',
-        plugins: ['transform-object-rest-spread']
-      })
-    ]
-  },
-  {
-    input: 'editor/external/dom-polyfill/dom-polyfill.js',
-    output: {
-      format: 'iife',
-      file: 'dist/dom-polyfill.js'
-    },
-    plugins: [babel({
-      babelHelpers: 'bundled'
-    })]
-  },
-  {
-    input: 'editor/canvg/canvg.js',
-    output: {
-      format: 'iife',
-      name: 'canvg',
-      file: 'dist/canvg.js'
-    },
-    plugins: [babel({
-      babelHelpers: 'bundled'
-    })]
-  },
-  ...localeFiles.map((localeFile) => {
-    // lang.*.js
-    const localeRegex = /^lang\.([\w-]+?)\.js$/;
-    const lang = localeFile.match(localeRegex);
-    if (!lang) {
-      return undefined;
-    }
-    return {
-      input: 'editor/locale/' + localeFile,
-      output: {
-        format: 'iife',
-        name: 'svgEditorLang_' + lang[1].replace(/-/g, '_'),
-        file: 'dist/locale/' + localeFile
-      },
-      plugins: [
-        // Probably don't need here, but...
-        babel({
-          babelHelpers: 'bundled'
-        })
-      ]
-    };
-  }),
-  ...extensionFiles.map((extensionFile) => {
-    if (extensionFile.match(/\.php$/)) {
-      mkdirSync('dist/extensions', {recursive: true});
-      copyFileSync(
-        join('editor/extensions', extensionFile),
-        join('dist/extensions', extensionFile)
-      );
-      return undefined;
-    }
-    // ext-*.js
-    const extensionName = extensionFile.match(/^ext-(.+?)\.js$/);
-    if (!extensionName) {
-      return undefined;
-    }
-    return {
-      input: 'editor/extensions/' + extensionFile,
-      output: {
-        format: 'iife',
-        name: 'svgEditorExtension_' + extensionName[1].replace(/-/g, '_'),
-        file: 'dist/extensions/' + extensionFile
-      },
-      plugins: [
-        replace({
-          patterns: [
-            /*
-            // In place of replacing imports with globals, we supply
-            //  what we can to the extension callback in svgcanvas.js
-            // (`addExtension` -> `getPrivateMethods`)
-            {
-              match: /editor\/extensions/,
-              test: '// <CONDITIONAL-ADD>: ',
-              replace: ''
-            },
-            */
-            ...[
-              // For now, we'll replace with globals
-              // We'll still make at least one import: editor/ext-locale/storage/
-              `import '../svgpathseg.js';`
-            ].map((tst) => {
-              return {
-                match: /editor\/extensions/,
-                test: tst,
-                replace: ''
-              };
-            })
-          ]
-        }),
-        babel({
-          babelHelpers: 'bundled',
-          plugins: ['transform-object-rest-spread']
-        })
-      ]
-    };
-  })
-].filter((exp) => exp);
+export default config;

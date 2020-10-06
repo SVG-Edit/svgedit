@@ -1,30 +1,36 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/namespaces.js';
-import * as transformlist from '../../../instrumented/svgtransformlist.js';
-import * as utilities from '../../../instrumented/utilities.js';
-import * as hstory from '../../../instrumented/history.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
+import * as utilities from '../../../instrumented/common/utilities.js';
+import * as hstory from '../../../instrumented/svgcanvas/history.js';
 
 describe('history', function () {
   // TODO(codedread): Write tests for handling history events.
 
   // Mocked out methods.
-  transformlist.changeRemoveElementFromListMap((elem) => { /* */ });
+  transformlist.changeRemoveElementFromListMap((elem) => { /* empty fn */ });
 
   utilities.mock({
     getHref (elem) { return '#foo'; },
-    setHref (elem, val) { /* */ },
+    setHref (elem, val) { /* empty fn */ },
     getRotationAngle (elem) { return 0; }
   });
 
   // const svg = document.createElementNS(NS.SVG, 'svg');
   let undoMgr = null;
 
-  class MockCommand {
-    constructor (optText) { this.text_ = optText; }
-    apply () { /* */ } // eslint-disable-line class-methods-use-this
-    unapply () { /* */ } // eslint-disable-line class-methods-use-this
-    getText () { return this.text_; }
+  class MockCommand extends hstory.Command {
+    constructor (optText) {
+      super();
+      this.text = optText;
+    }
+    apply (handler) {
+      super.apply(handler, () => { /* empty fn */ });
+    }
+    unapply (handler) {
+      super.unapply(handler, () => { /* empty fn */ });
+    }
     elements () { return []; } // eslint-disable-line class-methods-use-this
   }
 
@@ -76,12 +82,12 @@ describe('history', function () {
     assert.ok(hstory.RemoveElementCommand);
     assert.ok(hstory.BatchCommand);
     assert.ok(hstory.UndoManager);
-    assert.equal(typeof hstory.MoveElementCommand, typeof function () { /* */ });
-    assert.equal(typeof hstory.InsertElementCommand, typeof function () { /* */ });
-    assert.equal(typeof hstory.ChangeElementCommand, typeof function () { /* */ });
-    assert.equal(typeof hstory.RemoveElementCommand, typeof function () { /* */ });
-    assert.equal(typeof hstory.BatchCommand, typeof function () { /* */ });
-    assert.equal(typeof hstory.UndoManager, typeof function () { /* */ });
+    assert.equal(typeof hstory.MoveElementCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof hstory.InsertElementCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof hstory.ChangeElementCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof hstory.RemoveElementCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof hstory.BatchCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof hstory.UndoManager, typeof function () { /* empty fn */ });
   });
 
   it('Test UndoManager methods', function () {
@@ -94,12 +100,12 @@ describe('history', function () {
     assert.ok(undoMgr.getNextRedoCommandText);
 
     assert.equal(typeof undoMgr, typeof {});
-    assert.equal(typeof undoMgr.addCommandToHistory, typeof function () { /* */ });
-    assert.equal(typeof undoMgr.getUndoStackSize, typeof function () { /* */ });
-    assert.equal(typeof undoMgr.getRedoStackSize, typeof function () { /* */ });
-    assert.equal(typeof undoMgr.resetUndoStack, typeof function () { /* */ });
-    assert.equal(typeof undoMgr.getNextUndoCommandText, typeof function () { /* */ });
-    assert.equal(typeof undoMgr.getNextRedoCommandText, typeof function () { /* */ });
+    assert.equal(typeof undoMgr.addCommandToHistory, typeof function () { /* empty fn */ });
+    assert.equal(typeof undoMgr.getUndoStackSize, typeof function () { /* empty fn */ });
+    assert.equal(typeof undoMgr.getRedoStackSize, typeof function () { /* empty fn */ });
+    assert.equal(typeof undoMgr.resetUndoStack, typeof function () { /* empty fn */ });
+    assert.equal(typeof undoMgr.getNextUndoCommandText, typeof function () { /* empty fn */ });
+    assert.equal(typeof undoMgr.getNextRedoCommandText, typeof function () { /* empty fn */ });
   });
 
   it('Test UndoManager.addCommandToHistory() function', function () {
@@ -278,8 +284,8 @@ describe('history', function () {
     let move = new hstory.MoveElementCommand(this.div3, this.div1, this.divparent);
     assert.ok(move.unapply);
     assert.ok(move.apply);
-    assert.equal(typeof move.unapply, typeof function () { /* */ });
-    assert.equal(typeof move.apply, typeof function () { /* */ });
+    assert.equal(typeof move.unapply, typeof function () { /* empty fn */ });
+    assert.equal(typeof move.apply, typeof function () { /* empty fn */ });
 
     move.unapply();
     assert.equal(this.divparent.firstElementChild, this.div3);
@@ -324,8 +330,8 @@ describe('history', function () {
     let insert = new hstory.InsertElementCommand(this.div3);
     assert.ok(insert.unapply);
     assert.ok(insert.apply);
-    assert.equal(typeof insert.unapply, typeof function () { /* */ });
-    assert.equal(typeof insert.apply, typeof function () { /* */ });
+    assert.equal(typeof insert.unapply, typeof function () { /* empty fn */ });
+    assert.equal(typeof insert.apply, typeof function () { /* empty fn */ });
 
     insert.unapply();
     assert.equal(this.divparent.childElementCount, 2);
@@ -361,8 +367,8 @@ describe('history', function () {
     let remove = new hstory.RemoveElementCommand(div6, null, this.divparent);
     assert.ok(remove.unapply);
     assert.ok(remove.apply);
-    assert.equal(typeof remove.unapply, typeof function () { /* */ });
-    assert.equal(typeof remove.apply, typeof function () { /* */ });
+    assert.equal(typeof remove.unapply, typeof function () { /* empty fn */ });
+    assert.equal(typeof remove.apply, typeof function () { /* empty fn */ });
 
     remove.unapply();
     assert.equal(this.divparent.childElementCount, 4);
@@ -399,8 +405,8 @@ describe('history', function () {
       {title: 'old title', class: 'foo'});
     assert.ok(change.unapply);
     assert.ok(change.apply);
-    assert.equal(typeof change.unapply, typeof function () { /* */ });
-    assert.equal(typeof change.apply, typeof function () { /* */ });
+    assert.equal(typeof change.unapply, typeof function () { /* empty fn */ });
+    assert.equal(typeof change.apply, typeof function () { /* empty fn */ });
 
     change.unapply();
     assert.equal(this.div1.getAttribute('title'), 'old title');
@@ -470,8 +476,8 @@ describe('history', function () {
 
     assert.ok(change.unapply);
     assert.ok(change.apply);
-    assert.equal(typeof change.unapply, typeof function () { /* */ });
-    assert.equal(typeof change.apply, typeof function () { /* */ });
+    assert.equal(typeof change.unapply, typeof function () { /* empty fn */ });
+    assert.equal(typeof change.apply, typeof function () { /* empty fn */ });
 
     change.unapply();
     assert.equal(line.getAttribute('class'), 'oldClass');
@@ -482,17 +488,17 @@ describe('history', function () {
 
   it('Test BatchCommand', function () {
     let concatResult = '';
-    MockCommand.prototype.apply = function () { concatResult += this.text_; };
+    MockCommand.prototype.apply = function (handler) { concatResult += this.text; };
 
     const batch = new hstory.BatchCommand();
     assert.ok(batch.unapply);
     assert.ok(batch.apply);
     assert.ok(batch.addSubCommand);
     assert.ok(batch.isEmpty);
-    assert.equal(typeof batch.unapply, typeof function () { /* */ });
-    assert.equal(typeof batch.apply, typeof function () { /* */ });
-    assert.equal(typeof batch.addSubCommand, typeof function () { /* */ });
-    assert.equal(typeof batch.isEmpty, typeof function () { /* */ });
+    assert.equal(typeof batch.unapply, 'function');
+    assert.equal(typeof batch.apply, 'function');
+    assert.equal(typeof batch.addSubCommand, 'function');
+    assert.equal(typeof batch.isEmpty, 'function');
 
     assert.ok(batch.isEmpty());
 
@@ -505,12 +511,13 @@ describe('history', function () {
     batch.apply();
     assert.equal(concatResult, 'abc');
 
-    MockCommand.prototype.apply = function () { /* */ };
-    MockCommand.prototype.unapply = function () { concatResult += this.text_; };
+    MockCommand.prototype.apply = function () { /* empty fn */ };
+    MockCommand.prototype.unapply = function () { concatResult += this.text; };
     concatResult = '';
+    assert.ok(!concatResult);
     batch.unapply();
     assert.equal(concatResult, 'cba');
 
-    MockCommand.prototype.unapply = function () { /* */ };
+    MockCommand.prototype.unapply = function () { /* empty fn */ };
   });
 });

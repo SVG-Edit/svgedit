@@ -1,8 +1,9 @@
-import '../../../instrumented/jquery.min.js';
+/* eslint-disable max-len */
+import '../../../instrumented/editor/jquery.min.js';
 
-import * as browser from '../../../instrumented/browser.js';
-import * as utilities from '../../../instrumented/utilities.js';
-import {NS} from '../../../instrumented/namespaces.js';
+import * as browser from '../../../instrumented/common/browser.js';
+import * as utilities from '../../../instrumented/common/utilities.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
 
 describe('utilities', function () {
   /**
@@ -27,7 +28,7 @@ describe('utilities', function () {
     svgroot.append(elem);
     return elem;
   }
-  const mockPathActions = {resetOrientation () { /* */ }};
+  const mockPathActions = {resetOrientation () { /* empty fn */ }};
   let mockHistorySubCommands = [];
   const mockHistory = {
     BatchCommand: class {
@@ -100,7 +101,7 @@ describe('utilities', function () {
   it('Test svgedit.utilities package', function () {
     assert.ok(utilities);
     assert.ok(utilities.toXml);
-    assert.equal(typeof utilities.toXml, typeof function () { /* */ });
+    assert.equal(typeof utilities.toXml, typeof function () { /* empty fn */ });
   });
 
   it('Test svgedit.utilities.toXml() function', function () {

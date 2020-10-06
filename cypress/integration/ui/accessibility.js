@@ -1,6 +1,6 @@
 describe('UI - Accessibility', function () {
   beforeEach(() => {
-    cy.visit('/instrumented/svg-editor-es.html');
+    cy.visit('/instrumented/editor/index.html');
     cy.injectAxe();
   });
 
@@ -25,6 +25,16 @@ describe('UI - Accessibility', function () {
       locale: Object
       */
     });
-    cy.checkA11y();
+    cy.checkA11y(
+      {},
+      {
+        rules: {
+          'label-title-only': {enabled: false},
+          'page-has-heading-one': {enabled: false},
+          region: {enabled: false},
+          'scrollable-region-focusable': {enabled: false}
+        }
+      }
+    );
   });
 });

@@ -2,8 +2,8 @@
 // the project's config changing)
 
 import codeCoverageTask from '@cypress/code-coverage/task.js';
+import {initPlugin} from 'cypress-plugin-snapshots/plugin.js';
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
@@ -13,5 +13,6 @@ export default (on, config) => {
 
   // https://docs.cypress.io/guides/tooling/code-coverage.html#Install-the-plugin
   codeCoverageTask(on, config);
+  initPlugin(on, config);
   return config;
 };

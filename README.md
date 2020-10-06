@@ -1,4 +1,4 @@
-# ![LOGO](editor/images/logo.png) SVG-edit
+# ![LOGO](src/editor/images/logo.png) SVG-edit
 
 [![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
@@ -44,23 +44,18 @@ to join the project.
 
 ## Demo
 
-### [Try SVG-edit here](https://svg-edit.github.io/svgedit/editor/svg-editor.html)
+### [Try SVG-edit here](https://svg-edit.github.io/svgedit/dist/editor/index.html)
 
 <!-- See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
 (or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor-es.html)
 version, which requires a modern browser).
 -->
-See a working editor on [`master`](https://svg-edit.github.io/svgedit/editor/svg-editor.html) (or its [ES6-Module](https://svg-edit.github.io/svgedit/editor/svg-editor-es.html)
+See a working editor on [`master`](https://svg-edit.github.io/svgedit/src/editor/index.html)
 version, which requires a modern browser).
 
-You may also try it at <https://unpkg.com/svgedit/editor/svg-editor.html>
-(which redirects to a versioned URL).
+We also build a systemJS version at [`master`](https://svg-edit.github.io/svgedit/dist/editor/system/index.html)
 
 You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svgedit/releases).
-
-You may test the [latest version in `master`](https://svg-edit.github.io/svgedit/editor/svg-editor-es.html)
-which is the ESM version. (The [non-ESM version](https://svg-edit.github.io/svgedit/editor/svg-editor.html)
-on `master` may be updated less frequently.)
 
 ## Installation
 
@@ -79,7 +74,7 @@ on `master` may be updated less frequently.)
   ([ConfigOptions]{@tutorial ConfigOptions})) within the URL:
 
 ```html
-<iframe src="svgedit/editor/svg-editor.html?extensions="
+<iframe src="svgedit/src/editor/svg-editor.html?extensions="
     width="100%" height="100%"></iframe>
 ```
 
@@ -107,7 +102,7 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
 1. Create your npm package: `npm init` (complete the fields).
 1. Install SVG-edit into your package:
   `npm i --save svgedit`.
-1. Look within `node_modules/svgedit/`, e.g., `node_modules/svgedit/editor/svg-editor.html`
+1. Look within `node_modules/svgedit/`, e.g., `node_modules/svgedit/src/editor/svg-editor.html`
   for the files your package needs and use accordingly (from outside of
   `node_modules`).
 1. If you want to publish your own work, you can use `npm publish`.
@@ -203,14 +198,15 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
 
 ## Supported browsers
 
-The following browsers had been tested for 2.6 or earlier and will
-probably continue to work with 3.0.
+    - Opera 59+,
+    - IE 12+,
+    - Chrome 75+,
+    - FireFox 68+,
+    - Safari 10+
 
-- Firefox 1.5+
-- Opera 9.50+
-- Safari 4+
-- Chrome 1+
-- IE 9+ and Edge
+    Support for old browsers may require to use an older version of the package. However,
+    please open an issue if you need support for a specific version of your browser so
+    the project team can decide if we should support with the latest version.
 
 ## Further reading and more information
 
@@ -223,3 +219,7 @@ probably continue to work with 3.0.
  * Join the [svg-edit mailing list](https://groups.google.com/forum/#!forum/svg-edit).
  * Join us on `#svg-edit` on `freenode.net` (or use the
     [web client](https://webchat.freenode.net/?channels=svg-edit)).
+
+# Hosting
+SVGedit versions are deployed to:
+[![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)](https://www.netlify.com)

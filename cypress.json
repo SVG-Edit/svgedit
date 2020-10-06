@@ -1,7 +1,17 @@
 {
   "baseUrl": "http://localhost:8000",
   "reporter": "cypress-multi-reporters",
+  "video": false,
   "reporterOptions": {
     "configFile": "mocha-multi-reporters.json"
+  },
+  "ignoreTestFiles": ["**/__snapshots__/*", "**/__image_snapshots__/*"],
+  "defaultCommandTimeout": 10000,
+  "pageLoadTimeout": 120000,
+  "cypress-plugin-snapshots": {
+      "autoCleanUp": true,
+      "prettier": true,
+      "updateSnapshots": false,
+      "diffLines": 5
   }
 }

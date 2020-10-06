@@ -5,32 +5,28 @@ coverage
 instrumented
 dist
 docs/jsdoc
+archive
 
-svgedit-config-es.js
-svgedit-config-iife.js
-svgedit-custom.css
-editor/xdomain-svgedit-config-iife.js
-
-# Vendor/minified files
-editor/jquery.min.js
-editor/jquery-ui
-
-# Previously minified though exporting
-editor/js-hotkeys
-
-editor/jspdf/jspdf.min.js
-editor/jspdf/underscore-min.js
-
-editor/extensions/mathjax
-
-# Todo: We should at least check `compat/compat` in our other files, however
-editor/external/*
-!editor/external/dom-polyfill
-editor/external/dom-polyfill/*
-!editor/external/dom-polyfill/dom-polyfill.js
-!editor/external/dynamic-import-polyfill
-
+jsconfig.json
 mochawesome-report
 releases
 !.eslintrc.js
 !.ncurc.js
+
+es-dev-server.config.js
+nyc.config.js
+
+svgedit-custom.css
+
+# Vendor/minified files
+src/editor/jquery.min.js
+src/editor/jquery-ui
+
+# Previously minified though exporting
+src/editor/js-hotkeys
+
+src/editor/jspdf/jspdf.min.js
+src/editor/jspdf/underscore-min.js
+
+src/editor/extensions/ext-mathjax/mathjax
+

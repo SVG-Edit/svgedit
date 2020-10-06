@@ -1,8 +1,8 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/namespaces.js';
-import * as transformlist from '../../../instrumented/svgtransformlist.js';
-import {disableSupportsNativeTransformLists} from '../../../instrumented/browser.js';
+import {NS} from '../../../instrumented/common/namespaces.js';
+import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
+import {disableSupportsNativeTransformLists} from '../../../instrumented/common/browser.js';
 
 import almostEqualsPlugin from '../../support/assert-almostEquals.js';
 import expectOutOfBoundsExceptionPlugin from '../../support/assert-expectOutOfBoundsException.js';
@@ -73,7 +73,7 @@ describe('svgtransformlist', function () {
     const t = svgcontent.createSVGTransform();
     assert.ok(t);
     assert.ok(rxform.initialize);
-    assert.equal(typeof rxform.initialize, typeof function () { /* */ });
+    assert.equal(typeof rxform.initialize, typeof function () { /* empty fn */ });
     rxform.initialize(t);
     assert.equal(rxform.numberOfItems, 1);
     assert.equal(cxform.numberOfItems, 0);
@@ -96,8 +96,8 @@ describe('svgtransformlist', function () {
 
     assert.ok(rxform.appendItem);
     assert.ok(rxform.getItem);
-    assert.equal(typeof rxform.appendItem, typeof function () { /* */ });
-    assert.equal(typeof rxform.getItem, typeof function () { /* */ });
+    assert.equal(typeof rxform.appendItem, typeof function () { /* empty fn */ });
+    assert.equal(typeof rxform.getItem, typeof function () { /* empty fn */ });
 
     rxform.appendItem(t1);
     rxform.appendItem(t2);
@@ -127,7 +127,7 @@ describe('svgtransformlist', function () {
     const t1 = svgcontent.createSVGTransform(),
       t2 = svgcontent.createSVGTransform();
     assert.ok(rxform.removeItem);
-    assert.equal(typeof rxform.removeItem, typeof function () { /* */ });
+    assert.equal(typeof rxform.removeItem, typeof function () { /* empty fn */ });
     rxform.appendItem(t1);
     rxform.appendItem(t2);
 
@@ -145,7 +145,7 @@ describe('svgtransformlist', function () {
     const cxform = transformlist.getTransformList(circle);
 
     assert.ok(rxform.replaceItem);
-    assert.equal(typeof rxform.replaceItem, typeof function () { /* */ });
+    assert.equal(typeof rxform.replaceItem, typeof function () { /* empty fn */ });
 
     const t1 = svgcontent.createSVGTransform(),
       t2 = svgcontent.createSVGTransform(),
@@ -177,7 +177,7 @@ describe('svgtransformlist', function () {
     const cxform = transformlist.getTransformList(circle);
 
     assert.ok(rxform.insertItemBefore);
-    assert.equal(typeof rxform.insertItemBefore, typeof function () { /* */ });
+    assert.equal(typeof rxform.insertItemBefore, typeof function () { /* empty fn */ });
 
     const t1 = svgcontent.createSVGTransform(),
       t2 = svgcontent.createSVGTransform(),

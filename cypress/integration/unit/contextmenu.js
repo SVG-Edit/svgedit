@@ -1,5 +1,5 @@
-import '../../../instrumented/jquery.min.js';
-import * as contextmenu from '../../../instrumented/contextmenu.js';
+import '../../../instrumented/editor/jquery.min.js';
+import * as contextmenu from '../../../instrumented/editor/contextmenu.js';
 
 describe('contextmenu', function () {
   /**
@@ -38,7 +38,7 @@ describe('contextmenu', function () {
   });
 
   it('Test svgedit.contextmenu adds valid menu item', function () {
-    const validItem = {id: 'valid', label: 'anicelabel', action () { /* */ }};
+    const validItem = {id: 'valid', label: 'anicelabel', action () { /* empty fn */ }};
     contextmenu.add(validItem);
 
     assert.ok(contextmenu.hasCustomHandler('valid'), 'Valid menu item is added.');
@@ -46,8 +46,8 @@ describe('contextmenu', function () {
   });
 
   it('Test svgedit.contextmenu rejects valid duplicate menu item id', function () {
-    const validItem1 = {id: 'valid', label: 'anicelabel', action () { /**/ }};
-    const validItem2 = {id: 'valid', label: 'anicelabel', action () { /**/ }};
+    const validItem1 = {id: 'valid', label: 'anicelabel', action () { /* empty fn */ }};
+    const validItem2 = {id: 'valid', label: 'anicelabel', action () { /* empty fn */ }};
     contextmenu.add(validItem1);
 
     assert.throws(

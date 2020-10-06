@@ -3,49 +3,156 @@
 module.exports = {
   extends: ['ash-nazg/sauron-node'],
   parserOptions: {
+    ecmaVersion: 2020,
     sourceType: 'module'
   },
   env: {
-    browser: true
+    browser: true,
+    es6: true
   },
   settings: {
     polyfills: [
-    ],
-    jsdoc: {
-      additionalTagNames: {
-        // In case we need to extend
-        customTags: []
-      },
-      augmentsExtendsReplacesDocs: true
-      // Todo: Figure out why this is not working and why seem to have to
-      //    disable for all Markdown:
-      /*
-      baseConfig: {
-        rules: {
-          'no-multi-spaces': 'off'
+      // These are the primary polyfills needed by regular users if
+      //  not present, e.g., with core-js-bundle; also those under
+      //  extensions
+      // 'Array.isArray',
+      // 'Blob',
+      // 'console',
+      // 'CustomEvent',
+      // 'document.body',
+      // 'document.createElementNS',
+      // 'document.evaluate',
+      // 'document.head',
+      // 'document.importNode',
+      // 'document.querySelector',
+      // 'document.querySelectorAll',
+      // 'DOMParser',
+      // 'Error',
+      'fetch',
+      // 'FileReader',
+      // 'JSON',
+      // 'KeyboardEvent',
+      // 'location.href',
+      // 'location.origin',
+      // 'MouseEvent',
+      // 'MutationObserver',
+      // 'navigator',
+      // 'Number.isNaN',
+      // 'Number.parseFloat',
+      // 'Number.parseInt',
+      // 'Object.assign',
+      // 'Object.defineProperty',
+      // 'Object.defineProperties',
+      // 'Object.entries',
+      // 'Object.getOwnPropertyDescriptor',
+      // 'Object.keys',
+      // 'Object.values',
+      'Promise',
+      'Promise.all',
+      // 'Set',
+      'Uint8Array',
+      'URL'
+      // 'URL.createObjectURL',
+      // 'XMLSerializer',
+      // 'XMLHttpRequest',
+      // 'window.getComputedStyle',
+      // 'window.parent',
+      // 'window.scrollX',
+      // 'window.scrollY'
+    ]
+  },
+  rules: {
+    // check-examples is not picking up eslint config properly in some
+    //  environments; see also discussion above
+    //  `mocha-cleanup/no-assertions-outside-it`
+    'jsdoc/check-examples': ['warn', {
+      rejectExampleCodeRegex: '^`'
+    }],
+
+    // https://github.com/sindresorhus/eslint-plugin-unicorn/issues/453
+    'unicorn/regex-shorthand': 0,
+    // The Babel transform seems to have a problem converting these
+    'prefer-named-capture-group': 'off',
+    'jsdoc/require-file-overview': ['error', {
+      tags: {
+        file: {
+          initialCommentsOnly: true,
+          preventDuplicates: true
+        },
+        license: {
+          initialCommentsOnly: true,
+          preventDuplicates: true
+        },
+        copyright: {
+          initialCommentsOnly: true,
+          preventDuplicates: true
+        },
+        author: {
+          initialCommentsOnly: true,
+          preventDuplicates: true
+        },
+        module: {
+          initialCommentsOnly: true,
+          preventDuplicates: true
+        },
+        exports: {
+          initialCommentsOnly: true,
+          preventDuplicates: true
         }
       }
-      */
-    }
+    }],
+    // Warning or Off for now but should be reviewed
+    // Override these rules which are difficult for us
+    //   to apply at this time
+    'unicorn/prefer-string-slice': 'off',
+    'default-case': 'off',
+    'require-unicode-regexp': 'off',
+    'max-len':
+      [
+        'warn',
+        {ignoreComments: true, code: 130}
+      ], // 130 is too much but too many occurences
+    'unicorn/prefer-query-selector': 'off',
+    'unicorn/no-fn-reference-in-iterator': 'off',
+    'unicorn/prefer-node-append': 'off',
+    'unicorn/no-zero-fractions': 'off',
+    'unicorn/prefer-number-properties': 'off',
+    'eslint-comments/require-description': 'off',
+    'compat/compat': 'error',
+    'consistent-this': 'off',
+    'import/no-anonymous-default-export': 'off',
+    'node/no-unsupported-features/node-builtins': 'warn',
+    'prefer-exponentiation-operator': 'warn',
+    'node/no-unsupported-features/es-syntax': 'off',
+    'no-unsanitized/method': [
+      'error',
+      {
+        escape: {
+          methods: ['encodeURIComponent', 'encodeURI']
+        }
+      }
+    ]
   },
   overrides: [
     // Locales have no need for importing outside of SVG-Edit
+    // and translations may need a longer line length
     {
       files: [
-        'editor/locale/lang.*.js', 'editor/extensions/ext-locale/**',
+        'src/editor/locale/lang.*.js', 'src/editor/extensions/*/locale/**',
         'docs/tutorials/ExtensionDocs.md'
       ],
       rules: {
-        'import/no-anonymous-default-export': ['off']
+        'import/no-anonymous-default-export': 'off',
+        'max-len': 'off'
       }
     },
     // These browser files don't do importing or requiring
     {
       files: [
-        'editor/svgpathseg.js', 'editor/touch.js', 'editor/typedefs.js',
-        'editor/redirect-on-no-module-support.js',
-        'editor/extensions/imagelib/index.js',
-        'editor/external/dom-polyfill/dom-polyfill.js',
+        'src/editor/touch.js',
+        'src/editor/typedefs.js',
+        'src/editor/redirect-on-no-module-support.js',
+        'src/editor/extensions/ext-imagelib/index.js',
         'screencasts/svgopen2010/script.js'
       ],
       rules: {
@@ -63,6 +170,8 @@ module.exports = {
           'history',
           'history.pushState',
           'history.replaceState',
+          'location.hash',
+          'navigator',
           'Number.parseFloat',
           'Number.parseInt',
           'Number.isNaN'
@@ -95,7 +204,6 @@ module.exports = {
         // Used in examples of assert-close.js plugin
         'mocha-cleanup/no-assertions-outside-it': 'off',
         'eslint-comments/no-unused-disable': 'warn',
-
         'eol-last': ['off'],
         'no-console': ['off'],
         'no-undef': ['off'],
@@ -114,112 +222,6 @@ module.exports = {
         indent: 'off'
       }
     },
-    // Dis-apply Node rules mistakenly giving errors with browser files,
-    //  and treating Node global `root` as being present for shadowing
-    {
-      files: ['editor/**'],
-      globals: {
-        root: 'off'
-      },
-      settings: {
-        polyfills: [
-          // These are the primary polyfills needed by regular users if
-          //  not present, e.g., with core-js-bundle; also those under
-          //  extensions
-          'Array.isArray',
-          'Blob',
-          'console',
-          'CustomEvent',
-          'document.body',
-          'document.createElementNS',
-          'document.evaluate',
-          'document.head',
-          'document.importNode',
-          'document.querySelectorAll',
-          'DOMParser',
-          'Error',
-          'FileReader',
-          'JSON',
-          'KeyboardEvent',
-          'location.href',
-          'MouseEvent',
-          'MutationObserver',
-          'Number.isNaN',
-          'Number.parseFloat',
-          'Number.parseInt',
-          'Object.assign',
-          'Object.defineProperty',
-          'Object.defineProperties',
-          'Object.entries',
-          'Object.getOwnPropertyDescriptor',
-          'Object.keys',
-          'Object.values',
-          'Promise',
-          'Promise.all',
-          'Set',
-          'Uint8Array',
-          'URL',
-          'URL.createObjectURL',
-          'XMLSerializer',
-          'XMLHttpRequest',
-          'window.getComputedStyle',
-          'window.parent',
-          'window.scrollX',
-          'window.scrollY'
-        ]
-      },
-      rules: {
-        'node/no-unsupported-features/node-builtins': 'off'
-      }
-    },
-    // For extensions, `this` is generally assigned to be the more
-    //   descriptive `svgEditor`; they also have no need for importing outside
-    //   of SVG-Edit
-    {
-      files: ['editor/extensions/**'],
-      settings: {
-        polyfills: [
-          'console',
-          'fetch',
-          'location.origin',
-          'Number.isNaN',
-          'Number.parseFloat',
-          'Number.parseInt',
-          'window.postMessage'
-        ]
-      },
-      rules: {
-        'consistent-this': ['error', 'svgEditor'],
-        'import/no-anonymous-default-export': ['off']
-      }
-    },
-    {
-      // Node files
-      files: [
-        'docs/jsdoc-config.js',
-        'build/build-html.js',
-        'rollup.config.js', 'rollup-config.config.js'
-      ],
-      env: {
-        node: true
-      },
-      settings: {
-        polyfills: [
-          'console',
-          'Promise.resolve'
-        ]
-      },
-      globals: {
-        require: true
-      },
-      rules: {
-        // We can't put Rollup in npmignore or user can't get access,
-        //  and we have too many modules to add to `peerDependencies`
-        //  so this rule can know them to be available, so we instead
-        //  disable
-        'node/no-unpublished-import': 'off'
-      }
-    },
     {
       // As consumed by jsdoc, cannot be expressed as ESM
       files: ['docs/jsdoc-config.js'],
@@ -232,18 +234,6 @@ module.exports = {
       rules: {
         'import/no-commonjs': 'off',
         strict: 'off'
-      }
-    },
-    {
-      // Should probably have as external, but should still check
-      files: ['canvg/rgbcolor.js'],
-      settings: {
-        polyfills: [
-          'Number.isNaN',
-          'Number.parseInt',
-          'Object.assign',
-          'Object.keys'
-        ]
       }
     },
     {
@@ -284,9 +274,9 @@ module.exports = {
         // These errors are caused in Cypress files if user has not
         //  yet instrumented code; need to reinvestigate why we had to
         //  instrument separately from nyc mocha
-        'import/no-unresolved': 'warn',
-        'node/no-missing-import': 'warn',
-
+        'import/no-unresolved': ['error', {ignore: ['/instrumented/']}],
+        'node/no-missing-import': 'off',
+        'jsdoc/check-examples': 'off',
         'chai-expect-keywords/no-unsupported-keywords': [
           'error', {
             allowChaiDOM: true
@@ -326,63 +316,33 @@ module.exports = {
         'no-console': 0,
         'import/unambiguous': 0
       }
-    }
-  ],
-  rules: {
-    // check-examples is not picking up eslint config properly in some
-    //  environments; see also discussion above
-    //  `mocha-cleanup/no-assertions-outside-it`
-    'jsdoc/check-examples': ['warn', {
-      rejectExampleCodeRegex: '^`'
-    }],
-
-    // https://github.com/sindresorhus/eslint-plugin-unicorn/issues/453
-    'unicorn/regex-shorthand': 0,
-    // The Babel transform seems to have a problem converting these
-    'prefer-named-capture-group': 'off',
-    // Override these `ash-nazg/sauron` rules which are difficult for us
-    //   to apply at this time
-    'unicorn/prefer-string-slice': 'off',
-    'default-case': 'off',
-    'require-unicode-regexp': 'off',
-    'max-len': 'off', /* , {
-      ignoreUrls: true,
-      ignoreRegExpLiterals: true
-    } */
-    'unicorn/prefer-query-selector': 'off',
-    'unicorn/prefer-node-append': 'off',
-    'unicorn/no-zero-fractions': 'off',
-    'unicorn/prefer-number-properties': 'off',
-    'jsdoc/require-file-overview': ['error', {
-      tags: {
-        file: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        license: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        copyright: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        author: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        module: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        exports: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        }
+    },
+    {
+      // Node files
+      files: [
+        'docs/jsdoc-config.js',
+        'build/build-html.js',
+        'rollup.config.js', 'rollup-config.config.js'
+      ],
+      env: {
+        node: true
+      },
+      settings: {
+        polyfills: [
+          'console',
+          'Promise.resolve'
+        ]
+      },
+      globals: {
+        require: true
+      },
+      rules: {
+        // We can't put Rollup in npmignore or user can't get access,
+        //  and we have too many modules to add to `peerDependencies`
+        //  so this rule can know them to be available, so we instead
+        //  disable
+        'node/no-unpublished-import': 'off'
       }
-    }],
-
-    // Disable for now
-    'eslint-comments/require-description': 0
-  }
+    }
+  ]
 };

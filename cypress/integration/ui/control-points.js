@@ -22,10 +22,10 @@ describe('UI - Control Points', function () {
     cy.get('#tool_source_save').click();
     cy.get('#svg_1').click().click();
 
-    cy.get('#pathpointgrip_0').trigger('mousedown', {which: 1})
+    cy.get('#pathpointgrip_0').trigger('mousedown', {which: 1, force: true})
       .trigger('mousemove', randomOffset(), randomOffset(), {force: true})
       .trigger('mouseup', {force: true});
-    cy.get('#pathpointgrip_1').trigger('mousedown', {which: 1})
+    cy.get('#pathpointgrip_1').trigger('mousedown', {which: 1, force: true})
       .trigger('mousemove', randomOffset(), randomOffset(), {force: true})
       .trigger('mouseup', {force: true});
 

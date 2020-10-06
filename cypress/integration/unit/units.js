@@ -1,6 +1,6 @@
-import '../../../instrumented/jquery.min.js';
+import '../../../instrumented/editor/jquery.min.js';
 
-import * as units from '../../../instrumented/units.js';
+import * as units from '../../../instrumented/common/units.js';
 
 describe('units', function () {
   /**
@@ -49,7 +49,7 @@ describe('units', function () {
 
   it('Test svgedit.units.shortFloat()', function () {
     assert.ok(units.shortFloat);
-    assert.equal(typeof units.shortFloat, typeof function () { /* */ });
+    assert.equal(typeof units.shortFloat, typeof function () { /* empty fn */ });
 
     const {shortFloat} = units;
     assert.equal(shortFloat(0.00000001), 0);
@@ -61,7 +61,7 @@ describe('units', function () {
 
   it('Test svgedit.units.isValidUnit()', function () {
     assert.ok(units.isValidUnit);
-    assert.equal(typeof units.isValidUnit, typeof function () { /* */ });
+    assert.equal(typeof units.isValidUnit, typeof function () { /* empty fn */ });
 
     const {isValidUnit} = units;
     assert.ok(isValidUnit('0'));
@@ -85,7 +85,7 @@ describe('units', function () {
 
   it('Test svgedit.units.convertUnit()', function () {
     assert.ok(units.convertUnit);
-    assert.equal(typeof units.convertUnit, typeof function () { /* */ });
+    assert.equal(typeof units.convertUnit, typeof function () { /* empty fn */ });
     // cm in default setup
     assert.equal(units.convertUnit(42), 1.1113);
     assert.equal(units.convertUnit(42, 'px'), 42);
