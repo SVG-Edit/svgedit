@@ -33,6 +33,8 @@ import {
   setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
   leaveContext, setContext
 } from './draw.js';
+import {svgRootElement} from './svgroot.js';
+import {getJsonFromSvgElements} from './json.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {
@@ -155,25 +157,7 @@ class SvgCanvas {
  * @name module:svgcanvas~svgroot
  * @type {SVGSVGElement}
  */
-    const svgroot = svgdoc.importNode(
-      text2xml(
-        '<svg id="svgroot" xmlns="' + NS.SVG + '" xlinkns="' + NS.XLINK + '" ' +
-      'width="' + dimensions[0] + '" height="' + dimensions[1] +
-        '" x="' + dimensions[0] + '" y="' + dimensions[1] + '" overflow="visible">' +
-      '<defs>' +
-        '<filter id="canvashadow" filterUnits="objectBoundingBox">' +
-          '<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>' +
-          '<feOffset in="blur" dx="5" dy="5" result="offsetBlur"/>' +
-          '<feMerge>' +
-            '<feMergeNode in="offsetBlur"/>' +
-            '<feMergeNode in="SourceGraphic"/>' +
-          '</feMerge>' +
-        '</filter>' +
-      '</defs>' +
-    '</svg>'
-      ).documentElement,
-      true
-    );
+    const svgroot = svgRootElement(svgdoc, dimensions);
     container.append(svgroot);
 
     /**
@@ -292,29 +276,7 @@ class SvgCanvas {
 * @param {Text|Element} data
 * @returns {module:svgcanvas.SVGAsJSON}
 */
-    const getJsonFromSvgElement = this.getJsonFromSvgElement = function (data) {
-      // Text node
-      if (data.nodeType === 3) return data.nodeValue;
-
-      const retval = {
-        element: data.tagName,
-        // namespace: nsMap[data.namespaceURI],
-        attr: {},
-        children: []
-      };
-
-      // Iterate attributes
-      for (let i = 0, attr; (attr = data.attributes[i]); i++) {
-        retval.attr[attr.name] = attr.value;
-      }
-
-      // Iterate children
-      for (let i = 0, node; (node = data.childNodes[i]); i++) {
-        retval.children[i] = getJsonFromSvgElement(node);
-      }
-
-      return retval;
-    };
+    const getJsonFromSvgElement = this.getJsonFromSvgElement = getJsonFromSvgElements;
 
     /**
 * This should really be an intersection implementing all rather than a union.
