@@ -35,6 +35,7 @@ import {
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
+import {init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem} from './selected-elem.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {
@@ -6754,6 +6755,17 @@ function hideCursor () {
       }
     };
 
+    selectedElemInit(
+      /**
+  * @implements {module:selected-elem.elementContext}
+  */
+      {
+        getSelectedElements,
+        addCommandToHistory,
+        call
+      }
+    );
+
     /**
 * Repositions the selected element to the bottom in the DOM to appear on top of
 * other elements.
@@ -6761,53 +6773,16 @@ function hideCursor () {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.moveToTopSelectedElement = function () {
-      const [selected] = selectedElements;
-      if (!isNullish(selected)) {
-        let t = selected;
-        const oldParent = t.parentNode;
-        const oldNextSibling = t.nextSibling;
-        t = t.parentNode.appendChild(t);
-        // If the element actually moved position, add the command and fire the changed
-        // event handler.
-        if (oldNextSibling !== t.nextSibling) {
-          addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'top'));
-          call('changed', [t]);
-        }
-      }
-    };
+    this.moveToTopSelectedElement = moveToTopSelectedElem;
 
-    /**
+/**
 * Repositions the selected element to the top in the DOM to appear under
 * other elements.
 * @function module:svgcanvas.SvgCanvas#moveToBottomSelectedElement
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.moveToBottomSelectedElement = function () {
-      const [selected] = selectedElements;
-      if (!isNullish(selected)) {
-        let t = selected;
-        const oldParent = t.parentNode;
-        const oldNextSibling = t.nextSibling;
-        let {firstChild} = t.parentNode;
-        if (firstChild.tagName === 'title') {
-          firstChild = firstChild.nextSibling;
-        }
-        // This can probably be removed, as the defs should not ever apppear
-        // inside a layer group
-        if (firstChild.tagName === 'defs') {
-          firstChild = firstChild.nextSibling;
-        }
-        t = t.parentNode.insertBefore(t, firstChild);
-        // If the element actually moved position, add the command and fire the changed
-        // event handler.
-        if (oldNextSibling !== t.nextSibling) {
-          addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'bottom'));
-          call('changed', [t]);
-        }
-      }
-    };
+    this.moveToBottomSelectedElement = moveToBottomSelectedElem;
 
     /**
 * Moves the select element up or down the stack, based on the visibly
