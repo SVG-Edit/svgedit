@@ -5,13 +5,15 @@
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
+import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute 
 import * as hstry from './history.js';
 import {
-  isNullish
+  isNullish, getStrokedBBoxDefaultVisible
 } from '../common/utilities.js';
 const {
   MoveElementCommand
 } = hstry;
+let $ = jQueryPluginSVG(jQuery);
 
 let elementContext_ = null;
 
@@ -76,5 +78,50 @@ export const moveToBottomSelectedElem = function () {
       elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'bottom'));
       elementContext_.call('changed', [t]);
     }
+  }
+};
+
+/**
+* Moves the select element up or down the stack, based on the visibly
+* intersecting elements.
+* @function module:svgcanvas.SvgCanvas#moveUpDownSelected
+* @param {"Up"|"Down"} dir - String that's either 'Up' or 'Down'
+* @fires module:svgcanvas.SvgCanvas#event:changed
+* @returns {void}
+*/
+export const moveUpDownSelected = function (dir) {
+  console.log('moveUpDownSelected -----> ');
+  const selectedElements = elementContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!selected) { return; }
+
+  elementContext_.setCurBBoxes([]);
+  // curBBoxes = [];
+  let closest, foundCur;
+  // jQuery sorts this list
+  const list = $(elementContext_.getIntersectionList(getStrokedBBoxDefaultVisible([selected]))).toArray();
+  if (dir === 'Down') { list.reverse(); }
+
+  $.each(list, function () {
+    if (!foundCur) {
+      if (this === selected) {
+        foundCur = true;
+      }
+      return true;
+    }
+    closest = this;
+    return false;
+  });
+  if (!closest) { return; }
+
+  const t = selected;
+  const oldParent = t.parentNode;
+  const oldNextSibling = t.nextSibling;
+  $(closest)[dir === 'Down' ? 'before' : 'after'](t);
+  // If the element actually moved position, add the command and fire the changed
+  // event handler.
+  if (oldNextSibling !== t.nextSibling) {
+    elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'Move ' + dir));
+    elementContext_.call('changed', [t]);
   }
 };

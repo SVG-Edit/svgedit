@@ -35,7 +35,7 @@ import {
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
-import {init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem} from './selected-elem.js';
+import {init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem, moveUpDownSelected} from './selected-elem.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {
@@ -6762,7 +6762,9 @@ function hideCursor () {
       {
         getSelectedElements,
         addCommandToHistory,
-        call
+        call,
+        getIntersectionList,
+        setCurBBoxes (value) { curBBoxes = value; }
       }
     );
 
@@ -6792,39 +6794,7 @@ function hideCursor () {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.moveUpDownSelected = function (dir) {
-      const selected = selectedElements[0];
-      if (!selected) { return; }
-
-      curBBoxes = [];
-      let closest, foundCur;
-      // jQuery sorts this list
-      const list = $(getIntersectionList(getStrokedBBoxDefaultVisible([selected]))).toArray();
-      if (dir === 'Down') { list.reverse(); }
-
-      $.each(list, function () {
-        if (!foundCur) {
-          if (this === selected) {
-            foundCur = true;
-          }
-          return true;
-        }
-        closest = this;
-        return false;
-      });
-      if (!closest) { return; }
-
-      const t = selected;
-      const oldParent = t.parentNode;
-      const oldNextSibling = t.nextSibling;
-      $(closest)[dir === 'Down' ? 'before' : 'after'](t);
-      // If the element actually moved position, add the command and fire the changed
-      // event handler.
-      if (oldNextSibling !== t.nextSibling) {
-        addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'Move ' + dir));
-        call('changed', [t]);
-      }
-    };
+    this.moveUpDownSelected = moveUpDownSelected;
 
     /**
 * Moves selected elements on the X/Y axis.
