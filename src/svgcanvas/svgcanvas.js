@@ -34,7 +34,7 @@ import {
   leaveContext, setContext
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
-import {getJsonFromSvgElements} from './json.js';
+import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {
@@ -264,6 +264,18 @@ class SvgCanvas {
     // default size of 1 until it needs to grow bigger
     let selectedElements = [];
 
+    jsonInit(
+      /**
+  * @implements {module:json.jsonContext}
+  */
+      {
+        getDOMDocument () { return svgdoc; },
+        getDrawing () { return getCurrentDrawing(); },
+        getCurShape () { return curShape; },
+        getCurrentGroup () { return currentGroup; }
+      }
+    );
+
     /**
 * @typedef {PlainObject} module:svgcanvas.SVGAsJSON
 * @property {string} element
@@ -283,49 +295,7 @@ class SvgCanvas {
 * @name module:svgcanvas.SvgCanvas#addSVGElementFromJson
 * @type {module:utilities.EditorContext#addSVGElementFromJson|module:path.EditorContext#addSVGElementFromJson}
 */
-    const addSVGElementFromJson = this.addSVGElementFromJson = function (data) {
-      if (typeof data === 'string') return svgdoc.createTextNode(data);
-
-      let shape = getElem(data.attr.id);
-      // if shape is a path but we need to create a rect/ellipse, then remove the path
-      const currentLayer = getCurrentDrawing().getCurrentLayer();
-      if (shape && data.element !== shape.tagName) {
-        shape.remove();
-        shape = null;
-      }
-      if (!shape) {
-        const ns = data.namespace || NS.SVG;
-        shape = svgdoc.createElementNS(ns, data.element);
-        if (currentLayer) {
-          (currentGroup || currentLayer).append(shape);
-        }
-      }
-      if (data.curStyles) {
-        assignAttributes(shape, {
-          fill: curShape.fill,
-          stroke: curShape.stroke,
-          'stroke-width': curShape.stroke_width,
-          'stroke-dasharray': curShape.stroke_dasharray,
-          'stroke-linejoin': curShape.stroke_linejoin,
-          'stroke-linecap': curShape.stroke_linecap,
-          'stroke-opacity': curShape.stroke_opacity,
-          'fill-opacity': curShape.fill_opacity,
-          opacity: curShape.opacity / 2,
-          style: 'pointer-events:inherit'
-        }, 100);
-      }
-      assignAttributes(shape, data.attr, 100);
-      cleanupElement(shape);
-
-      // Children
-      if (data.children) {
-        data.children.forEach((child) => {
-          shape.append(addSVGElementFromJson(child));
-        });
-      }
-
-      return shape;
-    };
+    const addSVGElementFromJson = this.addSVGElementFromJson = addSVGElementsFromJson;
 
     canvas.getTransformList = getTransformList;
 
