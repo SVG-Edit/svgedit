@@ -9,7 +9,7 @@ import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attrib
 import * as hstry from './history.js';
 import * as pathModule from './path.js';
 import {
-  isNullish, getStrokedBBoxDefaultVisible
+  isNullish, getStrokedBBoxDefaultVisible, setHref
 } from '../common/utilities.js';
 import {
   getTransformList, 
@@ -362,7 +362,7 @@ export const alignSelectedElements = function (type, relativeTo) {
 * @returns {void}
 */
 export const deleteSelectedElements = function () {
-  let selectedElements = elementContext_.getSelectedElements();
+  const selectedElements = elementContext_.getSelectedElements();
   const batchCmd = new BatchCommand('Delete Elements');
   const len = selectedElements.length;
   const selectedCopy = []; // selectedElements is being deleted
@@ -392,9 +392,89 @@ export const deleteSelectedElements = function () {
     selectedCopy.push(selected); // for the copy
     batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
   }
-  selectedElements = [];
+  elementContext_.setSelectedElements();
 
   if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
   elementContext_.call('changed', selectedCopy);
   elementContext_.clearSelection();
+};
+
+/**
+* Remembers the current selected elements on the clipboard.
+* @function module:svgcanvas.SvgCanvas#copySelectedElements
+* @returns {void}
+*/
+export const copySelectedElements = function () {
+  const selectedElements = elementContext_.getSelectedElements();
+  const data =
+  JSON.stringify(selectedElements.map((x) => elementContext_.getJsonFromSvgElement(x)));
+  // Use sessionStorage for the clipboard data.
+  sessionStorage.setItem(elementContext_.getClipboardID(), data);
+  elementContext_.flashStorage();
+
+  const menu = $('#cmenu_canvas');
+  // Context menu might not exist (it is provided by editor.js).
+  if (menu.enableContextMenuItems) {
+    menu.enableContextMenuItems('#paste,#paste_in_place');
+  }
+};
+
+/**
+* Wraps all the selected elements in a group (`g`) element.
+* @function module:svgcanvas.SvgCanvas#groupSelectedElements
+* @param {"a"|"g"} [type="g"] - type of element to group into, defaults to `<g>`
+* @param {string} [urlArg]
+* @returns {void}
+*/
+export const groupSelectedElements = function (type, urlArg) {
+  const selectedElements = elementContext_.getSelectedElements();
+  if (!type) { type = 'g'; }
+  let cmdStr = '';
+  let url;
+
+  switch (type) {
+  case 'a': {
+    cmdStr = 'Make hyperlink';
+    url = urlArg || '';
+    break;
+  } default: {
+    type = 'g';
+    cmdStr = 'Group Elements';
+    break;
+  }
+  }
+
+  const batchCmd = new BatchCommand(cmdStr);
+
+  // create and insert the group element
+  const g = elementContext_.addSVGElementFromJson({
+    element: type,
+    attr: {
+      id: elementContext_.getNextId()
+    }
+  });
+  if (type === 'a') {
+    setHref(g, url);
+  }
+  batchCmd.addSubCommand(new InsertElementCommand(g));
+
+  // now move all children into the group
+  let i = selectedElements.length;
+  while (i--) {
+    let elem = selectedElements[i];
+    if (isNullish(elem)) { continue; }
+
+    if (elem.parentNode.tagName === 'a' && elem.parentNode.childNodes.length === 1) {
+      elem = elem.parentNode;
+    }
+
+    const oldNextSibling = elem.nextSibling;
+    const oldParent = elem.parentNode;
+    g.append(elem);
+    batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
+  }
+  if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
+
+  // update selection
+  elementContext_.selectOnly([g], true);
 };

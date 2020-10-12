@@ -38,7 +38,7 @@ import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from '
 import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
   moveUpDownSelected, moveSelectedElements, cloneSelectedElements, alignSelectedElements,
-  deleteSelectedElements
+  deleteSelectedElements, copySelectedElements, groupSelectedElements
 } from './selected-elem.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
@@ -6229,6 +6229,9 @@ function hideCursor () {
       {
         getSelectedElements,
         addCommandToHistory,
+        getJsonFromSvgElement,
+        addSVGElementFromJson,
+        flashStorage,
         call,
         getIntersectionList,
         setCurBBoxes (value) { curBBoxes = value; },
@@ -6240,7 +6243,11 @@ function hideCursor () {
         addToSelection,
         getContentW () { return canvas.contentW; },
         getContentH () { return canvas.contentH; },
-        clearSelection
+        getClipboardID () { return CLIPBOARD_ID; },
+        setSelectedElements () { selectedElements = []; },
+        clearSelection,
+        getNextId,
+        selectOnly
       }
     );
 
@@ -6299,27 +6306,14 @@ function hideCursor () {
     window.addEventListener('storage', storageChange, false);
     // Ask other tabs for sessionStorage (this is ONLY to trigger event).
     localStorage.setItem(CLIPBOARD_ID + '_startup', Math.random());
-
-    /**
+/**
 * Remembers the current selected elements on the clipboard.
 * @function module:svgcanvas.SvgCanvas#copySelectedElements
 * @returns {void}
 */
-    this.copySelectedElements = function () {
-      const data =
-      JSON.stringify(selectedElements.map((x) => getJsonFromSvgElement(x)));
-      // Use sessionStorage for the clipboard data.
-      sessionStorage.setItem(CLIPBOARD_ID, data);
-      flashStorage();
+this.copySelectedElements = copySelectedElements;
 
-      const menu = $('#cmenu_canvas');
-      // Context menu might not exist (it is provided by editor.js).
-      if (menu.enableContextMenuItems) {
-        menu.enableContextMenuItems('#paste,#paste_in_place');
-      }
-    };
-
-    /**
+/**
 * @function module:svgcanvas.SvgCanvas#pasteElements
 * @param {"in_place"|"point"|void} type
 * @param {Integer|void} x Expected if type is "point"
@@ -6434,57 +6428,7 @@ function hideCursor () {
 * @param {string} [urlArg]
 * @returns {void}
 */
-    this.groupSelectedElements = function (type, urlArg) {
-      if (!type) { type = 'g'; }
-      let cmdStr = '';
-      let url;
-
-      switch (type) {
-      case 'a': {
-        cmdStr = 'Make hyperlink';
-        url = urlArg || '';
-        break;
-      } default: {
-        type = 'g';
-        cmdStr = 'Group Elements';
-        break;
-      }
-      }
-
-      const batchCmd = new BatchCommand(cmdStr);
-
-      // create and insert the group element
-      const g = addSVGElementFromJson({
-        element: type,
-        attr: {
-          id: getNextId()
-        }
-      });
-      if (type === 'a') {
-        setHref(g, url);
-      }
-      batchCmd.addSubCommand(new InsertElementCommand(g));
-
-      // now move all children into the group
-      let i = selectedElements.length;
-      while (i--) {
-        let elem = selectedElements[i];
-        if (isNullish(elem)) { continue; }
-
-        if (elem.parentNode.tagName === 'a' && elem.parentNode.childNodes.length === 1) {
-          elem = elem.parentNode;
-        }
-
-        const oldNextSibling = elem.nextSibling;
-        const oldParent = elem.parentNode;
-        g.append(elem);
-        batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
-      }
-      if (!batchCmd.isEmpty()) { addCommandToHistory(batchCmd); }
-
-      // update selection
-      selectOnly([g], true);
-    };
+this.groupSelectedElements = groupSelectedElements;
 
     /**
 * Pushes all appropriate parent group properties down to its children, then
