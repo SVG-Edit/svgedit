@@ -6,19 +6,27 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute 
+import {NS} from '../common/namespaces.js';
 import * as hstry from './history.js';
 import * as pathModule from './path.js';
 import {
-  isNullish, getStrokedBBoxDefaultVisible, setHref
+  isNullish, getStrokedBBoxDefaultVisible, setHref, getElem, getHref,
+  findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost
 } from '../common/utilities.js';
+import {
+  transformPoint, matrixMultiply, transformListToTransform  
+} from '../common/math.js';
 import {
   getTransformList, 
 } from '../common/svgtransformlist.js';
 import {
   recalculateDimensions,
 } from './recalculate.js';
+import {
+  isGecko
+} from '../common/browser.js'; // , supportsEditableText
 const {
-  MoveElementCommand, BatchCommand, InsertElementCommand, RemoveElementCommand
+  MoveElementCommand, BatchCommand, InsertElementCommand, RemoveElementCommand, ChangeElementCommand
 } = hstry;
 let $ = jQueryPluginSVG(jQuery);
 
@@ -477,4 +485,405 @@ export const groupSelectedElements = function (type, urlArg) {
 
   // update selection
   elementContext_.selectOnly([g], true);
+};
+
+/**
+* Pushes all appropriate parent group properties down to its children, then
+* removes them from the group.
+* @function module:svgcanvas.SvgCanvas#pushGroupProperty
+* @param {SVGAElement|SVGGElement} g
+* @param {boolean} undoable
+* @returns {BatchCommand|void}
+*/
+export const pushGroupProperty = function (g, undoable) {
+  const children = g.childNodes;
+  const len = children.length;
+  const xform = g.getAttribute('transform');
+
+  const glist = getTransformList(g);
+  const m = transformListToTransform(glist).matrix;
+
+  const batchCmd = new BatchCommand('Push group properties');
+
+  // TODO: get all fill/stroke properties from the group that we are about to destroy
+  // "fill", "fill-opacity", "fill-rule", "stroke", "stroke-dasharray", "stroke-dashoffset",
+  // "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity",
+  // "stroke-width"
+  // and then for each child, if they do not have the attribute (or the value is 'inherit')
+  // then set the child's attribute
+
+  const gangle = getRotationAngle(g);
+
+  const gattrs = $(g).attr(['filter', 'opacity']);
+  let gfilter, gblur, changes;
+  const drawing = elementContext_.getDrawing();
+
+  for (let i = 0; i < len; i++) {
+    const elem = children[i];
+
+    if (elem.nodeType !== 1) { continue; }
+
+    if (gattrs.opacity !== null && gattrs.opacity !== 1) {
+      // const c_opac = elem.getAttribute('opacity') || 1;
+      const newOpac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100) / 100;
+      elementContext_.changeSelectedAttribute('opacity', newOpac, [elem]);
+    }
+
+    if (gattrs.filter) {
+      let cblur = this.getBlur(elem);
+      const origCblur = cblur;
+      if (!gblur) { gblur = this.getBlur(g); }
+      if (cblur) {
+        // Is this formula correct?
+        cblur = Number(gblur) + Number(cblur);
+      } else if (cblur === 0) {
+        cblur = gblur;
+      }
+
+      // If child has no current filter, get group's filter or clone it.
+      if (!origCblur) {
+        // Set group's filter to use first child's ID
+        if (!gfilter) {
+          gfilter = getRefElem(gattrs.filter);
+        } else {
+          // Clone the group's filter
+          gfilter = drawing.copyElem(gfilter);
+          findDefs().append(gfilter);
+        }
+      } else {
+        gfilter = getRefElem(elem.getAttribute('filter'));
+      }
+
+      // Change this in future for different filters
+      const suffix = (gfilter.firstChild.tagName === 'feGaussianBlur') ? 'blur' : 'filter';
+      gfilter.id = elem.id + '_' + suffix;
+      elementContext_.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
+
+      // Update blur value
+      if (cblur) {
+        elementContext_.changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
+        elementContext_.getCanvas().setBlurOffsets(gfilter, cblur);
+      }
+    }
+
+    let chtlist = getTransformList(elem);
+
+    // Don't process gradient transforms
+    if (elem.tagName.includes('Gradient')) { chtlist = null; }
+
+    // Hopefully not a problem to add this. Necessary for elements like <desc/>
+    if (!chtlist) { continue; }
+
+    // Apparently <defs> can get get a transformlist, but we don't want it to have one!
+    if (elem.tagName === 'defs') { continue; }
+
+    if (glist.numberOfItems) {
+      // TODO: if the group's transform is just a rotate, we can always transfer the
+      // rotate() down to the children (collapsing consecutive rotates and factoring
+      // out any translates)
+      if (gangle && glist.numberOfItems === 1) {
+        // [Rg] [Rc] [Mc]
+        // we want [Tr] [Rc2] [Mc] where:
+        //  - [Rc2] is at the child's current center but has the
+        // sum of the group and child's rotation angles
+        //  - [Tr] is the equivalent translation that this child
+        // undergoes if the group wasn't there
+
+        // [Tr] = [Rg] [Rc] [Rc2_inv]
+
+        // get group's rotation matrix (Rg)
+        const rgm = glist.getItem(0).matrix;
+
+        // get child's rotation matrix (Rc)
+        let rcm = elementContext_.getSVGRoot().createSVGMatrix();
+        const cangle = getRotationAngle(elem);
+        if (cangle) {
+          rcm = chtlist.getItem(0).matrix;
+        }
+
+        // get child's old center of rotation
+        const cbox = utilsGetBBox(elem);
+        const ceqm = transformListToTransform(chtlist).matrix;
+        const coldc = transformPoint(cbox.x + cbox.width / 2, cbox.y + cbox.height / 2, ceqm);
+
+        // sum group and child's angles
+        const sangle = gangle + cangle;
+
+        // get child's rotation at the old center (Rc2_inv)
+        const r2 = elementContext_.getSVGRoot().createSVGTransform();
+        r2.setRotate(sangle, coldc.x, coldc.y);
+
+        // calculate equivalent translate
+        const trm = matrixMultiply(rgm, rcm, r2.matrix.inverse());
+
+        // set up tlist
+        if (cangle) {
+          chtlist.removeItem(0);
+        }
+
+        if (sangle) {
+          if (chtlist.numberOfItems) {
+            chtlist.insertItemBefore(r2, 0);
+          } else {
+            chtlist.appendItem(r2);
+          }
+        }
+
+        if (trm.e || trm.f) {
+          const tr = elementContext_.getSVGRoot().createSVGTransform();
+          tr.setTranslate(trm.e, trm.f);
+          if (chtlist.numberOfItems) {
+            chtlist.insertItemBefore(tr, 0);
+          } else {
+            chtlist.appendItem(tr);
+          }
+        }
+      } else { // more complicated than just a rotate
+        // transfer the group's transform down to each child and then
+        // call recalculateDimensions()
+        const oldxform = elem.getAttribute('transform');
+        changes = {};
+        changes.transform = oldxform || '';
+
+        const newxform = elementContext_.getSVGRoot().createSVGTransform();
+
+        // [ gm ] [ chm ] = [ chm ] [ gm' ]
+        // [ gm' ] = [ chmInv ] [ gm ] [ chm ]
+        const chm = transformListToTransform(chtlist).matrix,
+          chmInv = chm.inverse();
+        const gm = matrixMultiply(chmInv, m, chm);
+        newxform.setMatrix(gm);
+        chtlist.appendItem(newxform);
+      }
+      const cmd = recalculateDimensions(elem);
+      if (cmd) { batchCmd.addSubCommand(cmd); }
+    }
+  }
+
+  // remove transform and make it undo-able
+  if (xform) {
+    changes = {};
+    changes.transform = xform;
+    g.setAttribute('transform', '');
+    g.removeAttribute('transform');
+    batchCmd.addSubCommand(new ChangeElementCommand(g, changes));
+  }
+
+  if (undoable && !batchCmd.isEmpty()) {
+    return batchCmd;
+  }
+  return undefined;
+};
+
+/**
+* Converts selected/given `<use>` or child SVG element to a group.
+* @function module:svgcanvas.SvgCanvas#convertToGroup
+* @param {Element} elem
+* @fires module:svgcanvas.SvgCanvas#event:selected
+* @returns {void}
+*/
+export const convertToGroup = function (elem) {
+  const selectedElements = elementContext_.getSelectedElements();
+  if (!elem) {
+    elem = selectedElements[0];
+  }
+  const $elem = $(elem);
+  const batchCmd = new BatchCommand();
+  let ts;
+
+  if ($elem.data('gsvg')) {
+    // Use the gsvg as the new group
+    const svg = elem.firstChild;
+    const pt = $(svg).attr(['x', 'y']);
+
+    $(elem.firstChild.firstChild).unwrap();
+    $(elem).removeData('gsvg');
+
+    const tlist = getTransformList(elem);
+    const xform = elementContext_.getSVGRoot().createSVGTransform();
+    xform.setTranslate(pt.x, pt.y);
+    tlist.appendItem(xform);
+    recalculateDimensions(elem);
+    elementContext_.call('selected', [elem]);
+  } else if ($elem.data('symbol')) {
+    elem = $elem.data('symbol');
+
+    ts = $elem.attr('transform');
+    const pos = $elem.attr(['x', 'y']);
+
+    const vb = elem.getAttribute('viewBox');
+
+    if (vb) {
+      const nums = vb.split(' ');
+      pos.x -= Number(nums[0]);
+      pos.y -= Number(nums[1]);
+    }
+
+    // Not ideal, but works
+    ts += ' translate(' + (pos.x || 0) + ',' + (pos.y || 0) + ')';
+
+    const prev = $elem.prev();
+
+    // Remove <use> element
+    batchCmd.addSubCommand(new RemoveElementCommand($elem[0], $elem[0].nextSibling, $elem[0].parentNode));
+    $elem.remove();
+
+    // See if other elements reference this symbol
+    const svgcontent = elementContext_.getSVGContent();
+    const hasMore = $(svgcontent).find('use:data(symbol)').length;
+
+    const g = elementContext_.getDOMDocument().createElementNS(NS.SVG, 'g');
+    const childs = elem.childNodes;
+
+    let i;
+    for (i = 0; i < childs.length; i++) {
+      g.append(childs[i].cloneNode(true));
+    }
+
+    // Duplicate the gradients for Gecko, since they weren't included in the <symbol>
+    if (isGecko()) {
+      const dupeGrads = $(findDefs()).children('linearGradient,radialGradient,pattern').clone();
+      $(g).append(dupeGrads);
+    }
+
+    if (ts) {
+      g.setAttribute('transform', ts);
+    }
+
+    const parent = elem.parentNode;
+
+    elementContext_.uniquifyElems(g);
+
+    // Put the dupe gradients back into <defs> (after uniquifying them)
+    if (isGecko()) {
+      $(findDefs()).append($(g).find('linearGradient,radialGradient,pattern'));
+    }
+
+    // now give the g itself a new id
+    g.id = elementContext_.getNextId();
+
+    prev.after(g);
+
+    if (parent) {
+      if (!hasMore) {
+        // remove symbol/svg element
+        const {nextSibling} = elem;
+        elem.remove();
+        batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
+      }
+      batchCmd.addSubCommand(new InsertElementCommand(g));
+    }
+
+    elementContext_.setUseData(g);
+
+    if (isGecko()) {
+      elementContext_.convertGradients(findDefs());
+    } else {
+      elementContext_.convertGradients(g);
+    }
+
+    // recalculate dimensions on the top-level children so that unnecessary transforms
+    // are removed
+    walkTreePost(g, function (n) {
+      try {
+        recalculateDimensions(n);
+      } catch (e) {
+        console.log(e); // eslint-disable-line no-console
+      }
+    });
+
+    // Give ID for any visible element missing one
+    const visElems = elementContext_.getVisElems();
+    $(g).find(visElems).each(function () {
+      if (!this.id) { this.id = elementContext_.getNextId(); }
+    });
+
+    elementContext_.selectOnly([g]);
+
+    const cm = pushGroupProperty(g, true);
+    if (cm) {
+      batchCmd.addSubCommand(cm);
+    }
+
+    elementContext_.addCommandToHistory(batchCmd);
+  } else {
+    console.log('Unexpected element to ungroup:', elem); // eslint-disable-line no-console
+  }
+};
+
+/**
+* Unwraps all the elements in a selected group (`g`) element. This requires
+* significant recalculations to apply group's transforms, etc. to its children.
+* @function module:svgcanvas.SvgCanvas#ungroupSelectedElement
+* @returns {void}
+*/
+export const ungroupSelectedElement = function () {
+  const selectedElements = elementContext_.getSelectedElements();
+  let g = selectedElements[0];
+  if (!g) {
+    return;
+  }
+  if ($(g).data('gsvg') || $(g).data('symbol')) {
+    // Is svg, so actually convert to group
+    convertToGroup(g);
+    return;
+  }
+  if (g.tagName === 'use') {
+    // Somehow doesn't have data set, so retrieve
+    const symbol = getElem(getHref(g).substr(1));
+    $(g).data('symbol', symbol).data('ref', symbol);
+    convertToGroup(g);
+    return;
+  }
+  const parentsA = $(g).parents('a');
+  if (parentsA.length) {
+    g = parentsA[0];
+  }
+
+  // Look for parent "a"
+  if (g.tagName === 'g' || g.tagName === 'a') {
+    const batchCmd = new BatchCommand('Ungroup Elements');
+    const cmd = pushGroupProperty(g, true);
+    if (cmd) { batchCmd.addSubCommand(cmd); }
+
+    const parent = g.parentNode;
+    const anchor = g.nextSibling;
+    const children = new Array(g.childNodes.length);
+
+    let i = 0;
+    while (g.firstChild) {
+      const elem = g.firstChild;
+      const oldNextSibling = elem.nextSibling;
+      const oldParent = elem.parentNode;
+
+      // Remove child title elements
+      if (elem.tagName === 'title') {
+        const {nextSibling} = elem;
+        batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, oldParent));
+        elem.remove();
+        continue;
+      }
+
+      if (anchor) {
+        anchor.before(elem);
+      } else {
+        g.after(elem);
+      }
+      children[i++] = elem;
+      batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
+    }
+
+    // remove the group from the selection
+    elementContext_.clearSelection();
+
+    // delete the group element (but make undo-able)
+    const gNextSibling = g.nextSibling;
+    g.remove();
+    batchCmd.addSubCommand(new RemoveElementCommand(g, gNextSibling, parent));
+
+    if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
+
+    // update selection
+    elementContext_.addToSelection(children);
+  }
 };
