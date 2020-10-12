@@ -37,7 +37,8 @@ import {svgRootElement} from './svgroot.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
-  moveUpDownSelected, moveSelectedElements, cloneSelectedElements, alignSelectedElements
+  moveUpDownSelected, moveSelectedElements, cloneSelectedElements, alignSelectedElements,
+  deleteSelectedElements
 } from './selected-elem.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
@@ -6217,6 +6218,32 @@ function hideCursor () {
       }
     };
 
+/**
+* Initialize from select-elem.js.
+* Send in an object implementing the ElementContainer interface (see select-elem.js).
+*/
+    selectedElemInit(
+      /**
+  * @implements {module:selected-elem.elementContext}
+  */
+      {
+        getSelectedElements,
+        addCommandToHistory,
+        call,
+        getIntersectionList,
+        setCurBBoxes (value) { curBBoxes = value; },
+        getSVGRoot,
+        gettingSelectorManager () { return selectorManager; },
+        getCurrentZoom,
+        getDrawing () { return getCurrentDrawing(); },
+        getCurrentGroup () { return currentGroup; },
+        addToSelection,
+        getContentW () { return canvas.contentW; },
+        getContentH () { return canvas.contentH; },
+        clearSelection
+      }
+    );
+
     /**
 * Removes all selected elements from the DOM and adds the change to the
 * history stack.
@@ -6224,42 +6251,7 @@ function hideCursor () {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.deleteSelectedElements = function () {
-      const batchCmd = new BatchCommand('Delete Elements');
-      const len = selectedElements.length;
-      const selectedCopy = []; // selectedElements is being deleted
-
-      for (let i = 0; i < len; ++i) {
-        const selected = selectedElements[i];
-        if (isNullish(selected)) { break; }
-
-        let parent = selected.parentNode;
-        let t = selected;
-
-        // this will unselect the element and remove the selectedOutline
-        selectorManager.releaseSelector(t);
-
-        // Remove the path if present.
-        pathModule.removePath_(t.id);
-
-        // Get the parent if it's a single-child anchor
-        if (parent.tagName === 'a' && parent.childNodes.length === 1) {
-          t = parent;
-          parent = parent.parentNode;
-        }
-
-        const {nextSibling} = t;
-        t.remove();
-        const elem = t;
-        selectedCopy.push(selected); // for the copy
-        batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
-      }
-      selectedElements = [];
-
-      if (!batchCmd.isEmpty()) { addCommandToHistory(batchCmd); }
-      call('changed', selectedCopy);
-      clearSelection();
-    };
+    this.deleteSelectedElements = deleteSelectedElements;
 
     /**
 * Removes all selected elements from the DOM and adds the change to the
@@ -6757,27 +6749,6 @@ function hideCursor () {
         addToSelection(children);
       }
     };
-
-    selectedElemInit(
-      /**
-  * @implements {module:selected-elem.elementContext}
-  */
-      {
-        getSelectedElements,
-        addCommandToHistory,
-        call,
-        getIntersectionList,
-        setCurBBoxes (value) { curBBoxes = value; },
-        getSVGRoot,
-        gettingSelectorManager () { return selectorManager; },
-        getCurrentZoom,
-        getDrawing () { return getCurrentDrawing(); },
-        getCurrentGroup () { return currentGroup; },
-        addToSelection,
-        getContentW () { return canvas.contentW; },
-        getContentH () { return canvas.contentH; }
-      }
-    );
 
     /**
 * Repositions the selected element to the bottom in the DOM to appear on top of

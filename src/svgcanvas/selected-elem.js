@@ -7,6 +7,7 @@
  */
 import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute 
 import * as hstry from './history.js';
+import * as pathModule from './path.js';
 import {
   isNullish, getStrokedBBoxDefaultVisible
 } from '../common/utilities.js';
@@ -17,7 +18,7 @@ import {
   recalculateDimensions,
 } from './recalculate.js';
 const {
-  MoveElementCommand, BatchCommand, InsertElementCommand
+  MoveElementCommand, BatchCommand, InsertElementCommand, RemoveElementCommand
 } = hstry;
 let $ = jQueryPluginSVG(jQuery);
 
@@ -351,4 +352,49 @@ export const alignSelectedElements = function (type, relativeTo) {
     }
   }
   moveSelectedElements(dx, dy);
+};
+
+/**
+* Removes all selected elements from the DOM and adds the change to the
+* history stack.
+* @function module:svgcanvas.SvgCanvas#deleteSelectedElements
+* @fires module:svgcanvas.SvgCanvas#event:changed
+* @returns {void}
+*/
+export const deleteSelectedElements = function () {
+  let selectedElements = elementContext_.getSelectedElements();
+  const batchCmd = new BatchCommand('Delete Elements');
+  const len = selectedElements.length;
+  const selectedCopy = []; // selectedElements is being deleted
+
+  for (let i = 0; i < len; ++i) {
+    const selected = selectedElements[i];
+    if (isNullish(selected)) { break; }
+
+    let parent = selected.parentNode;
+    let t = selected;
+
+    // this will unselect the element and remove the selectedOutline
+    elementContext_.gettingSelectorManager().releaseSelector(t);
+
+    // Remove the path if present.
+    pathModule.removePath_(t.id);
+
+    // Get the parent if it's a single-child anchor
+    if (parent.tagName === 'a' && parent.childNodes.length === 1) {
+      t = parent;
+      parent = parent.parentNode;
+    }
+
+    const {nextSibling} = t;
+    t.remove();
+    const elem = t;
+    selectedCopy.push(selected); // for the copy
+    batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
+  }
+  selectedElements = [];
+
+  if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
+  elementContext_.call('changed', selectedCopy);
+  elementContext_.clearSelection();
 };
