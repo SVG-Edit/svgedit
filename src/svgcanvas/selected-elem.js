@@ -17,7 +17,7 @@ import {
   recalculateDimensions,
 } from './recalculate.js';
 const {
-  MoveElementCommand, BatchCommand
+  MoveElementCommand, BatchCommand, InsertElementCommand
 } = hstry;
 let $ = jQueryPluginSVG(jQuery);
 
@@ -204,4 +204,54 @@ export const moveSelectedElements = function (dx, dy, undoable) {
     return batchCmd;
   }
   return undefined;
+};
+
+/**
+* Create deep DOM copies (clones) of all selected elements and move them slightly
+* from their originals.
+* @function module:svgcanvas.SvgCanvas#cloneSelectedElements
+* @param {Float} x Float with the distance to move on the x-axis
+* @param {Float} y Float with the distance to move on the y-axis
+* @returns {void}
+*/
+export const cloneSelectedElements = function (x, y) {
+  const selectedElements = elementContext_.getSelectedElements();
+  const currentGroup = elementContext_.getCurrentGroup();
+  let i, elem;
+  const batchCmd = new BatchCommand('Clone Elements');
+  // find all the elements selected (stop at first null)
+  const len = selectedElements.length;
+  /**
+* Sorts an array numerically and ascending.
+* @param {Element} a
+* @param {Element} b
+* @returns {Integer}
+*/
+  function sortfunction (a, b) {
+    return ($(b).index() - $(a).index());
+  }
+  selectedElements.sort(sortfunction);
+  for (i = 0; i < len; ++i) {
+    elem = selectedElements[i];
+    if (isNullish(elem)) { break; }
+  }
+  // use slice to quickly get the subset of elements we need
+  const copiedElements = selectedElements.slice(0, i);
+  this.clearSelection(true);
+  // note that we loop in the reverse way because of the way elements are added
+  // to the selectedElements array (top-first)
+  const drawing = elementContext_.getDrawing();
+  i = copiedElements.length;
+  while (i--) {
+    // clone each element and replace it within copiedElements
+    elem = copiedElements[i] = drawing.copyElem(copiedElements[i]);
+    (currentGroup || drawing.getCurrentLayer()).append(elem);
+    batchCmd.addSubCommand(new InsertElementCommand(elem));
+  }
+
+  if (!batchCmd.isEmpty()) {
+    elementContext_.addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
+    moveSelectedElements(x, y, false);
+    elementContext_.addCommandToHistory(batchCmd);
+  }
 };

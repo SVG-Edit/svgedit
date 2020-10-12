@@ -35,7 +35,7 @@ import {
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
-import {init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem, moveUpDownSelected, moveSelectedElements} from './selected-elem.js';
+import {init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem, moveUpDownSelected, moveSelectedElements, cloneSelectedElements } from './selected-elem.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {
@@ -6767,7 +6767,10 @@ function hideCursor () {
         setCurBBoxes (value) { curBBoxes = value; },
         getSVGRoot,
         gettingSelectorManager () { return selectorManager; },
-        getCurrentZoom
+        getCurrentZoom,
+        getDrawing () { return getCurrentDrawing(); },
+        getCurrentGroup () { return currentGroup; },
+        addToSelection
       }
     );
 
@@ -6818,47 +6821,9 @@ function hideCursor () {
 * @param {Float} y Float with the distance to move on the y-axis
 * @returns {void}
 */
-    this.cloneSelectedElements = function (x, y) {
-      let i, elem;
-      const batchCmd = new BatchCommand('Clone Elements');
-      // find all the elements selected (stop at first null)
-      const len = selectedElements.length;
-      /**
-   * Sorts an array numerically and ascending.
-   * @param {Element} a
-   * @param {Element} b
-   * @returns {Integer}
-   */
-      function sortfunction (a, b) {
-        return ($(b).index() - $(a).index());
-      }
-      selectedElements.sort(sortfunction);
-      for (i = 0; i < len; ++i) {
-        elem = selectedElements[i];
-        if (isNullish(elem)) { break; }
-      }
-      // use slice to quickly get the subset of elements we need
-      const copiedElements = selectedElements.slice(0, i);
-      this.clearSelection(true);
-      // note that we loop in the reverse way because of the way elements are added
-      // to the selectedElements array (top-first)
-      const drawing = getCurrentDrawing();
-      i = copiedElements.length;
-      while (i--) {
-        // clone each element and replace it within copiedElements
-        elem = copiedElements[i] = drawing.copyElem(copiedElements[i]);
-        (currentGroup || drawing.getCurrentLayer()).append(elem);
-        batchCmd.addSubCommand(new InsertElementCommand(elem));
-      }
+this.cloneSelectedElements = cloneSelectedElements;
 
-      if (!batchCmd.isEmpty()) {
-        addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
-        this.moveSelectedElements(x, y, false);
-        addCommandToHistory(batchCmd);
-      }
-    };
-
-    /**
+/**
 * Aligns selected elements.
 * @function module:svgcanvas.SvgCanvas#alignSelectedElements
 * @param {string} type - String with single character indicating the alignment type
