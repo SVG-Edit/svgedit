@@ -35,7 +35,10 @@ import {
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
-import {init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem, moveUpDownSelected, moveSelectedElements, cloneSelectedElements } from './selected-elem.js';
+import {
+  init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
+  moveUpDownSelected, moveSelectedElements, cloneSelectedElements, alignSelectedElements
+} from './selected-elem.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {
@@ -6770,7 +6773,9 @@ function hideCursor () {
         getCurrentZoom,
         getDrawing () { return getCurrentDrawing(); },
         getCurrentGroup () { return currentGroup; },
-        addToSelection
+        addToSelection,
+        getContentW () { return canvas.contentW; },
+        getContentH () { return canvas.contentH; }
       }
     );
 
@@ -6821,7 +6826,7 @@ function hideCursor () {
 * @param {Float} y Float with the distance to move on the y-axis
 * @returns {void}
 */
-this.cloneSelectedElements = cloneSelectedElements;
+    this.cloneSelectedElements = cloneSelectedElements;
 
 /**
 * Aligns selected elements.
@@ -6830,95 +6835,7 @@ this.cloneSelectedElements = cloneSelectedElements;
 * @param {"selected"|"largest"|"smallest"|"page"} relativeTo
 * @returns {void}
 */
-    this.alignSelectedElements = function (type, relativeTo) {
-      const bboxes = []; // angles = [];
-      const len = selectedElements.length;
-      if (!len) { return; }
-      let minx = Number.MAX_VALUE, maxx = Number.MIN_VALUE,
-        miny = Number.MAX_VALUE, maxy = Number.MIN_VALUE;
-      let curwidth = Number.MIN_VALUE, curheight = Number.MIN_VALUE;
-      for (let i = 0; i < len; ++i) {
-        if (isNullish(selectedElements[i])) { break; }
-        const elem = selectedElements[i];
-        bboxes[i] = getStrokedBBoxDefaultVisible([elem]);
-
-        // now bbox is axis-aligned and handles rotation
-        switch (relativeTo) {
-        case 'smallest':
-          if (((type === 'l' || type === 'c' || type === 'r') &&
-        (curwidth === Number.MIN_VALUE || curwidth > bboxes[i].width)) ||
-        ((type === 't' || type === 'm' || type === 'b') &&
-        (curheight === Number.MIN_VALUE || curheight > bboxes[i].height))
-          ) {
-            minx = bboxes[i].x;
-            miny = bboxes[i].y;
-            maxx = bboxes[i].x + bboxes[i].width;
-            maxy = bboxes[i].y + bboxes[i].height;
-            curwidth = bboxes[i].width;
-            curheight = bboxes[i].height;
-          }
-          break;
-        case 'largest':
-          if (((type === 'l' || type === 'c' || type === 'r') &&
-        (curwidth === Number.MIN_VALUE || curwidth < bboxes[i].width)) ||
-        ((type === 't' || type === 'm' || type === 'b') &&
-        (curheight === Number.MIN_VALUE || curheight < bboxes[i].height))
-          ) {
-            minx = bboxes[i].x;
-            miny = bboxes[i].y;
-            maxx = bboxes[i].x + bboxes[i].width;
-            maxy = bboxes[i].y + bboxes[i].height;
-            curwidth = bboxes[i].width;
-            curheight = bboxes[i].height;
-          }
-          break;
-        default: // 'selected'
-          if (bboxes[i].x < minx) { minx = bboxes[i].x; }
-          if (bboxes[i].y < miny) { miny = bboxes[i].y; }
-          if (bboxes[i].x + bboxes[i].width > maxx) { maxx = bboxes[i].x + bboxes[i].width; }
-          if (bboxes[i].y + bboxes[i].height > maxy) { maxy = bboxes[i].y + bboxes[i].height; }
-          break;
-        }
-      } // loop for each element to find the bbox and adjust min/max
-
-      if (relativeTo === 'page') {
-        minx = 0;
-        miny = 0;
-        maxx = canvas.contentW;
-        maxy = canvas.contentH;
-      }
-
-      const dx = new Array(len);
-      const dy = new Array(len);
-      for (let i = 0; i < len; ++i) {
-        if (isNullish(selectedElements[i])) { break; }
-        // const elem = selectedElements[i];
-        const bbox = bboxes[i];
-        dx[i] = 0;
-        dy[i] = 0;
-        switch (type) {
-        case 'l': // left (horizontal)
-          dx[i] = minx - bbox.x;
-          break;
-        case 'c': // center (horizontal)
-          dx[i] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
-          break;
-        case 'r': // right (horizontal)
-          dx[i] = maxx - (bbox.x + bbox.width);
-          break;
-        case 't': // top (vertical)
-          dy[i] = miny - bbox.y;
-          break;
-        case 'm': // middle (vertical)
-          dy[i] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
-          break;
-        case 'b': // bottom (vertical)
-          dy[i] = maxy - (bbox.y + bbox.height);
-          break;
-        }
-      }
-      this.moveSelectedElements(dx, dy);
-    };
+    this.alignSelectedElements = alignSelectedElements;
 
     /**
 * Group: Additional editor tools.
