@@ -10,8 +10,14 @@ import * as hstry from './history.js';
 import {
   isNullish, getStrokedBBoxDefaultVisible
 } from '../common/utilities.js';
+import {
+  getTransformList, 
+} from '../common/svgtransformlist.js';
+import {
+  recalculateDimensions,
+} from './recalculate.js';
 const {
-  MoveElementCommand
+  MoveElementCommand, BatchCommand
 } = hstry;
 let $ = jQueryPluginSVG(jQuery);
 
@@ -124,4 +130,78 @@ export const moveUpDownSelected = function (dir) {
     elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'Move ' + dir));
     elementContext_.call('changed', [t]);
   }
+};
+
+/**
+* Moves selected elements on the X/Y axis.
+* @function module:svgcanvas.SvgCanvas#moveSelectedElements
+* @param {Float} dx - Float with the distance to move on the x-axis
+* @param {Float} dy - Float with the distance to move on the y-axis
+* @param {boolean} undoable - Boolean indicating whether or not the action should be undoable
+* @fires module:svgcanvas.SvgCanvas#event:changed
+* @returns {BatchCommand|void} Batch command for the move
+*/
+
+export const moveSelectedElements = function (dx, dy, undoable) {
+  const selectedElements = elementContext_.getSelectedElements();
+  const currentZoom = elementContext_.getCurrentZoom();
+  // if undoable is not sent, default to true
+  // if single values, scale them to the zoom
+  if (dx.constructor !== Array) {
+    dx /= currentZoom;
+    dy /= currentZoom;
+  }
+  undoable = undoable || true;
+  const batchCmd = new BatchCommand('position');
+  let i = selectedElements.length;
+  while (i--) {
+    const selected = selectedElements[i];
+    if (!isNullish(selected)) {
+      // if (i === 0) {
+      //   selectedBBoxes[0] = utilsGetBBox(selected);
+      // }
+      // const b = {};
+      // for (const j in selectedBBoxes[i]) b[j] = selectedBBoxes[i][j];
+      // selectedBBoxes[i] = b;
+
+      const xform = elementContext_.getSVGRoot().createSVGTransform();
+      const tlist = getTransformList(selected);
+
+      // dx and dy could be arrays
+      if (dx.constructor === Array) {
+        // if (i === 0) {
+        //   selectedBBoxes[0].x += dx[0];
+        //   selectedBBoxes[0].y += dy[0];
+        // }
+        xform.setTranslate(dx[i], dy[i]);
+      } else {
+        // if (i === 0) {
+        //   selectedBBoxes[0].x += dx;
+        //   selectedBBoxes[0].y += dy;
+        // }
+        xform.setTranslate(dx, dy);
+      }
+
+      if (tlist.numberOfItems) {
+        tlist.insertItemBefore(xform, 0);
+      } else {
+        tlist.appendItem(xform);
+      }
+
+      const cmd = recalculateDimensions(selected);
+      if (cmd) {
+        batchCmd.addSubCommand(cmd);
+      }
+
+      elementContext_.gettingSelectorManager().requestSelector(selected).resize();
+    }
+  }
+  if (!batchCmd.isEmpty()) {
+    if (undoable) {
+      elementContext_.addCommandToHistory(batchCmd);
+    }
+    elementContext_.call('changed', selectedElements);
+    return batchCmd;
+  }
+  return undefined;
 };

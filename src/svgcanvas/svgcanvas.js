@@ -35,7 +35,7 @@ import {
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
-import {init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem, moveUpDownSelected} from './selected-elem.js';
+import {init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem, moveUpDownSelected, moveSelectedElements} from './selected-elem.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {
@@ -6764,7 +6764,10 @@ function hideCursor () {
         addCommandToHistory,
         call,
         getIntersectionList,
-        setCurBBoxes (value) { curBBoxes = value; }
+        setCurBBoxes (value) { curBBoxes = value; },
+        getSVGRoot,
+        gettingSelectorManager () { return selectorManager; },
+        getCurrentZoom
       }
     );
 
@@ -6805,67 +6808,7 @@ function hideCursor () {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {BatchCommand|void} Batch command for the move
 */
-    this.moveSelectedElements = function (dx, dy, undoable) {
-      // if undoable is not sent, default to true
-      // if single values, scale them to the zoom
-      if (dx.constructor !== Array) {
-        dx /= currentZoom;
-        dy /= currentZoom;
-      }
-      undoable = undoable || true;
-      const batchCmd = new BatchCommand('position');
-      let i = selectedElements.length;
-      while (i--) {
-        const selected = selectedElements[i];
-        if (!isNullish(selected)) {
-          // if (i === 0) {
-          //   selectedBBoxes[0] = utilsGetBBox(selected);
-          // }
-          // const b = {};
-          // for (const j in selectedBBoxes[i]) b[j] = selectedBBoxes[i][j];
-          // selectedBBoxes[i] = b;
-
-          const xform = svgroot.createSVGTransform();
-          const tlist = getTransformList(selected);
-
-          // dx and dy could be arrays
-          if (dx.constructor === Array) {
-            // if (i === 0) {
-            //   selectedBBoxes[0].x += dx[0];
-            //   selectedBBoxes[0].y += dy[0];
-            // }
-            xform.setTranslate(dx[i], dy[i]);
-          } else {
-            // if (i === 0) {
-            //   selectedBBoxes[0].x += dx;
-            //   selectedBBoxes[0].y += dy;
-            // }
-            xform.setTranslate(dx, dy);
-          }
-
-          if (tlist.numberOfItems) {
-            tlist.insertItemBefore(xform, 0);
-          } else {
-            tlist.appendItem(xform);
-          }
-
-          const cmd = recalculateDimensions(selected);
-          if (cmd) {
-            batchCmd.addSubCommand(cmd);
-          }
-
-          selectorManager.requestSelector(selected).resize();
-        }
-      }
-      if (!batchCmd.isEmpty()) {
-        if (undoable) {
-          addCommandToHistory(batchCmd);
-        }
-        call('changed', selectedElements);
-        return batchCmd;
-      }
-      return undefined;
-    };
+  this.moveSelectedElements = moveSelectedElements;
 
     /**
 * Create deep DOM copies (clones) of all selected elements and move them slightly
