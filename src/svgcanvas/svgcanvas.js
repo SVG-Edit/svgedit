@@ -35,6 +35,7 @@ import {
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
 import {init as undoInit, getUndoManager} from './undo.js';
+import {init as eventInit, mouseMoveEvent, mouseUpEvent, dblClickEvent} from './event.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
@@ -1991,6 +1992,79 @@ class SvgCanvas {
         });
       };
 
+/**
+* Initialize from event.js.
+* mouse event move to separate file init 
+*/
+  eventInit(
+  /**
+* @implements {module:selected-elem.elementContext}
+*/
+    {
+      getStarted () { return started; },
+      getCanvas() { return canvas; },
+      getCurConfig () { return curConfig; },
+      getCurrentMode () { return currentMode; },
+      getrootSctm () { return rootSctm; },
+      getStartX () { return startX; },
+      setStartX (value) { startX = value; },
+      getStartY () { return startY; },
+      setStartY (value) { startY = value; },
+      getRStartX () { return rStartX; },
+      getRStartY () { return rStartY; },
+      getRubberBox () { return rubberBox; },
+      getInitBbox () { return initBbox; },
+      getCurrentResizeMode () { return currentResizeMode; },
+      getCurrentGroup () { return currentGroup; },
+      getDrawnPath () { return drawnPath; },
+      getJustSelected () { return justSelected; },
+      getOpacAni () { return opacAni; },
+      getParameter () { return parameter; },
+      getNextParameter () { return nextParameter; },
+      getStepCount () { return STEP_COUNT; },
+      getThreSholdDist () { return THRESHOLD_DIST; },
+      getSumDistance () { return sumDistance; },
+      getStart (key) { return start[key]; },
+      getEnd (key) { return end[key]; },
+      getbSpline (key) { return bSpline[key]; },
+      getNextPos (key) { return nextPos[key]; },
+      getControllPoint1 (key) { return controllPoint1[key]; },
+      getControllPoint2 (key) { return controllPoint2[key]; },
+      setEnd (key, value) { return end[key] = value; },
+      setControllPoint1 (key, value) { return controllPoint1[key] = value; },
+      setControllPoint2 (key, value) { return controllPoint2[key] = value; },
+      setControllPoint2 (key, value) { return controllPoint2[key] = value; },
+      setJustSelected (value ) { justSelected = value; },
+      setParameter (value ) { Parameter = value; },
+      setStart (value ) { start = value; },
+      setSumDistance (value ) { sumDistance = value; },
+      setbSpline (value ) { bSpline = value; },
+      setNextPos (value ) { nextPos = value; },
+      setNextParameter (value ) { nextParameter = value; },
+      setCurProperties (key, value) { curText[key] = value; },
+      setCurText (key, value) { curText[key] = value; },
+      setStarted (s) { started = s; },
+      setStartTransform (transform) { startTransform = transform; },
+      setCurrentMode (cm) {
+        currentMode = cm;
+        return currentMode;
+      },
+      getFreehand (key) { return freehand[key]; },
+      setFreehand (key, value) { freehand[key] = value; },
+      setCurBBoxes (value) { curBBoxes = value; },
+      getDrawing () { return getCurrentDrawing(); },
+      getSelectedElements,
+      getCurrentZoom,
+      getId,
+      addCommandToHistory,
+      getSVGRoot,
+      getSVGContent,
+      call,
+      getIntersectionList,
+      getBsplinePoint
+    }
+  );
+
       // in this function we do not record any state changes yet (but we do update
       // any elements that are still being created, moved or resized on the canvas)
       /**
@@ -2000,444 +2074,7 @@ class SvgCanvas {
  * @fires module:svgcanvas.SvgCanvas#event:ext_mouseMove
  * @returns {void}
  */
-      const mouseMove = function (evt) {
-        if (!started) { return; }
-        if (evt.button === 1 || canvas.spaceKey) { return; }
-
-        let i, xya, c, cx, cy, dx, dy, len, angle, box,
-          selected = selectedElements[0];
-        const
-          pt = transformPoint(evt.pageX, evt.pageY, rootSctm),
-          mouseX = pt.x * currentZoom,
-          mouseY = pt.y * currentZoom,
-          shape = getElem(getId());
-
-        let realX = mouseX / currentZoom;
-        let x = realX;
-        let realY = mouseY / currentZoom;
-        let y = realY;
-
-        if (curConfig.gridSnapping) {
-          x = snapToGrid(x);
-          y = snapToGrid(y);
-        }
-
-        evt.preventDefault();
-        let tlist;
-        switch (currentMode) {
-        case 'select': {
-          // we temporarily use a translate on the element(s) being dragged
-          // this transform is removed upon mousing up and the element is
-          // relocated to the new location
-          if (selectedElements[0] !== null) {
-            dx = x - startX;
-            dy = y - startY;
-
-            if (curConfig.gridSnapping) {
-              dx = snapToGrid(dx);
-              dy = snapToGrid(dy);
-            }
-
-            /*
-      // Commenting out as currently has no effect
-      if (evt.shiftKey) {
-        xya = snapToAngle(startX, startY, x, y);
-        ({x, y} = xya);
-      }
-      */
-
-            if (dx !== 0 || dy !== 0) {
-              len = selectedElements.length;
-              for (i = 0; i < len; ++i) {
-                selected = selectedElements[i];
-                if (isNullish(selected)) { break; }
-                // if (i === 0) {
-                //   const box = utilsGetBBox(selected);
-                //     selectedBBoxes[i].x = box.x + dx;
-                //     selectedBBoxes[i].y = box.y + dy;
-                // }
-
-                // update the dummy transform in our transform list
-                // to be a translate
-                const xform = svgroot.createSVGTransform();
-                tlist = getTransformList(selected);
-                // Note that if Webkit and there's no ID for this
-                // element, the dummy transform may have gotten lost.
-                // This results in unexpected behaviour
-
-                xform.setTranslate(dx, dy);
-                if (tlist.numberOfItems) {
-                  tlist.replaceItem(xform, 0);
-                } else {
-                  tlist.appendItem(xform);
-                }
-
-                // update our internal bbox that we're tracking while dragging
-                selectorManager.requestSelector(selected).resize();
-              }
-
-              call('transition', selectedElements);
-            }
-          }
-          break;
-        } case 'multiselect': {
-          realX *= currentZoom;
-          realY *= currentZoom;
-          assignAttributes(rubberBox, {
-            x: Math.min(rStartX, realX),
-            y: Math.min(rStartY, realY),
-            width: Math.abs(realX - rStartX),
-            height: Math.abs(realY - rStartY)
-          }, 100);
-
-          // for each selected:
-          // - if newList contains selected, do nothing
-          // - if newList doesn't contain selected, remove it from selected
-          // - for any newList that was not in selectedElements, add it to selected
-          const elemsToRemove = selectedElements.slice(), elemsToAdd = [],
-            newList = getIntersectionList();
-
-          // For every element in the intersection, add if not present in selectedElements.
-          len = newList.length;
-          for (i = 0; i < len; ++i) {
-            const intElem = newList[i];
-            // Found an element that was not selected before, so we should add it.
-            if (!selectedElements.includes(intElem)) {
-              elemsToAdd.push(intElem);
-            }
-            // Found an element that was already selected, so we shouldn't remove it.
-            const foundInd = elemsToRemove.indexOf(intElem);
-            if (foundInd !== -1) {
-              elemsToRemove.splice(foundInd, 1);
-            }
-          }
-
-          if (elemsToRemove.length > 0) {
-            canvas.removeFromSelection(elemsToRemove);
-          }
-
-          if (elemsToAdd.length > 0) {
-            canvas.addToSelection(elemsToAdd);
-          }
-
-          break;
-        } case 'resize': {
-          // we track the resize bounding box and translate/scale the selected element
-          // while the mouse is down, when mouse goes up, we use this to recalculate
-          // the shape's coordinates
-          tlist = getTransformList(selected);
-          const hasMatrix = hasMatrixTransform(tlist);
-          box = hasMatrix ? initBbox : utilsGetBBox(selected);
-          let left = box.x,
-            top = box.y,
-            {width, height} = box;
-          dx = (x - startX);
-          dy = (y - startY);
-
-          if (curConfig.gridSnapping) {
-            dx = snapToGrid(dx);
-            dy = snapToGrid(dy);
-            height = snapToGrid(height);
-            width = snapToGrid(width);
-          }
-
-          // if rotated, adjust the dx,dy values
-          angle = getRotationAngle(selected);
-          if (angle) {
-            const r = Math.sqrt(dx * dx + dy * dy),
-              theta = Math.atan2(dy, dx) - angle * Math.PI / 180.0;
-            dx = r * Math.cos(theta);
-            dy = r * Math.sin(theta);
-          }
-
-          // if not stretching in y direction, set dy to 0
-          // if not stretching in x direction, set dx to 0
-          if (!currentResizeMode.includes('n') && !currentResizeMode.includes('s')) {
-            dy = 0;
-          }
-          if (!currentResizeMode.includes('e') && !currentResizeMode.includes('w')) {
-            dx = 0;
-          }
-
-          let // ts = null,
-            tx = 0, ty = 0,
-            sy = height ? (height + dy) / height : 1,
-            sx = width ? (width + dx) / width : 1;
-          // if we are dragging on the north side, then adjust the scale factor and ty
-          if (currentResizeMode.includes('n')) {
-            sy = height ? (height - dy) / height : 1;
-            ty = height;
-          }
-
-          // if we dragging on the east side, then adjust the scale factor and tx
-          if (currentResizeMode.includes('w')) {
-            sx = width ? (width - dx) / width : 1;
-            tx = width;
-          }
-
-          // update the transform list with translate,scale,translate
-          const translateOrigin = svgroot.createSVGTransform(),
-            scale = svgroot.createSVGTransform(),
-            translateBack = svgroot.createSVGTransform();
-
-          if (curConfig.gridSnapping) {
-            left = snapToGrid(left);
-            tx = snapToGrid(tx);
-            top = snapToGrid(top);
-            ty = snapToGrid(ty);
-          }
-
-          translateOrigin.setTranslate(-(left + tx), -(top + ty));
-          if (evt.shiftKey) {
-            if (sx === 1) {
-              sx = sy;
-            } else { sy = sx; }
-          }
-          scale.setScale(sx, sy);
-
-          translateBack.setTranslate(left + tx, top + ty);
-          if (hasMatrix) {
-            const diff = angle ? 1 : 0;
-            tlist.replaceItem(translateOrigin, 2 + diff);
-            tlist.replaceItem(scale, 1 + diff);
-            tlist.replaceItem(translateBack, Number(diff));
-          } else {
-            const N = tlist.numberOfItems;
-            tlist.replaceItem(translateBack, N - 3);
-            tlist.replaceItem(scale, N - 2);
-            tlist.replaceItem(translateOrigin, N - 1);
-          }
-
-          selectorManager.requestSelector(selected).resize();
-
-          call('transition', selectedElements);
-
-          break;
-        } case 'zoom': {
-          realX *= currentZoom;
-          realY *= currentZoom;
-          assignAttributes(rubberBox, {
-            x: Math.min(rStartX * currentZoom, realX),
-            y: Math.min(rStartY * currentZoom, realY),
-            width: Math.abs(realX - rStartX * currentZoom),
-            height: Math.abs(realY - rStartY * currentZoom)
-          }, 100);
-          break;
-        } case 'text': {
-          assignAttributes(shape, {
-            x,
-            y
-          }, 1000);
-          break;
-        } case 'line': {
-          if (curConfig.gridSnapping) {
-            x = snapToGrid(x);
-            y = snapToGrid(y);
-          }
-
-          let x2 = x;
-          let y2 = y;
-
-          if (evt.shiftKey) {
-            xya = snapToAngle(startX, startY, x2, y2);
-            x2 = xya.x;
-            y2 = xya.y;
-          }
-
-          shape.setAttribute('x2', x2);
-          shape.setAttribute('y2', y2);
-          break;
-        } case 'foreignObject':
-          // fall through
-        case 'square':
-          // fall through
-        case 'rect':
-          // fall through
-        case 'image': {
-          const square = (currentMode === 'square') || evt.shiftKey;
-          let
-            w = Math.abs(x - startX),
-            h = Math.abs(y - startY);
-          let newX, newY;
-          if (square) {
-            w = h = Math.max(w, h);
-            newX = startX < x ? startX : startX - w;
-            newY = startY < y ? startY : startY - h;
-          } else {
-            newX = Math.min(startX, x);
-            newY = Math.min(startY, y);
-          }
-
-          if (curConfig.gridSnapping) {
-            w = snapToGrid(w);
-            h = snapToGrid(h);
-            newX = snapToGrid(newX);
-            newY = snapToGrid(newY);
-          }
-
-          assignAttributes(shape, {
-            width: w,
-            height: h,
-            x: newX,
-            y: newY
-          }, 1000);
-
-          break;
-        } case 'circle': {
-          c = $(shape).attr(['cx', 'cy']);
-          ({cx, cy} = c);
-          let rad = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-          if (curConfig.gridSnapping) {
-            rad = snapToGrid(rad);
-          }
-          shape.setAttribute('r', rad);
-          break;
-        } case 'ellipse': {
-          c = $(shape).attr(['cx', 'cy']);
-          ({cx, cy} = c);
-          if (curConfig.gridSnapping) {
-            x = snapToGrid(x);
-            cx = snapToGrid(cx);
-            y = snapToGrid(y);
-            cy = snapToGrid(cy);
-          }
-          shape.setAttribute('rx', Math.abs(x - cx));
-          const ry = Math.abs(evt.shiftKey ? (x - cx) : (y - cy));
-          shape.setAttribute('ry', ry);
-          break;
-        }
-        case 'fhellipse':
-        case 'fhrect': {
-          freehand.minx = Math.min(realX, freehand.minx);
-          freehand.maxx = Math.max(realX, freehand.maxx);
-          freehand.miny = Math.min(realY, freehand.miny);
-          freehand.maxy = Math.max(realY, freehand.maxy);
-        }
-        // Fallthrough
-        case 'fhpath': {
-          // dAttr += + realX + ',' + realY + ' ';
-          // shape.setAttribute('points', dAttr);
-          end.x = realX; end.y = realY;
-          if (controllPoint2.x && controllPoint2.y) {
-            for (i = 0; i < STEP_COUNT - 1; i++) {
-              parameter = i / STEP_COUNT;
-              nextParameter = (i + 1) / STEP_COUNT;
-              bSpline = getBsplinePoint(nextParameter);
-              nextPos = bSpline;
-              bSpline = getBsplinePoint(parameter);
-              sumDistance += Math.sqrt((nextPos.x - bSpline.x) *
-          (nextPos.x - bSpline.x) + (nextPos.y - bSpline.y) *
-          (nextPos.y - bSpline.y));
-              if (sumDistance > THRESHOLD_DIST) {
-                sumDistance -= THRESHOLD_DIST;
-
-                // Faster than completely re-writing the points attribute.
-                const point = svgcontent.createSVGPoint();
-                point.x = bSpline.x;
-                point.y = bSpline.y;
-                shape.points.appendItem(point);
-              }
-            }
-          }
-          controllPoint2 = {x: controllPoint1.x, y: controllPoint1.y};
-          controllPoint1 = {x: start.x, y: start.y};
-          start = {x: end.x, y: end.y};
-          break;
-          // update path stretch line coordinates
-        } case 'path':
-          // fall through
-        case 'pathedit': {
-          x *= currentZoom;
-          y *= currentZoom;
-
-          if (curConfig.gridSnapping) {
-            x = snapToGrid(x);
-            y = snapToGrid(y);
-            startX = snapToGrid(startX);
-            startY = snapToGrid(startY);
-          }
-          if (evt.shiftKey) {
-            const {path} = pathModule;
-            let x1, y1;
-            if (path) {
-              x1 = path.dragging ? path.dragging[0] : startX;
-              y1 = path.dragging ? path.dragging[1] : startY;
-            } else {
-              x1 = startX;
-              y1 = startY;
-            }
-            xya = snapToAngle(x1, y1, x, y);
-            ({x, y} = xya);
-          }
-
-          if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
-            realX *= currentZoom;
-            realY *= currentZoom;
-            assignAttributes(rubberBox, {
-              x: Math.min(rStartX * currentZoom, realX),
-              y: Math.min(rStartY * currentZoom, realY),
-              width: Math.abs(realX - rStartX * currentZoom),
-              height: Math.abs(realY - rStartY * currentZoom)
-            }, 100);
-          }
-          pathActions.mouseMove(x, y);
-
-          break;
-        } case 'textedit': {
-          x *= currentZoom;
-          y *= currentZoom;
-          // if (rubberBox && rubberBox.getAttribute('display') !== 'none') {
-          //   assignAttributes(rubberBox, {
-          //     x: Math.min(startX, x),
-          //     y: Math.min(startY, y),
-          //     width: Math.abs(x - startX),
-          //     height: Math.abs(y - startY)
-          //   }, 100);
-          // }
-
-          textActions.mouseMove(mouseX, mouseY);
-
-          break;
-        } case 'rotate': {
-          box = utilsGetBBox(selected);
-          cx = box.x + box.width / 2;
-          cy = box.y + box.height / 2;
-          const m = getMatrix(selected),
-            center = transformPoint(cx, cy, m);
-          cx = center.x;
-          cy = center.y;
-          angle = ((Math.atan2(cy - y, cx - x) * (180 / Math.PI)) - 90) % 360;
-          if (curConfig.gridSnapping) {
-            angle = snapToGrid(angle);
-          }
-          if (evt.shiftKey) { // restrict rotations to nice angles (WRS)
-            const snap = 45;
-            angle = Math.round(angle / snap) * snap;
-          }
-
-          canvas.setRotationAngle(angle < -180 ? (360 + angle) : angle, true);
-          call('transition', selectedElements);
-          break;
-        } default:
-          break;
-        }
-
-        /**
-  * The mouse has moved on the canvas area.
-  * @event module:svgcanvas.SvgCanvas#event:ext_mouseMove
-  * @type {PlainObject}
-  * @property {MouseEvent} event The event object
-  * @property {Float} mouse_x x coordinate on canvas
-  * @property {Float} mouse_y y coordinate on canvas
-  * @property {Element} selected Refers to the first selected element
-  */
-        runExtensions('mouseMove', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseMove} */ {
-          event: evt,
-          mouse_x: mouseX,
-          mouse_y: mouseY,
-          selected
-        });
-      }; // mouseMove()
+      const mouseMove = mouseMoveEvent;
 
       // - in create mode, the element's opacity is set properly, we create an InsertElementCommand
       // and store it on the Undo stack
@@ -2452,372 +2089,9 @@ class SvgCanvas {
  * @fires module:svgcanvas.SvgCanvas#event:ext_mouseUp
  * @returns {void}
  */
-      const mouseUp = function (evt) {
-        if (evt.button === 2) { return; }
-        const tempJustSelected = justSelected;
-        justSelected = null;
-        if (!started) { return; }
-        const pt = transformPoint(evt.pageX, evt.pageY, rootSctm),
-          mouseX = pt.x * currentZoom,
-          mouseY = pt.y * currentZoom,
-          x = mouseX / currentZoom,
-          y = mouseY / currentZoom;
+      const mouseUp = mouseUpEvent;
 
-        let element = getElem(getId());
-        let keep = false;
-
-        const realX = x;
-        const realY = y;
-
-        // TODO: Make true when in multi-unit mode
-        const useUnit = false; // (curConfig.baseUnit !== 'px');
-        started = false;
-        let attrs, t;
-        switch (currentMode) {
-        // intentionally fall-through to select here
-        case 'resize':
-        case 'multiselect':
-          if (!isNullish(rubberBox)) {
-            rubberBox.setAttribute('display', 'none');
-            curBBoxes = [];
-          }
-          currentMode = 'select';
-          // Fallthrough
-        case 'select':
-          if (!isNullish(selectedElements[0])) {
-            // if we only have one selected element
-            if (isNullish(selectedElements[1])) {
-              // set our current stroke/fill properties to the element's
-              const selected = selectedElements[0];
-              switch (selected.tagName) {
-              case 'g':
-              case 'use':
-              case 'image':
-              case 'foreignObject':
-                break;
-              default:
-                curProperties.fill = selected.getAttribute('fill');
-                curProperties.fill_opacity = selected.getAttribute('fill-opacity');
-                curProperties.stroke = selected.getAttribute('stroke');
-                curProperties.stroke_opacity = selected.getAttribute('stroke-opacity');
-                curProperties.stroke_width = selected.getAttribute('stroke-width');
-                curProperties.stroke_dasharray = selected.getAttribute('stroke-dasharray');
-                curProperties.stroke_linejoin = selected.getAttribute('stroke-linejoin');
-                curProperties.stroke_linecap = selected.getAttribute('stroke-linecap');
-              }
-
-              if (selected.tagName === 'text') {
-                curText.font_size = selected.getAttribute('font-size');
-                curText.font_family = selected.getAttribute('font-family');
-              }
-              selectorManager.requestSelector(selected).showGrips(true);
-
-              // This shouldn't be necessary as it was done on mouseDown...
-              // call('selected', [selected]);
-            }
-            // always recalculate dimensions to strip off stray identity transforms
-            recalculateAllSelectedDimensions();
-            // if it was being dragged/resized
-            if (realX !== rStartX || realY !== rStartY) {
-              const len = selectedElements.length;
-              for (let i = 0; i < len; ++i) {
-                if (isNullish(selectedElements[i])) { break; }
-                if (!selectedElements[i].firstChild) {
-                  // Not needed for groups (incorrectly resizes elems), possibly not needed at all?
-                  selectorManager.requestSelector(selectedElements[i]).resize();
-                }
-              }
-              // no change in position/size, so maybe we should move to pathedit
-            } else {
-              t = evt.target;
-              if (selectedElements[0].nodeName === 'path' && isNullish(selectedElements[1])) {
-                pathActions.select(selectedElements[0]);
-                // if it was a path
-                // else, if it was selected and this is a shift-click, remove it from selection
-              } else if (evt.shiftKey) {
-                if (tempJustSelected !== t) {
-                  canvas.removeFromSelection([t]);
-                }
-              }
-            } // no change in mouse position
-
-            // Remove non-scaling stroke
-            if (supportsNonScalingStroke()) {
-              const elem = selectedElements[0];
-              if (elem) {
-                elem.removeAttribute('style');
-                walkTree(elem, function (el) {
-                  el.removeAttribute('style');
-                });
-              }
-            }
-          }
-          return;
-        case 'zoom': {
-          if (!isNullish(rubberBox)) {
-            rubberBox.setAttribute('display', 'none');
-          }
-          const factor = evt.shiftKey ? 0.5 : 2;
-          call('zoomed', {
-            x: Math.min(rStartX, realX),
-            y: Math.min(rStartY, realY),
-            width: Math.abs(realX - rStartX),
-            height: Math.abs(realY - rStartY),
-            factor
-          });
-          return;
-        } case 'fhpath': {
-          // Check that the path contains at least 2 points; a degenerate one-point path
-          // causes problems.
-          // Webkit ignores how we set the points attribute with commas and uses space
-          // to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
-          sumDistance = 0;
-          controllPoint2 = {x: 0, y: 0};
-          controllPoint1 = {x: 0, y: 0};
-          start = {x: 0, y: 0};
-          end = {x: 0, y: 0};
-          const coords = element.getAttribute('points');
-          const commaIndex = coords.indexOf(',');
-          if (commaIndex >= 0) {
-            keep = coords.includes(',', commaIndex + 1);
-          } else {
-            keep = coords.includes(' ', coords.indexOf(' ') + 1);
-          }
-          if (keep) {
-            element = pathActions.smoothPolylineIntoPath(element);
-          }
-          break;
-        } case 'line':
-          attrs = $(element).attr(['x1', 'x2', 'y1', 'y2']);
-          keep = (attrs.x1 !== attrs.x2 || attrs.y1 !== attrs.y2);
-          break;
-        case 'foreignObject':
-        case 'square':
-        case 'rect':
-        case 'image':
-          attrs = $(element).attr(['width', 'height']);
-          // Image should be kept regardless of size (use inherit dimensions later)
-          keep = (attrs.width || attrs.height) || currentMode === 'image';
-          break;
-        case 'circle':
-          keep = (element.getAttribute('r') !== '0');
-          break;
-        case 'ellipse':
-          attrs = $(element).attr(['rx', 'ry']);
-          keep = (attrs.rx || attrs.ry);
-          break;
-        case 'fhellipse':
-          if ((freehand.maxx - freehand.minx) > 0 &&
-      (freehand.maxy - freehand.miny) > 0) {
-            element = addSVGElementFromJson({
-              element: 'ellipse',
-              curStyles: true,
-              attr: {
-                cx: (freehand.minx + freehand.maxx) / 2,
-                cy: (freehand.miny + freehand.maxy) / 2,
-                rx: (freehand.maxx - freehand.minx) / 2,
-                ry: (freehand.maxy - freehand.miny) / 2,
-                id: getId()
-              }
-            });
-            call('changed', [element]);
-            keep = true;
-          }
-          break;
-        case 'fhrect':
-          if ((freehand.maxx - freehand.minx) > 0 &&
-      (freehand.maxy - freehand.miny) > 0) {
-            element = addSVGElementFromJson({
-              element: 'rect',
-              curStyles: true,
-              attr: {
-                x: freehand.minx,
-                y: freehand.miny,
-                width: (freehand.maxx - freehand.minx),
-                height: (freehand.maxy - freehand.miny),
-                id: getId()
-              }
-            });
-            call('changed', [element]);
-            keep = true;
-          }
-          break;
-        case 'text':
-          keep = true;
-          selectOnly([element]);
-          textActions.start(element);
-          break;
-        case 'path': {
-          // set element to null here so that it is not removed nor finalized
-          element = null;
-          // continue to be set to true so that mouseMove happens
-          started = true;
-
-          const res = pathActions.mouseUp(evt, element, mouseX, mouseY);
-          ({element} = res);
-          ({keep} = res);
-          break;
-        } case 'pathedit':
-          keep = true;
-          element = null;
-          pathActions.mouseUp(evt);
-          break;
-        case 'textedit':
-          keep = false;
-          element = null;
-          textActions.mouseUp(evt, mouseX, mouseY);
-          break;
-        case 'rotate': {
-          keep = true;
-          element = null;
-          currentMode = 'select';
-          const batchCmd = canvas.undoMgr.finishUndoableChange();
-          if (!batchCmd.isEmpty()) {
-            addCommandToHistory(batchCmd);
-          }
-          // perform recalculation to weed out any stray identity transforms that might get stuck
-          recalculateAllSelectedDimensions();
-          call('changed', selectedElements);
-          break;
-        } default:
-          // This could occur in an extension
-          break;
-        }
-
-        /**
-  * The main (left) mouse button is released (anywhere).
-  * @event module:svgcanvas.SvgCanvas#event:ext_mouseUp
-  * @type {PlainObject}
-  * @property {MouseEvent} event The event object
-  * @property {Float} mouse_x x coordinate on canvas
-  * @property {Float} mouse_y y coordinate on canvas
-  */
-        const extResult = runExtensions('mouseUp', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseUp} */ {
-          event: evt,
-          mouse_x: mouseX,
-          mouse_y: mouseY
-        }, true);
-
-        $.each(extResult, function (i, r) {
-          if (r) {
-            keep = r.keep || keep;
-            ({element} = r);
-            started = r.started || started;
-          }
-        });
-
-        if (!keep && !isNullish(element)) {
-          getCurrentDrawing().releaseId(getId());
-          element.remove();
-          element = null;
-
-          t = evt.target;
-
-          // if this element is in a group, go up until we reach the top-level group
-          // just below the layer groups
-          // TODO: once we implement links, we also would have to check for <a> elements
-          while (t && t.parentNode && t.parentNode.parentNode && t.parentNode.parentNode.tagName === 'g') {
-            t = t.parentNode;
-          }
-          // if we are not in the middle of creating a path, and we've clicked on some shape,
-          // then go to Select mode.
-          // WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
-          if ((currentMode !== 'path' || !drawnPath) &&
-      t && t.parentNode &&
-      t.parentNode.id !== 'selectorParentGroup' &&
-      t.id !== 'svgcanvas' && t.id !== 'svgroot'
-          ) {
-            // switch into "select" mode if we've clicked on an element
-            canvas.setMode('select');
-            selectOnly([t], true);
-          }
-        } else if (!isNullish(element)) {
-          /**
-    * @name module:svgcanvas.SvgCanvas#addedNew
-    * @type {boolean}
-    */
-          canvas.addedNew = true;
-
-          if (useUnit) { convertAttrs(element); }
-
-          let aniDur = 0.2;
-          let cAni;
-          if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
-            cAni = $(opacAni).clone().attr({
-              to: curShape.opacity,
-              dur: aniDur
-            }).appendTo(element);
-            try {
-              // Fails in FF4 on foreignObject
-              cAni[0].beginElement();
-            } catch (e) {}
-          } else {
-            aniDur = 0;
-          }
-
-          // Ideally this would be done on the endEvent of the animation,
-          // but that doesn't seem to be supported in Webkit
-          setTimeout(function () {
-            if (cAni) { cAni.remove(); }
-            element.setAttribute('opacity', curShape.opacity);
-            element.setAttribute('style', 'pointer-events:inherit');
-            cleanupElement(element);
-            if (currentMode === 'path') {
-              pathActions.toEditMode(element);
-            } else if (curConfig.selectNew) {
-              selectOnly([element], true);
-            }
-            // we create the insert command that is stored on the stack
-            // undo means to call cmd.unapply(), redo means to call cmd.apply()
-            addCommandToHistory(new InsertElementCommand(element));
-
-            call('changed', [element]);
-          }, aniDur * 1000);
-        }
-
-        startTransform = null;
-      };
-
-      const dblClick = function (evt) {
-        const evtTarget = evt.target;
-        const parent = evtTarget.parentNode;
-
-        let mouseTarget = getMouseTarget(evt);
-        const {tagName} = mouseTarget;
-
-        if (tagName === 'text' && currentMode !== 'textedit') {
-          const pt = transformPoint(evt.pageX, evt.pageY, rootSctm);
-          textActions.select(mouseTarget, pt.x, pt.y);
-        }
-
-        // Do nothing if already in current group
-        if (parent === currentGroup) { return; }
-
-        if ((tagName === 'g' || tagName === 'a') &&
-    getRotationAngle(mouseTarget)
-        ) {
-          // TODO: Allow method of in-group editing without having to do
-          // this (similar to editing rotated paths)
-
-          // Ungroup and regroup
-          pushGroupProperties(mouseTarget);
-          mouseTarget = selectedElements[0];
-          clearSelection(true);
-        }
-        // Reset context
-        if (currentGroup) {
-          draw.leaveContext();
-        }
-
-        if ((parent.tagName !== 'g' && parent.tagName !== 'a') ||
-    parent === getCurrentDrawing().getCurrentLayer() ||
-    mouseTarget === selectorManager.selectorParentGroup
-        ) {
-          // Escape from in-group edit
-          return;
-        }
-        draw.setContext(mouseTarget);
-      };
+      const dblClick = dblClickEvent;
 
       // prevent links from being followed in the canvas
       const handleLinkInCanvas = function (e) {
