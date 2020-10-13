@@ -67,8 +67,8 @@ export const moveToTopSelectedElem = function () {
 /**
 * Repositions the selected element to the top in the DOM to appear under
 * other elements.
-* @function module:svgcanvas.SvgCanvas#moveToBottomSelectedElement
-* @fires module:svgcanvas.SvgCanvas#event:changed
+* @function module:selected-elem.SvgCanvas#moveToBottomSelectedElement
+* @fires module:selected-elem.SvgCanvas#event:changed
 * @returns {void}
 */
 export const moveToBottomSelectedElem = function () {
@@ -99,9 +99,9 @@ export const moveToBottomSelectedElem = function () {
 /**
 * Moves the select element up or down the stack, based on the visibly
 * intersecting elements.
-* @function module:svgcanvas.SvgCanvas#moveUpDownSelected
+* @function module:selected-elem.SvgCanvas#moveUpDownSelected
 * @param {"Up"|"Down"} dir - String that's either 'Up' or 'Down'
-* @fires module:svgcanvas.SvgCanvas#event:changed
+* @fires module:selected-elem.SvgCanvas#event:changed
 * @returns {void}
 */
 export const moveUpDownSelected = function (dir) {
@@ -143,11 +143,11 @@ export const moveUpDownSelected = function (dir) {
 
 /**
 * Moves selected elements on the X/Y axis.
-* @function module:svgcanvas.SvgCanvas#moveSelectedElements
+* @function module:selected-elem.SvgCanvas#moveSelectedElements
 * @param {Float} dx - Float with the distance to move on the x-axis
 * @param {Float} dy - Float with the distance to move on the y-axis
 * @param {boolean} undoable - Boolean indicating whether or not the action should be undoable
-* @fires module:svgcanvas.SvgCanvas#event:changed
+* @fires module:selected-elem.SvgCanvas#event:changed
 * @returns {BatchCommand|void} Batch command for the move
 */
 
@@ -218,7 +218,7 @@ export const moveSelectedElements = function (dx, dy, undoable) {
 /**
 * Create deep DOM copies (clones) of all selected elements and move them slightly
 * from their originals.
-* @function module:svgcanvas.SvgCanvas#cloneSelectedElements
+* @function module:selected-elem.SvgCanvas#cloneSelectedElements
 * @param {Float} x Float with the distance to move on the x-axis
 * @param {Float} y Float with the distance to move on the y-axis
 * @returns {void}
@@ -266,7 +266,7 @@ export const cloneSelectedElements = function (x, y) {
 };
 /**
 * Aligns selected elements.
-* @function module:svgcanvas.SvgCanvas#alignSelectedElements
+* @function module:selected-elem.SvgCanvas#alignSelectedElements
 * @param {string} type - String with single character indicating the alignment type
 * @param {"selected"|"largest"|"smallest"|"page"} relativeTo
 * @returns {void}
@@ -365,8 +365,8 @@ export const alignSelectedElements = function (type, relativeTo) {
 /**
 * Removes all selected elements from the DOM and adds the change to the
 * history stack.
-* @function module:svgcanvas.SvgCanvas#deleteSelectedElements
-* @fires module:svgcanvas.SvgCanvas#event:changed
+* @function module:selected-elem.SvgCanvas#deleteSelectedElements
+* @fires module:selected-elem.SvgCanvas#event:changed
 * @returns {void}
 */
 export const deleteSelectedElements = function () {
@@ -409,7 +409,7 @@ export const deleteSelectedElements = function () {
 
 /**
 * Remembers the current selected elements on the clipboard.
-* @function module:svgcanvas.SvgCanvas#copySelectedElements
+* @function module:selected-elem.SvgCanvas#copySelectedElements
 * @returns {void}
 */
 export const copySelectedElements = function () {
@@ -429,7 +429,7 @@ export const copySelectedElements = function () {
 
 /**
 * Wraps all the selected elements in a group (`g`) element.
-* @function module:svgcanvas.SvgCanvas#groupSelectedElements
+* @function module:selected-elem.SvgCanvas#groupSelectedElements
 * @param {"a"|"g"} [type="g"] - type of element to group into, defaults to `<g>`
 * @param {string} [urlArg]
 * @returns {void}
@@ -490,7 +490,7 @@ export const groupSelectedElements = function (type, urlArg) {
 /**
 * Pushes all appropriate parent group properties down to its children, then
 * removes them from the group.
-* @function module:svgcanvas.SvgCanvas#pushGroupProperty
+* @function module:selected-elem.SvgCanvas#pushGroupProperty
 * @param {SVGAElement|SVGGElement} g
 * @param {boolean} undoable
 * @returns {BatchCommand|void}
@@ -677,9 +677,9 @@ export const pushGroupProperty = function (g, undoable) {
 
 /**
 * Converts selected/given `<use>` or child SVG element to a group.
-* @function module:svgcanvas.SvgCanvas#convertToGroup
+* @function module:selected-elem.SvgCanvas#convertToGroup
 * @param {Element} elem
-* @fires module:svgcanvas.SvgCanvas#event:selected
+* @fires module:selected-elem.SvgCanvas#event:selected
 * @returns {void}
 */
 export const convertToGroup = function (elem) {
@@ -814,7 +814,7 @@ export const convertToGroup = function (elem) {
 /**
 * Unwraps all the elements in a selected group (`g`) element. This requires
 * significant recalculations to apply group's transforms, etc. to its children.
-* @function module:svgcanvas.SvgCanvas#ungroupSelectedElement
+* @function module:selected-elem.SvgCanvas#ungroupSelectedElement
 * @returns {void}
 */
 export const ungroupSelectedElement = function () {
