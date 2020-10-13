@@ -34,6 +34,7 @@ import {
   leaveContext, setContext
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
+import {init as undoInit, getUndoManager} from './undo.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
@@ -46,7 +47,7 @@ import {getReverseNS, NS} from '../common/namespaces.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
-  preventClickDefault, snapToGrid, walkTree, walkTreePost,
+  preventClickDefault, snapToGrid, walkTree,
   getBBoxOfElementAsPath, convertToPath, toXml, encode64, decode64,
   dataURLToObjectURL, createObjectURL,
   getVisibleElements, dropXMLInternalSubset,
@@ -85,8 +86,11 @@ import {
 let $ = jQueryPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
-  ChangeElementCommand, BatchCommand, UndoManager, HistoryEventTypes
+  ChangeElementCommand, BatchCommand,
 } = hstry;
+
+const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
+const refAttrs = ['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'];
 
 if (!window.console) {
   window.console = {};
@@ -421,87 +425,6 @@ class SvgCanvas {
     canvas.sanitizeSvg = sanitizeSvg;
 
     /**
-* @name undoMgr
-* @memberof module:svgcanvas.SvgCanvas#
-* @type {module:history.HistoryEventHandler}
-*/
-    const undoMgr = canvas.undoMgr = new UndoManager({
-      /**
-   * @param {string} eventType One of the HistoryEvent types
-   * @param {module:history.HistoryCommand} cmd Fulfills the HistoryCommand interface
-   * @fires module:svgcanvas.SvgCanvas#event:changed
-   * @returns {void}
-   */
-      handleHistoryEvent (eventType, cmd) {
-        const EventTypes = HistoryEventTypes;
-        // TODO: handle setBlurOffsets.
-        if (eventType === EventTypes.BEFORE_UNAPPLY || eventType === EventTypes.BEFORE_APPLY) {
-          canvas.clearSelection();
-        } else if (eventType === EventTypes.AFTER_APPLY || eventType === EventTypes.AFTER_UNAPPLY) {
-          const elems = cmd.elements();
-          canvas.pathActions.clear();
-          call('changed', elems);
-          const cmdType = cmd.type();
-          const isApply = (eventType === EventTypes.AFTER_APPLY);
-          if (cmdType === 'MoveElementCommand') {
-            const parent = isApply ? cmd.newParent : cmd.oldParent;
-            if (parent === svgcontent) {
-              draw.identifyLayers();
-            }
-          } else if (cmdType === 'InsertElementCommand' ||
-          cmdType === 'RemoveElementCommand') {
-            if (cmd.parent === svgcontent) {
-              draw.identifyLayers();
-            }
-            if (cmdType === 'InsertElementCommand') {
-              if (isApply) { restoreRefElems(cmd.elem); }
-            } else if (!isApply) {
-              restoreRefElems(cmd.elem);
-            }
-            if (cmd.elem && cmd.elem.tagName === 'use') {
-              setUseData(cmd.elem);
-            }
-          } else if (cmdType === 'ChangeElementCommand') {
-            // if we are changing layer names, re-identify all layers
-            if (cmd.elem.tagName === 'title' &&
-          cmd.elem.parentNode.parentNode === svgcontent
-            ) {
-              draw.identifyLayers();
-            }
-            const values = isApply ? cmd.newValues : cmd.oldValues;
-            // If stdDeviation was changed, update the blur.
-            if (values.stdDeviation) {
-              canvas.setBlurOffsets(cmd.elem.parentNode, values.stdDeviation);
-            }
-            // This is resolved in later versions of webkit, perhaps we should
-            // have a featured detection for correct 'use' behavior?
-            // ——————————
-            // Remove & Re-add hack for Webkit (issue 775)
-            // if (cmd.elem.tagName === 'use' && isWebkit()) {
-            //  const {elem} = cmd;
-            //  if (!elem.getAttribute('x') && !elem.getAttribute('y')) {
-            //    const parent = elem.parentNode;
-            //    const sib = elem.nextSibling;
-            //    elem.remove();
-            //    parent.insertBefore(elem, sib);
-            //    // Ok to replace above with this? `sib.before(elem);`
-            //  }
-            // }
-          }
-        }
-      }
-    });
-
-    /**
-* This should really be an intersection applying to all types rather than a union.
-* @name module:svgcanvas~addCommandToHistory
-* @type {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory}
-*/
-    const addCommandToHistory = function (cmd) {
-      canvas.undoMgr.addCommandToHistory(cmd);
-    };
-
-    /**
 * This should really be an intersection applying to all types rather than a union.
 * @name module:svgcanvas.SvgCanvas#getZoom
 * @type {module:path.EditorContext#getCurrentZoom|module:select.SVGFactory#getCurrentZoom}
@@ -564,6 +487,58 @@ class SvgCanvas {
       }
       return undefined;
     };
+
+    const restoreRefElems = function (elem) {
+      // Look for missing reference elements, restore any found
+      const attrs = $(elem).attr(refAttrs);
+      Object.values(attrs).forEach((val) => {
+        if (val && val.startsWith('url(')) {
+          const id = getUrlFromAttr(val).substr(1);
+          const ref = getElem(id);
+          if (!ref) {
+            findDefs().append(removedElements[id]);
+            delete removedElements[id];
+          }
+        }
+      });
+
+      const childs = elem.getElementsByTagName('*');
+
+      if (childs.length) {
+        for (let i = 0, l = childs.length; i < l; i++) {
+          restoreRefElems(childs[i]);
+        }
+      }
+    };
+
+    undoInit(
+      /**
+  * @implements {module:undo.undoContext}
+  */
+      {
+        call,
+        restoreRefElems,
+        getSVGContent,
+        getCanvas () { return canvas; },
+      }
+    );
+
+    /**
+* @name undoMgr
+* @memberof module:svgcanvas.SvgCanvas#
+* @type {module:history.HistoryEventHandler}
+*/
+    const undoMgr = canvas.undoMgr = getUndoManager();
+
+    /**
+* This should really be an intersection applying to all types rather than a union.
+* @name module:svgcanvas~addCommandToHistory
+* @type {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory}
+*/
+    const addCommandToHistory = function (cmd) {
+      canvas.undoMgr.addCommandToHistory(cmd);
+    };
+
 
     /**
 * Clears the selection. The 'selected' handler is then optionally called.
@@ -816,8 +791,6 @@ class SvgCanvas {
     // Interface strings, usually for title elements
     const uiStrings = {};
 
-    const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
-    const refAttrs = ['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'];
 
     const elData = $.data;
 
@@ -830,28 +803,6 @@ class SvgCanvas {
       fill: 'freeze'
     }).appendTo(svgroot);
 
-    const restoreRefElems = function (elem) {
-      // Look for missing reference elements, restore any found
-      const attrs = $(elem).attr(refAttrs);
-      Object.values(attrs).forEach((val) => {
-        if (val && val.startsWith('url(')) {
-          const id = getUrlFromAttr(val).substr(1);
-          const ref = getElem(id);
-          if (!ref) {
-            findDefs().append(removedElements[id]);
-            delete removedElements[id];
-          }
-        }
-      });
-
-      const childs = elem.getElementsByTagName('*');
-
-      if (childs.length) {
-        for (let i = 0, l = childs.length; i < l; i++) {
-          restoreRefElems(childs[i]);
-        }
-      }
-    };
 
     // (function () {
     // TODO For Issue 208: this is a start on a thumbnail
