@@ -1591,90 +1591,90 @@ class SvgCanvas {
           y: spline.y
         };
       };
-/**
-* Initialize from event.js.
-* mouse event move to separate file init 
-*/
-    eventInit(
-/**
-* @implements {module:event.eventContext_}
-*/
-    {
-      getStarted () { return started; },
-      getCanvas() { return canvas; },
-      getCurConfig () { return curConfig; },
-      getCurrentMode () { return currentMode; },
-      getrootSctm () { return rootSctm; },
-      getStartX () { return startX; },
-      setStartX (value) { startX = value; },
-      getStartY () { return startY; },
-      setStartY (value) { startY = value; },
-      getRStartX () { return rStartX; },
-      getRStartY () { return rStartY; },
-      getRubberBox () { return rubberBox; },
-      getInitBbox () { return initBbox; },
-      getCurrentResizeMode () { return currentResizeMode; },
-      getCurrentGroup () { return currentGroup; },
-      getDrawnPath () { return drawnPath; },
-      getJustSelected () { return justSelected; },
-      getOpacAni () { return opacAni; },
-      getParameter () { return parameter; },
-      getNextParameter () { return nextParameter; },
-      getStepCount () { return STEP_COUNT; },
-      getThreSholdDist () { return THRESHOLD_DIST; },
-      getSumDistance () { return sumDistance; },
-      getStart (key) { return start[key]; },
-      getEnd (key) { return end[key]; },
-      getbSpline (key) { return bSpline[key]; },
-      getNextPos (key) { return nextPos[key]; },
-      getControllPoint1 (key) { return controllPoint1[key]; },
-      getControllPoint2 (key) { return controllPoint2[key]; },
-      getFreehand (key) { return freehand[key]; },
-      getDrawing () { return getCurrentDrawing(); },
-      getCurShape () { return curShape; },
-      getDAttr () { return dAttr; },
-      getLastGoodImgUrl () { return lastGoodImgUrl; },
-      getCurText (key) { return curText[key]; },
-      setDAttr (value ) { dAttr = value; },
-      setEnd (key, value) { return end[key] = value; },
-      setControllPoint1 (key, value) { return controllPoint1[key] = value; },
-      setControllPoint2 (key, value) { return controllPoint2[key] = value; },
-      setJustSelected (value ) { justSelected = value; },
-      setParameter (value ) { Parameter = value; },
-      setStart (value ) { start = value; },
-      setRStartX (value ) { rStartX = value; },
-      setRStartY (value ) { rStartY = value; },
-      setSumDistance (value ) { sumDistance = value; },
-      setbSpline (value ) { bSpline = value; },
-      setNextPos (value ) { nextPos = value; },
-      setNextParameter (value ) { nextParameter = value; },
-      setCurProperties (key, value) { curProperties[key] = value; },
-      setCurText (key, value) { curText[key] = value; },
-      setStarted (s) { started = s; },
-      setStartTransform (transform) { startTransform = transform; },
-      setCurrentMode (cm) {
-        currentMode = cm;
-        return currentMode;
-      },
-      setFreehand (key, value) { freehand[key] = value; },
-      setCurBBoxes (value) { curBBoxes = value; },
-      setRubberBox (value) { rubberBox = value; },
-      setInitBbox (value) { initBbox = value; },
-      setRootSctm (value) { rootSctm = value; },
-      setCurrentResizeMode (value) { currentResizeMode = value; },
-      setLastClickPoint (value) { lastClickPoint = value; },      
-      getSelectedElements,
-      getCurrentZoom,
-      getId,
-      addCommandToHistory,
-      getSVGRoot,
-      getSVGContent,
-      call,
-      elData,
-      getIntersectionList,
-      getBsplinePoint
-    }
-  );
+    /**
+    * Initialize from event.js.
+    * mouse event move to separate file init 
+    */
+      eventInit(
+      /**
+      * @implements {module:event.eventContext_}
+      */
+        {
+          getStarted () { return started; },
+          getCanvas() { return canvas; },
+          getCurConfig () { return curConfig; },
+          getCurrentMode () { return currentMode; },
+          getrootSctm () { return rootSctm; },
+          getStartX () { return startX; },
+          setStartX (value) { startX = value; },
+          getStartY () { return startY; },
+          setStartY (value) { startY = value; },
+          getRStartX () { return rStartX; },
+          getRStartY () { return rStartY; },
+          getRubberBox () { return rubberBox; },
+          getInitBbox () { return initBbox; },
+          getCurrentResizeMode () { return currentResizeMode; },
+          getCurrentGroup () { return currentGroup; },
+          getDrawnPath () { return drawnPath; },
+          getJustSelected () { return justSelected; },
+          getOpacAni () { return opacAni; },
+          getParameter () { return parameter; },
+          getNextParameter () { return nextParameter; },
+          getStepCount () { return STEP_COUNT; },
+          getThreSholdDist () { return THRESHOLD_DIST; },
+          getSumDistance () { return sumDistance; },
+          getStart (key) { return start[key]; },
+          getEnd (key) { return end[key]; },
+          getbSpline (key) { return bSpline[key]; },
+          getNextPos (key) { return nextPos[key]; },
+          getControllPoint1 (key) { return controllPoint1[key]; },
+          getControllPoint2 (key) { return controllPoint2[key]; },
+          getFreehand (key) { return freehand[key]; },
+          getDrawing () { return getCurrentDrawing(); },
+          getCurShape () { return curShape; },
+          getDAttr () { return dAttr; },
+          getLastGoodImgUrl () { return lastGoodImgUrl; },
+          getCurText (key) { return curText[key]; },
+          setDAttr (value) { dAttr = value; },
+          setEnd (key, value) { end[key] = value; },
+          setControllPoint1 (key, value) { controllPoint1[key] = value; },
+          setControllPoint2 (key, value) { controllPoint2[key] = value; },
+          setJustSelected (value) { justSelected = value; },
+          setParameter (value) { parameter = value; },
+          setStart (value) { start = value; },
+          setRStartX (value) { rStartX = value; },
+          setRStartY (value) { rStartY = value; },
+          setSumDistance (value) { sumDistance = value; },
+          setbSpline (value) { bSpline = value; },
+          setNextPos (value) { nextPos = value; },
+          setNextParameter (value) { nextParameter = value; },
+          setCurProperties (key, value) { curProperties[key] = value; },
+          setCurText (key, value) { curText[key] = value; },
+          setStarted (s) { started = s; },
+          setStartTransform (transform) { startTransform = transform; },
+          setCurrentMode (cm) {
+            currentMode = cm;
+            return currentMode;
+          },
+          setFreehand (key, value) { freehand[key] = value; },
+          setCurBBoxes (value) { curBBoxes = value; },
+          setRubberBox (value) { rubberBox = value; },
+          setInitBbox (value) { initBbox = value; },
+          setRootSctm (value) { rootSctm = value; },
+          setCurrentResizeMode (value) { currentResizeMode = value; },
+          setLastClickPoint (value) { lastClickPoint = value; },
+          getSelectedElements,
+          getCurrentZoom,
+          getId,
+          addCommandToHistory,
+          getSVGRoot,
+          getSVGContent,
+          call,
+          elData,
+          getIntersectionList,
+          getBsplinePoint
+        }
+      );
 
       /**
  * Follows these conditions:
@@ -1686,8 +1686,8 @@ class SvgCanvas {
  * @fires module:svgcanvas.SvgCanvas#event:ext_mouseDown
  * @returns {void}
  */
-      const mouseDown = mouseDownEvent;  
-
+      const mouseDown = mouseDownEvent;
+      
       // in this function we do not record any state changes yet (but we do update
       // any elements that are still being created, moved or resized on the canvas)
       /**
