@@ -34,7 +34,10 @@ import {
   leaveContext, setContext
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
-import {init as undoInit, getUndoManager} from './undo.js';
+import {
+  init as undoInit, getUndoManager, changeSelectedAttributeNoUndoMethod,
+  changeSelectedAttributeMethod, ffClone
+} from './undo.js';
 import {init as eventInit, mouseMoveEvent, mouseUpEvent, dblClickEvent, mouseDownEvent} from './event.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {
@@ -353,6 +356,10 @@ class SvgCanvas {
       return selectedElements;
     };
 
+    const setSelectedElements = this.getSelectedElems = function (key, value) {
+      selectedElements[key] = value;
+    };    
+
     const {pathActions} = pathModule;
 
     /**
@@ -521,6 +528,11 @@ class SvgCanvas {
         restoreRefElems,
         getSVGContent,
         getCanvas () { return canvas; },
+        getCurrentMode () { return currentMode; },
+        getCurrentZoom,
+        getSVGRoot,
+        getSelectedElements,
+        setSelectedElements
       }
     );
 
@@ -1349,27 +1361,6 @@ class SvgCanvas {
         path.setAttribute('d', pathActions.convertPath(path));
         pathActions.fixEnd(path);
       });
-    };
-
-    /**
-* Hack for Firefox bugs where text element features aren't updated or get
-* messed up. See issue 136 and issue 137.
-* This function clones the element and re-selects it.
-* @function module:svgcanvas~ffClone
-* @todo Test for this bug on load and add it to "support" object instead of
-* browser sniffing
-* @param {Element} elem - The (text) DOM element to clone
-* @returns {Element} Cloned element
-*/
-    const ffClone = function (elem) {
-      if (!isGecko()) { return elem; }
-      const clone = elem.cloneNode(true);
-      elem.before(clone);
-      elem.remove();
-      selectorManager.releaseSelector(elem);
-      selectedElements[0] = clone;
-      selectorManager.requestSelector(clone).showGrips(true);
-      return clone;
     };
 
     // `this.each` is deprecated, if any extension used this it can be recreated by doing this:
@@ -4802,122 +4793,7 @@ function hideCursor () {
 * @param {Element[]} elems - The DOM elements to apply the change to
 * @returns {void}
 */
-    const changeSelectedAttributeNoUndo = function (attr, newValue, elems) {
-      if (currentMode === 'pathedit') {
-        // Editing node
-        pathActions.moveNode(attr, newValue);
-      }
-      elems = elems || selectedElements;
-      let i = elems.length;
-      const noXYElems = ['g', 'polyline', 'path'];
-      // const goodGAttrs = ['transform', 'opacity', 'filter'];
-
-      while (i--) {
-        let elem = elems[i];
-        if (isNullish(elem)) { continue; }
-
-        // Set x,y vals on elements that don't have them
-        if ((attr === 'x' || attr === 'y') && noXYElems.includes(elem.tagName)) {
-          const bbox = getStrokedBBoxDefaultVisible([elem]);
-          const diffX = attr === 'x' ? newValue - bbox.x : 0;
-          const diffY = attr === 'y' ? newValue - bbox.y : 0;
-          canvas.moveSelectedElements(diffX * currentZoom, diffY * currentZoom, true);
-          continue;
-        }
-
-        // only allow the transform/opacity/filter attribute to change on <g> elements, slightly hacky
-        // TODO: Missing statement body
-        // if (elem.tagName === 'g' && goodGAttrs.includes(attr)) {}
-        let oldval = attr === '#text' ? elem.textContent : elem.getAttribute(attr);
-        if (isNullish(oldval)) { oldval = ''; }
-        if (oldval !== String(newValue)) {
-          if (attr === '#text') {
-            // const oldW = utilsGetBBox(elem).width;
-            elem.textContent = newValue;
-
-            // FF bug occurs on on rotated elements
-            if ((/rotate/).test(elem.getAttribute('transform'))) {
-              elem = ffClone(elem);
-            }
-            // Hoped to solve the issue of moving text with text-anchor="start",
-            // but this doesn't actually fix it. Hopefully on the right track, though. -Fyrd
-            // const box = getBBox(elem), left = box.x, top = box.y, {width, height} = box,
-            //   dx = width - oldW, dy = 0;
-            // const angle = getRotationAngle(elem, true);
-            // if (angle) {
-            //   const r = Math.sqrt(dx * dx + dy * dy);
-            //   const theta = Math.atan2(dy, dx) - angle;
-            //   dx = r * Math.cos(theta);
-            //   dy = r * Math.sin(theta);
-            //
-            //   elem.setAttribute('x', elem.getAttribute('x') - dx);
-            //   elem.setAttribute('y', elem.getAttribute('y') - dy);
-            // }
-          } else if (attr === '#href') {
-            setHref(elem, newValue);
-          } else { elem.setAttribute(attr, newValue); }
-
-          // Go into "select" mode for text changes
-          // NOTE: Important that this happens AFTER elem.setAttribute() or else attributes like
-          // font-size can get reset to their old value, ultimately by svgEditor.updateContextPanel(),
-          // after calling textActions.toSelectMode() below
-          if (currentMode === 'textedit' && attr !== '#text' && elem.textContent.length) {
-            textActions.toSelectMode(elem);
-          }
-
-          // if (i === 0) {
-          //   selectedBBoxes[0] = utilsGetBBox(elem);
-          // }
-
-          // Use the Firefox ffClone hack for text elements with gradients or
-          // where other text attributes are changed.
-          if (isGecko() && elem.nodeName === 'text' && (/rotate/).test(elem.getAttribute('transform'))) {
-            if (
-              String(newValue).startsWith('url') || (['font-size', 'font-family', 'x', 'y'].includes(attr) && elem.textContent)
-            ) {
-              elem = ffClone(elem);
-            }
-          }
-          // Timeout needed for Opera & Firefox
-          // codedread: it is now possible for this function to be called with elements
-          // that are not in the selectedElements array, we need to only request a
-          // selector if the element is in that array
-          if (selectedElements.includes(elem)) {
-            setTimeout(function () {
-              // Due to element replacement, this element may no longer
-              // be part of the DOM
-              if (!elem.parentNode) { return; }
-              selectorManager.requestSelector(elem).resize();
-            }, 0);
-          }
-          // if this element was rotated, and we changed the position of this element
-          // we need to update the rotational transform attribute
-          const angle = getRotationAngle(elem);
-          if (angle !== 0 && attr !== 'transform') {
-            const tlist = getTransformList(elem);
-            let n = tlist.numberOfItems;
-            while (n--) {
-              const xform = tlist.getItem(n);
-              if (xform.type === 4) {
-                // remove old rotate
-                tlist.removeItem(n);
-
-                const box = utilsGetBBox(elem);
-                const center = transformPoint(
-                  box.x + box.width / 2, box.y + box.height / 2, transformListToTransform(tlist).matrix
-                );
-                const cx = center.x,
-                  cy = center.y;
-                const newrot = svgroot.createSVGTransform();
-                newrot.setRotate(angle, cx, cy);
-                tlist.insertItemBefore(newrot, n);
-                break;
-              }
-            }
-          }
-        } // if oldValue != newValue
-      } // for each elem
-    };
+    const changeSelectedAttributeNoUndo = changeSelectedAttributeNoUndoMethod;
 
     /**
 * Change the given/selected element and add the original value to the history stack.
@@ -4930,18 +4806,7 @@ function hideCursor () {
 * @param {Element[]} elems - The DOM elements to apply the change to
 * @returns {void}
 */
-    const changeSelectedAttribute = this.changeSelectedAttribute = function (attr, val, elems) {
-      elems = elems || selectedElements;
-      canvas.undoMgr.beginUndoableChange(attr, elems);
-      // const i = elems.length;
-
-      changeSelectedAttributeNoUndo(attr, val, elems);
-
-      const batchCmd = canvas.undoMgr.finishUndoableChange();
-      if (!batchCmd.isEmpty()) {
-        addCommandToHistory(batchCmd);
-      }
-    };
+    const changeSelectedAttribute = this.changeSelectedAttribute = changeSelectedAttributeMethod;
 
 /**
 * Initialize from select-elem.js.
