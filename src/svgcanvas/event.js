@@ -7,7 +7,7 @@
 import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute 
 import {
   assignAttributes, cleanupElement, getElem, getRotationAngle, snapToGrid, walkTree,
-  getBBox as utilsGetBBox, isNullish
+  getBBox as utilsGetBBox, isNullish, preventClickDefault, setHref
 } from '../common/utilities.js';
 import {
   convertAttrs
@@ -19,7 +19,7 @@ import {
   getTransformList
 } from '../common/svgtransformlist.js';
 import {
-  supportsNonScalingStroke
+  supportsNonScalingStroke, isWebkit
 } from '../common/browser.js';
 import * as draw from './draw.js';
 import * as pathModule from './path.js';
@@ -630,7 +630,7 @@ export const mouseUpEvent = function (evt) {
     eventContext_.setControllPoint2('y', 0);
     eventContext_.setControllPoint1('x', 0);
     eventContext_.setControllPoint1('y', 0);
-    start = {x: 0, y: 0};
+    eventContext_.setStart({x: 0, y: 0});
     eventContext_.setEnd('x', 0);
     eventContext_.setEnd('y', 0);
     const coords = element.getAttribute('points');
@@ -873,4 +873,402 @@ mouseTarget === eventContext_.getCanvas().selectorManager.selectorParentGroup
     return;
   }
   draw.setContext(mouseTarget);
+};
+
+/**
+ * Follows these conditions:
+ * - When we are in a create mode, the element is added to the canvas but the
+ *   action is not recorded until mousing up.
+ * - When we are in select mode, select the element, remember the position
+ *   and do nothing else.
+ * @param {MouseEvent} evt
+ * @fires module:svgcanvas.SvgCanvas#event:ext_mouseDown
+ * @returns {void}
+ */
+export const mouseDownEvent = function (evt) {
+  const selectedElements = eventContext_.getSelectedElements();
+  const currentZoom = eventContext_.getCurrentZoom();
+  const curShape = eventContext_.getCanvas().getStyle();
+  if (eventContext_.getCanvas().spaceKey || evt.button === 1) { return; }
+
+  const rightClick = evt.button === 2;
+
+  if (evt.altKey) { // duplicate when dragging
+    eventContext_.getCanvas().cloneSelectedElements(0, 0);
+  }
+
+  eventContext_.setRootSctm($('#svgcontent g')[0].getScreenCTM().inverse());
+
+  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm()),
+    mouseX = pt.x * currentZoom,
+    mouseY = pt.y * currentZoom;
+
+  evt.preventDefault();
+
+  if (rightClick) {
+    eventContext_.setCurrentMode('select');
+    eventContext_.setLastClickPoint(pt);
+  }
+
+  // This would seem to be unnecessary...
+  // if (!['select', 'resize'].includes(currentMode)) {
+  //   setGradient();
+  // }
+
+  let x = mouseX / currentZoom,
+    y = mouseY / currentZoom;
+  let mouseTarget = eventContext_.getCanvas().getMouseTarget(evt);
+
+  if (mouseTarget.tagName === 'a' && mouseTarget.childNodes.length === 1) {
+    mouseTarget = mouseTarget.firstChild;
+  }
+
+  // realX/y ignores grid-snap value
+  const realX = x;
+  eventContext_.setStartX(x);
+  eventContext_.setRStartX(x);
+  const realY = y;
+  eventContext_.setStartY(y);
+  eventContext_.setRStartY(y);
+
+  if (eventContext_.getCurConfig().gridSnapping) {
+    x = snapToGrid(x);
+    y = snapToGrid(y);
+    eventContext_.setStartX(snapToGrid(eventContext_.getStartX()));
+    eventContext_.setStartY(snapToGrid(eventContext_.getStartY()));
+  }
+
+  // if it is a selector grip, then it must be a single element selected,
+  // set the mouseTarget to that and update the mode to rotate/resize
+
+  if (mouseTarget === eventContext_.getCanvas().selectorManager.selectorParentGroup && !isNullish(selectedElements[0])) {
+    const grip = evt.target;
+    const griptype = eventContext_.elData(grip, 'type');
+    // rotating
+    if (griptype === 'rotate') {
+      eventContext_.setCurrentMode('rotate');
+      // resizing
+    } else if (griptype === 'resize') {
+      eventContext_.setCurrentMode('resize');
+      eventContext_.setCurrentResizeMode(eventContext_.elData(grip, 'dir'));
+    }
+    mouseTarget = selectedElements[0];
+  }
+
+  eventContext_.setStartTransform(mouseTarget.getAttribute('transform'));
+
+  const tlist = getTransformList(mouseTarget);
+  switch (eventContext_.getCurrentMode()) {
+  case 'select':
+    eventContext_.setStarted(true);
+    eventContext_.setCurrentResizeMode('none');
+    if (rightClick) { eventContext_.setStarted(false); }
+
+    if (mouseTarget !== eventContext_.getSVGRoot()) {
+      // if this element is not yet selected, clear selection and select it
+      if (!selectedElements.includes(mouseTarget)) {
+        // only clear selection if shift is not pressed (otherwise, add
+        // element to selection)
+        if (!evt.shiftKey) {
+          // No need to do the call here as it will be done on addToSelection
+          eventContext_.getCanvas().clearSelection(true);
+        }
+        eventContext_.getCanvas().addToSelection([mouseTarget]);
+        eventContext_.setJustSelected(mouseTarget);
+        eventContext_.getCanvas().pathActions.clear();
+      }
+      // else if it's a path, go into pathedit mode in mouseup
+
+      if (!rightClick) {
+        // insert a dummy transform so if the element(s) are moved it will have
+        // a transform to use for its translate
+        for (const selectedElement of selectedElements) {
+          if (isNullish(selectedElement)) { continue; }
+          const slist = getTransformList(selectedElement);
+          if (slist.numberOfItems) {
+            slist.insertItemBefore(eventContext_.getSVGRoot().createSVGTransform(), 0);
+          } else {
+            slist.appendItem(eventContext_.getSVGRoot().createSVGTransform());
+          }
+        }
+      }
+    } else if (!rightClick) {
+      eventContext_.getCanvas().clearSelection();
+      eventContext_.setCurrentMode('multiselect');
+      if (isNullish(eventContext_.getRubberBox())) {
+        eventContext_.setRubberBox(eventContext_.getCanvas().selectorManager.getRubberBandBox());
+      }
+      eventContext_.setRStartX(eventContext_.getRStartX() * currentZoom);
+      eventContext_.setRStartY(eventContext_.getRStartY() * currentZoom);
+      // console.log('p',[evt.pageX, evt.pageY]);
+      // console.log('c',[evt.clientX, evt.clientY]);
+      // console.log('o',[evt.offsetX, evt.offsetY]);
+      // console.log('s',[startX, startY]);
+
+      assignAttributes(eventContext_.getRubberBox(), {
+        x: eventContext_.getRStartX(),
+        y: eventContext_.getRStartY(),
+        width: 0,
+        height: 0,
+        display: 'inline'
+      }, 100);
+    }
+    break;
+  case 'zoom':
+    eventContext_.setStarted(true);
+    if (isNullish(eventContext_.getRubberBox())) {
+      eventContext_.setRubberBox(eventContext_.getCanvas().selectorManager.getRubberBandBox());
+    }
+    assignAttributes(eventContext_.getRubberBox(), {
+      x: realX * currentZoom,
+      y: realX * currentZoom,
+      width: 0,
+      height: 0,
+      display: 'inline'
+    }, 100);
+    break;
+  case 'resize': {
+    eventContext_.setStarted(true);
+    eventContext_.setStartX(x);
+    eventContext_.setStartY(y);
+
+    // Getting the BBox from the selection box, since we know we
+    // want to orient around it
+    eventContext_.setInitBbox(utilsGetBBox($('#selectedBox0')[0]));
+    const bb = {};
+    $.each(eventContext_.getInitBbox(), function (key, val) {
+      bb[key] = val / currentZoom;
+    });
+    eventContext_.setInitBbox(bb);
+
+    // append three dummy transforms to the tlist so that
+    // we can translate,scale,translate in mousemove
+    const pos = getRotationAngle(mouseTarget) ? 1 : 0;
+
+    if (hasMatrixTransform(tlist)) {
+      tlist.insertItemBefore(eventContext_.getSVGRoot().createSVGTransform(), pos);
+      tlist.insertItemBefore(eventContext_.getSVGRoot().createSVGTransform(), pos);
+      tlist.insertItemBefore(eventContext_.getSVGRoot().createSVGTransform(), pos);
+    } else {
+      tlist.appendItem(eventContext_.getSVGRoot().createSVGTransform());
+      tlist.appendItem(eventContext_.getSVGRoot().createSVGTransform());
+      tlist.appendItem(eventContext_.getSVGRoot().createSVGTransform());
+
+      if (supportsNonScalingStroke()) {
+        // Handle crash for newer Chrome and Safari 6 (Mobile and Desktop):
+        // https://code.google.com/p/svg-edit/issues/detail?id=904
+        // Chromium issue: https://code.google.com/p/chromium/issues/detail?id=114625
+        // TODO: Remove this workaround once vendor fixes the issue
+        const iswebkit = isWebkit();
+
+        let delayedStroke;
+        if (iswebkit) {
+          delayedStroke = function (ele) {
+            const stroke_ = ele.getAttribute('stroke');
+            ele.removeAttribute('stroke');
+            // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
+            if (stroke_ !== null) setTimeout(function () { ele.setAttribute('stroke', stroke_); }, 0);
+          };
+        }
+        mouseTarget.style.vectorEffect = 'non-scaling-stroke';
+        if (iswebkit) { delayedStroke(mouseTarget); }
+
+        const all = mouseTarget.getElementsByTagName('*'),
+          len = all.length;
+        for (let i = 0; i < len; i++) {
+          if (!all[i].style) { // mathML
+            continue;
+          }
+          all[i].style.vectorEffect = 'non-scaling-stroke';
+          if (iswebkit) { delayedStroke(all[i]); }
+        }
+      }
+    }
+    break;
+  }
+  case 'fhellipse':
+  case 'fhrect':
+  case 'fhpath':
+    eventContext_.setStart({x: realX, y: realY });
+    eventContext_.setControllPoint1('x', 0);
+    eventContext_.setControllPoint1('y', 0);
+    eventContext_.setControllPoint2('x', 0);
+    eventContext_.setControllPoint2('y', 0);
+    eventContext_.setStarted(true);
+    eventContext_.setDAttr(realX + ',' + realY + ' ');
+    // Commented out as doing nothing now:
+    // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
+    eventContext_.addSVGElementFromJson({
+      element: 'polyline',
+      curStyles: true,
+      attr: {
+        points: eventContext_.getDAttr(),
+        id: eventContext_.getCanvas().getNextId(),
+        fill: 'none',
+        opacity: curShape.opacity / 2,
+        'stroke-linecap': 'round',
+        style: 'pointer-events:none'
+      }
+    });
+    eventContext_.setFreehand('minx', realX);
+    eventContext_.setFreehand('maxx', realX);
+    eventContext_.setFreehand('miny', realY);
+    eventContext_.setFreehand('maxy', realY);
+    break;
+  case 'image': {
+    eventContext_.setStarted(true);
+    const newImage = eventContext_.addSVGElementFromJson({
+      element: 'image',
+      attr: {
+        x,
+        y,
+        width: 0,
+        height: 0,
+        id: eventContext_.getCanvas().getNextId(),
+        opacity: curShape.opacity / 2,
+        style: 'pointer-events:inherit'
+      }
+    });
+    setHref(newImage, eventContext_.getLastGoodImgUrl());
+    preventClickDefault(newImage);
+    break;
+  } case 'square':
+    // TODO: once we create the rect, we lose information that this was a square
+    // (for resizing purposes this could be important)
+    // Fallthrough
+  case 'rect':
+    eventContext_.setStarted(true);
+    eventContext_.setStartX(x);
+    eventContext_.setStartY(y);
+    eventContext_.addSVGElementFromJson({
+      element: 'rect',
+      curStyles: true,
+      attr: {
+        x,
+        y,
+        width: 0,
+        height: 0,
+        id: eventContext_.getCanvas().getNextId(),
+        opacity: curShape.opacity / 2
+      }
+    });
+    break;
+  case 'line': {
+    eventContext_.setStarted(true);
+    const strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
+    eventContext_.addSVGElementFromJson({
+      element: 'line',
+      curStyles: true,
+      attr: {
+        x1: x,
+        y1: y,
+        x2: x,
+        y2: y,
+        id: eventContext_.getCanvas().getNextId(),
+        stroke: curShape.stroke,
+        'stroke-width': strokeW,
+        'stroke-dasharray': curShape.stroke_dasharray,
+        'stroke-linejoin': curShape.stroke_linejoin,
+        'stroke-linecap': curShape.stroke_linecap,
+        'stroke-opacity': curShape.stroke_opacity,
+        fill: 'none',
+        opacity: curShape.opacity / 2,
+        style: 'pointer-events:none'
+      }
+    });
+    break;
+  } case 'circle':
+    eventContext_.setStarted(true);
+    eventContext_.addSVGElementFromJson({
+      element: 'circle',
+      curStyles: true,
+      attr: {
+        cx: x,
+        cy: y,
+        r: 0,
+        id: eventContext_.getCanvas().getNextId(),
+        opacity: curShape.opacity / 2
+      }
+    });
+    break;
+  case 'ellipse':
+    eventContext_.setStarted(true);
+    eventContext_.addSVGElementFromJson({
+      element: 'ellipse',
+      curStyles: true,
+      attr: {
+        cx: x,
+        cy: y,
+        rx: 0,
+        ry: 0,
+        id: eventContext_.getCanvas().getNextId(),
+        opacity: curShape.opacity / 2
+      }
+    });
+    break;
+  case 'text':
+    eventContext_.setStarted(true);
+    /* const newText = */ eventContext_.addSVGElementFromJson({
+      element: 'text',
+      curStyles: true,
+      attr: {
+        x,
+        y,
+        id: eventContext_.getCanvas().getNextId(),
+        fill: eventContext_.getCurText('fill'),
+        'stroke-width': eventContext_.getCurText('stroke_width'),
+        'font-size': eventContext_.getCurText('font_size'),
+        'font-family': eventContext_.getCurText('font_family'),
+        'text-anchor': 'middle',
+        'xml:space': 'preserve',
+        opacity: curShape.opacity
+      }
+    });
+    // newText.textContent = 'text';
+    break;
+  case 'path':
+    // Fall through
+  case 'pathedit':
+    eventContext_.setStartX(eventContext_.getStartX() * currentZoom);
+    eventContext_.setStartY(eventContext_.getStartY() * currentZoom);
+    eventContext_.getCanvas().pathActions.mouseDown(evt, mouseTarget, eventContext_.getStartX(), eventContext_.getStartY());
+    eventContext_.setStarted(true);
+    break;
+  case 'textedit':
+    eventContext_.setStartX(eventContext_.getStartX() * currentZoom);
+    eventContext_.setStartY(eventContext_.getStartY() * currentZoom);
+    eventContext_.getCanvas().textActions.mouseDown(evt, mouseTarget, eventContext_.getStartX(), eventContext_.getStartY());
+    eventContext_.setStarted(true);
+    break;
+  case 'rotate':
+    eventContext_.setStarted(true);
+    // we are starting an undoable change (a drag-rotation)
+    eventContext_.getCanvas().undoMgr.beginUndoableChange('transform', selectedElements);
+    break;
+  default:
+    // This could occur in an extension
+    break;
+  }
+
+  /**
+* The main (left) mouse button is held down on the canvas area.
+* @event module:svgcanvas.SvgCanvas#event:ext_mouseDown
+* @type {PlainObject}
+* @property {MouseEvent} event The event object
+* @property {Float} start_x x coordinate on canvas
+* @property {Float} start_y y coordinate on canvas
+* @property {Element[]} selectedElements An array of the selected Elements
+*/
+  const extResult = eventContext_.getCanvas().runExtensions('mouseDown', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseDown} */ {
+    event: evt,
+    start_x: eventContext_.getStartX(),
+    start_y: eventContext_.getStartY(),
+    selectedElements
+  }, true);
+
+  $.each(extResult, function (i, r) {
+    if (r && r.started) {
+      eventContext_.setStarted(true);
+    }
+  });
 };

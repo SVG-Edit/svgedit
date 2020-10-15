@@ -35,7 +35,7 @@ import {
 } from './draw.js';
 import {svgRootElement} from './svgroot.js';
 import {init as undoInit, getUndoManager} from './undo.js';
-import {init as eventInit, mouseMoveEvent, mouseUpEvent, dblClickEvent} from './event.js';
+import {init as eventInit, mouseMoveEvent, mouseUpEvent, dblClickEvent, mouseDownEvent} from './event.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
@@ -1600,405 +1600,13 @@ class SvgCanvas {
           y: spline.y
         };
       };
-      /**
- * Follows these conditions:
- * - When we are in a create mode, the element is added to the canvas but the
- *   action is not recorded until mousing up.
- * - When we are in select mode, select the element, remember the position
- *   and do nothing else.
- * @param {MouseEvent} evt
- * @fires module:svgcanvas.SvgCanvas#event:ext_mouseDown
- * @returns {void}
- */
-      const mouseDown = function (evt) {
-        if (canvas.spaceKey || evt.button === 1) { return; }
-
-        const rightClick = evt.button === 2;
-
-        if (evt.altKey) { // duplicate when dragging
-          canvas.cloneSelectedElements(0, 0);
-        }
-
-        rootSctm = $('#svgcontent g')[0].getScreenCTM().inverse();
-
-        const pt = transformPoint(evt.pageX, evt.pageY, rootSctm),
-          mouseX = pt.x * currentZoom,
-          mouseY = pt.y * currentZoom;
-
-        evt.preventDefault();
-
-        if (rightClick) {
-          currentMode = 'select';
-          lastClickPoint = pt;
-        }
-
-        // This would seem to be unnecessary...
-        // if (!['select', 'resize'].includes(currentMode)) {
-        //   setGradient();
-        // }
-
-        let x = mouseX / currentZoom,
-          y = mouseY / currentZoom;
-        let mouseTarget = getMouseTarget(evt);
-
-        if (mouseTarget.tagName === 'a' && mouseTarget.childNodes.length === 1) {
-          mouseTarget = mouseTarget.firstChild;
-        }
-
-        // realX/y ignores grid-snap value
-        const realX = x;
-        rStartX = startX = x;
-        const realY = y;
-        rStartY = startY = y;
-
-        if (curConfig.gridSnapping) {
-          x = snapToGrid(x);
-          y = snapToGrid(y);
-          startX = snapToGrid(startX);
-          startY = snapToGrid(startY);
-        }
-
-        // if it is a selector grip, then it must be a single element selected,
-        // set the mouseTarget to that and update the mode to rotate/resize
-
-        if (mouseTarget === selectorManager.selectorParentGroup && !isNullish(selectedElements[0])) {
-          const grip = evt.target;
-          const griptype = elData(grip, 'type');
-          // rotating
-          if (griptype === 'rotate') {
-            currentMode = 'rotate';
-            // resizing
-          } else if (griptype === 'resize') {
-            currentMode = 'resize';
-            currentResizeMode = elData(grip, 'dir');
-          }
-          mouseTarget = selectedElements[0];
-        }
-
-        startTransform = mouseTarget.getAttribute('transform');
-
-        const tlist = getTransformList(mouseTarget);
-        switch (currentMode) {
-        case 'select':
-          started = true;
-          currentResizeMode = 'none';
-          if (rightClick) { started = false; }
-
-          if (mouseTarget !== svgroot) {
-            // if this element is not yet selected, clear selection and select it
-            if (!selectedElements.includes(mouseTarget)) {
-              // only clear selection if shift is not pressed (otherwise, add
-              // element to selection)
-              if (!evt.shiftKey) {
-                // No need to do the call here as it will be done on addToSelection
-                clearSelection(true);
-              }
-              addToSelection([mouseTarget]);
-              justSelected = mouseTarget;
-              pathActions.clear();
-            }
-            // else if it's a path, go into pathedit mode in mouseup
-
-            if (!rightClick) {
-              // insert a dummy transform so if the element(s) are moved it will have
-              // a transform to use for its translate
-              for (const selectedElement of selectedElements) {
-                if (isNullish(selectedElement)) { continue; }
-                const slist = getTransformList(selectedElement);
-                if (slist.numberOfItems) {
-                  slist.insertItemBefore(svgroot.createSVGTransform(), 0);
-                } else {
-                  slist.appendItem(svgroot.createSVGTransform());
-                }
-              }
-            }
-          } else if (!rightClick) {
-            clearSelection();
-            currentMode = 'multiselect';
-            if (isNullish(rubberBox)) {
-              rubberBox = selectorManager.getRubberBandBox();
-            }
-            rStartX *= currentZoom;
-            rStartY *= currentZoom;
-            // console.log('p',[evt.pageX, evt.pageY]);
-            // console.log('c',[evt.clientX, evt.clientY]);
-            // console.log('o',[evt.offsetX, evt.offsetY]);
-            // console.log('s',[startX, startY]);
-
-            assignAttributes(rubberBox, {
-              x: rStartX,
-              y: rStartY,
-              width: 0,
-              height: 0,
-              display: 'inline'
-            }, 100);
-          }
-          break;
-        case 'zoom':
-          started = true;
-          if (isNullish(rubberBox)) {
-            rubberBox = selectorManager.getRubberBandBox();
-          }
-          assignAttributes(rubberBox, {
-            x: realX * currentZoom,
-            y: realX * currentZoom,
-            width: 0,
-            height: 0,
-            display: 'inline'
-          }, 100);
-          break;
-        case 'resize': {
-          started = true;
-          startX = x;
-          startY = y;
-
-          // Getting the BBox from the selection box, since we know we
-          // want to orient around it
-          initBbox = utilsGetBBox($('#selectedBox0')[0]);
-          const bb = {};
-          $.each(initBbox, function (key, val) {
-            bb[key] = val / currentZoom;
-          });
-          initBbox = bb;
-
-          // append three dummy transforms to the tlist so that
-          // we can translate,scale,translate in mousemove
-          const pos = getRotationAngle(mouseTarget) ? 1 : 0;
-
-          if (hasMatrixTransform(tlist)) {
-            tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
-            tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
-            tlist.insertItemBefore(svgroot.createSVGTransform(), pos);
-          } else {
-            tlist.appendItem(svgroot.createSVGTransform());
-            tlist.appendItem(svgroot.createSVGTransform());
-            tlist.appendItem(svgroot.createSVGTransform());
-
-            if (supportsNonScalingStroke()) {
-              // Handle crash for newer Chrome and Safari 6 (Mobile and Desktop):
-              // https://code.google.com/p/svg-edit/issues/detail?id=904
-              // Chromium issue: https://code.google.com/p/chromium/issues/detail?id=114625
-              // TODO: Remove this workaround once vendor fixes the issue
-              const iswebkit = isWebkit();
-
-              let delayedStroke;
-              if (iswebkit) {
-                delayedStroke = function (ele) {
-                  const stroke_ = ele.getAttribute('stroke');
-                  ele.removeAttribute('stroke');
-                  // Re-apply stroke after delay. Anything higher than 1 seems to cause flicker
-                  if (stroke_ !== null) setTimeout(function () { ele.setAttribute('stroke', stroke_); }, 0);
-                };
-              }
-              mouseTarget.style.vectorEffect = 'non-scaling-stroke';
-              if (iswebkit) { delayedStroke(mouseTarget); }
-
-              const all = mouseTarget.getElementsByTagName('*'),
-                len = all.length;
-              for (let i = 0; i < len; i++) {
-                if (!all[i].style) { // mathML
-                  continue;
-                }
-                all[i].style.vectorEffect = 'non-scaling-stroke';
-                if (iswebkit) { delayedStroke(all[i]); }
-              }
-            }
-          }
-          break;
-        }
-        case 'fhellipse':
-        case 'fhrect':
-        case 'fhpath':
-          start.x = realX;
-          start.y = realY;
-          controllPoint1 = {x: 0, y: 0};
-          controllPoint2 = {x: 0, y: 0};
-          started = true;
-          dAttr = realX + ',' + realY + ' ';
-          // Commented out as doing nothing now:
-          // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
-          addSVGElementFromJson({
-            element: 'polyline',
-            curStyles: true,
-            attr: {
-              points: dAttr,
-              id: getNextId(),
-              fill: 'none',
-              opacity: curShape.opacity / 2,
-              'stroke-linecap': 'round',
-              style: 'pointer-events:none'
-            }
-          });
-          freehand.minx = realX;
-          freehand.maxx = realX;
-          freehand.miny = realY;
-          freehand.maxy = realY;
-          break;
-        case 'image': {
-          started = true;
-          const newImage = addSVGElementFromJson({
-            element: 'image',
-            attr: {
-              x,
-              y,
-              width: 0,
-              height: 0,
-              id: getNextId(),
-              opacity: curShape.opacity / 2,
-              style: 'pointer-events:inherit'
-            }
-          });
-          setHref(newImage, lastGoodImgUrl);
-          preventClickDefault(newImage);
-          break;
-        } case 'square':
-          // TODO: once we create the rect, we lose information that this was a square
-          // (for resizing purposes this could be important)
-          // Fallthrough
-        case 'rect':
-          started = true;
-          startX = x;
-          startY = y;
-          addSVGElementFromJson({
-            element: 'rect',
-            curStyles: true,
-            attr: {
-              x,
-              y,
-              width: 0,
-              height: 0,
-              id: getNextId(),
-              opacity: curShape.opacity / 2
-            }
-          });
-          break;
-        case 'line': {
-          started = true;
-          const strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
-          addSVGElementFromJson({
-            element: 'line',
-            curStyles: true,
-            attr: {
-              x1: x,
-              y1: y,
-              x2: x,
-              y2: y,
-              id: getNextId(),
-              stroke: curShape.stroke,
-              'stroke-width': strokeW,
-              'stroke-dasharray': curShape.stroke_dasharray,
-              'stroke-linejoin': curShape.stroke_linejoin,
-              'stroke-linecap': curShape.stroke_linecap,
-              'stroke-opacity': curShape.stroke_opacity,
-              fill: 'none',
-              opacity: curShape.opacity / 2,
-              style: 'pointer-events:none'
-            }
-          });
-          break;
-        } case 'circle':
-          started = true;
-          addSVGElementFromJson({
-            element: 'circle',
-            curStyles: true,
-            attr: {
-              cx: x,
-              cy: y,
-              r: 0,
-              id: getNextId(),
-              opacity: curShape.opacity / 2
-            }
-          });
-          break;
-        case 'ellipse':
-          started = true;
-          addSVGElementFromJson({
-            element: 'ellipse',
-            curStyles: true,
-            attr: {
-              cx: x,
-              cy: y,
-              rx: 0,
-              ry: 0,
-              id: getNextId(),
-              opacity: curShape.opacity / 2
-            }
-          });
-          break;
-        case 'text':
-          started = true;
-          /* const newText = */ addSVGElementFromJson({
-            element: 'text',
-            curStyles: true,
-            attr: {
-              x,
-              y,
-              id: getNextId(),
-              fill: curText.fill,
-              'stroke-width': curText.stroke_width,
-              'font-size': curText.font_size,
-              'font-family': curText.font_family,
-              'text-anchor': 'middle',
-              'xml:space': 'preserve',
-              opacity: curShape.opacity
-            }
-          });
-          // newText.textContent = 'text';
-          break;
-        case 'path':
-          // Fall through
-        case 'pathedit':
-          startX *= currentZoom;
-          startY *= currentZoom;
-          pathActions.mouseDown(evt, mouseTarget, startX, startY);
-          started = true;
-          break;
-        case 'textedit':
-          startX *= currentZoom;
-          startY *= currentZoom;
-          textActions.mouseDown(evt, mouseTarget, startX, startY);
-          started = true;
-          break;
-        case 'rotate':
-          started = true;
-          // we are starting an undoable change (a drag-rotation)
-          canvas.undoMgr.beginUndoableChange('transform', selectedElements);
-          break;
-        default:
-          // This could occur in an extension
-          break;
-        }
-
-        /**
-   * The main (left) mouse button is held down on the canvas area.
-   * @event module:svgcanvas.SvgCanvas#event:ext_mouseDown
-   * @type {PlainObject}
-   * @property {MouseEvent} event The event object
-   * @property {Float} start_x x coordinate on canvas
-   * @property {Float} start_y y coordinate on canvas
-   * @property {Element[]} selectedElements An array of the selected Elements
-  */
-        const extResult = runExtensions('mouseDown', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseDown} */ {
-          event: evt,
-          start_x: startX,
-          start_y: startY,
-          selectedElements
-        }, true);
-
-        $.each(extResult, function (i, r) {
-          if (r && r.started) {
-            started = true;
-          }
-        });
-      };
-
 /**
 * Initialize from event.js.
 * mouse event move to separate file init 
 */
-  eventInit(
-  /**
-* @implements {module:selected-elem.elementContext}
+    eventInit(
+/**
+* @implements {module:event.eventContext_}
 */
     {
       getStarted () { return started; },
@@ -2030,18 +1638,26 @@ class SvgCanvas {
       getNextPos (key) { return nextPos[key]; },
       getControllPoint1 (key) { return controllPoint1[key]; },
       getControllPoint2 (key) { return controllPoint2[key]; },
+      getFreehand (key) { return freehand[key]; },
+      getDrawing () { return getCurrentDrawing(); },
+      getCurShape () { return curShape; },
+      getDAttr () { return dAttr; },
+      getLastGoodImgUrl () { return lastGoodImgUrl; },
+      getCurText (key) { return curText[key]; },
+      setDAttr (value ) { dAttr = value; },
       setEnd (key, value) { return end[key] = value; },
       setControllPoint1 (key, value) { return controllPoint1[key] = value; },
-      setControllPoint2 (key, value) { return controllPoint2[key] = value; },
       setControllPoint2 (key, value) { return controllPoint2[key] = value; },
       setJustSelected (value ) { justSelected = value; },
       setParameter (value ) { Parameter = value; },
       setStart (value ) { start = value; },
+      setRStartX (value ) { rStartX = value; },
+      setRStartY (value ) { rStartY = value; },
       setSumDistance (value ) { sumDistance = value; },
       setbSpline (value ) { bSpline = value; },
       setNextPos (value ) { nextPos = value; },
       setNextParameter (value ) { nextParameter = value; },
-      setCurProperties (key, value) { curText[key] = value; },
+      setCurProperties (key, value) { curProperties[key] = value; },
       setCurText (key, value) { curText[key] = value; },
       setStarted (s) { started = s; },
       setStartTransform (transform) { startTransform = transform; },
@@ -2049,10 +1665,13 @@ class SvgCanvas {
         currentMode = cm;
         return currentMode;
       },
-      getFreehand (key) { return freehand[key]; },
       setFreehand (key, value) { freehand[key] = value; },
       setCurBBoxes (value) { curBBoxes = value; },
-      getDrawing () { return getCurrentDrawing(); },
+      setRubberBox (value) { rubberBox = value; },
+      setInitBbox (value) { initBbox = value; },
+      setRootSctm (value) { rootSctm = value; },
+      setCurrentResizeMode (value) { currentResizeMode = value; },
+      setLastClickPoint (value) { lastClickPoint = value; },      
       getSelectedElements,
       getCurrentZoom,
       getId,
@@ -2060,10 +1679,23 @@ class SvgCanvas {
       getSVGRoot,
       getSVGContent,
       call,
+      elData,
       getIntersectionList,
       getBsplinePoint
     }
   );
+
+      /**
+ * Follows these conditions:
+ * - When we are in a create mode, the element is added to the canvas but the
+ *   action is not recorded until mousing up.
+ * - When we are in select mode, select the element, remember the position
+ *   and do nothing else.
+ * @param {MouseEvent} evt
+ * @fires module:svgcanvas.SvgCanvas#event:ext_mouseDown
+ * @returns {void}
+ */
+      const mouseDown = mouseDownEvent;  
 
       // in this function we do not record any state changes yet (but we do update
       // any elements that are still being created, moved or resized on the canvas)
