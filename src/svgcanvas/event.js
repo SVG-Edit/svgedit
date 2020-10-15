@@ -666,7 +666,7 @@ export const mouseUpEvent = function (evt) {
   case 'fhellipse':
     if ((eventContext_.getFreehand('maxx') - eventContext_.getFreehand('minx')) > 0 &&
 (eventContext_.getFreehand('maxy') - eventContext_.getFreehand('miny')) > 0) {
-      element = eventContext_.addSVGElementFromJson({
+      element = eventContext_.getCanvas().addSVGElementFromJson({
         element: 'ellipse',
         curStyles: true,
         attr: {
@@ -684,7 +684,7 @@ export const mouseUpEvent = function (evt) {
   case 'fhrect':
     if ((eventContext_.getFreehand('maxx') - eventContext_.getFreehand('minx')) > 0 &&
 (eventContext_.getFreehand('maxy') - eventContext_.getFreehand('miny')) > 0) {
-      element = eventContext_.addSVGElementFromJson({
+      element = eventContext_.getCanvas().addSVGElementFromJson({
         element: 'rect',
         curStyles: true,
         attr: {
@@ -1098,7 +1098,7 @@ export const mouseDownEvent = function (evt) {
     eventContext_.setDAttr(realX + ',' + realY + ' ');
     // Commented out as doing nothing now:
     // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
-    eventContext_.addSVGElementFromJson({
+    eventContext_.getCanvas().addSVGElementFromJson({
       element: 'polyline',
       curStyles: true,
       attr: {
@@ -1117,7 +1117,7 @@ export const mouseDownEvent = function (evt) {
     break;
   case 'image': {
     eventContext_.setStarted(true);
-    const newImage = eventContext_.addSVGElementFromJson({
+    const newImage = eventContext_.getCanvas().addSVGElementFromJson({
       element: 'image',
       attr: {
         x,
@@ -1140,7 +1140,7 @@ export const mouseDownEvent = function (evt) {
     eventContext_.setStarted(true);
     eventContext_.setStartX(x);
     eventContext_.setStartY(y);
-    eventContext_.addSVGElementFromJson({
+    eventContext_.getCanvas().addSVGElementFromJson({
       element: 'rect',
       curStyles: true,
       attr: {
@@ -1156,7 +1156,7 @@ export const mouseDownEvent = function (evt) {
   case 'line': {
     eventContext_.setStarted(true);
     const strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
-    eventContext_.addSVGElementFromJson({
+    eventContext_.getCanvas().addSVGElementFromJson({
       element: 'line',
       curStyles: true,
       attr: {
@@ -1179,7 +1179,7 @@ export const mouseDownEvent = function (evt) {
     break;
   } case 'circle':
     eventContext_.setStarted(true);
-    eventContext_.addSVGElementFromJson({
+    eventContext_.getCanvas().addSVGElementFromJson({
       element: 'circle',
       curStyles: true,
       attr: {
@@ -1193,7 +1193,7 @@ export const mouseDownEvent = function (evt) {
     break;
   case 'ellipse':
     eventContext_.setStarted(true);
-    eventContext_.addSVGElementFromJson({
+    eventContext_.getCanvas().addSVGElementFromJson({
       element: 'ellipse',
       curStyles: true,
       attr: {
@@ -1208,7 +1208,7 @@ export const mouseDownEvent = function (evt) {
     break;
   case 'text':
     eventContext_.setStarted(true);
-    /* const newText = */ eventContext_.addSVGElementFromJson({
+    /* const newText = */ eventContext_.getCanvas().addSVGElementFromJson({
       element: 'text',
       curStyles: true,
       attr: {
