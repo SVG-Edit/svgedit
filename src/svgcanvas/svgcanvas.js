@@ -48,6 +48,12 @@ import {
 import {init as eventInit, mouseMoveEvent, mouseUpEvent, dblClickEvent, mouseDownEvent} from './event.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {
+  init as elemInit, getResolutionMethod, getTitleMethod, setGroupTitleMethod,
+  setDocumentTitleMethod, setResolutionMethod, getEditorNSMethod, setBBoxZoomMethod,
+  setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
+  setStrokeWidthMethod, setStrokeAttrMethod
+} from './elem-get-set.js';
+import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
   moveUpDownSelected, moveSelectedElements, cloneSelectedElements, alignSelectedElements,
   deleteSelectedElements, copySelectedElements, groupSelectedElements, pushGroupProperty,
@@ -58,23 +64,21 @@ import {getReverseNS, NS} from '../common/namespaces.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
-  preventClickDefault, snapToGrid, walkTree,
-  getBBoxOfElementAsPath, convertToPath, toXml, encode64, decode64,
-  dataURLToObjectURL, createObjectURL,
-  getVisibleElements, dropXMLInternalSubset,
-  init as utilsInit, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible,
-  isNullish
+  preventClickDefault, walkTree, getBBoxOfElementAsPath, convertToPath, 
+  toXml, encode64, decode64, dataURLToObjectURL, createObjectURL,
+  getVisibleElements, dropXMLInternalSubset, init as utilsInit, 
+  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish
 } from '../common/utilities.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
-  getMatrix, snapToAngle, isIdentity, rectsIntersect, transformBox
+  isIdentity, rectsIntersect, transformBox
 } from '../common/math.js';
 import {
-  convertToNum, convertAttrs, convertUnit, shortFloat, getTypeMap,
+  convertToNum, convertUnit, shortFloat, getTypeMap,
   init as unitsInit
 } from '../common/units.js';
 import {
-  isGecko, isChrome, isIE, isWebkit, supportsNonScalingStroke, supportsGoodTextCharPos
+  isGecko, isChrome, isIE, isWebkit
 } from '../common/browser.js'; // , supportsEditableText
 import {
   getTransformList, resetListMap,
@@ -3044,6 +3048,27 @@ class SvgCanvas {
 */
     this.getRootElem = function () { return svgroot; };
 
+    elemInit(
+  /**
+  * @implements {module:elem-get-set.elemInit}
+  */
+      {
+        addCommandToHistory,
+        getCurrentZoom,
+        getSVGContent,
+        getSelectedElements,
+        changeSelectedAttributeNoUndoMethod,
+        getDOMDocument () { return svgdoc; },
+        getCanvas () { return canvas; },
+        setCanvas (key, value) { canvas[key] = value; },
+        setCurrentZoom (value) { currentZoom = value; },
+        setCurProperties (key, value) { curProperties[key] = value; },
+        getCurProperties (key) { return curProperties[key]; },
+        setCurShape (key, value) { curShape[key] = value; },
+        call
+      }
+    );
+
     /**
 * @typedef {PlainObject} DimensionsAndZoom
 * @property {Float} w Width
@@ -3055,19 +3080,7 @@ class SvgCanvas {
 * @function module:svgcanvas.SvgCanvas#getResolution
 * @returns {DimensionsAndZoom} The current dimensions and zoom level in an object
 */
-    const getResolution = this.getResolution = function () {
-      //    const vb = svgcontent.getAttribute('viewBox').split(' ');
-      //    return {w:vb[2], h:vb[3], zoom: currentZoom};
-
-      const w = svgcontent.getAttribute('width') / currentZoom;
-      const h = svgcontent.getAttribute('height') / currentZoom;
-
-      return {
-        w,
-        h,
-        zoom: currentZoom
-      };
-    };
+    const getResolution = this.getResolution = getResolutionMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getSnapToGrid
@@ -3111,18 +3124,7 @@ class SvgCanvas {
 * @returns {string|void} the current group/SVG's title contents or
 * `undefined` if no element is passed nd there are no selected elements.
 */
-    this.getTitle = function (elem) {
-      elem = elem || selectedElements[0];
-      if (!elem) { return undefined; }
-      elem = $(elem).data('gsvg') || $(elem).data('symbol') || elem;
-      const childs = elem.childNodes;
-      for (const child of childs) {
-        if (child.nodeName === 'title') {
-          return child.textContent;
-        }
-      }
-      return '';
-    };
+    this.getTitle = getTitleMethod;
 
     /**
 * Sets the group/SVG's title content.
@@ -3131,35 +3133,7 @@ class SvgCanvas {
 * @todo Combine this with `setDocumentTitle`
 * @returns {void}
 */
-    this.setGroupTitle = function (val) {
-      let elem = selectedElements[0];
-      elem = $(elem).data('gsvg') || elem;
-
-      const ts = $(elem).children('title');
-
-      const batchCmd = new BatchCommand('Set Label');
-
-      let title;
-      if (!val.length) {
-        // Remove title element
-        const tsNextSibling = ts.nextSibling;
-        batchCmd.addSubCommand(new RemoveElementCommand(ts[0], tsNextSibling, elem));
-        ts.remove();
-      } else if (ts.length) {
-        // Change title contents
-        title = ts[0];
-        batchCmd.addSubCommand(new ChangeElementCommand(title, {'#text': title.textContent}));
-        title.textContent = val;
-      } else {
-        // Add title element
-        title = svgdoc.createElementNS(NS.SVG, 'title');
-        title.textContent = val;
-        $(elem).prepend(title);
-        batchCmd.addSubCommand(new InsertElementCommand(title));
-      }
-
-      addCommandToHistory(batchCmd);
-    };
+    this.setGroupTitle = setGroupTitleMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getDocumentTitle
@@ -3176,34 +3150,7 @@ class SvgCanvas {
 * @param {string} newTitle - String with the new title
 * @returns {void}
 */
-    this.setDocumentTitle = function (newTitle) {
-      const childs = svgcontent.childNodes;
-      let docTitle = false, oldTitle = '';
-
-      const batchCmd = new BatchCommand('Change Image Title');
-
-      for (const child of childs) {
-        if (child.nodeName === 'title') {
-          docTitle = child;
-          oldTitle = docTitle.textContent;
-          break;
-        }
-      }
-      if (!docTitle) {
-        docTitle = svgdoc.createElementNS(NS.SVG, 'title');
-        svgcontent.insertBefore(docTitle, svgcontent.firstChild);
-        // svgcontent.firstChild.before(docTitle); // Ok to replace above with this?
-      }
-
-      if (newTitle.length) {
-        docTitle.textContent = newTitle;
-      } else {
-        // No title given, so element is not necessary
-        docTitle.remove();
-      }
-      batchCmd.addSubCommand(new ChangeElementCommand(docTitle, {'#text': oldTitle}));
-      addCommandToHistory(batchCmd);
-    };
+    this.setDocumentTitle = setDocumentTitleMethod;
 
     /**
 * Returns the editor's namespace URL, optionally adding it to the root element.
@@ -3211,12 +3158,7 @@ class SvgCanvas {
 * @param {boolean} [add] - Indicates whether or not to add the namespace value
 * @returns {string} The editor's namespace URL
 */
-    this.getEditorNS = function (add) {
-      if (add) {
-        svgcontent.setAttribute('xmlns:se', NS.SE);
-      }
-      return NS.SE;
-    };
+    this.getEditorNS = getEditorNSMethod;
 
     /**
 * Changes the document's dimensions to the given size.
@@ -3228,58 +3170,7 @@ class SvgCanvas {
 * @returns {boolean} Indicates if resolution change was successful.
 * It will fail on "fit to content" option with no content to fit to.
 */
-    this.setResolution = function (x, y) {
-      const res = getResolution();
-      const {w, h} = res;
-      let batchCmd;
-
-      if (x === 'fit') {
-        // Get bounding box
-        const bbox = getStrokedBBoxDefaultVisible();
-
-        if (bbox) {
-          batchCmd = new BatchCommand('Fit Canvas to Content');
-          const visEls = getVisibleElements();
-          addToSelection(visEls);
-          const dx = [], dy = [];
-          $.each(visEls, function (i, item) {
-            dx.push(bbox.x * -1);
-            dy.push(bbox.y * -1);
-          });
-
-          const cmd = canvas.moveSelectedElements(dx, dy, true);
-          batchCmd.addSubCommand(cmd);
-          clearSelection();
-
-          x = Math.round(bbox.width);
-          y = Math.round(bbox.height);
-        } else {
-          return false;
-        }
-      }
-      if (x !== w || y !== h) {
-        if (!batchCmd) {
-          batchCmd = new BatchCommand('Change Image Dimensions');
-        }
-
-        x = convertToNum('width', x);
-        y = convertToNum('height', y);
-
-        svgcontent.setAttribute('width', x);
-        svgcontent.setAttribute('height', y);
-
-        this.contentW = x;
-        this.contentH = y;
-        batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {width: w, height: h}));
-
-        svgcontent.setAttribute('viewBox', [0, 0, x / currentZoom, y / currentZoom].join(' '));
-        batchCmd.addSubCommand(new ChangeElementCommand(svgcontent, {viewBox: ['0 0', w, h].join(' ')}));
-
-        addCommandToHistory(batchCmd);
-        call('changed', [svgcontent]);
-      }
-      return true;
-    };
+    this.setResolution = setResolutionMethod;
 
     /**
 * @typedef {module:jQueryAttr.Attributes} module:svgcanvas.ElementPositionInCanvas
@@ -3309,55 +3200,7 @@ class SvgCanvas {
 * @param {Integer} editorH - The editor's workarea box's height
 * @returns {module:svgcanvas.ZoomAndBBox|void}
 */
-    this.setBBoxZoom = function (val, editorW, editorH) {
-      let spacer = 0.85;
-      let bb;
-      const calcZoom = function (bb) { // eslint-disable-line no-shadow
-        if (!bb) { return false; }
-        const wZoom = Math.round((editorW / bb.width) * 100 * spacer) / 100;
-        const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100;
-        const zoom = Math.min(wZoom, hZoom);
-        canvas.setZoom(zoom);
-        return {zoom, bbox: bb};
-      };
-
-      if (typeof val === 'object') {
-        bb = val;
-        if (bb.width === 0 || bb.height === 0) {
-          const newzoom = bb.zoom ? bb.zoom : currentZoom * bb.factor;
-          canvas.setZoom(newzoom);
-          return {zoom: currentZoom, bbox: bb};
-        }
-        return calcZoom(bb);
-      }
-
-      switch (val) {
-      case 'selection': {
-        if (!selectedElements[0]) { return undefined; }
-        const selectedElems = $.map(selectedElements, function (n) {
-          if (n) {
-            return n;
-          }
-          return undefined;
-        });
-        bb = getStrokedBBoxDefaultVisible(selectedElems);
-        break;
-      } case 'canvas': {
-        const res = getResolution();
-        spacer = 0.95;
-        bb = {width: res.w, height: res.h, x: 0, y: 0};
-        break;
-      } case 'content':
-        bb = getStrokedBBoxDefaultVisible();
-        break;
-      case 'layer':
-        bb = getStrokedBBoxDefaultVisible(getVisibleElements(getCurrentDrawing().getCurrentLayer()));
-        break;
-      default:
-        return undefined;
-      }
-      return calcZoom(bb);
-    };
+    this.setBBoxZoom = setBBoxZoomMethod;
 
     /**
 * The zoom level has changed. Supplies the new zoom level as a number (not percentage).
@@ -3436,17 +3279,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:ext_zoomChanged
 * @returns {void}
 */
-    this.setZoom = function (zoomLevel) {
-      const res = getResolution();
-      svgcontent.setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel);
-      currentZoom = zoomLevel;
-      $.each(selectedElements, function (i, elem) {
-        if (!elem) { return; }
-        selectorManager.requestSelector(elem).resize();
-      });
-      pathActions.zoomChange();
-      runExtensions('zoomChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} */ zoomLevel);
-    };
+    this.setZoom = setZoomMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getMode
@@ -3496,44 +3329,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.setColor = function (type, val, preventUndo) {
-      curShape[type] = val;
-      curProperties[type + '_paint'] = {type: 'solidColor'};
-      const elems = [];
-      /**
-   *
-   * @param {Element} e
-   * @returns {void}
-   */
-      function addNonG (e) {
-        if (e.nodeName !== 'g') {
-          elems.push(e);
-        }
-      }
-      let i = selectedElements.length;
-      while (i--) {
-        const elem = selectedElements[i];
-        if (elem) {
-          if (elem.tagName === 'g') {
-            walkTree(elem, addNonG);
-          } else if (type === 'fill') {
-            if (elem.tagName !== 'polyline' && elem.tagName !== 'line') {
-              elems.push(elem);
-            }
-          } else {
-            elems.push(elem);
-          }
-        }
-      }
-      if (elems.length > 0) {
-        if (!preventUndo) {
-          changeSelectedAttribute(type, val, elems);
-          call('changed', elems);
-        } else {
-          changeSelectedAttributeNoUndo(type, val, elems);
-        }
-      }
-    };
+    this.setColor = setColorMethod;
 
     /**
 * Apply the current gradient to selected element's fill or stroke.
@@ -3541,84 +3337,7 @@ class SvgCanvas {
 * @param {"fill"|"stroke"} type - String indicating "fill" or "stroke" to apply to an element
 * @returns {void}
 */
-    const setGradient = this.setGradient = function (type) {
-      if (!curProperties[type + '_paint'] || curProperties[type + '_paint'].type === 'solidColor') { return; }
-      let grad = canvas[type + 'Grad'];
-      // find out if there is a duplicate gradient already in the defs
-      const duplicateGrad = findDuplicateGradient(grad);
-      const defs = findDefs();
-      // no duplicate found, so import gradient into defs
-      if (!duplicateGrad) {
-        // const origGrad = grad;
-        grad = defs.appendChild(svgdoc.importNode(grad, true));
-        // get next id and set it on the grad
-        grad.id = getNextId();
-      } else { // use existing gradient
-        grad = duplicateGrad;
-      }
-      canvas.setColor(type, 'url(#' + grad.id + ')');
-    };
-
-    /**
-* Check if exact gradient already exists.
-* @function module:svgcanvas~findDuplicateGradient
-* @param {SVGGradientElement} grad - The gradient DOM element to compare to others
-* @returns {SVGGradientElement} The existing gradient if found, `null` if not
-*/
-    const findDuplicateGradient = function (grad) {
-      const defs = findDefs();
-      const existingGrads = $(defs).find('linearGradient, radialGradient');
-      let i = existingGrads.length;
-      const radAttrs = ['r', 'cx', 'cy', 'fx', 'fy'];
-      while (i--) {
-        const og = existingGrads[i];
-        if (grad.tagName === 'linearGradient') {
-          if (grad.getAttribute('x1') !== og.getAttribute('x1') ||
-        grad.getAttribute('y1') !== og.getAttribute('y1') ||
-        grad.getAttribute('x2') !== og.getAttribute('x2') ||
-        grad.getAttribute('y2') !== og.getAttribute('y2')
-          ) {
-            continue;
-          }
-        } else {
-          const gradAttrs = $(grad).attr(radAttrs);
-          const ogAttrs = $(og).attr(radAttrs);
-
-          let diff = false;
-          $.each(radAttrs, function (j, attr) {
-            if (gradAttrs[attr] !== ogAttrs[attr]) { diff = true; }
-          });
-
-          if (diff) { continue; }
-        }
-
-        // else could be a duplicate, iterate through stops
-        const stops = grad.getElementsByTagNameNS(NS.SVG, 'stop');
-        const ostops = og.getElementsByTagNameNS(NS.SVG, 'stop');
-
-        if (stops.length !== ostops.length) {
-          continue;
-        }
-
-        let j = stops.length;
-        while (j--) {
-          const stop = stops[j];
-          const ostop = ostops[j];
-
-          if (stop.getAttribute('offset') !== ostop.getAttribute('offset') ||
-        stop.getAttribute('stop-opacity') !== ostop.getAttribute('stop-opacity') ||
-        stop.getAttribute('stop-color') !== ostop.getAttribute('stop-color')) {
-            break;
-          }
-        }
-
-        if (j === -1) {
-          return og;
-        }
-      } // for each gradient in defs
-
-      return null;
-    };
+    const setGradient = this.setGradient = setGradientMethod;
 
     /**
 * Set a color/gradient to a fill/stroke.
@@ -3627,24 +3346,7 @@ class SvgCanvas {
 * @param {module:jGraduate.jGraduatePaintOptions} paint - The jGraduate paint object to apply
 * @returns {void}
 */
-    this.setPaint = function (type, paint) {
-      // make a copy
-      const p = new $.jGraduate.Paint(paint);
-      this.setPaintOpacity(type, p.alpha / 100, true);
-
-      // now set the current paint object
-      curProperties[type + '_paint'] = p;
-      switch (p.type) {
-      case 'solidColor':
-        this.setColor(type, p.solidColor !== 'none' ? '#' + p.solidColor : 'none');
-        break;
-      case 'linearGradient':
-      case 'radialGradient':
-        canvas[type + 'Grad'] = p[p.type];
-        setGradient(type);
-        break;
-      }
-    };
+    this.setPaint = setPaintMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#setStrokePaint
@@ -3680,40 +3382,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.setStrokeWidth = function (val) {
-      if (val === 0 && ['line', 'path'].includes(currentMode)) {
-        canvas.setStrokeWidth(1);
-        return;
-      }
-      curProperties.stroke_width = val;
-
-      const elems = [];
-      /**
-   *
-   * @param {Element} e
-   * @returns {void}
-   */
-      function addNonG (e) {
-        if (e.nodeName !== 'g') {
-          elems.push(e);
-        }
-      }
-      let i = selectedElements.length;
-      while (i--) {
-        const elem = selectedElements[i];
-        if (elem) {
-          if (elem.tagName === 'g') {
-            walkTree(elem, addNonG);
-          } else {
-            elems.push(elem);
-          }
-        }
-      }
-      if (elems.length > 0) {
-        changeSelectedAttribute('stroke-width', val, elems);
-        call('changed', selectedElements);
-      }
-    };
+    this.setStrokeWidth = setStrokeWidthMethod;
 
     /**
 * Set the given stroke-related attribute the given value for selected elements.
@@ -3723,26 +3392,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.setStrokeAttr = function (attr, val) {
-      curShape[attr.replace('-', '_')] = val;
-      const elems = [];
-
-      let i = selectedElements.length;
-      while (i--) {
-        const elem = selectedElements[i];
-        if (elem) {
-          if (elem.tagName === 'g') {
-            walkTree(elem, function (e) { if (e.nodeName !== 'g') { elems.push(e); } });
-          } else {
-            elems.push(elem);
-          }
-        }
-      }
-      if (elems.length > 0) {
-        changeSelectedAttribute(attr, val, elems);
-        call('changed', selectedElements);
-      }
-    };
+    this.setStrokeAttr = setStrokeAttrMethod;
 
     /**
 * @typedef {PlainObject} module:svgcanvas.StyleOptions
@@ -4436,13 +4086,13 @@ class SvgCanvas {
 * @function module:svgcanvas.SvgCanvas#copySelectedElements
 * @returns {void}
 */
-this.copySelectedElements = copySelectedElements;
+    this.copySelectedElements = copySelectedElements;
 
     /**
     * Initialize from paste-elem.js.
-    * paste element functionality  
+    * paste element functionality
     */
-   pasteInit(
+    pasteInit(
     /**
     * @implements {module:event.eventContext_}
     */
@@ -4473,7 +4123,7 @@ this.copySelectedElements = copySelectedElements;
 * @param {string} [urlArg]
 * @returns {void}
 */
-this.groupSelectedElements = groupSelectedElements;
+    this.groupSelectedElements = groupSelectedElements;
 
     /**
 * Pushes all appropriate parent group properties down to its children, then
