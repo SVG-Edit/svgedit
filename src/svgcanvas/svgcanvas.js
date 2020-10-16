@@ -26,6 +26,10 @@ import jQueryPluginDBox from './dbox.js';
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
 import * as draw from './draw.js';
+import {
+  init as pasteInit, pasteElementsMethod
+} from './paste-elem.js';
+
 // eslint-disable-next-line no-duplicate-imports
 import {
   identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
@@ -4434,6 +4438,23 @@ class SvgCanvas {
 */
 this.copySelectedElements = copySelectedElements;
 
+    /**
+    * Initialize from paste-elem.js.
+    * paste element functionality  
+    */
+   pasteInit(
+    /**
+    * @implements {module:event.eventContext_}
+    */
+      {
+        getCanvas() { return canvas; },
+        getClipBoardID () { return CLIPBOARD_ID; },
+        getLastClickPoint (key) { return lastClickPoint[key]; },
+        addCommandToHistory,
+        restoreRefElems
+      }
+    );
+
 /**
 * @function module:svgcanvas.SvgCanvas#pasteElements
 * @param {"in_place"|"point"|void} type
@@ -4443,104 +4464,7 @@ this.copySelectedElements = copySelectedElements;
 * @fires module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
 * @returns {void}
 */
-    this.pasteElements = function (type, x, y) {
-      let clipb = JSON.parse(sessionStorage.getItem(CLIPBOARD_ID));
-      if (!clipb) return;
-      let len = clipb.length;
-      if (!len) return;
-
-      const pasted = [];
-      const batchCmd = new BatchCommand('Paste elements');
-      // const drawing = getCurrentDrawing();
-      /**
-  * @typedef {PlainObject<string, string>} module:svgcanvas.ChangedIDs
-  */
-      /**
-   * @type {module:svgcanvas.ChangedIDs}
-   */
-      const changedIDs = {};
-
-      // Recursively replace IDs and record the changes
-      /**
-   *
-   * @param {module:svgcanvas.SVGAsJSON} elem
-   * @returns {void}
-   */
-      function checkIDs (elem) {
-        if (elem.attr && elem.attr.id) {
-          changedIDs[elem.attr.id] = getNextId();
-          elem.attr.id = changedIDs[elem.attr.id];
-        }
-        if (elem.children) elem.children.forEach((child) => checkIDs(child));
-      }
-      clipb.forEach((elem) => checkIDs(elem));
-
-      // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
-      /**
-  * Triggered when `pasteElements` is called from a paste action (context menu or key).
-  * @event module:svgcanvas.SvgCanvas#event:ext_IDsUpdated
-  * @type {PlainObject}
-  * @property {module:svgcanvas.SVGAsJSON[]} elems
-  * @property {module:svgcanvas.ChangedIDs} changes Maps past ID (on attribute) to current ID
-  */
-      runExtensions(
-        'IDsUpdated',
-        /** @type {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} */
-        {elems: clipb, changes: changedIDs},
-        true
-      ).forEach(function (extChanges) {
-        if (!extChanges || !('remove' in extChanges)) return;
-
-        extChanges.remove.forEach(function (removeID) {
-          clipb = clipb.filter(function (clipBoardItem) {
-            return clipBoardItem.attr.id !== removeID;
-          });
-        });
-      });
-
-      // Move elements to lastClickPoint
-      while (len--) {
-        const elem = clipb[len];
-        if (!elem) { continue; }
-
-        const copy = addSVGElementFromJson(elem);
-        pasted.push(copy);
-        batchCmd.addSubCommand(new InsertElementCommand(copy));
-
-        restoreRefElems(copy);
-      }
-
-      selectOnly(pasted);
-
-      if (type !== 'in_place') {
-        let ctrX, ctrY;
-
-        if (!type) {
-          ctrX = lastClickPoint.x;
-          ctrY = lastClickPoint.y;
-        } else if (type === 'point') {
-          ctrX = x;
-          ctrY = y;
-        }
-
-        const bbox = getStrokedBBoxDefaultVisible(pasted);
-        const cx = ctrX - (bbox.x + bbox.width / 2),
-          cy = ctrY - (bbox.y + bbox.height / 2),
-          dx = [],
-          dy = [];
-
-        $.each(pasted, function (i, item) {
-          dx.push(cx);
-          dy.push(cy);
-        });
-
-        const cmd = canvas.moveSelectedElements(dx, dy, false);
-        if (cmd) batchCmd.addSubCommand(cmd);
-      }
-
-      addCommandToHistory(batchCmd);
-      call('changed', pasted);
-    };
+    this.pasteElements = pasteElementsMethod;
 
     /**
 * Wraps all the selected elements in a group (`g`) element.
