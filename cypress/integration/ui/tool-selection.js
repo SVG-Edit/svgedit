@@ -8,9 +8,11 @@ describe('UI - Tool selection', function () {
   });
 
   it('should set rectangle selection by click', function () {
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.get('#tools_rect_show')
       .trigger('mousedown', {force: true})
-      .trigger('mouseup', {force: true, timeout: 10000})
+      .wait(100) // this delay seems necessary
+      .trigger('mouseup', {force: true})
       .should((button) => {
         expect(button).to.have.class('tool_button_current');
       });
