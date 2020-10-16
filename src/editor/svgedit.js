@@ -301,22 +301,14 @@ let svgCanvas, urldata = {},
  * @param {PlainObject} [opts={}]
  * @param {boolean} [opts.noAlert]
  * @throws {Error} Upon failure to load SVG
- * @returns {Promise<void>} Resolves to undefined upon success (or if `noAlert` is
- *   falsey, though only until after the `alert` is closed); rejects if SVG
- *   loading fails and `noAlert` is truthy.
  */
-async function loadSvgString (str, {noAlert} = {}) {
+const loadSvgString = (str, {noAlert} = {}) => {
   const success = svgCanvas.setSvgString(str) !== false;
-  if (success) {
-    return;
-  }
-
-  if (!noAlert) {
-    await $.alert(uiStrings.notification.errorLoadingSVG);
-    return;
-  }
+  if (success) return;
+  // eslint-disable-next-line no-alert
+  if (!noAlert) window.alert(uiStrings.notification.errorLoadingSVG);
   throw new Error('Error loading SVG');
-}
+};
 
 /**
 * EXPORTS.
@@ -593,7 +585,7 @@ editor.setCustomHandlers = function (opts) {
  * @param {boolean} arg
  * @returns {void}
  */
-editor.randomizeIds = function (arg) {
+editor.randomizeIds = (arg) => {
   svgCanvas.randomizeIds(arg);
 };
 
@@ -602,7 +594,7 @@ editor.randomizeIds = function (arg) {
 * @function module:SVGEditor.init
 * @returns {void}
 */
-editor.init = function () {
+editor.init = () => {
   // const host = location.hostname,
   //  onWeb = host && host.includes('.');
   // Some FF versions throw security errors here when directly accessing
@@ -621,18 +613,15 @@ editor.init = function () {
     }
   } catch (err) {}
 
-  // Todo: Avoid const-defined functions and group functions together, etc. where possible
-  const goodLangs = [];
-  $('#lang_select option').each(function () {
-    goodLangs.push(this.value);
-  });
+  // get list of languages from options in the HTML
+  const goodLangs = [...document.querySelectorAll('#lang_select option')].map((option) => option.value);
 
   /**
    * Sets up current preferences based on defaults.
    * @returns {void}
    */
   function setupCurPrefs () {
-    curPrefs = $.extend(true, {}, defaultPrefs, curPrefs); // Now safe to merge with priority for curPrefs in the event any are already set
+    curPrefs = {...defaultPrefs, ...curPrefs}; // Now safe to merge with priority for curPrefs in the event any are already set
     // Export updated prefs
     editor.curPrefs = curPrefs;
   }
@@ -642,7 +631,7 @@ editor.init = function () {
    * @returns {void}
    */
   function setupCurConfig () {
-    curConfig = $.extend(true, {}, defaultConfig, curConfig); // Now safe to merge with priority for curConfig in the event any are already set
+    curConfig = {...defaultConfig, ...curConfig}; // Now safe to merge with priority for curConfig in the event any are already set
 
     // Now deal with extensions and other array config
     if (!curConfig.noDefaultExtensions) {
@@ -5677,19 +5666,20 @@ editor.init = function () {
 
   // Select given tool
   editor.ready(function () {
-    let tool;
-    const itool = curConfig.initTool,
-      container = $('#tools_left, #svg_editor .tools_flyout'),
-      preTool = container.find('#tool_' + itool),
-      regTool = container.find('#' + itool);
-    if (preTool.length) {
-      tool = preTool;
-    } else if (regTool.length) {
-      tool = regTool;
+    const preTool = document.getElementById(`tool_${curConfig.initTool}`);
+    const regTool = document.getElementById(curConfig.initTool);
+    const selectTool = document.getElementById('tool_select');
+    const mouseupEvent = new Event('mouseup');
+    if (preTool) {
+      preTool.click();
+      preTool.dispatchEvent(mouseupEvent);
+    } else if (regTool) {
+      regTool.click();
+      regTool.dispatchEvent(mouseupEvent);
     } else {
-      tool = $('#tool_select');
+      selectTool.click();
+      selectTool.dispatchEvent(mouseupEvent);
     }
-    tool.click().mouseup();
 
     if (curConfig.wireframe) {
       $('#tool_wireframe').click();
@@ -6222,11 +6212,11 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
           $.process_cancel(uiStrings.notification.loadingImage);
         },
         success (str) {
-          resolve(loadSvgString(str, {noAlert}));
+          loadSvgString(str, {noAlert});
         },
         error (xhr, stat, err) {
           if (xhr.status !== 404 && xhr.responseText) {
-            resolve(loadSvgString(xhr.responseText, {noAlert}));
+            loadSvgString(xhr.responseText, {noAlert});
             return;
           }
           if (noAlert) {
