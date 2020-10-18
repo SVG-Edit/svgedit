@@ -698,14 +698,10 @@ span.zoom_tool {
   width: 24px;
   margin: 2px 2px 4px 2px;
   padding: 3px;
-  -webkit-box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-  moz-box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
   box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
   background-color: #E8E8E8;
   cursor: pointer;
   border-radius: 3px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
 }
 
  #main_menu li#tool_open,  #main_menu li#tool_import {
@@ -848,7 +844,7 @@ span.zoom_tool {
   width: 300px;
   position: relative;
   margin-top: 5px;
-  -webkit-transition: width 150ms ease;
+  transition: width 150ms ease;
 }
 
 .expanded #tools_bottom_2 {

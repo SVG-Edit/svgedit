@@ -76,7 +76,7 @@ export const setStrings = function (type, obj, ids) {
         break;
 
       case 'title':
-        elem.title = val;
+        elem.setAttribute('title', val);
         break;
       }
     } else {

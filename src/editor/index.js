@@ -6,6 +6,7 @@ For default config and extensions (and available options) available to
 
 import './jquery.min.js';
 import './jquery-ui/jquery-ui-1.8.17.custom.min.js';
+import './components/index.js';
 import svgEditor from './svgedit.js';
 
 // URL OVERRIDE CONFIG

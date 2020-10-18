@@ -1059,7 +1059,6 @@ editor.init = () => {
         open: 'open.png',
         import: 'import.png',
         docprops: 'document-properties.png',
-        source: 'source.png',
         wireframe: 'wireframe.png',
 
         undo: 'undo.png',
@@ -1121,7 +1120,6 @@ editor.init = () => {
         '#tool_export div': 'export',
         '#tool_open div': 'open',
         '#tool_import div': 'import',
-        '#tool_source': 'source',
         '#tool_docprops > div': 'docprops',
         '#tool_editor_prefs > div': 'config',
         '#tool_editor_homepage > div': 'globe_link',
@@ -4755,7 +4753,7 @@ editor.init = () => {
   // behave more like buttons being pressed-in and not images
   (function () {
     const toolnames = [
-      'clear', 'open', 'save', 'source', 'delete',
+      'clear', 'open', 'save', 'delete',
       'delete_multi', 'paste', 'clone', 'clone_multi',
       'move_top', 'move_bottom'
     ];
@@ -4794,11 +4792,11 @@ editor.init = () => {
       if (button) {
         const {title} = button;
         const index = title.indexOf('Ctrl+');
-        button.title = [
+        button.setAttribute('title', [
           title.substr(0, index),
           'Cmd+',
           title.substr(index + 5)
-        ].join('');
+        ].join(''));
       }
     }
   }
@@ -5569,7 +5567,7 @@ editor.init = () => {
               keyAssocs[keyval] = opts.sel;
               // Disregard for menu items
               if (btn.closest('#main_menu') === null) {
-                btn.title = newTitle;
+                btn.setAttribute('title', newTitle);
               }
             }
           }
