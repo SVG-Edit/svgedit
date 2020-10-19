@@ -10,7 +10,7 @@ import jQueryPluginSVG from '../common/jQuery.attr.js';
 import {NS} from '../common/namespaces.js';
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
-  walkTree, isNullish, getHref, setHref
+  walkTree, isNullish, getHref, setHref, getElem
 } from '../common/utilities.js';
 import {
   convertToNum
@@ -831,4 +831,58 @@ export const removeHyperlinkMethod = function () {
 */
 export const setSegTypeMethod = function (newType) {
   elemContext_.getCanvas().pathActions.setSegType(newType);
+};
+
+    /**
+* Set the background of the editor (NOT the actual document).
+* @function module:svgcanvas.SvgCanvas#setBackground
+* @param {string} color - String with fill color to apply
+* @param {string} url - URL or path to image to use
+* @returns {void}
+*/
+export const setBackgroundMethod = function (color, url) {
+  const bg = getElem('canvasBackground');
+  const border = $(bg).find('rect')[0];
+  let bgImg = getElem('background_image');
+  let bgPattern = getElem('background_pattern');
+  border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
+  if (color === 'chessboard') {
+    if (!bgPattern) {
+      bgPattern = elemContext_.getDOMDocument().createElementNS(NS.SVG, 'foreignObject');
+      elemContext_.getCanvas().assignAttributes(bgPattern, {
+        id: 'background_pattern',
+        width: '100%',
+        height: '100%',
+        preserveAspectRatio: 'xMinYMin',
+        style: 'pointer-events:none'
+      });
+      const div = document.createElement('div');
+      elemContext_.getCanvas().assignAttributes(div, {
+        style: 'pointer-events:none;width:100%;height:100%;' +
+      'background-image:url(data:image/gif;base64,' +
+      'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
+      'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+      });
+      bgPattern.appendChild(div);
+      bg.append(bgPattern);
+    }
+  } else if (bgPattern) {
+    bgPattern.remove();
+  }
+  if (url) {
+    if (!bgImg) {
+      bgImg = elemContext_.getDOMDocument().createElementNS(NS.SVG, 'image');
+      elemContext_.getCanvas().assignAttributes(bgImg, {
+        id: 'background_image',
+        width: '100%',
+        height: '100%',
+        preserveAspectRatio: 'xMinYMin',
+        style: 'pointer-events:none'
+      });
+    }
+    setHref(bgImg, url);
+    bg.append(bgImg);
+  } else if (bgImg) {
+    bgImg.remove();
+  }
 };

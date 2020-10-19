@@ -51,11 +51,11 @@ import {
   init as elemInit, getResolutionMethod, getTitleMethod, setGroupTitleMethod,
   setDocumentTitleMethod, setResolutionMethod, getEditorNSMethod, setBBoxZoomMethod,
   setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
-  setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod, 
+  setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod,
   setItalicMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
-  getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod, 
-  setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod, 
-  removeHyperlinkMethod, setSegTypeMethod
+  getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod,
+  setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod,
+  removeHyperlinkMethod, setSegTypeMethod, setBackgroundMethod
 } from './elem-get-set.js';
 import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
@@ -3688,52 +3688,7 @@ class SvgCanvas {
 * @param {string} url - URL or path to image to use
 * @returns {void}
 */
-    this.setBackground = function (color, url) {
-      const bg = getElem('canvasBackground');
-      const border = $(bg).find('rect')[0];
-      let bgImg = getElem('background_image');
-      let bgPattern = getElem('background_pattern');
-      border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
-      if (color === 'chessboard') {
-        if (!bgPattern) {
-          bgPattern = svgdoc.createElementNS(NS.SVG, 'foreignObject');
-          assignAttributes(bgPattern, {
-            id: 'background_pattern',
-            width: '100%',
-            height: '100%',
-            preserveAspectRatio: 'xMinYMin',
-            style: 'pointer-events:none'
-          });
-          const div = document.createElement('div');
-          assignAttributes(div, {
-            style: 'pointer-events:none;width:100%;height:100%;' +
-          'background-image:url(data:image/gif;base64,' +
-          'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
-          'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
-          });
-          bgPattern.appendChild(div);
-          bg.append(bgPattern);
-        }
-      } else if (bgPattern) {
-        bgPattern.remove();
-      }
-      if (url) {
-        if (!bgImg) {
-          bgImg = svgdoc.createElementNS(NS.SVG, 'image');
-          assignAttributes(bgImg, {
-            id: 'background_image',
-            width: '100%',
-            height: '100%',
-            preserveAspectRatio: 'xMinYMin',
-            style: 'pointer-events:none'
-          });
-        }
-        setHref(bgImg, url);
-        bg.append(bgImg);
-      } else if (bgImg) {
-        bgImg.remove();
-      }
-    };
+    this.setBackground = setBackgroundMethod;
 
     /**
 * Select the next/previous element within the current layer.
