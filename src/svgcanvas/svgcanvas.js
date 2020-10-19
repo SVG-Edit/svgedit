@@ -51,7 +51,11 @@ import {
   init as elemInit, getResolutionMethod, getTitleMethod, setGroupTitleMethod,
   setDocumentTitleMethod, setResolutionMethod, getEditorNSMethod, setBBoxZoomMethod,
   setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
-  setStrokeWidthMethod, setStrokeAttrMethod
+  setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod, 
+  setItalicMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
+  getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod, 
+  setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod, 
+  removeHyperlinkMethod, setSegTypeMethod
 } from './elem-get-set.js';
 import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
@@ -3057,6 +3061,7 @@ class SvgCanvas {
         getCurrentZoom,
         getSVGContent,
         getSelectedElements,
+        call,
         changeSelectedAttributeNoUndoMethod,
         getDOMDocument () { return svgdoc; },
         getCanvas () { return canvas; },
@@ -3065,7 +3070,8 @@ class SvgCanvas {
         setCurProperties (key, value) { curProperties[key] = value; },
         getCurProperties (key) { return curProperties[key]; },
         setCurShape (key, value) { curShape[key] = value; },
-        call
+        getCurText (key) { return curText[key]; },
+        setCurText (key, value) { curText[key] = value; }        
       }
     );
 
@@ -3645,15 +3651,7 @@ class SvgCanvas {
 * @function module:svgcanvas.SvgCanvas#getBold
 * @returns {boolean} Indicates whether or not element is bold
 */
-    this.getBold = function () {
-      // should only have one element selected
-      const selected = selectedElements[0];
-      if (!isNullish(selected) && selected.tagName === 'text' &&
-    isNullish(selectedElements[1])) {
-        return (selected.getAttribute('font-weight') === 'bold');
-      }
-      return false;
-    };
+    this.getBold = getBoldMethod;
 
     /**
 * Make the selected element bold or normal.
@@ -3661,30 +3659,14 @@ class SvgCanvas {
 * @param {boolean} b - Indicates bold (`true`) or normal (`false`)
 * @returns {void}
 */
-    this.setBold = function (b) {
-      const selected = selectedElements[0];
-      if (!isNullish(selected) && selected.tagName === 'text' &&
-    isNullish(selectedElements[1])) {
-        changeSelectedAttribute('font-weight', b ? 'bold' : 'normal');
-      }
-      if (!selectedElements[0].textContent) {
-        textActions.setCursor();
-      }
-    };
+    this.setBold = setBoldMethod;
 
     /**
 * Check whether selected element is in italics or not.
 * @function module:svgcanvas.SvgCanvas#getItalic
 * @returns {boolean} Indicates whether or not element is italic
 */
-    this.getItalic = function () {
-      const selected = selectedElements[0];
-      if (!isNullish(selected) && selected.tagName === 'text' &&
-    isNullish(selectedElements[1])) {
-        return (selected.getAttribute('font-style') === 'italic');
-      }
-      return false;
-    };
+    this.getItalic = getItalicMethod;
 
     /**
 * Make the selected element italic or normal.
@@ -3692,24 +3674,13 @@ class SvgCanvas {
 * @param {boolean} i - Indicates italic (`true`) or normal (`false`)
 * @returns {void}
 */
-    this.setItalic = function (i) {
-      const selected = selectedElements[0];
-      if (!isNullish(selected) && selected.tagName === 'text' &&
-    isNullish(selectedElements[1])) {
-        changeSelectedAttribute('font-style', i ? 'italic' : 'normal');
-      }
-      if (!selectedElements[0].textContent) {
-        textActions.setCursor();
-      }
-    };
+    this.setItalic = setItalicMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getFontFamily
 * @returns {string} The current font family
 */
-    this.getFontFamily = function () {
-      return curText.font_family;
-    };
+    this.getFontFamily = getFontFamilyMethod;
 
     /**
 * Set the new font family.
@@ -3717,13 +3688,7 @@ class SvgCanvas {
 * @param {string} val - String with the new font family
 * @returns {void}
 */
-    this.setFontFamily = function (val) {
-      curText.font_family = val;
-      changeSelectedAttribute('font-family', val);
-      if (selectedElements[0] && !selectedElements[0].textContent) {
-        textActions.setCursor();
-      }
-    };
+    this.setFontFamily = setFontFamilyMethod;
 
     /**
 * Set the new font color.
@@ -3731,26 +3696,19 @@ class SvgCanvas {
 * @param {string} val - String with the new font color
 * @returns {void}
 */
-    this.setFontColor = function (val) {
-      curText.fill = val;
-      changeSelectedAttribute('fill', val);
-    };
+    this.setFontColor = setFontColorMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getFontColor
 * @returns {string} The current font color
 */
-    this.getFontColor = function () {
-      return curText.fill;
-    };
+    this.getFontColor = getFontColorMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getFontSize
 * @returns {Float} The current font size
 */
-    this.getFontSize = function () {
-      return curText.font_size;
-    };
+    this.getFontSize = getFontSizeMethod;
 
     /**
 * Applies the given font size to the selected element.
@@ -3758,23 +3716,13 @@ class SvgCanvas {
 * @param {Float} val - Float with the new font size
 * @returns {void}
 */
-    this.setFontSize = function (val) {
-      curText.font_size = val;
-      changeSelectedAttribute('font-size', val);
-      if (!selectedElements[0].textContent) {
-        textActions.setCursor();
-      }
-    };
+    this.setFontSize = setFontSizeMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getText
 * @returns {string} The current text (`textContent`) of the selected element
 */
-    this.getText = function () {
-      const selected = selectedElements[0];
-      if (isNullish(selected)) { return ''; }
-      return selected.textContent;
-    };
+    this.getText = getTextMethod;
 
     /**
 * Updates the text element with the given string.
@@ -3782,11 +3730,7 @@ class SvgCanvas {
 * @param {string} val - String with the new text
 * @returns {void}
 */
-    this.setTextContent = function (val) {
-      changeSelectedAttribute('#text', val);
-      textActions.init(val);
-      textActions.setCursor();
-    };
+    this.setTextContent = setTextContentMethod;
 
     /**
 * Sets the new image URL for the selected image element. Updates its size if
@@ -3796,42 +3740,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.setImageURL = function (val) {
-      const elem = selectedElements[0];
-      if (!elem) { return; }
-
-      const attrs = $(elem).attr(['width', 'height']);
-      const setsize = (!attrs.width || !attrs.height);
-
-      const curHref = getHref(elem);
-
-      // Do nothing if no URL change or size change
-      if (curHref === val && !setsize) {
-        return;
-      }
-
-      const batchCmd = new BatchCommand('Change Image URL');
-
-      setHref(elem, val);
-      batchCmd.addSubCommand(new ChangeElementCommand(elem, {
-        '#href': curHref
-      }));
-
-      $(new Image()).load(function () {
-        const changes = $(elem).attr(['width', 'height']);
-
-        $(elem).attr({
-          width: this.width,
-          height: this.height
-        });
-
-        selectorManager.requestSelector(elem).resize();
-
-        batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-        addCommandToHistory(batchCmd);
-        call('changed', [elem]);
-      }).attr('src', val);
-    };
+    this.setImageURL = setImageURLMethod;
 
     /**
 * Sets the new link URL for the selected anchor element.
@@ -3839,32 +3748,7 @@ class SvgCanvas {
 * @param {string} val - String with the link URL/path
 * @returns {void}
 */
-    this.setLinkURL = function (val) {
-      let elem = selectedElements[0];
-      if (!elem) { return; }
-      if (elem.tagName !== 'a') {
-        // See if parent is an anchor
-        const parentsA = $(elem).parents('a');
-        if (parentsA.length) {
-          elem = parentsA[0];
-        } else {
-          return;
-        }
-      }
-
-      const curHref = getHref(elem);
-
-      if (curHref === val) { return; }
-
-      const batchCmd = new BatchCommand('Change Link URL');
-
-      setHref(elem, val);
-      batchCmd.addSubCommand(new ChangeElementCommand(elem, {
-        '#href': curHref
-      }));
-
-      addCommandToHistory(batchCmd);
-    };
+    this.setLinkURL = setLinkURLMethod;
 
     /**
 * Sets the `rx` and `ry` values to the selected `rect` element
@@ -3874,18 +3758,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.setRectRadius = function (val) {
-      const selected = selectedElements[0];
-      if (!isNullish(selected) && selected.tagName === 'rect') {
-        const r = selected.getAttribute('rx');
-        if (r !== String(val)) {
-          selected.setAttribute('rx', val);
-          selected.setAttribute('ry', val);
-          addCommandToHistory(new ChangeElementCommand(selected, {rx: r, ry: r}, 'Radius'));
-          call('changed', [selected]);
-        }
-      }
-    };
+    this.setRectRadius = setRectRadiusMethod;
 
     /**
 * Wraps the selected element(s) in an anchor element or converts group to one.
@@ -3893,20 +3766,13 @@ class SvgCanvas {
 * @param {string} url
 * @returns {void}
 */
-    this.makeHyperlink = function (url) {
-      canvas.groupSelectedElements('a', url);
-
-      // TODO: If element is a single "g", convert to "a"
-      //  if (selectedElements.length > 1 && selectedElements[1]) {
-    };
+    this.makeHyperlink = makeHyperlinkMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#removeHyperlink
 * @returns {void}
 */
-    this.removeHyperlink = function () {
-      canvas.ungroupSelectedElement();
-    };
+    this.removeHyperlink = removeHyperlinkMethod;
 
     /**
 * Group: Element manipulation.
@@ -3918,9 +3784,7 @@ class SvgCanvas {
 * @param {Integer} newType - New segment type. See {@link https://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg} for list
 * @returns {void}
 */
-    this.setSegType = function (newType) {
-      pathActions.setSegType(newType);
-    };
+    this.setSegType = setSegTypeMethod;
 
     /**
 * Convert selected element to a path, or get the BBox of an element-as-path.

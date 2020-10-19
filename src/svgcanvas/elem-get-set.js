@@ -10,11 +10,14 @@ import jQueryPluginSVG from '../common/jQuery.attr.js';
 import {NS} from '../common/namespaces.js';
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
-  walkTree
+  walkTree, isNullish, getHref, setHref
 } from '../common/utilities.js';
 import {
   convertToNum
 } from '../common/units.js';
+import {
+  isWebkit
+} from '../common/browser.js';
 
 let $ = jQueryPluginSVG(jQuery);
 
@@ -538,4 +541,294 @@ export const setStrokeAttrMethod = function (attr, val) {
     elemContext_.getCanvas().changeSelectedAttribute(attr, val, elems);
     elemContext_.call('changed', selectedElements);
   }
+};
+/**
+* Check whether selected element is bold or not.
+* @function module:svgcanvas.SvgCanvas#getBold
+* @returns {boolean} Indicates whether or not element is bold
+*/
+export const getBoldMethod = function () {
+  const selectedElements = elemContext_.getSelectedElements();
+  // should only have one element selected
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+isNullish(selectedElements[1])) {
+    return (selected.getAttribute('font-weight') === 'bold');
+  }
+  return false;
+};
+
+/**
+* Make the selected element bold or normal.
+* @function module:svgcanvas.SvgCanvas#setBold
+* @param {boolean} b - Indicates bold (`true`) or normal (`false`)
+* @returns {void}
+*/
+export const setBoldMethod = function (b) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+isNullish(selectedElements[1])) {
+    elemContext_.getCanvas().changeSelectedAttribute('font-weight', b ? 'bold' : 'normal');
+  }
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
+* Check whether selected element is in italics or not.
+* @function module:svgcanvas.SvgCanvas#getItalic
+* @returns {boolean} Indicates whether or not element is italic
+*/
+export const getItalicMethod = function () {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+isNullish(selectedElements[1])) {
+    return (selected.getAttribute('font-style') === 'italic');
+  }
+  return false;
+};
+
+/**
+* Make the selected element italic or normal.
+* @function module:svgcanvas.SvgCanvas#setItalic
+* @param {boolean} i - Indicates italic (`true`) or normal (`false`)
+* @returns {void}
+*/
+export const setItalicMethod = function (i) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+isNullish(selectedElements[1])) {
+    elemContext_.getCanvas().changeSelectedAttribute('font-style', i ? 'italic' : 'normal');
+  }
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+/**
+* @function module:svgcanvas.SvgCanvas#getFontFamily
+* @returns {string} The current font family
+*/
+export const getFontFamilyMethod = function () {
+  return elemContext_.getCurText('font_family');
+};
+
+/**
+* Set the new font family.
+* @function module:svgcanvas.SvgCanvas#setFontFamily
+* @param {string} val - String with the new font family
+* @returns {void}
+*/
+export const setFontFamilyMethod = function (val) {
+  const selectedElements = elemContext_.getSelectedElements();
+  elemContext_.setCurText('font_family', val);
+  elemContext_.getCanvas().changeSelectedAttribute('font-family', val);
+  if (selectedElements[0] && !selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
+* Set the new font color.
+* @function module:svgcanvas.SvgCanvas#setFontColor
+* @param {string} val - String with the new font color
+* @returns {void}
+*/
+export const setFontColorMethod = function (val) {
+  elemContext_.setCurText('fill', val);
+  elemContext_.getCanvas().changeSelectedAttribute('fill', val);
+};
+
+/**
+* @function module:svgcanvas.SvgCanvas#getFontColor
+* @returns {string} The current font color
+*/
+export const getFontColorMethod = function () {
+  return elemContext_.getCurText('fill');
+};
+
+/**
+* @function module:svgcanvas.SvgCanvas#getFontSize
+* @returns {Float} The current font size
+*/
+export const getFontSizeMethod = function () {
+  return elemContext_.getCurText('font_size');
+};
+
+/**
+* Applies the given font size to the selected element.
+* @function module:svgcanvas.SvgCanvas#setFontSize
+* @param {Float} val - Float with the new font size
+* @returns {void}
+*/
+export const setFontSizeMethod = function (val) {
+  const selectedElements = elemContext_.getSelectedElements();
+  elemContext_.setCurText('font_size', val);
+  elemContext_.getCanvas().changeSelectedAttribute('font-size', val);
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
+* @function module:svgcanvas.SvgCanvas#getText
+* @returns {string} The current text (`textContent`) of the selected element
+*/
+export const getTextMethod = function () {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (isNullish(selected)) { return ''; }
+  return selected.textContent;
+};
+
+/**
+* Updates the text element with the given string.
+* @function module:svgcanvas.SvgCanvas#setTextContent
+* @param {string} val - String with the new text
+* @returns {void}
+*/
+export const setTextContentMethod = function (val) {
+  elemContext_.getCanvas().changeSelectedAttribute('#text', val);
+  elemContext_.getCanvas().textActions.init(val);
+  elemContext_.getCanvas().textActions.setCursor();
+};
+
+/**
+* Sets the new image URL for the selected image element. Updates its size if
+* a new URL is given.
+* @function module:svgcanvas.SvgCanvas#setImageURL
+* @param {string} val - String with the image URL/path
+* @fires module:svgcanvas.SvgCanvas#event:changed
+* @returns {void}
+*/
+export const setImageURLMethod = function (val) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const elem = selectedElements[0];
+  if (!elem) { return; }
+
+  const attrs = $(elem).attr(['width', 'height']);
+  const setsize = (!attrs.width || !attrs.height);
+
+  const curHref = getHref(elem);
+
+  // Do nothing if no URL change or size change
+  if (curHref === val && !setsize) {
+    return;
+  }
+
+  const batchCmd = new BatchCommand('Change Image URL');
+
+  setHref(elem, val);
+  batchCmd.addSubCommand(new ChangeElementCommand(elem, {
+    '#href': curHref
+  }));
+
+  $(new Image()).load(function () {
+    const changes = $(elem).attr(['width', 'height']);
+
+    $(elem).attr({
+      width: this.width,
+      height: this.height
+    });
+
+    elemContext_.getCanvas().selectorManager.requestSelector(elem).resize();
+
+    batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
+    elemContext_.addCommandToHistory(batchCmd);
+    elemContext_.call('changed', [elem]);
+  }).attr('src', val);
+};
+
+/**
+* Sets the new link URL for the selected anchor element.
+* @function module:svgcanvas.SvgCanvas#setLinkURL
+* @param {string} val - String with the link URL/path
+* @returns {void}
+*/
+export const setLinkURLMethod = function (val) {
+  const selectedElements = elemContext_.getSelectedElements();
+  let elem = selectedElements[0];
+  if (!elem) { return; }
+  if (elem.tagName !== 'a') {
+    // See if parent is an anchor
+    const parentsA = $(elem).parents('a');
+    if (parentsA.length) {
+      elem = parentsA[0];
+    } else {
+      return;
+    }
+  }
+
+  const curHref = getHref(elem);
+
+  if (curHref === val) { return; }
+
+  const batchCmd = new BatchCommand('Change Link URL');
+
+  setHref(elem, val);
+  batchCmd.addSubCommand(new ChangeElementCommand(elem, {
+    '#href': curHref
+  }));
+
+  elemContext_.addCommandToHistory(batchCmd);
+};
+
+/**
+* Sets the `rx` and `ry` values to the selected `rect` element
+* to change its corner radius.
+* @function module:svgcanvas.SvgCanvas#setRectRadius
+* @param {string|Float} val - The new radius
+* @fires module:svgcanvas.SvgCanvas#event:changed
+* @returns {void}
+*/
+export const setRectRadiusMethod = function (val) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'rect') {
+    const r = selected.getAttribute('rx');
+    if (r !== String(val)) {
+      selected.setAttribute('rx', val);
+      selected.setAttribute('ry', val);
+      elemContext_.addCommandToHistory(new ChangeElementCommand(selected, {rx: r, ry: r}, 'Radius'));
+      elemContext_.call('changed', [selected]);
+    }
+  }
+};
+
+/**
+* Wraps the selected element(s) in an anchor element or converts group to one.
+* @function module:svgcanvas.SvgCanvas#makeHyperlink
+* @param {string} url
+* @returns {void}
+*/
+export const makeHyperlinkMethod = function (url) {
+  elemContext_.getCanvas().groupSelectedElements('a', url);
+
+  // TODO: If element is a single "g", convert to "a"
+  //  if (selectedElements.length > 1 && selectedElements[1]) {
+};
+
+/**
+* @function module:svgcanvas.SvgCanvas#removeHyperlink
+* @returns {void}
+*/
+export const removeHyperlinkMethod = function () {
+  elemContext_.getCanvas().ungroupSelectedElement();
+};
+
+/**
+* Group: Element manipulation.
+*/
+
+/**
+* Sets the new segment type to the selected segment(s).
+* @function module:svgcanvas.SvgCanvas#setSegType
+* @param {Integer} newType - New segment type. See {@link https://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathSeg} for list
+* @returns {void}
+*/
+export const setSegTypeMethod = function (newType) {
+  elemContext_.getCanvas().pathActions.setSegType(newType);
 };
