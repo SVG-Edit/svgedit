@@ -1358,5 +1358,6 @@ export const mock = ({
   getRotationAngle = getRotationAngleUser;
 };
 
+export const $id = (id) => document.getElementById(id);
 export const $q = (sel) => document.querySelector(sel);
 export const $qq = (sel) => [...document.querySelectorAll(sel)];

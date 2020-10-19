@@ -46,7 +46,7 @@ import {
   setStrings
 } from './locale.js';
 
-const {$q} = Utils;
+const {$q, $id} = Utils;
 
 const editor = {};
 
@@ -4778,29 +4778,6 @@ editor.init = () => {
     });
   }());
 
-  // switch modifier key in tooltips if mac
-  // NOTE: This code is not used yet until I can figure out how to successfully bind ctrl/meta
-  // in Opera and Chrome
-  if (isMac() && !window.opera) {
-    const shortcutButtons = [
-      'tool_clear', 'tool_save', 'tool_source',
-      'tool_undo', 'tool_redo', 'tool_clone'
-    ];
-    let i = shortcutButtons.length;
-    while (i--) {
-      const button = document.getElementById(shortcutButtons[i]);
-      if (button) {
-        const {title} = button;
-        const index = title.indexOf('Ctrl+');
-        button.setAttribute('title', [
-          title.substr(0, index),
-          'Cmd+',
-          title.substr(index + 5)
-        ].join(''));
-      }
-    }
-  }
-
   /**
   * @param {external:jQuery} elem
   * @todo Go back to the color boxes having white background-color and then setting
@@ -5377,6 +5354,8 @@ editor.init = () => {
      * @name module:SVGEditor~ToolButtons
      * @type {module:SVGEditor.ToolButton[]}
      */
+    // register action to buttons
+    $id('tool_source').addEventListener('click', showSourceEditor);
     const toolButtons = [
       {sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
       {sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
@@ -5409,7 +5388,7 @@ editor.init = () => {
       {sel: '#tool_export', fn: clickExport, evt: 'mouseup'},
       {sel: '#tool_open', fn: clickOpen, evt: 'mouseup', key: ['O', true]},
       {sel: '#tool_import', fn: clickImport, evt: 'mouseup'},
-      {sel: '#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
+      // {sel: '#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
       {sel: '#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
       {
         key: ['esc', false, false],

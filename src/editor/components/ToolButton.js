@@ -1,3 +1,6 @@
+// import {isMac} from '../../common/browser.js';
+// if (isMac() && !window.opera) 'Ctrl+' 'Cmd+'
+
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
@@ -5,7 +8,7 @@ template.innerHTML = `
   {
     background-color: #ffc;
   }
-  :host
+  div
   {
     height: 24px;
     width: 24px;
@@ -16,7 +19,7 @@ template.innerHTML = `
     cursor: pointer;
     border-radius: 3px;
   }
-  .svg_icon {
+  img {
     border: none;
     width: 24px;
     height: 24px;
@@ -61,7 +64,10 @@ export class ToolButton extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'title':
-      this.$div.setAttribute('title', newValue);
+      {
+        const shortcut = this.getAttribute('shortcut');
+        this.$div.setAttribute('title', `${newValue} [${shortcut}]`);
+      }
       break;
     case 'src':
       this.$img.setAttribute('src', newValue);
@@ -71,7 +77,6 @@ export class ToolButton extends HTMLElement {
       console.error(`unknown attribute: ${name}`);
       break;
     }
-    console.log(name, oldValue, newValue);
   }
   /**
    * @function get
@@ -102,6 +107,27 @@ export class ToolButton extends HTMLElement {
    */
   set src (value) {
     this.setAttribute('src', value);
+  }
+
+  /**
+   * @function connectedCallback
+   * @returns {void}
+   */
+  connectedCallback () {
+    const shortcut = this.getAttribute('shortcut');
+    if (shortcut) {
+      // register the keydown event
+      document.addEventListener('keydown', (e) => {
+        // only track keyboard shortcuts for the body containing the SVG-Editor
+        if (e.target.nodeName !== 'BODY') return;
+        // normalize key
+        const key = `${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toUpperCase()}`;
+        if (shortcut !== key) return;
+        // launch the click event
+        this.click();
+        e.preventDefault();
+      });
+    }
   }
 }
 
