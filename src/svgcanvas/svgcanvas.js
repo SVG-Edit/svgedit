@@ -82,6 +82,10 @@ import {
   init as unitsInit
 } from '../common/units.js';
 import {
+  svgCanvasToString, svgToString, setSvgString,
+  init as svgInit, importSvgString
+} from './svg-exec.js';
+import {
   isGecko, isChrome, isIE, isWebkit
 } from '../common/browser.js'; // , supportsEditableText
 import {
@@ -1917,60 +1921,37 @@ class SvgCanvas {
 
       return numRemoved;
     };
-
+    svgInit(
+    /**
+    * @implements {module:elem-get-set.elemInit}
+    */
+      {
+        getCanvas () { return canvas; },
+        getSVGContent,
+        getSVGRoot,
+        getCurrentGroup () { return currentGroup; },
+        getCurConfig () { return curConfig; },
+        getNsMap () { return nsMap; },
+        getSvgOptionApply () { return saveOptions.apply; },
+        getSvgOptionImages () { return saveOptions.images; },
+        getEncodableImages (key) { return encodableImages[key]; },
+        call,
+        getDOMDocument () { return svgdoc; },
+        getVisElems () { return visElems; },
+        getIdPrefix () { return idprefix; },
+        setCurrentZoom (value) { currentZoom = value; },
+        getImportIds (key) { return importIds[key]; },
+        setImportIds (key, value) { importIds[key] = value; },
+        setSVGContent (value) { svgcontent = value; },
+        addCommandToHistory
+      }
+    );
     /**
 * Main function to set up the SVG content for output.
 * @function module:svgcanvas.SvgCanvas#svgCanvasToString
 * @returns {string} The SVG image for output
 */
-    this.svgCanvasToString = function () {
-      // keep calling it until there are none to remove
-      while (removeUnusedDefElems() > 0) {} // eslint-disable-line no-empty
-
-      pathActions.clear(true);
-
-      // Keep SVG-Edit comment on top
-      $.each(svgcontent.childNodes, function (i, node) {
-        if (i && node.nodeType === 8 && node.data.includes('Created with')) {
-          svgcontent.firstChild.before(node);
-        }
-      });
-
-      // Move out of in-group editing mode
-      if (currentGroup) {
-        draw.leaveContext();
-        selectOnly([currentGroup]);
-      }
-
-      const nakedSvgs = [];
-
-      // Unwrap gsvg if it has no special attributes (only id and style)
-      $(svgcontent).find('g:data(gsvg)').each(function () {
-        const attrs = this.attributes;
-        let len = attrs.length;
-        for (let i = 0; i < len; i++) {
-          if (attrs[i].nodeName === 'id' || attrs[i].nodeName === 'style') {
-            len--;
-          }
-        }
-        // No significant attributes, so ungroup
-        if (len <= 0) {
-          const svg = this.firstChild;
-          nakedSvgs.push(svg);
-          $(this).replaceWith(svg);
-        }
-      });
-      const output = this.svgToString(svgcontent, 0);
-
-      // Rewrap gsvg
-      if (nakedSvgs.length) {
-        $(nakedSvgs).each(function () {
-          groupSvgElem(this);
-        });
-      }
-
-      return output;
-    };
+    this.svgCanvasToString = svgCanvasToString;
 
     /**
 * Sub function ran on each SVG element to convert it to a string as desired.
@@ -1979,177 +1960,7 @@ class SvgCanvas {
 * @param {Integer} indent - Number of spaces to indent this tag
 * @returns {string} The given element as an SVG tag
 */
-    this.svgToString = function (elem, indent) {
-      const out = [];
-      const unit = curConfig.baseUnit;
-      const unitRe = new RegExp('^-?[\\d\\.]+' + unit + '$');
-
-      if (elem) {
-        cleanupElement(elem);
-        const attrs = [...elem.attributes];
-        const childs = elem.childNodes;
-        attrs.sort((a, b) => {
-          return a.name > b.name ? -1 : 1;
-        });
-
-        for (let i = 0; i < indent; i++) { out.push(' '); }
-        out.push('<'); out.push(elem.nodeName);
-        if (elem.id === 'svgcontent') {
-          // Process root element separately
-          const res = getResolution();
-
-          const vb = '';
-          // TODO: Allow this by dividing all values by current baseVal
-          // Note that this also means we should properly deal with this on import
-          // if (curConfig.baseUnit !== 'px') {
-          //   const unit = curConfig.baseUnit;
-          //   const unitM = getTypeMap()[unit];
-          //   res.w = shortFloat(res.w / unitM);
-          //   res.h = shortFloat(res.h / unitM);
-          //   vb = ' viewBox="' + [0, 0, res.w, res.h].join(' ') + '"';
-          //   res.w += unit;
-          //   res.h += unit;
-          // }
-
-          if (unit !== 'px') {
-            res.w = convertUnit(res.w, unit) + unit;
-            res.h = convertUnit(res.h, unit) + unit;
-          }
-
-          out.push(' width="' + res.w + '" height="' + res.h + '"' + vb + ' xmlns="' + NS.SVG + '"');
-
-          const nsuris = {};
-
-          // Check elements for namespaces, add if found
-          $(elem).find('*').andSelf().each(function () {
-            // const el = this;
-            // for some elements have no attribute
-            const uri = this.namespaceURI;
-            if (uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml') {
-              nsuris[uri] = true;
-              out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
-            }
-
-            $.each(this.attributes, function (i, attr) {
-              const u = attr.namespaceURI;
-              if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
-                nsuris[u] = true;
-                out.push(' xmlns:' + nsMap[u] + '="' + u + '"');
-              }
-            });
-          });
-
-          let i = attrs.length;
-          const attrNames = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
-          while (i--) {
-            const attr = attrs[i];
-            const attrVal = toXml(attr.value);
-
-            // Namespaces have already been dealt with, so skip
-            if (attr.nodeName.startsWith('xmlns:')) { continue; }
-
-            // only serialize attributes we don't use internally
-            if (attrVal !== '' && !attrNames.includes(attr.localName)) {
-              if (!attr.namespaceURI || nsMap[attr.namespaceURI]) {
-                out.push(' ');
-                out.push(attr.nodeName); out.push('="');
-                out.push(attrVal); out.push('"');
-              }
-            }
-          }
-        } else {
-          // Skip empty defs
-          if (elem.nodeName === 'defs' && !elem.firstChild) { return ''; }
-
-          const mozAttrs = ['-moz-math-font-style', '_moz-math-font-style'];
-          for (let i = attrs.length - 1; i >= 0; i--) {
-            const attr = attrs[i];
-            let attrVal = toXml(attr.value);
-            // remove bogus attributes added by Gecko
-            if (mozAttrs.includes(attr.localName)) { continue; }
-            if (attrVal === 'null') {
-              const styleName = attr.localName.replace(/-[a-z]/g, (s) => s[1].toUpperCase());
-              if (Object.prototype.hasOwnProperty.call(elem.style, styleName)) { continue; }
-            }
-            if (attrVal !== '') {
-              if (attrVal.startsWith('pointer-events')) { continue; }
-              if (attr.localName === 'class' && attrVal.startsWith('se_')) { continue; }
-              out.push(' ');
-              if (attr.localName === 'd') { attrVal = pathActions.convertPath(elem, true); }
-              if (!isNaN(attrVal)) {
-                attrVal = shortFloat(attrVal);
-              } else if (unitRe.test(attrVal)) {
-                attrVal = shortFloat(attrVal) + unit;
-              }
-
-              // Embed images when saving
-              if (saveOptions.apply &&
-            elem.nodeName === 'image' &&
-            attr.localName === 'href' &&
-            saveOptions.images &&
-            saveOptions.images === 'embed'
-              ) {
-                const img = encodableImages[attrVal];
-                if (img) { attrVal = img; }
-              }
-
-              // map various namespaces to our fixed namespace prefixes
-              // (the default xmlns attribute itself does not get a prefix)
-              if (!attr.namespaceURI || attr.namespaceURI === NS.SVG || nsMap[attr.namespaceURI]) {
-                out.push(attr.nodeName); out.push('="');
-                out.push(attrVal); out.push('"');
-              }
-            }
-          }
-        }
-
-        if (elem.hasChildNodes()) {
-          out.push('>');
-          indent++;
-          let bOneLine = false;
-
-          for (let i = 0; i < childs.length; i++) {
-            const child = childs.item(i);
-            switch (child.nodeType) {
-            case 1: // element node
-              out.push('\n');
-              out.push(this.svgToString(child, indent));
-              break;
-            case 3: { // text node
-              const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
-              if (str !== '') {
-                bOneLine = true;
-                out.push(String(toXml(str)));
-              }
-              break;
-            } case 4: // cdata node
-              out.push('\n');
-              out.push(new Array(indent + 1).join(' '));
-              out.push('<![CDATA[');
-              out.push(child.nodeValue);
-              out.push(']]>');
-              break;
-            case 8: // comment
-              out.push('\n');
-              out.push(new Array(indent + 1).join(' '));
-              out.push('<!--');
-              out.push(child.data);
-              out.push('-->');
-              break;
-            } // switch on node type
-          }
-          indent--;
-          if (!bOneLine) {
-            out.push('\n');
-            for (let i = 0; i < indent; i++) { out.push(' '); }
-          }
-          out.push('</'); out.push(elem.nodeName); out.push('>');
-        } else {
-          out.push('/>');
-        }
-      }
-      return out.join('');
-    }; // end svgToString()
+    this.svgToString = svgToString;
 
     /**
  * Function to run when image data is found.
@@ -2659,173 +2470,7 @@ class SvgCanvas {
 * @returns {boolean} This function returns `false` if the set was
 *     unsuccessful, `true` otherwise.
 */
-    this.setSvgString = function (xmlString, preventUndo) {
-      try {
-        // convert string into XML document
-        const newDoc = text2xml(xmlString);
-        if (newDoc.firstElementChild &&
-      newDoc.firstElementChild.namespaceURI !== NS.SVG) {
-          return false;
-        }
-
-        this.prepareSvg(newDoc);
-
-        const batchCmd = new BatchCommand('Change Source');
-
-        // remove old svg document
-        const {nextSibling} = svgcontent;
-
-        svgcontent.remove();
-        const oldzoom = svgcontent;
-        batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgroot));
-
-        // set new svg document
-        // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-        if (svgdoc.adoptNode) {
-          svgcontent = svgdoc.adoptNode(newDoc.documentElement);
-        } else {
-          svgcontent = svgdoc.importNode(newDoc.documentElement, true);
-        }
-
-        svgroot.append(svgcontent);
-        const content = $(svgcontent);
-
-        canvas.current_drawing_ = new draw.Drawing(svgcontent, idprefix);
-
-        // retrieve or set the nonce
-        const nonce = getCurrentDrawing().getNonce();
-        if (nonce) {
-          call('setnonce', nonce);
-        } else {
-          call('unsetnonce');
-        }
-
-        // change image href vals if possible
-        content.find('image').each(function () {
-          const image = this;
-          preventClickDefault(image);
-          const val = getHref(this);
-          if (val) {
-            if (val.startsWith('data:')) {
-              // Check if an SVG-edit data URI
-              const m = val.match(/svgedit_url=(.*?);/);
-              // const m = val.match(/svgedit_url=(?<url>.*?);/);
-              if (m) {
-                const url = decodeURIComponent(m[1]);
-                // const url = decodeURIComponent(m.groups.url);
-                $(new Image()).load(function () {
-                  image.setAttributeNS(NS.XLINK, 'xlink:href', url);
-                }).attr('src', url);
-              }
-            }
-            // Add to encodableImages if it loads
-            canvas.embedImage(val);
-          }
-        });
-
-        // Wrap child SVGs in group elements
-        content.find('svg').each(function () {
-          // Skip if it's in a <defs>
-          if ($(this).closest('defs').length) { return; }
-
-          uniquifyElems(this);
-
-          // Check if it already has a gsvg group
-          const pa = this.parentNode;
-          if (pa.childNodes.length === 1 && pa.nodeName === 'g') {
-            $(pa).data('gsvg', this);
-            pa.id = pa.id || getNextId();
-          } else {
-            groupSvgElem(this);
-          }
-        });
-
-        // For Firefox: Put all paint elems in defs
-        if (isGecko()) {
-          content.find('linearGradient, radialGradient, pattern').appendTo(findDefs());
-        }
-
-        // Set ref element for <use> elements
-
-        // TODO: This should also be done if the object is re-added through "redo"
-        setUseData(content);
-
-        convertGradients(content[0]);
-
-        const attrs = {
-          id: 'svgcontent',
-          overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden'
-        };
-
-        let percs = false;
-
-        // determine proper size
-        if (content.attr('viewBox')) {
-          const vb = content.attr('viewBox').split(' ');
-          attrs.width = vb[2];
-          attrs.height = vb[3];
-          // handle content that doesn't have a viewBox
-        } else {
-          $.each(['width', 'height'], function (i, dim) {
-            // Set to 100 if not given
-            const val = content.attr(dim) || '100%';
-
-            if (String(val).substr(-1) === '%') {
-              // Use user units if percentage given
-              percs = true;
-            } else {
-              attrs[dim] = convertToNum(dim, val);
-            }
-          });
-        }
-
-        // identify layers
-        draw.identifyLayers();
-
-        // Give ID for any visible layer children missing one
-        content.children().find(visElems).each(function () {
-          if (!this.id) { this.id = getNextId(); }
-        });
-
-        // Percentage width/height, so let's base it on visible elements
-        if (percs) {
-          const bb = getStrokedBBoxDefaultVisible();
-          attrs.width = bb.width + bb.x;
-          attrs.height = bb.height + bb.y;
-        }
-
-        // Just in case negative numbers are given or
-        // result from the percs calculation
-        if (attrs.width <= 0) { attrs.width = 100; }
-        if (attrs.height <= 0) { attrs.height = 100; }
-
-        content.attr(attrs);
-        this.contentW = attrs.width;
-        this.contentH = attrs.height;
-
-        batchCmd.addSubCommand(new InsertElementCommand(svgcontent));
-        // update root to the correct size
-        const changes = content.attr(['width', 'height']);
-        batchCmd.addSubCommand(new ChangeElementCommand(svgroot, changes));
-
-        // reset zoom
-        currentZoom = 1;
-
-        // reset transform lists
-        resetListMap();
-        clearSelection();
-        pathModule.clearData();
-        svgroot.append(selectorManager.selectorParentGroup);
-
-        if (!preventUndo) addCommandToHistory(batchCmd);
-        call('changed', [svgcontent]);
-      } catch (e) {
-        console.log(e); // eslint-disable-line no-console
-        return false;
-      }
-
-      return true;
-    };
+    this.setSvgString = setSvgString;
 
     /**
 * This function imports the input SVG XML as a `<symbol>` in the `<defs>`, then adds a
@@ -2841,122 +2486,7 @@ class SvgCanvas {
 * arbitrary transform lists, but makes some assumptions about how the transform list
 * was obtained
 */
-    this.importSvgString = function (xmlString) {
-      let j, ts, useEl;
-      try {
-        // Get unique ID
-        const uid = encode64(xmlString.length + xmlString).substr(0, 32);
-
-        let useExisting = false;
-        // Look for symbol and make sure symbol exists in image
-        if (importIds[uid]) {
-          if ($(importIds[uid].symbol).parents('#svgroot').length) {
-            useExisting = true;
-          }
-        }
-
-        const batchCmd = new BatchCommand('Import Image');
-        let symbol;
-        if (useExisting) {
-          ({symbol} = importIds[uid]);
-          ts = importIds[uid].xform;
-        } else {
-          // convert string into XML document
-          const newDoc = text2xml(xmlString);
-
-          this.prepareSvg(newDoc);
-
-          // import new svg document into our document
-          let svg;
-          // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-          if (svgdoc.adoptNode) {
-            svg = svgdoc.adoptNode(newDoc.documentElement);
-          } else {
-            svg = svgdoc.importNode(newDoc.documentElement, true);
-          }
-
-          uniquifyElems(svg);
-
-          const innerw = convertToNum('width', svg.getAttribute('width')),
-            innerh = convertToNum('height', svg.getAttribute('height')),
-            innervb = svg.getAttribute('viewBox'),
-            // if no explicit viewbox, create one out of the width and height
-            vb = innervb ? innervb.split(' ') : [0, 0, innerw, innerh];
-          for (j = 0; j < 4; ++j) {
-            vb[j] = Number(vb[j]);
-          }
-
-          // TODO: properly handle preserveAspectRatio
-          const // canvasw = +svgcontent.getAttribute('width'),
-            canvash = Number(svgcontent.getAttribute('height'));
-          // imported content should be 1/3 of the canvas on its largest dimension
-
-          if (innerh > innerw) {
-            ts = 'scale(' + (canvash / 3) / vb[3] + ')';
-          } else {
-            ts = 'scale(' + (canvash / 3) / vb[2] + ')';
-          }
-
-          // Hack to make recalculateDimensions understand how to scale
-          ts = 'translate(0) ' + ts + ' translate(0)';
-
-          symbol = svgdoc.createElementNS(NS.SVG, 'symbol');
-          const defs = findDefs();
-
-          if (isGecko()) {
-            // Move all gradients into root for Firefox, workaround for this bug:
-            // https://bugzilla.mozilla.org/show_bug.cgi?id=353575
-            // TODO: Make this properly undo-able.
-            $(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
-          }
-
-          while (svg.firstChild) {
-            const first = svg.firstChild;
-            symbol.append(first);
-          }
-          const attrs = svg.attributes;
-          for (const attr of attrs) { // Ok for `NamedNodeMap`
-            symbol.setAttribute(attr.nodeName, attr.value);
-          }
-          symbol.id = getNextId();
-
-          // Store data
-          importIds[uid] = {
-            symbol,
-            xform: ts
-          };
-
-          findDefs().append(symbol);
-          batchCmd.addSubCommand(new InsertElementCommand(symbol));
-        }
-
-        useEl = svgdoc.createElementNS(NS.SVG, 'use');
-        useEl.id = getNextId();
-        setHref(useEl, '#' + symbol.id);
-
-        (currentGroup || getCurrentDrawing().getCurrentLayer()).append(useEl);
-        batchCmd.addSubCommand(new InsertElementCommand(useEl));
-        clearSelection();
-
-        useEl.setAttribute('transform', ts);
-        recalculateDimensions(useEl);
-        $(useEl).data('symbol', symbol).data('ref', symbol);
-        addToSelection([useEl]);
-
-        // TODO: Find way to add this in a recalculateDimensions-parsable way
-        // if (vb[0] !== 0 || vb[1] !== 0) {
-        //   ts = 'translate(' + (-vb[0]) + ',' + (-vb[1]) + ') ' + ts;
-        // }
-        addCommandToHistory(batchCmd);
-        call('changed', [svgcontent]);
-      } catch (e) {
-        console.log(e); // eslint-disable-line no-console
-        return null;
-      }
-
-      // we want to return the element so we can automatically select it
-      return useEl;
-    };
+    this.importSvgString = importSvgString;
 
     // Could deprecate, but besides external uses, their usage makes clear that
     //  canvas is a dependency for all of these
@@ -3069,7 +2599,7 @@ class SvgCanvas {
         getCurProperties (key) { return curProperties[key]; },
         setCurShape (key, value) { curShape[key] = value; },
         getCurText (key) { return curText[key]; },
-        setCurText (key, value) { curText[key] = value; }        
+        setCurText (key, value) { curText[key] = value; }
       }
     );
 
