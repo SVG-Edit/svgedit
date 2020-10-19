@@ -101,6 +101,10 @@ import {
   Selector,
   init as selectInit
 } from './select.js';
+import {
+  clearSvgContentElementInit,
+  init as clearInit
+} from './clear.js';
 
 let $ = jQueryPluginSVG(jQuery);
 const {
@@ -187,6 +191,7 @@ class SvgCanvas {
  * @type {SVGSVGElement}
  */
     const svgroot = svgRootElement(svgdoc, dimensions);
+    const getSVGRoot = () => svgroot;
     container.append(svgroot);
 
     /**
@@ -196,31 +201,30 @@ class SvgCanvas {
  */
     let svgcontent = svgdoc.createElementNS(NS.SVG, 'svg');
 
+/**
+* This should really be an intersection implementing all rather than a union.
+* @type {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
+*/
+    const getSVGContent = () => { return svgcontent; };
+
+    clearInit(
+      /**
+  * @implements {module:utilities.EditorContext}
+  */
+      {
+        getSVGContent,
+        getDOMDocument () { return svgdoc; },
+        getDOMContainer () { return container; },
+        getSVGRoot,
+        getCurConfig () { return curConfig; }
+      }
+    );
     /**
 * This function resets the svgcontent element while keeping it in the DOM.
 * @function module:svgcanvas.SvgCanvas#clearSvgContentElement
 * @returns {void}
 */
-    const clearSvgContentElement = canvas.clearSvgContentElement = function () {
-      $(svgcontent).empty();
-
-      // TODO: Clear out all other attributes first?
-      $(svgcontent).attr({
-        id: 'svgcontent',
-        width: dimensions[0],
-        height: dimensions[1],
-        x: dimensions[0],
-        y: dimensions[1],
-        overflow: curConfig.show_outside_canvas ? 'visible' : 'hidden',
-        xmlns: NS.SVG,
-        'xmlns:se': NS.SE,
-        'xmlns:xlink': NS.XLINK
-      }).appendTo(svgroot);
-
-      // TODO: make this string optional and set by the client
-      const comment = svgdoc.createComment(' Created with SVG-edit - https://github.com/SVG-Edit/svgedit');
-      svgcontent.append(comment);
-    };
+    const clearSvgContentElement = canvas.clearSvgContentElement = clearSvgContentElementInit;
     clearSvgContentElement();
 
     // Prefix string for element IDs
@@ -357,12 +361,6 @@ class SvgCanvas {
     canvas.convertToNum = convertToNum;
 
     /**
-* This should really be an intersection implementing all rather than a union.
-* @type {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
-*/
-    const getSVGContent = () => { return svgcontent; };
-
-    /**
 * Should really be an intersection with all needing to apply rather than a union.
 * @name module:svgcanvas.SvgCanvas#getSelectedElements
 * @type {module:utilities.EditorContext#getSelectedElements|module:draw.DrawCanvasInit#getSelectedElements|module:path.EditorContext#getSelectedElements}
@@ -373,7 +371,7 @@ class SvgCanvas {
 
     const setSelectedElements = this.getSelectedElems = function (key, value) {
       selectedElements[key] = value;
-    };    
+    };
 
     const {pathActions} = pathModule;
 
@@ -381,7 +379,7 @@ class SvgCanvas {
 * This should actually be an intersection as all interfaces should be met.
 * @type {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
 */
-    const getSVGRoot = () => svgroot;
+
 
     utilsInit(
       /**
