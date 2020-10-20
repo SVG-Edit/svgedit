@@ -4,17 +4,21 @@
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
+
 import jQueryPluginSVG from '../common/jQuery.attr.js';
+import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
+import 'svg2pdf.js/dist/svg2pdf.es.js';
 import * as hstry from './history.js';
 import {
   text2xml, cleanupElement, findDefs, getHref, preventClickDefault,
-  toXml, getStrokedBBoxDefaultVisible, encode64
+  toXml, getStrokedBBoxDefaultVisible, encode64, createObjectURL,
+  dataURLToObjectURL
 } from '../common/utilities.js';
 import {resetListMap} from '../common/svgtransformlist.js';
 import {
   convertUnit, shortFloat, convertToNum
 } from '../common/units.js';
-import {isGecko} from '../common/browser.js';
+import {isGecko, isChrome} from '../common/browser.js';
 import * as pathModule from './path.js';
 import {NS} from '../common/namespaces.js';
 import * as draw from './draw.js';
@@ -586,4 +590,251 @@ export const importSvgString = function (xmlString) {
 
   // we want to return the element so we can automatically select it
   return useEl;
+};
+/**
+ * Function to run when image data is found.
+ * @callback module:svgcanvas.ImageEmbeddedCallback
+ * @param {string|false} result Data URL
+ * @returns {void}
+ */
+/**
+* Converts a given image file to a data URL when possible, then runs a given callback.
+* @function module:svgcanvas.SvgCanvas#embedImage
+* @param {string} src - The path/URL of the image
+* @returns {Promise<string|false>} Resolves to a Data URL (string|false)
+*/
+export const embedImage = function (src) {
+  // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
+  // eslint-disable-next-line promise/avoid-new
+  return new Promise(function (resolve, reject) {
+    // load in the image and once it's loaded, get the dimensions
+    $(new Image()).load(function (response, status, xhr) {
+      if (status === 'error') {
+        reject(new Error('Error loading image: ' + xhr.status + ' ' + xhr.statusText));
+        return;
+      }
+      // create a canvas the same size as the raster image
+      const cvs = document.createElement('canvas');
+      cvs.width = this.width;
+      cvs.height = this.height;
+      // load the raster image into the canvas
+      cvs.getContext('2d').drawImage(this, 0, 0);
+      // retrieve the data: URL
+      try {
+        let urldata = ';svgedit_url=' + encodeURIComponent(src);
+        urldata = cvs.toDataURL().replace(';base64', urldata + ';base64');
+        svgContext_.setEncodableImages(src, urldata);
+      } catch (e) {
+        svgContext_.setEncodableImages(src, false);
+      }
+      svgContext_.getCanvas().setGoodImage(src);
+      resolve(svgContext_.getEncodableImages(src));
+    }).attr('src', src);
+  });
+};
+
+/**
+* Serializes the current drawing into SVG XML text and passes it to the 'saved' handler.
+* This function also includes the XML prolog. Clients of the `SvgCanvas` bind their save
+* function to the 'saved' event.
+* @function module:svgcanvas.SvgCanvas#save
+* @param {module:svgcanvas.SaveOptions} opts
+* @fires module:svgcanvas.SvgCanvas#event:saved
+* @returns {void}
+*/
+export const save = function (opts) {
+  // remove the selected outline before serializing
+  svgContext_.getCanvas().clearSelection();
+  // Update save options if provided
+  if (opts) { $.extend(svgContext_.getSvgOption(), opts); }
+  svgContext_.setSvgOption('apply', true);
+
+  // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
+  const str = svgContext_.getCanvas().svgCanvasToString();
+  svgContext_.call('saved', str);
+};
+/**
+* @typedef {PlainObject} module:svgcanvas.IssuesAndCodes
+* @property {string[]} issueCodes The locale-independent code names
+* @property {string[]} issues The localized descriptions
+*/
+
+/**
+* Codes only is useful for locale-independent detection.
+* @returns {module:svgcanvas.IssuesAndCodes}
+*/
+function getIssues () {
+  const uiStrings = svgContext_.getUIStrings();
+  // remove the selected outline before serializing
+  svgContext_.getCanvas().clearSelection();
+
+  // Check for known CanVG issues
+  const issues = [];
+  const issueCodes = [];
+
+  // Selector and notice
+  const issueList = {
+    feGaussianBlur: uiStrings.exportNoBlur,
+    foreignObject: uiStrings.exportNoforeignObject,
+    '[stroke-dasharray]': uiStrings.exportNoDashArray
+  };
+  const content = $(svgContext_.getSVGContent());
+
+  // Add font/text check if Canvas Text API is not implemented
+  if (!('font' in $('<canvas>')[0].getContext('2d'))) {
+    issueList.text = uiStrings.exportNoText;
+  }
+
+  $.each(issueList, function (sel, descr) {
+    if (content.find(sel).length) {
+      issueCodes.push(sel);
+      issues.push(descr);
+    }
+  });
+  return {issues, issueCodes};
+}
+/**
+* @typedef {PlainObject} module:svgcanvas.ImageExportedResults
+* @property {string} datauri Contents as a Data URL
+* @property {string} bloburl May be the empty string
+* @property {string} svg The SVG contents as a string
+* @property {string[]} issues The localization messages of `issueCodes`
+* @property {module:svgcanvas.IssueCode[]} issueCodes CanVG issues found with the SVG
+* @property {"PNG"|"JPEG"|"BMP"|"WEBP"|"ICO"} type The chosen image type
+* @property {"image/png"|"image/jpeg"|"image/bmp"|"image/webp"} mimeType The image MIME type
+* @property {Float} quality A decimal between 0 and 1 (for use with JPEG or WEBP)
+* @property {string} exportWindowName A convenience for passing along a `window.name` to target a window on which the export could be added
+*/
+
+/**
+* Generates a PNG (or JPG, BMP, WEBP) Data URL based on the current image,
+* then calls "exported" with an object including the string, image
+* information, and any issues found.
+* @function module:svgcanvas.SvgCanvas#rasterExport
+* @param {"PNG"|"JPEG"|"BMP"|"WEBP"|"ICO"} [imgType="PNG"]
+* @param {Float} [quality] Between 0 and 1
+* @param {string} [exportWindowName]
+* @param {PlainObject} [opts]
+* @param {boolean} [opts.avoidEvent]
+* @fires module:svgcanvas.SvgCanvas#event:exported
+* @todo Confirm/fix ICO type
+* @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
+*/
+export const rasterExport = async function (imgType, quality, exportWindowName, opts = {}) {
+  const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
+  const mimeType = 'image/' + type.toLowerCase();
+  const {issues, issueCodes} = getIssues();
+  const svg = this.svgCanvasToString();
+
+  if (!$('#export_canvas').length) {
+    $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+  }
+  const c = $('#export_canvas')[0];
+  c.width = svgContext_.getCanvas().contentW;
+  c.height = svgContext_.getCanvas().contentH;
+  const canvg = svgContext_.getcanvg();
+  await canvg(c, svg);
+  // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
+  // eslint-disable-next-line promise/avoid-new
+  return new Promise((resolve, reject) => {
+    const dataURLType = type.toLowerCase();
+    const datauri = quality
+      ? c.toDataURL('image/' + dataURLType, quality)
+      : c.toDataURL('image/' + dataURLType);
+    let bloburl;
+    /**
+ * Called when `bloburl` is available for export.
+ * @returns {void}
+ */
+    function done () {
+      const obj = {
+        datauri, bloburl, svg, issues, issueCodes, type: imgType,
+        mimeType, quality, exportWindowName
+      };
+      if (!opts.avoidEvent) {
+        svgContext_.call('exported', obj);
+      }
+      resolve(obj);
+    }
+    if (c.toBlob) {
+      c.toBlob((blob) => {
+        bloburl = createObjectURL(blob);
+        done();
+      }, mimeType, quality);
+      return;
+    }
+    bloburl = dataURLToObjectURL(datauri);
+    done();
+  });
+};
+
+/**
+* @typedef {void|"save"|"arraybuffer"|"blob"|"datauristring"|"dataurlstring"|"dataurlnewwindow"|"datauri"|"dataurl"} external:jsPDF.OutputType
+* @todo Newer version to add also allows these `outputType` values "bloburi"|"bloburl" which return strings, so document here and for `outputType` of `module:svgcanvas.PDFExportedResults` below if added
+*/
+/**
+* @typedef {PlainObject} module:svgcanvas.PDFExportedResults
+* @property {string} svg The SVG PDF output
+* @property {string|ArrayBuffer|Blob|window} output The output based on the `outputType`;
+* if `undefined`, "datauristring", "dataurlstring", "datauri",
+* or "dataurl", will be a string (`undefined` gives a document, while the others
+* build as Data URLs; "datauri" and "dataurl" change the location of the current page); if
+* "arraybuffer", will return `ArrayBuffer`; if "blob", returns a `Blob`;
+* if "dataurlnewwindow", will change the current page's location and return a string
+* if in Safari and no window object is found; otherwise opens in, and returns, a new `window`
+* object; if "save", will have the same return as "dataurlnewwindow" if
+* `navigator.getUserMedia` support is found without `URL.createObjectURL` support; otherwise
+* returns `undefined` but attempts to save
+* @property {external:jsPDF.OutputType} outputType
+* @property {string[]} issues The human-readable localization messages of corresponding `issueCodes`
+* @property {module:svgcanvas.IssueCode[]} issueCodes
+* @property {string} exportWindowName
+*/
+
+/**
+* Generates a PDF based on the current image, then calls "exportedPDF" with
+* an object including the string, the data URL, and any issues found.
+* @function module:svgcanvas.SvgCanvas#exportPDF
+* @param {string} [exportWindowName] Will also be used for the download file name here
+* @param {external:jsPDF.OutputType} [outputType="dataurlstring"]
+* @fires module:svgcanvas.SvgCanvas#event:exportedPDF
+* @returns {Promise<module:svgcanvas.PDFExportedResults>} Resolves to {@link module:svgcanvas.PDFExportedResults}
+*/
+export const exportPDF = async (
+  exportWindowName,
+  outputType = isChrome() ? 'save' : undefined
+) => {
+  const res = svgContext_.getCanvas().getResolution();
+  const orientation = res.w > res.h ? 'landscape' : 'portrait';
+  const unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
+
+  // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
+  const doc = jsPDF({
+    orientation,
+    unit,
+    format: [res.w, res.h]
+    // , compressPdf: true
+  });
+  const docTitle = svgContext_.getCanvas().getDocumentTitle();
+  doc.setProperties({
+    title: docTitle /* ,
+    subject: '',
+    author: '',
+    keywords: '',
+    creator: '' */
+  });
+  const {issues, issueCodes} = getIssues();
+  // const svg = this.svgCanvasToString();
+  // await doc.addSvgAsImage(svg)
+  await doc.svg(svgContext_.getSVGContent(), {x: 0, y: 0, width: res.w, height: res.h});
+
+  // doc.output('save'); // Works to open in a new
+  //  window; todo: configure this and other export
+  //  options to optionally work in this manner as
+  //  opposed to opening a new tab
+  outputType = outputType || 'dataurlstring';
+  const obj = {issues, issueCodes, exportWindowName, outputType};
+  obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
+  svgContext_.call('exportedPDF', obj);
+  return obj;
 };

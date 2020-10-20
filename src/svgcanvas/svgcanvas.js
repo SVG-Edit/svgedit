@@ -46,7 +46,7 @@ import {
   init as textActionsInit, textActionsMethod
 } from './text-actions.js';
 import {
-  init as eventInit, mouseMoveEvent, mouseUpEvent, 
+  init as eventInit, mouseMoveEvent, mouseUpEvent,
   dblClickEvent, mouseDownEvent
 } from './event.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
@@ -81,19 +81,17 @@ import {
   isIdentity, rectsIntersect, transformBox
 } from '../common/math.js';
 import {
-  convertToNum, convertUnit, shortFloat, getTypeMap,
-  init as unitsInit
+  convertToNum, getTypeMap, init as unitsInit
 } from '../common/units.js';
 import {
-  svgCanvasToString, svgToString, setSvgString,
-  init as svgInit, importSvgString
+  svgCanvasToString, svgToString, setSvgString, save, exportPDF,
+  init as svgInit, importSvgString, embedImage, rasterExport
 } from './svg-exec.js';
 import {
-  isGecko, isChrome, isIE, isWebkit
+  isChrome, isIE, isWebkit
 } from '../common/browser.js'; // , supportsEditableText
 import {
-  getTransformList, resetListMap,
-  SVGTransformList as SVGEditTransformList
+  getTransformList, SVGTransformList as SVGEditTransformList
 } from '../common/svgtransformlist.js';
 import {
   remapElement,
@@ -386,7 +384,6 @@ class SvgCanvas {
 * This should actually be an intersection as all interfaces should be met.
 * @type {module:utilities.EditorContext#getSVGRoot|module:recalculate.EditorContext#getSVGRoot|module:coords.EditorContext#getSVGRoot|module:path.EditorContext#getSVGRoot}
 */
-
 
     utilsInit(
       /**
@@ -1896,12 +1893,16 @@ class SvgCanvas {
         getCanvas () { return canvas; },
         getSVGContent,
         getSVGRoot,
+        getUIStrings () { return uiStrings; },
         getCurrentGroup () { return currentGroup; },
         getCurConfig () { return curConfig; },
         getNsMap () { return nsMap; },
+        getSvgOption () { return saveOptions; },
+        setSvgOption (key, value) { saveOptions[key] = value; },
         getSvgOptionApply () { return saveOptions.apply; },
         getSvgOptionImages () { return saveOptions.images; },
         getEncodableImages (key) { return encodableImages[key]; },
+        setEncodableImages (key, value) { encodableImages[key] = value; },
         call,
         getDOMDocument () { return svgdoc; },
         getVisElems () { return visElems; },
@@ -1910,6 +1911,7 @@ class SvgCanvas {
         getImportIds (key) { return importIds[key]; },
         setImportIds (key, value) { importIds[key] = value; },
         setSVGContent (value) { svgcontent = value; },
+        getcanvg () { return canvg; },
         addCommandToHistory
       }
     );
@@ -1941,35 +1943,7 @@ class SvgCanvas {
 * @param {string} src - The path/URL of the image
 * @returns {Promise<string|false>} Resolves to a Data URL (string|false)
 */
-    this.embedImage = function (src) {
-      // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
-      // eslint-disable-next-line promise/avoid-new
-      return new Promise(function (resolve, reject) {
-        // load in the image and once it's loaded, get the dimensions
-        $(new Image()).load(function (response, status, xhr) {
-          if (status === 'error') {
-            reject(new Error('Error loading image: ' + xhr.status + ' ' + xhr.statusText));
-            return;
-          }
-          // create a canvas the same size as the raster image
-          const cvs = document.createElement('canvas');
-          cvs.width = this.width;
-          cvs.height = this.height;
-          // load the raster image into the canvas
-          cvs.getContext('2d').drawImage(this, 0, 0);
-          // retrieve the data: URL
-          try {
-            let urldata = ';svgedit_url=' + encodeURIComponent(src);
-            urldata = cvs.toDataURL().replace(';base64', urldata + ';base64');
-            encodableImages[src] = urldata;
-          } catch (e) {
-            encodableImages[src] = false;
-          }
-          lastGoodImgUrl = src;
-          resolve(encodableImages[src]);
-        }).attr('src', src);
-      });
-    };
+    this.embedImage = embedImage;
 
     /**
 * Sets a given URL to be a "last good image" URL.
@@ -1999,57 +1973,13 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:saved
 * @returns {void}
 */
-    this.save = function (opts) {
-      // remove the selected outline before serializing
-      clearSelection();
-      // Update save options if provided
-      if (opts) { $.extend(saveOptions, opts); }
-      saveOptions.apply = true;
-
-      // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
-      const str = this.svgCanvasToString();
-      call('saved', str);
-    };
+    this.save = save;
 
     /**
 * @typedef {PlainObject} module:svgcanvas.IssuesAndCodes
 * @property {string[]} issueCodes The locale-independent code names
 * @property {string[]} issues The localized descriptions
 */
-
-    /**
-* Codes only is useful for locale-independent detection.
-* @returns {module:svgcanvas.IssuesAndCodes}
-*/
-    function getIssues () {
-      // remove the selected outline before serializing
-      clearSelection();
-
-      // Check for known CanVG issues
-      const issues = [];
-      const issueCodes = [];
-
-      // Selector and notice
-      const issueList = {
-        feGaussianBlur: uiStrings.exportNoBlur,
-        foreignObject: uiStrings.exportNoforeignObject,
-        '[stroke-dasharray]': uiStrings.exportNoDashArray
-      };
-      const content = $(svgcontent);
-
-      // Add font/text check if Canvas Text API is not implemented
-      if (!('font' in $('<canvas>')[0].getContext('2d'))) {
-        issueList.text = uiStrings.exportNoText;
-      }
-
-      $.each(issueList, function (sel, descr) {
-        if (content.find(sel).length) {
-          issueCodes.push(sel);
-          issues.push(descr);
-        }
-      });
-      return {issues, issueCodes};
-    }
 
     /**
       * @typedef {"feGaussianBlur"|"foreignObject"|"[stroke-dasharray]"|"text"} module:svgcanvas.IssueCode
@@ -2081,53 +2011,7 @@ class SvgCanvas {
 * @todo Confirm/fix ICO type
 * @returns {Promise<module:svgcanvas.ImageExportedResults>} Resolves to {@link module:svgcanvas.ImageExportedResults}
 */
-    this.rasterExport = async function (imgType, quality, exportWindowName, opts = {}) {
-      const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
-      const mimeType = 'image/' + type.toLowerCase();
-      const {issues, issueCodes} = getIssues();
-      const svg = this.svgCanvasToString();
-
-      if (!$('#export_canvas').length) {
-        $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
-      }
-      const c = $('#export_canvas')[0];
-      c.width = canvas.contentW;
-      c.height = canvas.contentH;
-
-      await canvg(c, svg);
-      // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
-      // eslint-disable-next-line promise/avoid-new
-      return new Promise((resolve, reject) => {
-        const dataURLType = type.toLowerCase();
-        const datauri = quality
-          ? c.toDataURL('image/' + dataURLType, quality)
-          : c.toDataURL('image/' + dataURLType);
-        let bloburl;
-        /**
-     * Called when `bloburl` is available for export.
-     * @returns {void}
-     */
-        function done () {
-          const obj = {
-            datauri, bloburl, svg, issues, issueCodes, type: imgType,
-            mimeType, quality, exportWindowName
-          };
-          if (!opts.avoidEvent) {
-            call('exported', obj);
-          }
-          resolve(obj);
-        }
-        if (c.toBlob) {
-          c.toBlob((blob) => {
-            bloburl = createObjectURL(blob);
-            done();
-          }, mimeType, quality);
-          return;
-        }
-        bloburl = dataURLToObjectURL(datauri);
-        done();
-      });
-    };
+    this.rasterExport = rasterExport;
 
     /**
  * @typedef {void|"save"|"arraybuffer"|"blob"|"datauristring"|"dataurlstring"|"dataurlnewwindow"|"datauri"|"dataurl"} external:jsPDF.OutputType
@@ -2161,44 +2045,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:exportedPDF
 * @returns {Promise<module:svgcanvas.PDFExportedResults>} Resolves to {@link module:svgcanvas.PDFExportedResults}
 */
-    this.exportPDF = async (
-      exportWindowName,
-      outputType = isChrome() ? 'save' : undefined
-    ) => {
-      const res = getResolution();
-      const orientation = res.w > res.h ? 'landscape' : 'portrait';
-      const unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-
-      // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
-      const doc = jsPDF({
-        orientation,
-        unit,
-        format: [res.w, res.h]
-        // , compressPdf: true
-      });
-      const docTitle = getDocumentTitle();
-      doc.setProperties({
-        title: docTitle /* ,
-        subject: '',
-        author: '',
-        keywords: '',
-        creator: '' */
-      });
-      const {issues, issueCodes} = getIssues();
-      // const svg = this.svgCanvasToString();
-      // await doc.addSvgAsImage(svg)
-      await doc.svg(svgcontent, {x: 0, y: 0, width: res.w, height: res.h});
-
-      // doc.output('save'); // Works to open in a new
-      //  window; todo: configure this and other export
-      //  options to optionally work in this manner as
-      //  opposed to opening a new tab
-      outputType = outputType || 'dataurlstring';
-      const obj = {issues, issueCodes, exportWindowName, outputType};
-      obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
-      call('exportedPDF', obj);
-      return obj;
-    };
+    this.exportPDF = exportPDF;
 
     /**
 * Returns the current drawing as raw SVG XML text.
