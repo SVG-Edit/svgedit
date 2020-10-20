@@ -10,11 +10,11 @@ import {NS} from '../common/namespaces.js';
 import * as hstry from './history.js';
 import * as pathModule from './path.js';
 import {
-  isNullish, getStrokedBBoxDefaultVisible, setHref, getElem, getHref,
-  findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost
+  isNullish, getStrokedBBoxDefaultVisible, setHref, getElem, getHref, getVisibleElements,
+  findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost, assignAttributes
 } from '../common/utilities.js';
 import {
-  transformPoint, matrixMultiply, transformListToTransform  
+  transformPoint, matrixMultiply, transformListToTransform
 } from '../common/math.js';
 import {
   getTransformList, 
@@ -105,7 +105,6 @@ export const moveToBottomSelectedElem = function () {
 * @returns {void}
 */
 export const moveUpDownSelected = function (dir) {
-  console.log('moveUpDownSelected -----> ');
   const selectedElements = elementContext_.getSelectedElements();
   const selected = selectedElements[0];
   if (!selected) { return; }
@@ -886,4 +885,103 @@ export const ungroupSelectedElement = function () {
     // update selection
     elementContext_.addToSelection(children);
   }
+};
+/**
+* Updates the editor canvas width/height/position after a zoom has occurred.
+* @function module:svgcanvas.SvgCanvas#updateCanvas
+* @param {Float} w - Float with the new width
+* @param {Float} h - Float with the new height
+* @fires module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
+* @returns {module:svgcanvas.CanvasInfo}
+*/
+export const updateCanvas = function (w, h) {
+  elementContext_.getSVGRoot().setAttribute('width', w);
+  elementContext_.getSVGRoot().setAttribute('height', h);
+  const currentZoom = elementContext_.getCurrentZoom();
+  const bg = $('#canvasBackground')[0];
+  const oldX = elementContext_.getSVGContent().getAttribute('x');
+  const oldY = elementContext_.getSVGContent().getAttribute('y');
+  const x = ((w - this.contentW * currentZoom) / 2);
+  const y = ((h - this.contentH * currentZoom) / 2);
+
+  assignAttributes(elementContext_.getSVGContent(), {
+    width: this.contentW * currentZoom,
+    height: this.contentH * currentZoom,
+    x,
+    y,
+    viewBox: '0 0 ' + this.contentW + ' ' + this.contentH
+  });
+
+  assignAttributes(bg, {
+    width: elementContext_.getSVGContent().getAttribute('width'),
+    height: elementContext_.getSVGContent().getAttribute('height'),
+    x,
+    y
+  });
+
+  const bgImg = getElem('background_image');
+  if (bgImg) {
+    assignAttributes(bgImg, {
+      width: '100%',
+      height: '100%'
+    });
+  }
+
+  elementContext_.getCanvas().selectorManager.selectorParentGroup.setAttribute('transform', 'translate(' + x + ',' + y + ')');
+
+  /**
+* Invoked upon updates to the canvas.
+* @event module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
+* @type {PlainObject}
+* @property {Integer} new_x
+* @property {Integer} new_y
+* @property {string} old_x (Of Integer)
+* @property {string} old_y (Of Integer)
+* @property {Integer} d_x
+* @property {Integer} d_y
+*/
+  elementContext_.getCanvas().runExtensions(
+    'canvasUpdated',
+    /**
+ * @type {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated}
+ */
+    {new_x: x, new_y: y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY}
+  );
+  return {x, y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY};
+};
+/**
+* Select the next/previous element within the current layer.
+* @function module:svgcanvas.SvgCanvas#cycleElement
+* @param {boolean} next - true = next and false = previous element
+* @fires module:svgcanvas.SvgCanvas#event:selected
+* @returns {void}
+*/
+export const cycleElement = function (next) {
+  const selectedElements = elementContext_.getSelectedElements();
+  const currentGroup = elementContext_.getCurrentGroup();
+  let num;
+  const curElem = selectedElements[0];
+  let elem = false;
+  const allElems = getVisibleElements(currentGroup || elementContext_.getCanvas().getCurrentDrawing().getCurrentLayer());
+  if (!allElems.length) { return; }
+  if (isNullish(curElem)) {
+    num = next ? allElems.length - 1 : 0;
+    elem = allElems[num];
+  } else {
+    let i = allElems.length;
+    while (i--) {
+      if (allElems[i] === curElem) {
+        num = next ? i - 1 : i + 1;
+        if (num >= allElems.length) {
+          num = 0;
+        } else if (num < 0) {
+          num = allElems.length - 1;
+        }
+        elem = allElems[num];
+        break;
+      }
+    }
+  }
+  elementContext_.getCanvas().selectOnly([elem], true);
+  elementContext_.call('selected', selectedElements);
 };

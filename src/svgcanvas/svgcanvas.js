@@ -64,7 +64,7 @@ import {
   init as selectedElemInit, moveToTopSelectedElem, moveToBottomSelectedElem,
   moveUpDownSelected, moveSelectedElements, cloneSelectedElements, alignSelectedElements,
   deleteSelectedElements, copySelectedElements, groupSelectedElements, pushGroupProperty,
-  ungroupSelectedElement
+  ungroupSelectedElement, cycleElement, updateCanvas
 } from './selected-elem.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
@@ -336,7 +336,6 @@ class SvgCanvas {
     const addSVGElementFromJson = this.addSVGElementFromJson = addSVGElementsFromJson;
 
     canvas.getTransformList = getTransformList;
-
     canvas.matrixMultiply = matrixMultiply;
     canvas.hasMatrixTransform = hasMatrixTransform;
     canvas.transformListToTransform = transformListToTransform;
@@ -3339,60 +3338,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
 * @returns {module:svgcanvas.CanvasInfo}
 */
-    this.updateCanvas = function (w, h) {
-      svgroot.setAttribute('width', w);
-      svgroot.setAttribute('height', h);
-      const bg = $('#canvasBackground')[0];
-      const oldX = svgcontent.getAttribute('x');
-      const oldY = svgcontent.getAttribute('y');
-      const x = ((w - this.contentW * currentZoom) / 2);
-      const y = ((h - this.contentH * currentZoom) / 2);
-
-      assignAttributes(svgcontent, {
-        width: this.contentW * currentZoom,
-        height: this.contentH * currentZoom,
-        x,
-        y,
-        viewBox: '0 0 ' + this.contentW + ' ' + this.contentH
-      });
-
-      assignAttributes(bg, {
-        width: svgcontent.getAttribute('width'),
-        height: svgcontent.getAttribute('height'),
-        x,
-        y
-      });
-
-      const bgImg = getElem('background_image');
-      if (bgImg) {
-        assignAttributes(bgImg, {
-          width: '100%',
-          height: '100%'
-        });
-      }
-
-      selectorManager.selectorParentGroup.setAttribute('transform', 'translate(' + x + ',' + y + ')');
-
-      /**
-  * Invoked upon updates to the canvas.
-  * @event module:svgcanvas.SvgCanvas#event:ext_canvasUpdated
-  * @type {PlainObject}
-  * @property {Integer} new_x
-  * @property {Integer} new_y
-  * @property {string} old_x (Of Integer)
-  * @property {string} old_y (Of Integer)
-  * @property {Integer} d_x
-  * @property {Integer} d_y
-  */
-      runExtensions(
-        'canvasUpdated',
-        /**
-     * @type {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated}
-     */
-        {new_x: x, new_y: y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY}
-      );
-      return {x, y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY};
-    };
+    this.updateCanvas = updateCanvas;
 
     /**
 * Set the background of the editor (NOT the actual document).
@@ -3410,33 +3356,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:selected
 * @returns {void}
 */
-    this.cycleElement = function (next) {
-      let num;
-      const curElem = selectedElements[0];
-      let elem = false;
-      const allElems = getVisibleElements(currentGroup || getCurrentDrawing().getCurrentLayer());
-      if (!allElems.length) { return; }
-      if (isNullish(curElem)) {
-        num = next ? allElems.length - 1 : 0;
-        elem = allElems[num];
-      } else {
-        let i = allElems.length;
-        while (i--) {
-          if (allElems[i] === curElem) {
-            num = next ? i - 1 : i + 1;
-            if (num >= allElems.length) {
-              num = 0;
-            } else if (num < 0) {
-              num = allElems.length - 1;
-            }
-            elem = allElems[num];
-            break;
-          }
-        }
-      }
-      selectOnly([elem], true);
-      call('selected', selectedElements);
-    };
+    this.cycleElement = cycleElement;
 
     this.clear();
 
