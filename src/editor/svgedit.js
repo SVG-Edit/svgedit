@@ -1059,7 +1059,6 @@ editor.init = () => {
         open: 'open.png',
         import: 'import.png',
         docprops: 'document-properties.png',
-        wireframe: 'wireframe.png',
 
         undo: 'undo.png',
         redo: 'redo.png',
@@ -1123,7 +1122,6 @@ editor.init = () => {
         '#tool_docprops > div': 'docprops',
         '#tool_editor_prefs > div': 'config',
         '#tool_editor_homepage > div': 'globe_link',
-        '#tool_wireframe': 'wireframe',
 
         '#tool_undo': 'undo',
         '#tool_redo': 'redo',
@@ -4436,7 +4434,8 @@ editor.init = () => {
   * @returns {void}
   */
   const clickWireframe = function () {
-    $('#tool_wireframe').toggleClass('push_button_pressed tool_button');
+    console.log($id('tool_wireframe').pressed);
+    $id('tool_wireframe').pressed = !$id('tool_wireframe').pressed;
     workarea.toggleClass('wireframe');
 
     if (supportsNonSS) { return; }
@@ -5356,6 +5355,7 @@ editor.init = () => {
      */
     // register action to buttons
     $id('tool_source').addEventListener('click', showSourceEditor);
+    $id('tool_wireframe').addEventListener('click', clickWireframe);
     const toolButtons = [
       {sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
       {sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
@@ -5389,7 +5389,7 @@ editor.init = () => {
       {sel: '#tool_open', fn: clickOpen, evt: 'mouseup', key: ['O', true]},
       {sel: '#tool_import', fn: clickImport, evt: 'mouseup'},
       // {sel: '#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
-      {sel: '#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
+      // {sel: '#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
       {
         key: ['esc', false, false],
         fn () {
@@ -6148,19 +6148,6 @@ editor.loadFromString = function (str, {noAlert} = {}) {
       }
     }
   });
-};
-
-/**
-* Not presently in use.
-* @function module:SVGEditor.disableUI
-* @param {PlainObject} featList
-* @returns {void}
-*/
-editor.disableUI = function (featList) {
-  // $(function () {
-  //   $('#tool_wireframe, #tool_image, #main_button, #tool_source, #sidepanels').remove();
-  //   $('#tools_top').css('left', 5);
-  // });
 };
 
 /**

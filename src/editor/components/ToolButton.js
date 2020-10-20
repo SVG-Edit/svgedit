@@ -25,6 +25,10 @@ template.innerHTML = `
     height: 24px;
     overflow: none;
   }
+  .pressed {
+    background-color: #F4E284 !important;
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
+  }
   </style>
   <div title="title">
     <img class="svg_icon" src="./images/logo.svg" alt="icon">
@@ -51,7 +55,7 @@ export class ToolButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src'];
+    return ['title', 'src', 'pressed'];
   }
   /**
    * @function attributeChangedCallback
@@ -71,6 +75,13 @@ export class ToolButton extends HTMLElement {
       break;
     case 'src':
       this.$img.setAttribute('src', newValue);
+      break;
+    case 'pressed':
+      if (newValue) {
+        this.$div.classList.add('pressed');
+      } else {
+        this.$div.classList.remove('pressed');
+      }
       break;
     default:
       // eslint-disable-next-line no-console
@@ -92,6 +103,26 @@ export class ToolButton extends HTMLElement {
    */
   set title (value) {
     this.setAttribute('title', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get pressed () {
+    return this.hasAttribute('pressed');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set pressed (value) {
+    // boolean value => existence = true
+    if (value) {
+      this.setAttribute('pressed', 'true');
+    } else {
+      this.removeAttribute('pressed', '');
+    }
   }
   /**
    * @function get

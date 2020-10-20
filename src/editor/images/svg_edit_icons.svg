@@ -442,25 +442,6 @@
   </svg>
 </g>
 
-<g id="source">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55 52">
-  <text xml:space="preserve" text-anchor="middle" font-family="monospace" font-size="24" stroke="none" fill="#019191" id="svg_40" y="15" x="28.23" font-weight="bold">s</text>
-  <text xml:space="preserve" text-anchor="middle" font-family="monospace" font-size="24" stroke="none" fill="#019191" id="svg_47" y="30" x="28.23" font-weight="bold">v</text>
-  <text xml:space="preserve" text-anchor="middle" font-family="monospace" font-size="24" stroke="none" fill="#019191" id="svg_48" y="44" x="28.23" font-weight="bold">g</text>
-  <line stroke-width="3" fill="none" stroke="#aa0000" id="svg_51" y2="43" x2="16" y1="25" x1="5"/>
-  <line id="svg_62" stroke-width="3" fill="none" stroke="#aa0000" y2="8" x2="16" y1="26" x1="5"/>
-  <line id="svg_63" stroke-width="3" fill="none" stroke="#aa0000" y2="43" x2="39" y1="25" x1="50"/>
-  <line id="svg_64" stroke-width="3" fill="none" stroke="#aa0000" y2="8" x2="39" y1="26" x1="51"/>
- </svg>
-</g>
-
-<g id="wireframe">
- <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <circle stroke="#000000" fill="none" id="svg_49" r="8" cy="9.5" cx="9.5"/>
-  <rect stroke="#000000" fill="none" id="svg_52" height="14" width="14" y="8.5" x="8.5"/>
- </svg>
-</g>
-
 <g id="undo">
 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <defs>
