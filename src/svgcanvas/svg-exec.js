@@ -955,3 +955,56 @@ export const setUseDataMethod = function (parent) {
     }
   });
 };
+
+/**
+* Looks at DOM elements inside the `<defs>` to see if they are referred to,
+* removes them from the DOM if they are not.
+* @function module:svgcanvas.SvgCanvas#removeUnusedDefElems
+* @returns {Integer} The number of elements that were removed
+*/
+export const removeUnusedDefElemsMethod = function () {
+  const defs = svgContext_.getSVGContent().getElementsByTagNameNS(NS.SVG, 'defs');
+  if (!defs || !defs.length) { return 0; }
+
+  // if (!defs.firstChild) { return; }
+
+  const defelemUses = [];
+  let numRemoved = 0;
+  const attrs = ['fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end'];
+  const alen = attrs.length;
+
+  const allEls = svgContext_.getSVGContent().getElementsByTagNameNS(NS.SVG, '*');
+  const allLen = allEls.length;
+
+  let i, j;
+  for (i = 0; i < allLen; i++) {
+    const el = allEls[i];
+    for (j = 0; j < alen; j++) {
+      const ref = svgContext_.getCanvas().getUrlFromAttr(el.getAttribute(attrs[j]));
+      if (ref) {
+        defelemUses.push(ref.substr(1));
+      }
+    }
+
+    // gradients can refer to other gradients
+    const href = getHref(el);
+    if (href && href.startsWith('#')) {
+      defelemUses.push(href.substr(1));
+    }
+  }
+
+  const defelems = $(defs).find('linearGradient, radialGradient, filter, marker, svg, symbol');
+  i = defelems.length;
+  while (i--) {
+    const defelem = defelems[i];
+    const {id} = defelem;
+    if (!defelemUses.includes(id)) {
+      // Not found, so remove (but remember)
+      svgContext_.setRemovedElements(id, defelem);
+      defelem.remove();
+      numRemoved++;
+    }
+  }
+
+  return numRemoved;
+};

@@ -85,7 +85,8 @@ import {
 } from '../common/units.js';
 import {
   svgCanvasToString, svgToString, setSvgString, save, exportPDF, setUseDataMethod,
-  init as svgInit, importSvgString, embedImage, rasterExport, uniquifyElemsMethod
+  init as svgInit, importSvgString, embedImage, rasterExport, 
+  uniquifyElemsMethod, removeUnusedDefElemsMethod
 } from './svg-exec.js';
 import {
   isChrome, isIE, isWebkit
@@ -1832,58 +1833,6 @@ class SvgCanvas {
 * Group: Serialization.
 */
 
-    /**
-* Looks at DOM elements inside the `<defs>` to see if they are referred to,
-* removes them from the DOM if they are not.
-* @function module:svgcanvas.SvgCanvas#removeUnusedDefElems
-* @returns {Integer} The number of elements that were removed
-*/
-    const removeUnusedDefElems = this.removeUnusedDefElems = function () {
-      const defs = svgcontent.getElementsByTagNameNS(NS.SVG, 'defs');
-      if (!defs || !defs.length) { return 0; }
-
-      // if (!defs.firstChild) { return; }
-
-      const defelemUses = [];
-      let numRemoved = 0;
-      const attrs = ['fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end'];
-      const alen = attrs.length;
-
-      const allEls = svgcontent.getElementsByTagNameNS(NS.SVG, '*');
-      const allLen = allEls.length;
-
-      let i, j;
-      for (i = 0; i < allLen; i++) {
-        const el = allEls[i];
-        for (j = 0; j < alen; j++) {
-          const ref = getUrlFromAttr(el.getAttribute(attrs[j]));
-          if (ref) {
-            defelemUses.push(ref.substr(1));
-          }
-        }
-
-        // gradients can refer to other gradients
-        const href = getHref(el);
-        if (href && href.startsWith('#')) {
-          defelemUses.push(href.substr(1));
-        }
-      }
-
-      const defelems = $(defs).find('linearGradient, radialGradient, filter, marker, svg, symbol');
-      i = defelems.length;
-      while (i--) {
-        const defelem = defelems[i];
-        const {id} = defelem;
-        if (!defelemUses.includes(id)) {
-          // Not found, so remove (but remember)
-          removedElements[id] = defelem;
-          defelem.remove();
-          numRemoved++;
-        }
-      }
-
-      return numRemoved;
-    };
     svgInit(
     /**
     * @implements {module:elem-get-set.elemInit}
@@ -1909,13 +1858,23 @@ class SvgCanvas {
         setCurrentZoom (value) { currentZoom = value; },
         getImportIds (key) { return importIds[key]; },
         setImportIds (key, value) { importIds[key] = value; },
+        setRemovedElements (key, value) { removedElements[key] = value; },
         setSVGContent (value) { svgcontent = value; },
         getrefAttrs () { return refAttrs; },
         getcanvg () { return canvg; },
         addCommandToHistory
       }
     );
-    /**
+
+/**
+* Looks at DOM elements inside the `<defs>` to see if they are referred to,
+* removes them from the DOM if they are not.
+* @function module:svgcanvas.SvgCanvas#removeUnusedDefElems
+* @returns {Integer} The number of elements that were removed
+*/
+    this.removeUnusedDefElems = removeUnusedDefElemsMethod;
+    
+/**
 * Main function to set up the SVG content for output.
 * @function module:svgcanvas.SvgCanvas#svgCanvasToString
 * @returns {string} The SVG image for output
