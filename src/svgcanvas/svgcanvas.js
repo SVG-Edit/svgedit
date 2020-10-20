@@ -45,7 +45,10 @@ import {
 import {
   init as textActionsInit, textActionsMethod
 } from './text-actions.js';
-import {init as eventInit, mouseMoveEvent, mouseUpEvent, dblClickEvent, mouseDownEvent} from './event.js';
+import {
+  init as eventInit, mouseMoveEvent, mouseUpEvent, 
+  dblClickEvent, mouseDownEvent
+} from './event.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {
   init as elemInit, getResolutionMethod, getTitleMethod, setGroupTitleMethod,
@@ -1573,41 +1576,6 @@ class SvgCanvas {
         parameter,
         nextParameter;
 
-      const getBsplinePoint = function (t) {
-        const spline = {x: 0, y: 0},
-          p0 = controllPoint2,
-          p1 = controllPoint1,
-          p2 = start,
-          p3 = end,
-          S = 1.0 / 6.0,
-          t2 = t * t,
-          t3 = t2 * t;
-
-        const m = [
-          [-1, 3, -3, 1],
-          [3, -6, 3, 0],
-          [-3, 0, 3, 0],
-          [1, 4, 1, 0]
-        ];
-
-        spline.x = S * (
-          (p0.x * m[0][0] + p1.x * m[0][1] + p2.x * m[0][2] + p3.x * m[0][3]) * t3 +
-      (p0.x * m[1][0] + p1.x * m[1][1] + p2.x * m[1][2] + p3.x * m[1][3]) * t2 +
-      (p0.x * m[2][0] + p1.x * m[2][1] + p2.x * m[2][2] + p3.x * m[2][3]) * t +
-      (p0.x * m[3][0] + p1.x * m[3][1] + p2.x * m[3][2] + p3.x * m[3][3])
-        );
-        spline.y = S * (
-          (p0.y * m[0][0] + p1.y * m[0][1] + p2.y * m[0][2] + p3.y * m[0][3]) * t3 +
-      (p0.y * m[1][0] + p1.y * m[1][1] + p2.y * m[1][2] + p3.y * m[1][3]) * t2 +
-      (p0.y * m[2][0] + p1.y * m[2][1] + p2.y * m[2][2] + p3.y * m[2][3]) * t +
-      (p0.y * m[3][0] + p1.y * m[3][1] + p2.y * m[3][2] + p3.y * m[3][3])
-        );
-
-        return {
-          x: spline.x,
-          y: spline.y
-        };
-      };
     /**
     * Initialize from event.js.
     * mouse event move to separate file init 
@@ -1688,8 +1656,7 @@ class SvgCanvas {
           getSVGContent,
           call,
           elData,
-          getIntersectionList,
-          getBsplinePoint
+          getIntersectionList
         }
       );
 

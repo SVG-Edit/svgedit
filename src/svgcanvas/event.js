@@ -41,6 +41,42 @@ export const init = function (eventContext) {
   eventContext_ = eventContext;
 };
 
+export const getBsplinePoint = function (t) {
+  const spline = {x: 0, y: 0},
+    p0 = {x: eventContext_.getControllPoint2('x'), y: eventContext_.getControllPoint2('y')},
+    p1 = {x: eventContext_.getControllPoint1('x'), y: eventContext_.getControllPoint1('y')},
+    p2 = {x: eventContext_.getStart('x'), y: eventContext_.getStart('y')},
+    p3 = {x: eventContext_.getEnd('x'), y: eventContext_.getEnd('y')},
+    S = 1.0 / 6.0,
+    t2 = t * t,
+    t3 = t2 * t;
+
+  const m = [
+    [-1, 3, -3, 1],
+    [3, -6, 3, 0],
+    [-3, 0, 3, 0],
+    [1, 4, 1, 0]
+  ];
+
+  spline.x = S * (
+    (p0.x * m[0][0] + p1.x * m[0][1] + p2.x * m[0][2] + p3.x * m[0][3]) * t3 +
+(p0.x * m[1][0] + p1.x * m[1][1] + p2.x * m[1][2] + p3.x * m[1][3]) * t2 +
+(p0.x * m[2][0] + p1.x * m[2][1] + p2.x * m[2][2] + p3.x * m[2][3]) * t +
+(p0.x * m[3][0] + p1.x * m[3][1] + p2.x * m[3][2] + p3.x * m[3][3])
+  );
+  spline.y = S * (
+    (p0.y * m[0][0] + p1.y * m[0][1] + p2.y * m[0][2] + p3.y * m[0][3]) * t3 +
+(p0.y * m[1][0] + p1.y * m[1][1] + p2.y * m[1][2] + p3.y * m[1][3]) * t2 +
+(p0.y * m[2][0] + p1.y * m[2][1] + p2.y * m[2][2] + p3.y * m[2][3]) * t +
+(p0.y * m[3][0] + p1.y * m[3][1] + p2.y * m[3][2] + p3.y * m[3][3])
+  );
+
+  return {
+    x: spline.x,
+    y: spline.y
+  };
+};
+
 /**
  *
  * @param {MouseEvent} evt
@@ -372,9 +408,9 @@ if (evt.shiftKey) {
       for (i = 0; i < eventContext_.getStepCount() - 1; i++) {
         eventContext_.setParameter(i / eventContext_.getStepCount());
         eventContext_.setNextParameter((i + 1) / eventContext_.getStepCount());
-        eventContext_.setbSpline(eventContext_.getBsplinePoint(eventContext_.getNextParameter()));
+        eventContext_.setbSpline(getBsplinePoint(eventContext_.getNextParameter()));
         eventContext_.setNextPos({x: eventContext_.getbSpline('x'), y: eventContext_.getbSpline('y')});
-        eventContext_.setbSpline( eventContext_.getBsplinePoint(eventContext_.getParameter()));
+        eventContext_.setbSpline(getBsplinePoint(eventContext_.getParameter()));
         eventContext_.setSumDistance( eventContext_.getSumDistance() + Math.sqrt((eventContext_.getNextPos('x') - eventContext_.getbSpline('x')) *
     (eventContext_.getNextPos('x') - eventContext_.getbSpline('x')) + (eventContext_.getNextPos('y') - eventContext_.getbSpline('y')) *
     (eventContext_.getNextPos('y') - eventContext_.getbSpline('y'))));
