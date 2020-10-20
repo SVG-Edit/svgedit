@@ -84,8 +84,8 @@ import {
   convertToNum, getTypeMap, init as unitsInit
 } from '../common/units.js';
 import {
-  svgCanvasToString, svgToString, setSvgString, save, exportPDF,
-  init as svgInit, importSvgString, embedImage, rasterExport
+  svgCanvasToString, svgToString, setSvgString, save, exportPDF, setUseDataMethod,
+  init as svgInit, importSvgString, embedImage, rasterExport, uniquifyElemsMethod
 } from './svg-exec.js';
 import {
   isChrome, isIE, isWebkit
@@ -1911,6 +1911,7 @@ class SvgCanvas {
         getImportIds (key) { return importIds[key]; },
         setImportIds (key, value) { importIds[key] = value; },
         setSVGContent (value) { svgcontent = value; },
+        getrefAttrs () { return refAttrs; },
         getcanvg () { return canvg; },
         addCommandToHistory
       }
@@ -2081,93 +2082,7 @@ class SvgCanvas {
 * @param {Element} g - The parent element of the tree to give unique IDs
 * @returns {void}
 */
-    const uniquifyElems = this.uniquifyElems = function (g) {
-      const ids = {};
-      // TODO: Handle markers and connectors. These are not yet re-identified properly
-      // as their referring elements do not get remapped.
-      //
-      // <marker id='se_marker_end_svg_7'/>
-      // <polyline id='svg_7' se:connector='svg_1 svg_6' marker-end='url(#se_marker_end_svg_7)'/>
-      //
-      // Problem #1: if svg_1 gets renamed, we do not update the polyline's se:connector attribute
-      // Problem #2: if the polyline svg_7 gets renamed, we do not update the marker id nor the polyline's marker-end attribute
-      const refElems = ['filter', 'linearGradient', 'pattern', 'radialGradient', 'symbol', 'textPath', 'use'];
-
-      walkTree(g, function (n) {
-        // if it's an element node
-        if (n.nodeType === 1) {
-          // and the element has an ID
-          if (n.id) {
-            // and we haven't tracked this ID yet
-            if (!(n.id in ids)) {
-              // add this id to our map
-              ids[n.id] = {elem: null, attrs: [], hrefs: []};
-            }
-            ids[n.id].elem = n;
-          }
-
-          // now search for all attributes on this element that might refer
-          // to other elements
-          $.each(refAttrs, function (i, attr) {
-            const attrnode = n.getAttributeNode(attr);
-            if (attrnode) {
-              // the incoming file has been sanitized, so we should be able to safely just strip off the leading #
-              const url = getUrlFromAttr(attrnode.value),
-                refid = url ? url.substr(1) : null;
-              if (refid) {
-                if (!(refid in ids)) {
-                  // add this id to our map
-                  ids[refid] = {elem: null, attrs: [], hrefs: []};
-                }
-                ids[refid].attrs.push(attrnode);
-              }
-            }
-          });
-
-          // check xlink:href now
-          const href = getHref(n);
-          // TODO: what if an <image> or <a> element refers to an element internally?
-          if (href && refElems.includes(n.nodeName)) {
-            const refid = href.substr(1);
-            if (refid) {
-              if (!(refid in ids)) {
-                // add this id to our map
-                ids[refid] = {elem: null, attrs: [], hrefs: []};
-              }
-              ids[refid].hrefs.push(n);
-            }
-          }
-        }
-      });
-
-      // in ids, we now have a map of ids, elements and attributes, let's re-identify
-      for (const oldid in ids) {
-        if (!oldid) { continue; }
-        const {elem} = ids[oldid];
-        if (elem) {
-          const newid = getNextId();
-
-          // assign element its new id
-          elem.id = newid;
-
-          // remap all url() attributes
-          const {attrs} = ids[oldid];
-          let j = attrs.length;
-          while (j--) {
-            const attr = attrs[j];
-            attr.ownerElement.setAttribute(attr.name, 'url(#' + newid + ')');
-          }
-
-          // remap all href attributes
-          const hreffers = ids[oldid].hrefs;
-          let k = hreffers.length;
-          while (k--) {
-            const hreffer = hreffers[k];
-            setHref(hreffer, '#' + newid);
-          }
-        }
-      }
-    };
+    const uniquifyElems = this.uniquifyElems = uniquifyElemsMethod;
 
     /**
 * Assigns reference data for each use element.
@@ -2175,23 +2090,7 @@ class SvgCanvas {
 * @param {Element} parent
 * @returns {void}
 */
-    const setUseData = this.setUseData = function (parent) {
-      let elems = $(parent);
-
-      if (parent.tagName !== 'use') {
-        elems = elems.find('use');
-      }
-
-      elems.each(function () {
-        const id = getHref(this).substr(1);
-        const refElem = getElem(id);
-        if (!refElem) { return; }
-        $(this).data('ref', refElem);
-        if (refElem.tagName === 'symbol' || refElem.tagName === 'svg') {
-          $(this).data('symbol', refElem).data('ref', refElem);
-        }
-      });
-    };
+    const setUseData = this.setUseData = setUseDataMethod;
 
     /**
 * Converts gradients from userSpaceOnUse to objectBoundingBox.
