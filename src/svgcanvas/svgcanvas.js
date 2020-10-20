@@ -66,6 +66,9 @@ import {
   deleteSelectedElements, copySelectedElements, groupSelectedElements, pushGroupProperty,
   ungroupSelectedElement, cycleElement, updateCanvas
 } from './selected-elem.js';
+import {
+  init as blurInit, setBlurNoUndo, setBlurOffsets, setBlur
+} from './blur-event.js';
 import {sanitizeSvg} from './sanitize.js';
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {
@@ -2707,48 +2710,33 @@ class SvgCanvas {
       let filter = null;
       let filterHidden = false;
 
+      blurInit(
+        /**
+        * @implements {module:elem-get-set.elemInit}
+        */
+        {
+          getCanvas () { return canvas; },
+          getCurCommand () { return curCommand; },
+          setCurCommand (value) { curCommand = value; },
+          getFilter () { return filter; },
+          setFilter (value) { filter = value; },
+          getFilterHidden () { return filterHidden; },
+          setFilterHidden (value) { filterHidden = value; },
+          changeSelectedAttributeNoUndoMethod,
+          changeSelectedAttributeMethod,
+          isWebkit,
+          addCommandToHistory,
+          getSelectedElements
+        }
+      );
+
       /**
 * Sets the `stdDeviation` blur value on the selected element without being undoable.
 * @function module:svgcanvas.SvgCanvas#setBlurNoUndo
 * @param {Float} val - The new `stdDeviation` value
 * @returns {void}
 */
-      canvas.setBlurNoUndo = function (val) {
-        if (!filter) {
-          canvas.setBlur(val);
-          return;
-        }
-        if (val === 0) {
-          // Don't change the StdDev, as that will hide the element.
-          // Instead, just remove the value for "filter"
-          changeSelectedAttributeNoUndo('filter', '');
-          filterHidden = true;
-        } else {
-          const elem = selectedElements[0];
-          if (filterHidden) {
-            changeSelectedAttributeNoUndo('filter', 'url(#' + elem.id + '_blur)');
-          }
-          if (isWebkit()) {
-            // console.log('e', elem); // eslint-disable-line no-console
-            elem.removeAttribute('filter');
-            elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
-          }
-          changeSelectedAttributeNoUndo('stdDeviation', val, [filter.firstChild]);
-          canvas.setBlurOffsets(filter, val);
-        }
-      };
-
-      /**
- *
- * @returns {void}
- */
-      function finishChange () {
-        const bCmd = canvas.undoMgr.finishUndoableChange();
-        curCommand.addSubCommand(bCmd);
-        addCommandToHistory(curCommand);
-        curCommand = null;
-        filter = null;
-      }
+      canvas.setBlurNoUndo = setBlurNoUndo;
 
       /**
 * Sets the `x`, `y`, `width`, `height` values of the filter element in order to
@@ -2758,23 +2746,7 @@ class SvgCanvas {
 * @param {Float} stdDev - The standard deviation value on which to base the offset size
 * @returns {void}
 */
-      canvas.setBlurOffsets = function (filterElem, stdDev) {
-        if (stdDev > 3) {
-          // TODO: Create algorithm here where size is based on expected blur
-          assignAttributes(filterElem, {
-            x: '-50%',
-            y: '-50%',
-            width: '200%',
-            height: '200%'
-          }, 100);
-          // Removing these attributes hides text in Chrome (see Issue 579)
-        } else if (!isWebkit()) {
-          filterElem.removeAttribute('x');
-          filterElem.removeAttribute('y');
-          filterElem.removeAttribute('width');
-          filterElem.removeAttribute('height');
-        }
-      };
+      canvas.setBlurOffsets = setBlurOffsets;
 
       /**
 * Adds/updates the blur filter to the selected element.
@@ -2783,66 +2755,7 @@ class SvgCanvas {
 * @param {boolean} complete - Whether or not the action should be completed (to add to the undo manager)
 * @returns {void}
 */
-      canvas.setBlur = function (val, complete) {
-        if (curCommand) {
-          finishChange();
-          return;
-        }
-
-        // Looks for associated blur, creates one if not found
-        const elem = selectedElements[0];
-        const elemId = elem.id;
-        filter = getElem(elemId + '_blur');
-
-        val -= 0;
-
-        const batchCmd = new BatchCommand();
-
-        // Blur found!
-        if (filter) {
-          if (val === 0) {
-            filter = null;
-          }
-        } else {
-          // Not found, so create
-          const newblur = addSVGElementFromJson({element: 'feGaussianBlur',
-            attr: {
-              in: 'SourceGraphic',
-              stdDeviation: val
-            }
-          });
-
-          filter = addSVGElementFromJson({element: 'filter',
-            attr: {
-              id: elemId + '_blur'
-            }
-          });
-
-          filter.append(newblur);
-          findDefs().append(filter);
-
-          batchCmd.addSubCommand(new InsertElementCommand(filter));
-        }
-
-        const changes = {filter: elem.getAttribute('filter')};
-
-        if (val === 0) {
-          elem.removeAttribute('filter');
-          batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-          return;
-        }
-
-        changeSelectedAttribute('filter', 'url(#' + elemId + '_blur)');
-        batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-        canvas.setBlurOffsets(filter, val);
-
-        curCommand = batchCmd;
-        canvas.undoMgr.beginUndoableChange('stdDeviation', [filter ? filter.firstChild : null]);
-        if (complete) {
-          canvas.setBlurNoUndo(val);
-          finishChange();
-        }
-      };
+      canvas.setBlur = setBlur;
     }());
 
     /**
