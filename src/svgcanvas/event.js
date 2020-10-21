@@ -1308,3 +1308,89 @@ export const mouseDownEvent = function (evt) {
     }
   });
 };
+/**
+ * @param {Event} e
+ * @fires module:event.SvgCanvas#event:updateCanvas
+ * @fires module:event.SvgCanvas#event:zoomDone
+ * @returns {void}
+ */
+export const DOMMouseScrollEvent = function (e) {
+  const currentZoom = eventContext_.getCurrentZoom();
+  if (!e.shiftKey) { return; }
+
+  e.preventDefault();
+  const evt = e.originalEvent;
+
+  eventContext_.setRootSctm($('#svgcontent g')[0].getScreenCTM().inverse());
+
+  const workarea = $('#workarea');
+  const scrbar = 15;
+  const rulerwidth = eventContext_.getCurConfig().showRulers ? 16 : 0;
+
+  // mouse relative to content area in content pixels
+  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
+
+  // full work area width in screen pixels
+  const editorFullW = workarea.width();
+  const editorFullH = workarea.height();
+
+  // work area width minus scroll and ruler in screen pixels
+  const editorW = editorFullW - scrbar - rulerwidth;
+  const editorH = editorFullH - scrbar - rulerwidth;
+
+  // work area width in content pixels
+  const workareaViewW = editorW * eventContext_.getrootSctm().a;
+  const workareaViewH = editorH * eventContext_.getrootSctm().d;
+
+  // content offset from canvas in screen pixels
+  const wOffset = workarea.offset();
+  const wOffsetLeft = wOffset.left + rulerwidth;
+  const wOffsetTop = wOffset.top + rulerwidth;
+
+  const delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
+  if (!delta) { return; }
+
+  let factor = Math.max(3 / 4, Math.min(4 / 3, (delta)));
+
+  let wZoom, hZoom;
+  if (factor > 1) {
+    wZoom = Math.ceil(editorW / workareaViewW * factor * 100) / 100;
+    hZoom = Math.ceil(editorH / workareaViewH * factor * 100) / 100;
+  } else {
+    wZoom = Math.floor(editorW / workareaViewW * factor * 100) / 100;
+    hZoom = Math.floor(editorH / workareaViewH * factor * 100) / 100;
+  }
+  let zoomlevel = Math.min(wZoom, hZoom);
+  zoomlevel = Math.min(10, Math.max(0.01, zoomlevel));
+  if (zoomlevel === currentZoom) {
+    return;
+  }
+  factor = zoomlevel / currentZoom;
+
+  // top left of workarea in content pixels before zoom
+  const topLeftOld = transformPoint(wOffsetLeft, wOffsetTop, eventContext_.getrootSctm());
+
+  // top left of workarea in content pixels after zoom
+  const topLeftNew = {
+    x: pt.x - (pt.x - topLeftOld.x) / factor,
+    y: pt.y - (pt.y - topLeftOld.y) / factor
+  };
+
+  // top left of workarea in canvas pixels relative to content after zoom
+  const topLeftNewCanvas = {
+    x: topLeftNew.x * zoomlevel,
+    y: topLeftNew.y * zoomlevel
+  };
+
+  // new center in canvas pixels
+  const newCtr = {
+    x: topLeftNewCanvas.x - rulerwidth + editorFullW / 2,
+    y: topLeftNewCanvas.y - rulerwidth + editorFullH / 2
+  };
+
+  eventContext_.getCanvas().setZoom(zoomlevel);
+  $('#zoom').val((zoomlevel * 100).toFixed(1));
+
+  eventContext_.getCanvas().call('updateCanvas', {center: false, newCtr});
+  eventContext_.getCanvas().call('zoomDone');
+};

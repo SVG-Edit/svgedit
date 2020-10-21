@@ -50,7 +50,7 @@ import {
 } from './text-actions.js';
 import {
   init as eventInit, mouseMoveEvent, mouseUpEvent,
-  dblClickEvent, mouseDownEvent
+  dblClickEvent, mouseDownEvent, DOMMouseScrollEvent
 } from './event.js';
 import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
 import {
@@ -92,7 +92,7 @@ import {
 import {
   svgCanvasToString, svgToString, setSvgString, save, exportPDF, setUseDataMethod,
   init as svgInit, importSvgString, embedImage, rasterExport, 
-  uniquifyElemsMethod, removeUnusedDefElemsMethod
+  uniquifyElemsMethod, removeUnusedDefElemsMethod, convertGradientsMethod
 } from './svg-exec.js';
 import {
   isChrome, isIE, isWebkit
@@ -611,7 +611,7 @@ class SvgCanvas {
 */
 const getOpacity = function () {
   return curShape.opacity;
-};    
+};
 
 /**
 * @name module:svgcanvas.SvgCanvas#getMouseTarget
@@ -1601,94 +1601,7 @@ const getOpacity = function () {
       // $(window).mouseup(mouseUp);
 
       // TODO(rafaelcastrocouto): User preference for shift key and zoom factor
-      $(container).bind(
-        'mousewheel DOMMouseScroll',
-        /**
-   * @param {Event} e
-   * @fires module:svgcanvas.SvgCanvas#event:updateCanvas
-   * @fires module:svgcanvas.SvgCanvas#event:zoomDone
-   * @returns {void}
-   */
-        function (e) {
-          if (!e.shiftKey) { return; }
-
-          e.preventDefault();
-          const evt = e.originalEvent;
-
-          rootSctm = $('#svgcontent g')[0].getScreenCTM().inverse();
-
-          const workarea = $('#workarea');
-          const scrbar = 15;
-          const rulerwidth = curConfig.showRulers ? 16 : 0;
-
-          // mouse relative to content area in content pixels
-          const pt = transformPoint(evt.pageX, evt.pageY, rootSctm);
-
-          // full work area width in screen pixels
-          const editorFullW = workarea.width();
-          const editorFullH = workarea.height();
-
-          // work area width minus scroll and ruler in screen pixels
-          const editorW = editorFullW - scrbar - rulerwidth;
-          const editorH = editorFullH - scrbar - rulerwidth;
-
-          // work area width in content pixels
-          const workareaViewW = editorW * rootSctm.a;
-          const workareaViewH = editorH * rootSctm.d;
-
-          // content offset from canvas in screen pixels
-          const wOffset = workarea.offset();
-          const wOffsetLeft = wOffset.left + rulerwidth;
-          const wOffsetTop = wOffset.top + rulerwidth;
-
-          const delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
-          if (!delta) { return; }
-
-          let factor = Math.max(3 / 4, Math.min(4 / 3, (delta)));
-
-          let wZoom, hZoom;
-          if (factor > 1) {
-            wZoom = Math.ceil(editorW / workareaViewW * factor * 100) / 100;
-            hZoom = Math.ceil(editorH / workareaViewH * factor * 100) / 100;
-          } else {
-            wZoom = Math.floor(editorW / workareaViewW * factor * 100) / 100;
-            hZoom = Math.floor(editorH / workareaViewH * factor * 100) / 100;
-          }
-          let zoomlevel = Math.min(wZoom, hZoom);
-          zoomlevel = Math.min(10, Math.max(0.01, zoomlevel));
-          if (zoomlevel === currentZoom) {
-            return;
-          }
-          factor = zoomlevel / currentZoom;
-
-          // top left of workarea in content pixels before zoom
-          const topLeftOld = transformPoint(wOffsetLeft, wOffsetTop, rootSctm);
-
-          // top left of workarea in content pixels after zoom
-          const topLeftNew = {
-            x: pt.x - (pt.x - topLeftOld.x) / factor,
-            y: pt.y - (pt.y - topLeftOld.y) / factor
-          };
-
-          // top left of workarea in canvas pixels relative to content after zoom
-          const topLeftNewCanvas = {
-            x: topLeftNew.x * zoomlevel,
-            y: topLeftNew.y * zoomlevel
-          };
-
-          // new center in canvas pixels
-          const newCtr = {
-            x: topLeftNewCanvas.x - rulerwidth + editorFullW / 2,
-            y: topLeftNewCanvas.y - rulerwidth + editorFullH / 2
-          };
-
-          canvas.setZoom(zoomlevel);
-          $('#zoom').val((zoomlevel * 100).toFixed(1));
-
-          call('updateCanvas', {center: false, newCtr});
-          call('zoomDone');
-        }
-      );
+      $(container).bind('mousewheel DOMMouseScroll', DOMMouseScrollEvent);
     }());
 
     textActionsInit(
@@ -1948,77 +1861,7 @@ const getOpacity = function () {
 * @param {Element} elem
 * @returns {void}
 */
-    const convertGradients = this.convertGradients = function (elem) {
-      let elems = $(elem).find('linearGradient, radialGradient');
-      if (!elems.length && isWebkit()) {
-        // Bug in webkit prevents regular *Gradient selector search
-        elems = $(elem).find('*').filter(function () {
-          return (this.tagName.includes('Gradient'));
-        });
-      }
-
-      elems.each(function () {
-        const grad = this;
-        if ($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
-          // TODO: Support more than one element with this ref by duplicating parent grad
-          const fillStrokeElems = $(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
-          if (!fillStrokeElems.length) { return; }
-
-          // get object's bounding box
-          const bb = utilsGetBBox(fillStrokeElems[0]);
-
-          // This will occur if the element is inside a <defs> or a <symbol>,
-          // in which we shouldn't need to convert anyway.
-          if (!bb) { return; }
-
-          if (grad.tagName === 'linearGradient') {
-            const gCoords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
-
-            // If has transform, convert
-            const tlist = grad.gradientTransform.baseVal;
-            if (tlist && tlist.numberOfItems > 0) {
-              const m = transformListToTransform(tlist).matrix;
-              const pt1 = transformPoint(gCoords.x1, gCoords.y1, m);
-              const pt2 = transformPoint(gCoords.x2, gCoords.y2, m);
-
-              gCoords.x1 = pt1.x;
-              gCoords.y1 = pt1.y;
-              gCoords.x2 = pt2.x;
-              gCoords.y2 = pt2.y;
-              grad.removeAttribute('gradientTransform');
-            }
-
-            $(grad).attr({
-              x1: (gCoords.x1 - bb.x) / bb.width,
-              y1: (gCoords.y1 - bb.y) / bb.height,
-              x2: (gCoords.x2 - bb.x) / bb.width,
-              y2: (gCoords.y2 - bb.y) / bb.height
-            });
-            grad.removeAttribute('gradientUnits');
-          }
-          // else {
-          //   Note: radialGradient elements cannot be easily converted
-          //   because userSpaceOnUse will keep circular gradients, while
-          //   objectBoundingBox will x/y scale the gradient according to
-          //   its bbox.
-          //
-          //   For now we'll do nothing, though we should probably have
-          //   the gradient be updated as the element is moved, as
-          //   inkscape/illustrator do.
-          //
-          //   const gCoords = $(grad).attr(['cx', 'cy', 'r']);
-          //
-          //   $(grad).attr({
-          //     cx: (gCoords.cx - bb.x) / bb.width,
-          //     cy: (gCoords.cy - bb.y) / bb.height,
-          //     r: gCoords.r
-          //   });
-          //
-          //   grad.removeAttribute('gradientUnits');
-          // }
-        }
-      });
-    };
+    const convertGradients = this.convertGradients = convertGradientsMethod;
 
     /**
 * This function sets the current drawing as the input SVG XML.
