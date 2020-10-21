@@ -4,7 +4,7 @@
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  :host :hover
+  :host :hover :not(.disabled)
   {
     background-color: #ffc;
   }
@@ -28,6 +28,10 @@ template.innerHTML = `
   .pressed {
     background-color: #F4E284 !important;
     box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
+  }
+  .disabled {
+    opacity: 0.3;
+    cursor: default;
   }
   </style>
   <div title="title">
@@ -55,7 +59,7 @@ export class ToolButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'pressed'];
+    return ['title', 'src', 'pressed', 'disabled'];
   }
   /**
    * @function attributeChangedCallback
@@ -81,6 +85,13 @@ export class ToolButton extends HTMLElement {
         this.$div.classList.add('pressed');
       } else {
         this.$div.classList.remove('pressed');
+      }
+      break;
+    case 'disabled':
+      if (newValue) {
+        this.$div.classList.add('disabled');
+      } else {
+        this.$div.classList.remove('disabled');
       }
       break;
     default:
@@ -128,6 +139,26 @@ export class ToolButton extends HTMLElement {
    * @function get
    * @returns {any}
    */
+  get disabled () {
+    return this.hasAttribute('disabled');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set disabled (value) {
+    // boolean value => existence = true
+    if (value) {
+      this.setAttribute('disabled', 'true');
+    } else {
+      this.removeAttribute('disabled', '');
+    }
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
   get src () {
     return this.getAttribute('src');
   }
@@ -145,6 +176,7 @@ export class ToolButton extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
+    // capture shortcuts
     const shortcut = this.getAttribute('shortcut');
     if (shortcut) {
       // register the keydown event

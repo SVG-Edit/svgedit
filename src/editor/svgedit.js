@@ -1060,9 +1060,6 @@ editor.init = () => {
         import: 'import.png',
         docprops: 'document-properties.png',
 
-        undo: 'undo.png',
-        redo: 'redo.png',
-
         clone: 'clone.png',
         delete: 'delete.png',
         go_up: 'go-up.png',
@@ -1122,9 +1119,6 @@ editor.init = () => {
         '#tool_docprops > div': 'docprops',
         '#tool_editor_prefs > div': 'config',
         '#tool_editor_homepage > div': 'globe_link',
-
-        '#tool_undo': 'undo',
-        '#tool_redo': 'redo',
 
         '#tool_select': 'select',
         '#tool_fhpath': 'pencil',
@@ -2277,8 +2271,8 @@ editor.init = () => {
     }
 
     // update history buttons
-    $('#tool_undo').toggleClass('disabled', undoMgr.getUndoStackSize() === 0);
-    $('#tool_redo').toggleClass('disabled', undoMgr.getRedoStackSize() === 0);
+    $id('tool_undo').disabled = (undoMgr.getUndoStackSize() === 0);
+    $id('tool_redo').disabled = (undoMgr.getRedoStackSize() === 0);
 
     svgCanvas.addedNew = false;
 
@@ -4434,7 +4428,6 @@ editor.init = () => {
   * @returns {void}
   */
   const clickWireframe = function () {
-    console.log($id('tool_wireframe').pressed);
     $id('tool_wireframe').pressed = !$id('tool_wireframe').pressed;
     workarea.toggleClass('wireframe');
 
@@ -4766,12 +4759,6 @@ editor.init = () => {
 
     $(allTools).mousedown(function () {
       $(this).addClass(curClass);
-    }).bind('mousedown mouseout', function () {
-      $(this).removeClass(curClass);
-    });
-
-    $('#tool_undo, #tool_redo').mousedown(function () {
-      if (!$(this).hasClass('disabled')) { $(this).addClass(curClass); }
     }).bind('mousedown mouseout', function () {
       $(this).removeClass(curClass);
     });
@@ -5356,6 +5343,9 @@ editor.init = () => {
     // register action to buttons
     $id('tool_source').addEventListener('click', showSourceEditor);
     $id('tool_wireframe').addEventListener('click', clickWireframe);
+    $id('tool_undo').addEventListener('click', clickUndo);
+    $id('tool_redo').addEventListener('click', clickRedo);
+
     const toolButtons = [
       {sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
       {sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
@@ -5388,8 +5378,6 @@ editor.init = () => {
       {sel: '#tool_export', fn: clickExport, evt: 'mouseup'},
       {sel: '#tool_open', fn: clickOpen, evt: 'mouseup', key: ['O', true]},
       {sel: '#tool_import', fn: clickImport, evt: 'mouseup'},
-      // {sel: '#tool_source', fn: showSourceEditor, evt: 'click', key: ['U', true]},
-      // {sel: '#tool_wireframe', fn: clickWireframe, evt: 'click', key: ['F', true]},
       {
         key: ['esc', false, false],
         fn () {
@@ -5423,16 +5411,11 @@ editor.init = () => {
       {sel: '#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+['},
       {sel: '#tool_topath', fn: convertToPath, evt: 'click'},
       {sel: '#tool_make_link,#tool_make_link_multi', fn: makeHyperlink, evt: 'click'},
-      {sel: '#tool_undo', fn: clickUndo, evt: 'click'},
-      {sel: '#tool_redo', fn: clickRedo, evt: 'click'},
       {sel: '#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['D', true]},
       {sel: '#tool_group_elements', fn: clickGroup, evt: 'click', key: ['G', true]},
       {sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
       {sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
       {sel: '[id^=tool_align]', fn: clickAlign, evt: 'click'},
-      // these two lines are required to make Opera work properly with the flyout mechanism
-      // {sel: '#tools_rect_show', fn: clickRect, evt: 'click'},
-      // {sel: '#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
       {sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
       {sel: '#tool_italic', fn: clickItalic, evt: 'mousedown'},
       {sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
