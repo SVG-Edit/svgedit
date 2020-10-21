@@ -43,7 +43,9 @@ import {
   changeSelectedAttributeMethod, ffClone
 } from './undo.js';
 import {
-  init as selectionInit, clearSelectionMethod, addToSelectionMethod, getMouseTargetMethod
+  init as selectionInit, clearSelectionMethod, addToSelectionMethod, getMouseTargetMethod,
+  getIntersectionListMethod, addExtension, runExtensionsMethod, groupSvgElem, prepareSvg,
+  recalculateAllSelectedDimensions, setRotationAngle
 } from './selection.js';
 import {
   init as textActionsInit, textActionsMethod
@@ -586,6 +588,16 @@ class SvgCanvas {
         getSVGRoot,
         getSVGContent,
         getDOMContainer () { return container; },
+        getExtensions () { return extensions; },
+        setExtensions (key, value) { extensions[key] = value; },
+        getCurrentZoom,
+        isIE,
+        getRubberBox () { return rubberBox; },
+        setCurBBoxes (value) { curBBoxes = value; },
+        getCurBBoxes (value) { return curBBoxes; },
+        getCurrentResizeMode () { return currentResizeMode; },
+        addCommandToHistory,
+        getSelector () { return Selector; },        
       }
     );
 
@@ -606,17 +618,17 @@ class SvgCanvas {
 */
     const addToSelection = this.addToSelection = addToSelectionMethod;
 
-/**
-* @type {module:path.EditorContext#getOpacity}
-*/
-const getOpacity = function () {
-  return curShape.opacity;
-};
+    /**
+    * @type {module:path.EditorContext#getOpacity}
+    */
+    const getOpacity = function () {
+      return curShape.opacity;
+    };
 
-/**
-* @name module:svgcanvas.SvgCanvas#getMouseTarget
-* @type {module:path.EditorContext#getMouseTarget}
-*/
+    /**
+    * @name module:svgcanvas.SvgCanvas#getMouseTarget
+    * @type {module:path.EditorContext#getMouseTarget}
+    */
     const getMouseTarget = this.getMouseTarget = getMouseTargetMethod;
 
     /**
@@ -801,20 +813,6 @@ const getOpacity = function () {
       return this.runExtensions(action, vars, false, (n) => n === name);
     };
     /**
-* @typedef {module:svgcanvas.ExtensionMouseDownStatus|module:svgcanvas.ExtensionMouseUpStatus|module:svgcanvas.ExtensionIDsUpdatedStatus|module:locale.ExtensionLocaleData[]|void} module:svgcanvas.ExtensionStatus
-* @tutorial ExtensionDocs
-*/
-    /**
-* @callback module:svgcanvas.ExtensionVarBuilder
-* @param {string} name The name of the extension
-* @returns {module:svgcanvas.SvgCanvas#event:ext_addLangData}
-*/
-    /**
-* @callback module:svgcanvas.ExtensionNameFilter
-* @param {string} name
-* @returns {boolean}
-*/
-    /**
 * @todo Consider: Should this return an array by default, so extension results aren't overwritten?
 * @todo Would be easier to document if passing in object with key of action and vars as value; could then define an interface which tied both together
 * @function module:svgcanvas.SvgCanvas#runExtensions
@@ -824,140 +822,8 @@ const getOpacity = function () {
 * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
 * @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
 */
-    const runExtensions = this.runExtensions = function (action, vars, returnArray, nameFilter) {
-      let result = returnArray ? [] : false;
-      $.each(extensions, function (name, ext) {
-        if (nameFilter && !nameFilter(name)) {
-          return;
-        }
-        if (ext && action in ext) {
-          if (typeof vars === 'function') {
-            vars = vars(name); // ext, action
-          }
-          if (returnArray) {
-            result.push(ext[action](vars));
-          } else {
-            result = ext[action](vars);
-          }
-        }
-      });
-      return result;
-    };
+    const runExtensions = this.runExtensions = runExtensionsMethod;
 
-    /**
-* @typedef {PlainObject} module:svgcanvas.ExtensionMouseDownStatus
-* @property {boolean} started Indicates that creating/editing has started
-*/
-    /**
-* @typedef {PlainObject} module:svgcanvas.ExtensionMouseUpStatus
-* @property {boolean} keep Indicates if the current element should be kept
-* @property {boolean} started Indicates if editing should still be considered as "started"
-* @property {Element} element The element being affected
-*/
-    /**
-* @typedef {PlainObject} module:svgcanvas.ExtensionIDsUpdatedStatus
-* @property {string[]} remove Contains string IDs (used by `ext-connector.js`)
-*/
-
-    /**
- * @interface module:svgcanvas.ExtensionInitResponse
- * @property {module:SVGEditor.ContextTool[]|PlainObject<string, module:SVGEditor.ContextTool>} [context_tools]
- * @property {module:SVGEditor.Button[]|PlainObject<Integer, module:SVGEditor.Button>} [buttons]
- * @property {string} [svgicons] The location of a local SVG or SVGz file
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#mouseDown
- * @param {module:svgcanvas.SvgCanvas#event:ext_mouseDown} arg
- * @returns {void|module:svgcanvas.ExtensionMouseDownStatus}
- */
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#mouseMove
- * @param {module:svgcanvas.SvgCanvas#event:ext_mouseMove} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#mouseUp
- * @param {module:svgcanvas.SvgCanvas#event:ext_mouseUp} arg
- * @returns {module:svgcanvas.ExtensionMouseUpStatus}
- */
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#zoomChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext_zoomChanged} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#IDsUpdated
- * @param {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} arg
- * @returns {module:svgcanvas.ExtensionIDsUpdatedStatus}
- */
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#canvasUpdated
- * @param {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#toolButtonStateUpdate
- * @param {module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#selectedChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext_selectedChanged} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#elementTransition
- * @param {module:svgcanvas.SvgCanvas#event:ext_elementTransition} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#elementChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext_elementChanged} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#langReady
- * @param {module:svgcanvas.SvgCanvas#event:ext_langReady} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#langChanged
- * @param {module:svgcanvas.SvgCanvas#event:ext_langChanged} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#addLangData
- * @param {module:svgcanvas.SvgCanvas#event:ext_addLangData} arg
- * @returns {Promise<module:locale.ExtensionLocaleData>} Resolves to {@link module:locale.ExtensionLocaleData}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#onNewDocument
- * @param {module:svgcanvas.SvgCanvas#event:ext_onNewDocument} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#workareaResized
- * @param {module:svgcanvas.SvgCanvas#event:ext_workareaResized} arg
- * @returns {void}
-*/
-    /**
- * @function module:svgcanvas.ExtensionInitResponse#callback
- * @this module:SVGEditor
- * @param {module:svgcanvas.SvgCanvas#event:ext_callback} arg
- * @returns {void}
-*/
-
-    /**
-* @callback module:svgcanvas.ExtensionInitCallback
-* @this module:SVGEditor
-* @param {module:svgcanvas.ExtensionArgumentObject} arg
-* @returns {Promise<module:svgcanvas.ExtensionInitResponse|void>} Resolves to [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse} or `undefined`
-*/
-    /**
-* @typedef {PlainObject} module:svgcanvas.ExtensionInitArgs
-* @property {external:jQuery} $
-* @property {module:SVGEditor~ImportLocale} importLocale
-*/
     /**
 * Add an extension to the editor.
 * @function module:svgcanvas.SvgCanvas#addExtension
@@ -969,42 +835,7 @@ const getOpacity = function () {
 *   if extension of supplied name already exists
 * @returns {Promise<void>} Resolves to `undefined`
 */
-    this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
-      if (typeof extInitFunc !== 'function') {
-        throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
-      }
-      if (name in extensions) {
-        throw new Error('Cannot add extension "' + name + '", an extension by that name already exists.');
-      }
-      // Provide private vars/funcs here. Is there a better way to do this?
-      /**
-   * @typedef {module:svgcanvas.PrivateMethods} module:svgcanvas.ExtensionArgumentObject
-   * @property {SVGSVGElement} svgroot See {@link module:svgcanvas~svgroot}
-   * @property {SVGSVGElement} svgcontent See {@link module:svgcanvas~svgcontent}
-   * @property {!(string|Integer)} nonce See {@link module:draw.Drawing#getNonce}
-   * @property {module:select.SelectorManager} selectorManager
-   * @property {module:SVGEditor~ImportLocale} importLocale
-   */
-      /**
-   * @type {module:svgcanvas.ExtensionArgumentObject}
-   * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
-   */
-      const argObj = $.extend(canvas.getPrivateMethods(), {
-        $: jq,
-        importLocale,
-        svgroot,
-        svgcontent,
-        nonce: getCurrentDrawing().getNonce(),
-        selectorManager
-      });
-      const extObj = await extInitFunc(argObj);
-      if (extObj) {
-        extObj.name = name;
-      }
-
-      extensions[name] = extObj;
-      return call('extension_added', extObj);
-    };
+    this.addExtension = addExtension;
 
     /**
 * This method sends back an array or a NodeList full of elements that
@@ -1018,91 +849,11 @@ const getOpacity = function () {
 * @param {SVGRect} rect
 * @returns {Element[]|NodeList} Bbox elements
 */
-    const getIntersectionList = this.getIntersectionList = function (rect) {
-      if (isNullish(rubberBox)) { return null; }
-
-      const parent = currentGroup || getCurrentDrawing().getCurrentLayer();
-
-      let rubberBBox;
-      if (!rect) {
-        rubberBBox = rubberBox.getBBox();
-        const bb = svgcontent.createSVGRect();
-
-        ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left'].forEach((o) => {
-          bb[o] = rubberBBox[o] / currentZoom;
-        });
-        rubberBBox = bb;
-      } else {
-        rubberBBox = svgcontent.createSVGRect();
-        rubberBBox.x = rect.x;
-        rubberBBox.y = rect.y;
-        rubberBBox.width = rect.width;
-        rubberBBox.height = rect.height;
-      }
-
-      let resultList = null;
-      if (!isIE()) {
-        if (typeof svgroot.getIntersectionList === 'function') {
-          // Offset the bbox of the rubber box by the offset of the svgcontent element.
-          rubberBBox.x += Number.parseInt(svgcontent.getAttribute('x'));
-          rubberBBox.y += Number.parseInt(svgcontent.getAttribute('y'));
-
-          resultList = svgroot.getIntersectionList(rubberBBox, parent);
-        }
-      }
-
-      if (isNullish(resultList) || typeof resultList.item !== 'function') {
-        resultList = [];
-
-        if (!curBBoxes.length) {
-          // Cache all bboxes
-          curBBoxes = getVisibleElementsAndBBoxes(parent);
-        }
-        let i = curBBoxes.length;
-        while (i--) {
-          if (!rubberBBox.width) { continue; }
-          if (rectsIntersect(rubberBBox, curBBoxes[i].bbox)) {
-            resultList.push(curBBoxes[i].elem);
-          }
-        }
-      }
-
-      // addToSelection expects an array, but it's ok to pass a NodeList
-      // because using square-bracket notation is allowed:
-      // https://www.w3.org/TR/DOM-Level-2-Core/ecma-script-binding.html
-      return resultList;
-    };
+    const getIntersectionList = this.getIntersectionList = getIntersectionListMethod;
 
     this.getStrokedBBox = getStrokedBBoxDefaultVisible;
 
     this.getVisibleElements = getVisibleElements;
-
-    /**
-* @typedef {PlainObject} ElementAndBBox
-* @property {Element} elem - The element
-* @property {module:utilities.BBoxObject} bbox - The element's BBox as retrieved from `getStrokedBBoxDefaultVisible`
-*/
-
-    /**
-* Get all elements that have a BBox (excludes `<defs>`, `<title>`, etc).
-* Note that 0-opacity, off-screen etc elements are still considered "visible"
-* for this function.
-* @function module:svgcanvas.SvgCanvas#getVisibleElementsAndBBoxes
-* @param {Element} parent - The parent DOM element to search within
-* @returns {ElementAndBBox[]} An array with objects that include:
-*/
-    const getVisibleElementsAndBBoxes = this.getVisibleElementsAndBBoxes = function (parent) {
-      if (!parent) {
-        parent = $(svgcontent).children(); // Prevent layers from being included
-      }
-      const contentElems = [];
-      $(parent).children().each(function (i, elem) {
-        if (elem.getBBox) {
-          contentElems.push({elem, bbox: getStrokedBBoxDefaultVisible([elem])});
-        }
-      });
-      return contentElems.reverse();
-    };
 
     /**
 * Wrap an SVG element into a group element, mark the group as 'gsvg'.
@@ -1110,11 +861,7 @@ const getOpacity = function () {
 * @param {Element} elem - SVG element to wrap
 * @returns {void}
 */
-    const groupSvgElem = this.groupSvgElem = function (elem) {
-      const g = document.createElementNS(NS.SVG, 'g');
-      elem.replaceWith(g);
-      $(g).append(elem).data('gsvg', elem)[0].id = getNextId();
-    };
+    this.groupSvgElem = groupSvgElem;
 
     // Set scope for these functions
 
@@ -1261,25 +1008,9 @@ const getOpacity = function () {
 * @param {XMLDocument} newDoc - The SVG DOM document
 * @returns {void}
 */
-    this.prepareSvg = function (newDoc) {
-      this.sanitizeSvg(newDoc.documentElement);
+    this.prepareSvg = prepareSvg;
 
-      // convert paths into absolute commands
-      const paths = [...newDoc.getElementsByTagNameNS(NS.SVG, 'path')];
-      paths.forEach((path) => {
-        path.setAttribute('d', pathActions.convertPath(path));
-        pathActions.fixEnd(path);
-      });
-    };
-
-    // `this.each` is deprecated, if any extension used this it can be recreated by doing this:
-    // * @example $(canvas.getRootElem()).children().each(...)
-    // * @function module:svgcanvas.SvgCanvas#each
-    // this.each = function (cb) {
-    //  $(svgroot).children().each(cb);
-    // };
-
-    /**
+/**
 * Removes any old rotations if present, prepends a new rotation at the
 * transformed center.
 * @function module:svgcanvas.SvgCanvas#setRotationAngle
@@ -1288,52 +1019,7 @@ const getOpacity = function () {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.setRotationAngle = function (val, preventUndo) {
-      // ensure val is the proper type
-      val = Number.parseFloat(val);
-      const elem = selectedElements[0];
-      const oldTransform = elem.getAttribute('transform');
-      const bbox = utilsGetBBox(elem);
-      const cx = bbox.x + bbox.width / 2, cy = bbox.y + bbox.height / 2;
-      const tlist = getTransformList(elem);
-
-      // only remove the real rotational transform if present (i.e. at index=0)
-      if (tlist.numberOfItems > 0) {
-        const xform = tlist.getItem(0);
-        if (xform.type === 4) {
-          tlist.removeItem(0);
-        }
-      }
-      // find Rnc and insert it
-      if (val !== 0) {
-        const center = transformPoint(cx, cy, transformListToTransform(tlist).matrix);
-        const Rnc = svgroot.createSVGTransform();
-        Rnc.setRotate(val, center.x, center.y);
-        if (tlist.numberOfItems) {
-          tlist.insertItemBefore(Rnc, 0);
-        } else {
-          tlist.appendItem(Rnc);
-        }
-      } else if (tlist.numberOfItems === 0) {
-        elem.removeAttribute('transform');
-      }
-
-      if (!preventUndo) {
-        // we need to undo it, then redo it so it can be undo-able! :)
-        // TODO: figure out how to make changes to transform list undo-able cross-browser?
-        const newTransform = elem.getAttribute('transform');
-        elem.setAttribute('transform', oldTransform);
-        changeSelectedAttribute('transform', newTransform, selectedElements);
-        call('changed', selectedElements);
-      }
-      // const pointGripContainer = getElem('pathpointgrip_container');
-      // if (elem.nodeName === 'path' && pointGripContainer) {
-      //   pathActions.setPointContainerTransform(elem.getAttribute('transform'));
-      // }
-      const selector = selectorManager.requestSelector(selectedElements[0]);
-      selector.resize();
-      Selector.updateGripCursors(val);
-    };
+    this.setRotationAngle = setRotationAngle;
 
     /**
 * Runs `recalculateDimensions` on the selected elements,
@@ -1342,25 +1028,7 @@ const getOpacity = function () {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    this.recalculateAllSelectedDimensions = function () {
-      const text = (currentResizeMode === 'none' ? 'position' : 'size');
-      const batchCmd = new BatchCommand(text);
-
-      let i = selectedElements.length;
-      while (i--) {
-        const elem = selectedElements[i];
-        // if (getRotationAngle(elem) && !hasMatrixTransform(getTransformList(elem))) { continue; }
-        const cmd = recalculateDimensions(elem);
-        if (cmd) {
-          batchCmd.addSubCommand(cmd);
-        }
-      }
-
-      if (!batchCmd.isEmpty()) {
-        addCommandToHistory(batchCmd);
-        call('changed', selectedElements);
-      }
-    };
+    this.recalculateAllSelectedDimensions = recalculateAllSelectedDimensions;
 
     /**
  * Debug tool to easily see the current matrix in the browser's console.
@@ -2079,7 +1747,7 @@ const getOpacity = function () {
 * @function module:svgcanvas.SvgCanvas#getDocumentTitle
 * @returns {string|void} The current document title or an empty string if not found
 */
-    const getDocumentTitle = this.getDocumentTitle = function () {
+    this.getDocumentTitle = function () {
       return canvas.getTitle(svgcontent);
     };
 
@@ -2277,7 +1945,7 @@ const getOpacity = function () {
 * @param {"fill"|"stroke"} type - String indicating "fill" or "stroke" to apply to an element
 * @returns {void}
 */
-    const setGradient = this.setGradient = setGradientMethod;
+    this.setGradient = setGradientMethod;
 
     /**
 * Set a color/gradient to a fill/stroke.
