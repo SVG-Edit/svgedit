@@ -43,6 +43,9 @@ import {
   changeSelectedAttributeMethod, ffClone
 } from './undo.js';
 import {
+  init as selectionInit, clearSelectionMethod, addToSelectionMethod, getMouseTargetMethod
+} from './selection.js';
+import {
   init as textActionsInit, textActionsMethod
 } from './text-actions.js';
 import {
@@ -571,7 +574,20 @@ class SvgCanvas {
     const addCommandToHistory = function (cmd) {
       canvas.undoMgr.addCommandToHistory(cmd);
     };
-
+    selectionInit(
+      /**
+  * @implements {module:selection.selectionContext}
+  */
+      {
+        getCanvas () { return canvas; },
+        getCurrentGroup () { return currentGroup; },
+        getSelectedElements,
+        setSelectedElements,
+        getSVGRoot,
+        getSVGContent,
+        getDOMContainer () { return container; },
+      }
+    );
 
     /**
 * Clears the selection. The 'selected' handler is then optionally called.
@@ -580,17 +596,7 @@ class SvgCanvas {
 * @type {module:draw.DrawCanvasInit#clearSelection|module:path.EditorContext#clearSelection}
 * @fires module:svgcanvas.SvgCanvas#event:selected
 */
-    const clearSelection = this.clearSelection = function (noCall) {
-      selectedElements.forEach((elem) => {
-        if (isNullish(elem)) {
-          return;
-        }
-        selectorManager.releaseSelector(elem);
-      });
-      selectedElements = [];
-
-      if (!noCall) { call('selected', selectedElements); }
-    };
+    const clearSelection = this.clearSelection = clearSelectionMethod;
 
     /**
 * Adds a list of elements to the selection. The 'selected' handler is then called.
@@ -598,137 +604,20 @@ class SvgCanvas {
 * @type {module:path.EditorContext#addToSelection}
 * @fires module:svgcanvas.SvgCanvas#event:selected
 */
-    const addToSelection = this.addToSelection = function (elemsToAdd, showGrips) {
-      if (!elemsToAdd.length) { return; }
-      // find the first null in our selectedElements array
+    const addToSelection = this.addToSelection = addToSelectionMethod;
 
-      let j = 0;
-      while (j < selectedElements.length) {
-        if (isNullish(selectedElements[j])) {
-          break;
-        }
-        ++j;
-      }
-
-      // now add each element consecutively
-      let i = elemsToAdd.length;
-      while (i--) {
-        let elem = elemsToAdd[i];
-        if (!elem) { continue; }
-        const bbox = utilsGetBBox(elem);
-        if (!bbox) { continue; }
-
-        if (elem.tagName === 'a' && elem.childNodes.length === 1) {
-          // Make "a" element's child be the selected element
-          elem = elem.firstChild;
-        }
-
-        // if it's not already there, add it
-        if (!selectedElements.includes(elem)) {
-          selectedElements[j] = elem;
-
-          // only the first selectedBBoxes element is ever used in the codebase these days
-          // if (j === 0) selectedBBoxes[0] = utilsGetBBox(elem);
-          j++;
-          const sel = selectorManager.requestSelector(elem, bbox);
-
-          if (selectedElements.length > 1) {
-            sel.showGrips(false);
-          }
-        }
-      }
-      if (!selectedElements.length) {
-        return;
-      }
-      call('selected', selectedElements);
-
-      if (selectedElements.length === 1) {
-        selectorManager.requestSelector(selectedElements[0]).showGrips(showGrips);
-      }
-
-      // make sure the elements are in the correct order
-      // See: https://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
-
-      selectedElements.sort(function (a, b) {
-        if (a && b && a.compareDocumentPosition) {
-          return 3 - (b.compareDocumentPosition(a) & 6); // eslint-disable-line no-bitwise
-        }
-        if (isNullish(a)) {
-          return 1;
-        }
-        return 0;
-      });
-
-      // Make sure first elements are not null
-      while (isNullish(selectedElements[0])) {
-        selectedElements.shift(0);
-      }
-    };
-
-    /**
+/**
 * @type {module:path.EditorContext#getOpacity}
 */
-    const getOpacity = function () {
-      return curShape.opacity;
-    };
+const getOpacity = function () {
+  return curShape.opacity;
+};    
 
-    /**
+/**
 * @name module:svgcanvas.SvgCanvas#getMouseTarget
 * @type {module:path.EditorContext#getMouseTarget}
 */
-    const getMouseTarget = this.getMouseTarget = function (evt) {
-      if (isNullish(evt)) {
-        return null;
-      }
-      let mouseTarget = evt.target;
-
-      // if it was a <use>, Opera and WebKit return the SVGElementInstance
-      if (mouseTarget.correspondingUseElement) { mouseTarget = mouseTarget.correspondingUseElement; }
-
-      // for foreign content, go up until we find the foreignObject
-      // WebKit browsers set the mouse target to the svgcanvas div
-      if ([NS.MATH, NS.HTML].includes(mouseTarget.namespaceURI) &&
-    mouseTarget.id !== 'svgcanvas'
-      ) {
-        while (mouseTarget.nodeName !== 'foreignObject') {
-          mouseTarget = mouseTarget.parentNode;
-          if (!mouseTarget) { return svgroot; }
-        }
-      }
-
-      // Get the desired mouseTarget with jQuery selector-fu
-      // If it's root-like, select the root
-      const currentLayer = getCurrentDrawing().getCurrentLayer();
-      if ([svgroot, container, svgcontent, currentLayer].includes(mouseTarget)) {
-        return svgroot;
-      }
-
-      const $target = $(mouseTarget);
-
-      // If it's a selection grip, return the grip parent
-      if ($target.closest('#selectorParentGroup').length) {
-        // While we could instead have just returned mouseTarget,
-        // this makes it easier to indentify as being a selector grip
-        return selectorManager.selectorParentGroup;
-      }
-
-      while (mouseTarget.parentNode !== (currentGroup || currentLayer)) {
-        mouseTarget = mouseTarget.parentNode;
-      }
-
-      //
-      // // go up until we hit a child of a layer
-      // while (mouseTarget.parentNode.parentNode.tagName == 'g') {
-      //   mouseTarget = mouseTarget.parentNode;
-      // }
-      // Webkit bubbles the mouse event all the way up to the div, so we
-      // set the mouseTarget to the svgroot like the other browsers
-      // if (mouseTarget.nodeName.toLowerCase() == 'div') {
-      //   mouseTarget = svgroot;
-      // }
-
-      return mouseTarget;
-    };
+    const getMouseTarget = this.getMouseTarget = getMouseTargetMethod;
 
     /**
 * @namespace {module:path.pathActions} pathActions
@@ -1453,7 +1342,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {void}
 */
-    const recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function () {
+    this.recalculateAllSelectedDimensions = function () {
       const text = (currentResizeMode === 'none' ? 'position' : 'size');
       const batchCmd = new BatchCommand(text);
 
@@ -1876,7 +1765,7 @@ class SvgCanvas {
 * @returns {Integer} The number of elements that were removed
 */
     this.removeUnusedDefElems = removeUnusedDefElemsMethod;
-    
+
 /**
 * Main function to set up the SVG content for output.
 * @function module:svgcanvas.SvgCanvas#svgCanvasToString
