@@ -48,7 +48,7 @@ export class ToolButton extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'closed'});
+    this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     // locate the component
     this.$div = this._shadowRoot.querySelector('div');
@@ -195,4 +195,4 @@ export class ToolButton extends HTMLElement {
 }
 
 // Register
-customElements.define('tool-button', ToolButton);
+customElements.define('se-button', ToolButton);

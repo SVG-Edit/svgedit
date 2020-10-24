@@ -46,7 +46,7 @@ import {
   setStrings
 } from './locale.js';
 
-const {$q, $id} = Utils;
+const {$q, $qq, $id} = Utils;
 
 const editor = {};
 
@@ -880,44 +880,6 @@ editor.init = () => {
   }());
 
   /**
-  * @param {external:jQuery} elems
-  * @param {Float} scale
-  * @returns {void}
-  */
-  const scaleElements = function (elems, scale) {
-    // const prefix = '-' + uaPrefix.toLowerCase() + '-'; // Currently unused
-    const sides = ['top', 'left', 'bottom', 'right'];
-
-    elems.each(function () {
-      // Handled in CSS
-      // this.style[uaPrefix + 'Transform'] = 'scale(' + scale + ')';
-      const el = $(this);
-      const w = el.outerWidth() * (scale - 1);
-      const h = el.outerHeight() * (scale - 1);
-      // const margins = {}; // Currently unused
-
-      for (let i = 0; i < 4; i++) {
-        const s = sides[i];
-        let cur = el.data('orig_margin-' + s);
-        if (Utils.isNullish(cur)) {
-          cur = Number.parseInt(el.css('margin-' + s));
-          // Cache the original margin
-          el.data('orig_margin-' + s, cur);
-        }
-        let val = cur * scale;
-        if (s === 'right') {
-          val += w;
-        } else if (s === 'bottom') {
-          val += h;
-        }
-
-        el.css('margin-' + s, val);
-        // el.css('outline', '1px solid red');
-      }
-    });
-  };
-
-  /**
   * Called internally.
   * @function module:SVGEditor.setIconSize
   * @param {module:SVGEditor.IconSize} size
@@ -953,7 +915,6 @@ editor.init = () => {
 
     const hiddenPs = elems.parents(':hidden');
     hiddenPs.css('visibility', 'hidden').show();
-    scaleElements(elems, scale);
     hiddenPs.css('visibility', 'visible').hide();
     // return;
 
@@ -1025,10 +986,7 @@ editor.init = () => {
       //   `uiStrings` (localized) values
       fallback: {
         logo: 'logo.png',
-
-        select: 'select.png',
         select_node: 'select_node.png',
-
         square: 'square.png',
         rect: 'rect.png',
         fh_rect: 'freehand-square.png',
@@ -1082,13 +1040,6 @@ editor.init = () => {
         fontsize: 'fontsize.png',
         align: 'align.png',
 
-        align_left: 'align-left.png',
-        align_center: 'align-center.png',
-        align_right: 'align-right.png',
-        align_top: 'align-top.png',
-        align_middle: 'align-middle.png',
-        align_bottom: 'align-bottom.png',
-
         linecap_butt: 'linecap_butt.png',
         linecap_square: 'linecap_square.png',
         linecap_round: 'linecap_round.png',
@@ -1119,8 +1070,6 @@ editor.init = () => {
         '#tool_docprops > div': 'docprops',
         '#tool_editor_prefs > div': 'config',
         '#tool_editor_homepage > div': 'globe_link',
-
-        '#tool_select': 'select',
         '#tool_fhpath': 'pencil',
         '#tool_line': 'pen',
         '#tool_rect,#tools_rect_show': 'rect',
@@ -1129,32 +1078,27 @@ editor.init = () => {
         '#tool_ellipse,#tools_ellipse_show': 'ellipse',
         '#tool_circle': 'circle',
         '#tool_fhellipse': 'fh_ellipse',
-        '#tool_path': 'path',
-        '#tool_text,#layer_rename': 'text',
+        '#layer_rename': 'text',
         '#tool_image': 'image',
         '#tool_zoom': 'zoom',
 
-        '#tool_clone,#tool_clone_multi': 'clone',
         '#tool_node_clone': 'node_clone',
-        '#layer_delete,#tool_delete,#tool_delete_multi': 'delete',
+        '#layer_delete': 'delete',
         '#tool_node_delete': 'node_delete',
         '#tool_add_subpath': 'add_subpath',
         '#tool_openclose_path': 'open_path',
-        '#tool_move_top': 'move_top',
-        '#tool_move_bottom': 'move_bottom',
-        '#tool_topath': 'to_path',
         '#tool_node_link': 'link_controls',
         '#tool_reorient': 'reorient',
         '#tool_group_elements': 'group_elements',
         '#tool_ungroup': 'ungroup',
         '#tool_unlink_use': 'unlink_use',
 
-        '#tool_alignleft, #tool_posleft': 'align_left',
-        '#tool_aligncenter, #tool_poscenter': 'align_center',
-        '#tool_alignright, #tool_posright': 'align_right',
-        '#tool_aligntop, #tool_postop': 'align_top',
-        '#tool_alignmiddle, #tool_posmiddle': 'align_middle',
-        '#tool_alignbottom, #tool_posbottom': 'align_bottom',
+        '#tool_posleft': 'align_left',
+        '#tool_poscenter': 'align_center',
+        '#tool_posright': 'align_right',
+        '#tool_postop': 'align_top',
+        '#tool_posmiddle': 'align_middle',
+        '#tool_posbottom': 'align_bottom',
         '#cur_position': 'align',
 
         '#linecap_butt,#cur_linecap': 'linecap_butt',
@@ -1179,7 +1123,7 @@ editor.init = () => {
         '#rheightLabel, #iheightLabel': 'height',
         '#cornerRadiusLabel span': 'c_radius',
         '#angleLabel': 'angle',
-        '#linkLabel,#tool_make_link,#tool_make_link_multi': 'globe_link',
+        '#linkLabel,#tool_make_link_multi': 'globe_link',
         '#zoomLabel': 'zoom',
         '#tool_fill label': 'fill',
         '#tool_stroke .icon_label': 'stroke',
@@ -1298,29 +1242,6 @@ editor.init = () => {
       } catch (e) {}
     }
   }());
-
-  /**
-  *
-  * @returns {void}
-  */
-  const setSelectMode = function () {
-    const curr = $('.tool_button_current');
-    if (curr.length && curr[0].id !== 'tool_select') {
-      curr.removeClass('tool_button_current').addClass('tool_button');
-      $('#tool_select').addClass('tool_button_current').removeClass('tool_button');
-      $('#styleoverrides').text(`
-        #svgcanvas svg * {
-          cursor: move;
-          pointer-events: all;
-        }
-        #svgcanvas svg {
-          cursor: default;
-        }
-      `);
-    }
-    svgCanvas.setMode('select');
-    workarea.css('cursor', 'auto');
-  };
 
   // used to make the flyouts stay on the screen longer the very first time
   // const flyoutspeed = 1250; // Currently unused
@@ -1445,20 +1366,20 @@ editor.init = () => {
   * @returns {void}
   */
   const togglePathEditMode = function (editmode, elems) {
-    $('#path_node_panel').toggle(editmode);
-    $('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
+    // $('#path_node_panel').toggle(editmode);
+    // $('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
     if (editmode) {
       // Change select icon
       $('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
       $('#tool_select').addClass('tool_button_current').removeClass('tool_button');
-      setIcon('#tool_select', 'select_node');
+      // setIcon('#tool_select', 'select_node');
       multiselected = false;
       if (elems.length) {
         selectedElement = elems[0];
       }
     } else {
       setTimeout(() => {
-        setIcon('#tool_select', 'select');
+        // setIcon('#tool_select', 'select');
       }, 1000);
     }
   };
@@ -1608,6 +1529,24 @@ editor.init = () => {
     $(button).addClass('tool_button_current').removeClass('tool_button');
     return true;
   };
+  /**
+  * This is a common function used when a tool has been clicked (chosen).
+  * It does several common things:
+  * - Removes the `tool_button_current` class from whatever tool currently has it.
+  * - Hides any flyouts.
+  * - Adds the `tool_button_current` class to the button passed in.
+  * @function leftPanelClick
+  * @param {string|Element} button The DOM element or string selector representing the toolbar button
+  * @returns {boolean} Whether the button was disabled or not
+  */
+  const leftPanelClick = (button) => {
+    if (button.disabled) return false;
+    // remove the pressed state on other(s) button(s)
+    $qq('.tools_panel se-button[pressed]').forEach((b) => { b.pressed = false; });
+    // pressed state for the clicked button
+    $id(button).pressed = true;
+    return true;
+  };
 
   /**
   * Unless the select toolbar button is disabled, sets the button
@@ -1615,18 +1554,10 @@ editor.init = () => {
   * @function module:SVGEditor.clickSelect
   * @returns {void}
   */
-  const clickSelect = editor.clickSelect = function () {
-    if (toolButtonClick('#tool_select')) {
+  const clickSelect = () => {
+    if (leftPanelClick('tool_select')) {
+      workarea.css('cursor', 'auto');
       svgCanvas.setMode('select');
-      $('#styleoverrides').text(`
-        #svgcanvas svg * {
-          cursor: move;
-          pointer-events: all;
-        }
-        #svgcanvas svg {
-          cursor: default;
-        }
-      `);
     }
   };
 
@@ -2203,7 +2134,7 @@ editor.init = () => {
       }
 
       // Hide/show the make_link buttons
-      $('#tool_make_link, #tool_make_link').toggle(!linkHref);
+      $('#tool_make_link, #tool_make_link_multi').toggle(!linkHref);
 
       if (linkHref) {
         $('#link_url').val(linkHref);
@@ -2334,7 +2265,7 @@ editor.init = () => {
   const selectedChanged = function (win, elems) {
     const mode = svgCanvas.getMode();
     if (mode === 'select') {
-      setSelectMode();
+      clickSelect();
     }
     const isNode = mode === 'pathedit';
     // if elems[1] is present, then we have more than one element
@@ -2420,7 +2351,7 @@ editor.init = () => {
   const elementChanged = function (win, elems) {
     const mode = svgCanvas.getMode();
     if (mode === 'select') {
-      setSelectMode();
+      clickSelect();
     }
 
     elems.forEach((elem) => {
@@ -2513,7 +2444,7 @@ editor.init = () => {
 
     if (svgCanvas.getMode() === 'zoom' && bb.width) {
       // Go to select if a zoom box was drawn
-      setSelectMode();
+      clickSelect();
     }
 
     zoomDone();
@@ -3179,8 +3110,6 @@ editor.init = () => {
             key: btn.key,
             isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
           }, refData];
-
-          // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 
           const pos = ('position' in opts) ? opts.position : 'last';
           const len = flyoutHolder.children().length;
@@ -3881,7 +3810,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickFHPath = function () {
-    if (toolButtonClick('#tool_fhpath')) {
+    if (leftPanelClick('tool_fhpath')) {
       svgCanvas.setMode('fhpath');
     }
   };
@@ -3961,7 +3890,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickImage = function () {
-    if (toolButtonClick('#tool_image')) {
+    if (leftPanelClick('tool_image')) {
       svgCanvas.setMode('image');
     }
   };
@@ -3971,7 +3900,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickZoom = function () {
-    if (toolButtonClick('#tool_zoom')) {
+    if (leftPanelClick('tool_zoom')) {
       svgCanvas.setMode('zoom');
       workarea.css('cursor', zoomInIcon);
     }
@@ -3998,7 +3927,7 @@ editor.init = () => {
   const dblclickZoom = function () {
     if (toolButtonClick('#tool_zoom')) {
       zoomImage();
-      setSelectMode();
+      clickSelect();
     }
   };
 
@@ -4007,7 +3936,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickText = function () {
-    if (toolButtonClick('#tool_text')) {
+    if (leftPanelClick('tool_text')) {
       svgCanvas.setMode('text');
     }
   };
@@ -4017,7 +3946,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickPath = function () {
-    if (toolButtonClick('#tool_path')) {
+    if (leftPanelClick('tool_path')) {
       svgCanvas.setMode('path');
     }
   };
@@ -4232,7 +4161,7 @@ editor.init = () => {
     if (!ok) {
       return;
     }
-    setSelectMode();
+    clickSelect();
     svgCanvas.clear();
     svgCanvas.setResolution(x, y);
     updateCanvas(true);
@@ -4418,9 +4347,8 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickAlign = function () {
-    const letter = this.id.replace('tool_align', '').charAt(0);
-    svgCanvas.alignSelectedElements(letter, $('#align_relative_to').val());
+  const clickAlign = (pos) => {
+    svgCanvas.alignSelectedElements(pos, $('#align_relative_to').val());
   };
 
   /**
@@ -4546,7 +4474,7 @@ editor.init = () => {
       return;
     }
     saveChanges();
-    setSelectMode();
+    clickSelect();
   };
 
   /**
@@ -5018,11 +4946,6 @@ editor.init = () => {
     $(window).mouseup();
   });
 
-  $('#tool_move_top').mousedown(function (evt) {
-    $('#tools_stacking').show();
-    evt.preventDefault();
-  });
-
   $('.layer_button').mousedown(function () {
     $(this).addClass('layer_buttonpressed');
   }).mouseout(function () {
@@ -5340,15 +5263,39 @@ editor.init = () => {
      * @name module:SVGEditor~ToolButtons
      * @type {module:SVGEditor.ToolButton[]}
      */
-    // register action to buttons
+    // register action to top panel buttons
     $id('tool_source').addEventListener('click', showSourceEditor);
     $id('tool_wireframe').addEventListener('click', clickWireframe);
     $id('tool_undo').addEventListener('click', clickUndo);
     $id('tool_redo').addEventListener('click', clickRedo);
+    $id('tool_clone').addEventListener('click', clickClone);
+    $id('tool_clone_multi').addEventListener('click', clickClone);
+    $id('tool_delete').addEventListener('click', deleteSelected);
+    $id('tool_delete_multi').addEventListener('click', deleteSelected);
+    $id('tool_move_top').addEventListener('click', moveToTopSelected);
+    $id('tool_move_bottom').addEventListener('click', moveToBottomSelected);
+    $id('tool_topath').addEventListener('click', convertToPath);
+    $id('tool_make_link').addEventListener('click', makeHyperlink);
+    $id('tool_make_link_multi').addEventListener('click', makeHyperlink);
+    $id('tool_reorient').addEventListener('click', reorientPath);
+    $id('tool_group_elements').addEventListener('click', clickGroup);
+    $id('tool_align_left').addEventListener('click', () => clickAlign('left'));
+    $id('tool_align_right').addEventListener('click', () => clickAlign('right'));
+    $id('tool_align_center').addEventListener('click', () => clickAlign('center'));
+    $id('tool_align_top').addEventListener('click', () => clickAlign('top'));
+    $id('tool_align_bottom').addEventListener('click', () => clickAlign('bottom'));
+    $id('tool_align_middle').addEventListener('click', () => clickAlign('middle'));
+
+    // left panel
+    $id('tool_select').addEventListener('click', clickSelect);
+    $id('tool_fhpath').addEventListener('click', clickFHPath);
+    $id('tool_text').addEventListener('click', clickText);
+    $id('tool_image').addEventListener('click', clickImage);
+    $id('tool_zoom').addEventListener('click', clickZoom);
+    $id('tool_path').addEventListener('click', clickPath);
+    // $id('tool_').addEventListener('click', clickP);
 
     const toolButtons = [
-      {sel: '#tool_select', fn: clickSelect, evt: 'click', key: ['V', true]},
-      {sel: '#tool_fhpath', fn: clickFHPath, evt: 'click', key: ['Q', true]},
       {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true],
         parent: '#tools_line', prepend: true},
       {sel: '#tool_rect', fn: clickRect, evt: 'mouseup',
@@ -5363,10 +5310,6 @@ editor.init = () => {
         parent: '#tools_ellipse', icon: 'circle'},
       {sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup',
         parent: '#tools_ellipse', icon: 'fh_ellipse'},
-      {sel: '#tool_path', fn: clickPath, evt: 'click', key: ['P', true]},
-      {sel: '#tool_text', fn: clickText, evt: 'click', key: ['T', true]},
-      {sel: '#tool_image', fn: clickImage, evt: 'mouseup'},
-      {sel: '#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
       {sel: '#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
       {sel: '#tool_save', fn () {
         if (editingsource) {
@@ -5399,23 +5342,13 @@ editor.init = () => {
       {sel: '#tool_editor_homepage', fn: openHomePage, evt: 'click'},
       {sel: '#tool_open', fn () { window.dispatchEvent(new CustomEvent('openImage')); }, evt: 'click'},
       {sel: '#tool_import', fn () { window.dispatchEvent(new CustomEvent('importImage')); }, evt: 'click'},
-      {sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected,
-        evt: 'click', key: ['del/backspace', true]},
-      {sel: '#tool_reorient', fn: reorientPath, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_node_clone', fn: clonePathNode, evt: 'click'},
       {sel: '#tool_node_delete', fn: deletePathNode, evt: 'click'},
       {sel: '#tool_openclose_path', fn: opencloseSubPath, evt: 'click'},
       {sel: '#tool_add_subpath', fn: addSubPath, evt: 'click'},
-      {sel: '#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'ctrl+shift+]'},
-      {sel: '#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+['},
-      {sel: '#tool_topath', fn: convertToPath, evt: 'click'},
-      {sel: '#tool_make_link,#tool_make_link_multi', fn: makeHyperlink, evt: 'click'},
-      {sel: '#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['D', true]},
-      {sel: '#tool_group_elements', fn: clickGroup, evt: 'click', key: ['G', true]},
       {sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
       {sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
-      {sel: '[id^=tool_align]', fn: clickAlign, evt: 'click'},
       {sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
       {sel: '#tool_italic', fn: clickItalic, evt: 'mousedown'},
       {sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
