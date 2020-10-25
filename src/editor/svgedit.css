@@ -243,34 +243,9 @@ select {
   border-left: 1px solid #808080;
   border-top: 1px solid #808080;
   overflow: hidden;
-}
-
-.layer_button {
-  width: 14px;
-  height: 14px;
-  padding: 1px;
-  border-left: 1px solid #FFFFFF;
-  border-top: 1px solid #FFFFFF;
-  border-right: 1px solid #808080;
-  border-bottom: 1px solid #808080;
-  cursor: pointer;
-  float: left;
-  margin-right: 3px;
-}
-
-.layer_button:last-child {
-  margin-right: 0;
-}
-
-.layer_buttonpressed {
-  width: 14px;
-  height: 14px;
-  padding: 1px;
-  border-right: 1px solid #FFFFFF;
-  border-bottom: 1px solid #FFFFFF;
-  border-left: 1px solid #808080;
-  border-top: 1px solid #808080;
-  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
 }
 
 #layerlist {

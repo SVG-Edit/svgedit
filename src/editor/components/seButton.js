@@ -19,11 +19,17 @@ template.innerHTML = `
     cursor: pointer;
     border-radius: 3px;
   }
+  .small {
+    width: 14px;
+    height: 14px;
+    padding: 1px;
+    border-radius: 1px;
+  }
   img {
     border: none;
-    width: 24px;
-    height: 24px;
     overflow: none;
+    width: 100%;
+    height: 100%;
   }
   .pressed {
     background-color: #F4E284 !important;
@@ -35,7 +41,7 @@ template.innerHTML = `
   }
   </style>
   <div title="title">
-    <img class="svg_icon" src="./images/logo.svg" alt="icon">
+    <img src="./images/logo.svg" alt="icon">
   </div>
 `;
 /**
@@ -59,7 +65,7 @@ export class ToolButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'pressed', 'disabled'];
+    return ['title', 'src', 'pressed', 'disabled', 'size'];
   }
   /**
    * @function attributeChangedCallback
@@ -74,7 +80,7 @@ export class ToolButton extends HTMLElement {
     case 'title':
       {
         const shortcut = this.getAttribute('shortcut');
-        this.$div.setAttribute('title', `${newValue} [${shortcut}]`);
+        this.$div.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
       }
       break;
     case 'src':
@@ -85,6 +91,13 @@ export class ToolButton extends HTMLElement {
         this.$div.classList.add('pressed');
       } else {
         this.$div.classList.remove('pressed');
+      }
+      break;
+    case 'size':
+      if (newValue === 'small') {
+        this.$div.classList.add('small');
+      } else {
+        this.$div.classList.remove('small');
       }
       break;
     case 'disabled':
@@ -169,6 +182,22 @@ export class ToolButton extends HTMLElement {
    */
   set src (value) {
     this.setAttribute('src', value);
+  }
+
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get size () {
+    return this.getAttribute('size');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set size (value) {
+    this.setAttribute('size', value);
   }
 
   /**

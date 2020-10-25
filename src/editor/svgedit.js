@@ -1062,7 +1062,7 @@ editor.init = () => {
       placement: {
         '#logo': 'logo',
 
-        '#tool_clear div,#layer_new': 'new_image',
+        '#tool_clear div': 'new_image',
         '#tool_save div': 'save',
         '#tool_export div': 'export',
         '#tool_open div': 'open',
@@ -1078,12 +1078,10 @@ editor.init = () => {
         '#tool_ellipse,#tools_ellipse_show': 'ellipse',
         '#tool_circle': 'circle',
         '#tool_fhellipse': 'fh_ellipse',
-        '#layer_rename': 'text',
         '#tool_image': 'image',
         '#tool_zoom': 'zoom',
 
         '#tool_node_clone': 'node_clone',
-        '#layer_delete': 'delete',
         '#tool_node_delete': 'node_delete',
         '#tool_add_subpath': 'add_subpath',
         '#tool_openclose_path': 'open_path',
@@ -1110,10 +1108,6 @@ editor.init = () => {
         '#linejoin_bevel': 'linejoin_bevel',
 
         '#url_notice': 'warning',
-
-        '#layer_up': 'go_up',
-        '#layer_down': 'go_down',
-        '#layer_moreopts': 'context_menu',
         '#layerlist td.layervis': 'eye',
 
         '#tool_source_save,#tool_docprops_save,#tool_prefs_save': 'ok',
@@ -1138,7 +1132,7 @@ editor.init = () => {
       resize: {
         '#logo .svg_icon': 28,
         '.flyout_arrow_horiz .svg_icon': 5,
-        '.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
+        '.svg_icon, #layerlist td.layervis .svg_icon': 14,
         '.dropdown button .svg_icon': 7,
         '#main_button .dropdown .svg_icon': 9,
         '.palette_item:first .svg_icon': 15,
@@ -4928,14 +4922,6 @@ editor.init = () => {
     $(window).mouseup();
   });
 
-  $('.layer_button').mousedown(function () {
-    $(this).addClass('layer_buttonpressed');
-  }).mouseout(function () {
-    $(this).removeClass('layer_buttonpressed');
-  }).mouseup(function () {
-    $(this).removeClass('layer_buttonpressed');
-  });
-
   $('.push_button').mousedown(function () {
     if (!$(this).hasClass('disabled')) {
       $(this).addClass('push_button_pressed').removeClass('push_button');
@@ -4947,7 +4933,7 @@ editor.init = () => {
   });
 
   // ask for a layer name
-  $('#layer_new').click(async function () {
+  const newLayer = async () => {
     let uniqName,
       i = svgCanvas.getCurrentDrawing().getNumLayers();
     do {
@@ -4963,7 +4949,7 @@ editor.init = () => {
     svgCanvas.createLayer(newName);
     updateContextPanel();
     populateLayers();
-  });
+  };
 
   /**
    *
@@ -5016,7 +5002,7 @@ editor.init = () => {
    * @param {Integer} pos
    * @returns {void}
    */
-  function moveLayer (pos) {
+  const moveLayer = (pos) => {
     const total = svgCanvas.getCurrentDrawing().getNumLayers();
 
     let curIndex = $('#layerlist tr.layersel').index();
@@ -5025,19 +5011,9 @@ editor.init = () => {
       svgCanvas.setCurrentLayerPosition(total - curIndex - 1);
       populateLayers();
     }
-  }
+  };
 
-  $('#layer_delete').click(deleteLayer);
-
-  $('#layer_up').click(() => {
-    moveLayer(-1);
-  });
-
-  $('#layer_down').click(() => {
-    moveLayer(1);
-  });
-
-  $('#layer_rename').click(async function () {
+  const layerRename = async () => {
     // const curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
     const oldName = $('#layerlist tr.layersel td.layername').text();
     const newName = await $.prompt(uiStrings.notification.enterNewLayerName, '');
@@ -5049,7 +5025,7 @@ editor.init = () => {
 
     svgCanvas.renameCurrentLayer(newName);
     populateLayers();
-  });
+  };
 
   const SIDEPANEL_MAXWIDTH = 300;
   const SIDEPANEL_OPENWIDTH = 150;
@@ -5268,7 +5244,7 @@ editor.init = () => {
     $id('tool_align_bottom').addEventListener('click', () => clickAlign('bottom'));
     $id('tool_align_middle').addEventListener('click', () => clickAlign('middle'));
 
-    // left panel
+    // register actions for left panel
     $id('tool_select').addEventListener('click', clickSelect);
     $id('tool_fhpath').addEventListener('click', clickFHPath);
     $id('tool_text').addEventListener('click', clickText);
@@ -5276,6 +5252,13 @@ editor.init = () => {
     $id('tool_zoom').addEventListener('click', clickZoom);
     $id('tool_path').addEventListener('click', clickPath);
     // $id('tool_').addEventListener('click', clickP);
+
+    // register actions for layer toolbar
+    $id('layer_new').addEventListener('click', newLayer);
+    $id('layer_delete').addEventListener('click', deleteLayer);
+    $id('layer_up').addEventListener('click', () => moveLayer(-1));
+    $id('layer_down').addEventListener('click', () => moveLayer(1));
+    $id('layer_rename').addEventListener('click', layerRename);
 
     const toolButtons = [
       {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true],
