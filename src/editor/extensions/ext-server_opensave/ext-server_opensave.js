@@ -53,7 +53,7 @@ export default {
 
     /**
      *
-     * @param {string} [filename='image']
+     * @param {string} [filename="image"]
      * @param {string} suffix To add to file name
      * @param {string} uri
      * @returns {boolean}
