@@ -30,12 +30,11 @@ export const init = function (jsonContext) {
   svgdoc_ = jsonContext.getDOMDocument();
 };
 /**
-* getJsonFromSvgElements: Iterate element and return json format
-* @function module:json.getJsonFromSvgElements
+* @function module:json.getJsonFromSvgElements Iterate element and return json format
 * @param {ArgumentsArray} data - element
 * @returns {svgRootElement}
 */
-export const getJsonFromSvgElements = function (data) {
+export const getJsonFromSvgElements = (data) => {
   // Text node
   if (data.nodeType === 3) return data.nodeValue;
 
@@ -108,5 +107,4 @@ export const addSVGElementsFromJson = function (data) {
   }
 
   return shape;
-
 };

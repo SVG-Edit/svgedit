@@ -27,7 +27,7 @@ let undoContext_ = null;
 
 /**
 * @function module:undo.init
-* @param {module:undo.undoContext} undoContext_
+* @param {module:undo.undoContext} undoContext
 * @returns {void}
 */
 export const init = function (undoContext) {
@@ -36,12 +36,12 @@ export const init = function (undoContext) {
 
 export const getUndoManager = function () {
   return new UndoManager({
-/**
- * @param {string} eventType One of the HistoryEvent types
- * @param {module:history.HistoryCommand} cmd Fulfills the HistoryCommand interface
- * @fires module:undo.SvgCanvas#event:changed
- * @returns {void}
- */
+    /**
+     * @param {string} eventType One of the HistoryEvent types
+     * @param {module:history.HistoryCommand} cmd Fulfills the HistoryCommand interface
+     * @fires module:undo.SvgCanvas#event:changed
+     * @returns {void}
+     */
     handleHistoryEvent (eventType, cmd) {
       const EventTypes = HistoryEventTypes;
       // TODO: handle setBlurOffsets.
@@ -134,7 +134,6 @@ export const ffClone = function (elem) {
 * @returns {void}
 */
 export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, elems) {
-  console.log('changeSelectedAttributeNoUndoMethod');
   const selectedElements = undoContext_.getSelectedElements();
   const currentZoom = undoContext_.getCurrentZoom();
   if (undoContext_.getCurrentMode() === 'pathedit') {
@@ -217,6 +216,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       // that are not in the selectedElements array, we need to only request a
       // selector if the element is in that array
       if (selectedElements.includes(elem)) {
+        // eslint-disable-next-line no-loop-func
         setTimeout(function () {
           // Due to element replacement, this element may no longer
           // be part of the DOM
@@ -265,7 +265,6 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
 * @returns {void}
 */
 export const changeSelectedAttributeMethod = function (attr, val, elems) {
-  console.log('changeSelectedAttributeMethod');
   const selectedElements = undoContext_.getSelectedElements();
   elems = elems || selectedElements;
   undoContext_.getCanvas().undoMgr.beginUndoableChange(attr, elems);

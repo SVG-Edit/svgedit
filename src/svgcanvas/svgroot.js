@@ -9,8 +9,7 @@ import {NS} from '../common/namespaces.js';
 import {text2xml} from '../common/utilities.js';
 
 /**
-* svgRootElement the svg node and its children.
-* @function module:svgcanvas.svgRootElement
+* @function module:svgcanvas.svgRootElement svgRootElement the svg node and its children.
 * @param {Element} svgdoc - window.document
 * @param {ArgumentsArray} dimensions - dimensions of width and height
 * @returns {svgRootElement}

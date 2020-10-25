@@ -1,6 +1,6 @@
+/* globals jQuery */
 /**
- * get and set methods.
- * @module elem-get-set
+ * @module elem-get-set get and set methods.
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
@@ -15,11 +15,8 @@ import {
 import {
   convertToNum
 } from '../common/units.js';
-import {
-  isWebkit
-} from '../common/browser.js';
 
-let $ = jQueryPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 
 const {
   InsertElementCommand, RemoveElementCommand,
@@ -30,7 +27,7 @@ let elemContext_ = null;
 
 /**
 * @function module:elem-get-set.init
-* @param {module:elem-get-set.elemContext} elemContext_
+* @param {module:elem-get-set.elemContext} elemContext
 * @returns {void}
 */
 export const init = function (elemContext) {
@@ -365,7 +362,8 @@ export const setColorMethod = function (type, val, preventUndo) {
 * @returns {void}
 */
 export const setGradientMethod = function (type) {
-  if (!elemContext_.getCurProperties(type + '_paint') || elemContext_.getCurProperties(type + '_paint').type === 'solidColor') { return; }
+  if (!elemContext_.getCurProperties(type + '_paint') ||
+    elemContext_.getCurProperties(type + '_paint').type === 'solidColor') { return; }
   const canvas = elemContext_.getCanvas();
   let grad = canvas[type + 'Grad'];
   // find out if there is a duplicate gradient already in the defs
@@ -833,7 +831,7 @@ export const setSegTypeMethod = function (newType) {
   elemContext_.getCanvas().pathActions.setSegType(newType);
 };
 
-    /**
+/**
 * Set the background of the editor (NOT the actual document).
 * @function module:svgcanvas.SvgCanvas#setBackground
 * @param {string} color - String with fill color to apply

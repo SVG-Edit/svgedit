@@ -1,10 +1,11 @@
+/* globals jQuery */
 /**
  * Tools for event.
  * @module event
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute 
+import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute
 import {
   assignAttributes, cleanupElement, getElem, getRotationAngle, snapToGrid, walkTree,
   getBBox as utilsGetBBox, isNullish, preventClickDefault, setHref
@@ -29,12 +30,12 @@ const {
   InsertElementCommand
 } = hstry;
 
-let $ = jQueryPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 let eventContext_ = null;
 
 /**
 * @function module:undo.init
-* @param {module:undo.eventContext} eventContext_
+* @param {module:undo.eventContext} eventContext
 * @returns {void}
 */
 export const init = function (eventContext) {
@@ -123,14 +124,6 @@ export const mouseMoveEvent = function (evt) {
         dx = snapToGrid(dx);
         dy = snapToGrid(dy);
       }
-
-/*
-// Commenting out as currently has no effect
-if (evt.shiftKey) {
-  xya = snapToAngle(eventContext_.getStartX(), eventContext_.getStartY(), x, y);
-  ({x, y} = xya);
-}
-*/
 
       if (dx !== 0 || dy !== 0) {
         len = selectedElements.length;
@@ -411,9 +404,12 @@ if (evt.shiftKey) {
         eventContext_.setbSpline(getBsplinePoint(eventContext_.getNextParameter()));
         eventContext_.setNextPos({x: eventContext_.getbSpline('x'), y: eventContext_.getbSpline('y')});
         eventContext_.setbSpline(getBsplinePoint(eventContext_.getParameter()));
-        eventContext_.setSumDistance( eventContext_.getSumDistance() + Math.sqrt((eventContext_.getNextPos('x') - eventContext_.getbSpline('x')) *
-    (eventContext_.getNextPos('x') - eventContext_.getbSpline('x')) + (eventContext_.getNextPos('y') - eventContext_.getbSpline('y')) *
-    (eventContext_.getNextPos('y') - eventContext_.getbSpline('y'))));
+        eventContext_.setSumDistance(
+          eventContext_.getSumDistance() + Math.sqrt((eventContext_.getNextPos('x') -
+          eventContext_.getbSpline('x')) * (eventContext_.getNextPos('x') -
+          eventContext_.getbSpline('x')) + (eventContext_.getNextPos('y') -
+          eventContext_.getbSpline('y')) * (eventContext_.getNextPos('y') - eventContext_.getbSpline('y')))
+        );
         if (eventContext_.getSumDistance() > eventContext_.getThreSholdDist()) {
           eventContext_.setSumDistance(eventContext_.getSumDistance() - eventContext_.getThreSholdDist());
 
@@ -775,7 +771,7 @@ export const mouseUpEvent = function (evt) {
   } default:
     // This could occur in an extension
     break;
-}
+  }
 
   /**
 * The main (left) mouse button is released (anywhere).
@@ -785,7 +781,7 @@ export const mouseUpEvent = function (evt) {
 * @property {Float} mouse_x x coordinate on canvas
 * @property {Float} mouse_y y coordinate on canvas
 */
-  const extResult = eventContext_.getCanvas().runExtensions('mouseUp', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseUp} */ {
+  const extResult = eventContext_.getCanvas().runExtensions('mouseUp', {
     event: evt,
     mouse_x: mouseX,
     mouse_y: mouseY
@@ -1125,7 +1121,7 @@ export const mouseDownEvent = function (evt) {
   case 'fhellipse':
   case 'fhrect':
   case 'fhpath':
-    eventContext_.setStart({x: realX, y: realY });
+    eventContext_.setStart({x: realX, y: realY});
     eventContext_.setControllPoint1('x', 0);
     eventContext_.setControllPoint1('y', 0);
     eventContext_.setControllPoint2('x', 0);
@@ -1295,7 +1291,7 @@ export const mouseDownEvent = function (evt) {
 * @property {Float} start_y y coordinate on canvas
 * @property {Element[]} selectedElements An array of the selected Elements
 */
-  const extResult = eventContext_.getCanvas().runExtensions('mouseDown', /** @type {module:svgcanvas.SvgCanvas#event:ext_mouseDown} */ {
+  const extResult = eventContext_.getCanvas().runExtensions('mouseDown', {
     event: evt,
     start_x: eventContext_.getStartX(),
     start_y: eventContext_.getStartY(),

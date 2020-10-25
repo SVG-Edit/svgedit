@@ -14,7 +14,7 @@ let blurContext_ = null;
 
 /**
 * @function module:blur.init
-* @param {module:blur.blurContext} blurContext_
+* @param {module:blur.blurContext} blurContext
 * @returns {void}
 */
 export const init = function (blurContext) {

@@ -1,6 +1,6 @@
+/* globals jQuery */
 /**
- * Tools for Text edit functions
- * @module text-actions
+ * @module text-actions Tools for Text edit functions
  * @license MIT
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller

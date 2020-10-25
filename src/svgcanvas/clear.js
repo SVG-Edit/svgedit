@@ -1,3 +1,4 @@
+/* globals jQuery */
 /**
  * Tools for clear.
  * @module clear
@@ -7,7 +8,7 @@
 import jQueryPluginSVG from '../common/jQuery.attr.js';
 import {NS} from '../common/namespaces.js';
 
-let $ = jQueryPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 
 let clearContext_ = null;
 

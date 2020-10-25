@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/check-examples */
 /**
  * @file SVG Icon Loader 2.0
  *
