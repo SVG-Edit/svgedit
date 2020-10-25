@@ -244,9 +244,9 @@ export default function jQueryPluginJGraduate ($) {
   * @typedef {PlainObject} module:jGraduate.Options
   * @property {module:jGraduate~Paint} [paint] A Paint object object describing the paint to display initially; defaults to a new instance without options (defaults to opaque white)
   * @property {external:Window} [window]
-  * @property {string} [window.pickerTitle='Drag markers to pick a paint']
+  * @property {string} [window.pickerTitle="Drag markers to pick a paint"]
   * @property {PlainObject} [images]
-  * @property {string} [images.clientPath='images/']
+  * @property {string} [images.clientPath="images/"]
   * @property {"same"|"inverse"|"black"|"white"|module:jGraduate.ColorOpac} [newstop="inverse"]
   */
 
