@@ -2689,11 +2689,7 @@ class SvgCanvas {
           end = {x: 0, y: 0};
           const coords = element.getAttribute('points');
           const commaIndex = coords.indexOf(',');
-          if (commaIndex >= 0) {
-            keep = coords.includes(',', commaIndex + 1);
-          } else {
-            keep = coords.includes(' ', coords.indexOf(' ') + 1);
-          }
+          keep = commaIndex >= 0 ? coords.includes(',', commaIndex + 1) : coords.includes(' ', coords.indexOf(' ') + 1);
           if (keep) {
             element = pathActions.smoothPolylineIntoPath(element);
           }
@@ -4495,11 +4491,9 @@ function hideCursor () {
 
         // set new svg document
         // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-        if (svgdoc.adoptNode) {
-          svgcontent = svgdoc.adoptNode(newDoc.documentElement);
-        } else {
-          svgcontent = svgdoc.importNode(newDoc.documentElement, true);
-        }
+        svgcontent = svgdoc.adoptNode
+          ? svgdoc.adoptNode(newDoc.documentElement)
+          : svgdoc.importNode(newDoc.documentElement, true);
 
         svgroot.append(svgcontent);
         const content = $(svgcontent);
@@ -4681,13 +4675,9 @@ function hideCursor () {
           this.prepareSvg(newDoc);
 
           // import new svg document into our document
-          let svg;
           // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-          if (svgdoc.adoptNode) {
-            svg = svgdoc.adoptNode(newDoc.documentElement);
-          } else {
-            svg = svgdoc.importNode(newDoc.documentElement, true);
-          }
+          const svg =
+            svgdoc.adoptNode ? svgdoc.adoptNode(newDoc.documentElement) : svgdoc.importNode(newDoc.documentElement, true);
 
           uniquifyElems(svg);
 
@@ -4705,11 +4695,7 @@ function hideCursor () {
             canvash = Number(svgcontent.getAttribute('height'));
           // imported content should be 1/3 of the canvas on its largest dimension
 
-          if (innerh > innerw) {
-            ts = 'scale(' + (canvash / 3) / vb[3] + ')';
-          } else {
-            ts = 'scale(' + (canvash / 3) / vb[2] + ')';
-          }
+          ts = innerh > innerw ? 'scale(' + (canvash / 3) / vb[3] + ')' : 'scale(' + (canvash / 3) / vb[2] + ')';
 
           // Hack to make recalculateDimensions understand how to scale
           ts = 'translate(0) ' + ts + ' translate(0)';

@@ -1893,10 +1893,9 @@ export const pathActions = (function () {
               const absY = seglist.getItem(0).y;
 
               sSeg = stretchy.pathSegList.getItem(1);
-              if (sSeg.pathSegType === 4) {
-                newseg = drawnPath.createSVGPathSegLinetoAbs(absX, absY);
-              } else {
-                newseg = drawnPath.createSVGPathSegCurvetoCubicAbs(
+              newseg = (sSeg.pathSegType === 4)
+                ? drawnPath.createSVGPathSegLinetoAbs(absX, absY)
+                : drawnPath.createSVGPathSegCurvetoCubicAbs(
                   absX,
                   absY,
                   sSeg.x1 / currentZoom,
@@ -1904,8 +1903,6 @@ export const pathActions = (function () {
                   absX,
                   absY
                 );
-              }
-
               const endseg = drawnPath.createSVGPathSegClosePath();
               seglist.appendItem(newseg);
               seglist.appendItem(endseg);
@@ -1960,13 +1957,12 @@ export const pathActions = (function () {
 
             // Use the segment defined by stretchy
             sSeg = stretchy.pathSegList.getItem(1);
-            if (sSeg.pathSegType === 4) {
-              newseg = drawnPath.createSVGPathSegLinetoAbs(
+            newseg = (sSeg.pathSegType === 4)
+              ? drawnPath.createSVGPathSegLinetoAbs(
                 editorContext_.round(x),
                 editorContext_.round(y)
-              );
-            } else {
-              newseg = drawnPath.createSVGPathSegCurvetoCubicAbs(
+              )
+              : drawnPath.createSVGPathSegCurvetoCubicAbs(
                 editorContext_.round(x),
                 editorContext_.round(y),
                 sSeg.x1 / currentZoom,
@@ -1974,7 +1970,6 @@ export const pathActions = (function () {
                 sSeg.x2 / currentZoom,
                 sSeg.y2 / currentZoom
               );
-            }
 
             drawnPath.pathSegList.appendItem(newseg);
 

@@ -93,14 +93,11 @@ const fixIDs = function (svgEl, svgNum, force) {
   const defs = svgEl.find('defs');
   if (!defs.length) return svgEl;
 
-  let idElems;
-  if (isOpera) {
-    idElems = defs.find('*').filter(function () {
+  const idElems = (isOpera)
+    ? defs.find('*').filter(function () {
       return Boolean(this.id);
-    });
-  } else {
-    idElems = defs.find('[id]');
-  }
+    })
+    : defs.find('[id]');
 
   const allElems = svgEl[0].getElementsByTagName('*'),
     len = allElems.length;

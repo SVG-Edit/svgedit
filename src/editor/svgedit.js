@@ -2498,11 +2498,7 @@ editor.init = () => {
       $(context).parentsUntil('#svgcontent > g').andSelf().each(function () {
         if (this.id) {
           str += ' > ' + this.id;
-          if (this !== context) {
-            linkStr += ' > <a href="#">' + this.id + '</a>';
-          } else {
-            linkStr += ' > ' + this.id;
-          }
+          linkStr += (this !== context) ? ` > <a href="#">${this.id}</a>` : ` > ${this.id}`;
         }
       });
 
@@ -2605,13 +2601,7 @@ editor.init = () => {
             if (toolButtonClick(showSel)) {
               options.fn();
             }
-            let icon;
-            if (options.icon) {
-              icon = $.getSvgIcon(options.icon, true);
-            } else {
-              icon = $(options.sel).children().eq(0).clone();
-            }
-
+            const icon = (options.icon) ? $.getSvgIcon(options.icon, true) : $(options.sel).children().eq(0).clone();
             icon[0].setAttribute('width', shower.width());
             icon[0].setAttribute('height', shower.height());
             shower.children(':not(.flyout_arrow_horiz)').remove();
@@ -3199,11 +3189,7 @@ editor.init = () => {
     const opts = {alpha: opac};
     if (color.startsWith('url(#')) {
       let refElem = svgCanvas.getRefElem(color);
-      if (refElem) {
-        refElem = refElem.cloneNode(true);
-      } else {
-        refElem = $('#' + type + '_color defs *')[0];
-      }
+      refElem = (refElem) ? refElem.cloneNode(true) : $('#' + type + '_color defs *')[0];
       opts[refElem.tagName] = refElem;
     } else if (color.startsWith('#')) {
       opts.solidColor = color.substr(1);
@@ -3267,14 +3253,10 @@ editor.init = () => {
   const colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
   str = '';
   $.each(colorBlocks, function (i, e) {
-    if (e === 'chessboard') {
-      str += '<div class="color_block" data-bgcolor="' + e +
-        '" style="background-image:url(data:image/gif;base64,' +
-        'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
-        'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>';
-    } else {
-      str += '<div class="color_block" data-bgcolor="' + e + '" style="background-color:' + e + ';"></div>';
-    }
+    str += (e === 'chessboard')
+      // eslint-disable-next-line max-len
+      ? `<div class="color_block" data-bgcolor="${e}" style="background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjGgq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>`
+      : `<div class="color_block" data-bgcolor="${e}" style="background-color:${e};"></div>`;
   });
   $('#bg_blocks').append(str);
   const blocks = $('#bg_blocks div');
@@ -4344,7 +4326,7 @@ editor.init = () => {
   };
 
   /**
-  *
+  * @param {string} pos indicate the alignment relative to top, bottom, middle etc..
   * @returns {void}
   */
   const clickAlign = (pos) => {
@@ -5520,12 +5502,7 @@ editor.init = () => {
           const menu = ($(sel).parents('#main_menu').length);
 
           $(sel).each(function () {
-            let t;
-            if (menu) {
-              t = $(this).text().split(' [')[0];
-            } else {
-              t = this.title.split(' [')[0];
-            }
+            const t = (menu) ? $(this).text().split(' [')[0] : this.title.split(' [')[0];
             let keyStr = '';
             // Shift+Up
             $.each(keyval.split('/'), function (i, key) {
