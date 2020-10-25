@@ -243,34 +243,9 @@ select {
   border-left: 1px solid #808080;
   border-top: 1px solid #808080;
   overflow: hidden;
-}
-
-.layer_button {
-  width: 14px;
-  height: 14px;
-  padding: 1px;
-  border-left: 1px solid #FFFFFF;
-  border-top: 1px solid #FFFFFF;
-  border-right: 1px solid #808080;
-  border-bottom: 1px solid #808080;
-  cursor: pointer;
-  float: left;
-  margin-right: 3px;
-}
-
-.layer_button:last-child {
-  margin-right: 0;
-}
-
-.layer_buttonpressed {
-  width: 14px;
-  height: 14px;
-  padding: 1px;
-  border-right: 1px solid #FFFFFF;
-  border-bottom: 1px solid #FFFFFF;
-  border-left: 1px solid #808080;
-  border-top: 1px solid #808080;
-  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
 }
 
 #layerlist {
@@ -698,14 +673,10 @@ span.zoom_tool {
   width: 24px;
   margin: 2px 2px 4px 2px;
   padding: 3px;
-  -webkit-box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-  moz-box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
   box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
   background-color: #E8E8E8;
   cursor: pointer;
   border-radius: 3px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
 }
 
  #main_menu li#tool_open,  #main_menu li#tool_import {
@@ -848,7 +819,7 @@ span.zoom_tool {
   width: 300px;
   position: relative;
   margin-top: 5px;
-  -webkit-transition: width 150ms ease;
+  transition: width 150ms ease;
 }
 
 .expanded #tools_bottom_2 {

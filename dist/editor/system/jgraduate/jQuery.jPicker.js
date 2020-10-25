@@ -1,4 +1,4 @@
-/* eslint-disable no-bitwise, max-len */
+/* eslint-disable no-bitwise, max-len, unicorn/prefer-math-trunc, unicorn/prefer-ternary */
 /**
  * @file jPicker (Adapted from version 1.1.6)
  *

@@ -59,12 +59,12 @@
         <div id="layerpanel">
           <h3 id="layersLabel">Layers</h3>
           <fieldset id="layerbuttons">
-            <div id="layer_new" class="layer_button" title="New Layer"></div>
-            <div id="layer_delete" class="layer_button" title="Delete Layer"></div>
-            <div id="layer_rename" class="layer_button" title="Rename Layer"></div>
-            <div id="layer_up" class="layer_button" title="Move Layer Up"></div>
-            <div id="layer_down" class="layer_button" title="Move Layer Down"></div>
-            <div id="layer_moreopts" class="layer_button" title="More Options"></div>
+            <se-button id="layer_new" title="New Layer" size="small" src="./images/new.svg"></se-button>
+            <se-button id="layer_delete" title="Delete Layer" size="small" src="./images/delete.svg"></se-button>
+            <se-button id="layer_rename" title="Rename Layer" size="small" src="./images/text.svg"></se-button>
+            <se-button id="layer_up" title="Move Layer Up" size="small" src="./images/go_up.svg"></se-button>
+            <se-button id="layer_down" title="Move Layer Down" size="small" src="./images/go_down.svg"></se-button>
+            <se-button id="layer_moreopts" title="More Options" size="small" src="./images/context_menu.svg"></se-button>
           </fieldset>
           <table id="layerlist">
             <tr class="layer">
@@ -127,27 +127,27 @@
       <div id="tools_top" class="tools_panel">
         <div id="editor_panel">
           <div class="tool_sep"></div>
-          <div class="push_button" id="tool_source" title="Edit Source [U]"></div>
-          <div class="tool_button" id="tool_wireframe" title="Wireframe Mode [F]"></div>
+          <se-button id="tool_source" title="Edit Source" shortcut="U" src="./images/source.svg"></se-button>
+          <se-button id="tool_wireframe" title="Wireframe Mode" shortcut="F" src="./images/wireframe.svg"></se-button>
         </div>
         <!-- History buttons -->
         <div id="history_panel">
           <div class="tool_sep"></div>
-          <div class="push_button tool_button_disabled" id="tool_undo" title="Undo [Z]"></div>
-          <div class="push_button tool_button_disabled" id="tool_redo" title="Redo [Y]"></div>
+          <se-button id="tool_undo" title="Undo" shortcut="Z" src="./images/undo.svg" disabled></se-button>
+          <se-button id="tool_redo" title="Redo" shortcut="Y" src="./images/redo.svg" disabled></se-button>
         </div>
         <!-- Buttons when a single element is selected -->
         <div id="selected_panel">
           <div class="toolset">
             <div class="tool_sep"></div>
-            <div class="push_button" id="tool_clone" title="Duplicate Element [D]"></div>
-            <div class="push_button" id="tool_delete" title="Delete Element [Delete/Backspace]"></div>
+            <se-button id="tool_clone" title="Duplicate Element" shortcut="D" src="./images/clone.svg"></se-button>
+            <se-button id="tool_delete" title="Delete Element" shortcut="Backspace" src="./images/delete.svg"></se-button>
             <div class="tool_sep"></div>
-            <div class="push_button" id="tool_move_top" title="Bring to Front [ Ctrl+Shift+] ]"></div>
-            <div class="push_button" id="tool_move_bottom" title="Send to Back [ Ctrl+Shift+[ ]"></div>
-            <div class="push_button" id="tool_topath" title="Convert to Path"></div>
-            <div class="push_button" id="tool_reorient" title="Reorient path"></div>
-            <div class="push_button" id="tool_make_link" title="Make (hyper)link"></div>
+            <se-button id="tool_move_top" title="Bring to Front" shortcut="Ctrl+Shift+]" src="./images/move_top.svg"></se-button>
+            <se-button id="tool_move_bottom" title="Send to Back" shortcut="Ctrl+Shift+[" src="./images/move_bottom.png"></se-button>
+            <se-button id="tool_topath" title="Convert to Path" src="./images/to_path.svg"></se-button>
+            <se-button id="tool_reorient" title="Reorient path" src="./images/reorient.svg"></se-button>
+            <se-button id="tool_make_link" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
             <div class="tool_sep"></div>
             <label id="idLabel" title="Identify the element">
               <span>id:</span>
@@ -192,17 +192,17 @@
         <!-- Buttons when multiple elements are selected -->
         <div id="multiselected_panel">
           <div class="tool_sep"></div>
-          <div class="push_button" id="tool_clone_multi" title="Clone Elements [C]"></div>
-          <div class="push_button" id="tool_delete_multi" title="Delete Selected Elements [Delete/Backspace]"></div>
+          <se-button id="tool_clone_multi" title="Clone Elements" shortcut="C" src="./images/clone.svg"></se-button>
+          <se-button id="tool_delete_multi" title="Delete Selected Elements" shortcut="Delete/Backspace" src="./images/delete.svg"></se-button>
           <div class="tool_sep"></div>
-          <div class="push_button" id="tool_group_elements" title="Group Elements [G]"></div>
-          <div class="push_button" id="tool_make_link_multi" title="Make (hyper)link"></div>
-          <div class="push_button" id="tool_alignleft" title="Align Left"></div>
-          <div class="push_button" id="tool_aligncenter" title="Align Center"></div>
-          <div class="push_button" id="tool_alignright" title="Align Right"></div>
-          <div class="push_button" id="tool_aligntop" title="Align Top"></div>
-          <div class="push_button" id="tool_alignmiddle" title="Align Middle"></div>
-          <div class="push_button" id="tool_alignbottom" title="Align Bottom"></div>
+          <se-button id="tool_group_elements" title="Group Elements" shortcut="G" src="./images/group_elements.svg"></se-button>
+          <se-button id="tool_make_link_multi" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
+          <se-button id="tool_align_left" title="Align Left" src="./images/align_left.svg"></se-button>
+          <se-button id="tool_align_center" title="Align Center" src="./images/align_center.svg"></se-button>
+          <se-button id="tool_align_right" title="Align Right" src="./images/align_right.svg"></se-button>
+          <se-button id="tool_align_top" title="Align Top" src="./images/align_top.svg"></se-button>
+          <se-button id="tool_align_middle" title="Align Middle" src="./images/align_middle.svg"></se-button>
+          <se-button id="tool_align_bottom" title="Align Bottom" src="./images/align_bottom.svg"></se-button>
           <label id="tool_align_relative">
             <span id="relativeToLabel">relative to:</span>
             <select id="align_relative_to" title="Align relative to ...">
@@ -385,8 +385,8 @@
       <div id="cur_context_panel">
       </div>
       <div id="tools_left" class="tools_panel">
-        <div class="tool_button" id="tool_select" title="Select Tool"></div>
-        <div class="tool_button" id="tool_fhpath" title="Pencil Tool"></div>
+        <se-button id="tool_select" title="Select Tool" src="./images/select.svg"></se-button>
+        <se-button id="tool_fhpath" title="Pencil Tool" src="./images/pencil.svg" shortcut="Q"></se-button>
         <div class="tool_button" id="tool_line" title="Line Tool"></div>
         <div id="tools_rect_show" class="tool_button flyout_current" title="Square/Rect Tool">
           <div class="flyout_arrow_horiz"></div>
@@ -394,10 +394,10 @@
         <div id="tools_ellipse_show" class="tool_button flyout_current" title="Ellipse/Circle Tool">
           <div class="flyout_arrow_horiz"></div>
         </div>
-        <div class="tool_button" id="tool_path" title="Path Tool"></div>
-        <div class="tool_button" id="tool_text" title="Text Tool"></div>
-        <div class="tool_button" id="tool_image" title="Image Tool"></div>
-        <div class="tool_button" id="tool_zoom" title="Zoom Tool [Ctrl+Up/Down]"></div>
+        <se-button id="tool_path" title="Path Tool" src="./images/path.svg" shortcut="P"></se-button>
+        <se-button id="tool_text" title="Text Tool" src="./images/text.svg" shortcut="T"></se-button>
+        <se-button id="tool_image" title="Image Tool" src="./images/image.svg"></se-button>
+        <se-button id="tool_zoom" title="Zoom Tool" src="./images/zoom.svg" shortcut="Z"></se-button>
         <div style="display: none;">
           <div id="tool_rect" title="Rectangle"></div>
           <div id="tool_square" title="Square"></div>
