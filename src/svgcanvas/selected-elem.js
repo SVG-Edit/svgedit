@@ -1,3 +1,4 @@
+/* globals jQuery */
 /**
  * Tools for SVG selected element operation.
  * @module selected-elem
@@ -5,7 +6,7 @@
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute 
+import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute
 import {NS} from '../common/namespaces.js';
 import * as hstry from './history.js';
 import * as pathModule from './path.js';
@@ -17,18 +18,19 @@ import {
   transformPoint, matrixMultiply, transformListToTransform
 } from '../common/math.js';
 import {
-  getTransformList, 
+  getTransformList
 } from '../common/svgtransformlist.js';
 import {
-  recalculateDimensions,
+  recalculateDimensions
 } from './recalculate.js';
 import {
   isGecko
 } from '../common/browser.js'; // , supportsEditableText
+
 const {
   MoveElementCommand, BatchCommand, InsertElementCommand, RemoveElementCommand, ChangeElementCommand
 } = hstry;
-let $ = jQueryPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 
 let elementContext_ = null;
 

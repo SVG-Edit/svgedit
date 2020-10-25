@@ -1,3 +1,4 @@
+/* globals jQuery */
 /**
  * Tools for svg.
  * @module svg
@@ -5,9 +6,9 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import jQueryPluginSVG from '../common/jQuery.attr.js';
 import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
+import jQueryPluginSVG from '../common/jQuery.attr.js';
 import * as hstry from './history.js';
 import {
   text2xml, cleanupElement, findDefs, getHref, preventClickDefault,
@@ -34,7 +35,7 @@ const {
   ChangeElementCommand, BatchCommand
 } = hstry;
 
-let $ = jQueryPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 
 let svgContext_ = null;
 

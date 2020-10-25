@@ -14,9 +14,6 @@
 `convertToGroup` use of `:data()` selector
 */
 
-import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
-import 'svg2pdf.js/dist/svg2pdf.es.js';
-
 import {Canvg as canvg} from 'canvg';
 import 'pathseg';
 
@@ -79,21 +76,20 @@ import {getReverseNS, NS} from '../common/namespaces.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
-  preventClickDefault, walkTree, getBBoxOfElementAsPath, convertToPath, 
-  toXml, encode64, decode64, dataURLToObjectURL, createObjectURL,
-  getVisibleElements, dropXMLInternalSubset, init as utilsInit, 
+  preventClickDefault, walkTree, getBBoxOfElementAsPath, convertToPath, encode64, decode64,
+  getVisibleElements, dropXMLInternalSubset, init as utilsInit,
   getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish
 } from '../common/utilities.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
-  isIdentity, rectsIntersect, transformBox
+  isIdentity, transformBox
 } from '../common/math.js';
 import {
   convertToNum, getTypeMap, init as unitsInit
 } from '../common/units.js';
 import {
   svgCanvasToString, svgToString, setSvgString, save, exportPDF, setUseDataMethod,
-  init as svgInit, importSvgString, embedImage, rasterExport, 
+  init as svgInit, importSvgString, embedImage, rasterExport,
   uniquifyElemsMethod, removeUnusedDefElemsMethod, convertGradientsMethod
 } from './svg-exec.js';
 import {
@@ -123,7 +119,7 @@ import {
 let $ = jQueryPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
-  ChangeElementCommand, BatchCommand,
+  ChangeElementCommand, BatchCommand
 } = hstry;
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
@@ -215,7 +211,7 @@ class SvgCanvas {
  */
     let svgcontent = svgdoc.createElementNS(NS.SVG, 'svg');
 
-/**
+    /**
 * This should really be an intersection implementing all rather than a union.
 * @type {module:draw.DrawCanvasInit#getSVGContent|module:utilities.EditorContext#getSVGContent}
 */
@@ -597,7 +593,7 @@ class SvgCanvas {
         getCurBBoxes (value) { return curBBoxes; },
         getCurrentResizeMode () { return currentResizeMode; },
         addCommandToHistory,
-        getSelector () { return Selector; },        
+        getSelector () { return Selector; }
       }
     );
 
@@ -725,7 +721,6 @@ class SvgCanvas {
     // Interface strings, usually for title elements
     const uiStrings = {};
 
-
     const elData = $.data;
 
     // Animation element to change the opacity of any newly created element
@@ -736,7 +731,6 @@ class SvgCanvas {
       dur: 1,
       fill: 'freeze'
     }).appendTo(svgroot);
-
 
     // (function () {
     // TODO For Issue 208: this is a start on a thumbnail
@@ -822,7 +816,7 @@ class SvgCanvas {
 * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
 * @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
 */
-    const runExtensions = this.runExtensions = runExtensionsMethod;
+    this.runExtensions = runExtensionsMethod;
 
     /**
 * Add an extension to the editor.
@@ -1010,7 +1004,7 @@ class SvgCanvas {
 */
     this.prepareSvg = prepareSvg;
 
-/**
+    /**
 * Removes any old rotations if present, prepends a new rotation at the
 * transformed center.
 * @function module:svgcanvas.SvgCanvas#setRotationAngle
@@ -1117,33 +1111,33 @@ class SvgCanvas {
       };
       const THRESHOLD_DIST = 0.8,
         STEP_COUNT = 10;
-      let dAttr = null,
-        startX = null,
-        startY = null,
-        rStartX = null,
-        rStartY = null,
-        initBbox = {},
-        sumDistance = 0,
-        controllPoint2 = {x: 0, y: 0},
-        controllPoint1 = {x: 0, y: 0},
-        start = {x: 0, y: 0},
-        end = {x: 0, y: 0},
-        bSpline = {x: 0, y: 0},
-        nextPos = {x: 0, y: 0},
-        parameter,
-        nextParameter;
+      let dAttr = null;
+      let startX = null;
+      let startY = null;
+      let rStartX = null;
+      let rStartY = null;
+      let initBbox = {};
+      let sumDistance = 0;
+      const controllPoint2 = {x: 0, y: 0};
+      const controllPoint1 = {x: 0, y: 0};
+      let start = {x: 0, y: 0};
+      const end = {x: 0, y: 0};
+      let bSpline = {x: 0, y: 0};
+      let nextPos = {x: 0, y: 0};
+      let parameter;
+      let nextParameter;
 
-    /**
-    * Initialize from event.js.
-    * mouse event move to separate file init 
-    */
+      /**
+      * @function eventInit Initialize from event.js
+      * @returns {void}
+      */
       eventInit(
       /**
       * @implements {module:event.eventContext_}
       */
         {
           getStarted () { return started; },
-          getCanvas() { return canvas; },
+          getCanvas () { return canvas; },
           getCurConfig () { return curConfig; },
           getCurrentMode () { return currentMode; },
           getrootSctm () { return rootSctm; },
@@ -1293,13 +1287,6 @@ class SvgCanvas {
       }
     );
 
-    /* eslint-disable jsdoc/require-property */
-    /**
-* Group: Text edit functions
-* Functions relating to editing text elements.
-* @namespace {PlainObject} textActions
-* @memberof module:svgcanvas.SvgCanvas#
-*/
     const textActions = canvas.textActions = textActionsMethod;
 
     /**
@@ -1339,7 +1326,7 @@ class SvgCanvas {
       }
     );
 
-/**
+    /**
 * Looks at DOM elements inside the `<defs>` to see if they are referred to,
 * removes them from the DOM if they are not.
 * @function module:svgcanvas.SvgCanvas#removeUnusedDefElems
@@ -1347,7 +1334,7 @@ class SvgCanvas {
 */
     this.removeUnusedDefElems = removeUnusedDefElemsMethod;
 
-/**
+    /**
 * Main function to set up the SVG content for output.
 * @function module:svgcanvas.SvgCanvas#svgCanvasToString
 * @returns {string} The SVG image for output
@@ -1655,7 +1642,7 @@ class SvgCanvas {
     this.getRootElem = function () { return svgroot; };
 
     elemInit(
-  /**
+      /**
   * @implements {module:elem-get-set.elemInit}
   */
       {
@@ -2361,7 +2348,7 @@ class SvgCanvas {
 */
     const changeSelectedAttribute = this.changeSelectedAttribute = changeSelectedAttributeMethod;
 
-/**
+    /**
 * Initialize from select-elem.js.
 * Send in an object implementing the ElementContainer interface (see select-elem.js).
 */
@@ -2397,7 +2384,7 @@ class SvgCanvas {
         setUseData,
         convertGradients,
         getSVGContent,
-        getCanvas() { return canvas; },
+        getCanvas () { return canvas; },
         getVisElems () { return visElems; }
       }
     );
@@ -2457,7 +2444,7 @@ class SvgCanvas {
     window.addEventListener('storage', storageChange, false);
     // Ask other tabs for sessionStorage (this is ONLY to trigger event).
     localStorage.setItem(CLIPBOARD_ID + '_startup', Math.random());
-/**
+    /**
 * Remembers the current selected elements on the clipboard.
 * @function module:svgcanvas.SvgCanvas#copySelectedElements
 * @returns {void}
@@ -2465,7 +2452,8 @@ class SvgCanvas {
     this.copySelectedElements = copySelectedElements;
 
     /**
-    * Initialize from paste-elem.js.
+    * @function pasteInit Initialize from paste-elem.js.
+    * @returns {void}
     * paste element functionality
     */
     pasteInit(
@@ -2473,7 +2461,7 @@ class SvgCanvas {
     * @implements {module:event.eventContext_}
     */
       {
-        getCanvas() { return canvas; },
+        getCanvas () { return canvas; },
         getClipBoardID () { return CLIPBOARD_ID; },
         getLastClickPoint (key) { return lastClickPoint[key]; },
         addCommandToHistory,
@@ -2481,7 +2469,7 @@ class SvgCanvas {
       }
     );
 
-/**
+    /**
 * @function module:svgcanvas.SvgCanvas#pasteElements
 * @param {"in_place"|"point"|void} type
 * @param {Integer|void} x Expected if type is "point"
@@ -2509,7 +2497,7 @@ class SvgCanvas {
 * @param {boolean} undoable
 * @returns {BatchCommand|void}
 */
-    const pushGroupProperties = this.pushGroupProperties = pushGroupProperty;
+    this.pushGroupProperties = pushGroupProperty;
 
     /**
 * Unwraps all the elements in a selected group (`g`) element. This requires
@@ -2528,7 +2516,7 @@ class SvgCanvas {
 */
     this.moveToTopSelectedElement = moveToTopSelectedElem;
 
-/**
+    /**
 * Repositions the selected element to the top in the DOM to appear under
 * other elements.
 * @function module:svgcanvas.SvgCanvas#moveToBottomSelectedElement
@@ -2556,7 +2544,7 @@ class SvgCanvas {
 * @fires module:svgcanvas.SvgCanvas#event:changed
 * @returns {BatchCommand|void} Batch command for the move
 */
-  this.moveSelectedElements = moveSelectedElements;
+    this.moveSelectedElements = moveSelectedElements;
 
     /**
 * Create deep DOM copies (clones) of all selected elements and move them slightly
@@ -2568,7 +2556,7 @@ class SvgCanvas {
 */
     this.cloneSelectedElements = cloneSelectedElements;
 
-/**
+    /**
 * Aligns selected elements.
 * @function module:svgcanvas.SvgCanvas#alignSelectedElements
 * @param {string} type - String with single character indicating the alignment type

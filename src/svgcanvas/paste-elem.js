@@ -16,7 +16,7 @@ let pasteContext_ = null;
 
 /**
 * @function module:paste-elem.init
-* @param {module:paste-elem.pasteContext} pasteContext_
+* @param {module:paste-elem.pasteContext} pasteContext
 * @returns {void}
 */
 export const init = function (pasteContext) {

@@ -1,3 +1,4 @@
+/* globals jQuery */
 /**
  * Tools for selection.
  * @module selection
