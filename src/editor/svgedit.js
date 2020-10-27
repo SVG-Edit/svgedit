@@ -1536,7 +1536,7 @@ editor.init = () => {
   const leftPanelClick = (button) => {
     if (button.disabled) return false;
     // remove the pressed state on other(s) button(s)
-    $qq('.tools_panel se-button[pressed]').forEach((b) => { b.pressed = false; });
+    $qq('#tools-left se-button[pressed]').forEach((b) => { b.pressed = false; });
     // pressed state for the clicked button
     $id(button).pressed = true;
     return true;
