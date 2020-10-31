@@ -165,7 +165,7 @@ export default function jQueryPluginDBox ($, {
   };
   /**
   * @param {string} msg Message to accompany the prompt
-  * @param {string} [defaultText=''] The default text to show for the prompt
+  * @param {string} [defaultText=""] The default text to show for the prompt
   * @returns {jQueryPluginDBox.ResultPromise}
   */
   $.prompt = function (msg, defaultText = '') {

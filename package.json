@@ -50,7 +50,7 @@
     "open-cov": "run-p start open-cov-no-start",
     "report": "run-s report-no-mochawesome mochawesome-cli",
     "report-summary": "run-s report-text-summary mochawesome-cli-dot",
-    "license-badge": "license-badger --uncategorizedLicenseTemplate \"\\${license} (\\${name} (\\${version}))\" --filteredTypes=nonempty --textTemplate \"License types\n(project, deps, and bundled devDeps)\" --packageJson --production badges/licenses-badge.svg",
+    "license-badge": "license-badger --corrections --uncategorizedLicenseTemplate \"\\${license} (\\${name} (\\${version}))\" --filteredTypes=nonempty --textTemplate \"License types\n(project, deps, and bundled devDeps)\" --packageJson --production badges/licenses-badge.svg",
     "license-badge-dev": "license-badger --corrections --filteredTypes=nonempty --textTemplate \"License types\n(all devDeps)\" --allDevelopment badges/licenses-badge-dev.svg",
     "license-badges": "run-s license-badge license-badge-dev",
     "coverage-badge": "coveradge badges/coverage-badge",
