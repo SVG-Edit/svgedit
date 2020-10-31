@@ -4,7 +4,7 @@
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  :host :hover :not(.disabled)
+  :host(:hover) :not(.disabled)
   {
     background-color: #ffc;
   }
@@ -32,7 +32,7 @@ template.innerHTML = `
     height: 100%;
   }
   .pressed {
-    background-color: #F4E284 !important;
+    background-color: #F4E284;
     box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
   }
   .disabled {
@@ -65,7 +65,7 @@ export class ToolButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'pressed', 'disabled', 'size'];
+    return ['title', 'src', 'pressed', 'disabled', 'size', 'style'];
   }
   /**
    * @function attributeChangedCallback
@@ -82,6 +82,9 @@ export class ToolButton extends HTMLElement {
         const shortcut = this.getAttribute('shortcut');
         this.$div.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
       }
+      break;
+    case 'style':
+      this.$div.style = newValue;
       break;
     case 'src':
       this.$img.setAttribute('src', newValue);

@@ -2,12 +2,9 @@
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  :host {
-    position:relative;
-  }
-  :host(:hover) :not(.disabled)
+  :host
   {
-    background-color: #ffc;
+    position:absolute;
   }
   img {
     border: none;
@@ -31,30 +28,12 @@ template.innerHTML = `
     box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
     background-color: #E8E8E8;
     cursor: pointer;
-    position: relative;
-    border-radius: 3px;
-    overflow: hidden;
   }
-  .handle {
-    height: 4px;
-    width: 4px;
-    background: no-repeat url(data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjQiIHZpZXdCb3g9IjAgMCAzIDQiIHdpZHRoPSIzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwb2x5Z29uIGZpbGw9IiM4MDg2OEIiIHBvaW50cz0iNDg4LjI1IDY1Mi43NSA0ODYuMjUgNjU1LjI1IDQ4NC4yNSA2NTIuNzUiIHRyYW5zZm9ybT0icm90YXRlKC05MCAtODIuMjUgNTcwLjUpIi8+PC9zdmc+);
-    transform: scale(2);
-    position:absolute;
-    bottom: 2px;
-    right: 1px;
-  }
-  .button-icon {
-  }
-  .menu {
-    position: absolute;
-    display: flex;
-    top:-2px;
-    left:32px;
-    background: none !important;
+  .menu-button :hover
+  {
+    background-color: #ffc;
   }
   .menu-item {
-    display: inline;
     height: 24px;
     width: 24px;
     margin: 2px 2px 4px;
@@ -62,33 +41,44 @@ template.innerHTML = `
     box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
     background-color: #E8E8E8;
     cursor: pointer;
+    position:absolute;
     top:0px;
     left:0px;
   }
+  .handle {
+    position: absolute;
+    bottom: 6px;
+    right: 3px;
+    width: 3px;
+    height: 4px;
+    background: no-repeat url(data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjQiIHZpZXdCb3g9IjAgMCAzIDQiIHdpZHRoPSIzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwb2x5Z29uIGZpbGw9IiM4MDg2OEIiIHBvaW50cz0iNDg4LjI1IDY1Mi43NSA0ODYuMjUgNjU1LjI1IDQ4NC4yNSA2NTIuNzUiIHRyYW5zZm9ybT0icm90YXRlKC05MCAtODIuMjUgNTcwLjUpIi8+PC9zdmc+);
+    display: block;
+    transform: scale(2);
+  }
+  
   .open .item1 {
     transition-duration: 190ms;
+    transform: translate(35px);
   }
   .open .item2 {
     transition-duration: 290ms;
+    transform: translate(70px);
   }
   .open .item3 {
     transition-duration: 390ms;
+    transform: translate(105px);
   }
   .open .item4 {
     transition-duration: 490ms;
+    transform: translate(140px);
   }
   </style>
   
-  <div ">
-    <div class="menu-button">
-      <img class="button-icon" src="./images/logo.svg" alt="icon">
-      <div class="handle"></div>
-    </div>
-    <div class="menu">
-      <slot></slot>
-    </div>
+  <div class="menu-button open">
+    <img class="svg_icon" src="./images/logo.svg" alt="icon">
+    <div class="handle"></div>
+   <slot></slot>
   </div>
-  
 `;
 /**
  * @class FlyingButton
@@ -105,22 +95,13 @@ export class FlyingButton extends HTMLElement {
     // locate the component
     this.$open = this._shadowRoot.querySelector('.menu-button');
     this.$img = this._shadowRoot.querySelector('img');
-    // the last element of the div is the slot
-    // we retrieve all elements added in the slot (i.e. se-buttons)
-    this.$elements = this.$open.lastElementChild.assignedElements();
-    this.$elements[0].style.transitionDuration = '190ms';
-    this.$elements[0].style.transform = 'translate(2px,-3px)';
-    this.$elements[1].style.transitionDuration = '`2500ms';
-    this.$elements[1].style.transform = 'translate(0px,-3px)';
-    this.$elements[2].style.transitionDuration = '`2500ms';
-    this.$elements[2].style.transform = 'translate(0px,-3px)';
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'pressed', 'disabled'];
+    return ['title', 'src', 'pressed', 'disabled', 'style'];
   }
   /**
    * @function attributeChangedCallback
@@ -137,6 +118,9 @@ export class FlyingButton extends HTMLElement {
         const shortcut = this.getAttribute('shortcut');
         this.$open.setAttribute('title', `${newValue} [${shortcut}]`);
       }
+      break;
+    case 'style':
+      this.$open.style = newValue;
       break;
     case 'src':
       this.$img.setAttribute('src', newValue);

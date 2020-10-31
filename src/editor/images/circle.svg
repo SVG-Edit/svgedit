@@ -1,0 +1,11 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54">
+ <defs>
+  <linearGradient y2="1.0" x2="1.0" y1="0.1875" x1="0.171875" id="svg_4">
+   <stop stop-opacity="1" stop-color="#ffffff" offset="0.0"/>
+   <stop stop-opacity="1" stop-color="#ff6666" offset="1.0"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <circle stroke-opacity="1" fill-opacity="1" stroke-width="2" stroke="#000000" fill="url(#svg_4)" id="svg_1" r="23" cy="27" cx="27"/>
+ </g>
+</svg>
