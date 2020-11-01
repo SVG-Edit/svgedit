@@ -47,10 +47,13 @@ template.innerHTML = `
   }
   .menu {
     position: absolute;
-    display: flex;
     top:-2px;
     left:32px;
     background: none !important;
+    display:none;
+  }
+  .open {
+    display: flex;
   }
   .menu-item {
     align-content: flex-start;
@@ -85,7 +88,7 @@ export class FlyingButton extends HTMLElement {
     this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     // locate the component
-    this.$open = this._shadowRoot.querySelector('.menu-button');
+    this.$button = this._shadowRoot.querySelector('.menu-button');
     this.$img = this._shadowRoot.querySelector('img');
     this.$menu = this._shadowRoot.querySelector('.menu');
     // the last element of the div is the slot
@@ -112,7 +115,7 @@ export class FlyingButton extends HTMLElement {
     case 'title':
       {
         const shortcut = this.getAttribute('shortcut');
-        this.$open.setAttribute('title', `${newValue} [${shortcut}]`);
+        this.$button.setAttribute('title', `${newValue} [${shortcut}]`);
       }
       break;
     case 'src':
@@ -207,6 +210,17 @@ export class FlyingButton extends HTMLElement {
    */
   set src (value) {
     this.setAttribute('src', value);
+  }
+  /**
+   * @function connectedCallback
+   * @returns {void}
+   */
+  connectedCallback () {
+    // capture click event
+    this.$button.addEventListener('click', () => {
+      // normalize key
+      this.$menu.classList.toggle('open');
+    });
   }
 }
 
