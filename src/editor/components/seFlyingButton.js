@@ -13,7 +13,6 @@ template.innerHTML = `
     border: none;
     width: 24px;
     height: 24px;
-    overflow: none;
   }
   .pressed {
     background-color: #F4E284 !important;
@@ -54,28 +53,11 @@ template.innerHTML = `
     background: none !important;
   }
   .menu-item {
-    display: inline;
+    align-content: flex-start;
     height: 24px;
     width: 24px;
-    margin: 2px 2px 4px;
-    padding: 3px;
-    box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-    background-color: #E8E8E8;
-    cursor: pointer;
     top:0px;
     left:0px;
-  }
-  .open .item1 {
-    transition-duration: 190ms;
-  }
-  .open .item2 {
-    transition-duration: 290ms;
-  }
-  .open .item3 {
-    transition-duration: 390ms;
-  }
-  .open .item4 {
-    transition-duration: 490ms;
   }
   </style>
   
@@ -105,15 +87,10 @@ export class FlyingButton extends HTMLElement {
     // locate the component
     this.$open = this._shadowRoot.querySelector('.menu-button');
     this.$img = this._shadowRoot.querySelector('img');
+    this.$menu = this._shadowRoot.querySelector('.menu');
     // the last element of the div is the slot
     // we retrieve all elements added in the slot (i.e. se-buttons)
-    this.$elements = this.$open.lastElementChild.assignedElements();
-    this.$elements[0].style.transitionDuration = '190ms';
-    this.$elements[0].style.transform = 'translate(2px,-3px)';
-    this.$elements[1].style.transitionDuration = '`2500ms';
-    this.$elements[1].style.transform = 'translate(0px,-3px)';
-    this.$elements[2].style.transitionDuration = '`2500ms';
-    this.$elements[2].style.transform = 'translate(0px,-3px)';
+    this.$elements = this.$menu.lastElementChild.assignedElements();
   }
   /**
    * @function observedAttributes
