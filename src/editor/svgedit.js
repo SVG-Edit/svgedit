@@ -1070,17 +1070,8 @@ editor.init = () => {
         '#tool_docprops > div': 'docprops',
         '#tool_editor_prefs > div': 'config',
         '#tool_editor_homepage > div': 'globe_link',
-        '#tool_fhpath': 'pencil',
-        '#tool_line': 'pen',
-        '#tool_rect,#tools_rect_show': 'rect',
-        '#tool_square': 'square',
-        '#tool_fhrect': 'fh_rect',
-        '#tool_ellipse,#tools_ellipse_show': 'ellipse',
-        '#tool_circle': 'circle',
-        '#tool_fhellipse': 'fh_ellipse',
         '#tool_image': 'image',
         '#tool_zoom': 'zoom',
-
         '#tool_node_clone': 'node_clone',
         '#tool_node_delete': 'node_delete',
         '#tool_add_subpath': 'add_subpath',
@@ -1529,14 +1520,14 @@ editor.init = () => {
   * - Removes the `tool_button_current` class from whatever tool currently has it.
   * - Hides any flyouts.
   * - Adds the `tool_button_current` class to the button passed in.
-  * @function leftPanelClick
+  * @function updateLeftPanel
   * @param {string|Element} button The DOM element or string selector representing the toolbar button
   * @returns {boolean} Whether the button was disabled or not
   */
-  const leftPanelClick = (button) => {
+  const updateLeftPanel = (button) => {
     if (button.disabled) return false;
     // remove the pressed state on other(s) button(s)
-    $qq('#tools-left se-button[pressed]').forEach((b) => { b.pressed = false; });
+    $qq('#tools_left *[pressed]').forEach((b) => { b.pressed = false; });
     // pressed state for the clicked button
     $id(button).pressed = true;
     return true;
@@ -1549,7 +1540,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickSelect = () => {
-    if (leftPanelClick('tool_select')) {
+    if (updateLeftPanel('tool_select')) {
       workarea.css('cursor', 'auto');
       svgCanvas.setMode('select');
     }
@@ -2981,7 +2972,7 @@ editor.init = () => {
           parent = '#main_menu ul';
           break;
         }
-        let flyoutHolder, showBtn, refData, refBtn;
+        // let flyoutHolder, showBtn, refData, refBtn;
         const button = $((btn.list || btn.type === 'app_menu') ? '<li/>' : '<div/>')
           .attr('id', id)
           .attr('title', btn.title)
@@ -2998,6 +2989,7 @@ editor.init = () => {
           }
 
           if (btn.type === 'mode_flyout') {
+            /*
           // Add to flyout menu / make flyout menu
             // const opts = btn.includeWith;
             // // opts.button, default, position
@@ -3026,7 +3018,7 @@ editor.init = () => {
             // TODO: Find way to set the current icon using the iconloader if this is not default
 
             // Include data for extension button as well as ref button
-            /* curH = */ holders['#' + flyoutHolder[0].id] = [{
+            holders['#' + flyoutHolder[0].id] = [{
               sel: '#' + id,
               fn: btn.events.click,
               icon: btn.id,
@@ -3046,6 +3038,7 @@ editor.init = () => {
             //   flyoutHolder.append(button);
             //   curH.reverse();
             // }
+            */
           } else if (btn.type === 'app_menu') {
             button.append('<div>').append(btn.title);
           }
@@ -3059,11 +3052,11 @@ editor.init = () => {
             placementObj['#cur_' + btn.list] = svgicon;
           }
         } else if (btn.includeWith) {
+          /*
           // Add to flyout menu / make flyout menu
           const opts = btn.includeWith;
           // opts.button, default, position
           refBtn = $(opts.button);
-
           flyoutHolder = refBtn.parent();
           // Create a flyout menu if there isn't one already
           let tlsId;
@@ -3078,7 +3071,6 @@ editor.init = () => {
             // Create a flyout div
             flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
           }
-
           refData = Actions.getButtonData(opts.button);
 
           if (opts.isDefault) {
@@ -3105,8 +3097,8 @@ editor.init = () => {
             flyoutHolder.append(button);
             curH.reverse();
           }
+        */
         }
-
         if (!svgicons) {
           button.append(icon);
         }
@@ -3143,7 +3135,6 @@ editor.init = () => {
 
         setupFlyouts(holders);
       });
-
       $.each(btnSelects, function () {
         addAltDropDown(this.elem, this.list, this.callback, {seticon: true});
       });
@@ -3786,7 +3777,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickFHPath = function () {
-    if (leftPanelClick('tool_fhpath')) {
+    if (updateLeftPanel('tool_fhpath')) {
       svgCanvas.setMode('fhpath');
     }
   };
@@ -3796,7 +3787,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickLine = function () {
-    if (toolButtonClick('#tool_line')) {
+    if (updateLeftPanel('tool_line')) {
       svgCanvas.setMode('line');
     }
   };
@@ -3866,7 +3857,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickImage = function () {
-    if (leftPanelClick('tool_image')) {
+    if (updateLeftPanel('tool_image')) {
       svgCanvas.setMode('image');
     }
   };
@@ -3876,7 +3867,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickZoom = function () {
-    if (leftPanelClick('tool_zoom')) {
+    if (updateLeftPanel('tool_zoom')) {
       svgCanvas.setMode('zoom');
       workarea.css('cursor', zoomInIcon);
     }
@@ -3912,7 +3903,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickText = function () {
-    if (leftPanelClick('tool_text')) {
+    if (updateLeftPanel('tool_text')) {
       svgCanvas.setMode('text');
     }
   };
@@ -3922,7 +3913,7 @@ editor.init = () => {
   * @returns {void}
   */
   const clickPath = function () {
-    if (leftPanelClick('tool_path')) {
+    if (updateLeftPanel('tool_path')) {
       svgCanvas.setMode('path');
     }
   };
@@ -5251,6 +5242,7 @@ editor.init = () => {
     $id('tool_image').addEventListener('click', clickImage);
     $id('tool_zoom').addEventListener('click', clickZoom);
     $id('tool_path').addEventListener('click', clickPath);
+    $id('tool_line').addEventListener('click', clickLine);
     // $id('tool_').addEventListener('click', clickP);
 
     // register actions for layer toolbar
@@ -5261,8 +5253,6 @@ editor.init = () => {
     $id('layer_rename').addEventListener('click', layerRename);
 
     const toolButtons = [
-      {sel: '#tool_line', fn: clickLine, evt: 'click', key: ['L', true],
-        parent: '#tools_line', prepend: true},
       {sel: '#tool_rect', fn: clickRect, evt: 'mouseup',
         key: ['R', true], parent: '#tools_rect', icon: 'rect'},
       {sel: '#tool_square', fn: clickSquare, evt: 'mouseup',

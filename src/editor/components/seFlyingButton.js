@@ -1,11 +1,10 @@
-/* eslint-disable max-len */
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
   :host {
     position:relative;
   }
-  :host(:hover) :not(.disabled)
+  .overall:hover *
   {
     background-color: #ffc;
   }
@@ -14,9 +13,13 @@ template.innerHTML = `
     width: 24px;
     height: 24px;
   }
-  .pressed {
-    background-color: #F4E284 !important;
+  .overall.pressed .button-icon,
+  .overall.pressed .handle {
+    background-color: #000 !important;
+  }
+  .overall.pressed .menu-button {
     box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
+    background-color: #F4E284 !important;
   }
   .disabled {
     opacity: 0.3;
@@ -35,13 +38,12 @@ template.innerHTML = `
     overflow: hidden;
   }
   .handle {
-    height: 4px;
-    width: 4px;
-    background: no-repeat url(data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjQiIHZpZXdCb3g9IjAgMCAzIDQiIHdpZHRoPSIzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwb2x5Z29uIGZpbGw9IiM4MDg2OEIiIHBvaW50cz0iNDg4LjI1IDY1Mi43NSA0ODYuMjUgNjU1LjI1IDQ4NC4yNSA2NTIuNzUiIHRyYW5zZm9ybT0icm90YXRlKC05MCAtODIuMjUgNTcwLjUpIi8+PC9zdmc+);
-    transform: scale(2);
+    height: 8px;
+    width: 8px;
+    background-image: url(./images/handle.svg);
     position:absolute;
-    bottom: 2px;
-    right: 1px;
+    bottom: 0px;
+    right: 0px;
   }
   .button-icon {
   }
@@ -62,9 +64,12 @@ template.innerHTML = `
     top:0px;
     left:0px;
   }
+  .overall {
+    background: none !important;
+  }
   </style>
   
-  <div ">
+  <div class="overall">
     <div class="menu-button">
       <img class="button-icon" src="./images/logo.svg" alt="icon">
       <div class="handle"></div>
@@ -89,6 +94,7 @@ export class FlyingButton extends HTMLElement {
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button');
+    this.$overall = this._shadowRoot.querySelector('.overall');
     this.$img = this._shadowRoot.querySelector('img');
     this.$menu = this._shadowRoot.querySelector('.menu');
     // the last element of the div is the slot
@@ -123,9 +129,9 @@ export class FlyingButton extends HTMLElement {
       break;
     case 'pressed':
       if (newValue) {
-        this.$div.classList.add('pressed');
+        this.$overall.classList.add('pressed');
       } else {
-        this.$div.classList.remove('pressed');
+        this.$overall.classList.remove('pressed');
       }
       break;
     case 'disabled':
@@ -216,11 +222,36 @@ export class FlyingButton extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    // capture click event
-    this.$button.addEventListener('click', () => {
-      // normalize key
-      this.$menu.classList.toggle('open');
-    });
+    // initialize currentAction with the first slot of the list
+    this.activeSlot = this.shadowRoot.querySelector('slot').assignedElements()[0];
+    // capture click event on the button to manage the logic
+    const onClickHandler = (ev) => {
+      switch (ev.target.nodeName) {
+      case 'SE-FLYINGBUTTON':
+        if (this.pressed) {
+          this.$menu.classList.toggle('open');
+        } else {
+          // launch current action
+          this.activeSlot.click();
+          this.setAttribute('pressed', 'pressed');
+        }
+        break;
+      case 'SE-BUTTON':
+        console.log('change current action');
+        // change icon to the current action and close the menu
+        this.setAttribute('src', ev.target.getAttribute('src'));
+        this.currentAction = ev.target;
+        this.setAttribute('pressed', 'pressed');
+        this.$menu.classList.remove('open');
+        break;
+      default:
+        console.log(ev.target, ev.target.className);
+        this.$menu.classList.remove('open');
+        this.setAttribute('pressed', 'pressed');
+      }
+    };
+    // capture event from slots
+    this.addEventListener('click', onClickHandler);
   }
 }
 
