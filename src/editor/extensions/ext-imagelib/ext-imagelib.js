@@ -454,7 +454,7 @@ export default {
 
     const buttons = [{
       id: 'tool_imagelib',
-      type: 'app_menu', // _flyout
+      type: 'app_menu',
       icon: 'imagelib.png',
       position: 4,
       events: {

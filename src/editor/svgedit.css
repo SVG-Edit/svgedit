@@ -576,14 +576,6 @@ input[type=text] {
   z-index: 11;
 }
 
-.flyout_arrow_horiz {
-  position: absolute;
-  bottom: -1px;
-  right: 0;
-  z-index: 10;
-}
-
-
 span.zoom_tool {
   line-height: 26px;
   padding: 3px;
@@ -765,32 +757,6 @@ span.zoom_tool {
   background: #E8E8E8;
   height: 350px;
   z-index: 5;
-}
-
-.tools_flyout {
-  position: absolute;
-  display: none;
-  cursor: pointer;
-  width: 400px;
-  z-index: 1;
-}
-
-.tools_flyout_v {
-  position: absolute;
-  display: none;
-  cursor: pointer;
-  width: 30px;
-}
-
-.tools_flyout .tool_button {
-  float: left;
-  background-color: #E8E8E8;
-  border-left: 1px solid #FFFFFF;
-  border-top: 1px solid #FFFFFF;
-  border-right: 1px solid #808080;
-  border-bottom: 1px solid #808080;
-  height: 28px;
-  width: 28px;
 }
 
 #tools_bottom {
@@ -1340,18 +1306,6 @@ ul li.current {
 .ui-slider-handle {
   background: #B0B0B0;
   border: 1px solid #000;
-}
-
-/* Necessary to keep the flyouts sized properly */
-.tools_flyout .tool_button,
-.tools_flyout .tool_flyout {
-  padding: 2px;
-  width: 24px;
-  height: 24px;
-  margin: 0;
-  border-radius: 0px;
-  -moz-border-radius: 0px;
-  -webkit-border-radius: 0px;
 }
 
 /* Generic context menu styles */

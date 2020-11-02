@@ -817,10 +817,6 @@ editor.init = () => {
           extensionsAdded = true;
           Actions.setAll();
 
-          $('.flyout_arrow_horiz:empty').each(function () {
-            $(this).append($.getSvgIcon('arrow_right', true).width(5).height(5));
-          });
-
           if (editor.storagePromptState === 'ignore') {
             updateCanvas(true);
           }
@@ -845,19 +841,6 @@ editor.init = () => {
   };
 
   const stateObj = {tool_scale: editor.tool_scale};
-
-  /**
-  *
-  * @returns {void}
-  */
-  const setFlyoutPositions = function () {
-    $('.tools_flyout').each(function () {
-      const shower = $('#' + this.id + '_show');
-      const {left, top} = shower.offset();
-      const w = shower.outerWidth();
-      $(this).css({left: (left + w) * editor.tool_scale, top});
-    });
-  };
 
   /**
   * @type {string}
@@ -889,7 +872,7 @@ editor.init = () => {
     // const elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
     const selToscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,' +
   '        #main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,' +
-  '        #g_panel > *, #tool_font_size > *, .tools_flyout';
+  '        #g_panel > *, #tool_font_size > *';
 
     const elems = $(selToscale);
 
@@ -902,16 +885,6 @@ editor.init = () => {
     }
 
     stateObj.tool_scale = editor.tool_scale = scale;
-
-    setFlyoutPositions();
-    // $('.tools_flyout').each(function () {
-    //   const pos = $(this).position();
-    //   console.log($(this), pos.left+(34 * scale));
-    //   $(this).css({left: pos.left+(34 * scale), top: pos.top+(77 * scale)});
-    //   console.log('l', $(this).css('left'));
-    // });
-    //
-    // const scale = .75;
 
     const hiddenPs = elems.parents(':hidden');
     hiddenPs.css('visibility', 'hidden').show();
@@ -968,8 +941,6 @@ editor.init = () => {
       );
       ruleElem.text(styleStr);
     }
-
-    setFlyoutPositions();
   };
 
   /**
@@ -1004,7 +975,6 @@ editor.init = () => {
         image: 'image.png',
         zoom: 'zoom.png',
 
-        arrow_right: 'flyouth.png',
         arrow_right_big: 'arrow_right_big.png',
         arrow_down: 'dropdown.gif',
         fill: 'fill.png',
@@ -1116,13 +1086,11 @@ editor.init = () => {
         '#blurLabel': 'blur',
         '#font_sizeLabel': 'fontsize',
 
-        '.flyout_arrow_horiz': 'arrow_right',
         '.dropdown button, #main_button .dropdown': 'arrow_down',
         '#palette .palette_item:first, #fill_bg, #stroke_bg': 'no_color'
       },
       resize: {
         '#logo .svg_icon': 28,
-        '.flyout_arrow_horiz .svg_icon': 5,
         '.svg_icon, #layerlist td.layervis .svg_icon': 14,
         '.dropdown button .svg_icon': 7,
         '#main_button .dropdown .svg_icon': 9,
@@ -1147,19 +1115,6 @@ editor.init = () => {
         const size = editor.pref('iconsize');
         editor.setIconSize(size || ($(window).height() < minHeight ? 's' : 'm'));
 
-        // Look for any missing flyout icons from plugins
-        $('.tools_flyout').each(function () {
-          const shower = $('#' + this.id + '_show');
-          const sel = shower.attr('data-curopt');
-          // Check if there's an icon here
-          if (!shower.children('svg, img').length) {
-            const clone = $(sel).children().clone();
-            if (clone.length) {
-              clone[0].removeAttribute('style'); // Needed for Opera
-              shower.append(clone);
-            }
-          }
-        });
         $('#svg_container')[0].style.visibility = 'visible';
         await editor.runCallbacks();
       }
@@ -1228,9 +1183,6 @@ editor.init = () => {
     }
   }());
 
-  // used to make the flyouts stay on the screen longer the very first time
-  // const flyoutspeed = 1250; // Currently unused
-  // let textBeingEntered = false; // Currently unused
   const origTitle = $('title:first').text();
   // Make [1,2,5] array
   const rIntervals = [];
@@ -1494,20 +1446,13 @@ editor.init = () => {
   * This is a common function used when a tool has been clicked (chosen).
   * It does several common things:
   * - Removes the `tool_button_current` class from whatever tool currently has it.
-  * - Hides any flyouts.
   * - Adds the `tool_button_current` class to the button passed in.
   * @function module:SVGEditor.toolButtonClick
   * @param {string|Element} button The DOM element or string selector representing the toolbar button
-  * @param {boolean} noHiding Whether not to hide any flyouts
   * @returns {boolean} Whether the button was disabled or not
   */
-  const toolButtonClick = editor.toolButtonClick = function (button, noHiding) {
+  const toolButtonClick = editor.toolButtonClick = function (button) {
     if ($(button).hasClass('disabled')) { return false; }
-    if ($(button).parent().hasClass('tools_flyout')) { return true; }
-    const fadeFlyouts = 'normal';
-    if (!noHiding) {
-      $('.tools_flyout').fadeOut(fadeFlyouts);
-    }
     $('#styleoverrides').text('');
     workarea.css('cursor', 'auto');
     $('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
@@ -1518,7 +1463,6 @@ editor.init = () => {
   * This is a common function used when a tool has been clicked (chosen).
   * It does several common things:
   * - Removes the `tool_button_current` class from whatever tool currently has it.
-  * - Hides any flyouts.
   * - Adds the `tool_button_current` class to the button passed in.
   * @function updateLeftPanel
   * @param {string|Element} button The DOM element or string selector representing the toolbar button
@@ -1898,18 +1842,6 @@ editor.init = () => {
         nostroke: bNoStroke
       }
     );
-
-    // Disable flyouts if all inside are disabled
-    $('.tools_flyout').each(function () {
-      const shower = $('#' + this.id + '_show');
-      let hasEnabled = false;
-      $(this).children().each(function () {
-        if (!$(this).hasClass('disabled')) {
-          hasEnabled = true;
-        }
-      });
-      shower.toggleClass('disabled', !hasEnabled);
-    });
 
     operaRepaint();
   };
@@ -2505,167 +2437,6 @@ editor.init = () => {
     paintBox.stroke.prep();
   };
 
-  const flyoutFuncs = {};
-
-  /**
-  *
-  * @returns {void}
-  */
-  const setFlyoutTitles = function () {
-    $('.tools_flyout').each(function () {
-      const shower = $('#' + this.id + '_show');
-      if (shower.data('isLibrary')) {
-        return;
-      }
-
-      const tooltips = $(this).children().map(function () {
-        return this.title;
-      }).get();
-      shower[0].title = tooltips.join(' / ');
-    });
-  };
-
-  const allHolders = {};
-  /**
-   * @param {PlainObject<string, module:SVGEditor.ToolButton>} holders Key is a selector
-   * @returns {void}
-   */
-  const setupFlyouts = function (holders) {
-    $.each(holders, function (holdSel, btnOpts) {
-      if (!allHolders[holdSel]) {
-        allHolders[holdSel] = [];
-      }
-      allHolders[holdSel].push(...btnOpts);
-
-      const buttons = $(holdSel).children().not('.tool_button_evt_handled');
-      const showSel = holdSel + '_show';
-      const shower = $(showSel);
-      let def = false;
-      buttons.addClass('tool_button tool_button_evt_handled')
-        .unbind('click mousedown mouseup') // may not be necessary
-        .each(function () {
-          // Get this button's options
-          const idSel = '#' + this.getAttribute('id');
-          const [i, opts] = Object.entries(btnOpts).find(([_, {sel}]) => {
-            return sel === idSel;
-          });
-
-          // Remember the function that goes with this ID
-          flyoutFuncs[opts.sel] = opts.fn;
-
-          if (opts.isDefault) { def = i; }
-
-          /**
-           * Clicking the icon in flyout should set this set's icon.
-           * @param {Event} ev
-           * @returns {boolean}
-           */
-          const flyoutAction = function (ev) {
-            let options = opts;
-            // Find the currently selected tool if comes from keystroke
-            if (ev.type === 'keydown') {
-              const flyoutIsSelected = $(options.parent + '_show').hasClass('tool_button_current');
-              const currentOperation = $(options.parent + '_show').attr('data-curopt');
-              Object.entries(holders[opts.parent]).some(([j, tool]) => {
-                if (tool.sel !== currentOperation) {
-                  return false;
-                }
-                if (!ev.shiftKey || !flyoutIsSelected) {
-                  options = tool;
-                } else {
-                  // If flyout is selected, allow shift key to iterate through subitems
-                  j = Number.parseInt(j);
-                  // Use `allHolders` to include both extension `includeWith` and toolbarButtons
-                  options = allHolders[opts.parent][j + 1] ||
-                    holders[opts.parent][0];
-                }
-                return true;
-              });
-            }
-            if ($(this).hasClass('disabled')) { return false; }
-            if (toolButtonClick(showSel)) {
-              options.fn();
-            }
-            const icon = (options.icon) ? $.getSvgIcon(options.icon, true) : $(options.sel).children().eq(0).clone();
-            icon[0].setAttribute('width', shower.width());
-            icon[0].setAttribute('height', shower.height());
-            shower.children(':not(.flyout_arrow_horiz)').remove();
-            shower.append(icon).attr('data-curopt', options.sel); // This sets the current mode
-            return true;
-          };
-
-          $(this).mouseup(flyoutAction);
-
-          if (opts.key) {
-            $(document).bind('keydown', opts.key[0] + ' shift+' + opts.key[0], flyoutAction);
-          }
-          return true;
-        });
-
-      if (def) {
-        shower.attr('data-curopt', btnOpts[def].sel);
-      } else if (!shower.attr('data-curopt')) {
-        // Set first as default
-        shower.attr('data-curopt', btnOpts[0].sel);
-      }
-
-      let timer;
-
-      // Clicking the "show" icon should set the current mode
-      shower.mousedown(function (evt) {
-        if (shower.hasClass('disabled')) {
-          return false;
-        }
-        const holder = $(holdSel);
-        const pos = $(showSel).position();
-        const l = pos.left + 34;
-        const w = holder.width() * -1;
-        const time = holder.data('shown_popop') ? 200 : 0;
-        timer = setTimeout(function () {
-          // Show corresponding menu
-          if (!shower.data('isLibrary')) {
-            holder.css('left', w).show().animate({
-              left: l
-            }, 150);
-          } else {
-            holder.css('left', l).show();
-          }
-          holder.data('shown_popop', true);
-        }, time);
-        evt.preventDefault();
-        return true;
-      }).mouseup(function (evt) {
-        clearTimeout(timer);
-        const opt = $(this).attr('data-curopt');
-        // Is library and popped up, so do nothing
-        if (shower.data('isLibrary') && $(showSel.replace('_show', '')).is(':visible')) {
-          toolButtonClick(showSel, true);
-          return;
-        }
-        if (toolButtonClick(showSel) && flyoutFuncs[opt]) {
-          flyoutFuncs[opt]();
-        }
-      });
-      // $('#tools_rect').mouseleave(function () { $('#tools_rect').fadeOut(); });
-    });
-    setFlyoutTitles();
-    setFlyoutPositions();
-  };
-
-  /**
-  * @param {string} id
-  * @param {external:jQuery} child
-  * @returns {external:jQuery}
-  */
-  const makeFlyoutHolder = function (id, child) {
-    const div = $('<div>', {
-      class: 'tools_flyout',
-      id
-    }).appendTo('#svg_editor').append(child);
-
-    return div;
-  };
-
   /**
   * @param {string} elemSel
   * @param {string} listSel
@@ -2890,11 +2661,10 @@ editor.init = () => {
     }
 
     const {svgicons} = ext;
-    if (ext.buttons) {
+    if (ext.buttons && !ext.newUI) {
       const fallbackObj = {},
         altsObj = {},
-        placementObj = {},
-        holders = {};
+        placementObj = {};
 
       /**
       * @typedef {GenericArray} module:SVGEditor.KeyArray
@@ -2917,11 +2687,7 @@ editor.init = () => {
       * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
       * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
       * @property {boolean} [isDefault] Whether or not the button is the default. Used with `list`.
-      * @property {PlainObject} [includeWith] Object with flyout menu data
-      * @property {boolean} [includeWith.isDefault] Indicates whether button is default in flyout list or not.
-      * @property {string} includeWith.button jQuery selector of the existing button to be joined. Example: '#tool_line'. Required if `includeWith` is used.
-      * @property {"last"|Integer} [includeWith.position] Position of icon in flyout list; will be added to end if not indicated. Integer is for use with {@link http://api.jquery.com/eq/}.
-      * @property {module:SVGEditor.Key} [key] The key to bind to the button
+     * @property {module:SVGEditor.Key} [key] The key to bind to the button
       */
       // Add buttons given by extension
       $.each(ext.buttons, function (i, /** @type {module:SVGEditor.Button} */ btn) {
@@ -2972,7 +2738,7 @@ editor.init = () => {
           parent = '#main_menu ul';
           break;
         }
-        // let flyoutHolder, showBtn, refData, refBtn;
+
         const button = $((btn.list || btn.type === 'app_menu') ? '<li/>' : '<div/>')
           .attr('id', id)
           .attr('title', btn.title)
@@ -2988,58 +2754,7 @@ editor.init = () => {
             button.appendTo(parent);
           }
 
-          if (btn.type === 'mode_flyout') {
-            /*
-          // Add to flyout menu / make flyout menu
-            // const opts = btn.includeWith;
-            // // opts.button, default, position
-            refBtn = $(button);
-
-            flyoutHolder = refBtn.parent();
-            // Create a flyout menu if there isn't one already
-            let tlsId;
-            if (!refBtn.parent().hasClass('tools_flyout')) {
-              // Create flyout placeholder
-              tlsId = refBtn[0].id.replace('tool_', 'tools_');
-              showBtn = refBtn.clone()
-                .attr('id', tlsId + '_show')
-                .append($('<div>', {class: 'flyout_arrow_horiz'}));
-
-              refBtn.before(showBtn);
-
-              // Create a flyout div
-              flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
-              flyoutHolder.data('isLibrary', true);
-              showBtn.data('isLibrary', true);
-            }
-            // refData = Actions.getButtonData(opts.button);
-
-            placementObj['#' + tlsId + '_show'] = btn.id;
-            // TODO: Find way to set the current icon using the iconloader if this is not default
-
-            // Include data for extension button as well as ref button
-            holders['#' + flyoutHolder[0].id] = [{
-              sel: '#' + id,
-              fn: btn.events.click,
-              icon: btn.id,
-              // key: btn.key,
-              isDefault: true
-            }]; // , refData
-            //
-            // // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
-            //
-            // const pos = ('position' in opts)?opts.position:'last';
-            // const len = flyoutHolder.children().length;
-            //
-            // // Add at given position or end
-            // if (!isNaN(pos) && pos >= 0 && pos < len) {
-            //   flyoutHolder.children().eq(pos).before(button);
-            // } else {
-            //   flyoutHolder.append(button);
-            //   curH.reverse();
-            // }
-            */
-          } else if (btn.type === 'app_menu') {
+          if (btn.type === 'app_menu') {
             button.append('<div>').append(btn.title);
           }
         } else if (btn.list) {
@@ -3051,53 +2766,6 @@ editor.init = () => {
             const svgicon = btn.svgicon || btn.id;
             placementObj['#cur_' + btn.list] = svgicon;
           }
-        } else if (btn.includeWith) {
-          /*
-          // Add to flyout menu / make flyout menu
-          const opts = btn.includeWith;
-          // opts.button, default, position
-          refBtn = $(opts.button);
-          flyoutHolder = refBtn.parent();
-          // Create a flyout menu if there isn't one already
-          let tlsId;
-          if (!refBtn.parent().hasClass('tools_flyout')) {
-            // Create flyout placeholder
-            tlsId = refBtn[0].id.replace('tool_', 'tools_');
-            showBtn = refBtn.clone()
-              .attr('id', tlsId + '_show')
-              .append($('<div>', {class: 'flyout_arrow_horiz'}));
-
-            refBtn.before(showBtn);
-            // Create a flyout div
-            flyoutHolder = makeFlyoutHolder(tlsId, refBtn);
-          }
-          refData = Actions.getButtonData(opts.button);
-
-          if (opts.isDefault) {
-            placementObj['#' + tlsId + '_show'] = btn.id;
-          }
-          // TODO: Find way to set the current icon using the iconloader if this is not default
-
-          // Include data for extension button as well as ref button
-          const curH = holders['#' + flyoutHolder[0].id] = [{
-            sel: '#' + id,
-            fn: btn.events.click,
-            icon: btn.id,
-            key: btn.key,
-            isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
-          }, refData];
-
-          const pos = ('position' in opts) ? opts.position : 'last';
-          const len = flyoutHolder.children().length;
-
-          // Add at given position or end
-          if (!isNaN(pos) && pos >= 0 && pos < len) {
-            flyoutHolder.children().eq(pos).before(button);
-          } else {
-            flyoutHolder.append(button);
-            curH.reverse();
-          }
-        */
         }
         if (!svgicons) {
           button.append(icon);
@@ -3132,8 +2800,6 @@ editor.init = () => {
             }
           });
         }
-
-        setupFlyouts(holders);
       });
       $.each(btnSelects, function () {
         addAltDropDown(this.elem, this.list, this.callback, {seticon: true});
@@ -3159,6 +2825,20 @@ editor.init = () => {
           });
         });
       }
+    }
+    if (ext.buttons && ext.newUI) {
+      ext.buttons.forEach((btn) => {
+        // Set button up according to its type
+        switch (btn.type) {
+        case 'mode_flyout':
+          $id(btn.id).addEventListener('click', () => {
+            if (updateLeftPanel(btn.id)) {
+              btn.events.click();
+            }
+          });
+          break;
+        }
+      });
     }
     return runCallback();
   };
@@ -3560,9 +3240,9 @@ editor.init = () => {
       onButton = false;
     }).mousedown(function (evt) {
       // $('.contextMenu').hide();
-      const islib = $(evt.target).closest('div.tools_flyout, .contextMenu').length;
+      const islib = $(evt.target).closest('.contextMenu').length;
       if (!islib) {
-        $('.tools_flyout:visible,.contextMenu').fadeOut(250);
+        $('.contextMenu').fadeOut(250);
       }
     });
 
@@ -3730,22 +3410,6 @@ editor.init = () => {
     const letter = this.id.replace('tool_pos', '').charAt(0);
     svgCanvas.alignSelectedElements(letter, 'page');
   }, {multiclick: true});
-
-  /*
-
-  When a flyout icon is selected
-    (if flyout) {
-    - Change the icon
-    - Make pressing the button run its stuff
-    }
-    - Run its stuff
-
-  When its shortcut key is pressed
-    - If not current in list, do as above
-    , else:
-    - Just run its stuff
-
-  */
 
   // Unfocus text input when workarea is mousedowned.
   (function () {
@@ -4617,7 +4281,6 @@ editor.init = () => {
       workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
       winWh[type] = curval;
     });
-    setFlyoutPositions();
   });
 
   workarea.scroll(function () {
@@ -5205,7 +4868,6 @@ editor.init = () => {
     * @property {string} [parent] Selector
     * @property {boolean} [hidekey] Whether to show key value in title
     * @property {string} [icon] The button ID
-    * @property {boolean} isDefault For flyout holders
     */
     /**
      *
@@ -5362,7 +5024,6 @@ editor.init = () => {
        * @returns {void}
        */
       setAll () {
-        const flyouts = {};
         const keyHandler = {}; // will contain the action for each pressed key
 
         toolButtons.forEach((opts) => {
@@ -5378,23 +5039,6 @@ editor.init = () => {
                 opts.evt = 'mousedown';
               }
               btn.addEventListener(opts.evt, opts.fn);
-            }
-
-            // Add to parent flyout menu, if able to be displayed
-            if (opts.parent && $(opts.parent + '_show').length) {
-              let fH = $(opts.parent);
-              if (!fH.length) {
-                fH = makeFlyoutHolder(opts.parent.substr(1));
-              }
-              if (opts.prepend) {
-                btn.style.margin = 'initial';
-              }
-              fH[opts.prepend ? 'prepend' : 'append'](btn);
-
-              if (!Array.isArray(flyouts[opts.parent])) {
-                flyouts[opts.parent] = [];
-              }
-              flyouts[opts.parent].push(opts);
             }
           }
 
@@ -5437,9 +5081,6 @@ editor.init = () => {
             e.preventDefault();
           }
         });
-
-        // Setup flyouts
-        setupFlyouts(flyouts);
 
         // Misc additional actions
 
@@ -5927,9 +5568,6 @@ editor.init = () => {
     }
 
     svgCanvas.runExtensions('langChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_langChanged} */ lang);
-
-    // Update flyout tooltips
-    setFlyoutTitles();
 
     // Copy title for certain tool elements
     const elems = {

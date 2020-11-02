@@ -15,7 +15,7 @@ template.innerHTML = `
   }
   .overall.pressed .button-icon,
   .overall.pressed .handle {
-    background-color: #000 !important;
+    background-color: #F4E284 !important;
   }
   .overall.pressed .menu-button {
     box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
@@ -106,7 +106,7 @@ export class FlyingButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'pressed', 'disabled'];
+    return ['title', 'pressed', 'disabled'];
   }
   /**
    * @function attributeChangedCallback
@@ -123,9 +123,6 @@ export class FlyingButton extends HTMLElement {
         const shortcut = this.getAttribute('shortcut');
         this.$button.setAttribute('title', `${newValue} [${shortcut}]`);
       }
-      break;
-    case 'src':
-      this.$img.setAttribute('src', newValue);
       break;
     case 'pressed':
       if (newValue) {
@@ -203,27 +200,13 @@ export class FlyingButton extends HTMLElement {
     }
   }
   /**
-   * @function get
-   * @returns {any}
-   */
-  get src () {
-    return this.getAttribute('src');
-  }
-
-  /**
-   * @function set
-   * @returns {void}
-   */
-  set src (value) {
-    this.setAttribute('src', value);
-  }
-  /**
    * @function connectedCallback
    * @returns {void}
    */
   connectedCallback () {
     // initialize currentAction with the first slot of the list
     this.activeSlot = this.shadowRoot.querySelector('slot').assignedElements()[0];
+    this.$img.setAttribute('src', this.activeSlot.getAttribute('src'));
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
       switch (ev.target.nodeName) {
@@ -237,17 +220,16 @@ export class FlyingButton extends HTMLElement {
         }
         break;
       case 'SE-BUTTON':
-        console.log('change current action');
-        // change icon to the current action and close the menu
+        // change to the current action
         this.setAttribute('src', ev.target.getAttribute('src'));
         this.currentAction = ev.target;
         this.setAttribute('pressed', 'pressed');
+        // and close the menu
         this.$menu.classList.remove('open');
         break;
       default:
-        console.log(ev.target, ev.target.className);
-        this.$menu.classList.remove('open');
-        this.setAttribute('pressed', 'pressed');
+        // eslint-disable-next-line no-console
+        console.error('unkonw nodeName for:', ev.target, ev.target.className);
       }
     };
     // capture event from slots

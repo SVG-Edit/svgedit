@@ -156,7 +156,7 @@ export default {
     const buttons = [{
       id: 'tool_shapelib',
       icon: 'shapes.png',
-      type: 'mode_flyout', // _flyout
+      type: 'mode_flyout',
       position: 6,
       events: {
         click () {
@@ -214,7 +214,6 @@ export default {
           if (!btn.length) { return; }
 
           const copy = btn.children().clone();
-          shower.children(':not(.flyout_arrow_horiz)').remove();
           shower
             .append(copy)
             .attr('data-curopt', '#' + btn[0].id) // This sets the current mode
@@ -223,8 +222,6 @@ export default {
 
           curShapeId = btn[0].id.substr((modeId + '_').length);
           currentD = curLib.data[curShapeId];
-
-          $('.tools_flyout').fadeOut();
         });
 
         const shapeCats = $('<div id="shape_cats">');

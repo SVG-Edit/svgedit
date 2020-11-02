@@ -349,13 +349,7 @@ export default {
 
     const buttons = [{
       id: 'mode_connect',
-      type: 'mode',
-      icon: svgEditor.curConfig.imgPath + 'cut.png',
-      includeWith: {
-        button: '#tool_line',
-        isDefault: false,
-        position: 1
-      },
+      type: 'mode_flyout',
       events: {
         click () {
           svgCanvas.setMode('connector');
@@ -364,6 +358,8 @@ export default {
     }];
     const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
     return {
+      /** @todo JFH special flag */
+      newUI: true,
       name: strings.name,
       svgicons: 'conn.svg',
       buttons: strings.buttons.map((button, i) => {
