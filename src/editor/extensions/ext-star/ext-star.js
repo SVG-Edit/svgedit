@@ -120,6 +120,7 @@ export default {
     }];
 
     return {
+      newUI: true,
       name: strings.name,
       svgicons: 'star-icons.svg',
       buttons: strings.buttons.map((button, i) => {

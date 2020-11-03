@@ -954,7 +954,7 @@ class SvgCanvas {
 
     let
       // String with image URL of last loadable image
-      lastGoodImgUrl = curConfig.imgPath + 'logo.png',
+      lastGoodImgUrl = curConfig.imgPath + 'logo.svg',
 
       // Boolean indicating whether or not a draw action has been started
       started = false,

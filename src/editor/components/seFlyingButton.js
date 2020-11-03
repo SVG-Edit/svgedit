@@ -221,7 +221,7 @@ export class FlyingButton extends HTMLElement {
         break;
       case 'SE-BUTTON':
         // change to the current action
-        this.setAttribute('src', ev.target.getAttribute('src'));
+        this.$img.setAttribute('src', ev.target.getAttribute('src'));
         this.currentAction = ev.target;
         this.setAttribute('pressed', 'pressed');
         // and close the menu

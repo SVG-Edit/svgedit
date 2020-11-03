@@ -164,8 +164,8 @@ export default {
       }
     }];
     return {
+      newUI: true,
       name: strings.name,
-      svgicons: 'polygon-icons.svg',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

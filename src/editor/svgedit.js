@@ -956,7 +956,7 @@ editor.init = () => {
       // Todo: Set `alts: {}` with keys as the IDs in fallback set to
       //   `uiStrings` (localized) values
       fallback: {
-        logo: 'logo.png',
+        logo: 'logo.svg',
         select_node: 'select_node.png',
         square: 'square.png',
         rect: 'rect.png',
@@ -1151,7 +1151,7 @@ editor.init = () => {
 
   let resizeTimer, curScrollPos;
   let exportWindow = null,
-    defaultImageURL = curConfig.imgPath + 'logo.png',
+    defaultImageURL = curConfig.imgPath + 'logo.svg',
     zoomInIcon = 'crosshair',
     zoomOutIcon = 'crosshair',
     uiContext = 'toolbars';
@@ -1442,23 +1442,6 @@ editor.init = () => {
     $(opt).addClass('current').siblings().removeClass('current');
   }
 
-  /**
-  * This is a common function used when a tool has been clicked (chosen).
-  * It does several common things:
-  * - Removes the `tool_button_current` class from whatever tool currently has it.
-  * - Adds the `tool_button_current` class to the button passed in.
-  * @function module:SVGEditor.toolButtonClick
-  * @param {string|Element} button The DOM element or string selector representing the toolbar button
-  * @returns {boolean} Whether the button was disabled or not
-  */
-  const toolButtonClick = editor.toolButtonClick = function (button) {
-    if ($(button).hasClass('disabled')) { return false; }
-    $('#styleoverrides').text('');
-    workarea.css('cursor', 'auto');
-    $('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-    $(button).addClass('tool_button_current').removeClass('tool_button');
-    return true;
-  };
   /**
   * This is a common function used when a tool has been clicked (chosen).
   * It does several common things:
@@ -2784,7 +2767,7 @@ editor.init = () => {
                 button.bind(name, func);
               } else {
                 button.bind(name, function () {
-                  if (toolButtonClick(button)) {
+                  if (updateLeftPanel(button)) {
                     func();
                   }
                 });
@@ -2831,6 +2814,7 @@ editor.init = () => {
         // Set button up according to its type
         switch (btn.type) {
         case 'mode_flyout':
+        case 'mode':
           $id(btn.id).addEventListener('click', () => {
             if (updateLeftPanel(btn.id)) {
               btn.events.click();
@@ -3440,7 +3424,7 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickFHPath = function () {
+  const clickFHPath = () => {
     if (updateLeftPanel('tool_fhpath')) {
       svgCanvas.setMode('fhpath');
     }
@@ -3450,7 +3434,7 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickLine = function () {
+  const clickLine = () => {
     if (updateLeftPanel('tool_line')) {
       svgCanvas.setMode('line');
     }
@@ -3460,8 +3444,8 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickSquare = function () {
-    if (toolButtonClick('#tool_square')) {
+  const clickSquare = () => {
+    if (updateLeftPanel('tool_square')) {
       svgCanvas.setMode('square');
     }
   };
@@ -3470,8 +3454,8 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickRect = function () {
-    if (toolButtonClick('#tool_rect')) {
+  const clickRect = () => {
+    if (updateLeftPanel('tool_rect')) {
       svgCanvas.setMode('rect');
     }
   };
@@ -3480,8 +3464,8 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickFHRect = function () {
-    if (toolButtonClick('#tool_fhrect')) {
+  const clickFHRect = () => {
+    if (updateLeftPanel('tool_fhrect')) {
       svgCanvas.setMode('fhrect');
     }
   };
@@ -3490,8 +3474,8 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickCircle = function () {
-    if (toolButtonClick('#tool_circle')) {
+  const clickCircle = () => {
+    if (updateLeftPanel('tool_circle')) {
       svgCanvas.setMode('circle');
     }
   };
@@ -3500,8 +3484,8 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickEllipse = function () {
-    if (toolButtonClick('#tool_ellipse')) {
+  const clickEllipse = () => {
+    if (updateLeftPanel('tool_ellipse')) {
       svgCanvas.setMode('ellipse');
     }
   };
@@ -3510,8 +3494,8 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickFHEllipse = function () {
-    if (toolButtonClick('#tool_fhellipse')) {
+  const clickFHEllipse = () => {
+    if (updateLeftPanel('tool_fhellipse')) {
       svgCanvas.setMode('fhellipse');
     }
   };
@@ -3520,7 +3504,7 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const clickImage = function () {
+  const clickImage = () => {
     if (updateLeftPanel('tool_image')) {
       svgCanvas.setMode('image');
     }
@@ -3555,8 +3539,8 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const dblclickZoom = function () {
-    if (toolButtonClick('#tool_zoom')) {
+  const dblclickZoom = () => {
+    if (updateLeftPanel('tool_zoom')) {
       zoomImage();
       clickSelect();
     }
@@ -4542,7 +4526,7 @@ editor.init = () => {
 
   // Test for embedImage support (use timeout to not interfere with page load)
   setTimeout(function () {
-    svgCanvas.embedImage('images/logo.png', function (datauri) {
+    svgCanvas.embedImage('images/logo.svg', function (datauri) {
       if (!datauri) {
         // Disable option
         $('#image_save_opts [value=embed]').attr('disabled', 'disabled');
@@ -4903,9 +4887,16 @@ editor.init = () => {
     $id('tool_text').addEventListener('click', clickText);
     $id('tool_image').addEventListener('click', clickImage);
     $id('tool_zoom').addEventListener('click', clickZoom);
+    $id('tool_zoom').addEventListener('dblclick', dblclickZoom);
     $id('tool_path').addEventListener('click', clickPath);
     $id('tool_line').addEventListener('click', clickLine);
-    // $id('tool_').addEventListener('click', clickP);
+    // flyout
+    $id('tool_rect').addEventListener('click', clickRect);
+    $id('tool_square').addEventListener('click', clickSquare);
+    $id('tool_fhrect').addEventListener('click', clickFHRect);
+    $id('tool_ellipse').addEventListener('click', clickEllipse);
+    $id('tool_circle').addEventListener('click', clickCircle);
+    $id('tool_fhellipse').addEventListener('click', clickFHEllipse);
 
     // register actions for layer toolbar
     $id('layer_new').addEventListener('click', newLayer);
@@ -4915,18 +4906,6 @@ editor.init = () => {
     $id('layer_rename').addEventListener('click', layerRename);
 
     const toolButtons = [
-      {sel: '#tool_rect', fn: clickRect, evt: 'mouseup',
-        key: ['R', true], parent: '#tools_rect', icon: 'rect'},
-      {sel: '#tool_square', fn: clickSquare, evt: 'mouseup',
-        parent: '#tools_rect', icon: 'square'},
-      {sel: '#tool_fhrect', fn: clickFHRect, evt: 'mouseup',
-        parent: '#tools_rect', icon: 'fh_rect'},
-      {sel: '#tool_ellipse', fn: clickEllipse, evt: 'mouseup',
-        key: ['E', true], parent: '#tools_ellipse', icon: 'ellipse'},
-      {sel: '#tool_circle', fn: clickCircle, evt: 'mouseup',
-        parent: '#tools_ellipse', icon: 'circle'},
-      {sel: '#tool_fhellipse', fn: clickFHEllipse, evt: 'mouseup',
-        parent: '#tools_ellipse', icon: 'fh_ellipse'},
       {sel: '#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
       {sel: '#tool_save', fn () {
         if (editingsource) {
@@ -5105,8 +5084,6 @@ editor.init = () => {
             selectPrev();
           }
         });
-
-        $('#tool_zoom').dblclick(dblclickZoom);
       },
       /**
        * @returns {void}

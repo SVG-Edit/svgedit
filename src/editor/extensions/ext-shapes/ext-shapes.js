@@ -154,7 +154,7 @@ export default {
       loadIcons();
     }
     const buttons = [{
-      id: 'tool_shapelib',
+      id: 'tool_shapelib_show',
       icon: 'shapes.png',
       type: 'mode_flyout',
       position: 6,
@@ -166,6 +166,7 @@ export default {
     }];
 
     return {
+      newUI: true,
       svgicons: 'ext-shapes.xml',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);

@@ -74,7 +74,6 @@ export default {
     const buttons = [
       {
         id: 'tool_eyedropper',
-        icon: 'eyedropper.png',
         type: 'mode',
         events: {
           click () {
@@ -86,7 +85,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: 'eyedropper-icon.xml',
+      newUI: true,
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),

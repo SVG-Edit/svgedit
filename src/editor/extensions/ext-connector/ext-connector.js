@@ -361,7 +361,6 @@ export default {
       /** @todo JFH special flag */
       newUI: true,
       name: strings.name,
-      svgicons: 'conn.svg',
       buttons: strings.buttons.map((button, i) => {
         return Object.assign(buttons[i], button);
       }),
