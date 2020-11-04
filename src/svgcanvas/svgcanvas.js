@@ -637,7 +637,11 @@ class SvgCanvas {
 * @type {module:path.EditorContext#resetD}
 */
     function resetD (p) {
-      p.setAttribute('d', pathActions.convertPath(p));
+      if (typeof pathActions.convertPath === 'function') {
+        p.setAttribute('d', pathActions.convertPath(p));
+      } else if (typeof pathActions.convertPaths === 'function') {
+        p.setAttribute('d', pathActions.convertPaths(p));
+      }
     }
     pathModule.init(
       /**
