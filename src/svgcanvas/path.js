@@ -10,18 +10,17 @@
 import {NS} from '../common/namespaces.js';
 import {getTransformList} from '../common/svgtransformlist.js';
 import {shortFloat} from '../common/units.js';
-import {ChangeElementCommand, BatchCommand} from './history.js';
+import {ChangeElementCommand} from './history.js';
 import {
-  transformPoint, getMatrix, snapToAngle, rectsIntersect,
-  transformListToTransform
+  transformPoint, getMatrix
 } from '../common/math.js';
 import {
   assignAttributes, getElem, getRotationAngle, getBBox,
-  getRefElem, findDefs, snapToGrid, isNullish,
+  getRefElem, findDefs, isNullish,
   getBBox as utilsGetBBox
 } from '../common/utilities.js';
 import {
-  supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
+  supportsPathReplaceItem, isWebkit
 } from '../common/browser.js';
 import {
   init as pathMethodInit, insertItemBeforeMethod, ptObjToArrMethod, getGripPtMethod,
@@ -256,7 +255,6 @@ export const init = function (editorContext) {
     pathFuncs.push(s + 'Rel');
   });
 };
-
 
 pathMethodInit(
   /**
@@ -1578,8 +1576,6 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
   return segment;
 }
 
-
-
 pathActionsInit(
   /**
 * @implements {module:text-actions.textActionsContext}
@@ -1602,7 +1598,6 @@ pathActionsInit(
     setLinkControlPoints
   }
 );
-
 /* eslint-disable jsdoc/require-property */
 /**
 * Group: Path edit functions.

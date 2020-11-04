@@ -7,30 +7,20 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-
 import {NS} from '../common/namespaces.js';
-import {getTransformList} from '../common/svgtransformlist.js';
-import {shortFloat} from '../common/units.js';
-import {ChangeElementCommand, BatchCommand} from './history.js';
 import {
-  transformPoint, getMatrix, snapToAngle, rectsIntersect,
-  transformListToTransform
+  transformPoint
 } from '../common/math.js';
 import {
-  assignAttributes, getElem, getRotationAngle, getBBox,
-  getRefElem, findDefs, snapToGrid, isNullish,
-  getBBox as utilsGetBBox
+  assignAttributes, getElem
 } from '../common/utilities.js';
 import {
-  supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
+  supportsPathInsertItemBefore
 } from '../common/browser.js';
 
 const $ = jQuery;
-
-
 let pathMethodsContext_ = null;
 let editorContext_ = null;
-let path = null;
 
 /**
 * @function module:path-actions.init
@@ -39,8 +29,6 @@ let path = null;
 */
 export const init = function (pathMethodsContext) {
   pathMethodsContext_ = pathMethodsContext;
-  //editorContext_ = pathMethodsContext_.getEditorContext();
-  //console.log('editorContext_', editorContext_);
 };
 
 /**
