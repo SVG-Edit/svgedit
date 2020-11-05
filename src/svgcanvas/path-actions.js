@@ -653,7 +653,12 @@ export const pathActionsMethod = (function () {
             if (prev.pathSegType === 6) {
               const prevX = prev.x + (prev.x - prev.x2);
               const prevY = prev.y + (prev.y - prev.y2);
-              pathActionsContext_.replacePathSeg(6, 1, [mouseX, mouseY, prevX * currentZoom, prevY * currentZoom, mouseX, mouseY], stretchy);
+              pathActionsContext_.replacePathSeg(
+                6,
+                1,
+                [mouseX, mouseY, prevX * currentZoom, prevY * currentZoom, mouseX, mouseY],
+                stretchy
+              );
             } else if (firstCtrl) {
               pathActionsContext_.replacePathSeg(6, 1, [mouseX, mouseY, firstCtrl[0], firstCtrl[1], mouseX, mouseY], stretchy);
             } else {
