@@ -239,17 +239,3 @@ export class FlyingButton extends HTMLElement {
 
 // Register
 customElements.define('se-flyingbutton', FlyingButton);
-/*
- <div class="menu-item item1" title="title">
-      <img class="svg_icon" src="./images/logo.svg" alt="icon">
-    </div>
-    <div class="menu-item item2" title="title">
-      <img class="svg_icon" src="./images/logo.svg" alt="icon">
-    </div>
-    <div class="menu-item item3" title="title">
-      <img class="svg_icon" src="./images/logo.svg" alt="icon">
-    </div>
-    <div class="menu-item item4" title="title">
-       <img class="svg_icon" src="./images/logo.svg" alt="icon">
-    </div>
-    */

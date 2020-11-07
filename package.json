@@ -137,6 +137,7 @@
     "@babel/polyfill": "^7.12.1",
     "canvg": "^3.0.7",
     "core-js": "^3.6.5",
+    "elix": "^14.1.1",
     "jspdf": "^2.1.1",
     "pathseg": "^1.2.0",
     "regenerator-runtime": "^0.13.7",
