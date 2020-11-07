@@ -70,4 +70,13 @@ describe('use various parts of svg-edit', function () {
       .click({force: true});
     testSnapshot();
   });
+  it('check tool_start', function () {
+    cy.get('#tool_star')
+      .click({force: true});
+    cy.get('#svgcontent')
+      .trigger('mousedown', {which: 1, pageX: 600, pageY: 150, force: true})
+      .trigger('mousemove', {which: 1, pageX: 600, pageY: 170, force: true})
+      .trigger('mouseup', {force: true});
+    cy.get('#svgcontent').toMatchSnapshot();
+  });
 });
