@@ -23,7 +23,7 @@ describe('use various parts of svg-edit', function () {
        <title>Layer 1</title>
         <rect id="rect" fill="#FF0000" height="70" stroke="#000000" stroke-width="5" width="94" x="69.5" y="51.5"/>
        </g>
-     </svg>`, {parseSpecialCharSequences: false});
+     </svg>`, {force: true, parseSpecialCharSequences: false});
     cy.get('#tool_source_save').click({force: true});
     testSnapshot();
   });
