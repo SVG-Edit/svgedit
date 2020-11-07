@@ -45,7 +45,7 @@ export const clearSelectionMethod = function (noCall) {
     }
     selectionContext_.getCanvas().selectorManager.releaseSelector(elem);
   });
-  selectionContext_.setSelectedElements([]);
+  selectionContext_.getCanvas().setEmptySelectedElements();
 
   if (!noCall) { selectionContext_.getCanvas().call('selected', selectionContext_.getSelectedElements()); }
 };

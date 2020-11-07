@@ -401,7 +401,7 @@ export const deleteSelectedElements = function () {
     selectedCopy.push(selected); // for the copy
     batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
   }
-  elementContext_.setSelectedElements();
+  elementContext_.getCanvas().setEmptySelectedElements();
 
   if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
   elementContext_.call('changed', selectedCopy);

@@ -378,8 +378,11 @@ class SvgCanvas {
       return selectedElements;
     };
 
-    const setSelectedElements = this.getSelectedElems = function (key, value) {
+    this.setSelectedElements = function (key, value) {
       selectedElements[key] = value;
+    };
+    this.setEmptySelectedElements = function () {
+      selectedElements = [];
     };
 
     const {pathActions} = pathModule;
@@ -552,8 +555,7 @@ class SvgCanvas {
         getCurrentMode () { return currentMode; },
         getCurrentZoom,
         getSVGRoot,
-        getSelectedElements,
-        setSelectedElements
+        getSelectedElements
       }
     );
 
@@ -580,7 +582,6 @@ class SvgCanvas {
         getCanvas () { return canvas; },
         getCurrentGroup () { return currentGroup; },
         getSelectedElements,
-        setSelectedElements,
         getSVGRoot,
         getSVGContent,
         getDOMContainer () { return container; },
@@ -2379,7 +2380,6 @@ class SvgCanvas {
         getContentW () { return canvas.contentW; },
         getContentH () { return canvas.contentH; },
         getClipboardID () { return CLIPBOARD_ID; },
-        setSelectedElements () { selectedElements = []; },
         getDOMDocument () { return svgdoc; },
         clearSelection,
         getNextId,

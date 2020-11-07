@@ -120,7 +120,7 @@ export const ffClone = function (elem) {
   elem.before(clone);
   elem.remove();
   undoContext_.getCanvas().selectorManager.releaseSelector(elem);
-  undoContext_.setSelectedElements(0, clone);
+  undoContext_.getCanvas().setSelectedElements(0, clone);
   undoContext_.getCanvas().selectorManager.requestSelector(clone).showGrips(true);
   return clone;
 };
