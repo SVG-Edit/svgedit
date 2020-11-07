@@ -667,11 +667,7 @@ export const mouseUpEvent = function (evt) {
     eventContext_.setEnd('y', 0);
     const coords = element.getAttribute('points');
     const commaIndex = coords.indexOf(',');
-    if (commaIndex >= 0) {
-      keep = coords.includes(',', commaIndex + 1);
-    } else {
-      keep = coords.includes(' ', coords.indexOf(' ') + 1);
-    }
+    keep = commaIndex >= 0 ? coords.includes(',', commaIndex + 1) : coords.includes(' ', coords.indexOf(' ') + 1);
     if (keep) {
       element = eventContext_.getCanvas().pathActions.smoothPolylineIntoPath(element);
     }

@@ -505,13 +505,10 @@ export const importSvgString = function (xmlString) {
       this.prepareSvg(newDoc);
 
       // import new svg document into our document
-      let svg;
       // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-      if (svgContext_.getDOMDocument().adoptNode) {
-        svg = svgContext_.getDOMDocument().adoptNode(newDoc.documentElement);
-      } else {
-        svg = svgContext_.getDOMDocument().importNode(newDoc.documentElement, true);
-      }
+      const svg = svgContext_.getDOMDocument().adoptNode
+        ? svgContext_.getDOMDocument().adoptNode(newDoc.documentElement)
+        : svgContext_.getDOMDocument().importNode(newDoc.documentElement, true);
 
       svgContext_.getCanvas().uniquifyElems(svg);
 
@@ -529,11 +526,7 @@ export const importSvgString = function (xmlString) {
         canvash = Number(svgContext_.getSVGContent().getAttribute('height'));
       // imported content should be 1/3 of the canvas on its largest dimension
 
-      if (innerh > innerw) {
-        ts = 'scale(' + (canvash / 3) / vb[3] + ')';
-      } else {
-        ts = 'scale(' + (canvash / 3) / vb[2] + ')';
-      }
+      ts = innerh > innerw ? 'scale(' + (canvash / 3) / vb[3] + ')' : 'scale(' + (canvash / 3) / vb[2] + ')';
 
       // Hack to make recalculateDimensions understand how to scale
       ts = 'translate(0) ' + ts + ' translate(0)';

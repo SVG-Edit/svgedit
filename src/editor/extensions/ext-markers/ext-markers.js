@@ -189,10 +189,7 @@ export default {
       let viewBox = '0 0 100 100';
       let markerWidth = 5;
       let markerHeight = 5;
-      let seType;
-      if (val.substr(0, 1) === '\\') {
-        seType = val.substr(1);
-      } else { seType = 'textmarker'; }
+      const seType = val.substr(0, 1) === '\\' ? val.substr(1) : 'textmarker';
 
       if (!markerTypes[seType]) { return undefined; } // an unknown type!
 

@@ -28,11 +28,7 @@ function transformToString (xform) {
     text = 'translate(' + m.e + ',' + m.f + ')';
     break;
   case 3: // SCALE
-    if (m.a === m.d) {
-      text = 'scale(' + m.a + ')';
-    } else {
-      text = 'scale(' + m.a + ',' + m.d + ')';
-    }
+    text = m.a === m.d ? 'scale(' + m.a + ')' : 'scale(' + m.a + ',' + m.d + ')';
     break;
   case 4: { // ROTATE
     let cx = 0;
