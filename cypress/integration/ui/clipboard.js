@@ -17,7 +17,7 @@ describe('UI - Clipboard', function () {
     <title>Layer 1</title>
     <circle cx="100" cy="100" r="50" fill="#FF0000" id="testCircle" stroke="#000000" stroke-width="5"/>
    </g>
-  </svg>`, {parseSpecialCharSequences: false});
+  </svg>`, {force: true, parseSpecialCharSequences: false});
     cy.get('#tool_source_save').click();
     cy.get('#testCircle').should('exist');
     cy.get('#svg_1').should('not.exist');
