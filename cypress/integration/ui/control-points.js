@@ -12,9 +12,9 @@ describe('UI - Control Points', function () {
     cy.get('#tool_source').click();
 
     cy.get('#svg_source_textarea')
-      .type('{selectall}')
+      .type('{selectall}', {force: true})
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">
-   <g class="layer">
+   <g class="layer" id="svg_1">
     <title>Layer 1</title>
     <path d="m187,194a114,62 0 1 0 219,2" fill="#FF0000" stroke="#000000" stroke-width="5"/>
    </g>
