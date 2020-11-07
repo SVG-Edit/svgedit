@@ -66,7 +66,10 @@ module.exports = {
     //  environments; see also discussion above
     //  `mocha-cleanup/no-assertions-outside-it`
     'jsdoc/check-examples': ['warn', {
-      rejectExampleCodeRegex: '^`'
+      rejectExampleCodeRegex: '^`',
+      checkDefaults: true,
+      checkParams: true,
+      checkProperties: true
     }],
 
     // https://github.com/sindresorhus/eslint-plugin-unicorn/issues/453

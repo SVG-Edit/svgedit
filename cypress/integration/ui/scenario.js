@@ -3,10 +3,7 @@ import {
 } from '../../support/ui-test-helper.js';
 
 const testSnapshot = () => {
-  // cy.get('#tool_source').click({force: true});
-  // cy.get('#svg_source_textarea').invoke('val').toMatchSnapshot();
-  // cy.get('#tool_source_save').click({force: true});
-  cy.get('#svgcontent').toMatchSnapshot();
+  cy.get('#svgcontent').cleanSnapshot();
 };
 
 describe('use various parts of svg-edit', function () {

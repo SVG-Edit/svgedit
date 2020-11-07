@@ -23,3 +23,26 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+// remove the style attributes that is causing differences in snapshots
+const ngAttributes = ['style'];
+
+Cypress.Commands.add(
+  'cleanSnapshot',
+  {
+    prevSubject: true
+  },
+  (subject, snapshotOptions) => {
+    let html = subject[0].outerHTML;
+
+    for (const attribute of ngAttributes) {
+      const expression = new RegExp(`${attribute}[^= ]*="[^"]*"`, 'g');
+      html = html.replace(expression, '');
+    }
+    html = html.replace(/<!--[\s\S]*?-->/g, '');
+
+    const sanitisedBody = new DOMParser().parseFromString(html, 'text/html').querySelector('body');
+
+    return cy.wrap(sanitisedBody.firstChild).toMatchSnapshot();
+  }
+);

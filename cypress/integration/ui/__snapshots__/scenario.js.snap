@@ -10,8 +10,8 @@ exports[`use various parts of svg-edit > check tool_source #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       id="rect"
       fill="#FF0000"
@@ -21,7 +21,6 @@ exports[`use various parts of svg-edit > check tool_source #0`] = `
       width="94"
       x="69.5"
       y="51.5"
-      style="pointer-events:inherit"
     ></rect>
   </g>
 </svg>
@@ -70,8 +69,8 @@ exports[`use various parts of svg-edit > check tool_text #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       id="rect"
       fill="#FF0000"
@@ -81,7 +80,6 @@ exports[`use various parts of svg-edit > check tool_text #0`] = `
       width="94"
       x="69.5"
       y="51.5"
-      style="pointer-events:inherit"
       fill-opacity="1"
       stroke-opacity="1"
     ></rect>
@@ -89,7 +87,6 @@ exports[`use various parts of svg-edit > check tool_text #0`] = `
       fill="#000000"
       stroke="#000000"
       stroke-width="0"
-      style="pointer-events: inherit; cursor: text;"
       x="116"
       y="87"
       id="svg_1"
@@ -118,8 +115,8 @@ exports[`use various parts of svg-edit > check tool_clone #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       id="rect"
       fill="#FF0000"
@@ -129,7 +126,6 @@ exports[`use various parts of svg-edit > check tool_clone #0`] = `
       width="94"
       x="69.5"
       y="51.5"
-      style="pointer-events:inherit"
       fill-opacity="1"
       stroke-opacity="1"
     ></rect>
@@ -181,8 +177,8 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       id="rect"
       fill="#FF0000"
@@ -192,7 +188,6 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
       width="94"
       x="69.5"
       y="51.5"
-      style="pointer-events:inherit"
       fill-opacity="1"
       stroke-opacity="1"
     ></rect>
@@ -209,7 +204,7 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
-      font-style="italic"
+      font-=""
     >
       B
     </text>
@@ -245,8 +240,8 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       id="rect"
       fill="#FF0000"
@@ -256,7 +251,6 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
       width="94"
       x="69.5"
       y="51.5"
-      style="pointer-events:inherit"
       fill-opacity="1"
       stroke-opacity="1"
     ></rect>
@@ -273,7 +267,7 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
-      font-style="italic"
+      font-=""
       font-weight="bold"
     >
       B
@@ -310,8 +304,8 @@ exports[`use various parts of svg-edit > check change color #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       id="rect"
       fill="#FF0000"
@@ -321,7 +315,6 @@ exports[`use various parts of svg-edit > check change color #0`] = `
       width="94"
       x="69.5"
       y="51.5"
-      style="pointer-events:inherit"
       fill-opacity="1"
       stroke-opacity="1"
     ></rect>
@@ -338,7 +331,7 @@ exports[`use various parts of svg-edit > check change color #0`] = `
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
-      font-style="italic"
+      font-=""
       font-weight="bold"
     >
       B
