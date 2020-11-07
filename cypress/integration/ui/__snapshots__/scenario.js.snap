@@ -221,6 +221,7 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
       fill-opacity="1"
       stroke-opacity="1"
       id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
     >
       B
     </text>
@@ -285,6 +286,7 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
       fill-opacity="1"
       stroke-opacity="1"
       id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
     >
       B
     </text>
@@ -349,6 +351,7 @@ exports[`use various parts of svg-edit > check change color #0`] = `
       fill-opacity="1"
       stroke-opacity="1"
       id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
     >
       B
     </text>
