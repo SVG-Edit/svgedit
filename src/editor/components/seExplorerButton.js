@@ -59,7 +59,7 @@ template.innerHTML = `
     top: 0px;
     left:34px;
     background: #E8E8E8;
-    display: inline-flex;
+    display: none;
     flex-wrap: wrap;
     flex-direction: row;
     width: 150px;
@@ -71,6 +71,9 @@ template.innerHTML = `
     background: #E8E8E8;
     margin-bottom: -1px;
     white-space: nowrap;
+  }
+  .open-lib {
+    display: inline-flex;
   }
   .open {
     display: block;
@@ -86,18 +89,11 @@ template.innerHTML = `
       <div class="handle"></div>
     </div>
     <div class="image-lib"">
-      <se-button src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath fill='%23A0041E' d='M1 17l8-7 16 1 1 16-7 8s.001-5.999-6-12-12-6-12-6z'/%3E%3Cpath fill='%23FFAC33' d='M.973 35s-.036-7.979 2.985-11S15 21.187 15 21.187 14.999 29 11.999 32c-3 3-11.026 3-11.026 3z'/%3E%3Ccircle fill='%23FFCC4D' cx='8.999' cy='27' r='4'/%3E%3Cpath fill='%2355ACEE' d='M35.999 0s-10 0-22 10c-6 5-6 14-4 16s11 2 16-4c10-12 10-22 10-22z'/%3E%3Cpath d='M26.999 5c-1.623 0-3.013.971-3.641 2.36.502-.227 1.055-.36 1.641-.36 2.209 0 4 1.791 4 4 0 .586-.133 1.139-.359 1.64 1.389-.627 2.359-2.017 2.359-3.64 0-2.209-1.791-4-4-4z'/%3E%3Cpath fill='%23A0041E' d='M8 28s0-4 1-5 13.001-10.999 14-10-9.001 13-10.001 14S8 28 8 28z'/%3E%3C/svg%3E"></se-button>
-      <se-button src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath fill='%23A0041E' d='M1 17l8-7 16 1 1 16-7 8s.001-5.999-6-12-12-6-12-6z'/%3E%3Cpath fill='%23FFAC33' d='M.973 35s-.036-7.979 2.985-11S15 21.187 15 21.187 14.999 29 11.999 32c-3 3-11.026 3-11.026 3z'/%3E%3Ccircle fill='%23FFCC4D' cx='8.999' cy='27' r='4'/%3E%3Cpath fill='%2355ACEE' d='M35.999 0s-10 0-22 10c-6 5-6 14-4 16s11 2 16-4c10-12 10-22 10-22z'/%3E%3Cpath d='M26.999 5c-1.623 0-3.013.971-3.641 2.36.502-.227 1.055-.36 1.641-.36 2.209 0 4 1.791 4 4 0 .586-.133 1.139-.359 1.64 1.389-.627 2.359-2.017 2.359-3.64 0-2.209-1.791-4-4-4z'/%3E%3Cpath fill='%23A0041E' d='M8 28s0-4 1-5 13.001-10.999 14-10-9.001 13-10.001 14S8 28 8 28z'/%3E%3C/svg%3E"></se-button>
-      <se-button src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath fill='%23A0041E' d='M1 17l8-7 16 1 1 16-7 8s.001-5.999-6-12-12-6-12-6z'/%3E%3Cpath fill='%23FFAC33' d='M.973 35s-.036-7.979 2.985-11S15 21.187 15 21.187 14.999 29 11.999 32c-3 3-11.026 3-11.026 3z'/%3E%3Ccircle fill='%23FFCC4D' cx='8.999' cy='27' r='4'/%3E%3Cpath fill='%2355ACEE' d='M35.999 0s-10 0-22 10c-6 5-6 14-4 16s11 2 16-4c10-12 10-22 10-22z'/%3E%3Cpath d='M26.999 5c-1.623 0-3.013.971-3.641 2.36.502-.227 1.055-.36 1.641-.36 2.209 0 4 1.791 4 4 0 .586-.133 1.139-.359 1.64 1.389-.627 2.359-2.017 2.359-3.64 0-2.209-1.791-4-4-4z'/%3E%3Cpath fill='%23A0041E' d='M8 28s0-4 1-5 13.001-10.999 14-10-9.001 13-10.001 14S8 28 8 28z'/%3E%3C/svg%3E"></se-button>
-      <se-button src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath fill='%23A0041E' d='M1 17l8-7 16 1 1 16-7 8s.001-5.999-6-12-12-6-12-6z'/%3E%3Cpath fill='%23FFAC33' d='M.973 35s-.036-7.979 2.985-11S15 21.187 15 21.187 14.999 29 11.999 32c-3 3-11.026 3-11.026 3z'/%3E%3Ccircle fill='%23FFCC4D' cx='8.999' cy='27' r='4'/%3E%3Cpath fill='%2355ACEE' d='M35.999 0s-10 0-22 10c-6 5-6 14-4 16s11 2 16-4c10-12 10-22 10-22z'/%3E%3Cpath d='M26.999 5c-1.623 0-3.013.971-3.641 2.36.502-.227 1.055-.36 1.641-.36 2.209 0 4 1.791 4 4 0 .586-.133 1.139-.359 1.64 1.389-.627 2.359-2.017 2.359-3.64 0-2.209-1.791-4-4-4z'/%3E%3Cpath fill='%23A0041E' d='M8 28s0-4 1-5 13.001-10.999 14-10-9.001 13-10.001 14S8 28 8 28z'/%3E%3C/svg%3E"></se-button>
-      <se-button src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath fill='%23A0041E' d='M1 17l8-7 16 1 1 16-7 8s.001-5.999-6-12-12-6-12-6z'/%3E%3Cpath fill='%23FFAC33' d='M.973 35s-.036-7.979 2.985-11S15 21.187 15 21.187 14.999 29 11.999 32c-3 3-11.026 3-11.026 3z'/%3E%3Ccircle fill='%23FFCC4D' cx='8.999' cy='27' r='4'/%3E%3Cpath fill='%2355ACEE' d='M35.999 0s-10 0-22 10c-6 5-6 14-4 16s11 2 16-4c10-12 10-22 10-22z'/%3E%3Cpath d='M26.999 5c-1.623 0-3.013.971-3.641 2.36.502-.227 1.055-.36 1.641-.36 2.209 0 4 1.791 4 4 0 .586-.133 1.139-.359 1.64 1.389-.627 2.359-2.017 2.359-3.64 0-2.209-1.791-4-4-4z'/%3E%3Cpath fill='%23A0041E' d='M8 28s0-4 1-5 13.001-10.999 14-10-9.001 13-10.001 14S8 28 8 28z'/%3E%3C/svg%3E"></se-button>
-      <se-button src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath fill='%23A0041E' d='M1 17l8-7 16 1 1 16-7 8s.001-5.999-6-12-12-6-12-6z'/%3E%3Cpath fill='%23FFAC33' d='M.973 35s-.036-7.979 2.985-11S15 21.187 15 21.187 14.999 29 11.999 32c-3 3-11.026 3-11.026 3z'/%3E%3Ccircle fill='%23FFCC4D' cx='8.999' cy='27' r='4'/%3E%3Cpath fill='%2355ACEE' d='M35.999 0s-10 0-22 10c-6 5-6 14-4 16s11 2 16-4c10-12 10-22 10-22z'/%3E%3Cpath d='M26.999 5c-1.623 0-3.013.971-3.641 2.36.502-.227 1.055-.36 1.641-.36 2.209 0 4 1.791 4 4 0 .586-.133 1.139-.359 1.64 1.389-.627 2.359-2.017 2.359-3.64 0-2.209-1.791-4-4-4z'/%3E%3Cpath fill='%23A0041E' d='M8 28s0-4 1-5 13.001-10.999 14-10-9.001 13-10.001 14S8 28 8 28z'/%3E%3C/svg%3E"></se-button>
-    </div>
+      <se-button></se-button>
+   </div>
     <div class="menu">
-      <div class="menu-item">menu 1</div>
-      <div class="menu-item">menu 2 est un peu plus long</div>
-      <div class="menu-item">menu 3</div>   
-    </div>
+      <div class="menu-item">menu</div>
+   </div>
   </div>
   
 `;
@@ -118,7 +114,9 @@ export class ExplorerButton extends HTMLElement {
     this.$overall = this._shadowRoot.querySelector('.overall');
     this.$img = this._shadowRoot.querySelector('.menu-button img');
     this.$menu = this._shadowRoot.querySelector('.menu');
+    this.$lib = this._shadowRoot.querySelector('.image-lib');
     this.files = [];
+    this.request = new XMLHttpRequest();
   }
   /**
    * @function observedAttributes
@@ -134,7 +132,7 @@ export class ExplorerButton extends HTMLElement {
    * @param {string} newValue
    * @returns {void}
    */
-  attributeChangedCallback (name, oldValue, newValue) {
+  async attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
     switch (name) {
     case 'title':
@@ -158,26 +156,33 @@ export class ExplorerButton extends HTMLElement {
       }
       break;
     case 'lib':
-      {
-        // read the json containing the list of library files.
-        const request = new XMLHttpRequest();
-        request.open('GET', newValue, true);
-        request.addEventListener('load', (resp) => {
-          if (resp.target.status >= 200 && resp.target.status < 400) {
-            const json = JSON.parse(resp.target.response);
-            const {lib} = json;
-            // eslint-disable-next-line no-unsanitized/property
-            this.$menu.innerHTML = lib.map((menu) => (
-              `<div class="menu-item">${menu}</div>`
-            )).join('');
-          } else {
-            console.error(`could not read file:${newValue}`);
-          }
-        });
-        request.addEventListener('error', (error) => {
-          console.log(error);
-        });
-        request.send();
+      try {
+        let response = await fetch(`${newValue}index.json`);
+        let json = await response.json();
+        const {lib} = json;
+        // eslint-disable-next-line no-unsanitized/property
+        this.$menu.innerHTML = lib.map((menu) => (
+          `<div class="menu-item">${menu}</div>`
+        )).join('');
+        // initialize the icon
+        response = await fetch(`${newValue}${lib[0]}.json`);
+        json = await response.json();
+        console.log(json);
+        const {data} = json;
+        // eslint-disable-next-line no-unsanitized/property
+        this.$lib.innerHTML = Object.entries(data).map(([_key, path]) => {
+          const encoded = btoa(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+              <svg viewBox="-15 -15 330 330">
+                <path fill="none" stroke="#000" stroke-width="10" d="${path}">
+                </path>
+              </svg>
+            </svg>
+          `);
+          return `<se-button src="data:image/svg+xml;base64,${encoded}"></se-button>`;
+        }).join('');
+      } catch (error) {
+        console.error(`could not read file:${newValue}`, error);
       }
       break;
     default:
@@ -251,8 +256,8 @@ export class ExplorerButton extends HTMLElement {
       console.log(ev);
       switch (ev.target.nodeName) {
       case 'SE-EXPLORERBUTTON':
-
         this.$menu.classList.add('open');
+        this.$lib.classList.add('open-lib');
         break;
       case 'SE-BUTTON':
         // change to the current action
