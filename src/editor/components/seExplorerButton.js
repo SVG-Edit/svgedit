@@ -4,7 +4,7 @@ template.innerHTML = `
   :host {
     position:relative;
   }
-  .overall:hover *
+  .menu-button:hover, se-button:hover, .menu-item:hover 
   {
     background-color: #ffc;
   }
@@ -14,7 +14,8 @@ template.innerHTML = `
     height: 24px;
   }
   .overall.pressed .button-icon,
-  .overall.pressed .handle {
+  .overall.pressed .handle,
+  .menu-item.pressed {
     background-color: #F4E284 !important;
   }
   .overall.pressed .menu-button {
@@ -49,8 +50,8 @@ template.innerHTML = `
   }
   .menu {
     position: absolute;
-    top:0px;
-    left:185px;
+    top:2px;
+    left:171px;
     background: none !important;
     display:none;
   }
@@ -62,7 +63,7 @@ template.innerHTML = `
     display: none;
     flex-wrap: wrap;
     flex-direction: row;
-    width: 150px;
+    width: 136px;
   }
   .menu-item {
     line-height: 1em;
@@ -157,32 +158,16 @@ export class ExplorerButton extends HTMLElement {
       break;
     case 'lib':
       try {
-        let response = await fetch(`${newValue}index.json`);
-        let json = await response.json();
+        const response = await fetch(`${newValue}index.json`);
+        const json = await response.json();
         const {lib} = json;
         // eslint-disable-next-line no-unsanitized/property
-        this.$menu.innerHTML = lib.map((menu) => (
-          `<div class="menu-item">${menu}</div>`
+        this.$menu.innerHTML = lib.map((menu, i) => (
+          `<div data-menu="${menu}" class="menu-item ${(i === 0) ? 'pressed' : ''} ">${menu}</div>`
         )).join('');
-        // initialize the icon
-        response = await fetch(`${newValue}${lib[0]}.json`);
-        json = await response.json();
-        console.log(json);
-        const {data} = json;
-        // eslint-disable-next-line no-unsanitized/property
-        this.$lib.innerHTML = Object.entries(data).map(([_key, path]) => {
-          const encoded = btoa(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-              <svg viewBox="-15 -15 330 330">
-                <path fill="none" stroke="#000" stroke-width="10" d="${path}">
-                </path>
-              </svg>
-            </svg>
-          `);
-          return `<se-button src="data:image/svg+xml;base64,${encoded}"></se-button>`;
-        }).join('');
+        await this.updateLib(lib[0]);
       } catch (error) {
-        console.error(`could not read file:${newValue}`, error);
+        console.error(error);
       }
       break;
     default:
@@ -253,7 +238,6 @@ export class ExplorerButton extends HTMLElement {
   connectedCallback () {
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
-      console.log(ev);
       switch (ev.target.nodeName) {
       case 'SE-EXPLORERBUTTON':
         this.$menu.classList.add('open');
@@ -267,6 +251,11 @@ export class ExplorerButton extends HTMLElement {
         // and close the menu
         this.$menu.classList.remove('open');
         break;
+      case 'DIV':
+        this._shadowRoot.querySelectorAll('.menu > .pressed').forEach((b) => { b.classList.remove('pressed'); });
+        ev.target.classList.add('pressed');
+        this.updateLib(ev.target.dataset.menu);
+        break;
       default:
         // eslint-disable-next-line no-console
         console.error('unkonw nodeName for:', ev.target, ev.target.className);
@@ -274,6 +263,31 @@ export class ExplorerButton extends HTMLElement {
     };
     // capture event from slots
     this.addEventListener('click', onClickHandler);
+    this.$menu.addEventListener('click', onClickHandler);
+  }
+  /**
+   * @function updateLib
+   * @param {string} lib
+   * @returns {void}
+   */
+  async updateLib (lib) {
+    const libDir = this.getAttribute('lib');
+    try {
+      // initialize buttons for all shapes defined for this library
+      const response = await fetch(`${libDir}${lib}.json`);
+      const json = await response.json();
+      const {data} = json;
+      // eslint-disable-next-line no-unsanitized/property
+      this.$lib.innerHTML = Object.entries(data).map(([key, path]) => {
+        const encoded = btoa(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+          <svg viewBox="-15 -15 330 330"><path fill="none" stroke="#000" stroke-width="10" d="${path}"></path></svg>
+        </svg>`);
+        return `<se-button data-shape="${key}"src="data:image/svg+xml;base64,${encoded}"></se-button>`;
+      }).join('');
+    } catch (error) {
+      console.error(`could not read file:${libDir}${lib}.json`, error);
+    }
   }
 }
 
