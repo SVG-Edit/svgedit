@@ -94,12 +94,10 @@ template.innerHTML = `
       <se-button src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath fill='%23A0041E' d='M1 17l8-7 16 1 1 16-7 8s.001-5.999-6-12-12-6-12-6z'/%3E%3Cpath fill='%23FFAC33' d='M.973 35s-.036-7.979 2.985-11S15 21.187 15 21.187 14.999 29 11.999 32c-3 3-11.026 3-11.026 3z'/%3E%3Ccircle fill='%23FFCC4D' cx='8.999' cy='27' r='4'/%3E%3Cpath fill='%2355ACEE' d='M35.999 0s-10 0-22 10c-6 5-6 14-4 16s11 2 16-4c10-12 10-22 10-22z'/%3E%3Cpath d='M26.999 5c-1.623 0-3.013.971-3.641 2.36.502-.227 1.055-.36 1.641-.36 2.209 0 4 1.791 4 4 0 .586-.133 1.139-.359 1.64 1.389-.627 2.359-2.017 2.359-3.64 0-2.209-1.791-4-4-4z'/%3E%3Cpath fill='%23A0041E' d='M8 28s0-4 1-5 13.001-10.999 14-10-9.001 13-10.001 14S8 28 8 28z'/%3E%3C/svg%3E"></se-button>
     </div>
     <div class="menu">
-    <div class="menu-item">menu 1</div>
-    <div class="menu-item">menu 2 est un peu plus long</div>
-    <div class="menu-item">menu 3</div>
-      
+      <div class="menu-item">menu 1</div>
+      <div class="menu-item">menu 2 est un peu plus long</div>
+      <div class="menu-item">menu 3</div>   
     </div>
-   
   </div>
   
 `;
@@ -118,15 +116,16 @@ export class ExplorerButton extends HTMLElement {
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button');
     this.$overall = this._shadowRoot.querySelector('.overall');
-    this.$img = this._shadowRoot.querySelector('img');
+    this.$img = this._shadowRoot.querySelector('.menu-button img');
     this.$menu = this._shadowRoot.querySelector('.menu');
+    this.files = [];
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'pressed', 'disabled'];
+    return ['title', 'pressed', 'disabled', 'lib'];
   }
   /**
    * @function attributeChangedCallback
@@ -156,6 +155,29 @@ export class ExplorerButton extends HTMLElement {
         this.$div.classList.add('disabled');
       } else {
         this.$div.classList.remove('disabled');
+      }
+      break;
+    case 'lib':
+      {
+        // read the json containing the list of library files.
+        const request = new XMLHttpRequest();
+        request.open('GET', newValue, true);
+        request.addEventListener('load', (resp) => {
+          if (resp.target.status >= 200 && resp.target.status < 400) {
+            const json = JSON.parse(resp.target.response);
+            const {lib} = json;
+            // eslint-disable-next-line no-unsanitized/property
+            this.$menu.innerHTML = lib.map((menu) => (
+              `<div class="menu-item">${menu}</div>`
+            )).join('');
+          } else {
+            console.error(`could not read file:${newValue}`);
+          }
+        });
+        request.addEventListener('error', (error) => {
+          console.log(error);
+        });
+        request.send();
       }
       break;
     default:
@@ -229,6 +251,7 @@ export class ExplorerButton extends HTMLElement {
       console.log(ev);
       switch (ev.target.nodeName) {
       case 'SE-EXPLORERBUTTON':
+
         this.$menu.classList.add('open');
         break;
       case 'SE-BUTTON':

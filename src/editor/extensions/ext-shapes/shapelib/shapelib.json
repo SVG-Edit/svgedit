@@ -1,0 +1,7 @@
+{
+    "lib": [
+        "basic",
+        "animal",
+        "game"
+    ]
+}
