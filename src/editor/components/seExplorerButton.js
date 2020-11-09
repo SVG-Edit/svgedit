@@ -238,6 +238,8 @@ export class ExplorerButton extends HTMLElement {
   connectedCallback () {
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
+      console.log(ev.target);
+      ev.stopPropagation();
       switch (ev.target.nodeName) {
       case 'SE-EXPLORERBUTTON':
         this.$menu.classList.add('open');
@@ -247,9 +249,10 @@ export class ExplorerButton extends HTMLElement {
         // change to the current action
         this.$img.setAttribute('src', ev.target.getAttribute('src'));
         this.currentAction = ev.target;
-        this.setAttribute('pressed', 'pressed');
+        this.currentAction.setAttribute('pressed', 'pressed');
         // and close the menu
         this.$menu.classList.remove('open');
+        this.$lib.classList.remove('open-lib');
         break;
       case 'DIV':
         this._shadowRoot.querySelectorAll('.menu > .pressed').forEach((b) => { b.classList.remove('pressed'); });
@@ -264,6 +267,7 @@ export class ExplorerButton extends HTMLElement {
     // capture event from slots
     this.addEventListener('click', onClickHandler);
     this.$menu.addEventListener('click', onClickHandler);
+    this.$lib.addEventListener('click', onClickHandler);
   }
   /**
    * @function updateLib
@@ -277,11 +281,16 @@ export class ExplorerButton extends HTMLElement {
       const response = await fetch(`${libDir}${lib}.json`);
       const json = await response.json();
       const {data} = json;
+      const size = json.size ?? 300;
+      const fill = json.fill ? '#333' : 'none';
+      const off = size * 0.05;
+      const vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
+      const stroke = json.fill ? 0 : (size / 30);
       // eslint-disable-next-line no-unsanitized/property
       this.$lib.innerHTML = Object.entries(data).map(([key, path]) => {
         const encoded = btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-          <svg viewBox="-15 -15 330 330"><path fill="none" stroke="#000" stroke-width="10" d="${path}"></path></svg>
+          <svg viewBox="${vb}"><path fill="${fill}" stroke="#000" stroke-width="${stroke}" d="${path.toLowerCase()}"></path></svg>
         </svg>`);
         return `<se-button data-shape="${key}"src="data:image/svg+xml;base64,${encoded}"></se-button>`;
       }).join('');
