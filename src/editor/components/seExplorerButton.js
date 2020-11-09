@@ -50,8 +50,8 @@ template.innerHTML = `
   }
   .menu {
     position: absolute;
-    top:2px;
-    left:171px;
+    top:0px;
+    left:204px;
     background: none !important;
     display:none;
   }
@@ -63,7 +63,7 @@ template.innerHTML = `
     display: none;
     flex-wrap: wrap;
     flex-direction: row;
-    width: 136px;
+    width: 170px;
   }
   .menu-item {
     line-height: 1em;
@@ -247,8 +247,9 @@ export class ExplorerButton extends HTMLElement {
         break;
       case 'SE-BUTTON':
         // change to the current action
-        this.$img.setAttribute('src', ev.target.getAttribute('src'));
         this.currentAction = ev.target;
+        this.$img.setAttribute('src', this.currentAction.getAttribute('src'));
+        this.dataset.draw = this.data[this.currentAction.dataset.shape];
         this.currentAction.setAttribute('pressed', 'pressed');
         // and close the menu
         this.$menu.classList.remove('open');
@@ -280,17 +281,17 @@ export class ExplorerButton extends HTMLElement {
       // initialize buttons for all shapes defined for this library
       const response = await fetch(`${libDir}${lib}.json`);
       const json = await response.json();
-      const {data} = json;
+      this.data = json.data;
       const size = json.size ?? 300;
       const fill = json.fill ? '#333' : 'none';
       const off = size * 0.05;
       const vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
       const stroke = json.fill ? 0 : (size / 30);
       // eslint-disable-next-line no-unsanitized/property
-      this.$lib.innerHTML = Object.entries(data).map(([key, path]) => {
+      this.$lib.innerHTML = Object.entries(this.data).map(([key, path]) => {
         const encoded = btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-          <svg viewBox="${vb}"><path fill="${fill}" stroke="#000" stroke-width="${stroke}" d="${path.toLowerCase()}"></path></svg>
+          <svg viewBox="${vb}"><path fill="${fill}" stroke="#000" stroke-width="${stroke}" d="${path}"></path></svg>
         </svg>`);
         return `<se-button data-shape="${key}"src="data:image/svg+xml;base64,${encoded}"></se-button>`;
       }).join('');
