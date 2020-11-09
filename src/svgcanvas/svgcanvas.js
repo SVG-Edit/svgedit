@@ -41,7 +41,7 @@ import {
 } from './undo.js';
 import {
   init as selectionInit, clearSelectionMethod, addToSelectionMethod, getMouseTargetMethod,
-  getIntersectionListMethod, addExtension, runExtensionsMethod, groupSvgElem, prepareSvg,
+  getIntersectionListMethod, runExtensionsMethod, groupSvgElem, prepareSvg,
   recalculateAllSelectedDimensions, setRotationAngle
 } from './selection.js';
 import {
@@ -834,7 +834,42 @@ class SvgCanvas {
 *   if extension of supplied name already exists
 * @returns {Promise<void>} Resolves to `undefined`
 */
-    this.addExtension = addExtension;
+    this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
+      if (typeof extInitFunc !== 'function') {
+        throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
+      }
+      if (name in extensions) {
+        throw new Error('Cannot add extension "' + name + '", an extension by that name already exists.');
+      }
+      // Provide private vars/funcs here. Is there a better way to do this?
+      /**
+   * @typedef {module:svgcanvas.PrivateMethods} module:svgcanvas.ExtensionArgumentObject
+   * @property {SVGSVGElement} svgroot See {@link module:svgcanvas~svgroot}
+   * @property {SVGSVGElement} svgcontent See {@link module:svgcanvas~svgcontent}
+   * @property {!(string|Integer)} nonce See {@link module:draw.Drawing#getNonce}
+   * @property {module:select.SelectorManager} selectorManager
+   * @property {module:SVGEditor~ImportLocale} importLocale
+   */
+      /**
+   * @type {module:svgcanvas.ExtensionArgumentObject}
+   * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
+   */
+      const argObj = $.extend(canvas.getPrivateMethods(), {
+        $: jq,
+        importLocale,
+        svgroot,
+        svgcontent,
+        nonce: getCurrentDrawing().getNonce(),
+        selectorManager
+      });
+      const extObj = await extInitFunc(argObj);
+      if (extObj) {
+        extObj.name = name;
+      }
+
+      extensions[name] = extObj;
+      return call('extension_added', extObj);
+    };
 
     /**
 * This method sends back an array or a NodeList full of elements that
