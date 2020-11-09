@@ -417,6 +417,7 @@ exports[`use various parts of svg-edit > check tool_start #0`] = `
       fill-opacity="1"
       stroke-opacity="1"
       id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
     >
       B
     </text>
@@ -436,6 +437,206 @@ exports[`use various parts of svg-edit > check tool_start #0`] = `
       points="407,31.666666666666664 410.1348546788932,40.68524269666695 419.68075355060205,40.87977340833403 412.0723014202408,46.64809063666639 414.83713669723295,55.78689325833263 407,50.333333333333336 399.16286330276705,55.78689325833263 401.9276985797592,46.64809063666639 394.31924644939795,40.87977340833404 403.8651453211068,40.68524269666695 407,31.666666666666664 410.1348546788932,40.68524269666695 "
       stroke="#000000"
       stroke-width="0"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </polygon>
+  </g>
+</svg>
+`;
+
+exports[`use various parts of svg-edit > check tool_star #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <rect
+      id="rect"
+      fill="#FF0000"
+      height="70"
+      stroke="#000000"
+      stroke-width="5"
+      width="94"
+      x="69.5"
+      y="51.5"
+      style="pointer-events:inherit"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></rect>
+    <text
+      fill="#ffff00"
+      stroke="#000000"
+      stroke-width="0"
+      x="116"
+      y="87"
+      id="svg_1"
+      font-size="24"
+      font-family="serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      font-style="italic"
+      font-weight="bold"
+    >
+      B
+    </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
+    >
+      B
+    </text>
+    <polygon
+      cx="407"
+      cy="45"
+      id="svg_3"
+      shape="star"
+      point="5"
+      r="13.333333333333334"
+      radialshift=""
+      r2="5.333333333333334"
+      orient="point"
+      fill="#000000"
+      strokecolor="#000000"
+      strokeWidth="0"
+      points="407,31.666666666666664 410.1348546788932,40.68524269666695 419.68075355060205,40.87977340833403 412.0723014202408,46.64809063666639 414.83713669723295,55.78689325833263 407,50.333333333333336 399.16286330276705,55.78689325833263 401.9276985797592,46.64809063666639 394.31924644939795,40.87977340833404 403.8651453211068,40.68524269666695 407,31.666666666666664 410.1348546788932,40.68524269666695 "
+      stroke="#000000"
+      stroke-width="0"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </polygon>
+  </g>
+</svg>
+`;
+
+exports[`use various parts of svg-edit > check tool_polygon #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <rect
+      id="rect"
+      fill="#FF0000"
+      height="70"
+      stroke="#000000"
+      stroke-width="5"
+      width="94"
+      x="69.5"
+      y="51.5"
+      style="pointer-events:inherit"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></rect>
+    <text
+      fill="#ffff00"
+      stroke="#000000"
+      stroke-width="0"
+      x="116"
+      y="87"
+      id="svg_1"
+      font-size="24"
+      font-family="serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      font-style="italic"
+      font-weight="bold"
+    >
+      B
+    </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
+    >
+      B
+    </text>
+    <polygon
+      cx="407"
+      cy="45"
+      id="svg_3"
+      shape="star"
+      point="5"
+      r="13.333333333333334"
+      radialshift=""
+      r2="5.333333333333334"
+      orient="point"
+      fill="#000000"
+      strokecolor="#000000"
+      strokeWidth="0"
+      points="407,31.666666666666664 410.1348546788932,40.68524269666695 419.68075355060205,40.87977340833403 412.0723014202408,46.64809063666639 414.83713669723295,55.78689325833263 407,50.333333333333336 399.16286330276705,55.78689325833263 401.9276985797592,46.64809063666639 394.31924644939795,40.87977340833404 403.8651453211068,40.68524269666695 407,31.666666666666664 410.1348546788932,40.68524269666695 "
+      stroke="#000000"
+      stroke-width="0"
+      style="pointer-events:inherit"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+    <polygon
+      cx="457"
+      cy="95"
+      id="svg_4"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="6.666666666666667"
+      fill="#000000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="462.6710053890136,95 458.7524370403971,100.39344662916632 452.4120602650961,98.33333333333333 452.4120602650961,91.66666666666667 458.7524370403971,89.60655337083368 462.6710053890136,95 "
+      stroke="#000000"
+      stroke-width="5"
     >
       <animate
         attributeName="opacity"
