@@ -94,6 +94,7 @@ export class FlyingButton extends HTMLElement {
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button');
+    this.$handle = this._shadowRoot.querySelector('.handle');
     this.$overall = this._shadowRoot.querySelector('.overall');
     this.$img = this._shadowRoot.querySelector('img');
     this.$menu = this._shadowRoot.querySelector('.menu');
@@ -209,6 +210,8 @@ export class FlyingButton extends HTMLElement {
     this.$img.setAttribute('src', this.activeSlot.getAttribute('src'));
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
+      console.log(ev.target);
+      ev.stopPropagation();
       switch (ev.target.nodeName) {
       case 'SE-FLYINGBUTTON':
         if (this.pressed) {
@@ -222,10 +225,14 @@ export class FlyingButton extends HTMLElement {
       case 'SE-BUTTON':
         // change to the current action
         this.$img.setAttribute('src', ev.target.getAttribute('src'));
-        this.currentAction = ev.target;
+        this.activeSlot = ev.target;
         this.setAttribute('pressed', 'pressed');
         // and close the menu
         this.$menu.classList.remove('open');
+        break;
+      case 'DIV':
+        // this is a click on the handle so let's open/close the menu.
+        this.$menu.classList.toggle('open');
         break;
       default:
         // eslint-disable-next-line no-console
@@ -234,6 +241,7 @@ export class FlyingButton extends HTMLElement {
     };
     // capture event from slots
     this.addEventListener('click', onClickHandler);
+    this.$handle.addEventListener('click', onClickHandler);
   }
 }
 
