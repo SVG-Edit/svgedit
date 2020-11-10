@@ -392,25 +392,29 @@
       <div id="tools_left" class="tools_panel">
         <se-button id="tool_select" title="Select Tool" src="./images/select.svg"></se-button>
         <se-button id="tool_fhpath" title="Pencil Tool" src="./images/pencil.svg" shortcut="Q"></se-button>
-        <div class="tool_button" id="tool_line" title="Line Tool"></div>
-        <div id="tools_rect_show" class="tool_button flyout_current" title="Square/Rect Tool">
-          <div class="flyout_arrow_horiz"></div>
-        </div>
-        <div id="tools_ellipse_show" class="tool_button flyout_current" title="Ellipse/Circle Tool">
-          <div class="flyout_arrow_horiz"></div>
-        </div>
+        <se-flyingbutton id="tools_line_show" title="Line Tool (L)/Connect two objects">
+          <se-button id="tool_line" title="Line Tool" src="./images/pen.svg" shortcut="L"></se-button>
+          <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>                   
+        </se-flyingbutton>
+        <se-flyingbutton id="tools_rect" title="Square/Rect Tool">
+          <se-button id="tool_rect" title="Rectangle" src="./images/rect.svg" shortcut="R"></se-button>
+          <se-button id="tool_square" title="Square" src="./images/square.svg"></se-button>
+          <se-button id="tool_fhrect" title="Free-Hand Rectangle" src="./images/fh_rect.svg"></se-button>                  
+        </se-flyingbutton>
+        <se-flyingbutton id="tools_ellipse_show" title="Ellipse/Circle Tool">
+          <se-button id="tool_ellipse" title="Rectangle" src="./images/ellipse.svg" shortcut="E"></se-button>
+          <se-button id="tool_circle" title="Square" src="./images/circle.svg"></se-button>
+          <se-button id="tool_fhellipse" title="Free-Hand Rectangle" src="./images/fh_ellipse.svg"></se-button>                 
+        </se-flyingbutton>
         <se-button id="tool_path" title="Path Tool" src="./images/path.svg" shortcut="P"></se-button>
+        <se-explorerbutton id="tool_shapelib_show" title="Shape library" lib="./extensions/ext-shapes/shapelib/"></se-explorerbutton>
         <se-button id="tool_text" title="Text Tool" src="./images/text.svg" shortcut="T"></se-button>
         <se-button id="tool_image" title="Image Tool" src="./images/image.svg"></se-button>
         <se-button id="tool_zoom" title="Zoom Tool" src="./images/zoom.svg" shortcut="Z"></se-button>
-        <div style="display: none;">
-          <div id="tool_rect" title="Rectangle"></div>
-          <div id="tool_square" title="Square"></div>
-          <div id="tool_fhrect" title="Free-Hand Rectangle"></div>
-          <div id="tool_ellipse" title="Ellipse"></div>
-          <div id="tool_circle" title="Circle"></div>
-          <div id="tool_fhellipse" title="Free-Hand Ellipse"></div>
-        </div>
+        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I"></se-button>
+        <se-button id="ext-panning" title="Panning" src="./images/panning.svg"></se-button>
+        <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
+        <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
       </div> <!-- tools_left -->
       <div id="tools_bottom" class="tools_panel">
         <!-- Zoom buttons -->

@@ -91,7 +91,7 @@ const config = [{
           dest: 'dist/editor/system'
         },
         {src: 'src/editor/images', dest},
-        {src: 'src/editor/shapelib', dest},
+        {src: 'src/editor/extensions/ext-shapes/shapelib', dest: dest.map((d) => `${d}/extensions/ext-shapes`)},
         {src: 'src/editor/jgraduate', dest},
         {src: 'src/editor/spinbtn', dest},
         {src: 'src/editor/embedapi.html', dest},

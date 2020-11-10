@@ -60,11 +60,6 @@
             <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m-30,-30l0,60l60,0l0,-60z"/>
         </svg>
     </g>
-    <g id="star">
-        <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-width="10" stroke="#ff7f00" fill="#ff7f00" d="m-40,-20l80,0l-70,60l30,-80l30,80z"/>
-        </svg>
-    </g>
     <g id="box_o">
         <svg viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
             <path stroke-width="10" stroke="#ff7f00" fill="none" d="m-30,-30l0,60l60,0l0,-60z"/>
