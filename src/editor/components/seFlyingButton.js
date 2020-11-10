@@ -210,7 +210,6 @@ export class FlyingButton extends HTMLElement {
     this.$img.setAttribute('src', this.activeSlot.getAttribute('src'));
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
-      console.log(ev.target);
       ev.stopPropagation();
       switch (ev.target.nodeName) {
       case 'SE-FLYINGBUTTON':

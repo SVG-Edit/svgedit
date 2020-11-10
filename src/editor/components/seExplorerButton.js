@@ -115,6 +115,7 @@ export class ExplorerButton extends HTMLElement {
     this.$overall = this._shadowRoot.querySelector('.overall');
     this.$img = this._shadowRoot.querySelector('.menu-button img');
     this.$menu = this._shadowRoot.querySelector('.menu');
+    this.$handle = this._shadowRoot.querySelector('.handle');
     this.$lib = this._shadowRoot.querySelector('.image-lib');
     this.files = [];
     this.request = new XMLHttpRequest();
@@ -250,25 +251,33 @@ export class ExplorerButton extends HTMLElement {
         this.currentAction = ev.target;
         this.$img.setAttribute('src', this.currentAction.getAttribute('src'));
         this.dataset.draw = this.data[this.currentAction.dataset.shape];
+        this._shadowRoot.querySelectorAll('.image-lib > .pressed').forEach((b) => { b.classList.remove('pressed'); });
         this.currentAction.setAttribute('pressed', 'pressed');
         // and close the menu
         this.$menu.classList.remove('open');
         this.$lib.classList.remove('open-lib');
         break;
       case 'DIV':
-        this._shadowRoot.querySelectorAll('.menu > .pressed').forEach((b) => { b.classList.remove('pressed'); });
-        ev.target.classList.add('pressed');
-        this.updateLib(ev.target.dataset.menu);
+        if (ev.target.classList[0] === 'handle') {
+          // this is a click on the handle so let's open/close the menu.
+          this.$menu.classList.toggle('open');
+          this.$lib.classList.toggle('open-lib');
+        } else {
+          this._shadowRoot.querySelectorAll('.menu > .pressed').forEach((b) => { b.classList.remove('pressed'); });
+          ev.target.classList.add('pressed');
+          this.updateLib(ev.target.dataset.menu);
+        }
         break;
       default:
         // eslint-disable-next-line no-console
-        console.error('unkonw nodeName for:', ev.target, ev.target.className);
+        console.error('unknown nodeName for:', ev.target, ev.target.className);
       }
     };
     // capture event from slots
     this.addEventListener('click', onClickHandler);
     this.$menu.addEventListener('click', onClickHandler);
     this.$lib.addEventListener('click', onClickHandler);
+    this.$handle.addEventListener('click', onClickHandler);
   }
   /**
    * @function updateLib
