@@ -125,7 +125,7 @@ export class ExplorerButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'pressed', 'disabled', 'lib'];
+    return ['title', 'pressed', 'disabled', 'lib', 'src'];
   }
   /**
    * @function attributeChangedCallback
@@ -170,6 +170,9 @@ export class ExplorerButton extends HTMLElement {
       } catch (error) {
         console.error(error);
       }
+      break;
+    case 'src':
+      this.$img.setAttribute('src', newValue);
       break;
     default:
       // eslint-disable-next-line no-console
@@ -251,7 +254,7 @@ export class ExplorerButton extends HTMLElement {
         this.currentAction = ev.target;
         this.$img.setAttribute('src', this.currentAction.getAttribute('src'));
         this.dataset.draw = this.data[this.currentAction.dataset.shape];
-        this._shadowRoot.querySelectorAll('.image-lib > .pressed').forEach((b) => { b.classList.remove('pressed'); });
+        this._shadowRoot.querySelectorAll('.image-lib [pressed]').forEach((b) => { b.pressed = false; });
         this.currentAction.setAttribute('pressed', 'pressed');
         // and close the menu
         this.$menu.classList.remove('open');
