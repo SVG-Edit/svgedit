@@ -58,11 +58,7 @@ export default {
     svgCanvas.bind('setnonce', setArrowNonce);
     svgCanvas.bind('unsetnonce', unsetArrowNonce);
 
-    if (randomizeIds) {
-      arrowprefix = prefix + nonce + '_';
-    } else {
-      arrowprefix = prefix;
-    }
+    arrowprefix = randomizeIds ? prefix + nonce + '_' : prefix;
 
     const pathdata = {
       fw: {d: 'm0,0l10,5l-10,5l5,-5l-5,-5z', refx: 8, id: arrowprefix + 'fw'},
