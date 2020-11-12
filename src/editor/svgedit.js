@@ -2056,17 +2056,9 @@ editor.init = () => {
 
         if (tagName === 'text') {
           $('#text_panel').css('display', 'inline');
-          $('#tool_font_size').css('display', 'inline');
-          if (svgCanvas.getItalic()) {
-            $('#tool_italic').addClass('push_button_pressed').removeClass('tool_button');
-          } else {
-            $('#tool_italic').removeClass('push_button_pressed').addClass('tool_button');
-          }
-          if (svgCanvas.getBold()) {
-            $('#tool_bold').addClass('push_button_pressed').removeClass('tool_button');
-          } else {
-            $('#tool_bold').removeClass('push_button_pressed').addClass('tool_button');
-          }
+          $('#tool_font_size').css('display', 'inline');          
+          $id('tool_italic').pressed = (svgCanvas.getItalic()) ? true : false;
+          $id('tool_bold').pressed = (svgCanvas.getBold()) ? true : false;
           $('#font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
           $('#text').val(elem.textContent);
@@ -4905,6 +4897,9 @@ editor.init = () => {
     $id('layer_down').addEventListener('click', () => moveLayer(1));
     $id('layer_rename').addEventListener('click', layerRename);
 
+    $id('tool_bold').addEventListener('click', clickBold);
+    $id('tool_italic').addEventListener('click', clickItalic);
+
     const toolButtons = [
       {sel: '#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
       {sel: '#tool_save', fn () {
@@ -4945,8 +4940,6 @@ editor.init = () => {
       {sel: '#tool_add_subpath', fn: addSubPath, evt: 'click'},
       {sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
       {sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
-      {sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
-      {sel: '#tool_italic', fn: clickItalic, evt: 'mousedown'},
       {sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
       {sel: '#copy_save_done', fn: cancelOverlays, evt: 'click'},
 
