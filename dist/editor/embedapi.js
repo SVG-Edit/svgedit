@@ -102,7 +102,7 @@ function getMessageListener (t) {
 * - Have an iframe somewhere pointing to a version of svg-edit > r1000.
 * @example
 // Initialize the magic with:
-svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
+const svgCanvas = new EmbeddedSVGEdit(window.frames.svgedit);
 
 // Pass functions in this format:
 svgCanvas.setSvgString('string');
@@ -130,7 +130,7 @@ svgCanvas.setSvgString('string')(function (data, error) {
 
 // The only other difference is when handling returns:
 // the callback notation is used instead.
-blah = new EmbeddedSVGEdit(window.frames.svgedit);
+const blah = new EmbeddedSVGEdit(window.frames.svgedit);
 blah.clearSelection('woot', 'blah', 1337, [1, 2, 3, 4, 5, 'moo'], -42, {
      a: 'tree', b: 6, c: 9
 })(function () { console.log('GET DATA', args); });

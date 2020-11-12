@@ -1303,8 +1303,8 @@ editor.init = () => {
   * @returns {void}
   */
   const togglePathEditMode = function (editmode, elems) {
-    // $('#path_node_panel').toggle(editmode);
-    // $('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
+    $('#path_node_panel').toggle(editmode);
+    $('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
     if (editmode) {
       // Change select icon
       $('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
@@ -1978,7 +1978,7 @@ editor.init = () => {
         $('#tool_reorient').toggleClass('disabled', angle === 0);
       } else {
         const point = path.getNodePoint();
-        $('#tool_add_subpath').removeClass('push_button_pressed').addClass('tool_button');
+        $('#tool_add_subpath').pressed = false;
         $('#tool_node_delete').toggleClass('disabled', !path.canDeleteNodes);
 
         // Show open/close button based on selected point
@@ -3724,8 +3724,9 @@ editor.init = () => {
   */
   const addSubPath = function () {
     const button = $('#tool_add_subpath');
-    const sp = !button.hasClass('push_button_pressed');
-    button.toggleClass('push_button_pressed tool_button');
+    const sp = !button.hasClass('pressed');
+    button.pressed = sp;
+    // button.toggleClass('push_button_pressed tool_button');
     path.addSubPath(sp);
   };
 
@@ -4880,6 +4881,10 @@ editor.init = () => {
     $id('tool_align_top').addEventListener('click', () => clickAlign('top'));
     $id('tool_align_bottom').addEventListener('click', () => clickAlign('bottom'));
     $id('tool_align_middle').addEventListener('click', () => clickAlign('middle'));
+    $id('tool_node_clone').addEventListener('click', clonePathNode);
+    $id('tool_node_delete').addEventListener('click', deletePathNode);
+    $id('tool_openclose_path').addEventListener('click', opencloseSubPath);
+    $id('tool_add_subpath').addEventListener('click', addSubPath);
 
     // register actions for left panel
     $id('tool_select').addEventListener('click', clickSelect);
@@ -4939,10 +4944,6 @@ editor.init = () => {
       {sel: '#tool_open', fn () { window.dispatchEvent(new CustomEvent('openImage')); }, evt: 'click'},
       {sel: '#tool_import', fn () { window.dispatchEvent(new CustomEvent('importImage')); }, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
-      {sel: '#tool_node_clone', fn: clonePathNode, evt: 'click'},
-      {sel: '#tool_node_delete', fn: deletePathNode, evt: 'click'},
-      {sel: '#tool_openclose_path', fn: opencloseSubPath, evt: 'click'},
-      {sel: '#tool_add_subpath', fn: addSubPath, evt: 'click'},
       {sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
       {sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
       {sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
