@@ -411,29 +411,18 @@
       </div> <!-- tools_left -->
       <div id="tools_bottom" class="tools_panel">
         <!-- Zoom buttons -->
-        <div id="zoom_panel" class="toolset" title="Change zoom level">
-          <label>
-            <span id="zoomLabel" class="zoom_tool icon_label"></span>
-            <input id="zoom" size="3" value="100" type="text" />
-          </label>
-          <div id="zoom_dropdown" class="dropdown">
-            <button></button>
-            <ul>
-              <li>1000%</li>
-              <li>400%</li>
-              <li>200%</li>
-              <li>100%</li>
-              <li>50%</li>
-              <li>25%</li>
-              <li id="fit_to_canvas" data-val="canvas">Fit to canvas</li>
-              <li id="fit_to_sel" data-val="selection">Fit to selection</li>
-              <li id="fit_to_layer_content" data-val="layer">Fit to layer content</li>
-              <li id="fit_to_all" data-val="content">Fit to all content</li>
-              <li>100%</li>
-            </ul>
-          </div>
-          <div class="tool_sep"></div>
-        </div>
+        <se-dropdown src="./images/zoom.svg" title="Change zoom level">
+          <div value="1000">1000%</div>
+          <div value="400">400%</div>
+          <div value="200">200%</div>
+          <div value="100">100%</div>
+          <div value="50">50%</div>
+          <div value="25">25%</div>
+          <div value="canvas">Fit to canvas</div>
+          <div value="selection">Fit to selection</div>
+          <div value="layer">Fit to layer content</div>
+          <div value="content">Fit to all content</div>
+        </se-dropdown>
         <div id="tools_bottom_2">
           <div id="color_tools">
             <div class="color_tool" id="tool_fill">
@@ -493,12 +482,14 @@
             </div>
           </div>
         </div>
+        <se-dropdown></se-dropdown>
         <div id="tools_bottom_3">
           <div id="palette_holder">
             <div id="palette" title="Click to change fill color, shift-click to change stroke color">
             </div>
           </div>
         </div>
+        <se-dropdown></se-dropdown>
         <!-- <div id="copyright"><span id="copyrightLabel">Powered by</span> <a href="https://github.com/SVG-Edit/svgedit" target="_blank">SVG-edit v2.6-beta</a></div> -->
       </div>
       <div id="option_lists" class="dropdown">
