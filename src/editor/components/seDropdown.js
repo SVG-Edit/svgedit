@@ -1,15 +1,26 @@
 /* eslint-disable node/no-unpublished-import */
 import ListComboBox from 'elix/define/ListComboBox.js';
-import SpinBox from 'elix/define/NumberSpinBox.js';
+import NumberSpinBox from 'elix/define/NumberSpinBox.js';
 import {defaultState, template} from 'elix/src/base/internal.js';
 import {templateFrom} from 'elix/src/core/htmlLiterals.js';
 
-class MyCombo extends ListComboBox {
+/**
+ * @class CustomCombo
+ */
+class CustomCombo extends ListComboBox {
+  /**
+    * @function get
+    * @returns {PlainObject}
+    */
   get [defaultState] () {
     return Object.assign(super[defaultState], {
-      inputPartType: SpinBox
+      inputPartType: NumberSpinBox
     });
   }
+  /**
+    * @function get
+    * @returns {PlainObject}
+  */
   get [template] () {
     const result = super[template];
     result.content.append(
@@ -25,7 +36,7 @@ class MyCombo extends ListComboBox {
   }
 }
 
-customElements.define('my-combo', MyCombo);
+customElements.define('custom-combo', CustomCombo);
 
 const mytemplate = document.createElement('template');
 mytemplate.innerHTML = `
@@ -45,15 +56,15 @@ mytemplate.innerHTML = `
     margin: 0 0 -1px 0;
     line-height: 16px;
   }
-  my-combo::part(popup) {
+  custom-combo::part(popup) {
     width: 180px;
   }
   </style>
   <span class="toolset" title="title">
     <img  class="icon" src="./images/logo.svg" alt="icon" width="18" height="18">
-    <my-combo>
+    <custom-combo>
       <slot></slot>
-    </my-combo>
+    </custom-combo>
   </span>
 `;
 /**
@@ -68,7 +79,7 @@ export class Dropdown extends HTMLElement {
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.appendChild(mytemplate.content.cloneNode(true));
-    this.$dropdown = this._shadowRoot.querySelector('my-combo');
+    this.$dropdown = this._shadowRoot.querySelector('custom-combo');
     this.$img = this._shadowRoot.querySelector('img');
     this.$span = this._shadowRoot.querySelector('span');
     // we retrieve all elements added in the slot (i.e. se-buttons)
@@ -114,6 +125,12 @@ export class Dropdown extends HTMLElement {
     this.$dropdown.addEventListener('selectedindexchange', (e) => {
       console.log(e.detail);
       console.log(this.children[e.detail.selectedIndex].getAttribute('value'));
+      console.log(this);
+    });
+    this.$dropdown.addEventListener('input', (e) => {
+      console.log(e.detail);
+      console.log(this.children[e.detail.selectedIndex].getAttribute('value'));
+      console.log(this);
     });
   }
 }
