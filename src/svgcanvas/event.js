@@ -1381,7 +1381,7 @@ export const DOMMouseScrollEvent = function (e) {
   };
 
   eventContext_.getCanvas().setZoom(zoomlevel);
-  $('#zoom').val((zoomlevel * 100).toFixed(1));
+  document.getElementById('zoom').value = ((zoomlevel * 100).toFixed(1));
 
   eventContext_.getCanvas().call('updateCanvas', {center: false, newCtr});
   eventContext_.getCanvas().call('zoomDone');

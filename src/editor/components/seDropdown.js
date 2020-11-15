@@ -1,6 +1,7 @@
 /* eslint-disable node/no-unpublished-import */
 import ListComboBox from 'elix/define/ListComboBox.js';
 import NumberSpinBox from 'elix/define/NumberSpinBox.js';
+// import Input from 'elix/src/base/Input.js';
 import {defaultState} from 'elix/src/base/internal.js';
 import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';
 import {internal} from 'elix';
@@ -16,7 +17,8 @@ class CustomCombo extends ListComboBox {
   get [defaultState] () {
     return Object.assign(super[defaultState], {
       inputPartType: NumberSpinBox,
-      src: './imags.logo.svg'
+      src: './images/logo.svg',
+      inputsize: '100%'
     });
   }
   /**
@@ -26,18 +28,16 @@ class CustomCombo extends ListComboBox {
   get [internal.template] () {
     const result = super[internal.template];
     const source = result.content.getElementById('source');
+    // add a icon before our dropdown
     source.prepend(fragmentFrom.html`
-      <img src="./images/logo.svg" alt="icon" width="18" height="18">
-      </img>
+      <img src="./images/logo.svg" alt="icon" width="18" height="18"></img>
       `.cloneNode(true));
+    // change the style so it fits in our toolbar
     result.content.append(
       templateFrom.html`
         <style>
         :host {
           float:left;
-        }
-        ::part(input) {
-          width: 40px;
         }
         [part~="source"] {
           grid-template-columns: 20px 1fr auto;
@@ -51,7 +51,7 @@ class CustomCombo extends ListComboBox {
           line-height: 16px;
         }
         [part~="popup"] {
-          width: 180px;
+          width: max-content;
         }
         </style>
       `.content
@@ -63,7 +63,7 @@ class CustomCombo extends ListComboBox {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src'];
+    return ['title', 'src', 'inputsize'];
   }
   /**
    * @function attributeChangedCallback
@@ -74,36 +74,21 @@ class CustomCombo extends ListComboBox {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
+    console.log({this: this, name, oldValue, newValue});
     switch (name) {
     case 'title':
-      console.log({this: this, name, oldValue, newValue});
       // this.$span.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
       break;
     case 'src':
-      console.log({name, oldValue, newValue});
       this.src = newValue;
+      break;
+    case 'inputsize':
+      this.inputsize = newValue;
       break;
     default:
       super.attributeChangedCallback(name, oldValue, newValue);
       break;
     }
-  }
-  /**
-  * @function connectedCallback
-  * @returns {void}
-  */
-  connectedCallback () {
-    super.connectedCallback();
-    this.addEventListener('selectedindexchange', (e) => {
-      console.log(e.detail);
-      console.log(this.children[e.detail.selectedIndex].getAttribute('value'));
-      console.log(this);
-    });
-    this.addEventListener('input', (e) => {
-      console.log(e.detail);
-      console.log(this.children[e.detail.selectedIndex].getAttribute('value'));
-      console.log(this);
-    });
   }
   /**
     * @function [internal.render]
@@ -112,21 +97,82 @@ class CustomCombo extends ListComboBox {
     */
   [internal.render] (changed) {
     super[internal.render](changed);
-    console.log(this, changed, this[internal.firstRender], changed.src);
+    // console.log(this, changed);
     if (this[internal.firstRender]) {
       this.$img = this.shadowRoot.querySelector('img');
+      this.$input = this.shadowRoot.getElementById('input');
+      this.$event = new CustomEvent('change');
+      this.addEventListener('selectedindexchange', (e) => {
+        e.preventDefault();
+        this.value = this.children[e.detail.selectedIndex].getAttribute('value');
+      });
     }
     if (changed.src) {
       this.$img.setAttribute('src', this[internal.state].src);
     }
+    if (changed.inputsize) {
+      this.$input.shadowRoot.querySelector('[part~="input"]').style.width = this[internal.state].inputsize;
+    }
+    if (changed.value) {
+      console.log('value=', this[internal.state].value);
+      this.dispatchEvent(this.$event);
+    }
+    if (changed.inputPartType) {
+      // Wire up handler on new input.
+      this.$input.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.value = e.target.value;
+      });
+    }
   }
+  /**
+   * @function src
+   * @returns {string} src
+   */
   get src () {
     return this[internal.state].src;
   }
+  /**
+   * @function src
+   * @returns {void}
+   */
   set src (src) {
     this[internal.setState]({src});
+  }
+  /**
+   * @function inputsize
+   * @returns {string} src
+   */
+  get inputsize () {
+    return this[internal.state].inputsize;
+  }
+  /**
+   * @function src
+   * @returns {void}
+   */
+  set inputsize (inputsize) {
+    this[internal.setState]({inputsize});
   }
 }
 
 // Register
 customElements.define('se-dropdown', CustomCombo);
+
+/*
+{TODO
+    min: 0.001, max: 10000, step: 50, stepfunc: stepZoom,
+  function stepZoom (elem, step) {
+    const origVal = Number(elem.value);
+    if (origVal === 0) { return 100; }
+    const sugVal = origVal + step;
+    if (step === 0) { return origVal; }
+
+    if (origVal >= 100) {
+      return sugVal;
+    }
+    if (sugVal >= origVal) {
+      return origVal * 2;
+    }
+    return origVal / 2;
+  }
+*/

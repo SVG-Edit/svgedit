@@ -140,12 +140,6 @@ select {
   margin: 1px;
 }
 
-#zoomLabel {
-  cursor: pointer;
-  margin-right: 5px;
-  padding-top: 4px
-}
-
 #linkLabel > svg {
   height: 20px;
   padding-top: 4px;
@@ -574,15 +568,6 @@ input[type=text] {
 #tools_left .tool_button_current {
   position: relative;
   z-index: 11;
-}
-
-span.zoom_tool {
-  line-height: 26px;
-  padding: 3px;
-}
-
-#zoom_panel {
-  margin-top: 5px;
 }
 
 .dropdown {

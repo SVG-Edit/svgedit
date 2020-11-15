@@ -973,7 +973,6 @@ editor.init = () => {
         open_path: 'openpath.png',
 
         image: 'image.png',
-        zoom: 'zoom.png',
 
         arrow_right_big: 'arrow_right_big.png',
         arrow_down: 'dropdown.gif',
@@ -1041,7 +1040,6 @@ editor.init = () => {
         '#tool_editor_prefs > div': 'config',
         '#tool_editor_homepage > div': 'globe_link',
         '#tool_image': 'image',
-        '#tool_zoom': 'zoom',
         '#tool_node_clone': 'node_clone',
         '#tool_node_delete': 'node_delete',
         '#tool_add_subpath': 'add_subpath',
@@ -1079,7 +1077,6 @@ editor.init = () => {
         '#cornerRadiusLabel span': 'c_radius',
         '#angleLabel': 'angle',
         '#linkLabel,#tool_make_link_multi': 'globe_link',
-        '#zoomLabel': 'zoom',
         '#tool_fill label': 'fill',
         '#tool_stroke .icon_label': 'stroke',
         '#group_opacityLabel': 'opacity',
@@ -2322,11 +2319,9 @@ editor.init = () => {
       bb = zInfo.bbox;
 
     if (zoomlevel < 0.001) {
-      changeZoom({value: 0.1});
+      changeZoom(0.1);
       return;
     }
-
-    $('#zoom').val((zoomlevel * 100).toFixed(1));
 
     if (autoCenter) {
       updateCanvas();
@@ -2345,10 +2340,10 @@ editor.init = () => {
   /**
   * @type {module:jQuerySpinButton.ValueCallback}
   */
-  const changeZoom = function (ctl) {
-    const zoomlevel = ctl.value / 100;
+  const changeZoom = function (value) {
+    const zoomlevel = value / 100;
     if (zoomlevel < 0.001) {
-      ctl.value = 0.1;
+      value = 0.1;
       return;
     }
     const zoom = svgCanvas.getZoom();
@@ -3364,16 +3359,6 @@ editor.init = () => {
     }
   });
 
-  editor.addDropDown('#zoom_dropdown', function () {
-    const item = $(this);
-    const val = item.data('val');
-    if (val) {
-      zoomChanged(window, val);
-    } else {
-      changeZoom({value: Number.parseFloat(item.text())});
-    }
-  }, true);
-
   addAltDropDown('#stroke_linecap', '#linecap_opts', function () {
     setStrokeOpt(this, true);
   }, {dropUp: true});
@@ -3521,7 +3506,7 @@ editor.init = () => {
     const res = svgCanvas.getResolution();
     multiplier = multiplier ? res.zoom * multiplier : 1;
     // setResolution(res.w * multiplier, res.h * multiplier, true);
-    $('#zoom').val(multiplier * 100);
+    $id('zoom').value = multiplier * 100;
     svgCanvas.setZoom(multiplier);
     zoomDone();
     updateCanvas(true);
@@ -4548,11 +4533,6 @@ editor.init = () => {
     $(window).mouseup();
   });
 
-  $('#zoomLabel').click(function () {
-    $('#zoom_dropdown button').mousedown();
-    $(window).mouseup();
-  });
-
   $('.push_button').mousedown(function () {
     if (!$(this).hasClass('disabled')) {
       $(this).addClass('push_button_pressed').removeClass('push_button');
@@ -4772,24 +4752,6 @@ editor.init = () => {
     return sugVal;
   }
 
-  /**
-   * @type {module:jQuerySpinButton.StepCallback}
-   */
-  function stepZoom (elem, step) {
-    const origVal = Number(elem.value);
-    if (origVal === 0) { return 100; }
-    const sugVal = origVal + step;
-    if (step === 0) { return origVal; }
-
-    if (origVal >= 100) {
-      return sugVal;
-    }
-    if (sugVal >= origVal) {
-      return origVal * 2;
-    }
-    return origVal / 2;
-  }
-
   // function setResolution (w, h, center) {
   //   updateCanvas();
   //   // w -= 0; h -= 0;
@@ -4887,6 +4849,7 @@ editor.init = () => {
     $id('tool_zoom').addEventListener('dblclick', dblclickZoom);
     $id('tool_path').addEventListener('click', clickPath);
     $id('tool_line').addEventListener('click', clickLine);
+
     // flyout
     $id('tool_rect').addEventListener('click', clickRect);
     $id('tool_square').addEventListener('click', clickSquare);
@@ -4894,6 +4857,9 @@ editor.init = () => {
     $id('tool_ellipse').addEventListener('click', clickEllipse);
     $id('tool_circle').addEventListener('click', clickCircle);
     $id('tool_fhellipse').addEventListener('click', clickFHEllipse);
+
+    // register actions for bottom panel
+    $id('zoom').addEventListener('change', (e) => changeZoom(Number(e.target.value)));
 
     // register actions for layer toolbar
     $id('layer_new').addEventListener('click', newLayer);
@@ -5186,13 +5152,6 @@ editor.init = () => {
   $('#blur').SpinButton({
     min: 0, max: 10, step: 0.1, stateObj, callback: changeBlur
   });
-  $('#zoom').SpinButton({
-    min: 0.001, max: 10000, step: 50, stepfunc: stepZoom,
-    stateObj, callback: changeZoom
-  // Set default zoom
-  }).val(
-    svgCanvas.getZoom() * 100
-  );
 
   $('#workarea').contextMenu(
     {
