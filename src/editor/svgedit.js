@@ -1072,8 +1072,6 @@ editor.init = () => {
         '#tool_source_save,#tool_docprops_save,#tool_prefs_save': 'ok',
         '#tool_source_cancel,#tool_docprops_cancel,#tool_prefs_cancel': 'cancel',
 
-        '#rwidthLabel, #iwidthLabel': 'width',
-        '#rheightLabel, #iheightLabel': 'height',
         '#cornerRadiusLabel span': 'c_radius',
         '#angleLabel': 'angle',
         '#linkLabel,#tool_make_link_multi': 'globe_link',
@@ -1888,8 +1886,8 @@ editor.init = () => {
       const opacPerc = (selectedElement.getAttribute('opacity') || 1.0) * 100;
       $('#group_opacity').val(opacPerc);
       $('#opac_slider').slider('option', 'value', opacPerc);
-      $('#elem_id').val(selectedElement.id);
-      $('#elem_class').val(selectedElement.getAttribute('class'));
+      $id('elem_id').value = selectedElement.id;
+      $id('elem_class').value = (selectedElement.getAttribute('class') !== null) ? selectedElement.getAttribute('class') : '';
     }
 
     updateToolButtonState();
@@ -3046,6 +3044,45 @@ editor.init = () => {
   $('#g_title').change(function () {
     svgCanvas.setGroupTitle(this.value);
   });
+
+  const attrChanger = function (e) {
+    const attr = e.target.getAttribute('data-attr');
+    let val = e.target.value;
+    const valid = isValidUnit(attr, val, selectedElement);
+
+    if (!valid) {
+      e.target.value = selectedElement.getAttribute(attr);
+      /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
+      return false;
+    }
+
+    if (attr !== 'id' && attr !== 'class') {
+      if (isNaN(val)) {
+        val = svgCanvas.convertToNum(attr, val);
+      } else if (curConfig.baseUnit !== 'px') {
+        // Convert unitless value to one with given unit
+
+        const unitData = getTypeMap();
+
+        if (selectedElement[attr] || svgCanvas.getMode() === 'pathedit' || attr === 'x' || attr === 'y') {
+          val *= unitData[curConfig.baseUnit];
+        }
+      }
+    }
+
+    // if the user is changing the id, then de-select the element first
+    // change the ID, then re-select it with the new ID
+    if (attr === 'id') {
+      const elem = selectedElement;
+      svgCanvas.clearSelection();
+      elem.id = val;
+      svgCanvas.addToSelection([elem], true);
+    } else {
+      svgCanvas.changeSelectedAttribute(attr, val);
+    }
+    // e.target.blur();
+    return true;
+  };
 
   $('.attr_changer').change(function () {
     const attr = this.getAttribute('data-attr');
@@ -4860,6 +4897,27 @@ editor.init = () => {
 
     // register actions for bottom panel
     $id('zoom').addEventListener('change', (e) => changeZoom(Number(e.target.value)));
+    $id('elem_id').addEventListener('change', (e) => attrChanger(e));
+    $id('elem_class').addEventListener('change', (e) => attrChanger(e));
+    $id('circle_cx').addEventListener('change', (e) => attrChanger(e));
+    $id('circle_cy').addEventListener('change', (e) => attrChanger(e));
+    $id('circle_r').addEventListener('change', (e) => attrChanger(e));
+    $id('ellipse_cx').addEventListener('change', (e) => attrChanger(e));
+    $id('ellipse_cy').addEventListener('change', (e) => attrChanger(e));
+    $id('ellipse_rx').addEventListener('change', (e) => attrChanger(e));
+    $id('ellipse_ry').addEventListener('change', (e) => attrChanger(e));
+    $id('selected_x').addEventListener('change', (e) => attrChanger(e));
+    $id('selected_y').addEventListener('change', (e) => attrChanger(e));
+    $id('rect_width').addEventListener('change', (e) => attrChanger(e));
+    $id('rect_height').addEventListener('change', (e) => attrChanger(e));
+    $id('line_x1').addEventListener('change', (e) => attrChanger(e));
+    $id('line_y1').addEventListener('change', (e) => attrChanger(e));
+    $id('line_x2').addEventListener('change', (e) => attrChanger(e));
+    $id('line_y2').addEventListener('change', (e) => attrChanger(e));
+    $id('image_width').addEventListener('change', (e) => attrChanger(e));
+    $id('image_height').addEventListener('change', (e) => attrChanger(e));
+    $id('path_node_x').addEventListener('change', (e) => attrChanger(e));
+    $id('path_node_y').addEventListener('change', (e) => attrChanger(e));
 
     // register actions for layer toolbar
     $id('layer_new').addEventListener('click', newLayer);
