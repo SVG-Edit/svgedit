@@ -4908,6 +4908,14 @@ editor.init = () => {
     $id('ellipse_cy').addEventListener('change', (e) => attrChanger(e));
     $id('ellipse_rx').addEventListener('change', (e) => attrChanger(e));
     $id('ellipse_ry').addEventListener('change', (e) => attrChanger(e));
+    $id('selected_x').addEventListener('change', (e) => attrChanger(e));
+    $id('selected_y').addEventListener('change', (e) => attrChanger(e));
+    $id('rect_width').addEventListener('change', (e) => attrChanger(e));
+    $id('rect_height').addEventListener('change', (e) => attrChanger(e));
+    $id('line_x1').addEventListener('change', (e) => attrChanger(e));
+    $id('line_y1').addEventListener('change', (e) => attrChanger(e));
+    $id('line_x2').addEventListener('change', (e) => attrChanger(e));
+    $id('line_y2').addEventListener('change', (e) => attrChanger(e));
 
     // register actions for layer toolbar
     $id('layer_new').addEventListener('click', newLayer);

@@ -31,7 +31,11 @@ class SeInput extends Input {
   get [internal.template] () {
     const result = super[internal.template];
     result.content.prepend(fragmentFrom.html`
-      <label><span><img src="./images/logo.svg" alt="icon" width="18" height="18"></img></span></label>`.cloneNode(true));
+      <label>
+        <span class="icon_label">
+          <img src="./images/logo.svg" alt="icon" width="18" height="18" />
+        </span>
+      </label>`.cloneNode(true));
     // change the style so it fits in our toolbar
     result.content.append(
       templateFrom.html`
@@ -40,6 +44,15 @@ class SeInput extends Input {
           margin-top: 5px;
           height: 23px;
         }
+        .icon_label {
+          float: left;
+          padding-top: 3px;
+          padding-right: 3px;
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          -webkit-box-sizing: border-box;
+          height: 0;
+        }        
         </style>
       `.content
     );
