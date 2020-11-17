@@ -214,12 +214,8 @@
         </div>
         <div id="image_panel">
           <div class="toolset">
-            <label><span id="iwidthLabel" class="icon_label"></span>
-              <input id="image_width" class="attr_changer" title="Change image width" size="3" data-attr="width" />
-            </label>
-            <label><span id="iheightLabel" class="icon_label"></span>
-              <input id="image_height" class="attr_changer" title="Change image height" size="3" data-attr="height" />
-            </label>
+            <se-input id="image_width" data-attr="width" inputsize="41px" type="text" src="./images/width.svg" title="Change image width"></se-input>
+            <se-input id="image_height" data-attr="height" inputsize="41px" type="text" src="./images/height.svg" title="Change image height"></se-input> 
           </div>
           <div class="toolset">
             <label id="tool_image_url">url:
@@ -318,12 +314,8 @@
           <div class="tool_sep"></div>
           <div id="tool_node_link" class="tool_button push_button_pressed" title="Link Control Points"></div>
           <div class="tool_sep"></div>
-          <label id="tool_node_x">x:
-            <input id="path_node_x" class="attr_changer" title="Change node's x coordinate" size="3" data-attr="x" />
-          </label>
-          <label id="tool_node_y">y:
-            <input id="path_node_y" class="attr_changer" title="Change node's y coordinate" size="3" data-attr="y" />
-          </label>
+          <se-input id="path_node_x" data-attr="x" inputsize="41px" title="Change node's x coordinate" type="text" label="x:"></se-input>
+          <se-input id="path_node_y" data-attr="y" inputsize="41px" title="Change node's y coordinate" type="text" label="y:"></se-input>
           <select id="seg_type" title="Change Segment type">
             <option id="straight_segments" selected="selected" value="4">Straight</option>
             <option id="curve_segments" value="6">Curve</option>
