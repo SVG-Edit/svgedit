@@ -1889,7 +1889,7 @@ editor.init = () => {
       $('#group_opacity').val(opacPerc);
       $('#opac_slider').slider('option', 'value', opacPerc);
       $id('elem_id').value = selectedElement.id;
-      $('#elem_class').val(selectedElement.getAttribute('class'));
+      $id('elem_class').value = (selectedElement.getAttribute('class') !== null) ? selectedElement.getAttribute('class') : '';
     }
 
     updateToolButtonState();
@@ -4900,6 +4900,7 @@ editor.init = () => {
     // register actions for bottom panel
     $id('zoom').addEventListener('change', (e) => changeZoom(Number(e.target.value)));
     $id('elem_id').addEventListener('change', (e) => attrChanger(e));
+    $id('elem_class').addEventListener('change', (e) => attrChanger(e));
 
     // register actions for layer toolbar
     $id('layer_new').addEventListener('click', newLayer);
