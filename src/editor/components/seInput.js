@@ -19,7 +19,8 @@ class SeInput extends Input {
     return Object.assign(super[defaultState], {
       label: '',
       src: '',
-      inputsize: '100%'
+      inputsize: '100%',
+      value: ''
     });
   }
 
@@ -29,12 +30,19 @@ class SeInput extends Input {
   */
   get [internal.template] () {
     const result = super[internal.template];
-    console.log(result.content);
     result.content.prepend(fragmentFrom.html`
-      <label><span><img src="./images/logo.svg" alt="icon" width="18" height="18"></img></span>
-      `.cloneNode(true));
-    console.log('insterl template --------->', result);
-    result.content.append(fragmentFrom.html`</label>`.cloneNode(true));
+      <label><span><img src="./images/logo.svg" alt="icon" width="18" height="18"></img></span></label>`.cloneNode(true));
+    // change the style so it fits in our toolbar
+    result.content.append(
+      templateFrom.html`
+        <style>
+        [part~="input"] {
+          margin-top: 5px;
+          height: 23px;
+        }
+        </style>
+      `.content
+    );
     return result;
   }
   /**
@@ -82,18 +90,13 @@ class SeInput extends Input {
       this.$input = this.shadowRoot.getElementById('inner');
       this.$img = this.shadowRoot.querySelector('img');
       this.$span = this.shadowRoot.querySelector('span');
-      console.log(this.shadowRoot);
-      console.log(this.shadowRoot.querySelector('label'));
-      console.log(this.shadowRoot.querySelector('span'));
-      console.log(this.shadowRoot.querySelector('img'));
-      /* this.$event = new CustomEvent('change');
-      this.addEventListener('selectedindexchange', (e) => {
+      this.$event = new CustomEvent('change');
+      this.addEventListener('change', (e) => {
         e.preventDefault();
-        this.value = this.children[e.detail.selectedIndex].getAttribute('value');
-      }); */
+        this.value = e.target.value;
+      });
     }
     if (changed.inputsize) {
-      console.log('changed.inputsize --> ', this[internal.state].inputsize);
       this.$input.style.width = this[internal.state].inputsize;
     }
     if (changed.src) {
@@ -108,13 +111,15 @@ class SeInput extends Input {
         this.$img.style.display = 'none';
       }
     }
+    if (changed.value) {
+      this.dispatchEvent(this.$event);
+    }
   }
   /**
    * @function inputsize
    * @returns {string} inputsize
    */
   get inputsize () {
-    console.log('get inputsize --> ', this[internal.state].inputsize);
     return this[internal.state].inputsize;
   }
   /**
@@ -122,7 +127,6 @@ class SeInput extends Input {
    * @returns {void}
    */
   set inputsize (inputsize) {
-    console.log('set inputsize --> ', this[internal.state].inputsize);
     this[internal.setState]({inputsize});
   }
   /**
