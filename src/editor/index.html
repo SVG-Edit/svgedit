@@ -147,8 +147,8 @@
             <se-button id="tool_reorient" title="Reorient path" src="./images/reorient.svg"></se-button>
             <se-button id="tool_make_link" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
             <div class="tool_sep"></div>
-            <se-input id="elem_id" data-attr="id" inputsize="70%" type="text" label="id:"></se-input> 
-            <se-input id="elem_class" data-attr="class" inputsize="70%" type="text" label="class:"></se-input> 
+            <se-input id="elem_id" data-attr="id" inputsize="100px" type="text" label="id:" title="Identify the element"></se-input> 
+            <se-input id="elem_class" data-attr="class" inputsize="100px" type="text" label="class:" title="Element class"></se-input> 
           </div>
           <label id="tool_angle" title="Change rotation angle" class="toolset">
             <span id="angleLabel" class="icon_label"></span>
@@ -244,39 +244,21 @@
         </div>
         <div id="circle_panel">
           <div class="toolset">
-            <label id="tool_circle_cx">cx:
-              <input id="circle_cx" class="attr_changer" title="Change circle's cx coordinate" size="3"
-                data-attr="cx" />
-            </label>
-            <label id="tool_circle_cy">cy:
-              <input id="circle_cy" class="attr_changer" title="Change circle's cy coordinate" size="3"
-                data-attr="cy" />
-            </label>
+            <se-input id="circle_cx" data-attr="cx" inputsize="41px" type="text" label="cx:"></se-input>
+            <se-input id="circle_cy" data-attr="cy" inputsize="41px" type="text" label="cy:"></se-input>
           </div>
           <div class="toolset">
-            <label id="tool_circle_r">r:
-              <input id="circle_r" class="attr_changer" title="Change circle's radius" size="3" data-attr="r" />
-            </label>
+            <se-input id="circle_r" data-attr="r" inputsize="41px" type="text" label="r:"></se-input>
           </div>
         </div>
         <div id="ellipse_panel">
           <div class="toolset">
-            <label id="tool_ellipse_cx">cx:
-              <input id="ellipse_cx" class="attr_changer" title="Change ellipse's cx coordinate" size="3"
-                data-attr="cx" />
-            </label>
-            <label id="tool_ellipse_cy">cy:
-              <input id="ellipse_cy" class="attr_changer" title="Change ellipse's cy coordinate" size="3"
-                data-attr="cy" />
-            </label>
+            <se-input id="ellipse_cx" data-attr="cx" inputsize="41px" title="Change ellipse's cx coordinate" type="text" label="cx:"></se-input>
+            <se-input id="ellipse_cy" data-attr="cy" inputsize="41px" title="Change ellipse's cy coordinate" type="text" label="cy:"></se-input>
           </div>
           <div class="toolset">
-            <label id="tool_ellipse_rx">rx:
-              <input id="ellipse_rx" class="attr_changer" title="Change ellipse's x radius" size="3" data-attr="rx" />
-            </label>
-            <label id="tool_ellipse_ry">ry:
-              <input id="ellipse_ry" class="attr_changer" title="Change ellipse's y radius" size="3" data-attr="ry" />
-            </label>
+            <se-input id="ellipse_rx" data-attr="rx" inputsize="41px" title="Change ellipse's x radius" type="text" label="rx:"></se-input>
+            <se-input id="ellipse_ry" data-attr="ry" inputsize="41px" title="Change ellipse's y radius" type="text" label="ry:"></se-input>
           </div>
         </div>
         <div id="line_panel">

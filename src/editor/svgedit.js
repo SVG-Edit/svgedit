@@ -4901,6 +4901,13 @@ editor.init = () => {
     $id('zoom').addEventListener('change', (e) => changeZoom(Number(e.target.value)));
     $id('elem_id').addEventListener('change', (e) => attrChanger(e));
     $id('elem_class').addEventListener('change', (e) => attrChanger(e));
+    $id('circle_cx').addEventListener('change', (e) => attrChanger(e));
+    $id('circle_cy').addEventListener('change', (e) => attrChanger(e));
+    $id('circle_r').addEventListener('change', (e) => attrChanger(e));
+    $id('ellipse_cx').addEventListener('change', (e) => attrChanger(e));
+    $id('ellipse_cy').addEventListener('change', (e) => attrChanger(e));
+    $id('ellipse_rx').addEventListener('change', (e) => attrChanger(e));
+    $id('ellipse_ry').addEventListener('change', (e) => attrChanger(e));
 
     // register actions for layer toolbar
     $id('layer_new').addEventListener('click', newLayer);
