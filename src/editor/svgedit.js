@@ -2321,6 +2321,8 @@ editor.init = () => {
       return;
     }
 
+    $id('zoom').value = (svgCanvas.getZoom() * 100).toFixed(1);
+
     if (autoCenter) {
       updateCanvas();
     } else {
@@ -2338,23 +2340,34 @@ editor.init = () => {
   /**
   * @type {module:jQuerySpinButton.ValueCallback}
   */
-  const changeZoom = function (value) {
-    const zoomlevel = value / 100;
-    if (zoomlevel < 0.001) {
-      value = 0.1;
-      return;
-    }
-    const zoom = svgCanvas.getZoom();
-    const wArea = workarea;
+  const changeZoom = (value) => {
+    switch (value) {
+    case 'canvas':
+    case 'selection':
+    case 'layer':
+    case 'content':
+      zoomChanged(window, value);
+      break;
+    default:
+    {
+      const zoomlevel = Number(value) / 100;
+      if (zoomlevel < 0.001) {
+        value = 0.1;
+        return;
+      }
+      const zoom = svgCanvas.getZoom();
+      const wArea = workarea;
 
-    zoomChanged(window, {
-      width: 0,
-      height: 0,
-      // center pt of scroll position
-      x: (wArea[0].scrollLeft + wArea.width() / 2) / zoom,
-      y: (wArea[0].scrollTop + wArea.height() / 2) / zoom,
-      zoom: zoomlevel
-    }, true);
+      zoomChanged(window, {
+        width: 0,
+        height: 0,
+        // center pt of scroll position
+        x: (wArea[0].scrollLeft + wArea.width() / 2) / zoom,
+        y: (wArea[0].scrollTop + wArea.height() / 2) / zoom,
+        zoom: zoomlevel
+      }, true);
+    }
+    }
   };
 
   $('#cur_context_panel').delegate('a', 'click', function () {
@@ -3543,7 +3556,7 @@ editor.init = () => {
     const res = svgCanvas.getResolution();
     multiplier = multiplier ? res.zoom * multiplier : 1;
     // setResolution(res.w * multiplier, res.h * multiplier, true);
-    $id('zoom').value = multiplier * 100;
+    $id('zoom').value = (multiplier * 100).toFixed(1);
     svgCanvas.setZoom(multiplier);
     zoomDone();
     updateCanvas(true);
@@ -4753,11 +4766,6 @@ editor.init = () => {
 
   populateLayers();
 
-  // function changeResolution (x,y) {
-  //   const {zoom} = svgCanvas.getResolution();
-  //   setResolution(x * zoom, y * zoom);
-  // }
-
   const centerCanvas = () => {
     // this centers the canvas vertically in the workarea (horizontal handled in CSS)
     workarea.css('line-height', workarea.height() + 'px');
@@ -4896,7 +4904,7 @@ editor.init = () => {
     $id('tool_fhellipse').addEventListener('click', clickFHEllipse);
 
     // register actions for bottom panel
-    $id('zoom').addEventListener('change', (e) => changeZoom(Number(e.target.value)));
+    $id('zoom').addEventListener('change', (e) => changeZoom(e.detail.value));
     $id('elem_id').addEventListener('change', (e) => attrChanger(e));
     $id('elem_class').addEventListener('change', (e) => attrChanger(e));
     $id('circle_cx').addEventListener('change', (e) => attrChanger(e));
@@ -5210,6 +5218,9 @@ editor.init = () => {
   $('#blur').SpinButton({
     min: 0, max: 10, step: 0.1, stateObj, callback: changeBlur
   });
+
+  // zoom
+  $id('zoom').value = (svgCanvas.getZoom() * 100).toFixed(1);
 
   $('#workarea').contextMenu(
     {

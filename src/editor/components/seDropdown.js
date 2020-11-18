@@ -7,9 +7,9 @@ import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';
 import {internal} from 'elix';
 
 /**
- * @class CustomCombo
+ * @class Dropdown
  */
-class CustomCombo extends ListComboBox {
+class Dropdown extends ListComboBox {
   /**
     * @function get
     * @returns {PlainObject}
@@ -63,7 +63,7 @@ class CustomCombo extends ListComboBox {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'inputsize'];
+    return ['title', 'src', 'inputsize', 'value'];
   }
   /**
    * @function attributeChangedCallback
@@ -97,15 +97,9 @@ class CustomCombo extends ListComboBox {
     */
   [internal.render] (changed) {
     super[internal.render](changed);
-    // console.log(this, changed);
     if (this[internal.firstRender]) {
       this.$img = this.shadowRoot.querySelector('img');
       this.$input = this.shadowRoot.getElementById('input');
-      this.$event = new CustomEvent('change');
-      this.addEventListener('selectedindexchange', (e) => {
-        e.preventDefault();
-        this.value = this.children[e.detail.selectedIndex].getAttribute('value');
-      });
     }
     if (changed.src) {
       this.$img.setAttribute('src', this[internal.state].src);
@@ -113,15 +107,15 @@ class CustomCombo extends ListComboBox {
     if (changed.inputsize) {
       this.$input.shadowRoot.querySelector('[part~="input"]').style.width = this[internal.state].inputsize;
     }
-    if (changed.value) {
-      console.log('value=', this[internal.state].value);
-      this.dispatchEvent(this.$event);
-    }
     if (changed.inputPartType) {
       // Wire up handler on new input.
-      this.$input.addEventListener('click', (e) => {
+      this.addEventListener('close', (e) => {
         e.preventDefault();
-        this.value = e.target.value;
+        const value = e.detail?.closeResult.getAttribute('value');
+        if (value) {
+          const closeEvent = new CustomEvent('change', {detail: {value}});
+          this.dispatchEvent(closeEvent);
+        }
       });
     }
   }
@@ -153,10 +147,24 @@ class CustomCombo extends ListComboBox {
   set inputsize (inputsize) {
     this[internal.setState]({inputsize});
   }
+  /**
+   * @function value
+   * @returns {string} src
+   */
+  get value () {
+    return this[internal.state].value;
+  }
+  /**
+   * @function value
+   * @returns {void}
+   */
+  set value (value) {
+    this[internal.setState]({value});
+  }
 }
 
 // Register
-customElements.define('se-dropdown', CustomCombo);
+customElements.define('se-dropdown', Dropdown);
 
 /*
 {TODO
