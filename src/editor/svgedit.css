@@ -856,7 +856,7 @@ input[type=text] {
   float: left;
 }
 
-.color_tool .stroke_label {
+.color_tool #stroke_width {
   margin-left: 25px;
   float: left;
 }
