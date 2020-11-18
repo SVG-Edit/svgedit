@@ -2910,24 +2910,24 @@ editor.init = () => {
   /**
   * @type {module:jQuerySpinButton.ValueCallback}
   */
-  const changeRectRadius = function (ctl) {
-    svgCanvas.setRectRadius(ctl.value);
+  const changeRectRadius = function (e) {
+    svgCanvas.setRectRadius(e.target.value);
   };
 
   /**
   * @type {module:jQuerySpinButton.ValueCallback}
   */
-  const changeFontSize = function (ctl) {
-    svgCanvas.setFontSize(ctl.value);
+  const changeFontSize = function (e) {
+    svgCanvas.setFontSize(e.target.value);
   };
 
   /**
   * @type {module:jQuerySpinButton.ValueCallback}
   */
-  const changeStrokeWidth = function (ctl) {
-    let val = ctl.value;
+  const changeStrokeWidth = function (e) {
+    let val = e.target.value;
     if (val === 0 && selectedElement && ['line', 'polyline'].includes(selectedElement.nodeName)) {
-      val = ctl.value = 1;
+      val = e.target.value = 1;
     }
     svgCanvas.setStrokeWidth(val);
   };
@@ -2935,9 +2935,9 @@ editor.init = () => {
   /**
   * @type {module:jQuerySpinButton.ValueCallback}
   */
-  const changeRotationAngle = function (ctl) {
-    svgCanvas.setRotationAngle(ctl.value);
-    $('#tool_reorient').toggleClass('disabled', Number.parseInt(ctl.value) === 0);
+  const changeRotationAngle = function (e) {
+    svgCanvas.setRotationAngle(e.target.value);
+    $('#tool_reorient').toggleClass('disabled', Number.parseInt(e.target.value) === 0);
   };
 
   /**
@@ -4918,6 +4918,10 @@ editor.init = () => {
     $id('image_height').addEventListener('change', (e) => attrChanger(e));
     $id('path_node_x').addEventListener('change', (e) => attrChanger(e));
     $id('path_node_y').addEventListener('change', (e) => attrChanger(e));
+    $id('angle').addEventListener('change', (e) => changeRotationAngle(e));
+    $id('stroke_width').addEventListener('change', (e) => changeStrokeWidth(e));
+    $id('rect_rx').addEventListener('change', (e) => changeRectRadius(e));
+    $id('font_size').addEventListener('change', (e) => changeFontSize(e));
 
     // register actions for layer toolbar
     $id('layer_new').addEventListener('click', newLayer);
@@ -5192,18 +5196,6 @@ editor.init = () => {
   });
 
   // init SpinButtons
-  $('#rect_rx').SpinButton({
-    min: 0, max: 1000, stateObj, callback: changeRectRadius
-  });
-  $('#stroke_width').SpinButton({
-    min: 0, max: 99, smallStep: 0.1, stateObj, callback: changeStrokeWidth
-  });
-  $('#angle').SpinButton({
-    min: -180, max: 180, step: 5, stateObj, callback: changeRotationAngle
-  });
-  $('#font_size').SpinButton({
-    min: 0.001, stepfunc: stepFontSize, stateObj, callback: changeFontSize
-  });
   $('#group_opacity').SpinButton({
     min: 0, max: 100, step: 5, stateObj, callback: changeOpacity
   });
