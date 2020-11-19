@@ -147,10 +147,10 @@
             <se-button id="tool_reorient" title="Reorient path" src="./images/reorient.svg"></se-button>
             <se-button id="tool_make_link" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
             <div class="tool_sep"></div>
-            <se-input id="elem_id" data-attr="id" inputsize="100px" type="text" label="id:" title="Identify the element"></se-input> 
-            <se-input id="elem_class" data-attr="class" inputsize="100px" type="text" label="class:" title="Element class"></se-input> 
+            <se-input id="elem_id" data-attr="id" size="10" label="id:" title="Identify the element"></se-input> 
+            <se-input id="elem_class" data-attr="class" size="10" label="class:" title="Element class"></se-input> 
           </div>
-          <se-spin-input id="angle" min=-180 max=180 step=5 value="0" src="./images/angle.svg" title="Change rotation angle"></se-spin-input>
+          <se-spin-input id="angle" min=-180 max=180 step=5 src="./images/angle.svg" title="Change rotation angle"></se-spin-input>
           <div class="toolset" id="tool_blur" title="Change gaussian blur value">
             <label>
               <span id="blurLabel" class="icon_label"></span>
@@ -170,8 +170,8 @@
             <button></button>
           </div>
           <div id="xy_panel" class="toolset">
-            <se-input id="selected_x" data-attr="x" inputsize="41px" type="text" label="x:" title="Change X coordinate"></se-input>
-            <se-input id="selected_y" data-attr="y" inputsize="41px" type="text" label="y:" title="Change Y coordinate"></se-input>
+            <se-input id="selected_x" data-attr:="x" size="4" type="text" label="x:" title="Change X coordinate"></se-input>
+            <se-input id="selected_y" data-attr="y" size="4" type="text" label="y:" title="Change Y coordinate"></se-input>
           </div>
         </div>
         <!-- Buttons when multiple elements are selected -->
@@ -201,15 +201,15 @@
         </div>
         <div id="rect_panel">
           <div class="toolset">
-            <se-input id="rect_width" data-attr="width" inputsize="41px" type="text" src="./images/width.svg" title="Change rectangle width"></se-input>
-            <se-input id="rect_height" data-attr="height" inputsize="41px" type="text" src="./images/height.svg" title="Change rectangle height"></se-input>
+            <se-input id="rect_width" data-attr="width" size="4" src="./images/width.svg" title="Change rectangle width"></se-input>
+            <se-input id="rect_height" data-attr="height" size="4" src="./images/height.svg" title="Change rectangle height"></se-input>
           </div>
-          <se-spin-input id="rect_rx" min=0 max=1000 step=1 value="0" title="Change Rectangle Corner Radius" data-attr="Corner Radius" src="./images/c_radius.svg"></se-spin-input>
+          <se-spin-input id="rect_rx" min=0 max=1000 step=1 title="Change Rectangle Corner Radius" data-attr="Corner Radius" src="./images/c_radius.svg"></se-spin-input>
         </div>
         <div id="image_panel">
           <div class="toolset">
-            <se-input id="image_width" data-attr="width" inputsize="41px" type="text" src="./images/width.svg" title="Change image width"></se-input>
-            <se-input id="image_height" data-attr="height" inputsize="41px" type="text" src="./images/height.svg" title="Change image height"></se-input> 
+            <se-input id="image_width" data-attr="width" size="4" type="text" src="./images/width.svg" title="Change image width"></se-input>
+            <se-input id="image_height" data-attr="height" size="4" type="text" src="./images/height.svg" title="Change image height"></se-input> 
           </div>
           <div class="toolset">
             <label id="tool_image_url">url:
@@ -224,31 +224,31 @@
         </div>
         <div id="circle_panel">
           <div class="toolset">
-            <se-input id="circle_cx" data-attr="cx" inputsize="41px" type="text" label="cx:"></se-input>
-            <se-input id="circle_cy" data-attr="cy" inputsize="41px" type="text" label="cy:"></se-input>
+            <se-input id="circle_cx" data-attr="cx" size="4" label="cx:"></se-input>
+            <se-input id="circle_cy" data-attr="cy" size="4" label="cy:"></se-input>
           </div>
           <div class="toolset">
-            <se-input id="circle_r" data-attr="r" inputsize="41px" type="text" label="r:"></se-input>
+            <se-input id="circle_r" data-attr="r" size="4" label="r:"></se-input>
           </div>
         </div>
         <div id="ellipse_panel">
           <div class="toolset">
-            <se-input id="ellipse_cx" data-attr="cx" inputsize="41px" title="Change ellipse's cx coordinate" type="text" label="cx:"></se-input>
-            <se-input id="ellipse_cy" data-attr="cy" inputsize="41px" title="Change ellipse's cy coordinate" type="text" label="cy:"></se-input>
+            <se-input id="ellipse_cx" data-attr="cx" size="4" title="Change ellipse's cx coordinate" label="cx:"></se-input>
+            <se-input id="ellipse_cy" data-attr="cy" size="4" title="Change ellipse's cy coordinate" label="cy:"></se-input>
           </div>
           <div class="toolset">
-            <se-input id="ellipse_rx" data-attr="rx" inputsize="41px" title="Change ellipse's x radius" type="text" label="rx:"></se-input>
-            <se-input id="ellipse_ry" data-attr="ry" inputsize="41px" title="Change ellipse's y radius" type="text" label="ry:"></se-input>
+            <se-input id="ellipse_rx" data-attr="rx" size="4" title="Change ellipse's x radius" label="rx:"></se-input>
+            <se-input id="ellipse_ry" data-attr="ry" size="4" title="Change ellipse's y radius" label="ry:"></se-input>
           </div>
         </div>
         <div id="line_panel">
           <div class="toolset">
-            <se-input id="line_x1" data-attr="x1" inputsize="41px" title="Change line's starting x coordinate" type="text" label="x1:"></se-input>
-            <se-input id="line_y1" data-attr="y1" inputsize="41px" title="Change line's starting y coordinate" type="text" label="y1:"></se-input>
+            <se-input id="line_x1" data-attr="x1" size="4" title="Change line's starting x coordinate" label="x1:"></se-input>
+            <se-input id="line_y1" data-attr="y1" size="4" title="Change line's starting y coordinate" label="y1:"></se-input>
           </div>
           <div class="toolset">
-            <se-input id="line_x2" data-attr="x2" inputsize="41px" title="Change line's ending x coordinate" type="text" label="x2:"></se-input>
-            <se-input id="line_y2" data-attr="y2" inputsize="41px" title="Change line's ending y coordinate" type="text" label="y2:"></se-input>
+            <se-input id="line_x2" data-attr="x2" size="4" title="Change line's ending x coordinate" label="x2:"></se-input>
+            <se-input id="line_y2" data-attr="y2" size="4" title="Change line's ending y coordinate" label="y2:"></se-input>
           </div>
         </div>
         <div id="text_panel">
@@ -275,7 +275,7 @@
               </ul>
             </div>
           </div>
-          <se-spin-input id="font_size" min=1 max=1000 step=1 value="0" title="Change Font Size" src="./images/fontsize.svg"></se-spin-input>
+          <se-spin-input id="font_size" min=1 max=1000 step=1 title="Change Font Size" src="./images/fontsize.svg"></se-spin-input>
           <!-- Not visible, but still used -->
           <input id="text" type="text" size="35" />
         </div>
@@ -305,8 +305,8 @@
           <div class="tool_sep"></div>
           <div id="tool_node_link" class="tool_button push_button_pressed" title="Link Control Points"></div>
           <div class="tool_sep"></div>
-          <se-input id="path_node_x" data-attr="x" inputsize="41px" title="Change node's x coordinate" type="text" label="x:"></se-input>
-          <se-input id="path_node_y" data-attr="y" inputsize="41px" title="Change node's y coordinate" type="text" label="y:"></se-input>
+          <se-input id="path_node_x" data-attr="x" size="4" title="Change node's x coordinate" label="x:"></se-input>
+          <se-input id="path_node_y" data-attr="y" size="4" title="Change node's y coordinate" label="y:"></se-input>
           <select id="seg_type" title="Change Segment type">
             <option id="straight_segments" selected="selected" value="4">Straight</option>
             <option id="curve_segments" value="6">Curve</option>
@@ -375,7 +375,7 @@
                 <div id="stroke_bg"></div>
                 <div id="stroke_color" class="color_block" title="Change stroke color"></div>
               </div>
-              <se-spin-input id="stroke_width" min=0 max=99 step=0.1 value="5" title="Change stroke width by 1, shift-click to change by 0.1"></se-spin-input>
+              <se-spin-input id="stroke_width" min=0 max=99 step=0.1 title="Change stroke width by 1, shift-click to change by 0.1"></se-spin-input>
               <div id="toggle_stroke_tools" title="Show/hide more stroke tools"></div>
               <label class="stroke_tool">
                 <select id="stroke_style" title="Change stroke dash style">

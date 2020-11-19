@@ -1,60 +1,53 @@
 /* eslint-disable node/no-unpublished-import */
-import NumberSpinBox from 'elix/define/NumberSpinBox.js';
-import {defaultState} from 'elix/src/base/internal.js';
-import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';
-import {internal} from 'elix';
+import 'elix/define/NumberSpinBox.js';
+
+const template = document.createElement('template');
+template.innerHTML = `
+  <style>
+  :host {
+    position: relative;
+    top: 6px;
+  }
+  img {
+    top: 2px;
+    left: 4px;
+    position: relative;
+  }
+  span {
+    bottom: 1px;
+    right: -4px;
+    position: relative;
+  }
+  </style>
+  <img src="./images/logo.svg" alt="icon" width="12" height="12" />
+  <span id="label">label</span>
+  <elix-number-spin-box min="1" step="1"></elix-number-spin-box>
+`;
 
 /**
- * @class SeSpinInput
+ * @class SESpinInput
  */
-class SeSpinInput extends NumberSpinBox {
+export class SESpinInput extends HTMLElement {
   /**
-    * @function get
-    * @returns {PlainObject}
-  */
-  get [defaultState] () {
-    return Object.assign(super[defaultState], {
-      label: '',
-      src: '',
-      value: '',
-      min: 1,
-      step: 1
-    });
-  }
-
-  /**
-    * @function get
-    * @returns {PlainObject}
-  */
-  get [internal.template] () {
-    const result = super[internal.template];
-    result.content.prepend(fragmentFrom.html`
-      <label style="display:none;">
-        <span class="icon_label">
-          <img src="./images/logo.svg" alt="icon" width="18" height="18" />
-        </span>
-      </label>`.cloneNode(true));
-    // change the style so it fits in our toolbar
-    result.content.append(
-      templateFrom.html`
-        <style>
-        :host {
-          float:left;
-          line-height: normal;
-          margin-top: 5px;
-          height: 23px;
-        }
-        </style>
-      `.content
-    );
-    return result;
+    * @function constructor
+    */
+  constructor () {
+    super();
+    // create the shadowDom and insert the template
+    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    // locate the component
+    this.$img = this._shadowRoot.querySelector('img');
+    this.$label = this.shadowRoot.getElementById('label');
+    this.$event = new CustomEvent('change');
+    this.$input = this._shadowRoot.querySelector('elix-number-spin-box');
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['value', 'class', 'label', 'src', 'min', 'max', 'step'];
+    return ['value', 'label', 'src', 'size'];
   }
   /**
    * @function attributeChangedCallback
@@ -65,84 +58,134 @@ class SeSpinInput extends NumberSpinBox {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
-    console.log({this: this, name, oldValue, newValue});
     switch (name) {
-    case 'label':
-      this.label = newValue;
-      break;
     case 'src':
-      this.src = newValue;
+      this.$img.setAttribute('src', newValue);
+      this.$label.remove();
+      break;
+    case 'size':
+      this.$input.setAttribute('size', newValue);
+      break;
+    case 'step':
+      this.$input.setAttribute('step', newValue);
+      break;
+    case 'min':
+      this.$input.setAttribute('min', newValue);
+      break;
+    case 'max':
+      this.$input.setAttribute('max', newValue);
+      break;
+    case 'label':
+      this.$label.textContent = newValue;
+      this.$img.remove();
+      break;
+    case 'value':
+      this.$input.value = newValue;
       break;
     default:
-      super.attributeChangedCallback(name, oldValue, newValue);
+      // eslint-disable-next-line no-console
+      console.error(`unknown attribute: ${name}`);
       break;
     }
   }
   /**
-    * @function [internal.render]
-    * @param {PlainObject} changed
-    * @returns {void}
-    */
-  [internal.render] (changed) {
-    super[internal.render](changed);
-    if (this[internal.firstRender]) {
-      this.$input = this.shadowRoot.getElementById('input');
-      this.$label = this.shadowRoot.querySelector('label');
-      this.$img = this.shadowRoot.querySelector('img');
-      this.$span = this.shadowRoot.querySelector('span');
-      this.$event = new CustomEvent('change');
-      this.addEventListener('change', (e) => {
-        e.preventDefault();
-        this.value = e.target.value;
-      });
-    }
-    if (changed.src) {
-      if (this[internal.state].src !== '') {
-        this.$img.src = this[internal.state].src;
-        this.$img.style.display = 'block';
-        this.$label.style.display = 'block';
-      }
-    }
-    if (changed.label) {
-      if (this[internal.state].label !== '') {
-        this.$span.prepend(this[internal.state].label);
-        this.$img.style.display = 'none';
-        this.$label.style.display = 'block';
-      }
-    }
-    if (changed.value) {
-      this.dispatchEvent(this.$event);
-    }
-  }
-  /**
-   * @function src
-   * @returns {string} src
-   */
-  get src () {
-    return this[internal.state].src;
-  }
-  /**
-   * @function src
-   * @returns {void}
-   */
-  set src (src) {
-    this[internal.setState]({src});
-  }
-  /**
-   * @function label
-   * @returns {string} label
+   * @function get
+   * @returns {any}
    */
   get label () {
-    return this[internal.state].label;
+    return this.getAttribute('label');
   }
+
   /**
-   * @function label
+   * @function set
    * @returns {void}
    */
-  set label (label) {
-    this[internal.setState]({label});
+  set label (value) {
+    this.setAttribute('label', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get value () {
+    return this.$input.value;
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set value (value) {
+    this.$input.value = value;
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get src () {
+    return this.getAttribute('src');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set src (value) {
+    this.setAttribute('src', value);
+  }
+
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get size () {
+    return this.getAttribute('size');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set size (value) {
+    this.setAttribute('size', value);
+  }
+
+  /**
+   * @function connectedCallback
+   * @returns {void}
+   */
+  connectedCallback () {
+    this.addEventListener('change', (e) => {
+      e.preventDefault();
+      this.value = e.target.value;
+    });
+    this.dispatchEvent(this.$event);
   }
 }
 
 // Register
-customElements.define('se-spin-input', SeSpinInput);
+customElements.define('se-spin-input', SESpinInput);
+
+/* TO DO
+  Call back for fontsize
+  function stepFontSize (elem, step) {
+    const origVal = Number(elem.value);
+    const sugVal = origVal + step;
+    const increasing = sugVal >= origVal;
+    if (step === 0) { return origVal; }
+
+    if (origVal >= 24) {
+      if (increasing) {
+        return Math.round(origVal * 1.1);
+      }
+      return Math.round(origVal / 1.1);
+    }
+    if (origVal <= 1) {
+      if (increasing) {
+        return origVal * 2;
+      }
+      return origVal / 2;
+    }
+    return sugVal;
+  }
+  */

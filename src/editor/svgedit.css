@@ -526,10 +526,6 @@ div.palette_item:first-child {
   text-decoration: underline;
 }
 
-#tools_top > div, #tools_top {
-  line-height: 26px;
-}
-
 div.toolset,
 div.toolset > * {
   float: left;

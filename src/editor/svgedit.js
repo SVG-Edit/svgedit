@@ -1001,8 +1001,6 @@ editor.init = () => {
 
         ungroup: 'shape_ungroup.png',
         unlink_use: 'unlink_use.png',
-        width: 'width.png',
-        height: 'height.png',
         c_radius: 'c_radius.png',
         angle: 'angle.png',
         blur: 'blur.png',
@@ -4772,30 +4770,6 @@ editor.init = () => {
   };
 
   $(window).bind('load resize', centerCanvas);
-
-  /**
-   * @type {module:jQuerySpinButton.StepCallback}
-   */
-  function stepFontSize (elem, step) {
-    const origVal = Number(elem.value);
-    const sugVal = origVal + step;
-    const increasing = sugVal >= origVal;
-    if (step === 0) { return origVal; }
-
-    if (origVal >= 24) {
-      if (increasing) {
-        return Math.round(origVal * 1.1);
-      }
-      return Math.round(origVal / 1.1);
-    }
-    if (origVal <= 1) {
-      if (increasing) {
-        return origVal * 2;
-      }
-      return origVal / 2;
-    }
-    return sugVal;
-  }
 
   // function setResolution (w, h, center) {
   //   updateCanvas();
