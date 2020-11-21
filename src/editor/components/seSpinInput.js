@@ -60,7 +60,6 @@ export class SESpinInput extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    console.log(name, newValue);
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
@@ -177,27 +176,3 @@ export class SESpinInput extends HTMLElement {
 
 // Register
 customElements.define('se-spin-input', SESpinInput);
-
-/* TO DO
-  Call back for fontsize
-  function stepFontSize (elem, step) {
-    const origVal = Number(elem.value);
-    const sugVal = origVal + step;
-    const increasing = sugVal >= origVal;
-    if (step === 0) { return origVal; }
-
-    if (origVal >= 24) {
-      if (increasing) {
-        return Math.round(origVal * 1.1);
-      }
-      return Math.round(origVal / 1.1);
-    }
-    if (origVal <= 1) {
-      if (increasing) {
-        return origVal * 2;
-      }
-      return origVal / 2;
-    }
-    return sugVal;
-  }
-  */

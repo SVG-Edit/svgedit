@@ -755,7 +755,7 @@ editor.init = () => {
     const {ok, cancel} = uiStrings.common;
     jQueryPluginDBox($, {ok, cancel});
 
-    setIcons(); // Wait for dbox as needed for i18n
+    $('#svg_container')[0].style.visibility = 'visible';
 
     try {
       // load standard extensions
@@ -868,7 +868,6 @@ editor.init = () => {
   * @returns {void}
   */
   const setIconSize = editor.setIconSize = function (size) {
-    // const elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
     const selToscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,' +
   '        #main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,' +
   '        #g_panel > *, #tool_font_size > *';
@@ -943,176 +942,6 @@ editor.init = () => {
   };
 
   /**
-   * Setup SVG icons.
-   * @returns {void}
-   */
-  function setIcons () {
-    $.svgIcons(curConfig.imgPath + 'svg_edit_icons.svg', {
-      w: 24, h: 24,
-      id_match: false,
-      no_img: !isWebkit(), // Opera & Firefox 4 gives odd behavior w/images
-      fallback_path: curConfig.imgPath,
-      // Todo: Set `alts: {}` with keys as the IDs in fallback set to
-      //   `uiStrings` (localized) values
-      fallback: {
-        logo: 'logo.svg',
-        select_node: 'select_node.png',
-        square: 'square.png',
-        rect: 'rect.png',
-        fh_rect: 'freehand-square.png',
-        circle: 'circle.png',
-        ellipse: 'ellipse.png',
-        fh_ellipse: 'freehand-circle.png',
-        pencil: 'fhpath.png',
-        pen: 'line.png',
-        text: 'text.png',
-        path: 'path.png',
-        add_subpath: 'add_subpath.png',
-        close_path: 'closepath.png',
-        open_path: 'openpath.png',
-
-        image: 'image.png',
-
-        arrow_right_big: 'arrow_right_big.png',
-        arrow_down: 'dropdown.gif',
-        fill: 'fill.png',
-        stroke: 'stroke.png',
-        opacity: 'opacity.png',
-
-        new_image: 'clear.png',
-        save: 'save.png',
-        export: 'export.png',
-        open: 'open.png',
-        import: 'import.png',
-        docprops: 'document-properties.png',
-
-        clone: 'clone.png',
-        delete: 'delete.png',
-        go_up: 'go-up.png',
-        go_down: 'go-down.png',
-        context_menu: 'context_menu.png',
-        move_bottom: 'move_bottom.png',
-        move_top: 'move_top.png',
-        to_path: 'to_path.png',
-        link_controls: 'link_controls.png',
-        reorient: 'reorient.png',
-        group_elements: 'shape_group_elements.png',
-
-        ungroup: 'shape_ungroup.png',
-        unlink_use: 'unlink_use.png',
-        c_radius: 'c_radius.png',
-        angle: 'angle.png',
-        blur: 'blur.png',
-        fontsize: 'fontsize.png',
-        align: 'align.png',
-
-        linecap_butt: 'linecap_butt.png',
-        linecap_square: 'linecap_square.png',
-        linecap_round: 'linecap_round.png',
-        linejoin_miter: 'linejoin_miter.png',
-        linejoin_bevel: 'linejoin_bevel.png',
-        linejoin_round: 'linejoin_round.png',
-        eye: 'eye.png',
-        no_color: 'no_color.png',
-
-        ok: 'save.png',
-        cancel: 'cancel.png',
-        warning: 'warning.png',
-
-        node_delete: 'node_delete.png',
-        node_clone: 'node_clone.png',
-
-        globe_link: 'globe_link.png',
-        config: 'config.png'
-      },
-      placement: {
-        '#logo': 'logo',
-
-        '#tool_clear div': 'new_image',
-        '#tool_save div': 'save',
-        '#tool_export div': 'export',
-        '#tool_open div': 'open',
-        '#tool_import div': 'import',
-        '#tool_docprops > div': 'docprops',
-        '#tool_editor_prefs > div': 'config',
-        '#tool_editor_homepage > div': 'globe_link',
-        '#tool_image': 'image',
-        '#tool_node_clone': 'node_clone',
-        '#tool_node_delete': 'node_delete',
-        '#tool_add_subpath': 'add_subpath',
-        '#tool_openclose_path': 'open_path',
-        '#tool_node_link': 'link_controls',
-        '#tool_reorient': 'reorient',
-        '#tool_group_elements': 'group_elements',
-        '#tool_ungroup': 'ungroup',
-        '#tool_unlink_use': 'unlink_use',
-
-        '#tool_posleft': 'align_left',
-        '#tool_poscenter': 'align_center',
-        '#tool_posright': 'align_right',
-        '#tool_postop': 'align_top',
-        '#tool_posmiddle': 'align_middle',
-        '#tool_posbottom': 'align_bottom',
-        '#cur_position': 'align',
-
-        '#linecap_butt,#cur_linecap': 'linecap_butt',
-        '#linecap_round': 'linecap_round',
-        '#linecap_square': 'linecap_square',
-
-        '#linejoin_miter,#cur_linejoin': 'linejoin_miter',
-        '#linejoin_round': 'linejoin_round',
-        '#linejoin_bevel': 'linejoin_bevel',
-
-        '#url_notice': 'warning',
-        '#layerlist td.layervis': 'eye',
-
-        '#tool_source_save,#tool_docprops_save,#tool_prefs_save': 'ok',
-        '#tool_source_cancel,#tool_docprops_cancel,#tool_prefs_cancel': 'cancel',
-
-        '#cornerRadiusLabel span': 'c_radius',
-        '#angleLabel': 'angle',
-        '#linkLabel,#tool_make_link_multi': 'globe_link',
-        '#tool_fill label': 'fill',
-        '#tool_stroke .icon_label': 'stroke',
-        '#group_opacityLabel': 'opacity',
-        '#blurLabel': 'blur',
-        '#font_sizeLabel': 'fontsize',
-
-        '.dropdown button, #main_button .dropdown': 'arrow_down',
-        '#palette .palette_item:first, #fill_bg, #stroke_bg': 'no_color'
-      },
-      resize: {
-        '#logo .svg_icon': 28,
-        '.svg_icon, #layerlist td.layervis .svg_icon': 14,
-        '.dropdown button .svg_icon': 7,
-        '#main_button .dropdown .svg_icon': 9,
-        '.palette_item:first .svg_icon': 15,
-        '#fill_bg .svg_icon, #stroke_bg .svg_icon': 16,
-        '.toolbar_button button .svg_icon': 16,
-        '.stroke_tool div div .svg_icon': 20,
-        '#tools_bottom label .svg_icon': 18
-      },
-      async callback (icons) {
-        $('.toolbar_button button > svg, .toolbar_button button > img').each(function () {
-          $(this).parent().prepend(this);
-        });
-
-        const tleft = $('#tools_left');
-
-        let minHeight;
-        if (tleft.length) {
-          minHeight = tleft.offset().top + tleft.outerHeight();
-        }
-
-        const size = editor.pref('iconsize');
-        editor.setIconSize(size || ($(window).height() < minHeight ? 's' : 'm'));
-
-        $('#svg_container')[0].style.visibility = 'visible';
-        await editor.runCallbacks();
-      }
-    });
-  }
-  /**
   * @name module:SVGEditor.canvas
   * @type {module:svgcanvas.SvgCanvas}
   */
@@ -1120,26 +949,13 @@ editor.init = () => {
     document.getElementById('svgcanvas'),
     curConfig
   );
-  const palette = [
-      // Todo: Make into configuration item?
-      '#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
-      '#ff0000', '#ff7f00', '#ffff00', '#7fff00',
-      '#00ff00', '#00ff7f', '#00ffff', '#007fff',
-      '#0000ff', '#7f00ff', '#ff00ff', '#ff007f',
-      '#7f0000', '#7f3f00', '#7f7f00', '#3f7f00',
-      '#007f00', '#007f3f', '#007f7f', '#003f7f',
-      '#00007f', '#3f007f', '#7f007f', '#7f003f',
-      '#ffaaaa', '#ffd4aa', '#ffffaa', '#d4ffaa',
-      '#aaffaa', '#aaffd4', '#aaffff', '#aad4ff',
-      '#aaaaff', '#d4aaff', '#ffaaff', '#ffaad4'
-    ],
-    modKey = (isMac() ? 'meta+' : 'ctrl+'), // ⌘
-    path = svgCanvas.pathActions,
-    {undoMgr} = svgCanvas,
-    workarea = $('#workarea'),
-    canvMenu = $('#cmenu_canvas'),
-    // layerMenu = $('#cmenu_layers'), // Unused
-    paintBox = {fill: null, stroke: null};
+
+  const modKey = (isMac() ? 'meta+' : 'ctrl+');
+  const path = svgCanvas.pathActions;
+  const {undoMgr} = svgCanvas;
+  const workarea = $('#workarea');
+  const canvMenu = $('#cmenu_canvas');
+  const paintBox = {fill: null, stroke: null};
 
   let resizeTimer, curScrollPos;
   let exportWindow = null,
@@ -1296,12 +1112,10 @@ editor.init = () => {
   */
   const togglePathEditMode = function (editmode, elems) {
     $('#path_node_panel').toggle(editmode);
-    $('#tools_bottom_2,#tools_bottom_3').toggle(!editmode);
     if (editmode) {
       // Change select icon
       $('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
       $('#tool_select').addClass('tool_button_current').removeClass('tool_button');
-      // setIcon('#tool_select', 'select_node');
       multiselected = false;
       if (elems.length) {
         selectedElement = elems[0];
@@ -2881,16 +2695,9 @@ editor.init = () => {
   svgCanvas.bind('extension_added', extAdded);
   svgCanvas.textActions.setInputElem($('#text')[0]);
 
-  let str = '<div class="palette_item" data-rgb="none"></div>';
-  $.each(palette, function (i, item) {
-    str += '<div class="palette_item" style="background-color: ' + item +
-      ';" data-rgb="' + item + '"></div>';
-  });
-  $('#palette').append(str);
-
   // Set up editor background functionality
   const colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
-  str = '';
+  let str = '';
   $.each(colorBlocks, function (i, e) {
     str += (e === 'chessboard')
       // eslint-disable-next-line max-len
@@ -2920,14 +2727,14 @@ editor.init = () => {
   };
 
   /**
-  * @type {module:jQuerySpinButton.ValueCallback}
+  * @type {module}
   */
   const changeFontSize = function (e) {
     svgCanvas.setFontSize(e.target.value);
   };
 
   /**
-  * @type {module:jQuerySpinButton.ValueCallback}
+  * @type {module}
   */
   const changeStrokeWidth = function (e) {
     let val = e.target.value;
@@ -2938,7 +2745,7 @@ editor.init = () => {
   };
 
   /**
-  * @type {module:jQuerySpinButton.ValueCallback}
+  * @type {module}
   */
   const changeRotationAngle = function (e) {
     svgCanvas.setRotationAngle(e.target.value);
@@ -2946,7 +2753,7 @@ editor.init = () => {
   };
 
   /**
-  * @param {external:jQuery.fn.SpinButton} ctl Spin Button
+  * @param {PlainObject} ctl
   * @param {string} [val=ctl.value]
   * @returns {void}
   */
@@ -2960,7 +2767,7 @@ editor.init = () => {
   };
 
   /**
-  * @param {external:jQuery.fn.SpinButton} ctl Spin Button
+  * @param {PlainObject} ctl
   * @param {string} [val=ctl.value]
   * @param {boolean} noUndo
   * @returns {void}
@@ -3126,40 +2933,6 @@ editor.init = () => {
     }
     this.blur();
     return true;
-  });
-
-  // Prevent selection of elements when shift-clicking
-  $('#palette').mouseover(function () {
-    const inp = $('<input type="hidden">');
-    $(this).append(inp);
-    inp.focus().remove();
-  });
-
-  $('.palette_item').mousedown(function (evt) {
-    // shift key or right click for stroke
-    const picker = evt.shiftKey || evt.button === 2 ? 'stroke' : 'fill';
-    let color = $(this).data('rgb');
-    let paint;
-
-    // Webkit-based browsers returned 'initial' here for no stroke
-    if (color === 'none' || color === 'transparent' || color === 'initial') {
-      color = 'none';
-      paint = new $.jGraduate.Paint();
-    } else {
-      paint = new $.jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
-    }
-
-    paintBox[picker].setPaint(paint);
-    svgCanvas.setColor(picker, color);
-
-    if (color !== 'none' && svgCanvas.getPaintOpacity(picker) !== 1) {
-      svgCanvas.setPaintOpacity(picker, 1.0);
-    }
-    updateToolButtonState();
-  }).bind('contextmenu', function (e) { e.preventDefault(); });
-
-  $('#toggle_stroke_tools').on('click', function () {
-    $('#tools_bottom').toggleClass('expanded');
   });
 
   (function () {
@@ -4560,12 +4333,12 @@ editor.init = () => {
     });
   }, 1000);
 
-  $('#fill_color, #tool_fill .icon_label').click(function () {
+  $('#fill_color, #tool_fill').click(function () {
     colorPicker($('#fill_color'));
     updateToolButtonState();
   });
 
-  $('#stroke_color, #tool_stroke .icon_label').click(function () {
+  $('#stroke_color, #tool_stroke').click(function () {
     colorPicker($('#stroke_color'));
     updateToolButtonState();
   });
@@ -5169,14 +4942,6 @@ editor.init = () => {
     if (curConfig.gridColor) {
       $('#grid_color').val(curConfig.gridColor);
     }
-  });
-
-  // init SpinButtons
-  $('#group_opacity').SpinButton({
-    min: 0, max: 100, step: 5, stateObj, callback: changeOpacity
-  });
-  $('#blur').SpinButton({
-    min: 0, max: 10, step: 0.1, stateObj, callback: changeBlur
   });
 
   // zoom

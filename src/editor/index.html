@@ -57,7 +57,8 @@
             <se-button id="layer_rename" title="Rename Layer" size="small" src="./images/text.svg"></se-button>
             <se-button id="layer_up" title="Move Layer Up" size="small" src="./images/go_up.svg"></se-button>
             <se-button id="layer_down" title="Move Layer Down" size="small" src="./images/go_down.svg"></se-button>
-            <se-button id="layer_moreopts" title="More Options" size="small" src="./images/context_menu.svg"></se-button>
+            <se-button id="layer_moreopts" title="More Options" size="small" src="./images/context_menu.svg">
+            </se-button>
           </fieldset>
           <table id="layerlist">
             <tr class="layer">
@@ -116,13 +117,14 @@
             </li>
             <li style="width:50%;margin:auto;">
               <a href="https://www.netlify.com">
-                <img style="height:25px;" src="https://www.netlify.com/img/global/badges/netlify-dark.svg" alt="Deploys by Netlify" />
+                <img style="height:25px;" src="https://www.netlify.com/img/global/badges/netlify-dark.svg"
+                  alt="Deploys by Netlify" />
               </a>
             </li>
           </ul>
         </div>
       </div>
-      <div id="tools_top" class="tools_panel">
+      <div id="tools_top">
         <div id="editor_panel">
           <div class="tool_sep"></div>
           <se-button id="tool_source" title="Edit Source" shortcut="U" src="./images/source.svg"></se-button>
@@ -139,23 +141,25 @@
           <div class="toolset">
             <div class="tool_sep"></div>
             <se-button id="tool_clone" title="Duplicate Element" shortcut="D" src="./images/clone.svg"></se-button>
-            <se-button id="tool_delete" title="Delete Element" shortcut="Backspace" src="./images/delete.svg"></se-button>
+            <se-button id="tool_delete" title="Delete Element" shortcut="Backspace" src="./images/delete.svg">
+            </se-button>
             <div class="tool_sep"></div>
-            <se-button id="tool_move_top" title="Bring to Front" shortcut="Ctrl+Shift+]" src="./images/move_top.svg"></se-button>
-            <se-button id="tool_move_bottom" title="Send to Back" shortcut="Ctrl+Shift+[" src="./images/move_bottom.png"></se-button>
+            <se-button id="tool_move_top" title="Bring to Front" shortcut="Ctrl+Shift+]" src="./images/move_top.svg">
+            </se-button>
+            <se-button id="tool_move_bottom" title="Send to Back" shortcut="Ctrl+Shift+["
+              src="./images/move_bottom.png"></se-button>
             <se-button id="tool_topath" title="Convert to Path" src="./images/to_path.svg"></se-button>
             <se-button id="tool_reorient" title="Reorient path" src="./images/reorient.svg"></se-button>
             <se-button id="tool_make_link" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
             <div class="tool_sep"></div>
-            <se-input id="elem_id" data-attr="id" size="10" label="id:" title="Identify the element"></se-input> 
-            <se-input id="elem_class" data-attr="class" size="10" label="class:" title="Element class"></se-input> 
+            <se-input id="elem_id" data-attr="id" size="10" label="id:" title="Identify the element"></se-input>
+            <se-input id="elem_class" data-attr="class" size="10" label="class:" title="Element class"></se-input>
           </div>
-          <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="./images/angle.svg" title="Change rotation angle"></se-spin-input>
+          <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="./images/angle.svg"
+            title="Change rotation angle"></se-spin-input>
           <div class="toolset" id="tool_blur" title="Change gaussian blur value">
-            <label>
-              <span id="blurLabel" class="icon_label"></span>
-              <input id="blur" size="2" value="0" type="text" />
-            </label>
+            <se-spin-input size="2" id="blur" min=0 max=10 step=0.1 src="./images/blur.svg"
+              title="Change gaussian blur value"></se-spin-input>
             <div id="blur_dropdown" class="dropdown">
               <button></button>
               <ul>
@@ -170,17 +174,21 @@
             <button></button>
           </div>
           <div id="xy_panel" class="toolset">
-            <se-input id="selected_x" data-attr:="x" size="4" type="text" label="x:" title="Change X coordinate"></se-input>
-            <se-input id="selected_y" data-attr="y" size="4" type="text" label="y:" title="Change Y coordinate"></se-input>
+            <se-input id="selected_x" data-attr:="x" size="4" type="text" label="x:" title="Change X coordinate">
+            </se-input>
+            <se-input id="selected_y" data-attr="y" size="4" type="text" label="y:" title="Change Y coordinate">
+            </se-input>
           </div>
         </div>
         <!-- Buttons when multiple elements are selected -->
         <div id="multiselected_panel">
           <div class="tool_sep"></div>
           <se-button id="tool_clone_multi" title="Clone Elements" shortcut="C" src="./images/clone.svg"></se-button>
-          <se-button id="tool_delete_multi" title="Delete Selected Elements" shortcut="Delete/Backspace" src="./images/delete.svg"></se-button>
+          <se-button id="tool_delete_multi" title="Delete Selected Elements" shortcut="Delete/Backspace"
+            src="./images/delete.svg"></se-button>
           <div class="tool_sep"></div>
-          <se-button id="tool_group_elements" title="Group Elements" shortcut="G" src="./images/group_elements.svg"></se-button>
+          <se-button id="tool_group_elements" title="Group Elements" shortcut="G" src="./images/group_elements.svg">
+          </se-button>
           <se-button id="tool_make_link_multi" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
           <se-button id="tool_align_left" title="Align Left" src="./images/align_left.svg"></se-button>
           <se-button id="tool_align_center" title="Align Center" src="./images/align_center.svg"></se-button>
@@ -201,15 +209,20 @@
         </div>
         <div id="rect_panel">
           <div class="toolset">
-            <se-input id="rect_width" data-attr="width" size="4" src="./images/width.svg" title="Change rectangle width"></se-input>
-            <se-input id="rect_height" data-attr="height" size="4" src="./images/height.svg" title="Change rectangle height"></se-input>
+            <se-input id="rect_width" data-attr="width" size="4" src="./images/width.svg"
+              title="Change rectangle width"></se-input>
+            <se-input id="rect_height" data-attr="height" size="4" src="./images/height.svg"
+              title="Change rectangle height"></se-input>
           </div>
-          <se-spin-input id="rect_rx" min=0 max=1000 step=1 size="3" title="Change Rectangle Corner Radius" data-attr="Corner Radius" src="./images/c_radius.svg"></se-spin-input>
+          <se-spin-input id="rect_rx" min=0 max=1000 step=1 size="3" title="Change Rectangle Corner Radius"
+            data-attr="Corner Radius" src="./images/c_radius.svg"></se-spin-input>
         </div>
         <div id="image_panel">
           <div class="toolset">
-            <se-input id="image_width" data-attr="width" size="4" type="text" src="./images/width.svg" title="Change image width"></se-input>
-            <se-input id="image_height" data-attr="height" size="4" type="text" src="./images/height.svg" title="Change image height"></se-input> 
+            <se-input id="image_width" data-attr="width" size="4" type="text" src="./images/width.svg"
+              title="Change image width"></se-input>
+            <se-input id="image_height" data-attr="height" size="4" type="text" src="./images/height.svg"
+              title="Change image height"></se-input>
           </div>
           <div class="toolset">
             <label id="tool_image_url">url:
@@ -233,8 +246,10 @@
         </div>
         <div id="ellipse_panel">
           <div class="toolset">
-            <se-input id="ellipse_cx" data-attr="cx" size="4" title="Change ellipse's cx coordinate" label="cx:"></se-input>
-            <se-input id="ellipse_cy" data-attr="cy" size="4" title="Change ellipse's cy coordinate" label="cy:"></se-input>
+            <se-input id="ellipse_cx" data-attr="cx" size="4" title="Change ellipse's cx coordinate" label="cx:">
+            </se-input>
+            <se-input id="ellipse_cy" data-attr="cy" size="4" title="Change ellipse's cy coordinate" label="cy:">
+            </se-input>
           </div>
           <div class="toolset">
             <se-input id="ellipse_rx" data-attr="rx" size="4" title="Change ellipse's x radius" label="rx:"></se-input>
@@ -243,12 +258,16 @@
         </div>
         <div id="line_panel">
           <div class="toolset">
-            <se-input id="line_x1" data-attr="x1" size="4" title="Change line's starting x coordinate" label="x1:"></se-input>
-            <se-input id="line_y1" data-attr="y1" size="4" title="Change line's starting y coordinate" label="y1:"></se-input>
+            <se-input id="line_x1" data-attr="x1" size="4" title="Change line's starting x coordinate" label="x1:">
+            </se-input>
+            <se-input id="line_y1" data-attr="y1" size="4" title="Change line's starting y coordinate" label="y1:">
+            </se-input>
           </div>
           <div class="toolset">
-            <se-input id="line_x2" data-attr="x2" size="4" title="Change line's ending x coordinate" label="x2:"></se-input>
-            <se-input id="line_y2" data-attr="y2" size="4" title="Change line's ending y coordinate" label="y2:"></se-input>
+            <se-input id="line_x2" data-attr="x2" size="4" title="Change line's ending x coordinate" label="x2:">
+            </se-input>
+            <se-input id="line_y2" data-attr="y2" size="4" title="Change line's ending y coordinate" label="y2:">
+            </se-input>
           </div>
         </div>
         <div id="text_panel">
@@ -275,7 +294,8 @@
               </ul>
             </div>
           </div>
-          <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="Change Font Size" src="./images/fontsize.svg"></se-spin-input>
+          <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="Change Font Size"
+            src="./images/fontsize.svg"></se-spin-input>
           <!-- Not visible, but still used -->
           <input id="text" type="text" size="35" />
         </div>
@@ -313,40 +333,43 @@
           </select>
           <se-button id="tool_node_clone" title="Clone Node" src="./images/tool_node_clone.svg"></se-button>
           <se-button id="tool_node_delete" title="Delete Node" src="./images/tool_node_delete.svg"></se-button>
-          <se-button id="tool_openclose_path" title="Open/close sub-path" src="./images/tool_openclose_path.svg"></se-button>
+          <se-button id="tool_openclose_path" title="Open/close sub-path" src="./images/tool_openclose_path.svg">
+          </se-button>
           <se-button id="tool_add_subpath" title="Add sub-path" src="./images/tool_add_subpath.svg"></se-button>
         </div>
       </div> <!-- tools_top -->
       <div id="cur_context_panel">
       </div>
-      <div id="tools_left" class="tools_panel">
+      <div id="tools_left">
         <se-button id="tool_select" title="Select Tool" src="./images/select.svg"></se-button>
         <se-button id="tool_fhpath" title="Pencil Tool" src="./images/pencil.svg" shortcut="Q"></se-button>
         <se-flyingbutton id="tools_line_show" title="Line Tool (L)/Connect two objects">
           <se-button id="tool_line" title="Line Tool" src="./images/pen.svg" shortcut="L"></se-button>
-          <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>                   
+          <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
         </se-flyingbutton>
         <se-flyingbutton id="tools_rect" title="Square/Rect Tool">
           <se-button id="tool_rect" title="Rectangle" src="./images/rect.svg" shortcut="R"></se-button>
           <se-button id="tool_square" title="Square" src="./images/square.svg"></se-button>
-          <se-button id="tool_fhrect" title="Free-Hand Rectangle" src="./images/fh_rect.svg"></se-button>                  
+          <se-button id="tool_fhrect" title="Free-Hand Rectangle" src="./images/fh_rect.svg"></se-button>
         </se-flyingbutton>
         <se-flyingbutton id="tools_ellipse_show" title="Ellipse/Circle Tool">
           <se-button id="tool_ellipse" title="Rectangle" src="./images/ellipse.svg" shortcut="E"></se-button>
           <se-button id="tool_circle" title="Square" src="./images/circle.svg"></se-button>
-          <se-button id="tool_fhellipse" title="Free-Hand Rectangle" src="./images/fh_ellipse.svg"></se-button>                 
+          <se-button id="tool_fhellipse" title="Free-Hand Rectangle" src="./images/fh_ellipse.svg"></se-button>
         </se-flyingbutton>
         <se-button id="tool_path" title="Path Tool" src="./images/path.svg" shortcut="P"></se-button>
-        <se-explorerbutton id="tool_shapelib_show" title="Shape library" lib="./extensions/ext-shapes/shapelib/" src="./images/shapelib.svg"></se-explorerbutton>
+        <se-explorerbutton id="tool_shapelib_show" title="Shape library" lib="./extensions/ext-shapes/shapelib/"
+          src="./images/shapelib.svg"></se-explorerbutton>
         <se-button id="tool_text" title="Text Tool" src="./images/text.svg" shortcut="T"></se-button>
         <se-button id="tool_image" title="Image Tool" src="./images/image.svg"></se-button>
         <se-button id="tool_zoom" title="Zoom Tool" src="./images/zoom.svg" shortcut="Z"></se-button>
-        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I"></se-button>
+        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I">
+        </se-button>
         <se-button id="ext-panning" title="Panning" src="./images/panning.svg"></se-button>
         <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
         <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
       </div> <!-- tools_left -->
-      <div id="tools_bottom" class="tools_panel">
+      <div id="tools_bottom">
         <!-- Zoom buttons -->
         <se-dropdown id="zoom" src="./images/zoom.svg" title="Change zoom level" inputsize="40px">
           <div value="1000">1000</div>
@@ -360,70 +383,58 @@
           <div value="layer">Fit to layer content</div>
           <div value="content">Fit to all content</div>
         </se-dropdown>
-        <div id="tools_bottom_2">
-          <div id="color_tools">
-            <div class="color_tool" id="tool_fill">
-              <label class="icon_label" for="fill_color" title="Change fill color"></label>
-              <div class="color_block">
-                <div id="fill_bg"></div>
-                <div id="fill_color" class="color_block"></div>
-              </div>
-            </div>
-            <div class="color_tool" id="tool_stroke">
-              <label class="icon_label" title="Change stroke color"></label>
-              <div class="color_block">
-                <div id="stroke_bg"></div>
-                <div id="stroke_color" class="color_block" title="Change stroke color"></div>
-              </div>
-              <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width by 1"></se-spin-input>
-              <div id="toggle_stroke_tools" title="Show/hide more stroke tools"></div>
-              <label class="stroke_tool">
-                <select id="stroke_style" title="Change stroke dash style">
-                  <option selected="selected" value="none">&#8212;</option>
-                  <option value="2,2">...</option>
-                  <option value="5,5">- -</option>
-                  <option value="5,2,2,2">- .</option>
-                  <option value="5,2,2,2,2,2">- ..</option>
-                </select>
-              </label>
-              <div class="stroke_tool dropdown" id="stroke_linejoin">
-                <div id="cur_linejoin" title="Linejoin: Miter"></div>
-                <button></button>
-              </div>
-              <div class="stroke_tool dropdown" id="stroke_linecap">
-                <div id="cur_linecap" title="Linecap: Butt"></div>
-                <button></button>
-              </div>
-            </div>
-            <div class="color_tool" id="tool_opacity" title="Change selected item opacity">
-              <label>
-                <span id="group_opacityLabel" class="icon_label"></span>
-                <input id="group_opacity" size="3" value="100" type="text" />
-              </label>
-              <div id="opacity_dropdown" class="dropdown">
-                <button></button>
-                <ul>
-                  <li>0%</li>
-                  <li>25%</li>
-                  <li>50%</li>
-                  <li>75%</li>
-                  <li>100%</li>
-                  <li class="special">
-                    <div id="opac_slider"></div>
-                  </li>
-                </ul>
-              </div>
-            </div>
+        <div id="tool_fill">
+          <label for="fill_color" title="Change fill color"></label>
+          <div class="color_block">
+            <div id="fill_bg"></div>
+            <div id="fill_color" class="color_block"></div>
+          </div>
+        </div> <!-- tool_fill -->
+        <div id="tool_stroke">
+          <label title="Change stroke color"></label>
+          <div class="color_block">
+            <div id="stroke_bg"></div>
+            <div id="stroke_color" class="color_block" title="Change stroke color" src="./images/fill.svg"></div>
           </div>
         </div>
-        <div id="tools_bottom_3">
-          <div id="palette_holder">
-            <div id="palette" title="Click to change fill color, shift-click to change stroke color">
-            </div>
+        <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width by 1"></se-spin-input>
+        <label class="stroke_tool">
+          <select id="stroke_style" title="Change stroke dash style">
+            <option selected="selected" value="none">&#8212;</option>
+            <option value="2,2">...</option>
+            <option value="5,5">- -</option>
+            <option value="5,2,2,2">- .</option>
+            <option value="5,2,2,2,2,2">- ..</option>
+          </select>
+        </label>
+        <div class="stroke_tool dropdown" id="stroke_linejoin">
+          <div id="cur_linejoin" title="Linejoin: Miter"></div>
+          <button></button>
+        </div>
+        <div class="stroke_tool dropdown" id="stroke_linecap">
+          <div id="cur_linecap" title="Linecap: Butt"></div>
+          <button></button>
+        </div>
+
+        <div id="tool_opacity">
+          <se-spin-input size="3" id="group_opacity" min=0 max=100 step=5 title="Change selected item opacity">
+          </se-spin-input>
+          <div id="opacity_dropdown" class="dropdown">
+            <button></button>
+            <ul>
+              <li>0%</li>
+              <li>25%</li>
+              <li>50%</li>
+              <li>75%</li>
+              <li>100%</li>
+              <li class="special">
+                <div id="opac_slider"></div>
+              </li>
+            </ul>
           </div>
         </div>
-        <!-- <div id="copyright"><span id="copyrightLabel">Powered by</span> <a href="https://github.com/SVG-Edit/svgedit" target="_blank">SVG-edit v2.6-beta</a></div> -->
-      </div>
+        <se-palette id="palette"></se-palette>
+      </div> <!-- tools_bottom -->
       <div id="option_lists" class="dropdown">
         <ul id="linejoin_opts">
           <li class="tool_button current" id="linejoin_miter" title="Linejoin: Miter"></li>
