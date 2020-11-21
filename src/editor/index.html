@@ -150,7 +150,7 @@
             <se-input id="elem_id" data-attr="id" size="10" label="id:" title="Identify the element"></se-input> 
             <se-input id="elem_class" data-attr="class" size="10" label="class:" title="Element class"></se-input> 
           </div>
-          <se-spin-input id="angle" min=-180 max=180 step=5 src="./images/angle.svg" title="Change rotation angle"></se-spin-input>
+          <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="./images/angle.svg" title="Change rotation angle"></se-spin-input>
           <div class="toolset" id="tool_blur" title="Change gaussian blur value">
             <label>
               <span id="blurLabel" class="icon_label"></span>
@@ -204,7 +204,7 @@
             <se-input id="rect_width" data-attr="width" size="4" src="./images/width.svg" title="Change rectangle width"></se-input>
             <se-input id="rect_height" data-attr="height" size="4" src="./images/height.svg" title="Change rectangle height"></se-input>
           </div>
-          <se-spin-input id="rect_rx" min=0 max=1000 step=1 title="Change Rectangle Corner Radius" data-attr="Corner Radius" src="./images/c_radius.svg"></se-spin-input>
+          <se-spin-input id="rect_rx" min=0 max=1000 step=1 size="3" title="Change Rectangle Corner Radius" data-attr="Corner Radius" src="./images/c_radius.svg"></se-spin-input>
         </div>
         <div id="image_panel">
           <div class="toolset">
@@ -275,7 +275,7 @@
               </ul>
             </div>
           </div>
-          <se-spin-input id="font_size" min=1 max=1000 step=1 title="Change Font Size" src="./images/fontsize.svg"></se-spin-input>
+          <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="Change Font Size" src="./images/fontsize.svg"></se-spin-input>
           <!-- Not visible, but still used -->
           <input id="text" type="text" size="35" />
         </div>
@@ -375,7 +375,7 @@
                 <div id="stroke_bg"></div>
                 <div id="stroke_color" class="color_block" title="Change stroke color"></div>
               </div>
-              <se-spin-input id="stroke_width" min=0 max=99 step=0.1 title="Change stroke width by 1, shift-click to change by 0.1"></se-spin-input>
+              <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width by 1"></se-spin-input>
               <div id="toggle_stroke_tools" title="Show/hide more stroke tools"></div>
               <label class="stroke_tool">
                 <select id="stroke_style" title="Change stroke dash style">

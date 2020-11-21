@@ -74,7 +74,6 @@ class Dropdown extends ListComboBox {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
-    console.log({this: this, name, oldValue, newValue});
     switch (name) {
     case 'title':
       // this.$span.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);

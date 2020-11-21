@@ -18,6 +18,9 @@ template.innerHTML = `
     right: -4px;
     position: relative;
   }
+  elix-number-spin-box::part(spin-button) {
+    padding: 0px;
+  }
   </style>
   <img src="./images/logo.svg" alt="icon" width="12" height="12" />
   <span id="label">label</span>
@@ -47,7 +50,7 @@ export class SESpinInput extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['value', 'label', 'src', 'size'];
+    return ['value', 'label', 'src', 'size', 'min', 'max', 'step'];
   }
   /**
    * @function attributeChangedCallback
@@ -57,6 +60,7 @@ export class SESpinInput extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
+    console.log(name, newValue);
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
@@ -64,7 +68,10 @@ export class SESpinInput extends HTMLElement {
       this.$label.remove();
       break;
     case 'size':
-      this.$input.setAttribute('size', newValue);
+      // access to the underlying input box
+      this.$input.shadowRoot.getElementById('input').size = newValue;
+      // below seems mandatory to override the default width style that takes precedence on size
+      this.$input.shadowRoot.getElementById('input').style.width = 'unset';
       break;
     case 'step':
       this.$input.setAttribute('step', newValue);
@@ -155,11 +162,16 @@ export class SESpinInput extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    this.addEventListener('change', (e) => {
+    this.$input.addEventListener('change', (e) => {
       e.preventDefault();
       this.value = e.target.value;
+      this.dispatchEvent(this.$event);
     });
-    this.dispatchEvent(this.$event);
+    this.$input.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.value = e.target.value;
+      this.dispatchEvent(this.$event);
+    });
   }
 }
 

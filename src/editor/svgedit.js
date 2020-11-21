@@ -36,7 +36,6 @@ import Layer from '../common/layer.js';
 import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
 import jQueryPluginSVGIcons from './svgicons/jQuery.svgIcons.js';
 import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
-import jQueryPluginSpinButton from './spinbtn/jQuery.SpinButton.js';
 import jQueryPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
 import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import jQueryPluginDBox from '../svgcanvas/dbox.js';
@@ -52,7 +51,7 @@ const editor = {};
 
 const $ = [
   jQueryPluginJSHotkeys, jQueryPluginSVGIcons, jQueryPluginJGraduate,
-  jQueryPluginSpinButton, jQueryPluginContextMenu, jQueryPluginJPicker
+  jQueryPluginContextMenu, jQueryPluginJPicker
 ].reduce((jq, func) => func(jq), jQuery);
 
 const homePage = 'https://github.com/SVG-Edit/svgedit';
@@ -64,7 +63,7 @@ const homePage = 'https://github.com/SVG-Edit/svgedit';
 /**
 * @type {Float}
 */
-editor.tool_scale = 1; // Dependent on icon size, so any use to making configurable instead? Used by `jQuery.SpinButton.js`
+editor.tool_scale = 1;
 /**
 * @type {Integer}
 */
@@ -2336,7 +2335,7 @@ editor.init = () => {
   };
 
   /**
-  * @type {module:jQuerySpinButton.ValueCallback}
+  * @type {module}
   */
   const changeZoom = (value) => {
     switch (value) {
@@ -2548,7 +2547,6 @@ editor.init = () => {
     * @property {string|Integer} [colnum] Added as part of the option list class.
     * @property {string} [label] Label associated with the tool, visible in the UI
     * @property {Integer} [size] Value of the "size" attribute of the tool input
-    * @property {module:jQuerySpinButton.SpinButtonConfig} [spindata] When added to a tool of type "input", this tool becomes a "spinner" which allows the number to be in/decreased.
     */
     if (ext.context_tools) {
       $.each(ext.context_tools, function (i, tool) {
@@ -2622,10 +2620,6 @@ editor.init = () => {
 
           // Add to given tool.panel
           const inp = $(html).appendTo(panel).find('input');
-
-          if (tool.spindata) {
-            inp.SpinButton(tool.spindata);
-          }
 
           if (tool.events) {
             $.each(tool.events, function (evt, func) {
@@ -2919,7 +2913,7 @@ editor.init = () => {
   $('#image_save_opts input').val([editor.pref('img_save')]);
 
   /**
-  * @type {module:jQuerySpinButton.ValueCallback}
+  * @type {module}
   */
   const changeRectRadius = function (e) {
     svgCanvas.setRectRadius(e.target.value);
