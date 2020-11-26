@@ -4,10 +4,6 @@ import 'elix/define/NumberSpinBox.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  :host {
-    position: relative;
-    top: 6px;
-  }
   img {
     top: 2px;
     left: 4px;

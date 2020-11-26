@@ -36,12 +36,8 @@ class Dropdown extends ListComboBox {
     result.content.append(
       templateFrom.html`
         <style>
-        :host {
-          float:left;
-        }
         [part~="source"] {
           grid-template-columns: 20px 1fr auto;
-          margin-top: 4px;
         }
         ::slotted(*) {
           padding: 4px;
