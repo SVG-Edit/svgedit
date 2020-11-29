@@ -3778,6 +3778,20 @@ editor.init = () => {
     updateWireFrame();
   };
 
+  const handlePalette = (e) => {
+    e.preventDefault();
+    // shift key or right click for stroke
+    const {picker, color} = e.detail;
+    // Webkit-based browsers returned 'initial' here for no stroke
+    const paint = color === 'none' ? new $.jGraduate.Paint() : new $.jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
+    paintBox[picker].setPaint(paint);
+    svgCanvas.setColor(picker, color);
+    if (color !== 'none' && svgCanvas.getPaintOpacity(picker) !== 1) {
+      svgCanvas.setPaintOpacity(picker, 1.0);
+    }
+    updateToolButtonState();
+  };
+
   $('#svg_docprops_container, #svg_prefs_container').draggable({
     cancel: 'button,fieldset',
     containment: 'window'
@@ -4152,8 +4166,8 @@ editor.init = () => {
       const cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
       // set up gradients to be used for the buttons
       const svgdocbox = new DOMParser().parseFromString(
-        `<svg xmlns="http://www.w3.org/2000/svg">
-          <rect width="16.5" height="16.5"
+        `<svg xmlns="http://www.w3.org/2000/svg" width="16.5" height="16.5">
+          <rect
             fill="#${cur.color}" opacity="${cur.opacity}"/>
           <defs><linearGradient id="gradbox_${PaintBox.ctr++}"/></defs>
         </svg>`,
@@ -4681,6 +4695,7 @@ editor.init = () => {
 
     $id('tool_bold').addEventListener('click', clickBold);
     $id('tool_italic').addEventListener('click', clickItalic);
+    $id('palette').addEventListener('change', handlePalette);
 
     const toolButtons = [
       {sel: '#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},

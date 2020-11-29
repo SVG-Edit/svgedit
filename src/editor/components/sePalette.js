@@ -56,10 +56,17 @@ export class SEPalette extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    this.$strip.addEventListener('click', (e) => {
-      e.preventDefault();
-      console.log(e);
-      this.dispatchEvent(this.$event);
+    this.$strip.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      // shift key or right click for stroke
+      const picker = evt.shiftKey || evt.button === 2 ? 'stroke' : 'fill';
+      let color = this.$strip.currentItem.dataset.rgb;
+      // Webkit-based browsers returned 'initial' here for no stroke
+      if (color === 'none' || color === 'transparent' || color === 'initial') {
+        color = 'none';
+      }
+      const paletteEvent = new CustomEvent('change', {detail: {picker, color}, bubbles: false});
+      this.dispatchEvent(paletteEvent);
     });
   }
 }
