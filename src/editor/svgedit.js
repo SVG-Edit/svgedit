@@ -946,7 +946,7 @@ editor.init = () => {
   * @type {module:svgcanvas.SvgCanvas}
   */
   editor.canvas = svgCanvas = new SvgCanvas(
-    document.getElementById('svgcanvas'),
+    $id('svgcanvas'),
     curConfig
   );
 
@@ -1218,18 +1218,6 @@ editor.init = () => {
   };
 
   /**
-  *
-  * @returns {void}
-  */
-  const operaRepaint = function () {
-    // Repaints canvas in Opera. Needed for stroke-dasharray change as well as fill change
-    if (!window.opera) {
-      return;
-    }
-    $('<p/>').hide().appendTo('body').remove();
-  };
-
-  /**
    *
    * @param {Element} opt
    * @param {boolean} changeElem
@@ -1243,7 +1231,6 @@ editor.init = () => {
     if (changeElem) {
       svgCanvas.setStrokeAttr('stroke-' + pre, val);
     }
-    operaRepaint();
     setIcon('#cur_' + pre, id, 20);
     $(opt).addClass('current').siblings().removeClass('current');
   }
@@ -1343,7 +1330,7 @@ editor.init = () => {
   * @param {Element} elem
   * @returns {void}
   */
-  const setInputWidth = function (elem) {
+  const setInputWidth = (elem) => {
     const w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
     $(elem).width(w);
   };
@@ -1631,8 +1618,6 @@ editor.init = () => {
         nostroke: bNoStroke
       }
     );
-
-    operaRepaint();
   };
 
   /**
@@ -2789,12 +2774,10 @@ editor.init = () => {
 
   $('#stroke_style').change(function () {
     svgCanvas.setStrokeAttr('stroke-dasharray', $(this).val());
-    operaRepaint();
   });
 
   $('#stroke_linejoin').change(function () {
     svgCanvas.setStrokeAttr('stroke-linejoin', $(this).val());
-    operaRepaint();
   });
 
   // Lose focus for select elements when changed (Allows keyboard shortcuts to work better)

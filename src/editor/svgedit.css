@@ -38,10 +38,6 @@ hr {
   border-bottom: 1px solid #808080;
 }
 
-select {
-  margin-top: 4px;
-}
-
 #svgroot {
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -420,6 +416,31 @@ select {
   margin-top: 5px;
 }
 
+#fill_color,  #stroke_color {
+  height: 16px;
+  width: 16px;
+  border: 1px solid #808080;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+#fill_color,  #stroke_color {
+  height: 16px;
+  width: 16px;
+  border: 1px solid #808080;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.color_block {
+  top: 0;
+  left: 0;
+}
+
+.color_block svg {
+  display: block;
+}
+
 #tools_left {
   position: absolute;
   border-right: none;
@@ -728,6 +749,13 @@ input[type=text] {
 #toggle_stroke_tools:hover {
   background: white;
 }
+.color_tool > * {
+  float: left;
+  margin-right: 5px;
+}
+#tool_opacity { right: 0;}
+#tool_fill { left: 0; }
+#tool_stroke { left: 60px;}
 
 #tool_opacity {
   overflow: visible;
