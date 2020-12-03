@@ -211,7 +211,7 @@ export const mouseMoveEvent = function (evt) {
       top = box.y,
       {width, height} = box;
     dx = (x - eventContext_.getStartX());
-    dy = (y - eventContext_.getStartX());
+    dy = (y - eventContext_.getStartY());
 
     if (eventContext_.getCurConfig().gridSnapping) {
       dx = snapToGrid(dx);
