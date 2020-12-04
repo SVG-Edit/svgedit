@@ -12,9 +12,12 @@ template.innerHTML = `
   elix-menu-button::part(menu) {
     background-color: #eee !important;
   }
+  elix-menu-button::part(popup-toggle) {
+    padding: 0.40em 1.75em !important;
+  }
   </style>
   
-  <elix-menu-button id="sampleMenuButton" aria-label="Sample Menu">
+  <elix-menu-button id="MenuButton" aria-label="Main Menu">
     <slot></slot>
   </elix-menu-button>
   
@@ -32,15 +35,55 @@ export class SeMenu extends HTMLElement {
     this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     this.$menu = this._shadowRoot.querySelector('elix-menu-button');
-    console.log(this.$menu);
+    this.$label = this.$menu.shadowRoot.querySelector('#popupToggle').shadowRoot;
+  }
+  /**
+   * @function observedAttributes
+   * @returns {any} observed
+   */
+  static get observedAttributes () {
+    return ['label'];
   }
 
+  /**
+   * @function attributeChangedCallback
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   * @returns {void}
+   */
+  attributeChangedCallback (name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    switch (name) {
+    case 'label':
+      this.$label.prepend(newValue);
+      break;
+    default:
+      // eslint-disable-next-line no-console
+      console.error(`unknown attribute: ${name}`);
+      break;
+    }
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get label () {
+    return this.getAttribute('label');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set label (value) {
+    this.setAttribute('label', value);
+  }
   /**
    * @function connectedCallback
    * @returns {void}
    */
   connectedCallback () {
-    console.log("connectedCallback");
     this.$menu.addEventListener('openedchange', (e) => {
       e.preventDefault();
       const selectedItem = e?.detail?.closeResult;

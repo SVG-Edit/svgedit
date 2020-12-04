@@ -281,13 +281,6 @@ hr {
   z-index: 5;
 }
 
-#mainmenu1 {
-  position: absolute;
-  top: 4px;
-  left: 355px;
-  z-index: 5;
-}
-
 #main_icon {
   position: relative;
   top: -2px;
