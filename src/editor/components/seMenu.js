@@ -2,7 +2,6 @@
 import 'elix/define/MenuButton.js';
 import 'elix/define/MenuItem.js';
 
-
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
@@ -13,7 +12,7 @@ template.innerHTML = `
     background-color: #eee !important;
   }
   elix-menu-button::part(popup-toggle) {
-    padding: 0.40em 1.75em !important;
+    padding: 0.25em 0.60em !important
   }
   </style>
   
@@ -42,7 +41,7 @@ export class SeMenu extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label'];
+    return ['label', 'src'];
   }
 
   /**
@@ -53,8 +52,15 @@ export class SeMenu extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
+    var image = new Image();
     if (oldValue === newValue) return;
     switch (name) {
+    case 'src':
+      image.src = newValue;
+      image.width = 18;
+      image.height = 18;
+      this.$label.prepend(image);
+      break;
     case 'label':
       this.$label.prepend(newValue);
       break;
@@ -78,6 +84,21 @@ export class SeMenu extends HTMLElement {
    */
   set label (value) {
     this.setAttribute('label', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get src () {
+    return this.getAttribute('src');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set src (value) {
+    this.setAttribute('src', value);
   }
   /**
    * @function connectedCallback
