@@ -9,10 +9,12 @@ template.innerHTML = `
   :host {
     padding: 0px;
   }
+  elix-menu-button::part(menu) {
+    background-color: #eee !important;
+  }
   </style>
   
   <elix-menu-button id="sampleMenuButton" aria-label="Sample Menu">
-    welcome
     <slot></slot>
   </elix-menu-button>
   
@@ -41,9 +43,11 @@ export class SeMenu extends HTMLElement {
     console.log("connectedCallback");
     this.$menu.addEventListener('openedchange', (e) => {
       e.preventDefault();
-      console.log("came");
+      const selectedItem = e?.detail?.closeResult;
+      if (selectedItem !== undefined && selectedItem?.id !== undefined) {
+        document.getElementById(selectedItem.id).click();
+      }
     });
-    //this.dispatchEvent(this.$event);
   }
 }
 
