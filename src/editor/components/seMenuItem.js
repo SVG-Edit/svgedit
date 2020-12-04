@@ -44,16 +44,16 @@ export class SeMenuItem extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
+    let shortcut = '';
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
       this.$img.setAttribute('src', newValue);
-      this.$img.style.display = 'block';
+      this.$img.style.display = 'inline-block';
       break;
     case 'label':
-      const shortcut = this.getAttribute('shortcut');
+      shortcut = this.getAttribute('shortcut');
       this.$label.textContent = `${newValue} ${shortcut ? `(${shortcut})` : ''}`;
-      this.$img.remove();
       break;
     default:
       // eslint-disable-next-line no-console
