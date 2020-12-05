@@ -20,7 +20,7 @@ describe('use various parts of svg-edit', function () {
        <title>Layer 1</title>
         <rect id="rect" fill="#FF0000" height="70" stroke="#000000" stroke-width="5" width="94" x="69.5" y="51.5"/>
        </g>
-     </svg>`, {parseSpecialCharSequences: false});
+     </svg>`, {force: true, parseSpecialCharSequences: false});
     cy.get('#tool_source_save').click({force: true});
     testSnapshot();
   });
@@ -70,12 +70,21 @@ describe('use various parts of svg-edit', function () {
       .click({force: true});
     testSnapshot();
   });
-  it('check tool_start', function () {
+  it('check tool_star', function () {
     cy.get('#tool_star')
       .click({force: true});
     cy.get('#svgcontent')
       .trigger('mousedown', {which: 1, pageX: 600, pageY: 150, force: true})
       .trigger('mousemove', {which: 1, pageX: 600, pageY: 170, force: true})
+      .trigger('mouseup', {force: true});
+    cy.get('#svgcontent').toMatchSnapshot();
+  });
+  it('check tool_polygon', function () {
+    cy.get('#tool_polygon')
+      .click({force: true});
+    cy.get('#svgcontent')
+      .trigger('mousedown', {which: 1, pageX: 650, pageY: 200, force: true})
+      .trigger('mousemove', {which: 1, pageX: 650, pageY: 210, force: true})
       .trigger('mouseup', {force: true});
     cy.get('#svgcontent').toMatchSnapshot();
   });

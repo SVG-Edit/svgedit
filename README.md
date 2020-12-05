@@ -46,13 +46,6 @@ to join the project.
 
 ### [Try SVG-edit here](https://svg-edit.github.io/svgedit/dist/editor/index.html)
 
-<!-- See the [latest release](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor.html)
-(or its [ES6-Module](https://svg-edit.github.io/svgedit/releases/latest/editor/svg-editor-es.html)
-version, which requires a modern browser).
--->
-See a working editor on [`master`](https://svg-edit.github.io/svgedit/src/editor/index.html)
-version, which requires a modern browser).
-
 We also build a systemJS version at [`master`](https://svg-edit.github.io/svgedit/dist/editor/system/index.html)
 
 You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svgedit/releases).

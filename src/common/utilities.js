@@ -315,11 +315,7 @@ export const convertToXMLReferences = function (input) {
   let output = '';
   [...input].forEach((ch) => {
     const c = ch.charCodeAt();
-    if (c <= 127) {
-      output += ch;
-    } else {
-      output += `&#${c};`;
-    }
+    output += c <= 127 ? ch : `&#${c};`;
   });
   return output;
 };
@@ -778,18 +774,16 @@ export const getPathDFromElement = function (elem) {
       h = b.height;
     num = 4 - num; // Why? Because!
 
-    if (!rx && !ry) {
-      // Regular rect
-      d = getPathDFromSegments([
+    d = !rx && !ry
+      ? getPathDFromSegments([
         ['M', [x, y]],
         ['L', [x + w, y]],
         ['L', [x + w, y + h]],
         ['L', [x, y + h]],
         ['L', [x, y]],
         ['Z', []]
-      ]);
-    } else {
-      d = getPathDFromSegments([
+      ])
+      : getPathDFromSegments([
         ['M', [x, y + ry]],
         ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
         ['L', [x + w - rx, y]],
@@ -801,7 +795,6 @@ export const getPathDFromElement = function (elem) {
         ['L', [x, y + ry]],
         ['Z', []]
       ]);
-    }
     break;
   } default:
     break;

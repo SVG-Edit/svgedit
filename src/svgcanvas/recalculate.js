@@ -269,13 +269,7 @@ export const recalculateDimensions = function (selected) {
     const gangle = getRotationAngle(selected);
     if (gangle) {
       const a = gangle * Math.PI / 180;
-      let s;
-      if (Math.abs(a) > (1.0e-10)) {
-        s = Math.sin(a) / (1 - Math.cos(a));
-      } else {
-        // TODO: This blows up if the angle is exactly 0!
-        s = 2 / a;
-      }
+      const s = Math.abs(a) > (1.0e-10) ? Math.sin(a) / (1 - Math.cos(a)) : 2 / a;
       for (let i = 0; i < tlist.numberOfItems; ++i) {
         const xform = tlist.getItem(i);
         if (xform.type === 4) {
