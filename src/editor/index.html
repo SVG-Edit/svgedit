@@ -74,14 +74,24 @@
         <div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s
         </div>
       </div>
-      <div id="main_button">
+      <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg">
+        <!-- File-like buttons: New, Save, Source -->
+        <se-menu-item id="tool_clear" label="New Image" shortcut="N" src="./images/new.svg"></se-menu-item>
+        <se-menu-item id="tool_open" label="Open SVG" src="./images/open.svg"></se-menu-item>
+        <se-menu-item id="tool_import" label="Import Image" src="./images/importImg.svg"></se-menu-item>
+        <se-menu-item id="tool_save" label="Save Image" shortcut="S" src="./images/saveImg.svg"></se-menu-item>
+        <se-menu-item id="tool_export" label="Export" src="./images/export.svg"></se-menu-item>
+        <se-menu-item id="tool_docprops" label="Document Properties" shortcut="D" src="./images/docprop.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_prefs" label="Editor Preferences" src="./images/editPref.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_homepage" label="SVG-Edit Home Page" src="./images/svg-edit-home.svg"></se-menu-item>
+      </se-menu>
+      <!-- <div id="main_button">
         <div id="main_icon" class="tool_button" title="Main Menu">
           <span>SVG-Edit</span>
           <div id="logo"></div>
           <div class="dropdown"></div>
         </div>
         <div id="main_menu">
-          <!-- File-like buttons: New, Save, Source -->
           <ul>
             <li id="tool_clear">
               <div></div>
@@ -122,8 +132,9 @@
               </a>
             </li>
           </ul>
-        </div> <!-- main_menu -->
-      </div> <!-- main_button -->
+        </div> 
+      </div> -->
+
       <div id="tools_top">
         <div id="editor_panel">
           <div class="tool_sep"></div>

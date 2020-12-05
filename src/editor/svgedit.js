@@ -4680,18 +4680,28 @@ editor.init = () => {
     $id('tool_italic').addEventListener('click', clickItalic);
     $id('palette').addEventListener('change', handlePalette);
 
+    $id('tool_clear').addEventListener('click', clickClear);
+    $id('tool_open').addEventListener('click', function (e) {
+      clickOpen();
+      window.dispatchEvent(new CustomEvent('openImage'));
+    });
+    $id('tool_import').addEventListener('click', function (e) {
+      clickImport();
+      window.dispatchEvent(new CustomEvent('importImage'));
+    });
+    $id('tool_save').addEventListener('click', function (e) {
+      if (editingsource) {
+        saveSourceEditor();
+      } else {
+        clickSave();
+      }
+    });
+    $id('tool_export').addEventListener('click', clickExport);
+    $id('tool_docprops').addEventListener('click', showDocProperties);
+    $id('tool_editor_prefs').addEventListener('click', showPreferences);
+    $id('tool_editor_homepage').addEventListener('click', openHomePage);
+
     const toolButtons = [
-      {sel: '#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
-      {sel: '#tool_save', fn () {
-        if (editingsource) {
-          saveSourceEditor();
-        } else {
-          clickSave();
-        }
-      }, evt: 'mouseup', key: ['S', true]},
-      {sel: '#tool_export', fn: clickExport, evt: 'mouseup'},
-      {sel: '#tool_open', fn: clickOpen, evt: 'mouseup', key: ['O', true]},
-      {sel: '#tool_import', fn: clickImport, evt: 'mouseup'},
       {
         key: ['esc', false, false],
         fn () {
@@ -4707,12 +4717,7 @@ editor.init = () => {
         key: ['esc', false, false], hidekey: true},
       {sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
       {sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
-      {sel: '#tool_docprops', fn: showDocProperties, evt: 'click'},
       {sel: '#tool_prefs_save', fn: savePreferences, evt: 'click'},
-      {sel: '#tool_editor_prefs', fn: showPreferences, evt: 'click'},
-      {sel: '#tool_editor_homepage', fn: openHomePage, evt: 'click'},
-      {sel: '#tool_open', fn () { window.dispatchEvent(new CustomEvent('openImage')); }, evt: 'click'},
-      {sel: '#tool_import', fn () { window.dispatchEvent(new CustomEvent('importImage')); }, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
       {sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
