@@ -11,7 +11,7 @@ describe('Fix issue 408', function () {
   it('should not throw when showing/saving svg content', function () {
     cy.get('#tool_source').click();
     cy.get('#svg_source_textarea')
-      .type('{selectall}')
+      .type('{selectall}', {force: true})
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
       <g class="layer">
        <title>Layer 1</title>
