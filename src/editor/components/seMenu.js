@@ -52,7 +52,7 @@ export class SeMenu extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    var image = new Image();
+    const image = new Image();
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
