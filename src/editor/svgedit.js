@@ -957,7 +957,7 @@ editor.init = () => {
   const canvMenu = $('#cmenu_canvas');
   const paintBox = {fill: null, stroke: null};
 
-  let resizeTimer, curScrollPos;
+  let resizeTimer;
   let exportWindow = null,
     defaultImageURL = curConfig.imgPath + 'logo.svg',
     zoomInIcon = 'crosshair',
@@ -3981,8 +3981,6 @@ editor.init = () => {
     hidePreferences();
   };
 
-  let resetScrollPos = $.noop;
-
   /**
   *
   * @returns {Promise<void>} Resolves to `undefined`
@@ -4010,44 +4008,9 @@ editor.init = () => {
     } else if (preferences) {
       hidePreferences();
     }
-    resetScrollPos();
   };
 
   const winWh = {width: $(window).width(), height: $(window).height()};
-
-  // Fix for Issue 781: Drawing area jumps to top-left corner on window resize (IE9)
-  if (isIE()) {
-    resetScrollPos = function () {
-      if (workarea[0].scrollLeft === 0 && workarea[0].scrollTop === 0) {
-        workarea[0].scrollLeft = curScrollPos.left;
-        workarea[0].scrollTop = curScrollPos.top;
-      }
-    };
-
-    curScrollPos = {
-      left: workarea[0].scrollLeft,
-      top: workarea[0].scrollTop
-    };
-
-    $(window).resize(resetScrollPos);
-    editor.ready(function () {
-      // TODO: Find better way to detect when to do this to minimize
-      // flickering effect
-      return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
-        setTimeout(function () {
-          resetScrollPos();
-          resolve();
-        }, 500);
-      });
-    });
-
-    workarea.scroll(function () {
-      curScrollPos = {
-        left: workarea[0].scrollLeft,
-        top: workarea[0].scrollTop
-      };
-    });
-  }
 
   $(window).resize(function (evt) {
     $.each(winWh, function (type, val) {
@@ -4072,29 +4035,6 @@ editor.init = () => {
   });
 
   $('#change_image_url').click(promptImgURL);
-
-  // added these event handlers for all the push buttons so they
-  // behave more like buttons being pressed-in and not images
-  (function () {
-    const toolnames = [
-      'clear', 'open', 'save', 'delete',
-      'delete_multi', 'paste', 'clone', 'clone_multi',
-      'move_top', 'move_bottom'
-    ];
-    const curClass = 'tool_button_current';
-
-    let allTools = '';
-
-    $.each(toolnames, function (i, item) {
-      allTools += (i ? ',' : '') + '#tool_' + item;
-    });
-
-    $(allTools).mousedown(function () {
-      $(this).addClass(curClass);
-    }).bind('mousedown mouseout', function () {
-      $(this).removeClass(curClass);
-    });
-  }());
 
   /**
   * @param {external:jQuery} elem

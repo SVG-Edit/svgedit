@@ -754,8 +754,6 @@ input[type=text] {
   margin-right: 5px;
 }
 #tool_opacity { right: 0;}
-#tool_fill { left: 0; }
-#tool_stroke { left: 60px;}
 
 #tool_opacity {
   overflow: visible;
