@@ -14,6 +14,9 @@ template.innerHTML = `
   elix-menu-button::part(popup-toggle) {
     padding: 0.25em 0.60em !important
   }
+  :host ::slotted([current]){
+    background-color: #F4E284 !important;
+  }
   </style>
   
   <elix-menu-button id="MenuButton" aria-label="Main Menu">
