@@ -3775,7 +3775,7 @@ editor.init = () => {
     updateToolButtonState();
   };
 
-  $('#svg_docprops_container, #svg_prefs_container').draggable({
+  $('#svg_prefs_container').draggable({
     cancel: 'button,fieldset',
     containment: 'window'
   }).css('position', 'absolute');
@@ -3790,9 +3790,11 @@ editor.init = () => {
   const showDocProperties = function () {
     if (docprops) { return; }
     docprops = true;
+    const $imgDialog = document.getElementById('se-img-prop');
 
     // This selects the correct radio button by using the array notation
-    $('#image_save_opts input').val([editor.pref('img_save')]);
+    const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
+    $imageSaveOpts.querySelector('input').value = [editor.pref('img_save')];
 
     // update resolution option with actual resolution
     const res = svgCanvas.getResolution();
@@ -3800,12 +3802,10 @@ editor.init = () => {
       res.w = convertUnit(res.w) + curConfig.baseUnit;
       res.h = convertUnit(res.h) + curConfig.baseUnit;
     }
-
-    $('#canvas_width').val(res.w);
-    $('#canvas_height').val(res.h);
-    $('#canvas_title').val(svgCanvas.getDocumentTitle());
-
-    $('#svg_docprops').show();
+    $imgDialog.shadowRoot.querySelector('#canvas_width').value = res.w;
+    $imgDialog.shadowRoot.querySelector('#canvas_height').value = res.h;
+    $imgDialog.shadowRoot.querySelector('#canvas_title').value = svgCanvas.getDocumentTitle();
+    $imgDialog.shadowRoot.querySelector('#svg_docprops').open();
   };
 
   /**
@@ -3887,10 +3887,13 @@ editor.init = () => {
   * @returns {void}
   */
   const hideDocProperties = function () {
-    $('#svg_docprops').hide();
-    $('#canvas_width,#canvas_height').removeAttr('disabled');
-    $('#resolution')[0].selectedIndex = 0;
-    $('#image_save_opts input').val([editor.pref('img_save')]);
+    const $imgDialog = document.getElementById('se-img-prop');
+    $imgDialog.shadowRoot.querySelector('#svg_docprops').close();
+    $imgDialog.shadowRoot.querySelector('#canvas_width').removeAttribute('disabled');
+    $imgDialog.shadowRoot.querySelector('#canvas_height').removeAttribute('disabled');
+    $imgDialog.shadowRoot.querySelector('#resolution').selectedIndex = 0;
+    const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
+    $imageSaveOpts.querySelector('input').value = [editor.pref('img_save')];
     docprops = false;
   };
 
@@ -3909,29 +3912,29 @@ editor.init = () => {
   */
   const saveDocProperties = function () {
     // set title
-    const newTitle = $('#canvas_title').val();
-    updateTitle(newTitle);
+    const $imgDialog = document.getElementById('se-img-prop');
+    const newTitle = $imgDialog.shadowRoot.querySelector('#canvas_title').value;
     svgCanvas.setDocumentTitle(newTitle);
 
     // update resolution
-    const width = $('#canvas_width'), w = width.val();
-    const height = $('#canvas_height'), h = height.val();
+    const width = $imgDialog.shadowRoot.querySelector('#canvas_width'), w = width.value;
+    const height = $imgDialog.shadowRoot.querySelector('#canvas_height'), h = height.value;
 
     if (w !== 'fit' && !isValidUnit('width', w)) {
-      width.parent().addClass('error');
+      width.parentElement.classList.add('error');
       /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
 
-    width.parent().removeClass('error');
+    width.parentElement.classList.remove('error');
 
     if (h !== 'fit' && !isValidUnit('height', h)) {
-      height.parent().addClass('error');
+      height.parentElement.classList.add('error');
       /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
 
-    height.parent().removeClass('error');
+    height.parentElement.classList.remove('error');
 
     if (!svgCanvas.setResolution(w, h)) {
       /* await */ $.alert(uiStrings.notification.noContentToFitTo);
@@ -3939,7 +3942,8 @@ editor.init = () => {
     }
 
     // Set image save option
-    editor.pref('img_save', $('#image_save_opts :checked').val());
+    const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
+    editor.pref('img_save', $imageSaveOpts.querySelector(':checked').value);
     updateCanvas();
     hideDocProperties();
     return true;
@@ -4259,13 +4263,12 @@ editor.init = () => {
     svgCanvas.embedImage('images/logo.svg', function (datauri) {
       if (!datauri) {
         // Disable option
-        $('#image_save_opts [value=embed]').attr('disabled', 'disabled');
-        $('#image_save_opts input').val(['ref']);
+        const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
+        $imageSaveOpts.querySelector('[value=embed]').setAttribute('disabled', 'disabled');
+        $imageSaveOpts.querySelector('input').value = ['ref'];
         editor.pref('img_save', 'ref');
-        $('#image_opt_embed').css('color', '#666').attr(
-          'title',
-          uiStrings.notification.featNotSupported
-        );
+        $imageSaveOpts.querySelector('#image_opt_embed').style.color = "#666";
+        $imageSaveOpts.querySelector('#image_opt_embed').setAttribute('title', uiStrings.notification.featNotSupported);
       }
     });
   }, 1000);
@@ -4491,27 +4494,10 @@ editor.init = () => {
   //   // }
   // }
 
-  $('#resolution').change(function () {
-    const wh = $('#canvas_width,#canvas_height');
-    if (!this.selectedIndex) {
-      if ($('#canvas_width').val() === 'fit') {
-        wh.removeAttr('disabled').val(100);
-      }
-    } else if (this.value === 'content') {
-      wh.val('fit').attr('disabled', 'disabled');
-    } else {
-      const dims = this.value.split('x');
-      $('#canvas_width').val(dims[0]);
-      $('#canvas_height').val(dims[1]);
-      wh.removeAttr('disabled');
-    }
-  });
-
   // Prevent browser from erroneously repopulating fields
   $('input,select').attr('autocomplete', 'off');
 
   const dialogSelectors = [
-    '#tool_source_cancel', '#tool_docprops_cancel',
     '#tool_prefs_cancel', '.overlay'
   ];
   /* eslint-disable jsdoc/require-property */
@@ -4640,6 +4626,10 @@ editor.init = () => {
     $id('tool_docprops').addEventListener('click', showDocProperties);
     $id('tool_editor_prefs').addEventListener('click', showPreferences);
     $id('tool_editor_homepage').addEventListener('click', openHomePage);
+    const seImgProp = document.getElementById('se-img-prop');
+    seImgProp.shadowRoot.querySelector('#tool_docprops_save').addEventListener('click', saveDocProperties);
+    seImgProp.shadowRoot.querySelector('#tool_docprops_cancel').addEventListener('click', hideDocProperties);
+    seImgProp.shadowRoot.querySelector('#svg_docprops').addEventListener('close', hideDocProperties);
 
     const toolButtons = [
       {
@@ -4656,7 +4646,6 @@ editor.init = () => {
       {sel: dialogSelectors.join(','), fn: cancelOverlays, evt: 'click',
         key: ['esc', false, false], hidekey: true},
       {sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
-      {sel: '#tool_docprops_save', fn: saveDocProperties, evt: 'click'},
       {sel: '#tool_prefs_save', fn: savePreferences, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
