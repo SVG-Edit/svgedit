@@ -70,7 +70,10 @@ export default {
     font_family: 'Muutke Kirjasinperhe',
     font_size: 'Change font size',
     bold: 'Rasvane kiri',
-    italic: 'Kursiiv'
+    italic: 'Kursiiv',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

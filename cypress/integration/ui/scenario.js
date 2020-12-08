@@ -88,4 +88,22 @@ describe('use various parts of svg-edit', function () {
       .trigger('mouseup', {force: true});
     cy.get('#svgcontent').toMatchSnapshot();
   });
+  it('check tool_text_anchor_start', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('#tool_text_anchor_start')
+      .click({force: true});
+    testSnapshot();
+  });
+  it('check tool_text_anchor_middle', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('#tool_text_anchor_middle')
+      .click({force: true});
+    testSnapshot();
+  });
+  it('check tool_text_anchor_end', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('#tool_text_anchor_end')
+      .click({force: true});
+    testSnapshot();
+  });
 });

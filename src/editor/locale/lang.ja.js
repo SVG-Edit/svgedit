@@ -70,7 +70,10 @@ export default {
     font_family: 'フォントファミリーの変更',
     font_size: '文字サイズの変更',
     bold: '太字',
-    italic: 'イタリック体'
+    italic: 'イタリック体',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

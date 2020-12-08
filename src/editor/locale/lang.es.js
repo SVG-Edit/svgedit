@@ -70,7 +70,10 @@ export default {
     font_family: 'Tipo de fuente',
     font_size: 'Tamaño de la fuente',
     bold: 'Texto en negrita',
-    italic: 'Texto en cursiva'
+    italic: 'Texto en cursiva',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menú principal',

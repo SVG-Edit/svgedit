@@ -70,7 +70,10 @@ export default {
     font_family: 'Schriftart wählen',
     font_size: 'Schriftgröße einstellen',
     bold: 'Fetter Text',
-    italic: 'Kursiver Text'
+    italic: 'Kursiver Text',
+    text_anchor_start: 'Den Text linksbündig ausrichten',
+    text_anchor_middle: 'Den Text zentriert ausrichten',
+    text_anchor_end: 'Den Text rechtsbündig ausrichten'
   },
   tools: {
     main_menu: 'Hauptmenü',

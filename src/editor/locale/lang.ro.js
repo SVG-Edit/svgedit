@@ -70,7 +70,10 @@ export default {
     font_family: 'Modificare familie de fonturi',
     font_size: 'Schimbă dimensiunea fontului',
     bold: 'Text Îngroşat',
-    italic: 'Text Înclinat'
+    italic: 'Text Înclinat',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menu Principal',

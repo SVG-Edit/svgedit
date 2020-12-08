@@ -70,7 +70,10 @@ export default {
     font_family: 'Changer la famille de police',
     font_size: 'Changer la taille de la police',
     bold: 'Texte en gras',
-    italic: 'Texte en italique'
+    italic: 'Texte en italique',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menu principal',
