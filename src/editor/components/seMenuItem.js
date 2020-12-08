@@ -7,7 +7,7 @@ template.innerHTML = `
   <style>
   </style>  
   <elix-menu-item>
-    <div>
+    <div style="display:inline-block;">
       <img src="" alt="icon" style="display:none;" /> 
       <span></span>
     </div>
@@ -28,6 +28,8 @@ export class SeMenuItem extends HTMLElement {
     this.$img = this._shadowRoot.querySelector('img');
     this.$label = this._shadowRoot.querySelector('span');
     this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');
+    this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
+    this.$svg.setAttribute('style', 'width:1px;height:1px;');
   }
   /**
    * @function observedAttributes
