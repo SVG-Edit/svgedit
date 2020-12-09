@@ -127,6 +127,7 @@ export class SeImgPropDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
+    this.eventlisten = false;
     this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     this.$saveBtn = this._shadowRoot.querySelector('#tool_docprops_save');
@@ -180,10 +181,12 @@ export class SeImgPropDialog extends HTMLElement {
       }
       break;
     case 'dialog':
-      if (newValue === 'open') {
-        this.$dialog.open();
-      } else {
-        this.$dialog.close();
+      if (this.eventlisten) {
+        if (newValue === 'open') {
+          this.$dialog.open();
+        } else {
+          this.$dialog.close();
+        }
       }
       break;
     case 'save':
@@ -366,6 +369,7 @@ export class SeImgPropDialog extends HTMLElement {
     this.$saveBtn.addEventListener('click', onSaveHandler);
     this.$cancelBtn.addEventListener('click', onCancelHandler);
     this.$dialog.addEventListener('close', onCancelHandler);
+    this.eventlisten = true;
   }
 }
 

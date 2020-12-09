@@ -610,6 +610,10 @@ editor.init = () => {
       */
       editor.storage = localStorage;
     }
+    // Image props dialog added to DOM
+    const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
+    newSeImgPropDialog.setAttribute('id', 'se-img-prop');
+    document.body.append(newSeImgPropDialog);
   } catch (err) {}
 
   // get list of languages from options in the HTML
