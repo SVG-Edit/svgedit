@@ -4254,10 +4254,7 @@ editor.init = () => {
         const $imgDialog = document.getElementById('se-img-prop');
         editor.pref('img_save', 'ref');
         $imgDialog.setAttribute('save', 'ref');
-        const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
-        $imageSaveOpts.querySelector('[value=embed]').setAttribute('disabled', 'disabled');
-        $imageSaveOpts.querySelector('#image_opt_embed').style.color = "#666";
-        $imageSaveOpts.querySelector('#image_opt_embed').setAttribute('title', uiStrings.notification.featNotSupported);
+        $imgDialog.setAttribute('embed', 'one|' + uiStrings.notification.featNotSupported);
       }
     });
   }, 1000);

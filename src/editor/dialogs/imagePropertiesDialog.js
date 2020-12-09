@@ -144,7 +144,7 @@ export class SeImgPropDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'width', 'height', 'save', 'dialog'];
+    return ['title', 'width', 'height', 'save', 'dialog', 'embed'];
   }
   /**
    * @function attributeChangedCallback
@@ -193,6 +193,16 @@ export class SeImgPropDialog extends HTMLElement {
       } else {
         this.$imageOptEmbed.setAttribute('checked', true);
         this.$imageOptRef.setAttribute('checked', false);
+      }
+      break;
+    case 'embed':
+      if (newValue.includes('one')) {
+        const data = newValue.split('|');
+        if (data.length > 1) {
+          this._shadowRoot.querySelector('#image_opt_embed').setAttribute('title', data[1]);
+          this._shadowRoot.querySelector('#image_opt_embed').setAttribute('disabled', 'disabled');
+          this._shadowRoot.querySelector('#image_opt_embed').style.color = '#666';
+        }
       }
       break;
     default:
@@ -270,6 +280,20 @@ export class SeImgPropDialog extends HTMLElement {
    */
   set dialog (value) {
     this.setAttribute('dialog', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get embed () {
+    return this.hasAttribute('embed');
+  }
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set embed (value) {
+    this.setAttribute('embed', value);
   }
   /**
    * @function connectedCallback
