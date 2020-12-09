@@ -2702,8 +2702,17 @@ editor.init = () => {
 
   setBackground(editor.pref('bkgd_color'), editor.pref('bkgd_url'));
 
-  $('#image_save_opts input').val([editor.pref('img_save')]);
-
+  // update resolution option with actual resolution
+  const res = svgCanvas.getResolution();
+  if (curConfig.baseUnit !== 'px') {
+    res.w = convertUnit(res.w) + curConfig.baseUnit;
+    res.h = convertUnit(res.h) + curConfig.baseUnit;
+  }
+  $('#se-img-prop').attr('dialog', 'close');
+  $('#se-img-prop').attr('title', svgCanvas.getDocumentTitle());
+  $('#se-img-prop').attr('width', res.w);
+  $('#se-img-prop').attr('height', res.h);
+  $('#se-img-prop').attr('save', editor.pref('img_save'));
   /**
   * @type {module}
   */
@@ -3792,20 +3801,17 @@ editor.init = () => {
     docprops = true;
     const $imgDialog = document.getElementById('se-img-prop');
 
-    // This selects the correct radio button by using the array notation
-    const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
-    $imageSaveOpts.querySelector('input').value = [editor.pref('img_save')];
-
     // update resolution option with actual resolution
     const res = svgCanvas.getResolution();
     if (curConfig.baseUnit !== 'px') {
       res.w = convertUnit(res.w) + curConfig.baseUnit;
       res.h = convertUnit(res.h) + curConfig.baseUnit;
     }
-    $imgDialog.shadowRoot.querySelector('#canvas_width').value = res.w;
-    $imgDialog.shadowRoot.querySelector('#canvas_height').value = res.h;
-    $imgDialog.shadowRoot.querySelector('#canvas_title').value = svgCanvas.getDocumentTitle();
-    $imgDialog.shadowRoot.querySelector('#svg_docprops').open();
+    $imgDialog.setAttribute('save', editor.pref('img_save'));
+    $imgDialog.setAttribute('width', res.w);
+    $imgDialog.setAttribute('height', res.h);
+    $imgDialog.setAttribute('title', svgCanvas.getDocumentTitle());
+    $imgDialog.setAttribute('dialog', 'open');
   };
 
   /**
@@ -3888,12 +3894,8 @@ editor.init = () => {
   */
   const hideDocProperties = function () {
     const $imgDialog = document.getElementById('se-img-prop');
-    $imgDialog.shadowRoot.querySelector('#svg_docprops').close();
-    $imgDialog.shadowRoot.querySelector('#canvas_width').removeAttribute('disabled');
-    $imgDialog.shadowRoot.querySelector('#canvas_height').removeAttribute('disabled');
-    $imgDialog.shadowRoot.querySelector('#resolution').selectedIndex = 0;
-    const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
-    $imageSaveOpts.querySelector('input').value = [editor.pref('img_save')];
+    $imgDialog.setAttribute('dialog', 'close');
+    $imgDialog.setAttribute('save', editor.pref('img_save'));
     docprops = false;
   };
 
@@ -3910,40 +3912,30 @@ editor.init = () => {
   *
   * @returns {boolean} Whether there were problems saving the document properties
   */
-  const saveDocProperties = function () {
+  const saveDocProperties = function (e) {
     // set title
-    const $imgDialog = document.getElementById('se-img-prop');
-    const newTitle = $imgDialog.shadowRoot.querySelector('#canvas_title').value;
-    svgCanvas.setDocumentTitle(newTitle);
-
-    // update resolution
-    const width = $imgDialog.shadowRoot.querySelector('#canvas_width'), w = width.value;
-    const height = $imgDialog.shadowRoot.querySelector('#canvas_height'), h = height.value;
+    const {title, w, h, save} = e.detail;    
+    // set document title
+    svgCanvas.setDocumentTitle(title);
 
     if (w !== 'fit' && !isValidUnit('width', w)) {
-      width.parentElement.classList.add('error');
+      // width.parentElement.classList.add('error');
       /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
-
-    width.parentElement.classList.remove('error');
-
+    // width.parentElement.classList.remove('error');
     if (h !== 'fit' && !isValidUnit('height', h)) {
-      height.parentElement.classList.add('error');
+      // height.parentElement.classList.add('error');
       /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
-
-    height.parentElement.classList.remove('error');
-
+    // height.parentElement.classList.remove('error');
     if (!svgCanvas.setResolution(w, h)) {
       /* await */ $.alert(uiStrings.notification.noContentToFitTo);
       return false;
     }
-
     // Set image save option
-    const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
-    editor.pref('img_save', $imageSaveOpts.querySelector(':checked').value);
+    editor.pref('img_save', save);
     updateCanvas();
     hideDocProperties();
     return true;
@@ -4263,10 +4255,11 @@ editor.init = () => {
     svgCanvas.embedImage('images/logo.svg', function (datauri) {
       if (!datauri) {
         // Disable option
+        const $imgDialog = document.getElementById('se-img-prop');
+        editor.pref('img_save', 'ref');
+        $imgDialog.setAttribute('save', 'ref');
         const $imageSaveOpts = $imgDialog.shadowRoot.querySelector('#image_save_opts');
         $imageSaveOpts.querySelector('[value=embed]').setAttribute('disabled', 'disabled');
-        $imageSaveOpts.querySelector('input').value = ['ref'];
-        editor.pref('img_save', 'ref');
         $imageSaveOpts.querySelector('#image_opt_embed').style.color = "#666";
         $imageSaveOpts.querySelector('#image_opt_embed').setAttribute('title', uiStrings.notification.featNotSupported);
       }
@@ -4626,10 +4619,13 @@ editor.init = () => {
     $id('tool_docprops').addEventListener('click', showDocProperties);
     $id('tool_editor_prefs').addEventListener('click', showPreferences);
     $id('tool_editor_homepage').addEventListener('click', openHomePage);
-    const seImgProp = document.getElementById('se-img-prop');
-    seImgProp.shadowRoot.querySelector('#tool_docprops_save').addEventListener('click', saveDocProperties);
-    seImgProp.shadowRoot.querySelector('#tool_docprops_cancel').addEventListener('click', hideDocProperties);
-    seImgProp.shadowRoot.querySelector('#svg_docprops').addEventListener('close', hideDocProperties);
+    $id('se-img-prop').addEventListener('change', function (e) {
+      if (e.detail.dialog === 'closed') {
+        hideDocProperties();
+      } else {
+        saveDocProperties(e);
+      }
+    });
 
     const toolButtons = [
       {
