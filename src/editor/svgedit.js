@@ -3914,22 +3914,18 @@ editor.init = () => {
   */
   const saveDocProperties = function (e) {
     // set title
-    const {title, w, h, save} = e.detail;    
+    const {title, w, h, save} = e.detail;
     // set document title
     svgCanvas.setDocumentTitle(title);
 
     if (w !== 'fit' && !isValidUnit('width', w)) {
-      // width.parentElement.classList.add('error');
       /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
-    // width.parentElement.classList.remove('error');
     if (h !== 'fit' && !isValidUnit('height', h)) {
-      // height.parentElement.classList.add('error');
       /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
-    // height.parentElement.classList.remove('error');
     if (!svgCanvas.setResolution(w, h)) {
       /* await */ $.alert(uiStrings.notification.noContentToFitTo);
       return false;

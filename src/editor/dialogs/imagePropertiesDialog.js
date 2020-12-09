@@ -1,5 +1,6 @@
 /* eslint-disable node/no-unpublished-import */
 import 'elix/define/Dialog.js';
+import {isValidUnit} from '../../common/units.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -298,6 +299,18 @@ export class SeImgPropDialog extends HTMLElement {
     };
     const onSaveHandler = (ev) => {
       let saveOpt = '';
+      const w = this.$canvasWidth.value;
+      const h = this.$canvasHeight.value;
+      if (w !== 'fit' && !isValidUnit('width', w)) {
+        this.$canvasWidth.parentElement.classList.add('error');
+      } else {
+        this.$canvasWidth.parentElement.classList.remove('error');
+      }
+      if (h !== 'fit' && !isValidUnit('height', w)) {
+        this.$canvasHeight.parentElement.classList.add('error');
+      } else {
+        this.$canvasHeight.parentElement.classList.remove('error');
+      }
       if (this.$imageOptEmbed.getAttribute('checked') === 'true') {
         saveOpt = 'embed';
       }
