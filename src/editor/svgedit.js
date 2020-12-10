@@ -614,10 +614,14 @@ editor.init = () => {
     const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
     newSeImgPropDialog.setAttribute('id', 'se-img-prop');
     document.body.append(newSeImgPropDialog);
+    // editor prefences dialoag added to DOM
+    const newSeEditPrefsDialog = document.createElement('se-edit-prefs-dialog');
+    newSeEditPrefsDialog.setAttribute('id', 'se-edit-prefs');
+    document.body.append(newSeEditPrefsDialog);
   } catch (err) {}
 
-  // get list of languages from options in the HTML
-  const goodLangs = [...document.querySelectorAll('#lang_select option')].map((option) => option.value);
+  // eslint-disable-next-line max-len
+  const goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW'];
 
   /**
    * Sets up current preferences based on defaults.
@@ -894,7 +898,8 @@ editor.init = () => {
     // return;
 
     editor.pref('iconsize', size);
-    $('#iconsize').val(size);
+    const $editDialog = document.getElementById('se-edit-prefs');
+    $editDialog.setAttribute('iconsize', size);
 
     // Note that all rules will be prefixed with '#svg_editor' when parsed
     const cssResizeRules = {
@@ -2685,7 +2690,7 @@ editor.init = () => {
   svgCanvas.textActions.setInputElem($('#text')[0]);
 
   // Set up editor background functionality
-  const colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
+  /* const colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
   let str = '';
   $.each(colorBlocks, function (i, e) {
     str += (e === 'chessboard')
@@ -2702,7 +2707,7 @@ editor.init = () => {
       blocks.removeClass(curBg);
       $(this).addClass(curBg);
     });
-  });
+  }); */
 
   setBackground(editor.pref('bkgd_color'), editor.pref('bkgd_url'));
 
@@ -3825,25 +3830,19 @@ editor.init = () => {
   const showPreferences = function () {
     if (preferences) { return; }
     preferences = true;
+    const $editDialog = document.getElementById('se-edit-prefs');
     $('#main_menu').hide();
-
     // Update background color with current one
     const canvasBg = curPrefs.bkgd_color;
     const url = editor.pref('bkgd_url');
-    blocks.each(function () {
-      const blk = $(this);
-      const isBg = blk.data('bgcolor') === canvasBg;
-      blk.toggleClass(curBg, isBg);
-    });
-    if (!canvasBg) { blocks.eq(0).addClass(curBg); }
     if (url) {
-      $('#canvas_bg_url').val(url);
+      $editDialog.setAttribute('bgurl', url);
     }
-    $('#grid_snapping_on').prop('checked', curConfig.gridSnapping);
-    $('#grid_snapping_step').attr('value', curConfig.snappingStep);
-    $('#grid_color').attr('value', curConfig.gridColor);
-
-    $('#svg_prefs').show();
+    $editDialog.setAttribute('gridsnappingon', curConfig.gridSnapping);
+    $editDialog.setAttribute('gridsnappingstep', curConfig.snappingStep);
+    $editDialog.setAttribute('gridcolor', curConfig.gridColor);
+    $editDialog.setAttribute('canvasbg', canvasBg);
+    $editDialog.setAttribute('dialog', 'open');
   };
 
   /**
@@ -3908,7 +3907,8 @@ editor.init = () => {
   * @returns {void}
   */
   const hidePreferences = function () {
-    $('#svg_prefs').hide();
+    const $editDialog = document.getElementById('se-edit-prefs');
+    $editDialog.setAttribute('dialog', 'close');
     preferences = false;
   };
 
@@ -3946,33 +3946,31 @@ editor.init = () => {
   * @function module:SVGEditor.savePreferences
   * @returns {Promise<void>}
   */
-  const savePreferences = editor.savePreferences = async function () {
+  const savePreferences = editor.savePreferences = async function (e) {
+    const {lang, iconsize, bgcolor, bgurl, gridsnappingon, gridsnappingstep, gridcolor, showrulers, baseunit} = e.detail;
     // Set background
-    const color = $('#bg_blocks div.cur_background').data('bgcolor') || '#FFF';
-    setBackground(color, $('#canvas_bg_url').val());
+    setBackground(bgcolor, bgurl);
 
     // set language
-    const lang = $('#lang_select').val();
     if (lang && lang !== editor.pref('lang')) {
       const {langParam, langData} = await editor.putLocale(lang, goodLangs);
       await setLang(langParam, langData);
     }
 
     // set icon size
-    setIconSize($('#iconsize').val());
+    setIconSize(iconsize);
 
     // set grid setting
-    curConfig.gridSnapping = $('#grid_snapping_on')[0].checked;
-    curConfig.snappingStep = $('#grid_snapping_step').val();
-    curConfig.gridColor = $('#grid_color').val();
-    curConfig.showRulers = $('#show_rulers')[0].checked;
+    curConfig.gridSnapping = gridsnappingon;
+    curConfig.snappingStep = gridsnappingstep;
+    curConfig.gridColor = gridcolor;
+    curConfig.showRulers = showrulers;
 
     $('#rulers').toggle(curConfig.showRulers);
     if (curConfig.showRulers) { updateRulers(); }
-    curConfig.baseUnit = $('#base_unit').val();
+    curConfig.baseUnit = baseunit;
 
     svgCanvas.setConfig(curConfig);
-
     updateCanvas();
     hidePreferences();
   };
@@ -3999,10 +3997,6 @@ editor.init = () => {
       } else {
         hideSourceEditor();
       }
-    } else if (docprops) {
-      hideDocProperties();
-    } else if (preferences) {
-      hidePreferences();
     }
   };
 
@@ -4623,7 +4617,13 @@ editor.init = () => {
         saveDocProperties(e);
       }
     });
-
+    $id('se-edit-prefs').addEventListener('change', function (e) {
+      if (e.detail.dialog === 'closed') {
+        hidePreferences();
+      } else {
+        savePreferences(e);
+      }
+    });
     const toolButtons = [
       {
         key: ['esc', false, false],
@@ -4639,7 +4639,6 @@ editor.init = () => {
       {sel: dialogSelectors.join(','), fn: cancelOverlays, evt: 'click',
         key: ['esc', false, false], hidekey: true},
       {sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
-      {sel: '#tool_prefs_save', fn: savePreferences, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
       {sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
@@ -4826,6 +4825,7 @@ editor.init = () => {
     const preTool = document.getElementById(`tool_${curConfig.initTool}`);
     const regTool = document.getElementById(curConfig.initTool);
     const selectTool = document.getElementById('tool_select');
+    const $editDialog = document.getElementById('se-edit-prefs');
     const mouseupEvent = new Event('mouseup');
     if (preTool) {
       preTool.click();
@@ -4849,23 +4849,23 @@ editor.init = () => {
     $('#rulers').toggle(Boolean(curConfig.showRulers));
 
     if (curConfig.showRulers) {
-      $('#show_rulers')[0].checked = true;
+      $editDialog.setAttribute('showrulers', true);
     }
 
     if (curConfig.baseUnit) {
-      $('#base_unit').val(curConfig.baseUnit);
+      $editDialog.setAttribute('baseunit', curConfig.baseUnit);
     }
 
     if (curConfig.gridSnapping) {
-      $('#grid_snapping_on')[0].checked = true;
+      $editDialog.setAttribute('gridsnappingon', true);
     }
 
     if (curConfig.snappingStep) {
-      $('#grid_snapping_step').val(curConfig.snappingStep);
+      $editDialog.setAttribute('gridsnappingstep', curConfig.snappingStep);
     }
 
     if (curConfig.gridColor) {
-      $('#grid_color').val(curConfig.gridColor);
+      $editDialog.setAttribute('gridcolor', curConfig.gridColor);
     }
   });
 
@@ -5191,7 +5191,8 @@ editor.init = () => {
   const setLang = editor.setLang = function (lang, allStrings) {
     editor.langChanged = true;
     editor.pref('lang', lang);
-    $('#lang_select').val(lang);
+    const $editDialog = document.getElementById('se-edit-prefs');
+    $editDialog.setAttribute('lang', lang);
     if (!allStrings) {
       return;
     }
