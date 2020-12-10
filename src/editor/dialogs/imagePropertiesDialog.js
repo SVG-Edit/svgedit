@@ -233,7 +233,7 @@ export class SeImgPropDialog extends HTMLElement {
    * @returns {any}
    */
   get width () {
-    return this.hasAttribute('width');
+    return this.getAttribute('width');
   }
   /**
    * @function set
@@ -247,7 +247,7 @@ export class SeImgPropDialog extends HTMLElement {
    * @returns {any}
    */
   get height () {
-    return this.hasAttribute('height');
+    return this.getAttribute('height');
   }
   /**
    * @function set
@@ -261,7 +261,7 @@ export class SeImgPropDialog extends HTMLElement {
    * @returns {any}
    */
   get save () {
-    return this.hasAttribute('save');
+    return this.getAttribute('save');
   }
   /**
    * @function set
@@ -275,7 +275,7 @@ export class SeImgPropDialog extends HTMLElement {
    * @returns {any}
    */
   get dialog () {
-    return this.hasAttribute('dialog');
+    return this.getAttribute('dialog');
   }
   /**
    * @function set
@@ -289,7 +289,7 @@ export class SeImgPropDialog extends HTMLElement {
    * @returns {any}
    */
   get embed () {
-    return this.hasAttribute('embed');
+    return this.getAttribute('embed');
   }
   /**
    * @function set
