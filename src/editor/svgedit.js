@@ -2689,26 +2689,6 @@ editor.init = () => {
   svgCanvas.bind('extension_added', extAdded);
   svgCanvas.textActions.setInputElem($('#text')[0]);
 
-  // Set up editor background functionality
-  /* const colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
-  let str = '';
-  $.each(colorBlocks, function (i, e) {
-    str += (e === 'chessboard')
-      // eslint-disable-next-line max-len
-      ? `<div class="color_block" data-bgcolor="${e}" style="background-image:url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjGgq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);"></div>`
-      : `<div class="color_block" data-bgcolor="${e}" style="background-color:${e};"></div>`;
-  });
-  $('#bg_blocks').append(str);
-  const blocks = $('#bg_blocks div');
-  const curBg = 'cur_background';
-  blocks.each(function () {
-    const blk = $(this);
-    blk.click(function () {
-      blocks.removeClass(curBg);
-      $(this).addClass(curBg);
-    });
-  }); */
-
   setBackground(editor.pref('bkgd_color'), editor.pref('bkgd_url'));
 
   // update resolution option with actual resolution
@@ -3793,10 +3773,10 @@ editor.init = () => {
     updateToolButtonState();
   };
 
-  $('#svg_prefs_container').draggable({
+  /* $('#svg_prefs_container').draggable({
     cancel: 'button,fieldset',
     containment: 'window'
-  }).css('position', 'absolute');
+  }).css('position', 'absolute'); */
 
   let docprops = false;
   let preferences = false;
