@@ -704,7 +704,7 @@ input[type=text] {
 }
 
 #tools_bottom {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 40px;
   right: 20px;
