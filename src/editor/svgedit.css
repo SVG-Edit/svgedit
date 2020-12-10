@@ -705,14 +705,19 @@ input[type=text] {
 
 #tools_bottom {
   position: absolute;
-  bottom: 0;
   left: 40px;
-  right: 20px;
-  display: flex;
-  flex-flow: row nowrap;
-  overflow-x: auto;
-  align-items: center;
-  justify-content: space-between;
+  right: 0;
+  bottom: 0;
+  height: 40px;
+  overflow: visible;
+}
+
+#tools_bottom * {
+  float: left;
+}
+
+#palette {
+  float: right;
 }
 
 .dropdown li.tool_button {

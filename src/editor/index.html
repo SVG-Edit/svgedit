@@ -123,18 +123,8 @@
           </div>
           <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="./images/angle.svg"
             title="Change rotation angle"></se-spin-input>
-          <div class="toolset" id="tool_blur" title="Change gaussian blur value">
-            <se-spin-input size="2" id="blur" min=0 max=10 step=0.1 src="./images/blur.svg"
-              title="Change gaussian blur value"></se-spin-input>
-            <div id="blur_dropdown" class="dropdown">
-              <button></button>
-              <ul>
-                <li class="special">
-                  <div id="blur_slider"></div>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <se-spin-input size="2" id="blur" min=0 max=100 step=5 src="./images/blur.svg"
+            title="Change gaussian blur value"></se-spin-input>
           <div class="dropdown toolset" id="tool_position" title="Align Element to Page">
             <div id="cur_position" class="icon_label"></div>
             <button></button>

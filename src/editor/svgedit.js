@@ -1726,9 +1726,8 @@ editor.init = () => {
       const angle = svgCanvas.getRotationAngle(elem);
       $('#angle').val(angle);
 
-      const blurval = svgCanvas.getBlur(elem);
-      $('#blur').val(blurval);
-      $('#blur_slider').slider('option', 'value', blurval);
+      const blurval = svgCanvas.getBlur(elem) * 10;
+      $id('blur').value = blurval;
 
       if (svgCanvas.addedNew) {
         if (elname === 'image' && svgCanvas.getMode() === 'image') {
@@ -2646,9 +2645,6 @@ editor.init = () => {
     return new $.jGraduate.Paint(opts);
   };
 
-  // $('#text').focus(function () { textBeingEntered = true; });
-  // $('#text').blur(function () { textBeingEntered = false; });
-
   // bind the selected event to our function that handles updates to the UI
   svgCanvas.bind('selected', selectedChanged);
   svgCanvas.bind('transition', elementTransition);
@@ -2730,7 +2726,7 @@ editor.init = () => {
   /**
   * @type {module}
   */
-  const changeRotationAngle = function (e) {
+  const changeRotationAngle = (e) => {
     svgCanvas.setRotationAngle(e.target.value);
     $('#tool_reorient').toggleClass('disabled', Number.parseInt(e.target.value) === 0);
   };
@@ -2750,24 +2746,11 @@ editor.init = () => {
   };
 
   /**
-  * @param {PlainObject} ctl
-  * @param {string} [val=ctl.value]
-  * @param {boolean} noUndo
+  * @param {PlainObject} e
   * @returns {void}
   */
-  const changeBlur = function (ctl, val, noUndo) {
-    if (Utils.isNullish(val)) { val = ctl.value; }
-    $('#blur').val(val);
-    let complete = false;
-    if (!ctl || !ctl.handle) {
-      $('#blur_slider').slider('option', 'value', val);
-      complete = true;
-    }
-    if (noUndo) {
-      svgCanvas.setBlurNoUndo(val);
-    } else {
-      svgCanvas.setBlur(val, complete);
-    }
+  const changeBlur = (e) => {
+    svgCanvas.setBlur(e.target.value / 10, true);
   };
 
   $('#stroke_style').change(function () {
@@ -2873,7 +2856,6 @@ editor.init = () => {
     } else {
       svgCanvas.changeSelectedAttribute(attr, val);
     }
-    // e.target.blur();
     return true;
   };
 
@@ -3132,26 +3114,6 @@ editor.init = () => {
     },
     slide (evt, ui) {
       changeOpacity(ui);
-    }
-  });
-
-  editor.addDropDown('#blur_dropdown', $.noop);
-
-  let slideStart = false;
-  $('#blur_slider').slider({
-    max: 10,
-    step: 0.1,
-    stop (evt, ui) {
-      slideStart = false;
-      changeBlur(ui);
-      $('#blur_dropdown li').show();
-      $(window).mouseup();
-    },
-    start () {
-      slideStart = true;
-    },
-    slide (evt, ui) {
-      changeBlur(ui, null, slideStart);
     }
   });
 
@@ -4208,7 +4170,7 @@ editor.init = () => {
   // Use this to test support for blur element. Seems to work to test support in Webkit
   const blurTest = svgdocbox.createElementNS(NS.SVG, 'feGaussianBlur');
   if (blurTest.stdDeviationX === undefined) {
-    $('#tool_blur').hide();
+    $('#blur').hide();
   }
   $(blurTest).remove();
 
@@ -4555,6 +4517,7 @@ editor.init = () => {
     $id('path_node_x').addEventListener('change', (e) => attrChanger(e));
     $id('path_node_y').addEventListener('change', (e) => attrChanger(e));
     $id('angle').addEventListener('change', (e) => changeRotationAngle(e));
+    $id('blur').addEventListener('change', (e) => changeBlur(e));
     $id('stroke_width').addEventListener('change', (e) => changeStrokeWidth(e));
     $id('rect_rx').addEventListener('change', (e) => changeRectRadius(e));
     $id('font_size').addEventListener('change', (e) => changeFontSize(e));
