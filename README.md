@@ -71,21 +71,6 @@ You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svg
     width="100%" height="100%"></iframe>
 ```
 
-Note that if you want support for the following browsers, you will at least
-need some polyfills.
-
-For Android Browser 4.4.3-4.4.4, you will need at least `fetch`.
-
-For the following, you will need at least `URL`, `Promise`, and `fetch`:
-
-- IE <= 11
-- IE Mobile
-- Opera Mini
-- Blackberry Browser <= 10
-
-And for still older browsers (e.g., IE 8), you will at minimum need a
-`querySelector` polyfill.
-
 ### Integrating SVG-edit into your own npm package
 
 These steps are only needed if you wish to set up your own npm package
@@ -202,13 +187,15 @@ incorporating SVGEdit. You will need to have Node.js/npm installed.
     the project team can decide if we should support with the latest version.
 
 ## Further reading and more information
-
+ * Participate in [discussions](https://github.com/SVG-Edit/svgedit/discussions) 
  * See [docs](docs/) for more documentation. See the
     [JSDocs for our latest release](https://svg-edit.github.io/svgedit/releases/latest/docs/jsdoc/index.html).
  * [Acknowledgements](docs/Acknowledgements.md) lists open source projects
     used in svg-edit.
  * See [AUTHORS](AUTHORS) file for authors.
  * [StackOverflow](https://stackoverflow.com/tags/svg-edit) group.
+ 
+## Older references 
  * Join the [svg-edit mailing list](https://groups.google.com/forum/#!forum/svg-edit).
  * Join us on `#svg-edit` on `freenode.net` (or use the
     [web client](https://webchat.freenode.net/?channels=svg-edit)).
