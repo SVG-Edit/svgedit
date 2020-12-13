@@ -1160,6 +1160,9 @@ editor.init = () => {
         '#tool_unlink_use': 'unlink_use',
 
         '#tool_alignleft, #tool_posleft': 'align_left',
+        '#tool_text_anchor_start': 'anchor_start',
+        '#tool_text_anchor_middle': 'anchor_middle',
+        '#tool_text_anchor_end': 'anchor_end',
         '#tool_aligncenter, #tool_poscenter': 'align_center',
         '#tool_alignright, #tool_posright': 'align_right',
         '#tool_aligntop, #tool_postop': 'align_top',
@@ -2245,6 +2248,26 @@ editor.init = () => {
             $('#tool_bold').addClass('push_button_pressed').removeClass('tool_button');
           } else {
             $('#tool_bold').removeClass('push_button_pressed').addClass('tool_button');
+          }
+          const textAnchorStart = $('#tool_text_anchor_start');
+          const textAnchorMiddle = $('#tool_text_anchor_middle');
+          const textAnchorEnd = $('#tool_text_anchor_end');
+          switch (elem.getAttribute('text-anchor')) {
+          case 'start':
+            textAnchorStart.addClass('push_button_pressed').removeClass('tool_button');
+            textAnchorMiddle.removeClass('push_button_pressed').addClass('tool_button');
+            textAnchorEnd.removeClass('push_button_pressed').addClass('tool_button');
+            break;
+          case 'middle':
+            textAnchorStart.removeClass('push_button_pressed').addClass('tool_button');
+            textAnchorMiddle.addClass('push_button_pressed').removeClass('tool_button');
+            textAnchorEnd.removeClass('push_button_pressed').addClass('tool_button');
+            break;
+          case 'end':
+            textAnchorStart.removeClass('push_button_pressed').addClass('tool_button');
+            textAnchorMiddle.removeClass('push_button_pressed').addClass('tool_button');
+            textAnchorEnd.addClass('push_button_pressed').removeClass('tool_button');
+            break;
           }
           $('#font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
@@ -4259,6 +4282,17 @@ editor.init = () => {
   };
 
   /**
+   *
+   * @param {string} value "start","end" or "middle"
+   * @returns {false}
+   */
+  const clickTextAnchor = function (value) {
+    svgCanvas.setTextAnchor(value);
+    updateContextPanel();
+    return false;
+  };
+
+  /**
   *
   * @returns {void}
   */
@@ -5443,6 +5477,9 @@ editor.init = () => {
       // {sel: '#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
       {sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
       {sel: '#tool_italic', fn: clickItalic, evt: 'mousedown'},
+      {sel: '#tool_text_anchor_start', fn () { clickTextAnchor('start'); }, evt: 'mousedown'},
+      {sel: '#tool_text_anchor_middle', fn () { clickTextAnchor('middle'); }, evt: 'mousedown'},
+      {sel: '#tool_text_anchor_end', fn () { clickTextAnchor('end'); }, evt: 'mousedown'},
       {sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
       {sel: '#copy_save_done', fn: cancelOverlays, evt: 'click'},
 

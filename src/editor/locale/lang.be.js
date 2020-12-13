@@ -70,7 +70,10 @@ export default {
     font_family: 'Змены Сямейства шрыфтоў',
     font_size: 'Змяніць памер шрыфта',
     bold: 'Тоўсты тэкст',
-    italic: 'Нахілены тэкст'
+    italic: 'Нахілены тэкст',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

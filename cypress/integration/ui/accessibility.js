@@ -1,9 +1,12 @@
+import {
+  visitAndApproveStorage
+} from '../../support/ui-test-helper.js';
+
 describe('UI - Accessibility', function () {
   beforeEach(() => {
-    cy.visit('/instrumented/editor/index.html');
+    visitAndApproveStorage();
     cy.injectAxe();
   });
-
   // https://www.npmjs.com/package/cypress-axe
   it('Has no detectable a11y violations on load', () => {
     // Configure aXe and test the page at initial load

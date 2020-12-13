@@ -70,7 +70,10 @@ export default {
     font_family: 'Canviar la font Família',
     font_size: 'Change Font Size',
     bold: 'Text en negreta',
-    italic: 'Text en cursiva'
+    italic: 'Text en cursiva',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

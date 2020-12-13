@@ -70,7 +70,10 @@ export default {
     font_family: 'Tukar Font Keluarga',
     font_size: 'Ubah Saiz Font',
     bold: 'Bold Teks',
-    italic: 'Italic Teks'
+    italic: 'Italic Teks',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

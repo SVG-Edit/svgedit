@@ -70,7 +70,10 @@ export default {
     font_family: '글꼴 변경 패밀리',
     font_size: '글꼴 크기 변경',
     bold: '굵은 텍스트',
-    italic: '기울임꼴 텍스트'
+    italic: '기울임꼴 텍스트',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

@@ -70,7 +70,10 @@ export default {
     font_family: 'Цханге фонт породицу',
     font_size: 'Цханге фонт сизе',
     bold: 'Подебљан текст',
-    italic: 'Италиц текст'
+    italic: 'Италиц текст',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

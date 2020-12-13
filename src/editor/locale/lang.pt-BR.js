@@ -70,7 +70,10 @@ export default {
     font_family: 'Mudar o estilo da fonte',
     font_size: 'Mudar o tamanho da fonte',
     bold: 'Negrito',
-    italic: 'Italico'
+    italic: 'Italico',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menu Principal',

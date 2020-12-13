@@ -288,6 +288,9 @@ export const readLang = function (langData) {
     tool_angle: properties.angle,
     tool_blur: properties.blur,
     tool_bold: properties.bold,
+    tool_text_anchor_start: properties.text_anchor_start,
+    tool_text_anchor_middle: properties.text_anchor_middle,
+    tool_text_anchor_end: properties.text_anchor_end,
     tool_circle: tools.mode_circle,
     tool_clone: tools.clone,
     tool_clone_multi: tools.clone,
@@ -303,6 +306,7 @@ export const readLang = function (langData) {
     tool_link_url: tools.set_link_url,
     tool_image: tools.mode_image,
     tool_italic: properties.italic,
+
     tool_line: tools.mode_line,
     tool_move_bottom: tools.move_bottom,
     tool_move_top: tools.move_top,

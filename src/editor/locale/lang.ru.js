@@ -70,7 +70,10 @@ export default {
     font_family: 'Изменить семейство шрифтов',
     font_size: 'Изменить размер шрифта',
     bold: 'Жирный',
-    italic: 'Курсив'
+    italic: 'Курсив',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Главное меню',

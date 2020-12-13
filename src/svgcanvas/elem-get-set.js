@@ -606,6 +606,25 @@ isNullish(selectedElements[1])) {
     elemContext_.getCanvas().textActions.setCursor();
   }
 };
+
+/**
+ * Set the new text anchor
+ * @function module:svgcanvas.SvgCanvas#setTextAnchor
+ * @param {string} value - The text anchor value (start, middle or end)
+ * @returns {void}
+ */
+export const setTextAnchorMethod = function (value) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+      isNullish(selectedElements[1])) {
+    elemContext_.getCanvas().changeSelectedAttribute('text-anchor', value);
+  }
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
 /**
 * @function module:svgcanvas.SvgCanvas#getFontFamily
 * @returns {string} The current font family

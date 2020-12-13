@@ -70,7 +70,10 @@ export default {
     font_family: 'Cambiar fonte Familia',
     font_size: 'Mudar tamaño de letra',
     bold: 'Bold Text',
-    italic: 'Texto en cursiva'
+    italic: 'Texto en cursiva',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',
