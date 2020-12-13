@@ -535,7 +535,7 @@ div.toolset label span {
   margin-left: 5px;
 }
 
-#tools_top input {
+#tools_top se-input, se-spin-input {
   margin-top: 5px;
   height: 15px;
 }

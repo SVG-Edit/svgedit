@@ -121,7 +121,7 @@ export default {
     function setIcon (pos, id) {
       if (id.substr(0, 1) !== '\\') { id = '\\textmarker'; }
       const ci = '#' + idPrefix + pos + '_' + id.substr(1);
-      svgEditor.setIcon('#cur_' + pos + '_marker_list', $(ci).children());
+      // svgEditor.setIcon('#cur_' + pos + '_marker_list', $(ci).children());
       $(ci).addClass('current').siblings().removeClass('current');
     }
 

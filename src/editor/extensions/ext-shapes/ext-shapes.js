@@ -7,23 +7,10 @@
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
-  let translationModule;
-  try {
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
-  } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
-  }
-  return translationModule.default;
-};
-
 export default {
   name: 'shapes',
-  async init ({$}) {
+  init ({$}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
     const canv = svgEditor.canvas;
     const svgroot = canv.getRootElem();
     let lastBBox = {};
@@ -35,21 +22,15 @@ export default {
     let startX;
     let startY;
 
-    const buttons = [{
-      id: 'tool_shapelib_show',
-      type: 'mode_flyout',
-      events: {
-        click () {
-          canv.setMode(modeId);
-        }
+    const events = {
+      id: 'tool_shapelib',
+      click () {
+        canv.setMode(modeId);
       }
-    }];
+    };
 
     return {
-      newUI: true,
-      buttons: strings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      }),
+      events,
       callback () {
         // should later register the event
       },
@@ -57,7 +38,7 @@ export default {
         const mode = canv.getMode();
         if (mode !== modeId) { return undefined; }
 
-        const currentD = document.getElementById('tool_shapelib_show').dataset.draw;
+        const currentD = document.getElementById('tool_shapelib').dataset.draw;
         startX = opts.start_x;
         const x = startX;
         startY = opts.start_y;
