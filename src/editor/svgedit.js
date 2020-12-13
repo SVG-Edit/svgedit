@@ -1159,9 +1159,12 @@ editor.init = () => {
         '#tool_ungroup': 'ungroup',
         '#tool_unlink_use': 'unlink_use',
 
-        '#tool_alignleft, #tool_posleft, #tool_text_anchor_start': 'align_left',
-        '#tool_aligncenter, #tool_poscenter, #tool_text_anchor_middle': 'align_center',
-        '#tool_alignright, #tool_posright, #tool_text_anchor_end': 'align_right',
+        '#tool_alignleft, #tool_posleft': 'align_left',
+        '#tool_text_anchor_start': 'anchor_start',
+        '#tool_text_anchor_middle': 'anchor_middle',
+        '#tool_text_anchor_end': 'anchor_end',
+        '#tool_aligncenter, #tool_poscenter': 'align_center',
+        '#tool_alignright, #tool_posright': 'align_right',
         '#tool_aligntop, #tool_postop': 'align_top',
         '#tool_alignmiddle, #tool_posmiddle': 'align_middle',
         '#tool_alignbottom, #tool_posbottom': 'align_bottom',
@@ -4280,6 +4283,7 @@ editor.init = () => {
 
   /**
    *
+   * @param {string} value "start","end" or "middle"
    * @returns {false}
    */
   const clickTextAnchor = function (value) {
