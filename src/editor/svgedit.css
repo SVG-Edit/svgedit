@@ -1203,18 +1203,3 @@ ul li.current {
   padding-top: 5px;
   margin-top: 5px;
 }
-
-/*
-  Adding Icons
-  You can add icons to the context menu by adding
-  classes to the respective LI element(s)
-*/
-/*
-
-.contextMenu LI.edit A { background-image: url(images/page_white_edit.png); }
-.contextMenu LI.cut A { background-image: url(images/cut.png); }
-.contextMenu LI.copy A { background-image: url(images/page_white_copy.png); }
-.contextMenu LI.paste A { background-image: url(images/page_white_paste.png); }
-.contextMenu LI.delete A { background-image: url(images/page_white_delete.png); }
-.contextMenu LI.quit A { background-image: url(images/door.png); }
-*/

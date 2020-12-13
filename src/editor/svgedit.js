@@ -3048,9 +3048,9 @@ editor.init = () => {
   *
   * @returns {void}
   */
-  const linkControlPoints = function () {
-    $('#tool_node_link').toggleClass('push_button_pressed tool_button');
-    const linked = $('#tool_node_link').hasClass('push_button_pressed');
+  const linkControlPoints = () => {
+    const linked = $id('tool_node_link').pressed;
+    $id('tool_node_link').pressed = !linked;
     path.linkControlPoints(linked);
   };
 
@@ -4088,6 +4088,7 @@ editor.init = () => {
     $id('tool_node_delete').addEventListener('click', deletePathNode);
     $id('tool_openclose_path').addEventListener('click', opencloseSubPath);
     $id('tool_add_subpath').addEventListener('click', addSubPath);
+    $id('tool_node_link').addEventListener('click', linkControlPoints);
 
     // register actions for left panel
     $id('tool_select').addEventListener('click', clickSelect);
@@ -4196,7 +4197,6 @@ editor.init = () => {
       {sel: dialogSelectors.join(','), fn: cancelOverlays, evt: 'click',
         key: ['esc', false, false], hidekey: true},
       {sel: '#tool_source_save', fn: saveSourceEditor, evt: 'click'},
-      {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_ungroup', fn: clickGroup, evt: 'click'},
       {sel: '#tool_unlink_use', fn: clickGroup, evt: 'click'},
       {sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},

@@ -114,10 +114,10 @@
             <se-button id="tool_move_top" title="Bring to Front" shortcut="Ctrl+Shift+]" src="./images/move_top.svg">
             </se-button>
             <se-button id="tool_move_bottom" title="Send to Back" shortcut="Ctrl+Shift+["
-              src="./images/move_bottom.png"></se-button>
+              src="./images/move_bottom.svg"></se-button>
             <se-button id="tool_topath" title="Convert to Path" src="./images/to_path.svg"></se-button>
             <se-button id="tool_reorient" title="Reorient path" src="./images/reorient.svg"></se-button>
-            <se-button id="tool_make_link" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
+            <se-button id="tool_make_link" title="Make (hyper)link" src="./images/globe_link.svg"></se-button>
             <div class="tool_sep"></div>
             <se-input id="elem_id" data-attr="id" size="10" label="id:" title="Identify the element"></se-input>
             <se-input id="elem_class" data-attr="class" size="10" label="class:" title="Element class"></se-input>
@@ -146,7 +146,7 @@
           <div class="tool_sep"></div>
           <se-button id="tool_group_elements" title="Group Elements" shortcut="G" src="./images/group_elements.svg">
           </se-button>
-          <se-button id="tool_make_link_multi" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
+          <se-button id="tool_make_link_multi" title="Make (hyper)link" src="./images/globe_link.svg"></se-button>
           <se-button id="tool_align_left" title="Align Left" src="./images/align_left.svg"></se-button>
           <se-button id="tool_align_center" title="Align Center" src="./images/align_center.svg"></se-button>
           <se-button id="tool_align_right" title="Align Right" src="./images/align_right.svg"></se-button>
@@ -229,8 +229,8 @@
         </div> <!-- line_panel -->
         <div id="text_panel">
           <div class="toolset">
-            <se-button id="tool_bold" title="Bold Text [B]" src="./images/bold.svg" shortcut="B"></se-button>
-            <se-button id="tool_italic" title="Italic Text [I]" src="./images/italic.svg" shortcut="I"></se-button>
+            <se-button id="tool_bold" size="small" title="Bold Text [B]" src="./images/bold.svg" shortcut="B"></se-button>
+            <se-button id="tool_italic" size="small" title="Italic Text [I]" src="./images/italic.svg" shortcut="I"></se-button>
           </div>
           <div class="toolset" id="tool_font_family">
             <label>
@@ -280,7 +280,7 @@
         </div> <!-- a_panel -->
         <div id="path_node_panel">
           <div class="tool_sep"></div>
-          <div id="tool_node_link" class="tool_button push_button_pressed" title="Link Control Points"></div>
+          <se-button id="tool_node_link" title="Link Control Points" src="./images/tool_node_link.svg" pressed></se-button>
           <div class="tool_sep"></div>
           <se-input id="path_node_x" data-attr="x" size="4" title="Change node's x coordinate" label="x:"></se-input>
           <se-input id="path_node_y" data-attr="y" size="4" title="Change node's y coordinate" label="y:"></se-input>
