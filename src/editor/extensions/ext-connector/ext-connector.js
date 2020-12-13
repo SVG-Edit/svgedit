@@ -640,13 +640,13 @@ export default {
         return {remove};
       },
       toolButtonStateUpdate (opts) {
+        const button = document.getElementById('mode_connect');
         if (opts.nostroke) {
-          if ($('#mode_connect').hasClass('tool_button_current')) {
+          if (button.pressed === true) {
             svgEditor.clickSelect();
           }
         }
-        $('#mode_connect')
-          .toggleClass('disabled', opts.nostroke);
+        button.disabled = opts.nostroke;
       }
     };
   }

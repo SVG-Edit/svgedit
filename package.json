@@ -170,6 +170,7 @@
     "cypress-multi-reporters": "1.4.0",
     "cypress-plugin-snapshots": "1.4.4",
     "deparam": "git+https://github.com/brettz9/deparam.git#updates",
+    "elix": "^14.1.1",
     "es-dev-commonjs-transformer": "0.2.0",
     "es-dev-server": "1.57.8",
     "es-dev-server-rollup": "0.0.8",

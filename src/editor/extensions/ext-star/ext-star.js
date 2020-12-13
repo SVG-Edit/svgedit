@@ -77,18 +77,13 @@ export default {
       return 1 / Math.cos(n);
     }
     */
-    const buttons = [{
+    const events = {
       id: 'tool_star',
-      icon: 'star.png',
-      type: 'mode',
-      position: 12,
-      events: {
-        click () {
-          showPanel(true);
-          svgCanvas.setMode('star');
-        }
+      click () {
+        showPanel(true);
+        svgCanvas.setMode('star');
       }
-    }];
+    };
     const contextTools = [{
       type: 'input',
       panel: 'star_panel',
@@ -120,12 +115,8 @@ export default {
     }];
 
     return {
-      newUI: true,
       name: strings.name,
-      svgicons: 'star-icons.svg',
-      buttons: strings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      }),
+      events,
       context_tools: strings.contextTools.map((contextTool, i) => {
         return Object.assign(contextTools[i], contextTool);
       }),

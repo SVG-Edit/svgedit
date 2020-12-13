@@ -720,30 +720,9 @@ span.zoom_tool {
   padding-right: 5px;
 }
 
-#tool_bold, #tool_italic {
-  font: bold 2.1em/1.1em serif;
-  text-align: center;
-  padding-left: 2px;
-  position: relative;
-}
-
 #text {
   position: absolute;
   left: -9999px;
-}
-
-#tool_bold span, #tool_italic span {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0; left: 0;
-  background: #000;
-  opacity: 0;
-}
-
-#tool_italic {
-  font-weight: normal;
-  font-style: italic;
 }
 
 #url_notice {

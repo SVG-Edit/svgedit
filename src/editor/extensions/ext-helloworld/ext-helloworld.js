@@ -33,33 +33,16 @@ export default {
     const svgCanvas = svgEditor.canvas;
     return {
       name: strings.name,
-      // For more notes on how to make an icon file, see the source of
-      // the helloworld-icon.xml
-      svgicons: 'helloworld-icon.xml',
-
-      // Multiple buttons can be added in this array
-      buttons: [{
+      events: [{
         // Must match the icon ID in helloworld-icon.xml
         id: 'hello_world',
-
-        // Fallback, e.g., for `file:///` access
-        icon: 'helloworld.png',
-
-        // This indicates that the button will be added to the "mode"
-        // button panel on the left side
-        type: 'mode',
-
         // Tooltip text
         title: strings.buttons[0].title,
-
-        // Events
-        events: {
-          click () {
-            // The action taken when the button is clicked on.
-            // For "mode" buttons, any other button will
-            // automatically be de-pressed.
-            svgCanvas.setMode('hello_world');
-          }
+        click () {
+          // The action taken when the button is clicked on.
+          // For "mode" buttons, any other button will
+          // automatically be de-pressed.
+          svgCanvas.setMode('hello_world');
         }
       }],
       // This is triggered when the main mouse button is pressed down

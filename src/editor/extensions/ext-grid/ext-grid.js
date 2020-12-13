@@ -146,24 +146,10 @@ export default {
         updateGrid(svgCanvas.getZoom());
       }
       $('#canvasGrid').toggle(showGrid);
-      $('#view_grid').toggleClass('push_button_pressed tool_button');
+      document.getElementById('view_grid').pressed = showGrid;
     }
-    const buttons = [{
-      id: 'view_grid',
-      icon: 'grid.png',
-      type: 'context',
-      panel: 'editor_panel',
-      events: {
-        click () {
-          svgEditor.curConfig.showGrid = showGrid = !showGrid;
-          gridUpdate();
-        }
-      }
-    }];
     return {
       name: strings.name,
-      svgicons: 'grid-icon.xml',
-
       zoomChanged (zoom) {
         if (showGrid) { updateGrid(zoom); }
       },
@@ -172,9 +158,13 @@ export default {
           gridUpdate();
         }
       },
-      buttons: strings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      })
+      events: {
+        id: 'view_grid',
+        click () {
+          svgEditor.curConfig.showGrid = showGrid = !showGrid;
+          gridUpdate();
+        }
+      }
     };
   }
 };

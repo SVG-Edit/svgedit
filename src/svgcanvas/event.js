@@ -211,7 +211,7 @@ export const mouseMoveEvent = function (evt) {
       top = box.y,
       {width, height} = box;
     dx = (x - eventContext_.getStartX());
-    dy = (y - eventContext_.getStartX());
+    dy = (y - eventContext_.getStartY());
 
     if (eventContext_.getCurConfig().gridSnapping) {
       dx = snapToGrid(dx);
@@ -1381,7 +1381,7 @@ export const DOMMouseScrollEvent = function (e) {
   };
 
   eventContext_.getCanvas().setZoom(zoomlevel);
-  $('#zoom').val((zoomlevel * 100).toFixed(1));
+  document.getElementById('zoom').value = ((zoomlevel * 100).toFixed(1));
 
   eventContext_.getCanvas().call('updateCanvas', {center: false, newCtr});
   eventContext_.getCanvas().call('zoomDone');

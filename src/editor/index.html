@@ -57,7 +57,8 @@
             <se-button id="layer_rename" title="Rename Layer" size="small" src="./images/text.svg"></se-button>
             <se-button id="layer_up" title="Move Layer Up" size="small" src="./images/go_up.svg"></se-button>
             <se-button id="layer_down" title="Move Layer Down" size="small" src="./images/go_down.svg"></se-button>
-            <se-button id="layer_moreopts" title="More Options" size="small" src="./images/context_menu.svg"></se-button>
+            <se-button id="layer_moreopts" title="More Options" size="small" src="./images/context_menu.svg">
+            </se-button>
           </fieldset>
           <table id="layerlist">
             <tr class="layer">
@@ -73,128 +74,79 @@
         <div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s
         </div>
       </div>
-      <div id="main_button">
-        <div id="main_icon" class="tool_button" title="Main Menu">
-          <span>SVG-Edit</span>
-          <div id="logo"></div>
-          <div class="dropdown"></div>
+      <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg">
+        <!-- File-like buttons: New, Save, Source -->
+        <se-menu-item id="tool_clear" label="New Image" shortcut="N" src="./images/new.svg"></se-menu-item>
+        <se-menu-item id="tool_open" label="Open SVG" src="./images/open.svg"></se-menu-item>
+        <se-menu-item id="tool_import" label="Import Image" src="./images/importImg.svg"></se-menu-item>
+        <se-menu-item id="tool_save" label="Save Image" shortcut="S" src="./images/saveImg.svg"></se-menu-item>
+        <se-menu-item id="tool_export" label="Export" src="./images/export.svg"></se-menu-item>
+        <se-menu-item id="tool_docprops" label="Document Properties" shortcut="D" src="./images/docprop.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_prefs" label="Editor Preferences" src="./images/editPref.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_homepage" label="SVG-Edit Home Page" src="./images/svg-edit-home.svg"></se-menu-item>
+        <div style="width:50%;margin:auto;">
+          <a href="https://www.netlify.com">
+            <img style="height:25px;" src="https://www.netlify.com/img/global/badges/netlify-dark.svg"
+              alt="Deploys by Netlify" />
+          </a>
         </div>
-        <div id="main_menu">
-          <!-- File-like buttons: New, Save, Source -->
-          <ul>
-            <li id="tool_clear">
-              <div></div>
-              New Image (N)
-            </li>
-            <li id="tool_open" style="display:none;">
-              <div></div>
-              Open SVG
-            </li>
-            <li id="tool_import" style="display:none;">
-              <div></div>
-              Import Image
-            </li>
-            <li id="tool_save">
-              <div></div>
-              Save Image (S)
-            </li>
-            <li id="tool_export">
-              <div></div>
-              Export
-            </li>
-            <li id="tool_docprops">
-              <div></div>
-              Document Properties (D)
-            </li>
-            <li id="tool_editor_prefs">
-              <div></div>
-              Editor Preferences
-            </li>
-            <li id="tool_editor_homepage">
-              <div></div>
-              SVG-Edit Home Page
-            </li>
-            <li style="width:50%;margin:auto;">
-              <a href="https://www.netlify.com">
-                <img style="height:25px;" src="https://www.netlify.com/img/global/badges/netlify-dark.svg" alt="Deploys by Netlify" />
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div id="tools_top" class="tools_panel">
+      </se-menu>
+      <div id="tools_top">
         <div id="editor_panel">
           <div class="tool_sep"></div>
           <se-button id="tool_source" title="Edit Source" shortcut="U" src="./images/source.svg"></se-button>
           <se-button id="tool_wireframe" title="Wireframe Mode" shortcut="F" src="./images/wireframe.svg"></se-button>
-        </div>
-        <!-- History buttons -->
+          <se-button id="view_grid" title="Show grid" src="./images/grid.svg"></se-button>
+        </div> <!-- editor_panel -->
         <div id="history_panel">
           <div class="tool_sep"></div>
           <se-button id="tool_undo" title="Undo" shortcut="Z" src="./images/undo.svg" disabled></se-button>
           <se-button id="tool_redo" title="Redo" shortcut="Y" src="./images/redo.svg" disabled></se-button>
-        </div>
+        </div> <!-- history_panel -->
         <!-- Buttons when a single element is selected -->
         <div id="selected_panel">
           <div class="toolset">
             <div class="tool_sep"></div>
             <se-button id="tool_clone" title="Duplicate Element" shortcut="D" src="./images/clone.svg"></se-button>
-            <se-button id="tool_delete" title="Delete Element" shortcut="Backspace" src="./images/delete.svg"></se-button>
+            <se-button id="tool_delete" title="Delete Element" shortcut="Backspace" src="./images/delete.svg">
+            </se-button>
             <div class="tool_sep"></div>
-            <se-button id="tool_move_top" title="Bring to Front" shortcut="Ctrl+Shift+]" src="./images/move_top.svg"></se-button>
-            <se-button id="tool_move_bottom" title="Send to Back" shortcut="Ctrl+Shift+[" src="./images/move_bottom.png"></se-button>
+            <se-button id="tool_move_top" title="Bring to Front" shortcut="Ctrl+Shift+]" src="./images/move_top.svg">
+            </se-button>
+            <se-button id="tool_move_bottom" title="Send to Back" shortcut="Ctrl+Shift+["
+              src="./images/move_bottom.svg"></se-button>
             <se-button id="tool_topath" title="Convert to Path" src="./images/to_path.svg"></se-button>
             <se-button id="tool_reorient" title="Reorient path" src="./images/reorient.svg"></se-button>
-            <se-button id="tool_make_link" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
+            <se-button id="tool_make_link" title="Make (hyper)link" src="./images/globe_link.svg"></se-button>
             <div class="tool_sep"></div>
-            <label id="idLabel" title="Identify the element">
-              <span>id:</span>
-              <input id="elem_id" class="attr_changer" data-attr="id" size="10" type="text" />
-            </label>
-            <label id="classLabel" title="Element class">
-              <span>class:</span>
-              <input id="elem_class" class="attr_changer" data-attr="class" size="10" type="text" />
-            </label>
+            <se-input id="elem_id" data-attr="id" size="10" label="id:" title="Identify the element"></se-input>
+            <se-input id="elem_class" data-attr="class" size="10" label="class:" title="Element class"></se-input>
           </div>
-          <label id="tool_angle" title="Change rotation angle" class="toolset">
-            <span id="angleLabel" class="icon_label"></span>
-            <input id="angle" size="2" value="0" type="text" />
-          </label>
-          <div class="toolset" id="tool_blur" title="Change gaussian blur value">
-            <label>
-              <span id="blurLabel" class="icon_label"></span>
-              <input id="blur" size="2" value="0" type="text" />
-            </label>
-            <div id="blur_dropdown" class="dropdown">
-              <button></button>
-              <ul>
-                <li class="special">
-                  <div id="blur_slider"></div>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="./images/angle.svg"
+            title="Change rotation angle"></se-spin-input>
+          <se-spin-input size="2" id="blur" min=0 max=100 step=5 src="./images/blur.svg"
+            title="Change gaussian blur value"></se-spin-input>
           <div class="dropdown toolset" id="tool_position" title="Align Element to Page">
             <div id="cur_position" class="icon_label"></div>
             <button></button>
           </div>
           <div id="xy_panel" class="toolset">
-            <label>
-              x: <input id="selected_x" class="attr_changer" title="Change X coordinate" size="3" data-attr="x" />
-            </label>
-            <label>
-              y: <input id="selected_y" class="attr_changer" title="Change Y coordinate" size="3" data-attr="y" />
-            </label>
+            <se-input id="selected_x" data-attr:="x" size="4" type="text" label="x:" title="Change X coordinate">
+            </se-input>
+            <se-input id="selected_y" data-attr="y" size="4" type="text" label="y:" title="Change Y coordinate">
+            </se-input>
           </div>
-        </div>
+        </div> <!-- selected_panel -->
         <!-- Buttons when multiple elements are selected -->
         <div id="multiselected_panel">
           <div class="tool_sep"></div>
           <se-button id="tool_clone_multi" title="Clone Elements" shortcut="C" src="./images/clone.svg"></se-button>
-          <se-button id="tool_delete_multi" title="Delete Selected Elements" shortcut="Delete/Backspace" src="./images/delete.svg"></se-button>
+          <se-button id="tool_delete_multi" title="Delete Selected Elements" shortcut="Delete/Backspace"
+            src="./images/delete.svg"></se-button>
           <div class="tool_sep"></div>
-          <se-button id="tool_group_elements" title="Group Elements" shortcut="G" src="./images/group_elements.svg"></se-button>
-          <se-button id="tool_make_link_multi" title="Make (hyper)link" src="./images/globe_link.png"></se-button>
+          <se-button id="tool_group_elements" title="Group Elements" shortcut="G" src="./images/group_elements.svg">
+          </se-button>
+          <se-button id="tool_make_link_multi" title="Make (hyper)link" src="./images/globe_link.svg"></se-button>
           <se-button id="tool_align_left" title="Align Left" src="./images/align_left.svg"></se-button>
           <se-button id="tool_align_center" title="Align Center" src="./images/align_center.svg"></se-button>
           <se-button id="tool_align_right" title="Align Right" src="./images/align_right.svg"></se-button>
@@ -211,31 +163,23 @@
             </select>
           </label>
           <div class="tool_sep"></div>
-        </div>
+        </div> <!-- multiselected_panel -->
         <div id="rect_panel">
           <div class="toolset">
-            <label id="rect_width_tool" title="Change rectangle width">
-              <span id="rwidthLabel" class="icon_label"></span>
-              <input id="rect_width" class="attr_changer" size="3" data-attr="width" />
-            </label>
-            <label id="rect_height_tool" title="Change rectangle height">
-              <span id="rheightLabel" class="icon_label"></span>
-              <input id="rect_height" class="attr_changer" size="3" data-attr="height" />
-            </label>
+            <se-input id="rect_width" data-attr="width" size="4" src="./images/width.svg"
+              title="Change rectangle width"></se-input>
+            <se-input id="rect_height" data-attr="height" size="4" src="./images/height.svg"
+              title="Change rectangle height"></se-input>
           </div>
-          <label id="cornerRadiusLabel" class="toolset" title="Change Rectangle Corner Radius">
-            <span class="icon_label"></span>
-            <input id="rect_rx" size="3" value="0" type="text" data-attr="Corner Radius" />
-          </label>
-        </div>
+          <se-spin-input id="rect_rx" min=0 max=1000 step=1 size="3" title="Change Rectangle Corner Radius"
+            data-attr="Corner Radius" src="./images/c_radius.svg"></se-spin-input>
+        </div> <!-- rect_panel -->
         <div id="image_panel">
           <div class="toolset">
-            <label><span id="iwidthLabel" class="icon_label"></span>
-              <input id="image_width" class="attr_changer" title="Change image width" size="3" data-attr="width" />
-            </label>
-            <label><span id="iheightLabel" class="icon_label"></span>
-              <input id="image_height" class="attr_changer" title="Change image height" size="3" data-attr="height" />
-            </label>
+            <se-input id="image_width" data-attr="width" size="4" type="text" src="./images/width.svg"
+              title="Change image width"></se-input>
+            <se-input id="image_height" data-attr="height" size="4" type="text" src="./images/height.svg"
+              title="Change image height"></se-input>
           </div>
           <div class="toolset">
             <label id="tool_image_url">url:
@@ -247,70 +191,46 @@
                 title="NOTE: This image cannot be embedded. It will depend on this path to be displayed"></span>
             </label>
           </div>
-        </div>
+        </div> <!-- image_panel -->
         <div id="circle_panel">
           <div class="toolset">
-            <label id="tool_circle_cx">cx:
-              <input id="circle_cx" class="attr_changer" title="Change circle's cx coordinate" size="3"
-                data-attr="cx" />
-            </label>
-            <label id="tool_circle_cy">cy:
-              <input id="circle_cy" class="attr_changer" title="Change circle's cy coordinate" size="3"
-                data-attr="cy" />
-            </label>
+            <se-input id="circle_cx" data-attr="cx" size="4" label="cx:"></se-input>
+            <se-input id="circle_cy" data-attr="cy" size="4" label="cy:"></se-input>
           </div>
           <div class="toolset">
-            <label id="tool_circle_r">r:
-              <input id="circle_r" class="attr_changer" title="Change circle's radius" size="3" data-attr="r" />
-            </label>
+            <se-input id="circle_r" data-attr="r" size="4" label="r:"></se-input>
           </div>
-        </div>
+        </div> <!-- circle_panel -->
         <div id="ellipse_panel">
           <div class="toolset">
-            <label id="tool_ellipse_cx">cx:
-              <input id="ellipse_cx" class="attr_changer" title="Change ellipse's cx coordinate" size="3"
-                data-attr="cx" />
-            </label>
-            <label id="tool_ellipse_cy">cy:
-              <input id="ellipse_cy" class="attr_changer" title="Change ellipse's cy coordinate" size="3"
-                data-attr="cy" />
-            </label>
+            <se-input id="ellipse_cx" data-attr="cx" size="4" title="Change ellipse's cx coordinate" label="cx:">
+            </se-input>
+            <se-input id="ellipse_cy" data-attr="cy" size="4" title="Change ellipse's cy coordinate" label="cy:">
+            </se-input>
           </div>
           <div class="toolset">
-            <label id="tool_ellipse_rx">rx:
-              <input id="ellipse_rx" class="attr_changer" title="Change ellipse's x radius" size="3" data-attr="rx" />
-            </label>
-            <label id="tool_ellipse_ry">ry:
-              <input id="ellipse_ry" class="attr_changer" title="Change ellipse's y radius" size="3" data-attr="ry" />
-            </label>
+            <se-input id="ellipse_rx" data-attr="rx" size="4" title="Change ellipse's x radius" label="rx:"></se-input>
+            <se-input id="ellipse_ry" data-attr="ry" size="4" title="Change ellipse's y radius" label="ry:"></se-input>
           </div>
-        </div>
+        </div> <!-- ellipse_panel -->
         <div id="line_panel">
           <div class="toolset">
-            <label id="tool_line_x1">x1:
-              <input id="line_x1" class="attr_changer" title="Change line's starting x coordinate" size="3"
-                data-attr="x1" />
-            </label>
-            <label id="tool_line_y1">y1:
-              <input id="line_y1" class="attr_changer" title="Change line's starting y coordinate" size="3"
-                data-attr="y1" />
-            </label>
+            <se-input id="line_x1" data-attr="x1" size="4" title="Change line's starting x coordinate" label="x1:">
+            </se-input>
+            <se-input id="line_y1" data-attr="y1" size="4" title="Change line's starting y coordinate" label="y1:">
+            </se-input>
           </div>
           <div class="toolset">
-            <label id="tool_line_x2">x2:
-              <input id="line_x2" class="attr_changer" title="Change line's ending x coordinate" size="3"
-                data-attr="x2" />
-            </label>
-            <label id="tool_line_y2">y2:
-              <input id="line_y2" class="attr_changer" title="Change line's ending y coordinate" size="3"
-                data-attr="y2" />
-            </label>
+            <se-input id="line_x2" data-attr="x2" size="4" title="Change line's ending x coordinate" label="x2:">
+            </se-input>
+            <se-input id="line_y2" data-attr="y2" size="4" title="Change line's ending y coordinate" label="y2:">
+            </se-input>
           </div>
-        </div>
+        </div> <!-- line_panel -->
         <div id="text_panel">
           <div class="toolset">
-            <div class="tool_button" id="tool_bold" title="Bold Text [B]"><span></span>B</div>
-            <div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
+            <se-button id="tool_bold" size="small" title="Bold Text [B]" src="./images/bold.svg" shortcut="B"></se-button>
+            <se-button id="tool_italic" size="small" title="Italic Text [I]" src="./images/italic.svg" shortcut="I"></se-button>
           </div>
           <div class="toolset" id="tool_font_family">
             <label>
@@ -331,13 +251,11 @@
               </ul>
             </div>
           </div>
-          <label id="tool_font_size" title="Change Font Size">
-            <span id="font_sizeLabel" class="icon_label"></span>
-            <input id="font_size" size="3" value="0" type="text" />
-          </label>
+          <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="Change Font Size"
+            src="./images/fontsize.svg"></se-spin-input>
           <!-- Not visible, but still used -->
           <input id="text" type="text" size="35" />
-        </div>
+        </div> <!-- text_panel -->
         <!-- formerly gsvg_panel -->
         <div id="container_panel">
           <div class="tool_sep"></div>
@@ -346,161 +264,132 @@
             <span>label:</span>
             <input id="g_title" data-attr="title" size="10" type="text" />
           </label>
-        </div>
+        </div> <!-- container_panel -->
         <div id="use_panel">
           <div class="push_button" id="tool_unlink_use" title="Break link to reference element (make unique)"></div>
-        </div>
+        </div> <!-- use_panel -->
         <div id="g_panel">
           <div class="push_button" id="tool_ungroup" title="Ungroup Elements [G]"></div>
-        </div>
+        </div> <!-- g_panel -->
         <!-- For anchor elements -->
         <div id="a_panel">
           <label id="tool_link_url" title="Set link URL (leave empty to remove)">
             <span id="linkLabel" class="icon_label"></span>
             <input id="link_url" type="text" size="35" />
           </label>
-        </div>
+        </div> <!-- a_panel -->
         <div id="path_node_panel">
           <div class="tool_sep"></div>
-          <div id="tool_node_link" class="tool_button push_button_pressed" title="Link Control Points"></div>
+          <se-button id="tool_node_link" title="Link Control Points" src="./images/tool_node_link.svg" pressed></se-button>
           <div class="tool_sep"></div>
-          <label id="tool_node_x">x:
-            <input id="path_node_x" class="attr_changer" title="Change node's x coordinate" size="3" data-attr="x" />
-          </label>
-          <label id="tool_node_y">y:
-            <input id="path_node_y" class="attr_changer" title="Change node's y coordinate" size="3" data-attr="y" />
-          </label>
+          <se-input id="path_node_x" data-attr="x" size="4" title="Change node's x coordinate" label="x:"></se-input>
+          <se-input id="path_node_y" data-attr="y" size="4" title="Change node's y coordinate" label="y:"></se-input>
           <select id="seg_type" title="Change Segment type">
             <option id="straight_segments" selected="selected" value="4">Straight</option>
             <option id="curve_segments" value="6">Curve</option>
           </select>
-          <div class="tool_button" id="tool_node_clone" title="Clone Node"></div>
-          <div class="tool_button" id="tool_node_delete" title="Delete Node"></div>
-          <div class="tool_button" id="tool_openclose_path" title="Open/close sub-path"></div>
-          <div class="tool_button" id="tool_add_subpath" title="Add sub-path"></div>
-        </div>
+          <se-button id="tool_node_clone" title="Clone Node" src="./images/tool_node_clone.svg"></se-button>
+          <se-button id="tool_node_delete" title="Delete Node" src="./images/tool_node_delete.svg"></se-button>
+          <se-button id="tool_openclose_path" title="Open/close sub-path" src="./images/tool_openclose_path.svg">
+          </se-button>
+          <se-button id="tool_add_subpath" title="Add sub-path" src="./images/tool_add_subpath.svg"></se-button>
+        </div> <!-- path_node_panel -->
       </div> <!-- tools_top -->
       <div id="cur_context_panel">
       </div>
-      <div id="tools_left" class="tools_panel">
+      <div id="tools_left">
         <se-button id="tool_select" title="Select Tool" src="./images/select.svg"></se-button>
         <se-button id="tool_fhpath" title="Pencil Tool" src="./images/pencil.svg" shortcut="Q"></se-button>
-        <se-flyingbutton id="tools_line_show" title="Line Tool (L)/Connect two objects">
+        <se-flyingbutton id="tools_line" title="Line Tool (L)/Connect two objects">
           <se-button id="tool_line" title="Line Tool" src="./images/pen.svg" shortcut="L"></se-button>
-          <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>                   
+          <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
         </se-flyingbutton>
         <se-flyingbutton id="tools_rect" title="Square/Rect Tool">
           <se-button id="tool_rect" title="Rectangle" src="./images/rect.svg" shortcut="R"></se-button>
           <se-button id="tool_square" title="Square" src="./images/square.svg"></se-button>
-          <se-button id="tool_fhrect" title="Free-Hand Rectangle" src="./images/fh_rect.svg"></se-button>                  
+          <se-button id="tool_fhrect" title="Free-Hand Rectangle" src="./images/fh_rect.svg"></se-button>
         </se-flyingbutton>
-        <se-flyingbutton id="tools_ellipse_show" title="Ellipse/Circle Tool">
+        <se-flyingbutton id="tools_ellipse" title="Ellipse/Circle Tool">
           <se-button id="tool_ellipse" title="Rectangle" src="./images/ellipse.svg" shortcut="E"></se-button>
           <se-button id="tool_circle" title="Square" src="./images/circle.svg"></se-button>
-          <se-button id="tool_fhellipse" title="Free-Hand Rectangle" src="./images/fh_ellipse.svg"></se-button>                 
+          <se-button id="tool_fhellipse" title="Free-Hand Rectangle" src="./images/fh_ellipse.svg"></se-button>
         </se-flyingbutton>
         <se-button id="tool_path" title="Path Tool" src="./images/path.svg" shortcut="P"></se-button>
-        <se-explorerbutton id="tool_shapelib_show" title="Shape library" lib="./extensions/ext-shapes/shapelib/" src="./images/shapelib.svg"></se-explorerbutton>
+        <se-explorerbutton id="tool_shapelib" title="Shape library" lib="./extensions/ext-shapes/shapelib/"
+          src="./images/shapelib.svg"></se-explorerbutton>
         <se-button id="tool_text" title="Text Tool" src="./images/text.svg" shortcut="T"></se-button>
         <se-button id="tool_image" title="Image Tool" src="./images/image.svg"></se-button>
         <se-button id="tool_zoom" title="Zoom Tool" src="./images/zoom.svg" shortcut="Z"></se-button>
-        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I"></se-button>
+        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I">
+        </se-button>
         <se-button id="ext-panning" title="Panning" src="./images/panning.svg"></se-button>
         <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
         <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
       </div> <!-- tools_left -->
-      <div id="tools_bottom" class="tools_panel">
+      <div id="tools_bottom">
         <!-- Zoom buttons -->
-        <div id="zoom_panel" class="toolset" title="Change zoom level">
-          <label>
-            <span id="zoomLabel" class="zoom_tool icon_label"></span>
-            <input id="zoom" size="3" value="100" type="text" />
-          </label>
-          <div id="zoom_dropdown" class="dropdown">
+        <se-dropdown id="zoom" src="./images/zoom.svg" title="Change zoom level" inputsize="40px">
+          <div value="1000">1000</div>
+          <div value="400">400</div>
+          <div value="200">200</div>
+          <div value="100">100</div>
+          <div value="50">50</div>
+          <div value="25">25</div>
+          <div value="canvas">Fit to canvas</div>
+          <div value="selection">Fit to selection</div>
+          <div value="layer">Fit to layer content</div>
+          <div value="content">Fit to all content</div>
+        </se-dropdown>
+        <div id="tool_fill">
+          <label for="fill_color" title="Change fill color"></label>
+          <div class="color_block">
+            <div id="fill_bg"></div>
+            <div id="fill_color" class="color_block"></div>
+          </div>
+        </div> <!-- tool_fill -->
+        <div id="tool_stroke">
+          <label title="Change stroke color"></label>
+          <div class="color_block">
+            <div id="stroke_bg"></div>
+            <div id="stroke_color" class="color_block" title="Change stroke color" src="./images/fill.svg"></div>
+          </div>
+        </div>
+        <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width by 1" label=""></se-spin-input>
+        <label class="stroke_tool">
+          <select id="stroke_style" title="Change stroke dash style">
+            <option selected="selected" value="none">&#8212;</option>
+            <option value="2,2">...</option>
+            <option value="5,5">- -</option>
+            <option value="5,2,2,2">- .</option>
+            <option value="5,2,2,2,2,2">- ..</option>
+          </select>
+        </label>
+        <div class="stroke_tool dropdown" id="stroke_linejoin">
+          <div id="cur_linejoin" title="Linejoin: Miter"></div>
+          <button></button>
+        </div>
+        <div class="stroke_tool dropdown" id="stroke_linecap">
+          <div id="cur_linecap" title="Linecap: Butt"></div>
+          <button></button>
+        </div>
+        <div id="tool_opacity">
+          <se-spin-input size="3" id="group_opacity" min=0 max=100 step=5 title="Change selected item opacity" label=""></se-spin-input>
+          <div id="opacity_dropdown" class="dropdown">
             <button></button>
             <ul>
-              <li>1000%</li>
-              <li>400%</li>
-              <li>200%</li>
-              <li>100%</li>
-              <li>50%</li>
+              <li>0%</li>
               <li>25%</li>
-              <li id="fit_to_canvas" data-val="canvas">Fit to canvas</li>
-              <li id="fit_to_sel" data-val="selection">Fit to selection</li>
-              <li id="fit_to_layer_content" data-val="layer">Fit to layer content</li>
-              <li id="fit_to_all" data-val="content">Fit to all content</li>
+              <li>50%</li>
+              <li>75%</li>
               <li>100%</li>
+              <li class="special">
+                <div id="opac_slider"></div>
+              </li>
             </ul>
           </div>
-          <div class="tool_sep"></div>
-        </div>
-        <div id="tools_bottom_2">
-          <div id="color_tools">
-            <div class="color_tool" id="tool_fill">
-              <label class="icon_label" for="fill_color" title="Change fill color"></label>
-              <div class="color_block">
-                <div id="fill_bg"></div>
-                <div id="fill_color" class="color_block"></div>
-              </div>
-            </div>
-            <div class="color_tool" id="tool_stroke">
-              <label class="icon_label" title="Change stroke color"></label>
-              <div class="color_block">
-                <div id="stroke_bg"></div>
-                <div id="stroke_color" class="color_block" title="Change stroke color"></div>
-              </div>
-              <label class="stroke_label">
-                <input id="stroke_width" title="Change stroke width by 1, shift-click to change by 0.1" size="2"
-                  value="5" type="text" data-attr="Stroke Width" />
-              </label>
-              <div id="toggle_stroke_tools" title="Show/hide more stroke tools"></div>
-              <label class="stroke_tool">
-                <select id="stroke_style" title="Change stroke dash style">
-                  <option selected="selected" value="none">&#8212;</option>
-                  <option value="2,2">...</option>
-                  <option value="5,5">- -</option>
-                  <option value="5,2,2,2">- .</option>
-                  <option value="5,2,2,2,2,2">- ..</option>
-                </select>
-              </label>
-              <div class="stroke_tool dropdown" id="stroke_linejoin">
-                <div id="cur_linejoin" title="Linejoin: Miter"></div>
-                <button></button>
-              </div>
-              <div class="stroke_tool dropdown" id="stroke_linecap">
-                <div id="cur_linecap" title="Linecap: Butt"></div>
-                <button></button>
-              </div>
-            </div>
-            <div class="color_tool" id="tool_opacity" title="Change selected item opacity">
-              <label>
-                <span id="group_opacityLabel" class="icon_label"></span>
-                <input id="group_opacity" size="3" value="100" type="text" />
-              </label>
-              <div id="opacity_dropdown" class="dropdown">
-                <button></button>
-                <ul>
-                  <li>0%</li>
-                  <li>25%</li>
-                  <li>50%</li>
-                  <li>75%</li>
-                  <li>100%</li>
-                  <li class="special">
-                    <div id="opac_slider"></div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="tools_bottom_3">
-          <div id="palette_holder">
-            <div id="palette" title="Click to change fill color, shift-click to change stroke color">
-            </div>
-          </div>
-        </div>
-        <!-- <div id="copyright"><span id="copyrightLabel">Powered by</span> <a href="https://github.com/SVG-Edit/svgedit" target="_blank">SVG-edit v2.6-beta</a></div> -->
-      </div>
+        </div> <!-- tool_opacity -->
+        <se-palette id="palette"></se-palette>
+      </div> <!-- tools_bottom -->
       <div id="option_lists" class="dropdown">
         <ul id="linejoin_opts">
           <li class="tool_button current" id="linejoin_miter" title="Linejoin: Miter"></li>
@@ -540,167 +429,6 @@
         <form>
           <textarea id="svg_source_textarea" spellcheck="false"></textarea>
         </form>
-      </div>
-    </div>
-    <div id="svg_docprops">
-      <div class="overlay"></div>
-      <div id="svg_docprops_container">
-        <div id="tool_docprops_back" class="toolbar_button">
-          <button id="tool_docprops_save">OK</button>
-          <button id="tool_docprops_cancel">Cancel</button>
-        </div>
-        <fieldset id="svg_docprops_docprops">
-          <legend id="svginfo_image_props">Image Properties</legend>
-          <label>
-            <span id="svginfo_title">Title:</span>
-            <input type="text" id="canvas_title" />
-          </label>
-          <fieldset id="change_resolution">
-            <legend id="svginfo_dim">Canvas Dimensions</legend>
-            <label>
-              <span id="svginfo_width">width:</span>
-              <input type="text" id="canvas_width" size="6" />
-            </label>
-            <label>
-              <span id="svginfo_height">height:</span>
-              <input type="text" id="canvas_height" size="6" />
-            </label>
-            <label>
-              <select id="resolution">
-                <option id="selectedPredefined" selected="selected">Select predefined:</option>
-                <option>640x480</option>
-                <option>800x600</option>
-                <option>1024x768</option>
-                <option>1280x960</option>
-                <option>1600x1200</option>
-                <option id="fitToContent" value="content">Fit to Content</option>
-              </select>
-            </label>
-          </fieldset>
-          <fieldset id="image_save_opts">
-            <legend id="includedImages">Included Images</legend>
-            <label>
-              <input type="radio" name="image_opt" value="embed" checked="checked" />
-              <span id="image_opt_embed">Embed data (local files)</span>
-            </label>
-            <label>
-              <input type="radio" name="image_opt" value="ref" />
-              <span id="image_opt_ref">Use file reference</span>
-            </label>
-          </fieldset>
-        </fieldset>
-      </div>
-    </div>
-    <div id="svg_prefs">
-      <div class="overlay"></div>
-      <div id="svg_prefs_container">
-        <div id="tool_prefs_back" class="toolbar_button">
-          <button id="tool_prefs_save">OK</button>
-          <button id="tool_prefs_cancel">Cancel</button>
-        </div>
-        <fieldset>
-          <legend id="svginfo_editor_prefs">Editor Preferences</legend>
-          <label>
-            <span id="svginfo_lang">Language:</span>
-            <!-- Source: https://en.wikipedia.org/wiki/Language_names -->
-            <select id="lang_select">
-              <option id="lang_ar" value="ar">العربية</option>
-              <option id="lang_cs" value="cs">Čeština</option>
-              <option id="lang_de" value="de">Deutsch</option>
-              <option id="lang_en" value="en" selected="selected">English</option>
-              <option id="lang_es" value="es">Español</option>
-              <option id="lang_fa" value="fa">فارسی</option>
-              <option id="lang_fr" value="fr">Français</option>
-              <option id="lang_fy" value="fy">Frysk</option>
-              <option id="lang_hi" value="hi">हिन्दी, हिंदी</option>
-              <option id="lang_it" value="it">Italiano</option>
-              <option id="lang_ja" value="ja">日本語</option>
-              <option id="lang_nl" value="nl">Nederlands</option>
-              <option id="lang_pl" value="pl">Polski</option>
-              <option id="lang_pt-BR" value="pt-BR">Português (BR)</option>
-              <option id="lang_ro" value="ro">Română</option>
-              <option id="lang_ru" value="ru">Русский</option>
-              <option id="lang_sk" value="sk">Slovenčina</option>
-              <option id="lang_sl" value="sl">Slovenščina</option>
-              <option id="lang_zh-CN" value="zh-CN">简体中文</option>
-              <option id="lang_zh-TW" value="zh-TW">繁體中文</option>
-            </select>
-          </label>
-          <label>
-            <span id="svginfo_icons">Icon size:</span>
-            <select id="iconsize">
-              <option id="icon_small" value="s">Small</option>
-              <option id="icon_medium" value="m" selected="selected">Medium</option>
-              <option id="icon_large" value="l">Large</option>
-              <option id="icon_xlarge" value="xl">Extra Large</option>
-            </select>
-          </label>
-          <fieldset id="change_background">
-            <legend id="svginfo_change_background">Editor Background</legend>
-            <div id="bg_blocks"></div>
-            <label>
-              <span id="svginfo_bg_url">URL:</span>
-              <input type="text" id="canvas_bg_url" />
-            </label>
-            <p id="svginfo_bg_note">Note: Background will not be saved with image.</p>
-          </fieldset>
-          <fieldset id="change_grid">
-            <legend id="svginfo_grid_settings">Grid</legend>
-            <label>
-              <span id="svginfo_snap_onoff">Snapping on/off</span>
-              <input type="checkbox" value="snapping_on" id="grid_snapping_on" />
-            </label>
-            <label>
-              <span id="svginfo_snap_step">Snapping Step-Size:</span>
-              <input type="text" id="grid_snapping_step" size="3" value="10" />
-            </label>
-            <label>
-              <span id="svginfo_grid_color">Grid color:</span>
-              <input type="text" id="grid_color" size="3" value="#000" />
-            </label>
-          </fieldset>
-          <fieldset id="units_rulers">
-            <legend id="svginfo_units_rulers">Units &amp; Rulers</legend>
-            <label>
-              <span id="svginfo_rulers_onoff">Show rulers</span>
-              <input id="show_rulers" type="checkbox" value="show_rulers" checked="checked" />
-            </label>
-            <label>
-              <span id="svginfo_unit">Base Unit:</span>
-              <select id="base_unit">
-                <option value="px">Pixels</option>
-                <option value="cm">Centimeters</option>
-                <option value="mm">Millimeters</option>
-                <option value="in">Inches</option>
-                <option value="pt">Points</option>
-                <option value="pc">Picas</option>
-                <option value="em">Ems</option>
-                <option value="ex">Exs</option>
-              </select>
-            </label>
-            <!-- Should this be an export option instead? -->
-            <!--
-        <span id="svginfo_unit_system">Unit System:</span>
-        <label>
-          <input type="radio" name="unit_system" value="single" checked="checked"/>
-          <span id="svginfo_single_type_unit">Single type unit</span>
-          <small id="svginfo_single_type_unit_sub">
-            CSS unit type is set on root element.
-            If a different unit type is entered in a text
-            field, it is converted back to user units on export.
-          </small>
-        </label>
-        <label>
-          <input type="radio" name="unit_system" value="multi"/>
-          <span id="svginfo_multi_units">Multiple CSS units</span>
-          <small id="svginfo_single_type_unit_sub">
-            Attributes can be given different CSS units, which may
-            lead to inconsistant results among viewers.
-          </small>
-        </label>
-        -->
-          </fieldset>
-        </fieldset>
       </div>
     </div>
     <div id="dialog_box">

@@ -33,22 +33,6 @@ export default {
       // edg = 0,
       // undoCommand = 'Not image';
       started, newFO;
-
-    // const ccZoom;
-    // const wEl, hEl;
-    // const wOffset, hOffset;
-    // const ccRBG;
-    // const ccOpacity;
-    // const brushW, brushH;
-
-    // const ccDebug = document.getElementById('debugpanel');
-
-    /* const properlySourceSizeTextArea = function(){
-     // TODO: remove magic numbers here and get values from CSS
-     const height = $('#svg_source_container').height() - 80;
-     $('#svg_source_textarea').css('height', height);
-     }; */
-
     /**
     * @param {boolean} on
     * @returns {void}
@@ -102,55 +86,13 @@ export default {
     * @param {string} tex The itex text.
     * @returns {boolean} This function returns false if the set was unsuccessful, true otherwise.
     */
-    /*
-    function setItexString(tex) {
-      const mathns = 'http://www.w3.org/1998/Math/MathML',
-        xmlnsns = 'http://www.w3.org/2000/xmlns/',
-        ajaxEndpoint = '../../itex';
-      const elt = selElems[0];
-      try {
-        const math = svgdoc.createElementNS(mathns, 'math');
-        math.setAttributeNS(xmlnsns, 'xmlns', mathns);
-        math.setAttribute('display', 'inline');
-        const semantics = document.createElementNS(mathns, 'semantics');
-        const annotation = document.createElementNS(mathns, 'annotation');
-        annotation.setAttribute('encoding', 'application/x-tex');
-        annotation.textContent = tex;
-        const mrow = document.createElementNS(mathns, 'mrow');
-        semantics.append(mrow, annotation);
-        math.append(semantics);
-        // make an AJAX request to the server, to get the MathML
-        $.post(ajaxEndpoint, {tex, display: 'inline'}, function(data){
-          const children = data.documentElement.childNodes;
-          while (children.length > 0) {
-             mrow.append(svgdoc.adoptNode(children[0], true));
-          }
-          svgCanvas.sanitizeSvg(math);
-          svgCanvas.call('changed', [elt]);
-        });
-        elt.firstChild.replaceWith(math);
-        svgCanvas.call('changed', [elt]);
-        svgCanvas.clearSelection();
-      } catch(e) {
-        console.log(e);
-        return false;
-      }
-
-      return true;
-    }
-    */
-    const buttons = [{
+    const events = {
       id: 'tool_polygon',
-      icon: 'polygon.png',
-      type: 'mode',
-      position: 11,
-      events: {
-        click () {
-          svgCanvas.setMode('polygon');
-          showPanel(true);
-        }
+      click () {
+        svgCanvas.setMode('polygon');
+        showPanel(true);
       }
-    }];
+    };
     const contextTools = [{
       type: 'input',
       panel: 'polygon_panel',
@@ -164,11 +106,8 @@ export default {
       }
     }];
     return {
-      newUI: true,
       name: strings.name,
-      buttons: strings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      }),
+      events,
       context_tools: strings.contextTools.map((contextTool, i) => {
         return Object.assign(contextTools[i], contextTool);
       }),

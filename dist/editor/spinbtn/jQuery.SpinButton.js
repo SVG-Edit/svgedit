@@ -53,7 +53,7 @@
  * @module jQuerySpinButton
  * @example
   // Create group of settings to initialise spinbutton(s). (Optional)
-  myOptions = {
+  const myOptions = {
      min: 0, // Set lower limit.
      max: 100, // Set upper limit.
      step: 1, // Set increment size.
