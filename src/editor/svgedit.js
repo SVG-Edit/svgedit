@@ -943,22 +943,22 @@ editor.init = () => {
     $('#layerlist td.layername')
       .mouseup(function (evt) {
         $('#layerlist tr.layer').removeClass('layersel');
-        $(this.parentNode).addClass('layersel');
-        svgCanvas.setCurrentLayer(this.textContent);
+        $(evt.currentTarget.parentNode).addClass('layersel');
+        svgCanvas.setCurrentLayer(evt.currentTarget.textContent);
         evt.preventDefault();
       })
-      .mouseover(() => {
-        toggleHighlightLayer(this.textContent);
+      .mouseover((evt) => {
+        toggleHighlightLayer(evt.currentTarget.textContent);
       })
       .mouseout(() => {
         toggleHighlightLayer();
       });
-    $('#layerlist td.layervis').click(() => {
-      const row = $(this.parentNode).prevAll().length;
+    $('#layerlist td.layervis').click((evt) => {
+      const row = $(evt.currentTarget.parentNode).prevAll().length;
       const name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
-      const vis = $(this).hasClass('layerinvis');
+      const vis = $(evt.currentTarget).hasClass('layerinvis');
       svgCanvas.setLayerVisibility(name, vis);
-      $(this).toggleClass('layerinvis');
+      $(evt.currentTarget).toggleClass('layerinvis');
     });
 
     // if there were too few rows, let's add a few to make it not so lonely
@@ -2045,8 +2045,8 @@ editor.init = () => {
     }
   };
 
-  $('#cur_context_panel').delegate('a', 'click', () => {
-    const link = $(this);
+  $('#cur_context_panel').delegate('a', 'click', (evt) => {
+    const link = $(evt.currentTarget);
     if (link.attr('data-root')) {
       svgCanvas.leaveContext();
     } else {
@@ -2352,21 +2352,21 @@ editor.init = () => {
     svgCanvas.setBlur(e.target.value / 10, true);
   };
 
-  $('#stroke_style').change(() => {
-    svgCanvas.setStrokeAttr('stroke-dasharray', $(this).val());
+  $('#stroke_style').change((evt) => {
+    svgCanvas.setStrokeAttr('stroke-dasharray', $(evt.currentTarget).val());
   });
 
-  $('#stroke_linejoin').change(() => {
-    svgCanvas.setStrokeAttr('stroke-linejoin', $(this).val());
+  $('#stroke_linejoin').change((evt) => {
+    svgCanvas.setStrokeAttr('stroke-linejoin', $(evt.currentTarget).val());
   });
 
   // Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
-  $('select').change(() => { $(this).blur(); });
+  $('select').change((evt) => { $(evt.currentTarget).blur(); });
 
   // fired when user wants to move elements to another layer
   let promptMoveLayerOnce = false;
-  $('#selLayerNames').change(async () => {
-    const destLayer = this.options[this.selectedIndex].value;
+  $('#selLayerNames').change(async (evt) => {
+    const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
     const confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
     /**
     * @param {boolean} ok
@@ -2392,32 +2392,32 @@ editor.init = () => {
     }
   });
 
-  $('#font_family').change(() => {
-    svgCanvas.setFontFamily(this.value);
+  $('#font_family').change((evt) => {
+    svgCanvas.setFontFamily(evt.currentTarget.value);
   });
 
-  $('#seg_type').change(() => {
-    svgCanvas.setSegType($(this).val());
+  $('#seg_type').change((evt) => {
+    svgCanvas.setSegType($(evt.currentTarget).val());
   });
 
-  $('#text').bind('keyup input', () => {
-    svgCanvas.setTextContent(this.value);
+  $('#text').bind('keyup input', (evt) => {
+    svgCanvas.setTextContent(evt.currentTarget.value);
   });
 
-  $('#image_url').change(() => {
-    setImageURL(this.value);
+  $('#image_url').change((evt) => {
+    setImageURL(evt.currentTarget.value);
   });
 
-  $('#link_url').change(() => {
-    if (this.value.length) {
-      svgCanvas.setLinkURL(this.value);
+  $('#link_url').change((evt) => {
+    if (evt.currentTarget.value.length) {
+      svgCanvas.setLinkURL(evt.currentTarget.value);
     } else {
       svgCanvas.removeHyperlink();
     }
   });
 
-  $('#g_title').change(() => {
-    svgCanvas.setGroupTitle(this.value);
+  $('#g_title').change((evt) => {
+    svgCanvas.setGroupTitle(evt.currentTarget.value);
   });
 
   const attrChanger = function (e) {
@@ -2458,13 +2458,13 @@ editor.init = () => {
     return true;
   };
 
-  $('.attr_changer').change(() => {
-    const attr = this.getAttribute('data-attr');
-    let val = this.value;
+  $('.attr_changer').change((evt) => {
+    const attr = evt.currentTarget.getAttribute('data-attr');
+    let val = evt.currentTarget.value;
     const valid = isValidUnit(attr, val, selectedElement);
 
     if (!valid) {
-      this.value = selectedElement.getAttribute(attr);
+      evt.currentTarget.value = selectedElement.getAttribute(attr);
       /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
@@ -2493,7 +2493,7 @@ editor.init = () => {
     } else {
       svgCanvas.changeSelectedAttribute(attr, val);
     }
-    this.blur();
+    evt.currentTarget.blur();
     return true;
   });
 
@@ -2626,8 +2626,8 @@ editor.init = () => {
       if (jsHover) {
         listItems.mouseover(() => {
           this.style.backgroundColor = '#FFC';
-        }).mouseout(() => {
-          this.style.backgroundColor = 'transparent';
+        }).mouseout((evt) => {
+          evt.currentTarget.style.backgroundColor = 'transparent';
           return true;
         });
       }
