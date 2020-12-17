@@ -7,8 +7,8 @@
  * @copyright 2011 Jeff Schiller, 2016 Flint O'Brien
  */
 
-import {NS} from './namespaces.js';
-import {toXml, walkTree, isNullish} from './utilities.js';
+import {NS} from '../common/namespaces.js';
+import {toXml, walkTree, isNullish} from '../common/utilities.js';
 
 const $ = jQuery;
 
@@ -192,6 +192,14 @@ class Layer {
     this.group_.remove();
     this.group_ = undefined;
     return group;
+  }
+  /**
+   * Test whether an element is a layer or not.
+   * @param {SVGGElement} elem - The SVGGElement to test.
+   * @returns {boolean} True if the element is a layer
+   */
+  static isLayer (elem) {
+    return elem && elem.tagName === 'g' && Layer.CLASS_REGEX.test(elem.getAttribute('class'));
   }
 }
 /**

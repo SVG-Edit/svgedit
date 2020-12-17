@@ -190,6 +190,8 @@ class SvgCanvas {
 
     const canvas = this;
 
+    this.isLayer = draw.Layer.isLayer;
+
     // "document" element associated with the container (same as window.document using default svg-editor.js)
     // NOTE: This is not actually a SVG document, but an HTML document.
     // JFH const svgdoc = container.ownerDocument;

@@ -32,13 +32,14 @@ import {
 } from './contextmenu.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
-import Layer from '../common/layer.js';
 
 import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
 import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
 import jQueryPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
 import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import jQueryPluginDBox from '../svgcanvas/dbox.js';
+
+import LayersPanel from './LayersPanel.js';
 
 import {
   readLang, putLocale,
@@ -731,7 +732,7 @@ editor.init = () => {
     const {ok, cancel} = uiStrings.common;
     jQueryPluginDBox($, {ok, cancel});
 
-    $('#svg_container')[0].style.visibility = 'visible';
+    $id('svg_container').style.visibility = 'visible';
 
     try {
       // load standard extensions
@@ -844,6 +845,220 @@ editor.init = () => {
     curConfig
   );
 
+  /**
+  * Updates the context panel tools based on the selected element.
+  * @returns {void}
+  */
+  const updateContextPanel = () => {
+    let elem = selectedElement;
+    // If element has just been deleted, consider it null
+    if (!Utils.isNullish(elem) && !elem.parentNode) { elem = null; }
+    const currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
+    const currentMode = svgCanvas.getMode();
+    const unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
+
+    const isNode = currentMode === 'pathedit'; // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
+    const menuItems = $('#cmenu_canvas li');
+    $('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,' +
+    '#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,' +
+    ' #use_panel, #a_panel').hide();
+    if (!Utils.isNullish(elem)) {
+      const elname = elem.nodeName;
+      // If this is a link with no transform and one child, pretend
+      // its child is selected
+      // if (elname === 'a') { // && !$(elem).attr('transform')) {
+      //   elem = elem.firstChild;
+      // }
+
+      const angle = svgCanvas.getRotationAngle(elem);
+      $('#angle').val(angle);
+
+      const blurval = svgCanvas.getBlur(elem) * 10;
+      $id('blur').value = blurval;
+
+      if (svgCanvas.addedNew) {
+        if (elname === 'image' && svgCanvas.getMode() === 'image') {
+        // Prompt for URL if not a data URL
+          if (!svgCanvas.getHref(elem).startsWith('data:')) {
+          /* await */ promptImgURL({cancelDeletes: true});
+          }
+        }
+      /* else if (elname == 'text') {
+        // TODO: Do something here for new text
+      } */
+      }
+
+      if (!isNode && currentMode !== 'pathedit') {
+        $('#selected_panel').show();
+        // Elements in this array already have coord fields
+        if (['line', 'circle', 'ellipse'].includes(elname)) {
+          $('#xy_panel').hide();
+        } else {
+          let x, y;
+
+          // Get BBox vals for g, polyline and path
+          if (['g', 'polyline', 'path'].includes(elname)) {
+            const bb = svgCanvas.getStrokedBBox([elem]);
+            if (bb) {
+              ({x, y} = bb);
+            }
+          } else {
+            x = elem.getAttribute('x');
+            y = elem.getAttribute('y');
+          }
+
+          if (unit) {
+            x = convertUnit(x);
+            y = convertUnit(y);
+          }
+
+          $('#selected_x').val(x || 0);
+          $('#selected_y').val(y || 0);
+          $('#xy_panel').show();
+        }
+
+        // Elements in this array cannot be converted to a path
+        $id('tool_topath').style.display = ['image', 'text', 'path', 'g', 'use'].includes(elname) ? 'none' : 'block';
+        $id('tool_reorient').style.display = (elname === 'path') ? 'block' : 'none';
+        $id('tool_reorient').disabled = (angle === 0);
+      } else {
+        const point = path.getNodePoint();
+        $('#tool_add_subpath').pressed = false;
+        $('#tool_node_delete').toggleClass('disabled', !path.canDeleteNodes);
+
+        // Show open/close button based on selected point
+        // setIcon('#tool_openclose_path', path.closed_subpath ? 'open_path' : 'close_path');
+
+        if (point) {
+          const segType = $('#seg_type');
+          if (unit) {
+            point.x = convertUnit(point.x);
+            point.y = convertUnit(point.y);
+          }
+          $('#path_node_x').val(point.x);
+          $('#path_node_y').val(point.y);
+          if (point.type) {
+            segType.val(point.type).removeAttr('disabled');
+          } else {
+            segType.val(4).attr('disabled', 'disabled');
+          }
+        }
+        return;
+      }
+
+      // update contextual tools here
+      const panels = {
+        g: [],
+        a: [],
+        rect: ['rx', 'width', 'height'],
+        image: ['width', 'height'],
+        circle: ['cx', 'cy', 'r'],
+        ellipse: ['cx', 'cy', 'rx', 'ry'],
+        line: ['x1', 'y1', 'x2', 'y2'],
+        text: [],
+        use: []
+      };
+
+      const {tagName} = elem;
+
+      // if ($(elem).data('gsvg')) {
+      //   $('#g_panel').show();
+      // }
+
+      let linkHref = null;
+      if (tagName === 'a') {
+        linkHref = svgCanvas.getHref(elem);
+        $('#g_panel').show();
+      }
+
+      if (elem.parentNode.tagName === 'a') {
+        if (!$(elem).siblings().length) {
+          $('#a_panel').show();
+          linkHref = svgCanvas.getHref(elem.parentNode);
+        }
+      }
+
+      // Hide/show the make_link buttons
+      $('#tool_make_link, #tool_make_link_multi').toggle(!linkHref);
+
+      if (linkHref) {
+        $('#link_url').val(linkHref);
+      }
+
+      if (panels[tagName]) {
+        const curPanel = panels[tagName];
+
+        $('#' + tagName + '_panel').show();
+
+        $.each(curPanel, function (i, item) {
+          let attrVal = elem.getAttribute(item);
+          if (curConfig.baseUnit !== 'px' && elem[item]) {
+            const bv = elem[item].baseVal.value;
+            attrVal = convertUnit(bv);
+          }
+          $('#' + tagName + '_' + item).val(attrVal || 0);
+        });
+
+        if (tagName === 'text') {
+          $('#text_panel').css('display', 'inline');
+          $('#tool_font_size').css('display', 'inline');
+          $id('tool_italic').pressed = svgCanvas.getItalic();
+          $id('tool_bold').pressed = svgCanvas.getBold();
+          $('#font_family').val(elem.getAttribute('font-family'));
+          $('#font_size').val(elem.getAttribute('font-size'));
+          $('#text').val(elem.textContent);
+          if (svgCanvas.addedNew) {
+          // Timeout needed for IE9
+            setTimeout(() => {
+              $('#text').focus().select();
+            }, 100);
+          }
+          // text
+        } else if (tagName === 'image' && svgCanvas.getMode() === 'image') {
+          setImageURL(svgCanvas.getHref(elem));
+          // image
+        } else if (tagName === 'g' || tagName === 'use') {
+          $('#container_panel').show();
+          const title = svgCanvas.getTitle();
+          const label = $('#g_title')[0];
+          label.value = title;
+          setInputWidth(label);
+          $('#g_title').prop('disabled', tagName === 'use');
+        }
+      }
+      menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
+      menuItems[((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
+      // if (!Utils.isNullish(elem))
+    } else if (multiselected) {
+      $('#multiselected_panel').show();
+      menuItems
+        .enableContextMenuItems('#group')
+        .disableContextMenuItems('#ungroup');
+    } else {
+      menuItems.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
+    }
+
+    // update history buttons
+    $id('tool_undo').disabled = (undoMgr.getUndoStackSize() === 0);
+    $id('tool_redo').disabled = (undoMgr.getRedoStackSize() === 0);
+
+    svgCanvas.addedNew = false;
+
+    if ((elem && !isNode) || multiselected) {
+    // update the selected elements' layer
+      $('#selLayerNames').removeAttr('disabled').val(currentLayerName);
+
+      // Enable regular menu options
+      canvMenu.enableContextMenuItems(
+        '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back'
+      );
+    } else {
+      $('#selLayerNames').attr('disabled', 'disabled');
+    }
+  };
+
+  const layersPanel = new LayersPanel(svgCanvas, uiStrings, updateContextPanel);
+
   const modKey = (isMac() ? 'meta+' : 'ctrl+');
   const path = svgCanvas.pathActions;
   const {undoMgr} = svgCanvas;
@@ -884,7 +1099,6 @@ editor.init = () => {
     }
   }());
 
-  const origTitle = $('title:first').text();
   // Make [1,2,5] array
   const rIntervals = [];
   for (let i = 0.1; i < 1e5; i *= 10) {
@@ -893,81 +1107,7 @@ editor.init = () => {
     rIntervals.push(5 * i);
   }
 
-  /**
-   * This function highlights the layer passed in (by fading out the other layers).
-   * If no layer is passed in, this function restores the other layers.
-   * @param {string} [layerNameToHighlight]
-   * @returns {void}
-  */
-  const toggleHighlightLayer = function (layerNameToHighlight) {
-    let i;
-    const curNames = [], numLayers = svgCanvas.getCurrentDrawing().getNumLayers();
-    for (i = 0; i < numLayers; i++) {
-      curNames[i] = svgCanvas.getCurrentDrawing().getLayerName(i);
-    }
-
-    if (layerNameToHighlight) {
-      curNames.forEach((curName) => {
-        if (curName !== layerNameToHighlight) {
-          svgCanvas.getCurrentDrawing().setLayerOpacity(curName, 0.5);
-        }
-      });
-    } else {
-      curNames.forEach((curName) => {
-        svgCanvas.getCurrentDrawing().setLayerOpacity(curName, 1.0);
-      });
-    }
-  };
-
-  /**
-  *
-  * @returns {void}
-  */
-  const populateLayers = () => {
-    svgCanvas.clearSelection();
-    const layerlist = $('#layerlist tbody').empty();
-    const selLayerNames = $('#selLayerNames').empty();
-    const drawing = svgCanvas.getCurrentDrawing();
-    const currentLayerName = drawing.getCurrentLayerName();
-    let layer = svgCanvas.getCurrentDrawing().getNumLayers();
-    // we get the layers in the reverse z-order (the layer rendered on top is listed first)
-    while (layer--) {
-      const name = drawing.getLayerName(layer);
-      const layerTr = $('<tr class="layer">').toggleClass('layersel', name === currentLayerName);
-      const layerVis = $('<td class="layervis">').toggleClass('layerinvis', !drawing.getLayerVisibility(name));
-      const layerName = $('<td class="layername">' + name + '</td>');
-      layerlist.append(layerTr.append(layerVis, layerName));
-      selLayerNames.append('<option value="' + name + '">' + name + '</option>');
-    }
-    // handle selection of layer
-    $('#layerlist td.layername')
-      .mouseup(function (evt) {
-        $('#layerlist tr.layer').removeClass('layersel');
-        $(evt.currentTarget.parentNode).addClass('layersel');
-        svgCanvas.setCurrentLayer(evt.currentTarget.textContent);
-        evt.preventDefault();
-      })
-      .mouseover((evt) => {
-        toggleHighlightLayer(evt.currentTarget.textContent);
-      })
-      .mouseout(() => {
-        toggleHighlightLayer();
-      });
-    $('#layerlist td.layervis').click((evt) => {
-      const row = $(evt.currentTarget.parentNode).prevAll().length;
-      const name = $('#layerlist tr.layer:eq(' + row + ') td.layername').text();
-      const vis = $(evt.currentTarget).hasClass('layerinvis');
-      svgCanvas.setLayerVisibility(name, vis);
-      $(evt.currentTarget).toggleClass('layerinvis');
-    });
-
-    // if there were too few rows, let's add a few to make it not so lonely
-    let num = 5 - $('#layerlist tr.layer').size();
-    while (num-- > 0) {
-      // TODO: there must a better way to do this
-      layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
-    }
-  };
+  layersPanel.populateLayers();
 
   let editingsource = false;
   let origSource = '';
@@ -1571,218 +1711,6 @@ editor.init = () => {
   };
 
   /**
-  * Updates the context panel tools based on the selected element.
-  * @returns {void}
-  */
-  const updateContextPanel = () => {
-    let elem = selectedElement;
-    // If element has just been deleted, consider it null
-    if (!Utils.isNullish(elem) && !elem.parentNode) { elem = null; }
-    const currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
-    const currentMode = svgCanvas.getMode();
-    const unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
-
-    const isNode = currentMode === 'pathedit'; // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
-    const menuItems = $('#cmenu_canvas li');
-    $('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,' +
-      '#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,' +
-      ' #use_panel, #a_panel').hide();
-    if (!Utils.isNullish(elem)) {
-      const elname = elem.nodeName;
-      // If this is a link with no transform and one child, pretend
-      // its child is selected
-      // if (elname === 'a') { // && !$(elem).attr('transform')) {
-      //   elem = elem.firstChild;
-      // }
-
-      const angle = svgCanvas.getRotationAngle(elem);
-      $('#angle').val(angle);
-
-      const blurval = svgCanvas.getBlur(elem) * 10;
-      $id('blur').value = blurval;
-
-      if (svgCanvas.addedNew) {
-        if (elname === 'image' && svgCanvas.getMode() === 'image') {
-          // Prompt for URL if not a data URL
-          if (!svgCanvas.getHref(elem).startsWith('data:')) {
-            /* await */ promptImgURL({cancelDeletes: true});
-          }
-        }
-        /* else if (elname == 'text') {
-          // TODO: Do something here for new text
-        } */
-      }
-
-      if (!isNode && currentMode !== 'pathedit') {
-        $('#selected_panel').show();
-        // Elements in this array already have coord fields
-        if (['line', 'circle', 'ellipse'].includes(elname)) {
-          $('#xy_panel').hide();
-        } else {
-          let x, y;
-
-          // Get BBox vals for g, polyline and path
-          if (['g', 'polyline', 'path'].includes(elname)) {
-            const bb = svgCanvas.getStrokedBBox([elem]);
-            if (bb) {
-              ({x, y} = bb);
-            }
-          } else {
-            x = elem.getAttribute('x');
-            y = elem.getAttribute('y');
-          }
-
-          if (unit) {
-            x = convertUnit(x);
-            y = convertUnit(y);
-          }
-
-          $('#selected_x').val(x || 0);
-          $('#selected_y').val(y || 0);
-          $('#xy_panel').show();
-        }
-
-        // Elements in this array cannot be converted to a path
-        $id('tool_topath').style.display = ['image', 'text', 'path', 'g', 'use'].includes(elname) ? 'none' : 'block';
-        $id('tool_reorient').style.display = (elname === 'path') ? 'block' : 'none';
-        $id('tool_reorient').disabled = (angle === 0);
-      } else {
-        const point = path.getNodePoint();
-        $('#tool_add_subpath').pressed = false;
-        $('#tool_node_delete').toggleClass('disabled', !path.canDeleteNodes);
-
-        // Show open/close button based on selected point
-        // setIcon('#tool_openclose_path', path.closed_subpath ? 'open_path' : 'close_path');
-
-        if (point) {
-          const segType = $('#seg_type');
-          if (unit) {
-            point.x = convertUnit(point.x);
-            point.y = convertUnit(point.y);
-          }
-          $('#path_node_x').val(point.x);
-          $('#path_node_y').val(point.y);
-          if (point.type) {
-            segType.val(point.type).removeAttr('disabled');
-          } else {
-            segType.val(4).attr('disabled', 'disabled');
-          }
-        }
-        return;
-      }
-
-      // update contextual tools here
-      const panels = {
-        g: [],
-        a: [],
-        rect: ['rx', 'width', 'height'],
-        image: ['width', 'height'],
-        circle: ['cx', 'cy', 'r'],
-        ellipse: ['cx', 'cy', 'rx', 'ry'],
-        line: ['x1', 'y1', 'x2', 'y2'],
-        text: [],
-        use: []
-      };
-
-      const {tagName} = elem;
-
-      // if ($(elem).data('gsvg')) {
-      //   $('#g_panel').show();
-      // }
-
-      let linkHref = null;
-      if (tagName === 'a') {
-        linkHref = svgCanvas.getHref(elem);
-        $('#g_panel').show();
-      }
-
-      if (elem.parentNode.tagName === 'a') {
-        if (!$(elem).siblings().length) {
-          $('#a_panel').show();
-          linkHref = svgCanvas.getHref(elem.parentNode);
-        }
-      }
-
-      // Hide/show the make_link buttons
-      $('#tool_make_link, #tool_make_link_multi').toggle(!linkHref);
-
-      if (linkHref) {
-        $('#link_url').val(linkHref);
-      }
-
-      if (panels[tagName]) {
-        const curPanel = panels[tagName];
-
-        $('#' + tagName + '_panel').show();
-
-        $.each(curPanel, function (i, item) {
-          let attrVal = elem.getAttribute(item);
-          if (curConfig.baseUnit !== 'px' && elem[item]) {
-            const bv = elem[item].baseVal.value;
-            attrVal = convertUnit(bv);
-          }
-          $('#' + tagName + '_' + item).val(attrVal || 0);
-        });
-
-        if (tagName === 'text') {
-          $('#text_panel').css('display', 'inline');
-          $('#tool_font_size').css('display', 'inline');
-          $id('tool_italic').pressed = svgCanvas.getItalic();
-          $id('tool_bold').pressed = svgCanvas.getBold();
-          $('#font_family').val(elem.getAttribute('font-family'));
-          $('#font_size').val(elem.getAttribute('font-size'));
-          $('#text').val(elem.textContent);
-          if (svgCanvas.addedNew) {
-            // Timeout needed for IE9
-            setTimeout(() => {
-              $('#text').focus().select();
-            }, 100);
-          }
-        // text
-        } else if (tagName === 'image' && svgCanvas.getMode() === 'image') {
-          setImageURL(svgCanvas.getHref(elem));
-        // image
-        } else if (tagName === 'g' || tagName === 'use') {
-          $('#container_panel').show();
-          const title = svgCanvas.getTitle();
-          const label = $('#g_title')[0];
-          label.value = title;
-          setInputWidth(label);
-          $('#g_title').prop('disabled', tagName === 'use');
-        }
-      }
-      menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
-      menuItems[((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
-    // if (!Utils.isNullish(elem))
-    } else if (multiselected) {
-      $('#multiselected_panel').show();
-      menuItems
-        .enableContextMenuItems('#group')
-        .disableContextMenuItems('#ungroup');
-    } else {
-      menuItems.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
-    }
-
-    // update history buttons
-    $id('tool_undo').disabled = (undoMgr.getUndoStackSize() === 0);
-    $id('tool_redo').disabled = (undoMgr.getRedoStackSize() === 0);
-
-    svgCanvas.addedNew = false;
-
-    if ((elem && !isNode) || multiselected) {
-      // update the selected elements' layer
-      $('#selLayerNames').removeAttr('disabled').val(currentLayerName);
-
-      // Enable regular menu options
-      canvMenu.enableContextMenuItems(
-        '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back'
-      );
-    } else {
-      $('#selLayerNames').attr('disabled', 'disabled');
-    }
-  };
-
-  /**
   *
   * @returns {void}
   */
@@ -1806,7 +1734,7 @@ editor.init = () => {
   */
   const updateTitle = function (title) {
     title = title || svgCanvas.getDocumentTitle();
-    const newTitle = origTitle + (title ? ': ' + title : '');
+    const newTitle = document.querySelector('title').text + (title ? ': ' + title : '');
 
     // Remove title update with current context info, isn't really necessary
     // if (curContext) {
@@ -1893,15 +1821,6 @@ editor.init = () => {
     });
   };
 
-  /**
-   * Test whether an element is a layer or not.
-   * @param {SVGGElement} elem - The SVGGElement to test.
-   * @returns {boolean} True if the element is a layer
-   */
-  function isLayer (elem) {
-    return elem && elem.tagName === 'g' && Layer.CLASS_REGEX.test(elem.getAttribute('class'));
-  }
-
   // called when any element has changed
   /**
    * @param {external:Window} win
@@ -1918,8 +1837,8 @@ editor.init = () => {
 
     elems.forEach((elem) => {
       const isSvgElem = (elem && elem.tagName === 'svg');
-      if (isSvgElem || isLayer(elem)) {
-        populateLayers();
+      if (isSvgElem || svgCanvas.isLayer(elem)) {
+        layersPanel.populateLayers();
         // if the element changed was the svg, then it could be a resolution change
         if (isSvgElem) {
           updateCanvas();
@@ -2377,7 +2296,7 @@ editor.init = () => {
       promptMoveLayerOnce = true;
       svgCanvas.moveSelectedToLayer(destLayer);
       svgCanvas.clearSelection();
-      populateLayers();
+      layersPanel.populateLayers();
     };
     if (destLayer) {
       if (promptMoveLayerOnce) {
@@ -3118,7 +3037,7 @@ editor.init = () => {
     svgCanvas.setResolution(x, y);
     updateCanvas(true);
     zoomImage();
-    populateLayers();
+    layersPanel.populateLayers();
     updateContextPanel();
     prepPaints();
     svgCanvas.runExtensions('onNewDocument');
@@ -3258,7 +3177,7 @@ editor.init = () => {
   const clickUndo = () => {
     if (undoMgr.getUndoStackSize() > 0) {
       undoMgr.undo();
-      populateLayers();
+      layersPanel.populateLayers();
     }
   };
 
@@ -3269,7 +3188,7 @@ editor.init = () => {
   const clickRedo = () => {
     if (undoMgr.getRedoStackSize() > 0) {
       undoMgr.redo();
-      populateLayers();
+      layersPanel.populateLayers();
     }
   };
 
@@ -3412,7 +3331,7 @@ editor.init = () => {
       svgCanvas.clearSelection();
       hideSourceEditor();
       zoomImage();
-      populateLayers();
+      layersPanel.populateLayers();
       updateTitle();
       prepPaints();
     };
@@ -3818,101 +3737,6 @@ editor.init = () => {
     $(this).removeClass('push_button_pressed').addClass('push_button');
   });
 
-  // ask for a layer name
-  const newLayer = async () => {
-    let uniqName,
-      i = svgCanvas.getCurrentDrawing().getNumLayers();
-    do {
-      uniqName = uiStrings.layers.layer + ' ' + (++i);
-    } while (svgCanvas.getCurrentDrawing().hasLayer(uniqName));
-
-    const newName = await $.prompt(uiStrings.notification.enterUniqueLayerName, uniqName);
-    if (!newName) { return; }
-    if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      /* await */ $.alert(uiStrings.notification.dupeLayerName);
-      return;
-    }
-    svgCanvas.createLayer(newName);
-    updateContextPanel();
-    populateLayers();
-  };
-
-  /**
-   *
-   * @returns {void}
-   */
-  function deleteLayer () {
-    if (svgCanvas.deleteCurrentLayer()) {
-      updateContextPanel();
-      populateLayers();
-      // This matches what SvgCanvas does
-      // TODO: make this behavior less brittle (svg-editor should get which
-      // layer is selected from the canvas and then select that one in the UI)
-      $('#layerlist tr.layer').removeClass('layersel');
-      $('#layerlist tr.layer:first').addClass('layersel');
-    }
-  }
-
-  /**
-   *
-   * @returns {Promise<void>}
-   */
-  async function cloneLayer () {
-    const name = svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
-
-    const newName = await $.prompt(uiStrings.notification.enterUniqueLayerName, name);
-    if (!newName) { return; }
-    if (svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      /* await */ $.alert(uiStrings.notification.dupeLayerName);
-      return;
-    }
-    svgCanvas.cloneLayer(newName);
-    updateContextPanel();
-    populateLayers();
-  }
-
-  /**
-   *
-   * @returns {void}
-   */
-  function mergeLayer () {
-    if ($('#layerlist tr.layersel').index() === svgCanvas.getCurrentDrawing().getNumLayers() - 1) {
-      return;
-    }
-    svgCanvas.mergeLayer();
-    updateContextPanel();
-    populateLayers();
-  }
-
-  /**
-   * @param {Integer} pos
-   * @returns {void}
-   */
-  const moveLayer = (pos) => {
-    const total = svgCanvas.getCurrentDrawing().getNumLayers();
-
-    let curIndex = $('#layerlist tr.layersel').index();
-    if (curIndex > 0 || curIndex < total - 1) {
-      curIndex += pos;
-      svgCanvas.setCurrentLayerPosition(total - curIndex - 1);
-      populateLayers();
-    }
-  };
-
-  const layerRename = async () => {
-    // const curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
-    const oldName = $('#layerlist tr.layersel td.layername').text();
-    const newName = await $.prompt(uiStrings.notification.enterNewLayerName, '');
-    if (!newName) { return; }
-    if (oldName === newName || svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      /* await */ $.alert(uiStrings.notification.layerHasThatName);
-      return;
-    }
-
-    svgCanvas.renameCurrentLayer(newName);
-    populateLayers();
-  };
-
   const SIDEPANEL_MAXWIDTH = 300;
   const SIDEPANEL_OPENWIDTH = 150;
   let sidedrag = -1, sidedragging = false, allowmove = false;
@@ -3989,7 +3813,7 @@ editor.init = () => {
     $('#svg_editor').unbind('mousemove', resizeSidePanel);
   });
 
-  populateLayers();
+  layersPanel.populateLayers();
 
   const centerCanvas = () => {
     // this centers the canvas vertically in the workarea (horizontal handled in CSS)
@@ -4121,13 +3945,6 @@ editor.init = () => {
     $id('sidepanel_handle').addEventListener('click', toggleSidePanel);
     $id('copy_save_done').addEventListener('click', cancelOverlays);
 
-    // register actions for layer toolbar
-    $id('layer_new').addEventListener('click', newLayer);
-    $id('layer_delete').addEventListener('click', deleteLayer);
-    $id('layer_up').addEventListener('click', () => moveLayer(-1));
-    $id('layer_down').addEventListener('click', () => moveLayer(1));
-    $id('layer_rename').addEventListener('click', layerRename);
-
     $id('tool_bold').addEventListener('click', clickBold);
     $id('tool_italic').addEventListener('click', clickItalic);
     $id('palette').addEventListener('change', handlePalette);
@@ -4166,6 +3983,7 @@ editor.init = () => {
         savePreferences(e);
       }
     });
+    layersPanel.addEvents();
     const toolButtons = [
       // Shortcuts not associated with buttons
       {key: 'ctrl+left', fn () { rotateSelected(0, 1); }},
@@ -4414,56 +4232,12 @@ editor.init = () => {
     }
   );
 
-  /**
-  * Implements {@see module:jQueryContextMenu.jQueryContextMenuListener}.
-  * @param {"dupe"|"delete"|"merge_down"|"merge_all"} action
-  * @param {external:jQuery} el
-  * @param {{x: Float, y: Float, docX: Float, docY: Float}} pos
-  * @returns {void}
-  */
-  const lmenuFunc = function (action, el, pos) {
-    switch (action) {
-    case 'dupe':
-      /* await */ cloneLayer();
-      break;
-    case 'delete':
-      deleteLayer();
-      break;
-    case 'merge_down':
-      mergeLayer();
-      break;
-    case 'merge_all':
-      svgCanvas.mergeAllLayers();
-      updateContextPanel();
-      populateLayers();
-      break;
-    }
-  };
-
-  $('#layerlist').contextMenu(
-    {
-      menu: 'cmenu_layers',
-      inSpeed: 0
-    },
-    lmenuFunc
-  );
-
-  $('#layer_moreopts').contextMenu(
-    {
-      menu: 'cmenu_layers',
-      inSpeed: 0,
-      allowLeft: true
-    },
-    lmenuFunc
-  );
-
   $('.contextMenu li').mousedown(function (ev) {
     ev.preventDefault();
   });
 
   $('#cmenu_canvas li').disableContextMenu();
   canvMenu.enableContextMenuItems('#delete,#cut,#copy');
-
   /**
    * @returns {void}
    */
@@ -4703,7 +4477,7 @@ editor.init = () => {
 
     if (renameLayer) {
       svgCanvas.renameCurrentLayer(uiStrings.common.layer + ' 1');
-      populateLayers();
+      layersPanel.populateLayers();
     }
 
     svgCanvas.runExtensions('langChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_langChanged} */ lang);
