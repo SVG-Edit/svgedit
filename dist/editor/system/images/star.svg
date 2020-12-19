@@ -1,14 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-  <g id="tool_star">
-     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-1 -1 26 26">
-       <defs>
-    <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_i22">
-      <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
-      <stop stop-opacity="1" stop-color="#666666" offset="1"/>
-    </linearGradient>
-    </defs>
-    <polygon points="12.4062,1.55891 15.0578,9.39339 23.3283,9.49422 16.6965,14.4371 19.1564,22.3338 12.4062,17.5543 5.65596,22.3338 8.11588,14.4371 1.48406,9.49422 9.75455,9.39339" stroke="#000000" fill="url(#svg_i22)"/>   </svg>
-  </g>
-
-  <g id="svg_eof"/>
+<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit-->
+ <g class="layer">
+  <title>Layer 1</title>
+  <polygon cx="5.35" cy="6.6" fill="#7f7f7f" id="svg_1" orient="point" point="5" points="11.650000095367432,1.9678797721862793 14.126250267028809,9.091734409332275 21.66664218902588,9.24539589881897 15.656657218933105,13.801841735839844 17.840624809265137,21.02066469192505 11.650000095367432,16.71284818649292 5.459375262260437,21.02066469192505 7.643343567848206,13.801841735839844 1.6333584785461426,9.24539589881897 9.173750400543213,9.091734409332275 11.650000095367432,1.9678797721862793 14.126250267028809,9.091734409332275 " r="10.53212" r2="4.21285" shape="star" stroke="#000000" strokeWidth="5" strokecolor="#000000"/>
+ </g>
 </svg>
