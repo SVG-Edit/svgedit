@@ -398,16 +398,11 @@ editor.init = () => {
       const blurval = svgCanvas.getBlur(elem) * 10;
       $id('blur').value = blurval;
 
-      if (svgCanvas.addedNew) {
-        if (elname === 'image' && svgCanvas.getMode() === 'image') {
-        // Prompt for URL if not a data URL
-          if (!svgCanvas.getHref(elem).startsWith('data:')) {
-          /* await */ promptImgURL({cancelDeletes: true});
-          }
-        }
-      /* else if (elname == 'text') {
-        // TODO: Do something here for new text
-      } */
+      if (svgCanvas.addedNew &&
+        elname === 'image' &&
+        svgCanvas.getMode() === 'image' &&
+        !svgCanvas.getHref(elem).startsWith('data:')) {
+        /* await */ promptImgURL({cancelDeletes: true});
       }
 
       if (!isNode && currentMode !== 'pathedit') {
@@ -493,11 +488,9 @@ editor.init = () => {
         $('#g_panel').show();
       }
 
-      if (elem.parentNode.tagName === 'a') {
-        if (!$(elem).siblings().length) {
-          $('#a_panel').show();
-          linkHref = svgCanvas.getHref(elem.parentNode);
-        }
+      if (elem.parentNode.tagName === 'a' && !$(elem).siblings().length) {
+        $('#a_panel').show();
+        linkHref = svgCanvas.getHref(elem.parentNode);
       }
 
       // Hide/show the make_link buttons
@@ -1283,14 +1276,8 @@ editor.init = () => {
     // if elems[1] is present, then we have more than one element
     selectedElement = (elems.length === 1 || Utils.isNullish(elems[1]) ? elems[0] : null);
     multiselected = (elems.length >= 2 && !Utils.isNullish(elems[1]));
-    if (!Utils.isNullish(selectedElement)) {
-      // unless we're already in always set the mode of the editor to select because
-      // upon creation of a text element the editor is switched into
-      // select mode and this event fires - we need our UI to be in sync
-
-      if (!isNode) {
-        updateToolbar();
-      }
+    if (!Utils.isNullish(selectedElement) && !isNode) {
+      updateToolbar();
     } // if (!Utils.isNullish(elem))
 
     // Deal with pathedit mode
@@ -1546,11 +1533,9 @@ editor.init = () => {
     }
     let cbCalled = false;
 
-    if (ext.langReady) {
-      if (editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
-        const lang = editor.pref('lang');
-        await ext.langReady({lang});
-      }
+    if (ext.langReady && editor.langChanged) { // We check for this since the "lang" pref could have been set by storage
+      const lang = editor.pref('lang');
+      await ext.langReady({lang});
     }
 
     /**

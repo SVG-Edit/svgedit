@@ -208,12 +208,11 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
 
       // Use the Firefox ffClone hack for text elements with gradients or
       // where other text attributes are changed.
-      if (isGecko() && elem.nodeName === 'text' && (/rotate/).test(elem.getAttribute('transform'))) {
-        if (
-          String(newValue).startsWith('url') || (['font-size', 'font-family', 'x', 'y'].includes(attr) && elem.textContent)
-        ) {
-          elem = ffClone(elem);
-        }
+      if (isGecko() &&
+        elem.nodeName === 'text' &&
+        (/rotate/).test(elem.getAttribute('transform')) &&
+        (String(newValue).startsWith('url') || (['font-size', 'font-family', 'x', 'y'].includes(attr) && elem.textContent))) {
+        elem = ffClone(elem);
       }
       // Timeout needed for Opera & Firefox
       // codedread: it is now possible for this function to be called with elements

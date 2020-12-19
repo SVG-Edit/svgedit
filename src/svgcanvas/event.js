@@ -620,10 +620,8 @@ export const mouseUpEvent = function (evt) {
           eventContext_.getCanvas().pathActions.select(selectedElements[0]);
           // if it was a path
           // else, if it was selected and this is a shift-click, remove it from selection
-        } else if (evt.shiftKey) {
-          if (tempJustSelected !== t) {
-            eventContext_.getCanvas().removeFromSelection([t]);
-          }
+        } else if (evt.shiftKey && tempJustSelected !== t) {
+          eventContext_.getCanvas().removeFromSelection([t]);
         }
       } // no change in mouse position
 

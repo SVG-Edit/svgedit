@@ -1134,20 +1134,18 @@ export const pathActionsMethod = (function () {
               cleanup();
               break;
             }
-          } else if (item.pathSegType === 2) {
-            if (len > 0) {
-              const prevType = segList.getItem(len - 1).pathSegType;
-              // Path has M M
-              if (prevType === 2) {
-                remItems(len - 1, 1);
-                cleanup();
-                break;
+          } else if (item.pathSegType === 2 && len > 0) {
+            const prevType = segList.getItem(len - 1).pathSegType;
+            // Path has M M
+            if (prevType === 2) {
+              remItems(len - 1, 1);
+              cleanup();
+              break;
               // Entire path ends with Z M
-              } else if (prevType === 1 && segList.numberOfItems - 1 === len) {
-                remItems(len, 1);
-                cleanup();
-                break;
-              }
+            } else if (prevType === 1 && segList.numberOfItems - 1 === len) {
+              remItems(len, 1);
+              cleanup();
+              break;
             }
           }
         }

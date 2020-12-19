@@ -344,7 +344,7 @@ export class SeImgPropDialog extends HTMLElement {
       if (this.$imageOptRef.getAttribute('checked') === 'true') {
         saveOpt = 'ref';
       }
-      const closeEvent = new CustomEvent('change', { detail: {
+      const closeEvent = new CustomEvent('change', {detail: {
         title: this.$canvasTitle.value,
         w: this.$canvasWidth.value,
         h: this.$canvasHeight.value,
@@ -357,7 +357,7 @@ export class SeImgPropDialog extends HTMLElement {
       this.dispatchEvent(closeEvent);
     };
     const onCancelHandler = (ev) => {
-      const closeEvent = new CustomEvent('change', { detail: {
+      const closeEvent = new CustomEvent('change', {detail: {
         dialog: 'closed'
       }});
       this.$canvasWidth.removeAttribute('disabled');

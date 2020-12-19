@@ -30,7 +30,6 @@ const svg = document.createElementNS(NS.SVG, 'svg');
 const isOpera_ = Boolean(window.opera);
 const isWebkit_ = userAgent.includes('AppleWebKit');
 const isGecko_ = userAgent.includes('Gecko/');
-const isIE_ = userAgent.includes('MSIE');
 const isChrome_ = userAgent.includes('Chrome/');
 const isWindows_ = userAgent.includes('Windows');
 const isMac_ = userAgent.includes('Macintosh');
@@ -165,11 +164,6 @@ export const isWebkit = () => isWebkit_;
  * @returns {boolean}
 */
 export const isGecko = () => isGecko_;
-/**
- * @function module:browser.isIE
- * @returns {boolean}
-*/
-export const isIE = () => isIE_;
 /**
  * @function module:browser.isChrome
  * @returns {boolean}

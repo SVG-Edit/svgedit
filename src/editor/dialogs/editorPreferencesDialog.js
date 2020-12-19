@@ -1,6 +1,5 @@
 /* eslint-disable node/no-unpublished-import */
 import 'elix/define/Dialog.js';
-import {isValidUnit} from '../../common/units.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -485,7 +484,7 @@ export class SeEditPrefsDialog extends HTMLElement {
    */
   connectedCallback () {
     const onCancelHandler = (ev) => {
-      const closeEvent = new CustomEvent('change', { detail: {
+      const closeEvent = new CustomEvent('change', {detail: {
         dialog: 'closed'
       }});
       this.dispatchEvent(closeEvent);

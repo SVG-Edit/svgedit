@@ -284,15 +284,6 @@ export const getIntersectionListMethod = function (rect) {
   }
 
   let resultList = null;
-  if (!selectionContext_.isIE()) {
-    if (typeof selectionContext_.getSVGRoot().getIntersectionList === 'function') {
-      // Offset the bbox of the rubber box by the offset of the svgcontent element.
-      rubberBBox.x += Number.parseInt(selectionContext_.getSVGContent().getAttribute('x'));
-      rubberBBox.y += Number.parseInt(selectionContext_.getSVGContent().getAttribute('y'));
-
-      resultList = selectionContext_.getSVGRoot().getIntersectionList(rubberBBox, parent);
-    }
-  }
 
   if (isNullish(resultList) || typeof resultList.item !== 'function') {
     resultList = [];

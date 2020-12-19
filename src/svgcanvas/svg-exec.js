@@ -181,12 +181,10 @@ export const svgToString = function (elem, indent) {
         if (attr.nodeName.startsWith('xmlns:')) { continue; }
 
         // only serialize attributes we don't use internally
-        if (attrVal !== '' && !attrNames.includes(attr.localName)) {
-          if (!attr.namespaceURI || nsMap[attr.namespaceURI]) {
-            out.push(' ');
-            out.push(attr.nodeName); out.push('="');
-            out.push(attrVal); out.push('"');
-          }
+        if (attrVal !== '' && !attrNames.includes(attr.localName) && (!attr.namespaceURI || nsMap[attr.namespaceURI])) {
+          out.push(' ');
+          out.push(attr.nodeName); out.push('="');
+          out.push(attrVal); out.push('"');
         }
       }
     } else {
@@ -487,10 +485,8 @@ export const importSvgString = function (xmlString) {
 
     let useExisting = false;
     // Look for symbol and make sure symbol exists in image
-    if (svgContext_.getImportIds(uid)) {
-      if ($(svgContext_.getImportIds(uid).symbol).parents('#svgroot').length) {
-        useExisting = true;
-      }
+    if (svgContext_.getImportIds(uid) && $(svgContext_.getImportIds(uid).symbol).parents('#svgroot').length) {
+      useExisting = true;
     }
 
     const batchCmd = new BatchCommand('Import Image');

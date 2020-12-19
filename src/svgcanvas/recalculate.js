@@ -107,10 +107,8 @@ export const recalculateDimensions = function (selected) {
           tlist.removeItem(k);
         }
       // remove zero-degree rotations
-      } else if (xform.type === 4) {
-        if (xform.angle === 0) {
-          tlist.removeItem(k);
-        }
+      } else if (xform.type === 4 && xform.angle === 0) {
+        tlist.removeItem(k);
       }
     }
     // End here if all it has is a rotation
