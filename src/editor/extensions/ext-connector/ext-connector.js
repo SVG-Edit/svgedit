@@ -356,7 +356,7 @@ export default {
         }
       }
     }];
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     return {
       /** @todo JFH special flag */
       newUI: true,

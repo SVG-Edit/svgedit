@@ -24,7 +24,7 @@ export default {
   name: 'mathjax',
   async init ({$}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     const svgCanvas = svgEditor.canvas;
 
     // Configuration of the MathJax extention.

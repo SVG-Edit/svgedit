@@ -23,7 +23,7 @@ export default {
   name: 'grid',
   async init ({$, NS, getTypeMap}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     const svgCanvas = svgEditor.canvas;
     const svgdoc = document.getElementById('svgcanvas').ownerDocument,
       {assignAttributes} = svgCanvas,

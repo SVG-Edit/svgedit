@@ -23,7 +23,7 @@ export default {
   name: 'imagelib',
   async init ({$, decode64, dropXMLInternalSubset}) {
     const svgEditor = this;
-    const imagelibStrings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const imagelibStrings = await loadExtensionTranslation(svgEditor.pref('lang'));
 
     const {uiStrings, canvas: svgCanvas} = svgEditor;
 

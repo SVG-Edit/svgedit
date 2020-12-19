@@ -16,9 +16,6 @@
 * @borrows module:locale.setStrings as setStrings
 */
 
-// eslint-disable-next-line node/no-unpublished-import
-import deparam from 'deparam';
-
 import './touch.js';
 import {NS} from '../common/namespaces.js';
 import {isChrome, isGecko, isMac} from '../common/browser.js';
@@ -39,6 +36,7 @@ import jQueryPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
 import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import jQueryPluginDBox from '../svgcanvas/dbox.js';
 
+import ConfigObj from './ConfigObj.js';
 import LayersPanel from './LayersPanel.js';
 
 import {
@@ -86,177 +84,7 @@ const $ = [
 const homePage = 'https://github.com/SVG-Edit/svgedit';
 
 const callbacks = [];
-/**
-* Preferences.
-* @interface module:SVGEditor.Prefs
-* @property {string} [lang="en"] Two-letter language code. The language must exist in the Editor Preferences language list. Defaults to "en" if `locale.js` detection does not detect another language.
-* @property {module:SVGEditor.IconSize} [iconsize="s" || "m"] Size of the toolbar icons. Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise.
-* @property {string} [bkgd_color="#FFF"] Color hex for canvas background color. Defaults to white.
-* @property {string} [bkgd_url=""] Background raster image URL. This image will fill the background of the document; useful for tracing purposes.
-* @property {"embed"|"ref"} [img_save="embed"] Defines whether included raster images should be saved as Data URIs when possible, or as URL references. Settable in the Document Properties dialog.
-* @property {boolean} [save_notice_done=false] Used to track alert status
-* @property {boolean} [export_notice_done=false] Used to track alert status
-* @todo `save_notice_done` and `export_notice_done` should be changed to flags rather than preferences
-*/
-/**
-* @namespace {module:SVGEditor.Prefs} defaultPrefs
-* @memberof module:SVGEditor~
-* @implements {module:SVGEditor.Prefs}
-*/
-// The iteration algorithm for defaultPrefs does not currently support array/objects
-const defaultPrefs = /** @lends module:SVGEditor~defaultPrefs */ {
-  // EDITOR OPTIONS (DIALOG)
-  /**
-  * Default to "en" if locale.js detection does not detect another language.
-  */
-  lang: '',
-  /**
-  * Will default to 's' if the window height is smaller than the minimum
-  * height and 'm' otherwise.
-  */
-  iconsize: '',
-  bkgd_color: '#FFF',
-  bkgd_url: '',
-  // DOCUMENT PROPERTIES (DIALOG)
-  img_save: 'embed',
-  // ALERT NOTICES
-  // Only shows in UI as far as alert notices, but useful to remember, so keeping as pref
-  save_notice_done: false,
-  export_notice_done: false
-};
-/**
-* @name module:SVGEditor~defaultExtensions
-* @type {string[]}
-*/
-const defaultExtensions = [
-  'ext-connector',
-  'ext-eyedropper',
-  'ext-grid',
-  'ext-imagelib',
-  'ext-markers',
-  'ext-overview_window',
-  'ext-panning',
-  'ext-polygon',
-  'ext-shapes',
-  'ext-star',
-  'ext-storage'
-];
-/**
-* @typedef {"@default"|string} module:SVGEditor.Stylesheet `@default` will automatically load all of the default CSS paths for SVGEditor
-*/
-/**
-* @typedef {GenericArray} module:SVGEditor.XYDimensions
-* @property {Integer} length 2
-* @property {Float} 0
-* @property {Float} 1
-*/
-/**
-* @tutorial ConfigOptions
-* @interface module:SVGEditor.Config
-* @property {string} [canvasName="default"] Used to namespace storage provided via `ext-storage.js`; you can use this if you wish to have multiple independent instances of SVG Edit on the same domain
-* @property {boolean} [no_save_warning=false] If `true`, prevents the warning dialog box from appearing when closing/reloading the page. Mostly useful for testing.
-* @property {string} [imgPath="images/"] The path where the SVG icons are located, with trailing slash. Note that as of version 2.7, this is not configurable by URL for security reasons.
-* @property {boolean} [preventAllURLConfig=false] Set to `true` to override the ability for URLs to set non-content configuration (including extension config). Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
-* @property {boolean} [preventURLContentLoading=false] Set to `true` to override the ability for URLs to set URL-based SVG content. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
-* @property {boolean} [lockExtensions=false] Set to `true` to override the ability for URLs to set their own extensions; disallowed in URL setting. There is no need for this when `preventAllURLConfig` is used. Must be set early, i.e., in `svgedit-config-iife.js`; extension loading is too late!
-* @property {boolean} [noDefaultExtensions=false] If set to `true`, prohibits automatic inclusion of default extensions (though "extensions" can still be used to add back any desired default extensions along with any other extensions). This can only be meaningfully used in `svgedit-config-iife.js` or in the URL
-* @property {boolean} [noStorageOnLoad=false] Some interaction with `ext-storage.js`; prevent even the loading of previously saved local storage.
-* @property {boolean} [forceStorage=false] Some interaction with `ext-storage.js`; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not (and may be required by law in some regions)
-* @property {boolean} [emptyStorageOnDecline=false] Used by `ext-storage.js`; empty any prior storage if the user declines to store
-* @property {boolean} [avoidClientSide=false] DEPRECATED (use `avoidClientSideDownload` instead); Used by `ext-server_opensave.js`; set to `true` if you wish to always save to server and not only as fallback when client support is lacking
-* @property {boolean} [avoidClientSideDownload=false] Used by `ext-server_opensave.js`; set to `true` if you wish to always save to server and not only as fallback when client support is lacking
-* @property {boolean} [avoidClientSideOpen=false] Used by `ext-server_opensave.js`; set to `true` if you wish to always open from the server and not only as fallback when FileReader client support is lacking
-* @property {string[]} [extensions=[]] Extensions to load on startup. Use an array in `setConfig` and comma separated file names in the URL. Extension names must begin with "ext-". Note that as of version 2.7, paths containing "/", "\", or ":", are disallowed for security reasons. Although previous versions of this list would entirely override the default list, as of version 2.7, the defaults will always be added to this explicit list unless the configuration `noDefaultExtensions` is included. See {@link module:SVGEditor~defaultExtensions}.
-* @property {string[]} [allowedOrigins=[]] Used by `ext-xdomain-messaging.js` to indicate which origins are permitted for cross-domain messaging (e.g., between the embedded editor and main editor code). Besides explicit domains, one might add '*' to allow all domains (not recommended for privacy/data integrity of your user's content!), `window.location.origin` for allowing the same origin (should be safe if you trust all apps on your domain), 'null' to allow `file:///` URL usage
-* @property {null|PlainObject} [colorPickerCSS=null] Object of CSS properties mapped to values (for jQuery) to apply to the color picker. See {@link http://api.jquery.com/css/#css-properties}. A `null` value (the default) will cause the CSS to default to `left` with a position equal to that of the `fill_color` or `stroke_color` element minus 140, and a `bottom` equal to 40
-* @property {string} [paramurl] This was available via URL only. Allowed an un-encoded URL within the query string (use "url" or "source" with a data: URI instead)
-* @property {Float} [canvas_expansion=3] The minimum area visible outside the canvas, as a multiple of the image dimensions. The larger the number, the more one can scroll outside the canvas.
-* @property {PlainObject} [initFill] Init fill properties
-* @property {string} [initFill.color="FF0000"] The initial fill color. Must be a hex code string. Defaults to solid red.
-* @property {Float} [initFill.opacity=1] The initial fill opacity. Must be a number between 0 and 1
-* @property {PlainObject} [initStroke] Init stroke properties
-* @property {Float} [initStroke.width=5] The initial stroke width. Must be a positive number.
-* @property {string} [initStroke.color="000000"] The initial stroke color. Must be a hex code. Defaults to solid black.
-* @property {Float} [initStroke.opacity=1] The initial stroke opacity. Must be a number between 0 and 1.
-* @property {PlainObject} text Text style properties
-* @property {Float} [text.stroke_width=0] Text stroke width
-* @property {Float} [text.font_size=24] Text font size
-* @property {string} [text.font_family="serif"] Text font family
-* @property {Float} [initOpacity=1] Initial opacity (multiplied by 100)
-* @property {module:SVGEditor.XYDimensions} [dimensions=[640, 480]] The default width/height of a new document. Use an array in `setConfig` (e.g., `[800, 600]`) and comma separated numbers in the URL.
-* @property {boolean} [gridSnapping=false] Enable snap to grid by default. Set in Editor Options.
-* @property {string} [gridColor="#000"] Accepts hex, e.g., '#000'. Set in Editor Options. Defaults to black.
-* @property {string} [baseUnit="px"] Set in Editor Options.
-* @property {Float} [snappingStep=10] Set the default grid snapping value. Set in Editor Options.
-* @property {boolean} [showRulers=true] Initial state of ruler display (v2.6). Set in Editor Options.
-* @property {string} [initTool="select"] The initially selected tool. Must be either the ID of the button for the tool, or the ID without `tool_` prefix (e.g., "select").
-* @property {boolean} [wireframe=false] Start in wireframe mode
-* @property {boolean} [showlayers=false] Open the layers side-panel by default.
-* @property {"new"|"same"} [exportWindowType="new"] Can be "new" or "same" to indicate whether new windows will be generated for each export; the `window.name` of the export window is namespaced based on the `canvasName` (and incremented if "new" is selected as the type). Introduced 2.8.
-* @property {boolean} [showGrid=false] Set by `ext-grid.js`; determines whether or not to show the grid by default
-* @property {boolean} [show_outside_canvas=true] Defines whether or not elements outside the canvas should be visible. Set and used in `svgcanvas.js`.
-* @property {boolean} [selectNew=true] If true, will replace the selection with the current element and automatically select element objects (when not in "path" mode) after they are created, showing their grips (v2.6). Set and used in `svgcanvas.js` (`mouseUp`).
-* @todo Some others could be preferences as well (e.g., preventing URL changing of extensions, defaultExtensions, stylesheets, colorPickerCSS); Change the following to preferences and add pref controls where missing to the UI (e.g., `canvas_expansion`, `initFill`, `initStroke`, `text`, `initOpacity`, `dimensions`, `initTool`, `wireframe`, `showlayers`, `gridSnapping`, `gridColor`, `baseUnit`, `snappingStep`, `showRulers`, `exportWindowType`, `showGrid`, `show_outside_canvas`, `selectNew`)?
-*/
-/**
-* @namespace {module:SVGEditor.Config} defaultConfig
-* @memberof module:SVGEditor~
-* @implements {module:SVGEditor.Config}
-*/
-const defaultConfig = {
-  canvasName: 'default',
-  canvas_expansion: 3,
-  initFill: {
-    color: 'FF0000', // solid red
-    opacity: 1
-  },
-  initStroke: {
-    width: 5,
-    color: '000000', // solid black
-    opacity: 1
-  },
-  text: {
-    stroke_width: 0,
-    font_size: 24,
-    font_family: 'serif'
-  },
-  initOpacity: 1,
-  colorPickerCSS: null, // Defaults to 'left' with a position equal to that of the fill_color or stroke_color element minus 140, and a 'bottom' equal to 40
-  initTool: 'select',
-  exportWindowType: 'new', // 'same' (todo: also support 'download')
-  wireframe: false,
-  showlayers: false,
-  no_save_warning: false,
-  // PATH CONFIGURATION
-  // The following path configuration items are disallowed in the URL (as should any future path configurations)
-  imgPath: './images/',
-  // DOCUMENT PROPERTIES
-  // Change the following to a preference (already in the Document Properties dialog)?
-  dimensions: [640, 480],
-  // EDITOR OPTIONS
-  // Change the following to preferences (already in the Editor Options dialog)?
-  gridSnapping: false,
-  gridColor: '#000',
-  baseUnit: 'px',
-  snappingStep: 10,
-  showRulers: true,
-  // URL BEHAVIOR CONFIGURATION
-  preventAllURLConfig: false,
-  preventURLContentLoading: false,
-  // EXTENSION CONFIGURATION (see also preventAllURLConfig)
-  lockExtensions: false, // Disallowed in URL setting
-  noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in `svgedit-config-iife.js` or in the URL
-  // EXTENSION-RELATED (GRID)
-  showGrid: false, // Set by ext-grid.js
-  // EXTENSION-RELATED (STORAGE)
-  noStorageOnLoad: false, // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
-  forceStorage: false, // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not
-  emptyStorageOnDecline: false, // Used by ext-storage.js; empty any prior storage if the user declines to store
-  // EXTENSION (CLIENT VS. SERVER SAVING/OPENING)
-  avoidClientSide: false, // Deprecated in favor of `avoidClientSideDownload`
-  avoidClientSideDownload: false,
-  avoidClientSideOpen: false
-};
+
 /**
 * LOCALE.
 * @name module:SVGEditor.uiStrings
@@ -264,35 +92,10 @@ const defaultConfig = {
 */
 const uiStrings = editor.uiStrings = {};
 
-let svgCanvas, urldata = {},
+let svgCanvas,
   isReady = false,
   customExportImage = false,
-  customExportPDF = false,
-  curPrefs = {},
-  // Note: The difference between Prefs and Config is that Prefs
-  //   can be changed in the UI and are stored in the browser,
-  //   while config cannot
-  curConfig = {
-    // We do not put on defaultConfig to simplify object copying
-    //   procedures (we obtain instead from defaultExtensions)
-    extensions: [],
-    userExtensions: [],
-    /**
-    * Can use `location.origin` to indicate the current
-    * origin. Can contain a '*' to allow all domains or 'null' (as
-    * a string) to support all `file:///` URLs. Cannot be set by
-    * URL for security reasons (not safe, at least for
-    * privacy or data integrity of SVG content).
-    * Might have been fairly safe to allow
-    *   `new URL(location.href).origin` by default but
-    *   avoiding it ensures some more security that even third
-    *   party apps on the same domain also cannot communicate
-    *   with this app by default.
-    * For use with `ext-xdomain-messaging.js`
-    * @todo We might instead make as a user-facing preference.
-    */
-    allowedOrigins: []
-  };
+  customExportPDF = false;
 
 /**
  *
@@ -309,190 +112,16 @@ const loadSvgString = (str, {noAlert} = {}) => {
   throw new Error('Error loading SVG');
 };
 
+const configObj = new ConfigObj(editor);
+
 /**
 * EXPORTS.
 */
 
-/**
-* Store and retrieve preferences.
-* @function module:SVGEditor.pref
-* @param {string} key The preference name to be retrieved or set
-* @param {string} [val] The value. If the value supplied is missing or falsey, no change to the preference will
-* be made unless `mayBeEmpty` is set.
-* @param {boolean} [mayBeEmpty] If value may be falsey.
-* @returns {string|void} If val is missing or falsey and `mayBeEmpty` is not set, the
-* value of the previously stored preference will be returned.
-* @todo Review whether any remaining existing direct references to
-*  getting `curPrefs` can be changed to use `svgEditor.pref()` getting to ensure
-*  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`);
-*  specifically, `bkgd_color` could be changed so that the pref dialog has a
-*  button to auto-calculate background, but otherwise uses `svgEditor.pref()` to
-*  be able to get default prefs or overridable settings
-*/
-editor.pref = function (key, val, mayBeEmpty) {
-  if (mayBeEmpty || val) {
-    curPrefs[key] = val;
-    /**
-    * @name curPrefs
-    * @memberof module:SVGEditor
-    * @implements {module:SVGEditor.Prefs}
-    */
-    editor.curPrefs = curPrefs; // Update exported value
-    return undefined;
-  }
-  return (key in curPrefs) ? curPrefs[key] : defaultPrefs[key];
-};
-
-/**
-* Where permitted, sets canvas and/or `defaultPrefs` based on previous
-*  storage. This will override URL settings (for security reasons) but
-*  not `svgedit-config-iife.js` configuration (unless initial user
-*  overriding is explicitly permitted there via `allowInitialUserOverride`).
-* @function module:SVGEditor.loadContentAndPrefs
-* @todo Split `allowInitialUserOverride` into `allowOverrideByURL` and
-*  `allowOverrideByUserStorage` so `svgedit-config-iife.js` can disallow some
-*  individual items for URL setting but allow for user storage AND/OR
-*  change URL setting so that it always uses a different namespace,
-*  so it won't affect pre-existing user storage (but then if users saves
-*  that, it will then be subject to tampering
-* @returns {void}
-*/
-editor.loadContentAndPrefs = () => {
-  if (!curConfig.forceStorage &&
-    (curConfig.noStorageOnLoad ||
-        !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)
-    )
-  ) {
-    return;
-  }
-
-  // LOAD CONTENT
-  if (editor.storage && // Cookies do not have enough available memory to hold large documents
-    (curConfig.forceStorage ||
-      (!curConfig.noStorageOnLoad &&
-        document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/))
-    )
-  ) {
-    const name = 'svgedit-' + curConfig.canvasName;
-    const cached = editor.storage.getItem(name);
-    if (cached) {
-      editor.loadFromString(cached);
-    }
-  }
-
-  // LOAD PREFS
-  Object.keys(defaultPrefs).forEach((key) => {
-    const storeKey = 'svg-edit-' + key;
-    if (editor.storage) {
-      const val = editor.storage.getItem(storeKey);
-      if (val) {
-        defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
-      }
-    } else if (window.widget) {
-      defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
-    } else {
-      const result = document.cookie.match(
-        new RegExp('(?:^|;\\s*)' + Utils.regexEscape(
-          encodeURIComponent(storeKey)
-        ) + '=([^;]+)')
-      );
-      defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
-    }
-  });
-};
-
-/**
-* Allows setting of preferences or configuration (including extensions).
-* @function module:SVGEditor.setConfig
-* @param {module:SVGEditor.Config|module:SVGEditor.Prefs} opts The preferences or configuration (including extensions). See the tutorial on {@tutorial ConfigOptions} for info on config and preferences.
-* @param {PlainObject} [cfgCfg] Describes configuration which applies to the
-*    particular batch of supplied options
-* @param {boolean} [cfgCfg.allowInitialUserOverride=false] Set to true if you wish
-*  to allow initial overriding of settings by the user via the URL
-*  (if permitted) or previously stored preferences (if permitted);
-*  note that it will be too late if you make such calls in extension
-*  code because the URL or preference storage settings will
-*   have already taken place.
-* @param {boolean} [cfgCfg.overwrite=true] Set to false if you wish to
-*  prevent the overwriting of prior-set preferences or configuration
-*  (URL settings will always follow this requirement for security
-*  reasons, so `svgedit-config-iife.js` settings cannot be overridden unless it
-*  explicitly permits via `allowInitialUserOverride` but extension config
-*  can be overridden as they will run after URL settings). Should
-*   not be needed in `svgedit-config-iife.js`.
-* @returns {void}
-*/
-editor.setConfig = function (opts, cfgCfg = {}) {
-  /**
-   *
-   * @param {module:SVGEditor.Config|module:SVGEditor.Prefs} cfgObj
-   * @param {string} key
-   * @param {any} val See {@link module:SVGEditor.Config} or {@link module:SVGEditor.Prefs}
-   * @returns {void}
-   */
-  function extendOrAdd (cfgObj, key, val) {
-    if (cfgObj[key] && typeof cfgObj[key] === 'object') {
-      $.extend(true, cfgObj[key], val);
-    } else {
-      cfgObj[key] = val;
-    }
-  }
-  Object.entries(opts).forEach(function ([key, val]) {
-    // Only allow prefs defined in defaultPrefs or...
-    if ({}.hasOwnProperty.call(defaultPrefs, key)) {
-      if (cfgCfg.overwrite === false && (
-        curConfig.preventAllURLConfig ||
-        {}.hasOwnProperty.call(curPrefs, key)
-      )) {
-        return;
-      }
-      if (cfgCfg.allowInitialUserOverride === true) {
-        defaultPrefs[key] = val;
-      } else {
-        editor.pref(key, val);
-      }
-    } else if (['extensions', 'userExtensions', 'allowedOrigins'].includes(key)) {
-      if (cfgCfg.overwrite === false &&
-        (
-          curConfig.preventAllURLConfig ||
-          ['allowedOrigins'].includes(key) ||
-          (key === 'extensions' && curConfig.lockExtensions)
-        )
-      ) {
-        return;
-      }
-      curConfig[key] = curConfig[key].concat(val); // We will handle any dupes later
-    // Only allow other curConfig if defined in defaultConfig
-    } else if ({}.hasOwnProperty.call(defaultConfig, key)) {
-      if (cfgCfg.overwrite === false && (
-        curConfig.preventAllURLConfig ||
-        {}.hasOwnProperty.call(curConfig, key)
-      )) {
-        return;
-      }
-      // Potentially overwriting of previously set config
-      if ({}.hasOwnProperty.call(curConfig, key)) {
-        if (cfgCfg.overwrite === false) {
-          return;
-        }
-        extendOrAdd(curConfig, key, val);
-      } else if (cfgCfg.allowInitialUserOverride === true) {
-        extendOrAdd(defaultConfig, key, val);
-      } else if (defaultConfig[key] && typeof defaultConfig[key] === 'object') {
-        curConfig[key] = Array.isArray(defaultConfig[key]) ? [] : {};
-        $.extend(true, curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
-      } else {
-        curConfig[key] = val;
-      }
-    }
-  });
-  /**
-  * @name curConfig
-  * @memberof module:SVGEditor
-  * @implements {module:SVGEditor.Config}
-  */
-  editor.curConfig = curConfig; // Update exported value
-};
+editor.pref = configObj.pref.bind(configObj);
+editor.setConfig = configObj.setConfig.bind(configObj);
+editor.curPrefs = configObj.curPrefs;
+editor.curConfig = configObj.curConfig;
 
 /**
 * All methods are optional.
@@ -607,117 +236,10 @@ editor.init = () => {
     document.body.append(newSeEditPrefsDialog);
   } catch (err) {}
 
+  configObj.load();
+
   // eslint-disable-next-line max-len
   const goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW'];
-
-  /**
-   * Sets up current preferences based on defaults.
-   * @returns {void}
-   */
-  function setupCurPrefs () {
-    curPrefs = {...defaultPrefs, ...curPrefs}; // Now safe to merge with priority for curPrefs in the event any are already set
-    // Export updated prefs
-    editor.curPrefs = curPrefs;
-  }
-
-  /**
-   * Sets up current config based on defaults.
-   * @returns {void}
-   */
-  function setupCurConfig () {
-    curConfig = {...defaultConfig, ...curConfig}; // Now safe to merge with priority for curConfig in the event any are already set
-
-    // Now deal with extensions and other array config
-    if (!curConfig.noDefaultExtensions) {
-      curConfig.extensions = curConfig.extensions.concat(defaultExtensions);
-    }
-    // ...and remove any dupes
-    ['extensions', 'allowedOrigins'].forEach(function (cfg) {
-      curConfig[cfg] = $.grep(curConfig[cfg], function (n, i) { // Supposedly faster than filter per http://amandeep1986.blogspot.hk/2015/02/jquery-grep-vs-js-filter.html
-        return i === curConfig[cfg].indexOf(n);
-      });
-    });
-    // Export updated config
-    editor.curConfig = curConfig;
-  }
-  (() => {
-    // Load config/data from URL if given
-    const {search, searchParams} = new URL(location);
-
-    if (search) {
-      urldata = deparam(searchParams.toString(), true);
-
-      ['initStroke', 'initFill'].forEach((prop) => {
-        if (searchParams.has(`${prop}[color]`)) {
-          // Restore back to original non-deparamed value to avoid color
-          //  strings being converted to numbers
-          urldata[prop].color = searchParams.get(`${prop}[color]`);
-        }
-      });
-
-      if (searchParams.has('bkgd_color')) {
-        urldata.bkgd_color = '#' + searchParams.get('bkgd_color');
-      }
-
-      if (urldata.dimensions) {
-        urldata.dimensions = urldata.dimensions.split(',');
-      }
-
-      if (urldata.extensions) {
-        // For security reasons, disallow cross-domain or cross-folder
-        //  extensions via URL
-        urldata.extensions = urldata.extensions.match(/[:/\\]/)
-          ? ''
-          : urldata.extensions.split(',');
-      }
-
-      // Disallowing extension paths via URL for
-      // security reasons, even for same-domain
-      // ones given potential to interact in undesirable
-      // ways with other script resources
-      ['userExtensions', 'imgPath']
-        .forEach(function (pathConfig) {
-          if (urldata[pathConfig]) {
-            delete urldata[pathConfig];
-          }
-        });
-
-      // Note: `source` and `url` (as with `storagePrompt` later) are not
-      //  set on config but are used below
-      editor.setConfig(urldata, {overwrite: false});
-      setupCurConfig();
-
-      if (!curConfig.preventURLContentLoading) {
-        let {source} = urldata;
-        if (!source) { // urldata.source may have been null if it ended with '='
-          const src = searchParams.get('source');
-          if (src && src.startsWith('data:')) {
-            source = src;
-          }
-        }
-        if (source) {
-          if (source.startsWith('data:')) {
-            editor.loadFromDataURI(source);
-          } else {
-            editor.loadFromString(source);
-          }
-          return;
-        }
-        if (urldata.url) {
-          editor.loadFromURL(urldata.url);
-          return;
-        }
-      }
-      if (!urldata.noStorageOnLoad || curConfig.forceStorage) {
-        editor.loadContentAndPrefs();
-      }
-    } else {
-      setupCurConfig();
-      editor.loadContentAndPrefs();
-    }
-  })();
-  setupCurPrefs();
-
   /**
    * @fires module:svgcanvas.SvgCanvas#event:ext_addLangData
    * @fires module:svgcanvas.SvgCanvas#event:ext_langReady
@@ -737,7 +259,7 @@ editor.init = () => {
     try {
       // load standard extensions
       await Promise.all(
-        curConfig.extensions.map(async (extname) => {
+        configObj.curConfig.extensions.map(async (extname) => {
           /**
            * @tutorial ExtensionDocs
            * @typedef {PlainObject} module:SVGEditor.ExtensionObject
@@ -760,7 +282,7 @@ editor.init = () => {
       );
       // load user extensions (given as pathNames)
       await Promise.all(
-        curConfig.userExtensions.map(async (extPathName) => {
+        configObj.curConfig.userExtensions.map(async (extPathName) => {
           /**
            * @tutorial ExtensionDocs
            * @typedef {PlainObject} module:SVGEditor.ExtensionObject
@@ -842,7 +364,7 @@ editor.init = () => {
   */
   editor.canvas = svgCanvas = new SvgCanvas(
     $id('svgcanvas'),
-    curConfig
+    configObj.curConfig
   );
 
   /**
@@ -855,7 +377,7 @@ editor.init = () => {
     if (!Utils.isNullish(elem) && !elem.parentNode) { elem = null; }
     const currentLayerName = svgCanvas.getCurrentDrawing().getCurrentLayerName();
     const currentMode = svgCanvas.getMode();
-    const unit = curConfig.baseUnit !== 'px' ? curConfig.baseUnit : null;
+    const unit = configObj.curConfig.baseUnit !== 'px' ? configObj.curConfig.baseUnit : null;
 
     const isNode = currentMode === 'pathedit'; // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
     const menuItems = $('#cmenu_canvas li');
@@ -992,7 +514,7 @@ editor.init = () => {
 
         $.each(curPanel, function (i, item) {
           let attrVal = elem.getAttribute(item);
-          if (curConfig.baseUnit !== 'px' && elem[item]) {
+          if (configObj.curConfig.baseUnit !== 'px' && elem[item]) {
             const bv = elem[item].baseVal.value;
             attrVal = convertUnit(bv);
           }
@@ -1067,7 +589,7 @@ editor.init = () => {
   const paintBox = {fill: null, stroke: null};
 
   let exportWindow = null,
-    defaultImageURL = curConfig.imgPath + 'logo.svg',
+    defaultImageURL = configObj.curConfig.imgPath + 'logo.svg',
     zoomInIcon = 'crosshair',
     zoomOutIcon = 'crosshair',
     uiContext = 'toolbars';
@@ -1368,7 +890,7 @@ editor.init = () => {
     const limit = 30000;
     const contentElem = svgCanvas.getContentElem();
     const units = getTypeMap();
-    const unit = units[curConfig.baseUnit]; // 1 = 1px
+    const unit = units[configObj.curConfig.baseUnit]; // 1 = 1px
 
     // draw x ruler then y ruler
     for (d = 0; d < 2; d++) {
@@ -1528,7 +1050,7 @@ editor.init = () => {
       x: wArea[0].scrollLeft + wOrig / 2,
       y: wArea[0].scrollTop + hOrig / 2
     };
-    const multi = curConfig.canvas_expansion;
+    const multi = configObj.curConfig.canvas_expansion;
     w = Math.max(wOrig, svgCanvas.contentW * zoom * multi);
     h = Math.max(hOrig, svgCanvas.contentH * zoom * multi);
 
@@ -1581,12 +1103,12 @@ editor.init = () => {
       wArea[0].scrollLeft = newCtr.x - wOrig / 2;
       wArea[0].scrollTop = newCtr.y - hOrig / 2;
     }
-    if (curConfig.showRulers) {
+    if (configObj.curConfig.showRulers) {
       updateRulers(cnvs, zoom);
       workarea.scroll();
     }
 
-    if (urldata.storagePrompt !== true && editor.storagePromptState === 'ignore') {
+    if (configObj.urldata.storagePrompt !== true && editor.storagePromptState === 'ignore') {
       $('#dialog_box').hide();
     }
   };
@@ -2207,9 +1729,9 @@ editor.init = () => {
 
   // update resolution option with actual resolution
   const res = svgCanvas.getResolution();
-  if (curConfig.baseUnit !== 'px') {
-    res.w = convertUnit(res.w) + curConfig.baseUnit;
-    res.h = convertUnit(res.h) + curConfig.baseUnit;
+  if (configObj.curConfig.baseUnit !== 'px') {
+    res.w = convertUnit(res.w) + configObj.curConfig.baseUnit;
+    res.h = convertUnit(res.h) + configObj.curConfig.baseUnit;
   }
   $('#se-img-prop').attr('dialog', 'close');
   $('#se-img-prop').attr('title', svgCanvas.getDocumentTitle());
@@ -2353,13 +1875,13 @@ editor.init = () => {
     if (attr !== 'id' && attr !== 'class') {
       if (isNaN(val)) {
         val = svgCanvas.convertToNum(attr, val);
-      } else if (curConfig.baseUnit !== 'px') {
+      } else if (configObj.curConfig.baseUnit !== 'px') {
         // Convert unitless value to one with given unit
 
         const unitData = getTypeMap();
 
         if (selectedElement[attr] || svgCanvas.getMode() === 'pathedit' || attr === 'x' || attr === 'y') {
-          val *= unitData[curConfig.baseUnit];
+          val *= unitData[configObj.curConfig.baseUnit];
         }
       }
     }
@@ -2391,13 +1913,13 @@ editor.init = () => {
     if (attr !== 'id' && attr !== 'class') {
       if (isNaN(val)) {
         val = svgCanvas.convertToNum(attr, val);
-      } else if (curConfig.baseUnit !== 'px') {
+      } else if (configObj.curConfig.baseUnit !== 'px') {
         // Convert unitless value to one with given unit
 
         const unitData = getTypeMap();
 
         if (selectedElement[attr] || svgCanvas.getMode() === 'pathedit' || attr === 'x' || attr === 'y') {
-          val *= unitData[curConfig.baseUnit];
+          val *= unitData[configObj.curConfig.baseUnit];
         }
       }
     }
@@ -2933,9 +2455,9 @@ editor.init = () => {
   */
   const moveSelected = function (dx, dy) {
     if (!Utils.isNullish(selectedElement) || multiselected) {
-      if (curConfig.gridSnapping) {
+      if (configObj.curConfig.gridSnapping) {
         // Use grid snap value regardless of zoom level
-        const multi = svgCanvas.getZoom() * curConfig.snappingStep;
+        const multi = svgCanvas.getZoom() * configObj.curConfig.snappingStep;
         dx *= multi;
         dy *= multi;
       }
@@ -3027,7 +2549,7 @@ editor.init = () => {
    * @returns {Promise<void>} Resolves to `undefined`
    */
   const clickClear = async () => {
-    const [x, y] = curConfig.dimensions;
+    const [x, y] = configObj.curConfig.dimensions;
     const ok = await $.confirm(uiStrings.notification.QwantToClear);
     if (!ok) {
       return;
@@ -3112,10 +2634,10 @@ editor.init = () => {
      */
     function openExportWindow () {
       const {loadingImage} = uiStrings.notification;
-      if (curConfig.exportWindowType === 'new') {
+      if (configObj.curConfig.exportWindowType === 'new') {
         editor.exportWindowCt++;
       }
-      exportWindowName = curConfig.canvasName + editor.exportWindowCt;
+      exportWindowName = configObj.curConfig.canvasName + editor.exportWindowCt;
       let popHTML, popURL;
       if (loadingURL) {
         popURL = loadingURL;
@@ -3269,9 +2791,9 @@ editor.init = () => {
 
     // update resolution option with actual resolution
     const resolution = svgCanvas.getResolution();
-    if (curConfig.baseUnit !== 'px') {
-      resolution.w = convertUnit(resolution.w) + curConfig.baseUnit;
-      resolution.h = convertUnit(resolution.h) + curConfig.baseUnit;
+    if (configObj.curConfig.baseUnit !== 'px') {
+      resolution.w = convertUnit(resolution.w) + configObj.curConfig.baseUnit;
+      resolution.h = convertUnit(resolution.h) + configObj.curConfig.baseUnit;
     }
     $imgDialog.setAttribute('save', editor.pref('img_save'));
     $imgDialog.setAttribute('width', resolution.w);
@@ -3290,14 +2812,14 @@ editor.init = () => {
     const $editDialog = document.getElementById('se-edit-prefs');
     $('#main_menu').hide();
     // Update background color with current one
-    const canvasBg = curPrefs.bkgd_color;
+    const canvasBg = configObj.curPrefs.bkgd_color;
     const url = editor.pref('bkgd_url');
     if (url) {
       $editDialog.setAttribute('bgurl', url);
     }
-    $editDialog.setAttribute('gridsnappingon', curConfig.gridSnapping);
-    $editDialog.setAttribute('gridsnappingstep', curConfig.snappingStep);
-    $editDialog.setAttribute('gridcolor', curConfig.gridColor);
+    $editDialog.setAttribute('gridsnappingon', configObj.curConfig.gridSnapping);
+    $editDialog.setAttribute('gridsnappingstep', configObj.curConfig.snappingStep);
+    $editDialog.setAttribute('gridcolor', configObj.curConfig.gridColor);
     $editDialog.setAttribute('canvasbg', canvasBg);
     $editDialog.setAttribute('dialog', 'open');
   };
@@ -3416,16 +2938,16 @@ editor.init = () => {
     }
 
     // set grid setting
-    curConfig.gridSnapping = gridsnappingon;
-    curConfig.snappingStep = gridsnappingstep;
-    curConfig.gridColor = gridcolor;
-    curConfig.showRulers = showrulers;
+    configObj.curConfig.gridSnapping = gridsnappingon;
+    configObj.curConfig.snappingStep = gridsnappingstep;
+    configObj.curConfig.gridColor = gridcolor;
+    configObj.curConfig.showRulers = showrulers;
 
-    $('#rulers').toggle(curConfig.showRulers);
-    if (curConfig.showRulers) { updateRulers(); }
-    curConfig.baseUnit = baseunit;
+    $('#rulers').toggle(configObj.curConfig.showRulers);
+    if (configObj.curConfig.showRulers) { updateRulers(); }
+    configObj.curConfig.baseUnit = baseunit;
 
-    svgCanvas.setConfig(curConfig);
+    svgCanvas.setConfig(configObj.curConfig);
     updateCanvas();
     hidePreferences();
   };
@@ -3501,13 +3023,13 @@ editor.init = () => {
         cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker',
         containment: 'window'
       })
-      .css(curConfig.colorPickerCSS || {left: pos.left - 140, bottom: 40})
+      .css(configObj.curConfig.colorPickerCSS || {left: pos.left - 140, bottom: 40})
       .jGraduate(
         {
           images: {clientPath: './jgraduate/images/'},
           paint,
           window: {pickerTitle: title},
-          // images: {clientPath: curConfig.imgPath},
+          // images: {clientPath: configObj.curConfig.imgPath},
           newstop: 'inverse'
         },
         function (p) {
@@ -3531,7 +3053,7 @@ editor.init = () => {
      * @param {"fill"} type
      */
     constructor (container, type) {
-      const cur = curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
+      const cur = configObj.curConfig[type === 'fill' ? 'initFill' : 'initStroke'];
       // set up gradients to be used for the buttons
       const svgdocbox = new DOMParser().parseFromString(
         `<svg xmlns="http://www.w3.org/2000/svg" width="16.5" height="16.5">
@@ -3671,8 +3193,8 @@ editor.init = () => {
   paintBox.fill = new PaintBox('#fill_color', 'fill');
   paintBox.stroke = new PaintBox('#stroke_color', 'stroke');
 
-  $('#stroke_width').val(curConfig.initStroke.width);
-  $('#group_opacity').val(curConfig.initOpacity * 100);
+  $('#stroke_width').val(configObj.curConfig.initStroke.width);
+  $('#group_opacity').val(configObj.curConfig.initOpacity * 100);
 
   // Use this SVG elem to test vectorEffect support
   const testEl = paintBox.fill.rect.cloneNode(false);
@@ -4135,8 +3657,8 @@ editor.init = () => {
 
   // Select given tool
   editor.ready(function () {
-    const preTool = $id(`tool_${curConfig.initTool}`);
-    const regTool = $id(curConfig.initTool);
+    const preTool = $id(`tool_${configObj.curConfig.initTool}`);
+    const regTool = $id(configObj.curConfig.initTool);
     const selectTool = $id('tool_select');
     const $editDialog = $id('se-edit-prefs');
 
@@ -4148,34 +3670,34 @@ editor.init = () => {
       selectTool.click();
     }
 
-    if (curConfig.wireframe) {
+    if (configObj.curConfig.wireframe) {
       $id('tool_wireframe').click();
     }
 
-    if (curConfig.showlayers) {
+    if (configObj.curConfig.showlayers) {
       toggleSidePanel();
     }
 
-    $('#rulers').toggle(Boolean(curConfig.showRulers));
+    $('#rulers').toggle(Boolean(configObj.curConfig.showRulers));
 
-    if (curConfig.showRulers) {
+    if (configObj.curConfig.showRulers) {
       $editDialog.setAttribute('showrulers', true);
     }
 
-    if (curConfig.baseUnit) {
-      $editDialog.setAttribute('baseunit', curConfig.baseUnit);
+    if (configObj.curConfig.baseUnit) {
+      $editDialog.setAttribute('baseunit', configObj.curConfig.baseUnit);
     }
 
-    if (curConfig.gridSnapping) {
+    if (configObj.curConfig.gridSnapping) {
       $editDialog.setAttribute('gridsnappingon', true);
     }
 
-    if (curConfig.snappingStep) {
-      $editDialog.setAttribute('gridsnappingstep', curConfig.snappingStep);
+    if (configObj.curConfig.snappingStep) {
+      $editDialog.setAttribute('gridsnappingstep', configObj.curConfig.snappingStep);
     }
 
-    if (curConfig.gridColor) {
-      $editDialog.setAttribute('gridcolor', curConfig.gridColor);
+    if (configObj.curConfig.gridColor) {
+      $editDialog.setAttribute('gridcolor', configObj.curConfig.gridColor);
     }
   });
 
@@ -4265,7 +3787,7 @@ editor.init = () => {
     }
 
     // showSaveWarning is set to 'false' when the page is saved.
-    if (!curConfig.no_save_warning && editor.showSaveWarning) {
+    if (!configObj.curConfig.no_save_warning && editor.showSaveWarning) {
       // Browser already asks question about closing the page
       e.returnValue = uiStrings.notification.unsavedChanges; // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
       return uiStrings.notification.unsavedChanges;
@@ -4650,12 +4172,10 @@ editor.loadFromDataURI = function (str, {noAlert} = {}) {
 editor.addExtension = (name, init, initArgs) => {
   // Note that we don't want this on editor.ready since some extensions
   // may want to run before then (like server_opensave).
-  // $(() => {
   if (!svgCanvas) {
     throw new Error('Extension added too early');
   }
-  return svgCanvas.addExtension.call(this, name, init, initArgs);
-  // });
+  return svgCanvas.addExtension.call(editor, name, init, initArgs);
 };
 
 // Defer injection to wait out initial menu processing. This probably goes

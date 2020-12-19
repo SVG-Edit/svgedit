@@ -179,7 +179,7 @@ export default {
       name: 'storage',
       async langReady ({lang}) {
         const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
-        const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+        const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
         const {
           message, storagePrefsAndContent, storagePrefsOnly,
           storagePrefs, storageNoPrefsOrContent, storageNoPrefs,

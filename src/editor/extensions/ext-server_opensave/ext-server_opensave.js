@@ -24,7 +24,7 @@ export default {
   name: 'server_opensave',
   async init ({$, decode64, encode64}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     const {
       curConfig: {
         avoidClientSide, // Deprecated
