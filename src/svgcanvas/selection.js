@@ -402,7 +402,11 @@ export const setRotationAngle = function (val, preventUndo) {
     // we need to undo it, then redo it so it can be undo-able! :)
     // TODO: figure out how to make changes to transform list undo-able cross-browser?
     const newTransform = elem.getAttribute('transform');
-    elem.setAttribute('transform', oldTransform);
+    if (oldTransform) {
+      elem.setAttribute('transform', oldTransform);
+    } else {
+      elem.removeAttribute('transform');
+    }
     selectionContext_.getCanvas().changeSelectedAttribute('transform', newTransform, selectedElements);
     selectionContext_.getCanvas().call('changed', selectedElements);
   }

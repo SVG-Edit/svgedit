@@ -188,7 +188,11 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
         // }
       } else if (attr === '#href') {
         setHref(elem, newValue);
-      } else { elem.setAttribute(attr, newValue); }
+      } else if (newValue) {
+        elem.setAttribute(attr, newValue);
+      } else {
+        elem.removeAttribute(attr);
+      }
 
       // Go into "select" mode for text changes
       // NOTE: Important that this happens AFTER elem.setAttribute() or else attributes like
