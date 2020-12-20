@@ -11,6 +11,28 @@ const $ = [
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
+  img {
+    height: 22px;
+    width: 22px;
+  }
+  .block {
+    height: 22px;
+    width: 22px;
+    float: right;
+    background-color: darkgrey;
+  }
+  #picker {
+    background: #f0f0f0;
+    height: 26px;
+    line-height: 26px;
+    border-radius: 3px;
+    min-width: 52px;
+    display: flex;
+    align-items: center;
+    margin-right: 4px;
+    justify-content: space-evenly;
+  }
+  
   </style>
   <div id="picker">
       <img src="./images/logo.svg" alt="icon">
