@@ -19,7 +19,7 @@
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
     "start": "echo \"Open file, e.g., to http://localhost:8000/src/editor\" && web-dev-server --node-resolve",
-    "start:watch": "es-dev-server --node-resolve --watch",
+    "start:watch": "web-dev-server --node-resolve --watch",
     "cypress:open": "run-p start cypress:open-no-start",
     "cypress:open-no-start": "cypress open",
     "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && nyc instrument --compact=false src instrumented",
