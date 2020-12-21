@@ -505,7 +505,7 @@ export class SeEditPrefsDialog extends HTMLElement {
       this.dispatchEvent(closeEvent);
     };
     // Set up editor background functionality
-    const self = this;
+    const currentObj = this;
     this.colorBlocks.forEach(function (e, i) {
       const newdiv = document.createElement('div');
       if (e === 'chessboard') {
@@ -518,7 +518,7 @@ export class SeEditPrefsDialog extends HTMLElement {
         newdiv.style.backgroundColor = e;
         newdiv.classList.add('color_block');
       }
-      self.$bgBlocks.append(newdiv);
+      currentObj.$bgBlocks.append(newdiv);
     });
     const blocks = this.$bgBlocks.querySelectorAll('div');
     const curBg = 'cur_background';

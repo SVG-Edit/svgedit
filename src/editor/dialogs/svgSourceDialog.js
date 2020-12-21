@@ -208,10 +208,12 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
       this.dispatchEvent(closeEvent);
     };
     const onCopyHandler = (ev) => {
-      const closeEvent = new CustomEvent('change', {detail: {
-        copy: 'click',
-        value: this.$sourceTxt.value,
-      }});
+      const closeEvent = new CustomEvent('change', {
+        detail: {
+          copy: 'click',
+          value: this.$sourceTxt.value
+        }
+      });
       this.dispatchEvent(closeEvent);
     };
     const onSaveHandler = (ev) => {
