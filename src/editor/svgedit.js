@@ -2845,7 +2845,7 @@ editor.init = () => {
       prepPaints();
     };
 
-    if (!e.detail.value) {
+    if (!svgCanvas.setSvgString(e.detail.value)) {
       const ok = await $.confirm(uiStrings.notification.QerrorsRevertToSource);
       if (!ok) {
         return;

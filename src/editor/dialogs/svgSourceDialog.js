@@ -41,7 +41,7 @@ template.innerHTML = `
   }  
   #svg_source_editor #tool_source_back {
     text-align: left;
-    padding-left: 20px;
+    margin: 5px 10px;
   }  
   </style>
   <elix-dialog id="svg_source_editor" aria-label="SVG Source Editor" closed>
