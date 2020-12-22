@@ -238,6 +238,10 @@ editor.init = () => {
     const newSeEditorDialog = document.createElement('se-svg-source-editor-dialog');
     newSeEditorDialog.setAttribute('id', 'se-svg-editor-dialog');
     document.body.append(newSeEditorDialog);
+    // dialog_box added to DOM
+    const dialogBox = document.createElement('se-cmenu_canvas-dialog');
+    dialogBox.setAttribute('id', 'se-cmenu_canvas');
+    document.body.append(dialogBox);
   } catch (err) {}
 
   configObj.load();
@@ -384,7 +388,7 @@ editor.init = () => {
     const unit = configObj.curConfig.baseUnit !== 'px' ? configObj.curConfig.baseUnit : null;
 
     const isNode = currentMode === 'pathedit'; // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
-    const menuItems = $('#cmenu_canvas li');
+    const menuItems = document.getElementById('se-cmenu_canvas');
     $('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,' +
     '#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,' +
     ' #use_panel, #a_panel').hide();
@@ -545,16 +549,24 @@ editor.init = () => {
           $('#g_title').prop('disabled', tagName === 'use');
         }
       }
-      menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
-      menuItems[((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
+      console.log((tagName === 'g' ? 'en' : 'dis') + 'ablemenuitems');
+      console.log(((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ablemenuitems');
+      menuItems.setAttribute((tagName === 'g' ? 'en' : 'dis') + 'ablemenuitems', '#ungroup');
+      menuItems.setAttribute(((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ablemenuitems', '#group');
+
+      // menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
+      // menuItems[((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
       // if (!Utils.isNullish(elem))
     } else if (multiselected) {
       $('#multiselected_panel').show();
-      menuItems
+      menuItems.setAttribute('enablemenuitems', '#group');
+      menuItems.setAttribute('disablemenuitems', '#ungroup');
+      /* menuItems
         .enableContextMenuItems('#group')
-        .disableContextMenuItems('#ungroup');
+        .disableContextMenuItems('#ungroup'); */
     } else {
-      menuItems.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
+      menuItems.setAttribute('disablemenuitems', '#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
+      // menuItems.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
     }
 
     // update history buttons
@@ -568,9 +580,8 @@ editor.init = () => {
       $('#selLayerNames').removeAttr('disabled').val(currentLayerName);
 
       // Enable regular menu options
-      canvMenu.enableContextMenuItems(
-        '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back'
-      );
+      menuItems.setAttribute('enablemenuitems', '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
+      // canvMenu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
     } else {
       $('#selLayerNames').attr('disabled', 'disabled');
     }
@@ -582,7 +593,7 @@ editor.init = () => {
   const path = svgCanvas.pathActions;
   const {undoMgr} = svgCanvas;
   const workarea = $('#workarea');
-  const canvMenu = $('#cmenu_canvas');
+  const canvMenu = document.getElementById('se-cmenu_canvas');
   const paintBox = {fill: null, stroke: null};
 
   let exportWindow = null,
@@ -3697,8 +3708,7 @@ editor.init = () => {
 
   // zoom
   $id('zoom').value = (svgCanvas.getZoom() * 100).toFixed(1);
-
-  $('#workarea').contextMenu(
+/*   $('#workarea').contextMenu(
     {
       menu: 'cmenu_canvas',
       inSpeed: 0
@@ -3746,14 +3756,15 @@ editor.init = () => {
         break;
       }
     }
-  );
+  ); 
 
   $('.contextMenu li').mousedown(function (ev) {
     ev.preventDefault();
-  });
-
-  $('#cmenu_canvas li').disableContextMenu();
-  canvMenu.enableContextMenuItems('#delete,#cut,#copy');
+  }); */
+  canvMenu.setAttribute('disableallmenu', true);
+  canvMenu.setAttribute('enablemenuitems', '#delete,#cut,#copy');
+  // $('#cmenu_canvas li').disableContextMenu();
+  // canvMenu.enableContextMenuItems('#delete,#cut,#copy');
   /**
    * @returns {void}
    */
@@ -3762,9 +3773,11 @@ editor.init = () => {
     try {
       svgeditClipboard = localStorage.getItem('svgedit_clipboard');
     } catch (err) {}
-    canvMenu[(svgeditClipboard ? 'en' : 'dis') + 'ableContextMenuItems'](
+    // eslint-disable-next-line max-len
+    canvMenu.setAttribute((svgeditClipboard ? 'en' : 'dis') + 'ablemenuitems', '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
+    /* canvMenu[(svgeditClipboard ? 'en' : 'dis') + 'ableContextMenuItems'](
       '#paste,#paste_in_place'
-    );
+    ); */
   }
   enableOrDisableClipboard();
 
