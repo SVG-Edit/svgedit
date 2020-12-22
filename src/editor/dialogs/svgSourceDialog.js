@@ -38,7 +38,11 @@ template.innerHTML = `
   #svg_source_editor #svg_source_textarea {
     padding: 5px;
     font-size: 12px;
-  }  
+    min-height: 200px;
+    width: 95%;
+    height: 95%;
+  }
+  
   #svg_source_editor #tool_source_back {
     text-align: left;
     margin: 5px 10px;
