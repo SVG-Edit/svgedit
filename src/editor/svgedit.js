@@ -228,6 +228,10 @@ editor.init = () => {
     const newSeEditPrefsDialog = document.createElement('se-edit-prefs-dialog');
     newSeEditPrefsDialog.setAttribute('id', 'se-edit-prefs');
     document.body.append(newSeEditPrefsDialog);
+    // svg editor source dialoag added to DOM
+    const newSeEditorDialog = document.createElement('se-svg-source-editor-dialog');
+    newSeEditorDialog.setAttribute('id', 'se-svg-editor-dialog');
+    document.body.append(newSeEditorDialog);
   } catch (err) {}
 
   configObj.load();
@@ -607,14 +611,13 @@ editor.init = () => {
   */
   const showSourceEditor = function (e, forSaving) {
     if (editingsource) { return; }
-
     editingsource = true;
     origSource = svgCanvas.getSvgString();
-    $('#save_output_btns').toggle(Boolean(forSaving));
-    $('#tool_source_back').toggle(!forSaving);
-    $('#svg_source_textarea').val(origSource);
-    $('#svg_source_editor').fadeIn();
-    $('#svg_source_textarea').focus();
+    const $editorDialog = document.getElementById('se-svg-editor-dialog');
+    $editorDialog.setAttribute('dialog', 'open');
+    $editorDialog.setAttribute('value', origSource);
+    $editorDialog.setAttribute('copysec', Boolean(forSaving));
+    $editorDialog.setAttribute('applysec', !forSaving);
   };
 
   let selectedElement = null;
@@ -2774,18 +2777,17 @@ editor.init = () => {
   * @returns {void}
   */
   const hideSourceEditor = () => {
-    $('#svg_source_editor').hide();
+    const $editorDialog = document.getElementById('se-svg-editor-dialog');
+    $editorDialog.setAttribute('dialog', 'closed');
     editingsource = false;
-    $('#svg_source_textarea').blur();
   };
 
   /**
-  *
+  * @param {Event} e
   * @returns {Promise<void>} Resolves to `undefined`
   */
-  const saveSourceEditor = async () => {
+  const saveSourceEditor = async (e) => {
     if (!editingsource) { return; }
-
     const saveChanges = () => {
       svgCanvas.clearSelection();
       hideSourceEditor();
@@ -2795,7 +2797,7 @@ editor.init = () => {
       prepPaints();
     };
 
-    if (!svgCanvas.setSvgString($('#svg_source_textarea').val())) {
+    if (!svgCanvas.setSvgString(e.detail.value)) {
       const ok = await $.confirm(uiStrings.notification.QerrorsRevertToSource);
       if (!ok) {
         return;
@@ -2890,10 +2892,10 @@ editor.init = () => {
   };
 
   /**
-  *
+  * @param {Event} e
   * @returns {Promise<void>} Resolves to `undefined`
   */
-  const cancelOverlays = async () => {
+  const cancelOverlays = async (e) => {
     $('#dialog_box').hide();
     if (!editingsource && !docprops && !preferences) {
       if (curContext) {
@@ -2903,7 +2905,7 @@ editor.init = () => {
     }
 
     if (editingsource) {
-      if (origSource !== $('#svg_source_textarea').val()) {
+      if (origSource !== e.detail.value) {
         const ok = await $.confirm(uiStrings.notification.QignoreSourceChanges);
         if (ok) {
           hideSourceEditor();
@@ -3152,11 +3154,9 @@ editor.init = () => {
     $id('font_size').addEventListener('change', (e) => changeFontSize(e));
 
     // register actions in top toolbar
-    $id('tool_source_save').addEventListener('click', saveSourceEditor);
     $id('tool_ungroup').addEventListener('click', clickGroup);
     $id('tool_unlink_use').addEventListener('click', clickGroup);
     $id('sidepanel_handle').addEventListener('click', toggleSidePanel);
-    $id('copy_save_done').addEventListener('click', cancelOverlays);
 
     $id('tool_bold').addEventListener('click', clickBold);
     $id('tool_italic').addEventListener('click', clickItalic);
@@ -3194,6 +3194,15 @@ editor.init = () => {
         hidePreferences();
       } else {
         savePreferences(e);
+      }
+    });
+    $id('se-svg-editor-dialog').addEventListener('change', function (e) {
+      if (e?.detail?.copy === 'click') {
+        cancelOverlays(e);
+      } else if (e?.detail?.dialog === 'closed') {
+        hideSourceEditor();
+      } else {
+        saveSourceEditor(e);
       }
     });
     layersPanel.addEvents();

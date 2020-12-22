@@ -923,27 +923,6 @@ ul li.current {
   width: 96%;
 }
 
-
-#svg_source_editor form {
-  position: absolute;
-  top: 40px;
-  bottom: 30px;
-  width: 100%;
-}
-
-#svg_source_editor #svg_source_textarea {
-  position: relative;
-  width: 95%;
-  height: 95%;
-  padding: 5px;
-  font-size: 12px;
-}
-
-#svg_source_editor #tool_source_back {
-  text-align: left;
-  padding-left: 20px;
-}
-
 #svg_prefs_container div.color_block {
   float: left;
   margin: 2px;
