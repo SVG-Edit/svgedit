@@ -70,7 +70,10 @@ export default {
     font_family: 'बदलें फ़ॉन्ट परिवार',
     font_size: 'फ़ॉन्ट का आकार बदलें',
     bold: 'मोटा पाठ',
-    italic: 'इटैलिक पाठ'
+    italic: 'इटैलिक पाठ',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

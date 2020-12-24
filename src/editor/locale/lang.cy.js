@@ -70,7 +70,10 @@ export default {
     font_family: 'Newid Font Teulu',
     font_size: 'Newid Maint Ffont',
     bold: 'Testun Bras',
-    italic: 'Italig Testun'
+    italic: 'Italig Testun',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

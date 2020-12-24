@@ -70,7 +70,10 @@ export default {
     font_family: 'Αλλαγή γραμματοσειράς Οικογένεια',
     font_size: 'Αλλαγή μεγέθους γραμματοσειράς',
     bold: 'Bold Text',
-    italic: 'Πλάγιους'
+    italic: 'Πλάγιους',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

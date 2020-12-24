@@ -70,7 +70,10 @@ export default {
     font_family: 'Ändra Typsnitt',
     font_size: 'Ändra textstorlek',
     bold: 'Fet text',
-    italic: 'Kursiv text'
+    italic: 'Kursiv text',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

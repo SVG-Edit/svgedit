@@ -70,7 +70,10 @@ export default {
     font_family: 'Lettertype oanpasse',
     font_size: 'Lettergrutte oanpasse',
     bold: 'Fet',
-    italic: 'Skean'
+    italic: 'Skean',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

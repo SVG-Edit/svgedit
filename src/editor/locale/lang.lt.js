@@ -70,7 +70,10 @@ export default {
     font_family: 'Pakeistišriftą Šeima',
     font_size: 'Change font size',
     bold: 'Pusjuodis',
-    italic: 'Kursyvas'
+    italic: 'Kursyvas',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

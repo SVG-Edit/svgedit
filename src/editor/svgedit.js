@@ -515,6 +515,26 @@ editor.init = () => {
           $('#font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
           $('#text').val(elem.textContent);
+          const textAnchorStart = $id('tool_text_anchor_start');
+          const textAnchorMiddle = $id('tool_text_anchor_middle');
+          const textAnchorEnd = $id('tool_text_anchor_end');
+          switch (elem.getAttribute('text-anchor')) {
+          case 'start':
+            textAnchorStart.pressed = true;
+            textAnchorMiddle.pressed = false;
+            textAnchorEnd.pressed = false;
+            break;
+          case 'middle':
+            textAnchorStart.pressed = false;
+            textAnchorMiddle.pressed = true;
+            textAnchorEnd.pressed = false;
+            break;
+          case 'end':
+            textAnchorStart.pressed = false;
+            textAnchorMiddle.pressed = false;
+            textAnchorEnd.pressed = true;
+            break;
+          }
           if (svgCanvas.addedNew) {
           // Timeout needed for IE9
             setTimeout(() => {
@@ -2536,6 +2556,17 @@ editor.init = () => {
   };
 
   /**
+   *
+   * @param {string} value "start","end" or "middle"
+   * @returns {false}
+   */
+  const clickTextAnchor = (value) => {
+    svgCanvas.setTextAnchor(value);
+    updateContextPanel();
+    return false;
+  };
+
+  /**
   *
   * @returns {void}
   */
@@ -3193,6 +3224,10 @@ editor.init = () => {
 
     $id('tool_bold').addEventListener('click', clickBold);
     $id('tool_italic').addEventListener('click', clickItalic);
+    $id('tool_text_anchor_start').addEventListener('click', () => clickTextAnchor('start'));
+    $id('tool_text_anchor_middle').addEventListener('click', () => clickTextAnchor('middle'));
+    $id('tool_text_anchor_end').addEventListener('click', () => clickTextAnchor('end'));
+
     $id('palette').addEventListener('change', handlePalette);
 
     $id('tool_clear').addEventListener('click', clickClear);
@@ -3496,7 +3531,6 @@ editor.init = () => {
     try {
       svgeditClipboard = localStorage.getItem('svgedit_clipboard');
     } catch (err) {}
-    // eslint-disable-next-line max-len
     canvMenu.setAttribute((svgeditClipboard ? 'en' : 'dis') + 'ablemenuitems', '#paste,#paste_in_place');
   }
   enableOrDisableClipboard();

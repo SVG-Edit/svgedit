@@ -70,7 +70,10 @@ export default {
     font_family: 'שינוי גופן משפחה',
     font_size: 'שנה גודל גופן',
     bold: 'טקסט מודגש',
-    italic: 'טקסט נטוי'
+    italic: 'טקסט נטוי',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

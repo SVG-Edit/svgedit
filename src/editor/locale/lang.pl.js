@@ -71,7 +71,10 @@ export default {
     font_family: 'Zmień krój czcionki',
     font_size: 'Zmień rozmiar czcionki',
     bold: 'Pogrubienie textu',
-    italic: 'Kursywa'
+    italic: 'Kursywa',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menu główne',

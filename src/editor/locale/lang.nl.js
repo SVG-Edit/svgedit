@@ -70,7 +70,10 @@ export default {
     font_family: 'Verander lettertype',
     font_size: 'Verander lettertype grootte',
     bold: 'Vet',
-    italic: 'Cursief'
+    italic: 'Cursief',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Hoofdmenu',

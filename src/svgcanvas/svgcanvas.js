@@ -57,7 +57,7 @@ import {
   setDocumentTitleMethod, setResolutionMethod, getEditorNSMethod, setBBoxZoomMethod,
   setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
   setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod,
-  setItalicMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
+  setItalicMethod, setTextAnchorMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
   getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod,
   setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod,
   removeHyperlinkMethod, setSegTypeMethod, setBackgroundMethod
@@ -2215,6 +2215,14 @@ class SvgCanvas {
 * @returns {void}
 */
     this.setItalic = setItalicMethod;
+
+    /**
+* Set the new text anchor.
+* @function module:svgcanvas.SvgCanvas#setTextAnchor
+* @param {string} textAnchor - The value of the text anchor (start, middle or end)
+* @returns {void}
+*/
+    this.setTextAnchor = setTextAnchorMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getFontFamily

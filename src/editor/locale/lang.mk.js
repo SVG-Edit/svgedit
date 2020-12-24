@@ -70,7 +70,10 @@ export default {
     font_family: 'Смени фонт Фамилија',
     font_size: 'Изменифонт Големина',
     bold: 'Задебелен текст',
-    italic: 'Italic текст'
+    italic: 'Italic текст',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

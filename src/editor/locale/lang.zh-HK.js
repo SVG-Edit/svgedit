@@ -70,7 +70,10 @@ export default {
     font_family: '更改字体家族',
     font_size: '更改字体大小',
     bold: '粗体',
-    italic: '斜体文本'
+    italic: '斜体文本',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',

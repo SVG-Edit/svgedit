@@ -70,7 +70,10 @@ export default {
     font_family: 'Зміни Сімейство шрифтів',
     font_size: 'Змінити розмір шрифту',
     bold: 'Товстий текст',
-    italic: 'Похилий текст'
+    italic: 'Похилий текст',
+    text_anchor_start: 'Align the text in start',
+    text_anchor_middle: 'Align the text in middle',
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Main Menu',
