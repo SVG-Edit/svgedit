@@ -5,40 +5,36 @@
 class PaintBox {
   /**
      * @param {string|Element|external:jQuery} container
-     * @param {PlainObject} svgcanvas
      * @param {"fill"} type
      * @param {string} color
      * @param {number} opacity
      */
-  constructor (container, svgcanvas, type, color, opacity) {
+  constructor (container, type, color, opacity) {
     // set up gradients to be used for the buttons
     const svgdocbox = new DOMParser().parseFromString(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="16.5" height="16.5">
+      `<svg xmlns="http://www.w3.org/2000/svg">
           <rect
-            fill="#${color}" opacity="${opacity}"/>
+            fill="#${color}" opacity="${opacity}" width="22" height="22"/>
           <defs><linearGradient id="gradbox_${PaintBox.ctr++}"/></defs>
         </svg>`,
       'text/xml'
     );
 
     let docElem = svgdocbox.documentElement;
-    docElem = $(container)[0].appendChild(document.importNode(docElem, true));
-    docElem.setAttribute('width', 16.5);
+    docElem = container.appendChild(document.importNode(docElem, true));
 
     this.rect = docElem.firstElementChild;
     this.defs = docElem.getElementsByTagName('defs')[0];
     this.grad = this.defs.firstElementChild;
     this.paint = new $.jGraduate.Paint({solidColor: color});
     this.type = type;
-    this.svgcanvas = svgcanvas;
   }
 
   /**
      * @param {module:jGraduate~Paint} paint
-     * @param {boolean} apply
      * @returns {void}
      */
-  setPaint (paint, apply) {
+  setPaint (paint) {
     this.paint = paint;
 
     const ptype = paint.type;
@@ -61,11 +57,6 @@ class PaintBox {
 
     this.rect.setAttribute('fill', fillAttr);
     this.rect.setAttribute('opacity', opac);
-
-    if (apply) {
-      this.svgCanvas.setColor(this.type, this._paintColor, true);
-      this.svgCanvas.setPaintOpacity(this.type, this._paintOpacity, true);
-    }
   }
   /**
   * @param {string} color
@@ -90,11 +81,10 @@ class PaintBox {
 
   /**
      * @param {PlainObject} selectedElement
-     * @param {boolean} apply
-     * @returns {void}
+     * @returns {any}
      */
-  update (selectedElement, apply) {
-    if (!selectedElement) { return; }
+  update (selectedElement) {
+    if (!selectedElement) { return null; }
 
     const {type} = this;
     switch (selectedElement.tagName) {
@@ -103,7 +93,7 @@ class PaintBox {
     case 'foreignObject':
       // These elements don't have fill or stroke, so don't change
       // the current value
-      return;
+      return null;
     case 'g':
     case 'a': {
       const childs = selectedElement.getElementsByTagName('*');
@@ -123,7 +113,7 @@ class PaintBox {
       if (gPaint === null) {
         // No common color, don't update anything
         this._paintColor = null;
-        return;
+        return null;
       }
       this._paintColor = gPaint;
       this._paintOpacity = 1;
@@ -139,16 +129,12 @@ class PaintBox {
     }
     }
 
-    if (apply) {
-      this.svgCanvas.setColor(type, this._paintColor, true);
-      this.svgCanvas.setPaintOpacity(type, this._paintOpacity, true);
-    }
-
     this._paintOpacity *= 100;
 
     const paint = this.getPaint(this._paintColor, this._paintOpacity, type);
     // update the rect inside #fill_color/#stroke_color
     this.setPaint(paint);
+    return (paint);
   }
 
   /**

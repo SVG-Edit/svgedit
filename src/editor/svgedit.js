@@ -2946,12 +2946,13 @@ editor.init = () => {
   $('#group_opacity').val(configObj.curConfig.initOpacity * 100);
 
   const handleColorPicker = (type, evt) => {
-    // const {paint} = evt.detail;
+    const {paint} = evt.detail;
+    svgCanvas.setPaint(type, paint);
     updateToolButtonState();
   };
 
   $id('stroke_color').addEventListener('change', (evt) => handleColorPicker('stroke', evt));
-  $id('fill_color').addEventListener('change', (evt) => handleColorPicker('stroke', evt));
+  $id('fill_color').addEventListener('change', (evt) => handleColorPicker('fill', evt));
 
   $('#group_opacityLabel').click(() => {
     $('#opacity_dropdown button').mousedown();

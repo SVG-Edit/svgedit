@@ -17,7 +17,7 @@ template.innerHTML = `
     height: 22px;
     width: 22px;
   }
-  .block {
+  #block {
     height: 22px;
     width: 22px;
     float: right;
@@ -42,9 +42,7 @@ template.innerHTML = `
   <div id="picker">
       <img src="./images/logo.svg" alt="icon" id="logo">
       <label for="color" title="Change xxx color" id="label"></label>
-      <div class="block">
-          <div id="bg"></div>
-          <div id="color" class="block"></div>
+      <div id="block">
       </div>
   </div>
   <!-- hidden div -->
@@ -64,6 +62,7 @@ export class SeColorPicker extends HTMLElement {
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     this.$logo = this._shadowRoot.getElementById('logo');
     this.$label = this._shadowRoot.getElementById('label');
+    this.$block = this._shadowRoot.getElementById('block');
     this.paintBox = null;
     this.$picker = this._shadowRoot.getElementById('picker');
     this.$color_picker = this._shadowRoot.getElementById('color_picker');
@@ -92,7 +91,7 @@ export class SeColorPicker extends HTMLElement {
       this.setAttribute('title', newValue);
       break;
     case 'type':
-      this.$label.setAttribute(`Pick a ${newValue} Paint and Opacity`);
+      this.$label.setAttribute('title', `Pick a ${newValue} Paint and Opacity`);
       break;
     default:
       // eslint-disable-next-line no-console
@@ -152,7 +151,20 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   update (selectedElement, apply) {
-    this.paintBox.update(selectedElement, apply);
+    const paint = this.paintBox.update(selectedElement);
+    if (paint && apply) {
+      const changeEvent = new CustomEvent('change', {detail: {
+        paint
+      }});
+      this.dispatchEvent(changeEvent);
+    }
+  }
+  /**
+   * @param {PlainObject} paint
+   * @returns {void}
+   */
+  setPaint (paint) {
+    this.paintBox.setPaint(paint);
   }
 
   /**
@@ -160,7 +172,7 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    this.paintBox = new PaintBox(this, this.type);
+    this.paintBox = new PaintBox(this.$block, this.type);
     let {paint} = this.paintBox;
     $(this.$picker).click(() => {
       $(this.$color_picker)
@@ -173,13 +185,15 @@ export class SeColorPicker extends HTMLElement {
             images: {clientPath: './components/jgraduate/images/'},
             paint,
             window: {pickerTitle: this.label},
-            // images: {clientPath: configObj.curConfig.imgPath},
             newstop: 'inverse'
           },
-          function (p) {
+          (p) => {
             paint = new $.jGraduate.Paint(p);
-            this.paintBox.setPaint(paint);
-            this.svgCanvas.setPaint(this.picker, paint);
+            this.setPaint(paint);
+            const changeEvent = new CustomEvent('change', {detail: {
+              paint
+            }});
+            this.dispatchEvent(changeEvent);
             $('#color_picker').hide();
           },
           () => {
