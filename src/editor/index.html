@@ -340,20 +340,8 @@
           <div value="layer">Fit to layer content</div>
           <div value="content">Fit to all content</div>
         </se-dropdown>
-        <div id="tool_fill">
-          <label for="fill_color" title="Change fill color"></label>
-          <div class="color_block">
-            <div id="fill_bg"></div>
-            <div id="fill_color" class="color_block"></div>
-          </div>
-        </div> <!-- tool_fill -->
-        <div id="tool_stroke">
-          <label title="Change stroke color"></label>
-          <div class="color_block">
-            <div id="stroke_bg"></div>
-            <div id="stroke_color" class="color_block" title="Change stroke color" src="./images/fill.svg"></div>
-          </div>
-        </div>
+        <se-colorpicker id="fill_color" src="./images/fill.svg" title="Change fill color" type="fill"></se-colorpicker>
+        <se-colorpicker id="stroke_color" src="./images/stroke.svg" title="Change stroke color" type="stroke"></se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width by 1" label=""></se-spin-input>
         <label class="stroke_tool">
           <select id="stroke_style" title="Change stroke dash style">
@@ -410,8 +398,6 @@
           <li class="push_button" id="tool_posbottom" title="Align Bottom"></li>
         </ul>
       </div>
-      <!-- hidden divs -->
-      <div id="color_picker"></div>
     </div>
     <div id="dialog_box">
       <div class="overlay"></div>

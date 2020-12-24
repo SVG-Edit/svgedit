@@ -1,7 +1,3 @@
-@import "./jgraduate/css/jGraduate.css";
-@import "./jgraduate/css/jPicker.css";
-
-
 body {
   background: #D0D0D0;
 }
@@ -416,31 +412,6 @@ hr {
   margin-top: 5px;
 }
 
-#fill_color,  #stroke_color {
-  height: 16px;
-  width: 16px;
-  border: 1px solid #808080;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-#fill_color,  #stroke_color {
-  height: 16px;
-  width: 16px;
-  border: 1px solid #808080;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.color_block {
-  top: 0;
-  left: 0;
-}
-
-.color_block svg {
-  display: block;
-}
-
 #tools_left {
   position: absolute;
   border-right: none;
@@ -695,20 +666,12 @@ input[type=text] {
   display: none;
 }
 
-#color_picker {
-  position: absolute;
-  display: none;
-  background: #E8E8E8;
-  height: 350px;
-  z-index: 5;
-}
-
 #tools_bottom {
   position: absolute;
   left: 40px;
   right: 0;
   bottom: 0;
-  height: 40px;
+  height: 33px;
   overflow: visible;
 }
 
@@ -754,10 +717,7 @@ input[type=text] {
 #toggle_stroke_tools:hover {
   background: white;
 }
-.color_tool > * {
-  float: left;
-  margin-right: 5px;
-}
+
 #tool_opacity { right: 0;}
 
 #tool_opacity {
@@ -881,10 +841,6 @@ ul li.current {
 #bg_blocks {
   overflow: auto;
   margin-left: 30px;
-}
-
-#bg_blocks .color_block {
-  position: static;
 }
 
 #svg_docprops #svg_docprops_container,

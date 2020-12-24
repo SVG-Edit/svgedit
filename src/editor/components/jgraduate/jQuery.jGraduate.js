@@ -17,6 +17,11 @@
  * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
 
+/**
+ * @todo JFH: This jQuery plugin was adapted to work within a Web Component.
+ * We have to rewrite it as a pure webcomponent.
+*/
+
 /* eslint-disable jsdoc/require-property */
 /**
   * The jQuery namespace.
@@ -273,6 +278,9 @@ export default function jQueryPluginJGraduate ($) {
         $settings = $.extend(true, {}, $.fn.jGraduateDefaults, options || {}),
         id = $this.attr('id'),
         idref = '#' + $this.attr('id') + ' ';
+      // JFH !!!!!
+      const $shadowRoot = this.parentNode;
+      const $wc = (selector) => $($shadowRoot.querySelectorAll(selector));
 
       if (!idref) {
         /* await */ $.alert('Container element must have an id attribute to maintain unique id strings for sub-elements.');
@@ -332,8 +340,9 @@ export default function jQueryPluginJGraduate ($) {
         '<div class="jGraduate_LightBox"></div>' +
         '<div id="' + id + '_jGraduate_stopPicker" class="jGraduate_stopPicker"></div>'
       );
-      const colPicker = $(idref + '> .jGraduate_colPick');
-      const gradPicker = $(idref + '> .jGraduate_gradPick');
+      /* JFH !!!! */
+      const colPicker = $wc(idref + '> .jGraduate_colPick');
+      const gradPicker = $wc(idref + '> .jGraduate_gradPick');
 
       gradPicker.html(
         '<div id="' + id + '_jGraduate_Swatch" class="jGraduate_Swatch">' +
@@ -440,9 +449,9 @@ export default function jQueryPluginJGraduate ($) {
       const attrInput = {};
 
       const SLIDERW = 145;
-      $('.jGraduate_SliderBar').width(SLIDERW);
-
-      const container = $('#' + id + '_jGraduate_GradContainer')[0];
+      $wc('.jGraduate_SliderBar').width(SLIDERW);
+      // JFH !!!!!!
+      const container = $wc('#' + id + '_jGraduate_GradContainer')[0];
 
       const svg = mkElem('svg', {
         id: id + '_jgraduate_svg',
@@ -472,7 +481,7 @@ export default function jQueryPluginJGraduate ($) {
       case 'linearGradient':
         if (!isSolid) {
           curGradient.id = id + '_lg_jgraduate_grad';
-          grad = curGradient = svg.appendChild(curGradient); // .cloneNode(true));
+          grad = curGradient = svg.appendChild(curGradient);
         }
         mkElem('radialGradient', {
           id: id + '_rg_jgraduate_grad'
@@ -482,7 +491,7 @@ export default function jQueryPluginJGraduate ($) {
       case 'radialGradient':
         if (!isSolid) {
           curGradient.id = id + '_rg_jgraduate_grad';
-          grad = curGradient = svg.appendChild(curGradient); // .cloneNode(true));
+          grad = curGradient = svg.appendChild(curGradient);
         }
         mkElem('linearGradient', {
           id: id + '_lg_jgraduate_grad'
@@ -491,7 +500,8 @@ export default function jQueryPluginJGraduate ($) {
 
       let stopGroup; // eslint-disable-line prefer-const
       if (isSolid) {
-        grad = curGradient = $('#' + id + '_lg_jgraduate_grad')[0];
+        // JFH !!!!!!!!
+        grad = curGradient = $wc('#' + id + '_lg_jgraduate_grad')[0];
         color = $this.paint[curType];
         mkStop(0, '#' + color, 1);
 
@@ -578,18 +588,6 @@ export default function jQueryPluginJGraduate ($) {
 
       focusCoord[0].id = id + '_jGraduate_focusCoord';
 
-      // const coords = $(idref + ' .grad_coord');
-
-      // $(container).hover(function () {
-      //   coords.animate({
-      //     opacity: 1
-      //   }, 500);
-      // }, function () {
-      //   coords.animate({
-      //     opacity: .2
-      //   }, 500);
-      // });
-
       let showFocus;
       $.each(['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'], function (i, attr) {
         const isRadial = isNaN(attr[1]);
@@ -606,7 +604,7 @@ export default function jQueryPluginJGraduate ($) {
           }
         }
 
-        attrInput[attr] = $('#' + id + '_jGraduate_' + attr)
+        attrInput[attr] = $wc('#' + id + '_jGraduate_' + attr)
           .val(attrval)
           .change(function () {
             // TODO: Support values < 0 and > 1 (zoomable preview?)
@@ -683,14 +681,14 @@ export default function jQueryPluginJGraduate ($) {
           e.preventDefault();
           return false;
         }).data('stop', stop).data('bg', pathbg).dblclick(function () {
-          $('div.jGraduate_LightBox').show();
+          $wc('div.jGraduate_LightBox').show();
           const colorhandle = this;
           let stopOpacity = Number(stop.getAttribute('stop-opacity')) || 1;
           let stopColor = stop.getAttribute('stop-color') || 1;
           let thisAlpha = (Number.parseFloat(stopOpacity) * 255).toString(16);
           while (thisAlpha.length < 2) { thisAlpha = '0' + thisAlpha; }
           colr = stopColor.substr(1) + thisAlpha;
-          $('#' + id + '_jGraduate_stopPicker').css({left: 100, bottom: 15}).jPicker({
+          $wc('#' + id + '_jGraduate_stopPicker').css({left: 100, bottom: 15}).jPicker({
             window: {title: 'Pick the start color and opacity for the gradient'},
             images: {clientPath: $settings.images.clientPath},
             color: {active: colr, alphaSupport: true}
@@ -701,11 +699,11 @@ export default function jQueryPluginJGraduate ($) {
             colorhandle.setAttribute('fill-opacity', stopOpacity);
             stop.setAttribute('stop-color', stopColor);
             stop.setAttribute('stop-opacity', stopOpacity);
-            $('div.jGraduate_LightBox').hide();
-            $('#' + id + '_jGraduate_stopPicker').hide();
+            $wc('div.jGraduate_LightBox').hide();
+            $wc('#' + id + '_jGraduate_stopPicker').hide();
           }, null, function () {
-            $('div.jGraduate_LightBox').hide();
-            $('#' + id + '_jGraduate_stopPicker').hide();
+            $wc('div.jGraduate_LightBox').hide();
+            $wc('#' + id + '_jGraduate_stopPicker').hide();
           });
         });
 
@@ -735,13 +733,13 @@ export default function jQueryPluginJGraduate ($) {
       */
       function remStop () {
         delStop.setAttribute('display', 'none');
-        const path = $(curStop);
+        const path = $wc(curStop);
         const stop = path.data('stop');
         const bg = path.data('bg');
         $([curStop, stop, bg]).remove();
       }
 
-      const stopMakerDiv = $('#' + id + '_jGraduate_StopSlider');
+      const stopMakerDiv = $wc('#' + id + '_jGraduate_StopSlider');
 
       let stops, curStop, drag;
 
@@ -761,9 +759,6 @@ export default function jQueryPluginJGraduate ($) {
         if (curStop) curStop.setAttribute('stroke', '#000');
         item.setAttribute('stroke', 'blue');
         curStop = item;
-        //   stops = $('stop');
-        //   opac_select.val(curStop.attr('fill-opacity') || 1);
-        //   root.append(delStop);
       }
 
       let stopOffset;
@@ -792,7 +787,7 @@ export default function jQueryPluginJGraduate ($) {
         const rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
         if (scaleX === 1 && scaleY === 1) {
           curGradient.removeAttribute('gradientTransform');
-          // $('#ang').addClass('dis');
+          // $wc('#ang').addClass('dis');
         } else {
           const x = -cX * (scaleX - 1);
           const y = -cY * (scaleY - 1);
@@ -801,7 +796,7 @@ export default function jQueryPluginJGraduate ($) {
             rot + 'translate(' + x + ',' + y + ') scale(' +
               scaleX + ',' + scaleY + ')'
           );
-          // $('#ang').removeClass('dis');
+          // $wc('#ang').removeClass('dis');
         }
       }
 
@@ -981,7 +976,7 @@ export default function jQueryPluginJGraduate ($) {
 
       previewRect.setAttribute('fill-opacity', gradalpha / 100);
 
-      $('#' + id + ' div.grad_coord').mousedown(function (evt) {
+      $wc('#' + id + ' div.grad_coord').mousedown(function (evt) {
         evt.preventDefault();
         draggingCoord = $(this);
         // const sPos = draggingCoord.offset();
@@ -990,13 +985,13 @@ export default function jQueryPluginJGraduate ($) {
       });
 
       // bind GUI elements
-      $('#' + id + '_jGraduate_Ok').bind('click', function () {
+      $wc('#' + id + '_jGraduate_Ok').bind('click', function () {
         $this.paint.type = curType;
         $this.paint[curType] = curGradient.cloneNode(true);
         $this.paint.solidColor = null;
         okClicked();
       });
-      $('#' + id + '_jGraduate_Cancel').bind('click', function (paint) {
+      $wc('#' + id + '_jGraduate_Cancel').bind('click', function (paint) {
         cancelClicked();
       });
 
@@ -1010,11 +1005,11 @@ export default function jQueryPluginJGraduate ($) {
         }
       }
 
-      $('#' + id + '_jGraduate_match_ctr')[0].checked = !showFocus;
+      $wc('#' + id + '_jGraduate_match_ctr')[0].checked = !showFocus;
 
       let lastfx, lastfy;
 
-      $('#' + id + '_jGraduate_match_ctr').change(function () {
+      $wc('#' + id + '_jGraduate_match_ctr').change(function () {
         showFocus = !this.checked;
         focusCoord.toggle(showFocus);
         attrInput.fx.val('');
@@ -1261,28 +1256,30 @@ export default function jQueryPluginJGraduate ($) {
         null,
         function () { cancelClicked(); }
       );
-
-      const tabs = $(idref + ' .jGraduate_tabs li');
+      // JFH !!!!
+      // const tabs = $wc(idref + ' .jGraduate_tabs li');
+      const tabs = $wc('.jGraduate_tabs li');
       tabs.click(function () {
         tabs.removeClass('jGraduate_tab_current');
         $(this).addClass('jGraduate_tab_current');
-        $(idref + ' > div').hide();
+        $wc(idref + ' > div').hide();
         const type = $(this).attr('data-type');
-        /* const container = */ $(idref + ' .jGraduate_gradPick').show();
+        $wc(idref + ' .jGraduate_gradPick').show();
         if (type === 'rg' || type === 'lg') {
           // Show/hide appropriate fields
-          $('.jGraduate_' + type + '_field').show();
-          $('.jGraduate_' + (type === 'lg' ? 'rg' : 'lg') + '_field').hide();
+          $wc('.jGraduate_' + type + '_field').show();
+          $wc('.jGraduate_' + (type === 'lg' ? 'rg' : 'lg') + '_field').hide();
 
-          $('#' + id + '_jgraduate_rect')[0].setAttribute('fill', 'url(#' + id + '_' + type + '_jgraduate_grad)');
+          $wc('#' + id + '_jgraduate_rect')[0]
+            .setAttribute('fill', 'url(#' + id + '_' + type + '_jgraduate_grad)');
 
           // Copy stops
 
           curType = type === 'lg' ? 'linearGradient' : 'radialGradient';
 
-          $('#' + id + '_jGraduate_OpacInput').val($this.paint.alpha).change();
+          $wc('#' + id + '_jGraduate_OpacInput').val($this.paint.alpha).change();
 
-          const newGrad = $('#' + id + '_' + type + '_jgraduate_grad')[0];
+          const newGrad = $wc('#' + id + '_' + type + '_jgraduate_grad')[0];
 
           if (curGradient !== newGrad) {
             const curStops = $(curGradient).find('stop');
@@ -1292,27 +1289,27 @@ export default function jQueryPluginJGraduate ($) {
             curGradient.setAttribute('spreadMethod', sm);
           }
           showFocus = type === 'rg' && curGradient.getAttribute('fx') !== null && !(cx === fx && cy === fy);
-          $('#' + id + '_jGraduate_focusCoord').toggle(showFocus);
+          $wc('#' + id + '_jGraduate_focusCoord').toggle(showFocus);
           if (showFocus) {
-            $('#' + id + '_jGraduate_match_ctr')[0].checked = false;
+            $wc('#' + id + '_jGraduate_match_ctr')[0].checked = false;
           }
         } else {
-          $(idref + ' .jGraduate_gradPick').hide();
-          $(idref + ' .jGraduate_colPick').show();
+          $wc(idref + ' .jGraduate_gradPick').hide();
+          $wc(idref + ' .jGraduate_colPick').show();
         }
       });
-      $(idref + ' > div').hide();
+      $wc(idref + ' > div').hide();
       tabs.removeClass('jGraduate_tab_current');
       let tab;
       switch ($this.paint.type) {
       case 'linearGradient':
-        tab = $(idref + ' .jGraduate_tab_lingrad');
+        tab = $wc(idref + ' .jGraduate_tab_lingrad');
         break;
       case 'radialGradient':
-        tab = $(idref + ' .jGraduate_tab_radgrad');
+        tab = $wc(idref + ' .jGraduate_tab_radgrad');
         break;
       default:
-        tab = $(idref + ' .jGraduate_tab_color');
+        tab = $wc(idref + ' .jGraduate_tab_color');
         break;
       }
       $this.show();
