@@ -238,6 +238,21 @@ editor.init = () => {
     const newSeEditorDialog = document.createElement('se-svg-source-editor-dialog');
     newSeEditorDialog.setAttribute('id', 'se-svg-editor-dialog');
     document.body.append(newSeEditorDialog);
+    // canvas menu added to DOM
+    const dialogBox = document.createElement('se-cmenu_canvas-dialog');
+    dialogBox.setAttribute('id', 'se-cmenu_canvas');
+    document.body.append(dialogBox);
+    // layer menu added to DOM
+    const menuMore = document.createElement('se-cmenu-layers');
+    menuMore.setAttribute('id', 'se-cmenu-layers-more');
+    menuMore.value = 'layer_moreopts';
+    menuMore.setAttribute('leftclick', true);
+    document.body.append(menuMore);
+    const menuLayerBox = document.createElement('se-cmenu-layers');
+    menuLayerBox.setAttribute('id', 'se-cmenu-layers-list');
+    menuLayerBox.value = 'layerlist';
+    menuLayerBox.setAttribute('leftclick', false);
+    document.body.append(menuLayerBox);
   } catch (err) {}
 
   configObj.load();
@@ -384,7 +399,7 @@ editor.init = () => {
     const unit = configObj.curConfig.baseUnit !== 'px' ? configObj.curConfig.baseUnit : null;
 
     const isNode = currentMode === 'pathedit'; // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
-    const menuItems = $('#cmenu_canvas li');
+    const menuItems = document.getElementById('se-cmenu_canvas');
     $('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,' +
     '#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,' +
     ' #use_panel, #a_panel').hide();
@@ -545,16 +560,16 @@ editor.init = () => {
           $('#g_title').prop('disabled', tagName === 'use');
         }
       }
-      menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
-      menuItems[((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
+      menuItems.setAttribute((tagName === 'g' ? 'en' : 'dis') + 'ablemenuitems', '#ungroup');
+      menuItems.setAttribute(((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ablemenuitems', '#group');
+
       // if (!Utils.isNullish(elem))
     } else if (multiselected) {
       $('#multiselected_panel').show();
-      menuItems
-        .enableContextMenuItems('#group')
-        .disableContextMenuItems('#ungroup');
+      menuItems.setAttribute('enablemenuitems', '#group');
+      menuItems.setAttribute('disablemenuitems', '#ungroup');
     } else {
-      menuItems.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
+      menuItems.setAttribute('disablemenuitems', '#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
     }
 
     // update history buttons
@@ -568,9 +583,8 @@ editor.init = () => {
       $('#selLayerNames').removeAttr('disabled').val(currentLayerName);
 
       // Enable regular menu options
-      canvMenu.enableContextMenuItems(
-        '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back'
-      );
+      const canCMenu = document.getElementById('se-cmenu_canvas');
+      canCMenu.setAttribute('enablemenuitems', '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
     } else {
       $('#selLayerNames').attr('disabled', 'disabled');
     }
@@ -582,7 +596,7 @@ editor.init = () => {
   const path = svgCanvas.pathActions;
   const {undoMgr} = svgCanvas;
   const workarea = $('#workarea');
-  const canvMenu = $('#cmenu_canvas');
+  const canvMenu = document.getElementById('se-cmenu_canvas');
   const paintBox = {fill: null, stroke: null};
 
   let exportWindow = null,
@@ -3286,6 +3300,25 @@ editor.init = () => {
     changeSidePanelWidth(deltaX);
   };
 
+  const lmenuFunc = (action, el) => {
+    switch (action) {
+    case 'dupe':
+      /* await */ layersPanel.cloneLayer();
+      break;
+    case 'delete':
+      layersPanel.deleteLayer();
+      break;
+    case 'merge_down':
+      layersPanel.mergeLayer();
+      break;
+    case 'merge_all':
+      layersPanel.svgCanvas.mergeAllLayers();
+      layersPanel.updateContextPanel();
+      layersPanel.populateLayers();
+      break;
+    }
+  };
+
   /**
    * If width is non-zero, then fully close it; otherwise fully open it.
    * @param {boolean} close Forces the side panel closed
@@ -3499,6 +3532,56 @@ editor.init = () => {
         saveSourceEditor(e);
       }
     });
+    $id('se-cmenu_canvas').addEventListener('change', function (e) {
+      const action = e?.detail?.trigger;
+      switch (action) {
+      case 'delete':
+        deleteSelected();
+        break;
+      case 'cut':
+        cutSelected();
+        break;
+      case 'copy':
+        copySelected();
+        break;
+      case 'paste':
+        svgCanvas.pasteElements();
+        break;
+      case 'paste_in_place':
+        svgCanvas.pasteElements('in_place');
+        break;
+      case 'group':
+      case 'group_elements':
+        svgCanvas.groupSelectedElements();
+        break;
+      case 'ungroup':
+        svgCanvas.ungroupSelectedElement();
+        break;
+      case 'move_front':
+        moveToTopSelected();
+        break;
+      case 'move_up':
+        moveUpDownSelected('Up');
+        break;
+      case 'move_down':
+        moveUpDownSelected('Down');
+        break;
+      case 'move_back':
+        moveToBottomSelected();
+        break;
+      default:
+        if (hasCustomHandler(action)) {
+          getCustomHandler(action).call();
+        }
+        break;
+      }
+    });
+    $id('se-cmenu-layers-more').addEventListener('change', function (e) {
+      lmenuFunc(e?.detail?.trigger, e?.detail?.source);
+    });
+    $id('se-cmenu-layers-list').addEventListener('change', function (e) {
+      lmenuFunc(e?.detail?.trigger, e?.detail?.source);
+    });
     layersPanel.addEvents();
     const toolButtons = [
       // Shortcuts not associated with buttons
@@ -3697,63 +3780,8 @@ editor.init = () => {
 
   // zoom
   $id('zoom').value = (svgCanvas.getZoom() * 100).toFixed(1);
-
-  $('#workarea').contextMenu(
-    {
-      menu: 'cmenu_canvas',
-      inSpeed: 0
-    },
-    function (action, el, pos) {
-      switch (action) {
-      case 'delete':
-        deleteSelected();
-        break;
-      case 'cut':
-        cutSelected();
-        break;
-      case 'copy':
-        copySelected();
-        break;
-      case 'paste':
-        svgCanvas.pasteElements();
-        break;
-      case 'paste_in_place':
-        svgCanvas.pasteElements('in_place');
-        break;
-      case 'group':
-      case 'group_elements':
-        svgCanvas.groupSelectedElements();
-        break;
-      case 'ungroup':
-        svgCanvas.ungroupSelectedElement();
-        break;
-      case 'move_front':
-        moveToTopSelected();
-        break;
-      case 'move_up':
-        moveUpDownSelected('Up');
-        break;
-      case 'move_down':
-        moveUpDownSelected('Down');
-        break;
-      case 'move_back':
-        moveToBottomSelected();
-        break;
-      default:
-        if (hasCustomHandler(action)) {
-          getCustomHandler(action).call();
-        }
-        break;
-      }
-    }
-  );
-
-  $('.contextMenu li').mousedown(function (ev) {
-    ev.preventDefault();
-  });
-
-  $('#cmenu_canvas li').disableContextMenu();
-  canvMenu.enableContextMenuItems('#delete,#cut,#copy');
+  canvMenu.setAttribute('disableallmenu', true);
+  canvMenu.setAttribute('enablemenuitems', '#delete,#cut,#copy');
   /**
    * @returns {void}
    */
@@ -3762,9 +3790,8 @@ editor.init = () => {
     try {
       svgeditClipboard = localStorage.getItem('svgedit_clipboard');
     } catch (err) {}
-    canvMenu[(svgeditClipboard ? 'en' : 'dis') + 'ableContextMenuItems'](
-      '#paste,#paste_in_place'
-    );
+    // eslint-disable-next-line max-len
+    canvMenu.setAttribute((svgeditClipboard ? 'en' : 'dis') + 'ablemenuitems', '#paste,#paste_in_place');
   }
   enableOrDisableClipboard();
 

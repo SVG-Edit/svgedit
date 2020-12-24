@@ -421,11 +421,9 @@ export const copySelectedElements = function () {
   sessionStorage.setItem(elementContext_.getClipboardID(), data);
   elementContext_.flashStorage();
 
-  const menu = $('#cmenu_canvas');
   // Context menu might not exist (it is provided by editor.js).
-  if (menu.enableContextMenuItems) {
-    menu.enableContextMenuItems('#paste,#paste_in_place');
-  }
+  const canvMenu = document.getElementById('se-cmenu_canvas');
+  canvMenu.setAttribute('enablemenuitems', '#paste,#paste_in_place');
 };
 
 /**
