@@ -23,42 +23,6 @@ class LayersPanel {
     document.getElementById('layer_up').addEventListener('click', () => this.moveLayer.bind(this)(-1));
     document.getElementById('layer_down').addEventListener('click', () => this.moveLayer.bind(this)(1));
     document.getElementById('layer_rename').addEventListener('click', this.layerRename.bind(this));
-
-    const lmenuFunc = (action, el, pos) => {
-      switch (action) {
-      case 'dupe':
-        /* await */ this.cloneLayer();
-        break;
-      case 'delete':
-        this.deleteLayer();
-        break;
-      case 'merge_down':
-        this.mergeLayer();
-        break;
-      case 'merge_all':
-        this.svgCanvas.mergeAllLayers();
-        this.updateContextPanel();
-        this.populateLayers();
-        break;
-      }
-    };
-
-    $('#layer_moreopts').contextMenu(
-      {
-        menu: 'cmenu_layers',
-        inSpeed: 0,
-        allowLeft: true
-      },
-      lmenuFunc
-    );
-
-    $('#layerlist').contextMenu(
-      {
-        menu: 'cmenu_layers',
-        inSpeed: 0
-      },
-      lmenuFunc
-    );
   }
   /**
    * @returns {void}
