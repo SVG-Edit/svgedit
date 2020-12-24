@@ -238,10 +238,21 @@ editor.init = () => {
     const newSeEditorDialog = document.createElement('se-svg-source-editor-dialog');
     newSeEditorDialog.setAttribute('id', 'se-svg-editor-dialog');
     document.body.append(newSeEditorDialog);
-    // dialog_box added to DOM
+    // canvas menu added to DOM
     const dialogBox = document.createElement('se-cmenu_canvas-dialog');
     dialogBox.setAttribute('id', 'se-cmenu_canvas');
     document.body.append(dialogBox);
+    // layer menu added to DOM
+    const menuMore = document.createElement('se-cmenu-layers');
+    menuMore.setAttribute('id', 'se-cmenu-layers-more');
+    menuMore.value = 'layer_moreopts';
+    menuMore.setAttribute('leftclick', true);
+    document.body.append(menuMore);
+    const menuLayerBox = document.createElement('se-cmenu-layers');
+    menuLayerBox.setAttribute('id', 'se-cmenu-layers-list');
+    menuLayerBox.value = 'layerlist';
+    menuLayerBox.setAttribute('leftclick', false);
+    document.body.append(menuLayerBox);
   } catch (err) {}
 
   configObj.load();
@@ -3289,6 +3300,25 @@ editor.init = () => {
     changeSidePanelWidth(deltaX);
   };
 
+  const lmenuFunc = (action, el) => {
+    switch (action) {
+    case 'dupe':
+      /* await */ layersPanel.cloneLayer();
+      break;
+    case 'delete':
+      layersPanel.deleteLayer();
+      break;
+    case 'merge_down':
+      layersPanel.mergeLayer();
+      break;
+    case 'merge_all':
+      layersPanel.svgCanvas.mergeAllLayers();
+      layersPanel.updateContextPanel();
+      layersPanel.populateLayers();
+      break;
+    }
+  };
+
   /**
    * If width is non-zero, then fully close it; otherwise fully open it.
    * @param {boolean} close Forces the side panel closed
@@ -3545,6 +3575,12 @@ editor.init = () => {
         }
         break;
       }
+    });
+    $id('se-cmenu-layers-more').addEventListener('change', function (e) {
+      lmenuFunc(e?.detail?.trigger, e?.detail?.source);
+    });
+    $id('se-cmenu-layers-list').addEventListener('change', function (e) {
+      lmenuFunc(e?.detail?.trigger, e?.detail?.source);
     });
     layersPanel.addEvents();
     const toolButtons = [
