@@ -481,7 +481,7 @@ export default function jQueryPluginJGraduate ($) {
       case 'linearGradient':
         if (!isSolid) {
           curGradient.id = id + '_lg_jgraduate_grad';
-          grad = curGradient = svg.appendChild(curGradient); // .cloneNode(true));
+          grad = curGradient = svg.appendChild(curGradient);
         }
         mkElem('radialGradient', {
           id: id + '_rg_jgraduate_grad'
@@ -491,7 +491,7 @@ export default function jQueryPluginJGraduate ($) {
       case 'radialGradient':
         if (!isSolid) {
           curGradient.id = id + '_rg_jgraduate_grad';
-          grad = curGradient = svg.appendChild(curGradient); // .cloneNode(true));
+          grad = curGradient = svg.appendChild(curGradient);
         }
         mkElem('linearGradient', {
           id: id + '_lg_jgraduate_grad'
@@ -736,7 +736,7 @@ export default function jQueryPluginJGraduate ($) {
         const path = $wc(curStop);
         const stop = path.data('stop');
         const bg = path.data('bg');
-        $wc([curStop, stop, bg]).remove();
+        $([curStop, stop, bg]).remove();
       }
 
       const stopMakerDiv = $wc('#' + id + '_jGraduate_StopSlider');
@@ -976,22 +976,22 @@ export default function jQueryPluginJGraduate ($) {
 
       previewRect.setAttribute('fill-opacity', gradalpha / 100);
 
-      $wc(id + ' div.grad_coord').mousedown(function (evt) {
+      $wc('#' + id + ' div.grad_coord').mousedown(function (evt) {
         evt.preventDefault();
-        draggingCoord = $wc(this);
+        draggingCoord = $(this);
         // const sPos = draggingCoord.offset();
         offset = draggingCoord.parent().offset();
         $win.mousemove(onCoordDrag).mouseup(onCoordUp);
       });
 
       // bind GUI elements
-      $wc(id + '_jGraduate_Ok').bind('click', function () {
+      $wc('#' + id + '_jGraduate_Ok').bind('click', function () {
         $this.paint.type = curType;
         $this.paint[curType] = curGradient.cloneNode(true);
         $this.paint.solidColor = null;
         okClicked();
       });
-      $wc(id + '_jGraduate_Cancel').bind('click', function (paint) {
+      $wc('#' + id + '_jGraduate_Cancel').bind('click', function (paint) {
         cancelClicked();
       });
 
@@ -1152,13 +1152,13 @@ export default function jQueryPluginJGraduate ($) {
       };
 
       $.each(sliders, function (type, data) {
-        const handle = $wc(data.handle);
+        const handle = $(data.handle);
         handle.mousedown(function (evt) {
           const parent = handle.parent();
           slider = {
             type,
             elem: handle,
-            input: $wc(data.input),
+            input: $(data.input),
             parent,
             offset: parent.offset()
           };
@@ -1166,7 +1166,7 @@ export default function jQueryPluginJGraduate ($) {
           evt.preventDefault();
         });
 
-        $wc(data.input).val(data.val).change(function () {
+        $(data.input).val(data.val).change(function () {
           const isRad = curType === 'radialGradient';
           let val = Number(this.value);
           let xpos = 0;
