@@ -65,7 +65,7 @@ template.innerHTML = `
   </style>
   <ul id="cmenu_canvas" class="contextMenu">
     <li>
-      <a href="#cut">
+      <a href="#cut" id="se-cut">
         Cut<span class="shortcut">META+X</span>
       </a>
     </li>
@@ -75,43 +75,43 @@ template.innerHTML = `
       </a>
     </li>
     <li>
-      <a href="#paste">Paste</a>
+      <a href="#paste" id="se-paste">Paste</a>
     </li>
     <li>
-      <a href="#paste_in_place">Paste in Place</a>
+      <a href="#paste_in_place" id="se-paste-in-place">Paste in Place</a>
     </li>
     <li class="separator">
-      <a href="#delete">
+      <a href="#delete" id="se-delete">
         Delete<span class="shortcut">BACKSPACE</span>
       </a>
     </li>
     <li class="separator">
-      <a href="#group">
+      <a href="#group" id="se-group">
         Group<span class="shortcut">G</span>
       </a>
     </li>
     <li>
-      <a href="#ungroup">
+      <a href="#ungroup" id="se-ungroup">
         Ungroup<span class="shortcut">G</span>
       </a>
     </li>
     <li class="separator">
-      <a href="#move_front">
+      <a href="#move_front" id="se-move-front">
         Bring to Front<span class="shortcut">CTRL+SHFT+]</span>
       </a>
     </li>
     <li>
-      <a href="#move_up">
+      <a href="#move_up" id="se-move-up">
         Bring Forward<span class="shortcut">CTRL+]</span>
       </a>
     </li>
     <li>
-      <a href="#move_down">
+      <a href="#move_down" id="se-move-down">
         Send Backward<span class="shortcut">CTRL+[</span>
       </a>
     </li>
     <li>
-      <a href="#move_back">
+      <a href="#move_back" id="se-move-back">
         Send to Back<span class="shortcut">CTRL+SHFT+[</span>
       </a>
     </li> 
@@ -133,6 +133,16 @@ export class SeCMenuDialog extends HTMLElement {
     this._svgEditor = document.getElementById('svg_editor');
     this.$dialog = this._shadowRoot.querySelector('#cmenu_canvas');
     this.$copyLink = this._shadowRoot.querySelector('#se-copy');
+    this.$cutLink = this._shadowRoot.querySelector('#se-cut');
+    this.$pasteLink = this._shadowRoot.querySelector('#se-paste');
+    this.$pasteInPlaceLink = this._shadowRoot.querySelector('#se-paste-in-place');
+    this.$deleteLink = this._shadowRoot.querySelector('#se-delete');
+    this.$groupLink = this._shadowRoot.querySelector('#se-group');
+    this.$ungroupLink = this._shadowRoot.querySelector('#se-ungroup');
+    this.$moveFrontLink = this._shadowRoot.querySelector('#se-move-front');
+    this.$moveUpLink = this._shadowRoot.querySelector('#se-move-up');
+    this.$moveDownLink = this._shadowRoot.querySelector('#se-move-down');
+    this.$moveBackLink = this._shadowRoot.querySelector('#se-move-back');
   }
   /**
    * @function observedAttributes
@@ -149,7 +159,8 @@ export class SeCMenuDialog extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    console.log('name =', name);
+    // if (oldValue === newValue) return;
     let eles = [];
     const sdowRoot = this._shadowRoot;
     switch (name) {
@@ -166,6 +177,7 @@ export class SeCMenuDialog extends HTMLElement {
       eles.forEach(function (ele) {
         const selEle = sdowRoot.querySelector('a[href*="' + ele + '"]');
         selEle.parentElement.classList.remove('disabled');
+        console.log('enable --> ' + ele);
       });
       break;
     case 'disablemenuitems':
@@ -173,6 +185,7 @@ export class SeCMenuDialog extends HTMLElement {
       eles.forEach(function (ele) {
         const selEle = sdowRoot.querySelector('a[href*="' + ele + '"]');
         selEle.parentElement.classList.add('disabled');
+        console.log('disabled --> ' + ele);
       });
       break;
     default:
@@ -232,16 +245,37 @@ export class SeCMenuDialog extends HTMLElement {
   connectedCallback () {
     const current = this;
     const onMenuOpenHandler = (e) => {
+      e.preventDefault();
       current.$dialog.style.top = e.pageY + 'px';
       current.$dialog.style.left = e.pageX + 'px';
       current.$dialog.style.display = 'block';
-      e.preventDefault();
     };
-    const onCopyClickHandler = (e) => {
-      console.log('came');
+    const onMenuCloseHandler = (e) => {
+      if (e.button !== 2) {
+        current.$dialog.style.display = 'none';
+        console.log('onMenuCloseHandler');
+      }
     };
-    this._workarea.addEventListener('contextmenu', onMenuOpenHandler, false);
-    this.$copyLink.addEventListener('click', onCopyClickHandler);
+    const onMenuClickHandler = (e, action) => {
+      console.log('action ------> ', action);
+      const triggerEvent = new CustomEvent('change', {detail: {
+        trigger: action
+      }});
+      this.dispatchEvent(triggerEvent);
+    };
+    this._workarea.addEventListener('contextmenu', onMenuOpenHandler);
+    this._workarea.addEventListener('mousedown', onMenuCloseHandler);
+    this.$cutLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'cut'));
+    this.$copyLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'copy'));
+    this.$pasteLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'paste'));
+    this.$pasteInPlaceLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'paste_in_place'));
+    this.$deleteLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'delete'));
+    this.$groupLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'group'));
+    this.$ungroupLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'ungroup'));
+    this.$moveFrontLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'move_front'));
+    this.$moveUpLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'move_up'));
+    this.$moveDownLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'move_down'));
+    this.$moveBackLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'move_back'));
   }
 }
 

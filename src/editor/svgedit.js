@@ -549,24 +549,16 @@ editor.init = () => {
           $('#g_title').prop('disabled', tagName === 'use');
         }
       }
-      console.log((tagName === 'g' ? 'en' : 'dis') + 'ablemenuitems');
-      console.log(((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ablemenuitems');
       menuItems.setAttribute((tagName === 'g' ? 'en' : 'dis') + 'ablemenuitems', '#ungroup');
       menuItems.setAttribute(((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ablemenuitems', '#group');
 
-      // menuItems[(tagName === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
-      // menuItems[((tagName === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
       // if (!Utils.isNullish(elem))
     } else if (multiselected) {
       $('#multiselected_panel').show();
       menuItems.setAttribute('enablemenuitems', '#group');
       menuItems.setAttribute('disablemenuitems', '#ungroup');
-      /* menuItems
-        .enableContextMenuItems('#group')
-        .disableContextMenuItems('#ungroup'); */
     } else {
       menuItems.setAttribute('disablemenuitems', '#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
-      // menuItems.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
     }
 
     // update history buttons
@@ -580,8 +572,8 @@ editor.init = () => {
       $('#selLayerNames').removeAttr('disabled').val(currentLayerName);
 
       // Enable regular menu options
-      menuItems.setAttribute('enablemenuitems', '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
-      // canvMenu.enableContextMenuItems('#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
+      const canCMenu = document.getElementById('se-cmenu_canvas');
+      canCMenu.setAttribute('enablemenuitems', '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
     } else {
       $('#selLayerNames').attr('disabled', 'disabled');
     }
@@ -3510,6 +3502,50 @@ editor.init = () => {
         saveSourceEditor(e);
       }
     });
+    $id('se-cmenu_canvas').addEventListener('change', function (e) {
+      const action = e?.detail?.trigger;
+      switch (action) {
+      case 'delete':
+        deleteSelected();
+        break;
+      case 'cut':
+        cutSelected();
+        break;
+      case 'copy':
+        copySelected();
+        break;
+      case 'paste':
+        svgCanvas.pasteElements();
+        break;
+      case 'paste_in_place':
+        svgCanvas.pasteElements('in_place');
+        break;
+      case 'group':
+      case 'group_elements':
+        svgCanvas.groupSelectedElements();
+        break;
+      case 'ungroup':
+        svgCanvas.ungroupSelectedElement();
+        break;
+      case 'move_front':
+        moveToTopSelected();
+        break;
+      case 'move_up':
+        moveUpDownSelected('Up');
+        break;
+      case 'move_down':
+        moveUpDownSelected('Down');
+        break;
+      case 'move_back':
+        moveToBottomSelected();
+        break;
+      default:
+        if (hasCustomHandler(action)) {
+          getCustomHandler(action).call();
+        }
+        break;
+      }
+    });
     layersPanel.addEvents();
     const toolButtons = [
       // Shortcuts not associated with buttons
@@ -3708,63 +3744,8 @@ editor.init = () => {
 
   // zoom
   $id('zoom').value = (svgCanvas.getZoom() * 100).toFixed(1);
-/*   $('#workarea').contextMenu(
-    {
-      menu: 'cmenu_canvas',
-      inSpeed: 0
-    },
-    function (action, el, pos) {
-      switch (action) {
-      case 'delete':
-        deleteSelected();
-        break;
-      case 'cut':
-        cutSelected();
-        break;
-      case 'copy':
-        copySelected();
-        break;
-      case 'paste':
-        svgCanvas.pasteElements();
-        break;
-      case 'paste_in_place':
-        svgCanvas.pasteElements('in_place');
-        break;
-      case 'group':
-      case 'group_elements':
-        svgCanvas.groupSelectedElements();
-        break;
-      case 'ungroup':
-        svgCanvas.ungroupSelectedElement();
-        break;
-      case 'move_front':
-        moveToTopSelected();
-        break;
-      case 'move_up':
-        moveUpDownSelected('Up');
-        break;
-      case 'move_down':
-        moveUpDownSelected('Down');
-        break;
-      case 'move_back':
-        moveToBottomSelected();
-        break;
-      default:
-        if (hasCustomHandler(action)) {
-          getCustomHandler(action).call();
-        }
-        break;
-      }
-    }
-  ); 
-
-  $('.contextMenu li').mousedown(function (ev) {
-    ev.preventDefault();
-  }); */
   canvMenu.setAttribute('disableallmenu', true);
   canvMenu.setAttribute('enablemenuitems', '#delete,#cut,#copy');
-  // $('#cmenu_canvas li').disableContextMenu();
-  // canvMenu.enableContextMenuItems('#delete,#cut,#copy');
   /**
    * @returns {void}
    */
@@ -3774,10 +3755,7 @@ editor.init = () => {
       svgeditClipboard = localStorage.getItem('svgedit_clipboard');
     } catch (err) {}
     // eslint-disable-next-line max-len
-    canvMenu.setAttribute((svgeditClipboard ? 'en' : 'dis') + 'ablemenuitems', '#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back');
-    /* canvMenu[(svgeditClipboard ? 'en' : 'dis') + 'ableContextMenuItems'](
-      '#paste,#paste_in_place'
-    ); */
+    canvMenu.setAttribute((svgeditClipboard ? 'en' : 'dis') + 'ablemenuitems', '#paste,#paste_in_place');
   }
   enableOrDisableClipboard();
 
