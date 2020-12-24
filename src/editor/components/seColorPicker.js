@@ -1,6 +1,6 @@
 /* globals jQuery */
-import jQueryPluginJGraduate from '../jgraduate/jQuery.jGraduate.js';
-import jQueryPluginJPicker from '../jgraduate/jQuery.jPicker.js';
+import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
+import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import PaintBox from './PaintBox.js';
 
 const $ = [
@@ -11,7 +11,9 @@ const $ = [
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  img {
+  @import "./components/jgraduate/css/jGraduate.css";
+  @import "./components/jgraduate/css/jPicker.css";
+  #logo {
     height: 22px;
     width: 22px;
   }
@@ -26,17 +28,20 @@ template.innerHTML = `
     height: 26px;
     line-height: 26px;
     border-radius: 3px;
-    min-width: 52px;
+    width: 52px;
     display: flex;
     align-items: center;
     margin-right: 4px;
     justify-content: space-evenly;
   }
-  
+  #color_picker {
+    position: absolute;
+    bottom: 40px;
+  }
   </style>
   <div id="picker">
-      <img src="./images/logo.svg" alt="icon">
-      <label for="color" title="Change xxx color"></label>
+      <img src="./images/logo.svg" alt="icon" id="logo">
+      <label for="color" title="Change xxx color" id="label"></label>
       <div class="block">
           <div id="bg"></div>
           <div id="color" class="block"></div>
@@ -46,7 +51,7 @@ template.innerHTML = `
   <div id="color_picker"></div>
 `;
 /**
- * @class SeMenuItem
+ * @class SeColorPicker
  */
 export class SeColorPicker extends HTMLElement {
   /**
@@ -57,17 +62,18 @@ export class SeColorPicker extends HTMLElement {
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.appendChild(template.content.cloneNode(true));
-    this.$img = this._shadowRoot.querySelector('img');
-    this.$label = this._shadowRoot.querySelector('label');
-    this.$picker = this._shadowRoot.getElementById('picker');
+    this.$logo = this._shadowRoot.getElementById('logo');
+    this.$label = this._shadowRoot.getElementById('label');
     this.paintBox = null;
+    this.$picker = this._shadowRoot.getElementById('picker');
+    this.$color_picker = this._shadowRoot.getElementById('color_picker');
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label', 'src', 'value', 'picker'];
+    return ['label', 'src', 'type'];
   }
   /**
    * @function attributeChangedCallback
@@ -80,10 +86,13 @@ export class SeColorPicker extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      this.$img.setAttribute('src', newValue);
+      this.$logo.setAttribute('src', newValue);
       break;
     case 'label':
-      this.$label.setAttribute('title', newValue);
+      this.setAttribute('title', newValue);
+      break;
+    case 'type':
+      this.$label.setAttribute(`Pick a ${newValue} Paint and Opacity`);
       break;
     default:
       // eslint-disable-next-line no-console
@@ -96,7 +105,7 @@ export class SeColorPicker extends HTMLElement {
    * @returns {any}
    */
   get label () {
-    return this.getAttribute('label');
+    return this.$label.getAttribute('title');
   }
 
   /**
@@ -105,6 +114,21 @@ export class SeColorPicker extends HTMLElement {
    */
   set label (value) {
     this.setAttribute('label', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get type () {
+    return this.getAttribute('type');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set type (value) {
+    this.setAttribute('type', value);
   }
   /**
    * @function get
@@ -138,29 +162,31 @@ export class SeColorPicker extends HTMLElement {
   connectedCallback () {
     this.paintBox = new PaintBox(this, this.type);
     let {paint} = this.paintBox;
-    $('#color_picker')
-      .draggable({
-        cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker',
-        containment: 'window'
-      })
-      .jGraduate(
-        {
-          images: {clientPath: './jgraduate/images/'},
-          paint,
-          window: {pickerTitle: this.label},
-          // images: {clientPath: configObj.curConfig.imgPath},
-          newstop: 'inverse'
-        },
-        function (p) {
-          paint = new $.jGraduate.Paint(p);
-          this.paintBox.setPaint(paint);
-          this.svgCanvas.setPaint(this.picker, paint);
-          $('#color_picker').hide();
-        },
-        () => {
-          $('#color_picker').hide();
-        }
-      );
+    $(this.$picker).click(() => {
+      $(this.$color_picker)
+        .draggable({
+          cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker',
+          containment: 'window'
+        })
+        .jGraduate(
+          {
+            images: {clientPath: './components/jgraduate/images/'},
+            paint,
+            window: {pickerTitle: this.label},
+            // images: {clientPath: configObj.curConfig.imgPath},
+            newstop: 'inverse'
+          },
+          function (p) {
+            paint = new $.jGraduate.Paint(p);
+            this.paintBox.setPaint(paint);
+            this.svgCanvas.setPaint(this.picker, paint);
+            $('#color_picker').hide();
+          },
+          () => {
+            $('#color_picker').hide();
+          }
+        );
+    });
   }
 }
 

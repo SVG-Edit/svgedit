@@ -1556,7 +1556,7 @@ const jPicker = function ($) {
           const all = ui.val('all');
           activePreview.css({backgroundColor: (all && '#' + all.hex) || 'transparent'});
           setAlpha.call(that, activePreview, (all && toFixedNumeric((all.a * 100) / 255, 4)) || 0);
-        } catch (e) { }
+        } catch (e) {}
       }
       /**
       * @param {external:jQuery} ui
