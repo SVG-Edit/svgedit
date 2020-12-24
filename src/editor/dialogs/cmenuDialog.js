@@ -130,7 +130,6 @@ export class SeCMenuDialog extends HTMLElement {
     this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     this._workarea = document.getElementById('workarea');
-    this._svgEditor = document.getElementById('svg_editor');
     this.$dialog = this._shadowRoot.querySelector('#cmenu_canvas');
     this.$copyLink = this._shadowRoot.querySelector('#se-copy');
     this.$cutLink = this._shadowRoot.querySelector('#se-cut');
@@ -159,8 +158,6 @@ export class SeCMenuDialog extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    console.log('name =', name);
-    // if (oldValue === newValue) return;
     let eles = [];
     const sdowRoot = this._shadowRoot;
     switch (name) {
@@ -177,7 +174,6 @@ export class SeCMenuDialog extends HTMLElement {
       eles.forEach(function (ele) {
         const selEle = sdowRoot.querySelector('a[href*="' + ele + '"]');
         selEle.parentElement.classList.remove('disabled');
-        console.log('enable --> ' + ele);
       });
       break;
     case 'disablemenuitems':
@@ -185,7 +181,6 @@ export class SeCMenuDialog extends HTMLElement {
       eles.forEach(function (ele) {
         const selEle = sdowRoot.querySelector('a[href*="' + ele + '"]');
         selEle.parentElement.classList.add('disabled');
-        console.log('disabled --> ' + ele);
       });
       break;
     default:
@@ -253,11 +248,9 @@ export class SeCMenuDialog extends HTMLElement {
     const onMenuCloseHandler = (e) => {
       if (e.button !== 2) {
         current.$dialog.style.display = 'none';
-        console.log('onMenuCloseHandler');
       }
     };
     const onMenuClickHandler = (e, action) => {
-      console.log('action ------> ', action);
       const triggerEvent = new CustomEvent('change', {detail: {
         trigger: action
       }});
