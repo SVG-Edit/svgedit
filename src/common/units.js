@@ -230,13 +230,8 @@ export const convertAttrs = function (element) {
   for (let i = 0; i < len; i++) {
     const attr = attrs[i];
     const cur = element.getAttribute(attr);
-    if (cur) {
-      if (!isNaN(cur)) {
-        element.setAttribute(attr, (cur / typeMap_[unit]) + unit);
-      }
-      // else {
-      // Convert existing?
-      // }
+    if (cur && !isNaN(cur)) {
+      element.setAttribute(attr, (cur / typeMap_[unit]) + unit);
     }
   }
 };

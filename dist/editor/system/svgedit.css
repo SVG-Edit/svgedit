@@ -1,6 +1,5 @@
 @import "./jgraduate/css/jGraduate.css";
 @import "./jgraduate/css/jPicker.css";
-@import "./spinbtn/jQuery.SpinButton.css";
 
 
 body {
@@ -37,10 +36,6 @@ a {
 hr {
   border: none;
   border-bottom: 1px solid #808080;
-}
-
-select {
-  margin-top: 4px;
 }
 
 #svgroot {
@@ -121,40 +116,9 @@ select {
   overflow: hidden;
 }
 
-#palette_holder {
-  overflow: hidden;
-  margin-top: 5px;
-  padding: 5px;
-  position: absolute;
-  right: 15px;
-  height: 16px;
-  background: #f0f0f0;
-  border-radius: 3px;
-  z-index: 2;
-}
-
-#stroke_bg,
-#fill_bg {
-  height: 16px;
-  width: 16px;
-  margin: 1px;
-}
-
-#zoomLabel {
-  cursor: pointer;
-  margin-right: 5px;
-  padding-top: 4px
-}
-
 #linkLabel > svg {
   height: 20px;
   padding-top: 4px;
-}
-
-#palette {
-  float: left;
-  width: 632px;
-  height: 16px;
 }
 
 #workarea {
@@ -307,16 +271,6 @@ select {
   display: block;
 }
 
-div.palette_item {
-  height: 15px;
-  width: 15px;
-  float: left;
-}
-
-div.palette_item:first-child {
-  background: white;
-}
-
 /* Main button
 —————————————————————————————*/
 
@@ -462,6 +416,31 @@ div.palette_item:first-child {
   margin-top: 5px;
 }
 
+#fill_color,  #stroke_color {
+  height: 16px;
+  width: 16px;
+  border: 1px solid #808080;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+#fill_color,  #stroke_color {
+  height: 16px;
+  width: 16px;
+  border: 1px solid #808080;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.color_block {
+  top: 0;
+  left: 0;
+}
+
+.color_block svg {
+  display: block;
+}
+
 #tools_left {
   position: absolute;
   border-right: none;
@@ -482,7 +461,6 @@ div.palette_item:first-child {
   stroke-dasharray: 0;
   opacity: 1;
   pointer-events: stroke;
-  vector-effect: non-scaling-stroke;
   filter: none;
 }
 
@@ -532,10 +510,6 @@ div.palette_item:first-child {
   text-decoration: underline;
 }
 
-#tools_top > div, #tools_top {
-  line-height: 26px;
-}
-
 div.toolset,
 div.toolset > * {
   float: left;
@@ -561,7 +535,7 @@ div.toolset label span {
   margin-left: 5px;
 }
 
-#tools_top input {
+#tools_top se-input, se-spin-input {
   margin-top: 5px;
   height: 15px;
 }
@@ -574,15 +548,6 @@ input[type=text] {
 #tools_left .tool_button_current {
   position: relative;
   z-index: 11;
-}
-
-span.zoom_tool {
-  line-height: 26px;
-  padding: 3px;
-}
-
-#zoom_panel {
-  margin-top: 5px;
 }
 
 .dropdown {
@@ -747,54 +712,16 @@ span.zoom_tool {
   overflow: visible;
 }
 
-#tools_bottom_1 {
-  width: 115px;
+#tools_bottom * {
   float: left;
 }
 
-#tools_bottom input[type=text] {
-  width: 4em;
-}
-
-/* Color tools: fill, stroke, opacity
-–––––––––––––––––––––––––––––––––––––*/
-
-#tools_bottom_2 {
-  float: left;
-  width: 300px;
-  position: relative;
-  margin-top: 5px;
-  transition: width 150ms ease;
-}
-
-.expanded #tools_bottom_2 {
-  width: 450px;
-}
-
-#tools_bottom #tools_bottom_2 .dropdown button {
-  margin-top: 2px;
+#palette {
+  float: right;
 }
 
 .dropdown li.tool_button {
   width: 24px;
-}
-
-#tools_bottom_2 .icon_label {
-  display: block;
-  margin: 3px 5px;
-  padding: 0;
-}
-
-#tool_opacity { right: 0;}
-#tool_fill { left: 0; }
-#tool_stroke { left: 60px;}
-
-#fill_color,  #stroke_color {
-  height: 16px;
-  width: 16px;
-  border: 1px solid #808080;
-  cursor: pointer;
-  overflow: hidden;
 }
 
 #stroke_expand {
@@ -820,10 +747,6 @@ span.zoom_tool {
   color: #666;
 }
 
-.expanded #tool_stroke.color_tool {
-  width: 280px;
-}
-
 .expanded #toggle_stroke_tools:before {
   content: '<<';
 }
@@ -831,72 +754,17 @@ span.zoom_tool {
 #toggle_stroke_tools:hover {
   background: white;
 }
-
-.color_tool {
-  position: absolute;
-  overflow: hidden;
-  background: #f0f0f0;
-  height: 26px;
-  line-height: 26px;
-  border-radius: 3px;
-  min-width: 52px;
-}
-
-#tool_stroke.color_tool {
-  width: 130px;
-  z-index: 2;
-  -webkit-transition: width 150ms ease;
-  -moz-transition: width 150ms ease;
-  -o-transition: width 150ms ease;
-  -ms-transition: width 150ms ease;
-  transition: width 150ms ease;
-}
-
-.color_block {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.color_block svg {
-  display: block;
-}
-
 .color_tool > * {
   float: left;
   margin-right: 5px;
 }
-
-.color_tool .dropdown > * {
-  float: left;
-}
-
-.color_tool .stroke_label {
-  margin-left: 25px;
-  float: left;
-}
-
-.color_tool > .color_block {
-  top: 3px;
-  left: 29px;
-}
-
-.color_tool input {
-  margin: 0;
-}
+#tool_opacity { right: 0;}
 
 #tool_opacity {
   overflow: visible;
 }
 
 @media screen and (max-width:1250px) {
-  .expanded #palette_holder {
-    left: 560px;
-    overflow-x: scroll;
-    padding: 0 5px;
-    margin-top: 2px;
-    height: 30px;
-  }
   #tools_top {
     height: 71px;
   }
@@ -918,16 +786,6 @@ span.zoom_tool {
 
   #selected_panel {
     clear: right;
-  }
-}
-
-@media screen and (max-width:1100px) {
-  #tools_bottom:not(.expanded) #palette_holder {
-    left: 410px;
-    overflow-x: scroll;
-    padding: 0 5px;
-    margin-top: 2px;
-    height: 30px;
   }
 }
 
@@ -971,10 +829,6 @@ ul li.current {
   border-radius: 0;
   -moz-border-radius: 0;
   -webkit-border-radius: 0;
-}
-
-#tools_bottom .dropdown button {
-  margin-top: 2px;
 }
 
 #opacity_dropdown li {
@@ -1349,18 +1203,3 @@ ul li.current {
   padding-top: 5px;
   margin-top: 5px;
 }
-
-/*
-  Adding Icons
-  You can add icons to the context menu by adding
-  classes to the respective LI element(s)
-*/
-/*
-
-.contextMenu LI.edit A { background-image: url(images/page_white_edit.png); }
-.contextMenu LI.cut A { background-image: url(images/cut.png); }
-.contextMenu LI.copy A { background-image: url(images/page_white_copy.png); }
-.contextMenu LI.paste A { background-image: url(images/page_white_paste.png); }
-.contextMenu LI.delete A { background-image: url(images/page_white_delete.png); }
-.contextMenu LI.quit A { background-image: url(images/door.png); }
-*/

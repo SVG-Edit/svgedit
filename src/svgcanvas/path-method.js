@@ -1012,10 +1012,8 @@ export class Path {
     if (!Array.isArray(indexes)) { indexes = [indexes]; }
     indexes.forEach((index) => {
       const seg = this.segs[index];
-      if (seg.ptgrip) {
-        if (!this.selected_pts.includes(index) && index >= 0) {
-          this.selected_pts.push(index);
-        }
+      if (seg.ptgrip && !this.selected_pts.includes(index) && index >= 0) {
+        this.selected_pts.push(index);
       }
     });
     this.selected_pts.sort();

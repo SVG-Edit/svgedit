@@ -26,7 +26,7 @@ export default {
   name: 'panning',
   async init ({importLocale}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     const svgCanvas = svgEditor.canvas;
     const buttons = [{
       id: 'ext-panning',

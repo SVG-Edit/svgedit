@@ -1,6 +1,5 @@
 /* eslint-disable node/no-unpublished-import */
 import 'elix/define/Dialog.js';
-import {isValidUnit} from '../../common/units.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -485,7 +484,7 @@ export class SeEditPrefsDialog extends HTMLElement {
    */
   connectedCallback () {
     const onCancelHandler = (ev) => {
-      const closeEvent = new CustomEvent('change', { detail: {
+      const closeEvent = new CustomEvent('change', {detail: {
         dialog: 'closed'
       }});
       this.dispatchEvent(closeEvent);
@@ -506,7 +505,7 @@ export class SeEditPrefsDialog extends HTMLElement {
       this.dispatchEvent(closeEvent);
     };
     // Set up editor background functionality
-    const self = this;
+    const currentObj = this;
     this.colorBlocks.forEach(function (e, i) {
       const newdiv = document.createElement('div');
       if (e === 'chessboard') {
@@ -519,7 +518,7 @@ export class SeEditPrefsDialog extends HTMLElement {
         newdiv.style.backgroundColor = e;
         newdiv.classList.add('color_block');
       }
-      self.$bgBlocks.append(newdiv);
+      currentObj.$bgBlocks.append(newdiv);
     });
     const blocks = this.$bgBlocks.querySelectorAll('div');
     const curBg = 'cur_background';

@@ -7,3 +7,4 @@ import './seSpinInput.js';
 import './sePalette.js';
 import './seMenu.js';
 import './seMenuItem.js';
+import './seColorPicker.js';

@@ -616,10 +616,10 @@ export default function jQueryPluginJGraduate ($) {
               this.value = 1.0;
             }
 
-            if (!(attr[0] === 'f' && !showFocus)) {
-              if ((isRadial && curType === 'radialGradient') || (!isRadial && curType === 'linearGradient')) {
-                curGradient.setAttribute(attr, this.value);
-              }
+            if (!(attr[0] === 'f' &&
+              !showFocus) &&
+              ((isRadial && curType === 'radialGradient') || (!isRadial && curType === 'linearGradient'))) {
+              curGradient.setAttribute(attr, this.value);
             }
 
             const $elem = isRadial

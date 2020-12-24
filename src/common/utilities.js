@@ -679,10 +679,8 @@ export const getBBox = function (elem) {
       } else {
         // Check if element is child of a foreignObject
         const fo = $(selected).closest('foreignObject');
-        if (fo.length) {
-          if (fo[0].getBBox) {
-            ret = fo[0].getBBox();
-          }
+        if (fo.length && fo[0].getBBox) {
+          ret = fo[0].getBBox();
         }
       }
     }

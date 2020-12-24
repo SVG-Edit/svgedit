@@ -43,11 +43,10 @@ class Dropdown extends ListComboBox {
           padding: 4px;
           background: #E8E8E8;
           border: 1px solid #B0B0B0;
-          margin: 0 0 -1px 0;
-          line-height: 16px;
+          width: 100%;
         }
         [part~="popup"] {
-          width: max-content;
+          width: 150%;
         }
         </style>
       `.content
@@ -106,7 +105,7 @@ class Dropdown extends ListComboBox {
       // Wire up handler on new input.
       this.addEventListener('close', (e) => {
         e.preventDefault();
-        const value = e.detail?.closeResult.getAttribute('value');
+        const value = e.detail?.closeResult?.getAttribute('value');
         if (value) {
           const closeEvent = new CustomEvent('change', {detail: {value}});
           this.dispatchEvent(closeEvent);

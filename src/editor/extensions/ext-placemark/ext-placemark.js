@@ -35,7 +35,7 @@ export default {
       // newFOG, newFOGParent, newDef, newImageName, newMaskID,
       // undoCommand = 'Not image',
       // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     const markerTypes = {
       nomarker: {},
       forwardslash:

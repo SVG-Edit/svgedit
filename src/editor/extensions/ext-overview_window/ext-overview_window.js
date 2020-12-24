@@ -8,7 +8,7 @@
  */
 export default {
   name: 'overview_window',
-  init ({$, isChrome, isIE}) {
+  init ({$, isChrome}) {
     const overviewWindowGlobals = {};
     // Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
     // https://code.google.com/p/chromium/issues/detail?id=565120.
@@ -77,18 +77,8 @@ export default {
       const viewWidth = $('#svgroot').attr('width');
       const viewHeight = $('#svgroot').attr('height');
 
-      let viewX = 640;
-      let viewY = 480;
-      if (isIE()) {
-        // This has only been tested with Firefox 10 and IE 9 (without chrome frame).
-        // I am not sure if if is Firefox or IE that is being non compliant here.
-        // Either way the one that is noncompliant may become more compliant later.
-        // TAG:HACK
-        // TAG:VERSION_DEPENDENT
-        // TAG:BROWSER_SNIFFING
-        viewX = 0;
-        viewY = 0;
-      }
+      const viewX = 640;
+      const viewY = 480;
 
       const svgWidthOld = $('#overviewMiniView').attr('width');
       const svgHeightNew = viewHeight / viewWidth * svgWidthOld;

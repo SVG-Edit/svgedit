@@ -23,7 +23,7 @@ export default {
   name: 'arrows',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     const svgCanvas = svgEditor.canvas;
     const
       addElem = svgCanvas.addSVGElementFromJson,

@@ -356,7 +356,7 @@ export default {
         }
       }
     }];
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     return {
       /** @todo JFH special flag */
       newUI: true,
@@ -641,10 +641,8 @@ export default {
       },
       toolButtonStateUpdate (opts) {
         const button = document.getElementById('mode_connect');
-        if (opts.nostroke) {
-          if (button.pressed === true) {
-            svgEditor.clickSelect();
-          }
+        if (opts.nostroke && button.pressed === true) {
+          svgEditor.clickSelect();
         }
         button.disabled = opts.nostroke;
       }

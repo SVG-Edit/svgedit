@@ -58,7 +58,6 @@ svgEditor.setConfig({
   //   opacity: 1
   // },
   // initOpacity: 1,
-  // colorPickerCSS: null,
   // initTool: 'select',
   // exportWindowType: 'new', // 'same'
   // wireframe: false,
@@ -143,5 +142,4 @@ try { // try clause to avoid js to complain if XDOMAIN undefined
     // eslint-disable-next-line no-console
     console.info('xdomain config activated');
   }
-} catch (error) {
-}
+} catch (error) {}

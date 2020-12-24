@@ -30,7 +30,7 @@ export default {
       // addElem = svgCanvas.addSVGElementFromJson,
       svgdoc = S.svgroot.parentNode.ownerDocument;
 
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
 
     const properlySourceSizeTextArea = function () {
       // TODO: remove magic numbers here and get values from CSS

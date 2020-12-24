@@ -6,7 +6,7 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import Layer from '../common/layer.js';
+import Layer from './layer.js';
 import HistoryRecordingService from './historyrecording.js';
 
 import {NS} from '../common/namespaces.js';

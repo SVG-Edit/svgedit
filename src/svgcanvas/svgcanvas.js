@@ -93,7 +93,7 @@ import {
   uniquifyElemsMethod, removeUnusedDefElemsMethod, convertGradientsMethod
 } from './svg-exec.js';
 import {
-  isChrome, isIE, isWebkit
+  isChrome, isWebkit
 } from '../common/browser.js'; // , supportsEditableText
 import {
   getTransformList, SVGTransformList as SVGEditTransformList
@@ -189,6 +189,8 @@ class SvgCanvas {
     const {dimensions} = curConfig;
 
     const canvas = this;
+
+    this.isLayer = draw.Layer.isLayer;
 
     // "document" element associated with the container (same as window.document using default svg-editor.js)
     // NOTE: This is not actually a SVG document, but an HTML document.
@@ -588,7 +590,6 @@ class SvgCanvas {
         getExtensions () { return extensions; },
         setExtensions (key, value) { extensions[key] = value; },
         getCurrentZoom,
-        isIE,
         getRubberBox () { return rubberBox; },
         setCurBBoxes (value) { curBBoxes = value; },
         getCurBBoxes (value) { return curBBoxes; },
@@ -2676,7 +2677,6 @@ class SvgCanvas {
 * @property {module:history.HistoryCommand} InsertElementCommand
 * @property {module:browser.isChrome} isChrome
 * @property {module:math.isIdentity} isIdentity
-* @property {module:browser.isIE} isIE
 * @property {module:svgcanvas~logMatrix} logMatrix
 * @property {module:history.HistoryCommand} MoveElementCommand
 * @property {module:namespaces.NS} NS
@@ -2719,7 +2719,6 @@ class SvgCanvas {
         InsertElementCommand,
         isChrome,
         isIdentity,
-        isIE,
         logMatrix,
         MoveElementCommand,
         NS,

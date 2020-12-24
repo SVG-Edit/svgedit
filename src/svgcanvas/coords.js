@@ -71,34 +71,27 @@ export const remapElement = function (selected, changes, m) {
   for (let i = 0; i < 2; i++) {
     const type = i === 0 ? 'fill' : 'stroke';
     const attrVal = selected.getAttribute(type);
-    if (attrVal && attrVal.startsWith('url(')) {
-      if (m.a < 0 || m.d < 0) {
-        const grad = getRefElem(attrVal);
-        const newgrad = grad.cloneNode(true);
-        if (m.a < 0) {
-          // flip x
-          const x1 = newgrad.getAttribute('x1');
-          const x2 = newgrad.getAttribute('x2');
-          newgrad.setAttribute('x1', -(x1 - 1));
-          newgrad.setAttribute('x2', -(x2 - 1));
-        }
-
-        if (m.d < 0) {
-          // flip y
-          const y1 = newgrad.getAttribute('y1');
-          const y2 = newgrad.getAttribute('y2');
-          newgrad.setAttribute('y1', -(y1 - 1));
-          newgrad.setAttribute('y2', -(y2 - 1));
-        }
-        newgrad.id = editorContext_.getDrawing().getNextId();
-        findDefs().append(newgrad);
-        selected.setAttribute(type, 'url(#' + newgrad.id + ')');
+    if (attrVal && attrVal.startsWith('url(') && (m.a < 0 || m.d < 0)) {
+      const grad = getRefElem(attrVal);
+      const newgrad = grad.cloneNode(true);
+      if (m.a < 0) {
+        // flip x
+        const x1 = newgrad.getAttribute('x1');
+        const x2 = newgrad.getAttribute('x2');
+        newgrad.setAttribute('x1', -(x1 - 1));
+        newgrad.setAttribute('x2', -(x2 - 1));
       }
 
-      // Not really working :(
-      // if (selected.tagName === 'path') {
-      //   reorientGrads(selected, m);
-      // }
+      if (m.d < 0) {
+        // flip y
+        const y1 = newgrad.getAttribute('y1');
+        const y2 = newgrad.getAttribute('y2');
+        newgrad.setAttribute('y1', -(y1 - 1));
+        newgrad.setAttribute('y2', -(y2 - 1));
+      }
+      newgrad.id = editorContext_.getDrawing().getNextId();
+      findDefs().append(newgrad);
+      selected.setAttribute(type, 'url(#' + newgrad.id + ')');
     }
   }
 

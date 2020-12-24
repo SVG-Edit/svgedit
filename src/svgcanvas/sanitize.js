@@ -204,13 +204,10 @@ export const sanitizeSvg = function (node) {
     const href = getHref(node);
     if (href &&
       ['filter', 'linearGradient', 'pattern',
-        'radialGradient', 'textPath', 'use'].includes(node.nodeName)) {
-      // TODO: we simply check if the first character is a #, is this bullet-proof?
-      if (href[0] !== '#') {
-        // remove the attribute (but keep the element)
-        setHref(node, '');
-        node.removeAttributeNS(NS.XLINK, 'href');
-      }
+        'radialGradient', 'textPath', 'use'].includes(node.nodeName) && href[0] !== '#') {
+      // remove the attribute (but keep the element)
+      setHref(node, '');
+      node.removeAttributeNS(NS.XLINK, 'href');
     }
 
     // Safari crashes on a <use> without a xlink:href, so we just remove the node here
