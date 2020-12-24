@@ -1133,8 +1133,8 @@ editor.init = () => {
   };
 
   const updateColorpickers = (apply) => {
-    $id('fill_color').update(selectedElement, apply);
-    $id('stroke_color').update(selectedElement, apply);
+    $id('fill_color').update(svgCanvas, selectedElement, apply);
+    $id('stroke_color').update(svgCanvas, selectedElement, apply);
   };
 
   /**

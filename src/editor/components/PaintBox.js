@@ -59,16 +59,17 @@ class PaintBox {
     this.rect.setAttribute('opacity', opac);
   }
   /**
+   * @param {PlainObject} svgCanvas
   * @param {string} color
   * @param {Float} opac
   * @param {string} type
   * @returns {module:jGraduate~Paint}
   */
-  getPaint (color, opac, type) {
+  static getPaint (svgCanvas, color, opac, type) {
     // update the editor's fill paint
     const opts = {alpha: opac};
     if (color.startsWith('url(#')) {
-      let refElem = this.svgCanvas.getRefElem(color);
+      let refElem = svgCanvas.getRefElem(color);
       refElem = (refElem) ? refElem.cloneNode(true) : $('#' + type + '_color defs *')[0];
       opts[refElem.tagName] = refElem;
     } else if (color.startsWith('#')) {
@@ -80,10 +81,11 @@ class PaintBox {
   }
 
   /**
+     * @param {PlainObject} svgcanvas
      * @param {PlainObject} selectedElement
      * @returns {any}
      */
-  update (selectedElement) {
+  update (svgcanvas, selectedElement) {
     if (!selectedElement) { return null; }
 
     const {type} = this;
@@ -131,7 +133,7 @@ class PaintBox {
 
     this._paintOpacity *= 100;
 
-    const paint = this.getPaint(this._paintColor, this._paintOpacity, type);
+    const paint = PaintBox.getPaint(svgcanvas, this._paintColor, this._paintOpacity, type);
     // update the rect inside #fill_color/#stroke_color
     this.setPaint(paint);
     return (paint);
@@ -147,7 +149,7 @@ class PaintBox {
     case 'linearGradient':
     case 'radialGradient': {
       const paint = new $.jGraduate.Paint({copy: this.paint});
-      this.svgCanvas.setPaint(this.type, paint);
+      this.setPaint(this.type, paint);
       break;
     }
     }

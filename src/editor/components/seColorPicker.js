@@ -146,12 +146,13 @@ export class SeColorPicker extends HTMLElement {
   }
 
   /**
+   * @param {PlainObject} svgCanvas
    * @param {PlainObject} selectedElement
    * @param {bool} apply
    * @returns {void}
    */
-  update (selectedElement, apply) {
-    const paint = this.paintBox.update(selectedElement);
+  update (svgCanvas, selectedElement, apply) {
+    const paint = this.paintBox.update(svgCanvas, selectedElement);
     if (paint && apply) {
       const changeEvent = new CustomEvent('change', {detail: {
         paint
