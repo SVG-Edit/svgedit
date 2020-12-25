@@ -283,7 +283,8 @@ export default function jQueryPluginJGraduate ($) {
       const $wc = (selector) => $($shadowRoot.querySelectorAll(selector));
 
       if (!idref) {
-        /* await */ $.alert('Container element must have an id attribute to maintain unique id strings for sub-elements.');
+        // eslint-disable-next-line no-alert
+        alert('Container element must have an id attribute to maintain unique id strings for sub-elements.');
         return;
       }
 

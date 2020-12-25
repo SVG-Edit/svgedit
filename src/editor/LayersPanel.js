@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* globals $ */
 
 /**
@@ -27,17 +28,17 @@ class LayersPanel {
   /**
    * @returns {void}
    */
-  async newLayer () {
+  newLayer () {
     let uniqName;
     let i = this.svgCanvas.getCurrentDrawing().getNumLayers();
     do {
       uniqName = this.uiStrings.layers.layer + ' ' + (++i);
     } while (this.svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 
-    const newName = await $.prompt(this.uiStrings.notification.enterUniqueLayerName, uniqName);
+    const newName = prompt(this.uiStrings.notification.enterUniqueLayerName, uniqName);
     if (!newName) { return; }
     if (this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-    /* await */ $.alert(this.uiStrings.notification.dupeLayerName);
+      alert(this.uiStrings.notification.dupeLayerName);
       return;
     }
     this.svgCanvas.createLayer(newName);
@@ -63,15 +64,15 @@ class LayersPanel {
 
   /**
    *
-   * @returns {Promise<void>}
+   * @returns {void}
    */
-  async cloneLayer () {
+  cloneLayer () {
     const name = this.svgCanvas.getCurrentDrawing().getCurrentLayerName() + ' copy';
 
-    const newName = await $.prompt(this.uiStrings.notification.enterUniqueLayerName, name);
+    const newName = prompt(this.uiStrings.notification.enterUniqueLayerName, name);
     if (!newName) { return; }
     if (this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-    /* await */ $.alert(this.uiStrings.notification.dupeLayerName);
+      alert(this.uiStrings.notification.dupeLayerName);
       return;
     }
     this.svgCanvas.cloneLayer(newName);
@@ -110,13 +111,13 @@ class LayersPanel {
   /**
    * @returns {void}
    */
-  async layerRename () {
+  layerRename () {
   // const curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
     const oldName = $('#layerlist tr.layersel td.layername').text();
-    const newName = await $.prompt(this.uiStrings.notification.enterNewLayerName, '');
+    const newName = prompt(this.uiStrings.notification.enterNewLayerName, '');
     if (!newName) { return; }
     if (oldName === newName || this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-    /* await */ $.alert(this.uiStrings.notification.layerHasThatName);
+      alert(this.uiStrings.notification.layerHasThatName);
       return;
     }
     this.svgCanvas.renameCurrentLayer(newName);

@@ -6,9 +6,6 @@
  * @copyright 2010 Jeff Schiller, 2010 Alexis Deveria
  */
 
-// Dependencies:
-// 1) jQuery (for $.alert())
-
 import 'pathseg';
 
 import {NS} from './namespaces.js';

@@ -196,11 +196,12 @@ export default {
           // Create source save/cancel buttons
           /* const save = */ $('#tool_source_save').clone()
             .hide().attr('id', 'foreign_save').unbind()
-            .appendTo('#tool_source_back').click(async function () {
+            .appendTo('#tool_source_back').click(function () {
               if (!editingforeign) { return; }
 
               if (!setForeignString($('#svg_source_textarea').val())) {
-                const ok = await $.confirm('Errors found. Revert to original?');
+                // eslint-disable-next-line no-alert
+                const ok = confirm('Errors found. Revert to original?');
                 if (!ok) { return; }
                 endChanges();
               } else {

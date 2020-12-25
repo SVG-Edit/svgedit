@@ -223,7 +223,7 @@ export default {
         } else {
           pending[id].entry.remove();
         }
-        // await $.alert('Unexpected data was returned: ' + response, function() {
+        // await alert('Unexpected data was returned: ' + response, function() {
         //   if (mode !== 'm') {
         //     closeBrowser();
         //   } else {

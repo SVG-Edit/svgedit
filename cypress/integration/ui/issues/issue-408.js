@@ -20,7 +20,7 @@ describe('Fix issue 408', function () {
         <circle cx="117.5" cy="87.5" fill="#ffff00" r="19.84943" stroke="#000000" />
        </g>
       </g>
-     </svg>`, {parseSpecialCharSequences: false});
+     </svg>`, {force: true, parseSpecialCharSequences: false});
     cy.get('#tool_source_save').click();
     cy.get('#svg_6').click().dblclick(); // change context
     cy.get('#tool_source').click(); // reopen tool_source

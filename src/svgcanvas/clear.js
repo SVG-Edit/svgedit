@@ -5,7 +5,7 @@
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import jQueryPluginSVG from '../common/jQuery.attr.js';
+import jQueryPluginSVG from './jQuery.attr.js';
 import {NS} from '../common/namespaces.js';
 
 const $ = jQueryPluginSVG(jQuery);

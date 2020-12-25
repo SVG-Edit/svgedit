@@ -1,4 +1,5 @@
-/* globals jQuery */
+/* eslint-disable no-alert */
+/* globals jQuery seSelect */
 /**
 * The main module for the visual SVG Editor.
 *
@@ -24,11 +25,7 @@ import {
 } from './contextmenu.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
-
 import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
-import jQueryPluginContextMenu from './contextmenu/jQuery.contextMenu.js';
-import jQueryPluginDBox from '../svgcanvas/dbox.js';
-
 import ConfigObj from './ConfigObj.js';
 import LayersPanel from './LayersPanel.js';
 
@@ -69,8 +66,8 @@ const editor = {
   setStrings
 };
 
-const $ = [jQueryPluginJSHotkeys, jQueryPluginContextMenu].reduce((jq, func) => func(jq), jQuery);
-
+// JFH hotkey is used for text input.
+const $ = [jQueryPluginJSHotkeys].reduce((jq, func) => func(jq), jQuery);
 const homePage = 'https://github.com/SVG-Edit/svgedit';
 
 const callbacks = [];
@@ -97,7 +94,6 @@ let svgCanvas,
 const loadSvgString = (str, {noAlert} = {}) => {
   const success = svgCanvas.setSvgString(str) !== false;
   if (success) return;
-  // eslint-disable-next-line no-alert
   if (!noAlert) window.alert(uiStrings.notification.errorLoadingSVG);
   throw new Error('Error loading SVG');
 };
@@ -259,9 +255,6 @@ editor.init = () => {
   const extAndLocaleFunc = async () => {
     const {langParam, langData} = await editor.putLocale(editor.pref('lang'), goodLangs);
     await setLang(langParam, langData);
-
-    const {ok, cancel} = uiStrings.common;
-    jQueryPluginDBox($, {ok, cancel});
 
     $id('svg_container').style.visibility = 'visible';
 
@@ -718,7 +711,7 @@ editor.init = () => {
         editor.pref('save_notice_done', 'all');
       }
       if (done !== 'part') {
-        $.alert(note);
+        alert(note);
       }
     }
   };
@@ -735,7 +728,7 @@ editor.init = () => {
     exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!exportWindow || exportWindow.closed) {
-      /* await */ $.alert(uiStrings.notification.popupWindowBlocked);
+      alert(uiStrings.notification.popupWindowBlocked);
       return;
     }
 
@@ -852,12 +845,12 @@ editor.init = () => {
   /**
    * @param {PlainObject} [opts={}]
    * @param {boolean} [opts.cancelDeletes=false]
-   * @returns {Promise<void>} Resolves to `undefined`
+   * @returns {void} Resolves to `undefined`
    */
-  async function promptImgURL ({cancelDeletes = false} = {}) {
+  function promptImgURL ({cancelDeletes = false} = {}) {
     let curhref = svgCanvas.getHref(selectedElement);
     curhref = curhref.startsWith('data:') ? '' : curhref;
-    const url = await $.prompt(uiStrings.notification.enterNewImgURL, curhref);
+    const url = prompt(uiStrings.notification.enterNewImgURL, curhref);
     if (url) {
       setImageURL(url);
     } else if (cancelDeletes) {
@@ -1515,15 +1508,6 @@ editor.init = () => {
   };
 
   /**
-  * Makes sure the current selected paint is available to work with.
-  * @returns {void}
-  */
-  const prepPaints = () => {
-    $id('fill_color').prep();
-    $id('stroke_color').prep();
-  };
-
-  /**
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
    * @listens module:svgcanvas.SvgCanvas#event:extension_added
@@ -1666,7 +1650,7 @@ editor.init = () => {
       exportWindow = window.open('', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
     }
     if (!exportWindow || exportWindow.closed) {
-      /* await */ $.alert(uiStrings.notification.popupWindowBlocked);
+      alert(uiStrings.notification.popupWindowBlocked);
       return;
     }
     exportWindow.location.href = data.output;
@@ -1772,7 +1756,7 @@ editor.init = () => {
 
   // fired when user wants to move elements to another layer
   let promptMoveLayerOnce = false;
-  $('#selLayerNames').change(async (evt) => {
+  $('#selLayerNames').change((evt) => {
     const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
     const confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
     /**
@@ -1790,7 +1774,7 @@ editor.init = () => {
       if (promptMoveLayerOnce) {
         moveToLayer(true);
       } else {
-        const ok = await $.confirm(confirmStr);
+        const ok = confirm(confirmStr);
         if (!ok) {
           return;
         }
@@ -1834,7 +1818,7 @@ editor.init = () => {
 
     if (!valid) {
       e.target.value = selectedElement.getAttribute(attr);
-      /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
+      alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
 
@@ -1872,7 +1856,7 @@ editor.init = () => {
 
     if (!valid) {
       evt.currentTarget.value = selectedElement.getAttribute(attr);
-      /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
+      alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
 
@@ -2403,11 +2387,11 @@ editor.init = () => {
 
   /**
   *
-  * @returns {Promise<void>} Resolves to `undefined`
+  * @returns {void} Resolves to `undefined`
   */
-  const makeHyperlink = async () => {
+  const makeHyperlink = () => {
     if (!isNullish(selectedElement) || multiselected) {
-      const url = await $.prompt(uiStrings.notification.enterNewLinkURL, 'http://');
+      const url = prompt(uiStrings.notification.enterNewLinkURL, 'http://');
       if (url) {
         svgCanvas.makeHyperlink(url);
       }
@@ -2512,11 +2496,11 @@ editor.init = () => {
 
   /**
    * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
-   * @returns {Promise<void>} Resolves to `undefined`
+   * @returns {void}
    */
-  const clickClear = async () => {
+  const clickClear = () => {
     const [x, y] = configObj.curConfig.dimensions;
-    const ok = await $.confirm(uiStrings.notification.QwantToClear);
+    const ok = confirm(uiStrings.notification.QwantToClear);
     if (!ok) {
       return;
     }
@@ -2527,7 +2511,6 @@ editor.init = () => {
     zoomImage();
     layersPanel.populateLayers();
     updateContextPanel();
-    prepPaints();
     svgCanvas.runExtensions('onNewDocument');
   };
 
@@ -2581,24 +2564,13 @@ editor.init = () => {
   * @returns {Promise<void>} Resolves to `undefined`
   */
   const clickExport = async () => {
-    const imgType = await $.select('Select an image type for export: ', [
+    const imgType = await seSelect('Select an image type for export: ', [
       // See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
       // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
       'PNG',
       'JPEG', 'BMP', 'WEBP', 'PDF'
-    ], () => {
-      const sel = $(this);
-      if (sel.val() === 'JPEG' || sel.val() === 'WEBP') {
-        if (!$('#image-slider').length) {
-          $(`<div><label>${uiStrings.ui.quality}
-              <input id="image-slider"
-                type="range" min="1" max="100" value="92" />
-            </label></div>`).appendTo(sel.parent());
-        }
-      } else {
-        $('#image-slider').parent().remove();
-      }
-    }); // todo: replace hard-coded msg with uiStrings.notification.
+    ]);
+
     if (!imgType) {
       return;
     }
@@ -2646,7 +2618,7 @@ editor.init = () => {
       if (!customExportImage) {
         openExportWindow();
       }
-      const quality = Number.parseInt($('#image-slider').val()) / 100;
+      const quality = 1; // JFH !!! Number.parseInt($('#image-slider').val()) / 100;
       /* const results = */ await svgCanvas.rasterExport(imgType, quality, exportWindowName);
     }
   };
@@ -2824,9 +2796,9 @@ editor.init = () => {
 
   /**
   * @param {Event} e
-  * @returns {Promise<void>} Resolves to `undefined`
+  * @returns {void} Resolves to `undefined`
   */
-  const saveSourceEditor = async (e) => {
+  const saveSourceEditor = (e) => {
     if (!editingsource) { return; }
     const saveChanges = () => {
       svgCanvas.clearSelection();
@@ -2834,11 +2806,10 @@ editor.init = () => {
       zoomImage();
       layersPanel.populateLayers();
       updateTitle();
-      prepPaints();
     };
 
     if (!svgCanvas.setSvgString(e.detail.value)) {
-      const ok = await $.confirm(uiStrings.notification.QerrorsRevertToSource);
+      const ok = confirm(uiStrings.notification.QerrorsRevertToSource);
       if (!ok) {
         return;
       }
@@ -2881,15 +2852,15 @@ editor.init = () => {
     svgCanvas.setDocumentTitle(title);
 
     if (w !== 'fit' && !isValidUnit('width', w)) {
-      /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
+      alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
     if (h !== 'fit' && !isValidUnit('height', h)) {
-      /* await */ $.alert(uiStrings.notification.invalidAttrValGiven);
+      alert(uiStrings.notification.invalidAttrValGiven);
       return false;
     }
     if (!svgCanvas.setResolution(w, h)) {
-      /* await */ $.alert(uiStrings.notification.noContentToFitTo);
+      alert(uiStrings.notification.noContentToFitTo);
       return false;
     }
     // Set image save option
@@ -2933,9 +2904,9 @@ editor.init = () => {
 
   /**
   * @param {Event} e
-  * @returns {Promise<void>} Resolves to `undefined`
+  * @returns {void} Resolves to `undefined`
   */
-  const cancelOverlays = async (e) => {
+  const cancelOverlays = (e) => {
     $('#dialog_box').hide();
     if (!editingsource && !docprops && !preferences) {
       if (curContext) {
@@ -2946,7 +2917,7 @@ editor.init = () => {
 
     if (editingsource) {
       if (origSource !== e.detail.value) {
-        const ok = await $.confirm(uiStrings.notification.QignoreSourceChanges);
+        const ok = confirm(uiStrings.notification.QignoreSourceChanges);
         if (ok) {
           hideSourceEditor();
         }
@@ -2977,7 +2948,7 @@ editor.init = () => {
   });
 
   $('#url_notice').click(() => {
-    /* await */ $.alert(this.title);
+    alert(this.title);
   });
 
   $('#change_image_url').click(promptImgURL);
@@ -3571,7 +3542,7 @@ editor.init = () => {
     if (undoMgr.getUndoStackSize() === 0) {
       return true;
     }
-    return $.confirm(uiStrings.notification.QwantToOpen);
+    return confirm(uiStrings.notification.QwantToOpen);
   };
 
   /**
@@ -3883,7 +3854,7 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
             reject(new Error('URLLoadFail'));
             return;
           }
-          $.alert(uiStrings.notification.URLLoadFail + ': \n' + err);
+          alert(uiStrings.notification.URLLoadFail + ': \n' + err);
           resolve();
         },
         complete () {

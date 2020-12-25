@@ -3,9 +3,9 @@ import 'pathseg';
 import '../../../instrumented/editor/jquery.min.js';
 
 import {NS} from '../../../instrumented/common/namespaces.js';
-import * as utilities from '../../../instrumented/common/utilities.js';
-import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
-import * as math from '../../../instrumented/common/math.js';
+import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
+import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
+import * as math from '../../../instrumented/svgcanvas/math.js';
 
 describe('utilities performance', function () {
   let currentLayer, groupWithMatrixTransform, textWithMatrixTransform;

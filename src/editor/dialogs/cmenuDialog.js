@@ -184,7 +184,7 @@ export class SeCMenuDialog extends HTMLElement {
       });
       break;
     default:
-      super.attributeChangedCallback(name, oldValue, newValue);
+      // super.attributeChangedCallback(name, oldValue, newValue);
       break;
     }
   }

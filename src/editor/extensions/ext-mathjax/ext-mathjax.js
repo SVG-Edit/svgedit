@@ -202,7 +202,8 @@ export default {
               });
             } catch (e) {
               console.log('Failed loading MathJax.'); // eslint-disable-line no-console
-              $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
+              // eslint-disable-next-line no-alert
+              alert('Failed loading MathJax. You will not be able to change the mathematics.');
             }
           }
         }

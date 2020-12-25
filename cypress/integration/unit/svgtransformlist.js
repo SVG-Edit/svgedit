@@ -1,7 +1,7 @@
 import '../../../instrumented/editor/jquery.min.js';
 
 import {NS} from '../../../instrumented/common/namespaces.js';
-import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
+import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
 import {disableSupportsNativeTransformLists} from '../../../instrumented/common/browser.js';
 
 import almostEqualsPlugin from '../../support/assert-almostEquals.js';

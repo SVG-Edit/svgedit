@@ -6,7 +6,7 @@
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute
 import {NS} from '../common/namespaces.js';
 import * as hstry from './history.js';
 import * as pathModule from './path.js';

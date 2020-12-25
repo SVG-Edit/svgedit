@@ -8,7 +8,7 @@
 
 import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
-import jQueryPluginSVG from '../common/jQuery.attr.js';
+import jQueryPluginSVG from './jQuery.attr.js';
 import * as hstry from './history.js';
 import {
   text2xml, cleanupElement, findDefs, getHref, preventClickDefault,

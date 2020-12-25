@@ -880,8 +880,8 @@ exports[`use various parts of svg-edit > check tool_text_anchor_middle #0`] = `
       strokecolor="#000000"
       strokewidth="5"
       fill-opacity="1"
-      stroke="none"
       stroke-opacity="1"
+      stroke="none"
     ></polygon>
     <polygon
       cx="115"
@@ -1016,8 +1016,8 @@ exports[`use various parts of svg-edit > check tool_text_anchor_end #0`] = `
       strokecolor="#000000"
       strokewidth="5"
       fill-opacity="1"
-      stroke="none"
       stroke-opacity="1"
+      stroke="none"
     ></polygon>
     <polygon
       cx="115"
@@ -1031,8 +1031,8 @@ exports[`use various parts of svg-edit > check tool_text_anchor_end #0`] = `
       strokecolor="none"
       strokewidth="5"
       fill-opacity="1"
-      stroke="none"
       stroke-opacity="1"
+      stroke="none"
     ></polygon>
     <polygon
       cx="115"

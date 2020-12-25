@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import {NS} from '../common/namespaces.js';
 import {convertToNum} from '../common/units.js';
 import {isWebkit} from '../common/browser.js';

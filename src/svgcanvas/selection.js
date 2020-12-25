@@ -11,7 +11,7 @@ import {
   isNullish, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
 } from './utilities.js';
 import {transformPoint, transformListToTransform, rectsIntersect} from './math.js';
-import jQueryPluginSVG from '../common/jQuery.attr.js';
+import jQueryPluginSVG from './jQuery.attr.js';
 import {
   getTransformList
 } from './svgtransformlist.js';

@@ -78,7 +78,7 @@ export default {
           });
 
           // Show the text using the custom alert function
-          $.alert(text);
+          alert(text); // eslint-disable-line no-alert
         }
       }
     };

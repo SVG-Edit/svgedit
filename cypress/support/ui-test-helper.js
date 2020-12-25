@@ -1,5 +1,6 @@
 export const approveStorage = () => {
-  return cy.get('#dialog_buttons > input[type=button][data-ok]')
+  // JFH will need to be chnaged when dialog is changed...
+  cy.get('elix-alert-dialog').shadow().find('#choiceButtonContainer > plain-border-button-0:nth-child(1)')
     .click();
 };
 
@@ -9,7 +10,7 @@ export const visitAndApproveStorage = () => {
 };
 
 export const openMainMenu = () => {
-  return cy.get('#main_icon').click();
+  return cy.get('#main_button').click();
 };
 
 export const openEditorPreferences = () => {

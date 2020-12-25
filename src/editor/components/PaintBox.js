@@ -138,22 +138,6 @@ class PaintBox {
     this.setPaint(paint);
     return (paint);
   }
-
-  /**
-     * @returns {void}
-     */
-  prep () {
-    const ptype = this.paint.type;
-
-    switch (ptype) {
-    case 'linearGradient':
-    case 'radialGradient': {
-      const paint = new $.jGraduate.Paint({copy: this.paint});
-      this.setPaint(this.type, paint);
-      break;
-    }
-    }
-  }
 }
 PaintBox.ctr = 0;
 

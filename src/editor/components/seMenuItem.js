@@ -8,7 +8,7 @@ template.innerHTML = `
   </style>  
   <elix-menu-item>
     <div style="display:inline-block;">
-      <img src="" alt="icon" style="display:none;" /> 
+      <img src="./images/logo.svg" alt="icon" style="display:none;" /> 
       <span></span>
     </div>
   </elix-menu-item>  

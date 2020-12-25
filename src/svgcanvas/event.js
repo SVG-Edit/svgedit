@@ -5,7 +5,7 @@
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute
 import {
   assignAttributes, cleanupElement, getElem, getRotationAngle, snapToGrid, walkTree,
   getBBox as utilsGetBBox, isNullish, preventClickDefault, setHref

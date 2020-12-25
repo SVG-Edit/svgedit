@@ -17,8 +17,7 @@
 import {Canvg as canvg} from 'canvg';
 import 'pathseg';
 
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
-import jQueryPluginDBox from './dbox.js';
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
@@ -117,7 +116,7 @@ import {
   init as clearInit
 } from './clear.js';
 
-let $ = jQueryPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand, BatchCommand
@@ -1741,7 +1740,6 @@ class SvgCanvas {
 */
     this.setUiStrings = function (strs) {
       Object.assign(uiStrings, strs.notification);
-      $ = jQueryPluginDBox($, strs.common);
       pathModule.setUiStrings(strs);
     };
 

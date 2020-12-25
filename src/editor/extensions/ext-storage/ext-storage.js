@@ -1,3 +1,4 @@
+/* globals seSelect */
 /**
  * @file ext-storage.js
  *
@@ -181,9 +182,9 @@ export default {
         const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
         const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
         const {
-          message, storagePrefsAndContent, storagePrefsOnly,
+          message /* , storagePrefsAndContent, storagePrefsOnly,
           storagePrefs, storageNoPrefsOrContent, storageNoPrefs,
-          rememberLabel, rememberTooltip
+          rememberLabel, rememberTooltip */
         } = strings;
 
         // No need to run this one-time dialog again just because the user
@@ -213,6 +214,7 @@ export default {
           )
           // ...then show the storage prompt.
         )) {
+          /*
           const options = [];
           if (storage) {
             options.unshift(
@@ -226,20 +228,13 @@ export default {
               {value: 'noPrefsOrContent', text: storageNoPrefs}
             );
           }
-
-          // Hack to temporarily provide a wide and high enough dialog
-          const oldContainerWidth = $('#dialog_container')[0].style.width,
-            oldContainerMarginLeft = $('#dialog_container')[0].style.marginLeft,
-            oldContentHeight = $('#dialog_content')[0].style.height,
-            oldContainerHeight = $('#dialog_container')[0].style.height;
-          $('#dialog_content')[0].style.height = '120px';
-          $('#dialog_container')[0].style.height = '170px';
-          $('#dialog_container')[0].style.width = '800px';
-          $('#dialog_container')[0].style.marginLeft = '-400px';
+          */
+          const options = storage ? ['prefsAndContent', 'prefsOnly', 'noPrefsOrContent'] : ['prefsOnly', 'noPrefsOrContent'];
 
           // Open select-with-checkbox dialog
           // From svg-editor.js
           svgEditor.storagePromptState = 'waiting';
+          /* JFH !!!!!
           const {response: pref, checked} = await $.select(
             message,
             options,
@@ -251,6 +246,8 @@ export default {
               tooltip: rememberTooltip
             }
           );
+          */
+          const pref = await seSelect(message, options);
           if (pref && pref !== 'noPrefsOrContent') {
             // Regardless of whether the user opted
             // to remember the choice (and move to a URL which won't
@@ -263,7 +260,7 @@ export default {
             //    the user does indicate a wish to store their info, we
             //    don't want ask them again upon page refresh so move
             //    them instead to a URL which does not always prompt
-            if (storagePrompt === 'true' && checked) {
+            if (storagePrompt === 'true' /* && checked */) {
               replaceStoragePrompt();
               return;
             }
@@ -274,18 +271,12 @@ export default {
             ) {
               emptyStorage();
             }
-            if (pref && checked) {
+            if (pref /* && checked */) {
               // Open a URL which won't set storage and won't prompt user about storage
               replaceStoragePrompt('false');
               return;
             }
           }
-
-          // Reset width/height of dialog (e.g., for use by Export)
-          $('#dialog_container')[0].style.width = oldContainerWidth;
-          $('#dialog_container')[0].style.marginLeft = oldContainerMarginLeft;
-          $('#dialog_content')[0].style.height = oldContentHeight;
-          $('#dialog_container')[0].style.height = oldContainerHeight;
 
           // It should be enough to (conditionally) add to storage on
           //   beforeunload, but if we wished to update immediately,

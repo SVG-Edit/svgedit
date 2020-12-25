@@ -8,6 +8,7 @@
   "ignoreTestFiles": ["**/__snapshots__/*", "**/__image_snapshots__/*"],
   "defaultCommandTimeout": 10000,
   "pageLoadTimeout": 120000,
+  "includeShadowDom":	true,
   "cypress-plugin-snapshots": {
       "autoCleanUp": true,
       "prettier": true,
