@@ -6,8 +6,8 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import {getHref, setHref, getRotationAngle, isNullish} from '../common/utilities.js';
-import {removeElementFromListMap} from '../common/svgtransformlist.js';
+import {getHref, setHref, getRotationAngle, isNullish} from './utilities.js';
+import {removeElementFromListMap} from './svgtransformlist.js';
 
 /**
 * Group: Undo/Redo history management.

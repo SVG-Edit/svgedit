@@ -3,7 +3,7 @@
 import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import {isWebkit} from '../common/browser.js';
 import {convertPath} from './path.js';
-import {preventClickDefault} from '../common/utilities.js';
+import {preventClickDefault} from './utilities.js';
 
 // Constants
 const $ = jQueryPluginSVG(jQuery);

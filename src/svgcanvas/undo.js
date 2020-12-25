@@ -8,16 +8,16 @@ import * as draw from './draw.js';
 import * as hstry from './history.js';
 import {
   getRotationAngle, getBBox as utilsGetBBox, isNullish, setHref, getStrokedBBoxDefaultVisible
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   isGecko
 } from '../common/browser.js';
 import {
   transformPoint, transformListToTransform
-} from '../common/math.js';
+} from './math.js';
 import {
   getTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 
 const {
   UndoManager, HistoryEventTypes

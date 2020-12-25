@@ -9,12 +9,12 @@
 import {NS} from '../common/namespaces.js';
 import {
   isNullish, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
-} from '../common/utilities.js';
-import {transformPoint, transformListToTransform, rectsIntersect} from '../common/math.js';
+} from './utilities.js';
+import {transformPoint, transformListToTransform, rectsIntersect} from './math.js';
 import jQueryPluginSVG from '../common/jQuery.attr.js';
 import {
   getTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 import * as hstry from './history.js';
 
 const {BatchCommand} = hstry;

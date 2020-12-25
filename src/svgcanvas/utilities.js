@@ -7,17 +7,17 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
-import {NS} from './namespaces.js';
+import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import {NS} from '../common/namespaces.js';
 import {getTransformList} from './svgtransformlist.js';
-import {setUnitAttr, getTypeMap} from './units.js';
+import {setUnitAttr, getTypeMap} from '../common/units.js';
 import {
   hasMatrixTransform, transformListToTransform, transformBox
 } from './math.js';
 import {
   isWebkit, supportsHVLineContainerBBox, supportsPathBBox, supportsXpath,
   supportsSelectors
-} from './browser.js';
+} from '../common/browser.js';
 
 // Constants
 const $ = jQueryPluginSVG(jQuery);
@@ -1299,17 +1299,6 @@ export const snapToGrid = function (value) {
 };
 
 /**
-* Escapes special characters in a regular expression.
-* @function module:utilities.regexEscape
-* @param {string} str
-* @returns {string}
-*/
-export const regexEscape = function (str) {
-  // Originally from: http://phpjs.org/functions
-  return String(str).replace(/[.\\+*?[^\]$(){}=!<>|:-]/g, '\\$&');
-};
-
-/**
  * Prevents default browser click behaviour on the given element.
  * @function module:utilities.preventClickDefault
  * @param {Element} img - The DOM element to prevent the click on
@@ -1350,6 +1339,7 @@ export const mock = ({
   getRotationAngle = getRotationAngleUser;
 };
 
+// shortcuts to common DOM functions
 export const $id = (id) => document.getElementById(id);
-export const $q = (sel) => document.querySelector(sel);
-export const $qq = (sel) => [...document.querySelectorAll(sel)];
+export const $qq = (sel) => document.querySelector(sel);
+export const $qa = (sel) => [...document.querySelectorAll(sel)];

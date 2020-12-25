@@ -19,7 +19,7 @@
 * @property {Float} y
 */
 
-import {NS} from './namespaces.js';
+import {NS} from '../common/namespaces.js';
 import {getTransformList} from './svgtransformlist.js';
 
 // Constants

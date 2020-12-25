@@ -8,9 +8,9 @@
  */
 
 import {isTouch, isWebkit} from '../common/browser.js'; // , isOpera
-import {getRotationAngle, getBBox, getStrokedBBox, isNullish} from '../common/utilities.js';
-import {transformListToTransform, transformBox, transformPoint} from '../common/math.js';
-import {getTransformList} from '../common/svgtransformlist.js';
+import {getRotationAngle, getBBox, getStrokedBBox, isNullish} from './utilities.js';
+import {transformListToTransform, transformBox, transformPoint} from './math.js';
+import {getTransformList} from './svgtransformlist.js';
 
 const $ = jQuery;
 

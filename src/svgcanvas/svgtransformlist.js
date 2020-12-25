@@ -7,8 +7,8 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {NS} from './namespaces.js';
-import {supportsNativeTransformLists} from './browser.js';
+import {NS} from '../common/namespaces.js';
+import {supportsNativeTransformLists} from '../common/browser.js';
 
 const svgroot = document.createElementNS(NS.SVG, 'svg');
 

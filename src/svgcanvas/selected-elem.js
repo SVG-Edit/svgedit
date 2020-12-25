@@ -13,13 +13,13 @@ import * as pathModule from './path.js';
 import {
   isNullish, getStrokedBBoxDefaultVisible, setHref, getElem, getHref, getVisibleElements,
   findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost, assignAttributes
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   transformPoint, matrixMultiply, transformListToTransform
-} from '../common/math.js';
+} from './math.js';
 import {
   getTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 import {
   recalculateDimensions
 } from './recalculate.js';

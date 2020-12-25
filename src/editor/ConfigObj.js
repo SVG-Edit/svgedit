@@ -2,7 +2,17 @@
 
 // eslint-disable-next-line node/no-unpublished-import
 import deparam from 'deparam';
-import * as Utils from '../common/utilities.js';
+
+/**
+* Escapes special characters in a regular expression.
+* @function regexEscape
+* @param {string} str
+* @returns {string}
+*/
+export const regexEscape = function (str) {
+  // Originally from: http://phpjs.org/functions
+  return String(str).replace(/[.\\+*?[^\]$(){}=!<>|:-]/g, '\\$&');
+};
 /**
  * @class configObj
  */
@@ -345,7 +355,7 @@ export default class ConfigObj {
         this.defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
       } else {
         const result = document.cookie.match(
-          new RegExp('(?:^|;\\s*)' + Utils.regexEscape(
+          new RegExp('(?:^|;\\s*)' + regexEscape(
             encodeURIComponent(storeKey)
           ) + '=([^;]+)')
         );

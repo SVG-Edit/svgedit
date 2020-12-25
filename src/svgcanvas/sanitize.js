@@ -8,7 +8,7 @@
 
 import {getReverseNS, NS} from '../common/namespaces.js';
 import {isGecko} from '../common/browser.js';
-import {getHref, setHref, getUrlFromAttr} from '../common/utilities.js';
+import {getHref, setHref, getUrlFromAttr} from './utilities.js';
 
 const REVERSE_NS = getReverseNS();
 

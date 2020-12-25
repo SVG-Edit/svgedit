@@ -8,7 +8,7 @@
  */
 
 import {NS} from '../common/namespaces.js';
-import {toXml, walkTree, isNullish} from '../common/utilities.js';
+import {toXml, walkTree, isNullish} from './utilities.js';
 
 const $ = jQuery;
 

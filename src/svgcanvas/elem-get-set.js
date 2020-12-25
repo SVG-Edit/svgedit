@@ -11,7 +11,7 @@ import {NS} from '../common/namespaces.js';
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
   walkTree, isNullish, getHref, setHref, getElem
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   convertToNum
 } from '../common/units.js';

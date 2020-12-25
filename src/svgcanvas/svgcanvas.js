@@ -78,12 +78,13 @@ import {
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
   preventClickDefault, walkTree, getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, dropXMLInternalSubset, init as utilsInit,
-  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish
-} from '../common/utilities.js';
+  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish, blankPageObjectURL,
+  $id, $qa, $qq
+} from './utilities.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
   isIdentity, transformBox
-} from '../common/math.js';
+} from './math.js';
 import {
   convertToNum, getTypeMap, init as unitsInit
 } from '../common/units.js';
@@ -97,7 +98,7 @@ import {
 } from '../common/browser.js'; // , supportsEditableText
 import {
   getTransformList, SVGTransformList as SVGEditTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 import {
   remapElement,
   init as coordsInit
@@ -2742,5 +2743,15 @@ class SvgCanvas {
     };
   } // End constructor
 } // End class
+
+// attach utilities function to the class that are used by SvgEdit so
+// we can avoid using the whole utilities.js file in svgEdit.js
+SvgCanvas.isNullish = isNullish;
+SvgCanvas.encode64 = encode64;
+SvgCanvas.decode64 = decode64;
+SvgCanvas.$id = $id;
+SvgCanvas.$qq = $qq;
+SvgCanvas.$qa = $qa;
+SvgCanvas.blankPageObjectURL = blankPageObjectURL;
 
 export default SvgCanvas;

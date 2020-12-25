@@ -9,14 +9,14 @@ import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attrib
 import {NS} from '../common/namespaces.js';
 import {convertToNum} from '../common/units.js';
 import {isWebkit} from '../common/browser.js';
-import {getTransformList} from '../common/svgtransformlist.js';
-import {getRotationAngle, getHref, getBBox, getRefElem, isNullish} from '../common/utilities.js';
+import {getTransformList} from './svgtransformlist.js';
+import {getRotationAngle, getHref, getBBox, getRefElem, isNullish} from './utilities.js';
 import {BatchCommand, ChangeElementCommand} from './history.js';
 import {remapElement} from './coords.js';
 import {
   isIdentity, matrixMultiply, transformPoint, transformListToTransform,
   hasMatrixTransform
-} from '../common/math.js';
+} from './math.js';
 
 const $ = jQueryPluginSVG(jQuery);
 
