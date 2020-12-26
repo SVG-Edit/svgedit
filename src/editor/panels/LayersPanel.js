@@ -1,29 +1,147 @@
 /* eslint-disable no-alert */
 /* globals $ */
+import SvgCanvas from '../../svgcanvas/svgcanvas.js';
+
+const SIDEPANEL_MAXWIDTH = 300;
+const SIDEPANEL_OPENWIDTH = 150;
+const {$id} = SvgCanvas;
 
 /**
  *
  */
 class LayersPanel {
   /**
-   * @param {PlainObject} svgCanvas svgCanvas
-   * @param {PlainObject} uiStrings uiStrings
-   * @param {GenericCallBack} updateContextPanel updateContextPanel
+   * @param {PlainObject} editor
    */
-  constructor (svgCanvas, uiStrings, updateContextPanel) {
-    this.svgCanvas = svgCanvas;
-    this.uiStrings = uiStrings;
-    this.updateContextPanel = updateContextPanel;
+  constructor (editor) {
+    this.svgCanvas = editor.canvas;
+    this.uiStrings = editor.uiStrings;
+    this.updateContextPanel = editor.topPanelHandlers.updateContextPanel;
+    this.sidedrag = -1;
+    this.sidedragging = false;
+    this.allowmove = false;
+    this.editor = editor;
+  }
+
+  /**
+   * @param {Float} delta
+   * @fires module:svgcanvas.SvgCanvas#event:ext_workareaResized
+   * @returns {void}
+   */
+  changeSidePanelWidth (delta) {
+    const rulerX = $('#ruler_x');
+    $('#sidepanels').width('+=' + delta);
+    $('#layerpanel').width('+=' + delta);
+    rulerX.css('right', Number.parseInt(rulerX.css('right')) + delta);
+    this.editor.workarea.css('right', Number.parseInt(this.editor.workarea.css('right')) + delta);
+    this.svgCanvas.runExtensions('workareaResized');
+  }
+
+  /**
+  * @param {Event} evt
+  * @returns {void}
+  */
+  resizeSidePanel (evt) {
+    if (!this.allowmove) { return; }
+    if (this.sidedrag === -1) { return; }
+    this.sidedragging = true;
+    let deltaX = this.sidedrag - evt.pageX;
+    const sideWidth = $('#sidepanels').width();
+    if (sideWidth + deltaX > SIDEPANEL_MAXWIDTH) {
+      deltaX = SIDEPANEL_MAXWIDTH - sideWidth;
+      // sideWidth = SIDEPANEL_MAXWIDTH;
+    } else if (sideWidth + deltaX < 2) {
+      deltaX = 2 - sideWidth;
+      // sideWidth = 2;
+    }
+    if (deltaX === 0) { return; }
+    this.sidedrag -= deltaX;
+    this.changeSidePanelWidth(deltaX);
+  }
+
+  /**
+   * If width is non-zero, then fully close it; otherwise fully open it.
+   * @param {boolean} close Forces the side panel closed
+   * @returns {void}
+   */
+  toggleSidePanel (close) {
+    const dpr = window.devicePixelRatio || 1;
+    const w = $('#sidepanels').width();
+    const isOpened = (dpr < 1 ? w : w / dpr) > 2;
+    const zoomAdjustedSidepanelWidth = (dpr < 1 ? 1 : dpr) * SIDEPANEL_OPENWIDTH;
+    const deltaX = (isOpened || close ? 0 : zoomAdjustedSidepanelWidth) - w;
+    this.changeSidePanelWidth(deltaX);
+  }
+  /**
+   * @param {PlainObject} e event
+   * @returns {void}
+   */
+  lmenuFunc (e) {
+    const action = e?.detail?.trigger;
+    switch (action) {
+    case 'dupe':
+      this.cloneLayer();
+      break;
+    case 'delete':
+      this.deleteLayer();
+      break;
+    case 'merge_down':
+      this.mergeLayer();
+      break;
+    case 'merge_all':
+      this.svgCanvas.mergeAllLayers();
+      this.updateContextPanel();
+      this.populateLayers();
+      break;
+    }
   }
   /**
    * @returns {void}
    */
-  addEvents () {
+  init () {
+    // layer menu added to DOM
+    const menuMore = document.createElement('se-cmenu-layers');
+    menuMore.setAttribute('id', 'se-cmenu-layers-more');
+    menuMore.value = 'layer_moreopts';
+    menuMore.setAttribute('leftclick', true);
+    document.body.append(menuMore);
+    const menuLayerBox = document.createElement('se-cmenu-layers');
+    menuLayerBox.setAttribute('id', 'se-cmenu-layers-list');
+    menuLayerBox.value = 'layerlist';
+    menuLayerBox.setAttribute('leftclick', false);
+    document.body.append(menuLayerBox);
     document.getElementById('layer_new').addEventListener('click', this.newLayer.bind(this));
     document.getElementById('layer_delete').addEventListener('click', this.deleteLayer.bind(this));
     document.getElementById('layer_up').addEventListener('click', () => this.moveLayer.bind(this)(-1));
     document.getElementById('layer_down').addEventListener('click', () => this.moveLayer.bind(this)(1));
     document.getElementById('layer_rename').addEventListener('click', this.layerRename.bind(this));
+    $id('se-cmenu-layers-more').addEventListener('change', this.lmenuFunc.bind(this));
+    $id('se-cmenu-layers-list').addEventListener('change', (e) => {
+      this.lmenuFunc.bind(this)(e?.detail?.trigger, e?.detail?.source);
+    });
+    $id('sidepanel_handle').addEventListener('click', this.toggleSidePanel.bind(this));
+    if (this.editor.curConfig.showlayers) {
+      this.toggleSidePanel();
+    }
+    $id('sidepanel_handle').addEventListener('mousedown', (evt) => {
+      this.sidedrag = evt.pageX;
+      window.addEventListener('mousemove', this.resizeSidePanel.bind(this));
+      this.allowmove = false;
+      // Silly hack for Chrome, which always runs mousemove right after mousedown
+      setTimeout(() => {
+        this.allowmove = true;
+      }, 20);
+    });
+    $id('sidepanel_handle').addEventListener('mouseup', (evt) => {
+      if (!this.sidedragging) { this.toggleSidePanel(); }
+      this.sidedrag = -1;
+      this.sidedragging = false;
+    });
+    window.addEventListener('mouseup', (evt) => {
+      this.sidedrag = -1;
+      this.sidedragging = false;
+      $id('svg_editor').removeEventListener('mousemove', this.resizeSidePanel.bind(this));
+    });
   }
   /**
    * @returns {void}
