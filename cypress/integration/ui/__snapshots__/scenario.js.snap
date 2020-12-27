@@ -97,7 +97,7 @@ exports[`use various parts of svg-edit > check tool_text #0`] = `
       fill-opacity="1"
       stroke-opacity="1"
     >
-      B
+      AB
     </text>
   </g>
 </svg>
@@ -143,7 +143,7 @@ exports[`use various parts of svg-edit > check tool_clone #0`] = `
       fill-opacity="1"
       stroke-opacity="1"
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -159,7 +159,7 @@ exports[`use various parts of svg-edit > check tool_clone #0`] = `
       stroke-opacity="1"
       id="svg_2"
     >
-      B
+      AB
     </text>
   </g>
 </svg>
@@ -206,7 +206,7 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
       stroke-opacity="1"
       font-=""
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -223,7 +223,7 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
       id="svg_2"
       transform="matrix(1 0 0 1 0 0)"
     >
-      B
+      AB
     </text>
   </g>
 </svg>
@@ -271,7 +271,7 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
       font-=""
       font-weight="bold"
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -288,7 +288,7 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
       id="svg_2"
       transform="matrix(1 0 0 1 0 0)"
     >
-      B
+      AB
     </text>
   </g>
 </svg>
@@ -336,7 +336,7 @@ exports[`use various parts of svg-edit > check change color #0`] = `
       font-=""
       font-weight="bold"
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -353,7 +353,7 @@ exports[`use various parts of svg-edit > check change color #0`] = `
       id="svg_2"
       transform="matrix(1 0 0 1 0 0)"
     >
-      B
+      AB
     </text>
   </g>
 </svg>
@@ -493,7 +493,7 @@ exports[`use various parts of svg-edit > check tool_star #0`] = `
       font-style="italic"
       font-weight="bold"
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -510,7 +510,7 @@ exports[`use various parts of svg-edit > check tool_star #0`] = `
       id="svg_2"
       transform="matrix(1 0 0 1 0 0)"
     >
-      B
+      AB
     </text>
     <polygon
       cx="407"
@@ -584,7 +584,7 @@ exports[`use various parts of svg-edit > check tool_polygon #0`] = `
       font-style="italic"
       font-weight="bold"
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -601,7 +601,7 @@ exports[`use various parts of svg-edit > check tool_polygon #0`] = `
       id="svg_2"
       transform="matrix(1 0 0 1 0 0)"
     >
-      B
+      AB
     </text>
     <polygon
       cx="407"
@@ -692,7 +692,7 @@ exports[`use various parts of svg-edit > check tool_text_anchor_start #0`] = `
       font-=""
       font-weight="bold"
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -709,7 +709,7 @@ exports[`use various parts of svg-edit > check tool_text_anchor_start #0`] = `
       id="svg_2"
       transform="matrix(1 0 0 1 0 0)"
     >
-      B
+      AB
     </text>
     <polygon
       cx="407"
@@ -813,7 +813,7 @@ exports[`use various parts of svg-edit > check tool_text_anchor_middle #0`] = `
       font-=""
       font-weight="bold"
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -830,7 +830,7 @@ exports[`use various parts of svg-edit > check tool_text_anchor_middle #0`] = `
       id="svg_2"
       transform="matrix(1 0 0 1 0 0)"
     >
-      B
+      AB
     </text>
     <polygon
       cx="407"
@@ -949,7 +949,7 @@ exports[`use various parts of svg-edit > check tool_text_anchor_end #0`] = `
       font-=""
       font-weight="bold"
     >
-      B
+      AB
     </text>
     <text
       fill="#000000"
@@ -966,7 +966,7 @@ exports[`use various parts of svg-edit > check tool_text_anchor_end #0`] = `
       id="svg_2"
       transform="matrix(1 0 0 1 0 0)"
     >
-      B
+      AB
     </text>
     <polygon
       cx="407"

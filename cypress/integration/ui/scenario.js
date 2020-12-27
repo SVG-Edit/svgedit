@@ -41,7 +41,7 @@ describe('use various parts of svg-edit', function () {
       .trigger('mousedown', 'center', {force: true})
       .trigger('mouseup', {force: true});
     // svgedit use the #text text field to capture the text
-    cy.get('#text').type('B', {force: true});
+    cy.get('#text').type('AB', {force: true});
     testSnapshot();
   });
 
