@@ -316,7 +316,7 @@ class TopPanelHandlers {
   * @returns {void}
   */
   clickUndo () {
-    const {undoMgr} = this.editor;
+    const {undoMgr} = this.editor.canvas;
     if (undoMgr.getUndoStackSize() > 0) {
       undoMgr.undo();
       this.editor.layersPanel.populateLayers();

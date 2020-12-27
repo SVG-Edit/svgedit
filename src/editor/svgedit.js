@@ -849,7 +849,8 @@ editor.init = () => {
       $('#group_opacity').val(opacPerc);
       $('#opac_slider').slider('option', 'value', opacPerc);
       $id('elem_id').value = editor.selectedElement.id;
-      $id('elem_class').value = (editor.selectedElement.getAttribute('class') !== null) ? editor.selectedElement.getAttribute('class') : '';
+      $id('elem_class').value =
+        (editor.selectedElement.getAttribute('class') !== null) ? editor.selectedElement.getAttribute('class') : '';
     }
 
     editor.bottomPanelHandlers.updateToolButtonState();
@@ -1540,11 +1541,11 @@ editor.init = () => {
   * @returns {void}
   */
   editor.zoomImage = function (multiplier) {
-    const resolution = this.svgCanvasgetResolution();
+    const resolution = svgCanvas.getResolution();
     multiplier = multiplier ? resolution.zoom * multiplier : 1;
     // setResolution(res.w * multiplier, res.h * multiplier, true);
     $id('zoom').value = (multiplier * 100).toFixed(1);
-    this.svgCanvassetZoom(multiplier);
+    svgCanvas.setZoom(multiplier);
     zoomDone();
     updateCanvas(true);
   };
@@ -1847,7 +1848,7 @@ editor.init = () => {
   */
   const saveSourceEditor = (e) => {
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
-    if ($editorDialog.getAttribute('dialog') === 'open') return;
+    if ($editorDialog.getAttribute('dialog') !== 'open') return;
     const saveChanges = () => {
       svgCanvas.clearSelection();
       hideSourceEditor();

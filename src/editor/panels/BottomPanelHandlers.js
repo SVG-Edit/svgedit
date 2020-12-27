@@ -17,13 +17,25 @@ class BottomPanelHandlers {
     this.editor = editor;
     this.svgCanvas = editor.canvas;
   }
+  /**
+   * @type {module}
+   */
+  get selectedElement () {
+    return this.editor.selectedElement;
+  }
+  /**
+   * @type {module}
+   */
+  get multiselected () {
+    return this.editor.multiselected;
+  }
 
   /**
   * @type {module}
   */
   changeStrokeWidth (e) {
     let val = e.target.value;
-    if (val === 0 && this.editor.selectedElement && ['line', 'polyline'].includes(this.editor.selectedElement.nodeName)) {
+    if (val === 0 && this.selectedElement && ['line', 'polyline'].includes(this.selectedElement.nodeName)) {
       val = 1;
     }
     this.svgCanvas.setStrokeWidth(val);
