@@ -63,8 +63,7 @@ export default {
           } */
           break;
         case 'save-end':
-          // eslint-disable-next-line no-alert
-          alert(`save complete for pathID ${pathID}!`);
+          document.getElementById('se-alert-dialog').title = `save complete for pathID ${pathID}!`;
           break;
         default:
           throw new Error('Unexpected WebAppFind event type');

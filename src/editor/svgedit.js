@@ -222,6 +222,10 @@ editor.init = () => {
     const dialogBox = document.createElement('se-cmenu_canvas-dialog');
     dialogBox.setAttribute('id', 'se-cmenu_canvas');
     document.body.append(dialogBox);
+    // alertDialog added to DOM
+    const alertBox = document.createElement('se-alert-dialog');
+    alertBox.setAttribute('id', 'se-alert-dialog');
+    document.body.append(alertBox);
   } catch (err) {}
 
   editor.configObj.load();
@@ -436,7 +440,6 @@ editor.init = () => {
     // Alert will only appear the first time saved OR the
     //   first time the bug is encountered
     let done = editor.pref('save_notice_done');
-
     if (done !== 'all') {
       let note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
       // Check if FF and has <defs/>
@@ -453,7 +456,7 @@ editor.init = () => {
         editor.pref('save_notice_done', 'all');
       }
       if (done !== 'part') {
-        alert(note);
+        document.getElementById('se-alert-dialog').title = note;
       }
     }
   };
@@ -470,7 +473,7 @@ editor.init = () => {
     exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!exportWindow || exportWindow.closed) {
-      alert(uiStrings.notification.popupWindowBlocked);
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.popupWindowBlocked;
       return;
     }
 
@@ -1289,7 +1292,7 @@ editor.init = () => {
 
   // fired when user wants to move elements to another layer
   let promptMoveLayerOnce = false;
-  $('#selLayerNames').change((evt) => {
+  $('#selLayerNames').change( async(evt) => {
     const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
     const confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
     /**
@@ -1307,8 +1310,8 @@ editor.init = () => {
       if (promptMoveLayerOnce) {
         moveToLayer(true);
       } else {
-        const ok = confirm(confirmStr);
-        if (!ok) {
+        const ok = await seConfirm(confirmStr, [uiStrings.common.ok, uiStrings.common.cancel]);
+        if (ok === uiStrings.common.cancel) {
           return;
         }
         moveToLayer(true);
@@ -1666,10 +1669,10 @@ editor.init = () => {
    * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
    * @returns {void}
    */
-  const clickClear = () => {
+  const clickClear = async() => {
     const [x, y] = editor.configObj.curConfig.dimensions;
-    const ok = confirm(uiStrings.notification.QwantToClear);
-    if (!ok) {
+    const cancel = await seConfirm(uiStrings.notification.QwantToClear, [uiStrings.common.ok, uiStrings.common.cancel]);
+    if (cancel === uiStrings.common.cancel) {
       return;
     }
     editor.leftPanelHandlers.clickSelect();
@@ -1846,7 +1849,7 @@ editor.init = () => {
   * @param {Event} e
   * @returns {void} Resolves to `undefined`
   */
-  const saveSourceEditor = (e) => {
+  const saveSourceEditor = async (e) => {
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     if ($editorDialog.getAttribute('dialog') !== 'open') return;
     const saveChanges = () => {
@@ -1858,8 +1861,8 @@ editor.init = () => {
     };
 
     if (!svgCanvas.setSvgString(e.detail.value)) {
-      const ok = confirm(uiStrings.notification.QerrorsRevertToSource);
-      if (!ok) {
+      const resp = await seConfirm(uiStrings.notification.QerrorsRevertToSource, [uiStrings.common.ok, uiStrings.common.cancel]);
+      if (resp === uiStrings.common.cancel) {
         return;
       }
       saveChanges();
@@ -1901,15 +1904,15 @@ editor.init = () => {
     svgCanvas.setDocumentTitle(title);
 
     if (w !== 'fit' && !isValidUnit('width', w)) {
-      alert(uiStrings.notification.invalidAttrValGiven);
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.invalidAttrValGiven;
       return false;
     }
     if (h !== 'fit' && !isValidUnit('height', h)) {
-      alert(uiStrings.notification.invalidAttrValGiven);
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.invalidAttrValGiven;
       return false;
     }
     if (!svgCanvas.setResolution(w, h)) {
-      alert(uiStrings.notification.noContentToFitTo);
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.noContentToFitTo;
       return false;
     }
     // Set image save option
@@ -1955,7 +1958,7 @@ editor.init = () => {
   * @param {Event} e
   * @returns {void} Resolves to `undefined`
   */
-  const cancelOverlays = (e) => {
+  const cancelOverlays = async (e) => {
     $('#dialog_box').hide();
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     const editingsource = $editorDialog.getAttribute('dialog') === 'open';
@@ -1969,8 +1972,8 @@ editor.init = () => {
     if (editingsource) {
       const origSource = svgCanvas.getSvgString();
       if (origSource !== e.detail.value) {
-        const ok = confirm(uiStrings.notification.QignoreSourceChanges);
-        if (ok) {
+        const resp = await seConfirm(uiStrings.notification.QignoreSourceChanges, [uiStrings.common.ok, uiStrings.common.cancel]);
+        if (resp === uiStrings.common.ok) {
           hideSourceEditor();
         }
       } else {
@@ -2000,7 +2003,7 @@ editor.init = () => {
   });
 
   $('#url_notice').click(() => {
-    alert(this.title);
+    document.getElementById('se-alert-dialog').title = this.title;
   });
 
   $('#stroke_width').val(editor.configObj.curConfig.initStroke.width);
@@ -2702,7 +2705,7 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
             reject(new Error('URLLoadFail'));
             return;
           }
-          alert(uiStrings.notification.URLLoadFail + ': \n' + err);
+          document.getElementById('se-alert-dialog').title = uiStrings.notification.URLLoadFail + ': \n' + err;
           resolve();
         },
         complete () {

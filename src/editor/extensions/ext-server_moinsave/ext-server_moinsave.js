@@ -64,8 +64,7 @@ export default {
           <input type="hidden" name="contenttype" value="application/x-svgdraw">
         `).appendTo('body')
           .submit().remove();
-        // eslint-disable-next-line no-alert
-        alert(strings.saved);
+        document.getElementById('se-alert-dialog').title = strings.saved;
         top.window.location = '/' + name;
       }
     });
