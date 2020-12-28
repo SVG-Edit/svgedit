@@ -387,7 +387,7 @@ export default {
           width: '100%'
         });
         // eslint-disable-next-line max-len
-        const cancel = $('<button><img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel + '</button>')
+        $('<button><img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel + '</button>')
           .appendTo(browser)
           .on('click touchend', function () {
             $('#imgbrowse_holder').hide();
