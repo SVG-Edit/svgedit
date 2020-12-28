@@ -1289,7 +1289,7 @@ editor.init = () => {
 
   // fired when user wants to move elements to another layer
   let promptMoveLayerOnce = false;
-  $('#selLayerNames').change((evt) => {
+  $('#selLayerNames').change( async(evt) => {
     const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
     const confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
     /**
@@ -1307,8 +1307,8 @@ editor.init = () => {
       if (promptMoveLayerOnce) {
         moveToLayer(true);
       } else {
-        const ok = confirm(confirmStr);
-        if (!ok) {
+        const ok = await seConfirm(confirmStr, [uiStrings.common.ok, uiStrings.common.cancel]);
+        if (ok === uiStrings.common.cancel) {
           return;
         }
         moveToLayer(true);
@@ -1666,10 +1666,10 @@ editor.init = () => {
    * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
    * @returns {void}
    */
-  const clickClear = () => {
+  const clickClear = async() => {
     const [x, y] = editor.configObj.curConfig.dimensions;
-    const ok = confirm(uiStrings.notification.QwantToClear);
-    if (!ok) {
+    const cancel = await seConfirm(uiStrings.notification.QwantToClear, [uiStrings.common.ok, uiStrings.common.cancel]);
+    if (cancel === uiStrings.common.cancel) {
       return;
     }
     editor.leftPanelHandlers.clickSelect();
@@ -1846,7 +1846,7 @@ editor.init = () => {
   * @param {Event} e
   * @returns {void} Resolves to `undefined`
   */
-  const saveSourceEditor = (e) => {
+  const saveSourceEditor = async (e) => {
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     if ($editorDialog.getAttribute('dialog') !== 'open') return;
     const saveChanges = () => {
@@ -1858,8 +1858,8 @@ editor.init = () => {
     };
 
     if (!svgCanvas.setSvgString(e.detail.value)) {
-      const ok = confirm(uiStrings.notification.QerrorsRevertToSource);
-      if (!ok) {
+      const resp = await seConfirm(uiStrings.notification.QerrorsRevertToSource, [uiStrings.common.ok, uiStrings.common.cancel]);
+      if (resp === uiStrings.common.cancel) {
         return;
       }
       saveChanges();
@@ -1955,7 +1955,7 @@ editor.init = () => {
   * @param {Event} e
   * @returns {void} Resolves to `undefined`
   */
-  const cancelOverlays = (e) => {
+  const cancelOverlays = async (e) => {
     $('#dialog_box').hide();
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     const editingsource = $editorDialog.getAttribute('dialog') === 'open';
@@ -1969,8 +1969,8 @@ editor.init = () => {
     if (editingsource) {
       const origSource = svgCanvas.getSvgString();
       if (origSource !== e.detail.value) {
-        const ok = confirm(uiStrings.notification.QignoreSourceChanges);
-        if (ok) {
+        const resp = await seConfirm(uiStrings.notification.QignoreSourceChanges, [uiStrings.common.ok, uiStrings.common.cancel]);
+        if (resp === uiStrings.common.ok) {
           hideSourceEditor();
         }
       } else {
