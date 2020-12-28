@@ -372,7 +372,7 @@ export default {
       let browser = $('#imgbrowse');
       if (!browser.length) {
         $('<div id=imgbrowse_holder><div id=imgbrowse class=toolbar_button>' +
-        '</div></div>').insertAfter('#svg_docprops');
+        '</div></div>').insertAfter('#svg_editor');
         browser = $('#imgbrowse');
 
         const allLibs = imagelibStrings.select_lib;
@@ -386,8 +386,8 @@ export default {
           left: 0,
           width: '100%'
         });
-
-        const cancel = $('<button>' + uiStrings.common.cancel + '</button>')
+        // eslint-disable-next-line max-len
+        const cancel = $('<button><img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel + '</button>')
           .appendTo(browser)
           .on('click touchend', function () {
             $('#imgbrowse_holder').hide();
@@ -398,8 +398,8 @@ export default {
           });
 
         const leftBlock = $('<span>').css({position: 'absolute', top: 5, left: 10}).appendTo(browser);
-
-        const back = $('<button hidden>' + imagelibStrings.show_list + '</button>')
+        // eslint-disable-next-line max-len
+        const back = $('<button hidden><img class="svg_icon" src="./images/library.svg" alt="icon" width="16" height="16" />' + imagelibStrings.show_list + '</button>')
           .appendTo(leftBlock)
           .on('click touchend', function () {
             frame.attr('src', 'about:blank').hide();
@@ -430,9 +430,6 @@ export default {
           'margin-top': 10
         });
 
-        cancel.prepend($.getSvgIcon('cancel', true));
-        back.prepend($.getSvgIcon('tool_imagelib', true));
-
         imagelibStrings.imgLibs.forEach(function ({name, url, description}) {
           $('<li>')
             .appendTo(libOpts)
@@ -452,21 +449,16 @@ export default {
       }
     }
 
-    const buttons = [{
+    const events = {
       id: 'tool_imagelib',
-      type: 'app_menu',
-      icon: 'imagelib.png',
-      position: 4,
-      events: {
-        mouseup: showBrowser
+      click () {
+        showBrowser();
       }
-    }];
+    };
 
     return {
       svgicons: 'ext-imagelib.xml',
-      buttons: imagelibStrings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      }),
+      events,
       callback () {
         $('<style>').text(
           '#imgbrowse_holder {' +
