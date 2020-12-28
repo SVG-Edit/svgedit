@@ -34,7 +34,7 @@ export class SeAlertDialog extends HTMLElement {
       this.dialog.open();
       break;
     default:
-      super.attributeChangedCallback(name, oldValue, newValue);
+      console.error('unkonw attr for:', name, 'newValue =', newValue);
       break;
     }
   }
