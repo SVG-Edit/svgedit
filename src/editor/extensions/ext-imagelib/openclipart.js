@@ -39,8 +39,7 @@ async function processResults (url) {
   // console.log('json', json);
 
   if (!json || json.msg !== 'success') {
-    // Todo: This could use a generic alert library instead
-    alert('There was a problem downloading the results'); // eslint-disable-line no-alert
+    document.getElementById('se-alert-dialog').title = 'There was a problem downloading the results';
     return;
   }
   const {payload, info: {

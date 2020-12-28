@@ -222,6 +222,10 @@ editor.init = () => {
     const dialogBox = document.createElement('se-cmenu_canvas-dialog');
     dialogBox.setAttribute('id', 'se-cmenu_canvas');
     document.body.append(dialogBox);
+    // alertDialog added to DOM
+    const alertBox = document.createElement('se-alert-dialog');
+    alertBox.setAttribute('id', 'se-alert-dialog');
+    document.body.append(alertBox);
   } catch (err) {}
 
   editor.configObj.load();
@@ -436,7 +440,6 @@ editor.init = () => {
     // Alert will only appear the first time saved OR the
     //   first time the bug is encountered
     let done = editor.pref('save_notice_done');
-
     if (done !== 'all') {
       let note = uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
       // Check if FF and has <defs/>
@@ -453,7 +456,7 @@ editor.init = () => {
         editor.pref('save_notice_done', 'all');
       }
       if (done !== 'part') {
-        alert(note);
+        document.getElementById('se-alert-dialog').title = note;
       }
     }
   };
@@ -470,7 +473,7 @@ editor.init = () => {
     exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!exportWindow || exportWindow.closed) {
-      alert(uiStrings.notification.popupWindowBlocked);
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.popupWindowBlocked;
       return;
     }
 
@@ -1901,15 +1904,15 @@ editor.init = () => {
     svgCanvas.setDocumentTitle(title);
 
     if (w !== 'fit' && !isValidUnit('width', w)) {
-      alert(uiStrings.notification.invalidAttrValGiven);
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.invalidAttrValGiven;
       return false;
     }
     if (h !== 'fit' && !isValidUnit('height', h)) {
-      alert(uiStrings.notification.invalidAttrValGiven);
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.invalidAttrValGiven;
       return false;
     }
     if (!svgCanvas.setResolution(w, h)) {
-      alert(uiStrings.notification.noContentToFitTo);
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.noContentToFitTo;
       return false;
     }
     // Set image save option
@@ -2000,7 +2003,7 @@ editor.init = () => {
   });
 
   $('#url_notice').click(() => {
-    alert(this.title);
+    document.getElementById('se-alert-dialog').title = this.title;
   });
 
   $('#stroke_width').val(editor.configObj.curConfig.initStroke.width);
@@ -2702,7 +2705,7 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
             reject(new Error('URLLoadFail'));
             return;
           }
-          alert(uiStrings.notification.URLLoadFail + ': \n' + err);
+          document.getElementById('se-alert-dialog').title = uiStrings.notification.URLLoadFail + ': \n' + err;
           resolve();
         },
         complete () {

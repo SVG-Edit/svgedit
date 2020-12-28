@@ -403,8 +403,7 @@ class TopPanelHandlers {
 
     if (!valid) {
       e.target.value = this.selectedElement().getAttribute(attr);
-      // eslint-disable-next-line no-alert
-      alert(this.uiStrings.notification.invalidAttrValGiven);
+      document.getElementById('se-alert-dialog').title = this.uiStrings.notification.invalidAttrValGiven;
       return false;
     }
 
