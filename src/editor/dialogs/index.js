@@ -5,4 +5,5 @@ import './cmenuDialog.js';
 import './cmenuLayersDialog.js';
 import './seSelectDialog.js';
 import './seConfirmDialog.js';
+import './sePromptDialog.js';
 import './seAlertDialog.js';

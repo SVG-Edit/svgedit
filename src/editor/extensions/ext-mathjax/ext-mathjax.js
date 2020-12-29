@@ -1,4 +1,4 @@
-/* globals MathJax */
+/* globals MathJax seAlert */
 /**
  * @file ext-mathjax.js
  *
@@ -202,9 +202,7 @@ export default {
               });
             } catch (e) {
               console.log('Failed loading MathJax.'); // eslint-disable-line no-console
-              document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
-              // eslint-disable-next-line max-len
-              document.getElementById('se-alert-dialog').title = 'Failed loading MathJax. You will not be able to change the mathematics.';
+              seAlert('alert', 'Failed loading MathJax. You will not be able to change the mathematics.');
             }
           }
         }

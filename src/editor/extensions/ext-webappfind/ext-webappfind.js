@@ -1,3 +1,4 @@
+/* globals seAlert */
 /**
 * Depends on Firefox add-on and executables from
 * {@link https://github.com/brettz9/webappfind}.
@@ -63,8 +64,7 @@ export default {
           } */
           break;
         case 'save-end':
-          document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
-          document.getElementById('se-alert-dialog').title = `save complete for pathID ${pathID}!`;
+          seAlert('alert', `save complete for pathID ${pathID}!`);
           break;
         default:
           throw new Error('Unexpected WebAppFind event type');

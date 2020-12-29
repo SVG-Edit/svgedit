@@ -1,5 +1,5 @@
 /* eslint-disable no-alert */
-/* globals $ */
+/* globals $ seAlert */
 import SvgCanvas from '../../svgcanvas/svgcanvas.js';
 
 const SIDEPANEL_MAXWIDTH = 300;
@@ -156,8 +156,7 @@ class LayersPanel {
     const newName = prompt(this.uiStrings.notification.enterUniqueLayerName, uniqName);
     if (!newName) { return; }
     if (this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
-      document.getElementById('se-alert-dialog').title = this.uiStrings.notification.dupeLayerName;
+      seAlert('alert', this.uiStrings.notification.dupeLayerName);
       return;
     }
     this.svgCanvas.createLayer(newName);
@@ -191,8 +190,7 @@ class LayersPanel {
     const newName = prompt(this.uiStrings.notification.enterUniqueLayerName, name);
     if (!newName) { return; }
     if (this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
-      document.getElementById('se-alert-dialog').title = this.uiStrings.notification.dupeLayerName;
+      seAlert('alert', this.uiStrings.notification.dupeLayerName);
       return;
     }
     this.svgCanvas.cloneLayer(newName);
@@ -237,8 +235,7 @@ class LayersPanel {
     const newName = prompt(this.uiStrings.notification.enterNewLayerName, '');
     if (!newName) { return; }
     if (oldName === newName || this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
-      document.getElementById('se-alert-dialog').title = this.uiStrings.notification.layerHasThatName;
+      seAlert('alert', this.uiStrings.notification.layerHasThatName);
       return;
     }
     this.svgCanvas.renameCurrentLayer(newName);
