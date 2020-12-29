@@ -2,9 +2,8 @@
 import ListComboBox from 'elix/define/ListComboBox.js';
 import NumberSpinBox from 'elix/define/NumberSpinBox.js';
 // import Input from 'elix/src/base/Input.js';
-import {defaultState} from 'elix/src/base/internal.js';
+import * as internal from 'elix/src/base/internal.js';
 import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';
-import {internal} from 'elix';
 
 /**
  * @class Dropdown
@@ -14,8 +13,8 @@ class Dropdown extends ListComboBox {
     * @function get
     * @returns {PlainObject}
     */
-  get [defaultState] () {
-    return Object.assign(super[defaultState], {
+  get [internal.defaultState] () {
+    return Object.assign(super[internal.defaultState], {
       inputPartType: NumberSpinBox,
       src: './images/logo.svg',
       inputsize: '100%'
