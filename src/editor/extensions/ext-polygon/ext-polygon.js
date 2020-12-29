@@ -22,7 +22,7 @@ export default {
   name: 'polygon',
   async init (S) {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const {$} = S, // {svgcontent}
       // addElem = svgCanvas.addSVGElementFromJson,
       editingitex = false;

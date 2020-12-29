@@ -24,14 +24,14 @@ export default {
   async init ({$, NS, getTypeMap}) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const svgdoc = document.getElementById('svgcanvas').ownerDocument,
       {assignAttributes} = svgCanvas,
       hcanvas = document.createElement('canvas'),
       canvBG = $('#canvasBackground'),
       units = getTypeMap(), // Assumes prior `init()` call on `units.js` module
       intervals = [0.01, 0.1, 1, 10, 100, 1000];
-    let showGrid = svgEditor.curConfig.showGrid || false;
+    let showGrid = svgEditor.configObj.curConfig.showGrid || false;
 
     $(hcanvas).hide().appendTo('body');
 
@@ -90,7 +90,7 @@ export default {
      */
     function updateGrid (zoom) {
       // TODO: Try this with <line> elements, then compare performance difference
-      const unit = units[svgEditor.curConfig.baseUnit]; // 1 = 1px
+      const unit = units[svgEditor.configObj.curConfig.baseUnit]; // 1 = 1px
       const uMulti = unit * zoom;
       // Calculate the main number interval
       const rawM = 100 / uMulti;
@@ -109,7 +109,7 @@ export default {
       const part = bigInt / 10;
 
       ctx.globalAlpha = 0.2;
-      ctx.strokeStyle = svgEditor.curConfig.gridColor;
+      ctx.strokeStyle = svgEditor.configObj.curConfig.gridColor;
       for (let i = 1; i < 10; i++) {
         const subD = Math.round(part * i) + 0.5;
         // const lineNum = (i % 2)?12:10;
@@ -161,7 +161,7 @@ export default {
       events: {
         id: 'view_grid',
         click () {
-          svgEditor.curConfig.showGrid = showGrid = !showGrid;
+          svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid;
           gridUpdate();
         }
       }

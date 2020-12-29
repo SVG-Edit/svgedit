@@ -99,7 +99,7 @@ export default {
               webappfind: {
                 type: saveMessage,
                 pathID,
-                content: svgEditor.canvas.getSvgString()
+                content: svgEditor.svgCanvas.getSvgString()
               }
             }, window.location.origin === 'null'
               // Avoid "null" string error for `file:` protocol (even

@@ -22,7 +22,7 @@ export default {
   name: 'placemark',
   async init (S) {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const addElem = svgCanvas.addSVGElementFromJson;
     const {$} = S; // {svgcontent},
     let

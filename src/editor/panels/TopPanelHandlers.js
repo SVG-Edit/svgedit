@@ -16,7 +16,7 @@ class TopPanelHandlers {
   */
   constructor (editor) {
     this.editor = editor;
-    this.svgCanvas = editor.canvas;
+    this.svgCanvas = editor.svgCanvas;
     this.uiStrings = editor.uiStrings;
   }
   /**
@@ -198,7 +198,7 @@ class TopPanelHandlers {
 
         curPanel.forEach((item) => {
           let attrVal = elem.getAttribute(item);
-          if (this.editor.curConfig.baseUnit !== 'px' && elem[item]) {
+          if (this.editor.configObj.curConfig.baseUnit !== 'px' && elem[item]) {
             const bv = elem[item].baseVal.value;
             attrVal = convertUnit(bv);
           }
@@ -265,8 +265,8 @@ class TopPanelHandlers {
     }
 
     // update history buttons
-    $id('tool_undo').disabled = (this.editor.canvas.undoMgr.getUndoStackSize() === 0);
-    $id('tool_redo').disabled = (this.editor.canvas.undoMgr.getRedoStackSize() === 0);
+    $id('tool_undo').disabled = (this.svgCanvas.undoMgr.getUndoStackSize() === 0);
+    $id('tool_redo').disabled = (this.svgCanvas.undoMgr.getRedoStackSize() === 0);
 
     this.svgCanvas.addedNew = false;
 

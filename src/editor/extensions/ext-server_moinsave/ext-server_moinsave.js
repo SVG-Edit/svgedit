@@ -26,7 +26,7 @@ export default {
   async init ({$, encode64, importLocale}) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const saveSvgAction = '/+modify';
 
     // Create upload target (hidden iframe)

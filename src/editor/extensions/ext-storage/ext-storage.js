@@ -36,7 +36,7 @@ export default {
   name: 'storage',
   init ({$}) {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
 
     // We could empty any already-set data for users when they decline storage,
     //  but it would be a risk for users who wanted to store but accidentally
@@ -56,7 +56,7 @@ export default {
       // the "noStorageOnLoad" config setting to true in svgedit-config-*.js.
       noStorageOnLoad,
       forceStorage
-    } = svgEditor.curConfig;
+    } = svgEditor.configObj.curConfig;
     const {storage, updateCanvas} = svgEditor;
 
     /**
@@ -90,7 +90,7 @@ export default {
      */
     function setSVGContentStorage (val) {
       if (storage) {
-        const name = 'svgedit-' + svgEditor.curConfig.canvasName;
+        const name = 'svgedit-' + svgEditor.configObj.curConfig.canvasName;
         if (!val) {
           storage.removeItem(name);
         } else {

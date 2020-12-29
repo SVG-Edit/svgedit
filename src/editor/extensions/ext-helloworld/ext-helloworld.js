@@ -30,7 +30,7 @@ export default {
   async init ({$, importLocale}) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     return {
       name: strings.name,
       events: [{

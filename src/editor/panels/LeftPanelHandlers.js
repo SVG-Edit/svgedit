@@ -14,7 +14,7 @@ class LeftPanelHandlers {
   */
   constructor (editor) {
     this.editor = editor;
-    this.svgCanvas = editor.canvas;
+    this.svgCanvas = editor.svgCanvas;
   }
   /**
   * This is a common function used when a tool has been clicked (chosen).

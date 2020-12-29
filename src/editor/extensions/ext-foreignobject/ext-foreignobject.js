@@ -24,7 +24,7 @@ export default {
   async init (S) {
     const svgEditor = this;
     const {$, text2xml, NS} = S;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const
       // {svgcontent} = S,
       // addElem = svgCanvas.addSVGElementFromJson,

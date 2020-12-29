@@ -47,7 +47,7 @@ export default {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
     const {$} = S;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const // {svgcontent} = S,
       addElem = svgCanvas.addSVGElementFromJson;
     const mtypes = ['start', 'mid', 'end'];

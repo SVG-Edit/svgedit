@@ -24,7 +24,7 @@ export default {
   async init (S) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const
       addElem = svgCanvas.addSVGElementFromJson,
       {nonce, $} = S,

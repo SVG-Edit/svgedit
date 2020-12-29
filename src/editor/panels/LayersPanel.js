@@ -14,7 +14,7 @@ class LayersPanel {
    * @param {PlainObject} editor
    */
   constructor (editor) {
-    this.svgCanvas = editor.canvas;
+    this.svgCanvas = editor.svgCanvas;
     this.uiStrings = editor.uiStrings;
     this.updateContextPanel = editor.topPanelHandlers.updateContextPanel;
     this.sidedrag = -1;
@@ -120,7 +120,7 @@ class LayersPanel {
       this.lmenuFunc.bind(this)(e?.detail?.trigger, e?.detail?.source);
     });
     $id('sidepanel_handle').addEventListener('click', this.toggleSidePanel.bind(this));
-    if (this.editor.curConfig.showlayers) {
+    if (this.editor.configObj.curConfig.showlayers) {
       this.toggleSidePanel();
     }
     $id('sidepanel_handle').addEventListener('mousedown', (evt) => {

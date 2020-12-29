@@ -15,7 +15,7 @@ class BottomPanelHandlers {
   */
   constructor (editor) {
     this.editor = editor;
-    this.svgCanvas = editor.canvas;
+    this.svgCanvas = editor.svgCanvas;
   }
   /**
    * @type {module}
@@ -178,7 +178,7 @@ class BottomPanelHandlers {
    */
   init () {
     // register actions for bottom panel
-    $id('zoom').addEventListener('change', (e) => this.changeZoom(e.detail.value).bind(this));
+    $id('zoom').addEventListener('change', (e) => this.changeZoom.bind(this)(e.detail.value));
     $id('stroke_color').addEventListener('change', (evt) => this.handleColorPicker.bind(this)('stroke', evt));
     $id('fill_color').addEventListener('change', (evt) => this.handleColorPicker.bind(this)('fill', evt));
     $id('stroke_width').addEventListener('change', this.changeStrokeWidth.bind(this));
