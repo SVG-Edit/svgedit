@@ -1,5 +1,5 @@
 /* eslint-disable no-alert */
-/* globals jQuery seSelect seAlert */
+/* globals jQuery seSelect seAlert seConfirm */
 /**
 * The main module for the visual SVG Editor.
 *
@@ -1292,7 +1292,7 @@ editor.init = () => {
 
   // fired when user wants to move elements to another layer
   let promptMoveLayerOnce = false;
-  $('#selLayerNames').change( async(evt) => {
+  $('#selLayerNames').change(async (evt) => {
     const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
     const confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
     /**
@@ -1669,7 +1669,7 @@ editor.init = () => {
    * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
    * @returns {void}
    */
-  const clickClear = async() => {
+  const clickClear = async () => {
     const [x, y] = editor.configObj.curConfig.dimensions;
     const cancel = await seConfirm(uiStrings.notification.QwantToClear, [uiStrings.common.ok, uiStrings.common.cancel]);
     if (cancel === uiStrings.common.cancel) {

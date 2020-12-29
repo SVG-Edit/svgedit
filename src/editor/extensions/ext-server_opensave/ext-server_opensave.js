@@ -1,3 +1,4 @@
+/* globals seConfirm */
 /**
  * @file ext-server_opensave.js
  *
