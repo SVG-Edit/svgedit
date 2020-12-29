@@ -156,6 +156,7 @@ class LayersPanel {
     const newName = prompt(this.uiStrings.notification.enterUniqueLayerName, uniqName);
     if (!newName) { return; }
     if (this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
+      document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
       document.getElementById('se-alert-dialog').title = this.uiStrings.notification.dupeLayerName;
       return;
     }
@@ -190,6 +191,7 @@ class LayersPanel {
     const newName = prompt(this.uiStrings.notification.enterUniqueLayerName, name);
     if (!newName) { return; }
     if (this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
+      document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
       document.getElementById('se-alert-dialog').title = this.uiStrings.notification.dupeLayerName;
       return;
     }
@@ -235,6 +237,7 @@ class LayersPanel {
     const newName = prompt(this.uiStrings.notification.enterNewLayerName, '');
     if (!newName) { return; }
     if (oldName === newName || this.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
+      document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
       document.getElementById('se-alert-dialog').title = this.uiStrings.notification.layerHasThatName;
       return;
     }

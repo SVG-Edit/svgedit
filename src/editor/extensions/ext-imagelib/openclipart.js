@@ -39,6 +39,7 @@ async function processResults (url) {
   // console.log('json', json);
 
   if (!json || json.msg !== 'success') {
+    document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
     document.getElementById('se-alert-dialog').title = 'There was a problem downloading the results';
     return;
   }

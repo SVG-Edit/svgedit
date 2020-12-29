@@ -245,9 +245,8 @@ export default {
         form.submit();
 
         rebuildInput(form);
-        await $.process_cancel(strings.uploading);
+        await seConfirm(strings.uploading, ['Cancel']);
         cancelled = true;
-        $('#dialog_box').hide();
       }
 
       if (form[0] === openSvgForm[0]) {

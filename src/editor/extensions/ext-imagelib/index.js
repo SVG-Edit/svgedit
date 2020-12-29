@@ -32,6 +32,7 @@ $('a').click(function () {
         data = canvas.toDataURL();
       } catch (err) {
         // This fails in Firefox with `file:///` URLs :(
+        document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
         document.getElementById('se-alert-dialog').title = 'Data URL conversion failed: ' + err;
         data = '';
       }

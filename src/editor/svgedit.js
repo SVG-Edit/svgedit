@@ -456,6 +456,7 @@ editor.init = () => {
         editor.pref('save_notice_done', 'all');
       }
       if (done !== 'part') {
+        document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
         document.getElementById('se-alert-dialog').title = note;
       }
     }
@@ -473,6 +474,7 @@ editor.init = () => {
     exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!exportWindow || exportWindow.closed) {
+      document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
       document.getElementById('se-alert-dialog').title = uiStrings.notification.popupWindowBlocked;
       return;
     }
@@ -789,7 +791,7 @@ editor.init = () => {
     }
 
     if (editor.configObj.urldata.storagePrompt !== true && editor.storagePromptState === 'ignore') {
-      $('#dialog_box').hide();
+      document.getElementById('se-alert-dialog').setAttribute('close', true);
     }
   };
 
@@ -1902,7 +1904,7 @@ editor.init = () => {
     const {title, w, h, save} = e.detail;
     // set document title
     svgCanvas.setDocumentTitle(title);
-
+    document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
     if (w !== 'fit' && !isValidUnit('width', w)) {
       document.getElementById('se-alert-dialog').title = uiStrings.notification.invalidAttrValGiven;
       return false;
@@ -1959,7 +1961,6 @@ editor.init = () => {
   * @returns {void} Resolves to `undefined`
   */
   const cancelOverlays = async (e) => {
-    $('#dialog_box').hide();
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     const editingsource = $editorDialog.getAttribute('dialog') === 'open';
     if (!editingsource && !docprops && !preferences) {
@@ -2003,6 +2004,7 @@ editor.init = () => {
   });
 
   $('#url_notice').click(() => {
+    document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
     document.getElementById('se-alert-dialog').title = this.title;
   });
 
@@ -2440,13 +2442,14 @@ editor.init = () => {
     * @returns {void}
     */
     const importImage = function (e) {
-      $.process_cancel(uiStrings.notification.loadingImage);
+      document.getElementById('se-alert-dialog').setAttribute('type', 'prompt_cancel');
+      document.getElementById('se-alert-dialog').title = uiStrings.notification.loadingImage;
       e.stopPropagation();
       e.preventDefault();
       $('#main_menu').hide();
       const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
       if (!file) {
-        $('#dialog_box').hide();
+        document.getElementById('se-alert-dialog').setAttribute('close', true);
         return;
       }
 
@@ -2467,7 +2470,7 @@ editor.init = () => {
           svgCanvas.alignSelectedElements('c', 'page');
           // highlight imported element, otherwise we get strange empty selectbox
           svgCanvas.selectOnly([newElement]);
-          $('#dialog_box').hide();
+          document.getElementById('se-alert-dialog').setAttribute('close', true);
         };
         reader.readAsText(file);
       } else {
@@ -2497,7 +2500,7 @@ editor.init = () => {
             svgCanvas.alignSelectedElements('m', 'page');
             svgCanvas.alignSelectedElements('c', 'page');
             editor.topPanelHandlers.updateContextPanel();
-            $('#dialog_box').hide();
+            document.getElementById('se-alert-dialog').setAttribute('close', true);
           };
           // create dummy img so we know the default dimensions
           let imgWidth = 100;
@@ -2525,7 +2528,8 @@ editor.init = () => {
       if (!ok) { return; }
       svgCanvas.clear();
       if (this.files.length === 1) {
-        $.process_cancel(uiStrings.notification.loadingImage);
+        document.getElementById('se-alert-dialog').setAttribute('type', 'prompt_cancel');
+        document.getElementById('se-alert-dialog').title = uiStrings.notification.loadingImage;
         const reader = new FileReader();
         reader.onloadend = async function ({target}) {
           await loadSvgString(target.result);
@@ -2691,7 +2695,8 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
         dataType: 'text',
         cache: Boolean(cache),
         beforeSend () {
-          $.process_cancel(uiStrings.notification.loadingImage);
+          document.getElementById('se-alert-dialog').setAttribute('type', 'prompt_cancel');
+          document.getElementById('se-alert-dialog').title = uiStrings.notification.loadingImage;
         },
         success (str) {
           loadSvgString(str, {noAlert});
@@ -2705,11 +2710,13 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
             reject(new Error('URLLoadFail'));
             return;
           }
+          document.getElementById('se-alert-dialog').setAttribute('close', true);
+          document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
           document.getElementById('se-alert-dialog').title = uiStrings.notification.URLLoadFail + ': \n' + err;
           resolve();
         },
         complete () {
-          $('#dialog_box').hide();
+          document.getElementById('se-alert-dialog').setAttribute('close', true);
         }
       });
     });

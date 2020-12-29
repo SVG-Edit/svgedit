@@ -403,6 +403,7 @@ class TopPanelHandlers {
 
     if (!valid) {
       e.target.value = this.selectedElement().getAttribute(attr);
+      document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
       document.getElementById('se-alert-dialog').title = this.uiStrings.notification.invalidAttrValGiven;
       return false;
     }

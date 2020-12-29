@@ -63,6 +63,7 @@ export default {
           } */
           break;
         case 'save-end':
+          document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
           document.getElementById('se-alert-dialog').title = `save complete for pathID ${pathID}!`;
           break;
         default:

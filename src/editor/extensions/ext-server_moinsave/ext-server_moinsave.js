@@ -64,6 +64,7 @@ export default {
           <input type="hidden" name="contenttype" value="application/x-svgdraw">
         `).appendTo('body')
           .submit().remove();
+        document.getElementById('se-alert-dialog').setAttribute('type', 'alert');
         document.getElementById('se-alert-dialog').title = strings.saved;
         top.window.location = '/' + name;
       }

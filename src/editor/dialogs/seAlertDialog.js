@@ -18,7 +18,7 @@ export class SeAlertDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title'];
+    return ['title', 'type', 'close'];
   }
   /**
    * @function attributeChangedCallback
@@ -30,8 +30,23 @@ export class SeAlertDialog extends HTMLElement {
   attributeChangedCallback (name, oldValue, newValue) {
     switch (name) {
     case 'title':
+      if (this.dialog.opened) {
+        this.dialog.close();
+      }
       this.dialog.textContent = newValue;
       this.dialog.open();
+      break;
+    case 'type':
+      if (newValue === 'prompt_cancel') {
+        this.dialog.choices = ['Cancel'];
+      } else {
+        this.dialog.choices = ['Ok'];
+      }
+      break;
+    case 'close':
+      if (this.dialog.opened) {
+        this.dialog.close();
+      }
       break;
     default:
       console.error('unkonw attr for:', name, 'newValue =', newValue);
@@ -52,6 +67,36 @@ export class SeAlertDialog extends HTMLElement {
    */
   set title (value) {
     this.setAttribute('title', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get type () {
+    return this.getAttribute('type');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set type (value) {
+    this.setAttribute('type', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get close () {
+    return this.getAttribute('close');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set close (value) {
+    this.setAttribute('close', value);
   }
 }
 
