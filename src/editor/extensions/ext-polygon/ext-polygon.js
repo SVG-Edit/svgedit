@@ -133,7 +133,7 @@ export default {
             // Todo: Uncomment the setItexString() function above and handle ajaxEndpoint?
             /*
             if (!setItexString($('#svg_source_textarea').val())) {
-              const ok = confirm('Errors found. Revert to original?', function (ok) {
+              const ok = seConfirm('Errors found. Revert to original?', function (ok) {
               if (!ok) {
                 return false;
               }

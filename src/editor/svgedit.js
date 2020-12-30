@@ -1,5 +1,4 @@
-/* eslint-disable no-alert */
-/* globals jQuery seSelect */
+/* globals jQuery seConfirm seAlert seSelect */
 /**
 * The main module for the visual SVG this.
 *
@@ -146,7 +145,7 @@ class Editor {
   loadSvgString (str, {noAlert} = {}) {
     const success = this.svgCanvas.setSvgString(str) !== false;
     if (success) return;
-    if (!noAlert) window.alert(this.uiStrings.notification.errorLoadingSVG);
+    if (!noAlert) seAlert(this.uiStrings.notification.errorLoadingSVG);
     throw new Error('Error loading SVG');
   }
 
@@ -566,7 +565,7 @@ class Editor {
         this.exportWindow = window.open('', this.exportWindowName); // A hack to get the window via JSON-able name without opening a new one
       }
       if (!this.exportWindow || this.exportWindow.closed) {
-        alert(this.uiStrings.notification.popupWindowBlocked);
+        seAlert(this.uiStrings.notification.popupWindowBlocked);
         return;
       }
       this.exportWindow.location.href = data.output;
@@ -628,7 +627,7 @@ class Editor {
         if (promptMoveLayerOnce) {
           moveToLayer(true);
         } else {
-          const ok = confirm(confirmStr);
+          const ok = seConfirm(confirmStr);
           if (!ok) {
             return;
           }
@@ -828,7 +827,7 @@ class Editor {
     });
 
     $('#url_notice').click(() => {
-      alert(this.title);
+      seAlert(this.title);
     });
 
     $('#stroke_width').val(this.configObj.curConfig.initStroke.width);
@@ -1217,7 +1216,7 @@ class Editor {
         this.pref('save_notice_done', 'all');
       }
       if (done !== 'part') {
-        alert(note);
+        seAlert(note);
       }
     }
   }
@@ -1234,7 +1233,7 @@ class Editor {
     this.exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!this.exportWindow || this.exportWindow.closed) {
-      alert(this.uiStrings.notification.popupWindowBlocked);
+      seAlert(this.uiStrings.notification.popupWindowBlocked);
       return;
     }
 
@@ -1252,7 +1251,7 @@ class Editor {
       // Note that this will also prevent the notice even though new issues may appear later.
       // May want to find a way to deal with that without annoying the user
       this.pref('export_notice_done', 'all');
-      this.exportWindow.alert(note);
+      this.exportWindow.seAlert(note);
     }
   }
 
@@ -1728,7 +1727,7 @@ class Editor {
     * @typedef {PlainObject} module:SVGthis.ContextTool
     * @property {string} panel The ID of the existing panel to which the tool is being added. Required.
     * @property {string} id The ID of the actual tool element. Required.
-    * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { alert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
+    * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"change", external:jQuery.Function>} events DOM event names keyed to associated functions. Example: `{change () { seAlert('Option was changed') } }`. "change" event is one specifically handled for the "button-select" type. Required.
     * @property {string} title The tooltip text that will appear when the user hovers over the tool. Required.
     * @property {"tool_button"|"select"|"button-select"|"input"|string} type The type of tool being added. Expected.
     * @property {PlainObject<string, string>} [options] List of options and their labels for select tools. Example: `{1: 'One', 2: 'Two', all: 'All' }`. Required by "select" tools.
@@ -1932,7 +1931,7 @@ class Editor {
    */
   clickClear () {
     const [x, y] = this.configObj.curConfig.dimensions;
-    const ok = confirm(this.uiStrings.notification.QwantToClear);
+    const ok = seConfirm(this.uiStrings.notification.QwantToClear);
     if (!ok) {
       return;
     }
@@ -2121,7 +2120,7 @@ class Editor {
     };
 
     if (!this.svgCanvas.setSvgString(e.detail.value)) {
-      const ok = confirm(this.uiStrings.notification.QerrorsRevertToSource);
+      const ok = seConfirm(this.uiStrings.notification.QerrorsRevertToSource);
       if (!ok) {
         return;
       }
@@ -2164,15 +2163,15 @@ class Editor {
     this.svgCanvas.setDocumentTitle(title);
 
     if (w !== 'fit' && !isValidUnit('width', w)) {
-      alert(this.uiStrings.notification.invalidAttrValGiven);
+      seAlert(this.uiStrings.notification.invalidAttrValGiven);
       return false;
     }
     if (h !== 'fit' && !isValidUnit('height', h)) {
-      alert(this.uiStrings.notification.invalidAttrValGiven);
+      seAlert(this.uiStrings.notification.invalidAttrValGiven);
       return false;
     }
     if (!this.svgCanvas.setResolution(w, h)) {
-      alert(this.uiStrings.notification.noContentToFitTo);
+      seAlert(this.uiStrings.notification.noContentToFitTo);
       return false;
     }
     // Set image save option
@@ -2231,7 +2230,7 @@ class Editor {
     if (editingsource) {
       const origSource = this.svgCanvas.getSvgString();
       if (origSource !== e.detail.value) {
-        const ok = confirm(this.uiStrings.notification.QignoreSourceChanges);
+        const ok = seConfirm(this.uiStrings.notification.QignoreSourceChanges);
         if (ok) {
           this.hideSourceEditor();
         }
@@ -2262,7 +2261,7 @@ class Editor {
     if (this.undoMgr.getUndoStackSize() === 0) {
       return true;
     }
-    return confirm(this.uiStrings.notification.QwantToOpen);
+    return seConfirm(this.uiStrings.notification.QwantToOpen);
   }
 
   /**
@@ -2457,7 +2456,7 @@ class Editor {
               reject(new Error('URLLoadFail'));
               return;
             }
-            alert(this.uiStrings.notification.URLLoadFail + ': \n' + err);
+            seAlert(this.uiStrings.notification.URLLoadFail + ': \n' + err);
             resolve();
           },
           complete () {

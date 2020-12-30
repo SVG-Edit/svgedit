@@ -2,9 +2,9 @@
 import AlertDialog from 'elix/define/AlertDialog.js';
 
 const dialog = new AlertDialog();
-const seAlert = (type, text) => {
+const seAlert = (text) => {
   dialog.textContent = text;
-  dialog.choices = (type === 'alert') ? ['Ok'] : ['Cancel'];
+  dialog.choices = ['Ok'];
   dialog.open();
 };
 

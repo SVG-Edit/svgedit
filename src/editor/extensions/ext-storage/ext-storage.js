@@ -54,7 +54,7 @@ export default {
       // the "noStorageOnLoad" config setting to true in svgedit-config-*.js.
       noStorageOnLoad,
       forceStorage
-    } = svgEditor.curConfig;
+    } = svgEditor.configObj.curConfig;
     const {storage} = svgEditor;
 
     /**

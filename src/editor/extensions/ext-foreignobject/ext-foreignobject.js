@@ -1,3 +1,4 @@
+/* globals  seConfirm */
 /**
  * @file ext-foreignobject.js
  *
@@ -200,8 +201,7 @@ export default {
               if (!editingforeign) { return; }
 
               if (!setForeignString($('#svg_source_textarea').val())) {
-                // eslint-disable-next-line no-alert
-                const ok = confirm('Errors found. Revert to original?');
+                const ok = seConfirm('Errors found. Revert to original?');
                 if (!ok) { return; }
                 endChanges();
               } else {
