@@ -1,3 +1,4 @@
+/* globals seAlert */
 // eslint-disable-next-line node/no-unpublished-import
 import {jml, body, nbsp} from 'jamilih';
 // eslint-disable-next-line node/no-unpublished-import
@@ -39,7 +40,7 @@ async function processResults (url) {
   // console.log('json', json);
 
   if (!json || json.msg !== 'success') {
-    document.getElementById('se-alert-dialog').title = 'There was a problem downloading the results';
+    seAlert('alert', 'There was a problem downloading the results');
     return;
   }
   const {payload, info: {

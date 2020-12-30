@@ -1,3 +1,4 @@
+/* globals seConfirm */
 /**
  * @file ext-imagelib.js
  *
@@ -181,11 +182,9 @@ export default {
         const message = uiStrings.notification.retrieving.replace('%s', name);
 
         if (mode !== 'm') {
-          await $.process_cancel(message);
+          await seConfirm(message, [uiStrings.common.cancel]);
           transferStopped = true;
           // Should a message be sent back to the frame?
-
-          $('#dialog_box').hide();
         } else {
           entry = $('<div>').text(message).data('id', curMeta.id);
           preview.append(entry);

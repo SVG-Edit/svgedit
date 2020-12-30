@@ -1,4 +1,4 @@
-/* globals $ */
+/* globals $ seAlert */
 import SvgCanvas from '../../svgcanvas/svgcanvas.js';
 import {isValidUnit, getTypeMap, convertUnit} from '../../common/units.js';
 
@@ -403,7 +403,7 @@ class TopPanelHandlers {
 
     if (!valid) {
       e.target.value = this.selectedElement().getAttribute(attr);
-      document.getElementById('se-alert-dialog').title = this.uiStrings.notification.invalidAttrValGiven;
+      seAlert('alert', this.uiStrings.notification.invalidAttrValGiven);
       return false;
     }
 
