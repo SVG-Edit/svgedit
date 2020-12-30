@@ -8,7 +8,7 @@ import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';
 /**
  * @class Dropdown
  */
-class Dropdown extends ListComboBox {
+class Zoom extends ListComboBox {
   /**
     * @function get
     * @returns {PlainObject}
@@ -157,7 +157,7 @@ class Dropdown extends ListComboBox {
 }
 
 // Register
-customElements.define('se-dropdown', Dropdown);
+customElements.define('se-zoom', Zoom);
 
 /*
 {TODO

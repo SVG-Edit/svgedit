@@ -1,4 +1,4 @@
-/* globals jQuery */
+/* globals jQuery seAlert */
 const $ = jQuery;
 $('a').click(function () {
   const {href} = this;
@@ -32,7 +32,7 @@ $('a').click(function () {
         data = canvas.toDataURL();
       } catch (err) {
         // This fails in Firefox with `file:///` URLs :(
-        document.getElementById('se-alert-dialog').title = 'Data URL conversion failed: ' + err;
+        seAlert('alert', 'Data URL conversion failed: ' + err);
         data = '';
       }
       post({href, data});

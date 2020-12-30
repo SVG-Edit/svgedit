@@ -1,5 +1,5 @@
 /* eslint-disable no-alert */
-/* globals jQuery seSelect */
+/* globals jQuery seSelect seAlert seConfirm */
 /**
 * The main module for the visual SVG Editor.
 *
@@ -230,6 +230,10 @@ editor.init = () => {
     const storageBox = document.createElement('se-storage-dialog');
     storageBox.setAttribute('id', 'se-storage-dialog');
     document.body.append(storageBox);
+    // promptDialog added to DOM
+    const promptBox = document.createElement('se-prompt-dialog');
+    promptBox.setAttribute('id', 'se-prompt-dialog');
+    document.body.append(promptBox);
   } catch (err) {}
 
   editor.configObj.load();
@@ -460,7 +464,7 @@ editor.init = () => {
         editor.pref('save_notice_done', 'all');
       }
       if (done !== 'part') {
-        document.getElementById('se-alert-dialog').title = note;
+        seAlert('alert', note);
       }
     }
   };
@@ -477,7 +481,7 @@ editor.init = () => {
     exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!exportWindow || exportWindow.closed) {
-      document.getElementById('se-alert-dialog').title = uiStrings.notification.popupWindowBlocked;
+      seAlert('alert', uiStrings.notification.popupWindowBlocked);
       return;
     }
 
@@ -793,7 +797,7 @@ editor.init = () => {
     }
 
     if (editor.configObj.urldata.storagePrompt !== true && editor.storagePromptState === 'ignore') {
-      $('#dialog_box').hide();
+      document.getElementById('se-prompt-dialog').setAttribute('close', true);
     }
   };
 
@@ -1296,7 +1300,7 @@ editor.init = () => {
 
   // fired when user wants to move elements to another layer
   let promptMoveLayerOnce = false;
-  $('#selLayerNames').change( async(evt) => {
+  $('#selLayerNames').change(async (evt) => {
     const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
     const confirmStr = uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
     /**
@@ -1314,7 +1318,7 @@ editor.init = () => {
       if (promptMoveLayerOnce) {
         moveToLayer(true);
       } else {
-        const ok = await seConfirm(confirmStr, [uiStrings.common.ok, uiStrings.common.cancel]);
+        const ok = await window.seConfirm(confirmStr, [uiStrings.common.ok, uiStrings.common.cancel]);
         if (ok === uiStrings.common.cancel) {
           return;
         }
@@ -1673,9 +1677,9 @@ editor.init = () => {
    * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
    * @returns {void}
    */
-  const clickClear = async() => {
+  const clickClear = async () => {
     const [x, y] = editor.configObj.curConfig.dimensions;
-    const cancel = await seConfirm(uiStrings.notification.QwantToClear, [uiStrings.common.ok, uiStrings.common.cancel]);
+    const cancel = await window.seConfirm(uiStrings.notification.QwantToClear, [uiStrings.common.ok, uiStrings.common.cancel]);
     if (cancel === uiStrings.common.cancel) {
       return;
     }
@@ -1865,7 +1869,8 @@ editor.init = () => {
     };
 
     if (!svgCanvas.setSvgString(e.detail.value)) {
-      const resp = await seConfirm(uiStrings.notification.QerrorsRevertToSource, [uiStrings.common.ok, uiStrings.common.cancel]);
+      const resp =
+        await window.seConfirm(uiStrings.notification.QerrorsRevertToSource, [uiStrings.common.ok, uiStrings.common.cancel]);
       if (resp === uiStrings.common.cancel) {
         return;
       }
@@ -1906,17 +1911,16 @@ editor.init = () => {
     const {title, w, h, save} = e.detail;
     // set document title
     svgCanvas.setDocumentTitle(title);
-
     if (w !== 'fit' && !isValidUnit('width', w)) {
-      document.getElementById('se-alert-dialog').title = uiStrings.notification.invalidAttrValGiven;
+      seAlert('alert', uiStrings.notification.invalidAttrValGiven);
       return false;
     }
     if (h !== 'fit' && !isValidUnit('height', h)) {
-      document.getElementById('se-alert-dialog').title = uiStrings.notification.invalidAttrValGiven;
+      seAlert('alert', uiStrings.notification.invalidAttrValGiven);
       return false;
     }
     if (!svgCanvas.setResolution(w, h)) {
-      document.getElementById('se-alert-dialog').title = uiStrings.notification.noContentToFitTo;
+      seAlert('alert', uiStrings.notification.noContentToFitTo);
       return false;
     }
     // Set image save option
@@ -1963,7 +1967,6 @@ editor.init = () => {
   * @returns {void} Resolves to `undefined`
   */
   const cancelOverlays = async (e) => {
-    $('#dialog_box').hide();
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     const editingsource = $editorDialog.getAttribute('dialog') === 'open';
     if (!editingsource && !docprops && !preferences) {
@@ -1976,7 +1979,8 @@ editor.init = () => {
     if (editingsource) {
       const origSource = svgCanvas.getSvgString();
       if (origSource !== e.detail.value) {
-        const resp = await seConfirm(uiStrings.notification.QignoreSourceChanges, [uiStrings.common.ok, uiStrings.common.cancel]);
+        const resp =
+          await window.seConfirm(uiStrings.notification.QignoreSourceChanges, [uiStrings.common.ok, uiStrings.common.cancel]);
         if (resp === uiStrings.common.ok) {
           hideSourceEditor();
         }
@@ -2106,7 +2110,7 @@ editor.init = () => {
   });
 
   $('#url_notice').click(() => {
-    document.getElementById('se-alert-dialog').title = this.title;
+    seAlert('alert', this.title);
   });
 
   $('#stroke_width').val(editor.configObj.curConfig.initStroke.width);
@@ -2577,13 +2581,13 @@ editor.init = () => {
     * @returns {void}
     */
     const importImage = function (e) {
-      $.process_cancel(uiStrings.notification.loadingImage);
+      document.getElementById('se-prompt-dialog').title = uiStrings.notification.loadingImage;
       e.stopPropagation();
       e.preventDefault();
       $('#main_menu').hide();
       const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
       if (!file) {
-        $('#dialog_box').hide();
+        document.getElementById('se-prompt-dialog').setAttribute('close', true);
         return;
       }
 
@@ -2604,7 +2608,7 @@ editor.init = () => {
           svgCanvas.alignSelectedElements('c', 'page');
           // highlight imported element, otherwise we get strange empty selectbox
           svgCanvas.selectOnly([newElement]);
-          $('#dialog_box').hide();
+          document.getElementById('se-prompt-dialog').setAttribute('close', true);
         };
         reader.readAsText(file);
       } else {
@@ -2634,7 +2638,7 @@ editor.init = () => {
             svgCanvas.alignSelectedElements('m', 'page');
             svgCanvas.alignSelectedElements('c', 'page');
             editor.topPanelHandlers.updateContextPanel();
-            $('#dialog_box').hide();
+            document.getElementById('se-prompt-dialog').setAttribute('close', true);
           };
           // create dummy img so we know the default dimensions
           let imgWidth = 100;
@@ -2662,7 +2666,7 @@ editor.init = () => {
       if (!ok) { return; }
       svgCanvas.clear();
       if (this.files.length === 1) {
-        $.process_cancel(uiStrings.notification.loadingImage);
+        document.getElementById('se-prompt-dialog').title = uiStrings.notification.loadingImage;
         const reader = new FileReader();
         reader.onloadend = async function ({target}) {
           await loadSvgString(target.result);
@@ -2828,7 +2832,7 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
         dataType: 'text',
         cache: Boolean(cache),
         beforeSend () {
-          $.process_cancel(uiStrings.notification.loadingImage);
+          document.getElementById('se-prompt-dialog').title = uiStrings.notification.loadingImage;
         },
         success (str) {
           loadSvgString(str, {noAlert});
@@ -2842,11 +2846,11 @@ editor.loadFromURL = function (url, {cache, noAlert} = {}) {
             reject(new Error('URLLoadFail'));
             return;
           }
-          document.getElementById('se-alert-dialog').title = uiStrings.notification.URLLoadFail + ': \n' + err;
+          seAlert('alert', uiStrings.notification.URLLoadFail + ': \n' + err);
           resolve();
         },
         complete () {
-          $('#dialog_box').hide();
+          document.getElementById('se-prompt-dialog').setAttribute('close', true);
         }
       });
     });

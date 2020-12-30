@@ -1,4 +1,4 @@
-/* globals $ */
+/* globals $ seAlert */
 import SvgCanvas from '../../svgcanvas/svgcanvas.js';
 import {isValidUnit, getTypeMap, convertUnit} from '../../common/units.js';
 
@@ -403,20 +403,20 @@ class TopPanelHandlers {
 
     if (!valid) {
       e.target.value = this.selectedElement().getAttribute(attr);
-      document.getElementById('se-alert-dialog').title = this.uiStrings.notification.invalidAttrValGiven;
+      seAlert('alert', this.uiStrings.notification.invalidAttrValGiven);
       return false;
     }
 
     if (attr !== 'id' && attr !== 'class') {
       if (isNaN(val)) {
         val = this.svgCanvas.convertToNum(attr, val);
-      } else if (this.configObj.curConfig.baseUnit !== 'px') {
+      } else if (this.editor.configObj.curConfig.baseUnit !== 'px') {
         // Convert unitless value to one with given unit
 
         const unitData = getTypeMap();
 
         if (this.selectedElement[attr] || this.svgCanvas.getMode() === 'pathedit' || attr === 'x' || attr === 'y') {
-          val *= unitData[this.configObj.curConfig.baseUnit];
+          val *= unitData[this.editor.configObj.curConfig.baseUnit];
         }
       }
     }
