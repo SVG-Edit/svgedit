@@ -1,32 +1,20 @@
 /* eslint-disable node/no-unpublished-import */
-import 'elix/define/MenuButton.js';
+import 'elix/define/DropdownList.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  :host {
-    padding: 0px;
-  }
-  elix-menu-button::part(menu) {
-    background-color: #eee !important;
-  }
-  elix-menu-button::part(popup-toggle) {
-    padding: 0.25em 0.60em !important
-  }
-  :host ::slotted([current]){
-    background-color: #F4E284 !important;
-  }
   </style>
-  
-  <elix-menu-button id="MenuButton" aria-label="Main Menu">
+  <label>Label</label>
+  <elix-dropdown-list>
     <slot></slot>
-  </elix-menu-button>
+  </elix-dropdown-list>
   
 `;
 /**
- * @class SeMenu
+ * @class SeList
  */
-export class SeMenu extends HTMLElement {
+export class SeList extends HTMLElement {
   /**
     * @function constructor
     */
@@ -35,15 +23,15 @@ export class SeMenu extends HTMLElement {
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.appendChild(template.content.cloneNode(true));
-    this.$menu = this._shadowRoot.querySelector('elix-menu-button');
-    this.$label = this.$menu.shadowRoot.querySelector('#popupToggle').shadowRoot;
+    this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
+    this.$label = this._shadowRoot.querySelector('label');
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label', 'src'];
+    return ['label'];
   }
 
   /**
@@ -54,17 +42,10 @@ export class SeMenu extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    const image = new Image();
     if (oldValue === newValue) return;
     switch (name) {
-    case 'src':
-      image.src = newValue;
-      image.width = 18;
-      image.height = 18;
-      this.$label.prepend(image);
-      break;
     case 'label':
-      this.$label.prepend(newValue);
+      this.$label.textContent = newValue;
       break;
     default:
       // eslint-disable-next-line no-console
@@ -88,26 +69,11 @@ export class SeMenu extends HTMLElement {
     this.setAttribute('label', value);
   }
   /**
-   * @function get
-   * @returns {any}
-   */
-  get src () {
-    return this.getAttribute('src');
-  }
-
-  /**
-   * @function set
-   * @returns {void}
-   */
-  set src (value) {
-    this.setAttribute('src', value);
-  }
-  /**
    * @function connectedCallback
    * @returns {void}
    */
   connectedCallback () {
-    this.$menu.addEventListener('openedchange', (e) => {
+    this.$dropdown.addEventListener('change', (e) => {
       e.preventDefault();
       const selectedItem = e?.detail?.closeResult;
       if (selectedItem !== undefined && selectedItem?.id !== undefined) {
@@ -118,4 +84,4 @@ export class SeMenu extends HTMLElement {
 }
 
 // Register
-customElements.define('se-menu', SeMenu);
+customElements.define('se-list', SeList);
