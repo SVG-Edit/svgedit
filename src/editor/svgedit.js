@@ -222,6 +222,14 @@ editor.init = () => {
     const dialogBox = document.createElement('se-cmenu_canvas-dialog');
     dialogBox.setAttribute('id', 'se-cmenu_canvas');
     document.body.append(dialogBox);
+    // alertDialog added to DOM
+    const alertBox = document.createElement('se-alert-dialog');
+    alertBox.setAttribute('id', 'se-alert-dialog');
+    document.body.append(alertBox);
+    // storageDialog added to DOM
+    const storageBox = document.createElement('se-storage-dialog');
+    storageBox.setAttribute('id', 'se-storage-dialog');
+    document.body.append(storageBox);
     // promptDialog added to DOM
     const promptBox = document.createElement('se-prompt-dialog');
     promptBox.setAttribute('id', 'se-prompt-dialog');
@@ -1982,6 +1990,105 @@ editor.init = () => {
     }
   };
 
+  /**
+   * Replace `storagePrompt` parameter within URL.
+   * @param {string} val
+   * @returns {void}
+   * @todo Replace the string manipulation with `searchParams.set`
+   */
+  function replaceStoragePrompt (val) {
+    val = val ? 'storagePrompt=' + val : '';
+    const loc = top.location; // Allow this to work with the embedded editor as well
+    if (loc.href.includes('storagePrompt=')) {
+      /*
+      loc.href = loc.href.replace(/(?<sep>[&?])storagePrompt=[^&]*(?<amp>&?)/, function (n0, sep, amp) {
+        return (val ? sep : '') + val + (!val && amp ? sep : (amp || ''));
+      });
+      */
+      loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
+        return (val ? n1 : '') + val + (!val && amp ? n1 : (amp || ''));
+      });
+    } else {
+      loc.href += (loc.href.includes('?') ? '&' : '?') + val;
+    }
+  }
+
+  /**
+   * Sets SVG content as a string with "svgedit-" and the current
+   *   canvas name as namespace.
+   * @param {string} val
+   * @returns {void}
+   */
+  function setSVGContentStorage (val) {
+    if (editor.storage) {
+      const name = 'svgedit-' + editor.curConfig.canvasName;
+      if (!val) {
+        editor.storage.removeItem(name);
+      } else {
+        editor.storage.setItem(name, val);
+      }
+    }
+  }
+
+  /**
+  * Listen for unloading: If and only if opted in by the user, set the content
+  *   document and preferences into storage:
+  * 1. Prevent save warnings (since we're automatically saving unsaved
+  *       content into storage)
+  * 2. Use localStorage to set SVG contents (potentially too large to allow in cookies)
+  * 3. Use localStorage (where available) or cookies to set preferences.
+  * @returns {void}
+  */
+  function setupBeforeUnloadListener () {
+    window.addEventListener('beforeunload', function (e) {
+      // Don't save anything unless the user opted in to storage
+      if (!document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)) {
+        return;
+      }
+      if (document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/)) {
+        setSVGContentStorage(svgCanvas.getSvgString());
+      }
+
+      editor.setConfig({no_save_warning: true}); // No need for explicit saving at all once storage is on
+      // svgEditor.showSaveWarning = false;
+
+      const {curPrefs} = editor;
+
+      Object.entries(curPrefs).forEach(([key, val]) => {
+        const store = (val !== undefined);
+        key = 'svg-edit-' + key;
+        if (!store) {
+          return;
+        }
+        if (editor.storage) {
+          editor.storage.setItem(key, val);
+        } else if (window.widget) {
+          window.widget.setPreferenceForKey(val, key);
+        } else {
+          val = encodeURIComponent(val);
+          document.cookie = encodeURIComponent(key) + '=' + val + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
+        }
+      });
+    });
+  }
+
+  /**
+   * Set the cookie to expire.
+   * @param {string} cookie
+   * @returns {void}
+   */
+  function expireCookie (cookie) {
+    document.cookie = encodeURIComponent(cookie) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  }
+
+  /**
+   * Expire the storage cookie.
+   * @returns {void}
+   */
+  function removeStoragePrefCookie () {
+    expireCookie('svgeditstore');
+  }
+
   const winWh = {width: $(window).width(), height: $(window).height()};
 
   $(window).resize(function (evt) {
@@ -2152,6 +2259,40 @@ editor.init = () => {
         }
         break;
       }
+    });
+    $id('se-storage-dialog').addEventListener('change', function (e) {
+      document.getElementById('se-storage-dialog').setAttribute('dialog', 'close');
+      if (e?.detail?.trigger === 'ok') {
+        if (e?.detail?.select !== 'noPrefsOrContent') {
+          const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
+          document.cookie = 'svgeditstore=' + encodeURIComponent(e.detail.select) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
+          if (storagePrompt === 'true' && e?.detail?.checkbox ) {
+            replaceStoragePrompt();
+            return;
+          }
+        } else {
+          removeStoragePrefCookie();
+          if (editor.curConfig.emptyStorageOnDecline && e?.detail?.checkbox) {
+            setSVGContentStorage('');
+            Object.keys(editor.curPrefs).forEach((name) => {
+              name = 'svg-edit-' + name;
+              if (editor.storage) {
+                editor.storage.removeItem(name);
+              }
+              expireCookie(name);
+            });
+          }
+          if (e?.detail?.select && e?.detail?.checkbox) {
+            replaceStoragePrompt('false');
+            return;
+          }
+        }
+      } else if (e?.detail?.trigger === 'cancel') {
+        removeStoragePrefCookie();
+      }
+      setupBeforeUnloadListener();
+      editor.storagePromptState = 'closed';
+      updateCanvas(true);
     });
 
     const toolButtons = [
