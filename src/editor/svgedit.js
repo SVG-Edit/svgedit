@@ -504,7 +504,22 @@ class Editor {
       const dialogBox = document.createElement('se-cmenu_canvas-dialog');
       dialogBox.setAttribute('id', 'se-cmenu_canvas');
       document.body.append(dialogBox);
-    } catch (err) {}
+      // alertDialog added to DOM
+      const alertBox = document.createElement('se-alert-dialog');
+      alertBox.setAttribute('id', 'se-alert-dialog');
+      document.body.append(alertBox);
+      // storageDialog added to DOM
+      const storageBox = document.createElement('se-storage-dialog');
+      storageBox.setAttribute('id', 'se-storage-dialog');
+      document.body.append(storageBox);
+      // promptDialog added to DOM
+      const promptBox = document.createElement('se-prompt-dialog');
+      promptBox.setAttribute('id', 'se-prompt-dialog');
+      document.body.append(promptBox);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
 
     this.configObj.load();
 

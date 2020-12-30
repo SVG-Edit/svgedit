@@ -19,18 +19,6 @@
  *   initial (or URL-forced) dialog. *
 */
 
-const loadExtensionTranslation = async function (lang) {
-  let translationModule;
-  try {
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
-  } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
-  }
-  return translationModule.default;
-};
-
 export default {
   name: 'storage',
   init ({$}) {
@@ -119,18 +107,8 @@ export default {
     let loaded = false;
     return {
       name: 'storage',
-      async langReady ({lang}) {
+      langReady ({lang}) {
         const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
-        // eslint-disable-next-line no-unused-vars
-        const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
-        /*
-        const {
-          message, storagePrefsAndContent, storagePrefsOnly,
-          storagePrefs, storageNoPrefsOrContent, storageNoPrefs,
-          rememberLabel, rememberTooltip
-        } = strings;
-        */
-
         // No need to run this one-time dialog again just because the user
         //   changes the language
         if (loaded) {
