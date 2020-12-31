@@ -17,7 +17,6 @@ class Rulers {
       this.rulerIntervals.push(5 * i);
     }
     this.svgCanvas = editor.svgCanvas;
-    this.curConfig = editor.configObj;
     this.editor = editor;
   }
   /**
@@ -25,10 +24,9 @@ class Rulers {
   */
   manageScroll () {
     const rulerX = document.getElementById('ruler_x');
-    const rulerY = document.getElementById('ruler_x');
-
-    if (rulerX) rulerX.scrollLeft = this.editor.workarea.scrollLeft;
-    if (rulerY) rulerY.scrollTop = this.editor.workarea.scrollTop;
+    const rulerY = document.getElementById('ruler_y');
+    if (rulerX) rulerX.scrollLeft = this.editor.workarea[0].scrollLeft;
+    if (rulerY) rulerY.scrollTop = this.editor.workarea[0].scrollTop;
   }
 
   /**
@@ -45,7 +43,7 @@ class Rulers {
     const limit = 30000;
     const contentElem = this.svgCanvas.getContentElem();
     const units = getTypeMap();
-    const unit = units[this.curConfig.baseUnit]; // 1 = 1px
+    const unit = units[this.editor.configObj.curConfig.baseUnit]; // 1 = 1px
 
     // draw x ruler then y ruler
     for (d = 0; d < 2; d++) {

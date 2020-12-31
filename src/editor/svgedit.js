@@ -480,18 +480,6 @@ class Editor {
   */
   init () {
     try {
-      if ('localStorage' in window) { // && onWeb removed so Webkit works locally
-        /**
-        * The built-in interface implemented by `localStorage`
-        * @external Storage
-        */
-        /**
-        * @name storage
-        * @memberof module:SVGEditor
-        * @type {external:Storage}
-        */
-        this.storage = this.localStorage;
-      }
       // Image props dialog added to DOM
       const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
       newSeImgPropDialog.setAttribute('id', 'se-img-prop');

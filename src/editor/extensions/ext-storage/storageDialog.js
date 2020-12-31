@@ -181,3 +181,9 @@ export class SeStorageDialog extends HTMLElement {
 
 // Register
 customElements.define('se-storage-dialog', SeStorageDialog);
+
+/*
+if ('localStorage' in window) { // && onWeb removed so Webkit works locally
+       this.storage = this.localStorage;
+      }
+*/

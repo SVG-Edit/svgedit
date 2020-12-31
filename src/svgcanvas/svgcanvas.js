@@ -168,7 +168,7 @@ if (window.opera) {
 class SvgCanvas {
   /**
   * @param {HTMLElement} container - The container HTML element that should hold the SVG root element
-  * @param {module:SVGEditor.curConfig} config - An object that contains configuration data
+  * @param {module:SVGeditor.configObj.curConfig} config - An object that contains configuration data
   */
   constructor (container, config) {
   // Alias Namespace constants

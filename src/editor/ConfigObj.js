@@ -150,34 +150,14 @@ export default class ConfigObj {
       // EXTENSION (CLIENT VS. SERVER SAVING/OPENING)
       avoidClientSide: false, // Deprecated in favor of `avoidClientSideDownload`
       avoidClientSideDownload: false,
-      avoidClientSideOpen: false
+      avoidClientSideOpen: false,
+      userExtensions: []
     };
 
     this.curPrefs = {};
     // Note: The difference between Prefs and Config is that Prefs
     //   can be changed in the UI and are stored in the browser,
     //   while config cannot
-    this.curConfig = {
-      // We do not put on defaultConfig to simplify object copying
-      //   procedures (we obtain instead from defaultExtensions)
-      extensions: [],
-      userExtensions: [],
-      /**
-        * Can use `location.origin` to indicate the current
-        * origin. Can contain a '*' to allow all domains or 'null' (as
-        * a string) to support all `file:///` URLs. Cannot be set by
-        * URL for security reasons (not safe, at least for
-        * privacy or data integrity of SVG content).
-        * Might have been fairly safe to allow
-        *   `new URL(location.href).origin` by default but
-        *   avoiding it ensures some more security that even third
-        *   party apps on the same domain also cannot communicate
-        *   with this app by default.
-        * For use with `ext-xdomain-messaging.js`
-        * @todo We might instead make as a user-facing preference.
-      */
-      allowedOrigins: []
-    };
     this.urldata = {};
     /**
       * @name module:SVGEditor~defaultExtensions
@@ -212,20 +192,22 @@ export default class ConfigObj {
    * @returns {void}
    */
   setupCurConfig () {
-    const curConfig = {...this.defaultConfig, ...this.curConfig}; // Now safe to merge with priority for curConfig in the event any are already set
+    const curConfig = {...this.defaultConfig, ...this.editor.configObj.curConfig}; // Now safe to merge with priority for curConfig in the event any are already set
 
     // Now deal with extensions and other array config
     if (!curConfig.noDefaultExtensions) {
-      curConfig.extensions = curConfig.extensions.concat(this.defaultExtensions);
+      curConfig.extensions = [...this.defaultExtensions];
     }
     // ...and remove any dupes
+    /*
     ['extensions', 'allowedOrigins'].forEach(function (cfg) {
       curConfig[cfg] = $.grep(curConfig[cfg], function (n, i) { // Supposedly faster than filter per http://amandeep1986.blogspot.hk/2015/02/jquery-grep-vs-js-filter.html
         return i === curConfig[cfg].indexOf(n);
       });
     });
+    */
     // Export updated config
-    this.curConfig = curConfig;
+    this.editor.configObj.curConfig = curConfig;
   }
   /**
    * @function loadFromURL Load config/data from URL if given
@@ -277,7 +259,7 @@ export default class ConfigObj {
       this.setConfig(this.urldata, {overwrite: false});
       this.setupCurConfig();
 
-      if (!this.curConfig.preventURLContentLoading) {
+      if (!this.editor.configObj.curConfig.preventURLContentLoading) {
         let {source} = this.urldata;
         if (!source) { // urldata.source may have been null if it ended with '='
           const src = searchParams.get('source');
@@ -298,7 +280,7 @@ export default class ConfigObj {
           return;
         }
       }
-      if (!this.urldata.noStorageOnLoad || this.curConfig.forceStorage) {
+      if (!this.urldata.noStorageOnLoad || this.editor.configObj.curConfig.forceStorage) {
         this.loadContentAndPrefs();
       }
     } else {
@@ -321,8 +303,8 @@ export default class ConfigObj {
     * @returns {void}
   */
   loadContentAndPrefs () {
-    if (!this.curConfig.forceStorage &&
-      (this.curConfig.noStorageOnLoad ||
+    if (!this.editor.configObj.curConfig.forceStorage &&
+      (this.editor.configObj.curConfig.noStorageOnLoad ||
           !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)
       )
     ) {
@@ -331,12 +313,12 @@ export default class ConfigObj {
 
     // LOAD CONTENT
     if (this.editor.storage && // Cookies do not have enough available memory to hold large documents
-      (this.curConfig.forceStorage ||
-        (!this.curConfig.noStorageOnLoad &&
+      (this.editor.configObj.curConfig.forceStorage ||
+        (!this.editor.configObj.curConfig.noStorageOnLoad &&
           document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/))
       )
     ) {
-      const name = 'svgedit-' + this.curConfig.canvasName;
+      const name = 'svgedit-' + this.editor.configObj.curConfig.canvasName;
       const cached = this.editor.storage.getItem(name);
       if (cached) {
         this.editor.loadFromString(cached);
@@ -404,7 +386,7 @@ export default class ConfigObj {
       // Only allow prefs defined in configObj.defaultPrefs or...
       if (this.defaultPrefs[key]) {
         if (cfgCfg.overwrite === false && (
-          this.curConfig.preventAllURLConfig ||
+          this.editor.configObj.curConfig.preventAllURLConfig ||
           this.curPrefs[key])
         ) {
           return;
@@ -417,35 +399,35 @@ export default class ConfigObj {
       } else if (['extensions', 'userExtensions', 'allowedOrigins'].includes(key)) {
         if (cfgCfg.overwrite === false &&
           (
-            this.curConfig.preventAllURLConfig ||
+            this.editor.configObj.curConfig.preventAllURLConfig ||
             ['allowedOrigins'].includes(key) ||
-            (key === 'extensions' && this.curConfig.lockExtensions)
+            (key === 'extensions' && this.editor.configObj.curConfig.lockExtensions)
           )
         ) {
           return;
         }
-        this.curConfig[key] = this.curConfig[key].concat(val); // We will handle any dupes later
+        this.editor.configObj.curConfig[key] = this.editor.configObj.curConfig[key].concat(val); // We will handle any dupes later
       // Only allow other configObj.curConfig if defined in configObj.defaultConfig
       } else if ({}.hasOwnProperty.call(this.defaultConfig, key)) {
         if (cfgCfg.overwrite === false && (
-          this.curConfig.preventAllURLConfig ||
-          {}.hasOwnProperty.call(this.curConfig, key)
+          this.editor.configObj.curConfig.preventAllURLConfig ||
+          {}.hasOwnProperty.call(this.editor.configObj.curConfig, key)
         )) {
           return;
         }
         // Potentially overwriting of previously set config
-        if ({}.hasOwnProperty.call(this.curConfig, key)) {
+        if ({}.hasOwnProperty.call(this.editor.configObj.curConfig, key)) {
           if (cfgCfg.overwrite === false) {
             return;
           }
-          extendOrAdd(this.curConfig, key, val);
+          extendOrAdd(this.editor.configObj.curConfig, key, val);
         } else if (cfgCfg.allowInitialUserOverride === true) {
           extendOrAdd(this.defaultConfig, key, val);
         } else if (this.defaultConfig[key] && typeof this.defaultConfig[key] === 'object') {
-          this.curConfig[key] = Array.isArray(this.defaultConfig[key]) ? [] : {};
-          $.extend(true, this.curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
+          this.editor.configObj.curConfig[key] = Array.isArray(this.defaultConfig[key]) ? [] : {};
+          $.extend(true, this.editor.configObj.curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
         } else {
-          this.curConfig[key] = val;
+          this.editor.configObj.curConfig[key] = val;
         }
       }
     });
