@@ -316,7 +316,7 @@ class TopPanelHandlers {
   * @returns {void}
   */
   clickUndo () {
-    const {undoMgr} = this.editor.canvas;
+    const {undoMgr} = this.editor.svgCanvas;
     if (undoMgr.getUndoStackSize() > 0) {
       undoMgr.undo();
       this.editor.layersPanel.populateLayers();
@@ -328,7 +328,7 @@ class TopPanelHandlers {
   * @returns {void}
   */
   clickRedo () {
-    const {undoMgr} = this.editor.canvas;
+    const {undoMgr} = this.editor.svgCanvas;
     if (undoMgr.getRedoStackSize() > 0) {
       undoMgr.redo();
       this.editor.layersPanel.populateLayers();

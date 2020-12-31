@@ -161,6 +161,22 @@ export class SeStorageDialog extends HTMLElement {
     this.$okBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'ok'));
     this.$cancelBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'cancel'));
   }
+  /**
+ * Sets SVG content as a string with "svgedit-" and the current
+ *   canvas name as namespace.
+ * @param {string} val
+ * @returns {void}
+ */
+  setSVGContentStorage (val) {
+    if (this.storage) {
+      const name = 'svgedit-' + this.configObj.curConfig.canvasName;
+      if (!val) {
+        this.storage.removeItem(name);
+      } else {
+        this.storage.setItem(name, val);
+      }
+    }
+  }
 }
 
 // Register

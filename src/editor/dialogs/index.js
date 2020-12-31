@@ -7,4 +7,3 @@ import './seSelectDialog.js';
 import './seConfirmDialog.js';
 import './sePromptDialog.js';
 import './seAlertDialog.js';
-import './storageDialog.js';

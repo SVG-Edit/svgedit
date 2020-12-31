@@ -3,8 +3,20 @@ import 'elix/define/DropdownList.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <style>
-  </style>
+<style>
+[part~="source"] {
+  grid-template-columns: 20px 1fr auto;
+}
+::slotted(*) {
+  padding: 4px;
+  background: #E8E8E8;
+  border: 1px solid #B0B0B0;
+  width: 100%;
+}
+[part~="popup"] {
+  width: 150%;
+}
+</style>
   <label>Label</label>
   <elix-dropdown-list>
     <slot></slot>

@@ -508,10 +508,6 @@ class Editor {
       const alertBox = document.createElement('se-alert-dialog');
       alertBox.setAttribute('id', 'se-alert-dialog');
       document.body.append(alertBox);
-      // storageDialog added to DOM
-      const storageBox = document.createElement('se-storage-dialog');
-      storageBox.setAttribute('id', 'se-storage-dialog');
-      document.body.append(storageBox);
       // promptDialog added to DOM
       const promptBox = document.createElement('se-prompt-dialog');
       promptBox.setAttribute('id', 'se-prompt-dialog');

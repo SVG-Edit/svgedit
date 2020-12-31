@@ -18,6 +18,41 @@
  * @todo We might provide control of storage settings through the UI besides the
  *   initial (or URL-forced) dialog. *
 */
+import './storageDialog.js';
+
+/**
+ * Expire the storage cookie.
+ * @returns {void}
+ */
+const removeStoragePrefCookie = () => {
+  expireCookie('svgeditstore');
+};
+/**
+ * Set the cookie to expire.
+ * @param {string} cookie
+ * @returns {void}
+ */
+const expireCookie = (cookie) => {
+  document.cookie = encodeURIComponent(cookie) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+};
+
+/**
+ * Replace `storagePrompt` parameter within URL.
+ * @param {string} val
+ * @returns {void}
+ * @todo Replace the string manipulation with `searchParams.set`
+ */
+const replaceStoragePrompt = (val) => {
+  val = val ? 'storagePrompt=' + val : '';
+  const loc = top.location; // Allow this to work with the embedded editor as well
+  if (loc.href.includes('storagePrompt=')) {
+    loc.href = loc.href.replace(/([&?])storagePrompt=[^&]*(&?)/, function (n0, n1, amp) {
+      return (val ? n1 : '') + val + (!val && amp ? n1 : (amp || ''));
+    });
+  } else {
+    loc.href += (loc.href.includes('?') ? '&' : '?') + val;
+  }
+};
 
 export default {
   name: 'storage',
@@ -44,6 +79,48 @@ export default {
       forceStorage
     } = svgEditor.configObj.curConfig;
     const {storage} = svgEditor;
+
+    // storageDialog added to DOM
+    const storageBox = document.createElement('se-storage-dialog');
+    storageBox.setAttribute('id', 'se-storage-dialog');
+    document.body.append(storageBox);
+
+    // manage the change in the storageDialog
+
+    storageBox.addEventListener('change', (e) => {
+      storageBox.setAttribute('dialog', 'close');
+      if (e?.detail?.trigger === 'ok') {
+        if (e?.detail?.select !== 'noPrefsOrContent') {
+          const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
+          document.cookie = 'svgeditstore=' + encodeURIComponent(e.detail.select) + '; expires=Fri, 31 Dec 9999 23:59:59 GMT';
+          if (storagePrompt === 'true' && e?.detail?.checkbox) {
+            replaceStoragePrompt();
+            return;
+          }
+        } else {
+          removeStoragePrefCookie();
+          if (svgEditor.configObj.curConfig.emptyStorageOnDecline && e?.detail?.checkbox) {
+            this.setSVGContentStorage('');
+            Object.keys(svgEditor.curPrefs).forEach((name) => {
+              name = 'svg-edit-' + name;
+              if (svgEditor.storage) {
+                svgEditor.storage.removeItem(name);
+              }
+              expireCookie(name);
+            });
+          }
+          if (e?.detail?.select && e?.detail?.checkbox) {
+            replaceStoragePrompt('false');
+            return;
+          }
+        }
+      } else if (e?.detail?.trigger === 'cancel') {
+        removeStoragePrefCookie();
+      }
+      setupBeforeUnloadListener();
+      svgEditor.storagePromptState = 'closed';
+      svgEditor.updateCanvas(true);
+    });
 
     /**
      * Sets SVG content as a string with "svgedit-" and the current
