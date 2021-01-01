@@ -187,6 +187,9 @@ class BottomPanelHandlers {
     $id('stroke_linecap').addEventListener('change', (evt) => this.handleStrokeAttr.bind(this)('stroke-linecap', evt));
     $id('opacity_dropdown').addEventListener('change', this.handleOpacity.bind(this));
     $id('palette').addEventListener('change', this.handlePalette.bind(this));
+    const {curConfig} = this.editor.configObj;
+    $id('fill_color').setPaint(new $.jGraduate.Paint({alpha: 100, solidColor: curConfig.initFill.color}));
+    $id('stroke_color').setPaint(new $.jGraduate.Paint({alpha: 100, solidColor: curConfig.initStroke.color}));
   }
 }
 
