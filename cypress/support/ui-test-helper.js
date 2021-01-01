@@ -1,7 +1,6 @@
 export const approveStorage = () => {
   // JFH will need to be chnaged when dialog is changed...
-  cy.get('elix-alert-dialog').shadow().find('#choiceButtonContainer > plain-border-button-0:nth-child(1)')
-    .click();
+  cy.get('#storage_ok').click();
 };
 
 export const visitAndApproveStorage = () => {
