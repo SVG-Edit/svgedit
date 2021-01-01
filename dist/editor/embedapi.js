@@ -362,7 +362,7 @@ class EmbeddedSVGEdit {
         let sameOriginWithGlobal = false;
         try {
           sameOriginWithGlobal = window.location.origin === that.frame.contentWindow.location.origin &&
-            that.frame.contentWindow.svgEditor.canvas;
+            that.frame.contentWindow.svgEditor.svgCanvas;
         } catch (err) {}
 
         if (sameOriginWithGlobal) {
