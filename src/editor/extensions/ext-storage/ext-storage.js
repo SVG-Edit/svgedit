@@ -161,7 +161,7 @@ export default {
         svgEditor.setConfig({no_save_warning: true}); // No need for explicit saving at all once storage is on
         // svgEditor.showSaveWarning = false;
 
-        const {curPrefs} = svgEditor;
+        const {curPrefs} = svgEditor.configObj;
 
         Object.entries(curPrefs).forEach(([key, val]) => {
           const store = (val !== undefined);
