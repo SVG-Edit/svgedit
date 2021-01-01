@@ -56,7 +56,7 @@ template.innerHTML = `
           By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.
         </p>
         <select id="se-storage-pref">
-          <option value="prefsAndContent" id="js-storage" disabled>Store preferences and SVG content locally</option>
+          <option value="prefsAndContent">Store preferences and SVG content locally</option>
           <option value="prefsOnly">Only store preferences locally</option>
           <option value="noPrefsOrContent">Do not store my preferences or SVG content locally</option>
         </select> 
@@ -181,9 +181,3 @@ export class SeStorageDialog extends HTMLElement {
 
 // Register
 customElements.define('se-storage-dialog', SeStorageDialog);
-
-/*
-if ('localStorage' in window) { // && onWeb removed so Webkit works locally
-       this.storage = this.localStorage;
-      }
-*/

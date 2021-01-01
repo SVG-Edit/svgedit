@@ -478,7 +478,7 @@ class Editor {
   * @function module:SVGthis.init
   * @returns {void}
   */
-  init () {
+  async init () {
     try {
       // Image props dialog added to DOM
       const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
@@ -503,6 +503,10 @@ class Editor {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
+    }
+
+    if ('localStorage' in window) { // && onWeb removed so Webkit works locally
+      this.storage = window.localStorage;
     }
 
     this.configObj.load();
@@ -1147,6 +1151,8 @@ class Editor {
     this.ready(() => {
       injectExtendedContextMenuItemsIntoDom();
     });
+    // run callbacks stored by this.ready
+    await this.runCallbacks();
   }
 
   /**
