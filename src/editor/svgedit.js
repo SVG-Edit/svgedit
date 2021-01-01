@@ -88,13 +88,13 @@ class Editor {
     this.customExportImage = false;
     this.customExportPDF = false;
     this.configObj = new ConfigObj(this);
-    this.pref = this.configObj.pref.bind(this.configObj);
+    this.configObj.pref = this.configObj.pref.bind(this.configObj);
     this.setConfig = this.configObj.setConfig.bind(this.configObj);
     this.callbacks = [];
     this.curContext = null;
     this.exportWindowName = null;
     this.docprops = false;
-    this.preferences = false;
+    this.configObj.preferences = false;
     this.canvMenu = null;
     // eslint-disable-next-line max-len
     this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW'];
@@ -349,7 +349,7 @@ class Editor {
    * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
    */
   async extAndLocaleFunc () {
-    const {langParam, langData} = await this.putLocale(this.pref('lang'), this.goodLangs);
+    const {langParam, langData} = await this.putLocale(this.configObj.pref('lang'), this.goodLangs);
     await this.setLang(langParam, langData);
 
     $id('svg_container').style.visibility = 'visible';
@@ -589,7 +589,7 @@ class Editor {
     this.svgCanvas.bind('extension_added', this.extAdded.bind(this));
     this.svgCanvas.textActions.setInputElem($('#text')[0]);
 
-    this.setBackground(this.pref('bkgd_color'), this.pref('bkgd_url'));
+    this.setBackground(this.configObj.pref('bkgd_color'), this.configObj.pref('bkgd_url'));
 
     // update resolution option with actual resolution
     const res = this.svgCanvas.getResolution();
@@ -601,7 +601,7 @@ class Editor {
     $('#se-img-prop').attr('title', this.svgCanvas.getDocumentTitle());
     $('#se-img-prop').attr('width', res.w);
     $('#se-img-prop').attr('height', res.h);
-    $('#se-img-prop').attr('save', this.pref('img_save'));
+    $('#se-img-prop').attr('save', this.configObj.pref('img_save'));
 
     // Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
     $('select').change((evt) => { $(evt.currentTarget).blur(); });
@@ -1197,7 +1197,7 @@ class Editor {
 
     // Alert will only appear the first time saved OR the
     //   first time the bug is encountered
-    let done = this.pref('save_notice_done');
+    let done = this.configObj.pref('save_notice_done');
 
     if (done !== 'all') {
       let note = this.uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
@@ -1206,13 +1206,13 @@ class Editor {
         if (svg.includes('<defs')) {
           // warning about Mozilla bug #308590 when applicable (seems to be fixed now in Feb 2013)
           note += '\n\n' + this.uiStrings.notification.defsFailOnSave;
-          this.pref('save_notice_done', 'all');
+          this.configObj.pref('save_notice_done', 'all');
           done = 'all';
         } else {
-          this.pref('save_notice_done', 'part');
+          this.configObj.pref('save_notice_done', 'part');
         }
       } else {
-        this.pref('save_notice_done', 'all');
+        this.configObj.pref('save_notice_done', 'all');
       }
       if (done !== 'part') {
         seAlert(note);
@@ -1237,7 +1237,7 @@ class Editor {
     }
 
     this.exportWindow.location.href = data.bloburl || data.datauri;
-    const done = this.pref('export_notice_done');
+    const done = this.configObj.pref('export_notice_done');
     if (done !== 'all') {
       let note = this.uiStrings.notification.saveFromBrowser.replace('%s', data.type);
 
@@ -1249,7 +1249,7 @@ class Editor {
 
       // Note that this will also prevent the notice even though new issues may appear later.
       // May want to find a way to deal with that without annoying the user
-      this.pref('export_notice_done', 'all');
+      this.configObj.pref('export_notice_done', 'all');
       this.exportWindow.seAlert(note);
     }
   }
@@ -1307,9 +1307,9 @@ class Editor {
    * @returns {void}
    */
   setBackground (color, url) {
-    // if (color == this.pref('bkgd_color') && url == this.pref('bkgd_url')) { return; }
-    this.pref('bkgd_color', color);
-    this.pref('bkgd_url', url, true);
+    // if (color == this.configObj.pref('bkgd_color') && url == this.configObj.pref('bkgd_url')) { return; }
+    this.configObj.pref('bkgd_color', color);
+    this.configObj.pref('bkgd_url', url, true);
 
     // This should be done in  this.svgCanvas.js for the borderRect fill
     this.svgCanvas.setBackground(color, url);
@@ -1707,7 +1707,7 @@ class Editor {
     let cbCalled = false;
 
     if (ext.langReady && this.langChanged) { // We check for this since the "lang" pref could have been set by storage
-      const lang = this.pref('lang');
+      const lang = this.configObj.pref('lang');
       await ext.langReady({lang});
     }
 
@@ -1951,7 +1951,7 @@ class Editor {
   clickSave () {
     // In the future, more options can be provided here
     const saveOpts = {
-      images: this.pref('img_save'),
+      images: this.configObj.pref('img_save'),
       round_digits: 6
     };
     this.svgCanvas.save(saveOpts);
@@ -2055,7 +2055,7 @@ class Editor {
       resolution.w = convertUnit(resolution.w) + this.configObj.curConfig.baseUnit;
       resolution.h = convertUnit(resolution.h) + this.configObj.curConfig.baseUnit;
     }
-    $imgDialog.setAttribute('save', this.pref('img_save'));
+    $imgDialog.setAttribute('save', this.configObj.pref('img_save'));
     $imgDialog.setAttribute('width', resolution.w);
     $imgDialog.setAttribute('height', resolution.h);
     $imgDialog.setAttribute('title', this.svgCanvas.getDocumentTitle());
@@ -2067,13 +2067,13 @@ class Editor {
   * @returns {void}
   */
   showPreferences () {
-    if (this.preferences) { return; }
-    this.preferences = true;
+    if (this.configObj.preferences) { return; }
+    this.configObj.preferences = true;
     const $editDialog = document.getElementById('se-edit-prefs');
     $('#main_menu').hide();
     // Update background color with current one
     const canvasBg = this.configObj.curPrefs.bkgd_color;
-    const url = this.pref('bkgd_url');
+    const url = this.configObj.pref('bkgd_url');
     if (url) {
       $editDialog.setAttribute('bgurl', url);
     }
@@ -2137,7 +2137,7 @@ class Editor {
   hideDocProperties () {
     const $imgDialog = document.getElementById('se-img-prop');
     $imgDialog.setAttribute('dialog', 'close');
-    $imgDialog.setAttribute('save', this.pref('img_save'));
+    $imgDialog.setAttribute('save', this.configObj.pref('img_save'));
     this.docprops = false;
   }
 
@@ -2148,7 +2148,7 @@ class Editor {
   hidePreferences () {
     const $editDialog = document.getElementById('se-edit-prefs');
     $editDialog.setAttribute('dialog', 'close');
-    this.preferences = false;
+    this.configObj.preferences = false;
   }
 
   /**
@@ -2174,7 +2174,7 @@ class Editor {
       return false;
     }
     // Set image save option
-    this.pref('img_save', save);
+    this.configObj.pref('img_save', save);
     this.updateCanvas();
     this.hideDocProperties();
     return true;
@@ -2192,7 +2192,7 @@ class Editor {
     this.setBackground(bgcolor, bgurl);
 
     // set language
-    if (lang && lang !== this.pref('lang')) {
+    if (lang && lang !== this.configObj.pref('lang')) {
       const {langParam, langData} = await this.putLocale(lang, this.goodLangs);
       await this.setLang(langParam, langData);
     }
@@ -2219,7 +2219,7 @@ class Editor {
     $('#dialog_box').hide();
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     const editingsource = $editorDialog.getAttribute('dialog') === 'open';
-    if (!editingsource && !this.docprops && !this.preferences) {
+    if (!editingsource && !this.docprops && !this.configObj.preferences) {
       if (this.curContext) {
         this.svgCanvas.leaveContext();
       }
@@ -2308,7 +2308,7 @@ class Editor {
   */
   setLang (lang, allStrings) {
     this.langChanged = true;
-    this.pref('lang', lang);
+    this.configObj.pref('lang', lang);
     const $editDialog = document.getElementById('se-edit-prefs');
     $editDialog.setAttribute('lang', lang);
     if (!allStrings) {

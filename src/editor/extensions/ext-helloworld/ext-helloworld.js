@@ -29,7 +29,7 @@ export default {
   name: 'helloworld',
   async init ({$, importLocale}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {svgCanvas} = svgEditor;
     return {
       name: strings.name,

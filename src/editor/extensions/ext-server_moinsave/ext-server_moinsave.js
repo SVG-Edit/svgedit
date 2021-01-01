@@ -25,7 +25,7 @@ export default {
   name: 'server_moinsave',
   async init ({$, encode64, importLocale}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {svgCanvas} = svgEditor;
     const saveSvgAction = '/+modify';
 

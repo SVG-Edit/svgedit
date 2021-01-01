@@ -411,13 +411,13 @@ class TopPanelHandlers {
     if (attr !== 'id' && attr !== 'class') {
       if (isNaN(val)) {
         val = this.svgCanvas.convertToNum(attr, val);
-      } else if (this.configObj.curConfig.baseUnit !== 'px') {
+      } else if (this.editor.configObj.curConfig.baseUnit !== 'px') {
         // Convert unitless value to one with given unit
 
         const unitData = getTypeMap();
 
         if (this.selectedElement[attr] || this.svgCanvas.getMode() === 'pathedit' || attr === 'x' || attr === 'y') {
-          val *= unitData[this.configObj.curConfig.baseUnit];
+          val *= unitData[this.editor.configObj.curConfig.baseUnit];
         }
       }
     }

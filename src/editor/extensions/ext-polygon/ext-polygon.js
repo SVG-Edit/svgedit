@@ -26,7 +26,7 @@ export default {
     const {$} = S, // {svgcontent}
       // addElem = svgCanvas.addSVGElementFromJson,
       editingitex = false;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     let selElems,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       // newFOG, newFOGParent, newDef, newImageName, newMaskID, modeChangeG,

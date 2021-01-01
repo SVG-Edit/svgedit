@@ -462,10 +462,10 @@ export default class ConfigObj {
   * @returns {string|void} If val is missing or falsey and `mayBeEmpty` is not set, the
   * value of the previously stored preference will be returned.
   * @todo Review whether any remaining existing direct references to
-  *  getting `curPrefs` can be changed to use `svgEditor.pref()` getting to ensure
+  *  getting `curPrefs` can be changed to use `svgEditor.configObj.pref()` getting to ensure
   *  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`);
   *  specifically, `bkgd_color` could be changed so that the pref dialog has a
-  *  button to auto-calculate background, but otherwise uses `svgEditor.pref()` to
+  *  button to auto-calculate background, but otherwise uses `svgEditor.configObj.pref()` to
   *  be able to get default prefs or overridable settings
   */
   pref (key, val, mayBeEmpty) {

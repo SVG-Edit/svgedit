@@ -22,7 +22,7 @@ export default {
   name: 'webappfind',
   async init ({$}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const saveMessage = 'save',
       readMessage = 'read',
       excludedMessages = [readMessage, saveMessage];

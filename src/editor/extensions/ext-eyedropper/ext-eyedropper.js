@@ -23,7 +23,7 @@ export default {
   name: 'eyedropper',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {$, ChangeElementCommand} = S, // , svgcontent,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       {svgCanvas} = svgEditor,

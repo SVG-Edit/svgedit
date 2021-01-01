@@ -45,7 +45,7 @@ export default {
   name: 'markers',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {$} = S;
     const {svgCanvas} = svgEditor;
     const // {svgcontent} = S,
