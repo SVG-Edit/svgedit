@@ -812,8 +812,8 @@ class Editor {
     });
     const winWh = {width: $(window).width(), height: $(window).height()};
 
-    $(window).resize(function (evt) {
-      $.each(winWh, function (type, val) {
+    window.addEventListener('resize', (evt) => {
+      Object.entries(winWh).forEach(([type, val]) => {
         const curval = $(window)[type]();
         this.workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
         winWh[type] = curval;
