@@ -11,11 +11,11 @@ import {NS} from '../common/namespaces.js';
 import {ChangeElementCommand} from './history.js';
 import {
   transformPoint, getMatrix
-} from '../common/math.js';
+} from './math.js';
 import {
   assignAttributes, getRotationAngle, isNullish,
   getElem
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
 } from '../common/browser.js';

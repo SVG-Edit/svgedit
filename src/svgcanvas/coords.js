@@ -7,11 +7,11 @@
 
 import {
   snapToGrid, assignAttributes, getBBox, getRefElem, findDefs
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   transformPoint, transformListToTransform, matrixMultiply, transformBox
-} from '../common/math.js';
-import {getTransformList} from '../common/svgtransformlist.js';
+} from './math.js';
+import {getTransformList} from './svgtransformlist.js';
 
 const $ = jQuery;
 

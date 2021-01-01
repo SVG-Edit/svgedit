@@ -7,14 +7,14 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import {getTransformList} from '../common/svgtransformlist.js';
+import {getTransformList} from './svgtransformlist.js';
 import {shortFloat} from '../common/units.js';
-import {transformPoint} from '../common/math.js';
+import {transformPoint} from './math.js';
 import {
   getRotationAngle, getBBox,
   getRefElem, findDefs, isNullish,
   getBBox as utilsGetBBox
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   init as pathMethodInit, insertItemBeforeMethod, ptObjToArrMethod, getGripPtMethod,
   getPointFromGripMethod, addPointGripMethod, getGripContainerMethod, addCtrlGripMethod,

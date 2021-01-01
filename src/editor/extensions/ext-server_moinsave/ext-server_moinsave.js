@@ -25,8 +25,8 @@ export default {
   name: 'server_moinsave',
   async init ({$, encode64, importLocale}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
-    const svgCanvas = svgEditor.canvas;
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const {svgCanvas} = svgEditor;
     const saveSvgAction = '/+modify';
 
     // Create upload target (hidden iframe)
@@ -64,7 +64,8 @@ export default {
           <input type="hidden" name="contenttype" value="application/x-svgdraw">
         `).appendTo('body')
           .submit().remove();
-        $.alert(strings.saved);
+        // eslint-disable-next-line no-alert
+        alert(strings.saved);
         top.window.location = '/' + name;
       }
     });

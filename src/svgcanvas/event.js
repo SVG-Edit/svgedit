@@ -5,20 +5,20 @@
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute
 import {
   assignAttributes, cleanupElement, getElem, getRotationAngle, snapToGrid, walkTree,
   getBBox as utilsGetBBox, isNullish, preventClickDefault, setHref
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   convertAttrs
 } from '../common/units.js';
 import {
   transformPoint, hasMatrixTransform, getMatrix, snapToAngle
-} from '../common/math.js';
+} from './math.js';
 import {
   getTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 import {
   supportsNonScalingStroke, isWebkit
 } from '../common/browser.js';

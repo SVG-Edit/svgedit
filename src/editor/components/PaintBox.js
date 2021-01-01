@@ -6,15 +6,13 @@ class PaintBox {
   /**
      * @param {string|Element|external:jQuery} container
      * @param {"fill"} type
-     * @param {string} color
-     * @param {number} opacity
      */
-  constructor (container, type, color, opacity) {
+  constructor (container, type) {
     // set up gradients to be used for the buttons
     const svgdocbox = new DOMParser().parseFromString(
       `<svg xmlns="http://www.w3.org/2000/svg">
           <rect
-            fill="#${color}" opacity="${opacity}" width="22" height="22"/>
+            fill="#000000" opacity="1" width="22" height="22"/>
           <defs><linearGradient id="gradbox_${PaintBox.ctr++}"/></defs>
         </svg>`,
       'text/xml'
@@ -26,7 +24,7 @@ class PaintBox {
     this.rect = docElem.firstElementChild;
     this.defs = docElem.getElementsByTagName('defs')[0];
     this.grad = this.defs.firstElementChild;
-    this.paint = new $.jGraduate.Paint({solidColor: color});
+    // this.paint = new $.jGraduate.Paint({solidColor: color});
     this.type = type;
   }
 
@@ -137,22 +135,6 @@ class PaintBox {
     // update the rect inside #fill_color/#stroke_color
     this.setPaint(paint);
     return (paint);
-  }
-
-  /**
-     * @returns {void}
-     */
-  prep () {
-    const ptype = this.paint.type;
-
-    switch (ptype) {
-    case 'linearGradient':
-    case 'radialGradient': {
-      const paint = new $.jGraduate.Paint({copy: this.paint});
-      this.setPaint(this.type, paint);
-      break;
-    }
-    }
   }
 }
 PaintBox.ctr = 0;

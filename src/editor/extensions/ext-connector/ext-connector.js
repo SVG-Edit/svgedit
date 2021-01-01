@@ -23,7 +23,7 @@ export default {
   name: 'connector',
   async init (S) {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const {getElem} = svgCanvas;
     const {$, svgroot} = S,
       addElem = svgCanvas.addSVGElementFromJson,
@@ -356,7 +356,7 @@ export default {
         }
       }
     }];
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     return {
       /** @todo JFH special flag */
       newUI: true,
@@ -374,7 +374,7 @@ export default {
         startX = opts.start_x;
         startY = opts.start_y;
         const mode = svgCanvas.getMode();
-        const {curConfig: {initStroke}} = svgEditor;
+        const {curConfig: {initStroke}} = svgEditor.configObj;
 
         if (mode === 'connector') {
           if (started) { return undefined; }

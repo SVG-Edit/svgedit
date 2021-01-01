@@ -9,16 +9,16 @@
 
 import {NS} from '../common/namespaces.js';
 import {shortFloat} from '../common/units.js';
-import {getTransformList} from '../common/svgtransformlist.js';
+import {getTransformList} from './svgtransformlist.js';
 import {ChangeElementCommand, BatchCommand} from './history.js';
 import {
   transformPoint, snapToAngle, rectsIntersect,
   transformListToTransform
-} from '../common/math.js';
+} from './math.js';
 import {
   assignAttributes, getElem, getRotationAngle, snapToGrid, isNullish,
   getBBox as utilsGetBBox
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   isWebkit
 } from '../common/browser.js';

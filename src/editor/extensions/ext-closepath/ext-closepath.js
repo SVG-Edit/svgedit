@@ -25,7 +25,7 @@ export default {
   name: 'closepath',
   async init ({importLocale, $}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     let selElems;
     const updateButton = function (path) {
       const seglist = path.pathSegList,

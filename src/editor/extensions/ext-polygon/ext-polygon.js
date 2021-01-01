@@ -22,11 +22,11 @@ export default {
   name: 'polygon',
   async init (S) {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const {$} = S, // {svgcontent}
       // addElem = svgCanvas.addSVGElementFromJson,
       editingitex = false;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     let selElems,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       // newFOG, newFOGParent, newDef, newImageName, newMaskID, modeChangeG,
@@ -133,7 +133,7 @@ export default {
             // Todo: Uncomment the setItexString() function above and handle ajaxEndpoint?
             /*
             if (!setItexString($('#svg_source_textarea').val())) {
-              const ok = await $.confirm('Errors found. Revert to original?', function (ok) {
+              const ok = seConfirm('Errors found. Revert to original?', function (ok) {
               if (!ok) {
                 return false;
               }

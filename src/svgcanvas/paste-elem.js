@@ -1,9 +1,9 @@
 /* globals jQuery */
 
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import {
   getStrokedBBoxDefaultVisible
-} from '../common/utilities.js';
+} from './utilities.js';
 import * as hstry from './history.js';
 // Constants
 const $ = jQueryPluginSVG(jQuery);

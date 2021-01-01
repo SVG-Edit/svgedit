@@ -6,14 +6,14 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import jQueryPluginSVG from '../common/jQuery.attr.js';
+import jQueryPluginSVG from './jQuery.attr.js';
 import {NS} from '../common/namespaces.js';
 import {
   transformPoint, getMatrix
-} from '../common/math.js';
+} from './math.js';
 import {
   assignAttributes, getElem, getBBox as utilsGetBBox
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   supportsGoodTextCharPos
 } from '../common/browser.js';
@@ -262,15 +262,6 @@ export const textActionsMethod = (function () {
 
     return out;
   }
-
-  /*
-// Not currently in use
-function hideCursor () {
-if (cursor) {
-cursor.setAttribute('visibility', 'hidden');
-}
-}
-*/
 
   /**
 *

@@ -29,8 +29,8 @@ export default {
   name: 'helloworld',
   async init ({$, importLocale}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
-    const svgCanvas = svgEditor.canvas;
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const {svgCanvas} = svgEditor;
     return {
       name: strings.name,
       events: [{
@@ -78,7 +78,7 @@ export default {
           });
 
           // Show the text using the custom alert function
-          $.alert(text);
+          alert(text); // eslint-disable-line no-alert
         }
       }
     };

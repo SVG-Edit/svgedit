@@ -17,8 +17,7 @@
 import {Canvg as canvg} from 'canvg';
 import 'pathseg';
 
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
-import jQueryPluginDBox from './dbox.js';
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
@@ -78,12 +77,13 @@ import {
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
   preventClickDefault, walkTree, getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, dropXMLInternalSubset, init as utilsInit,
-  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish
-} from '../common/utilities.js';
+  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish, blankPageObjectURL,
+  $id, $qa, $qq
+} from './utilities.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
   isIdentity, transformBox
-} from '../common/math.js';
+} from './math.js';
 import {
   convertToNum, getTypeMap, init as unitsInit
 } from '../common/units.js';
@@ -97,7 +97,7 @@ import {
 } from '../common/browser.js'; // , supportsEditableText
 import {
   getTransformList, SVGTransformList as SVGEditTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 import {
   remapElement,
   init as coordsInit
@@ -116,7 +116,7 @@ import {
   init as clearInit
 } from './clear.js';
 
-let $ = jQueryPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand, BatchCommand
@@ -168,7 +168,7 @@ if (window.opera) {
 class SvgCanvas {
   /**
   * @param {HTMLElement} container - The container HTML element that should hold the SVG root element
-  * @param {module:SVGEditor.curConfig} config - An object that contains configuration data
+  * @param {module:SVGeditor.configObj.curConfig} config - An object that contains configuration data
   */
   constructor (container, config) {
   // Alias Namespace constants
@@ -1740,7 +1740,6 @@ class SvgCanvas {
 */
     this.setUiStrings = function (strs) {
       Object.assign(uiStrings, strs.notification);
-      $ = jQueryPluginDBox($, strs.common);
       pathModule.setUiStrings(strs);
     };
 
@@ -2742,5 +2741,15 @@ class SvgCanvas {
     };
   } // End constructor
 } // End class
+
+// attach utilities function to the class that are used by SvgEdit so
+// we can avoid using the whole utilities.js file in svgEdit.js
+SvgCanvas.isNullish = isNullish;
+SvgCanvas.encode64 = encode64;
+SvgCanvas.decode64 = decode64;
+SvgCanvas.$id = $id;
+SvgCanvas.$qq = $qq;
+SvgCanvas.$qa = $qa;
+SvgCanvas.blankPageObjectURL = blankPageObjectURL;
 
 export default SvgCanvas;

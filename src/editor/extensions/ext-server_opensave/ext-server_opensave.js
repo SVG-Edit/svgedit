@@ -24,7 +24,7 @@ export default {
   name: 'server_opensave',
   async init ({$, decode64, encode64}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {
       curConfig: {
         avoidClientSide, // Deprecated
@@ -146,7 +146,8 @@ export default {
         }
 
         if (note.length) {
-          await $.alert(note);
+          // eslint-disable-next-line no-alert
+          alert(note);
         }
 
         const filename = getFileNameFromTitle();

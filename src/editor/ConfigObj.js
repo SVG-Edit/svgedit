@@ -2,7 +2,17 @@
 
 // eslint-disable-next-line node/no-unpublished-import
 import deparam from 'deparam';
-import * as Utils from '../common/utilities.js';
+
+/**
+* Escapes special characters in a regular expression.
+* @function regexEscape
+* @param {string} str
+* @returns {string}
+*/
+export const regexEscape = function (str) {
+  // Originally from: http://phpjs.org/functions
+  return String(str).replace(/[.\\+*?[^\]$(){}=!<>|:-]/g, '\\$&');
+};
 /**
  * @class configObj
  */
@@ -147,27 +157,6 @@ export default class ConfigObj {
     // Note: The difference between Prefs and Config is that Prefs
     //   can be changed in the UI and are stored in the browser,
     //   while config cannot
-    this.curConfig = {
-      // We do not put on defaultConfig to simplify object copying
-      //   procedures (we obtain instead from defaultExtensions)
-      extensions: [],
-      userExtensions: [],
-      /**
-        * Can use `location.origin` to indicate the current
-        * origin. Can contain a '*' to allow all domains or 'null' (as
-        * a string) to support all `file:///` URLs. Cannot be set by
-        * URL for security reasons (not safe, at least for
-        * privacy or data integrity of SVG content).
-        * Might have been fairly safe to allow
-        *   `new URL(location.href).origin` by default but
-        *   avoiding it ensures some more security that even third
-        *   party apps on the same domain also cannot communicate
-        *   with this app by default.
-        * For use with `ext-xdomain-messaging.js`
-        * @todo We might instead make as a user-facing preference.
-      */
-      allowedOrigins: []
-    };
     this.urldata = {};
     /**
       * @name module:SVGEditor~defaultExtensions
@@ -186,6 +175,27 @@ export default class ConfigObj {
       'ext-star',
       'ext-storage'
     ];
+    this.curConfig = {
+      // We do not put on defaultConfig to simplify object copying
+      //   procedures (we obtain instead from defaultExtensions)
+      extensions: [],
+      userExtensions: [],
+      /**
+      * Can use `location.origin` to indicate the current
+      * origin. Can contain a '*' to allow all domains or 'null' (as
+      * a string) to support all `file:///` URLs. Cannot be set by
+      * URL for security reasons (not safe, at least for
+      * privacy or data integrity of SVG content).
+      * Might have been fairly safe to allow
+      *   `new URL(location.href).origin` by default but
+      *   avoiding it ensures some more security that even third
+      *   party apps on the same domain also cannot communicate
+      *   with this app by default.
+      * For use with `ext-xdomain-messaging.js`
+      * @todo We might instead make as a user-facing preference.
+      */
+      allowedOrigins: []
+    };
     this.editor = editor;
   }
   /**
@@ -206,14 +216,16 @@ export default class ConfigObj {
 
     // Now deal with extensions and other array config
     if (!curConfig.noDefaultExtensions) {
-      curConfig.extensions = curConfig.extensions.concat(this.defaultExtensions);
+      curConfig.extensions = [...this.defaultExtensions];
     }
     // ...and remove any dupes
+    /*
     ['extensions', 'allowedOrigins'].forEach(function (cfg) {
       curConfig[cfg] = $.grep(curConfig[cfg], function (n, i) { // Supposedly faster than filter per http://amandeep1986.blogspot.hk/2015/02/jquery-grep-vs-js-filter.html
         return i === curConfig[cfg].indexOf(n);
       });
     });
+    */
     // Export updated config
     this.curConfig = curConfig;
   }
@@ -345,7 +357,7 @@ export default class ConfigObj {
         this.defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
       } else {
         const result = document.cookie.match(
-          new RegExp('(?:^|;\\s*)' + Utils.regexEscape(
+          new RegExp('(?:^|;\\s*)' + regexEscape(
             encodeURIComponent(storeKey)
           ) + '=([^;]+)')
         );
@@ -450,10 +462,10 @@ export default class ConfigObj {
   * @returns {string|void} If val is missing or falsey and `mayBeEmpty` is not set, the
   * value of the previously stored preference will be returned.
   * @todo Review whether any remaining existing direct references to
-  *  getting `curPrefs` can be changed to use `svgEditor.pref()` getting to ensure
+  *  getting `curPrefs` can be changed to use `svgEditor.configObj.pref()` getting to ensure
   *  `defaultPrefs` fallback (also for sake of `allowInitialUserOverride`);
   *  specifically, `bkgd_color` could be changed so that the pref dialog has a
-  *  button to auto-calculate background, but otherwise uses `svgEditor.pref()` to
+  *  button to auto-calculate background, but otherwise uses `svgEditor.configObj.pref()` to
   *  be able to get default prefs or overridable settings
   */
   pref (key, val, mayBeEmpty) {

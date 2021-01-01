@@ -24,8 +24,8 @@ export default {
   name: 'mathjax',
   async init ({$}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
-    const svgCanvas = svgEditor.canvas;
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const {svgCanvas} = svgEditor;
 
     // Configuration of the MathJax extention.
 
@@ -202,7 +202,8 @@ export default {
               });
             } catch (e) {
               console.log('Failed loading MathJax.'); // eslint-disable-line no-console
-              $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
+              // eslint-disable-next-line no-alert
+              alert('Failed loading MathJax. You will not be able to change the mathematics.');
             }
           }
         }

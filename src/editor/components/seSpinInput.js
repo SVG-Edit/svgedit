@@ -18,7 +18,7 @@ template.innerHTML = `
     padding: 0px;
   }
   </style>
-  <img src="./images/logo.svg" alt="icon" width="12" height="12" />
+  <img src="./images/logo.svg" alt="icon" width="12" height="12" aria-labelledby="label" />
   <span id="label">label</span>
   <elix-number-spin-box min="1" step="1"></elix-number-spin-box>
 `;

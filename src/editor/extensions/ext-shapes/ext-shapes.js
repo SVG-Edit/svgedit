@@ -11,7 +11,7 @@ export default {
   name: 'shapes',
   init ({$}) {
     const svgEditor = this;
-    const canv = svgEditor.canvas;
+    const canv = svgEditor.svgCanvas;
     const svgroot = canv.getRootElem();
     let lastBBox = {};
 

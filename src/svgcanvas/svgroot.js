@@ -6,7 +6,7 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 import {NS} from '../common/namespaces.js';
-import {text2xml} from '../common/utilities.js';
+import {text2xml} from './utilities.js';
 
 /**
 * @function module:svgcanvas.svgRootElement svgRootElement the svg node and its children.

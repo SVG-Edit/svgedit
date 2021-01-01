@@ -379,25 +379,6 @@ hr {
 
 /*—————————————————————————————*/
 
-.tool_button:hover,
-.push_button:hover,
-.buttonup:hover,
-.buttondown,
-.tool_button_current,
-.push_button_pressed
-{
-  background-color: #ffc !important;
-}
-
-.tool_button_current,
-.push_button_pressed,
-.buttondown {
-  background-color: #f4e284 !important;
-  -webkit-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
-  -moz-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
-  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
-}
-
 #tools_top {
   position: absolute;
   left: 108px;
@@ -405,7 +386,6 @@ hr {
   top: 2px;
   height: 40px;
   border-bottom: none;
-  overflow: auto;
 }
 
 #tools_top .tool_sep {
@@ -515,12 +495,6 @@ input[type=text] {
   padding: 2px;
 }
 
-#tools_left .tool_button,
-#tools_left .tool_button_current {
-  position: relative;
-  z-index: 11;
-}
-
 .dropdown {
   position: relative;
 }
@@ -590,21 +564,6 @@ input[type=text] {
 #font_family {
   margin-left: 5px;
   margin-right: 0;
-}
-
-.tool_button,
-.push_button,
-.tool_button_current,
-.push_button_pressed
-{
-  height: 24px;
-  width: 24px;
-  margin: 2px 2px 4px 2px;
-  padding: 3px;
-  box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-  background-color: #E8E8E8;
-  cursor: pointer;
-  border-radius: 3px;
 }
 
  #main_menu li#tool_open,  #main_menu li#tool_import {
@@ -681,10 +640,6 @@ input[type=text] {
 
 #palette {
   float: right;
-}
-
-.dropdown li.tool_button {
-  width: 24px;
 }
 
 #stroke_expand {

@@ -45,9 +45,9 @@ export default {
   name: 'markers',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {$} = S;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const // {svgcontent} = S,
       addElem = svgCanvas.addSVGElementFromJson;
     const mtypes = ['start', 'mid', 'end'];
@@ -404,12 +404,13 @@ export default {
 
     /**
     * @param {"start"|"mid"|"end"} pos
-    * @returns {Promise<void>} Resolves to `undefined`
+    * @returns {void} Resolves to `undefined`
     */
-    async function showTextPrompt (pos) {
+    function showTextPrompt (pos) {
       let def = $('#' + pos + '_marker').val();
       if (def.substr(0, 1) === '\\') { def = ''; }
-      const txt = await $.prompt('Enter text for ' + pos + ' marker', def);
+      // eslint-disable-next-line no-alert
+      const txt = prompt('Enter text for ' + pos + ' marker', def);
       if (txt) {
         triggerTextEntry(pos, txt);
       }

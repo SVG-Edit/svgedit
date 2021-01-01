@@ -22,7 +22,7 @@ export default {
   name: 'star',
   async init (S) {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
 
     const {$} = S; // {svgcontent},
     let
@@ -35,7 +35,7 @@ export default {
       // newFOG, newFOGParent, newDef, newImageName, newMaskID,
       // undoCommand = 'Not image',
       // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
     /**
      *

@@ -13,7 +13,7 @@ import {NS} from '../common/namespaces.js';
 import {isOpera} from '../common/browser.js';
 import {
   toXml, getElem
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   copyElem as utilCopyElem
 } from './copy-elem.js';

@@ -8,17 +8,17 @@
 
 import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
-import jQueryPluginSVG from '../common/jQuery.attr.js';
+import jQueryPluginSVG from './jQuery.attr.js';
 import * as hstry from './history.js';
 import {
   text2xml, cleanupElement, findDefs, getHref, preventClickDefault,
   toXml, getStrokedBBoxDefaultVisible, encode64, createObjectURL,
   dataURLToObjectURL, walkTree, getBBox as utilsGetBBox
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   transformPoint, transformListToTransform
-} from '../common/math.js';
-import {resetListMap} from '../common/svgtransformlist.js';
+} from './math.js';
+import {resetListMap} from './svgtransformlist.js';
 import {
   convertUnit, shortFloat, convertToNum
 } from '../common/units.js';

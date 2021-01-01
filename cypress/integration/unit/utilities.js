@@ -2,7 +2,7 @@
 import '../../../instrumented/editor/jquery.min.js';
 
 import * as browser from '../../../instrumented/common/browser.js';
-import * as utilities from '../../../instrumented/common/utilities.js';
+import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import {NS} from '../../../instrumented/common/namespaces.js';
 
 describe('utilities', function () {

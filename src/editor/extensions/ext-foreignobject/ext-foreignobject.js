@@ -1,3 +1,4 @@
+/* globals  seConfirm */
 /**
  * @file ext-foreignobject.js
  *
@@ -24,13 +25,13 @@ export default {
   async init (S) {
     const svgEditor = this;
     const {$, text2xml, NS} = S;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     const
       // {svgcontent} = S,
       // addElem = svgCanvas.addSVGElementFromJson,
       svgdoc = S.svgroot.parentNode.ownerDocument;
 
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
     const properlySourceSizeTextArea = function () {
       // TODO: remove magic numbers here and get values from CSS
@@ -196,11 +197,11 @@ export default {
           // Create source save/cancel buttons
           /* const save = */ $('#tool_source_save').clone()
             .hide().attr('id', 'foreign_save').unbind()
-            .appendTo('#tool_source_back').click(async function () {
+            .appendTo('#tool_source_back').click(function () {
               if (!editingforeign) { return; }
 
               if (!setForeignString($('#svg_source_textarea').val())) {
-                const ok = await $.confirm('Errors found. Revert to original?');
+                const ok = seConfirm('Errors found. Revert to original?');
                 if (!ok) { return; }
                 endChanges();
               } else {

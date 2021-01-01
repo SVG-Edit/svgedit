@@ -6,20 +6,20 @@
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute
 import {NS} from '../common/namespaces.js';
 import * as hstry from './history.js';
 import * as pathModule from './path.js';
 import {
   isNullish, getStrokedBBoxDefaultVisible, setHref, getElem, getHref, getVisibleElements,
   findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost, assignAttributes
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   transformPoint, matrixMultiply, transformListToTransform
-} from '../common/math.js';
+} from './math.js';
 import {
   getTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 import {
   recalculateDimensions
 } from './recalculate.js';

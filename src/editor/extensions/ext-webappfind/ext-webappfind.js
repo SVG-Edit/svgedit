@@ -22,7 +22,7 @@ export default {
   name: 'webappfind',
   async init ({$}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const saveMessage = 'save',
       readMessage = 'read',
       excludedMessages = [readMessage, saveMessage];
@@ -63,7 +63,8 @@ export default {
           } */
           break;
         case 'save-end':
-          $.alert(`save complete for pathID ${pathID}!`);
+          // eslint-disable-next-line no-alert
+          alert(`save complete for pathID ${pathID}!`);
           break;
         default:
           throw new Error('Unexpected WebAppFind event type');
@@ -98,7 +99,7 @@ export default {
               webappfind: {
                 type: saveMessage,
                 pathID,
-                content: svgEditor.canvas.getSvgString()
+                content: svgEditor.svgCanvas.getSvgString()
               }
             }, window.location.origin === 'null'
               // Avoid "null" string error for `file:` protocol (even

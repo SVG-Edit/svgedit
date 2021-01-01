@@ -5,7 +5,7 @@
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
-import {getElem, assignAttributes, cleanupElement} from '../common/utilities.js';
+import {getElem, assignAttributes, cleanupElement} from './utilities.js';
 import {NS} from '../common/namespaces.js';
 
 let jsonContext_ = null;

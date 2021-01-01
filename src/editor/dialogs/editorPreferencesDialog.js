@@ -194,11 +194,11 @@ template.innerHTML = `
         </fieldset>
         <fieldset id="change_grid">
           <legend id="svginfo_grid_settings">Grid</legend>
-          <label>
+          <label for="svginfo_snap_onoff">
             <span id="svginfo_snap_onoff">Snapping on/off</span>
             <input type="checkbox" value="snapping_on" id="grid_snapping_on" />
           </label>
-          <label>
+          <label for="grid_snapping_step">
             <span id="svginfo_snap_step">Snapping Step-Size:</span>
             <input type="text" id="grid_snapping_step" size="3" value="10" />
           </label>
