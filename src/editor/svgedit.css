@@ -486,7 +486,7 @@ div.toolset label span {
   margin-left: 5px;
 }
 
-#tools_top se-input, se-spin-input {
+#tools_top se-input, #tools_top se-spin-input {
   margin-top: 5px;
   height: 15px;
 }
@@ -638,6 +638,16 @@ input[type=text] {
   float: left;
 }
 
+#tools_bottom se-spin-input {
+  float: left;
+  vertical-align: middle;
+}
+
+.bottom-icon {
+  width: 22px;
+}
+
+
 #palette {
   float: right;
 }
@@ -677,31 +687,6 @@ input[type=text] {
 
 #tool_opacity {
   overflow: visible;
-}
-
-@media screen and (max-width:1250px) {
-  #tools_top {
-    height: 71px;
-  }
-  #workarea, #sidepanels {
-    top: 70px;
-  }
-  #rulers #ruler_corner,
-  #rulers #ruler_x, #tools_left {
-    top: 71px;
-  }
-
-  #rulers #ruler_y {
-    top: 86px;
-  }
-
-  #cur_context_panel {
-    top: 87px;
-  }
-
-  #selected_panel {
-    clear: right;
-  }
 }
 
 /*–––––––––––––––––––––––––––––––––––––*/
