@@ -139,7 +139,6 @@ class EditorStartup {
     this.svgCanvas.bind('selected', this.selectedChanged.bind(this));
     this.svgCanvas.bind('transition', this.elementTransition.bind(this));
     this.svgCanvas.bind('changed', this.elementChanged.bind(this));
-    this.svgCanvas.bind('saved', this.saveHandler.bind(this));
     this.svgCanvas.bind('exported', this.exportHandler.bind(this));
     this.svgCanvas.bind('exportedPDF', function (win, data) {
       if (!data.output) { // Ignore Chrome
@@ -454,10 +453,11 @@ class EditorStartup {
     this.layersPanel.init();
 
     $id('tool_clear').addEventListener('click', this.clickClear.bind(this));
-    $id('tool_open').addEventListener('click', function (e) {
+    $id('tool_open').addEventListener('click', (e) => {
+      e.preventDefault();
       this.clickOpen();
       window.dispatchEvent(new CustomEvent('openImage'));
-    }.bind(this));
+    });
     $id('tool_import').addEventListener('click', (e) => {
       this.clickImport();
       window.dispatchEvent(new CustomEvent('importImage'));
@@ -702,27 +702,6 @@ class EditorStartup {
       this.workarea[0].addEventListener('dragover', this.onDragOver);
       this.workarea[0].addEventListener('dragleave', this.onDragLeave);
       this.workarea[0].addEventListener('drop', importImage);
-
-      const open = $('<input type="file">').change(async function (e) {
-        const ok = await this.openPrep();
-        if (!ok) { return; }
-        this.svgCanvas.clear();
-        if (this.files.length === 1) {
-          $.process_cancel(this.uiStrings.notification.loadingImage);
-          const reader = new FileReader();
-          reader.onloadend = async function ({target}) {
-            await this.loadSvgString(target.result);
-            this.updateCanvas();
-          };
-          reader.readAsText(this.files[0]);
-        }
-      });
-      $('#tool_open').show();
-      $(window).on('openImage', () => open.click());
-
-      const imgImport = $('<input type="file">').change(importImage);
-      $('#tool_import').show();
-      $(window).on('importImage', () => imgImport.click());
     }
 
     this.updateCanvas(true);

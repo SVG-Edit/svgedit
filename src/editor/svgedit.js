@@ -17,7 +17,7 @@
 */
 
 import './touch.js';
-import {isChrome, isGecko, isMac} from '../common/browser.js';
+import {isChrome, isMac} from '../common/browser.js';
 import {convertUnit, isValidUnit} from '../common/units.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
@@ -205,20 +205,18 @@ class Editor extends EditorStartup {
   setCustomHandlers (opts) {
     return this.ready(() => {
       if (opts.open) {
-        $('#tool_open > input[type="file"]').remove();
-        $('#tool_open').show();
-        this.svgCanvas.open = opts.open;
+        this.svgCanvas.open = opts.open.bind(this);
       }
       if (opts.save) {
         this.showSaveWarning = false;
-        this.svgCanvas.bind('saved', opts.save);
+        this.svgCanvas.bind('saved', opts.save.bind(this));
       }
       if (opts.exportImage) {
-        this.customExportImage = opts.exportImage;
+        this.customExportImage = opts.exportImage.bind(this);
         this.svgCanvas.bind('exported', this.customExportImage); // canvg and our RGBColor will be available to the method
       }
       if (opts.exportPDF) {
-        this.customExportPDF = opts.exportPDF;
+        this.customExportPDF = opts.exportPDF.bind(this);
         this.svgCanvas.bind('exportedPDF', this.customExportPDF); // jsPDF and our RGBColor will be available to the method
       }
     });
@@ -365,55 +363,6 @@ class Editor extends EditorStartup {
       setTimeout(() => {
         // setIcon('#tool_select', 'select');
       }, 1000);
-    }
-  }
-
-  /**
-   * @type {module:svgcanvas.EventHandler}
-   * @param {external:Window} wind
-   * @param {module:svgcanvas.SvgCanvas#event:saved} svg The SVG source
-   * @listens module:svgcanvas.SvgCanvas#event:saved
-   * @returns {void}
-   */
-  saveHandler (wind, svg) {
-    this.showSaveWarning = false;
-
-    // by default, we add the XML prolog back, systems integrating SVG-edit (wikis, CMSs)
-    // can just provide their own custom save handler and might not want the XML prolog
-    svg = '<?xml version="1.0"?>\n' + svg;
-
-    // Since saving SVGs by opening a new window was removed in Chrome use artificial link-click
-    // https://stackoverflow.com/questions/45603201/window-is-not-allowed-to-navigate-top-frame-navigations-to-data-urls
-    const a = document.createElement('a');
-    a.href = 'data:image/svg+xml;base64,' + encode64(svg);
-    a.download = 'icon.svg';
-    a.style.display = 'none';
-    document.body.append(a); // Need to append for Firefox
-
-    a.click();
-
-    // Alert will only appear the first time saved OR the
-    //   first time the bug is encountered
-    let done = this.configObj.pref('save_notice_done');
-
-    if (done !== 'all') {
-      let note = this.uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
-      // Check if FF and has <defs/>
-      if (isGecko()) {
-        if (svg.includes('<defs')) {
-          // warning about Mozilla bug #308590 when applicable (seems to be fixed now in Feb 2013)
-          note += '\n\n' + this.uiStrings.notification.defsFailOnSave;
-          this.configObj.pref('save_notice_done', 'all');
-          done = 'all';
-        } else {
-          this.configObj.pref('save_notice_done', 'part');
-        }
-      } else {
-        this.configObj.pref('save_notice_done', 'all');
-      }
-      if (done !== 'part') {
-        seAlert(note);
-      }
     }
   }
 
@@ -1454,7 +1403,7 @@ class Editor extends EditorStartup {
    */
   openPrep () {
     $('#main_menu').hide();
-    if (this.undoMgr.getUndoStackSize() === 0) {
+    if (this.svgCanvas.undoMgr.getUndoStackSize() === 0) {
       return true;
     }
     return seConfirm(this.uiStrings.notification.QwantToOpen);
