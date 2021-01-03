@@ -8,7 +8,7 @@
  </defs>
  <g>
   <path transform="rotate(-45, 41.5117, 59.4648)" id="svg_3" d="m-19.0679,34.2946l94.8359,0c36.499,-1.4142 33.67101,48.9569 0,50.3711l-94.8359,0l0,-50.3711z" stroke-width="2" stroke="#a0a0a0" fill="url(#svg_8)"/>
-  <path id="svg_1" d="m6.63133,95.07755l59.17515,-59.17515" stroke-width="3" stroke="#00ffff" fill="none"/>
-  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke="none" fill="#00ffff"/>
+  <path id="svg_1" d="m6.63133,95.07755l59.17515,-59.17515" stroke-width="3" stroke="#fddb8c" fill="none"/>
+  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke="none" fill="#fddb8c"/>
  </g>
 </svg>

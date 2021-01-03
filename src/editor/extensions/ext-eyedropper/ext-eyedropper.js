@@ -71,29 +71,19 @@ export default {
       }
     }
 
-    const buttons = [
-      {
-        id: 'tool_eyedropper',
-        type: 'mode',
-        events: {
-          click () {
-            svgCanvas.setMode('eyedropper');
-          }
-        }
+    const events = {
+      id: 'tool_eyedropper',
+      click () {
+        svgCanvas.setMode('eyedropper');
       }
-    ];
+    };
 
     return {
       name: strings.name,
-      newUI: true,
-      buttons: strings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      }),
-
+      events,
       // if we have selected an element, grab its paint and enable the eye dropper button
       selectedChanged: getStyle,
       elementChanged: getStyle,
-
       mouseDown (opts) {
         const mode = svgCanvas.getMode();
         if (mode === 'eyedropper') {

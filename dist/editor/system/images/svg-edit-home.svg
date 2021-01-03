@@ -6,7 +6,7 @@
   </radialGradient>
   <linearGradient id="svg_10" x1="0" y1="0" x2="1" y2="0">
    <stop offset="0" stop-color="#333333" stop-opacity="0.99609"/>
-   <stop offset="1" stop-opacity="0.99609" stop-color="#666666"/>
+   <stop offset="1" stop-opacity="0.99609" stop-color="#fddb8c"/>
   </linearGradient>
  </defs>
  <g>

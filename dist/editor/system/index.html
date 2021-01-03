@@ -299,9 +299,8 @@
           </se-button>
           <se-button id="tool_add_subpath" title="Add sub-path" src="./images/tool_add_subpath.svg"></se-button>
         </div> <!-- path_node_panel -->
-      </div> <!-- tools_top -->
-      <div id="cur_context_panel">
-      </div>
+        <div id="cur_context_panel"></div>
+    </div> <!-- tools_top -->
       <div id="tools_left">
         <se-button id="tool_select" title="Select Tool" src="./images/select.svg"></se-button>
         <se-button id="tool_fhpath" title="Pencil Tool" src="./images/pencil.svg" shortcut="Q"></se-button>
@@ -347,7 +346,7 @@
         </se-zoom>
         <se-colorpicker id="fill_color" src="./images/fill.svg" title="Change fill color" type="fill"></se-colorpicker>
         <se-colorpicker id="stroke_color" src="./images/stroke.svg" title="Change stroke color" type="stroke"></se-colorpicker>
-        <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width by 1" label=""></se-spin-input>
+        <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width" label=""></se-spin-input>
         <se-list id="stroke_style" title="Change stroke dash style" label="">
             <se-list-item value="none">&#8212;</se-list-item>
             <se-list-item value="2,2">...</se-list-item>
@@ -356,23 +355,16 @@
             <se-list-item value="5,2,2,2,2,2">- ..</se-list-item>
         </se-list>
         <se-list id="stroke_linejoin" title="Linejoin: Miter" label="">
-          <se-list-item id="linejoin_miter"><se-button size="small" title="Linejoin: Miter" src="./images/linejoin_miter.svg"></se-button></se-list-item>
-          <se-list-item id="linejoin_round"><se-button size="small" title="Linejoin: Round" src="./images/linejoin_round.svg"></se-button></se-list-item>
-          <se-list-item id="linejoin_bevel"><se-button size="small" title="Linejoin: Bevel" src="./images/linejoin_bevel.svg"></se-button></se-list-item>  
+          <se-list-item id="linejoin_miter"><img title="Linejoin: Miter" src="./images/linejoin_miter.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linejoin_round"><img title="Linejoin: Round" src="./images/linejoin_round.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linejoin_bevel"><img title="Linejoin: Bevel" src="./images/linejoin_bevel.svg" height="22px"></img></se-list-item>  
         </se-list>
         <se-list id="stroke_linecap" title="Linecap: Butt" label="">
-          <se-list-item id="linecap_butt"><se-button size="small" title="Linecap: Butt" src="./images/linecap_butt.svg"></se-button></se-list-item>
-          <se-list-item id="linecap_square"><se-button size="small" title="Linecap: Square" src="./images/linecap_square.svg"></se-button></se-list-item>
-          <se-list-item id="linecap_round"><se-button size="small" title="Linecap: Round" src="./images/linecap_round.svg"></se-button></se-list-item>
+          <se-list-item id="linecap_butt"><img title="Linecap: Butt" src="./images/linecap_butt.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linecap_square"><img title="Linecap: Square" src="./images/linecap_square.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linecap_round"><img title="Linecap: Round" src="./images/linecap_round.svg" height="22px"></img></se-list-item>
         </se-list>
-        <se-list id="opacity_dropdown" label="">
-          <se-list-item>0%</se-list-item>
-          <se-list-item>25%</se-list-item>
-          <se-list-item>50%</se-list-item>
-          <se-list-item>75%</se-list-item>
-          <se-list-item>100%</se-list-item>
-        </se-list>
-        <se-spin-input size="3" id="group_opacity" min=0 max=100 step=5 title="Change selected item opacity" label=""></se-spin-input>
+        <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="Change selected item opacity" src="./images/opacity.svg"></se-spin-input>
         <se-palette id="palette"></se-palette>
       </div> <!-- tools_bottom -->
     <div id="dialog_box">
