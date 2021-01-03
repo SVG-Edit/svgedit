@@ -28,22 +28,16 @@ export default {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {svgCanvas} = svgEditor;
-    const buttons = [{
+    const events = {
       id: 'ext-panning',
-      icon: 'panning.png',
-      type: 'mode',
-      events: {
-        click () {
-          svgCanvas.setMode('ext-panning');
-        }
+      click () {
+        svgCanvas.setMode('ext-panning');
       }
-    }];
+    };
     return {
       newUI: true,
       name: strings.name,
-      buttons: strings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      }),
+      events,
       mouseDown () {
         if (svgCanvas.getMode() === 'ext-panning') {
           svgEditor.setPanning(true);
