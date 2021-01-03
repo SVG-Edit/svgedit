@@ -137,10 +137,11 @@
     "@babel/polyfill": "7.12.1",
     "@web/dev-server-rollup": "0.3.1",
     "canvg": "3.0.7",
-    "core-js": "3.7.0",
+    "core-js": "3.8.2",
     "jspdf": "2.1.1",
     "pathseg": "1.2.0",
     "regenerator-runtime": "0.13.7",
+    "rollup-plugin-polyfill-node": "^0.4.1",
     "svg2pdf.js": "2.0.0"
   },
   "devDependencies": {
@@ -163,7 +164,7 @@
     "axe-core": "4.1.1",
     "babel-plugin-transform-object-rest-spread": "7.0.0-beta.3",
     "copyfiles": "2.4.0",
-    "core-js-bundle": "3.7.0",
+    "core-js-bundle": "3.8.2",
     "coveradge": "0.6.0",
     "cp-cli": "2.0.0",
     "cross-var": "1.1.0",
