@@ -414,13 +414,8 @@ class EditorStartup {
       seAlert(this.title);
     });
 
-    $('#stroke_width').val(this.configObj.curConfig.initStroke.width);
-    $('#group_opacity').val(this.configObj.curConfig.initOpacity * 100);
-
-    $('#group_opacityLabel').click(() => {
-      $('#opacity_dropdown button').mousedown();
-      $(window).mouseup();
-    });
+    $id('stroke_width').value = this.configObj.curConfig.initStroke.width;
+    $id('opacity').value = this.configObj.curConfig.initOpacity * 100;
 
     $('.push_button').mousedown(() => {
       if (!$(this).hasClass('disabled')) {

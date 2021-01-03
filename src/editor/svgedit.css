@@ -734,10 +734,6 @@ ul li.current {
   -webkit-border-radius: 0;
 }
 
-#opacity_dropdown li {
-  width: 140px;
-}
-
  #copyright {
   text-align: right;
   padding-right: .3em;
