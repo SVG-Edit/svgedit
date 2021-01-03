@@ -2,10 +2,10 @@
  <defs>
   <linearGradient y2="1" x2="1" y1="0" x1="1" id="svg_25">
    <stop stop-opacity="1" stop-color="#10284c" offset="0"/>
-   <stop stop-opacity="1" stop-color="#5374ad" offset="1"/>
+   <stop stop-opacity="1" stop-color="#fddb8c" offset="1"/>
   </linearGradient>
   <linearGradient y2="0.75781" x2="0.99609" y1="0" x1="1" id="svg_23">
-   <stop stop-opacity="1" stop-color="#162e84" offset="0"/>
+   <stop stop-opacity="1" stop-color="#fddb8c" offset="0"/>
    <stop stop-opacity="1" stop-color="#97c4ef" offset="1"/>
   </linearGradient>
  </defs>
@@ -14,6 +14,6 @@
   <rect fill="url(#svg_23)" id="svg_20" height="7.02244" width="15.96424" y="6.7266" x="4"/>
   <rect fill="url(#svg_25)" id="svg_24" height="4.02393" width="15.96303" y="13.77454" x="4"/>
   <circle fill="#ffffad" id="svg_26" r="1.83333" cy="9.82002" cx="7.13254"/>
-  <path d="m14.5696,13.77458l0.70243,-4.85313l-3.12899,4.85313l2.42656,0z" id="svg_14" fill="#404040" stroke="none"/>
-  <path d="m15.27203,8.98531c2.74584,0.06386 2.42657,4.21456 -0.63857,4.85313c0.70243,-1.27714 1.66028,-3.63985 0.63857,-4.85313z" id="svg_17" fill="#404040" stroke="none"/>
+  <path d="m14.5696,13.77458l0.70243,-4.85313l-3.12899,4.85313l2.42656,0z" id="svg_14" fill="#212121" stroke="none"/>
+  <path d="m15.27203,8.98531c2.74584,0.06386 2.42657,4.21456 -0.63857,4.85313c0.70243,-1.27714 1.66028,-3.63985 0.63857,-4.85313z" id="svg_17" fill="#212121" stroke="none"/>
 </svg>

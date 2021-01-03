@@ -1,5 +1,14 @@
-body {
-  background: #D0D0D0;
+:root{
+  --main-bg-color: #f4f4f4;
+  --text-color: #000000;
+  --border-color: #808080;
+  --canvas-bg-color:  radial-gradient(#7a7676, #ffffff 50%);
+  --link-color: #19c;
+  --ruler-color: #f4f4f4;
+}
+
+body {  
+  background: var(--main-bg-color);
 }
 
 html, body, div{
@@ -22,16 +31,16 @@ html, body, div{
 #svg_editor {
   font-size: 8pt;
   font-family: Verdana, Helvetica, Arial;
-  color: #000000;
+  color: var(--text-color);;
 }
 
 a {
-  color: #19c;
+  color:var(--link-color);
 }
 
 hr {
   border: none;
-  border-bottom: 1px solid #808080;
+  border-bottom: 1px solid var(--border-color);
 }
 
 #svgroot {
@@ -45,19 +54,13 @@ hr {
 #svgcanvas {
   line-height: normal;
   display: inline-block;
-  background-color: #A0A0A0;
+  background: var(--canvas-bg-color);
   text-align: center;
   vertical-align: middle;
   width: 640px;
   height: 480px;
   -apple-dashboard-region:dashboard-region(control rectangle 0px 0px 0px 0px); /* for widget regions that shouldn't react to dragging */
   position: relative;
-  /*
-    A subtle gradient effect in the canvas.
-    Just experimenting - not sure if this is worth it.
-  */
-  background: -moz-radial-gradient(45deg,#bbb,#222);
-  background: -webkit-gradient(radial, center center, 3, center center, 1000, from(#bbb), to(#222));
 }
 
 /* Rulers
@@ -65,7 +68,7 @@ hr {
 
 #rulers > div {
   position: absolute;
-  background: #DDD;
+  background: var(--ruler-color);
   z-index: 1;
   overflow: hidden;
 }
@@ -125,7 +128,7 @@ hr {
   bottom: 40px;
   right: 14px;
   background-color: #A0A0A0;
-  border: 1px solid #808080;
+  border: 1px solid var(--border-color);
   overflow: auto;
   text-align: center;
 }
@@ -138,7 +141,7 @@ hr {
   right: 0;
   width: 2px;
   padding: 10px;
-  border-color: #808080;
+  border-color: var(--border-color);
   border-style: solid;
   border-width: 1px;
   border-left: none;
@@ -167,7 +170,7 @@ hr {
 #sidepanel_handle {
   display: inline-block;
   position: absolute;
-  background-color: #D0D0D0;
+  background-color: --main-bg-color;
   font-weight: bold;
   left: 0;
   top: 40%;
@@ -200,8 +203,8 @@ hr {
   height: 20px;
   border-right: 1px solid #FFFFFF;
   border-bottom: 1px solid #FFFFFF;
-  border-left: 1px solid #808080;
-  border-top: 1px solid #808080;
+  border-left: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -213,7 +216,7 @@ hr {
   padding: 0;
   width: 127px;
   border-collapse: collapse;
-  border: 1px solid #808080;
+  border: 1px solid var(--border-color);
   background-color: #FFFFFF;
 }
 
@@ -224,7 +227,7 @@ hr {
 }
 
 #layerlist tr.layersel {
-  border: 1px solid #808080;
+  border: 1px solid var(--border-color);
   background-color: #CCCCCC;
 }
 
@@ -382,10 +385,10 @@ hr {
 #tools_top {
   position: absolute;
   left: 108px;
-  right: 2px;
   top: 2px;
-  height: 40px;
+  min-height: 40px;
   border-bottom: none;
+  overflow: scroll;
 }
 
 #tools_top .tool_sep {
@@ -400,7 +403,7 @@ hr {
   left: 1px;
   margin-top: -2px;
   padding-left: 2px;
-  background: #D0D0D0; /* Needed so flyout icons don't appear on the left */
+  background: --main-bg-color; /* Needed so flyout icons don't appear on the left */
   z-index: 4;
 }
 
@@ -506,14 +509,14 @@ input[type=text] {
   padding: 0;
   border-left: 1px solid #FFFFFF;
   border-top: 1px solid #FFFFFF;
-  border-right: 1px solid #808080;
-  border-bottom: 1px solid #808080;
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   background-color: #E8E8E8;
 }
 
 .dropdown button.down {
-  border-left: 1px solid #808080;
-  border-top: 1px solid #808080;
+  border-left: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
   border-right: 1px solid #FFFFFF;
   border-bottom: 1px solid #FFFFFF;
   background-color: #B0B0B0;
@@ -904,7 +907,7 @@ ul li.current {
   padding:5px 10px 5px 7px; /* Firefox */
   line-height:17px; /* Safari */
   margin: 5px 20px 0 0;
-  border: 1px #808080 solid;
+  border: 1px var(--border-color) solid;
   border-top-color: #FFF;
   border-left-color: #FFF;
   border-radius: 5px;
