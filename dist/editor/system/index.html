@@ -12,7 +12,7 @@
 
   <!-- STYLESHEETS (others loaded dynamically) -->
   <style id="styleoverrides" media="screen"></style>
-  <link href="svgedit.css" rel="stylesheet" media="all">
+  <link href="./svgedit.css" rel="stylesheet" media="all">
   </link>
 
   <!-- SCRIPTS -->
@@ -22,14 +22,7 @@
 
   <!-- If you do not wish to add extensions by URL, you can add calls
       within the following file to svgEditor.setConfig -->
-  <script>
-              const systemJsLoaderTag = document.createElement('script');
-              systemJsLoaderTag.src = './s.min.js';
-              systemJsLoaderTag.addEventListener('load', function () {
-                System.import('./index.js');
-                });
-              document.head.appendChild(systemJsLoaderTag);
-              </script>
+  <script type="module" src="./index.js"></script>
 
   <title>SVG-edit</title>
 </head>
