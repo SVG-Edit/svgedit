@@ -2,7 +2,7 @@
  <defs>
   <linearGradient y2="1.0" x2="1.0" y1="0.1875" x1="0.171875" id="svg_4">
    <stop stop-opacity="1" stop-color="#ffffff" offset="0.0"/>
-   <stop stop-opacity="1" stop-color="#ff6666" offset="1.0"/>
+   <stop stop-opacity="1" stop-color="#fddb8c" offset="1.0"/>
   </linearGradient>
  </defs>
  <g>

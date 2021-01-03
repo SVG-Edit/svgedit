@@ -2,7 +2,7 @@
  <defs>
   <linearGradient y2="1" x2="1" y1="0.10156" x1="0.36328" id="svg_2">
    <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
-   <stop stop-opacity="1" stop-color="#3b7e9b" offset="1"/>
+   <stop stop-opacity="1" stop-color="#fddb8c" offset="1"/>
   </linearGradient>
  </defs>
   <rect transform="matrix(1, 0, 0, 1, 0, 0)" stroke="#000000" fill="url(#svg_2)" id="svg_1" height="12" width="20" y="5.5" x="1.5"/>

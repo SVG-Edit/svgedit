@@ -2,7 +2,7 @@
  <defs>
   <linearGradient y2="1" x2="1" y1="0.28125" x1="0.33594" id="svg_4">
    <stop stop-opacity="1" stop-color="#ffffff" offset="0"/>
-   <stop stop-opacity="1" stop-color="#33a533" offset="1"/>
+   <stop stop-opacity="1" stop-color="#fddb8c" offset="1"/>
   </linearGradient>
  </defs>
  <path stroke-dasharray="null" stroke-width="4" stroke="#000000" fill="url(#svg_4)" id="svg_1" d="m6,103l55,-87c85,33.64 -26,37.12 55,87l-110,0z"/>

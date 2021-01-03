@@ -1,12 +1,12 @@
 <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
    <defs>
     <linearGradient id="svg_30" x1="0" y1="0" x2="1" y2="0">
-     <stop offset="0" stop-color="#d3d3d3" stop-opacity="1"/>
-     <stop offset="1" stop-color="#424242" stop-opacity="1"/>
+     <stop offset="0" stop-color="#fddb8c" stop-opacity="1"/>
+     <stop offset="1" stop-color="#fddb8c" stop-opacity="1"/>
     </linearGradient>
    </defs>
     <path d="m107.14774,101.03477l-0.64774,43.96523c5.00857,4.72089 14.00811,5.27188 19,0l-0.31667,-44.16l-9.61514,-19.84l-8.42046,20.03477z" id="svg_29" fill="url(#svg_30)" stroke="#202020" stroke-width="2" transform="rotate(-45, 116, 114)"/>
-    <circle cx="58" cy="58" r="51" id="svg_22" fill="#c0c0c0" stroke="#202020" stroke-width="5"/>
-    <circle cx="58" cy="58" r="43" id="svg_27" fill="#aaccff" stroke="none"/>
-    <path d="m15.68604,61.46511c38.13954,17.67442 48.13954,15.34883 85.11628,-0.46511c1.39536,18.60465 -19.30231,41.86047 -42.7907,40.93023c-21.6279,-0.93023 -42.7907,-21.86046 -42.32558,-40.46511z" id="svg_28" fill="#8cbaff" stroke="none"/>
+    <circle cx="58" cy="58" r="51" id="svg_22" fill="#fddb8c" stroke="#202020" stroke-width="5"/>
+    <circle cx="58" cy="58" r="43" id="svg_27" fill="#fddb8c" stroke="none"/>
+    <path d="m15.68604,61.46511c38.13954,17.67442 48.13954,15.34883 85.11628,-0.46511c1.39536,18.60465 -19.30231,41.86047 -42.7907,40.93023c-21.6279,-0.93023 -42.7907,-21.86046 -42.32558,-40.46511z" id="svg_28" fill="#fddb00" stroke="none"/>
   </svg>

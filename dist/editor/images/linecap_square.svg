@@ -8,7 +8,7 @@
  </defs>
  <g>
   <rect fill="url(#svg_8)" stroke="none" x="-18.51568" y="35.5974" width="117.46469" height="50.3728" id="svg_3" transform="rotate(-45, 40.2168, 60.7832)"/>
-  <path id="svg_1" d="m6.63133,95.07755l59.17514,-59.17514" stroke-width="3" stroke="#00ffff" fill="none"/>
-  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke="none" fill="#00ffff"/>
+  <path id="svg_1" d="m6.63133,95.07755l59.17514,-59.17514" stroke-width="3" stroke="#fddb8c" fill="none"/>
+  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke="none" fill="#fddb8c"/>
  </g>
 </svg>
