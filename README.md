@@ -53,7 +53,8 @@ You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svg
 Thanks to netlify, you can test the following versions: 
 
 latest master build (V6): https://svgedit.netlify.app/editor/index.html
-V7 preview (under development): 
+
+V7 preview (under development): https://deploy-preview-465--svgedit.netlify.app/editor/index.html
 
 ## Installation
 
