@@ -7,9 +7,9 @@ template.innerHTML = `
   <style>
   </style>  
   <elix-menu-item>
-    <div style="display:inline-block;">
+    <div style="display:flex; align-items: center;">
       <img src="./images/logo.svg" alt="icon" style="display:none;" /> 
-      <span></span>
+      <span style="margin-left: 3px;"></span>
     </div>
   </elix-menu-item>  
 `;
@@ -29,7 +29,7 @@ export class SeMenuItem extends HTMLElement {
     this.$label = this._shadowRoot.querySelector('span');
     this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');
     this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
-    this.$svg.setAttribute('style', 'width:1px;height:1px;');
+    this.$svg.setAttribute('style', 'display: none;');
   }
   /**
    * @function observedAttributes
