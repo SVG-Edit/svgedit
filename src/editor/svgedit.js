@@ -1071,10 +1071,10 @@ class Editor extends EditorStartup {
    * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
    * @returns {void}
    */
-  clickClear () {
+  async clickClear () {
     const [x, y] = this.configObj.curConfig.dimensions;
-    const ok = seConfirm(this.uiStrings.notification.QwantToClear);
-    if (!ok) {
+    const ok = await seConfirm(this.uiStrings.notification.QwantToClear);
+    if (ok === 'Cancel') {
       return;
     }
     this.leftPanelHandlers.clickSelect();
