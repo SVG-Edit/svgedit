@@ -17,6 +17,10 @@ template.innerHTML = `
   :host ::slotted([current]){
     background-color: #F4E284 !important;
   }
+  :host ::slotted(*){
+    padding: 0.25em 1.25em 0.25em 0.25em !important;
+    margin: 2px;
+  }
   </style>
   
   <elix-menu-button id="MenuButton" aria-label="Main Menu">
@@ -107,7 +111,7 @@ export class SeMenu extends HTMLElement {
    * @function connectedCallback
    * @returns {void}
    */
-  connectedCallback () {
+  /* connectedCallback () {
     this.$menu.addEventListener('openedchange', (e) => {
       e.preventDefault();
       const selectedItem = e?.detail?.closeResult;
@@ -115,7 +119,7 @@ export class SeMenu extends HTMLElement {
         document.getElementById(selectedItem.id).click();
       }
     });
-  }
+  } */
 }
 
 // Register

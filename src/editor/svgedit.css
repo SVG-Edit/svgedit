@@ -1014,3 +1014,10 @@ ul li.current {
   background: #B0B0B0;
   border: 1px solid #000;
 }
+elix-alert-dialog::part(frame) {
+  background: #CCC;
+  width: 300px;
+  border: 1px outset #777;
+  font-size: 0.8em;
+  font-family: Verdana,Helvetica,sans-serif;
+}

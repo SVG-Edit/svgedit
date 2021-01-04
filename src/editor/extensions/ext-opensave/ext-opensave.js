@@ -54,7 +54,7 @@ export default {
       },
       async open () {
         const ok = await this.openPrep();
-        if (!ok) { return; }
+        if (ok === 'Cancel') { return; }
         this.svgCanvas.clear();
         const input = document.createElement('input');
         input.type = 'file';

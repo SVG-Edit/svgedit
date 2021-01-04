@@ -1071,10 +1071,10 @@ class Editor extends EditorStartup {
    * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
    * @returns {void}
    */
-  clickClear () {
+  async clickClear () {
     const [x, y] = this.configObj.curConfig.dimensions;
-    const ok = seConfirm(this.uiStrings.notification.QwantToClear);
-    if (!ok) {
+    const ok = await seConfirm(this.uiStrings.notification.QwantToClear);
+    if (ok === 'Cancel') {
       return;
     }
     this.leftPanelHandlers.clickSelect();
@@ -1398,12 +1398,12 @@ class Editor extends EditorStartup {
    * @returns {boolean|Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
    *  and `false` after the user confirms.
    */
-  openPrep () {
+  async openPrep () {
     $('#main_menu').hide();
     if (this.svgCanvas.undoMgr.getUndoStackSize() === 0) {
       return true;
     }
-    return seConfirm(this.uiStrings.notification.QwantToOpen);
+    return await seConfirm(this.uiStrings.notification.QwantToOpen);
   }
 
   /**
