@@ -111,7 +111,7 @@ export class SeMenu extends HTMLElement {
    * @function connectedCallback
    * @returns {void}
    */
-  connectedCallback () {
+  /* connectedCallback () {
     this.$menu.addEventListener('openedchange', (e) => {
       e.preventDefault();
       const selectedItem = e?.detail?.closeResult;
@@ -119,7 +119,7 @@ export class SeMenu extends HTMLElement {
         document.getElementById(selectedItem.id).click();
       }
     });
-  }
+  } */
 }
 
 // Register

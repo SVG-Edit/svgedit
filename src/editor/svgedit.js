@@ -1398,12 +1398,12 @@ class Editor extends EditorStartup {
    * @returns {boolean|Promise<boolean>} Resolves to boolean indicating `true` if there were no changes
    *  and `false` after the user confirms.
    */
-  openPrep () {
+  async openPrep () {
     $('#main_menu').hide();
     if (this.svgCanvas.undoMgr.getUndoStackSize() === 0) {
       return true;
     }
-    return seConfirm(this.uiStrings.notification.QwantToOpen);
+    return await seConfirm(this.uiStrings.notification.QwantToOpen);
   }
 
   /**
