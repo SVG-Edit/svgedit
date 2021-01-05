@@ -388,7 +388,7 @@ hr {
   top: 2px;
   min-height: 40px;
   border-bottom: none;
-  overflow: scroll;
+  overflow: auto;
 }
 
 #tools_top .tool_sep {
@@ -429,6 +429,7 @@ hr {
 
 #tools_top div[id$="_panel"]:not(#editor_panel):not(#history_panel) {
   display: none;
+  float: left;
 }
 
 #editor_panel, #history_panel {
@@ -1021,3 +1022,28 @@ elix-alert-dialog::part(frame) {
   font-size: 0.8em;
   font-family: Verdana,Helvetica,sans-serif;
 }
+@media screen and (max-width: 1250px) {
+  #tools_top {
+    height: 71px;
+  }
+  #workarea, #sidepanels {
+    top: 70px;
+  }
+  #rulers #ruler_corner,
+  #rulers #ruler_x, #tools_left {
+    top: 71px;
+  }
+
+  #rulers #ruler_y {
+    top: 86px;
+  }
+
+  #cur_context_panel {
+    top: 87px;
+  }
+
+  #selected_panel {
+    clear: right;
+  }
+}
+

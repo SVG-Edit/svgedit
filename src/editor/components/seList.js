@@ -83,11 +83,13 @@ export class SeList extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    this.$dropdown.addEventListener('change', (e) => {
+    const currentObj = this;
+    this.$dropdown.addEventListener('selectedindexchange', (e) => {
       e.preventDefault();
-      const selectedItem = e?.detail?.closeResult;
-      if (selectedItem !== undefined && selectedItem?.id !== undefined) {
-        document.getElementById(selectedItem.id).click();
+      if (e?.detail?.selectedIndex !== undefined) {
+        const value = this.$dropdown.selectedItem.getAttribute('value');
+        const closeEvent = new CustomEvent('change', {detail: {value}});
+        currentObj.dispatchEvent(closeEvent);
       }
     });
   }

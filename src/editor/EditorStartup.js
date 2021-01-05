@@ -220,8 +220,8 @@ class EditorStartup {
       }
     });
 
-    $('#font_family').change((evt) => {
-      this.svgCanvas.setFontFamily(evt.currentTarget.value);
+    $('#tool_font_family').change((evt) => {
+      this.svgCanvas.setFontFamily(evt.originalEvent.detail.value);
     });
 
     $('#seg_type').change((evt) => {
