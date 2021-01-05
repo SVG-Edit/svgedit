@@ -1023,13 +1023,6 @@ elix-alert-dialog::part(frame) {
   font-family: Verdana,Helvetica,sans-serif;
 }
 @media screen and (max-width: 1250px) {
-  .expanded #palette_holder {
-    left: 560px;
-    overflow-x: scroll;
-    padding: 0 5px;
-    margin-top: 2px;
-    height: 30px;
-  }
   #tools_top {
     height: 71px;
   }
@@ -1054,12 +1047,3 @@ elix-alert-dialog::part(frame) {
   }
 }
 
-@media screen and (max-width:1100px) {
-  #tools_bottom:not(.expanded) #palette_holder {
-    left: 410px;
-    overflow-x: scroll;
-    padding: 0 5px;
-    margin-top: 2px;
-    height: 30px;
-  }
-}
