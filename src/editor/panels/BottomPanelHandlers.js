@@ -142,7 +142,7 @@ class BottomPanelHandlers {
   * @type {module}
   */
   handleStrokeAttr (type, evt) {
-    this.svgCanvas.setStrokeAttr(type, evt.currentTarget.value);
+    this.svgCanvas.setStrokeAttr(type, evt.detail.value);
   }
   /**
   * @type {module}

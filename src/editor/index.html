@@ -127,18 +127,26 @@
             title="Change rotation angle"></se-spin-input>
           <se-spin-input size="2" id="blur" min=0 max=100 step=5 src="./images/blur.svg"
             title="Change gaussian blur value"></se-spin-input>
-          <se-list>
-            <se-list-item id="tool_posleft">Align Left</se-list-item>
-            <se-list-item id="tool_poscenter">Align Center</se-list-item>
-            <se-list-item id="tool_posright">Align Right</se-list-item>
-            <se-list-item id="tool_postop">Align Top</se-list-item>
-            <se-list-item id="tool_posmiddle">Align Middle</se-list-item>
-            <se-list-item id="tool_posbottom">Align Bottom</se-list-item> 
+          <se-list id="tool_position" title="Align Element to Page" label="">
+            <se-list-item id="tool_posleft" value="l">
+              <img title="align left" src="./images/align_left.svg" height="22px">
+            </se-list-item>
+            <se-list-item id="tool_poscenter" value="c">
+              <img title="align center" src="./images/align_center.svg" height="22px">
+            </se-list-item>
+            <se-list-item id="tool_posright" value="r">
+              <img title="align right" src="./images/align_right.svg" height="22px">
+            </se-list-item>
+            <se-list-item id="tool_postop" value="t">
+              <img title="align top" src="./images/align_top.svg" height="22px">
+            </se-list-item>
+            <se-list-item id="tool_posmiddle" value="m">
+              <img title="align middle" src="./images/align_middle.svg" height="22px">
+            </se-list-item>
+            <se-list-item id="tool_posbottom" value="b">
+              <img title="align bottom" src="./images/align_bottom.svg" height="22px">
+            </se-list-item> 
           </se-list>
-          <div class="dropdown toolset" id="tool_position" title="Align Element to Page">
-            <div id="cur_position" class="icon_label"></div>
-            <button></button>
-          </div>
           <div id="xy_panel" class="toolset">
             <se-spin-input id="selected_x" data-attr:="x" size="4" type="text" label="x:" title="Change X coordinate">
             </se-spin-input>
@@ -348,14 +356,14 @@
             <se-list-item value="5,2,2,2,2,2">- ..</se-list-item>
         </se-list>
         <se-list id="stroke_linejoin" title="Linejoin: Miter" label="">
-          <se-list-item id="linejoin_miter"><img title="Linejoin: Miter" src="./images/linejoin_miter.svg" height="22px"></img></se-list-item>
-          <se-list-item id="linejoin_round"><img title="Linejoin: Round" src="./images/linejoin_round.svg" height="22px"></img></se-list-item>
-          <se-list-item id="linejoin_bevel"><img title="Linejoin: Bevel" src="./images/linejoin_bevel.svg" height="22px"></img></se-list-item>  
+          <se-list-item id="linejoin_miter" value="miter"><img title="Linejoin: Miter" src="./images/linejoin_miter.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linejoin_round" value="round"><img title="Linejoin: Round" src="./images/linejoin_round.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linejoin_bevel" value="bevel"><img title="Linejoin: Bevel" src="./images/linejoin_bevel.svg" height="22px"></img></se-list-item>  
         </se-list>
         <se-list id="stroke_linecap" title="Linecap: Butt" label="">
-          <se-list-item id="linecap_butt"><img title="Linecap: Butt" src="./images/linecap_butt.svg" height="22px"></img></se-list-item>
-          <se-list-item id="linecap_square"><img title="Linecap: Square" src="./images/linecap_square.svg" height="22px"></img></se-list-item>
-          <se-list-item id="linecap_round"><img title="Linecap: Round" src="./images/linecap_round.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linecap_butt" value="butt"><img title="Linecap: Butt" src="./images/linecap_butt.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linecap_square" value="square"><img title="Linecap: Square" src="./images/linecap_square.svg" height="22px"></img></se-list-item>
+          <se-list-item id="linecap_round" value="round"><img title="Linecap: Round" src="./images/linecap_round.svg" height="22px"></img></se-list-item>
         </se-list>
         <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="Change selected item opacity" src="./images/opacity.svg"></se-spin-input>
         <se-palette id="palette"></se-palette>
