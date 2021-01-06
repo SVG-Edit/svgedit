@@ -1,16 +1,10 @@
 /* eslint-disable node/no-unpublished-import */
 import PlainAlertDialog from 'elix/src/plain/PlainAlertDialog.js';
-// import AlertDialog from 'elix/define/AlertDialog.js';
-import {defaultState, template} from 'elix/src/base/internal.js';
+import {template} from 'elix/src/base/internal.js';
 import {fragmentFrom} from 'elix/src/core/htmlLiterals.js';
-import PlainBorderButton from 'elix/define/BorderButton.js';
 
 /**
- * AlertDialog component in the Plain reference design system
- *
- * @inherits AlertDialog
- * @mixes PlainModalOverlayMixin
- * @part {PlainBorderButton} choice-button
+ * @class SePlainAlertDialog
  */
 export default class SePlainAlertDialog extends PlainAlertDialog {
   /**
@@ -31,8 +25,6 @@ export default class SePlainAlertDialog extends PlainAlertDialog {
         </div>
       `);
     }
-    console.log(result.content);
-
     result.content.append(
       fragmentFrom.html`
         <style>
