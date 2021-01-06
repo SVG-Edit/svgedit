@@ -1250,7 +1250,7 @@ class Editor extends EditorStartup {
   * @param {Event} e
   * @returns {void} Resolves to `undefined`
   */
-  saveSourceEditor (e) {
+  async saveSourceEditor (e) {
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     if ($editorDialog.getAttribute('dialog') !== 'open') return;
     const saveChanges = () => {
@@ -1262,8 +1262,8 @@ class Editor extends EditorStartup {
     };
 
     if (!this.svgCanvas.setSvgString(e.detail.value)) {
-      const ok = seConfirm(this.uiStrings.notification.QerrorsRevertToSource);
-      if (!ok) {
+      const ok = await seConfirm(this.uiStrings.notification.QerrorsRevertToSource);
+      if (ok === false || ok === 'Cancel') {
         return;
       }
       saveChanges();
