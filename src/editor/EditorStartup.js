@@ -455,7 +455,7 @@ class EditorStartup {
     });
     $id('tool_import').addEventListener('click', (e) => {
       this.clickImport();
-      window.dispatchEvent(new CustomEvent('importImage'));
+      window.dispatchEvent(new CustomEvent('importImages'));
     });
     $id('tool_save').addEventListener('click', function (e) {
       const $editorDialog = document.getElementById('se-svg-editor-dialog');
@@ -617,14 +617,15 @@ class EditorStartup {
     * @param {Event} e
     * @returns {void}
     */
+      let editorObj = this;
       const importImage = function (e) {
-        $.process_cancel(this.uiStrings.notification.loadingImage);
+        document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
         e.stopPropagation();
         e.preventDefault();
         $('#main_menu').hide();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
         if (!file) {
-          $('#dialog_box').hide();
+          document.getElementById('se-prompt-dialog').setAttribute('close', true);
           return;
         }
 
@@ -637,15 +638,15 @@ class EditorStartup {
         if (file.type.includes('svg')) {
           reader = new FileReader();
           reader.onloadend = function (ev) {
-            const newElement = this.svgCanvas.importSvgString(ev.target.result, true);
-            this.svgCanvas.ungroupSelectedElement();
-            this.svgCanvas.ungroupSelectedElement();
-            this.svgCanvas.groupSelectedElements();
-            this.svgCanvas.alignSelectedElements('m', 'page');
-            this.svgCanvas.alignSelectedElements('c', 'page');
+            const newElement = editorObj.svgCanvas.importSvgString(ev.target.result, true);
+            editorObj.svgCanvas.ungroupSelectedElement();
+            editorObj.svgCanvas.ungroupSelectedElement();
+            editorObj.svgCanvas.groupSelectedElements();
+            editorObj.svgCanvas.alignSelectedElements('m', 'page');
+            editorObj.svgCanvas.alignSelectedElements('c', 'page');
             // highlight imported element, otherwise we get strange empty selectbox
-            this.svgCanvas.selectOnly([newElement]);
-            $('#dialog_box').hide();
+            editorObj.svgCanvas.selectOnly([newElement]);
+            document.getElementById('se-prompt-dialog').setAttribute('close', true);
           };
           reader.readAsText(file);
         } else {
@@ -659,23 +660,23 @@ class EditorStartup {
           * @returns {void}
           */
             const insertNewImage = function (imageWidth, imageHeight) {
-              const newImage = this.svgCanvas.addSVGElementFromJson({
+              const newImage = editorObj.svgCanvas.addSVGElementFromJson({
                 element: 'image',
                 attr: {
                   x: 0,
                   y: 0,
                   width: imageWidth,
                   height: imageHeight,
-                  id: this.svgCanvas.getNextId(),
+                  id: editorObj.svgCanvas.getNextId(),
                   style: 'pointer-events:inherit'
                 }
               });
-              this.svgCanvas.setHref(newImage, result);
-              this.svgCanvas.selectOnly([newImage]);
-              this.svgCanvas.alignSelectedElements('m', 'page');
-              this.svgCanvas.alignSelectedElements('c', 'page');
-              this.topPanelHandlers.updateContextPanel();
-              $('#dialog_box').hide();
+              editorObj.svgCanvas.setHref(newImage, result);
+              editorObj.svgCanvas.selectOnly([newImage]);
+              editorObj.svgCanvas.alignSelectedElements('m', 'page');
+              editorObj.svgCanvas.alignSelectedElements('c', 'page');
+              editorObj.topPanelHandlers.updateContextPanel();
+              document.getElementById('se-prompt-dialog').setAttribute('close', true);
             };
             // create dummy img so we know the default dimensions
             let imgWidth = 100;
@@ -697,6 +698,8 @@ class EditorStartup {
       this.workarea[0].addEventListener('dragover', this.onDragOver);
       this.workarea[0].addEventListener('dragleave', this.onDragLeave);
       this.workarea[0].addEventListener('drop', importImage);
+      const imgImport = $('<input type="file">').change(importImage);
+      $(window).on('importImages', () => imgImport.click());
     }
 
     this.updateCanvas(true);
