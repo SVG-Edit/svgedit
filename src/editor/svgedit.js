@@ -596,6 +596,8 @@ class Editor extends EditorStartup {
 
     // All elements including image and group have opacity
     if (!isNullish(this.selectedElement)) {
+      const opacPerc = (this.selectedElement.getAttribute('opacity') || 1.0) * 100;
+      $id('opacity').value = opacPerc;
       $id('elem_id').value = this.selectedElement.id;
       $id('elem_class').value =
         (this.selectedElement.getAttribute('class') !== null) ? this.selectedElement.getAttribute('class') : '';
