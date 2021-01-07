@@ -10,7 +10,7 @@ class PaintBox {
   constructor (container, type) {
     // set up gradients to be used for the buttons
     const svgdocbox = new DOMParser().parseFromString(
-      `<svg xmlns="http://www.w3.org/2000/svg">
+      `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22">
           <rect
             fill="#000000" opacity="1" width="22" height="22"/>
           <defs><linearGradient id="gradbox_${PaintBox.ctr++}"/></defs>
