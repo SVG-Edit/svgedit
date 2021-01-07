@@ -143,7 +143,9 @@ export default {
         }
 
         // Hide possible transfer dialog box
-        $('#dialog_box').hide();
+        if (document.querySelector('se-elix-alert-dialog')) {
+          document.querySelector('se-elix-alert-dialog').remove();
+        }
         type = hasName
           ? 'meta'
           : response.charAt(0);
@@ -184,9 +186,6 @@ export default {
         if (mode !== 'm') {
           await seConfirm(message);
           transferStopped = true;
-          // Should a message be sent back to the frame?
-
-          // $('#dialog_box').hide();
         } else {
           entry = $('<div>').text(message).data('id', curMeta.id);
           preview.append(entry);
