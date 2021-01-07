@@ -238,7 +238,7 @@ export default {
       case 's':
         // Import one
         if (svgStr) {
-          svgCanvas.importSvgString(response);
+          svgEditor.svgCanvas.importSvgString(response);
         } else if (imgStr) {
           importImage(response);
         }

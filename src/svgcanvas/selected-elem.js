@@ -53,10 +53,10 @@ export const init = function (elementContext) {
 export const moveToTopSelectedElem = function () {
   const [selected] = elementContext_.getSelectedElements();
   if (!isNullish(selected)) {
-    let t = selected;
+    const t = selected;
     const oldParent = t.parentNode;
     const oldNextSibling = t.nextSibling;
-    t = t.parentNode.appendChild(t);
+    t.parentNode.append(t);
     // If the element actually moved position, add the command and fire the changed
     // event handler.
     if (oldNextSibling !== t.nextSibling) {
@@ -792,8 +792,7 @@ export const convertToGroup = function (elem) {
     });
 
     // Give ID for any visible element missing one
-    const visElems = elementContext_.getVisElems();
-    $(g).find(visElems).each(function () {
+    $(g).find(elementContext_.getVisElems()).each(function () {
       if (!this.id) { this.id = elementContext_.getNextId(); }
     });
 

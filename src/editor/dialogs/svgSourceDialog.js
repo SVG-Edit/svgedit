@@ -83,7 +83,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#svg_source_editor');
     this.$copyBtn = this._shadowRoot.querySelector('#copy_save_done');
     this.$saveBtn = this._shadowRoot.querySelector('#tool_source_save');

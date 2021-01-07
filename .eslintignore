@@ -31,6 +31,5 @@ src/editor/jspdf/underscore-min.js
 src/editor/extensions/ext-mathjax/mathjax
 
 # jquery files
-src/editor/svgicons/jQuery.svgIcons.js
 src/editor/jgraduate/jQuery.jPicker.js
 

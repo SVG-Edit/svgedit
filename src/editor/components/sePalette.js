@@ -40,14 +40,14 @@ export class SEPalette extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$strip = this._shadowRoot.querySelector('elix-centered-strip');
     palette.forEach((rgb) => {
       const newDiv = document.createElement('div');
       newDiv.classList.add('square');
       newDiv.style.backgroundColor = rgb;
       newDiv.dataset.rgb = rgb;
-      this.$strip.appendChild(newDiv);
+      this.$strip.append(newDiv);
     });
   }
 

@@ -134,7 +134,8 @@ export const getGripContainerMethod = function () {
   let c = getElem('pathpointgrip_container');
   if (!c) {
     const parentElement = getElem('selectorParentGroup');
-    c = parentElement.appendChild(document.createElementNS(NS.SVG, 'g'));
+    c = document.createElementNS(NS.SVG, 'g');
+    parentElement.append(c);
     c.id = 'pathpointgrip_container';
   }
   return c;
@@ -171,7 +172,7 @@ export const addPointGripMethod = function (index, x, y) {
       atts['xlink:title'] = uiStrings.pathNodeTooltip;
     }
     assignAttributes(pointGrip, atts);
-    pointGrip = pointGripContainer.appendChild(pointGrip);
+    pointGripContainer.append(pointGrip);
 
     const grip = $('#pathpointgrip_' + index);
     grip.dblclick(function () {

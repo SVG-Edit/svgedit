@@ -617,7 +617,7 @@ class EditorStartup {
     * @param {Event} e
     * @returns {void}
     */
-      let editorObj = this;
+      const editorObj = this;
       const importImage = function (e) {
         document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
         e.stopPropagation();

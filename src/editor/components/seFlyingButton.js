@@ -91,7 +91,7 @@ export class FlyingButton extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button');
     this.$handle = this._shadowRoot.querySelector('.handle');

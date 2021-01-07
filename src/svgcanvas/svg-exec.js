@@ -679,6 +679,7 @@ function getIssues () {
   }
 
   $.each(issueList, function (sel, descr) {
+    // eslint-disable-next-line unicorn/no-array-callback-reference
     if (content.find(sel).length) {
       issueCodes.push(sel);
       issues.push(descr);

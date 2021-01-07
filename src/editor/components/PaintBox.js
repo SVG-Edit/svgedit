@@ -19,7 +19,8 @@ class PaintBox {
     );
 
     let docElem = svgdocbox.documentElement;
-    docElem = container.appendChild(document.importNode(docElem, true));
+    docElem = document.importNode(docElem, true);
+    container.append(docElem);
 
     this.rect = docElem.firstElementChild;
     this.defs = docElem.getElementsByTagName('defs')[0];
@@ -46,7 +47,8 @@ class PaintBox {
     case 'linearGradient':
     case 'radialGradient': {
       this.grad.remove();
-      this.grad = this.defs.appendChild(paint[ptype]);
+      this.grad = paint[ptype];
+      this.defs.append(this.grad);
       const id = this.grad.id = 'gradbox_' + this.type;
       fillAttr = 'url(#' + id + ')';
       break;

@@ -361,7 +361,7 @@ export const pathActionsMethod = (function () {
             'stroke-width': '0.5',
             fill: 'none'
           });
-          stretchy = getElem('selectorParentGroup').appendChild(stretchy);
+          getElem('selectorParentGroup').append(stretchy);
         }
         stretchy.setAttribute('display', 'inline');
 

@@ -59,7 +59,7 @@ export class SeColorPicker extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$logo = this._shadowRoot.getElementById('logo');
     this.$label = this._shadowRoot.getElementById('label');
     this.$block = this._shadowRoot.getElementById('block');

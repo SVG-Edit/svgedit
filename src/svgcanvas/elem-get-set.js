@@ -372,7 +372,8 @@ export const setGradientMethod = function (type) {
   // no duplicate found, so import gradient into defs
   if (!duplicateGrad) {
     // const origGrad = grad;
-    grad = defs.appendChild(elemContext_.getDOMDocument().importNode(grad, true));
+    grad = elemContext_.getDOMDocument().importNode(grad, true);
+    defs.append(grad);
     // get next id and set it on the grad
     grad.id = elemContext_.getCanvas().getNextId();
   } else { // use existing gradient
@@ -879,7 +880,7 @@ export const setBackgroundMethod = function (color, url) {
       'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
       'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
       });
-      bgPattern.appendChild(div);
+      bgPattern.append(div);
       bg.append(bgPattern);
     }
   } else if (bgPattern) {

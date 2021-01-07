@@ -81,7 +81,7 @@ export class SeCMenuLayerDialog extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.source = '';
     this._workarea = undefined;
     this.$sidePanels = document.getElementById('sidepanels');

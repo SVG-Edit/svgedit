@@ -243,7 +243,7 @@ export class SeEditPrefsDialog extends HTMLElement {
     // create the shadowDom and insert the template
     this.colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#svg_prefs');
     this.$saveBtn = this._shadowRoot.querySelector('#tool_prefs_save');
     this.$cancelBtn = this._shadowRoot.querySelector('#tool_prefs_cancel');

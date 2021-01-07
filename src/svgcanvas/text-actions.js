@@ -81,7 +81,7 @@ export const textActionsMethod = (function () {
         stroke: '#333',
         'stroke-width': 1
       });
-      cursor = getElem('selectorParentGroup').appendChild(cursor);
+      getElem('selectorParentGroup').append(cursor);
     }
 
     if (!blinker) {

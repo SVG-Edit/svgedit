@@ -24,7 +24,7 @@ export class SeMenuItem extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$img = this._shadowRoot.querySelector('img');
     this.$label = this._shadowRoot.querySelector('span');
     this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');

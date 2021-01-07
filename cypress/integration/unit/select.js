@@ -37,13 +37,13 @@ describe('select', function () {
       element: 'svg',
       attr: {id: 'svgroot'}
     });
-    svgcontent = svgroot.appendChild(
-      mockFactory.createSVGElement({
-        element: 'svg',
-        attr: {id: 'svgcontent'}
-      })
-    );
-    /* const rect = */ svgcontent.appendChild(
+    svgcontent = mockFactory.createSVGElement({
+      element: 'svg',
+      attr: {id: 'svgcontent'}
+    });
+
+    svgroot.append(svgcontent);
+    /* const rect = */ svgcontent.append(
       mockFactory.createSVGElement({
         element: 'rect',
         attr: {

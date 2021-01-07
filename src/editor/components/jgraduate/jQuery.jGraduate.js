@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-dom-node-append */
 /**
  * @file jGraduate 0.4
  *

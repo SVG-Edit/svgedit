@@ -26,10 +26,13 @@ describe('svgtransformlist', function () {
     svgroot.style.visibility = 'hidden';
     document.body.append(svgroot);
 
-    svgcontent = svgroot.appendChild(document.createElementNS(NS.SVG, 'svg'));
-    rect = svgcontent.appendChild(document.createElementNS(NS.SVG, 'rect'));
+    svgcontent = document.createElementNS(NS.SVG, 'svg');
+    svgroot.append(svgcontent);
+    rect = document.createElementNS(NS.SVG, 'rect');
+    svgcontent.append(rect);
     rect.id = 'r';
-    circle = svgcontent.appendChild(document.createElementNS(NS.SVG, 'circle'));
+    circle = document.createElementNS(NS.SVG, 'circle');
+    svgcontent.append(circle);
     circle.id = 'c';
   });
 
