@@ -119,11 +119,12 @@ template.innerHTML = `
     float: left;
     margin: 2px;
     padding: 20px;
+    border: 1px solid #6f6f6f;
   }
   
   #change_background div.cur_background {
     border: 2px solid blue;
-    padding: 18px;
+    padding: 19px;
   }
   #canvas_bg_url {
     display: block;
