@@ -24,7 +24,7 @@ template.innerHTML = `
   }
   </style>
   <div title="Click to change fill color, shift-click to change stroke color">
-    <elix-centered-strip style="width:300px">
+    <elix-centered-strip style="width:300px;padding:5px;background: #fff; border-radius: 5px;">
     </elix-centered-strip>
   </div>
 `;

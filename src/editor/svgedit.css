@@ -389,6 +389,7 @@ hr {
   min-height: 40px;
   border-bottom: none;
   overflow: auto;
+  right:2px;
 }
 
 #tools_top .tool_sep {
@@ -646,8 +647,12 @@ input[type=text] {
 #tools_bottom se-spin-input {
   float: left;
   vertical-align: middle;
+  display:flex;
+  align-items: center;
 }
-
+#tools_bottom elix-dropdown-list{
+  width:22px;
+}
 .bottom-icon {
   width: 22px;
 }

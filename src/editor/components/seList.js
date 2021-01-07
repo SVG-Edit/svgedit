@@ -16,7 +16,7 @@ template.innerHTML = `
 }
 </style>
   <label>Label</label>
-  <elix-dropdown-list>
+  <elix-dropdown-list style="height:22px; width:22px">
     <slot></slot>
   </elix-dropdown-list>
   
@@ -35,6 +35,9 @@ export class SeList extends HTMLElement {
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
     this.$label = this._shadowRoot.querySelector('label');
+    if(this.getAttribute('id') === 'tool_font_family') {
+      this.$dropdown.style.width = '66px';
+      }
   }
   /**
    * @function observedAttributes
