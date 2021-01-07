@@ -512,7 +512,7 @@ export class SeEditPrefsDialog extends HTMLElement {
       if (e === 'chessboard') {
         newdiv.dataset.bgColor = e;
         // eslint-disable-next-line max-len
-        newdiv.style.backgroundImage = 'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjGgq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7)';
+        newdiv.style.backgroundImage = 'url(data:image/gif;base64,R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7)';
         newdiv.classList.add('color_block');
       } else {
         newdiv.dataset.bgColor = e; // setAttribute('data-bgcolor', e);
