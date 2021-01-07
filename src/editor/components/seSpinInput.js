@@ -6,7 +6,7 @@ template.innerHTML = `
   <style>
   img {
     top: 2px;
-    left: 4px;
+    left: 1px;
     position: relative;
   }
   span {
@@ -16,6 +16,10 @@ template.innerHTML = `
   }
   elix-number-spin-box::part(spin-button) {
     padding: 0px;
+  }
+  elix-number-spin-box{
+    width: 54px;
+    height: 25px;
   }
   </style>
   <img src="./images/logo.svg" alt="icon" width="12" height="12" aria-labelledby="label" />
