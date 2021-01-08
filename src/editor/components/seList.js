@@ -82,7 +82,6 @@ export class SeList extends HTMLElement {
    */
   connectedCallback () {
     const currentObj = this;
-    this.$dropdown.addEventListener('close', (e) => {      this.$dropdown.open();    });
     this.$dropdown.addEventListener('selectedindexchange', (e) => {
       e.preventDefault();
       if (e?.detail?.selectedIndex !== undefined) {
