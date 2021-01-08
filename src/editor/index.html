@@ -123,9 +123,9 @@
             <se-input id="elem_id" data-attr="id" size="10" label="id:" title="Identify the element"></se-input>
             <se-input id="elem_class" data-attr="class" size="10" label="class:" title="Element class"></se-input>
           </div>
-          <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="./images/angle.svg"
+          <se-spin-input size="3" id="angle" min=-181 max=181 step=5 src="./images/angle.svg"
             title="Change rotation angle"></se-spin-input>
-          <se-spin-input size="2" id="blur" min=0 max=100 step=5 src="./images/blur.svg"
+          <se-spin-input size="2" id="blur" min=-1 max=101 step=5 src="./images/blur.svg"
             title="Change gaussian blur value"></se-spin-input>
           <se-list id="tool_position" title="Align Element to Page" label="">
             <se-list-item id="tool_posleft" value="l">
@@ -185,7 +185,7 @@
             <se-spin-input id="rect_height" data-attr="height" size="4" src="./images/height.svg"
               title="Change rectangle height"></se-spin-input>
           </div>
-          <se-spin-input id="rect_rx" min=0 max=1000 step=1 size="3" title="Change Rectangle Corner Radius"
+          <se-spin-input id="rect_rx" min=-0.1 max=1000.1 step=1.0 size="3" title="Change Rectangle Corner Radius"
             data-attr="Corner Radius" src="./images/c_radius.svg"></se-spin-input>
         </div> <!-- rect_panel -->
         <div id="image_panel">
@@ -257,7 +257,7 @@
             <se-list-item value="Helvetica"> <div style="font-family:serif">Helvetica</div></se-list-item>
             <se-list-item value="Times"> <div style="font-family:serif">Times</div></se-list-item> 
           </se-list>
-          <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="Change Font Size"
+          <se-spin-input size="2" id="font_size" min=0.99 max=1000.1 step=1.0 title="Change Font Size"
             src="./images/fontsize.svg"></se-spin-input>
           <!-- Not visible, but still used -->
           <input id="text" type="text" size="35" />
@@ -347,7 +347,7 @@
         </se-zoom>
         <se-colorpicker id="fill_color" src="./images/fill.svg" title="Change fill color" type="fill"></se-colorpicker>
         <se-colorpicker id="stroke_color" src="./images/stroke.svg" title="Change stroke color" type="stroke"></se-colorpicker>
-        <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width" label=""></se-spin-input>
+        <se-spin-input id="stroke_width" min=-0.1 max=99.1 step=1.0 title="Change stroke width" label=""></se-spin-input>
         <se-list id="stroke_style" title="Change stroke dash style" label="">
             <se-list-item value="none">&#8212;</se-list-item>
             <se-list-item value="2,2">...</se-list-item>
@@ -365,7 +365,7 @@
           <se-list-item id="linecap_square" value="square"><img title="Linecap: Square" src="./images/linecap_square.svg" height="22px"></img></se-list-item>
           <se-list-item id="linecap_round" value="round"><img title="Linecap: Round" src="./images/linecap_round.svg" height="22px"></img></se-list-item>
         </se-list>
-        <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="Change selected item opacity" src="./images/opacity.svg"></se-spin-input>
+        <se-spin-input size="3" id="opacity" min=-1 max=101 step=5 title="Change selected item opacity" src="./images/opacity.svg"></se-spin-input>
         <se-palette id="palette"></se-palette>
       </div> <!-- tools_bottom -->
     <div id="dialog_box">
