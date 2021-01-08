@@ -5,9 +5,8 @@ const template = document.createElement('template');
 template.innerHTML = `
   <style>
   img {
-    top: 2px;
-    left: 1px;
     position: relative;
+    margin:0 2px 0 0;
   }
   span {
     bottom: 1px;
@@ -19,7 +18,7 @@ template.innerHTML = `
   }
   elix-number-spin-box{
     width: 54px;
-    height: 25px;
+    height: 24px;
   }
   </style>
   <img src="./images/logo.svg" alt="icon" width="12" height="12" aria-labelledby="label" />

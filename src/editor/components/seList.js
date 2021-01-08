@@ -40,7 +40,7 @@ export class SeList extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label'];
+    return ['label', 'width', 'height'];
   }
 
   /**
@@ -55,6 +55,12 @@ export class SeList extends HTMLElement {
     switch (name) {
     case 'label':
       this.$label.textContent = newValue;
+      break;
+    case 'height':
+      this.$dropdown.style.height = newValue;
+      break;
+    case 'width':
+      this.$dropdown.style.width = newValue;
       break;
     default:
       // eslint-disable-next-line no-console
@@ -76,6 +82,36 @@ export class SeList extends HTMLElement {
    */
   set label (value) {
     this.setAttribute('label', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get width () {
+    return this.getAttribute('width');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set width (value) {
+    this.setAttribute('width', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get height () {
+    return this.getAttribute('height');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set height (value) {
+    this.setAttribute('height', value);
   }
   /**
    * @function connectedCallback
