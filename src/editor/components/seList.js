@@ -4,15 +4,14 @@ import 'elix/define/DropdownList.js';
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
-[part~="source"] {
-  grid-template-columns: 20px 1fr auto;
+::part(popup-toggle) {
+  display: none;
 }
 ::slotted(*) {
   background: #E8E8E8;
-  border: 1px solid #B0B0B0;
-}
-::part(popup-toggle) {
-  display: none;
+  padding:0;
+  /*border: 1px solid #B0B0B0;*/
+  width:100%;
 }
 </style>
   <label>Label</label>
