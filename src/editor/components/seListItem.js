@@ -4,6 +4,9 @@ import 'elix/define/Option.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
+  elix-option{  
+    padding:0.25rem 0.125rem !important;
+  }
   </style>  
   <elix-option aria-label="option">
     <slot></slot>

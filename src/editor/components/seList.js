@@ -9,7 +9,8 @@ template.innerHTML = `
 }
 ::slotted(*) {
   background: #E8E8E8;
-  border: 1px solid #B0B0B0;
+  padding:0;
+  /*border: 1px solid #B0B0B0;*/
 }
 </style>
   <label>Label</label>
@@ -81,6 +82,7 @@ export class SeList extends HTMLElement {
    */
   connectedCallback () {
     const currentObj = this;
+    this.$dropdown.addEventListener('close', (e) => {      this.$dropdown.open();    });
     this.$dropdown.addEventListener('selectedindexchange', (e) => {
       e.preventDefault();
       if (e?.detail?.selectedIndex !== undefined) {
