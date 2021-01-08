@@ -727,7 +727,10 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
   c.width = svgContext_.getCanvas().contentW;
   c.height = svgContext_.getCanvas().contentH;
   const canvg = svgContext_.getcanvg();
-  await canvg(c, svg);
+  const ctx = c.getContext('2d');
+  const v = canvg.fromString(ctx, svg);
+  // Render only first frame, ignoring animations.
+  await v.render();
   // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
   // eslint-disable-next-line promise/avoid-new
   return new Promise((resolve, reject) => {
