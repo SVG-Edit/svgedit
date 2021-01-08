@@ -6,6 +6,8 @@ template.innerHTML = `
   <style>
   elix-option{  
     padding:0.25rem 0.125rem !important;
+    background: #E8E8E8;
+    border-bottom: 1px solid #B0B0B0;
   }
   </style>  
   <elix-option aria-label="option">
