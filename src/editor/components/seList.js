@@ -16,7 +16,7 @@ template.innerHTML = `
 }
 </style>
   <label>Label</label>
-  <elix-dropdown-list style="height:22px; width:22px">
+  <elix-dropdown-list>
     <slot></slot>
   </elix-dropdown-list>
   
@@ -35,16 +35,13 @@ export class SeList extends HTMLElement {
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
     this.$label = this._shadowRoot.querySelector('label');
-    if(this.getAttribute('id') === 'tool_font_family') {
-      this.$dropdown.style.width = '66px';
-      }
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label'];
+    return ['label', 'width', 'height'];
   }
 
   /**
@@ -59,6 +56,12 @@ export class SeList extends HTMLElement {
     switch (name) {
     case 'label':
       this.$label.textContent = newValue;
+      break;
+    case 'height':
+      this.$dropdown.style.height = newValue;
+      break;
+    case 'width':
+      this.$dropdown.style.width = newValue;
       break;
     default:
       // eslint-disable-next-line no-console
@@ -80,6 +83,36 @@ export class SeList extends HTMLElement {
    */
   set label (value) {
     this.setAttribute('label', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get width () {
+    return this.getAttribute('width');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set width (value) {
+    this.setAttribute('width', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get height () {
+    return this.getAttribute('height');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set height (value) {
+    this.setAttribute('height', value);
   }
   /**
    * @function connectedCallback
