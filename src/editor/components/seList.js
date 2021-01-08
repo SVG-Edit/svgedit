@@ -11,6 +11,7 @@ template.innerHTML = `
   background: #E8E8E8;
   padding:0;
   /*border: 1px solid #B0B0B0;*/
+  width:100%;
 }
 </style>
   <label>Label</label>
