@@ -61,6 +61,8 @@ class EditorStartup {
   * @returns {void}
   */
   async init () {
+    // allow to prepare the dom without display
+    $id('svg_editor').style.visibility = 'hidden';
     try {
     // Image props dialog added to DOM
       const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
@@ -725,7 +727,7 @@ class EditorStartup {
     const {langParam, langData} = await this.putLocale(this.configObj.pref('lang'), this.goodLangs);
     await this.setLang(langParam, langData);
 
-    $id('svg_container').style.visibility = 'visible';
+    $id('svg_editor').style.visibility = 'visible';
 
     try {
       // load standard extensions

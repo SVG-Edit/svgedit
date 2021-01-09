@@ -396,7 +396,7 @@ class Editor extends EditorStartup {
       // Note that this will also prevent the notice even though new issues may appear later.
       // May want to find a way to deal with that without annoying the user
       this.configObj.pref('export_notice_done', 'all');
-      this.exportWindow.seAlert(note);
+      seAlert(note);
     }
   }
 
@@ -1161,7 +1161,10 @@ class Editor extends EditorStartup {
       if (!this.customExportImage) {
         openExportWindow();
       }
-      const quality = 1; // JFH !!! Number.parseInt($('#image-slider').val()) / 100;
+      /**
+       * @todo "quality" should be an option of the dialog
+       */
+      const quality = 1;
       /* const results = */ await this.svgCanvas.rasterExport(imgType, quality, this.exportWindowName);
     }
   }
