@@ -4,9 +4,9 @@ template.innerHTML = `
   :host {
     position:relative;
   }
-  .menu-button:hover, se-button:hover, .menu-item:hover 
+  .menu-button:hover, se-button:hover, .menu-item:hover
   {
-    background-color: #ffc;
+    background-color: #2B3C45;
   }
   img {
     border: none;
@@ -14,13 +14,13 @@ template.innerHTML = `
     height: 24px;
   }
   .overall.pressed .button-icon,
-  .overall.pressed .handle,
+  .overall.pressed,
   .menu-item.pressed {
-    background-color: #F4E284 !important;
+    background-color: #2B3C45 !important;
   }
   .overall.pressed .menu-button {
     box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
-    background-color: #F4E284 !important;
+    background-color: #2B3C45 !important;
   }
   .disabled {
     opacity: 0.3;
@@ -31,8 +31,7 @@ template.innerHTML = `
     width: 24px;
     margin: 2px 2px 4px;
     padding: 3px;
-    box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-    background-color: #E8E8E8;
+    background-color: #72797A;
     cursor: pointer;
     position: relative;
     border-radius: 3px;
@@ -83,7 +82,7 @@ template.innerHTML = `
     background: none !important;
   }
   </style>
-  
+
   <div class="overall">
     <div class="menu-button">
       <img class="button-icon" src="./images/logo.svg" alt="icon">
@@ -96,7 +95,7 @@ template.innerHTML = `
       <div class="menu-item">menu</div>
    </div>
   </div>
-  
+
 `;
 /**
  * @class ExplorerButton
