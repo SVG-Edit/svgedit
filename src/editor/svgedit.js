@@ -1487,7 +1487,7 @@ class Editor extends EditorStartup {
 
     // Copy title for certain tool elements
     this.elems = {
-      '#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
+      '#stroke_color': '#tool_stroke .color_block',
       '#fill_color': '#tool_fill label, #tool_fill .color_block',
       '#linejoin_miter': '#cur_linejoin',
       '#linecap_butt': '#cur_linecap'

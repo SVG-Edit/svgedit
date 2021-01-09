@@ -311,6 +311,52 @@ hr {
   margin-top: 5px;
 }
 
+#tools_top > div > * {
+  float: left;
+  margin-right: 2px;
+}
+#tools_top se-input {
+  margin-top: 6px;
+  height: 15px;
+}
+#tools_top se-spin-input {
+  margin-top: 5px;
+  height: 15px;
+}
+
+#tools_top se-dropdown-list {
+  margin-top: 5px;
+  height: 15px;
+}
+
+/*—————————————————————————————*/
+
+#tools_bottom {
+  position: absolute;
+  left: 40px;
+  right: 0;
+  bottom: 0;
+  height: 33px;
+  overflow: visible;
+}
+
+#tools_bottom * {
+  float: left;
+  margin-right: 2px;
+}
+
+#tools_bottom se-spin-input {
+  float: left;
+  vertical-align: middle;
+  display:flex;
+  align-items: center;
+}
+#tools_bottom elix-dropdown-list{
+  width:22px;
+}
+
+/*—————————————————————————————*/
+
 #tools_left {
   position: absolute;
   border-right: none;
@@ -319,9 +365,11 @@ hr {
   left: 1px;
   margin-top: -2px;
   padding-left: 2px;
-  background: --main-bg-color; /* Needed so flyout icons don't appear on the left */
+  background: --main-bg-color;
   z-index: 4;
 }
+
+/*—————————————————————————————*/
 
 #workarea.wireframe #svgcontent * {
   fill: none;
@@ -341,11 +389,6 @@ hr {
 
 #workarea.wireframe #canvasBackground > rect {
   fill: #FFF !important;
-}
-
-#tools_top div[id$="_panel"]:not(#editor_panel):not(#history_panel) {
-  display: none;
-  float: left;
 }
 
 #editor_panel, #history_panel {
@@ -396,20 +439,7 @@ div.toolset label span {
   display: inline-block;
 }
 
-#tools_top > div > * {
-  float: left;
-  margin-right: 2px;
-}
 
-#tools_top label {
-  margin-top: 0;
-  margin-left: 5px;
-}
-
-#tools_top se-input, #tools_top se-spin-input {
-  margin-top: 5px;
-  height: 15px;
-}
 
 input[type=text] {
   padding: 2px;
@@ -521,16 +551,6 @@ input[type=text] {
   height: 24px;
 }
 
-.icon_label {
-  float: left;
-  padding-top: 3px;
-  padding-right: 3px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  height: 0;
-}
-
 .width_label {
   padding-right: 5px;
 }
@@ -545,29 +565,6 @@ input[type=text] {
   display: none;
 }
 
-#tools_bottom {
-  position: absolute;
-  left: 40px;
-  right: 0;
-  bottom: 0;
-  height: 33px;
-  overflow: visible;
-}
-
-#tools_bottom * {
-  float: left;
-  margin-right: 2px;
-}
-
-#tools_bottom se-spin-input {
-  float: left;
-  vertical-align: middle;
-  display:flex;
-  align-items: center;
-}
-#tools_bottom elix-dropdown-list{
-  width:22px;
-}
 .bottom-icon {
   width: 22px;
 }
@@ -718,24 +715,4 @@ ul li.current {
   z-index: 20001;
 }
 
-@media screen and (max-width: 1250px) {
-  #tools_top {
-    height: 71px;
-  }
-  #workarea, #sidepanels {
-    top: 70px;
-  }
-
-  #tools_left {
-    top: 71px;
-  }
-
-  #cur_context_panel {
-    top: 87px;
-  }
-
-  #selected_panel {
-    clear: right;
-  }
-}
 

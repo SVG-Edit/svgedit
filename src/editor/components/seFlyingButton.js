@@ -107,7 +107,7 @@ export class FlyingButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'pressed', 'disabled'];
+    return ['title', 'pressed', 'disabled', 'opened'];
   }
   /**
    * @function attributeChangedCallback
@@ -130,6 +130,13 @@ export class FlyingButton extends HTMLElement {
         this.$overall.classList.add('pressed');
       } else {
         this.$overall.classList.remove('pressed');
+      }
+      break;
+    case 'opened':
+      if (newValue) {
+        this.$menu.classList.add('open');
+      } else {
+        this.$menu.classList.remove('open');
       }
       break;
     case 'disabled':
@@ -178,6 +185,28 @@ export class FlyingButton extends HTMLElement {
       this.setAttribute('pressed', 'true');
     } else {
       this.removeAttribute('pressed', '');
+      // close also the menu if open
+      this.removeAttribute('opened');
+    }
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get opened () {
+    return this.hasAttribute('opened');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set opened (value) {
+    // boolean value => existence = true
+    if (value) {
+      this.setAttribute('opened', 'opened');
+    } else {
+      this.removeAttribute('opened');
     }
   }
   /**
@@ -214,7 +243,7 @@ export class FlyingButton extends HTMLElement {
       switch (ev.target.nodeName) {
       case 'SE-FLYINGBUTTON':
         if (this.pressed) {
-          this.$menu.classList.toggle('open');
+          this.setAttribute('opened', 'opened');
         } else {
           // launch current action
           this.activeSlot.click();
@@ -231,7 +260,11 @@ export class FlyingButton extends HTMLElement {
         break;
       case 'DIV':
         // this is a click on the handle so let's open/close the menu.
-        this.$menu.classList.toggle('open');
+        if (this.opened) {
+          this.removeAttribute('opened');
+        } else {
+          this.setAttribute('opened', 'opened');
+        }
         break;
       default:
         // eslint-disable-next-line no-console
