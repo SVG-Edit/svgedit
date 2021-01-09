@@ -145,7 +145,7 @@
             </se-list-item>
             <se-list-item id="tool_posbottom" value="b">
               <img title="align bottom" src="./images/align_bottom.svg" height="22px">
-            </se-list-item> 
+            </se-list-item>
           </se-list>
           <div id="xy_panel" class="toolset">
             <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x:" title="Change X coordinate">
@@ -255,7 +255,7 @@
             <se-list-item value="Monospace" style="font-family:monospace;"> Monospace</se-list-item>
             <se-list-item value="Courier" style="font-family:courier;"> Courier</se-list-item>
             <se-list-item value="Helvetica" style="font-family:helvetica;">Helvetica</se-list-item>
-            <se-list-item value="Times" style="font-family:times;">Times</se-list-item> 
+            <se-list-item value="Times" style="font-family:times;">Times</se-list-item>
           </se-list>
           <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="Change Font Size"
             src="./images/fontsize.svg"></se-spin-input>
@@ -304,11 +304,14 @@
     </div> <!-- tools_top -->
       <div id="tools_left">
         <se-button id="tool_select" title="Select Tool" src="./images/select.svg"></se-button>
+        <se-button id="tool_zoom" title="Zoom Tool" src="./images/zoom.svg" shortcut="Z"></se-button>
+        <se-button id="ext-panning" title="Panning" src="./images/panning.svg"></se-button>
         <se-button id="tool_fhpath" title="Pencil Tool" src="./images/pencil.svg" shortcut="Q"></se-button>
         <se-flyingbutton id="tools_line" title="Line Tool (L)/Connect two objects">
           <se-button id="tool_line" title="Line Tool" src="./images/pen.svg" shortcut="L"></se-button>
           <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
         </se-flyingbutton>
+        <se-button id="tool_path" title="Path Tool" src="./images/path.svg" shortcut="P"></se-button>
         <se-flyingbutton id="tools_rect" title="Square/Rect Tool">
           <se-button id="tool_rect" title="Rectangle" src="./images/rect.svg" shortcut="R"></se-button>
           <se-button id="tool_square" title="Square" src="./images/square.svg"></se-button>
@@ -319,17 +322,13 @@
           <se-button id="tool_circle" title="Square" src="./images/circle.svg"></se-button>
           <se-button id="tool_fhellipse" title="Free-Hand Rectangle" src="./images/fh_ellipse.svg"></se-button>
         </se-flyingbutton>
-        <se-button id="tool_path" title="Path Tool" src="./images/path.svg" shortcut="P"></se-button>
-        <se-explorerbutton id="tool_shapelib" title="Shape library" lib="./extensions/ext-shapes/shapelib/"
-          src="./images/shapelib.svg"></se-explorerbutton>
+        <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
+        <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
         <se-button id="tool_text" title="Text Tool" src="./images/text.svg" shortcut="T"></se-button>
         <se-button id="tool_image" title="Image Tool" src="./images/image.svg"></se-button>
-        <se-button id="tool_zoom" title="Zoom Tool" src="./images/zoom.svg" shortcut="Z"></se-button>
-        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I">
-        </se-button>
-        <se-button id="ext-panning" title="Panning" src="./images/panning.svg"></se-button>
-        <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
-        <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
+        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I"></se-button>
+        <se-explorerbutton id="tool_shapelib" title="Shape library" lib="./extensions/ext-shapes/shapelib/"
+                           src="./images/shapelib.svg"></se-explorerbutton>
       </div> <!-- tools_left -->
       <div id="tools_bottom">
         <!-- Zoom buttons -->
@@ -358,7 +357,7 @@
         <se-list id="stroke_linejoin" title="Linejoin: Miter" label="" width="22px" height="24px">
           <se-list-item id="linejoin_miter" value="miter"><img title="Linejoin: Miter" src="./images/linejoin_miter.svg" height="22px"></img></se-list-item>
           <se-list-item id="linejoin_round" value="round"><img title="Linejoin: Round" src="./images/linejoin_round.svg" height="22px"></img></se-list-item>
-          <se-list-item id="linejoin_bevel" value="bevel"><img title="Linejoin: Bevel" src="./images/linejoin_bevel.svg" height="22px"></img></se-list-item>  
+          <se-list-item id="linejoin_bevel" value="bevel"><img title="Linejoin: Bevel" src="./images/linejoin_bevel.svg" height="22px"></img></se-list-item>
         </se-list>
         <se-list id="stroke_linecap" title="Linecap: Butt" label="" width="22px" height="24px">
           <se-list-item id="linecap_butt" value="butt"><img title="Linecap: Butt" src="./images/linecap_butt.svg" height="22px"></img></se-list-item>
