@@ -6,7 +6,7 @@ template.innerHTML = `
   <style>
   img {
     position: relative;
-    margin:0 2px 0 0;
+    right: -4px;
   }
   span {
     bottom: 1px;
