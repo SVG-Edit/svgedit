@@ -88,22 +88,19 @@ hr {
   display: inline-block;
   position: absolute;
   background-color: --main-bg-color;
-  font-weight: bold;
+  color: #fff;
+  font-weight: 100;
   left: 0;
   top: 40%;
   width: 1em;
-  padding: 5px 1px 5px 5px;
-  margin-left: 3px;
+  padding: 5px 5px 5px 5px;
+  margin-left: 6px;
   cursor: pointer;
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   -moz-user-select: none;
   -webkit-user-select: none;
-}
-
-#sidepanel_handle:hover {
-  font-weight: bold;
 }
 
 #sidepanel_handle * {
