@@ -6,7 +6,7 @@ template.innerHTML = `
   }
   .overall:hover *
   {
-    background-color: #2B3C45;
+    background-color: var(--icon-bg-color-hover);
   }
   img {
     border: none;
@@ -15,10 +15,10 @@ template.innerHTML = `
   }
   .overall.pressed .button-icon,
   .overall.pressed .handle {
-    background-color: #2B3C45 !important;
+    background-color: var(--icon-bg-color-hover) !important;
   }
   .overall.pressed .menu-button {
-    background-color: #2B3C45 !important;
+    background-color: var(--icon-bg-color-hover) !important;
   }
   .disabled {
     opacity: 0.3;
@@ -29,7 +29,7 @@ template.innerHTML = `
     width: 24px;
     margin: 2px 2px 4px;
     padding: 3px;
-    background-color: #72797A;
+    background-color: var(--icon-bg-color);
     cursor: pointer;
     position: relative;
     border-radius: 3px;

@@ -16,11 +16,10 @@ template.innerHTML = `
   .overall.pressed .button-icon,
   .overall.pressed,
   .menu-item.pressed {
-    background-color: #2B3C45 !important;
+    background-color: var(--icon-bg-color-hover) !important;
   }
   .overall.pressed .menu-button {
-    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
-    background-color: #2B3C45 !important;
+    background-color: var(--icon-bg-color-hover) !important;
   }
   .disabled {
     opacity: 0.3;
@@ -31,7 +30,7 @@ template.innerHTML = `
     width: 24px;
     margin: 2px 2px 4px;
     padding: 3px;
-    background-color: #72797A;
+    background-color: var(--icon-bg-color);
     cursor: pointer;
     position: relative;
     border-radius: 3px;

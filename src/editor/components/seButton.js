@@ -6,7 +6,7 @@ template.innerHTML = `
   <style>
   :host(:hover) :not(.disabled)
   {
-    background-color: #2B3C45;
+    background-color: var(--icon-bg-color-hover);
   }
   div
   {
@@ -14,7 +14,7 @@ template.innerHTML = `
     width: 24px;
     margin: 2px 2px 4px;
     padding: 3px;
-    background-color: #72797A;
+    background-color: var(--icon-bg-color);
     cursor: pointer;
     border-radius: 3px;
   }
@@ -30,7 +30,7 @@ template.innerHTML = `
     height: 100%;
   }
   .pressed {
-    background-color: #2B3C45;
+    background-color: var(--icon-bg-color-hover);
   }
   .disabled {
     opacity: 0.3;
