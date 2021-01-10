@@ -9,24 +9,26 @@ template.innerHTML = `
     padding: 0px;
   }
   elix-menu-button::part(menu) {
-    background-color: #eee !important;
+    background-color: var(--icon-bg-color) !important;
+    color: #fff;
   }
   elix-menu-button::part(popup-toggle) {
     padding: 0.25em 0.60em !important
   }
   :host ::slotted([current]){
-    background-color: #F4E284 !important;
+    background-color: var(--icon-bg-color-hover) !important;
+    color: #fff;
   }
   :host ::slotted(*){
     padding: 0.25em 1.25em 0.25em 0.25em !important;
     margin: 2px;
   }
   </style>
-  
+
   <elix-menu-button id="MenuButton" aria-label="Main Menu">
     <slot></slot>
   </elix-menu-button>
-  
+
 `;
 /**
  * @class SeMenu
@@ -64,8 +66,8 @@ export class SeMenu extends HTMLElement {
     switch (name) {
     case 'src':
       image.src = newValue;
-      image.width = 18;
-      image.height = 18;
+      image.width = 24;
+      image.height = 24;
       this.$label.prepend(image);
       break;
     case 'label':

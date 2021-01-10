@@ -5,13 +5,13 @@ import 'elix/define/MenuItem.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  </style>  
+  </style>
   <elix-menu-item>
     <div style="display:flex; align-items: center;">
-      <img src="./images/logo.svg" alt="icon" style="display:none;" /> 
-      <span style="margin-left: 3px;"></span>
+      <img src="./images/logo.svg" alt="icon" style="display:none;" width="24"/>
+      <span style="margin-left: 7px;"></span>
     </div>
-  </elix-menu-item>  
+  </elix-menu-item>
 `;
 /**
  * @class SeMenuItem
