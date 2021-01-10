@@ -1,7 +1,1 @@
-<svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <rect x="1.5" y="12.5" width="18" height="7" fill="#fddb8c" stroke="#606060" id="svg_6"/>
-    <rect x="4.5" y="2.5" width="12" height="7" id="svg_4" fill="#fddb8c" stroke="#606060"/>
-    <rect x="9.5" y="-10" width="2" height="40" id="svg_2" fill="#f9bc01" stroke="#c15909"/>
-    <rect x="2.5" y="13.5" width="16" height="5" fill="none" stroke="#ffffff" id="svg_7"/>
-    <rect x="5.5" y="3.5" width="10" height="5" id="svg_5" fill="none" stroke="#ffffff"/>
-  </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51.04 49.47"><defs><style>.cls-1,.cls-3{fill:none;}.cls-2{fill:#fff;stroke:#fff;stroke-linejoin:round;}.cls-2,.cls-3{stroke-linecap:round;stroke-width:2px;}.cls-3{stroke:#f9ba00;stroke-miterlimit:10;}</style></defs><g id="Calque_2" data-name="Calque 2"><g id="Calque_1-2" data-name="Calque 1"><polyline class="cls-1" points="6.8 0 51.04 0 51.04 49.47 0 49.47 0 0 6.8 0"/><rect class="cls-2" x="15.27" y="10.91" width="20.5" height="11.59" transform="translate(51.04 33.42) rotate(-180)"/><rect class="cls-2" x="11.09" y="26.96" width="28.87" height="11.59" transform="translate(51.04 65.52) rotate(-180)"/><line class="cls-3" x1="25.52" y1="4.81" x2="25.52" y2="44.66"/></g></g></svg>
