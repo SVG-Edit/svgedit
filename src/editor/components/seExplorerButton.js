@@ -6,7 +6,7 @@ template.innerHTML = `
   }
   .menu-button:hover, se-button:hover, .menu-item:hover
   {
-    background-color: #2B3C45;
+    background-color: var(--icon-bg-color-hover);
   }
   img {
     border: none;
