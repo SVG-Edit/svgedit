@@ -319,11 +319,16 @@
         </div>
         <div id="text_panel">
           <div class="toolset">
-            <div class="tool_button" id="tool_text_anchor_start" title="Align the text in start"></div>
-            <div class="tool_button" id="tool_text_anchor_middle" title="Align the text in middle"></div>
-            <div class="tool_button" id="tool_text_anchor_end" title="Align the text in end"></div>
             <div class="tool_button" id="tool_bold" title="Bold Text [B]"><span></span>B</div>
             <div class="tool_button" id="tool_italic" title="Italic Text [I]"><span></span>i</div>
+          </div>
+          <div class="dropdown toolset" id="tool_text_anchor" title="Define the text anchor">
+            <div id="text_anchor_icon" class="icon_label"></div>
+            <button></button>
+          </div>
+          <div class="dropdown toolset" id="tool_text_decoration" title="Format text with decoration">
+            <div id="text_decoration_icon" class="icon_label"></div>
+            <button></button>
           </div>
           <div class="toolset" id="tool_font_family">
             <label>
@@ -528,6 +533,16 @@
           <li class="push_button" id="tool_postop" title="Align Top"></li>
           <li class="push_button" id="tool_posmiddle" title="Align Middle"></li>
           <li class="push_button" id="tool_posbottom" title="Align Bottom"></li>
+        </ul>
+        <ul id="text_anchor_opts">
+          <li class="push_button" id="tool_text_anchor_start" title="Align the text in start" data-value="start"></li>
+          <li class="push_button" id="tool_text_anchor_middle" title="Align the text in middle" data-value="middle"></li>
+          <li class="push_button" id="tool_text_anchor_end" title="Align the text in end" data-value="end"></li>
+        </ul>
+        <ul id="text_decoration_opts">
+          <li class="push_button" id="tool_text_decoration_underline" title="Underline Text" data-value="underline">ab</li>
+          <li class="push_button" id="tool_text_decoration_linethrough" title="Strike through Text" data-value="line-through">ab</li>
+          <li class="push_button" id="tool_text_decoration_overline" title="Overline Text" data-value="overline">ab</li>
         </ul>
       </div>
       <!-- hidden divs -->

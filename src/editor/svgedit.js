@@ -1201,6 +1201,8 @@ editor.init = () => {
         '#group_opacityLabel': 'opacity',
         '#blurLabel': 'blur',
         '#font_sizeLabel': 'fontsize',
+        '#text_anchor_icon': 'anchor_middle',
+        '#text_decoration_icon': 'textdecoration',
 
         '.flyout_arrow_horiz': 'arrow_right',
         '.dropdown button, #main_button .dropdown': 'arrow_down',
@@ -2311,26 +2313,6 @@ editor.init = () => {
             $('#tool_bold').addClass('push_button_pressed').removeClass('tool_button');
           } else {
             $('#tool_bold').removeClass('push_button_pressed').addClass('tool_button');
-          }
-          const textAnchorStart = $('#tool_text_anchor_start');
-          const textAnchorMiddle = $('#tool_text_anchor_middle');
-          const textAnchorEnd = $('#tool_text_anchor_end');
-          switch (elem.getAttribute('text-anchor')) {
-          case 'start':
-            textAnchorStart.addClass('push_button_pressed').removeClass('tool_button');
-            textAnchorMiddle.removeClass('push_button_pressed').addClass('tool_button');
-            textAnchorEnd.removeClass('push_button_pressed').addClass('tool_button');
-            break;
-          case 'middle':
-            textAnchorStart.removeClass('push_button_pressed').addClass('tool_button');
-            textAnchorMiddle.addClass('push_button_pressed').removeClass('tool_button');
-            textAnchorEnd.removeClass('push_button_pressed').addClass('tool_button');
-            break;
-          case 'end':
-            textAnchorStart.removeClass('push_button_pressed').addClass('tool_button');
-            textAnchorMiddle.removeClass('push_button_pressed').addClass('tool_button');
-            textAnchorEnd.addClass('push_button_pressed').removeClass('tool_button');
-            break;
           }
           $('#font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
@@ -3917,6 +3899,22 @@ editor.init = () => {
     svgCanvas.alignSelectedElements(letter, 'page');
   }, {multiclick: true});
 
+  addAltDropDown('#tool_text_decoration', '#text_decoration_opts', function () {
+    const selectedTextDecoration = $(this).data('value');
+
+    if (svgCanvas.hasTextDecoration(selectedTextDecoration)) {
+      svgCanvas.removeTextDecoration(selectedTextDecoration);
+    } else {
+      svgCanvas.addTextDecoration(selectedTextDecoration);
+    }
+  }, {multiclick: true});
+
+  addAltDropDown('#tool_text_anchor', '#text_anchor_opts', function () {
+    const selectedTextAnchor = $(this).data('value');
+    svgCanvas.setTextAnchor(selectedTextAnchor);
+    updateContextPanel();
+  }, {});
+
   /*
 
   When a flyout icon is selected
@@ -4341,17 +4339,6 @@ editor.init = () => {
   */
   const clickItalic = function () {
     svgCanvas.setItalic(!svgCanvas.getItalic());
-    updateContextPanel();
-    return false;
-  };
-
-  /**
-   *
-   * @param {string} value "start","end" or "middle"
-   * @returns {false}
-   */
-  const clickTextAnchor = function (value) {
-    svgCanvas.setTextAnchor(value);
     updateContextPanel();
     return false;
   };
@@ -5540,9 +5527,6 @@ editor.init = () => {
       // {sel: '#tools_ellipse_show', fn: clickEllipse, evt: 'click'},
       {sel: '#tool_bold', fn: clickBold, evt: 'mousedown'},
       {sel: '#tool_italic', fn: clickItalic, evt: 'mousedown'},
-      {sel: '#tool_text_anchor_start', fn () { clickTextAnchor('start'); }, evt: 'mousedown'},
-      {sel: '#tool_text_anchor_middle', fn () { clickTextAnchor('middle'); }, evt: 'mousedown'},
-      {sel: '#tool_text_anchor_end', fn () { clickTextAnchor('end'); }, evt: 'mousedown'},
       {sel: '#sidepanel_handle', fn: toggleSidePanel, key: ['X']},
       {sel: '#copy_save_done', fn: cancelOverlays, evt: 'click'},
 

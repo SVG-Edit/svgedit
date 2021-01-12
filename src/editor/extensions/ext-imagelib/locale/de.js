@@ -1,9 +1,9 @@
 export default {
-  select_lib: 'Select an image library',
-  show_list: 'Show library list',
-  import_single: 'Import single',
-  import_multi: 'Import multiple',
-  open: 'Open as new document',
+  select_lib: 'Bilder Bibliothek auswählen',
+  show_list: 'Liste aller Bibliotheken anzeigen',
+  import_single: 'Einzelne importieren',
+  import_multi: 'Mehrere importieren',
+  open: 'Öffnen als neues Dokument',
   buttons: [
     {
       title: 'Bilder-Bibliothek'
@@ -11,14 +11,14 @@ export default {
   ],
   imgLibs: [
     {
-      name: 'Demo library (local)',
+      name: 'Demo Bibliothek (lokal)',
       url: 'extensions/ext-imagelib/index.html',
-      description: 'Demonstration library for SVG-edit on this server'
+      description: 'Demo Bibltiothek für svg-edit auf diesem Server'
     },
     {
-      name: 'IAN Symbol Libraries',
+      name: 'IAN Symbol Bibliothek',
       url: 'https://ian.umces.edu/symbols/catalog/svgedit/album_chooser.php?svgedit=3',
-      description: 'Free library of illustrations'
+      description: 'Kostenlose Bibliothek mit Illustrationen'
     }
     /*
     // See message in "en" locale for further details
