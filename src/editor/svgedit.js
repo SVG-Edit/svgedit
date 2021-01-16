@@ -1184,6 +1184,8 @@ editor.init = () => {
         '#layer_down': 'go_down',
         '#layer_moreopts': 'context_menu',
         '#layerlist td.layervis': 'eye',
+        '#objectlist td.objectvis': 'eye',
+        '#objectlist td.objectselect': 'object_select',
 
         '#tool_source_save,#tool_docprops_save,#tool_prefs_save': 'ok',
         '#tool_source_cancel,#tool_docprops_cancel,#tool_prefs_cancel': 'cancel',
@@ -1207,7 +1209,7 @@ editor.init = () => {
       resize: {
         '#logo .svg_icon': 28,
         '.flyout_arrow_horiz .svg_icon': 5,
-        '.layer_button .svg_icon, #layerlist td.layervis .svg_icon': 14,
+        '.layer_button .svg_icon, #layerlist td.layervis .svg_icon, #objectlist .svg_icon': 14,
         '.dropdown button .svg_icon': 7,
         '#main_button .dropdown .svg_icon': 9,
         '.palette_item:first .svg_icon': 15,
@@ -1405,6 +1407,7 @@ editor.init = () => {
         $('#layerlist tr.layer').removeClass('layersel');
         $(this.parentNode).addClass('layersel');
         svgCanvas.setCurrentLayer(this.textContent);
+        populateObjects();
         evt.preventDefault();
       })
       .mouseover(function () {
@@ -1426,6 +1429,66 @@ editor.init = () => {
     while (num-- > 0) {
       // TODO: there must a better way to do this
       layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
+    }
+  };
+
+  const populateObjects = function () {
+    const objectlist = $('#objectlist tbody').empty();
+    const eyeIcon = $.getSvgIcon('eye');
+    const selectIcon = $.getSvgIcon('object_select');
+    const selectedElementId = selectedElement ? selectedElement.id : null;
+
+    const drawing = svgCanvas.getCurrentDrawing();
+    const currentElements = drawing.getCurrentLayerChildren();
+    for (const currentElement of currentElements) {
+      const elementId = currentElement.id;
+
+      const objectTr = $('<tr class="object">').toggleClass('objectsel', elementId === selectedElementId);
+      const objectVis = $('<td class="objectvis">').toggleClass('objectinvis', !drawing.isLayerChildrenVisible(elementId));
+      const objectName = $('<td class="objectname" title="' + elementId + '">' + elementId + '</td>');
+      const objectSelect = $('<td class="objectselect">');
+      objectlist.append(objectTr.append(objectVis, objectName, objectSelect));
+    }
+
+    if (eyeIcon !== undefined) {
+      const copy = eyeIcon.clone();
+      $('td.objectvis', objectlist).append(copy);
+      $.resizeSvgIcons({'td.objectvis .svg_icon': 14});
+    }
+    if (selectIcon !== undefined) {
+      const copy = selectIcon.clone();
+      $('td.objectselect', objectlist).append(copy);
+      $.resizeSvgIcons({'td.objectselect .svg_icon': 8});
+    }
+
+    // Change visibility of object
+    $('#objectlist td.objectvis').click(function () {
+      const row = $(this.parentNode).prevAll().length;
+      const id = $('#objectlist tr.object:eq(' + row + ') td.objectname').text();
+      const vis = $(this).hasClass('objectinvis');
+      drawing.setLayerChildrenVisible(id, vis);
+      $(this).toggleClass('objectinvis');
+      if (!vis) svgCanvas.clearSelection();
+    });
+
+    // Handle selection of object
+    $('#objectlist td.objectselect').click(function () {
+      $('#objectlist tr.object').removeClass('objectsel');
+      const row = $(this.parentNode).prevAll().length;
+      const vis = $('#objectlist tr.object:eq(' + row + ') td.objectvis').hasClass('objectinvis');
+
+      if (!vis) {
+        const id = $('#objectlist tr.object:eq(' + row + ') td.objectname').text();
+        svgCanvas.clearSelection();
+        svgCanvas.addToSelection([$('[id="' + id + '"]')[0]], true);
+        $(this).parent().toggleClass('objectsel');
+      }
+    });
+
+    // if there were too few rows, let's add a few to make it not so lonely
+    let num = 5 - $('#objectlist tr.object').size();
+    while (num-- > 0) {
+      objectlist.append('<tr><td style="color:white">_</td><td/><td/></tr>');
     }
   };
 
@@ -2386,6 +2449,7 @@ editor.init = () => {
     // Deal with pathedit mode
     togglePathEditMode(isNode, elems);
     updateContextPanel();
+    populateObjects();
     svgCanvas.runExtensions('selectedChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_selectedChanged} */ {
       elems,
       selectedElement,
@@ -5281,6 +5345,7 @@ editor.init = () => {
   });
 
   populateLayers();
+  populateObjects();
 
   // function changeResolution (x,y) {
   //   const {zoom} = svgCanvas.getResolution();

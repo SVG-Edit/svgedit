@@ -273,7 +273,8 @@ select {
   cursor: pointer;
 }
 
-#layerlist {
+#layerlist,
+#objectlist {
   margin: 1px;
   padding: 0;
   width: 127px;
@@ -282,45 +283,63 @@ select {
   background-color: #FFFFFF;
 }
 
-#layerlist tr.layer {
+#layerlist tr.layer,
+#objectlist tr.object {
   background-color: #FFFFFF;
   margin: 0;
   padding: 0;
 }
 
-#layerlist tr.layersel {
+#layerlist tr.layersel,
+#objectlist tr.objectsel {
   border: 1px solid #808080;
   background-color: #CCCCCC;
 }
 
-#layerlist td.layervis {
+#layerlist td.layervis,
+#objectlist td.objectvis,
+#objectlist td.objectselect {
   width: 22px;
   cursor: pointer;
 }
 
-#layerlist td.layerinvis {
+#objectlist td.objectselect {
+    text-align: center;
+}
+
+#layerlist td.layerinvis,
+#objectlist td.objectinvis {
   background-image: none;
   cursor: pointer;
 }
 
-#layerlist td.layervis * {
+#layerlist td.layervis *,
+#objectlist td.objectvis * {
   display: block;
 }
 
-#layerlist td.layerinvis * {
+#layerlist td.layerinvis *,
+#objectlist td.objectinvis * {
   display: none;
 }
 
-#layerlist td.layername {
+#layerlist td.layername,
+#objectlist td.objectname {
   cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 1px;
 }
 
-#layerlist td.layername:hover {
+#layerlist td.layername:hover,
+#objectlist td.objectname:hover {
   color: blue;
   font-style: italic;
 }
 
-#layerlist tr.layersel td.layername {
+#layerlist tr.layersel td.layername,
+#objectlist tr.objectsel td.objectname {
   font-weight: bold;
 }
 

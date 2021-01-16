@@ -961,6 +961,12 @@
  </svg>
 </g>
 
+<g id="object_select">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <ellipse cx="12" cy="11.9875" fill="#000000" fill-opacity="0" id="svg_2" rx="9.33333" ry="9.33333" stroke="#000000" stroke-width="3"/>
+  </svg>
+</g>
+
 <g id="no_color">
   <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <line fill="none" stroke="#d40000" id="svg_90" y2="24" x2="24" y1="0" x1="0"/>
