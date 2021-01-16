@@ -4,13 +4,19 @@ import 'elix/define/DropdownList.js';
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
+elix-dropdown-list {
+  margin: 5px;
+}
+
+elix-dropdown-list:hover {
+  background-color: var(--icon-bg-color-hover);
+}
+
 ::part(popup-toggle) {
   display: none;
 }
 ::slotted(*) {
-  background: #E8E8E8;
   padding:0;
-  /*border: 1px solid #B0B0B0;*/
   width:100%;
 }
 </style>
@@ -18,7 +24,7 @@ template.innerHTML = `
   <elix-dropdown-list>
     <slot></slot>
   </elix-dropdown-list>
-  
+
 `;
 /**
  * @class SeList

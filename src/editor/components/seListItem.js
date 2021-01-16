@@ -4,15 +4,17 @@ import 'elix/define/Option.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  elix-option{  
+  elix-option{
     padding:0.25rem 0.125rem !important;
-    background: #E8E8E8;
-    border-bottom: 1px solid #B0B0B0;
+    background-color: var(--icon-bg-color);
   }
-  </style>  
+  elix-option:hover{
+    background-color: var(--icon-bg-color-hover);
+  }
+  </style>
   <elix-option aria-label="option">
     <slot></slot>
-  </elix-option>  
+  </elix-option>
 `;
 /**
  * @class SeMenu

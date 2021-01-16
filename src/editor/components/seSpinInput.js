@@ -12,9 +12,21 @@ template.innerHTML = `
     bottom: 1px;
     right: -4px;
     position: relative;
+    margin-left: 4px;
+    margin-right: 4px;
+    color: #fff;
+  }
+  elix-number-spin-box {
+    background-color: var(--input-color);
+    border-radius: 3px;
+    height: 20px !important;
+    margin-top: 1px;
   }
   elix-number-spin-box::part(spin-button) {
     padding: 0px;
+  }
+  elix-number-spin-box::part(input) {
+    width: 3em;
   }
   elix-number-spin-box{
     width: 54px;

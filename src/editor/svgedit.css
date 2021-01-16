@@ -7,6 +7,7 @@
   --ruler-color: #B2B2B2;
   --icon-bg-color: #72797A;
   --icon-bg-color-hover: #2B3C45;
+  --input-color: #B2B2B2;
 }
 
 body {
@@ -192,6 +193,13 @@ hr {
   top: 4px;
   left: 5px;
   z-index: 5;
+  color: #fff;
+  border-radius: 3px;
+}
+
+#main_button:hover {
+  background-color: var(--icon-bg-color-hover);
+  color: #fff;
 }
 
 #main_icon {
