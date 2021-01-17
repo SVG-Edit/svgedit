@@ -40,13 +40,24 @@ class Zoom extends ListComboBox {
         }
         ::slotted(*) {
           padding: 4px;
-          background: #E8E8E8;
-          border: 1px solid #B0B0B0;
           width: 100%;
+          background-color: var(--icon-bg-color);
+          color: #fff;
+        }
         }
         [part~="popup"] {
           width: 150%;
         }
+        elix-number-spin-box {
+          background-color: var(--input-color);
+          border-radius: 3px;
+          height: 20px !important;
+          margin-top: 1px;
+        }
+        elix-number-spin-box::part(spin-button) {
+            padding: 0px;
+        }
+
         </style>
       `.content
     );
