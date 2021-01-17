@@ -14,29 +14,30 @@ template.innerHTML = `
   @import "./components/jgraduate/css/jGraduate.css";
   @import "./components/jgraduate/css/jPicker.css";
   #logo {
-    height: 22px;
-    width: 22px;
+    height: 18px;
+    width: 18px;
   }
   #block {
-    height: 22px;
-    width: 22px;
+    height: 13px;
+    width: 14px;
     float: right;
     background-color: darkgrey;
   }
   #picker {
-    background: #f0f0f0;
-    height: 26px;
-    line-height: 26px;
+    background: var(--input-color);
+    height: 19px;
+    line-height: 19px;
     border-radius: 3px;
     width: 52px;
     display: flex;
     align-items: center;
     margin-right: 4px;
+    margin-top: 1px;
     justify-content: space-evenly;
   }
   #color_picker {
-    position: absolute;
-    bottom: 40px;
+    z-index: 1000;
+    top: -350px;
   }
   </style>
   <div id="picker">
