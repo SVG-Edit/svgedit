@@ -86,6 +86,10 @@ class EditorStartup {
       const promptBox = document.createElement('se-prompt-dialog');
       promptBox.setAttribute('id', 'se-prompt-dialog');
       document.body.append(promptBox);
+      // Export dialog added to DOM
+      const exportDialog = document.createElement('se-export-dialog');
+      exportDialog.setAttribute('id', 'se-export-dialog');
+      document.body.append(exportDialog);
     } catch (err) {
     // eslint-disable-next-line no-console
       console.error(err);
@@ -470,7 +474,11 @@ class EditorStartup {
         this.clickSave();
       }
     }.bind(this));
-    $id('tool_export').addEventListener('click', this.clickExport.bind(this));
+    // this.clickExport.bind(this)
+    $id('tool_export').addEventListener('click', function (e) {
+      document.getElementById('se-export-dialog').setAttribute('dialog', 'open');
+    });
+    $id('se-export-dialog').addEventListener('change', this.clickExport.bind(this));
     $id('tool_docprops').addEventListener('click', this.showDocProperties.bind(this));
     $id('tool_editor_prefs').addEventListener('click', this.showPreferences.bind(this));
     $id('tool_editor_homepage').addEventListener('click', this.openHomePage.bind(this));

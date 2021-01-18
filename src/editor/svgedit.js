@@ -1106,17 +1106,12 @@ class Editor extends EditorStartup {
   *
   * @returns {Promise<void>} Resolves to `undefined`
   */
-  async clickExport () {
-    const imgType = await seSelect('Select an image type for export: ', [
-      // See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
-      // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
-      'PNG',
-      'JPEG', 'BMP', 'WEBP', 'PDF'
-    ]);
-
-    if (!imgType) {
+  async clickExport (e) {
+    if (e?.detail?.trigger !== 'ok' || e?.detail?.imgType === undefined) {
       return;
     }
+    const imgType = e?.detail?.imgType;
+    const quality = (e?.detail?.quality) ? (e?.detail?.quality / 100) : 1;
     // Open placeholder window (prevents popup)
     let exportWindowName;
 
@@ -1161,10 +1156,6 @@ class Editor extends EditorStartup {
       if (!this.customExportImage) {
         openExportWindow();
       }
-      /**
-       * @todo "quality" should be an option of the dialog
-       */
-      const quality = 1;
       /* const results = */ await this.svgCanvas.rasterExport(imgType, quality, this.exportWindowName);
     }
   }
