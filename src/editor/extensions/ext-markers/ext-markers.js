@@ -595,7 +595,6 @@ export default {
       },
 
       elementChanged (opts) {
-        // console.log('elementChanged',opts);
         const elem = opts.elems[0];
         if (elem && (
           elem.getAttribute('marker-start') ||

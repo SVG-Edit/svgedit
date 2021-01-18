@@ -17,7 +17,7 @@
 */
 
 import './touch.js';
-import {isChrome, isMac} from '../common/browser.js';
+import {isWebkit, isChrome, isMac, isTouch} from '../common/browser.js';
 import {convertUnit, isValidUnit} from '../common/units.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
@@ -77,6 +77,7 @@ class Editor extends EditorStartup {
       * @name module:SVGthis.uiStrings
       * @type {PlainObject}
       */
+    this.flyoutFuncs = {};
     this.uiStrings = {};
     this.svgCanvas = null;
     this.isReady = false;
@@ -840,12 +841,264 @@ class Editor extends EditorStartup {
   }
 
   /**
+  * Makes sure the current selected paint is available to work with.
+  * @returns {void}
+  */
+  /* prepPaints () {
+    paintBox.fill.prep();
+    paintBox.stroke.prep();
+  } */
+
+  /**
+  *
+  * @returns {void}
+  */
+  // eslint-disable-next-line class-methods-use-this
+  setFlyoutPositions () {
+    $('.tools_flyout').each(function () {
+      const shower = $('#' + this.id + '_show');
+      const {left, top} = shower.offset();
+      const w = shower.outerWidth();
+      this.css({left: (left + w) * editor.tool_scale, top});
+    });
+    return;
+  }
+
+  /**
+  *
+  * @returns {void}
+  */
+  // eslint-disable-next-line class-methods-use-this
+  setFlyoutTitles () {
+    $('.tools_flyout').each(function () {
+      const shower = $('#' + this.id + '_show');
+      if (shower.data('isLibrary')) {
+        return;
+      }
+      const tooltips = this.children().map(function () {
+        return this.title;
+      }).get();
+      shower[0].title = tooltips.join(' / ');
+    });
+  }
+
+  /**
+   * @param {PlainObject<string, module:SVGEditor.ToolButton>} holders Key is a selector
+   * @returns {void}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  setupFlyouts (holders) {
+    const allHolders = {};
+    $.each(holders, function (holdSel, btnOpts) {
+      if (!allHolders[holdSel]) {
+        allHolders[holdSel] = [];
+      }
+      allHolders[holdSel].push(...btnOpts);
+
+      const buttons = $(holdSel).children().not('.tool_button_evt_handled');
+      const showSel = holdSel + '_show';
+      const shower = $(showSel);
+      let def = false;
+      buttons.addClass('tool_button tool_button_evt_handled')
+        .unbind('click mousedown mouseup') // may not be necessary
+        .each(function () {
+          // Get this button's options
+          const idSel = '#' + this.getAttribute('id');
+          const [i, opts] = Object.entries(btnOpts).find(([_, {sel}]) => {
+            return sel === idSel;
+          });
+
+          // Remember the function that goes with this ID
+          this.flyoutFuncs[opts.sel] = opts.fn;
+
+          if (opts.isDefault) { def = i; }
+
+          const flyoutAction = function (ev) {
+            let options = opts;
+            // Find the currently selected tool if comes from keystroke
+            if (ev.type === 'keydown') {
+              const flyoutIsSelected = $(options.parent + '_show').hasClass('tool_button_current');
+              const currentOperation = $(options.parent + '_show').attr('data-curopt');
+              Object.entries(holders[opts.parent]).some(([j, tool]) => {
+                if (tool.sel !== currentOperation) {
+                  return false;
+                }
+                if (!ev.shiftKey || !flyoutIsSelected) {
+                  options = tool;
+                } else {
+                  // If flyout is selected, allow shift key to iterate through subitems
+                  j = Number.parseInt(j);
+                  // Use `allHolders` to include both extension `includeWith` and toolbarButtons
+                  options = allHolders[opts.parent][j + 1] ||
+                    holders[opts.parent][0];
+                }
+                return true;
+              });
+            }
+            if ($(this).hasClass('disabled')) { return false; }
+             /* if (toolButtonClick(showSel)) {
+              options.fn();
+            } */
+            const icon = (options.icon) ? $.getSvgIcon(options.icon, true) : $(options.sel).children().eq(0).clone();
+            icon[0].setAttribute('width', shower.width());
+            icon[0].setAttribute('height', shower.height());
+            shower.children(':not(.flyout_arrow_horiz)').remove();
+            shower.append(icon).attr('data-curopt', options.sel); // This sets the current mode
+            return true;
+          };
+
+          $(this).mouseup(flyoutAction);
+
+          if (opts.key) {
+            $(document).bind('keydown', opts.key[0] + ' shift+' + opts.key[0], flyoutAction);
+          }
+          return true;
+        });
+
+      if (def) {
+        shower.attr('data-curopt', btnOpts[def].sel);
+      } else if (!shower.attr('data-curopt')) {
+        // Set first as default
+        shower.attr('data-curopt', btnOpts[0].sel);
+      }
+
+      let timer;
+
+      // Clicking the "show" icon should set the current mode
+      shower.mousedown(function (evt) {
+        if (shower.hasClass('disabled')) {
+          return false;
+        }
+        const holder = $(holdSel);
+        const pos = $(showSel).position();
+        const l = pos.left + 34;
+        const w = holder.width() * -1;
+        const time = holder.data('shown_popop') ? 200 : 0;
+        timer = setTimeout(function () {
+          // Show corresponding menu
+          if (!shower.data('isLibrary')) {
+            holder.css('left', w).show().animate({
+              left: l
+            }, 150);
+          } else {
+            holder.css('left', l).show();
+          }
+          holder.data('shown_popop', true);
+        }, time);
+        evt.preventDefault();
+        return true;
+      }).mouseup(function (evt) {
+        clearTimeout(timer);
+        /* const opt = $(this).attr('data-curopt');
+        // Is library and popped up, so do nothing
+        if (shower.data('isLibrary') && $(showSel.replace('_show', '')).is(':visible')) {
+          toolButtonClick(showSel, true);
+          return;
+        }
+        if (toolButtonClick(showSel) && this.flyoutFuncs[opt]) {
+          this.flyoutFuncs[opt]();
+        } */
+      });
+      // $('#tools_rect').mouseleave(function () { $('#tools_rect').fadeOut(); });
+    });
+    this.setFlyoutTitles();
+    this.setFlyoutPositions();    
+    console.log("1011 after --->")
+  }
+
+  /**
+  * @param {string} id
+  * @param {external:jQuery} child
+  * @returns {external:jQuery}
+  */
+  // eslint-disable-next-line class-methods-use-this 
+  makeFlyoutHolder (id, child) {
+    const div = $('<div>', {
+      class: 'tools_flyout',
+      id
+    }).appendTo('#svg_editor').append(child);
+    return div;
+  }
+
+  /**
+  * @param {string} elemSel
+  * @param {string} listSel
+  * @param {external:jQuery.Function} callback
+  * @param {PlainObject} opts
+  * @param {boolean} opts.dropUp
+  * @param {boolean} opts.seticon
+  * @param {boolean} opts.multiclick
+  * @todo Combine this with `addDropDown` or find other way to optimize.
+  * @returns {void}
+  */
+  // eslint-disable-next-line class-methods-use-this
+  addAltDropDown (elemSel, listSel, callback, opts) {
+    const button = $(elemSel);
+    const {dropUp} = opts;
+    const list = $(listSel);
+    if (dropUp) {
+      $(elemSel).addClass('dropup');
+    }
+    list.find('li').bind('mouseup', function (...args) {
+      if (opts.seticon) {
+        // setIcon('#cur_' + button[0].id, $(this).children());
+        $(this).addClass('current').siblings().removeClass('current');
+      }
+      callback.apply(this, ...args);
+    });
+
+    let onButton = false;
+    $(window).mouseup(function (evt) {
+      if (!onButton) {
+        button.removeClass('down');
+        list.hide();
+        list.css({top: 0, left: 0});
+      }
+      onButton = false;
+    });
+
+    // const height = list.height(); // Currently unused
+    button.bind('mousedown', function () {
+      const off = button.offset();
+      if (dropUp) {
+        off.top -= list.height();
+        off.left += 8;
+      } else {
+        off.top += button.height();
+      }
+      list.offset(off);
+
+      if (!button.hasClass('down')) {
+        list.show();
+        onButton = true;
+      } else {
+        // CSS position must be reset for Webkit
+        list.hide();
+        list.css({top: 0, left: 0});
+      }
+      button.toggleClass('down');
+    }).hover(function () {
+      onButton = true;
+    }).mouseout(function () {
+      onButton = false;
+    });
+
+    if (opts.multiclick) {
+      list.mousedown(function () {
+        onButton = true;
+      });
+    }
+  };
+
+  /**
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
    * @listens module:svgcanvas.SvgCanvas#event:extension_added
    * @returns {Promise<void>|void} Resolves to `undefined`
    */
   async extAdded (win, ext) {
+    const self = this;
+    const btnSelects = [];
     if (!ext) {
       return undefined;
     }
@@ -956,7 +1209,288 @@ class Editor extends EditorStartup {
         }
       });
     }
+    const {svgicons} = ext;
+    if (ext.buttons) {
+      const fallbackObj = {},
+        altsObj = {},
+        placementObj = {},
+        holders = {};
 
+      /**
+      * @typedef {GenericArray} module:SVGEditor.KeyArray
+      * @property {string} 0 The key to bind (on `keydown`)
+      * @property {boolean} 1 Whether to `preventDefault` on the `keydown` event
+      * @property {boolean} 2 Not apparently in use (NoDisableInInput)
+      */
+      /**
+       * @typedef {string|module:SVGEditor.KeyArray} module:SVGEditor.Key
+       */
+      /**
+      * @typedef {PlainObject} module:SVGEditor.Button
+      * @property {string} id A unique identifier for this button. If SVG icons are used, this must match the ID used in the icon file. Required.
+      * @property {"mode_flyout"|"mode"|"context"|"app_menu"} type Type of button. Required.
+      * @property {string} title The tooltip text that will appear when the user hovers over the icon. Required.
+      * @property {PlainObject<string, external:jQuery.Function>|PlainObject<"click", external:jQuery.Function>} events DOM event names with associated functions. Example: `{click () { alert('Button was clicked') } }`. Click is used with `includeWith` and `type` of "mode_flyout" (and "mode"); any events may be added if `list` is not present. Expected.
+      * @property {string} panel The ID of the context panel to be included, if type is "context". Required only if type is "context".
+      * @property {string} icon The file path to the raster version of the icon image source. Required only if no `svgicons` is supplied from [ExtensionInitResponse]{@link module:svgcanvas.ExtensionInitResponse}.
+      * @property {string} [svgicon] If absent, will utilize the button "id"; used to set "placement" on the `svgIcons` call
+      * @property {string} [list] Points to the "id" of a `context_tools` item of type "button-select" into which the button will be added as a panel list item
+      * @property {Integer} [position] The numeric index for placement; defaults to last position (as of the time of extension addition) if not present. For use with {@link http://api.jquery.com/eq/}.
+      * @property {boolean} [isDefault] Whether or not the button is the default. Used with `list`.
+      * @property {PlainObject} [includeWith] Object with flyout menu data
+      * @property {boolean} [includeWith.isDefault] Indicates whether button is default in flyout list or not.
+      * @property {string} includeWith.button jQuery selector of the existing button to be joined. Example: '#tool_line'. Required if `includeWith` is used.
+      * @property {"last"|Integer} [includeWith.position] Position of icon in flyout list; will be added to end if not indicated. Integer is for use with {@link http://api.jquery.com/eq/}.
+      * @property {module:SVGEditor.Key} [key] The key to bind to the button
+      */
+      // Add buttons given by extension
+      console.log(ext.buttons);
+      $.each(ext.buttons, function (i, /** @type {module:SVGEditor.Button} */ btn) {
+        let {id} = btn;
+        let num = i;
+        // Give button a unique ID
+        while ($('#' + id).length) {
+          id = btn.id + '_' + (++num);
+        }
+        console.log(id);
+        let icon;
+        if (!svgicons) {
+          console.log(btn.icon);
+          icon = $(
+            '<img src="' + btn.icon +
+              (btn.title ? '" alt="' + btn.title : '') +
+              '">'
+          );
+        } else {
+          fallbackObj[id] = btn.icon;
+          altsObj[id] = btn.title;
+          const svgicon = btn.svgicon || btn.id;
+          if (btn.type === 'app_menu') {
+            placementObj['#' + id + ' > div'] = svgicon;
+          } else {
+            placementObj['#' + id] = svgicon;
+          }
+        }
+        console.log(placementObj);
+        let cls, parent;
+
+        // Set button up according to its type
+        switch (btn.type) {
+        case 'mode_flyout':
+        case 'mode':
+          cls = 'tool_button';
+          parent = '#tools_left';
+          break;
+        case 'context':
+          cls = 'tool_button';
+          parent = '#' + btn.panel;
+          // create the panel if it doesn't exist
+          if (!$(parent).length) {
+            $('<div>', {id: btn.panel}).appendTo('#tools_top');
+          }
+          break;
+        case 'app_menu':
+          cls = '';
+          parent = '#main_menu ul';
+          break;
+        }
+        let flyoutHolder, showBtn, refData, refBtn;
+        const button = $((btn.list || btn.type === 'app_menu') ? '<li/>' : '<div/>')
+          .attr('id', id)
+          .attr('title', btn.title)
+          .addClass(cls);
+        if (!btn.includeWith && !btn.list) {
+          console.log('1306');
+          if ('position' in btn) {
+            if ($(parent).children().eq(btn.position).length) {
+              $(parent).children().eq(btn.position).before(button);
+            } else {
+              $(parent).children().last().after(button);
+            }
+          } else {
+            button.appendTo(parent);
+          }
+
+          if (btn.type === 'mode_flyout') {
+          // Add to flyout menu / make flyout menu
+            // const opts = btn.includeWith;
+            // // opts.button, default, position
+            refBtn = $(button);
+
+            flyoutHolder = refBtn.parent();
+            // Create a flyout menu if there isn't one already
+            let tlsId;
+            if (!refBtn.parent().hasClass('tools_flyout')) {
+              // Create flyout placeholder
+              tlsId = refBtn[0].id.replace('tool_', 'tools_');
+              showBtn = refBtn.clone()
+                .attr('id', tlsId + '_show')
+                .append($('<div>', {class: 'flyout_arrow_horiz'}));
+
+              refBtn.before(showBtn);
+
+              // Create a flyout div
+              flyoutHolder = self.makeFlyoutHolder(tlsId, refBtn);
+              flyoutHolder.data('isLibrary', true);
+              showBtn.data('isLibrary', true);
+            }
+            // refData = Actions.getButtonData(opts.button);
+
+            placementObj['#' + tlsId + '_show'] = btn.id;
+            // TODO: Find way to set the current icon using the iconloader if this is not default
+
+            // Include data for extension button as well as ref button
+            /* curH = */ holders['#' + flyoutHolder[0].id] = [{
+              sel: '#' + id,
+              fn: btn.events.click,
+              icon: btn.id,
+              // key: btn.key,
+              isDefault: true
+            }]; // , refData
+            //
+            // // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+            //
+            // const pos = ('position' in opts)?opts.position:'last';
+            // const len = flyoutHolder.children().length;
+            //
+            // // Add at given position or end
+            // if (!isNaN(pos) && pos >= 0 && pos < len) {
+            //   flyoutHolder.children().eq(pos).before(button);
+            // } else {
+            //   flyoutHolder.append(button);
+            //   curH.reverse();
+            // }
+          } else if (btn.type === 'app_menu') {
+            button.append('<div>').append(btn.title);
+          }
+        } else if (btn.list) {
+          console.log('1370');
+          // Add button to list
+          button.addClass('push_button');
+          $('#' + btn.list + '_opts').append(button);
+          if (btn.isDefault) {
+            $('#cur_' + btn.list).append(button.children().clone());
+            const svgicon = btn.svgicon || btn.id;
+            
+            placementObj['#cur_' + btn.list] = svgicon;
+            console.log(placementObj);
+          }
+        } else if (btn.includeWith) {
+          console.log('1380');
+          // Add to flyout menu / make flyout menu
+          const opts = btn.includeWith;
+          // opts.button, default, position
+          refBtn = $(opts.button);
+
+          flyoutHolder = refBtn.parent();
+          // Create a flyout menu if there isn't one already
+          let tlsId;
+          if (!refBtn.parent().hasClass('tools_flyout')) {
+            // Create flyout placeholder
+            tlsId = refBtn[0].id.replace('tool_', 'tools_');
+            showBtn = refBtn.clone()
+              .attr('id', tlsId + '_show')
+              .append($('<div>', {class: 'flyout_arrow_horiz'}));
+
+            refBtn.before(showBtn);
+            // Create a flyout div
+            flyoutHolder = self.makeFlyoutHolder(tlsId, refBtn);
+          }
+
+          // refData = Actions.getButtonData(opts.button);
+
+          if (opts.isDefault) {
+            placementObj['#' + tlsId + '_show'] = btn.id;
+          }
+          // TODO: Find way to set the current icon using the iconloader if this is not default
+
+          // Include data for extension button as well as ref button
+          /* const curH = */ holders['#' + flyoutHolder[0].id] = [{
+            sel: '#' + id,
+            fn: btn.events.click,
+            icon: btn.id,
+            key: btn.key,
+            isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
+          }]; // , refData
+
+          // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
+
+          const pos = ('position' in opts) ? opts.position : 'last';
+          const len = flyoutHolder.children().length;
+
+          // Add at given position or end
+          if (!isNaN(pos) && pos >= 0 && pos < len) {
+            flyoutHolder.children().eq(pos).before(button);
+          } else {
+            flyoutHolder.append(button);
+            // curH.reverse();
+          } 
+        }
+        console.log(svgicons);
+        if (!svgicons) {
+          button.append(icon);
+        }
+        console.log(btn.list);
+        if (!btn.list) {
+          console.log('1436');
+          // Add given events to button
+          $.each(btn.events, function (name, func) {
+            if (name === 'click' && btn.type === 'mode') {
+              // `touch.js` changes `touchstart` to `mousedown`,
+              //   so we must map extension click events as well
+              if (isTouch() && name === 'click') {
+                name = 'mousedown';
+              }
+              if (btn.includeWith) {
+                button.bind(name, func);
+              } else {
+                button.bind(name, function () {
+                  /* if (toolButtonClick(button)) {
+                    func();
+                  } */
+                });
+              }
+              if (btn.key) {
+                $(document).bind('keydown', btn.key, func);
+                if (btn.title) {
+                  button.attr('title', btn.title + ' [' + btn.key + ']');
+                }
+              }
+            } else {
+              button.bind(name, func);
+            }
+          });
+        }
+        self.setupFlyouts(holders);
+        console.log("1471------------->");
+      });
+
+      $.each(btnSelects, function () {
+        self.addAltDropDown(this.elem, this.list, this.callback, {seticon: true});
+      });
+      console.log(svgicons);
+      if (svgicons) {
+        console.log(`${this.configObj.curConfig.imgPath}${svgicons}`);
+        return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
+          $.svgIcons(`${this.configObj.curConfig.imgPath}${svgicons}`, {
+            w: 24, h: 24,
+            id_match: false,
+            no_img: (!isWebkit()),
+            fallback: fallbackObj,
+            placement: placementObj,
+            callback (icons) {
+              // Non-ideal hack to make the icon match the current size
+              // if (curPrefs.iconsize && curPrefs.iconsize !== 'm') {
+              if (editor.pref('iconsize') !== 'm') {
+                // prepResize();
+              }
+              runCallback();
+              resolve();
+            }
+          });
+        });
+      }
+    }
     if (ext.events) {
       this.leftPanelHandlers.add(ext.events.id, ext.events.click);
     }
