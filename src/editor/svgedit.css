@@ -776,8 +776,10 @@ span.zoom_tool {
   padding-right: 5px;
 }
 
-#tool_bold, #tool_italic {
-  font: bold 2.1em/1.1em serif;
+#tool_bold,
+#tool_italic,
+#text_decoration_opts li {
+  font: 2.1em/1.1em serif;
   text-align: center;
   padding-left: 2px;
   position: relative;
@@ -788,7 +790,9 @@ span.zoom_tool {
   left: -9999px;
 }
 
-#tool_bold span, #tool_italic span {
+#tool_bold span,
+#tool_italic span,
+#text_decoration_opts li span{
   position: absolute;
   width: 100%;
   height: 100%;
@@ -797,9 +801,24 @@ span.zoom_tool {
   opacity: 0;
 }
 
+#tool_bold {
+  font-weight: bold;
+}
+
 #tool_italic {
-  font-weight: normal;
   font-style: italic;
+}
+
+#tool_text_decoration_underline {
+  text-decoration-line: underline;
+}
+
+#tool_text_decoration_overline {
+  text-decoration-line: overline;
+}
+
+#tool_text_decoration_linethrough {
+  text-decoration-line: line-through;
 }
 
 #url_notice {
