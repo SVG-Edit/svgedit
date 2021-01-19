@@ -396,7 +396,7 @@ class Editor extends EditorStartup {
       // Note that this will also prevent the notice even though new issues may appear later.
       // May want to find a way to deal with that without annoying the user
       this.configObj.pref('export_notice_done', 'all');
-      this.exportWindow.seAlert(note);
+      seAlert(note);
     }
   }
 
@@ -1106,17 +1106,12 @@ class Editor extends EditorStartup {
   *
   * @returns {Promise<void>} Resolves to `undefined`
   */
-  async clickExport () {
-    const imgType = await seSelect('Select an image type for export: ', [
-      // See http://kangax.github.io/jstests/toDataUrl_mime_type_test/ for a useful list of MIME types and browser support
-      // 'ICO', // Todo: Find a way to preserve transparency in SVG-Edit if not working presently and do full packaging for x-icon; then switch back to position after 'PNG'
-      'PNG',
-      'JPEG', 'BMP', 'WEBP', 'PDF'
-    ]);
-
-    if (!imgType) {
+  async clickExport (e) {
+    if (e?.detail?.trigger !== 'ok' || e?.detail?.imgType === undefined) {
       return;
     }
+    const imgType = e?.detail?.imgType;
+    const quality = (e?.detail?.quality) ? (e?.detail?.quality / 100) : 1;
     // Open placeholder window (prevents popup)
     let exportWindowName;
 
@@ -1161,7 +1156,6 @@ class Editor extends EditorStartup {
       if (!this.customExportImage) {
         openExportWindow();
       }
-      const quality = 1; // JFH !!! Number.parseInt($('#image-slider').val()) / 100;
       /* const results = */ await this.svgCanvas.rasterExport(imgType, quality, this.exportWindowName);
     }
   }
@@ -1484,7 +1478,7 @@ class Editor extends EditorStartup {
 
     // Copy title for certain tool elements
     this.elems = {
-      '#stroke_color': '#tool_stroke .icon_label, #tool_stroke .color_block',
+      '#stroke_color': '#tool_stroke .color_block',
       '#fill_color': '#tool_fill label, #tool_fill .color_block',
       '#linejoin_miter': '#cur_linejoin',
       '#linecap_butt': '#cur_linecap'

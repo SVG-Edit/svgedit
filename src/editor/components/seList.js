@@ -4,22 +4,27 @@ import 'elix/define/DropdownList.js';
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
-[part~="source"] {
-  grid-template-columns: 20px 1fr auto;
+elix-dropdown-list {
+  margin: 5px;
 }
-::slotted(*) {
-  background: #E8E8E8;
-  border: 1px solid #B0B0B0;
+
+elix-dropdown-list:hover {
+  background-color: var(--icon-bg-color-hover);
 }
+
 ::part(popup-toggle) {
   display: none;
+}
+::slotted(*) {
+  padding:0;
+  width:100%;
 }
 </style>
   <label>Label</label>
   <elix-dropdown-list>
     <slot></slot>
   </elix-dropdown-list>
-  
+
 `;
 /**
  * @class SeList
@@ -41,7 +46,7 @@ export class SeList extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label'];
+    return ['label', 'width', 'height'];
   }
 
   /**
@@ -56,6 +61,12 @@ export class SeList extends HTMLElement {
     switch (name) {
     case 'label':
       this.$label.textContent = newValue;
+      break;
+    case 'height':
+      this.$dropdown.style.height = newValue;
+      break;
+    case 'width':
+      this.$dropdown.style.width = newValue;
       break;
     default:
       // eslint-disable-next-line no-console
@@ -77,6 +88,36 @@ export class SeList extends HTMLElement {
    */
   set label (value) {
     this.setAttribute('label', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get width () {
+    return this.getAttribute('width');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set width (value) {
+    this.setAttribute('width', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get height () {
+    return this.getAttribute('height');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set height (value) {
+    this.setAttribute('height', value);
   }
   /**
    * @function connectedCallback

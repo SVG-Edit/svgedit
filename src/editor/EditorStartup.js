@@ -4,7 +4,7 @@ import {convertUnit} from '../common/units.js';
 import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
-
+import editorTemplate from './templates/editorTemplate.js';
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import LayersPanel from './panels/LayersPanel.js';
 import LeftPanelHandlers from './panels/LeftPanelHandlers.js';
@@ -61,8 +61,12 @@ class EditorStartup {
   * @returns {void}
   */
   async init () {
+    // allow to prepare the dom without display
+    $id('svg_editor').style.visibility = 'hidden';
     try {
-    // Image props dialog added to DOM
+      // add editor components to the DOM
+      document.body.append(editorTemplate.content.cloneNode(true));
+      // Image props dialog added to DOM
       const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
       newSeImgPropDialog.setAttribute('id', 'se-img-prop');
       document.body.append(newSeImgPropDialog);
@@ -82,6 +86,10 @@ class EditorStartup {
       const promptBox = document.createElement('se-prompt-dialog');
       promptBox.setAttribute('id', 'se-prompt-dialog');
       document.body.append(promptBox);
+      // Export dialog added to DOM
+      const exportDialog = document.createElement('se-export-dialog');
+      exportDialog.setAttribute('id', 'se-export-dialog');
+      document.body.append(exportDialog);
     } catch (err) {
     // eslint-disable-next-line no-console
       console.error(err);
@@ -466,7 +474,11 @@ class EditorStartup {
         this.clickSave();
       }
     }.bind(this));
-    $id('tool_export').addEventListener('click', this.clickExport.bind(this));
+    // this.clickExport.bind(this)
+    $id('tool_export').addEventListener('click', function (e) {
+      document.getElementById('se-export-dialog').setAttribute('dialog', 'open');
+    });
+    $id('se-export-dialog').addEventListener('change', this.clickExport.bind(this));
     $id('tool_docprops').addEventListener('click', this.showDocProperties.bind(this));
     $id('tool_editor_prefs').addEventListener('click', this.showPreferences.bind(this));
     $id('tool_editor_homepage').addEventListener('click', this.openHomePage.bind(this));
@@ -725,7 +737,7 @@ class EditorStartup {
     const {langParam, langData} = await this.putLocale(this.configObj.pref('lang'), this.goodLangs);
     await this.setLang(langParam, langData);
 
-    $id('svg_container').style.visibility = 'visible';
+    $id('svg_editor').style.visibility = 'visible';
 
     try {
       // load standard extensions

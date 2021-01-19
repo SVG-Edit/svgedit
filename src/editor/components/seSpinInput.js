@@ -5,24 +5,37 @@ const template = document.createElement('template');
 template.innerHTML = `
   <style>
   img {
-    top: 2px;
-    left: 1px;
     position: relative;
+    right: -4px;
   }
   span {
-    bottom: 1px;
+    bottom: -3px;
     right: -4px;
     position: relative;
+    margin-left: 4px;
+    margin-right: 4px;
+    color: #fff;
+    vertical-align: ;
+  }
+  elix-number-spin-box {
+    background-color: var(--input-color);
+    border-radius: 3px;
+    height: 20px !important;
+    margin-top: 1px;
+    vertical-align: top;
   }
   elix-number-spin-box::part(spin-button) {
     padding: 0px;
   }
+  elix-number-spin-box::part(input) {
+    width: 3em;
+  }
   elix-number-spin-box{
     width: 54px;
-    height: 25px;
+    height: 24px;
   }
   </style>
-  <img src="./images/logo.svg" alt="icon" width="12" height="12" aria-labelledby="label" />
+  <img src="./images/logo.svg" alt="icon" width="24" height="24" aria-labelledby="label" />
   <span id="label">label</span>
   <elix-number-spin-box min="1" step="1"></elix-number-spin-box>
 `;

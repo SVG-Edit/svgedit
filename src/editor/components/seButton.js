@@ -6,7 +6,7 @@ template.innerHTML = `
   <style>
   :host(:hover) :not(.disabled)
   {
-    background-color: #ffc;
+    background-color: var(--icon-bg-color-hover);
   }
   div
   {
@@ -14,8 +14,7 @@ template.innerHTML = `
     width: 24px;
     margin: 2px 2px 4px;
     padding: 3px;
-    box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-    background-color: #E8E8E8;
+    background-color: var(--icon-bg-color);
     cursor: pointer;
     border-radius: 3px;
   }
@@ -31,8 +30,7 @@ template.innerHTML = `
     height: 100%;
   }
   .pressed {
-    background-color: #F4E284;
-    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
+    background-color: var(--icon-bg-color-hover);
   }
   .disabled {
     opacity: 0.3;

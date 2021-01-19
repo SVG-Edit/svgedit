@@ -4,10 +4,17 @@ import 'elix/define/Option.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  </style>  
+  elix-option{
+    padding:0.25rem 0.125rem !important;
+    background-color: var(--icon-bg-color);
+  }
+  elix-option:hover{
+    background-color: var(--icon-bg-color-hover);
+  }
+  </style>
   <elix-option aria-label="option">
     <slot></slot>
-  </elix-option>  
+  </elix-option>
 `;
 /**
  * @class SeMenu
@@ -21,7 +28,9 @@ export class SeListItem extends HTMLElement {
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
     this._shadowRoot.append(template.content.cloneNode(true));
-    this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');
+    this.$menuitem = this._shadowRoot.querySelector('elix-option');
+    this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
+    this.$svg.setAttribute('style', 'display: none;');
   }
   /**
    * @function observedAttributes

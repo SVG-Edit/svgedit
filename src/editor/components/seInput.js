@@ -13,6 +13,13 @@ template.innerHTML = `
     bottom: 1px;
     right: -4px;
     position: relative;
+    margin-left: 4px;
+    margin-right: 4px;
+    color: #fff;
+  }
+  elix-input {
+    background-color: var(--input-color);
+    border-radius: 3px;
   }
   </style>
   <img src="./images/logo.svg" alt="icon" width="12" height="12" />
