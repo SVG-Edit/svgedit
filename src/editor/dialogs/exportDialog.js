@@ -101,7 +101,7 @@ export class SeExportDialog extends HTMLElement {
     this.$okBtn = this._shadowRoot.querySelector('#export_ok');
     this.$cancelBtn = this._shadowRoot.querySelector('#export_cancel');
     this.$exportOption = this._shadowRoot.querySelector('#se-storage-pref');
-    this.$qualityCont = this._shadowRoot.querySelector('#se-quality');    
+    this.$qualityCont = this._shadowRoot.querySelector('#se-quality');
     this.$input = this._shadowRoot.querySelector('elix-number-spin-box');
     this.value = 1;
   }

@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import '../dialogs/se-elix/define/NumberSpinBox.js';
 
 const template = document.createElement('template');

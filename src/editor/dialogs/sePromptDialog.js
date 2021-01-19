@@ -42,7 +42,7 @@ export class SePromptDialog extends HTMLElement {
       }
       break;
     default:
-      console.error('unkonw attr for:', name, 'newValue =', newValue);
+      // console.log('unkonw attr for:', name, 'newValue =', newValue);
       break;
     }
   }

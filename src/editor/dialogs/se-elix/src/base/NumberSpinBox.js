@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable node/no-unpublished-import */
 import {
   defaultState,
@@ -44,6 +45,7 @@ class NumberSpinBox extends SpinBox {
   }
 
   /**
+   * @function formatValue
    * Format the numeric value as a string.
    *
    * This is used after incrementing/decrementing the value to reformat the
@@ -51,6 +53,7 @@ class NumberSpinBox extends SpinBox {
    *
    * @param {number} value
    * @param {number} precision
+   * @returns {number}
    */
   formatValue (value, precision) {
     return Number(value).toFixed(precision);
@@ -97,19 +100,21 @@ class NumberSpinBox extends SpinBox {
   }
 
   /**
-   * Parse the given string as a number.
-   *
-   * This is used to parse the current value before incrementing/decrementing
-   * it.
-   *
-   * @param {string} value
+   * @function parseValue
+   * @param {number} value
    * @param {number} precision
+   * @returns {int}
    */
-  parseValue(value, precision) {
+  parseValue (value, precision) {
     const parsed = precision === 0 ? parseInt(value) : parseFloat(value);
     return isNaN(parsed) ? 0 : parsed;
   }
-
+  /**
+   * @function stateEffects
+   * @param {any} state
+   * @param {any} changed
+   * @returns {any}
+   */
   [stateEffects] (state, changed) {
     const effects = super[stateEffects];
     // If step changed, calculate its precision (number of digits after
@@ -175,19 +180,16 @@ class NumberSpinBox extends SpinBox {
   }
 
   /**
-   * The amount by which the `value` will be incremented or decremented.
-   *
-   * The precision of the step (the number of digits after any decimal)
-   * determines how the spin box will format the number. The default `step`
-   * value of 1 has no decimals, so the `value` will be formatted as an integer.
-   * A `step` of 0.1 will format the `value` as a number with one decimal place.
-   *
-   * @type {number}
-   * @default 1
+   * @function get
+   * @returns {any}
    */
   get step () {
     return this[state].step;
   }
+  /**
+   * @function set
+   * @returns {void}
+   */
   set step (step) {
     if (!isNaN(step)) {
       this[setState]({
@@ -197,10 +199,8 @@ class NumberSpinBox extends SpinBox {
   }
 
   /**
-   * Decrements the `value` by the amount of the `step`.
-   *
-   * If the result is still greater than the `max` value, this will force
-   * `value` to `max`.
+   * @function stepDown
+   * @returns {void}
    */
   stepDown () {
     super.stepDown();
@@ -222,10 +222,8 @@ class NumberSpinBox extends SpinBox {
   }
 
   /**
-   * Increments the `value` by the amount of the `step`.
-   *
-   * If the result is still smaller than the `min` value, this will force
-   * `value` to `min`.
+   * @function stepUp
+   * @returns {void}
    */
   stepUp () {
     super.stepUp();
