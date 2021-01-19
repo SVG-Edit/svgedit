@@ -1,9 +1,8 @@
 /* eslint-disable node/no-unpublished-import */
 import ListComboBox from 'elix/define/ListComboBox.js';
-import NumberSpinBox from 'elix/define/NumberSpinBox.js';
-// import Input from 'elix/src/base/Input.js';
 import * as internal from 'elix/src/base/internal.js';
 import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';
+import NumberSpinBox from '../dialogs/se-elix/define/NumberSpinBox.js';
 
 /**
  * @class Dropdown
