@@ -121,7 +121,7 @@ export default {
     function setIcon (pos, id) {
       if (id.substr(0, 1) !== '\\') { id = '\\textmarker'; }
       const ci = '#' + idPrefix + pos + '_' + id.substr(1);
-      // svgEditor.setIcon('#cur_' + pos + '_marker_list', $(ci).children());
+      svgEditor.setIcon('#cur_' + pos + '_marker_list', $(ci).children());
       $(ci).addClass('current').siblings().removeClass('current');
     }
 
@@ -508,7 +508,7 @@ export default {
           buttons.push({
             id: idPrefix + pos + '_' + id,
             svgicon: id,
-            icon: 'markers-' + id + '.png',
+            icon: id + '.svg',
             title,
             type: 'context',
             events: {click: setArrowFromButton},
@@ -565,7 +565,7 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: 'markers-icons.xml',
+      svgicons: '',
       callback () {
         $('#marker_panel').addClass('toolset').hide();
       },
@@ -595,7 +595,6 @@ export default {
       },
 
       elementChanged (opts) {
-        // console.log('elementChanged',opts);
         const elem = opts.elems[0];
         if (elem && (
           elem.getAttribute('marker-start') ||

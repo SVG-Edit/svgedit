@@ -42,7 +42,8 @@ export class SePromptDialog extends HTMLElement {
       }
       break;
     default:
-      // console.log('unkonw attr for:', name, 'newValue =', newValue);
+      // eslint-disable-next-line no-console
+      console.error('unknown attr for:', name, 'newValue =', newValue);
       break;
     }
   }

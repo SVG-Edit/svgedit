@@ -722,5 +722,8 @@ ul li.current {
   z-index: 20001;
 }
 
+/* ------------ */
 
-
+.dropdown li.tool_button {
+  width: 24px;
+}
