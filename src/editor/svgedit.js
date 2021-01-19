@@ -1,4 +1,4 @@
-/* globals jQuery seConfirm seAlert seSelect */
+/* globals jQuery seConfirm seAlert */
 /**
 * The main module for the visual SVG this.
 *
@@ -1538,7 +1538,7 @@ class Editor extends EditorStartup {
   }
 
   /**
-  *
+  * @function copySelected
   * @returns {void}
   */
   copySelected () {

@@ -190,6 +190,8 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
         setHref(elem, newValue);
       } else if (newValue) {
         elem.setAttribute(attr, newValue);
+      } else if (typeof newValue === 'number') {
+        elem.setAttribute(attr, newValue);
       } else {
         elem.removeAttribute(attr);
       }
