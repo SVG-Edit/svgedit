@@ -17,7 +17,7 @@
 */
 
 import './touch.js';
-import {isWebkit, isChrome, isMac, isTouch} from '../common/browser.js';
+import {isChrome, isMac, isTouch} from '../common/browser.js';
 import {convertUnit, isValidUnit} from '../common/units.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
@@ -861,7 +861,6 @@ class Editor extends EditorStartup {
       const w = shower.outerWidth();
       this.css({left: (left + w) * editor.tool_scale, top});
     });
-    return;
   }
 
   /**
@@ -886,7 +885,6 @@ class Editor extends EditorStartup {
    * @param {PlainObject<string, module:SVGEditor.ToolButton>} holders Key is a selector
    * @returns {void}
    */
-  // eslint-disable-next-line class-methods-use-this
   setupFlyouts (holders) {
     const allHolders = {};
     $.each(holders, function (holdSel, btnOpts) {
@@ -936,7 +934,7 @@ class Editor extends EditorStartup {
               });
             }
             if ($(this).hasClass('disabled')) { return false; }
-             /* if (toolButtonClick(showSel)) {
+            /* if (toolButtonClick(showSel)) {
               options.fn();
             } */
             const icon = (options.icon) ? $.getSvgIcon(options.icon, true) : $(options.sel).children().eq(0).clone();
@@ -1002,8 +1000,7 @@ class Editor extends EditorStartup {
       // $('#tools_rect').mouseleave(function () { $('#tools_rect').fadeOut(); });
     });
     this.setFlyoutTitles();
-    this.setFlyoutPositions();    
-    console.log("1011 after --->")
+    // this.setFlyoutPositions();
   }
 
   /**
@@ -1011,13 +1008,30 @@ class Editor extends EditorStartup {
   * @param {external:jQuery} child
   * @returns {external:jQuery}
   */
-  // eslint-disable-next-line class-methods-use-this 
+  // eslint-disable-next-line class-methods-use-this
   makeFlyoutHolder (id, child) {
     const div = $('<div>', {
       class: 'tools_flyout',
       id
     }).appendTo('#svg_editor').append(child);
     return div;
+  }
+
+  /**
+  * @function module:SVGEditor.setIcon
+  * @param {string|Element|external:jQuery} elem
+  * @param {string|external:jQuery} iconId
+  * @returns {void}
+  */
+  setIcon (elem, iconId) {
+    // eslint-disable-next-line max-len
+    const icon = (typeof iconId === 'string') ? $('<img src="' + this.configObj.curConfig.imgPath + iconId + '">') : iconId.clone();
+    if (!icon) {
+      // Todo: Investigate why this still occurs in some cases
+      console.log('NOTE: Icon image missing: ' + iconId); // eslint-disable-line no-console
+      return;
+    }
+    $(elem).empty().append(icon);
   }
 
   /**
@@ -1031,8 +1045,9 @@ class Editor extends EditorStartup {
   * @todo Combine this with `addDropDown` or find other way to optimize.
   * @returns {void}
   */
-  // eslint-disable-next-line class-methods-use-this
   addAltDropDown (elemSel, listSel, callback, opts) {
+    // eslint-disable-next-line no-shadow
+    const self = this;
     const button = $(elemSel);
     const {dropUp} = opts;
     const list = $(listSel);
@@ -1041,7 +1056,7 @@ class Editor extends EditorStartup {
     }
     list.find('li').bind('mouseup', function (...args) {
       if (opts.seticon) {
-        // setIcon('#cur_' + button[0].id, $(this).children());
+        self.setIcon('#cur_' + button[0].id, $(this).children());
         $(this).addClass('current').siblings().removeClass('current');
       }
       callback.apply(this, ...args);
@@ -1088,7 +1103,7 @@ class Editor extends EditorStartup {
         onButton = true;
       });
     }
-  };
+  }
 
   /**
    * @param {external:Window} win
@@ -1097,6 +1112,7 @@ class Editor extends EditorStartup {
    * @returns {Promise<void>|void} Resolves to `undefined`
    */
   async extAdded (win, ext) {
+    // eslint-disable-next-line no-shadow
     const self = this;
     const btnSelects = [];
     if (!ext) {
@@ -1174,7 +1190,9 @@ class Editor extends EditorStartup {
           break;
         } case 'button-select': {
           html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' +
-            '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+            '<div id="cur_' + tool.id + '" class="icon_label"></div>' +
+            '<button><img class="svg_icon" src="./images/arrow_down.svg" alt="icon" width="7" height="7"></button>' +
+            '</div>';
 
           const list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
 
@@ -1184,6 +1202,13 @@ class Editor extends EditorStartup {
 
           // Creates the tool, hides & adds it, returns the select element
           /* const dropdown = */ $(html).appendTo(panel).children();
+          btnSelects.push({
+            elem: ('#' + tool.id),
+            list: ('#' + tool.id + '_opts'),
+            title: tool.title,
+            callback: tool.events.change,
+            cur: ('#cur_' + tool.id)
+          });
           break;
         } case 'input': {
           html = '<label' + contId + '>' +
@@ -1244,7 +1269,6 @@ class Editor extends EditorStartup {
       * @property {module:SVGEditor.Key} [key] The key to bind to the button
       */
       // Add buttons given by extension
-      console.log(ext.buttons);
       $.each(ext.buttons, function (i, /** @type {module:SVGEditor.Button} */ btn) {
         let {id} = btn;
         let num = i;
@@ -1252,12 +1276,11 @@ class Editor extends EditorStartup {
         while ($('#' + id).length) {
           id = btn.id + '_' + (++num);
         }
-        console.log(id);
+
         let icon;
         if (!svgicons) {
-          console.log(btn.icon);
           icon = $(
-            '<img src="' + btn.icon +
+            '<img src="' + self.configObj.curConfig.imgPath + btn.icon +
               (btn.title ? '" alt="' + btn.title : '') +
               '">'
           );
@@ -1271,7 +1294,6 @@ class Editor extends EditorStartup {
             placementObj['#' + id] = svgicon;
           }
         }
-        console.log(placementObj);
         let cls, parent;
 
         // Set button up according to its type
@@ -1294,13 +1316,13 @@ class Editor extends EditorStartup {
           parent = '#main_menu ul';
           break;
         }
-        let flyoutHolder, showBtn, refData, refBtn;
+        // refData
+        let flyoutHolder, showBtn, refBtn;
         const button = $((btn.list || btn.type === 'app_menu') ? '<li/>' : '<div/>')
           .attr('id', id)
           .attr('title', btn.title)
           .addClass(cls);
         if (!btn.includeWith && !btn.list) {
-          console.log('1306');
           if ('position' in btn) {
             if ($(parent).children().eq(btn.position).length) {
               $(parent).children().eq(btn.position).before(button);
@@ -1364,19 +1386,15 @@ class Editor extends EditorStartup {
             button.append('<div>').append(btn.title);
           }
         } else if (btn.list) {
-          console.log('1370');
           // Add button to list
           button.addClass('push_button');
           $('#' + btn.list + '_opts').append(button);
           if (btn.isDefault) {
             $('#cur_' + btn.list).append(button.children().clone());
             const svgicon = btn.svgicon || btn.id;
-            
             placementObj['#cur_' + btn.list] = svgicon;
-            console.log(placementObj);
           }
         } else if (btn.includeWith) {
-          console.log('1380');
           // Add to flyout menu / make flyout menu
           const opts = btn.includeWith;
           // opts.button, default, position
@@ -1424,15 +1442,12 @@ class Editor extends EditorStartup {
           } else {
             flyoutHolder.append(button);
             // curH.reverse();
-          } 
+          }
         }
-        console.log(svgicons);
         if (!svgicons) {
           button.append(icon);
         }
-        console.log(btn.list);
         if (!btn.list) {
-          console.log('1436');
           // Add given events to button
           $.each(btn.events, function (name, func) {
             if (name === 'click' && btn.type === 'mode') {
@@ -1462,15 +1477,11 @@ class Editor extends EditorStartup {
           });
         }
         self.setupFlyouts(holders);
-        console.log("1471------------->");
       });
-
       $.each(btnSelects, function () {
         self.addAltDropDown(this.elem, this.list, this.callback, {seticon: true});
       });
-      console.log(svgicons);
-      if (svgicons) {
-        console.log(`${this.configObj.curConfig.imgPath}${svgicons}`);
+      /* if (svgicons) {
         return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
           $.svgIcons(`${this.configObj.curConfig.imgPath}${svgicons}`, {
             w: 24, h: 24,
@@ -1489,7 +1500,7 @@ class Editor extends EditorStartup {
             }
           });
         });
-      }
+      } */
     }
     if (ext.events) {
       this.leftPanelHandlers.add(ext.events.id, ext.events.click);
