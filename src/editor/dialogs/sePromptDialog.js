@@ -42,6 +42,7 @@ export class SePromptDialog extends HTMLElement {
       }
       break;
     default:
+      // eslint-disable-next-line no-console
       console.error('unkonw attr for:', name, 'newValue =', newValue);
       break;
     }
