@@ -5,13 +5,19 @@ import 'elix/define/MenuItem.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  </style>  
+    elix-menu-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .menu_item_text {
+      padding-left: 10px;
+    }
+  </style>
   <elix-menu-item>
-    <div style="display:inline-block;">
-      <img src="./images/logo.svg" alt="icon" style="display:none;" /> 
-      <span></span>
-    </div>
-  </elix-menu-item>  
+      <img src="./images/logo.svg" alt="icon" />
+      <span class="menu_item_text"></span>
+  </elix-menu-item>
 `;
 /**
  * @class SeMenuItem
@@ -29,7 +35,7 @@ export class SeMenuItem extends HTMLElement {
     this.$label = this._shadowRoot.querySelector('span');
     this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');
     this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
-    this.$svg.setAttribute('style', 'width:1px;height:1px;');
+    this.$svg.setAttribute('style', 'display: none;');
   }
   /**
    * @function observedAttributes

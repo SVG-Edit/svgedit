@@ -7,7 +7,7 @@
   --ruler-color: #f4f4f4;
 }
 
-body {  
+body {
   background: var(--main-bg-color);
 }
 
@@ -151,7 +151,7 @@ hr {
 
 #layerpanel {
   display: inline-block;
-  position:relative;
+  position: relative;
   top: 0px;
   bottom: 0;
   left: 12px;
@@ -170,7 +170,7 @@ hr {
 #sidepanel_handle {
   display: inline-block;
   position: absolute;
-  background-color: --main-bg-color;
+  background-color: var(--main-bg-color);
   font-weight: bold;
   left: 0;
   top: 40%;
@@ -208,7 +208,7 @@ hr {
   overflow: hidden;
   display: flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
 }
 
 #layerlist {
@@ -386,6 +386,7 @@ hr {
   position: absolute;
   left: 108px;
   top: 2px;
+  right: 0px;
   min-height: 40px;
   border-bottom: none;
   overflow: scroll;
@@ -403,7 +404,7 @@ hr {
   left: 1px;
   margin-top: -2px;
   padding-left: 2px;
-  background: --main-bg-color; /* Needed so flyout icons don't appear on the left */
+  background: var(--main-bg-color); /* Needed so flyout icons don't appear on the left */
   z-index: 4;
 }
 
@@ -432,7 +433,7 @@ hr {
 }
 
 #editor_panel, #history_panel {
-  height: 34px;
+  height: 39px;
   float: left;
 }
 
