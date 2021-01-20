@@ -5,7 +5,7 @@ const template = document.createElement('template');
 template.innerHTML = `
 <style>
 elix-dropdown-list {
-  margin: 5px;
+  margin: 1px;
 }
 
 elix-dropdown-list:hover {

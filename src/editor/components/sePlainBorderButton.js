@@ -22,7 +22,6 @@ class SePlainBorderButton extends PlainButton {
           [part~="button"] {
             background: #72797A;
             border: 1px solid #ccc;
-            padding: 0.25em 0.5em;
           }
         </style>
       `
