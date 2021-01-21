@@ -24,8 +24,7 @@ export default {
     const propsWindowHtml =
       '<div id="overview_window_content_pane" style="width:100%; ' +
         'word-wrap:break-word;  display:inline-block; margin-top:20px;">' +
-        '<div id="overview_window_content" style="position:relative; ' +
-          'left:12px; top:0px;">' +
+        '<div id="overview_window_content" style="position:relative; top:0px;">' +
           '<div style="background-color:#A0A0A0; display:inline-block; ' +
             'overflow:visible;">' +
             '<svg id="overviewMiniView" width="150" height="100" x="0" ' +
@@ -41,7 +40,7 @@ export default {
           '</div>' +
         '</div>' +
       '</div>';
-    $('#sidepanels').append(propsWindowHtml);
+    $('#panel_right_objects').append(propsWindowHtml);
 
     // Define dynamic animation of the view box.
     const updateViewBox = function () {

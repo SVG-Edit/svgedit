@@ -61,7 +61,7 @@ svgEditor.setConfig({
   // initTool: 'select',
   // exportWindowType: 'new', // 'same'
   // wireframe: false,
-  // showlayers: false,
+  // showObjectsPanel: false,
   // no_save_warning: false,
   // PATH CONFIGURATION
   // imgPath: 'images/',

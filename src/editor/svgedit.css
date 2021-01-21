@@ -84,7 +84,7 @@ hr {
   height: 15px;
   top: 41px;
   left: 56px;
-  right: 30px;
+  right: 40px;
   border-bottom: 1px solid;
   border-left: 1px solid #777;
 }
@@ -126,80 +126,61 @@ hr {
   top: 40px;
   left: 40px;
   bottom: 40px;
-  right: 14px;
+  right: 40px;
   background-color: #A0A0A0;
   border: 1px solid var(--border-color);
   overflow: auto;
   text-align: center;
 }
 
-#sidepanels {
+/* Panel right
+—————————————————————————————*/
+#panel_right {
+  position: absolute;
+  right: 0px;
+  top: 40px;
+  bottom: 40px;
+  background: var(--main-bg-color);
+  z-index: 4;
+  padding-right: 2px;
+}
+
+#panel_right_flyout {
   display: inline-block;
   position:absolute;
   top: 40px;
   bottom: 40px;
-  right: 0;
-  width: 2px;
-  padding: 10px;
-  border-color: var(--border-color);
-  border-style: solid;
-  border-width: 1px;
-  border-left: none;
+  right: 40px;
+  width: 0px;
+  border: 1px solid var(--border-color);
   overflow-x:hidden;
   overflow-y:visible;
+  background: var(--main-bg-color);
+  z-index: 4;
 }
 
-#layerpanel {
-  display: inline-block;
-  position: relative;
-  top: 0px;
-  bottom: 0;
-  left: 12px;
-  width: 0;
-  overflow: hidden;
-  margin: 0;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-}
-
-/*
-  border-style: solid;
-  border-color: #666;
-  border-width: 0px 0px 0px 1px;
-*/
-#sidepanel_handle {
-  display: inline-block;
+#panel_right_resizer {
   position: absolute;
-  background-color: var(--main-bg-color);
-  font-weight: bold;
-  left: 0;
-  top: 40%;
-  width: 1em;
-  padding: 5px 1px 5px 5px;
-  margin-left: 3px;
-  cursor: pointer;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -moz-user-select: none;
-  -webkit-user-select: none;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 1;
 }
 
-#sidepanel_handle:hover {
-  font-weight: bold;
+.side_panel_open {
+  display: block;
 }
 
-#sidepanel_handle * {
-  cursor: pointer;
-  -moz-user-select: none;
-  -webkit-user-select: none;
+.panel_right_flyout_panel {
+  padding: 10px;
 }
+
+/* Objects Panel
+—————————————————————————————*/
 #layerbuttons {
   margin: 0;
   padding: 0;
-  padding-left: 2px;
-  padding-right: 2px;
-  width: 125px;
   height: 20px;
   border-right: 1px solid #FFFFFF;
   border-bottom: 1px solid #FFFFFF;
@@ -211,54 +192,73 @@ hr {
   align-items: center;
 }
 
-#layerlist {
+#layerlist,
+#objectlist {
   margin: 1px;
   padding: 0;
-  width: 127px;
+  width: 100%;
   border-collapse: collapse;
   border: 1px solid var(--border-color);
   background-color: #FFFFFF;
 }
 
-#layerlist tr.layer {
+#layerlist tr.layer,
+#objectlist tr.layer {
   background-color: #FFFFFF;
   margin: 0;
   padding: 0;
 }
 
-#layerlist tr.layersel {
+#layerlist tr.layersel,
+#objectlist tr.objectsel {
   border: 1px solid var(--border-color);
   background-color: #CCCCCC;
 }
 
-#layerlist td.layervis {
+#layerlist td.layervis,
+#objectlist td.objectvis,
+#objectlist td.objectselect {
   width: 22px;
   cursor: pointer;
 }
 
-#layerlist td.layerinvis {
+#objectlist td.objectselect {
+  text-align: center;
+}
+
+#layerlist td.layerinvis,
+#objectlist td.objectinvis {
   background-image: none;
   cursor: pointer;
 }
 
-#layerlist td.layervis * {
+#layerlist td.layervis *,
+#objectlist td.objectvis * {
   display: block;
 }
 
-#layerlist td.layerinvis * {
+#layerlist td.layerinvis *,
+#objectlist td.objectinvis * {
   display: none;
 }
 
-#layerlist td.layername {
+#layerlist td.layername,
+#objectlist td.objectname {
   cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 1px;
 }
 
-#layerlist td.layername:hover {
+#layerlist td.layername:hover,
+#objectlist td.objectname:hover {
   color: blue;
   font-style: italic;
 }
 
-#layerlist tr.layersel td.layername {
+#layerlist tr.layersel td.layername,
+#objectlist tr.objectsel td.objectname {
   font-weight: bold;
 }
 

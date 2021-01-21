@@ -2,8 +2,6 @@
 /* globals $ */
 import SvgCanvas from '../../svgcanvas/svgcanvas.js';
 
-const SIDEPANEL_MAXWIDTH = 300;
-const SIDEPANEL_OPENWIDTH = 150;
 const {$id} = SvgCanvas;
 
 /**
@@ -17,61 +15,9 @@ class LayersPanel {
     this.svgCanvas = editor.svgCanvas;
     this.uiStrings = editor.uiStrings;
     this.updateContextPanel = editor.topPanelHandlers.updateContextPanel;
-    this.sidedrag = -1;
-    this.sidedragging = false;
-    this.allowmove = false;
     this.editor = editor;
   }
 
-  /**
-   * @param {Float} delta
-   * @fires module:svgcanvas.SvgCanvas#event:ext_workareaResized
-   * @returns {void}
-   */
-  changeSidePanelWidth (delta) {
-    const rulerX = $('#ruler_x');
-    $('#sidepanels').width('+=' + delta);
-    $('#layerpanel').width('+=' + delta);
-    rulerX.css('right', Number.parseInt(rulerX.css('right')) + delta);
-    this.editor.workarea.css('right', Number.parseInt(this.editor.workarea.css('right')) + delta);
-    this.svgCanvas.runExtensions('workareaResized');
-  }
-
-  /**
-  * @param {Event} evt
-  * @returns {void}
-  */
-  resizeSidePanel (evt) {
-    if (!this.allowmove) { return; }
-    if (this.sidedrag === -1) { return; }
-    this.sidedragging = true;
-    let deltaX = this.sidedrag - evt.pageX;
-    const sideWidth = $('#sidepanels').width();
-    if (sideWidth + deltaX > SIDEPANEL_MAXWIDTH) {
-      deltaX = SIDEPANEL_MAXWIDTH - sideWidth;
-      // sideWidth = SIDEPANEL_MAXWIDTH;
-    } else if (sideWidth + deltaX < 2) {
-      deltaX = 2 - sideWidth;
-      // sideWidth = 2;
-    }
-    if (deltaX === 0) { return; }
-    this.sidedrag -= deltaX;
-    this.changeSidePanelWidth(deltaX);
-  }
-
-  /**
-   * If width is non-zero, then fully close it; otherwise fully open it.
-   * @param {boolean} close Forces the side panel closed
-   * @returns {void}
-   */
-  toggleSidePanel (close) {
-    const dpr = window.devicePixelRatio || 1;
-    const w = $('#sidepanels').width();
-    const isOpened = (dpr < 1 ? w : w / dpr) > 2;
-    const zoomAdjustedSidepanelWidth = (dpr < 1 ? 1 : dpr) * SIDEPANEL_OPENWIDTH;
-    const deltaX = (isOpened || close ? 0 : zoomAdjustedSidepanelWidth) - w;
-    this.changeSidePanelWidth(deltaX);
-  }
   /**
    * @param {PlainObject} e event
    * @returns {void}
@@ -118,29 +64,6 @@ class LayersPanel {
     $id('se-cmenu-layers-more').addEventListener('change', this.lmenuFunc.bind(this));
     $id('se-cmenu-layers-list').addEventListener('change', (e) => {
       this.lmenuFunc.bind(this)(e?.detail?.trigger, e?.detail?.source);
-    });
-    $id('sidepanel_handle').addEventListener('click', this.toggleSidePanel.bind(this));
-    if (this.editor.configObj.curConfig.showlayers) {
-      this.toggleSidePanel();
-    }
-    $id('sidepanel_handle').addEventListener('mousedown', (evt) => {
-      this.sidedrag = evt.pageX;
-      window.addEventListener('mousemove', this.resizeSidePanel.bind(this));
-      this.allowmove = false;
-      // Silly hack for Chrome, which always runs mousemove right after mousedown
-      setTimeout(() => {
-        this.allowmove = true;
-      }, 20);
-    });
-    $id('sidepanel_handle').addEventListener('mouseup', (evt) => {
-      if (!this.sidedragging) { this.toggleSidePanel(); }
-      this.sidedrag = -1;
-      this.sidedragging = false;
-    });
-    window.addEventListener('mouseup', (evt) => {
-      this.sidedrag = -1;
-      this.sidedragging = false;
-      $id('svg_editor').removeEventListener('mousemove', this.resizeSidePanel.bind(this));
     });
   }
   /**
@@ -293,6 +216,7 @@ class LayersPanel {
         $('#layerlist tr.layer').removeClass('layersel');
         $(evt.currentTarget.parentNode).addClass('layersel');
         this.svgCanvas.setCurrentLayer(evt.currentTarget.textContent);
+        this.populateObjects();
         evt.preventDefault();
       })
       .mouseover((evt) => {
@@ -314,6 +238,53 @@ class LayersPanel {
     while (num-- > 0) {
     // TODO: there must a better way to do this
       layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
+    }
+  }
+
+  populateObjects () {
+    const objectlist = $('#objectlist tbody').empty();
+    const selectedElementId = this.editor.selectedElement ? this.editor.selectedElement.id : null;
+
+    const drawing = this.svgCanvas.getCurrentDrawing();
+    const currentElements = drawing.getCurrentLayerChildren();
+    for (const currentElement of currentElements) {
+      const elementId = currentElement.id;
+
+      const objectTr = $('<tr class="object">').toggleClass('objectsel', elementId === selectedElementId);
+      const objectVis = $('<td class="objectvis">').toggleClass('objectinvis', !drawing.isLayerChildrenVisible(elementId));
+      const objectName = $('<td class="objectname" title="' + elementId + '">' + elementId + '</td>');
+      const objectSelect = $('<td class="objectselect">');
+      objectlist.append(objectTr.append(objectVis, objectName, objectSelect));
+    }
+
+    // Change visibility of object
+    $('#objectlist td.objectvis').click((evt) => {
+      const row = $(evt.currentTarget.parentNode).prevAll().length;
+      const id = $('#objectlist tr.object:eq(' + row + ') td.objectname').text();
+      const vis = $(evt.currentTarget).hasClass('objectinvis');
+      drawing.setLayerChildrenVisible(id, vis);
+      $(evt.currentTarget).toggleClass('objectinvis');
+      if (!vis) this.svgCanvas.clearSelection();
+    });
+
+    // Handle selection of object
+    $('#objectlist td.objectselect').click((evt) => {
+      $('#objectlist tr.object').removeClass('objectsel');
+      const row = $(evt.currentTarget.parentNode).prevAll().length;
+      const vis = $('#objectlist tr.object:eq(' + row + ') td.objectvis').hasClass('objectinvis');
+
+      if (!vis) {
+        const id = $('#objectlist tr.object:eq(' + row + ') td.objectname').text();
+        this.svgCanvas.clearSelection();
+        this.svgCanvas.addToSelection([$('[id="' + id + '"]')[0]], true);
+        $(evt.currentTarget.parentNode).toggleClass('objectsel');
+      }
+    });
+
+    // if there were too few rows, let's add a few to make it not so lonely
+    let num = 5 - $('#objectlist tr.object').size();
+    while (num-- > 0) {
+      objectlist.append('<tr><td style="color:white">_</td><td/><td/></tr>');
     }
   }
 }

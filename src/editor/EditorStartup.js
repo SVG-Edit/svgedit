@@ -8,6 +8,7 @@ import {
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import LayersPanel from './panels/LayersPanel.js';
 import LeftPanelHandlers from './panels/LeftPanelHandlers.js';
+import RightPanelHandlers from './panels/RightPanelHandlers.js';
 import BottomPanelHandlers from './panels/BottomPanelHandlers.js';
 import TopPanelHandlers from './panels/TopPanelHandlers.js';
 import Rulers from './Rulers.js';
@@ -103,6 +104,7 @@ class EditorStartup {
     );
 
     this.leftPanelHandlers = new LeftPanelHandlers(this);
+    this.rightPanelHandlers = new RightPanelHandlers(this);
     this.bottomPanelHandlers = new BottomPanelHandlers(this);
     this.topPanelHandlers = new TopPanelHandlers(this);
     this.layersPanel = new LayersPanel(this);
@@ -443,6 +445,7 @@ class EditorStartup {
     * Associate all button actions as well as non-button keyboard shortcuts.
     */
     this.leftPanelHandlers.init();
+    this.rightPanelHandlers.init();
     this.bottomPanelHandlers.init();
     this.topPanelHandlers.init();
     this.layersPanel.init();

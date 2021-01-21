@@ -16,19 +16,19 @@ template.innerHTML = `
     -webkit-box-shadow: 2px 5px 10px rgba(0,0,0,.3);
     box-shadow: 2px 5px 10px rgba(0,0,0,.3);
   }
-  
+
   .contextMenu li {
     list-style: none;
     padding: 0px;
     margin: 0px;
   }
-  
+
   .contextMenu .shortcut {
     width: 115px;
     text-align:right;
     float:right;
   }
-  
+
   .contextMenu a {
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -42,26 +42,26 @@ template.innerHTML = `
     outline: none;
     padding: 0px 15px 1px 20px;
   }
-  
+
   .contextMenu li.hover a {
     background-color: #2e5dea;
     color: white;
     cursor: default;
   }
-  
+
   .contextMenu li.disabled a {
     color: #999;
   }
-  
+
   .contextMenu li.hover.disabled a {
     background-color: transparent;
   }
-  
+
   .contextMenu li.separator {
     border-top: solid 1px #E3E3E3;
     padding-top: 5px;
     margin-top: 5px;
-  }  
+  }
   </style>
   <ul id="cmenu_layers" class="contextMenu">
     <li><a href="#dupe" id="se-dupe">Duplicate Layer...</a></li>
@@ -84,7 +84,7 @@ export class SeCMenuLayerDialog extends HTMLElement {
     this._shadowRoot.appendChild(template.content.cloneNode(true));
     this.source = '';
     this._workarea = undefined;
-    this.$sidePanels = document.getElementById('sidepanels');
+    this.$rightPanel = document.getElementById('panel_right');
     this.$dialog = this._shadowRoot.querySelector('#cmenu_layers');
     this.$duplicateLink = this._shadowRoot.querySelector('#se-dupe');
     this.$deleteLink = this._shadowRoot.querySelector('#se-layer-delete');
@@ -180,7 +180,7 @@ export class SeCMenuLayerDialog extends HTMLElement {
         this._workarea.addEventListener('click', onMenuOpenHandler);
       }
       this._workarea.addEventListener('mousedown', onMenuCloseHandler);
-      this.$sidePanels.addEventListener('mousedown', onMenuCloseHandler);
+      this.$rightPanel.addEventListener('mousedown', onMenuCloseHandler);
     }
     this.$duplicateLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'dupe', this.source));
     this.$deleteLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'delete', this.source));

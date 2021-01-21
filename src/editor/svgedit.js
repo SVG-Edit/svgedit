@@ -657,6 +657,7 @@ class Editor extends EditorStartup {
     // Deal with pathedit mode
     this.togglePathEditMode(isNode, elems);
     this.topPanelHandlers.updateContextPanel();
+    this.layersPanel.populateObjects();
     this.svgCanvas.runExtensions('selectedChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_selectedChanged} */ {
       elems,
       selectedElement: this.selectedElement,

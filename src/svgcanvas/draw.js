@@ -341,6 +341,29 @@ export class Drawing {
   }
 
   /**
+   * Returns all objects of the currently selected layer. If an error occurs, an empty array is returned.
+   * @returns {SVGGElement[] | any[]} The objects of the currently active layer (or an empty array if no objects found).
+   */
+  getCurrentLayerChildren () {
+    return this.current_layer
+      ? [...this.current_layer.getChildren()].filter((object) => { return object.tagName !== 'title'; })
+      : [];
+  }
+
+  /**
+   * Returns the object at the current layer with the given 'objectId'. If none is found 'null' is returned.
+   * @param {string} objectId The id of the object
+   * @returns {?SVGGElement} The found object or 'null' if none is found.
+   */
+  getCurrentLayerChild (objectId) {
+    const foundElements = this.getCurrentLayerChildren()
+      .filter((obj) => { return obj.id === objectId; });
+    if (!foundElements) { return null; }
+
+    return foundElements[0];
+  }
+
+  /**
    * Set the current layer's position.
    * @param {Integer} newpos - The zero-based index of the new position of the layer. Range should be 0 to layers-1
    * @returns {{title: SVGGElement, previousName: string}|null} If the name was changed, returns {title:SVGGElement, previousName:string}; otherwise null.
@@ -628,6 +651,38 @@ export class Drawing {
     if (!layer) { return null; }
     layer.setVisible(bVisible);
     return layer.getGroup();
+  }
+
+  /**
+   * Sets the visibility of the object. If the object id is not valid, this
+   * function returns `null`, otherwise it returns the `SVGElement` representing
+   * the object. This is an undo-able action.
+   * @param {string} objectId - The id of the object to change the visibility
+   * @param {boolean} bVisible - Whether the object should be visible
+   * @returns {?SVGGElement} The SVGGElement representing the object if the
+   *   `objectId` was valid, otherwise `null`.
+   */
+  setLayerChildrenVisible (objectId, bVisible) {
+    if (typeof bVisible !== 'boolean') {
+      return null;
+    }
+    const element = this.getCurrentLayerChild(objectId);
+    const expected = bVisible ? 'inline' : 'none';
+    const oldDisplay = element.getAttribute('display');
+    if (oldDisplay !== expected) {
+      element.setAttribute('display', expected);
+    }
+    return element;
+  }
+
+  /**
+   * Returns whether the object with the given id is visible or not.
+   * @param {string} objectId - id of the object on which to get the visibility.
+   * @returns {false|boolean} The visibility of the object, or `false` if the objects id was invalid.
+   */
+  isLayerChildrenVisible (objectId) {
+    const element = this.getCurrentLayerChild(objectId);
+    return element.getAttribute('display') !== 'none';
   }
 
   /**

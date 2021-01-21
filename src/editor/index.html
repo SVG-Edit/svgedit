@@ -48,8 +48,15 @@
         <div id="svgcanvas" style="position: relative;">
         </div>
       </div>
-      <div id="sidepanels">
-        <div id="layerpanel">
+
+      <div id="panel_right">
+        <se-button id="panel_right_objects_button" title="Objects" src="./images/layerstack.svg"></se-button>
+      </div>
+
+      <div id="panel_right_flyout">
+        <div id="panel_right_resizer"></div>
+
+        <div id="panel_right_objects" class="panel_right_flyout_panel">
           <h3 id="layersLabel">Layers</h3>
           <fieldset id="layerbuttons">
             <se-button id="layer_new" title="New Layer" size="small" src="./images/new.svg"></se-button>
@@ -66,14 +73,24 @@
               <td class="layername">Layer 1</td>
             </tr>
           </table>
+
+          <h3>Objects</h3>
+          <table id="objectlist">
+            <tr class="object">
+              <td class="objectvis"></td>
+              <td class="objectname">Object 1</td>
+              <td class="objectselect"></td>
+            </tr>
+          </table>
+
           <span id="selLayerLabel">Move elements to:</span>
           <select id="selLayerNames" title="Move selected elements to a different layer" disabled="disabled">
             <option selected="selected" value="layer1">Layer 1</option>
           </select>
         </div>
-        <div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s
-        </div>
+
       </div>
+
       <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg" alt="logo">
         <!-- File-like buttons: New, Save, Source -->
         <se-menu-item id="tool_clear" label="New Image" shortcut="N" src="./images/new.svg"></se-menu-item>
@@ -133,7 +150,7 @@
             <se-list-item id="tool_posright">Align Right</se-list-item>
             <se-list-item id="tool_postop">Align Top</se-list-item>
             <se-list-item id="tool_posmiddle">Align Middle</se-list-item>
-            <se-list-item id="tool_posbottom">Align Bottom</se-list-item> 
+            <se-list-item id="tool_posbottom">Align Bottom</se-list-item>
           </se-list>
           <div class="dropdown toolset" id="tool_position" title="Align Element to Page">
             <div id="cur_position" class="icon_label"></div>
@@ -247,7 +264,7 @@
             <se-list-item value="Monospace"> <div style="font-family:serif">Monospace</div></se-list-item>
             <se-list-item value="Courier"> <div style="font-family:serif">Courier</div></se-list-item>
             <se-list-item value="Helvetica"> <div style="font-family:serif">Helvetica</div></se-list-item>
-            <se-list-item value="Times"> <div style="font-family:serif">Times</div></se-list-item> 
+            <se-list-item value="Times"> <div style="font-family:serif">Times</div></se-list-item>
           </se-list>
           <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="Change Font Size"
             src="./images/fontsize.svg"></se-spin-input>
@@ -350,7 +367,7 @@
         <se-list id="stroke_linejoin" title="Linejoin: Miter" label="">
           <se-list-item id="linejoin_miter"><img title="Linejoin: Miter" src="./images/linejoin_miter.svg" height="22px"></img></se-list-item>
           <se-list-item id="linejoin_round"><img title="Linejoin: Round" src="./images/linejoin_round.svg" height="22px"></img></se-list-item>
-          <se-list-item id="linejoin_bevel"><img title="Linejoin: Bevel" src="./images/linejoin_bevel.svg" height="22px"></img></se-list-item>  
+          <se-list-item id="linejoin_bevel"><img title="Linejoin: Bevel" src="./images/linejoin_bevel.svg" height="22px"></img></se-list-item>
         </se-list>
         <se-list id="stroke_linecap" title="Linecap: Butt" label="">
           <se-list-item id="linecap_butt"><img title="Linecap: Butt" src="./images/linecap_butt.svg" height="22px"></img></se-list-item>

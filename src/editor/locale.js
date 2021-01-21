@@ -170,8 +170,6 @@ export const readLang = function (langData) {
     tool_prefs_cancel: common.cancel,
     tool_prefs_save: common.ok,
 
-    sidepanel_handle: layers.layers.split('').join(' '),
-
     tool_clear: tools.new_doc,
     tool_docprops: tools.docprops,
     tool_export: tools.export_img,

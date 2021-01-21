@@ -147,6 +147,14 @@ class Layer {
   }
 
   /**
+   * Returns all children of this layer.
+   * @returns {NodeListOf<ChildNode>} The children of this layer.
+   */
+  getChildren () {
+    return this.group_.childNodes;
+  }
+
+  /**
   * @returns {SVGTitleElement|null}
   */
   getTitleElement () {
