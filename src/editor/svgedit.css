@@ -318,7 +318,7 @@ hr {
   margin-top: 5px;
 }
 
-#tools_top > div > div, #tools_top > div > se-button, #tools_top > div > se-spin-input, #tools_top > div > label, #tools_top > div > se-list , #tools_top > div > se-button {
+#tools_top > div > * {
   float: left;
   margin-right: 1px;
 }
@@ -431,8 +431,7 @@ hr {
   text-decoration: underline;
 }
 
-div.toolset,
-div.toolset > div, div.toolset > se-button, div.toolset > se-input, div.toolset > se-spin-input, div.toolset > se-list {
+div.toolset, div.toolset > * {
   float: left;
 }
 
