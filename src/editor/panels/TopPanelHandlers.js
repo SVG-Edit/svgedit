@@ -213,26 +213,6 @@ class TopPanelHandlers {
           $('#font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
           $('#text').val(elem.textContent);
-          const textAnchorStart = $id('tool_text_anchor_start');
-          const textAnchorMiddle = $id('tool_text_anchor_middle');
-          const textAnchorEnd = $id('tool_text_anchor_end');
-          switch (elem.getAttribute('text-anchor')) {
-          case 'start':
-            textAnchorStart.pressed = true;
-            textAnchorMiddle.pressed = false;
-            textAnchorEnd.pressed = false;
-            break;
-          case 'middle':
-            textAnchorStart.pressed = false;
-            textAnchorMiddle.pressed = true;
-            textAnchorEnd.pressed = false;
-            break;
-          case 'end':
-            textAnchorStart.pressed = false;
-            textAnchorMiddle.pressed = false;
-            textAnchorEnd.pressed = true;
-            break;
-          }
           if (this.svgCanvas.addedNew) {
             // Timeout needed for IE9
             setTimeout(() => {
@@ -575,6 +555,18 @@ class TopPanelHandlers {
   }
 
   /**
+   * Adds or remove the text decoration value.
+   * @param value "overline", "underline" or "line-through"
+   */
+  clickTextDecoration (value) {
+    if (this.svgCanvas.hasTextDecoration(value)) {
+      this.svgCanvas.removeTextDecoration(value);
+    } else {
+      this.svgCanvas.addTextDecoration(value);
+    }
+  }
+
+  /**
    * @type {module}
    */
   init () {
@@ -619,6 +611,9 @@ class TopPanelHandlers {
     $id('tool_text_anchor_start').addEventListener('click', () => this.clickTextAnchor.bind(this)('start'));
     $id('tool_text_anchor_middle').addEventListener('click', () => this.clickTextAnchor.bind(this)('middle'));
     $id('tool_text_anchor_end').addEventListener('click', () => this.clickTextAnchor.bind(this)('end'));
+    $id('tool_text_decoration_underline').addEventListener('click', () => this.clickTextDecoration.bind(this)('underline'));
+    $id('tool_text_decoration_linethrough').addEventListener('click', () => this.clickTextDecoration.bind(this)('line-through'));
+    $id('tool_text_decoration_overline').addEventListener('click', () => this.clickTextDecoration.bind(this)('overline'));
     $id('tool_unlink_use').addEventListener('click', this.clickGroup.bind(this));
     $id('change_image_url').addEventListener('click', this.promptImgURL.bind(this));
     // all top panel attributes

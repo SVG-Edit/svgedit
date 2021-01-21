@@ -252,9 +252,18 @@
           <div class="toolset">
             <se-button id="tool_bold" title="Bold Text [B]" src="./images/bold.svg" shortcut="B"></se-button>
             <se-button id="tool_italic" title="Italic Text [I]" src="./images/italic.svg" shortcut="I"></se-button>
-            <se-button id="tool_text_anchor_start" title="Align the text from start" src="./images/anchor_start.svg"></se-button>
-            <se-button id="tool_text_anchor_middle" title="Align the text from middle" src="./images/anchor_middle.svg"></se-button>
-            <se-button id="tool_text_anchor_end" title="Align the text from end" src="./images/anchor_end.svg"></se-button>
+
+            <se-list id="tool_text_anchor" label="Text-Anchor:">
+              <se-list-item id="tool_text_anchor_start" title="Align the text from start"><img src="./images/anchor_start.svg" /></se-list-item>
+              <se-list-item id="tool_text_anchor_middle" title="Align the text from middle"><img src="./images/anchor_middle.svg" /></se-list-item>
+              <se-list-item id="tool_text_anchor_end" title="Align the text from end"><img src="./images/anchor_end.svg" /></se-list-item>
+            </se-list>
+
+            <se-list id="tool_text_decoration" label="Text-Decoration:">
+              <se-list-item id="tool_text_decoration_underline" title="Underline Text" data-value="underline">Underline</se-list-item>
+              <se-list-item id="tool_text_decoration_linethrough" title="Strike through Text" data-value="line-through">Line-through</se-list-item>
+              <se-list-item id="tool_text_decoration_overline" title="Overline Text" data-value="overline">Overline</se-list-item>
+            </se-list>
           </div>
           <se-list id="tool_font_family" label="Font:">
             <se-list-item value="Sans-serif"> <div style="font-family:serif">Sans-serif</div></se-list-item>

@@ -608,6 +608,66 @@ isNullish(selectedElements[1])) {
 };
 
 /**
+ * Checks whether the selected element has the given text decoration value or not
+ * @function module:svgcanvas.SvgCanvas#hasTextDecoration
+ * @param {string} value - The value that should be checked
+ * @returns {boolean} Indicates whether or not element has the text decoration value
+ */
+export const hasTextDecorationMethod = function (value) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    const attribute = selected.getAttribute('text-decoration');
+    if (attribute) {
+      return attribute.includes(value);
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Adds the given value to the text decoration
+ * @function module:svgcanvas.SvgCanvas#addTextDecoration
+ * @param {string} value - The value that should be added
+ * @returns {void}
+ */
+export const addTextDecorationMethod = function (value) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    const oldValue = selected.getAttribute('text-decoration') || '';
+    elemContext_.getCanvas().changeSelectedAttribute('text-decoration', oldValue + ' ' + value);
+  }
+
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
+ * Removes the given value from the text decoration
+ * @function module:svgcanvas.SvgCanvas#removeTextDecoration
+ * @param {string} value - The value that should be removed
+ * @returns {void}
+ */
+export const removeTextDecorationMethod = function (value) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    const actualValues = selected.getAttribute('text-decoration');
+    elemContext_.getCanvas().changeSelectedAttribute('text-decoration', actualValues.replace(value, ''));
+  }
+
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
  * @function module:svgcanvas.SvgCanvas#setTextAnchorMethod Set the new text anchor
  * @param {string} value - The text anchor value (start, middle or end)
  * @returns {void}

@@ -56,6 +56,7 @@ import {
   setDocumentTitleMethod, setResolutionMethod, getEditorNSMethod, setBBoxZoomMethod,
   setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
   setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod,
+  hasTextDecorationMethod, addTextDecorationMethod, removeTextDecorationMethod,
   setItalicMethod, setTextAnchorMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
   getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod,
   setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod,
@@ -2214,6 +2215,30 @@ class SvgCanvas {
 * @returns {void}
 */
     this.setItalic = setItalicMethod;
+
+    /**
+     * Check whether selected element has the given text decoration or not.
+     * @function module:svgcanvas.SvgCanvas#hasTextDecoration
+     * @param {string} value - The value that should be checked
+     * @returns {boolean} Indicates whether the element has the given text decoration
+     */
+    this.hasTextDecoration = hasTextDecorationMethod;
+
+    /**
+     * Adds the given value to the text decoration.
+     * @function module:svgcanvas.SvgCanvas#addTextDecoration
+     * @param {string} value - The value that should be added
+     * @returns {void}
+     */
+    this.addTextDecoration = addTextDecorationMethod;
+
+    /**
+     * Removes the given value from the text decoration.
+     * @function module:svgcanvas.SvgCanvas#removeTextDecoration
+     * @param {string} value - The value that should be removed
+     * @returns {void}
+     */
+    this.removeTextDecoration = removeTextDecorationMethod;
 
     /**
 * Set the new text anchor.
