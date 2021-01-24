@@ -13,7 +13,6 @@ template.innerHTML = `
     bottom: 1px;
     right: -4px;
     position: relative;
-    margin-left: 4px;
     margin-right: 4px;
     color: #fff;
   }
