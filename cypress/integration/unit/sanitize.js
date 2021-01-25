@@ -46,4 +46,14 @@ describe('sanitize', function () {
 
     assert.equal(text.getAttribute('text-decoration'), 'underline');
   });
+
+  it('Test sanitizeSvg() does not strip word-spacing attribute from text', function () {
+    const text = document.createElementNS(NS.SVG, 'text');
+    text.setAttribute('word-spacing', '10');
+    svg.append(text);
+
+    sanitize.sanitizeSvg(text);
+
+    assert.equal(text.getAttribute('word-spacing'), '10');
+  });
 });

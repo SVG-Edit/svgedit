@@ -114,6 +114,14 @@ describe('use various parts of svg-edit', function () {
       .type('{enter}', {force: true});
     testSnapshot();
   });
+  it('check tool_word_spacing', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('#word_spacing')
+      .type('{selectall}', {force: true})
+      .type('10', {force: true})
+      .type('{enter}', {force: true});
+    testSnapshot();
+  });
   it('check tool_star', function () {
     cy.get('#tool_star')
       .click({force: true});

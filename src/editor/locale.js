@@ -307,6 +307,7 @@ export const readLang = function (langData) {
     tool_image: tools.mode_image,
     tool_italic: properties.italic,
     tool_letter_spacing: properties.letter_spacing,
+    tool_word_spacing: properties.word_spacing,
 
     tool_line: tools.mode_line,
     tool_move_bottom: tools.move_bottom,

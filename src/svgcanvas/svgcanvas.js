@@ -58,7 +58,8 @@ import {
   setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
   setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod,
   setItalicMethod, hasTextDecorationMethod, addTextDecorationMethod, removeTextDecorationMethod, setLetterSpacingMethod,
-  getLetterSpacingMethod, setTextAnchorMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
+  getLetterSpacingMethod, setWordSpacingMethod, getWordSpacingMethod, setTextAnchorMethod,
+  getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
   getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod,
   setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod,
   removeHyperlinkMethod, setSegTypeMethod, setBackgroundMethod
@@ -2248,7 +2249,6 @@ class SvgCanvas {
      */
     this.getLetterSpacing = getLetterSpacingMethod;
 
-
     /**
      * Changes the letter spacing.
      * @function module:svgcanvas.SvgCanvas#setLetterSpacing
@@ -2256,6 +2256,22 @@ class SvgCanvas {
      * @returns {void}
      */
     this.setLetterSpacing = setLetterSpacingMethod;
+
+    /**
+     * Returns the word spacing.
+     * @function module:svgcanvas.SvgCanvas#getWordSpacing
+     * @param {string} value - The value that should be set
+     * @returns {string} The word spacing value
+     */
+    this.getWordSpacing = getWordSpacingMethod;
+
+    /**
+     * Changes the word spacing.
+     * @function module:svgcanvas.SvgCanvas#setWordSpacing
+     * @param {string} value - The value that should be set
+     * @returns {void}
+     */
+    this.setWordSpacing = setWordSpacingMethod;
 
     /**
 * Set the new text anchor.
