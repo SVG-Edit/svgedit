@@ -74,7 +74,8 @@ export default {
     text_anchor_start: 'Den Text linksbündig ausrichten',
     text_anchor_middle: 'Den Text zentriert ausrichten',
     text_anchor_end: 'Den Text rechtsbündig ausrichten',
-    letter_spacing: 'Den Abstand zwischen den Buchstabend anpassen'
+    letter_spacing: 'Den Abstand zwischen den Buchstaben anpassen',
+    word_spacing: 'Den Abstand zwischen den einzelnen Wörtern anpassen'
   },
   tools: {
     main_menu: 'Hauptmenü',

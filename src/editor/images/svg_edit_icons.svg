@@ -1093,6 +1093,24 @@
   </svg>
 </g>
 
+<g id="wordspacing">
+  <svg width="44" height="18" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="se_marker_start_svg_2" markerHeight="5" markerWidth="5" orient="auto" refX="50" refY="50" viewBox="0 0 100 100">
+        <path d="m0,50l100,40l-30,-40l30,-40l-100,40z" fill="#ff7f00" id="svg_3" stroke="#ff7f00" stroke-width="10"/>
+      </marker>
+      <marker id="se_marker_end_svg_2" markerHeight="5" markerWidth="5" orient="auto" refX="50" refY="50" viewBox="0 0 100 100">
+        <path d="m100,50l-100,40l30,-40l-30,-40l100,40z" fill="#ff7f00" id="svg_4" stroke="#ff7f00" stroke-width="10"/>
+      </marker>
+    </defs>
+    <g class="layer">
+      <title>Layer 1</title>
+      <text fill="#000000" font-family="serif" font-size="15" id="svg_1" stroke="#000000" stroke-width="0" text-anchor="middle" x="21.78779" xml:space="preserve" y="14.00814">A      B</text>
+      <line fill="none" id="svg_2" marker-end="url(#se_marker_end_svg_2)" marker-start="url(#se_marker_start_svg_2)" stroke="#ff7f00" x1="15.19377" x2="28.36873" y1="8.75" y2="8.75"/>
+    </g>
+  </svg>
+</g>
+
 <g id="svg_eof"/>
 
 </svg>

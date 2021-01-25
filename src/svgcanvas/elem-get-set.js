@@ -718,6 +718,38 @@ export const setLetterSpacingMethod = function (value) {
 };
 
 /**
+ * Returns the word spacing value
+ * @function module:svgcanvas.SvgCanvas#getWordSpacing
+ * @returns {string} The word spacing value
+ */
+export const getWordSpacingMethod = function () {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    return selected.getAttribute('word-spacing') || 0;
+  }
+  return null;
+};
+
+/**
+ * Set the new word spacing.
+ * @function module:svgcanvas.SvgCanvas#setWordSpacing
+ * @param {string} value - The word spacing
+ * @returns {void}
+ */
+export const setWordSpacingMethod = function (value) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+    isNullish(selectedElements[1])) {
+    elemContext_.getCanvas().changeSelectedAttribute('word-spacing', value);
+  }
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
 * @function module:svgcanvas.SvgCanvas#getFontFamily
 * @returns {string} The current font family
 */

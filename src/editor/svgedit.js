@@ -1204,6 +1204,7 @@ editor.init = () => {
         '#text_anchor_icon': 'anchor_middle',
         '#text_decoration_icon': 'textdecoration',
         '#letter_spacing_icon': 'letterspacing',
+        '#word_spacing_icon': 'wordspacing',
 
         '.flyout_arrow_horiz': 'arrow_right',
         '.dropdown button, #main_button .dropdown': 'arrow_down',
@@ -2318,6 +2319,9 @@ editor.init = () => {
           const letterSpacingValue = svgCanvas.getLetterSpacing(elem);
           $('#letter_spacing').val(letterSpacingValue);
           $('#letter_spacing_slider').slider('option', 'value', letterSpacingValue);
+          const wordSpacingValue = svgCanvas.getWordSpacing(elem);
+          $('#word_spacing').val(wordSpacingValue);
+          $('#word_spacing_slider').slider('option', 'value', wordSpacingValue);
           $('#font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
           $('#text').val(elem.textContent);
@@ -3942,6 +3946,31 @@ editor.init = () => {
     }
 
     svgCanvas.setLetterSpacing(val);
+  };
+
+  editor.addDropDown('#word_spacing_dropdown', $.noop);
+
+  $('#word_spacing_slider').slider({
+    step: 1,
+    stop (evt, ui) {
+      changeWordSpacing(ui);
+      $('#word_spacing_dropdown li').show();
+      $(window).mouseup();
+    },
+    slide (evt, ui) {
+      changeWordSpacing(ui, null);
+    }
+  });
+
+  const changeWordSpacing = function (ctl, val) {
+    if (Utils.isNullish(val)) { val = ctl.value; }
+    $('#word_spacing').val(val);
+
+    if (!ctl || !ctl.handle) {
+      $('#word_spacing_slider').slider('option', 'value', val);
+    }
+
+    svgCanvas.setWordSpacing(val);
   };
 
   /*
@@ -5826,6 +5855,9 @@ editor.init = () => {
   });
   $('#letter_spacing').SpinButton({
     min: -1000, step: 1, stateObj, callback: changeLetterSpacing
+  });
+  $('#word_spacing').SpinButton({
+    min: -1000, step: 1, stateObj, callback: changeWordSpacing
   });
   $('#zoom').SpinButton({
     min: 0.001, max: 10000, step: 50, stepfunc: stepZoom,
