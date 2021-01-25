@@ -73,7 +73,8 @@ export default {
     italic: 'Kursiver Text',
     text_anchor_start: 'Den Text linksbündig ausrichten',
     text_anchor_middle: 'Den Text zentriert ausrichten',
-    text_anchor_end: 'Den Text rechtsbündig ausrichten'
+    text_anchor_end: 'Den Text rechtsbündig ausrichten',
+    letter_spacing: 'Den Abstand zwischen den Buchstabend anpassen'
   },
   tools: {
     main_menu: 'Hauptmenü',

@@ -686,6 +686,38 @@ export const setTextAnchorMethod = function (value) {
 };
 
 /**
+ * Returns the letter spacing value
+ * @function module:svgcanvas.SvgCanvas#getLetterSpacing
+ * @returns {string} The letter spacing value
+ */
+export const getLetterSpacingMethod = function () {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    return selected.getAttribute('letter-spacing') || 0;
+  }
+  return null;
+};
+
+/**
+ * Set the new letter spacing.
+ * @function module:svgcanvas.SvgCanvas#setLetterSpacing
+ * @param {string} value - The letter spacing
+ * @returns {void}
+ */
+export const setLetterSpacingMethod = function (value) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+    isNullish(selectedElements[1])) {
+    elemContext_.getCanvas().changeSelectedAttribute('letter-spacing', value);
+  }
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
 * @function module:svgcanvas.SvgCanvas#getFontFamily
 * @returns {string} The current font family
 */

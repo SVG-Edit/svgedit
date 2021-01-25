@@ -57,8 +57,8 @@ import {
   setDocumentTitleMethod, setResolutionMethod, getEditorNSMethod, setBBoxZoomMethod,
   setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
   setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod,
-  setItalicMethod, hasTextDecorationMethod, addTextDecorationMethod, removeTextDecorationMethod,
-  setTextAnchorMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
+  setItalicMethod, hasTextDecorationMethod, addTextDecorationMethod, removeTextDecorationMethod, setLetterSpacingMethod,
+  getLetterSpacingMethod, setTextAnchorMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
   getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod,
   setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod,
   removeHyperlinkMethod, setSegTypeMethod, setBackgroundMethod
@@ -2239,6 +2239,23 @@ class SvgCanvas {
      * @returns {void}
      */
     this.removeTextDecoration = removeTextDecorationMethod;
+
+    /**
+     * Returns the letter spacing.
+     * @function module:svgcanvas.SvgCanvas#getLetterSpacing
+     * @param {string} value - The value that should be set
+     * @returns {string} The letter spacing value
+     */
+    this.getLetterSpacing = getLetterSpacingMethod;
+
+
+    /**
+     * Changes the letter spacing.
+     * @function module:svgcanvas.SvgCanvas#setLetterSpacing
+     * @param {string} value - The value that should be set
+     * @returns {void}
+     */
+    this.setLetterSpacing = setLetterSpacingMethod;
 
     /**
 * Set the new text anchor.
