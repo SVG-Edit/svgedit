@@ -106,6 +106,14 @@ describe('use various parts of svg-edit', function () {
       .click({force: true});
     testSnapshot();
   });
+  it('check tool_letter_spacing', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('#letter_spacing')
+      .type('{selectall}', {force: true})
+      .type('150', {force: true})
+      .type('{enter}', {force: true});
+    testSnapshot();
+  });
   it('check tool_star', function () {
     cy.get('#tool_star')
       .click({force: true});

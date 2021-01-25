@@ -1203,6 +1203,7 @@ editor.init = () => {
         '#font_sizeLabel': 'fontsize',
         '#text_anchor_icon': 'anchor_middle',
         '#text_decoration_icon': 'textdecoration',
+        '#letter_spacing_icon': 'letterspacing',
 
         '.flyout_arrow_horiz': 'arrow_right',
         '.dropdown button, #main_button .dropdown': 'arrow_down',
@@ -2325,6 +2326,9 @@ editor.init = () => {
           } else {
             $('#tool_bold').removeClass('push_button_pressed').addClass('tool_button');
           }
+          const letterSpacingValue = svgCanvas.getLetterSpacing(elem);
+          $('#letter_spacing').val(letterSpacingValue);
+          $('#letter_spacing_slider').slider('option', 'value', letterSpacingValue);
           $('#font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
           $('#text').val(elem.textContent);
@@ -3926,6 +3930,31 @@ editor.init = () => {
     updateContextPanel();
   }, {});
 
+  editor.addDropDown('#letter_spacing_dropdown', $.noop);
+
+  $('#letter_spacing_slider').slider({
+    step: 1,
+    stop (evt, ui) {
+      changeLetterSpacing(ui);
+      $('#letter_spacing_dropdown li').show();
+      $(window).mouseup();
+    },
+    slide (evt, ui) {
+      changeLetterSpacing(ui, null);
+    }
+  });
+
+  const changeLetterSpacing = function (ctl, val) {
+    if (Utils.isNullish(val)) { val = ctl.value; }
+    $('#letter_spacing').val(val);
+
+    if (!ctl || !ctl.handle) {
+      $('#letter_spacing_slider').slider('option', 'value', val);
+    }
+
+    svgCanvas.setLetterSpacing(val);
+  };
+
   /*
 
   When a flyout icon is selected
@@ -5512,8 +5541,8 @@ editor.init = () => {
       {sel: '#tool_editor_homepage', fn: openHomePage, evt: 'click'},
       {sel: '#tool_open', fn () { window.dispatchEvent(new CustomEvent('openImage')); }, evt: 'click'},
       {sel: '#tool_import', fn () { window.dispatchEvent(new CustomEvent('importImage')); }, evt: 'click'},
-      {sel: '#tool_delete', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
-      {sel: '#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true]},
+      {sel: '#tool_delete', fn: deleteSelected, evt: 'click', key: ['delete/backspace', true]},
+      {sel: '#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['delete/backspace', true]},
       {sel: '#tool_reorient', fn: reorientPath, evt: 'click'},
       {sel: '#tool_node_link', fn: linkControlPoints, evt: 'click'},
       {sel: '#tool_node_clone', fn: clonePathNode, evt: 'click'},
@@ -5543,32 +5572,32 @@ editor.init = () => {
 
       // Shortcuts not associated with buttons
 
-      {key: 'ctrl+left', fn () { rotateSelected(0, 1); }},
-      {key: 'ctrl+right', fn () { rotateSelected(1, 1); }},
-      {key: 'ctrl+shift+left', fn () { rotateSelected(0, 5); }},
-      {key: 'ctrl+shift+right', fn () { rotateSelected(1, 5); }},
+      {key: 'ctrl+arrowleft', fn () { rotateSelected(0, 1); }},
+      {key: 'ctrl+arrowright', fn () { rotateSelected(1, 1); }},
+      {key: 'ctrl+shift+arrowleft', fn () { rotateSelected(0, 5); }},
+      {key: 'ctrl+shift+arrowright', fn () { rotateSelected(1, 5); }},
       {key: 'shift+O', fn: selectPrev},
       {key: 'shift+P', fn: selectNext},
-      {key: [modKey + 'up', true], fn () { zoomImage(2); }},
-      {key: [modKey + 'down', true], fn () { zoomImage(0.5); }},
+      {key: [modKey + 'arrowup', true], fn () { zoomImage(2); }},
+      {key: [modKey + 'arrowdown', true], fn () { zoomImage(0.5); }},
       {key: [modKey + ']', true], fn () { moveUpDownSelected('Up'); }},
       {key: [modKey + '[', true], fn () { moveUpDownSelected('Down'); }},
-      {key: ['up', true], fn () { moveSelected(0, -1); }},
-      {key: ['down', true], fn () { moveSelected(0, 1); }},
-      {key: ['left', true], fn () { moveSelected(-1, 0); }},
-      {key: ['right', true], fn () { moveSelected(1, 0); }},
-      {key: 'shift+up', fn () { moveSelected(0, -10); }},
-      {key: 'shift+down', fn () { moveSelected(0, 10); }},
-      {key: 'shift+left', fn () { moveSelected(-10, 0); }},
-      {key: 'shift+right', fn () { moveSelected(10, 0); }},
-      {key: ['alt+up', true], fn () { svgCanvas.cloneSelectedElements(0, -1); }},
-      {key: ['alt+down', true], fn () { svgCanvas.cloneSelectedElements(0, 1); }},
-      {key: ['alt+left', true], fn () { svgCanvas.cloneSelectedElements(-1, 0); }},
-      {key: ['alt+right', true], fn () { svgCanvas.cloneSelectedElements(1, 0); }},
-      {key: ['alt+shift+up', true], fn () { svgCanvas.cloneSelectedElements(0, -10); }},
-      {key: ['alt+shift+down', true], fn () { svgCanvas.cloneSelectedElements(0, 10); }},
-      {key: ['alt+shift+left', true], fn () { svgCanvas.cloneSelectedElements(-10, 0); }},
-      {key: ['alt+shift+right', true], fn () { svgCanvas.cloneSelectedElements(10, 0); }},
+      {key: ['arrowup', true], fn () { moveSelected(0, -1); }},
+      {key: ['arrowdown', true], fn () { moveSelected(0, 1); }},
+      {key: ['arrowleft', true], fn () { moveSelected(-1, 0); }},
+      {key: ['arrowright', true], fn () { moveSelected(1, 0); }},
+      {key: 'shift+arrowup', fn () { moveSelected(0, -10); }},
+      {key: 'shift+arrowdown', fn () { moveSelected(0, 10); }},
+      {key: 'shift+arrowleft', fn () { moveSelected(-10, 0); }},
+      {key: 'shift+arrowright', fn () { moveSelected(10, 0); }},
+      {key: ['alt+arrowup', true], fn () { svgCanvas.cloneSelectedElements(0, -1); }},
+      {key: ['alt+arrowdown', true], fn () { svgCanvas.cloneSelectedElements(0, 1); }},
+      {key: ['alt+arrowleft', true], fn () { svgCanvas.cloneSelectedElements(-1, 0); }},
+      {key: ['alt+arrowright', true], fn () { svgCanvas.cloneSelectedElements(1, 0); }},
+      {key: ['alt+shift+arrowup', true], fn () { svgCanvas.cloneSelectedElements(0, -10); }},
+      {key: ['alt+shift+arrowdown', true], fn () { svgCanvas.cloneSelectedElements(0, 10); }},
+      {key: ['alt+shift+arrowleft', true], fn () { svgCanvas.cloneSelectedElements(-10, 0); }},
+      {key: ['alt+shift+arrowright', true], fn () { svgCanvas.cloneSelectedElements(10, 0); }},
       {key: 'a', fn () { svgCanvas.selectAllInCurrentLayer(); }},
       {key: modKey + 'a', fn () { svgCanvas.selectAllInCurrentLayer(); }},
 
@@ -5805,6 +5834,9 @@ editor.init = () => {
   });
   $('#blur').SpinButton({
     min: 0, max: 10, step: 0.1, stateObj, callback: changeBlur
+  });
+  $('#letter_spacing').SpinButton({
+    min: -1000, step: 1, stateObj, callback: changeLetterSpacing
   });
   $('#zoom').SpinButton({
     min: 0.001, max: 10000, step: 50, stepfunc: stepZoom,

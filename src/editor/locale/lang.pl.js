@@ -74,7 +74,8 @@ export default {
     italic: 'Kursywa',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end'
+    text_anchor_end: 'Align the text in end',
+    letter_spacing: 'Change the letter spacing'
   },
   tools: {
     main_menu: 'Menu główne',

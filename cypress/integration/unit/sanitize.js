@@ -16,4 +16,34 @@ describe('sanitize', function () {
     assert.equal(rect.getAttribute('stroke'), 'blue');
     assert.equal(rect.getAttribute('stroke-width'), '40');
   });
+
+  it('Test sanitizeSvg() does not strip letter-spacing attribute from text', function () {
+    const text = document.createElementNS(NS.SVG, 'text');
+    text.setAttribute('letter-spacing', '150');
+    svg.append(text);
+
+    sanitize.sanitizeSvg(text);
+
+    assert.equal(text.getAttribute('letter-spacing'), '150');
+  });
+
+  it('Test sanitizeSvg() does not strip text-anchor attribute from text', function () {
+    const text = document.createElementNS(NS.SVG, 'text');
+    text.setAttribute('text-anchor', 'end');
+    svg.append(text);
+
+    sanitize.sanitizeSvg(text);
+
+    assert.equal(text.getAttribute('text-anchor'), 'end');
+  });
+
+  it('Test sanitizeSvg() does not strip text-decoration attribute from text', function () {
+    const text = document.createElementNS(NS.SVG, 'text');
+    text.setAttribute('text-decoration', 'underline');
+    svg.append(text);
+
+    sanitize.sanitizeSvg(text);
+
+    assert.equal(text.getAttribute('text-decoration'), 'underline');
+  });
 });
