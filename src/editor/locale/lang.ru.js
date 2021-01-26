@@ -75,7 +75,8 @@ export default {
     text_anchor_middle: 'Align the text in middle',
     text_anchor_end: 'Align the text in end',
     letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing'
+    word_spacing: 'Change the word spacing',
+    text_length: 'Lets you specify the width of the space into which the text will draw'
   },
   tools: {
     main_menu: 'Главное меню',

@@ -75,7 +75,8 @@ export default {
     text_anchor_middle: 'Den Text zentriert ausrichten',
     text_anchor_end: 'Den Text rechtsbündig ausrichten',
     letter_spacing: 'Den Abstand zwischen den Buchstaben anpassen',
-    word_spacing: 'Den Abstand zwischen den einzelnen Wörtern anpassen'
+    word_spacing: 'Den Abstand zwischen den einzelnen Wörtern anpassen',
+    text_length: 'Die Breite, in dem der Text gezeichnet wird'
   },
   tools: {
     main_menu: 'Hauptmenü',

@@ -750,6 +750,70 @@ export const setWordSpacingMethod = function (value) {
 };
 
 /**
+ * Returns the text length value
+ * @function module:svgcanvas.SvgCanvas#getTextLength
+ * @returns {string} The text length value
+ */
+export const getTextLengthMethod = function () {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    return selected.getAttribute('textLength') || 0;
+  }
+  return null;
+};
+
+/**
+ * Set the new text length.
+ * @function module:svgcanvas.SvgCanvas#setTextLength
+ * @param {string} value - The text length
+ * @returns {void}
+ */
+export const setTextLengthMethod = function (value) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+    isNullish(selectedElements[1])) {
+    elemContext_.getCanvas().changeSelectedAttribute('textLength', value);
+  }
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
+ * Returns the length adjust value
+ * @function module:svgcanvas.SvgCanvas#getLengthAdjust
+ * @returns {string} The length adjust value
+ */
+export const getLengthAdjustMethod = function () {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' && isNullish(selectedElements[1])) {
+    return selected.getAttribute('lengthAdjust') || 0;
+  }
+  return null;
+};
+
+/**
+ * Set the new length adjust.
+ * @function module:svgcanvas.SvgCanvas#setLengthAdjust
+ * @param {string} value - The length adjust
+ * @returns {void}
+ */
+export const setLengthAdjustMethod = function (value) {
+  const selectedElements = elemContext_.getSelectedElements();
+  const selected = selectedElements[0];
+  if (!isNullish(selected) && selected.tagName === 'text' &&
+    isNullish(selectedElements[1])) {
+    elemContext_.getCanvas().changeSelectedAttribute('lengthAdjust', value);
+  }
+  if (!selectedElements[0].textContent) {
+    elemContext_.getCanvas().textActions.setCursor();
+  }
+};
+
+/**
 * @function module:svgcanvas.SvgCanvas#getFontFamily
 * @returns {string} The current font family
 */

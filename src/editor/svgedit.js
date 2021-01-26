@@ -1205,6 +1205,7 @@ editor.init = () => {
         '#text_decoration_icon': 'textdecoration',
         '#letter_spacing_icon': 'letterspacing',
         '#word_spacing_icon': 'wordspacing',
+        '#text_length_icon': 'textlength',
 
         '.flyout_arrow_horiz': 'arrow_right',
         '.dropdown button, #main_button .dropdown': 'arrow_down',
@@ -2324,6 +2325,9 @@ editor.init = () => {
           $('#word_spacing_slider').slider('option', 'value', wordSpacingValue);
           $('#font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
+          const textLengthValue = svgCanvas.getTextLength(elem);
+          $('#text_length').val(textLengthValue);
+          $('#text_length_slider').slider('option', 'value', textLengthValue);
           $('#text').val(elem.textContent);
           if (svgCanvas.addedNew) {
             // Timeout needed for IE9
@@ -3923,6 +3927,12 @@ editor.init = () => {
     updateContextPanel();
   }, {});
 
+  addAltDropDown('#tool_length_adjust', '#length_adjust_opts', function () {
+    const selectedLengthAdjust = $(this).data('value');
+    svgCanvas.setLengthAdjust(selectedLengthAdjust);
+    updateContextPanel();
+  }, {});
+
   editor.addDropDown('#letter_spacing_dropdown', $.noop);
 
   $('#letter_spacing_slider').slider({
@@ -3971,6 +3981,32 @@ editor.init = () => {
     }
 
     svgCanvas.setWordSpacing(val);
+  };
+
+  editor.addDropDown('#text_length_dropdown', $.noop);
+
+  $('#text_length_slider').slider({
+    step: 10,
+    max: 1000,
+    stop (evt, ui) {
+      changeTextLength(ui);
+      $('#text_length_dropdown li').show();
+      $(window).mouseup();
+    },
+    slide (evt, ui) {
+      changeTextLength(ui, null);
+    }
+  });
+
+  const changeTextLength = function (ctl, val) {
+    if (Utils.isNullish(val)) { val = ctl.value; }
+    $('#text_length').val(val);
+
+    if (!ctl || !ctl.handle) {
+      $('#text_length_slider').slider('option', 'value', val);
+    }
+
+    svgCanvas.setTextLength(val);
   };
 
   /*
@@ -5858,6 +5894,9 @@ editor.init = () => {
   });
   $('#word_spacing').SpinButton({
     min: -1000, step: 1, stateObj, callback: changeWordSpacing
+  });
+  $('#text_length').SpinButton({
+    min: -1000, max: 1000, step: 10, stateObj, callback: changeTextLength
   });
   $('#zoom').SpinButton({
     min: 0.001, max: 10000, step: 50, stepfunc: stepZoom,

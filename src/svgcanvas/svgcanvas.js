@@ -58,7 +58,8 @@ import {
   setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
   setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod,
   setItalicMethod, hasTextDecorationMethod, addTextDecorationMethod, removeTextDecorationMethod, setLetterSpacingMethod,
-  getLetterSpacingMethod, setWordSpacingMethod, getWordSpacingMethod, setTextAnchorMethod,
+  getLetterSpacingMethod, setWordSpacingMethod, getWordSpacingMethod, setTextLengthMethod, getTextLengthMethod,
+  setLengthAdjustMethod, getLengthAdjustMethod, setTextAnchorMethod,
   getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
   getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod,
   setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod,
@@ -2272,6 +2273,38 @@ class SvgCanvas {
      * @returns {void}
      */
     this.setWordSpacing = setWordSpacingMethod;
+
+    /**
+     * Returns the text length.
+     * @function module:svgcanvas.SvgCanvas#getTextLength
+     * @param {string} value - The value that should be set
+     * @returns {string} The text length value
+     */
+    this.getTextLength = getTextLengthMethod;
+
+    /**
+     * Changes the text length.
+     * @function module:svgcanvas.SvgCanvas#setTextLength
+     * @param {string} value - The value that should be set
+     * @returns {void}
+     */
+    this.setTextLength = setTextLengthMethod;
+
+    /**
+     * Returns the length adjust.
+     * @function module:svgcanvas.SvgCanvas#getLengthAdjust
+     * @param {string} value - The value that should be set
+     * @returns {string} The length adjust value
+     */
+    this.getLengthAdjust = getLengthAdjustMethod;
+
+    /**
+     * Changes the length adjust.
+     * @function module:svgcanvas.SvgCanvas#setLengthAdjust
+     * @param {string} value - The value that should be set
+     * @returns {void}
+     */
+    this.setLengthAdjust = setLengthAdjustMethod;
 
     /**
 * Set the new text anchor.

@@ -56,4 +56,24 @@ describe('sanitize', function () {
 
     assert.equal(text.getAttribute('word-spacing'), '10');
   });
+
+  it('Test sanitizeSvg() does not strip textLength attribute from text', function () {
+    const text = document.createElementNS(NS.SVG, 'text');
+    text.setAttribute('textLength', '200');
+    svg.append(text);
+
+    sanitize.sanitizeSvg(text);
+
+    assert.equal(text.getAttribute('textLength'), '200');
+  });
+
+  it('Test sanitizeSvg() does not strip lengthAdjust attribute from text', function () {
+    const text = document.createElementNS(NS.SVG, 'text');
+    text.setAttribute('lengthAdjust', 'spacingAndGlyphs');
+    svg.append(text);
+
+    sanitize.sanitizeSvg(text);
+
+    assert.equal(text.getAttribute('lengthAdjust'), 'spacingAndGlyphs');
+  });
 });
