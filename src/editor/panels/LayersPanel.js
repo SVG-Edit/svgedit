@@ -220,10 +220,10 @@ class LayersPanel {
         evt.preventDefault();
       })
       .mouseover((evt) => {
-        this.toggleHighlightLayer(this.svgCanvas, evt.currentTarget.textContent);
+        this.toggleHighlightLayer(evt.currentTarget.textContent);
       })
       .mouseout(() => {
-        this.toggleHighlightLayer(this.svgCanvas);
+        this.toggleHighlightLayer('');
       });
     $('#layerlist td.layervis').click((evt) => {
       const row = $(evt.currentTarget.parentNode).prevAll().length;

@@ -23,6 +23,10 @@ template.innerHTML = `
     float: right;
     background-color: darkgrey;
   }
+  #block svg {
+    height: 26px;
+    width: 26px;
+  }
   #picker {
     background: #f0f0f0;
     height: 26px;
@@ -42,8 +46,7 @@ template.innerHTML = `
   <div id="picker">
       <img src="./images/logo.svg" alt="icon" id="logo">
       <label for="color" title="Change xxx color" id="label"></label>
-      <div id="block">
-      </div>
+      <div id="block"></div>
   </div>
   <!-- hidden div -->
   <div id="color_picker"></div>

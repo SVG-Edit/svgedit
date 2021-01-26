@@ -96,37 +96,39 @@ class Editor extends EditorStartup {
     const modKey = (isMac() ? 'meta+' : 'ctrl+');
     this.toolButtons = [
       // Shortcuts not associated with buttons
-      {key: 'ctrl+left', fn () { this.rotateSelected(0, 1); }},
-      {key: 'ctrl+right', fn () { this.rotateSelected(1, 1); }},
-      {key: 'ctrl+shift+left', fn () { this.rotateSelected(0, 5); }},
-      {key: 'ctrl+shift+right', fn () { this.rotateSelected(1, 5); }},
-      {key: 'shift+O', fn: this.selectPrev},
-      {key: 'shift+P', fn: this.selectNext},
-      {key: [modKey + 'up', true], fn () { this.zoomImage(2); }},
-      {key: [modKey + 'down', true], fn () { this.zoomImage(0.5); }},
-      {key: [modKey + ']', true], fn () { this.moveUpDownSelected('Up'); }},
-      {key: [modKey + '[', true], fn () { this.moveUpDownSelected('Down'); }},
-      {key: ['up', true], fn () { this.moveSelected(0, -1); }},
-      {key: ['down', true], fn () { this.moveSelected(0, 1); }},
-      {key: ['left', true], fn () { this.moveSelected(-1, 0); }},
-      {key: ['right', true], fn () { this.moveSelected(1, 0); }},
-      {key: 'shift+up', fn () { this.moveSelected(0, -10); }},
-      {key: 'shift+down', fn () { this.moveSelected(0, 10); }},
-      {key: 'shift+left', fn () { this.moveSelected(-10, 0); }},
-      {key: 'shift+right', fn () { this.moveSelected(10, 0); }},
-      {key: ['alt+up', true], fn () { this.svgCanvas.cloneSelectedElements(0, -1); }},
-      {key: ['alt+down', true], fn () { this.svgCanvas.cloneSelectedElements(0, 1); }},
-      {key: ['alt+left', true], fn () { this.svgCanvas.cloneSelectedElements(-1, 0); }},
-      {key: ['alt+right', true], fn () { this.svgCanvas.cloneSelectedElements(1, 0); }},
-      {key: ['alt+shift+up', true], fn () { this.svgCanvas.cloneSelectedElements(0, -10); }},
-      {key: ['alt+shift+down', true], fn () { this.svgCanvas.cloneSelectedElements(0, 10); }},
-      {key: ['alt+shift+left', true], fn () { this.svgCanvas.cloneSelectedElements(-10, 0); }},
-      {key: ['alt+shift+right', true], fn () { this.svgCanvas.cloneSelectedElements(10, 0); }},
-      {key: 'a', fn () { this.svgCanvas.selectAllInCurrentLayer(); }},
-      {key: modKey + 'a', fn () { this.svgCanvas.selectAllInCurrentLayer(); }},
-      {key: modKey + 'x', fn: this.cutSelected},
-      {key: modKey + 'c', fn: this.copySelected},
-      {key: modKey + 'v', fn: this.pasteInCenter}
+      {key: 'ctrl+arrowleft', fn: () => this.rotateSelected.bind(this)(0, 1)},
+      {key: 'ctrl+arrowright', fn: () => this.rotateSelected.bind(this)(1, 1)},
+      {key: 'ctrl+shift+arrowleft', fn: () => this.rotateSelected.bind(this)(0, 5)},
+      {key: 'ctrl+shift+arrowright', fn: () => this.rotateSelected.bind(this)(1, 5)},
+      {key: 'shift+O', fn: this.selectPrev.bind(this)},
+      {key: 'shift+P', fn: this.selectNext.bind(this)},
+      {key: [modKey + 'arrowup', true], fn: () => this.zoomImage.bind(this)(2)},
+      {key: [modKey + 'arrowdown', true], fn: () => this.zoomImage.bind(this)(0.5)},
+      {key: [modKey + ']', true], fn: () => this.moveUpDownSelected.bind(this)('Up')},
+      {key: [modKey + '[', true], fn: () => this.moveUpDownSelected.bind(this)('Down')},
+      {key: ['arrowup', true], fn: () => this.moveSelected.bind(this)(0, -1)},
+      {key: ['arrowdown', true], fn: () => this.moveSelected.bind(this)(0, 1)},
+      {key: ['arrowleft', true], fn: () => this.moveSelected.bind(this)(-1, 0)},
+      {key: ['arrowright', true], fn: () => this.moveSelected.bind(this)(1, 0)},
+      {key: 'shift+arrowup', fn: () => this.moveSelected.bind(this)(0, -10)},
+      {key: 'shift+arrowdown', fn: () => this.moveSelected.bind(this)(0, 10)},
+      {key: 'shift+arrowleft', fn: () => this.moveSelected.bind(this)(-10, 0)},
+      {key: 'shift+arrowright', fn: () => this.moveSelected.bind(this)(10, 0)},
+      {key: ['alt+arrowup', true], fn: () => this.cloneSelectedElements.bind(this)(0, -1)},
+      {key: ['alt+arrowdown', true], fn: () => this.cloneSelectedElements.bind(this)(0, 1)},
+      {key: ['alt+arrowleft', true], fn: () => this.cloneSelectedElements.bind(this)(-1, 0)},
+      {key: ['alt+arrowright', true], fn: () => this.cloneSelectedElements.bind(this)(1, 0)},
+      {key: ['alt+shift+arrowup', true], fn: () => this.cloneSelectedElements.bind(this)(0, -10)},
+      {key: ['alt+shift+arrowdown', true], fn: () => this.cloneSelectedElements.bind(this)(0, 10)},
+      {key: ['alt+shift+arrowleft', true], fn: () => this.cloneSelectedElements.bind(this)(-10, 0)},
+      {key: ['alt+shift+arrowright', true], fn: () => this.cloneSelectedElements.bind(this)(10, 0)},
+      {key: 'a', fn: this.selectAll.bind(this)},
+      {key: modKey + 'a', fn: this.selectAll.bind(this)},
+      {key: modKey + 'x', fn: this.cutSelected.bind(this)},
+      {key: modKey + 'c', fn: this.copySelected.bind(this)},
+      {key: modKey + 'v', fn: this.pasteInCenter.bind(this)},
+      {key: modKey + 'z', fn: this.undoAction.bind(this)},
+      {key: 'delete/backspace', fn: this.deleteSelectedElements.bind(this)}
     ];
   }
   /**
@@ -1013,6 +1015,18 @@ class Editor extends EditorStartup {
   }
 
   /**
+   * Undo the last action
+   * @returns {void}
+   */
+  undoAction () {
+    const {undoMgr} = this.svgCanvas;
+    if (undoMgr.getUndoStackSize() > 0) {
+      undoMgr.undo();
+      this.layersPanel.populateLayers();
+    }
+  }
+
+  /**
   * @param {"Up"|"Down"} dir
   * @returns {void}
   */
@@ -1040,6 +1054,16 @@ class Editor extends EditorStartup {
   }
 
   /**
+   * Clones the selected element and moves it with the given deltas
+   * @param {Float} dx
+   * @param {Float} dy
+   * @returns {void}
+   */
+  cloneSelectedElements (dx, dy) {
+    this.svgCanvas.cloneSelectedElements(dx, dy);
+  }
+
+  /**
   *
   * @returns {void}
   */
@@ -1053,6 +1077,24 @@ class Editor extends EditorStartup {
   */
   selectPrev () {
     this.svgCanvas.cycleElement(0);
+  }
+
+  /**
+   * Selects all objects in the current layer
+   * @returns {void}
+   */
+  selectAll () {
+    this.svgCanvas.selectAllInCurrentLayer();
+  }
+
+  /**
+   * Deletes the selected objects
+   * @returns {void}
+   */
+  deleteSelectedElements () {
+    if (!isNullish(this.selectedElement) || this.multiselected) {
+      this.svgCanvas.deleteSelectedElements();
+    }
   }
 
   /**

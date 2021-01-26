@@ -620,7 +620,10 @@ class TopPanelHandlers {
     ['elem_id', 'elem_class', 'circle_cx', 'circle_cy', 'circle_r', 'ellipse_cx',
       'ellipse_cy', 'ellipse_rx', 'ellipse_ry', 'selected_x', 'selected_y', 'rect_width',
       'rect_height', 'line_x1', 'line_x2', 'line_y2', 'image_width', 'image_height', 'path_node_x',
-      'path_node_y'].forEach((attrId) => $id(attrId).addEventListener('change', this.attrChanger.bind(this)));
+      'path_node_y'].forEach((attrId) => {
+      $id(attrId).addEventListener('change', this.attrChanger.bind(this));
+      $id(attrId).addEventListener('input', this.attrChanger.bind(this));
+    });
   }
 }
 

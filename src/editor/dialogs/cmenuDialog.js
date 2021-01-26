@@ -16,19 +16,19 @@ template.innerHTML = `
     -webkit-box-shadow: 2px 5px 10px rgba(0,0,0,.3);
     box-shadow: 2px 5px 10px rgba(0,0,0,.3);
   }
-  
+
   .contextMenu li {
     list-style: none;
     padding: 0px;
     margin: 0px;
   }
-  
+
   .contextMenu .shortcut {
     width: 115px;
     text-align:right;
     float:right;
   }
-  
+
   .contextMenu a {
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -42,26 +42,26 @@ template.innerHTML = `
     outline: none;
     padding: 0px 15px 1px 20px;
   }
-  
-  .contextMenu li.hover a {
+
+  .contextMenu li:hover a {
     background-color: #2e5dea;
     color: white;
     cursor: default;
   }
-  
+
   .contextMenu li.disabled a {
     color: #999;
   }
-  
-  .contextMenu li.hover.disabled a {
+
+  .contextMenu li:hover.disabled a {
     background-color: transparent;
   }
-  
+
   .contextMenu li.separator {
     border-top: solid 1px #E3E3E3;
     padding-top: 5px;
     margin-top: 5px;
-  }  
+  }
   </style>
   <ul id="cmenu_canvas" class="contextMenu">
     <li>
@@ -114,7 +114,7 @@ template.innerHTML = `
       <a href="#move_back" id="se-move-back">
         Send to Back<span class="shortcut">CTRL+SHFT+[</span>
       </a>
-    </li> 
+    </li>
   </ul>
 `;
 /**
@@ -239,23 +239,34 @@ export class SeCMenuDialog extends HTMLElement {
    */
   connectedCallback () {
     const current = this;
+
     const onMenuOpenHandler = (e) => {
       e.preventDefault();
       current.$dialog.style.top = e.pageY + 'px';
       current.$dialog.style.left = e.pageX + 'px';
       current.$dialog.style.display = 'block';
     };
+
     const onMenuCloseHandler = (e) => {
       if (e.button !== 2) {
         current.$dialog.style.display = 'none';
       }
     };
+
     const onMenuClickHandler = (e, action) => {
-      const triggerEvent = new CustomEvent('change', {detail: {
-        trigger: action
-      }});
-      this.dispatchEvent(triggerEvent);
+      let listItem = e.target;
+      if (listItem.tagName !== 'LI') listItem = listItem.parentNode;
+      if (listItem.tagName !== 'LI') listItem = listItem.parentNode;
+
+      if (!listItem.classList.contains('disabled')) {
+        const triggerEvent = new CustomEvent('change', {detail: {
+          trigger: action
+        }});
+        onMenuCloseHandler(e);
+        this.dispatchEvent(triggerEvent);
+      }
     };
+
     this._workarea.addEventListener('contextmenu', onMenuOpenHandler);
     this._workarea.addEventListener('mousedown', onMenuCloseHandler);
     this.$cutLink.addEventListener('click', (evt) => onMenuClickHandler(evt, 'cut'));
