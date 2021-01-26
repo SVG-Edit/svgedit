@@ -122,6 +122,26 @@ describe('use various parts of svg-edit', function () {
       .type('{enter}', {force: true});
     testSnapshot();
   });
+  it('check tool_text_length', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('#text_length')
+      .type('{selectall}', {force: true})
+      .type('600', {force: true})
+      .type('{enter}', {force: true});
+    testSnapshot();
+  });
+  it('check tool_length_adjust_spacing', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('#tool_length_adjust_spacing')
+      .click({force: true});
+    testSnapshot();
+  });
+  it('check tool_length_adjust_spacingAndGlyphs', function () {
+    cy.get('#svg_1').click({force: true});
+    cy.get('#tool_length_adjust_spacingAndGlyphs')
+      .click({force: true});
+    testSnapshot();
+  });
   it('check tool_star', function () {
     cy.get('#tool_star')
       .click({force: true});

@@ -381,6 +381,24 @@
             <span id="font_sizeLabel" class="icon_label"></span>
             <input id="font_size" size="3" value="0" type="text" />
           </label>
+          <div class="toolset" id="tool_text_length" title="Change the length of the text">
+            <label>
+              <span id="text_length_icon" class="icon_label"></span>
+              <input id="text_length" size="4" value="0" type="text" />
+            </label>
+            <div id="text_length_dropdown" class="dropdown">
+              <button></button>
+              <ul>
+                <li class="special">
+                  <div id="text_length_slider"></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="dropdown toolset" id="tool_length_adjust" title="Controls how the text is stretched into the length defined by the textLength attribute">
+            <label id="length_adjust_label">Length adjust:</label>
+            <button></button>
+          </div>
           <!-- Not visible, but still used -->
           <input id="text" type="text" size="35" />
         </div>
@@ -571,6 +589,10 @@
           <li class="push_button" id="tool_text_decoration_underline" title="Underline Text" data-value="underline">ab</li>
           <li class="push_button" id="tool_text_decoration_linethrough" title="Strike through Text" data-value="line-through">ab</li>
           <li class="push_button" id="tool_text_decoration_overline" title="Overline Text" data-value="overline">ab</li>
+        </ul>
+        <ul id="length_adjust_opts">
+          <li class="push_button" id="tool_length_adjust_spacing" title="Stretched using spacing only" data-value="spacing">spacing</li>
+          <li class="push_button" id="tool_length_adjust_spacingAndGlyphs" title="Stretched using spacing and glyphs" data-value="spacingAndGlyphs">spacingAndGlyphs</li>
         </ul>
       </div>
       <!-- hidden divs -->
