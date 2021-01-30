@@ -1798,6 +1798,7 @@ editor.init = () => {
       const isX = (d === 0);
       const dim = isX ? 'x' : 'y';
       const lentype = isX ? 'width' : 'height';
+      const narrowtype = isX ? 'height' : 'width';
       const contentDim = Number(contentElem.getAttribute(dim));
 
       const $hcanvOrig = $('#ruler_' + dim + ' canvas:first');
@@ -1808,13 +1809,22 @@ editor.init = () => {
 
       const hcanv = $hcanv[0];
 
+      // $canvas.height() or $canvas.width()
+      const narrowDim = $hcanv[narrowtype]();
+
       // Set the canvas size to the width of the container
+      const scale = window.devicePixelRatio || 1;
       let rulerLen = scanvas[lentype]();
       const totalLen = rulerLen;
-      hcanv.parentNode.style[lentype] = totalLen + 'px';
+      hcanv.parentNode.style[lentype] = rulerLen + 'px';
+      hcanv.width = totalLen;
       let ctx = hcanv.getContext('2d');
       let ctxArr, num, ctxArrNum;
-
+      ctx.scale(scale, scale);
+      hcanv.style[lentype] = totalLen + 'px';
+      hcanv.style[narrowtype] = narrowDim + 'px';
+      hcanv[lentype] = totalLen * scale;
+      hcanv[narrowtype] = narrowDim * scale;
       ctx.fillStyle = 'rgb(200,0,0)';
       ctx.fillRect(0, 0, hcanv.width, hcanv.height);
 
@@ -1828,7 +1838,7 @@ editor.init = () => {
         ctxArr[0] = ctx;
         let copy;
         for (i = 1; i < ctxArrNum; i++) {
-          hcanv[lentype] = limit;
+          hcanv[lentype] = limit * scale;
           copy = hcanv.cloneNode(true);
           hcanv.parentNode.append(copy);
           ctxArr[i] = copy.getContext('2d');
@@ -1840,7 +1850,7 @@ editor.init = () => {
         rulerLen = limit;
       }
 
-      hcanv[lentype] = rulerLen;
+      hcanv[lentype] = rulerLen * scale;
 
       const uMulti = unit * zoom;
 
@@ -1858,6 +1868,7 @@ editor.init = () => {
       const bigInt = multi * uMulti;
 
       ctx.font = '9px sans-serif';
+      ctx.scale(scale, scale);
 
       let rulerD = ((contentDim / uMulti) % multi) * uMulti;
       let labelPos = rulerD - bigInt;
