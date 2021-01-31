@@ -196,12 +196,12 @@ export default {
               // When MathJax is loaded get the div where the math will be rendered.
               MathJax.Hub.queue.Push(function () {
                 math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
-                console.log(math); // eslint-disable-line no-console
+                console.log(math); 
                 mathjaxLoaded = true;
-                console.log('MathJax Loaded'); // eslint-disable-line no-console
+                console.log('MathJax Loaded'); 
               });
             } catch (e) {
-              console.log('Failed loading MathJax.'); // eslint-disable-line no-console
+              console.log('Failed loading MathJax.'); 
               // eslint-disable-next-line no-alert
               alert('Failed loading MathJax. You will not be able to change the mathematics.');
             }

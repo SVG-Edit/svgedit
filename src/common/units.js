@@ -55,7 +55,6 @@ let typeMap_ = {};
  * @returns {Integer} The number of digits number should be rounded to
  */
 
-/* eslint-disable jsdoc/valid-types */
 /**
  * @typedef {PlainObject} module:units.TypeMap
  * @property {Float} em
@@ -68,7 +67,6 @@ let typeMap_ = {};
  * @property {Integer} px
  * @property {0} %
  */
-/* eslint-enable jsdoc/valid-types */
 
 /**
  * Initializes this module.
@@ -301,7 +299,7 @@ export const isValidUnit = function (attr, val, selectedElement) {
     try {
       const elem = elementContainer_.getElement(val);
       result = (!elem || elem === selectedElement);
-    } catch (e) {}
+    } catch (e) {/* empty fn */}
     return result;
   }
   return true;

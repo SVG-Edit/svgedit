@@ -1,4 +1,4 @@
-/* eslint-disable no-bitwise, max-len, unicorn/prefer-math-trunc, unicorn/prefer-ternary */
+/* eslint-disable max-len */
 /**
  * @file jPicker (Adapted from version 1.1.6)
  *
@@ -327,14 +327,14 @@ const jPicker = function ($) {
       * @param {GenericCallback} callback
       * @returns {void}
       */
-      function bind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+      function bind (callback) {
         if (typeof callback === 'function') changeEvents.push(callback);
       }
       /**
       * @param {GenericCallback} callback
       * @returns {void}
       */
-      function unbind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+      function unbind (callback) {
         if (typeof callback !== 'function') return;
         let i;
         while ((i = changeEvents.includes(callback))) changeEvents.splice(i, 1);
@@ -681,13 +681,11 @@ const jPicker = function ($) {
   * @property {string} [ahex]
   */
 
-  /* eslint-disable jsdoc/require-property */
   /**
   * @namespace {PlainObject} jPicker
   * @memberof external:jQuery
   */
   $.jPicker = /** @lends external:jQuery.jPicker */ {
-    /* eslint-enable jsdoc/require-property */
     /**
     * Array holding references to each active instance of the jPicker control.
     * @type {external:jQuery.fn.$.fn.jPicker[]}
@@ -949,14 +947,14 @@ const jPicker = function ($) {
       * @param {GenericCallback} callback
       * @returns {void}
       */
-      function bind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+      function bind (callback) {
         if (typeof callback === 'function') changeEvents.push(callback);
       }
       /**
       * @param {GenericCallback} callback
       * @returns {void}
       */
-      function unbind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+      function unbind (callback) {
         if (typeof callback !== 'function') return;
         let i;
         while ((i = changeEvents.includes(callback))) {
@@ -1176,12 +1174,10 @@ const jPicker = function ($) {
     }
   };
   const {Color, List, ColorMethods} = $.jPicker; // local copies for YUI compressor
-  /* eslint-disable jsdoc/require-returns */
   /**
    * @function external:jQuery.fn.jPicker
    * @see {@link external:jQuery.fn.$.fn.jPicker}
    */
-  /* eslint-enable jsdoc/require-returns */
 
   /**
   * Will be bound to active {@link jQuery.jPicker.Color}.
@@ -1556,7 +1552,7 @@ const jPicker = function ($) {
           const all = ui.val('all');
           activePreview.css({backgroundColor: (all && '#' + all.hex) || 'transparent'});
           setAlpha.call(that, activePreview, (all && toFixedNumeric((all.a * 100) / 255, 4)) || 0);
-        } catch (e) {}
+        } catch (e) {/* empty fn */}
       }
       /**
       * @param {external:jQuery} ui

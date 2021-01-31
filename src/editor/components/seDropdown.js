@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import ListComboBox from 'elix/define/ListComboBox.js';
 import {defaultState} from 'elix/src/base/internal.js';
 import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';

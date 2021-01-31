@@ -1,113 +1,39 @@
 'use strict';
 
 module.exports = {
-  extends: ['ash-nazg/sauron-node'],
+  plugins: ["html"],
+  extends: ["plugin:markdown/recommended","eslint:recommended"],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module'
   },
   env: {
     browser: true,
-    es6: true
+    es6: true,
+    node: true
   },
   settings: {
     polyfills: [
       // These are the primary polyfills needed by regular users if
       //  not present, e.g., with core-js-bundle; also those under
       //  extensions
-      // 'Array.isArray',
-      // 'Blob',
-      // 'console',
-      // 'CustomEvent',
-      // 'document.body',
-      // 'document.createElementNS',
-      // 'document.evaluate',
-      // 'document.head',
-      // 'document.importNode',
-      // 'document.querySelector',
-      // 'document.querySelectorAll',
-      // 'DOMParser',
-      // 'Error',
       'fetch',
-      // 'FileReader',
-      // 'JSON',
-      // 'KeyboardEvent',
-      // 'location.href',
-      // 'location.origin',
-      // 'MouseEvent',
-      // 'MutationObserver',
-      // 'navigator',
-      // 'Number.isNaN',
-      // 'Number.parseFloat',
-      // 'Number.parseInt',
-      // 'Object.assign',
-      // 'Object.defineProperty',
-      // 'Object.defineProperties',
-      // 'Object.entries',
-      // 'Object.getOwnPropertyDescriptor',
-      // 'Object.keys',
-      // 'Object.values',
       'Promise',
       'Promise.all',
-      // 'Set',
       'Uint8Array',
       'URL'
-      // 'URL.createObjectURL',
-      // 'XMLSerializer',
-      // 'XMLHttpRequest',
-      // 'window.getComputedStyle',
-      // 'window.parent',
-      // 'window.scrollX',
-      // 'window.scrollY'
     ]
   },
   rules: {
     // check-examples is not picking up eslint config properly in some
     //  environments; see also discussion above
     //  `mocha-cleanup/no-assertions-outside-it`
-    'jsdoc/check-examples': ['warn', {
-      rejectExampleCodeRegex: '^`',
-      checkDefaults: true,
-      checkParams: true,
-      checkProperties: true
-    }],
-
-    // https://github.com/sindresorhus/eslint-plugin-unicorn/issues/453
-    'unicorn/regex-shorthand': 0,
+    'no-unused-vars': ["error", { "args": "none" }],
     // The Babel transform seems to have a problem converting these
     'prefer-named-capture-group': 'off',
-    'jsdoc/require-file-overview': ['error', {
-      tags: {
-        file: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        license: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        copyright: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        author: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        module: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        },
-        exports: {
-          initialCommentsOnly: true,
-          preventDuplicates: true
-        }
-      }
-    }],
     // Warning or Off for now but should be reviewed
     // Override these rules which are difficult for us
     //   to apply at this time
-    'unicorn/prefer-string-slice': 'off',
     'default-case': 'off',
     'require-unicode-regexp': 'off',
     'max-len':
@@ -115,114 +41,32 @@ module.exports = {
         'warn',
         {ignoreComments: true, code: 130}
       ], // 130 is too much but too many occurences
-    'unicorn/prefer-query-selector': 'off',
-    'unicorn/no-fn-reference-in-iterator': 'off',
-    'unicorn/prefer-node-append': 'off',
-    'unicorn/no-zero-fractions': 'off',
-    'unicorn/prefer-number-properties': 'off',
     'eslint-comments/require-description': 'off',
-    'compat/compat': 'error',
     'consistent-this': 'off',
     'import/no-anonymous-default-export': 'off',
-    'node/no-unsupported-features/node-builtins': 'warn',
-    'prefer-exponentiation-operator': 'warn',
-    'node/no-unsupported-features/es-syntax': 'off',
-    'no-unsanitized/method': [
-      'error',
-      {
-        escape: {
-          methods: ['encodeURIComponent', 'encodeURI']
-        }
-      }
-    ]
+    'prefer-exponentiation-operator': 'warn'
   },
   overrides: [
     // Locales have no need for importing outside of SVG-Edit
     // and translations may need a longer line length
     {
       files: [
-        'src/editor/locale/lang.*.js', 'src/editor/extensions/*/locale/**',
-        'docs/tutorials/ExtensionDocs.md'
+        'src/editor/locale/lang.*.js', 'src/editor/extensions/*/locale/**'
       ],
       rules: {
         'import/no-anonymous-default-export': 'off',
         'max-len': 'off'
       }
     },
-    // These browser files don't do importing or requiring
     {
-      files: [
-        'src/editor/touch.js',
-        'src/editor/typedefs.js',
-        'src/editor/redirect-on-no-module-support.js',
-        'src/editor/extensions/ext-imagelib/index.js',
-        'screencasts/svgopen2010/script.js'
-      ],
-      rules: {
-        'import/unambiguous': ['off']
-      }
-    },
-    {
-      files: ['**/*.html', 'screencasts/**'],
-      globals: {
-        root: 'off'
-      },
-      settings: {
-        polyfills: [
-          'document.querySelector',
-          'history',
-          'history.pushState',
-          'history.replaceState',
-          'location.hash',
-          'navigator',
-          'Number.parseFloat',
-          'Number.parseInt',
-          'Number.isNaN'
-        ]
-      },
-      rules: {
-        'import/unambiguous': 'off'
-      }
-    },
-    {
-      files: ['.eslintrc.js', '.ncurc.js', 'tools/mochawesome-cli.js'],
-      extends: [
-        'ash-nazg/sauron-node-script'
-      ]
+      files: ['.eslintrc.js', '.ncurc.js', 'tools/mochawesome-cli.js']
     },
     // Our Markdown rules (and used for JSDoc examples as well, by way of
     //   our use of `jsdoc/check-examples` within `ash-nazg`)
     {
-      files: ['**/*.md'],
-      settings: {
-        polyfills: [
-          // Tutorials
-          'console',
-          'location.href'
-        ]
-      },
+      files: ["**/*.md/*.js"],
       rules: {
-        // Todo: Figure out why this is not enough to disable warning
-        //  for examples in my environment (but it is in others')
-        // Used in examples of assert-close.js plugin
-        'mocha-cleanup/no-assertions-outside-it': 'off',
-        'eslint-comments/no-unused-disable': 'warn',
-        'eol-last': ['off'],
-        'no-console': ['off'],
-        'no-undef': ['off'],
-        'no-unused-vars': ['warn'],
-        'padded-blocks': ['off'],
-        'import/unambiguous': ['off'],
-        'import/no-unresolved': ['off'],
-        'node/no-missing-import': ['off'],
-        'no-multi-spaces': 'off',
-        'sonarjs/no-all-duplicated-branches': 'off',
-        'node/no-unpublished-import': ['error', {
-          allowModules: ['@cypress/fiddle']
-        }],
-        'no-alert': 'off',
-        // Disable until may fix https://github.com/gajus/eslint-plugin-jsdoc/issues/211
-        indent: 'off'
+         "no-undef": 'off'
       }
     },
     {
@@ -240,10 +84,7 @@ module.exports = {
       }
     },
     {
-      files: ['cypress/plugins/index.js'],
-      extends: [
-        'ash-nazg/sauron-node-script'
-      ]
+      files: ['cypress/plugins/index.js']
     },
     {
       files: ['cypress/**'],
@@ -277,7 +118,6 @@ module.exports = {
         // These errors are caused in Cypress files if user has not
         //  yet instrumented code; need to reinvestigate why we had to
         //  instrument separately from nyc mocha
-        'import/no-unresolved': ['error', {ignore: ['/instrumented/']}],
         'node/no-missing-import': 'off',
         'jsdoc/check-examples': 'off',
         'chai-expect-keywords/no-unsupported-keywords': [
@@ -344,7 +184,6 @@ module.exports = {
         //  and we have too many modules to add to `peerDependencies`
         //  so this rule can know them to be available, so we instead
         //  disable
-        'node/no-unpublished-import': 'off'
       }
     }
   ]

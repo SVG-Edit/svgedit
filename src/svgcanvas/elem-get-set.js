@@ -169,7 +169,7 @@ export const setResolutionMethod = function (x, y) {
       const visEls = getVisibleElements();
       elemContext_.getCanvas().addToSelection(visEls);
       const dx = [], dy = [];
-      $.each(visEls, function (i, item) {
+      $.each(visEls, function (_i, _item) {
         dx.push(bbox.x * -1);
         dy.push(bbox.y * -1);
       });
@@ -239,7 +239,7 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
   const selectedElements = elemContext_.getSelectedElements();
   let spacer = 0.85;
   let bb;
-  const calcZoom = function (bb) { // eslint-disable-line no-shadow
+  const calcZoom = function (bb) {
     if (!bb) { return false; }
     const wZoom = Math.round((editorW / bb.width) * 100 * spacer) / 100;
     const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100;

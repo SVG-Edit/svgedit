@@ -1,6 +1,5 @@
 /* globals $ */
 
-// eslint-disable-next-line node/no-unpublished-import
 import deparam from 'deparam';
 
 /**
@@ -259,7 +258,7 @@ export default class ConfigObj {
       if (this.urldata.extensions) {
         // For security reasons, disallow cross-domain or cross-folder
         //  extensions via URL
-        this.urldata.extensions = this.urldata.extensions.match(/[:/\\]/)
+        this.urldata.extensions = (/[:/\\]/).test(this.urldata.extensions)
           ? ''
           : this.urldata.extensions.split(',');
       }
@@ -326,7 +325,7 @@ export default class ConfigObj {
   loadContentAndPrefs () {
     if (!this.curConfig.forceStorage &&
       (this.curConfig.noStorageOnLoad ||
-          !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)
+          !(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/).test(document.cookie)
       )
     ) {
       return;
@@ -336,7 +335,7 @@ export default class ConfigObj {
     if (this.editor.storage && // Cookies do not have enough available memory to hold large documents
       (this.curConfig.forceStorage ||
         (!this.curConfig.noStorageOnLoad &&
-          document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/))
+          (/(?:^|;\s*)svgeditstore=prefsAndContent/).test(document.cookie))
       )
     ) {
       const name = 'svgedit-' + this.curConfig.canvasName;

@@ -452,7 +452,7 @@ export class SelectorManager {
       sel = this.selectorMap[elem.id];
     if (sel && !sel.locked) {
       // TODO(codedread): Ensure this exists in this module.
-      console.log('WARNING! selector was released but was already unlocked'); // eslint-disable-line no-console
+      console.log('WARNING! selector was released but was already unlocked'); 
     }
     for (let i = 0; i < N; ++i) {
       if (this.selectors[i] && this.selectors[i] === sel) {
@@ -464,7 +464,7 @@ export class SelectorManager {
         // remove from DOM and store reference in JS but only if it exists in the DOM
         try {
           sel.selectorGroup.setAttribute('display', 'none');
-        } catch (e) {}
+        } catch (e) {/* empty fn */}
 
         break;
       }

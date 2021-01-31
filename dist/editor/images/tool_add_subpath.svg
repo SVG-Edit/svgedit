@@ -1,16 +1,1 @@
-<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" xmlns:xlink="http://www.w3.org/1999/xlink" class="svg_icon"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 124 124">
- <defs>
-  <linearGradient id="svg_4" x1="0.33594" y1="0.28125" x2="1" y2="1">
-   <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
-   <stop offset="1" stop-color="#fddb8c" stop-opacity="1"/>
-  </linearGradient>
- </defs>
- <g>
-  <path d="m6,103l55,-87c85,33.64 -26,37.12 55,87l-110,0z" id="svg_1" fill="url(#svg_4)" stroke="#000000" stroke-width="4" stroke-dasharray="null"/>
-  <g id="svg_7">
-   <circle stroke-dasharray="null" stroke-width="5" stroke="#000000" fill="#ffffff" id="svg_6" r="22.63281" cy="88.5" cx="45.5"/>
-   <line stroke-dasharray="null" stroke-width="7" stroke="#000000" id="svg_2" y2="104.03768" x2="45.5" y1="72.96232" x1="45.5"/>
-   <line stroke-dasharray="null" stroke-width="7" stroke="#000000" id="svg_3" y2="88.5" x2="61.03768" y1="88.5" x1="29.96232"/>
-  </g>
- </g>
- </svg></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51.04 49.47"><defs><style>.cls-1,.cls-2{fill:none;}.cls-2{stroke:#fff;stroke-miterlimit:10;stroke-width:2px;}.cls-3{fill:#fff;stroke:#f9ba00;stroke-linecap:round;stroke-linejoin:round;stroke-width:3px;}</style></defs><g id="Calque_2" data-name="Calque 2"><g id="Calque_1-2" data-name="Calque 1"><polyline class="cls-1" points="6.8 0 51.04 0 51.04 49.47 0 49.47 0 0 6.8 0"/><path class="cls-2" d="M43.15,17.55l2.47,1.12V42.3S4.55,43.89,5.44,33c.48-6,5.83-9.8,8.55-14.71A22,22,0,0,0,16.56,5.47l15.05,6.84Z"/><line class="cls-3" x1="41.13" y1="33.28" x2="31.88" y2="33.28"/><line class="cls-3" x1="36.51" y1="37.9" x2="36.51" y2="28.65"/></g></g></svg>

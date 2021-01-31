@@ -151,10 +151,10 @@ export default {
     function setupBeforeUnloadListener () {
       window.addEventListener('beforeunload', function (e) {
         // Don't save anything unless the user opted in to storage
-        if (!document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)) {
+        if (!(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/).test(document.cookie)) {
           return;
         }
-        if (document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/)) {
+        if ((/(?:^|;\s*)svgeditstore=prefsAndContent/).test(document.cookie)) {
           setSVGContentStorage(svgCanvas.getSvgString());
         }
 
@@ -209,7 +209,7 @@ export default {
             // continual prompts about it)...
             storagePrompt !== 'false' &&
             // ...and this user hasn't previously indicated a desire for storage
-            !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)
+            !(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/).test(document.cookie)
           )
           // ...then show the storage prompt.
         )) {

@@ -456,7 +456,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (!preventUndo) svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [svgContext_.getSVGContent()]);
   } catch (e) {
-    console.log(e); // eslint-disable-line no-console
+    console.log(e); 
     return false;
   }
 
@@ -577,7 +577,7 @@ export const importSvgString = function (xmlString) {
     svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [svgContext_.getSVGContent()]);
   } catch (e) {
-    console.log(e); // eslint-disable-line no-console
+    console.log(e); 
     return null;
   }
 
@@ -598,7 +598,6 @@ export const importSvgString = function (xmlString) {
 */
 export const embedImage = function (src) {
   // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
-  // eslint-disable-next-line promise/avoid-new
   return new Promise(function (resolve, reject) {
     // load in the image and once it's loaded, get the dimensions
     $(new Image()).load(function (response, status, xhr) {
@@ -679,7 +678,6 @@ function getIssues () {
   }
 
   $.each(issueList, function (sel, descr) {
-    // eslint-disable-next-line unicorn/no-array-callback-reference
     if (content.find(sel).length) {
       issueCodes.push(sel);
       issues.push(descr);
@@ -732,7 +730,6 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
   // Render only first frame, ignoring animations.
   await v.render();
   // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
-  // eslint-disable-next-line promise/avoid-new
   return new Promise((resolve, reject) => {
     const dataURLType = type.toLowerCase();
     const datauri = quality

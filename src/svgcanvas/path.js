@@ -77,7 +77,7 @@ export const setLinkControlPoints = function (lcp) {
  * @type {null|module:path.Path}
  * @memberof module:path
 */
-export let path = null; // eslint-disable-line import/no-mutable-exports
+export let path = null;
 
 let editorContext_ = null;
 
@@ -725,7 +725,6 @@ export const convertPath = function (pth, toRel) {
       }
       d += pathDSegment(letter, [[x1, y1], [x, y]]);
       break;
-    // eslint-disable-next-line sonarjs/no-duplicated-branches
     case 10: // absolute elliptical arc (A)
       x -= curx;
       y -= cury;

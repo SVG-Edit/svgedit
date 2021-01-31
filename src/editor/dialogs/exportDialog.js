@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/Dialog.js';
 import './se-elix/define/NumberSpinBox.js';
 

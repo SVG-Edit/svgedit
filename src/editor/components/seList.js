@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/DropdownList.js';
 
 const template = document.createElement('template');

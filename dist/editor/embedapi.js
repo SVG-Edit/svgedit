@@ -24,7 +24,7 @@ let cbid = 0;
 function getCallbackSetter (funcName) {
   return function (...args) {
     const that = this, // New callback
-      callbackID = this.send(funcName, args, function () { /* empty */ }); // The callback (currently it's nothing, but will be set later)
+      callbackID = this.send(funcName, args, function () { /* empty fn */ }); // The callback (currently it's nothing, but will be set later)
 
     return function (newCallback) {
       that.callbacks[callbackID] = newCallback; // Set callback
@@ -71,7 +71,6 @@ function messageListener (e) {
     e.source !== this.frame.contentWindow ||
     (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin))
   ) {
-    // eslint-disable-next-line no-console -- Info for developers
     console.error(
       `The origin ${e.origin} was not whitelisted as an origin from ` +
       `which responses may be received by this ${window.origin} script.`
@@ -344,7 +343,7 @@ class EmbeddedSVGEdit {
   * @param {GenericCallback} callback (This may be better than a promise in case adding an event.)
   * @returns {Integer}
   */
-  send (name, args, callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+  send (name, args, callback) {
     const that = this;
     cbid++;
 
@@ -363,7 +362,7 @@ class EmbeddedSVGEdit {
         try {
           sameOriginWithGlobal = window.location.origin === that.frame.contentWindow.location.origin &&
             that.frame.contentWindow.svgEditor.svgCanvas;
-        } catch (err) {}
+        }catch (err) {/* empty */}
 
         if (sameOriginWithGlobal) {
           // Although we do not really need this API if we are working same

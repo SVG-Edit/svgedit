@@ -24,7 +24,7 @@ export default {
         //  to configure
         const {allowedOrigins} = svgEditor.configObj.curConfig;
         if (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin)) {
-          console.log(`Origin ${e.origin} not whitelisted for posting to ${window.origin}`); // eslint-disable-line no-console
+          console.log(`Origin ${e.origin} not whitelisted for posting to ${window.origin}`); 
           return;
         }
         const cbid = data.id;
@@ -43,7 +43,7 @@ export default {
         e.source.postMessage(JSON.stringify(message), '*');
       });
     } catch (err) {
-      console.log('Error with xdomain message listener: ' + err); // eslint-disable-line no-console
+      console.log('Error with xdomain message listener: ' + err); 
     }
   }
 };

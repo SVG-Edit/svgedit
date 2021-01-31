@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-dom-node-append */
 /**
  * @file jGraduate 0.4
  *
@@ -23,7 +22,6 @@
  * We have to rewrite it as a pure webcomponent.
 */
 
-/* eslint-disable jsdoc/require-property */
 /**
   * The jQuery namespace.
   * @external jQuery
@@ -34,7 +32,6 @@
  * @memberof external:jQuery
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
-/* eslint-enable jsdoc/require-property */
 
 const ns = {
   svg: 'http://www.w3.org/2000/svg',
@@ -145,13 +142,11 @@ export default function jQueryPluginJGraduate ($) {
     }
   }
 
-  /* eslint-disable jsdoc/require-property */
   /**
   * @namespace {PlainObject} jGraduate
   * @memberof external:jQuery
   */
   $.jGraduate = /** @lends external:jQuery.jGraduate */ {
-    /* eslint-enable jsdoc/require-property */
     /**
     * @class external:jQuery.jGraduate.Paint
     * @see module:jGraduate~Paint
