@@ -165,6 +165,19 @@ template.innerHTML = `
   </elix-popup-button>
 `;
 /**
+* @external Math
+*/
+/**
+* @memberof external:Math
+* @param {Float} value
+* @param {Float} precision
+* @returns {Float}
+*/
+function toFixedNumeric (value, precision) {
+  if (precision === undefined) precision = 0;
+  return Math.round(value * (10 ** precision)) / (10 ** precision);
+}
+/**
  * Whether a value is `null` or `undefined`.
  * @param {any} val
  * @returns {boolean}
@@ -512,7 +525,7 @@ class ColorValuePicker {
    */
   constructor (picker, color, bindedHex, alphaPrecision) {
     const that = this; // private properties and methods
-    const inputs = picker.find('td.Text input');
+    const inputs = picker.querySelectorAll('td.Text input');
     // input box key down - use arrows to alter color
     /**
      *
@@ -746,9 +759,44 @@ class ColorValuePicker {
     * @returns {void}
     */
     function destroy () {
-      red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).unbind('keyup', keyUp).unbind('blur', blur);
-      red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).unbind('keydown', keyDown);
-      color.unbind(colorChanged);
+      red.removeEventListener('keyup', keyUp);
+      green.removeEventListener('keyup', keyUp);
+      blue.removeEventListener('keyup', keyUp);
+      hue.removeEventListener('keyup', keyUp);
+      saturation.removeEventListener('keyup', keyUp);
+      value.removeEventListener('keyup', keyUp);
+      hex.removeEventListener('keyup', keyUp);
+
+      red.removeEventListener('blur', blur);
+      green.removeEventListener('blur', blur);
+      blue.removeEventListener('blur', blur);
+      hue.removeEventListener('blur', blur);
+      saturation.removeEventListener('blur', blur);
+      value.removeEventListener('blur', blur);
+      hex.removeEventListener('blur', blur);
+
+      red.removeEventListener('keydown', keyDown);
+      green.removeEventListener('keydown', keyDown);
+      blue.removeEventListener('keydown', keyDown);
+      hue.removeEventListener('keydown', keyDown);
+      saturation.removeEventListener('keydown', keyDown);
+      value.removeEventListener('keydown', keyDown);
+
+      if (alpha !== null) {
+        alpha.removeEventListener('keyup', keyUp);
+        alpha.removeEventListener('blur', blur);
+        alpha.removeEventListener('keydown', keyDown);
+      }
+      if (ahex !== null) {
+        ahex.removeEventListener('keyup', keyUp);
+        ahex.removeEventListener('blur', blur);
+      }
+      if (bindedHex !== null) {
+        bindedHex.removeEventListener('keyup', keyUp);
+        bindedHex.removeEventListener('blur', blur);
+      }
+      // TODO: color unbind
+      // color.unbind(colorChanged);
       red = null;
       green = null;
       blue = null;
@@ -760,22 +808,57 @@ class ColorValuePicker {
       ahex = null;
     }
     let
-      red = inputs.eq(3),
-      green = inputs.eq(4),
-      blue = inputs.eq(5),
-      alpha = inputs.length > 7 ? inputs.eq(6) : null,
-      hue = inputs.eq(0),
-      saturation = inputs.eq(1),
-      value = inputs.eq(2),
-      hex = inputs.eq(inputs.length > 7 ? 7 : 6),
-      ahex = inputs.length > 7 ? inputs.eq(8) : null;
+      red = inputs[3],
+      green = inputs[4],
+      blue = inputs[5],
+      alpha = inputs.length > 7 ? inputs[6] : null,
+      hue = inputs[0],
+      saturation = inputs[1],
+      value = inputs[2],
+      hex = inputs[inputs.length > 7 ? 7 : 6],
+      ahex = inputs.length > 7 ? inputs[8] : null;
     $.extend(true, that, {
       // public properties and methods
       destroy
     });
-    red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).bind('keyup', keyUp).bind('blur', blur);
-    red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).bind('keydown', keyDown);
-    color.bind(colorChanged);
+    red.addEventListener('keyup', keyUp);
+    green.addEventListener('keyup', keyUp);
+    blue.addEventListener('keyup', keyUp);
+    hue.addEventListener('keyup', keyUp);
+    saturation.addEventListener('keyup', keyUp);
+    value.addEventListener('keyup', keyUp);
+    hex.addEventListener('keyup', keyUp);
+
+    red.addEventListener('blur', blur);
+    green.addEventListener('blur', blur);
+    blue.addEventListener('blur', blur);
+    hue.addEventListener('blur', blur);
+    saturation.addEventListener('blur', blur);
+    value.addEventListener('blur', blur);
+    hex.addEventListener('blur', blur);
+
+    red.addEventListener('keydown', keyDown);
+    green.addEventListener('keydown', keyDown);
+    blue.addEventListener('keydown', keyDown);
+    hue.addEventListener('keydown', keyDown);
+    saturation.addEventListener('keydown', keyDown);
+    value.addEventListener('keydown', keyDown);
+
+    if (alpha !== null) {
+      alpha.addEventListener('keyup', keyUp);
+      alpha.addEventListener('blur', blur);
+      alpha.addEventListener('keydown', keyDown);
+    }
+    if (ahex !== null) {
+      ahex.addEventListener('keyup', keyUp);
+      ahex.addEventListener('blur', blur);
+    }
+    if (bindedHex !== null) {
+      bindedHex.addEventListener('keyup', keyUp);
+      bindedHex.addEventListener('blur', blur);
+    }
+    // TODO: color
+    // color.bind(colorChanged);
   }
 }
 
@@ -1312,80 +1395,7 @@ export class SeColorPicker extends HTMLElement {
         color: {
           mode: 'h',
           active: '', // new Color({ahex: '#ffcc00ff'}),
-          quickList: [
-          /*  new Color({h: 360, s: 33, v: 100}),
-            new Color({h: 360, s: 66, v: 100}),
-            new Color({h: 360, s: 100, v: 100}),
-            new Color({h: 360, s: 100, v: 75}),
-            new Color({h: 360, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 100}),
-            new Color({h: 30, s: 33, v: 100}),
-            new Color({h: 30, s: 66, v: 100}),
-            new Color({h: 30, s: 100, v: 100}),
-            new Color({h: 30, s: 100, v: 75}),
-            new Color({h: 30, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 90}),
-            new Color({h: 60, s: 33, v: 100}),
-            new Color({h: 60, s: 66, v: 100}),
-            new Color({h: 60, s: 100, v: 100}),
-            new Color({h: 60, s: 100, v: 75}),
-            new Color({h: 60, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 80}),
-            new Color({h: 90, s: 33, v: 100}),
-            new Color({h: 90, s: 66, v: 100}),
-            new Color({h: 90, s: 100, v: 100}),
-            new Color({h: 90, s: 100, v: 75}),
-            new Color({h: 90, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 70}),
-            new Color({h: 120, s: 33, v: 100}),
-            new Color({h: 120, s: 66, v: 100}),
-            new Color({h: 120, s: 100, v: 100}),
-            new Color({h: 120, s: 100, v: 75}),
-            new Color({h: 120, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 60}),
-            new Color({h: 150, s: 33, v: 100}),
-            new Color({h: 150, s: 66, v: 100}),
-            new Color({h: 150, s: 100, v: 100}),
-            new Color({h: 150, s: 100, v: 75}),
-            new Color({h: 150, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 50}),
-            new Color({h: 180, s: 33, v: 100}),
-            new Color({h: 180, s: 66, v: 100}),
-            new Color({h: 180, s: 100, v: 100}),
-            new Color({h: 180, s: 100, v: 75}),
-            new Color({h: 180, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 40}),
-            new Color({h: 210, s: 33, v: 100}),
-            new Color({h: 210, s: 66, v: 100}),
-            new Color({h: 210, s: 100, v: 100}),
-            new Color({h: 210, s: 100, v: 75}),
-            new Color({h: 210, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 30}),
-            new Color({h: 240, s: 33, v: 100}),
-            new Color({h: 240, s: 66, v: 100}),
-            new Color({h: 240, s: 100, v: 100}),
-            new Color({h: 240, s: 100, v: 75}),
-            new Color({h: 240, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 20}),
-            new Color({h: 270, s: 33, v: 100}),
-            new Color({h: 270, s: 66, v: 100}),
-            new Color({h: 270, s: 100, v: 100}),
-            new Color({h: 270, s: 100, v: 75}),
-            new Color({h: 270, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 10}),
-            new Color({h: 300, s: 33, v: 100}),
-            new Color({h: 300, s: 66, v: 100}),
-            new Color({h: 300, s: 100, v: 100}),
-            new Color({h: 300, s: 100, v: 75}),
-            new Color({h: 300, s: 100, v: 50}),
-            new Color({h: 180, s: 0, v: 0}),
-            new Color({h: 330, s: 33, v: 100}),
-            new Color({h: 330, s: 66, v: 100}),
-            new Color({h: 330, s: 100, v: 100}),
-            new Color({h: 330, s: 100, v: 75}),
-            new Color({h: 330, s: 100, v: 50}),
-            new Color() */
-          ]
+          quickList: []
         },
         images: {
           clientPath: './components/jgraduate/images/',
@@ -1467,10 +1477,85 @@ export class SeColorPicker extends HTMLElement {
       }
     };
     const isLessThanIE7 = Number.parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters;
-    const settings = this.jPicker.default;
-    const win = settings.window;
     const {Color, ColorMethods} = this.jPicker;
+    this.jPicker.default.color.active = new Color({ahex: '#ffcc00ff'});
+    this.jPicker.default.color.quickList = [
+      new Color({h: 360, s: 33, v: 100}),
+      new Color({h: 360, s: 66, v: 100}),
+      new Color({h: 360, s: 100, v: 100}),
+      new Color({h: 360, s: 100, v: 75}),
+      new Color({h: 360, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 100}),
+      new Color({h: 30, s: 33, v: 100}),
+      new Color({h: 30, s: 66, v: 100}),
+      new Color({h: 30, s: 100, v: 100}),
+      new Color({h: 30, s: 100, v: 75}),
+      new Color({h: 30, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 90}),
+      new Color({h: 60, s: 33, v: 100}),
+      new Color({h: 60, s: 66, v: 100}),
+      new Color({h: 60, s: 100, v: 100}),
+      new Color({h: 60, s: 100, v: 75}),
+      new Color({h: 60, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 80}),
+      new Color({h: 90, s: 33, v: 100}),
+      new Color({h: 90, s: 66, v: 100}),
+      new Color({h: 90, s: 100, v: 100}),
+      new Color({h: 90, s: 100, v: 75}),
+      new Color({h: 90, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 70}),
+      new Color({h: 120, s: 33, v: 100}),
+      new Color({h: 120, s: 66, v: 100}),
+      new Color({h: 120, s: 100, v: 100}),
+      new Color({h: 120, s: 100, v: 75}),
+      new Color({h: 120, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 60}),
+      new Color({h: 150, s: 33, v: 100}),
+      new Color({h: 150, s: 66, v: 100}),
+      new Color({h: 150, s: 100, v: 100}),
+      new Color({h: 150, s: 100, v: 75}),
+      new Color({h: 150, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 50}),
+      new Color({h: 180, s: 33, v: 100}),
+      new Color({h: 180, s: 66, v: 100}),
+      new Color({h: 180, s: 100, v: 100}),
+      new Color({h: 180, s: 100, v: 75}),
+      new Color({h: 180, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 40}),
+      new Color({h: 210, s: 33, v: 100}),
+      new Color({h: 210, s: 66, v: 100}),
+      new Color({h: 210, s: 100, v: 100}),
+      new Color({h: 210, s: 100, v: 75}),
+      new Color({h: 210, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 30}),
+      new Color({h: 240, s: 33, v: 100}),
+      new Color({h: 240, s: 66, v: 100}),
+      new Color({h: 240, s: 100, v: 100}),
+      new Color({h: 240, s: 100, v: 75}),
+      new Color({h: 240, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 20}),
+      new Color({h: 270, s: 33, v: 100}),
+      new Color({h: 270, s: 66, v: 100}),
+      new Color({h: 270, s: 100, v: 100}),
+      new Color({h: 270, s: 100, v: 75}),
+      new Color({h: 270, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 10}),
+      new Color({h: 300, s: 33, v: 100}),
+      new Color({h: 300, s: 66, v: 100}),
+      new Color({h: 300, s: 100, v: 100}),
+      new Color({h: 300, s: 100, v: 75}),
+      new Color({h: 300, s: 100, v: 50}),
+      new Color({h: 180, s: 0, v: 0}),
+      new Color({h: 330, s: 33, v: 100}),
+      new Color({h: 330, s: 66, v: 100}),
+      new Color({h: 330, s: 100, v: 100}),
+      new Color({h: 330, s: 100, v: 75}),
+      new Color({h: 330, s: 100, v: 50}),
+      new Color()
+    ];
+    const settings = this.jPicker.default;
     const {images, localization, color} = settings; // local copies for YUI compressor
+    const win = settings.window;
     const colorObj = {
       active: (typeof settings.color.active).toString().toLowerCase() === 'string'
         ? new Color({ahex: !win.alphaSupport && settings.color.active
@@ -1503,21 +1588,176 @@ export class SeColorPicker extends HTMLElement {
     if (typeof cancelCallback !== 'function') {
       cancelCallback = null;
     } */
-
     /**
-    * @external Math
-    */
-    /**
-    * @memberof external:Math
-    * @param {Float} value
-    * @param {Float} precision
-    * @returns {Float}
-    */
-    function toFixedNumeric (value, precision) {
-      if (precision === undefined) precision = 0;
-      return Math.round(value * (10 ** precision)) / (10 ** precision);
+     *
+     * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode
+     * @throws {Error} Invalid mode
+     * @returns {void}
+     */
+    function setColorMode (colorMode) {
+      const {active} = color, // local copies for YUI compressor
+        // {clientPath} = images,
+        hex = active.val('hex');
+      let rgbMap, rgbBar;
+      settings.color.mode = colorMode;
+      switch (colorMode) {
+      case 'h':
+        setTimeout(function () {
+          setBG.call(that, colorMapDiv, 'transparent');
+          setImgLoc.call(that, colorMapL1, 0);
+          setAlpha.call(that, colorMapL1, 100);
+          setImgLoc.call(that, colorMapL2, 260);
+          setAlpha.call(that, colorMapL2, 100);
+          setBG.call(that, colorBarDiv, 'transparent');
+          setImgLoc.call(that, colorBarL1, 0);
+          setAlpha.call(that, colorBarL1, 100);
+          setImgLoc.call(that, colorBarL2, 260);
+          setAlpha.call(that, colorBarL2, 100);
+          setImgLoc.call(that, colorBarL3, 260);
+          setAlpha.call(that, colorBarL3, 100);
+          setImgLoc.call(that, colorBarL4, 260);
+          setAlpha.call(that, colorBarL4, 100);
+          setImgLoc.call(that, colorBarL6, 260);
+          setAlpha.call(that, colorBarL6, 100);
+        }, 0);
+        colorMap.range('all', {minX: 0, maxX: 100, minY: 0, maxY: 100});
+        colorBar.range('rangeY', {minY: 0, maxY: 360});
+        if (isNullish(active.val('ahex'))) break;
+        colorMap.val('xy', {x: active.val('s'), y: 100 - active.val('v')}, colorMap);
+        colorBar.val('y', 360 - active.val('h'), colorBar);
+        break;
+      case 's':
+        setTimeout(function () {
+          setBG.call(that, colorMapDiv, 'transparent');
+          setImgLoc.call(that, colorMapL1, -260);
+          setImgLoc.call(that, colorMapL2, -520);
+          setImgLoc.call(that, colorBarL1, -260);
+          setImgLoc.call(that, colorBarL2, -520);
+          setImgLoc.call(that, colorBarL6, 260);
+          setAlpha.call(that, colorBarL6, 100);
+        }, 0);
+        colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+        colorBar.range('rangeY', {minY: 0, maxY: 100});
+        if (isNullish(active.val('ahex'))) break;
+        colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
+        colorBar.val('y', 100 - active.val('s'), colorBar);
+        break;
+      case 'v':
+        setTimeout(function () {
+          setBG.call(that, colorMapDiv, '000000');
+          setImgLoc.call(that, colorMapL1, -780);
+          setImgLoc.call(that, colorMapL2, 260);
+          setBG.call(that, colorBarDiv, hex);
+          setImgLoc.call(that, colorBarL1, -520);
+          setImgLoc.call(that, colorBarL2, 260);
+          setAlpha.call(that, colorBarL2, 100);
+          setImgLoc.call(that, colorBarL6, 260);
+          setAlpha.call(that, colorBarL6, 100);
+        }, 0);
+        colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+        colorBar.range('rangeY', {minY: 0, maxY: 100});
+        if (isNullish(active.val('ahex'))) break;
+        colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('s')}, colorMap);
+        colorBar.val('y', 100 - active.val('v'), colorBar);
+        break;
+      case 'r':
+        rgbMap = -1040;
+        rgbBar = -780;
+        colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+        colorBar.range('rangeY', {minY: 0, maxY: 255});
+        if (isNullish(active.val('ahex'))) break;
+        colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('g')}, colorMap);
+        colorBar.val('y', 255 - active.val('r'), colorBar);
+        break;
+      case 'g':
+        rgbMap = -1560;
+        rgbBar = -1820;
+        colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+        colorBar.range('rangeY', {minY: 0, maxY: 255});
+        if (isNullish(active.val('ahex'))) break;
+        colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('r')}, colorMap);
+        colorBar.val('y', 255 - active.val('g'), colorBar);
+        break;
+      case 'b':
+        rgbMap = -2080;
+        rgbBar = -2860;
+        colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+        colorBar.range('rangeY', {minY: 0, maxY: 255});
+        if (isNullish(active.val('ahex'))) break;
+        colorMap.val('xy', {x: active.val('r'), y: 255 - active.val('g')}, colorMap);
+        colorBar.val('y', 255 - active.val('b'), colorBar);
+        break;
+      case 'a':
+        setTimeout(function () {
+          setBG.call(that, colorMapDiv, 'transparent');
+          setImgLoc.call(that, colorMapL1, -260);
+          setImgLoc.call(that, colorMapL2, -520);
+          setImgLoc.call(that, colorBarL1, 260);
+          setImgLoc.call(that, colorBarL2, 260);
+          setAlpha.call(that, colorBarL2, 100);
+          setImgLoc.call(that, colorBarL6, 0);
+          setAlpha.call(that, colorBarL6, 100);
+        }, 0);
+        colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+        colorBar.range('rangeY', {minY: 0, maxY: 255});
+        if (isNullish(active.val('ahex'))) break;
+        colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
+        colorBar.val('y', 255 - active.val('a'), colorBar);
+        break;
+      default:
+        throw new Error('Invalid Mode');
+      }
+      switch (colorMode) {
+      case 'h':
+        break;
+      case 's':
+      case 'v':
+      case 'a':
+        setTimeout(function () {
+          setAlpha.call(that, colorMapL1, 100);
+          setAlpha.call(that, colorBarL1, 100);
+          setImgLoc.call(that, colorBarL3, 260);
+          setAlpha.call(that, colorBarL3, 100);
+          setImgLoc.call(that, colorBarL4, 260);
+          setAlpha.call(that, colorBarL4, 100);
+        }, 0);
+        break;
+      case 'r':
+      case 'g':
+      case 'b':
+        setTimeout(function () {
+          setBG.call(that, colorMapDiv, 'transparent');
+          setBG.call(that, colorBarDiv, 'transparent');
+          setAlpha.call(that, colorBarL1, 100);
+          setAlpha.call(that, colorMapL1, 100);
+          setImgLoc.call(that, colorMapL1, rgbMap);
+          setImgLoc.call(that, colorMapL2, rgbMap - 260);
+          setImgLoc.call(that, colorBarL1, rgbBar - 780);
+          setImgLoc.call(that, colorBarL2, rgbBar - 520);
+          setImgLoc.call(that, colorBarL3, rgbBar);
+          setImgLoc.call(that, colorBarL4, rgbBar - 260);
+          setImgLoc.call(that, colorBarL6, 260);
+          setAlpha.call(that, colorBarL6, 100);
+        }, 0);
+        break;
+      }
+      if (isNullish(active.val('ahex'))) return;
+      activeColorChanged.call(that, active);
     }
-
+    /**
+     * Update color when user changes text values.
+     * @param {external:jQuery} ui
+     * @param {?module:jPicker.Slider} context
+     * @returns {void}
+    */
+    function activeColorChanged (ui, context) {
+      if (isNullish(context) || (context !== colorBar && context !== colorMap)) positionMapAndBarArrows.call(that, ui, context);
+      setTimeout(function () {
+        updatePreview.call(that, ui);
+        updateMapVisuals.call(that, ui);
+        updateBarVisuals.call(that, ui);
+      }, 0);
+    }
     /**
      * User has dragged the ColorMap pointer.
      * @param {external:jQuery} ui
@@ -1547,6 +1787,150 @@ export class SeColorPicker extends HTMLElement {
         break;
       case 'b':
         active.val('rg', {r: xy.x, g: 255 - xy.y}, context);
+        break;
+      }
+    }
+
+    /**
+    * @param {external:jQuery} el
+    * @param {string} [c="transparent"]
+    * @returns {void}
+    */
+    function setBG (el, c) {
+      el.css({backgroundColor: (c && c.length === 6 && '#' + c) || 'transparent'});
+    }
+
+    /**
+    * @param {external:jQuery} img
+    * @param {string} src The image source
+    * @returns {void}
+    */
+    function setImg (img, src) {
+      if (isLessThanIE7 && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
+        img.attr('pngSrc', src);
+        img.css({backgroundImage: 'none', filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')'});
+      } else img.css({backgroundImage: 'url(\'' + src + '\')'});
+    }
+    /**
+    * @param {external:jQuery} img
+    * @param {Float} y
+    * @returns {void}
+    */
+    function setImgLoc (img, y) {
+      img.css({top: y + 'px'});
+    }    
+
+    /**
+    * @param {external:jQuery} obj
+    * @param {Float} alpha
+    * @returns {void}
+    */
+    function setAlpha (obj, alpha) {
+      obj.style.visibility = (alpha > 0) ? 'visible' : 'hidden';
+      if (alpha > 0 && alpha < 100) {
+        if (isLessThanIE7) {
+          const src = obj.getAttribute('pngSrc');
+          if (!isNullish(src) && (
+            src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
+          )) {
+            obj.css({
+              filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
+                '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')'
+            });
+          } else obj.style.opacity = toFixedNumeric(alpha / 100, 4);
+        } else obj.style.opacity = toFixedNumeric(alpha / 100, 4);
+      } else if (alpha === 0 || alpha === 100) {
+        if (isLessThanIE7) {
+          const src = obj.getAttribute('pngSrc');
+          if (!isNullish(src) && (
+            src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
+          )) {
+            obj.css({
+              filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
+              '\', sizingMethod=\'scale\')'
+            });
+          } else obj.style.opacity = '';
+        } else obj.style.opacity = '';
+      }
+    }
+
+    /**
+    * Revert color to original color when opened.
+    * @returns {void}
+    */
+    function revertColor () {
+      colorObj.active.val('ahex', colorObj.current.val('ahex'));
+    }
+
+    /**
+    *
+    * @returns {void}
+    */
+    function currentClicked () {
+      revertColor.call(that);
+    }
+
+    /**
+    *
+    * @returns {void}
+    */
+    function cancelClicked () {
+      revertColor.call(that);
+      settings.window.expandable && hide.call(that);
+      typeof cancelCallback === 'function' && cancelCallback.call(that, colorObj.active, cancelButton);
+    }
+    /**
+    *
+    * @returns {void}
+    */
+    function okClicked () {
+      commitColor.call(that);
+      settings.window.expandable && hide.call(that);
+      typeof commitCallback === 'function' && commitCallback.call(that, colorObj.active, okButton);
+    }
+
+    /**
+    * @param {Event} e
+    * @returns {false}
+    */
+    function quickPickClicked (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const title = e.target.getAttribute('title');
+      colorObj.active.val('ahex', title || null, e.target);
+      return false;
+    }
+
+    /**
+     * User has dragged the ColorBar slider.
+     * @param {external:jQuery} ui
+     * @param {?module:jPicker.Slider} context
+     * @returns {void}
+    */
+    function colorBarValueChanged (ui, context) {
+      const {active} = color;
+      if (context !== colorBar && isNullish(active.val())) return;
+      switch (settings.color.mode) {
+      case 'h':
+        active.val('h', {h: 360 - ui.val('y')}, context);
+        break;
+      case 's':
+        active.val('s', {s: 100 - ui.val('y')}, context);
+        break;
+      case 'v':
+        active.val('v', {v: 100 - ui.val('y')}, context);
+        break;
+      case 'r':
+        active.val('r', {r: 255 - ui.val('y')}, context);
+        break;
+      case 'g':
+        active.val('g', {g: 255 - ui.val('y')}, context);
+        break;
+      case 'b':
+        active.val('b', {b: 255 - ui.val('y')}, context);
+        break;
+      case 'a':
+        active.val('a', 255 - ui.val('y'), context);
         break;
       }
     }
@@ -1623,16 +2007,16 @@ export class SeColorPicker extends HTMLElement {
         <td colspan="2" class="Preview" id="Preview">
           ${localization.text.newColor}
           <div>
-            <span class="Active" title="${localization.tooltips.colors.newColor}">&nbsp;</span>
-            <span class="Current" title="${localization.tooltips.colors.currentColor}">&nbsp;</span>
+            <span id="Active" title="${localization.tooltips.colors.newColor}">&nbsp;</span>
+            <span id="Current" title="${localization.tooltips.colors.currentColor}">&nbsp;</span>
           </div>
           ${localization.text.currentColor}
         </td>
-        <td rowspan="9" class="Button">
-          <input type="button" class="Ok" value="${localization.text.ok}" title="${localization.tooltips.buttons.ok}"/>
-          <input type="button" class="Cancel" value="${localization.text.cancel}" title="${localization.tooltips.buttons.cancel}"/>
+        <td rowspan="9" class="Button" id="Button">
+          <input type="button" id="Ok-button" class="Ok" value="${localization.text.ok}" title="${localization.tooltips.buttons.ok}"/>
+          <input type="button" id="okCancel-button" class="Cancel" value="${localization.text.cancel}" title="${localization.tooltips.buttons.cancel}"/>
           <hr/>
-          <div class="Grid">&nbsp;</div>
+          <div class="Grid" id="Grid"></div>
         </td>
       </tr>
       <tr class="Hue">
@@ -1762,23 +2146,30 @@ export class SeColorPicker extends HTMLElement {
         }
       }
     );
-    const preview = tbody.querySelector('#Preview');
-    // colorBar.bind(colorBarValueChanged);
-    /* colorPicker = new ColorValuePicker(
+    colorBar.bind(colorBarValueChanged);
+    colorPicker = new ColorValuePicker(
       tbody,
-      color.active,
+      colorObj.active,
       win.expandable && win.bindToInput ? win.input : null,
       win.alphaPrecision
     );
+    
     const hex = !isNullish(all) ? all.hex : null,
-    preview = tbody.querySelector('#Preview'), // tbody.find('.Preview'),
-    button = tbody.querySelector('#Button'); // tbody.find('.Button');
-     activePreview = preview.find('.Active:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'});
-    currentPreview = preview.find('.Current:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'}).bind('click', currentClicked);
-    setAlpha.call(that, currentPreview, toFixedNumeric((color.current.val('a') * 100) / 255, 4));
-    okButton = button.find('.Ok:first').bind('click', okClicked);
-    cancelButton = button.find('.Cancel:first').bind('click', cancelClicked); 
-    grid = button.find('.Grid:first'); */
+      preview = tbody.querySelector('#Preview'), // tbody.find('.Preview'),
+      button = tbody.querySelector('#Button'); // tbody.find('.Button');
+    activePreview = preview.querySelector('#Active');
+    activePreview.style.backgroundColor = (hex) ? '#' + hex : 'transparent';
+    currentPreview = preview.querySelector('#Current');
+    currentPreview.style.backgroundColor = (hex) ? '#' + hex : 'transparent';
+    preview.querySelector('#Current').addEventListener('click', currentClicked);
+
+    setAlpha.call(that, currentPreview, toFixedNumeric((colorObj.current.val('a') * 100) / 255, 4));
+    //button.find('.Ok:first')
+    okButton = button.querySelector('#Ok-button');
+    okButton.addEventListener('click', okClicked);
+    cancelButton = button.querySelector('#okCancel-button');
+    cancelButton.addEventListener('click', cancelClicked);
+    grid = button.querySelector('#Grid');
     setTimeout(function () {
       setImg.call(that, colorMapL1, images.clientPath + 'Maps.png');
       setImg.call(that, colorMapL2, images.clientPath + 'Maps.png');
@@ -1793,7 +2184,34 @@ export class SeColorPicker extends HTMLElement {
     }, 0);
     // preview.find('div:first')
     // tbody.find('td.Radio input').bind('click', radioClicked);
-    
+    // initialize quick list
+    if (colorObj.quickList && colorObj.quickList.length > 0) {
+      let html = '';
+      for (let i = 0; i < colorObj.quickList.length; i++) {
+        /* if default colors are hex strings, change them to color objects */
+        if ((typeof (colorObj.quickList[i])).toString().toLowerCase() === 'string') {
+          colorObj.quickList[i] = new Color({hex: colorObj.quickList[i]});
+        }
+        const alpha = colorObj.quickList[i].val('a');
+        let ahex = colorObj.quickList[i].val('ahex');
+        if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
+        const quickHex = colorObj.quickList[i].val('hex');
+        if (!ahex) ahex = '00000000';
+        html += '<span class="QuickColor"' + (' title="#' + ahex + '"') + ' style="background-color:' + ((quickHex && '#' + quickHex) || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + toFixedNumeric(alpha / 255, 4) + ';filter:Alpha(opacity=' + toFixedNumeric(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
+      }
+      setImg.call(that, grid, images.clientPath + 'bar-opacity.png');
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      while (div.children.length > 0) {
+        grid.appendChild(div.children[0]);
+      }
+      const quickColorElements = grid.querySelectorAll('.QuickColor');
+      for (const quickColorElement of quickColorElements) {
+        quickColorElement.addEventListener('click', quickPickClicked);
+      }
+    }
+    setColorMode.call(that, settings.color.mode);
+
     // ----------------------------------------------------------------
 
     this.applyStyle('.jGraduate_SliderBar', 'width', this.SLIDERW);
