@@ -606,1037 +606,1068 @@ const {Color, List, ColorMethods} = jPicker; // local copies for YUI compressor
 * @returns {external:jQuery}
 */
 export function jPickerMethod (elem, options, commitCallback, liveCallback, cancelCallback) {
-  return elem.each(function () {
-    const that = this,
-      settings = $.extend(true, {}, jPickerDefaults, options); // local copies for YUI compressor
-    if ($(that).get(0).nodeName.toLowerCase() === 'input') { // Add color picker icon if binding to an input element and bind the events to the input
-      $.extend(true, settings, {
-        window: {
-          bindToInput: true,
-          expandable: true,
-          input: $(that)
-        }
-      });
-      if ($(that).val() === '') {
-        settings.color.active = new Color({hex: null});
-        settings.color.current = new Color({hex: null});
-      } else if (ColorMethods.validateHex($(that).val())) {
-        settings.color.active = new Color({hex: $(that).val(), a: settings.color.active.val('a')});
-        settings.color.current = new Color({hex: $(that).val(), a: settings.color.active.val('a')});
+  // return elem.each(function () {
+  const that = elem,
+    settings = $.extend(true, {}, jPickerDefaults, options); // local copies for YUI compressor
+  if ($(that).get(0).nodeName.toLowerCase() === 'input') { // Add color picker icon if binding to an input element and bind the events to the input
+    $.extend(true, settings, {
+      window: {
+        bindToInput: true,
+        expandable: true,
+        input: $(that)
       }
+    });
+    if ($(that).val() === '') {
+      settings.color.active = new Color({hex: null});
+      settings.color.current = new Color({hex: null});
+    } else if (ColorMethods.validateHex($(that).val())) {
+      settings.color.active = new Color({hex: $(that).val(), a: settings.color.active.val('a')});
+      settings.color.current = new Color({hex: $(that).val(), a: settings.color.active.val('a')});
     }
-    if (settings.window.expandable) {
-      $(that).after('<span class="jPicker"><span class="Icon"><span class="Color">&nbsp;</span><span class="Alpha">&nbsp;</span><span class="Image" title="Click To Open Color Picker">&nbsp;</span><span class="Container">&nbsp;</span></span></span>');
-    } else {
-      settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
-    }
-    const isLessThanIE7 = Number.parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
-    // set color mode and update visuals for the new color mode
-    /**
-     *
-     * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode
-     * @throws {Error} Invalid mode
-     * @returns {void}
-     */
-    function setColorMode (colorMode) {
-      const {active} = color, // local copies for YUI compressor
-        // {clientPath} = images,
-        hex = active.val('hex');
-      let rgbMap, rgbBar;
-      settings.color.mode = colorMode;
-      switch (colorMode) {
-      case 'h':
-        setTimeout(function () {
-          setBG.call(that, colorMapDiv, 'transparent');
-          setImgLoc.call(that, colorMapL1, 0);
-          setAlpha.call(that, colorMapL1, 100);
-          setImgLoc.call(that, colorMapL2, 260);
-          setAlpha.call(that, colorMapL2, 100);
-          setBG.call(that, colorBarDiv, 'transparent');
-          setImgLoc.call(that, colorBarL1, 0);
-          setAlpha.call(that, colorBarL1, 100);
-          setImgLoc.call(that, colorBarL2, 260);
-          setAlpha.call(that, colorBarL2, 100);
-          setImgLoc.call(that, colorBarL3, 260);
-          setAlpha.call(that, colorBarL3, 100);
-          setImgLoc.call(that, colorBarL4, 260);
-          setAlpha.call(that, colorBarL4, 100);
-          setImgLoc.call(that, colorBarL6, 260);
-          setAlpha.call(that, colorBarL6, 100);
-        }, 0);
-        colorMap.range('all', {minX: 0, maxX: 100, minY: 0, maxY: 100});
-        colorBar.range('rangeY', {minY: 0, maxY: 360});
-        if (isNullish(active.val('ahex'))) break;
-        colorMap.val('xy', {x: active.val('s'), y: 100 - active.val('v')}, colorMap);
-        colorBar.val('y', 360 - active.val('h'), colorBar);
-        break;
-      case 's':
-        setTimeout(function () {
-          setBG.call(that, colorMapDiv, 'transparent');
-          setImgLoc.call(that, colorMapL1, -260);
-          setImgLoc.call(that, colorMapL2, -520);
-          setImgLoc.call(that, colorBarL1, -260);
-          setImgLoc.call(that, colorBarL2, -520);
-          setImgLoc.call(that, colorBarL6, 260);
-          setAlpha.call(that, colorBarL6, 100);
-        }, 0);
-        colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
-        colorBar.range('rangeY', {minY: 0, maxY: 100});
-        if (isNullish(active.val('ahex'))) break;
-        colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
-        colorBar.val('y', 100 - active.val('s'), colorBar);
-        break;
-      case 'v':
-        setTimeout(function () {
-          setBG.call(that, colorMapDiv, '000000');
-          setImgLoc.call(that, colorMapL1, -780);
-          setImgLoc.call(that, colorMapL2, 260);
-          setBG.call(that, colorBarDiv, hex);
-          setImgLoc.call(that, colorBarL1, -520);
-          setImgLoc.call(that, colorBarL2, 260);
-          setAlpha.call(that, colorBarL2, 100);
-          setImgLoc.call(that, colorBarL6, 260);
-          setAlpha.call(that, colorBarL6, 100);
-        }, 0);
-        colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
-        colorBar.range('rangeY', {minY: 0, maxY: 100});
-        if (isNullish(active.val('ahex'))) break;
-        colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('s')}, colorMap);
-        colorBar.val('y', 100 - active.val('v'), colorBar);
-        break;
-      case 'r':
-        rgbMap = -1040;
-        rgbBar = -780;
-        colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
-        colorBar.range('rangeY', {minY: 0, maxY: 255});
-        if (isNullish(active.val('ahex'))) break;
-        colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('g')}, colorMap);
-        colorBar.val('y', 255 - active.val('r'), colorBar);
-        break;
-      case 'g':
-        rgbMap = -1560;
-        rgbBar = -1820;
-        colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
-        colorBar.range('rangeY', {minY: 0, maxY: 255});
-        if (isNullish(active.val('ahex'))) break;
-        colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('r')}, colorMap);
-        colorBar.val('y', 255 - active.val('g'), colorBar);
-        break;
-      case 'b':
-        rgbMap = -2080;
-        rgbBar = -2860;
-        colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
-        colorBar.range('rangeY', {minY: 0, maxY: 255});
-        if (isNullish(active.val('ahex'))) break;
-        colorMap.val('xy', {x: active.val('r'), y: 255 - active.val('g')}, colorMap);
-        colorBar.val('y', 255 - active.val('b'), colorBar);
-        break;
-      case 'a':
-        setTimeout(function () {
-          setBG.call(that, colorMapDiv, 'transparent');
-          setImgLoc.call(that, colorMapL1, -260);
-          setImgLoc.call(that, colorMapL2, -520);
-          setImgLoc.call(that, colorBarL1, 260);
-          setImgLoc.call(that, colorBarL2, 260);
-          setAlpha.call(that, colorBarL2, 100);
-          setImgLoc.call(that, colorBarL6, 0);
-          setAlpha.call(that, colorBarL6, 100);
-        }, 0);
-        colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
-        colorBar.range('rangeY', {minY: 0, maxY: 255});
-        if (isNullish(active.val('ahex'))) break;
-        colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
-        colorBar.val('y', 255 - active.val('a'), colorBar);
-        break;
-      default:
-        throw new Error('Invalid Mode');
-      }
-      switch (colorMode) {
-      case 'h':
-        break;
-      case 's':
-      case 'v':
-      case 'a':
-        setTimeout(function () {
-          setAlpha.call(that, colorMapL1, 100);
-          setAlpha.call(that, colorBarL1, 100);
-          setImgLoc.call(that, colorBarL3, 260);
-          setAlpha.call(that, colorBarL3, 100);
-          setImgLoc.call(that, colorBarL4, 260);
-          setAlpha.call(that, colorBarL4, 100);
-        }, 0);
-        break;
-      case 'r':
-      case 'g':
-      case 'b':
-        setTimeout(function () {
-          setBG.call(that, colorMapDiv, 'transparent');
-          setBG.call(that, colorBarDiv, 'transparent');
-          setAlpha.call(that, colorBarL1, 100);
-          setAlpha.call(that, colorMapL1, 100);
-          setImgLoc.call(that, colorMapL1, rgbMap);
-          setImgLoc.call(that, colorMapL2, rgbMap - 260);
-          setImgLoc.call(that, colorBarL1, rgbBar - 780);
-          setImgLoc.call(that, colorBarL2, rgbBar - 520);
-          setImgLoc.call(that, colorBarL3, rgbBar);
-          setImgLoc.call(that, colorBarL4, rgbBar - 260);
-          setImgLoc.call(that, colorBarL6, 260);
-          setAlpha.call(that, colorBarL6, 100);
-        }, 0);
-        break;
-      }
-      if (isNullish(active.val('ahex'))) return;
-      activeColorChanged.call(that, active);
-    }
-    /**
-     * Update color when user changes text values.
-     * @param {external:jQuery} ui
-     * @param {?module:jPicker.Slider} context
-     * @returns {void}
-    */
-    function activeColorChanged (ui, context) {
-      if (isNullish(context) || (context !== colorBar && context !== colorMap)) positionMapAndBarArrows.call(that, ui, context);
+  }
+  if (settings.window.expandable) {
+    $(that).after('<span class="jPicker"><span class="Icon"><span class="Color">&nbsp;</span><span class="Alpha">&nbsp;</span><span class="Image" title="Click To Open Color Picker">&nbsp;</span><span class="Container" id="Container">&nbsp;</span></span></span>');
+  } else {
+    settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
+  }
+  const isLessThanIE7 = Number.parseFloat(navigator.appVersion.split('MSIE')[1]) < 7 && document.body.filters; // needed to run the AlphaImageLoader function for IE6
+  // set color mode and update visuals for the new color mode
+  /**
+   *
+   * @param {"h"|"s"|"v"|"r"|"g"|"b"|"a"} colorMode
+   * @throws {Error} Invalid mode
+   * @returns {void}
+   */
+  function setColorMode (colorMode) {
+    const {active} = color, // local copies for YUI compressor
+      // {clientPath} = images,
+      hex = active.val('hex');
+    let rgbMap, rgbBar;
+    settings.color.mode = colorMode;
+    switch (colorMode) {
+    case 'h':
       setTimeout(function () {
-        updatePreview.call(that, ui);
-        updateMapVisuals.call(that, ui);
-        updateBarVisuals.call(that, ui);
+        setBG.call(that, colorMapDiv, 'transparent');
+        setImgLoc.call(that, colorMapL1, 0);
+        setAlpha.call(that, colorMapL1, 100);
+        setImgLoc.call(that, colorMapL2, 260);
+        setAlpha.call(that, colorMapL2, 100);
+        setBG.call(that, colorBarDiv, 'transparent');
+        setImgLoc.call(that, colorBarL1, 0);
+        setAlpha.call(that, colorBarL1, 100);
+        setImgLoc.call(that, colorBarL2, 260);
+        setAlpha.call(that, colorBarL2, 100);
+        setImgLoc.call(that, colorBarL3, 260);
+        setAlpha.call(that, colorBarL3, 100);
+        setImgLoc.call(that, colorBarL4, 260);
+        setAlpha.call(that, colorBarL4, 100);
+        setImgLoc.call(that, colorBarL6, 260);
+        setAlpha.call(that, colorBarL6, 100);
       }, 0);
+      colorMap.range('all', {minX: 0, maxX: 100, minY: 0, maxY: 100});
+      colorBar.range('rangeY', {minY: 0, maxY: 360});
+      if (isNullish(active.val('ahex'))) break;
+      colorMap.val('xy', {x: active.val('s'), y: 100 - active.val('v')}, colorMap);
+      colorBar.val('y', 360 - active.val('h'), colorBar);
+      break;
+    case 's':
+      setTimeout(function () {
+        setBG.call(that, colorMapDiv, 'transparent');
+        setImgLoc.call(that, colorMapL1, -260);
+        setImgLoc.call(that, colorMapL2, -520);
+        setImgLoc.call(that, colorBarL1, -260);
+        setImgLoc.call(that, colorBarL2, -520);
+        setImgLoc.call(that, colorBarL6, 260);
+        setAlpha.call(that, colorBarL6, 100);
+      }, 0);
+      colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+      colorBar.range('rangeY', {minY: 0, maxY: 100});
+      if (isNullish(active.val('ahex'))) break;
+      colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
+      colorBar.val('y', 100 - active.val('s'), colorBar);
+      break;
+    case 'v':
+      setTimeout(function () {
+        setBG.call(that, colorMapDiv, '000000');
+        setImgLoc.call(that, colorMapL1, -780);
+        setImgLoc.call(that, colorMapL2, 260);
+        setBG.call(that, colorBarDiv, hex);
+        setImgLoc.call(that, colorBarL1, -520);
+        setImgLoc.call(that, colorBarL2, 260);
+        setAlpha.call(that, colorBarL2, 100);
+        setImgLoc.call(that, colorBarL6, 260);
+        setAlpha.call(that, colorBarL6, 100);
+      }, 0);
+      colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+      colorBar.range('rangeY', {minY: 0, maxY: 100});
+      if (isNullish(active.val('ahex'))) break;
+      colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('s')}, colorMap);
+      colorBar.val('y', 100 - active.val('v'), colorBar);
+      break;
+    case 'r':
+      rgbMap = -1040;
+      rgbBar = -780;
+      colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+      colorBar.range('rangeY', {minY: 0, maxY: 255});
+      if (isNullish(active.val('ahex'))) break;
+      colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('g')}, colorMap);
+      colorBar.val('y', 255 - active.val('r'), colorBar);
+      break;
+    case 'g':
+      rgbMap = -1560;
+      rgbBar = -1820;
+      colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+      colorBar.range('rangeY', {minY: 0, maxY: 255});
+      if (isNullish(active.val('ahex'))) break;
+      colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('r')}, colorMap);
+      colorBar.val('y', 255 - active.val('g'), colorBar);
+      break;
+    case 'b':
+      rgbMap = -2080;
+      rgbBar = -2860;
+      colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
+      colorBar.range('rangeY', {minY: 0, maxY: 255});
+      if (isNullish(active.val('ahex'))) break;
+      colorMap.val('xy', {x: active.val('r'), y: 255 - active.val('g')}, colorMap);
+      colorBar.val('y', 255 - active.val('b'), colorBar);
+      break;
+    case 'a':
+      setTimeout(function () {
+        setBG.call(that, colorMapDiv, 'transparent');
+        setImgLoc.call(that, colorMapL1, -260);
+        setImgLoc.call(that, colorMapL2, -520);
+        setImgLoc.call(that, colorBarL1, 260);
+        setImgLoc.call(that, colorBarL2, 260);
+        setAlpha.call(that, colorBarL2, 100);
+        setImgLoc.call(that, colorBarL6, 0);
+        setAlpha.call(that, colorBarL6, 100);
+      }, 0);
+      colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
+      colorBar.range('rangeY', {minY: 0, maxY: 255});
+      if (isNullish(active.val('ahex'))) break;
+      colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
+      colorBar.val('y', 255 - active.val('a'), colorBar);
+      break;
+    default:
+      throw new Error('Invalid Mode');
     }
+    switch (colorMode) {
+    case 'h':
+      break;
+    case 's':
+    case 'v':
+    case 'a':
+      setTimeout(function () {
+        setAlpha.call(that, colorMapL1, 100);
+        setAlpha.call(that, colorBarL1, 100);
+        setImgLoc.call(that, colorBarL3, 260);
+        setAlpha.call(that, colorBarL3, 100);
+        setImgLoc.call(that, colorBarL4, 260);
+        setAlpha.call(that, colorBarL4, 100);
+      }, 0);
+      break;
+    case 'r':
+    case 'g':
+    case 'b':
+      setTimeout(function () {
+        setBG.call(that, colorMapDiv, 'transparent');
+        setBG.call(that, colorBarDiv, 'transparent');
+        setAlpha.call(that, colorBarL1, 100);
+        setAlpha.call(that, colorMapL1, 100);
+        setImgLoc.call(that, colorMapL1, rgbMap);
+        setImgLoc.call(that, colorMapL2, rgbMap - 260);
+        setImgLoc.call(that, colorBarL1, rgbBar - 780);
+        setImgLoc.call(that, colorBarL2, rgbBar - 520);
+        setImgLoc.call(that, colorBarL3, rgbBar);
+        setImgLoc.call(that, colorBarL4, rgbBar - 260);
+        setImgLoc.call(that, colorBarL6, 260);
+        setAlpha.call(that, colorBarL6, 100);
+      }, 0);
+      break;
+    }
+    if (isNullish(active.val('ahex'))) return;
+    activeColorChanged.call(that, active);
+  }
+  /**
+   * Update color when user changes text values.
+   * @param {external:jQuery} ui
+   * @param {?module:jPicker.Slider} context
+   * @returns {void}
+  */
+  function activeColorChanged (ui, context) {
+    if (isNullish(context) || (context !== colorBar && context !== colorMap)) positionMapAndBarArrows.call(that, ui, context);
+    setTimeout(function () {
+      updatePreview.call(that, ui);
+      updateMapVisuals.call(that, ui);
+      updateBarVisuals.call(that, ui);
+    }, 0);
+  }
 
-    /**
-     * User has dragged the ColorMap pointer.
-     * @param {external:jQuery} ui
-     * @param {?module:jPicker.Slider} context
-     * @returns {void}
-    */
-    function mapValueChanged (ui, context) {
-      const {active} = color;
-      if (context !== colorMap && isNullish(active.val())) return;
-      const xy = ui.val('all');
-      switch (settings.color.mode) {
-      case 'h':
-        active.val('sv', {s: xy.x, v: 100 - xy.y}, context);
-        break;
-      case 's':
-      case 'a':
-        active.val('hv', {h: xy.x, v: 100 - xy.y}, context);
-        break;
-      case 'v':
-        active.val('hs', {h: xy.x, s: 100 - xy.y}, context);
-        break;
-      case 'r':
-        active.val('gb', {g: 255 - xy.y, b: xy.x}, context);
-        break;
-      case 'g':
-        active.val('rb', {r: 255 - xy.y, b: xy.x}, context);
-        break;
-      case 'b':
-        active.val('rg', {r: xy.x, g: 255 - xy.y}, context);
-        break;
-      }
+  /**
+   * User has dragged the ColorMap pointer.
+   * @param {external:jQuery} ui
+   * @param {?module:jPicker.Slider} context
+   * @returns {void}
+  */
+  function mapValueChanged (ui, context) {
+    const {active} = color;
+    if (context !== colorMap && isNullish(active.val())) return;
+    const xy = ui.val('all');
+    switch (settings.color.mode) {
+    case 'h':
+      active.val('sv', {s: xy.x, v: 100 - xy.y}, context);
+      break;
+    case 's':
+    case 'a':
+      active.val('hv', {h: xy.x, v: 100 - xy.y}, context);
+      break;
+    case 'v':
+      active.val('hs', {h: xy.x, s: 100 - xy.y}, context);
+      break;
+    case 'r':
+      active.val('gb', {g: 255 - xy.y, b: xy.x}, context);
+      break;
+    case 'g':
+      active.val('rb', {r: 255 - xy.y, b: xy.x}, context);
+      break;
+    case 'b':
+      active.val('rg', {r: xy.x, g: 255 - xy.y}, context);
+      break;
     }
+  }
 
-    /**
-     * User has dragged the ColorBar slider.
-     * @param {external:jQuery} ui
-     * @param {?module:jPicker.Slider} context
-     * @returns {void}
-    */
-    function colorBarValueChanged (ui, context) {
-      const {active} = color;
-      if (context !== colorBar && isNullish(active.val())) return;
-      switch (settings.color.mode) {
-      case 'h':
-        active.val('h', {h: 360 - ui.val('y')}, context);
-        break;
-      case 's':
-        active.val('s', {s: 100 - ui.val('y')}, context);
-        break;
-      case 'v':
-        active.val('v', {v: 100 - ui.val('y')}, context);
-        break;
-      case 'r':
-        active.val('r', {r: 255 - ui.val('y')}, context);
-        break;
-      case 'g':
-        active.val('g', {g: 255 - ui.val('y')}, context);
-        break;
-      case 'b':
-        active.val('b', {b: 255 - ui.val('y')}, context);
-        break;
-      case 'a':
-        active.val('a', 255 - ui.val('y'), context);
-        break;
-      }
+  /**
+   * User has dragged the ColorBar slider.
+   * @param {external:jQuery} ui
+   * @param {?module:jPicker.Slider} context
+   * @returns {void}
+  */
+  function colorBarValueChanged (ui, context) {
+    const {active} = color;
+    if (context !== colorBar && isNullish(active.val())) return;
+    switch (settings.color.mode) {
+    case 'h':
+      active.val('h', {h: 360 - ui.val('y')}, context);
+      break;
+    case 's':
+      active.val('s', {s: 100 - ui.val('y')}, context);
+      break;
+    case 'v':
+      active.val('v', {v: 100 - ui.val('y')}, context);
+      break;
+    case 'r':
+      active.val('r', {r: 255 - ui.val('y')}, context);
+      break;
+    case 'g':
+      active.val('g', {g: 255 - ui.val('y')}, context);
+      break;
+    case 'b':
+      active.val('b', {b: 255 - ui.val('y')}, context);
+      break;
+    case 'a':
+      active.val('a', 255 - ui.val('y'), context);
+      break;
     }
+  }
 
-    /**
-     * Position map and bar arrows to match current color.
-     * @param {external:jQuery} ui
-     * @param {?module:jPicker.Slider} context
-     * @returns {void}
-    */
-    function positionMapAndBarArrows (ui, context) {
-      if (context !== colorMap) {
-        switch (settings.color.mode) {
-        case 'h': {
-          const sv = ui.val('sv');
-          colorMap.val('xy', {x: !isNullish(sv) ? sv.s : 100, y: 100 - (!isNullish(sv) ? sv.v : 100)}, context);
-          break;
-        } case 's':
-        // Fall through
-        case 'a': {
-          const hv = ui.val('hv');
-          colorMap.val('xy', {x: (hv && hv.h) || 0, y: 100 - (!isNullish(hv) ? hv.v : 100)}, context);
-          break;
-        } case 'v': {
-          const hs = ui.val('hs');
-          colorMap.val('xy', {x: (hs && hs.h) || 0, y: 100 - (!isNullish(hs) ? hs.s : 100)}, context);
-          break;
-        } case 'r': {
-          const bg = ui.val('bg');
-          colorMap.val('xy', {x: (bg && bg.b) || 0, y: 255 - ((bg && bg.g) || 0)}, context);
-          break;
-        } case 'g': {
-          const br = ui.val('br');
-          colorMap.val('xy', {x: (br && br.b) || 0, y: 255 - ((br && br.r) || 0)}, context);
-          break;
-        } case 'b': {
-          const rg = ui.val('rg');
-          colorMap.val('xy', {x: (rg && rg.r) || 0, y: 255 - ((rg && rg.g) || 0)}, context);
-          break;
-        }
-        }
-      }
-      if (context !== colorBar) {
-        switch (settings.color.mode) {
-        case 'h':
-          colorBar.val('y', 360 - (ui.val('h') || 0), context);
-          break;
-        case 's': {
-          const s = ui.val('s');
-          colorBar.val('y', 100 - (!isNullish(s) ? s : 100), context);
-          break;
-        } case 'v': {
-          const v = ui.val('v');
-          colorBar.val('y', 100 - (!isNullish(v) ? v : 100), context);
-          break;
-        } case 'r':
-          colorBar.val('y', 255 - (ui.val('r') || 0), context);
-          break;
-        case 'g':
-          colorBar.val('y', 255 - (ui.val('g') || 0), context);
-          break;
-        case 'b':
-          colorBar.val('y', 255 - (ui.val('b') || 0), context);
-          break;
-        case 'a': {
-          const a = ui.val('a');
-          colorBar.val('y', 255 - (!isNullish(a) ? a : 255), context);
-          break;
-        }
-        }
-      }
-    }
-    /**
-    * @param {external:jQuery} ui
-    * @returns {void}
-    */
-    function updatePreview (ui) {
-      try {
-        const all = ui.val('all');
-        activePreview.css({backgroundColor: (all && '#' + all.hex) || 'transparent'});
-        setAlpha.call(that, activePreview, (all && toFixedNumeric((all.a * 100) / 255, 4)) || 0);
-      } catch (e) {}
-    }
-    /**
-    * @param {external:jQuery} ui
-    * @returns {void}
-    */
-    function updateMapVisuals (ui) {
+  /**
+   * Position map and bar arrows to match current color.
+   * @param {external:jQuery} ui
+   * @param {?module:jPicker.Slider} context
+   * @returns {void}
+  */
+  function positionMapAndBarArrows (ui, context) {
+    if (context !== colorMap) {
       switch (settings.color.mode) {
-      case 'h':
-        setBG.call(that, colorMapDiv, new Color({h: ui.val('h') || 0, s: 100, v: 100}).val('hex'));
+      case 'h': {
+        const sv = ui.val('sv');
+        colorMap.val('xy', {x: !isNullish(sv) ? sv.s : 100, y: 100 - (!isNullish(sv) ? sv.v : 100)}, context);
         break;
-      case 's':
+      } case 's':
+      // Fall through
       case 'a': {
+        const hv = ui.val('hv');
+        colorMap.val('xy', {x: (hv && hv.h) || 0, y: 100 - (!isNullish(hv) ? hv.v : 100)}, context);
+        break;
+      } case 'v': {
+        const hs = ui.val('hs');
+        colorMap.val('xy', {x: (hs && hs.h) || 0, y: 100 - (!isNullish(hs) ? hs.s : 100)}, context);
+        break;
+      } case 'r': {
+        const bg = ui.val('bg');
+        colorMap.val('xy', {x: (bg && bg.b) || 0, y: 255 - ((bg && bg.g) || 0)}, context);
+        break;
+      } case 'g': {
+        const br = ui.val('br');
+        colorMap.val('xy', {x: (br && br.b) || 0, y: 255 - ((br && br.r) || 0)}, context);
+        break;
+      } case 'b': {
+        const rg = ui.val('rg');
+        colorMap.val('xy', {x: (rg && rg.r) || 0, y: 255 - ((rg && rg.g) || 0)}, context);
+        break;
+      }
+      }
+    }
+    if (context !== colorBar) {
+      switch (settings.color.mode) {
+      case 'h':
+        colorBar.val('y', 360 - (ui.val('h') || 0), context);
+        break;
+      case 's': {
         const s = ui.val('s');
-        setAlpha.call(that, colorMapL2, 100 - (!isNullish(s) ? s : 100));
+        colorBar.val('y', 100 - (!isNullish(s) ? s : 100), context);
         break;
       } case 'v': {
         const v = ui.val('v');
-        setAlpha.call(that, colorMapL1, !isNullish(v) ? v : 100);
+        colorBar.val('y', 100 - (!isNullish(v) ? v : 100), context);
         break;
       } case 'r':
-        setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('r') || 0) / 255 * 100, 4));
+        colorBar.val('y', 255 - (ui.val('r') || 0), context);
         break;
       case 'g':
-        setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('g') || 0) / 255 * 100, 4));
+        colorBar.val('y', 255 - (ui.val('g') || 0), context);
         break;
       case 'b':
-        setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('b') || 0) / 255 * 100));
+        colorBar.val('y', 255 - (ui.val('b') || 0), context);
+        break;
+      case 'a': {
+        const a = ui.val('a');
+        colorBar.val('y', 255 - (!isNullish(a) ? a : 255), context);
         break;
       }
+      }
+    }
+  }
+  /**
+  * @param {external:jQuery} ui
+  * @returns {void}
+  */
+  function updatePreview (ui) {
+    try {
+      const all = ui.val('all');
+      activePreview.css({backgroundColor: (all && '#' + all.hex) || 'transparent'});
+      setAlpha.call(that, activePreview, (all && toFixedNumeric((all.a * 100) / 255, 4)) || 0);
+    } catch (e) {}
+  }
+  /**
+  * @param {external:jQuery} ui
+  * @returns {void}
+  */
+  function updateMapVisuals (ui) {
+    switch (settings.color.mode) {
+    case 'h':
+      setBG.call(that, colorMapDiv, new Color({h: ui.val('h') || 0, s: 100, v: 100}).val('hex'));
+      break;
+    case 's':
+    case 'a': {
+      const s = ui.val('s');
+      setAlpha.call(that, colorMapL2, 100 - (!isNullish(s) ? s : 100));
+      break;
+    } case 'v': {
+      const v = ui.val('v');
+      setAlpha.call(that, colorMapL1, !isNullish(v) ? v : 100);
+      break;
+    } case 'r':
+      setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('r') || 0) / 255 * 100, 4));
+      break;
+    case 'g':
+      setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('g') || 0) / 255 * 100, 4));
+      break;
+    case 'b':
+      setAlpha.call(that, colorMapL2, toFixedNumeric((ui.val('b') || 0) / 255 * 100));
+      break;
+    }
+    const a = ui.val('a');
+    setAlpha.call(that, colorMapL3, toFixedNumeric(((255 - (a || 0)) * 100) / 255, 4));
+  }
+  /**
+  * @param {external:jQuery} ui
+  * @returns {void}
+  */
+  function updateBarVisuals (ui) {
+    switch (settings.color.mode) {
+    case 'h': {
       const a = ui.val('a');
-      setAlpha.call(that, colorMapL3, toFixedNumeric(((255 - (a || 0)) * 100) / 255, 4));
-    }
-    /**
-    * @param {external:jQuery} ui
-    * @returns {void}
-    */
-    function updateBarVisuals (ui) {
-      switch (settings.color.mode) {
-      case 'h': {
-        const a = ui.val('a');
-        setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - (a || 0)) * 100) / 255, 4));
-        break;
-      } case 's': {
-        const hva = ui.val('hva'),
-          saturatedColor = new Color({h: (hva && hva.h) || 0, s: 100, v: !isNullish(hva) ? hva.v : 100});
-        setBG.call(that, colorBarDiv, saturatedColor.val('hex'));
-        setAlpha.call(that, colorBarL2, 100 - (!isNullish(hva) ? hva.v : 100));
-        setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - ((hva && hva.a) || 0)) * 100) / 255, 4));
-        break;
-      } case 'v': {
-        const hsa = ui.val('hsa'),
-          valueColor = new Color({h: (hsa && hsa.h) || 0, s: !isNullish(hsa) ? hsa.s : 100, v: 100});
-        setBG.call(that, colorBarDiv, valueColor.val('hex'));
-        setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - ((hsa && hsa.a) || 0)) * 100) / 255, 4));
-        break;
-      } case 'r':
-      case 'g':
-      case 'b': {
-        const rgba = ui.val('rgba');
-        let hValue = 0, vValue = 0;
-        if (settings.color.mode === 'r') {
-          hValue = (rgba && rgba.b) || 0;
-          vValue = (rgba && rgba.g) || 0;
-        } else if (settings.color.mode === 'g') {
-          hValue = (rgba && rgba.b) || 0;
-          vValue = (rgba && rgba.r) || 0;
-        } else if (settings.color.mode === 'b') {
-          hValue = (rgba && rgba.r) || 0;
-          vValue = (rgba && rgba.g) || 0;
-        }
-        const middle = vValue > hValue ? hValue : vValue;
-        setAlpha.call(that, colorBarL2, hValue > vValue ? toFixedNumeric(((hValue - vValue) / (255 - vValue)) * 100, 4) : 0);
-        setAlpha.call(that, colorBarL3, vValue > hValue ? toFixedNumeric(((vValue - hValue) / (255 - hValue)) * 100, 4) : 0);
-        setAlpha.call(that, colorBarL4, toFixedNumeric((middle / 255) * 100, 4));
-        setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - ((rgba && rgba.a) || 0)) * 100) / 255, 4));
-        break;
-      } case 'a': {
-        const a = ui.val('a');
-        setBG.call(that, colorBarDiv, ui.val('hex') || '000000');
-        setAlpha.call(that, colorBarL5, !isNullish(a) ? 0 : 100);
-        setAlpha.call(that, colorBarL6, !isNullish(a) ? 100 : 0);
-        break;
+      setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - (a || 0)) * 100) / 255, 4));
+      break;
+    } case 's': {
+      const hva = ui.val('hva'),
+        saturatedColor = new Color({h: (hva && hva.h) || 0, s: 100, v: !isNullish(hva) ? hva.v : 100});
+      setBG.call(that, colorBarDiv, saturatedColor.val('hex'));
+      setAlpha.call(that, colorBarL2, 100 - (!isNullish(hva) ? hva.v : 100));
+      setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - ((hva && hva.a) || 0)) * 100) / 255, 4));
+      break;
+    } case 'v': {
+      const hsa = ui.val('hsa'),
+        valueColor = new Color({h: (hsa && hsa.h) || 0, s: !isNullish(hsa) ? hsa.s : 100, v: 100});
+      setBG.call(that, colorBarDiv, valueColor.val('hex'));
+      setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - ((hsa && hsa.a) || 0)) * 100) / 255, 4));
+      break;
+    } case 'r':
+    case 'g':
+    case 'b': {
+      const rgba = ui.val('rgba');
+      let hValue = 0, vValue = 0;
+      if (settings.color.mode === 'r') {
+        hValue = (rgba && rgba.b) || 0;
+        vValue = (rgba && rgba.g) || 0;
+      } else if (settings.color.mode === 'g') {
+        hValue = (rgba && rgba.b) || 0;
+        vValue = (rgba && rgba.r) || 0;
+      } else if (settings.color.mode === 'b') {
+        hValue = (rgba && rgba.r) || 0;
+        vValue = (rgba && rgba.g) || 0;
       }
-      }
+      const middle = vValue > hValue ? hValue : vValue;
+      setAlpha.call(that, colorBarL2, hValue > vValue ? toFixedNumeric(((hValue - vValue) / (255 - vValue)) * 100, 4) : 0);
+      setAlpha.call(that, colorBarL3, vValue > hValue ? toFixedNumeric(((vValue - hValue) / (255 - hValue)) * 100, 4) : 0);
+      setAlpha.call(that, colorBarL4, toFixedNumeric((middle / 255) * 100, 4));
+      setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - ((rgba && rgba.a) || 0)) * 100) / 255, 4));
+      break;
+    } case 'a': {
+      const a = ui.val('a');
+      setBG.call(that, colorBarDiv, ui.val('hex') || '000000');
+      setAlpha.call(that, colorBarL5, !isNullish(a) ? 0 : 100);
+      setAlpha.call(that, colorBarL6, !isNullish(a) ? 100 : 0);
+      break;
     }
-    /**
-    * @param {external:jQuery} el
-    * @param {string} [c="transparent"]
-    * @returns {void}
-    */
-    function setBG (el, c) {
-      el.css({backgroundColor: (c && c.length === 6 && '#' + c) || 'transparent'});
     }
+  }
+  /**
+  * @param {external:jQuery} el
+  * @param {string} [c="transparent"]
+  * @returns {void}
+  */
+  function setBG (el, c) {
+    el.css({backgroundColor: (c && c.length === 6 && '#' + c) || 'transparent'});
+  }
 
-    /**
-    * @param {external:jQuery} img
-    * @param {string} src The image source
-    * @returns {void}
-    */
-    function setImg (img, src) {
-      if (isLessThanIE7 && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
-        img.attr('pngSrc', src);
-        img.css({backgroundImage: 'none', filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')'});
-      } else img.css({backgroundImage: 'url(\'' + src + '\')'});
-    }
-    /**
-    * @param {external:jQuery} img
-    * @param {Float} y
-    * @returns {void}
-    */
-    function setImgLoc (img, y) {
-      img.css({top: y + 'px'});
-    }
-    /**
-    * @param {external:jQuery} obj
-    * @param {Float} alpha
-    * @returns {void}
-    */
-    function setAlpha (obj, alpha) {
-      obj.css({visibility: alpha > 0 ? 'visible' : 'hidden'});
-      if (alpha > 0 && alpha < 100) {
-        if (isLessThanIE7) {
-          const src = obj.attr('pngSrc');
-          if (!isNullish(src) && (
-            src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
-          )) {
-            obj.css({
-              filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
-                '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')'
-            });
-          } else obj.css({opacity: toFixedNumeric(alpha / 100, 4)});
-        } else obj.css({opacity: toFixedNumeric(alpha / 100, 4)});
-      } else if (alpha === 0 || alpha === 100) {
-        if (isLessThanIE7) {
-          const src = obj.attr('pngSrc');
-          if (!isNullish(src) && (
-            src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
-          )) {
-            obj.css({
-              filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
-              '\', sizingMethod=\'scale\')'
-            });
-          } else obj.css({opacity: ''});
-        } else obj.css({opacity: ''});
-      }
-    }
-
-    /**
-    * Revert color to original color when opened.
-    * @returns {void}
-    */
-    function revertColor () {
-      color.active.val('ahex', color.current.val('ahex'));
-    }
-    /**
-    * Commit the color changes.
-    * @returns {void}
-    */
-    function commitColor () {
-      color.current.val('ahex', color.active.val('ahex'));
-    }
-    /**
-    * @param {Event} e
-    * @returns {void}
-    */
-    function radioClicked (e) {
-      $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
-      setColorMode.call(that, e.target.value);
-    }
-    /**
-    *
-    * @returns {void}
-    */
-    function currentClicked () {
-      revertColor.call(that);
-    }
-    /**
-    *
-    * @returns {void}
-    */
-    function cancelClicked () {
-      revertColor.call(that);
-      settings.window.expandable && hide.call(that);
-      typeof cancelCallback === 'function' && cancelCallback.call(that, color.active, cancelButton);
-    }
-    /**
-    *
-    * @returns {void}
-    */
-    function okClicked () {
-      commitColor.call(that);
-      settings.window.expandable && hide.call(that);
-      typeof commitCallback === 'function' && commitCallback.call(that, color.active, okButton);
-    }
-    /**
-    *
-    * @returns {void}
-    */
-    function iconImageClicked () {
-      show.call(that);
-    }
-    /**
-    * @param {external:jQuery} ui
-    * @returns {void}
-    */
-    function currentColorChanged (ui) {
-      const hex = ui.val('hex');
-      currentPreview.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
-      setAlpha.call(that, currentPreview, toFixedNumeric(((ui.val('a') || 0) * 100) / 255, 4));
-    }
-    /**
-    * @param {external:jQuery} ui
-    * @returns {void}
-    */
-    function expandableColorChanged (ui) {
-      const hex = ui.val('hex');
-      const va = ui.val('va');
-      iconColor.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
-      setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - ((va && va.a) || 0)) * 100) / 255, 4));
-      if (settings.window.bindToInput && settings.window.updateInputColor) {
-        settings.window.input.css({
-          backgroundColor: (hex && '#' + hex) || 'transparent',
-          color: isNullish(va) || va.v > 75 ? '#000000' : '#ffffff'
-        });
-      }
-    }
-    /**
-    * @param {Event} e
-    * @returns {void}
-    */
-    function moveBarMouseDown (e) {
-      // const {element} = settings.window, // local copies for YUI compressor
-      //     {page} = settings.window;
-      elementStartX = Number.parseInt(container.css('left'));
-      elementStartY = Number.parseInt(container.css('top'));
-      pageStartX = e.pageX;
-      pageStartY = e.pageY;
-      // bind events to document to move window - we will unbind these on mouseup
-      $(document).bind('mousemove', documentMouseMove).bind('mouseup', documentMouseUp);
-      e.preventDefault(); // prevent attempted dragging of the column
-    }
-    /**
-    * @param {Event} e
-    * @returns {false}
-    */
-    function documentMouseMove (e) {
-      container.css({
-        left: elementStartX - (pageStartX - e.pageX) + 'px',
-        top: elementStartY - (pageStartY - e.pageY) + 'px'
-      });
-      if (settings.window.expandable && !$.support.boxModel) {
-        container.prev().css({
-          left: container.css('left'),
-          top: container.css('top')
-        });
-      }
-      e.stopPropagation();
-      e.preventDefault();
-      return false;
-    }
-    /**
-    * @param {Event} e
-    * @returns {false}
-    */
-    function documentMouseUp (e) {
-      $(document).unbind('mousemove', documentMouseMove).unbind('mouseup', documentMouseUp);
-      e.stopPropagation();
-      e.preventDefault();
-      return false;
-    }
-    /**
-    * @param {Event} e
-    * @returns {false}
-    */
-    function quickPickClicked (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      color.active.val('ahex', $(this).attr('title') || null, e.target);
-      return false;
-    }
-    /**
-    *
-    * @returns {void}
-    */
-    function show () {
-      color.current.val('ahex', color.active.val('ahex'));
-      /**
-      *
-      * @returns {void}
-      */
-      function attachIFrame () {
-        if (!settings.window.expandable || $.support.boxModel) return;
-        const table = container.find('table:first');
-        container.before('<iframe/>');
-        container.prev().css({
-          width: table.width(),
-          height: container.height(),
-          opacity: 0,
-          position: 'absolute',
-          left: container.css('left'),
-          top: container.css('top')
-        });
-      }
-      if (settings.window.expandable) {
-        $(document.body).children('div.jPicker.Container').css({zIndex: 10});
-        container.css({zIndex: 20});
-      }
-      switch (settings.window.effects.type) {
-      case 'fade':
-        container.fadeIn(settings.window.effects.speed.show, attachIFrame);
-        break;
-      case 'slide':
-        container.slideDown(settings.window.effects.speed.show, attachIFrame);
-        break;
-      case 'show':
-      default:
-        container.show(settings.window.effects.speed.show, attachIFrame);
-        break;
-      }
-    }
-    /**
-    *
-    * @returns {void}
-    */
-    function hide () {
-      /**
-      *
-      * @returns {void}
-      */
-      function removeIFrame () {
-        if (settings.window.expandable) container.css({zIndex: 10});
-        if (!settings.window.expandable || $.support.boxModel) return;
-        container.prev().remove();
-      }
-      switch (settings.window.effects.type) {
-      case 'fade':
-        container.fadeOut(settings.window.effects.speed.hide, removeIFrame);
-        break;
-      case 'slide':
-        container.slideUp(settings.window.effects.speed.hide, removeIFrame);
-        break;
-      case 'show':
-      default:
-        container.hide(settings.window.effects.speed.hide, removeIFrame);
-        break;
-      }
-    }
-    /**
-    *
-    * @returns {void}
-    */
-    function initialize () {
-      const win = settings.window,
-        popup = win.expandable ? $(that).next().find('.Container:first') : null;
-      container = win.expandable ? $('<div/>') : $(that);
-      container.addClass('jPicker Container');
-      if (win.expandable) container.hide();
-      container.get(0).onselectstart = function (e) {
-        if (e.target.nodeName.toLowerCase() !== 'input') return false;
-        return true;
-      };
-      // inject html source code - we are using a single table for this control - I know tables are considered bad, but it takes care of equal height columns and
-      // this control really is tabular data, so I believe it is the right move
-      const all = color.active.val('all');
-      if (win.alphaPrecision < 0) win.alphaPrecision = 0;
-      else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
-      const controlHtml = `<table class="jPicker" cellpadding="0" cellspacing="0">
-        <tbody>
-          ${win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : ''}
-          <tr>
-            <td rowspan="9"><h2 class="Title">${win.title || localization.text.title}</h2><div class="Map"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><img src="${images.clientPath + images.colorMap.arrow.file}" class="Arrow"/></div></td>
-            <td rowspan="9"><div class="Bar"><span class="Map1">&nbsp;</span><span class="Map2">&nbsp;</span><span class="Map3">&nbsp;</span><span class="Map4">&nbsp;</span><span class="Map5">&nbsp;</span><span class="Map6">&nbsp;</span><img src="${images.clientPath + images.colorBar.arrow.file}" class="Arrow"/></div></td>
-            <td colspan="2" class="Preview">${localization.text.newColor}<div><span class="Active" title="${localization.tooltips.colors.newColor}">&nbsp;</span><span class="Current" title="${localization.tooltips.colors.currentColor}">&nbsp;</span></div>${localization.text.currentColor}</td>
-            <td rowspan="9" class="Button"><input type="button" class="Ok" value="${localization.text.ok}" title="${localization.tooltips.buttons.ok}"/><input type="button" class="Cancel" value="${localization.text.cancel}" title="${localization.tooltips.buttons.cancel}"/><hr/><div class="Grid">&nbsp;</div></td>
-          </tr>
-          <tr class="Hue">
-            <td class="Radio"><label title="${localization.tooltips.hue.radio}"><input type="radio" value="h"${settings.color.mode === 'h' ? ' checked="checked"' : ''}/>H:</label></td>
-            <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.h : ''}" title="${localization.tooltips.hue.textbox}"/>&nbsp;&deg;</td>
-          </tr>
-          <tr class="Saturation">
-            <td class="Radio"><label title="${localization.tooltips.saturation.radio}"><input type="radio" value="s"${settings.color.mode === 's' ? ' checked="checked"' : ''}/>S:</label></td>
-            <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.s : ''}" title="${localization.tooltips.saturation.textbox}"/>&nbsp;%</td>
-          </tr>
-          <tr class="Value">
-            <td class="Radio"><label title="${localization.tooltips.value.radio}"><input type="radio" value="v"${settings.color.mode === 'v' ? ' checked="checked"' : ''}/>V:</label><br/><br/></td>
-            <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.v : ''}" title="${localization.tooltips.value.textbox}"/>&nbsp;%<br/><br/></td>
-          </tr>
-          <tr class="Red">
-            <td class="Radio"><label title="${localization.tooltips.red.radio}"><input type="radio" value="r"${settings.color.mode === 'r' ? ' checked="checked"' : ''}/>R:</label></td>
-            <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.r : ''}" title="${localization.tooltips.red.textbox}"/></td>
-          </tr>
-          <tr class="Green">
-            <td class="Radio"><label title="${localization.tooltips.green.radio}"><input type="radio" value="g"${settings.color.mode === 'g' ? ' checked="checked"' : ''}/>G:</label></td>
-            <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.g : ''}" title="${localization.tooltips.green.textbox}"/></td>
-          </tr>
-          <tr class="Blue">
-            <td class="Radio"><label title="${localization.tooltips.blue.radio}"><input type="radio" value="b"${settings.color.mode === 'b' ? ' checked="checked"' : ''}/>B:</label></td>
-            <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.b : ''}" title="${localization.tooltips.blue.textbox}"/></td>
-          </tr>
-          <tr class="Alpha">
-            <td class="Radio">${win.alphaSupport ? `<label title="${localization.tooltips.alpha.radio}"><input type="radio" value="a"${settings.color.mode === 'a' ? ' checked="checked"' : ''}/>A:</label>` : '&nbsp;'}</td>
-            <td class="Text">${win.alphaSupport ? `<input type="text" maxlength="${3 + win.alphaPrecision}" value="${!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, win.alphaPrecision) : ''}" title="${localization.tooltips.alpha.textbox}"/>&nbsp;%` : '&nbsp;'}</td>
-          </tr>
-          <tr class="Hex">
-            <td colspan="2" class="Text"><label title="${localization.tooltips.hex.textbox}">#:<input type="text" maxlength="6" class="Hex" value="${!isNullish(all) ? all.hex : ''}"/></label>${win.alphaSupport ? `<input type="text" maxlength="2" class="AHex" value="${!isNullish(all) ? all.ahex.substring(6) : ''}" title="${localization.tooltips.hex.alpha}"/></td>` : '&nbsp;'}
-          </tr>
-        </tbody></table>`;
-      if (win.expandable) {
-        container.html(controlHtml);
-        if (!$(document.body).children('div.jPicker.Container').length) {
-          $(document.body).prepend(container);
-        } else {
-          $(document.body).children('div.jPicker.Container:last').after(container);
-        }
-        container.mousedown(
-          function () {
-            $(document.body).children('div.jPicker.Container').css({zIndex: 10});
-            container.css({zIndex: 20});
-          }
-        );
-        container.css( // positions must be set and display set to absolute before source code injection or IE will size the container to fit the window
-          {
-            left:
-              win.position.x === 'left'
-                ? (popup.offset().left - 530 - (win.position.y === 'center' ? 25 : 0)) + 'px'
-                : win.position.x === 'center'
-                  ? (popup.offset().left - 260) + 'px'
-                  : win.position.x === 'right'
-                    ? (popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0)) + 'px'
-                    : win.position.x === 'screenCenter'
-                      ? (($(document).width() >> 1) - 260) + 'px'
-                      : (popup.offset().left + Number.parseInt(win.position.x)) + 'px',
-            position: 'absolute',
-            top: win.position.y === 'top'
-              ? (popup.offset().top - 312) + 'px'
-              : win.position.y === 'center'
-                ? (popup.offset().top - 156) + 'px'
-                : win.position.y === 'bottom'
-                  ? (popup.offset().top + 25) + 'px'
-                  : (popup.offset().top + Number.parseInt(win.position.y)) + 'px'
-          }
-        );
-      } else {
-        container = $(that);
-        container.html(controlHtml);
-      }
-      // initialize the objects to the source code just injected
-      const tbody = container.find('tbody:first');
-      colorMapDiv = tbody.find('div.Map:first');
-      colorBarDiv = tbody.find('div.Bar:first');
-      const MapMaps = colorMapDiv.find('span');
-      const BarMaps = colorBarDiv.find('span');
-      colorMapL1 = MapMaps.filter('.Map1:first');
-      colorMapL2 = MapMaps.filter('.Map2:first');
-      colorMapL3 = MapMaps.filter('.Map3:first');
-      colorBarL1 = BarMaps.filter('.Map1:first');
-      colorBarL2 = BarMaps.filter('.Map2:first');
-      colorBarL3 = BarMaps.filter('.Map3:first');
-      colorBarL4 = BarMaps.filter('.Map4:first');
-      colorBarL5 = BarMaps.filter('.Map5:first');
-      colorBarL6 = BarMaps.filter('.Map6:first');
-      // create color pickers and maps
-      colorMap = new Slider(
-        colorMapDiv,
-        {
-          map: {
-            width: images.colorMap.width,
-            height: images.colorMap.height
-          },
-          arrow: {
-            image: images.clientPath + images.colorMap.arrow.file,
-            width: images.colorMap.arrow.width,
-            height: images.colorMap.arrow.height
-          }
-        }
-      );
-      colorMap.bind(mapValueChanged);
-      colorBar = new Slider(
-        colorBarDiv,
-        {
-          map: {
-            width: images.colorBar.width,
-            height: images.colorBar.height
-          },
-          arrow: {
-            image: images.clientPath + images.colorBar.arrow.file,
-            width: images.colorBar.arrow.width,
-            height: images.colorBar.arrow.height
-          }
-        }
-      );
-      colorBar.bind(colorBarValueChanged);
-      colorPicker = new ColorValuePicker(
-        tbody,
-        color.active,
-        win.expandable && win.bindToInput ? win.input : null,
-        win.alphaPrecision
-      );
-      const hex = !isNullish(all) ? all.hex : null,
-        preview = tbody.find('.Preview'),
-        button = tbody.find('.Button');
-      activePreview = preview.find('.Active:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'});
-      currentPreview = preview.find('.Current:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'}).bind('click', currentClicked);
-      setAlpha.call(that, currentPreview, toFixedNumeric((color.current.val('a') * 100) / 255, 4));
-      okButton = button.find('.Ok:first').bind('click', okClicked);
-      cancelButton = button.find('.Cancel:first').bind('click', cancelClicked);
-      grid = button.find('.Grid:first');
-      setTimeout(function () {
-        setImg.call(that, colorMapL1, images.clientPath + 'Maps.png');
-        setImg.call(that, colorMapL2, images.clientPath + 'Maps.png');
-        setImg.call(that, colorMapL3, images.clientPath + 'map-opacity.png');
-        setImg.call(that, colorBarL1, images.clientPath + 'Bars.png');
-        setImg.call(that, colorBarL2, images.clientPath + 'Bars.png');
-        setImg.call(that, colorBarL3, images.clientPath + 'Bars.png');
-        setImg.call(that, colorBarL4, images.clientPath + 'Bars.png');
-        setImg.call(that, colorBarL5, images.clientPath + 'bar-opacity.png');
-        setImg.call(that, colorBarL6, images.clientPath + 'AlphaBar.png');
-        setImg.call(that, preview.find('div:first'), images.clientPath + 'preview-opacity.png');
-      }, 0);
-      tbody.find('td.Radio input').bind('click', radioClicked);
-      // initialize quick list
-      if (color.quickList && color.quickList.length > 0) {
-        let html = '';
-        for (let i = 0; i < color.quickList.length; i++) {
-          /* if default colors are hex strings, change them to color objects */
-          if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') {
-            color.quickList[i] = new Color({hex: color.quickList[i]});
-          }
-          const alpha = color.quickList[i].val('a');
-          let ahex = color.quickList[i].val('ahex');
-          if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
-          const quickHex = color.quickList[i].val('hex');
-          if (!ahex) ahex = '00000000';
-          html += '<span class="QuickColor"' + (' title="#' + ahex + '"') + ' style="background-color:' + ((quickHex && '#' + quickHex) || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + toFixedNumeric(alpha / 255, 4) + ';filter:Alpha(opacity=' + toFixedNumeric(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
-        }
-        setImg.call(that, grid, images.clientPath + 'bar-opacity.png');
-        grid.html(html);
-        grid.find('.QuickColor').click(quickPickClicked);
-      }
-      setColorMode.call(that, settings.color.mode);
-      color.active.bind(activeColorChanged);
-      typeof liveCallback === 'function' && color.active.bind(liveCallback);
-      color.current.bind(currentColorChanged);
-      // bind to input
-      if (win.expandable) {
-        that.icon = popup.parents('.Icon:first');
-        iconColor = that.icon.find('.Color:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'});
-        iconAlpha = that.icon.find('.Alpha:first');
-        setImg.call(that, iconAlpha, images.clientPath + 'bar-opacity.png');
-        setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - (!isNullish(all) ? all.a : 0)) * 100) / 255, 4));
-        iconImage = that.icon.find('.Image:first').css({
-          backgroundImage: 'url(\'' + images.clientPath + images.picker.file + '\')'
-        }).bind('click', iconImageClicked);
-        if (win.bindToInput && win.updateInputColor) {
-          win.input.css({
-            backgroundColor: (hex && '#' + hex) || 'transparent',
-            color: isNullish(all) || all.v > 75 ? '#000000' : '#ffffff'
+  /**
+  * @param {external:jQuery} img
+  * @param {string} src The image source
+  * @returns {void}
+  */
+  function setImg (img, src) {
+    if (isLessThanIE7 && (src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png'))) {
+      img.setAttribute('pngSrc', src);
+      img.style.backgroundImage = 'none';
+      img.style.filter = 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')';
+      // img.attr('pngSrc', src);
+      // img.css({backgroundImage: 'none', filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')'});
+    } else img.style.backgroundImage = 'url(\'' + src + '\')';
+    // img.css({backgroundImage: 'url(\'' + src + '\')'});
+  }
+  /**
+  * @param {external:jQuery} img
+  * @param {Float} y
+  * @returns {void}
+  */
+  function setImgLoc (img, y) {
+    // img.css({top: y + 'px'});
+    img.style.top = y + 'px';
+  }
+  /**
+  * @param {external:jQuery} obj
+  * @param {Float} alpha
+  * @returns {void}
+  */
+  function setAlpha (obj, alpha) {
+    obj.style.visibility = (alpha > 0) ? 'visible' : 'hidden';
+    if (alpha > 0 && alpha < 100) {
+      if (isLessThanIE7) {
+        const src = obj.getAttribute('pngSrc');
+        if (!isNullish(src) && (
+          src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
+        )) {
+          obj.css({
+            filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
+              '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')'
           });
-        }
-        moveBar = tbody.find('.Move:first').bind('mousedown', moveBarMouseDown);
-        color.active.bind(expandableColorChanged);
-      } else show.call(that);
+        } else obj.style.opacity = toFixedNumeric(alpha / 100, 4);
+      } else obj.style.opacity = toFixedNumeric(alpha / 100, 4);
+    } else if (alpha === 0 || alpha === 100) {
+      if (isLessThanIE7) {
+        const src = obj.getAttribute('pngSrc');
+        if (!isNullish(src) && (
+          src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
+        )) {
+          obj.css({
+            filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
+            '\', sizingMethod=\'scale\')'
+          });
+        } else obj.style.opacity = '';
+      } else obj.style.opacity = '';
     }
+  }
+
+  /**
+  * Revert color to original color when opened.
+  * @returns {void}
+  */
+  function revertColor () {
+    color.active.val('ahex', color.current.val('ahex'));
+  }
+  /**
+  * Commit the color changes.
+  * @returns {void}
+  */
+  function commitColor () {
+    color.current.val('ahex', color.active.val('ahex'));
+  }
+  /**
+  * @param {Event} e
+  * @returns {void}
+  */
+  function radioClicked (e) {
+    $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
+    setColorMode.call(that, e.target.value);
+  }
+  /**
+  *
+  * @returns {void}
+  */
+  function currentClicked () {
+    revertColor.call(that);
+  }
+  /**
+  *
+  * @returns {void}
+  */
+  function cancelClicked () {
+    revertColor.call(that);
+    settings.window.expandable && hide.call(that);
+    typeof cancelCallback === 'function' && cancelCallback.call(that, color.active, cancelButton);
+  }
+  /**
+  *
+  * @returns {void}
+  */
+  function okClicked () {
+    commitColor.call(that);
+    settings.window.expandable && hide.call(that);
+    typeof commitCallback === 'function' && commitCallback.call(that, color.active, okButton);
+  }
+  /**
+  *
+  * @returns {void}
+  */
+  function iconImageClicked () {
+    show.call(that);
+  }
+  /**
+  * @param {external:jQuery} ui
+  * @returns {void}
+  */
+  function currentColorChanged (ui) {
+    const hex = ui.val('hex');
+    currentPreview.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
+    setAlpha.call(that, currentPreview, toFixedNumeric(((ui.val('a') || 0) * 100) / 255, 4));
+  }
+  /**
+  * @param {external:jQuery} ui
+  * @returns {void}
+  */
+  function expandableColorChanged (ui) {
+    const hex = ui.val('hex');
+    const va = ui.val('va');
+    iconColor.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
+    setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - ((va && va.a) || 0)) * 100) / 255, 4));
+    if (settings.window.bindToInput && settings.window.updateInputColor) {
+      settings.window.input.css({
+        backgroundColor: (hex && '#' + hex) || 'transparent',
+        color: isNullish(va) || va.v > 75 ? '#000000' : '#ffffff'
+      });
+    }
+  }
+  /**
+  * @param {Event} e
+  * @returns {void}
+  */
+  function moveBarMouseDown (e) {
+    // const {element} = settings.window, // local copies for YUI compressor
+    //     {page} = settings.window;
+    elementStartX = Number.parseInt(container.css('left'));
+    elementStartY = Number.parseInt(container.css('top'));
+    pageStartX = e.pageX;
+    pageStartY = e.pageY;
+    // bind events to document to move window - we will unbind these on mouseup
+    $(document).bind('mousemove', documentMouseMove).bind('mouseup', documentMouseUp);
+    e.preventDefault(); // prevent attempted dragging of the column
+  }
+  /**
+  * @param {Event} e
+  * @returns {false}
+  */
+  function documentMouseMove (e) {
+    container.css({
+      left: elementStartX - (pageStartX - e.pageX) + 'px',
+      top: elementStartY - (pageStartY - e.pageY) + 'px'
+    });
+    if (settings.window.expandable && !$.support.boxModel) {
+      container.prev().css({
+        left: container.css('left'),
+        top: container.css('top')
+      });
+    }
+    e.stopPropagation();
+    e.preventDefault();
+    return false;
+  }
+  /**
+  * @param {Event} e
+  * @returns {false}
+  */
+  function documentMouseUp (e) {
+    $(document).unbind('mousemove', documentMouseMove).unbind('mouseup', documentMouseUp);
+    e.stopPropagation();
+    e.preventDefault();
+    return false;
+  }
+  /**
+  * @param {Event} e
+  * @returns {false}
+  */
+  function quickPickClicked (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    color.active.val('ahex', $(this).attr('title') || null, e.target);
+    return false;
+  }
+  /**
+  *
+  * @returns {void}
+  */
+  function show () {
+    color.current.val('ahex', color.active.val('ahex'));
     /**
     *
     * @returns {void}
     */
-    function destroy () {
-      container.find('td.Radio input').unbind('click', radioClicked);
-      currentPreview.unbind('click', currentClicked);
-      cancelButton.unbind('click', cancelClicked);
-      okButton.unbind('click', okClicked);
-      if (settings.window.expandable) {
-        iconImage.unbind('click', iconImageClicked);
-        moveBar.unbind('mousedown', moveBarMouseDown);
-        that.icon = null;
+    function attachIFrame () {
+      if (!settings.window.expandable || $.support.boxModel) return;
+      const table = container.find('table:first');
+      container.before('<iframe/>');
+      container.prev().css({
+        width: table.width(),
+        height: container.height(),
+        opacity: 0,
+        position: 'absolute',
+        left: container.css('left'),
+        top: container.css('top')
+      });
+    }
+    if (settings.window.expandable) {
+      $(document.body).children('div.jPicker.Container').css({zIndex: 10});
+      container.css({zIndex: 20});
+    }
+    switch (settings.window.effects.type) {
+    case 'fade':
+      container.fadeIn(settings.window.effects.speed.show, attachIFrame);
+      break;
+    case 'slide':
+      container.slideDown(settings.window.effects.speed.show, attachIFrame);
+      break;
+    case 'show':
+    default:
+      container.show(settings.window.effects.speed.show, attachIFrame);
+      break;
+    }
+  }
+  /**
+  *
+  * @returns {void}
+  */
+  function hide () {
+    /**
+    *
+    * @returns {void}
+    */
+    function removeIFrame () {
+      if (settings.window.expandable) container.css({zIndex: 10});
+      if (!settings.window.expandable || $.support.boxModel) return;
+      container.prev().remove();
+    }
+    switch (settings.window.effects.type) {
+    case 'fade':
+      container.fadeOut(settings.window.effects.speed.hide, removeIFrame);
+      break;
+    case 'slide':
+      container.slideUp(settings.window.effects.speed.hide, removeIFrame);
+      break;
+    case 'show':
+    default:
+      container.hide(settings.window.effects.speed.hide, removeIFrame);
+      break;
+    }
+  }
+  /**
+  *
+  * @returns {void}
+  */
+  function initialize () {
+    console.log('$(that).next() --> ', that.nextElementSibling);
+    console.log('$(that).next() --> ', that.nextElementSibling.querySelector('#Container'));
+    const win = settings.window,
+      popup = win.expandable ? that.nextElementSibling.querySelector('#Container') : null;
+    container = win.expandable ? $('<div/>') : that;
+    // container.addClass('jPicker Container');
+    container.classList.add('jPicker');
+    container.classList.add('Container');
+    if (win.expandable) container.hide();
+    container.onselectstart = function (e) {
+      if (e.target.nodeName.toLowerCase() !== 'input') return false;
+      return true;
+    };
+    // inject html source code - we are using a single table for this control - I know tables are considered bad, but it takes care of equal height columns and
+    // this control really is tabular data, so I believe it is the right move
+    const all = color.active.val('all');
+    if (win.alphaPrecision < 0) win.alphaPrecision = 0;
+    else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
+    const controlHtml = `<table class="jPicker" cellpadding="0" cellspacing="0">
+      <tbody>
+        ${win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : ''}
+        <tr>
+          <td rowspan="9"><h2 class="Title">${win.title || localization.text.title}</h2><div class="Map" id="Map"><span class="Map1" id="MMap1">&nbsp;</span><span class="Map2" id="MMap2">&nbsp;</span><span class="Map3" id="MMap3">&nbsp;</span><img src="${images.clientPath + images.colorMap.arrow.file}" class="Arrow"/></div></td>
+          <td rowspan="9"><div class="Bar" id="Bar"><span class="Map1" id="Map1">&nbsp;</span><span class="Map2" id="Map2">&nbsp;</span><span class="Map3" id="Map3">&nbsp;</span><span class="Map4" id="Map4">&nbsp;</span><span class="Map5" id="Map5">&nbsp;</span><span class="Map6" id="Map6">&nbsp;</span><img src="${images.clientPath + images.colorBar.arrow.file}" class="Arrow"/></div></td>
+          <td colspan="2" class="Preview" id="Preview">${localization.text.newColor}<div><span class="Active" id="Active" title="${localization.tooltips.colors.newColor}">&nbsp;</span><span class="Current" id="Current" title="${localization.tooltips.colors.currentColor}">&nbsp;</span></div>${localization.text.currentColor}</td>
+          <td rowspan="9" class="Button" id="Button"><input type="button" class="Ok" id="Ok" value="${localization.text.ok}" title="${localization.tooltips.buttons.ok}"/><input type="button" class="Cancel" id="Cancel" value="${localization.text.cancel}" title="${localization.tooltips.buttons.cancel}"/><hr/><div class="Grid" id="Grid"></div></td>
+        </tr>
+        <tr class="Hue">
+          <td class="Radio"><label title="${localization.tooltips.hue.radio}"><input type="radio" value="h"${settings.color.mode === 'h' ? ' checked="checked"' : ''}/>H:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.h : ''}" title="${localization.tooltips.hue.textbox}"/>&nbsp;&deg;</td>
+        </tr>
+        <tr class="Saturation">
+          <td class="Radio"><label title="${localization.tooltips.saturation.radio}"><input type="radio" value="s"${settings.color.mode === 's' ? ' checked="checked"' : ''}/>S:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.s : ''}" title="${localization.tooltips.saturation.textbox}"/>&nbsp;%</td>
+        </tr>
+        <tr class="Value">
+          <td class="Radio"><label title="${localization.tooltips.value.radio}"><input type="radio" value="v"${settings.color.mode === 'v' ? ' checked="checked"' : ''}/>V:</label><br/><br/></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.v : ''}" title="${localization.tooltips.value.textbox}"/>&nbsp;%<br/><br/></td>
+        </tr>
+        <tr class="Red">
+          <td class="Radio"><label title="${localization.tooltips.red.radio}"><input type="radio" value="r"${settings.color.mode === 'r' ? ' checked="checked"' : ''}/>R:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.r : ''}" title="${localization.tooltips.red.textbox}"/></td>
+        </tr>
+        <tr class="Green">
+          <td class="Radio"><label title="${localization.tooltips.green.radio}"><input type="radio" value="g"${settings.color.mode === 'g' ? ' checked="checked"' : ''}/>G:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.g : ''}" title="${localization.tooltips.green.textbox}"/></td>
+        </tr>
+        <tr class="Blue">
+          <td class="Radio"><label title="${localization.tooltips.blue.radio}"><input type="radio" value="b"${settings.color.mode === 'b' ? ' checked="checked"' : ''}/>B:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.b : ''}" title="${localization.tooltips.blue.textbox}"/></td>
+        </tr>
+        <tr class="Alpha">
+          <td class="Radio">${win.alphaSupport ? `<label title="${localization.tooltips.alpha.radio}"><input type="radio" value="a"${settings.color.mode === 'a' ? ' checked="checked"' : ''}/>A:</label>` : '&nbsp;'}</td>
+          <td class="Text">${win.alphaSupport ? `<input type="text" maxlength="${3 + win.alphaPrecision}" value="${!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, win.alphaPrecision) : ''}" title="${localization.tooltips.alpha.textbox}"/>&nbsp;%` : '&nbsp;'}</td>
+        </tr>
+        <tr class="Hex">
+          <td colspan="2" class="Text"><label title="${localization.tooltips.hex.textbox}">#:<input type="text" maxlength="6" class="Hex" value="${!isNullish(all) ? all.hex : ''}"/></label>${win.alphaSupport ? `<input type="text" maxlength="2" class="AHex" value="${!isNullish(all) ? all.ahex.substring(6) : ''}" title="${localization.tooltips.hex.alpha}"/></td>` : '&nbsp;'}
+        </tr>
+      </tbody></table>`;
+    if (win.expandable) {
+      container.html(controlHtml);
+      if (!$(document.body).children('div.jPicker.Container').length) {
+        $(document.body).prepend(container);
+      } else {
+        $(document.body).children('div.jPicker.Container:last').after(container);
       }
-      container.find('.QuickColor').unbind('click', quickPickClicked);
-      colorMapDiv = null;
-      colorBarDiv = null;
-      colorMapL1 = null;
-      colorMapL2 = null;
-      colorMapL3 = null;
-      colorBarL1 = null;
-      colorBarL2 = null;
-      colorBarL3 = null;
-      colorBarL4 = null;
-      colorBarL5 = null;
-      colorBarL6 = null;
-      colorMap.destroy();
-      colorMap = null;
-      colorBar.destroy();
-      colorBar = null;
-      colorPicker.destroy();
-      colorPicker = null;
-      activePreview = null;
-      currentPreview = null;
-      okButton = null;
-      cancelButton = null;
-      grid = null;
-      commitCallback = null;
-      cancelCallback = null;
-      liveCallback = null;
-      container.html('');
-      for (let i = 0; i < List.length; i++) {
-        if (List[i] === that) {
-          List.splice(i, 1);
-          i--; // Decrement to ensure we don't miss next item (lgtm warning)
+      container.mousedown(
+        function () {
+          $(document.body).children('div.jPicker.Container').css({zIndex: 10});
+          container.css({zIndex: 20});
+        }
+      );
+      container.css( // positions must be set and display set to absolute before source code injection or IE will size the container to fit the window
+        {
+          left:
+            win.position.x === 'left'
+              ? (popup.offset().left - 530 - (win.position.y === 'center' ? 25 : 0)) + 'px'
+              : win.position.x === 'center'
+                ? (popup.offset().left - 260) + 'px'
+                : win.position.x === 'right'
+                  ? (popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0)) + 'px'
+                  : win.position.x === 'screenCenter'
+                    ? (($(document).width() >> 1) - 260) + 'px'
+                    : (popup.offset().left + Number.parseInt(win.position.x)) + 'px',
+          position: 'absolute',
+          top: win.position.y === 'top'
+            ? (popup.offset().top - 312) + 'px'
+            : win.position.y === 'center'
+              ? (popup.offset().top - 156) + 'px'
+              : win.position.y === 'bottom'
+                ? (popup.offset().top + 25) + 'px'
+                : (popup.offset().top + Number.parseInt(win.position.y)) + 'px'
+        }
+      );
+    } else {
+      container = that;
+      const div = document.createElement('div');
+      div.innerHTML = controlHtml;
+      while (div.children.length > 0) {
+        container.appendChild(div.children[0]);
+      }
+    }
+    // initialize the objects to the source code just injected
+    const tbody = container.querySelector('tbody');
+    colorMapDiv = tbody.querySelector('#Map');
+    colorBarDiv = tbody.querySelector('#Bar');
+    // const MapMaps = colorMapDiv.find('span');
+    // const BarMaps = colorBarDiv.find('span');
+    colorMapL1 = colorMapDiv.querySelector('#MMap1');
+    colorMapL2 = colorMapDiv.querySelector('#MMap2');
+    colorMapL3 = colorMapDiv.querySelector('#MMap3');
+    colorBarL1 = colorBarDiv.querySelector('#Map1');
+    colorBarL2 = colorBarDiv.querySelector('#Map2');
+    colorBarL3 = colorBarDiv.querySelector('#Map3');
+    colorBarL4 = colorBarDiv.querySelector('#Map4');
+    colorBarL5 = colorBarDiv.querySelector('#Map5');
+    colorBarL6 = colorBarDiv.querySelector('#Map6');
+    // create color pickers and maps
+    colorMap = new Slider(
+      colorMapDiv,
+      {
+        map: {
+          width: images.colorMap.width,
+          height: images.colorMap.height
+        },
+        arrow: {
+          image: images.clientPath + images.colorMap.arrow.file,
+          width: images.colorMap.arrow.width,
+          height: images.colorMap.arrow.height
         }
       }
-    }
-    const {images, localization} = settings; // local copies for YUI compressor
-    const color = {
-      active: (typeof settings.color.active).toString().toLowerCase() === 'string'
-        ? new Color({ahex: !settings.window.alphaSupport && settings.color.active
-          ? settings.color.active.substring(0, 6) + 'ff'
-          : settings.color.active
-        })
-        : new Color({ahex: !settings.window.alphaSupport &&
-            settings.color.active.val('ahex')
-          ? settings.color.active.val('ahex').substring(0, 6) + 'ff'
-          : settings.color.active.val('ahex')
-        }),
-      current: (typeof settings.color.active).toString().toLowerCase() === 'string'
-        ? new Color({ahex: !settings.window.alphaSupport && settings.color.active
-          ? settings.color.active.substring(0, 6) + 'ff'
-          : settings.color.active})
-        : new Color({ahex: !settings.window.alphaSupport &&
-            settings.color.active.val('ahex')
-          ? settings.color.active.val('ahex').substring(0, 6) + 'ff'
-          : settings.color.active.val('ahex')
-        }),
-      quickList: settings.color.quickList
-    };
-
-    if (typeof commitCallback !== 'function') {
-      commitCallback = null;
-    }
-    if (typeof liveCallback !== 'function') {
-      liveCallback = null;
-    }
-    if (typeof cancelCallback !== 'function') {
-      cancelCallback = null;
-    }
-
-    let elementStartX = null, // Used to record the starting css positions for dragging the control
-      elementStartY = null,
-      pageStartX = null, // Used to record the mousedown coordinates for dragging the control
-      pageStartY = null,
-      container = null,
-      colorMapDiv = null,
-      colorBarDiv = null,
-      colorMapL1 = null, // different layers of colorMap and colorBar
-      colorMapL2 = null,
-      colorMapL3 = null,
-      colorBarL1 = null,
-      colorBarL2 = null,
-      colorBarL3 = null,
-      colorBarL4 = null,
-      colorBarL5 = null,
-      colorBarL6 = null,
-      colorMap = null, // color maps
-      colorBar = null,
-      colorPicker = null,
-      activePreview = null, // color boxes above the radio buttons
-      currentPreview = null,
-      okButton = null,
-      cancelButton = null,
-      grid = null, // preset colors grid
-      iconColor = null, // iconColor for popup icon
-      iconAlpha = null, // iconAlpha for popup icon
-      iconImage = null, // iconImage popup icon
-      moveBar = null; // drag bar
-
-    $.extend(true, that, {
-      // public properties, methods, and callbacks
-      commitCallback, // commitCallback function can be overridden to return the selected color to a method you specify when the user clicks "OK"
-      liveCallback, // liveCallback function can be overridden to return the selected color to a method you specify in live mode (continuous update)
-      cancelCallback, // cancelCallback function can be overridden to a method you specify when the user clicks "Cancel"
-      color,
-      show,
-      hide,
-      destroy // destroys this control entirely, removing all events and objects, and removing itself from the List
-    });
-    List.push(that);
+    );
+    colorMap.bind(mapValueChanged);
+    colorBar = new Slider(
+      colorBarDiv,
+      {
+        map: {
+          width: images.colorBar.width,
+          height: images.colorBar.height
+        },
+        arrow: {
+          image: images.clientPath + images.colorBar.arrow.file,
+          width: images.colorBar.arrow.width,
+          height: images.colorBar.arrow.height
+        }
+      }
+    );
+    colorBar.bind(colorBarValueChanged);
+    colorPicker = new ColorValuePicker(
+      tbody,
+      color.active,
+      win.expandable && win.bindToInput ? win.input : null,
+      win.alphaPrecision
+    );
+    const hex = !isNullish(all) ? all.hex : null,
+      preview = tbody.querySelector('#Preview'),
+      button = tbody.querySelector('#Button');
+    activePreview = preview.querySelector('#Active');
+    activePreview.style.backgroundColor = (hex) ? '#' + hex : 'transparent';
+    // .css({backgroundColor: (hex && '#' + hex) || 'transparent'});
+    currentPreview = preview.querySelector('#Current');
+    currentPreview.style.backgroundColor = (hex) ? '#' + hex : 'transparent';
+    currentPreview.addEventListener('click', currentClicked);
+    // .css({backgroundColor: (hex && '#' + hex) || 'transparent'}).bind('click', currentClicked);
+    setAlpha.call(that, currentPreview, toFixedNumeric((color.current.val('a') * 100) / 255, 4));
+    okButton = button.querySelector('#Ok');
+    okButton.addEventListener('click', okClicked);
+    cancelButton = button.querySelector('#Cancel');
+    cancelButton.addEventListener('click', cancelClicked);
+    grid = button.querySelector('#Grid');
     setTimeout(function () {
-      initialize.call(that);
+      setImg.call(that, colorMapL1, images.clientPath + 'Maps.png');
+      setImg.call(that, colorMapL2, images.clientPath + 'Maps.png');
+      setImg.call(that, colorMapL3, images.clientPath + 'map-opacity.png');
+      setImg.call(that, colorBarL1, images.clientPath + 'Bars.png');
+      setImg.call(that, colorBarL2, images.clientPath + 'Bars.png');
+      setImg.call(that, colorBarL3, images.clientPath + 'Bars.png');
+      setImg.call(that, colorBarL4, images.clientPath + 'Bars.png');
+      setImg.call(that, colorBarL5, images.clientPath + 'bar-opacity.png');
+      setImg.call(that, colorBarL6, images.clientPath + 'AlphaBar.png');
+      setImg.call(that, preview.find('div:first'), images.clientPath + 'preview-opacity.png');
     }, 0);
+    const radioInputs = tbody.querySelectorAll('td.Radio input');
+    for (const radioInput of radioInputs) {
+      radioInput.addEventListener('click', radioClicked);
+    }
+    // initialize quick list
+    if (color.quickList && color.quickList.length > 0) {
+      let html = '';
+      for (let i = 0; i < color.quickList.length; i++) {
+        /* if default colors are hex strings, change them to color objects */
+        if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') {
+          color.quickList[i] = new Color({hex: color.quickList[i]});
+        }
+        const alpha = color.quickList[i].val('a');
+        let ahex = color.quickList[i].val('ahex');
+        if (!win.alphaSupport && ahex) ahex = ahex.substring(0, 6) + 'ff';
+        const quickHex = color.quickList[i].val('hex');
+        if (!ahex) ahex = '00000000';
+        html += '<span class="QuickColor"' + (' title="#' + ahex + '"') + ' style="background-color:' + ((quickHex && '#' + quickHex) || '') + ';' + (quickHex ? '' : 'background-image:url(' + images.clientPath + 'NoColor.png)') + (win.alphaSupport && alpha && alpha < 255 ? ';opacity:' + toFixedNumeric(alpha / 255, 4) + ';filter:Alpha(opacity=' + toFixedNumeric(alpha / 2.55, 4) + ')' : '') + '">&nbsp;</span>';
+      }
+      setImg.call(that, grid, images.clientPath + 'bar-opacity.png');
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      while (div.children.length > 0) {
+        grid.appendChild(div.children[0]);
+      }
+      // grid.html(html);
+      const QuickColorSels = grid.querySelectorAll('.QuickColor');
+      for (const QuickColorSel of QuickColorSels) {
+        QuickColorSel.addEventListener('click', quickPickClicked);
+      }
+    }
+    setColorMode.call(that, settings.color.mode);
+    color.active.bind(activeColorChanged);
+    typeof liveCallback === 'function' && color.active.bind(liveCallback);
+    color.current.bind(currentColorChanged);
+    // bind to input
+    if (win.expandable) {
+      that.icon = popup.parents('.Icon:first');
+      iconColor = that.icon.find('.Color:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'});
+      iconAlpha = that.icon.find('.Alpha:first');
+      setImg.call(that, iconAlpha, images.clientPath + 'bar-opacity.png');
+      setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - (!isNullish(all) ? all.a : 0)) * 100) / 255, 4));
+      iconImage = that.icon.find('.Image:first').css({
+        backgroundImage: 'url(\'' + images.clientPath + images.picker.file + '\')'
+      }).bind('click', iconImageClicked);
+      if (win.bindToInput && win.updateInputColor) {
+        win.input.css({
+          backgroundColor: (hex && '#' + hex) || 'transparent',
+          color: isNullish(all) || all.v > 75 ? '#000000' : '#ffffff'
+        });
+      }
+      moveBar = tbody.find('.Move:first').bind('mousedown', moveBarMouseDown);
+      color.active.bind(expandableColorChanged);
+    } else show.call(that);
+  }
+  /**
+  *
+  * @returns {void}
+  */
+  function destroy () {
+    container.find('td.Radio input').unbind('click', radioClicked);
+    currentPreview.unbind('click', currentClicked);
+    cancelButton.unbind('click', cancelClicked);
+    okButton.unbind('click', okClicked);
+    if (settings.window.expandable) {
+      iconImage.unbind('click', iconImageClicked);
+      moveBar.unbind('mousedown', moveBarMouseDown);
+      that.icon = null;
+    }
+    container.find('.QuickColor').unbind('click', quickPickClicked);
+    colorMapDiv = null;
+    colorBarDiv = null;
+    colorMapL1 = null;
+    colorMapL2 = null;
+    colorMapL3 = null;
+    colorBarL1 = null;
+    colorBarL2 = null;
+    colorBarL3 = null;
+    colorBarL4 = null;
+    colorBarL5 = null;
+    colorBarL6 = null;
+    colorMap.destroy();
+    colorMap = null;
+    colorBar.destroy();
+    colorBar = null;
+    colorPicker.destroy();
+    colorPicker = null;
+    activePreview = null;
+    currentPreview = null;
+    okButton = null;
+    cancelButton = null;
+    grid = null;
+    commitCallback = null;
+    cancelCallback = null;
+    liveCallback = null;
+    container.html('');
+    for (let i = 0; i < List.length; i++) {
+      if (List[i] === that) {
+        List.splice(i, 1);
+        i--; // Decrement to ensure we don't miss next item (lgtm warning)
+      }
+    }
+  }
+  const {images, localization} = settings; // local copies for YUI compressor
+  const color = {
+    active: (typeof settings.color.active).toString().toLowerCase() === 'string'
+      ? new Color({ahex: !settings.window.alphaSupport && settings.color.active
+        ? settings.color.active.substring(0, 6) + 'ff'
+        : settings.color.active
+      })
+      : new Color({ahex: !settings.window.alphaSupport &&
+          settings.color.active.val('ahex')
+        ? settings.color.active.val('ahex').substring(0, 6) + 'ff'
+        : settings.color.active.val('ahex')
+      }),
+    current: (typeof settings.color.active).toString().toLowerCase() === 'string'
+      ? new Color({ahex: !settings.window.alphaSupport && settings.color.active
+        ? settings.color.active.substring(0, 6) + 'ff'
+        : settings.color.active})
+      : new Color({ahex: !settings.window.alphaSupport &&
+          settings.color.active.val('ahex')
+        ? settings.color.active.val('ahex').substring(0, 6) + 'ff'
+        : settings.color.active.val('ahex')
+      }),
+    quickList: settings.color.quickList
+  };
+
+  if (typeof commitCallback !== 'function') {
+    commitCallback = null;
+  }
+  if (typeof liveCallback !== 'function') {
+    liveCallback = null;
+  }
+  if (typeof cancelCallback !== 'function') {
+    cancelCallback = null;
+  }
+
+  let elementStartX = null, // Used to record the starting css positions for dragging the control
+    elementStartY = null,
+    pageStartX = null, // Used to record the mousedown coordinates for dragging the control
+    pageStartY = null,
+    container = null,
+    colorMapDiv = null,
+    colorBarDiv = null,
+    colorMapL1 = null, // different layers of colorMap and colorBar
+    colorMapL2 = null,
+    colorMapL3 = null,
+    colorBarL1 = null,
+    colorBarL2 = null,
+    colorBarL3 = null,
+    colorBarL4 = null,
+    colorBarL5 = null,
+    colorBarL6 = null,
+    colorMap = null, // color maps
+    colorBar = null,
+    colorPicker = null,
+    activePreview = null, // color boxes above the radio buttons
+    currentPreview = null,
+    okButton = null,
+    cancelButton = null,
+    grid = null, // preset colors grid
+    iconColor = null, // iconColor for popup icon
+    iconAlpha = null, // iconAlpha for popup icon
+    iconImage = null, // iconImage popup icon
+    moveBar = null; // drag bar
+
+  $.extend(true, that, {
+    // public properties, methods, and callbacks
+    commitCallback, // commitCallback function can be overridden to return the selected color to a method you specify when the user clicks "OK"
+    liveCallback, // liveCallback function can be overridden to return the selected color to a method you specify in live mode (continuous update)
+    cancelCallback, // cancelCallback function can be overridden to a method you specify when the user clicks "Cancel"
+    color,
+    show,
+    hide,
+    destroy // destroys this control entirely, removing all events and objects, and removing itself from the List
   });
+  List.push(that);
+  setTimeout(function () {
+    initialize.call(that);
+  }, 0);
+  //});
 }
 /**
 * @typedef {PlainObject} external:jQuery.fn.jPickerOptionsIconInfo

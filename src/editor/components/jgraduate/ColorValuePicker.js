@@ -35,7 +35,7 @@ export default class ColorValuePicker {
    */
   constructor (picker, color, bindedHex, alphaPrecision) {
     const that = this; // private properties and methods
-    const inputs = picker.find('td.Text input');
+    const inputs = picker.querySelectorAll('td.Text input');
     // input box key down - use arrows to alter color
     /**
      *
@@ -283,21 +283,57 @@ export default class ColorValuePicker {
       ahex = null;
     }
     let
-      red = inputs.eq(3),
-      green = inputs.eq(4),
-      blue = inputs.eq(5),
-      alpha = inputs.length > 7 ? inputs.eq(6) : null,
-      hue = inputs.eq(0),
-      saturation = inputs.eq(1),
-      value = inputs.eq(2),
-      hex = inputs.eq(inputs.length > 7 ? 7 : 6),
-      ahex = inputs.length > 7 ? inputs.eq(8) : null;
+      red = inputs[3],
+      green = inputs[4],
+      blue = inputs[5],
+      alpha = inputs.length > 7 ? inputs[6] : null,
+      hue = inputs[0],
+      saturation = inputs[1],
+      value = inputs[2],
+      hex = inputs[(inputs.length > 7) ? 7 : 6],
+      ahex = inputs.length > 7 ? inputs[8] : null;
     $.extend(true, that, {
       // public properties and methods
       destroy
     });
-    red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).bind('keyup', keyUp).bind('blur', blur);
-    red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).bind('keydown', keyDown);
+    red.addEventListener('keyup', keyUp);
+    green.addEventListener('keyup', keyUp);
+    blue.addEventListener('keyup', keyUp);
+    hue.addEventListener('keyup', keyUp);
+    saturation.addEventListener('keyup', keyUp);
+    value.addEventListener('keyup', keyUp);
+    hex.addEventListener('keyup', keyUp);
+
+    red.addEventListener('blur', blur);
+    green.addEventListener('blur', blur);
+    blue.addEventListener('blur', blur);
+    hue.addEventListener('blur', blur);
+    saturation.addEventListener('blur', blur);
+    value.addEventListener('blur', blur);
+    hex.addEventListener('blur', blur);
+
+    red.addEventListener('keydown', keyDown);
+    green.addEventListener('keydown', keyDown);
+    blue.addEventListener('keydown', keyDown);
+    hue.addEventListener('keydown', keyDown);
+    saturation.addEventListener('keydown', keyDown);
+    value.addEventListener('keydown', keyDown);
+
+    if (alpha !== null) {
+      alpha.addEventListener('keyup', keyUp);
+      alpha.addEventListener('blur', blur);
+      alpha.addEventListener('keydown', keyDown);
+    }
+    if (ahex !== null) {
+      ahex.addEventListener('keyup', keyUp);
+      ahex.addEventListener('blur', blur);
+    }
+    if (bindedHex !== null) {
+      bindedHex.addEventListener('keyup', keyUp);
+      bindedHex.addEventListener('blur', blur);
+    }
+    // red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).bind('keyup', keyUp).bind('blur', blur);
+    // red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).bind('keydown', keyDown);
     color.bind(colorChanged);
   }
 }
