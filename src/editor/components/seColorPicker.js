@@ -1,12 +1,7 @@
-/* globals jQuery */
-import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
-import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
+/* globals $ */
+import {jGraduate, jGraduateMethod} from './jgraduate/jQuery.jGraduate.js';
+// import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import PaintBox from './PaintBox.js';
-
-const $ = [
-  jQueryPluginJGraduate,
-  jQueryPluginJPicker
-].reduce((jq, func) => func(jq), jQuery);
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -181,27 +176,28 @@ export class SeColorPicker extends HTMLElement {
         .draggable({
           cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker',
           containment: 'window'
-        })
-        .jGraduate(
-          {
-            images: {clientPath: './components/jgraduate/images/'},
-            paint,
-            window: {pickerTitle: this.label},
-            newstop: 'inverse'
-          },
-          (p) => {
-            paint = new $.jGraduate.Paint(p);
-            this.setPaint(paint);
-            const changeEvent = new CustomEvent('change', {detail: {
-              paint
-            }});
-            this.dispatchEvent(changeEvent);
-            $('#color_picker').hide();
-          },
-          () => {
-            $('#color_picker').hide();
-          }
-        );
+        });
+      jGraduateMethod(
+        $(this.$color_picker),
+        {
+          images: {clientPath: './components/jgraduate/images/'},
+          paint,
+          window: {pickerTitle: this.label},
+          newstop: 'inverse'
+        },
+        (p) => {
+          paint = new jGraduate.Paint(p);
+          this.setPaint(paint);
+          const changeEvent = new CustomEvent('change', {detail: {
+            paint
+          }});
+          this.dispatchEvent(changeEvent);
+          $('#color_picker').hide();
+        },
+        () => {
+          $('#color_picker').hide();
+        }
+      );
     });
   }
 }

@@ -1,4 +1,5 @@
 /* globals jQuery */
+import {jGraduate} from '../editor/components/jgraduate/jQuery.jGraduate.js';
 /**
  * @module elem-get-set get and set methods.
  * @license MIT
@@ -452,7 +453,7 @@ export const findDuplicateGradient = function (grad) {
 */
 export const setPaintMethod = function (type, paint) {
   // make a copy
-  const p = new $.jGraduate.Paint(paint);
+  const p = new jGraduate.Paint(paint);
   this.setPaintOpacity(type, p.alpha / 100, true);
 
   // now set the current paint object

@@ -1,4 +1,5 @@
 /* globals $ */
+import {jGraduate} from './jgraduate/jQuery.jGraduate.js';
 /**
  *
  */
@@ -77,7 +78,7 @@ class PaintBox {
     } else {
       opts.solidColor = 'none';
     }
-    return new $.jGraduate.Paint(opts);
+    return new jGraduate.Paint(opts);
   }
 
   /**
