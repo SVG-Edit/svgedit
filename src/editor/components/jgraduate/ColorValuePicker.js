@@ -253,16 +253,16 @@ export default class ColorValuePicker {
     */
     function colorChanged (ui, context) {
       const all = ui.val('all');
-      if (context !== red.get(0)) red.val(!isNullish(all) ? all.r : '');
-      if (context !== green.get(0)) green.val(!isNullish(all) ? all.g : '');
-      if (context !== blue.get(0)) blue.val(!isNullish(all) ? all.b : '');
-      if (alpha && context !== alpha.get(0)) alpha.val(!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, alphaPrecision) : '');
-      if (context !== hue.get(0)) hue.val(!isNullish(all) ? all.h : '');
-      if (context !== saturation.get(0)) saturation.val(!isNullish(all) ? all.s : '');
-      if (context !== value.get(0)) value.val(!isNullish(all) ? all.v : '');
-      if (context !== hex.get(0) && ((bindedHex && context !== bindedHex.get(0)) || !bindedHex)) hex.val(!isNullish(all) ? all.hex : '');
-      if (bindedHex && context !== bindedHex.get(0) && context !== hex.get(0)) bindedHex.val(!isNullish(all) ? all.hex : '');
-      if (ahex && context !== ahex.get(0)) ahex.val(!isNullish(all) ? all.ahex.substring(6) : '');
+      if (context !== red) red.value = (!isNullish(all) ? all.r : '');
+      if (context !== green) green.value = (!isNullish(all) ? all.g : '');
+      if (context !== blue) blue.value = (!isNullish(all) ? all.b : '');
+      if (alpha && context !== alpha) alpha.value = (!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, alphaPrecision) : '');
+      if (context !== hue) hue.value = (!isNullish(all) ? all.h : '');
+      if (context !== saturation) saturation.value = (!isNullish(all) ? all.s : '');
+      if (context !== value) value.value = (!isNullish(all) ? all.v : '');
+      if (context !== hex && ((bindedHex && context !== bindedHex) || !bindedHex)) hex.value = (!isNullish(all) ? all.hex : '');
+      if (bindedHex && context !== bindedHex && context !== hex) bindedHex.value = (!isNullish(all) ? all.hex : '');
+      if (ahex && context !== ahex) ahex.value = (!isNullish(all) ? all.ahex.substring(6) : '');
     }
     /**
     * Unbind all events and null objects.

@@ -10,6 +10,18 @@
 const isNullish = (val) => {
   return val === null || val === undefined;
 };
+function findPos (obj) {
+  let curleft = 0;
+  let curtop = 0;
+  if (obj.offsetParent) {
+    do {
+      curleft += obj.offsetLeft;
+      curtop += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+    return {left: curleft, top: curtop};
+  }
+  return {left: curleft, top: curtop};
+}
 /**
  * Encapsulate slider functionality for the ColorMap and ColorBar -
  * could be useful to use a jQuery UI draggable for this with certain extensions.
@@ -39,7 +51,7 @@ export default class Slider {
      * @returns {void}
      */
     function mouseDown (e) {
-      const off = bar.offset();
+      const off = findPos(bar);
       offset = {l: off.left | 0, t: off.top | 0};
       clearTimeout(timeout);
       // using setTimeout for visual updates - once the style is updated the browser will re-render internally allowing the next Javascript to run
@@ -130,9 +142,9 @@ export default class Slider {
         if (arrowH >= barH) arrowOffsetY = (barH >> 1) - (arrowH >> 1);
         else arrowOffsetY -= arrowH >> 1;
         // set the arrow position based on these offsets
-        arrow.css({left: arrowOffsetX + 'px', top: arrowOffsetY + 'px'});
-        // arrow.style.left = arrowOffsetX + 'px';
-        // arrow.style.top = arrowOffsetY + 'px';
+        // arrow.css({left: arrowOffsetX + 'px', top: arrowOffsetY + 'px'});
+        arrow.style.left = arrowOffsetX + 'px';
+        arrow.style.top = arrowOffsetY + 'px';
       });
     }
 

@@ -945,7 +945,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   function updatePreview (ui) {
     try {
       const all = ui.val('all');
-      activePreview.css({backgroundColor: (all && '#' + all.hex) || 'transparent'});
+      activePreview.style.backgroundColor = (all && '#' + all.hex) || 'transparent';
       setAlpha.call(that, activePreview, (all && toFixedNumeric((all.a * 100) / 255, 4)) || 0);
     } catch (e) {}
   }
@@ -1039,7 +1039,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   * @returns {void}
   */
   function setBG (el, c) {
-    el.css({backgroundColor: (c && c.length === 6 && '#' + c) || 'transparent'});
+    el.style.backgroundColor = (c && c.length === 6 && '#' + c) || 'transparent';
   }
 
   /**
@@ -1052,10 +1052,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       img.setAttribute('pngSrc', src);
       img.style.backgroundImage = 'none';
       img.style.filter = 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')';
-      // img.attr('pngSrc', src);
-      // img.css({backgroundImage: 'none', filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src + '\', sizingMethod=\'scale\')'});
     } else img.style.backgroundImage = 'url(\'' + src + '\')';
-    // img.css({backgroundImage: 'url(\'' + src + '\')'});
   }
   /**
   * @param {external:jQuery} img
@@ -1063,7 +1060,6 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   * @returns {void}
   */
   function setImgLoc (img, y) {
-    // img.css({top: y + 'px'});
     img.style.top = y + 'px';
   }
   /**
@@ -1079,10 +1075,8 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         if (!isNullish(src) && (
           src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
         )) {
-          obj.css({
-            filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
-              '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')'
-          });
+          obj.style.filter = 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
+          '\', sizingMethod=\'scale\') progid:DXImageTransform.Microsoft.Alpha(opacity=' + alpha + ')';
         } else obj.style.opacity = toFixedNumeric(alpha / 100, 4);
       } else obj.style.opacity = toFixedNumeric(alpha / 100, 4);
     } else if (alpha === 0 || alpha === 100) {
@@ -1091,10 +1085,8 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         if (!isNullish(src) && (
           src.includes('AlphaBar.png') || src.includes('Bars.png') || src.includes('Maps.png')
         )) {
-          obj.css({
-            filter: 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
-            '\', sizingMethod=\'scale\')'
-          });
+          obj.style.filter = 'progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' + src +
+          '\', sizingMethod=\'scale\')';
         } else obj.style.opacity = '';
       } else obj.style.opacity = '';
     }
@@ -1160,7 +1152,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   */
   function currentColorChanged (ui) {
     const hex = ui.val('hex');
-    currentPreview.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
+    currentPreview.style.backgroundColor = (hex && '#' + hex) || 'transparent';
     setAlpha.call(that, currentPreview, toFixedNumeric(((ui.val('a') || 0) * 100) / 255, 4));
   }
   /**
@@ -1170,9 +1162,11 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   function expandableColorChanged (ui) {
     const hex = ui.val('hex');
     const va = ui.val('va');
-    iconColor.css({backgroundColor: (hex && '#' + hex) || 'transparent'});
+    iconColor.style.backgroundColor = (hex && '#' + hex) || 'transparent';
     setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - ((va && va.a) || 0)) * 100) / 255, 4));
     if (settings.window.bindToInput && settings.window.updateInputColor) {
+      // settings.window.input.style.backgroundColor = (hex && '#' + hex) || 'transparent';
+      // settings.window.input.style.color = isNullish(va) || va.v > 75 ? '#000000' : '#ffffff';
       settings.window.input.css({
         backgroundColor: (hex && '#' + hex) || 'transparent',
         color: isNullish(va) || va.v > 75 ? '#000000' : '#ffffff'
@@ -1199,11 +1193,10 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   * @returns {false}
   */
   function documentMouseMove (e) {
-    container.css({
-      left: elementStartX - (pageStartX - e.pageX) + 'px',
-      top: elementStartY - (pageStartY - e.pageY) + 'px'
-    });
+    container.style.left = elementStartX - (pageStartX - e.pageX) + 'px';
+    container.style.top = elementStartY - (pageStartY - e.pageY) + 'px';
     if (settings.window.expandable && !$.support.boxModel) {
+      // const prev = container.previousElementSibling;
       container.prev().css({
         left: container.css('left'),
         top: container.css('top')
@@ -1258,7 +1251,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     }
     if (settings.window.expandable) {
       $(document.body).children('div.jPicker.Container').css({zIndex: 10});
-      container.css({zIndex: 20});
+      container.style.zIndex = 20;
     }
     switch (settings.window.effects.type) {
     case 'fade':
@@ -1283,7 +1276,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     * @returns {void}
     */
     function removeIFrame () {
-      if (settings.window.expandable) container.css({zIndex: 10});
+      if (settings.window.expandable) container.style.zIndex = 10;
       if (!settings.window.expandable || $.support.boxModel) return;
       container.prev().remove();
     }
@@ -1305,10 +1298,9 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   * @returns {void}
   */
   function initialize () {
-    console.log('$(that).next() --> ', that.nextElementSibling);
-    console.log('$(that).next() --> ', that.nextElementSibling.querySelector('#Container'));
+    const nexts = that.nextElementSibling;
     const win = settings.window,
-      popup = win.expandable ? that.nextElementSibling.querySelector('#Container') : null;
+      popup = win.expandable ? nexts.querySelector('#Container') : null;
     container = win.expandable ? $('<div/>') : that;
     // container.addClass('jPicker Container');
     container.classList.add('jPicker');
@@ -1329,7 +1321,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         <tr>
           <td rowspan="9"><h2 class="Title">${win.title || localization.text.title}</h2><div class="Map" id="Map"><span class="Map1" id="MMap1">&nbsp;</span><span class="Map2" id="MMap2">&nbsp;</span><span class="Map3" id="MMap3">&nbsp;</span><img src="${images.clientPath + images.colorMap.arrow.file}" class="Arrow"/></div></td>
           <td rowspan="9"><div class="Bar" id="Bar"><span class="Map1" id="Map1">&nbsp;</span><span class="Map2" id="Map2">&nbsp;</span><span class="Map3" id="Map3">&nbsp;</span><span class="Map4" id="Map4">&nbsp;</span><span class="Map5" id="Map5">&nbsp;</span><span class="Map6" id="Map6">&nbsp;</span><img src="${images.clientPath + images.colorBar.arrow.file}" class="Arrow"/></div></td>
-          <td colspan="2" class="Preview" id="Preview">${localization.text.newColor}<div><span class="Active" id="Active" title="${localization.tooltips.colors.newColor}">&nbsp;</span><span class="Current" id="Current" title="${localization.tooltips.colors.currentColor}">&nbsp;</span></div>${localization.text.currentColor}</td>
+          <td colspan="2" class="Preview" id="Preview">${localization.text.newColor}<div id="preview-div"><span class="Active" id="Active" title="${localization.tooltips.colors.newColor}">&nbsp;</span><span class="Current" id="Current" title="${localization.tooltips.colors.currentColor}">&nbsp;</span></div>${localization.text.currentColor}</td>
           <td rowspan="9" class="Button" id="Button"><input type="button" class="Ok" id="Ok" value="${localization.text.ok}" title="${localization.tooltips.buttons.ok}"/><input type="button" class="Cancel" id="Cancel" value="${localization.text.cancel}" title="${localization.tooltips.buttons.cancel}"/><hr/><div class="Grid" id="Grid"></div></td>
         </tr>
         <tr class="Hue">
@@ -1374,7 +1366,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       container.mousedown(
         function () {
           $(document.body).children('div.jPicker.Container').css({zIndex: 10});
-          container.css({zIndex: 20});
+          container.style.zIndex = 20;
         }
       );
       container.css( // positions must be set and display set to absolute before source code injection or IE will size the container to fit the window
@@ -1464,11 +1456,9 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       button = tbody.querySelector('#Button');
     activePreview = preview.querySelector('#Active');
     activePreview.style.backgroundColor = (hex) ? '#' + hex : 'transparent';
-    // .css({backgroundColor: (hex && '#' + hex) || 'transparent'});
     currentPreview = preview.querySelector('#Current');
     currentPreview.style.backgroundColor = (hex) ? '#' + hex : 'transparent';
     currentPreview.addEventListener('click', currentClicked);
-    // .css({backgroundColor: (hex && '#' + hex) || 'transparent'}).bind('click', currentClicked);
     setAlpha.call(that, currentPreview, toFixedNumeric((color.current.val('a') * 100) / 255, 4));
     okButton = button.querySelector('#Ok');
     okButton.addEventListener('click', okClicked);
@@ -1485,7 +1475,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       setImg.call(that, colorBarL4, images.clientPath + 'Bars.png');
       setImg.call(that, colorBarL5, images.clientPath + 'bar-opacity.png');
       setImg.call(that, colorBarL6, images.clientPath + 'AlphaBar.png');
-      setImg.call(that, preview.find('div:first'), images.clientPath + 'preview-opacity.png');
+      setImg.call(that, preview.querySelector('#preview-div'), images.clientPath + 'preview-opacity.png');
     }, 0);
     const radioInputs = tbody.querySelectorAll('td.Radio input');
     for (const radioInput of radioInputs) {

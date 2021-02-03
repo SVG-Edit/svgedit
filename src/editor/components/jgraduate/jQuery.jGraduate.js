@@ -1,3 +1,6 @@
+/* eslint-disable unicorn/prefer-node-remove */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-unsanitized/property */
 /**
  * @file jGraduate 0.4
  *
@@ -48,6 +51,19 @@ if (!window.console) {
     log (str) { /* empty fn */ },
     dir (str) { /* empty fn */ }
   };
+}
+
+function findPos (obj) {
+  let curleft = 0;
+  let curtop = 0;
+  if (obj.offsetParent) {
+    do {
+      curleft += obj.offsetLeft;
+      curtop += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+    return {left: curleft, top: curtop};
+  }
+  return {left: curleft, top: curtop};
 }
 
 /**
@@ -244,11 +260,11 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       break;
     }
     typeof $this.okCallback === 'function' && $this.okCallback($this.paint);
-    $this.hide();
+    $this.style.display = 'none';
   };
   const cancelClicked = function () {
     typeof $this.cancelCallback === 'function' && $this.cancelCallback();
-    $this.hide();
+    $this.style.display = 'none';
   };
 
   $.extend(
@@ -265,13 +281,12 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
 
   let // pos = $this.position(),
     color = null;
-  const $win = $(window);
+  const $win = window;
 
   if ($this.paint.type === 'none') {
     $this.paint = new jGraduate.Paint({solidColor: 'ffffff'});
   }
   $this.classList.add('jGraduate_Picker');
-  // $this.addClass('jGraduate_Picker');
   /* eslint-disable max-len */
   $this.innerHTML = '<ul class="jGraduate_tabs">' +
       '<li class="jGraduate_tab_color jGraduate_tab_current" id="jGraduate_tab_color" data-type="col">Solid Color</li>' +
@@ -283,8 +298,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     '<div class="jGraduate_LightBox" id="jGraduate_LightBox"></div>' +
     '<div id="' + id + '_jGraduate_stopPicker" class="jGraduate_stopPicker"></div>';
   /* JFH !!!! */
-  const colPicker = $this.querySelector('#jGraduate_colPick'); //($wc(idref + '> .jGraduate_colPick'))[0];
-  const gradPicker = $this.querySelector('#jGraduate_gradPick'); // ($wc(idref + '> .jGraduate_gradPick'))[0];
+  const colPicker = $this.querySelector('#jGraduate_colPick');
+  const gradPicker = $this.querySelector('#jGraduate_gradPick');
   const html = '<div id="' + id + '_jGraduate_Swatch" class="jGraduate_Swatch">' +
         '<h2 class="jGraduate_Title">' + $settings.window.pickerTitle + '</h2>' +
         '<div id="' + id + '_jGraduate_GradContainer" class="jGraduate_GradContainer"></div>' +
@@ -378,10 +393,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   const div = document.createElement('div');
   div.innerHTML = html;
   while (div.children.length > 0) {
-    console.log(gradPicker);
     gradPicker.appendChild(div.children[0]);
   }
-  console.log(gradPicker);
   /* eslint-enable max-len */
   // --------------
   // Set up all the SVG elements (the gradient, stops and rectangle)
@@ -395,9 +408,12 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   const attrInput = {};
 
   const SLIDERW = 145;
-  $wc('.jGraduate_SliderBar').width(SLIDERW);
+  const JQSliderBars = $this.querySelectorAll('.jGraduate_SliderBar');
+  for (const JQSliderBar of JQSliderBars) {
+    JQSliderBar.style.width = SLIDERW + 'px';
+  }
   // JFH !!!!!!
-  const container = $wc('#' + id + '_jGraduate_GradContainer')[0];
+  const container = $this.querySelector('#' + id + '_jGraduate_GradContainer');
 
   const svg = mkElem('svg', {
     id: id + '_jgraduate_svg',
@@ -447,7 +463,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   let stopGroup; // eslint-disable-line prefer-const
   if (isSolid) {
     // JFH !!!!!!!!
-    grad = curGradient = $wc('#' + id + '_lg_jgraduate_grad')[0];
+    grad = curGradient = $this.querySelector('#' + id + '_lg_jgraduate_grad');
     color = $this.paint[curType];
     mkStop(0, '#' + color, 1);
 
@@ -505,39 +521,72 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   }, svg);
 
   // stop visuals created here
-  const beginCoord = $('<div/>').attr({
-    class: 'grad_coord jGraduate_lg_field',
-    title: 'Begin Stop'
-  }).text(1).css({
-    top: y1 * MAX,
-    left: x1 * MAX
-  }).data('coord', 'start').appendTo(container);
+  const beginCoord = document.createElement('div');
+  beginCoord.setAttribute('class', 'grad_coord jGraduate_lg_field');
+  beginCoord.setAttribute('title', 'Begin Stop');
+  beginCoord.textContent = 1;
+  beginCoord.style.top = y1 * MAX;
+  beginCoord.style.left = x1 * MAX;
+  beginCoord.dataset.coord = 'start';
+  container.appendChild(beginCoord);
 
-  const endCoord = beginCoord.clone().text(2).css({
-    top: y2 * MAX,
-    left: x2 * MAX
-  }).attr('title', 'End stop').data('coord', 'end').appendTo(container);
+  const endCoord = document.createElement('div');
+  endCoord.setAttribute('class', 'grad_coord jGraduate_lg_field');
+  endCoord.setAttribute('title', 'End stop');
+  endCoord.textContent = 2;
+  endCoord.style.top = y2 * MAX;
+  endCoord.style.left = x2 * MAX;
+  endCoord.dataset.coord = 'end';
+  container.appendChild(endCoord);
 
-  const centerCoord = $('<div/>').attr({
-    class: 'grad_coord jGraduate_rg_field',
-    title: 'Center stop'
-  }).text('C').css({
-    top: cy * MAX,
-    left: cx * MAX
-  }).data('coord', 'center').appendTo(container);
+  const centerCoord = document.createElement('div');
+  centerCoord.setAttribute('class', 'grad_coord jGraduate_rg_field');
+  centerCoord.setAttribute('title', 'Center stop');
+  centerCoord.textContent = 'C';
+  centerCoord.style.top = cy * MAX;
+  centerCoord.style.left = cx * MAX;
+  centerCoord.dataset.coord = 'center';
+  container.appendChild(centerCoord);
 
-  const focusCoord = centerCoord.clone().text('F').css({
-    top: fy * MAX,
-    left: fx * MAX,
-    display: 'none'
-  }).attr('title', 'Focus point').data('coord', 'focus').appendTo(container);
-
-  focusCoord[0].id = id + '_jGraduate_focusCoord';
+  const focusCoord = document.createElement('div');
+  focusCoord.setAttribute('class', 'grad_coord jGraduate_rg_field');
+  focusCoord.setAttribute('title', 'Focus point');
+  focusCoord.textContent = 'F';
+  focusCoord.style.top = fy * MAX;
+  focusCoord.style.left = fx * MAX;
+  focusCoord.style.display = 'none';
+  focusCoord.dataset.coord = 'focus';
+  focusCoord.setAttribute('id', id + '_jGraduate_focusCoord');
+  container.appendChild(focusCoord);
 
   let showFocus;
-  $.each(['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'], function (i, attr) {
+  const onAttrChangeHandler = (e, attr, isRadial) => {
+    // TODO: Support values < 0 and > 1 (zoomable preview?)
+    if (isNaN(Number.parseFloat(e.target.value)) || e.target.value < 0) {
+      e.target.value = 0.0;
+    } else if (e.target.value > 1) {
+      e.target.value = 1.0;
+    }
+
+    if (!(attr[0] === 'f' &&
+      !showFocus) &&
+      ((isRadial && curType === 'radialGradient') || (!isRadial && curType === 'linearGradient'))) {
+      curGradient.setAttribute(attr, e.target.value);
+    }
+
+    const $elem = isRadial
+      ? attr[0] === 'c' ? centerCoord : focusCoord
+      : attr[1] === '1' ? beginCoord : endCoord;
+
+    if (attr.includes('x') === 'left') {
+      $elem.style.left = e.target.value * MAX;
+    } else if (attr.includes('x') === 'top') {
+      $elem.style.top = e.target.value * MAX;
+    }
+  };
+  for (const [i, attr] of ['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'].entries()) {
     const isRadial = isNaN(attr[1]);
-    
+
     let attrval = curGradient.getAttribute(attr);
     if (!attrval) {
       // Set defaults
@@ -550,31 +599,11 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       }
     }
 
-    attrInput[attr] = $wc('#' + id + '_jGraduate_' + attr)
-      .val(attrval)
-      .change(function () {
-        // TODO: Support values < 0 and > 1 (zoomable preview?)
-        if (isNaN(Number.parseFloat(this.value)) || this.value < 0) {
-          this.value = 0.0;
-        } else if (this.value > 1) {
-          this.value = 1.0;
-        }
-
-        if (!(attr[0] === 'f' &&
-          !showFocus) &&
-          ((isRadial && curType === 'radialGradient') || (!isRadial && curType === 'linearGradient'))) {
-          curGradient.setAttribute(attr, this.value);
-        }
-
-        const $elem = isRadial
-          ? attr[0] === 'c' ? centerCoord : focusCoord
-          : attr[1] === '1' ? beginCoord : endCoord;
-
-        const cssName = attr.includes('x') ? 'left' : 'top';
-
-        $elem.css(cssName, this.value * MAX);
-      }).change();
-  });
+    attrInput[attr] = $this.querySelector('#' + id + '_jGraduate_' + attr);
+    attrInput[attr].value = attrval;
+    attrInput[attr].addEventListener('change', (evt) => onAttrChangeHandler(evt, attr, isRadial));
+    attrInput[attr].dispatchEvent(new Event('change'));
+  }
 
   /**
    *
@@ -596,7 +625,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       opac = stopElem.getAttribute('stop-opacity');
       n = stopElem.getAttribute('offset');
     } else {
-      console.log(curGradient);
       curGradient.appendChild(stop);
     }
     if (opac === null) opac = 1;
@@ -623,7 +651,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     $(path).mousedown(function (e) {
       selectStop(this);
       drag = curStop;
-      $win.mousemove(dragColor).mouseup(remDrags);
+      $win.addEventListener('mousemove', dragColor);
+      $win.addEventListener('mouseup', remDrags);
       stopOffset = stopMakerDiv.offset();
       e.preventDefault();
       return false;
@@ -715,7 +744,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   * @returns {void}
   */
   function remDrags () {
-    $win.unbind('mousemove', dragColor);
+    $win.removeEventListener('mousemove', dragColor);
     if (delStop.getAttribute('display') !== 'none') {
       remStop();
     }
@@ -848,31 +877,32 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     x = x < 0 ? 0 : x > MAX ? MAX : x;
     y = y < 0 ? 0 : y > MAX ? MAX : y;
 
-    draggingCoord.css('left', x).css('top', y);
+    draggingCoord.style.left = x + 'px';
+    draggingCoord.style.top = y + 'px';
 
     // calculate stop offset
     const fracx = x / SIZEX;
     const fracy = y / SIZEY;
 
-    const type = draggingCoord.data('coord');
+    const type = draggingCoord.dataset.coord;
     const grd = curGradient;
 
     switch (type) {
     case 'start':
-      attrInput.x1.val(fracx);
-      attrInput.y1.val(fracy);
+      attrInput.x1.value = fracx;
+      attrInput.y1.value = fracy;
       grd.setAttribute('x1', fracx);
       grd.setAttribute('y1', fracy);
       break;
     case 'end':
-      attrInput.x2.val(fracx);
-      attrInput.y2.val(fracy);
+      attrInput.x2.value = fracx;
+      attrInput.y2.value = fracy;
       grd.setAttribute('x2', fracx);
       grd.setAttribute('y2', fracy);
       break;
     case 'center':
-      attrInput.cx.val(fracx);
-      attrInput.cy.val(fracy);
+      attrInput.cx.value = fracx;
+      attrInput.cy.value = fracy;
       grd.setAttribute('cx', fracx);
       grd.setAttribute('cy', fracy);
       cX = fracx;
@@ -880,8 +910,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       xform();
       break;
     case 'focus':
-      attrInput.fx.val(fracx);
-      attrInput.fy.val(fracy);
+      attrInput.fx.value = fracx;
+      attrInput.fy.value = fracy;
       grd.setAttribute('fx', fracx);
       grd.setAttribute('fy', fracy);
       xform();
@@ -892,7 +922,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
 
   const onCoordUp = function () {
     draggingCoord = null;
-    $win.unbind('mousemove', onCoordDrag).unbind('mouseup', onCoordUp);
+    $win.removeEventListener('mousemove', onCoordDrag);
+    $win.removeEventListener('mouseup', onCoordUp);
   };
 
   // Linear gradient
@@ -923,44 +954,50 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
 
   previewRect.setAttribute('fill-opacity', gradalpha / 100);
 
-  $wc('#' + id + ' div.grad_coord').mousedown(function (evt) {
-    evt.preventDefault();
-    draggingCoord = $(this);
+  const JQGradCoords = $this.querySelectorAll('#' + id + ' div.grad_coord');
+  const onMouseDownGradCoords = (e) => {
+    e.preventDefault();
+    draggingCoord = e.target;
     // const sPos = draggingCoord.offset();
-    offset = draggingCoord.parent().offset();
-    $win.mousemove(onCoordDrag).mouseup(onCoordUp);
-  });
+    offset = findPos(draggingCoord.parentNode);
+    $win.addEventListener('mousemove', onCoordDrag);
+    $win.addEventListener('mouseup', onCoordUp);
+  };
+  for (const JQGradCoord of JQGradCoords) {
+    JQGradCoord.addEventListener('mousedown', onMouseDownGradCoords);
+  }
 
   // bind GUI elements
-  $wc('#' + id + '_jGraduate_Ok').bind('click', function () {
+  $this.querySelector('#' + id + '_jGraduate_Ok').addEventListener('click', function () {
     $this.paint.type = curType;
     $this.paint[curType] = curGradient.cloneNode(true);
     $this.paint.solidColor = null;
     okClicked();
   });
-  $wc('#' + id + '_jGraduate_Cancel').bind('click', function (paint) {
-    cancelClicked();
-  });
+  $this.querySelector('#' + id + '_jGraduate_Cancel').addEventListener('click', cancelClicked);
 
   if (curType === 'radialGradient') {
     if (showFocus) {
-      focusCoord.show();
+      focusCoord.style.display = 'block';
     } else {
-      focusCoord.hide();
-      attrInput.fx.val('');
-      attrInput.fy.val('');
+      focusCoord.style.display = 'none';
+      attrInput.fx.value = '';
+      attrInput.fy.value = '';
     }
   }
 
-  $wc('#' + id + '_jGraduate_match_ctr')[0].checked = !showFocus;
+  $this.querySelector('#' + id + '_jGraduate_match_ctr').checked = !showFocus;
 
   let lastfx, lastfy;
-
-  $wc('#' + id + '_jGraduate_match_ctr').change(function () {
-    showFocus = !this.checked;
-    focusCoord.toggle(showFocus);
-    attrInput.fx.val('');
-    attrInput.fy.val('');
+  const onMatchCtrHandler = (e) => {
+    showFocus = !e.target.checked;
+    if (showFocus) {
+      focusCoord.style.display = 'block';
+    } else {
+      focusCoord.style.display = 'none';
+    }
+    attrInput.fx.value = '';
+    attrInput.fy.value = '';
     const grd = curGradient;
     if (!showFocus) {
       lastfx = grd.getAttribute('fx');
@@ -972,10 +1009,11 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       const fY = lastfy || 0.5;
       grd.setAttribute('fx', fX);
       grd.setAttribute('fy', fY);
-      attrInput.fx.val(fX);
-      attrInput.fy.val(fY);
+      attrInput.fx.value = fX;
+      attrInput.fy.value = fY;
     }
-  });
+  };
+  $this.querySelector('#' + id + '_jGraduate_match_ctr').addEventListener('change', onMatchCtrHandler);
 
   stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
   numstops = stops.length;
@@ -1109,7 +1147,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
         parent,
         offset: parent.offset()
       };
-      $win.mousemove(dragSlider).mouseup(stopSlider);
+      $win.addEventListener('mousemove', dragSlider);
+      $win.addEventListener('mouseup', stopSlider);
       evt.preventDefault();
     });
 
@@ -1158,7 +1197,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       } else if (xpos < 0) {
         xpos = 0;
       }
-      handle.css({'margin-left': xpos - 5});
+      handle.style.marginLeft = (xpos - 5) + 'px';
     }).change();
   });
 
@@ -1168,7 +1207,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   };
 
   const stopSlider = function (evt) {
-    $win.unbind('mousemove', dragSlider).unbind('mouseup', stopSlider);
+    $win.removeEventListener('mousemove', dragSlider);
+    $win.removeEventListener('mouseup', stopSlider);
     slider = null;
   };
 
@@ -1181,9 +1221,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   if (!isSolid) {
     color = stops[0].getAttribute('stop-color');
   }
-
   // This should be done somewhere else, probably
-  $.extend(jPickerDefaults.window, {
+  Object.assign(jPickerDefaults.window, {
     alphaSupport: true, effects: {type: 'show', speed: 0}
   });
 
@@ -1204,70 +1243,90 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     null,
     function () { cancelClicked(); }
   );
+
   // JFH !!!!
-  // const tabs = $wc(idref + ' .jGraduate_tabs li');
-  const tabs = $wc('.jGraduate_tabs li');
-  tabs.click(function () {
-    tabs.removeClass('jGraduate_tab_current');
-    $(this).addClass('jGraduate_tab_current');
-    $wc(idref + ' > div').hide();
-    const type = $(this).attr('data-type');
-    $wc(idref + ' .jGraduate_gradPick').show();
+  const tabs = $this.querySelectorAll('.jGraduate_tabs li');
+  const onTabsClickHandler = (e) => {
+    for (const tab of tabs) {
+      tab.classList.remove('jGraduate_tab_current');
+    }
+    e.target.classList.add('jGraduate_tab_current');
+    const innerDivs = $this.querySelectorAll(idref + ' > div');
+    [].forEach.call(innerDivs, function (innerDiv) {
+      innerDiv.style.display = 'none';
+    });
+    const type = e.target.dataset.type;
+    gradPicker.style.display = 'block';
     if (type === 'rg' || type === 'lg') {
-      // Show/hide appropriate fields
-      $wc('.jGraduate_' + type + '_field').show();
-      $wc('.jGraduate_' + (type === 'lg' ? 'rg' : 'lg') + '_field').hide();
-
-      $wc('#' + id + '_jgraduate_rect')[0]
+      const tFileds = $this.querySelectorAll('.jGraduate_' + type + '_field');
+      [].forEach.call(tFileds, function (tFiled) {
+        tFiled.style.display = 'block';
+      });
+      const t1Fileds = $this.querySelectorAll('.jGraduate_' + (type === 'lg' ? 'rg' : 'lg') + '_field');
+      [].forEach.call(t1Fileds, function (tFiled) {
+        tFiled.style.display = 'none';
+      });
+      $this.querySelectorAll('#' + id + '_jgraduate_rect')[0]
         .setAttribute('fill', 'url(#' + id + '_' + type + '_jgraduate_grad)');
-
-      // Copy stops
-
       curType = type === 'lg' ? 'linearGradient' : 'radialGradient';
-
-      $wc('#' + id + '_jGraduate_OpacInput').val($this.paint.alpha).change();
-
-      const newGrad = $wc('#' + id + '_' + type + '_jgraduate_grad')[0];
-
+      const jOpacInput = $this.querySelector('#' + id + '_jGraduate_OpacInput');
+      jOpacInput.value = $this.paint.alpha;
+      jOpacInput.dispatchEvent(new Event('change'));
+      const newGrad = $this.querySelectorAll('#' + id + '_' + type + '_jgraduate_grad')[0];
       if (curGradient !== newGrad) {
-        const curStops = $(curGradient).find('stop');
-        $(newGrad).empty().append(curStops);
+        const curStops = curGradient.querySelectorAll('stop');
+        while (newGrad.firstChild) {
+          newGrad.removeChild(newGrad.firstChild);
+        }
+        [].forEach.call(curStops, function (curS) {
+          newGrad.appendChild(curS);
+        });
         curGradient = newGrad;
         const sm = spreadMethodOpt.getAttribute('value');
         curGradient.setAttribute('spreadMethod', sm);
       }
       showFocus = type === 'rg' && curGradient.getAttribute('fx') !== null && !(cx === fx && cy === fy);
-      $wc('#' + id + '_jGraduate_focusCoord').toggle(showFocus);
+      const jQfocusCoord = $this.querySelectorAll('#' + id + '_jGraduate_focusCoord');
+      if (jQfocusCoord[0].style.display === 'none') {
+        jQfocusCoord[0].style.display = 'block';
+      } else {
+        jQfocusCoord[0].style.display = 'none';
+      }
       if (showFocus) {
-        $wc('#' + id + '_jGraduate_match_ctr')[0].checked = false;
+        $this.querySelectorAll('#' + id + '_jGraduate_match_ctr')[0].checked = false;
       }
     } else {
-      $wc(idref + ' .jGraduate_gradPick').hide();
-      $wc(idref + ' .jGraduate_colPick').show();
+      gradPicker.style.display = 'none';
+      colPicker.style.display = 'block';
     }
+  };
+  for (const tab of tabs) {
+    tab.addEventListener('click', onTabsClickHandler);
+  }
+  const innerDivs = $this.querySelectorAll(idref + ' > div');
+  [].forEach.call(innerDivs, function (innerDiv) {
+    innerDiv.style.display = 'none';
   });
-  $wc(idref + ' > div').hide();
-  tabs.removeClass('jGraduate_tab_current');
+  for (const tab of tabs) {
+    tab.classList.remove('jGraduate_tab_current');
+  }
   let tab;
   switch ($this.paint.type) {
   case 'linearGradient':
-    tab = $wc(idref + ' .jGraduate_tab_lingrad');
+    tab = $this.querySelector(idref + ' .jGraduate_tab_lingrad');
     break;
   case 'radialGradient':
-    tab = $wc(idref + ' .jGraduate_tab_radgrad');
+    tab = $this.querySelector(idref + ' .jGraduate_tab_radgrad');
     break;
   default:
-    tab = $wc(idref + ' .jGraduate_tab_color');
+    tab = $this.querySelector(idref + ' .jGraduate_tab_color');
     break;
   }
   $this.style.display = 'block';
 
   // jPicker will try to show after a 0ms timeout, so need to fire this after that
   setTimeout(() => {
-    tab.addClass('jGraduate_tab_current').click();
+    tab.classList.add('jGraduate_tab_current');
+    tab.dispatchEvent(new Event('click'));
   }, 10);
-  // });
 }
-
-//   return $;
-// }
