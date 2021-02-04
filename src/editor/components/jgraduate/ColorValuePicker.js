@@ -1,4 +1,3 @@
-/* globals $ */
 /* eslint-disable max-len */
 /* eslint-disable unicorn/prefer-math-trunc */
 /* eslint-disable no-bitwise */
@@ -43,90 +42,90 @@ export default class ColorValuePicker {
      * @returns {Event|false|void}
      */
     function keyDown (e) {
-      if (e.target.value === '' && e.target !== hex.get(0) && ((!isNullish(bindedHex) && e.target !== bindedHex.get(0)) || isNullish(bindedHex))) return undefined;
+      if (e.target.value === '' && e.target !== hex && ((!isNullish(bindedHex) && e.target !== bindedHex) || isNullish(bindedHex))) return undefined;
       if (!validateKey(e)) return e;
       switch (e.target) {
-      case red.get(0):
+      case red:
         switch (e.keyCode) {
         case 38:
-          red.val(setValueInRange.call(that, (red.val() << 0) + 1, 0, 255));
-          color.val('r', red.val(), e.target);
+          red.value = setValueInRange.call(that, (red.value << 0) + 1, 0, 255);
+          color.val('r', red.value, e.target);
           return false;
         case 40:
-          red.val(setValueInRange.call(that, (red.val() << 0) - 1, 0, 255));
-          color.val('r', red.val(), e.target);
+          red.value = setValueInRange.call(that, (red.value << 0) - 1, 0, 255);
+          color.val('r', red.value, e.target);
           return false;
         }
         break;
-      case green.get(0):
+      case green:
         switch (e.keyCode) {
         case 38:
-          green.val(setValueInRange.call(that, (green.val() << 0) + 1, 0, 255));
-          color.val('g', green.val(), e.target);
+          green.value = setValueInRange.call(that, (green.value << 0) + 1, 0, 255);
+          color.val('g', green.value, e.target);
           return false;
         case 40:
-          green.val(setValueInRange.call(that, (green.val() << 0) - 1, 0, 255));
-          color.val('g', green.val(), e.target);
+          green.value = setValueInRange.call(that, (green.value << 0) - 1, 0, 255);
+          color.val('g', green.value, e.target);
           return false;
         }
         break;
-      case blue.get(0):
+      case blue:
         switch (e.keyCode) {
         case 38:
-          blue.val(setValueInRange.call(that, (blue.val() << 0) + 1, 0, 255));
-          color.val('b', blue.val(), e.target);
+          blue.value = setValueInRange.call(that, (blue.value << 0) + 1, 0, 255);
+          color.val('b', blue.value, e.target);
           return false;
         case 40:
-          blue.val(setValueInRange.call(that, (blue.val() << 0) - 1, 0, 255));
-          color.val('b', blue.val(), e.target);
+          blue.value = setValueInRange.call(that, (blue.value << 0) - 1, 0, 255);
+          color.val('b', blue.value, e.target);
           return false;
         }
         break;
-      case alpha && alpha.get(0):
+      case alpha:
         switch (e.keyCode) {
         case 38:
-          alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) + 1, 0, 100));
-          color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
+          alpha.value = setValueInRange.call(that, Number.parseFloat(alpha.value) + 1, 0, 100);
+          color.val('a', toFixedNumeric((alpha.value * 255) / 100, alphaPrecision), e.target);
           return false;
         case 40:
-          alpha.val(setValueInRange.call(that, Number.parseFloat(alpha.val()) - 1, 0, 100));
-          color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
+          alpha.value = setValueInRange.call(that, Number.parseFloat(alpha.value) - 1, 0, 100);
+          color.val('a', toFixedNumeric((alpha.value * 255) / 100, alphaPrecision), e.target);
           return false;
         }
         break;
-      case hue.get(0):
+      case hue:
         switch (e.keyCode) {
         case 38:
-          hue.val(setValueInRange.call(that, (hue.val() << 0) + 1, 0, 360));
-          color.val('h', hue.val(), e.target);
+          hue.value = setValueInRange.call(that, (hue.value << 0) + 1, 0, 360);
+          color.val('h', hue.value, e.target);
           return false;
         case 40:
-          hue.val(setValueInRange.call(that, (hue.val() << 0) - 1, 0, 360));
-          color.val('h', hue.val(), e.target);
+          hue.value =setValueInRange.call(that, (hue.value << 0) - 1, 0, 360);
+          color.val('h', hue.value, e.target);
           return false;
         }
         break;
-      case saturation.get(0):
+      case saturation:
         switch (e.keyCode) {
         case 38:
-          saturation.val(setValueInRange.call(that, (saturation.val() << 0) + 1, 0, 100));
-          color.val('s', saturation.val(), e.target);
+          saturation.value = setValueInRange.call(that, (saturation.value << 0) + 1, 0, 100);
+          color.val('s', saturation.value, e.target);
           return false;
         case 40:
-          saturation.val(setValueInRange.call(that, (saturation.val() << 0) - 1, 0, 100));
-          color.val('s', saturation.val(), e.target);
+          saturation.value = setValueInRange.call(that, (saturation.value << 0) - 1, 0, 100);
+          color.val('s', saturation.value, e.target);
           return false;
         }
         break;
-      case value.get(0):
+      case value:
         switch (e.keyCode) {
         case 38:
-          value.val(setValueInRange.call(that, (value.val() << 0) + 1, 0, 100));
-          color.val('v', value.val(), e.target);
+          value.value = setValueInRange.call(that, (value.value << 0) + 1, 0, 100);
+          color.val('v', value.value, e.target);
           return false;
         case 40:
-          value.val(setValueInRange.call(that, (value.val() << 0) - 1, 0, 100));
-          color.val('v', value.val(), e.target);
+          value.value = setValueInRange.call(that, (value.value << 0) - 1, 0, 100);
+          color.val('v', value.value, e.target);
           return false;
         }
         break;
@@ -140,52 +139,52 @@ export default class ColorValuePicker {
     * @todo Why is this returning an event?
     */
     function keyUp (e) {
-      if (e.target.value === '' && e.target !== hex.get(0) &&
-        ((!isNullish(bindedHex) && e.target !== bindedHex.get(0)) ||
+      if (e.target.value === '' && e.target !== hex &&
+        ((!isNullish(bindedHex) && e.target !== bindedHex) ||
         isNullish(bindedHex))) return undefined;
       if (!validateKey(e)) return e;
       switch (e.target) {
-      case red.get(0):
-        red.val(setValueInRange.call(that, red.val(), 0, 255));
-        color.val('r', red.val(), e.target);
+      case red:
+        red.value = setValueInRange.call(that, red.value, 0, 255);
+        color.val('r', red.value, e.target);
         break;
-      case green.get(0):
-        green.val(setValueInRange.call(that, green.val(), 0, 255));
-        color.val('g', green.val(), e.target);
+      case green:
+        green.value = setValueInRange.call(that, green.value, 0, 255);
+        color.val('g', green.value, e.target);
         break;
-      case blue.get(0):
-        blue.val(setValueInRange.call(that, blue.val(), 0, 255));
-        color.val('b', blue.val(), e.target);
+      case blue:
+        blue.value = setValueInRange.call(that, blue.value, 0, 255);
+        color.val('b', blue.value, e.target);
         break;
-      case alpha && alpha.get(0):
-        alpha.val(setValueInRange.call(that, alpha.val(), 0, 100));
-        color.val('a', toFixedNumeric((alpha.val() * 255) / 100, alphaPrecision), e.target);
+      case alpha:
+        alpha.value = setValueInRange.call(that, alpha.value, 0, 100);
+        color.val('a', toFixedNumeric((alpha.value * 255) / 100, alphaPrecision), e.target);
         break;
-      case hue.get(0):
-        hue.val(setValueInRange.call(that, hue.val(), 0, 360));
-        color.val('h', hue.val(), e.target);
+      case hue:
+        hue.value = setValueInRange.call(that, hue.value, 0, 360);
+        color.val('h', hue.value, e.target);
         break;
-      case saturation.get(0):
-        saturation.val(setValueInRange.call(that, saturation.val(), 0, 100));
-        color.val('s', saturation.val(), e.target);
+      case saturation:
+        saturation.value = setValueInRange.call(that, saturation.value, 0, 100);
+        color.val('s', saturation.value, e.target);
         break;
-      case value.get(0):
-        value.val(setValueInRange.call(that, value.val(), 0, 100));
-        color.val('v', value.val(), e.target);
+      case value:
+        value.value = setValueInRange.call(that, value.value, 0, 100);
+        color.val('v', value.value, e.target);
         break;
-      case hex.get(0):
-        hex.val(hex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6));
-        bindedHex && bindedHex.val(hex.val());
-        color.val('hex', hex.val() !== '' ? hex.val() : null, e.target);
+      case hex:
+        hex.value = hex.value.replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6);
+        bindedHex && bindedHex.val(hex.value);
+        color.val('hex', hex.value !== '' ? hex.value : null, e.target);
         break;
-      case bindedHex && bindedHex.get(0):
-        bindedHex.val(bindedHex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6));
-        hex.val(bindedHex.val());
-        color.val('hex', bindedHex.val() !== '' ? bindedHex.val() : null, e.target);
+      case bindedHex:
+        bindedHex.value = bindedHex.value.replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 6);
+        hex.val(bindedHex.value);
+        color.val('hex', bindedHex.value !== '' ? bindedHex.value : null, e.target);
         break;
-      case ahex && ahex.get(0):
-        ahex.val(ahex.val().replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2));
-        color.val('a', !isNullish(ahex.val()) ? Number.parseInt(ahex.val(), 16) : null, e.target);
+      case ahex:
+        ahex.value = ahex.value.replace(/[^a-fA-F\d]/g, '').toLowerCase().substring(0, 2);
+        color.val('a', !isNullish(ahex.value) ? Number.parseInt(ahex.value, 16) : null, e.target);
         break;
       }
       return undefined;
@@ -196,21 +195,46 @@ export default class ColorValuePicker {
     * @returns {void}
     */
     function blur (e) {
-      if (!isNullish(color.val())) {
+      if (!isNullish(color.value)) {
         switch (e.target) {
-        case red.get(0): red.val(color.val('r')); break;
-        case green.get(0): green.val(color.val('g')); break;
-        case blue.get(0): blue.val(color.val('b')); break;
-        case alpha && alpha.get(0): alpha.val(toFixedNumeric((color.val('a') * 100) / 255, alphaPrecision)); break;
-        case hue.get(0): hue.val(color.val('h')); break;
-        case saturation.get(0): saturation.val(color.val('s')); break;
-        case value.get(0): value.val(color.val('v')); break;
-        case hex.get(0):
-        case bindedHex && bindedHex.get(0):
-          hex.val(color.val('hex'));
-          bindedHex && bindedHex.val(color.val('hex'));
+        case red:
+          color.value = 'r';
+          red.value = color.value;
           break;
-        case ahex && ahex.get(0): ahex.val(color.val('ahex').substring(6)); break;
+        case green:
+          color.value = 'g';
+          green.value = color.value;
+          break;
+        case blue:
+          color.value = 'b';
+          blue.value = color.value;
+          break;
+        case alpha:
+          color.value = 'a';
+          alpha.value = toFixedNumeric((color.value * 100) / 255, alphaPrecision);
+          break;
+        case hue:
+          color.value = 'h';
+          hue.value = color.value;
+          break;
+        case saturation:
+          color.value = 's';
+          saturation.value = color.value;
+          break;
+        case value:
+          color.value = 'v';
+          value.value = color.value;
+          break;
+        case hex:
+        case bindedHex:
+          color.value = 'hex';
+          hex.value = color.value;
+          bindedHex.value = color.value;
+          break;
+        case ahex:
+          color.value = 'ahex';
+          ahex.value = color.value.substring(6); 
+          break;
         }
       }
     }
@@ -269,8 +293,42 @@ export default class ColorValuePicker {
     * @returns {void}
     */
     function destroy () {
-      red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).unbind('keyup', keyUp).unbind('blur', blur);
-      red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).unbind('keydown', keyDown);
+      red.removeEventListener('keyup', keyUp);
+      green.removeEventListener('keyup', keyUp);
+      blue.removeEventListener('keyup', keyUp);
+      hue.removeEventListener('keyup', keyUp);
+      saturation.removeEventListener('keyup', keyUp);
+      value.removeEventListener('keyup', keyUp);
+      hex.removeEventListener('keyup', keyUp);
+
+      red.removeEventListener('blur', blur);
+      green.removeEventListener('blur', blur);
+      blue.removeEventListener('blur', blur);
+      hue.removeEventListener('blur', blur);
+      saturation.removeEventListener('blur', blur);
+      value.removeEventListener('blur', blur);
+      hex.removeEventListener('blur', blur);
+
+      red.removeEventListener('keydown', keyDown);
+      green.removeEventListener('keydown', keyDown);
+      blue.removeEventListener('keydown', keyDown);
+      hue.removeEventListener('keydown', keyDown);
+      saturation.removeEventListener('keydown', keyDown);
+      value.removeEventListener('keydown', keyDown);
+
+      if (alpha !== null) {
+        alpha.removeEventListener('keyup', keyUp);
+        alpha.removeEventListener('blur', blur);
+        alpha.removeEventListener('keydown', keyDown);
+      }
+      if (ahex !== null) {
+        ahex.removeEventListener('keyup', keyUp);
+        ahex.removeEventListener('blur', blur);
+      }
+      if (bindedHex !== null) {
+        bindedHex.removeEventListener('keyup', keyUp);
+        bindedHex.removeEventListener('blur', blur);
+      }
       color.unbind(colorChanged);
       red = null;
       green = null;
@@ -332,8 +390,6 @@ export default class ColorValuePicker {
       bindedHex.addEventListener('keyup', keyUp);
       bindedHex.addEventListener('blur', blur);
     }
-    // red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).add(hex).add(bindedHex).add(ahex).bind('keyup', keyUp).bind('blur', blur);
-    // red.add(green).add(blue).add(alpha).add(hue).add(saturation).add(value).bind('keydown', keyDown);
     color.bind(colorChanged);
   }
 }

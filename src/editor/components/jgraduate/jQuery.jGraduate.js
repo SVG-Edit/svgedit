@@ -649,23 +649,30 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       'stroke-width': 1.5
     }, stopGroup);
 
-    $(path).mousedown(function (e) {
+    path.addEventListener('mousedown', function (e) {
       selectStop(this);
       drag = curStop;
       $win.addEventListener('mousemove', dragColor);
       $win.addEventListener('mouseup', remDrags);
-      stopOffset = stopMakerDiv.offset();
+      stopOffset = findPos(stopMakerDiv);
       e.preventDefault();
       return false;
-    }).data('stop', stop).data('bg', pathbg).dblclick(function () {
-      $wc('div.jGraduate_LightBox').show();
+    });
+    $(path).data('stop', stop).data('bg', pathbg);
+    // path.dataset.stop = stop;
+    // path.dataset.bg = pathbg;
+    path.addEventListener('dblclick', function () {
+      $this.querySelector('#jGraduate_LightBox').style.display = 'block';
       const colorhandle = this;
       let stopOpacity = Number(stop.getAttribute('stop-opacity')) || 1;
       let stopColor = stop.getAttribute('stop-color') || 1;
       let thisAlpha = (Number.parseFloat(stopOpacity) * 255).toString(16);
       while (thisAlpha.length < 2) { thisAlpha = '0' + thisAlpha; }
       colr = stopColor.substr(1) + thisAlpha;
-      jPickerMethod($wc('#' + id + '_jGraduate_stopPicker').css({left: 100, bottom: 15}), {
+      const jqPickerElem = $this.querySelector('#' + id + '_jGraduate_stopPicker');
+      jqPickerElem.style.left = '100px';
+      jqPickerElem.style.bottom = '15px';
+      jPickerMethod(jqPickerElem, {
         window: {title: 'Pick the start color and opacity for the gradient'},
         images: {clientPath: $settings.images.clientPath},
         color: {active: colr, alphaSupport: true}
@@ -676,30 +683,31 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
         colorhandle.setAttribute('fill-opacity', stopOpacity);
         stop.setAttribute('stop-color', stopColor);
         stop.setAttribute('stop-opacity', stopOpacity);
-        $wc('div.jGraduate_LightBox').hide();
-        $wc('#' + id + '_jGraduate_stopPicker').hide();
+        $this.querySelector('#jGraduate_LightBox').style.display = 'none';
+        $this.querySelector('#' + id + '_jGraduate_stopPicker').style.display = 'none';
       }, null, function () {
-        $wc('div.jGraduate_LightBox').hide();
-        $wc('#' + id + '_jGraduate_stopPicker').hide();
+        $this.querySelector('#jGraduate_LightBox').style.display = 'none';
+        $this.querySelector('#' + id + '_jGraduate_stopPicker').style.display = 'none';
       });
     });
-
-    $(curGradient).find('stop').each(function () {
-      const curS = $(this);
-      if (Number(this.getAttribute('offset')) > n) {
+    const jqStopEls = curGradient.querySelectorAll('stop');
+    for (const jqStopEl of jqStopEls) {
+      const curS = jqStopEl;
+      if (Number(jqStopEl.getAttribute('offset')) > n) {
         if (!colr) {
-          const newcolor = this.getAttribute('stop-color');
-          const newopac = this.getAttribute('stop-opacity');
+          const newcolor = jqStopEl.getAttribute('stop-color');
+          const newopac = jqStopEl.getAttribute('stop-opacity');
           stop.setAttribute('stop-color', newcolor);
           path.setAttribute('fill', newcolor);
           stop.setAttribute('stop-opacity', newopac === null ? 1 : newopac);
           path.setAttribute('fill-opacity', newopac === null ? 1 : newopac);
         }
-        curS.before(stop);
-        return false;
+        curS.insertAdjacentElement('beforebegin', stop);
+        // curS.before(stop);
+        // return false;
       }
-      return true;
-    });
+      // return true;
+    }
     if (sel) selectStop(path);
     return stop;
   }
@@ -709,6 +717,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   * @returns {void}
   */
   function remStop () {
+    console.log("remStop --> ", curStop);
     delStop.setAttribute('display', 'none');
     const path = $wc(curStop);
     const stop = path.data('stop');
@@ -716,7 +725,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     $([curStop, stop, bg]).remove();
   }
 
-  const stopMakerDiv = $wc('#' + id + '_jGraduate_StopSlider');
+  const stopMakerDiv = $this.querySelector('#' + id + '_jGraduate_StopSlider');
 
   let stops, curStop, drag;
 
@@ -806,12 +815,13 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     stop.setAttribute('offset', sX);
 
     let last = 0;
-    $(curGradient).find('stop').each(function (i) {
-      const cur = this.getAttribute('offset');
-      const t = $(this);
+    const jqStopElems = curGradient.querySelectorAll('stop');
+    [].forEach.call(jqStopElems, function (jqStopElem) {
+      const cur = jqStopElem.getAttribute('offset');
+      const t = jqStopElem;
       if (cur < last) {
-        t.prev().before(t);
-        stops = $(curGradient).find('stop');
+        t.previousElementSibling.insertAdjacentElement('beforebegin', t);
+        stops = curGradient.querySelectorAll('stop');
       }
       last = cur;
     });
@@ -820,7 +830,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   const stopMakerSVG = mkElem('svg', {
     width: '100%',
     height: 45
-  }, stopMakerDiv[0]);
+  }, stopMakerDiv);
 
   const transPattern = mkElem('pattern', {
     width: 16,
@@ -838,8 +848,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
 
   transImg.setAttributeNS(ns.xlink, 'xlink:href', bgImage);
 
-  $(stopMakerSVG).click(function (evt) {
-    stopOffset = stopMakerDiv.offset();
+  stopMakerSVG.addEventListener('click', function (evt) {
+    stopOffset = findPos(stopMakerDiv);
     const {target} = evt;
     if (target.tagName === 'path') return;
     let x = evt.pageX - stopOffset.left - 8;
@@ -848,7 +858,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     evt.stopPropagation();
   });
 
-  $(stopMakerSVG).mouseover(function () {
+  stopMakerSVG.addEventListener('mouseover', function () {
     stopMakerSVG.append(delStop);
   });
 
@@ -959,7 +969,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   const onMouseDownGradCoords = (e) => {
     e.preventDefault();
     draggingCoord = e.target;
-    // const sPos = draggingCoord.offset();
     offset = findPos(draggingCoord.parentNode);
     $win.addEventListener('mousemove', onCoordDrag);
     $win.addEventListener('mouseup', onCoordUp);
