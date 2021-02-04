@@ -599,34 +599,42 @@ const {Color, List, ColorMethods} = jPicker; // local copies for YUI compressor
 *   so we use an approach to add a redundant `$.fn.` in the name.
 * @namespace
 * @memberof external:jQuery.fn
+* @param {any} elem
 * @param {external:jQuery.fn.jPickerOptions} options
 * @param {module:jPicker.CommitCallback} [commitCallback]
 * @param {module:jPicker.LiveCallback} [liveCallback]
 * @param {module:jPicker.CancelCallback} [cancelCallback]
-* @returns {external:jQuery}
+* @returns {void}
 */
 export function jPickerMethod (elem, options, commitCallback, liveCallback, cancelCallback) {
-  // return elem.each(function () {
   const that = elem,
     settings = $.extend(true, {}, jPickerDefaults, options); // local copies for YUI compressor
-  if ($(that).get(0).nodeName.toLowerCase() === 'input') { // Add color picker icon if binding to an input element and bind the events to the input
+  if (that.nodeName.toLowerCase() === 'input') { // Add color picker icon if binding to an input element and bind the events to the input
     $.extend(true, settings, {
       window: {
         bindToInput: true,
         expandable: true,
-        input: $(that)
+        input: that
       }
     });
-    if ($(that).val() === '') {
+    if (that.value === '') {
       settings.color.active = new Color({hex: null});
       settings.color.current = new Color({hex: null});
-    } else if (ColorMethods.validateHex($(that).val())) {
-      settings.color.active = new Color({hex: $(that).val(), a: settings.color.active.val('a')});
-      settings.color.current = new Color({hex: $(that).val(), a: settings.color.active.val('a')});
+    } else if (ColorMethods.validateHex(that.value)) {
+      settings.color.active = new Color({hex: that.value, a: settings.color.active.val('a')});
+      settings.color.current = new Color({hex: that.value, a: settings.color.active.val('a')});
     }
   }
   if (settings.window.expandable) {
-    $(that).after('<span class="jPicker"><span class="Icon"><span class="Color">&nbsp;</span><span class="Alpha">&nbsp;</span><span class="Image" title="Click To Open Color Picker">&nbsp;</span><span class="Container" id="Container">&nbsp;</span></span></span>');
+    that.insertAdjacentElement('afterend', `<span class="jPicker">
+      <span class="Icon">
+        <span class="Color">&nbsp;</span>
+        <span class="Alpha">&nbsp;</span>
+        <span class="Image" title="Click To Open Color Picker">&nbsp;</span>
+        <span class="Container" id="Container">&nbsp;</span>
+      </span>
+    </span>`);
+    // $(that).after('<span class="jPicker"><span class="Icon"><span class="Color">&nbsp;</span><span class="Alpha">&nbsp;</span><span class="Image" title="Click To Open Color Picker">&nbsp;</span><span class="Container" id="Container">&nbsp;</span></span></span>');
   } else {
     settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
   }
@@ -1111,7 +1119,12 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   * @returns {void}
   */
   function radioClicked (e) {
-    $(this).parents('tbody:first').find('input:radio[value!="' + e.target.value + '"]').removeAttr('checked');
+    const rChecks = that.querySelectorAll('input[type="radio"]:checked');
+    for (const rCheck of rChecks) {
+      if (rCheck.value !== e.target.value) {
+        rCheck.checked = false;
+      }
+    }
     setColorMode.call(that, e.target.value);
   }
   /**
@@ -1918,7 +1931,3 @@ export const jPickerDefaults = {
     }
   }
 };
-  // return $;
-// };
-
-// export default jPicker;
