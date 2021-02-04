@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 /* eslint-disable unicorn/prefer-node-remove */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-unsanitized/property */
@@ -1014,7 +1015,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     }
   };
   $this.querySelector('#' + id + '_jGraduate_match_ctr').addEventListener('change', onMatchCtrHandler);
-
   stops = curGradient.getElementsByTagNameNS(ns.svg, 'stop');
   numstops = stops.length;
   // if there are not at least two stops, then
@@ -1030,8 +1030,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
 
   const setSlider = function (e) {
     const {offset: {left}} = slider;
-    const div = slider.parent;
-    let x = (e.pageX - left - Number.parseInt(div.css('border-left-width')));
+    const divi = slider.parent;
+    let x = (e.pageX - left - Number.parseInt(getComputedStyle(divi, null).getPropertyValue('border-left-width')));
     if (x > SLIDERW) x = SLIDERW;
     if (x <= 0) x = 0;
     const posx = x - 5;
@@ -1072,9 +1072,9 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       x /= 100;
       break;
     }
-    slider.elem.css({'margin-left': posx});
+    slider.elem.style.marginLeft = posx + 'px';
     x = Math.round(x * 100);
-    slider.input.val(x);
+    slider.input.value = x;
   };
 
   let ellipVal = 0, angleVal = 0;
@@ -1112,7 +1112,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       }
     }
   }
-
   const sliders = {
     radius: {
       handle: '#' + id + '_jGraduate_RadiusArrows',
@@ -1135,24 +1134,24 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       val: angleVal
     }
   };
-
-  $.each(sliders, function (type, data) {
-    const handle = $(data.handle);
-    handle.mousedown(function (evt) {
-      const parent = handle.parent();
+  for (const [index, [type, data]] of Object.entries(Object.entries(sliders))) {
+    const handle = $this.querySelector(data.handle);
+    const sInput = $this.querySelector(data.input);
+    handle.addEventListener('mousedown', function (evt) {
+      const parent = handle.parentNode;
       slider = {
         type,
         elem: handle,
-        input: $(data.input),
+        input: sInput,
         parent,
-        offset: parent.offset()
+        offset: findPos(parent)
       };
       $win.addEventListener('mousemove', dragSlider);
       $win.addEventListener('mouseup', stopSlider);
       evt.preventDefault();
     });
-
-    $(data.input).val(data.val).change(function () {
+    sInput.value = data.val;
+    sInput.addEventListener('change', function () {
       const isRad = curType === 'radialGradient';
       let val = Number(this.value);
       let xpos = 0;
@@ -1198,8 +1197,9 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
         xpos = 0;
       }
       handle.style.marginLeft = (xpos - 5) + 'px';
-    }).change();
-  });
+    });
+    sInput.dispatchEvent(new Event('change'));
+  }
 
   const dragSlider = function (evt) {
     setSlider(evt);
