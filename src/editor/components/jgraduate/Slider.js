@@ -1,4 +1,3 @@
-/* globals $ */
 /* eslint-disable unicorn/prefer-math-trunc */
 /* eslint-disable no-bitwise */
 /* eslint-disable unicorn/prefer-ternary */
@@ -10,6 +9,10 @@
 const isNullish = (val) => {
   return val === null || val === undefined;
 };
+/**
+ * @param {any} obj
+ * @returns {any}
+ */
 function findPos (obj) {
   let curleft = 0;
   let curtop = 0;
@@ -61,7 +64,6 @@ export default class Slider {
       // Bind mousemove and mouseup event to the document so it responds when dragged of of the bar - we will unbind these when on mouseup to save processing
       document.addEventListener('mousemove', mouseMove);
       document.addEventListener('mouseup', mouseUp);
-      // $(document).bind('mousemove', mouseMove).bind('mouseup', mouseUp);
       e.preventDefault(); // don't try to select anything or drag the image to the desktop
     }
     /**
@@ -86,7 +88,6 @@ export default class Slider {
     function mouseUp (e) {
       document.removeEventListener('mousemove', mouseMove);
       document.removeEventListener('mouseup', mouseUp);
-      // $(document).unbind('mouseup', mouseUp).unbind('mousemove', mouseMove);
       e.stopPropagation();
       e.preventDefault();
       return false;
@@ -142,7 +143,6 @@ export default class Slider {
         if (arrowH >= barH) arrowOffsetY = (barH >> 1) - (arrowH >> 1);
         else arrowOffsetY -= arrowH >> 1;
         // set the arrow position based on these offsets
-        // arrow.css({left: arrowOffsetX + 'px', top: arrowOffsetY + 'px'});
         arrow.style.left = arrowOffsetX + 'px';
         arrow.style.top = arrowOffsetY + 'px';
       });
@@ -320,8 +320,6 @@ export default class Slider {
       document.removeEventListener('mousemove', mouseMove);
       document.removeEventListener('mouseup', mouseUp);
       bar.removeEventListener('mousedown', mouseDown);
-      // $(document).unbind('mouseup', mouseUp).unbind('mousemove', mouseMove);
-      // bar.unbind('mousedown', mouseDown);
       bar = null;
       arrow = null;
       changeEvents = null;
@@ -345,27 +343,12 @@ export default class Slider {
       unbind,
       destroy
     });
-    /* $.extend(
-      true,
-      // public properties, methods, and event bindings - these we need
-      //   to access from other controls
-      that,
-      {
-        val,
-        range,
-        bind,
-        unbind,
-        destroy
-      }
-    ); */
     // initialize this control
     arrow.src = options.arrow && options.arrow.image;
     arrow.w = (options.arrow && options.arrow.width) || arrow.width();
     arrow.h = (options.arrow && options.arrow.height) || arrow.height();
     bar.w = (options.map && options.map.width) || bar.width();
     bar.h = (options.map && options.map.height) || bar.height();
-    // bind mousedown event
-    // bar.bind('mousedown', mouseDown);
     bar.addEventListener('mousedown', mouseDown);
     bind.call(that, draw);
   }
