@@ -23,6 +23,7 @@
 /* globals $ */
 import Paint from './paint.js';
 import {jPickerDefaults, jPickerMethod} from './jQuery.jPicker.js';
+import {findPos} from './Util.js';
 
 /**
  * @todo JFH: This jQuery plugin was adapted to work within a Web Component.
@@ -52,19 +53,6 @@ if (!window.console) {
     log (str) { /* empty fn */ },
     dir (str) { /* empty fn */ }
   };
-}
-
-function findPos (obj) {
-  let curleft = 0;
-  let curtop = 0;
-  if (obj.offsetParent) {
-    do {
-      curleft += obj.offsetLeft;
-      curtop += obj.offsetTop;
-    } while (obj = obj.offsetParent);
-    return {left: curleft, top: curtop};
-  }
-  return {left: curleft, top: curtop};
 }
 
 /**

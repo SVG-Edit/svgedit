@@ -1,6 +1,7 @@
 /* eslint-disable unicorn/prefer-math-trunc */
 /* eslint-disable no-bitwise */
 /* eslint-disable unicorn/prefer-ternary */
+import {findPos} from './Util.js';
 /**
  * Whether a value is `null` or `undefined`.
  * @param {any} val
@@ -9,22 +10,6 @@
 const isNullish = (val) => {
   return val === null || val === undefined;
 };
-/**
- * @param {any} obj
- * @returns {any}
- */
-function findPos (obj) {
-  let curleft = 0;
-  let curtop = 0;
-  if (obj.offsetParent) {
-    do {
-      curleft += obj.offsetLeft;
-      curtop += obj.offsetTop;
-    } while (obj = obj.offsetParent);
-    return {left: curleft, top: curtop};
-  }
-  return {left: curleft, top: curtop};
-}
 /**
  * Encapsulate slider functionality for the ColorMap and ColorBar -
  * could be useful to use a jQuery UI draggable for this with certain extensions.

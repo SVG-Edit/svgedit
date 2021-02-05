@@ -1,7 +1,4 @@
-/* eslint-disable jsdoc/require-file-overview */
-import ColorValuePicker from './ColorValuePicker.js';
-import Slider from './Slider.js';
-/* globals $ */
+/* eslint-disable unicorn/prefer-modern-dom-apis */
 /**
  * @file jPicker (Adapted from version 1.1.6)
  *
@@ -18,6 +15,14 @@ import Slider from './Slider.js';
  * John Dyers' website: {@link http://johndyer.name}
  * Color Picker page: {@link http://johndyer.name/photoshop-like-javascript-color-picker/}
  */
+/* globals $ */
+/* eslint-disable unicorn/prefer-math-trunc */
+/* eslint-disable no-unsanitized/property */
+/* eslint-disable no-bitwise */
+/* eslint-disable max-len */
+import ColorValuePicker from './ColorValuePicker.js';
+import Slider from './Slider.js';
+import {findPos} from './Util.js';
 
 /**
 * @external Math
@@ -626,15 +631,15 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     }
   }
   if (settings.window.expandable) {
-    that.insertAdjacentElement('afterend', `<span class="jPicker">
-      <span class="Icon">
-        <span class="Color">&nbsp;</span>
-        <span class="Alpha">&nbsp;</span>
-        <span class="Image" title="Click To Open Color Picker">&nbsp;</span>
-        <span class="Container" id="Container">&nbsp;</span>
-      </span>
-    </span>`);
-    // $(that).after('<span class="jPicker"><span class="Icon"><span class="Color">&nbsp;</span><span class="Alpha">&nbsp;</span><span class="Image" title="Click To Open Color Picker">&nbsp;</span><span class="Container" id="Container">&nbsp;</span></span></span>');
+    const content = document.createElement('span');
+    content.classList.add('jPicker');
+    content.innerHTML = `<span class="Icon" id="jq-ae-Icon">
+      <span class="Color" id="jq-ae-Color">&nbsp;</span>
+      <span class="Alpha" id="jq-ae-Alpha">&nbsp;</span>
+      <span class="Image" id="jq-ae-Image" title="Click To Open Color Picker">&nbsp;</span>
+      <span class="Container" id="Container">&nbsp;</span>
+    </span>`;
+    that.insertAdjacentElement('afterend', content);
   } else {
     settings.window.liveUpdate = false; // Basic control binding for inline use - You will need to override the liveCallback or commitCallback function to retrieve results
   }
@@ -1178,12 +1183,8 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     iconColor.style.backgroundColor = (hex && '#' + hex) || 'transparent';
     setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - ((va && va.a) || 0)) * 100) / 255, 4));
     if (settings.window.bindToInput && settings.window.updateInputColor) {
-      // settings.window.input.style.backgroundColor = (hex && '#' + hex) || 'transparent';
-      // settings.window.input.style.color = isNullish(va) || va.v > 75 ? '#000000' : '#ffffff';
-      settings.window.input.css({
-        backgroundColor: (hex && '#' + hex) || 'transparent',
-        color: isNullish(va) || va.v > 75 ? '#000000' : '#ffffff'
-      });
+      settings.window.input.style.backgroundColor = (hex && '#' + hex) || 'transparent';
+      settings.window.input.style.color = isNullish(va) || va.v > 75 ? '#000000' : '#ffffff';
     }
   }
   /**
@@ -1191,14 +1192,13 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   * @returns {void}
   */
   function moveBarMouseDown (e) {
-    // const {element} = settings.window, // local copies for YUI compressor
-    //     {page} = settings.window;
-    elementStartX = Number.parseInt(container.css('left'));
-    elementStartY = Number.parseInt(container.css('top'));
+    elementStartX = Number.parseInt(container.style.left);
+    elementStartY = Number.parseInt(container.style.top);
     pageStartX = e.pageX;
     pageStartY = e.pageY;
     // bind events to document to move window - we will unbind these on mouseup
-    $(document).bind('mousemove', documentMouseMove).bind('mouseup', documentMouseUp);
+    document.addEventListener('mousemove', documentMouseMove);
+    document.addEventListener('mouseup', documentMouseUp);
     e.preventDefault(); // prevent attempted dragging of the column
   }
   /**
@@ -1209,11 +1209,9 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     container.style.left = elementStartX - (pageStartX - e.pageX) + 'px';
     container.style.top = elementStartY - (pageStartY - e.pageY) + 'px';
     if (settings.window.expandable && !$.support.boxModel) {
-      // const prev = container.previousElementSibling;
-      container.prev().css({
-        left: container.css('left'),
-        top: container.css('top')
-      });
+      const prev = container.previousElementSibling;
+      prev.style.left = container.style.left;
+      prev.style.top = container.style.top;
     }
     e.stopPropagation();
     e.preventDefault();
@@ -1224,7 +1222,8 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   * @returns {false}
   */
   function documentMouseUp (e) {
-    $(document).unbind('mousemove', documentMouseMove).unbind('mouseup', documentMouseUp);
+    document.removeEventListener('mousemove', documentMouseMove);
+    document.removeEventListener('mouseup', documentMouseUp);
     e.stopPropagation();
     e.preventDefault();
     return false;
@@ -1236,7 +1235,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   function quickPickClicked (e) {
     e.preventDefault();
     e.stopPropagation();
-    color.active.val('ahex', $(this).attr('title') || null, e.target);
+    color.active.val('ahex', e.target.getAttribute('title') || null, e.target);
     return false;
   }
   /**
@@ -1251,22 +1250,22 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     */
     function attachIFrame () {
       if (!settings.window.expandable || $.support.boxModel) return;
-      const table = container.find('table:first');
-      container.before('<iframe/>');
-      container.prev().css({
-        width: table.width(),
-        height: container.height(),
-        opacity: 0,
-        position: 'absolute',
-        left: container.css('left'),
-        top: container.css('top')
-      });
+      const table = container.querySelector('#jPicker-table');
+      container.insertAdjacentElement('beforebegin', document.createElement('iframe'));
+      const pELem = container.previousElementSibling;
+      pELem.style.width = parseFloat(getComputedStyle(table, null).width.replace('px', ''));
+      pELem.style.height = parseFloat(getComputedStyle(container, null).height.replace('px', ''));
+      pELem.style.opacity = 0;
+      pELem.style.position = 'absolute';
+      pELem.style.left = getComputedStyle(container, null).getPropertyValue('left');
+      pELem.style.top = getComputedStyle(container, null).getPropertyValue('top');
     }
     if (settings.window.expandable) {
-      $(document.body).children('div.jPicker.Container').css({zIndex: 10});
       container.style.zIndex = 20;
     }
-    switch (settings.window.effects.type) {
+    container.style.display = 'block';
+    attachIFrame();
+    /* switch (settings.window.effects.type) {
     case 'fade':
       container.fadeIn(settings.window.effects.speed.show, attachIFrame);
       break;
@@ -1277,7 +1276,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     default:
       container.show(settings.window.effects.speed.show, attachIFrame);
       break;
-    }
+    } */
   }
   /**
   *
@@ -1293,7 +1292,9 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       if (!settings.window.expandable || $.support.boxModel) return;
       container.prev().remove();
     }
-    switch (settings.window.effects.type) {
+    container.style.display = 'none';
+    removeIFrame();
+    /* switch (settings.window.effects.type) {
     case 'fade':
       container.fadeOut(settings.window.effects.speed.hide, removeIFrame);
       break;
@@ -1304,7 +1305,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     default:
       container.hide(settings.window.effects.speed.hide, removeIFrame);
       break;
-    }
+    } */
   }
   /**
   *
@@ -1314,11 +1315,11 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     const nexts = that.nextElementSibling;
     const win = settings.window,
       popup = win.expandable ? nexts.querySelector('#Container') : null;
-    container = win.expandable ? $('<div/>') : that;
+    container = win.expandable ? document.createElement('div') : that;
     // container.addClass('jPicker Container');
     container.classList.add('jPicker');
     container.classList.add('Container');
-    if (win.expandable) container.hide();
+    if (win.expandable) container.style.display = 'none';
     container.onselectstart = function (e) {
       if (e.target.nodeName.toLowerCase() !== 'input') return false;
       return true;
@@ -1328,7 +1329,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     const all = color.active.val('all');
     if (win.alphaPrecision < 0) win.alphaPrecision = 0;
     else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
-    const controlHtml = `<table class="jPicker" cellpadding="0" cellspacing="0">
+    const controlHtml = `<table class="jPicker" id="jPicker-table" cellpadding="0" cellspacing="0">
       <tbody>
         ${win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : ''}
         <tr>
@@ -1370,54 +1371,47 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         </tr>
       </tbody></table>`;
     if (win.expandable) {
-      container.html(controlHtml);
-      if (!$(document.body).children('div.jPicker.Container').length) {
-        $(document.body).prepend(container);
+      container.innerHTML = controlHtml;
+      if (!that.querySelectorAll('div.jPicker.Container').length) {
+        document.body.insertBefore(container, document.body.firstChild);
       } else {
-        $(document.body).children('div.jPicker.Container:last').after(container);
+        that.querySelector('div.jPicker.Container:last').insertAdjacentElement('afterend', container)
       }
-      container.mousedown(
-        function () {
-          $(document.body).children('div.jPicker.Container').css({zIndex: 10});
-          container.style.zIndex = 20;
-        }
-      );
-      container.css( // positions must be set and display set to absolute before source code injection or IE will size the container to fit the window
-        {
-          left:
-            win.position.x === 'left'
-              ? (popup.offset().left - 530 - (win.position.y === 'center' ? 25 : 0)) + 'px'
-              : win.position.x === 'center'
-                ? (popup.offset().left - 260) + 'px'
-                : win.position.x === 'right'
-                  ? (popup.offset().left - 10 + (win.position.y === 'center' ? 25 : 0)) + 'px'
-                  : win.position.x === 'screenCenter'
-                    ? (($(document).width() >> 1) - 260) + 'px'
-                    : (popup.offset().left + Number.parseInt(win.position.x)) + 'px',
-          position: 'absolute',
-          top: win.position.y === 'top'
-            ? (popup.offset().top - 312) + 'px'
-            : win.position.y === 'center'
-              ? (popup.offset().top - 156) + 'px'
-              : win.position.y === 'bottom'
-                ? (popup.offset().top + 25) + 'px'
-                : (popup.offset().top + Number.parseInt(win.position.y)) + 'px'
-        }
-      );
+      container.addEventListener('mousedown', function () {
+        container.style.zIndex = 20;
+      });
+      const poslt = findPos(popup);
+      container.style.position = 'absolute';
+      container.style.left =
+        win.position.x === 'left'
+          ? (poslt.left - 530 - (win.position.y === 'center' ? 25 : 0)) + 'px'
+          : win.position.x === 'center'
+            ? (poslt.left - 260) + 'px'
+            : win.position.x === 'right'
+              ? (poslt.left - 10 + (win.position.y === 'center' ? 25 : 0)) + 'px'
+              : win.position.x === 'screenCenter'
+                ? ((document.width >> 1) - 260) + 'px'
+                : (poslt.left + Number.parseInt(win.position.x)) + 'px';
+      container.style.top =
+        win.position.y === 'top'
+          ? (poslt.top - 312) + 'px'
+          : win.position.y === 'center'
+            ? (poslt.top - 156) + 'px'
+            : win.position.y === 'bottom'
+              ? (poslt.top + 25) + 'px'
+              : (poslt.top + Number.parseInt(win.position.y)) + 'px';
     } else {
       container = that;
-      const div = document.createElement('div');
-      div.innerHTML = controlHtml;
-      while (div.children.length > 0) {
-        container.appendChild(div.children[0]);
+      const newDiv = document.createElement('div');
+      newDiv.innerHTML = controlHtml;
+      while (newDiv.children.length > 0) {
+        container.appendChild(newDiv.children[0]);
       }
     }
     // initialize the objects to the source code just injected
     const tbody = container.querySelector('tbody');
     colorMapDiv = tbody.querySelector('#Map');
     colorBarDiv = tbody.querySelector('#Bar');
-    // const MapMaps = colorMapDiv.find('span');
-    // const BarMaps = colorBarDiv.find('span');
     colorMapL1 = colorMapDiv.querySelector('#MMap1');
     colorMapL2 = colorMapDiv.querySelector('#MMap2');
     colorMapL3 = colorMapDiv.querySelector('#MMap3');
@@ -1527,39 +1521,47 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     color.current.bind(currentColorChanged);
     // bind to input
     if (win.expandable) {
-      that.icon = popup.parents('.Icon:first');
-      iconColor = that.icon.find('.Color:first').css({backgroundColor: (hex && '#' + hex) || 'transparent'});
-      iconAlpha = that.icon.find('.Alpha:first');
+      that.icon = popup.parentNode;
+      iconColor = that.icon.querySelector('.Color');
+      iconColor.style.backgroundColor = (hex && '#' + hex) || 'transparent';
+      iconAlpha = that.icon.querySelector('.Alpha');
       setImg.call(that, iconAlpha, images.clientPath + 'bar-opacity.png');
       setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - (!isNullish(all) ? all.a : 0)) * 100) / 255, 4));
-      iconImage = that.icon.find('.Image:first').css({
-        backgroundImage: 'url(\'' + images.clientPath + images.picker.file + '\')'
-      }).bind('click', iconImageClicked);
+      iconImage = that.icon.querySelector('.Image')
+      iconImage.style.backgroundImage = 'url(\'' + images.clientPath + images.picker.file + '\')';
+      iconImage.addEventListener('click', iconImageClicked);
       if (win.bindToInput && win.updateInputColor) {
-        win.input.css({
-          backgroundColor: (hex && '#' + hex) || 'transparent',
-          color: isNullish(all) || all.v > 75 ? '#000000' : '#ffffff'
-        });
+        win.input.style.backgroundColor = (hex && '#' + hex) || 'transparent';
+        win.input.style.color = isNullish(all) || all.v > 75 ? '#000000' : '#ffffff';
       }
-      moveBar = tbody.find('.Move:first').bind('mousedown', moveBarMouseDown);
+      const moveBar = tbody.querySelector('.Move');
+      moveBar.addEventListener('mousedown', moveBarMouseDown);
       color.active.bind(expandableColorChanged);
-    } else show.call(that);
+    } else {
+      show.call(that);
+    }
   }
   /**
   *
   * @returns {void}
   */
   function destroy () {
-    container.find('td.Radio input').unbind('click', radioClicked);
-    currentPreview.unbind('click', currentClicked);
-    cancelButton.unbind('click', cancelClicked);
-    okButton.unbind('click', okClicked);
+    const radioInputs = container.querySelectorAll('td.Radio input');
+    for (const radioInput of radioInputs) {
+      radioInput.removeEventListener('click', radioClicked);
+    }
+    currentPreview.removeEventListener('click', currentClicked);
+    cancelButton.removeEventListener('click', cancelClicked);
+    okButton.removeEventListener('click', okClicked);
     if (settings.window.expandable) {
-      iconImage.unbind('click', iconImageClicked);
-      moveBar.unbind('mousedown', moveBarMouseDown);
+      iconImage.removeEventListener('click', iconImageClicked);
+      moveBar.removeEventListener('mousedown', moveBarMouseDown);
       that.icon = null;
     }
-    container.find('.QuickColor').unbind('click', quickPickClicked);
+    const jqQuickColors = container.querySelectorAll('.QuickColor');
+    for (const jqQuickColor of jqQuickColors) {
+      jqQuickColor.removeEventListener('click', quickPickClicked);
+    }
     colorMapDiv = null;
     colorBarDiv = null;
     colorMapL1 = null;
@@ -1670,7 +1672,6 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   setTimeout(function () {
     initialize.call(that);
   }, 0);
-  //});
 }
 /**
 * @typedef {PlainObject} external:jQuery.fn.jPickerOptionsIconInfo
