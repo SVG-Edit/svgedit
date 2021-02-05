@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/CenteredStrip.js';
 
 const palette = [

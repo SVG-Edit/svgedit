@@ -160,7 +160,6 @@ export class ExplorerButton extends HTMLElement {
         const response = await fetch(`${newValue}index.json`);
         const json = await response.json();
         const {lib} = json;
-        // eslint-disable-next-line no-unsanitized/property
         this.$menu.innerHTML = lib.map((menu, i) => (
           `<div data-menu="${menu}" class="menu-item ${(i === 0) ? 'pressed' : ''} ">${menu}</div>`
         )).join('');
@@ -297,7 +296,6 @@ export class ExplorerButton extends HTMLElement {
       const off = size * 0.05;
       const vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
       const stroke = json.fill ? 0 : (size / 30);
-      // eslint-disable-next-line no-unsanitized/property
       this.$lib.innerHTML = Object.entries(this.data).map(([key, path]) => {
         const encoded = btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">

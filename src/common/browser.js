@@ -49,7 +49,7 @@ const seg = path.createSVGPathSegLinetoAbs(5, 5);
 try {
   seglist.replaceItem(seg, 1);
   return true;
-} catch (err) {}
+}catch (err) {/* empty */}
 return false;
 }());
 
@@ -61,7 +61,7 @@ const seg = path.createSVGPathSegLinetoAbs(5, 5);
 try {
   seglist.insertItemBefore(seg, 1);
   return true;
-} catch (err) {}
+}catch (err) {/* empty */}
 return false;
 }());
 

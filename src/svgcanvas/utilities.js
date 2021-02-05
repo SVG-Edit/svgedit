@@ -441,7 +441,7 @@ export const getUrlFromAttr = function (attrVal) {
 * @param {Element} elem
 * @returns {string} The given element's `xlink:href` value
 */
-export let getHref = function (elem) { // eslint-disable-line import/no-mutable-exports
+export let getHref = function (elem) {
   return elem.getAttributeNS(NS.XLINK, 'href');
 };
 
@@ -452,7 +452,7 @@ export let getHref = function (elem) { // eslint-disable-line import/no-mutable-
 * @param {string} val
 * @returns {void}
 */
-export let setHref = function (elem, val) { // eslint-disable-line import/no-mutable-exports
+export let setHref = function (elem, val) {
   elem.setAttributeNS(NS.XLINK, 'xlink:href', val);
 };
 
@@ -569,7 +569,7 @@ export const getPathBBox = function (path) {
 */
 function groupBBFix (selected) {
   if (supportsHVLineContainerBBox()) {
-    try { return selected.getBBox(); } catch (e) {}
+    try { return selected.getBBox(); } catch (e) {/* empty */}
   }
   const ref = $.data(selected, 'ref');
   let matched = null;
@@ -1172,7 +1172,7 @@ export const getRotationAngleFromTransformList = function (tlist, toRad) {
 * @param {boolean} [toRad=false] - When true returns the value in radians rather than degrees
 * @returns {Float} The angle in degrees or radians
 */
-export let getRotationAngle = function (elem, toRad) { // eslint-disable-line import/no-mutable-exports
+export let getRotationAngle = function (elem, toRad) {
   const selected = elem || editorContext_.getSelectedElements()[0];
   // find the rotation transform (if any) and set it
   const tlist = getTransformList(selected);

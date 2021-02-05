@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import {template} from 'elix/src/base/internal.js';
 import {fragmentFrom} from 'elix/src/core/htmlLiterals.js';
 import PlainButton from 'elix/src/plain/PlainButton.js';
@@ -22,7 +21,6 @@ class SePlainBorderButton extends PlainButton {
           [part~="button"] {
             background: #72797A;
             border: 1px solid #ccc;
-            padding: 0.25em 0.5em;
           }
         </style>
       `

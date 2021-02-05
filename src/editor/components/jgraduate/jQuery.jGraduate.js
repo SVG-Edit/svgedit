@@ -30,7 +30,6 @@ import {findPos} from './Util.js';
  * We have to rewrite it as a pure webcomponent.
 */
 
-/* eslint-disable jsdoc/require-property */
 /**
   * The jQuery namespace.
   * @external jQuery
@@ -41,7 +40,6 @@ import {findPos} from './Util.js';
  * @memberof external:jQuery
  * @see {@link http://learn.jquery.com/plugins/|jQuery Plugins}
  */
-/* eslint-enable jsdoc/require-property */
 
 const ns = {
   svg: 'http://www.w3.org/2000/svg',

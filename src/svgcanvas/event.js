@@ -835,7 +835,7 @@ t.id !== 'svgcanvas' && t.id !== 'svgroot'
       try {
         // Fails in FF4 on foreignObject
         cAni[0].beginElement();
-      } catch (e) {}
+      } catch (e) {/* empty fn */}
     } else {
       aniDur = 0;
     }

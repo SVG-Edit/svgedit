@@ -1,11 +1,10 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/DropdownList.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
 elix-dropdown-list {
-  margin: 5px;
+  margin: 1px;
 }
 
 elix-dropdown-list:hover {

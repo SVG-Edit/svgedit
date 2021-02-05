@@ -109,7 +109,7 @@ export default {
      * @param {ImageLibMetaMessage|ImageLibMessage|string} cfg.data String is deprecated when parsed to JSON `ImageLibMessage`
      * @returns {void}
      */
-    async function onMessage ({origin, data: response}) { // eslint-disable-line no-shadow
+    async function onMessage ({origin, data: response}) {
       if (!response || !['string', 'object'].includes(typeof response)) {
         // Do nothing
         return;
@@ -126,7 +126,7 @@ export default {
         }
         if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
           // Todo: Surface this error to user?
-          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`); // eslint-disable-line no-console
+          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`); 
           return;
         }
         const hasName = 'name' in response;

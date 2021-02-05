@@ -18,10 +18,10 @@ let svgCanvas = null;
 function handleSvgData (data, error) {
   if (error) {
     // Todo: This should be replaced with a general purpose dialog alert library call
-    alert('error ' + error); // eslint-disable-line no-alert
+    alert('error ' + error);
   } else {
     // Todo: This should be replaced with a general purpose dialog alert library call
-    alert('Congratulations. Your SVG string is back in the host page, do with it what you will\n\n' + data); // eslint-disable-line no-alert
+    alert('Congratulations. Your SVG string is back in the host page, do with it what you will\n\n' + data);
   }
 }
 
@@ -112,7 +112,7 @@ iframe[0].addEventListener('load', function () {
   try {
     doc = frame.contentDocument || frame.contentWindow.document;
   } catch (err) {
-    console.log('Blocked from accessing document', err); // eslint-disable-line no-console
+    console.log('Blocked from accessing document', err);
   }
   if (doc) {
     // Todo: Provide a way to get this to occur by `postMessage`

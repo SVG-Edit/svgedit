@@ -1,9 +1,1 @@
-<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
- <defs>
-  <linearGradient id="svg_66" x1="0.04297" y1="0.00391" x2="0.21484" y2="0.875">
-   <stop offset="0" stop-color="#f7f963" stop-opacity="1"/>
-   <stop offset="1" stop-color="#d3c310" stop-opacity="1"/>
-  </linearGradient>
- </defs>
-  <path transform="rotate(-90, 10.3017, 11.5526)" d="m6.70188,10.72562l6.55493,-7.13388l6.65817,7.24912l-3.79441,0.03193l0,2.72259c-0.04257,2.74017 -2.76516,5.83068 -7.81235,6.02135c-5.18575,0 -7.1226,-3.75464 -7.49302,-7.41944c0.61736,1.6754 3.14913,3.78397 5.3716,3.67918c2.71635,0.1048 4.41501,-0.61714 4.41501,-2.50184l0,-2.64901l-3.89995,0z" id="svg_45" fill="url(#svg_66)" stroke="#b7a800"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51.04 49.47"><defs><style>.cls-1,.cls-3{fill:none;}.cls-1,.cls-2{stroke:#fff;}.cls-1{stroke-linecap:round;stroke-miterlimit:10;stroke-width:4px;}.cls-2{fill:#fff;stroke-linejoin:round;}</style></defs><g id="Calque_2" data-name="Calque 2"><g id="Calque_1-2" data-name="Calque 1"><path class="cls-1" d="M30.81,10.68A16.72,16.72,0,1,1,11.49,36"/><polygon class="cls-2" points="22.43 7.64 30.2 17.38 34.77 5.93 22.43 7.64"/><rect class="cls-3" width="51.04" height="49.47"/></g></g></svg>

@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/Input.js';
 
 const template = document.createElement('template');
@@ -13,7 +12,6 @@ template.innerHTML = `
     bottom: 1px;
     right: -4px;
     position: relative;
-    margin-left: 4px;
     margin-right: 4px;
     color: #fff;
   }

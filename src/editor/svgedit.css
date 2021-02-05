@@ -306,7 +306,7 @@ hr {
 
 #tools_top {
   position: absolute;
-  left: 108px;
+  left: 105px;
   top: 2px;
   min-height: 40px;
   border-bottom: none;
@@ -320,13 +320,13 @@ hr {
 
 #tools_top > div > * {
   float: left;
-  margin-right: 2px;
+  margin-right: 1px;
 }
 #tools_top se-input {
   margin-top: 6px;
   height: 15px;
 }
-#tools_top se-spin-input {
+#tools_top se-spin-input, #tools_top se-list {
   margin-top: 5px;
   height: 15px;
 }
@@ -431,8 +431,7 @@ hr {
   text-decoration: underline;
 }
 
-div.toolset,
-div.toolset > * {
+div.toolset, div.toolset > * {
   float: left;
 }
 

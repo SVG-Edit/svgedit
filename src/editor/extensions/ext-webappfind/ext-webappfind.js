@@ -39,7 +39,7 @@ export default {
       * @throws {Error} Unexpected event type
       * @returns {void}
       */
-      (win, {data, origin}) => { // eslint-disable-line no-shadow
+      (win, {data, origin}) => {
         // console.log('data, origin', data, origin);
         let type, content;
         try {

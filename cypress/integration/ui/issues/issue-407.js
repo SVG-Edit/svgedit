@@ -30,6 +30,6 @@ describe('Fix issue 407', function () {
       .dblclick({force: true});
     // svgedit use the #text text field to capture the text
     cy.get('#text').type('1234', {force: true});
-    cy.get('#a_text').should('have.text', 'hell1234o');
+    cy.get('#a_text').should('have.text', 'he1234llo');
   });
 });

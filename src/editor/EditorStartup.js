@@ -38,7 +38,7 @@ const readySignal = () => {
         cancelable: true
       });
       w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
-    } catch (e) {}
+    } catch (e) {/* empty fn */}
   }
 };
 
@@ -91,7 +91,6 @@ class EditorStartup {
       exportDialog.setAttribute('id', 'se-export-dialog');
       document.body.append(exportDialog);
     } catch (err) {
-    // eslint-disable-next-line no-console
       console.error(err);
     }
 
@@ -758,7 +757,7 @@ class EditorStartup {
             return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam});
           } catch (err) {
             // Todo: Add config to alert any errors
-            console.error('Extension failed to load: ' + extname + '; ', err); // eslint-disable-line no-console
+            console.error('Extension failed to load: ' + extname + '; ', err);
             return undefined;
           }
         })
@@ -781,7 +780,7 @@ class EditorStartup {
             return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam});
           } catch (err) {
             // Todo: Add config to alert any errors
-            console.error('Extension failed to load: ' + extPathName + '; ', err); // eslint-disable-line no-console
+            console.error('Extension failed to load: ' + extPathName + '; ', err);
             return undefined;
           }
         })
@@ -817,7 +816,7 @@ class EditorStartup {
       this.svgCanvas.call('extensions_added');
     } catch (err) {
       // Todo: Report errors through the UI
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
     }
   }
 
@@ -828,7 +827,7 @@ class EditorStartup {
  * @fires module:svgcanvas.SvgCanvas#event:message
  * @returns {void}
  */
-  messageListener ({data, origin}) { // eslint-disable-line no-shadow
+  messageListener ({data, origin}) {
   // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     const messageObj = {data, origin};
     if (!this.extensionsAdded) {

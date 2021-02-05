@@ -94,7 +94,7 @@ const svgWhiteList_ = {
 const svgWhiteListNS_ = {};
 Object.entries(svgWhiteList_).forEach(function ([elt, atts]) {
   const attNS = {};
-  Object.entries(atts).forEach(function ([i, att]) {
+  Object.entries(atts).forEach(function ([_i, att]) {
     if (att.includes(':')) {
       const v = att.split(':');
       attNS[v[1]] = NS[(v[0]).toUpperCase()];

@@ -498,8 +498,8 @@ class Editor extends EditorStartup {
 
     const ratio = newCanX / oldCanX;
 
-    const scrollX = w / 2 - wOrig / 2; // eslint-disable-line no-shadow
-    const scrollY = h / 2 - hOrig / 2; // eslint-disable-line no-shadow
+    const scrollX = w / 2 - wOrig / 2;
+    const scrollY = h / 2 - hOrig / 2;
 
     if (!newCtr) {
       const oldDistX = oldCtr.x - oldCanX;
@@ -1028,7 +1028,7 @@ class Editor extends EditorStartup {
     const icon = (typeof iconId === 'string') ? $('<img src="' + this.configObj.curConfig.imgPath + iconId + '">') : iconId.clone();
     if (!icon) {
       // Todo: Investigate why this still occurs in some cases
-      console.log('NOTE: Icon image missing: ' + iconId); // eslint-disable-line no-console
+      console.log('NOTE: Icon image missing: ' + iconId); 
       return;
     }
     $(elem).empty().append(icon);
@@ -1046,7 +1046,6 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   addAltDropDown (elemSel, listSel, callback, opts) {
-    // eslint-disable-next-line no-shadow
     const self = this;
     const button = $(elemSel);
     const {dropUp} = opts;
@@ -1112,7 +1111,7 @@ class Editor extends EditorStartup {
    * @returns {Promise<void>|void} Resolves to `undefined`
    */
   async extAdded (win, ext) {
-    // eslint-disable-next-line no-shadow
+   
     const self = this;
     const btnSelects = [];
     if (!ext) {
@@ -1482,7 +1481,7 @@ class Editor extends EditorStartup {
         self.addAltDropDown(this.elem, this.list, this.callback, {seticon: true});
       });
       /* if (svgicons) {
-        return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
+        return new Promise((resolve, reject) => {
           $.svgIcons(`${this.configObj.curConfig.imgPath}${svgicons}`, {
             w: 24, h: 24,
             id_match: false,
@@ -1649,6 +1648,7 @@ class Editor extends EditorStartup {
 
   /**
   *
+  * @param e
   * @returns {Promise<void>} Resolves to `undefined`
   */
   async clickExport (e) {
@@ -1930,7 +1930,7 @@ class Editor extends EditorStartup {
     let svgeditClipboard;
     try {
       svgeditClipboard = this.localStorage.getItem('svgedit_clipboard');
-    } catch (err) {}
+    } catch (err) {/* empty fn */}
     this.canvMenu.setAttribute((svgeditClipboard ? 'en' : 'dis') + 'ablemenuitems', '#paste,#paste_in_place');
   }
 
@@ -2051,10 +2051,10 @@ class Editor extends EditorStartup {
 * @param {module:SVGthis.ReadyCallback} cb Callback to be queued to invoke
 * @returns {Promise<ArbitraryCallbackResult>} Resolves when all callbacks, including the supplied have resolved
 */
-  ready (cb) { // eslint-disable-line promise/prefer-await-to-callbacks
-    return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
+  ready (cb) {
+    return new Promise((resolve, reject) => {
       if (this.isReady) {
-        resolve(cb()); // eslint-disable-line node/callback-return, promise/prefer-await-to-callbacks
+        resolve(cb());
         return;
       }
       this.callbacks.push([cb, resolve, reject]);
@@ -2069,7 +2069,7 @@ class Editor extends EditorStartup {
   async runCallbacks () {
     try {
       await Promise.all(this.callbacks.map(([cb]) => {
-        return cb(); // eslint-disable-line promise/prefer-await-to-callbacks
+        return cb();
       }));
     } catch (err) {
       this.callbacks.forEach(([, , reject]) => {
@@ -2119,7 +2119,7 @@ class Editor extends EditorStartup {
  */
   loadFromURL (url, {cache, noAlert} = {}) {
     return this.ready(() => {
-      return new Promise((resolve, reject) => { // eslint-disable-line promise/avoid-new
+      return new Promise((resolve, reject) => {
         $.ajax({
           url,
           dataType: 'text',

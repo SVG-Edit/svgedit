@@ -787,7 +787,7 @@ export const convertToGroup = function (elem) {
       try {
         recalculateDimensions(n);
       } catch (e) {
-        console.log(e); // eslint-disable-line no-console
+        console.log(e); 
       }
     });
 
@@ -805,7 +805,7 @@ export const convertToGroup = function (elem) {
 
     elementContext_.addCommandToHistory(batchCmd);
   } else {
-    console.log('Unexpected element to ungroup:', elem); // eslint-disable-line no-console
+    console.log('Unexpected element to ungroup:', elem); 
   }
 };
 
