@@ -4,9 +4,6 @@
 
 // Todo: Show /test (i.e., `unit.js`) test results at beginning?
 
-// See https://github.com/jsdoc/jsdoc/issues/1750 to create such tags
-/* eslint "jsdoc/check-tag-names": ["error", {definedTags: ["cli-arg"]}] --
-  we want a custom tag */
 /**
  * @file A CLI reporter against after-the-fact compiled (merged Mochawesome)
  * Mocha results.
@@ -23,7 +20,6 @@ const reporterFile = process.argv[2]
 
 const path = '../mochawesome.json';
 
-// eslint-disable-next-line import/no-dynamic-require -- Allow CLI to change
 const MochaReporter = require(`mocha/lib/reporters/${reporterFile}.js`);
 const Suite = require('mocha/lib/suite.js');
 const Test = require('mocha/lib/test.js');
@@ -39,8 +35,6 @@ const {constants: {
   EVENT_TEST_PENDING
 }} = require('mocha/lib/runner.js');
 
-// eslint-disable-next-line max-len -- Won't let us make next line multiline
-// eslint-disable-next-line import/no-dynamic-require -- Not fixed now, but may allow changing
 const {results, stats} = require(path);
 
 const runner = new Runner(

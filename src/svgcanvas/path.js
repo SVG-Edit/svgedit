@@ -77,7 +77,7 @@ export const setLinkControlPoints = function (lcp) {
  * @type {null|module:path.Path}
  * @memberof module:path
 */
-export let path = null; // eslint-disable-line import/no-mutable-exports
+export let path = null;
 
 let editorContext_ = null;
 

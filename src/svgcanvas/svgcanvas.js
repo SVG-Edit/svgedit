@@ -2701,7 +2701,7 @@ class SvgCanvas {
 * @returns {module:svgcanvas.PrivateMethods}
 */
     this.getPrivateMethods = function () {
-      const obj = {
+      return {
         addCommandToHistory,
         BatchCommand,
         ChangeElementCommand,
@@ -2731,7 +2731,6 @@ class SvgCanvas {
         transformPoint,
         walkTree
       };
-      return obj;
     };
   } // End constructor
 } // End class

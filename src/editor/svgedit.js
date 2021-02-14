@@ -2753,12 +2753,10 @@ editor.init = () => {
   * @returns {external:jQuery}
   */
   const makeFlyoutHolder = function (id, child) {
-    const div = $('<div>', {
+    return $('<div>', {
       class: 'tools_flyout',
       id
     }).appendTo('#svg_editor').append(child);
-
-    return div;
   };
 
   /**
