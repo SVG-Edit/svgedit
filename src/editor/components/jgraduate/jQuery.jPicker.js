@@ -1210,7 +1210,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   function documentMouseMove (e) {
     container.style.left = elementStartX - (pageStartX - e.pageX) + 'px';
     container.style.top = elementStartY - (pageStartY - e.pageY) + 'px';
-    if (settings.window.expandable && !$.support.boxModel) {
+    if (settings.window.expandable) {
       const prev = container.previousElementSibling;
       prev.style.left = container.style.left;
       prev.style.top = container.style.top;
@@ -1251,7 +1251,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     * @returns {void}
     */
     function attachIFrame () {
-      if (!settings.window.expandable || $.support.boxModel) return;
+      if (!settings.window.expandable) return;
       const table = container.querySelector('#jPicker-table');
       container.insertAdjacentElement('beforebegin', document.createElement('iframe'));
       const pELem = container.previousElementSibling;
@@ -1291,7 +1291,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     */
     function removeIFrame () {
       if (settings.window.expandable) container.style.zIndex = 10;
-      if (!settings.window.expandable || $.support.boxModel) return;
+      if (!settings.window.expandable) return;
       container.prev().remove();
     }
     container.style.display = 'none';
@@ -1659,8 +1659,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     iconAlpha = null, // iconAlpha for popup icon
     iconImage = null, // iconImage popup icon
     moveBar = null; // drag bar
-
-  $.extend(true, that, {
+  Object.assign(that, {
     // public properties, methods, and callbacks
     commitCallback, // commitCallback function can be overridden to return the selected color to a method you specify when the user clicks "OK"
     liveCallback, // liveCallback function can be overridden to return the selected color to a method you specify in live mode (continuous update)

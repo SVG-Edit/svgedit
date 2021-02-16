@@ -350,10 +350,7 @@ export default class ColorValuePicker {
       value = inputs[2],
       hex = inputs[(inputs.length > 7) ? 7 : 6],
       ahex = inputs.length > 7 ? inputs[8] : null;
-    $.extend(true, that, {
-      // public properties and methods
-      destroy
-    });
+    Object.assign(that, {destroy});
     red.addEventListener('keyup', keyUp);
     green.addEventListener('keyup', keyUp);
     blue.addEventListener('keyup', keyUp);

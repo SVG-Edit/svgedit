@@ -225,7 +225,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     idref = '#' + $this.getAttribute('id') + ' ';
   // JFH !!!!!
   const $shadowRoot = elem.parentNode;
-  const $wc = (selector) => $($shadowRoot.querySelectorAll(selector));
+  // const $wc = (selector) => $($shadowRoot.querySelectorAll(selector));
 
   if (!idref) {
     // eslint-disable-next-line no-alert
@@ -596,6 +596,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
    */
   function mkStop (n, colr, opac, sel, stopElem) {
     const stop = stopElem || mkElem('stop', {
+      id: 'jq_stop_' + Math.floor((Math.random() * 10000) + 1),
       'stop-color': colr,
       'stop-opacity': opac,
       offset: n
@@ -614,6 +615,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       '2.7-13.2,0C-9.6,9.9-9.4,4.4-6.2,0.9z';
 
     const pathbg = mkElem('path', {
+      id: 'jq_pathbg_' + Math.floor((Math.random() * 10000) + 1),
       d: pickerD,
       fill: 'url(#jGraduate_trans)',
       transform: 'translate(' + (10 + n * MAX) + ', 26)'
@@ -637,9 +639,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       e.preventDefault();
       return false;
     });
-    $(path).data('stop', stop).data('bg', pathbg);
-    // path.dataset.stop = stop;
-    // path.dataset.bg = pathbg;
+    path.dataset.stop = stop.getAttribute('id');
+    path.dataset.bg = pathbg.getAttribute('id');
     path.addEventListener('dblclick', function () {
       $this.querySelector('#jGraduate_LightBox').style.display = 'block';
       const colorhandle = this;
@@ -696,12 +697,11 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   * @returns {void}
   */
   function remStop () {
-    console.log("remStop --> ", curStop);
     delStop.setAttribute('display', 'none');
-    const path = $wc(curStop);
-    const stop = path.data('stop');
-    const bg = path.data('bg');
-    $([curStop, stop, bg]).remove();
+    const path = curStop;
+    delete path.dataset.stop;
+    delete path.dataset.bg;
+    curStop.parentNode.removeChild(curStop);
   }
 
   const stopMakerDiv = $this.querySelector('#' + id + '_jGraduate_StopSlider');
@@ -787,8 +787,9 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     }
 
     drag.setAttribute('transform', xfStr);
-    $.data(drag, 'bg').setAttribute('transform', xfStr);
-    const stop = $.data(drag, 'stop');
+    const jqpgpath = $this.querySelector('#'+drag.dataset.bg); 
+    jqpgpath.setAttribute('transform', xfStr);
+    const stop = $this.querySelector('#'+drag.dataset.stop); 
     const sX = (x - 10) / MAX;
 
     stop.setAttribute('offset', sX);
