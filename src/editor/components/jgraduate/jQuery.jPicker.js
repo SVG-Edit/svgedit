@@ -22,7 +22,7 @@
 /* eslint-disable max-len */
 import ColorValuePicker from './ColorValuePicker.js';
 import Slider from './Slider.js';
-import {findPos} from './Util.js';
+import {findPos,mergeDeep} from './Util.js';
 
 /**
 * @external Math
@@ -367,8 +367,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
       changeEvents = null;
     }
     let r, g, b, a, h, s, v, changeEvents = [];
-
-    $.extend(true, that, {
+    Object.assign(that, {
       // public properties and methods
       val,
       bind,
@@ -612,10 +611,13 @@ const {Color, List, ColorMethods} = jPicker; // local copies for YUI compressor
 * @returns {void}
 */
 export function jPickerMethod (elem, options, commitCallback, liveCallback, cancelCallback) {
+  let sets = mergeDeep({}, jPickerDefaults); // local copies for YUI compressor
+  sets = mergeDeep(sets, options);
+
   const that = elem,
-    settings = $.extend(true, {}, jPickerDefaults, options); // local copies for YUI compressor
+        settings = sets;
   if (that.nodeName.toLowerCase() === 'input') { // Add color picker icon if binding to an input element and bind the events to the input
-    $.extend(true, settings, {
+    Object.assign(settings, {
       window: {
         bindToInput: true,
         expandable: true,
