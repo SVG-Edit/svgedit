@@ -219,9 +219,8 @@ function deepExtend(out) {
 * @returns {external:jQuery}
 */
 export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
-  // return elem.each(function () {
   const $this = elem,
-    $settings = $.extend(true, {}, jGraduateDefaults, options || {}),
+    $settings = Object.assign({}, jGraduateDefaults, options || {}),
     id = $this.getAttribute('id'),
     idref = '#' + $this.getAttribute('id') + ' ';
   // JFH !!!!!
