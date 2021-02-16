@@ -252,18 +252,12 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     typeof $this.cancelCallback === 'function' && $this.cancelCallback();
     $this.style.display = 'none';
   };
-
-  $.extend(
-    true,
-    $this,
-    // public properties, methods, and callbacks
-    {
-      // make a copy of the incoming paint
-      paint: new jGraduate.Paint({copy: $settings.paint}),
-      okCallback: typeof okCallback === 'function' ? okCallback : null,
-      cancelCallback: typeof cancelCallback === 'function' ? cancelCallback : null
-    }
-  );
+  Object.assign($this,     {
+    // make a copy of the incoming paint
+    paint: new jGraduate.Paint({copy: $settings.paint}),
+    okCallback: typeof okCallback === 'function' ? okCallback : null,
+    cancelCallback: typeof cancelCallback === 'function' ? cancelCallback : null
+  });
 
   let // pos = $this.position(),
     color = null;
