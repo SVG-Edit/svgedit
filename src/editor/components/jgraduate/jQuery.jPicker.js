@@ -15,7 +15,6 @@
  * John Dyers' website: {@link http://johndyer.name}
  * Color Picker page: {@link http://johndyer.name/photoshop-like-javascript-color-picker/}
  */
-/* globals $ */
 /* eslint-disable unicorn/prefer-math-trunc */
 /* eslint-disable no-unsanitized/property */
 /* eslint-disable no-bitwise */

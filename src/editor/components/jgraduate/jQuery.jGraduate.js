@@ -20,7 +20,6 @@
  * @example $.jGraduate.Paint({radialGradient: o, a: 7}); // creates a radial gradient paint with opacity=0.07
  * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
-/* globals $ */
 import Paint from './paint.js';
 import {jPickerDefaults, jPickerMethod} from './jQuery.jPicker.js';
 import {findPos} from './Util.js';
