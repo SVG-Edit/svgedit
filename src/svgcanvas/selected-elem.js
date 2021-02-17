@@ -288,9 +288,9 @@ export const alignSelectedElements = function (type, relativeTo) {
     // now bbox is axis-aligned and handles rotation
     switch (relativeTo) {
     case 'smallest':
-      if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
+      if (((type === 'l' || type === 'c' || type === 'r') &&
     (curwidth === Number.MIN_VALUE || curwidth > bboxes[i].width)) ||
-    ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
+    ((type === 't' || type === 'm' || type === 'b') &&
     (curheight === Number.MIN_VALUE || curheight > bboxes[i].height))
       ) {
         minx = bboxes[i].x;
@@ -302,9 +302,9 @@ export const alignSelectedElements = function (type, relativeTo) {
       }
       break;
     case 'largest':
-      if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
+      if (((type === 'l' || type === 'c' || type === 'r') &&
     (curwidth === Number.MIN_VALUE || curwidth < bboxes[i].width)) ||
-    ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
+    ((type === 't' || type === 'm' || type === 'b') &&
     (curheight === Number.MIN_VALUE || curheight < bboxes[i].height))
       ) {
         minx = bboxes[i].x;
@@ -341,27 +341,21 @@ export const alignSelectedElements = function (type, relativeTo) {
     dy[i] = 0;
     switch (type) {
     case 'l': // left (horizontal)
-    case 'left': // left (horizontal)
       dx[i] = minx - bbox.x;
       break;
     case 'c': // center (horizontal)
-    case 'center': // center (horizontal)
       dx[i] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
       break;
     case 'r': // right (horizontal)
-    case 'right': // right (horizontal)
       dx[i] = maxx - (bbox.x + bbox.width);
       break;
     case 't': // top (vertical)
-    case 'top': // top (vertical)
       dy[i] = miny - bbox.y;
       break;
     case 'm': // middle (vertical)
-    case 'middle': // middle (vertical)
       dy[i] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
       break;
     case 'b': // bottom (vertical)
-    case 'bottom': // bottom (vertical)
       dy[i] = maxy - (bbox.y + bbox.height);
       break;
     }

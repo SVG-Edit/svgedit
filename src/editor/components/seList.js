@@ -130,7 +130,6 @@ export class SeList extends HTMLElement {
         const value = this.$dropdown.selectedItem.getAttribute('value');
         const closeEvent = new CustomEvent('change', {detail: {value}});
         currentObj.dispatchEvent(closeEvent);
-        currentObj.value = value;
       }
     });
   }
