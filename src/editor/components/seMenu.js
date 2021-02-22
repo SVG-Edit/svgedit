@@ -12,7 +12,7 @@ template.innerHTML = `
     color: #fff;
   }
   elix-menu-button::part(popup-toggle) {
-    padding: 0.25em 0.60em !important
+    padding: 0.25em 0.30em !important
   }
   :host ::slotted([current]){
     background-color: var(--icon-bg-color-hover) !important;
