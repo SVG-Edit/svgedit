@@ -1,4 +1,4 @@
-/* globals $ */
+import {jGraduate} from './jgraduate/jQuery.jGraduate.js';
 /**
  *
  */
@@ -20,7 +20,7 @@ class PaintBox {
 
     let docElem = svgdocbox.documentElement;
     docElem = document.importNode(docElem, true);
-    container.append(docElem);
+    container.appendChild(docElem);
 
     this.rect = docElem.firstElementChild;
     this.defs = docElem.getElementsByTagName('defs')[0];
@@ -48,7 +48,7 @@ class PaintBox {
     case 'radialGradient': {
       this.grad.remove();
       this.grad = paint[ptype];
-      this.defs.append(this.grad);
+      this.defs.appendChild(this.grad);
       const id = this.grad.id = 'gradbox_' + this.type;
       fillAttr = 'url(#' + id + ')';
       break;
@@ -70,14 +70,14 @@ class PaintBox {
     const opts = {alpha: opac};
     if (color.startsWith('url(#')) {
       let refElem = svgCanvas.getRefElem(color);
-      refElem = (refElem) ? refElem.cloneNode(true) : $('#' + type + '_color defs *')[0];
+      refElem = (refElem) ? refElem.cloneNode(true) : document.querySelectorAll('#' + type + '_color defs *')[0];
       opts[refElem.tagName] = refElem;
     } else if (color.startsWith('#')) {
       opts.solidColor = color.substr(1);
     } else {
       opts.solidColor = 'none';
     }
-    return new $.jGraduate.Paint(opts);
+    return new jGraduate.Paint(opts);
   }
 
   /**
