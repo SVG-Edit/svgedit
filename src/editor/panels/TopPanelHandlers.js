@@ -398,7 +398,11 @@ class TopPanelHandlers {
 * @returns {void}
 */
   clickAlign (pos) {
-    this.svgCanvas.alignSelectedElements(pos, $('#align_relative_to').val());
+    let value = $('#tool_align_relative').val();
+    if(value === ''){
+      value = 'selected';
+    }
+    this.svgCanvas.alignSelectedElements(pos, value);
   }
   /**
 *
