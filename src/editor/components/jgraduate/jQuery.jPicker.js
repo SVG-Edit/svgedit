@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-modern-dom-apis */
 /**
  * @file jPicker (Adapted from version 1.1.6)
  *
@@ -15,8 +14,6 @@
  * John Dyers' website: {@link http://johndyer.name}
  * Color Picker page: {@link http://johndyer.name/photoshop-like-javascript-color-picker/}
  */
-/* eslint-disable unicorn/prefer-math-trunc */
-/* eslint-disable no-unsanitized/property */
 /* eslint-disable no-bitwise */
 /* eslint-disable max-len */
 import ColorValuePicker from './ColorValuePicker.js';
@@ -75,14 +72,11 @@ const isNullish = (val) => {
 * @property {string} [hex]
 * @property {string} [ahex]
 */
-
-/* eslint-disable jsdoc/require-property */
 /**
 * @namespace {PlainObject} jPicker
 * @memberof external:jQuery
 */
 export const jPicker = /** @lends external:jQuery.jPicker */ {
-  /* eslint-enable jsdoc/require-property */
   /**
   * Array holding references to each active instance of the jPicker control.
   * @type {external:jQuery.fn.$.fn.jPicker[]}
@@ -344,14 +338,14 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
     * @param {GenericCallback} callback
     * @returns {void}
     */
-    function bind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+    function bind (callback) {
       if (typeof callback === 'function') changeEvents.push(callback);
     }
     /**
     * @param {GenericCallback} callback
     * @returns {void}
     */
-    function unbind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+    function unbind (callback) {
       if (typeof callback !== 'function') return;
       let i;
       while ((i = changeEvents.includes(callback))) {
@@ -570,12 +564,10 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
   }
 };
 const {Color, List, ColorMethods} = jPicker; // local copies for YUI compressor
-/* eslint-disable jsdoc/require-returns */
 /**
  * @function external:jQuery.fn.jPicker
  * @see {@link external:jQuery.fn.$.fn.jPicker}
  */
-/* eslint-enable jsdoc/require-returns */
 
 /**
 * Will be bound to active {@link jQuery.jPicker.Color}.
@@ -961,7 +953,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       const all = ui.val('all');
       activePreview.style.backgroundColor = (all && '#' + all.hex) || 'transparent';
       setAlpha.call(that, activePreview, (all && toFixedNumeric((all.a * 100) / 255, 4)) || 0);
-    } catch (e) {}
+    } catch (e) {/* empty fn */}
   }
   /**
   * @param {external:jQuery} ui
