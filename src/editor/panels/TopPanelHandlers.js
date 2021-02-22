@@ -206,7 +206,7 @@ class TopPanelHandlers {
         });
 
         if (tagName === 'text') {
-          $('#text_panel').css('display', 'inline');
+          $('#text_panel').css('display', 'inline-block');
           $('#tool_font_size').css('display', 'inline');
           $id('tool_italic').pressed = this.svgCanvas.getItalic();
           $id('tool_bold').pressed = this.svgCanvas.getBold();
