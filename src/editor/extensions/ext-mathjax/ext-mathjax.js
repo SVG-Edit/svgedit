@@ -168,12 +168,12 @@ export default {
                 '</div>' +
               '</div>'
             ).insertAfter('#svg_prefs').hide();
-
             // Make the MathEditor draggable.
-            $('#mathjax_container').draggable({
+            // TODO: unable to reach this place
+            /* $('#mathjax_container').draggable({
               cancel: 'button,fieldset',
               containment: 'window'
-            });
+            }); */
 
             // Add functionality and picture to cancel button.
             $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true))
