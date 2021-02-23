@@ -1,6 +1,4 @@
-/* eslint-disable unicorn/prefer-math-trunc */
 /* eslint-disable no-bitwise */
-/* eslint-disable unicorn/prefer-ternary */
 import {findPos} from './Util.js';
 /**
  * Whether a value is `null` or `undefined`.

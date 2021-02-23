@@ -1,3 +1,4 @@
+/* eslint-disable node/no-unpublished-import */
 import {jml, body, nbsp} from 'jamilih';
 import $ from 'query-result';
 import {manipulation} from 'qr-manipulation';

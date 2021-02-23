@@ -1,3 +1,4 @@
+/* eslint-disable no-unsanitized/property */
 /**
  * @file jPicker (Adapted from version 1.1.6)
  *

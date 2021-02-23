@@ -1,3 +1,4 @@
+/* eslint-disable no-unsanitized/property */
 const template = document.createElement('template');
 template.innerHTML = `
   <style>

@@ -1010,11 +1010,10 @@ class Editor extends EditorStartup {
   */
   // eslint-disable-next-line class-methods-use-this
   makeFlyoutHolder (id, child) {
-    const div = $('<div>', {
+    return $('<div>', {
       class: 'tools_flyout',
       id
     }).appendTo('#svg_editor').append(child);
-    return div;
   }
 
   /**

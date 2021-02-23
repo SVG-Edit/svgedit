@@ -1,5 +1,4 @@
 /* eslint-disable no-loop-func */
-/* eslint-disable unicorn/prefer-node-remove */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-unsanitized/property */
 /**

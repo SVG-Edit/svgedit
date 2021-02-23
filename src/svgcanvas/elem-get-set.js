@@ -1,10 +1,11 @@
-/* globals jQuery */
-import {jGraduate} from '../editor/components/jgraduate/jQuery.jGraduate.js';
 /**
  * @module elem-get-set get and set methods.
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
+
+/* globals jQuery */
+import {jGraduate} from '../editor/components/jgraduate/jQuery.jGraduate.js';
 
 import * as hstry from './history.js';
 import jQueryPluginSVG from './jQuery.attr.js';

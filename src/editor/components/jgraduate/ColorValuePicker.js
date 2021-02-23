@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-/* eslint-disable unicorn/prefer-math-trunc */
 /* eslint-disable no-bitwise */
 /**
 * @external Math
