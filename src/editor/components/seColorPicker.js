@@ -171,11 +171,6 @@ export class SeColorPicker extends HTMLElement {
   connectedCallback () {
     this.paintBox = new PaintBox(this.$block, this.type);
     $(this.$picker).click(() => {
-      /* $(this.$color_picker)
-        .draggable({
-          cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker',
-          containment: 'window'
-        }); */
       let {paint} = this.paintBox;
       jGraduateMethod(
         this.$color_picker,
