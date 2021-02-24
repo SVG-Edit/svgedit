@@ -104,6 +104,8 @@ class Editor extends EditorStartup {
       {key: 'ctrl+shift+arrowright', fn () { curObj.rotateSelected(1, 5); }},
       {key: 'shift+o', fn () { curObj.svgCanvas.cycleElement(0); }},
       {key: 'shift+p', fn () { curObj.svgCanvas.cycleElement(1); }},
+      {key: 'tab', fn () { curObj.svgCanvas.cycleElement(0); }},
+      {key: 'shift+tab', fn () { curObj.svgCanvas.cycleElement(1); }},
       {key: [modKey + 'arrowup', true], fn () { curObj.zoomImage(2); }},
       {key: [modKey + 'arrowdown', true], fn () { curObj.zoomImage(0.5); }},
       {key: [modKey + ']', true], fn () { curObj.moveUpDownSelected('Up'); }},
@@ -281,18 +283,6 @@ class Editor extends EditorStartup {
         evt.preventDefault();
       }
     );
-
-    $(window).bind('keydown', 'tab', function (e) {
-      if (this.uiContext === 'canvas') {
-        e.preventDefault();
-        this.selectNext();
-      }
-    }.bind(this)).bind('keydown', 'shift+tab', function (e) {
-      if (this.uiContext === 'canvas') {
-        e.preventDefault();
-        this.selectPrev();
-      }
-    }.bind(this));
   }
   /**
      * @returns {void}
