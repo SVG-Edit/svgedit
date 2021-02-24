@@ -887,6 +887,7 @@ class Editor extends EditorStartup {
    */
   setupFlyouts (holders) {
     const allHolders = {};
+    const currentObj = this;
     $.each(holders, function (holdSel, btnOpts) {
       if (!allHolders[holdSel]) {
         allHolders[holdSel] = [];
@@ -907,7 +908,7 @@ class Editor extends EditorStartup {
           });
 
           // Remember the function that goes with this ID
-          this.flyoutFuncs[opts.sel] = opts.fn;
+          currentObj.flyoutFuncs[opts.sel] = opts.fn;
 
           if (opts.isDefault) { def = i; }
 
