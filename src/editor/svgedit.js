@@ -95,39 +95,40 @@ class Editor extends EditorStartup {
     // eslint-disable-next-line max-len
     this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW'];
     const modKey = (isMac() ? 'meta+' : 'ctrl+');
+    const curObj = this;
     this.toolButtons = [
       // Shortcuts not associated with buttons
-      {key: 'ctrl+left', fn () { this.rotateSelected(0, 1); }},
-      {key: 'ctrl+right', fn () { this.rotateSelected(1, 1); }},
-      {key: 'ctrl+shift+left', fn () { this.rotateSelected(0, 5); }},
-      {key: 'ctrl+shift+right', fn () { this.rotateSelected(1, 5); }},
-      {key: 'shift+O', fn: this.selectPrev},
-      {key: 'shift+P', fn: this.selectNext},
-      {key: [modKey + 'up', true], fn () { this.zoomImage(2); }},
-      {key: [modKey + 'down', true], fn () { this.zoomImage(0.5); }},
-      {key: [modKey + ']', true], fn () { this.moveUpDownSelected('Up'); }},
-      {key: [modKey + '[', true], fn () { this.moveUpDownSelected('Down'); }},
-      {key: ['up', true], fn () { this.moveSelected(0, -1); }},
-      {key: ['down', true], fn () { this.moveSelected(0, 1); }},
-      {key: ['left', true], fn () { this.moveSelected(-1, 0); }},
-      {key: ['right', true], fn () { this.moveSelected(1, 0); }},
-      {key: 'shift+up', fn () { this.moveSelected(0, -10); }},
-      {key: 'shift+down', fn () { this.moveSelected(0, 10); }},
-      {key: 'shift+left', fn () { this.moveSelected(-10, 0); }},
-      {key: 'shift+right', fn () { this.moveSelected(10, 0); }},
-      {key: ['alt+up', true], fn () { this.svgCanvas.cloneSelectedElements(0, -1); }},
-      {key: ['alt+down', true], fn () { this.svgCanvas.cloneSelectedElements(0, 1); }},
-      {key: ['alt+left', true], fn () { this.svgCanvas.cloneSelectedElements(-1, 0); }},
-      {key: ['alt+right', true], fn () { this.svgCanvas.cloneSelectedElements(1, 0); }},
-      {key: ['alt+shift+up', true], fn () { this.svgCanvas.cloneSelectedElements(0, -10); }},
-      {key: ['alt+shift+down', true], fn () { this.svgCanvas.cloneSelectedElements(0, 10); }},
-      {key: ['alt+shift+left', true], fn () { this.svgCanvas.cloneSelectedElements(-10, 0); }},
-      {key: ['alt+shift+right', true], fn () { this.svgCanvas.cloneSelectedElements(10, 0); }},
-      {key: 'a', fn () { this.svgCanvas.selectAllInCurrentLayer(); }},
-      {key: modKey + 'a', fn () { this.svgCanvas.selectAllInCurrentLayer(); }},
-      {key: modKey + 'x', fn: this.cutSelected},
-      {key: modKey + 'c', fn: this.copySelected},
-      {key: modKey + 'v', fn: this.pasteInCenter}
+      {key: 'ctrl+arrowleft', fn () { curObj.rotateSelected(0, 1);}},
+      {key: 'ctrl+arrowright', fn () { curObj.rotateSelected(1, 1); }},
+      {key: 'ctrl+shift+arrowleft', fn () { curObj.rotateSelected(0, 5); }},
+      {key: 'ctrl+shift+arrowright', fn () { curObj.rotateSelected(1, 5); }},
+      {key: 'shift+o', fn () { curObj.svgCanvas.cycleElement(0); }},
+      {key: 'shift+p', fn () { curObj.svgCanvas.cycleElement(1); }},
+      {key: [modKey + 'arrowup', true], fn () { curObj.zoomImage(2); }},
+      {key: [modKey + 'arrowdown', true], fn () { curObj.zoomImage(0.5); }},
+      {key: [modKey + ']', true], fn () { curObj.moveUpDownSelected('Up'); }},
+      {key: [modKey + '[', true], fn () { curObj.moveUpDownSelected('Down'); }},
+      {key: ['arrowup', true], fn () { curObj.moveSelected(0, -1); }},
+      {key: ['arrowdown', true], fn () { curObj.moveSelected(0, 1); }},
+      {key: ['arrowleft', true], fn () { curObj.moveSelected(-1, 0); }},
+      {key: ['arrowright', true], fn () { curObj.moveSelected(1, 0); }},
+      {key: 'shift+arrowup', fn () { curObj.moveSelected(0, -10); }},
+      {key: 'shift+arrowdown', fn () { curObj.moveSelected(0, 10); }},
+      {key: 'shift+arrowleft', fn () { curObj.moveSelected(-10, 0); }},
+      {key: 'shift+arrowright', fn () { curObj.moveSelected(10, 0); }},
+      {key: ['alt+arrowup', true], fn () { curObj.svgCanvas.cloneSelectedElements(0, -1); }},
+      {key: ['alt+arrowdown', true], fn () { curObj.svgCanvas.cloneSelectedElements(0, 1); }},
+      {key: ['alt+arrowleft', true], fn () { curObj.svgCanvas.cloneSelectedElements(-1, 0); }},
+      {key: ['alt+arrowright', true], fn () { curObj.svgCanvas.cloneSelectedElements(1, 0); }},
+      {key: ['alt+shift+arrowup', true], fn () { curObj.svgCanvas.cloneSelectedElements(0, -10); }},
+      {key: ['alt+shift+arrowdown', true], fn () { curObj.svgCanvas.cloneSelectedElements(0, 10); }},
+      {key: ['alt+shift+arrowleft', true], fn () { curObj.svgCanvas.cloneSelectedElements(-10, 0); }},
+      {key: ['alt+shift+arrowright', true], fn () { curObj.svgCanvas.cloneSelectedElements(10, 0); }},
+      {key: 'a', fn () { curObj.svgCanvas.selectAllInCurrentLayer(); }},
+      {key: modKey + 'a', fn () { curObj.svgCanvas.selectAllInCurrentLayer(); }},
+      {key: modKey + 'x', fn () { curObj.cutSelected(); }},
+      {key: modKey + 'c', fn () { curObj.copySelected(); }},
+      {key: modKey + 'v', fn () { curObj.pasteInCenter(); }}
     ];
   }
   /**
@@ -259,7 +260,7 @@ class Editor extends EditorStartup {
       // only track keyboard shortcuts for the body containing the SVG-Editor
       if (e.target.nodeName !== 'BODY') return;
       // normalize key
-      const key = `${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toLowerCase()}`;
+      const key = `${(e.altKey) ? 'alt+' : ''}${(e.shiftKey) ? 'shift+' : ''}${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toLowerCase()}`;
       // return if no shortcut defined for this key
       if (!keyHandler[key]) return;
       // launch associated handler and preventDefault if necessary
