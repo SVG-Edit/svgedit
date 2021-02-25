@@ -75,7 +75,7 @@ export const svgCanvasToString = function () {
   const nakedSvgs = [];
 
   // Unwrap gsvg if it has no special attributes (only id and style)
-  $(svgContext_.getSVGContent()).find('g:data(gsvg)').each(function () {
+  $(svgContext_.getSVGContent()).find('g[data-gsvg]').each(function () {
     const attrs = this.attributes;
     let len = attrs.length;
     for (let i = 0; i < len; i++) {
