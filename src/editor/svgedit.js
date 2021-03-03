@@ -938,10 +938,10 @@ class Editor extends EditorStartup {
           };
 
           $(this).mouseup(flyoutAction);
-
-          if (opts.key) {
+          // TODO: currently not trigger here
+          /* if (opts.key) {
             $(document).bind('keydown', opts.key[0] + ' shift+' + opts.key[0], flyoutAction);
-          }
+          } */
           return true;
         });
 
@@ -1420,7 +1420,6 @@ class Editor extends EditorStartup {
             key: btn.key,
             isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
           }]; // , refData
-
           // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 
           const pos = ('position' in opts) ? opts.position : 'last';
@@ -1456,7 +1455,8 @@ class Editor extends EditorStartup {
                 });
               }
               if (btn.key) {
-                $(document).bind('keydown', btn.key, func);
+                // TODO: currently not trigger here
+                // $(document).bind('keydown', btn.key, func);
                 if (btn.title) {
                   button.attr('title', btn.title + ' [' + btn.key + ']');
                 }
