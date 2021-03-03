@@ -21,7 +21,6 @@ import {isChrome, isMac, isTouch} from '../common/browser.js';
 import {convertUnit, isValidUnit} from '../common/units.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
-import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
 import ConfigObj from './ConfigObj.js';
 
 import {
@@ -34,7 +33,6 @@ import EditorStartup from './EditorStartup.js';
 const {$id, $qa, isNullish, encode64, decode64, blankPageObjectURL} = SvgCanvas;
 
 // JFH hotkey is used for text input.
-const $ = [jQueryPluginJSHotkeys].reduce((jq, func) => func(jq), jQuery);
 const homePage = 'https://github.com/SVG-Edit/svgedit';
 /**
  *
