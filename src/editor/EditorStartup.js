@@ -285,21 +285,32 @@ class EditorStartup {
       panning = false;
     });
 
-    $(document).bind('keydown', 'space', function (evt) {
-      this.svgCanvas.spaceKey = keypan = true;
-      evt.preventDefault();
-    }.bind(this)).bind('keyup', 'space', function (evt) {
-      evt.preventDefault();
-      this.svgCanvas.spaceKey = keypan = false;
-    }.bind(this)).bind('keydown', 'shift', function (evt) {
-      if (this.svgCanvas.getMode() === 'zoom') {
+    document.addEventListener('keydown', (e) => {
+      if (e.target.nodeName !== 'BODY') return;
+      if(e.code.toLowerCase() === 'space'){
+        this.svgCanvas.spaceKey = keypan = true;
+        e.preventDefault();  
+      } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
         this.workarea.css('cursor', zoomOutIcon);
+        e.preventDefault();  
+      } else {
+        return;
       }
-    }.bind(this)).bind('keyup', 'shift', function (evt) {
-      if (this.svgCanvas.getMode() === 'zoom') {
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.target.nodeName !== 'BODY') return;
+      if(e.code.toLowerCase() === 'space'){
+        this.svgCanvas.spaceKey = keypan = false;
+        e.preventDefault();  
+      } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
         this.workarea.css('cursor', zoomInIcon);
+        e.preventDefault();  
+      } else {
+        return;
       }
-    }.bind(this));
+    });
+
 
     /**
      * @function module:SVGthis.setPanning
