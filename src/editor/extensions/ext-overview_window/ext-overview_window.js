@@ -6,7 +6,7 @@
  * @copyright 2013 James Sacksteder
  *
  */
-import { dragmove } from '../../jquery-ui/dragmove.js';
+import { dragmove } from '../../dragmove/dragmove.js';
 export default {
   name: 'overview_window',
   init ({$, isChrome}) {
