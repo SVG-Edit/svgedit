@@ -21,7 +21,6 @@ import {isChrome, isMac, isTouch} from '../common/browser.js';
 import {convertUnit, isValidUnit} from '../common/units.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
-import jQueryPluginJSHotkeys from './js-hotkeys/jquery.hotkeys.min.js';
 import ConfigObj from './ConfigObj.js';
 
 import {
@@ -34,7 +33,6 @@ import EditorStartup from './EditorStartup.js';
 const {$id, $qa, isNullish, encode64, decode64, blankPageObjectURL} = SvgCanvas;
 
 // JFH hotkey is used for text input.
-const $ = [jQueryPluginJSHotkeys].reduce((jq, func) => func(jq), jQuery);
 const homePage = 'https://github.com/SVG-Edit/svgedit';
 /**
  *
@@ -938,10 +936,10 @@ class Editor extends EditorStartup {
           };
 
           $(this).mouseup(flyoutAction);
-
-          if (opts.key) {
+          // TODO: currently not trigger here
+          /* if (opts.key) {
             $(document).bind('keydown', opts.key[0] + ' shift+' + opts.key[0], flyoutAction);
-          }
+          } */
           return true;
         });
 
@@ -1420,7 +1418,6 @@ class Editor extends EditorStartup {
             key: btn.key,
             isDefault: Boolean(btn.includeWith && btn.includeWith.isDefault)
           }]; // , refData
-
           // {sel:'#tool_rect', fn: clickRect, evt: 'mouseup', key: 4, parent: '#tools_rect', icon: 'rect'}
 
           const pos = ('position' in opts) ? opts.position : 'last';
@@ -1456,7 +1453,8 @@ class Editor extends EditorStartup {
                 });
               }
               if (btn.key) {
-                $(document).bind('keydown', btn.key, func);
+                // TODO: currently not trigger here
+                // $(document).bind('keydown', btn.key, func);
                 if (btn.title) {
                   button.attr('title', btn.title + ' [' + btn.key + ']');
                 }
