@@ -8,6 +8,7 @@ module.exports = {
     'editor/jquery.min.js',
     'editor/jgraduate/**',
     'editor/svgicons/**',
+    'editor/dragmove/**',
     'editor/spinbtn'
   ],
   "reporter": [
