@@ -1,6 +1,4 @@
-/* globals $ */
 import {jGraduate, jGraduateMethod} from './jgraduate/jQuery.jGraduate.js';
-// import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
 import PaintBox from './PaintBox.js';
 
 const template = document.createElement('template');
@@ -170,7 +168,7 @@ export class SeColorPicker extends HTMLElement {
    */
   connectedCallback () {
     this.paintBox = new PaintBox(this.$block, this.type);
-    $(this.$picker).click(() => {
+    this.$picker.addEventListener('click', () => {
       let {paint} = this.paintBox;
       jGraduateMethod(
         this.$color_picker,
