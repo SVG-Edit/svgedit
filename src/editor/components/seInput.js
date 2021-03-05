@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/Input.js';
 
 const template = document.createElement('template');
@@ -13,6 +12,12 @@ template.innerHTML = `
     bottom: 1px;
     right: -4px;
     position: relative;
+    margin-right: 4px;
+    color: #fff;
+  }
+  elix-input {
+    background-color: var(--input-color);
+    border-radius: 3px;
   }
   </style>
   <img src="./images/logo.svg" alt="icon" width="12" height="12" />
@@ -31,7 +36,7 @@ export class SEInput extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$img = this._shadowRoot.querySelector('img');
     this.$label = this.shadowRoot.getElementById('label');

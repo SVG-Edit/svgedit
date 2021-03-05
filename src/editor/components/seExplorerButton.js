@@ -1,12 +1,13 @@
+/* eslint-disable no-unsanitized/property */
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
   :host {
     position:relative;
   }
-  .menu-button:hover, se-button:hover, .menu-item:hover 
+  .menu-button:hover, se-button:hover, .menu-item:hover
   {
-    background-color: #ffc;
+    background-color: var(--icon-bg-color-hover);
   }
   img {
     border: none;
@@ -14,13 +15,12 @@ template.innerHTML = `
     height: 24px;
   }
   .overall.pressed .button-icon,
-  .overall.pressed .handle,
+  .overall.pressed,
   .menu-item.pressed {
-    background-color: #F4E284 !important;
+    background-color: var(--icon-bg-color-hover) !important;
   }
   .overall.pressed .menu-button {
-    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
-    background-color: #F4E284 !important;
+    background-color: var(--icon-bg-color-hover) !important;
   }
   .disabled {
     opacity: 0.3;
@@ -29,10 +29,9 @@ template.innerHTML = `
   .menu-button {
     height: 24px;
     width: 24px;
-    margin: 2px 2px 4px;
+    margin: 2px 1px 4px;
     padding: 3px;
-    box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-    background-color: #E8E8E8;
+    background-color: var(--icon-bg-color);
     cursor: pointer;
     position: relative;
     border-radius: 3px;
@@ -83,7 +82,7 @@ template.innerHTML = `
     background: none !important;
   }
   </style>
-  
+
   <div class="overall">
     <div class="menu-button">
       <img class="button-icon" src="./images/logo.svg" alt="icon">
@@ -96,7 +95,7 @@ template.innerHTML = `
       <div class="menu-item">menu</div>
    </div>
   </div>
-  
+
 `;
 /**
  * @class ExplorerButton
@@ -109,7 +108,7 @@ export class ExplorerButton extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button');
     this.$overall = this._shadowRoot.querySelector('.overall');
@@ -162,7 +161,6 @@ export class ExplorerButton extends HTMLElement {
         const response = await fetch(`${newValue}index.json`);
         const json = await response.json();
         const {lib} = json;
-        // eslint-disable-next-line no-unsanitized/property
         this.$menu.innerHTML = lib.map((menu, i) => (
           `<div data-menu="${menu}" class="menu-item ${(i === 0) ? 'pressed' : ''} ">${menu}</div>`
         )).join('');
@@ -299,7 +297,6 @@ export class ExplorerButton extends HTMLElement {
       const off = size * 0.05;
       const vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
       const stroke = json.fill ? 0 : (size / 30);
-      // eslint-disable-next-line no-unsanitized/property
       this.$lib.innerHTML = Object.entries(this.data).map(([key, path]) => {
         const encoded = btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">

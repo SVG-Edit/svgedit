@@ -1,8 +1,6 @@
-// eslint-disable-next-line node/no-unpublished-import
+/* eslint-disable node/no-unpublished-import */
 import {jml, body, nbsp} from 'jamilih';
-// eslint-disable-next-line node/no-unpublished-import
 import $ from 'query-result';
-// eslint-disable-next-line node/no-unpublished-import
 import {manipulation} from 'qr-manipulation';
 
 manipulation($, jml);
@@ -40,7 +38,7 @@ async function processResults (url) {
 
   if (!json || json.msg !== 'success') {
     // Todo: This could use a generic alert library instead
-    alert('There was a problem downloading the results'); // eslint-disable-line no-alert
+    alert('There was a problem downloading the results'); 
     return;
   }
   const {payload, info: {

@@ -1,17 +1,16 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/Menu.js';
 import 'elix/define/MenuItem.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-  </style>  
+  </style>
   <elix-menu-item>
-    <div style="display:inline-block;">
-      <img src="./images/logo.svg" alt="icon" style="display:none;" /> 
-      <span></span>
+    <div style="display:flex; align-items: center;">
+      <img src="./images/logo.svg" alt="icon" style="display:none;" width="24"/>
+      <span style="margin-left: 7px;"></span>
     </div>
-  </elix-menu-item>  
+  </elix-menu-item>
 `;
 /**
  * @class SeMenuItem
@@ -24,12 +23,12 @@ export class SeMenuItem extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$img = this._shadowRoot.querySelector('img');
     this.$label = this._shadowRoot.querySelector('span');
     this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');
     this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
-    this.$svg.setAttribute('style', 'width:1px;height:1px;');
+    this.$svg.setAttribute('style', 'display: none;');
   }
   /**
    * @function observedAttributes

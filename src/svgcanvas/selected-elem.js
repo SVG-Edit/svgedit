@@ -53,10 +53,10 @@ export const init = function (elementContext) {
 export const moveToTopSelectedElem = function () {
   const [selected] = elementContext_.getSelectedElements();
   if (!isNullish(selected)) {
-    let t = selected;
+    const t = selected;
     const oldParent = t.parentNode;
     const oldNextSibling = t.nextSibling;
-    t = t.parentNode.appendChild(t);
+    t.parentNode.append(t);
     // If the element actually moved position, add the command and fire the changed
     // event handler.
     if (oldNextSibling !== t.nextSibling) {
@@ -288,9 +288,9 @@ export const alignSelectedElements = function (type, relativeTo) {
     // now bbox is axis-aligned and handles rotation
     switch (relativeTo) {
     case 'smallest':
-      if (((type === 'l' || type === 'c' || type === 'r') &&
+      if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
     (curwidth === Number.MIN_VALUE || curwidth > bboxes[i].width)) ||
-    ((type === 't' || type === 'm' || type === 'b') &&
+    ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
     (curheight === Number.MIN_VALUE || curheight > bboxes[i].height))
       ) {
         minx = bboxes[i].x;
@@ -302,9 +302,9 @@ export const alignSelectedElements = function (type, relativeTo) {
       }
       break;
     case 'largest':
-      if (((type === 'l' || type === 'c' || type === 'r') &&
+      if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
     (curwidth === Number.MIN_VALUE || curwidth < bboxes[i].width)) ||
-    ((type === 't' || type === 'm' || type === 'b') &&
+    ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
     (curheight === Number.MIN_VALUE || curheight < bboxes[i].height))
       ) {
         minx = bboxes[i].x;
@@ -341,21 +341,27 @@ export const alignSelectedElements = function (type, relativeTo) {
     dy[i] = 0;
     switch (type) {
     case 'l': // left (horizontal)
+    case 'left': // left (horizontal)
       dx[i] = minx - bbox.x;
       break;
     case 'c': // center (horizontal)
+    case 'center': // center (horizontal)
       dx[i] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
       break;
     case 'r': // right (horizontal)
+    case 'right': // right (horizontal)
       dx[i] = maxx - (bbox.x + bbox.width);
       break;
     case 't': // top (vertical)
+    case 'top': // top (vertical)
       dy[i] = miny - bbox.y;
       break;
     case 'm': // middle (vertical)
+    case 'middle': // middle (vertical)
       dy[i] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
       break;
     case 'b': // bottom (vertical)
+    case 'bottom': // bottom (vertical)
       dy[i] = maxy - (bbox.y + bbox.height);
       break;
     }
@@ -787,13 +793,12 @@ export const convertToGroup = function (elem) {
       try {
         recalculateDimensions(n);
       } catch (e) {
-        console.log(e); // eslint-disable-line no-console
+        console.log(e); 
       }
     });
 
     // Give ID for any visible element missing one
-    const visElems = elementContext_.getVisElems();
-    $(g).find(visElems).each(function () {
+    $(g).find(elementContext_.getVisElems()).each(function () {
       if (!this.id) { this.id = elementContext_.getNextId(); }
     });
 
@@ -806,7 +811,7 @@ export const convertToGroup = function (elem) {
 
     elementContext_.addCommandToHistory(batchCmd);
   } else {
-    console.log('Unexpected element to ungroup:', elem); // eslint-disable-line no-console
+    console.log('Unexpected element to ungroup:', elem); 
   }
 };
 

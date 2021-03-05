@@ -1,7 +1,6 @@
-/* globals $ */
-
 // eslint-disable-next-line node/no-unpublished-import
 import deparam from 'deparam';
+import {mergeDeep} from './components/jgraduate/Util.js';
 
 /**
 * Escapes special characters in a regular expression.
@@ -259,7 +258,7 @@ export default class ConfigObj {
       if (this.urldata.extensions) {
         // For security reasons, disallow cross-domain or cross-folder
         //  extensions via URL
-        this.urldata.extensions = this.urldata.extensions.match(/[:/\\]/)
+        this.urldata.extensions = (/[:/\\]/).test(this.urldata.extensions)
           ? ''
           : this.urldata.extensions.split(',');
       }
@@ -326,7 +325,7 @@ export default class ConfigObj {
   loadContentAndPrefs () {
     if (!this.curConfig.forceStorage &&
       (this.curConfig.noStorageOnLoad ||
-          !document.cookie.match(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/)
+          !(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/).test(document.cookie)
       )
     ) {
       return;
@@ -336,7 +335,7 @@ export default class ConfigObj {
     if (this.editor.storage && // Cookies do not have enough available memory to hold large documents
       (this.curConfig.forceStorage ||
         (!this.curConfig.noStorageOnLoad &&
-          document.cookie.match(/(?:^|;\s*)svgeditstore=prefsAndContent/))
+          (/(?:^|;\s*)svgeditstore=prefsAndContent/).test(document.cookie))
       )
     ) {
       const name = 'svgedit-' + this.curConfig.canvasName;
@@ -398,7 +397,8 @@ export default class ConfigObj {
      */
     const extendOrAdd = (cfgObj, key, val) => {
       if (cfgObj[key] && typeof cfgObj[key] === 'object') {
-        $.extend(true, cfgObj[key], val);
+        // $.extend(true, cfgObj[key], val);
+        cfgObj[key] = mergeDeep(cfgObj[key], val);
       } else {
         cfgObj[key] = val;
       }
@@ -446,7 +446,8 @@ export default class ConfigObj {
           extendOrAdd(this.defaultConfig, key, val);
         } else if (this.defaultConfig[key] && typeof this.defaultConfig[key] === 'object') {
           this.curConfig[key] = Array.isArray(this.defaultConfig[key]) ? [] : {};
-          $.extend(true, this.curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
+          this.curConfig[key] = mergeDeep(this.curConfig[key], val);
+          // $.extend(true, this.curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
         } else {
           this.curConfig[key] = val;
         }

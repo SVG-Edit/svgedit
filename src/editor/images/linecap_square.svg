@@ -1,14 +1,1 @@
-<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:se="http://svg-edit.googlecode.com" xmlns:xlink="http://www.w3.org/1999/xlink">
- <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit -->
- <defs>
-  <linearGradient id="svg_8" x1="0.8" y1="1" x2="0.2" y2="1">
-   <stop offset="0" stop-color="#000000" stop-opacity="1"/>
-   <stop offset="1" stop-color="#000000" stop-opacity="0"/>
-  </linearGradient>
- </defs>
- <g>
-  <rect fill="url(#svg_8)" stroke="none" x="-18.51568" y="35.5974" width="117.46469" height="50.3728" id="svg_3" transform="rotate(-45, 40.2168, 60.7832)"/>
-  <path id="svg_1" d="m6.63133,95.07755l59.17514,-59.17514" stroke-width="3" stroke="#fddb8c" fill="none"/>
-  <path id="svg_2" d="m51.62893,36.10742l13.05662,-13.05662l13.05661,13.05662l-13.05661,13.05662l-13.05662,-13.05662z" stroke="none" fill="#fddb8c"/>
- </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51.04 49.47"><defs><style>.cls-1{fill:none;}.cls-2{fill:#f9ba00;stroke:#f9ba00;}.cls-2,.cls-3{stroke-linecap:round;}.cls-2,.cls-3,.cls-4{stroke-linejoin:round;stroke-width:2px;}.cls-3,.cls-4{fill:#fff;stroke:#fff;}</style></defs><g id="Calque_2" data-name="Calque 2"><g id="Calque_1-2" data-name="Calque 1"><polyline class="cls-1" points="6.8 0 51.04 0 51.04 49.47 0 49.47 0 0 6.8 0"/><rect class="cls-2" x="14.02" y="14.98" width="23.98" height="18.95"/><rect class="cls-3" x="27.5" y="22.12" width="4.67" height="4.67"/><line class="cls-4" x1="31.16" y1="24.51" x2="13.04" y2="24.51"/></g></g></svg>

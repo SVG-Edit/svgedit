@@ -6,16 +6,15 @@ template.innerHTML = `
   <style>
   :host(:hover) :not(.disabled)
   {
-    background-color: #ffc;
+    background-color: var(--icon-bg-color-hover);
   }
   div
   {
     height: 24px;
     width: 24px;
-    margin: 2px 2px 4px;
+    margin: 2px 1px 4px;
     padding: 3px;
-    box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-    background-color: #E8E8E8;
+    background-color: var(--icon-bg-color);
     cursor: pointer;
     border-radius: 3px;
   }
@@ -31,8 +30,7 @@ template.innerHTML = `
     height: 100%;
   }
   .pressed {
-    background-color: #F4E284;
-    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
+    background-color: var(--icon-bg-color-hover);
   }
   .disabled {
     opacity: 0.3;
@@ -54,7 +52,7 @@ export class ToolButton extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$div = this._shadowRoot.querySelector('div');
     this.$img = this._shadowRoot.querySelector('img');

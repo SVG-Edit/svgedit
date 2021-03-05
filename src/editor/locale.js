@@ -50,7 +50,7 @@ export const setStrings = function (type, obj, ids) {
   const parent = document.getElementById('svg_editor').parentNode;
   Object.entries(obj).forEach(([sel, val]) => {
     if (!val) {
-      console.log(sel); // eslint-disable-line no-console
+      console.log(sel);
       return; // keep old text when has no translation
     }
 
@@ -80,7 +80,7 @@ export const setStrings = function (type, obj, ids) {
         break;
       }
     } else {
-      console.log('Missing element for localization: ' + sel); // eslint-disable-line no-console
+      console.log('Missing element for localization: ' + sel); 
     }
   });
 };
@@ -355,7 +355,7 @@ export const putLocale = async function (givenParam, goodLangs) {
     langParam = navigator.language;
   }
 
-  console.log('Lang: ' + langParam); // eslint-disable-line no-console
+  console.log('Lang: ' + langParam); 
 
   // Set to English if language is not in list of good langs
   if (!goodLangs.includes(langParam) && langParam !== 'test') {

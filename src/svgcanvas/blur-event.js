@@ -44,7 +44,7 @@ export const setBlurNoUndo = function (val) {
       blurContext_.changeSelectedAttributeNoUndoMethod('filter', 'url(#' + elem.id + '_blur)');
     }
     if (blurContext_.isWebkit()) {
-      // console.log('e', elem); // eslint-disable-line no-console
+      // console.log('e', elem); 
       elem.removeAttribute('filter');
       elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
     }

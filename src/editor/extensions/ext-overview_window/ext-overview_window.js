@@ -6,6 +6,7 @@
  * @copyright 2013 James Sacksteder
  *
  */
+import { dragmove } from '../../dragmove/dragmove.js';
 export default {
   name: 'overview_window',
   init ({$, isChrome}) {
@@ -104,12 +105,31 @@ export default {
       $('#workarea').scrollLeft(portX);
       $('#workarea').scrollTop(portY);
     };
-    $('#overview_window_view_box').draggable({
-      containment: 'parent',
-      drag: updateViewPortFromViewBox,
-      start () { overviewWindowGlobals.viewBoxDragging = true; },
-      stop () { overviewWindowGlobals.viewBoxDragging = false; }
-    });
+    const onStart = function () {
+      overviewWindowGlobals.viewBoxDragging = true;
+      updateViewPortFromViewBox();
+    };
+    const onEnd = function (el, parent, x, y) {
+      if((el.offsetLeft + el.offsetWidth) > $(parent).attr('width')){
+        el.style.left = ($(parent).attr('width') - el.offsetWidth) + 'px';
+      } else if(el.offsetLeft  < 0){
+        el.style.left = "0px"
+      }
+      if((el.offsetTop + el.offsetHeight) > $(parent).attr('height')){
+        el.style.top = ($(parent).attr('height') - el.offsetHeight) + 'px';
+      } else if(el.offsetTop  < 0){
+        el.style.top = "0px"
+      }
+      overviewWindowGlobals.viewBoxDragging = false;
+      updateViewPortFromViewBox();
+    };
+    const onDrag = function () {
+      updateViewPortFromViewBox();
+    };
+    const dragElem = document.querySelector("#overview_window_view_box");
+    const parentElem = document.querySelector("#overviewMiniView");
+    dragmove(dragElem, dragElem, parentElem, onStart, onEnd, onDrag);
+
     $('#overviewMiniView').click(function (evt) {
       // Firefox doesn't support evt.offsetX and evt.offsetY.
       const mouseX = (evt.offsetX || evt.originalEvent.layerX);

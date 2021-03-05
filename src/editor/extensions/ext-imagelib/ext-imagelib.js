@@ -1,3 +1,4 @@
+/* globals seConfirm */
 /**
  * @file ext-imagelib.js
  *
@@ -108,7 +109,7 @@ export default {
      * @param {ImageLibMetaMessage|ImageLibMessage|string} cfg.data String is deprecated when parsed to JSON `ImageLibMessage`
      * @returns {void}
      */
-    async function onMessage ({origin, data: response}) { // eslint-disable-line no-shadow
+    async function onMessage ({origin, data: response}) {
       if (!response || !['string', 'object'].includes(typeof response)) {
         // Do nothing
         return;
@@ -125,7 +126,7 @@ export default {
         }
         if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
           // Todo: Surface this error to user?
-          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`); // eslint-disable-line no-console
+          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`); 
           return;
         }
         const hasName = 'name' in response;
@@ -142,7 +143,9 @@ export default {
         }
 
         // Hide possible transfer dialog box
-        $('#dialog_box').hide();
+        if (document.querySelector('se-elix-alert-dialog')) {
+          document.querySelector('se-elix-alert-dialog').remove();
+        }
         type = hasName
           ? 'meta'
           : response.charAt(0);
@@ -181,11 +184,8 @@ export default {
         const message = uiStrings.notification.retrieving.replace('%s', name);
 
         if (mode !== 'm') {
-          await $.process_cancel(message);
+          await seConfirm(message);
           transferStopped = true;
-          // Should a message be sent back to the frame?
-
-          $('#dialog_box').hide();
         } else {
           entry = $('<div>').text(message).data('id', curMeta.id);
           preview.append(entry);
@@ -237,7 +237,7 @@ export default {
       case 's':
         // Import one
         if (svgStr) {
-          svgCanvas.importSvgString(response);
+          svgEditor.svgCanvas.importSvgString(response);
         } else if (imgStr) {
           importImage(response);
         }

@@ -1,9 +1,11 @@
-/* globals jQuery */
 /**
  * @module elem-get-set get and set methods.
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
+
+/* globals jQuery */
+import {jGraduate} from '../editor/components/jgraduate/jQuery.jGraduate.js';
 
 import * as hstry from './history.js';
 import jQueryPluginSVG from './jQuery.attr.js';
@@ -169,7 +171,7 @@ export const setResolutionMethod = function (x, y) {
       const visEls = getVisibleElements();
       elemContext_.getCanvas().addToSelection(visEls);
       const dx = [], dy = [];
-      $.each(visEls, function (i, item) {
+      $.each(visEls, function (_i, _item) {
         dx.push(bbox.x * -1);
         dy.push(bbox.y * -1);
       });
@@ -239,7 +241,7 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
   const selectedElements = elemContext_.getSelectedElements();
   let spacer = 0.85;
   let bb;
-  const calcZoom = function (bb) { // eslint-disable-line no-shadow
+  const calcZoom = function (bb) {
     if (!bb) { return false; }
     const wZoom = Math.round((editorW / bb.width) * 100 * spacer) / 100;
     const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100;
@@ -372,7 +374,8 @@ export const setGradientMethod = function (type) {
   // no duplicate found, so import gradient into defs
   if (!duplicateGrad) {
     // const origGrad = grad;
-    grad = defs.appendChild(elemContext_.getDOMDocument().importNode(grad, true));
+    grad = elemContext_.getDOMDocument().importNode(grad, true);
+    defs.append(grad);
     // get next id and set it on the grad
     grad.id = elemContext_.getCanvas().getNextId();
   } else { // use existing gradient
@@ -451,7 +454,7 @@ export const findDuplicateGradient = function (grad) {
 */
 export const setPaintMethod = function (type, paint) {
   // make a copy
-  const p = new $.jGraduate.Paint(paint);
+  const p = new jGraduate.Paint(paint);
   this.setPaintOpacity(type, p.alpha / 100, true);
 
   // now set the current paint object
@@ -879,7 +882,7 @@ export const setBackgroundMethod = function (color, url) {
       'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
       'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
       });
-      bgPattern.appendChild(div);
+      bgPattern.append(div);
       bg.append(bgPattern);
     }
   } else if (bgPattern) {

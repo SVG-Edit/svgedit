@@ -28,8 +28,6 @@ export default {
     const {$, svgroot} = S,
       addElem = svgCanvas.addSVGElementFromJson,
       selManager = S.selectorManager,
-      connSel = '.se_connector',
-      // connect_str = '-SE_CONNECT-',
       elData = $.data;
 
     let startX,
@@ -191,7 +189,7 @@ export default {
     * @returns {void}
     */
     function findConnectors (elems = selElems) {
-      const connectors = $(svgcontent).find(connSel);
+      const connectors = $(svgcontent).find('.se_connector');
       connections = [];
 
       // Loop through connectors to see if one is connected to the element
@@ -310,7 +308,7 @@ export default {
       const gse = svgCanvas.groupSelectedElements;
 
       svgCanvas.groupSelectedElements = function (...args) {
-        svgCanvas.removeFromSelection($(connSel).toArray());
+        svgCanvas.removeFromSelection($('.se_connector').toArray());
         return gse.apply(this, args);
       };
 
@@ -334,7 +332,7 @@ export default {
       $(svgcontent).find('*').each(function () {
         const conn = this.getAttributeNS(seNs, 'connector');
         if (conn) {
-          this.setAttribute('class', connSel.substr(1));
+          this.setAttribute('class', 'se_connector');
           const connData = conn.split(' ');
           const sbb = svgCanvas.getStrokedBBox([getElem(connData[0])]);
           const ebb = svgCanvas.getStrokedBBox([getElem(connData[1])]);
@@ -500,7 +498,7 @@ export default {
         const connStr = startId + ' ' + endId;
         const altStr = endId + ' ' + startId;
         // Don't create connector if one already exists
-        const dupe = $(svgcontent).find(connSel).filter(function () {
+        const dupe = $(svgcontent).find('.se_connector').filter(function () {
           const conn = this.getAttributeNS(seNs, 'connector');
           if (conn === connStr || conn === altStr) { return true; }
           return false;
@@ -524,7 +522,7 @@ export default {
           .data('end_bb', bb);
         seNs = svgCanvas.getEditorNS(true);
         curLine.setAttributeNS(seNs, 'se:connector', connStr);
-        curLine.setAttribute('class', connSel.substr(1));
+        curLine.setAttribute('class', 'se_connector');
         curLine.setAttribute('opacity', 1);
         svgCanvas.addToSelection([curLine]);
         svgCanvas.moveToBottomSelectedElement();
@@ -538,7 +536,7 @@ export default {
       },
       selectedChanged (opts) {
         // TODO: Find better way to skip operations if no connectors are in use
-        if (!$(svgcontent).find(connSel).length) { return; }
+        if (!$(svgcontent).find('.se_connector').length) { return; }
 
         if (svgCanvas.getMode() === 'connector') {
           svgCanvas.setMode('select');
@@ -616,7 +614,7 @@ export default {
           }
         }
         // Update line if it's a connector
-        if (elem.getAttribute('class') === connSel.substr(1)) {
+        if (elem.getAttribute('class') === 'se_connector') {
           const start = getElem(elData(elem, 'c_start'));
           updateConnectors([start]);
         } else {

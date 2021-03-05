@@ -1,4 +1,4 @@
-/* globals $ */
+import {jGraduate} from './jgraduate/jQuery.jGraduate.js';
 /**
  *
  */
@@ -10,16 +10,17 @@ class PaintBox {
   constructor (container, type) {
     // set up gradients to be used for the buttons
     const svgdocbox = new DOMParser().parseFromString(
-      `<svg xmlns="http://www.w3.org/2000/svg">
+      `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
           <rect
-            fill="#000000" opacity="1" width="22" height="22"/>
+            fill="#000000" opacity="1" width="14" height="14"/>
           <defs><linearGradient id="gradbox_${PaintBox.ctr++}"/></defs>
         </svg>`,
       'text/xml'
     );
 
     let docElem = svgdocbox.documentElement;
-    docElem = container.appendChild(document.importNode(docElem, true));
+    docElem = document.importNode(docElem, true);
+    container.appendChild(docElem);
 
     this.rect = docElem.firstElementChild;
     this.defs = docElem.getElementsByTagName('defs')[0];
@@ -46,7 +47,8 @@ class PaintBox {
     case 'linearGradient':
     case 'radialGradient': {
       this.grad.remove();
-      this.grad = this.defs.appendChild(paint[ptype]);
+      this.grad = paint[ptype];
+      this.defs.appendChild(this.grad);
       const id = this.grad.id = 'gradbox_' + this.type;
       fillAttr = 'url(#' + id + ')';
       break;
@@ -68,14 +70,14 @@ class PaintBox {
     const opts = {alpha: opac};
     if (color.startsWith('url(#')) {
       let refElem = svgCanvas.getRefElem(color);
-      refElem = (refElem) ? refElem.cloneNode(true) : $('#' + type + '_color defs *')[0];
+      refElem = (refElem) ? refElem.cloneNode(true) : document.querySelectorAll('#' + type + '_color defs *')[0];
       opts[refElem.tagName] = refElem;
     } else if (color.startsWith('#')) {
       opts.solidColor = color.substr(1);
     } else {
       opts.solidColor = 'none';
     }
-    return new $.jGraduate.Paint(opts);
+    return new jGraduate.Paint(opts);
   }
 
   /**

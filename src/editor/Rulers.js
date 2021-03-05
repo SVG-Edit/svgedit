@@ -1,6 +1,6 @@
 /* globals $ */
 import {getTypeMap} from '../common/units.js';
-
+import rulersTemplate from './templates/rulersTemplate.js';
 /**
  *
  */
@@ -18,6 +18,8 @@ class Rulers {
     }
     this.svgCanvas = editor.svgCanvas;
     this.editor = editor;
+    // add rulers component to the DOM
+    document.body.append(rulersTemplate.content.cloneNode(true));
   }
   /**
    * @type {Module}

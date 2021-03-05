@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/Dialog.js';
 
 const template = document.createElement('template');
@@ -88,7 +87,7 @@ export class SeStorageDialog extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#dialog_box');
     this.$storage = this._shadowRoot.querySelector('#js-storage');
     this.$okBtn = this._shadowRoot.querySelector('#storage_ok');

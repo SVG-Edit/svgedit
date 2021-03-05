@@ -6,7 +6,7 @@ template.innerHTML = `
   }
   .overall:hover *
   {
-    background-color: #ffc;
+    background-color: var(--icon-bg-color-hover);
   }
   img {
     border: none;
@@ -15,11 +15,10 @@ template.innerHTML = `
   }
   .overall.pressed .button-icon,
   .overall.pressed .handle {
-    background-color: #F4E284 !important;
+    background-color: var(--icon-bg-color-hover) !important;
   }
   .overall.pressed .menu-button {
-    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4), 1px 1px  0 white  !important;
-    background-color: #F4E284 !important;
+    background-color: var(--icon-bg-color-hover) !important;
   }
   .disabled {
     opacity: 0.3;
@@ -28,10 +27,9 @@ template.innerHTML = `
   .menu-button {
     height: 24px;
     width: 24px;
-    margin: 2px 2px 4px;
+    margin: 2px 1px 4px;
     padding: 3px;
-    box-shadow: inset 1px 1px 2px white, 1px 1px 1px rgba(0,0,0,0.3);
-    background-color: #E8E8E8;
+    background-color: var(--icon-bg-color);
     cursor: pointer;
     position: relative;
     border-radius: 3px;
@@ -68,7 +66,7 @@ template.innerHTML = `
     background: none !important;
   }
   </style>
-  
+
   <div class="overall">
     <div class="menu-button">
       <img class="button-icon" src="./images/logo.svg" alt="icon">
@@ -78,7 +76,7 @@ template.innerHTML = `
       <slot></slot>
     </div>
   </div>
-  
+
 `;
 /**
  * @class FlyingButton
@@ -91,7 +89,7 @@ export class FlyingButton extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button');
     this.$handle = this._shadowRoot.querySelector('.handle');
@@ -107,7 +105,7 @@ export class FlyingButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'pressed', 'disabled'];
+    return ['title', 'pressed', 'disabled', 'opened'];
   }
   /**
    * @function attributeChangedCallback
@@ -130,6 +128,13 @@ export class FlyingButton extends HTMLElement {
         this.$overall.classList.add('pressed');
       } else {
         this.$overall.classList.remove('pressed');
+      }
+      break;
+    case 'opened':
+      if (newValue) {
+        this.$menu.classList.add('open');
+      } else {
+        this.$menu.classList.remove('open');
       }
       break;
     case 'disabled':
@@ -178,6 +183,28 @@ export class FlyingButton extends HTMLElement {
       this.setAttribute('pressed', 'true');
     } else {
       this.removeAttribute('pressed', '');
+      // close also the menu if open
+      this.removeAttribute('opened');
+    }
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get opened () {
+    return this.hasAttribute('opened');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set opened (value) {
+    // boolean value => existence = true
+    if (value) {
+      this.setAttribute('opened', 'opened');
+    } else {
+      this.removeAttribute('opened');
     }
   }
   /**
@@ -214,7 +241,7 @@ export class FlyingButton extends HTMLElement {
       switch (ev.target.nodeName) {
       case 'SE-FLYINGBUTTON':
         if (this.pressed) {
-          this.$menu.classList.toggle('open');
+          this.setAttribute('opened', 'opened');
         } else {
           // launch current action
           this.activeSlot.click();
@@ -231,7 +258,11 @@ export class FlyingButton extends HTMLElement {
         break;
       case 'DIV':
         // this is a click on the handle so let's open/close the menu.
-        this.$menu.classList.toggle('open');
+        if (this.opened) {
+          this.removeAttribute('opened');
+        } else {
+          this.setAttribute('opened', 'opened');
+        }
         break;
       default:
         // eslint-disable-next-line no-console

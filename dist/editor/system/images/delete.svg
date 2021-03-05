@@ -1,6 +1,1 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <rect ry="3" rx="3" stroke="#800000" fill="#aa0000" id="svg_37" height="20.29514" width="21.17486" y="1.70304" x="1.42011"/>
-  <rect ry="3" rx="3" stroke="#ff5555" fill="#aa0000" id="svg_67" height="18.63022" width="19.61118" y="2.53597" x="2.20258"/>
-  <line stroke-width="2" fill="none" stroke="#ffffff" id="svg_68" y2="16.85127" x2="17.00646" y1="6.85127" x1="7.00646"/>
-  <line stroke-width="2" id="svg_70" fill="none" stroke="#ffffff" y2="16.85127" x2="7.00646" y1="6.85127" x1="17.00646"/>
- </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51.04 49.47"><defs><style>.cls-1,.cls-2,.cls-3,.cls-4{fill:none;}.cls-2,.cls-3,.cls-4{stroke:#fff;stroke-width:2px;}.cls-2,.cls-4{stroke-linejoin:round;}.cls-3,.cls-4{stroke-linecap:round;}.cls-3{stroke-miterlimit:10;}</style></defs><g id="Calque_2" data-name="Calque 2"><g id="Calque_1-2" data-name="Calque 1"><polyline class="cls-1" points="6.8 0 51.04 0 51.04 49.47 0 49.47 0 0 6.8 0"/><polygon class="cls-2" points="41.06 11.05 36.34 43.08 14.71 43.08 9.99 11.05 41.06 11.05"/><line class="cls-3" x1="18.2" y1="16.01" x2="19.71" y2="38.01"/><line class="cls-3" x1="25.43" y1="16.06" x2="25.43" y2="38.06"/><line class="cls-3" x1="32.68" y1="16.06" x2="31.17" y2="38.06"/><line class="cls-4" x1="6.94" y1="11.05" x2="44.1" y2="11.05"/><rect class="cls-2" x="19.69" y="6.4" width="11.66" height="4.65"/></g></g></svg>

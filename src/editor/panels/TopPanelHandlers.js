@@ -206,11 +206,11 @@ class TopPanelHandlers {
         });
 
         if (tagName === 'text') {
-          $('#text_panel').css('display', 'inline');
+          $('#text_panel').css('display', 'inline-block');
           $('#tool_font_size').css('display', 'inline');
           $id('tool_italic').pressed = this.svgCanvas.getItalic();
           $id('tool_bold').pressed = this.svgCanvas.getBold();
-          $('#font_family').val(elem.getAttribute('font-family'));
+          $('#tool_font_family').val(elem.getAttribute('font-family'));
           $('#font_size').val(elem.getAttribute('font-size'));
           $('#text').val(elem.textContent);
           const textAnchorStart = $id('tool_text_anchor_start');
@@ -386,11 +386,23 @@ class TopPanelHandlers {
   }
 
   /**
+* @param {PlainObject} evt
+* @returns {void}
+*/
+  clickAlignEle (evt) {
+    this.svgCanvas.alignSelectedElements(evt.detail.value, 'page');
+  }
+
+  /**
 * @param {string} pos indicate the alignment relative to top, bottom, middle etc..
 * @returns {void}
 */
   clickAlign (pos) {
-    this.svgCanvas.alignSelectedElements(pos, $('#align_relative_to').val());
+    let value = $('#tool_align_relative').val();
+    if(value === ''){
+      value = 'selected';
+    }
+    this.svgCanvas.alignSelectedElements(pos, value);
   }
   /**
 *
@@ -598,6 +610,7 @@ class TopPanelHandlers {
     $id('tool_make_link_multi').addEventListener('click', this.makeHyperlink.bind(this));
     $id('tool_reorient').addEventListener('click', this.reorientPath.bind(this));
     $id('tool_group_elements').addEventListener('click', this.clickGroup.bind(this));
+    $id('tool_position').addEventListener('change', (evt) => this.clickAlignEle.bind(this)(evt));
     $id('tool_align_left').addEventListener('click', () => this.clickAlign.bind(this)('left'));
     $id('tool_align_right').addEventListener('click', () => this.clickAlign.bind(this)('right'));
     $id('tool_align_center').addEventListener('click', () => this.clickAlign.bind(this)('center'));

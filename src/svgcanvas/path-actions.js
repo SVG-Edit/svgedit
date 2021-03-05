@@ -165,7 +165,6 @@ export const convertPath = function (pth, toRel) {
       }
       d += pathDSegment(letter, [[x1, y1], [x, y]]);
       break;
-    // eslint-disable-next-line sonarjs/no-duplicated-branches
     case 10: // absolute elliptical arc (A)
       x -= curx;
       y -= cury;
@@ -230,7 +229,6 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
   return segment;
 }
 
-/* eslint-disable jsdoc/require-property */
 /**
 * Group: Path edit functions.
 * Functions relating to editing path elements.
@@ -238,7 +236,6 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
 * @memberof module:path
 */
 export const pathActionsMethod = (function () {
-  /* eslint-enable jsdoc/require-property */
   let subpath = false;
   let newPoint, firstCtrl;
 
@@ -361,7 +358,7 @@ export const pathActionsMethod = (function () {
             'stroke-width': '0.5',
             fill: 'none'
           });
-          stretchy = getElem('selectorParentGroup').appendChild(stretchy);
+          getElem('selectorParentGroup').append(stretchy);
         }
         stretchy.setAttribute('display', 'inline');
 
@@ -675,7 +672,7 @@ export const pathActionsMethod = (function () {
         }
       } else {
         path.selected_pts = [];
-        path.eachSeg(function (i) {
+        path.eachSeg(function (_i) {
           const seg = this;
           if (!seg.next && !seg.prev) { return; }
 
@@ -708,11 +705,11 @@ export const pathActionsMethod = (function () {
     /**
     * @param {Event} evt
     * @param {Element} element
-    * @param {Float} mouseX
-    * @param {Float} mouseY
+    * @param {Float} _mouseX
+    * @param {Float} _mouseY
     * @returns {module:path.keepElement|void}
     */
-    mouseUp (evt, element, mouseX, mouseY) {
+    mouseUp (evt, element, _mouseX, _mouseY) {
       editorContext_ = pathActionsContext_.getEditorContext();
       const drawnPath = editorContext_.getDrawnPath();
       // Create mode
@@ -1173,7 +1170,6 @@ export const pathActionsMethod = (function () {
       }
       path.endChanges('Delete path node(s)');
     },
-    /* eslint-disable jsdoc/require-returns */
     // Can't seem to use `@borrows` here, so using `@see`
     /**
     * Smooth polyline into path.
@@ -1181,7 +1177,7 @@ export const pathActionsMethod = (function () {
     * @see module:path~smoothPolylineIntoPath
     */
     smoothPolylineIntoPath,
-    /* eslint-enable jsdoc/require-returns */
+    /* eslint-enable  */
     /**
     * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
     * @returns {void}
@@ -1240,7 +1236,6 @@ export const pathActionsMethod = (function () {
       editorContext_ = pathActionsContext_.getEditorContext();
       if (isWebkit()) { editorContext_.resetD(elem); }
     },
-    /* eslint-disable jsdoc/require-returns */
     // Can't seem to use `@borrows` here, so using `@see`
     /**
     * Convert a path to one with only absolute or relative values.
@@ -1248,7 +1243,6 @@ export const pathActionsMethod = (function () {
     * @see module:path.convertPath
     */
     convertPath
-    /* eslint-enable jsdoc/require-returns */
   });
 })();
 // end pathActions

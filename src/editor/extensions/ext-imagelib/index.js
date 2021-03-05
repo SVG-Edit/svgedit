@@ -33,7 +33,7 @@ $('a').click(function () {
       } catch (err) {
         // This fails in Firefox with `file:///` URLs :(
         // Todo: This could use a generic alert library instead
-        alert('Data URL conversion failed: ' + err); // eslint-disable-line no-alert
+        alert('Data URL conversion failed: ' + err); 
         data = '';
       }
       post({href, data});

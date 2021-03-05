@@ -5,7 +5,6 @@ For default config and extensions (and available options) available to
 */
 
 import './jquery.min.js';
-import './jquery-ui/jquery-ui-1.8.17.custom.min.js';
 import './components/index.js';
 import './dialogs/index.js';
 import svgEditor from './svgedit.js';
@@ -139,7 +138,6 @@ try { // try clause to avoid js to complain if XDOMAIN undefined
       canvasName: 'xdomain', // Namespace this
       allowedOrigins: ['*']
     });
-    // eslint-disable-next-line no-console
     console.info('xdomain config activated');
   }
-} catch (error) {}
+} catch (error) {/* empty fn */}

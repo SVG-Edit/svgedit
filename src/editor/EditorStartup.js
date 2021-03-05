@@ -4,7 +4,7 @@ import {convertUnit} from '../common/units.js';
 import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
-
+import editorTemplate from './templates/editorTemplate.js';
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import LayersPanel from './panels/LayersPanel.js';
 import LeftPanelHandlers from './panels/LeftPanelHandlers.js';
@@ -38,7 +38,7 @@ const readySignal = () => {
         cancelable: true
       });
       w.document.documentElement.dispatchEvent(svgEditorReadyEvent);
-    } catch (e) {}
+    } catch (e) {/* empty fn */}
   }
 };
 
@@ -61,8 +61,12 @@ class EditorStartup {
   * @returns {void}
   */
   async init () {
+    // allow to prepare the dom without display
+    $id('svg_editor').style.visibility = 'hidden';
     try {
-    // Image props dialog added to DOM
+      // add editor components to the DOM
+      document.body.append(editorTemplate.content.cloneNode(true));
+      // Image props dialog added to DOM
       const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
       newSeImgPropDialog.setAttribute('id', 'se-img-prop');
       document.body.append(newSeImgPropDialog);
@@ -82,8 +86,11 @@ class EditorStartup {
       const promptBox = document.createElement('se-prompt-dialog');
       promptBox.setAttribute('id', 'se-prompt-dialog');
       document.body.append(promptBox);
+      // Export dialog added to DOM
+      const exportDialog = document.createElement('se-export-dialog');
+      exportDialog.setAttribute('id', 'se-export-dialog');
+      document.body.append(exportDialog);
     } catch (err) {
-    // eslint-disable-next-line no-console
       console.error(err);
     }
 
@@ -220,8 +227,8 @@ class EditorStartup {
       }
     });
 
-    $('#font_family').change((evt) => {
-      this.svgCanvas.setFontFamily(evt.currentTarget.value);
+    $('#tool_font_family').change((evt) => {
+      this.svgCanvas.setFontFamily(evt.originalEvent.detail.value);
     });
 
     $('#seg_type').change((evt) => {
@@ -278,21 +285,32 @@ class EditorStartup {
       panning = false;
     });
 
-    $(document).bind('keydown', 'space', function (evt) {
-      this.svgCanvas.spaceKey = keypan = true;
-      evt.preventDefault();
-    }.bind(this)).bind('keyup', 'space', function (evt) {
-      evt.preventDefault();
-      this.svgCanvas.spaceKey = keypan = false;
-    }.bind(this)).bind('keydown', 'shift', function (evt) {
-      if (this.svgCanvas.getMode() === 'zoom') {
+    document.addEventListener('keydown', (e) => {
+      if (e.target.nodeName !== 'BODY') return;
+      if(e.code.toLowerCase() === 'space'){
+        this.svgCanvas.spaceKey = keypan = true;
+        e.preventDefault();  
+      } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
         this.workarea.css('cursor', zoomOutIcon);
+        e.preventDefault();  
+      } else {
+        return;
       }
-    }.bind(this)).bind('keyup', 'shift', function (evt) {
-      if (this.svgCanvas.getMode() === 'zoom') {
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.target.nodeName !== 'BODY') return;
+      if(e.code.toLowerCase() === 'space'){
+        this.svgCanvas.spaceKey = keypan = false;
+        e.preventDefault();  
+      } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
         this.workarea.css('cursor', zoomInIcon);
+        e.preventDefault();  
+      } else {
+        return;
       }
-    }.bind(this));
+    });
+
 
     /**
      * @function module:SVGthis.setPanning
@@ -455,7 +473,7 @@ class EditorStartup {
     });
     $id('tool_import').addEventListener('click', (e) => {
       this.clickImport();
-      window.dispatchEvent(new CustomEvent('importImage'));
+      window.dispatchEvent(new CustomEvent('importImages'));
     });
     $id('tool_save').addEventListener('click', function (e) {
       const $editorDialog = document.getElementById('se-svg-editor-dialog');
@@ -466,7 +484,11 @@ class EditorStartup {
         this.clickSave();
       }
     }.bind(this));
-    $id('tool_export').addEventListener('click', this.clickExport.bind(this));
+    // this.clickExport.bind(this)
+    $id('tool_export').addEventListener('click', function (e) {
+      document.getElementById('se-export-dialog').setAttribute('dialog', 'open');
+    });
+    $id('se-export-dialog').addEventListener('change', this.clickExport.bind(this));
     $id('tool_docprops').addEventListener('click', this.showDocProperties.bind(this));
     $id('tool_editor_prefs').addEventListener('click', this.showPreferences.bind(this));
     $id('tool_editor_homepage').addEventListener('click', this.openHomePage.bind(this));
@@ -617,14 +639,15 @@ class EditorStartup {
     * @param {Event} e
     * @returns {void}
     */
+      const editorObj = this;
       const importImage = function (e) {
-        $.process_cancel(this.uiStrings.notification.loadingImage);
+        document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
         e.stopPropagation();
         e.preventDefault();
         $('#main_menu').hide();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
         if (!file) {
-          $('#dialog_box').hide();
+          document.getElementById('se-prompt-dialog').setAttribute('close', true);
           return;
         }
 
@@ -637,15 +660,15 @@ class EditorStartup {
         if (file.type.includes('svg')) {
           reader = new FileReader();
           reader.onloadend = function (ev) {
-            const newElement = this.svgCanvas.importSvgString(ev.target.result, true);
-            this.svgCanvas.ungroupSelectedElement();
-            this.svgCanvas.ungroupSelectedElement();
-            this.svgCanvas.groupSelectedElements();
-            this.svgCanvas.alignSelectedElements('m', 'page');
-            this.svgCanvas.alignSelectedElements('c', 'page');
+            const newElement = editorObj.svgCanvas.importSvgString(ev.target.result, true);
+            editorObj.svgCanvas.ungroupSelectedElement();
+            editorObj.svgCanvas.ungroupSelectedElement();
+            editorObj.svgCanvas.groupSelectedElements();
+            editorObj.svgCanvas.alignSelectedElements('m', 'page');
+            editorObj.svgCanvas.alignSelectedElements('c', 'page');
             // highlight imported element, otherwise we get strange empty selectbox
-            this.svgCanvas.selectOnly([newElement]);
-            $('#dialog_box').hide();
+            editorObj.svgCanvas.selectOnly([newElement]);
+            document.getElementById('se-prompt-dialog').setAttribute('close', true);
           };
           reader.readAsText(file);
         } else {
@@ -659,23 +682,23 @@ class EditorStartup {
           * @returns {void}
           */
             const insertNewImage = function (imageWidth, imageHeight) {
-              const newImage = this.svgCanvas.addSVGElementFromJson({
+              const newImage = editorObj.svgCanvas.addSVGElementFromJson({
                 element: 'image',
                 attr: {
                   x: 0,
                   y: 0,
                   width: imageWidth,
                   height: imageHeight,
-                  id: this.svgCanvas.getNextId(),
+                  id: editorObj.svgCanvas.getNextId(),
                   style: 'pointer-events:inherit'
                 }
               });
-              this.svgCanvas.setHref(newImage, result);
-              this.svgCanvas.selectOnly([newImage]);
-              this.svgCanvas.alignSelectedElements('m', 'page');
-              this.svgCanvas.alignSelectedElements('c', 'page');
-              this.topPanelHandlers.updateContextPanel();
-              $('#dialog_box').hide();
+              editorObj.svgCanvas.setHref(newImage, result);
+              editorObj.svgCanvas.selectOnly([newImage]);
+              editorObj.svgCanvas.alignSelectedElements('m', 'page');
+              editorObj.svgCanvas.alignSelectedElements('c', 'page');
+              editorObj.topPanelHandlers.updateContextPanel();
+              document.getElementById('se-prompt-dialog').setAttribute('close', true);
             };
             // create dummy img so we know the default dimensions
             let imgWidth = 100;
@@ -697,6 +720,8 @@ class EditorStartup {
       this.workarea[0].addEventListener('dragover', this.onDragOver);
       this.workarea[0].addEventListener('dragleave', this.onDragLeave);
       this.workarea[0].addEventListener('drop', importImage);
+      const imgImport = $('<input type="file">').change(importImage);
+      $(window).on('importImages', () => imgImport.click());
     }
 
     this.updateCanvas(true);
@@ -722,7 +747,7 @@ class EditorStartup {
     const {langParam, langData} = await this.putLocale(this.configObj.pref('lang'), this.goodLangs);
     await this.setLang(langParam, langData);
 
-    $id('svg_container').style.visibility = 'visible';
+    $id('svg_editor').style.visibility = 'visible';
 
     try {
       // load standard extensions
@@ -743,7 +768,7 @@ class EditorStartup {
             return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam});
           } catch (err) {
             // Todo: Add config to alert any errors
-            console.error('Extension failed to load: ' + extname + '; ', err); // eslint-disable-line no-console
+            console.error('Extension failed to load: ' + extname + '; ', err);
             return undefined;
           }
         })
@@ -766,7 +791,7 @@ class EditorStartup {
             return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam});
           } catch (err) {
             // Todo: Add config to alert any errors
-            console.error('Extension failed to load: ' + extPathName + '; ', err); // eslint-disable-line no-console
+            console.error('Extension failed to load: ' + extPathName + '; ', err);
             return undefined;
           }
         })
@@ -802,7 +827,7 @@ class EditorStartup {
       this.svgCanvas.call('extensions_added');
     } catch (err) {
       // Todo: Report errors through the UI
-      console.log(err); // eslint-disable-line no-console
+      console.log(err);
     }
   }
 
@@ -813,7 +838,7 @@ class EditorStartup {
  * @fires module:svgcanvas.SvgCanvas#event:message
  * @returns {void}
  */
-  messageListener ({data, origin}) { // eslint-disable-line no-shadow
+  messageListener ({data, origin}) {
   // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     const messageObj = {data, origin};
     if (!this.extensionsAdded) {

@@ -45,20 +45,19 @@ export class Selector {
     });
 
     // this holds a reference to the path rect
-    this.selectorRect = this.selectorGroup.appendChild(
-      svgFactory_.createSVGElement({
-        element: 'path',
-        attr: {
-          id: ('selectedBox' + this.id),
-          fill: 'none',
-          stroke: '#22C',
-          'stroke-width': '1',
-          'stroke-dasharray': '5,5',
-          // need to specify this so that the rect is not selectable
-          style: 'pointer-events:none'
-        }
-      })
-    );
+    this.selectorRect = svgFactory_.createSVGElement({
+      element: 'path',
+      attr: {
+        id: ('selectedBox' + this.id),
+        fill: 'none',
+        stroke: '#22C',
+        'stroke-width': '1',
+        'stroke-dasharray': '5,5',
+        // need to specify this so that the rect is not selectable
+        style: 'pointer-events:none'
+      }
+    });
+    this.selectorGroup.append(this.selectorRect);
 
     // this holds a reference to the grip coordinates for this selector
     this.gripCoords = {
@@ -342,11 +341,12 @@ export class SelectorManager {
 
       $.data(grip, 'dir', dir);
       $.data(grip, 'type', 'resize');
-      this.selectorGrips[dir] = this.selectorGripsGroup.appendChild(grip);
+      this.selectorGrips[dir] = grip;
+      this.selectorGripsGroup.append(grip);
     });
 
     // add rotator elems
-    this.rotateGripConnector = this.selectorGripsGroup.appendChild(
+    this.rotateGripConnector =
       svgFactory_.createSVGElement({
         element: 'line',
         attr: {
@@ -354,10 +354,10 @@ export class SelectorManager {
           stroke: '#22C',
           'stroke-width': '1'
         }
-      })
-    );
+      });
+    this.selectorGripsGroup.append(this.rotateGripConnector);
 
-    this.rotateGrip = this.selectorGripsGroup.appendChild(
+    this.rotateGrip =
       svgFactory_.createSVGElement({
         element: 'circle',
         attr: {
@@ -368,8 +368,8 @@ export class SelectorManager {
           'stroke-width': 2,
           style: 'cursor:url(' + config_.imgPath + 'rotate.svg) 12 12, auto;'
         }
-      })
-    );
+      });
+    this.selectorGripsGroup.append(this.rotateGrip);
     $.data(this.rotateGrip, 'type', 'rotate');
 
     if ($('#canvasBackground').length) { return; }
@@ -452,7 +452,7 @@ export class SelectorManager {
       sel = this.selectorMap[elem.id];
     if (sel && !sel.locked) {
       // TODO(codedread): Ensure this exists in this module.
-      console.log('WARNING! selector was released but was already unlocked'); // eslint-disable-line no-console
+      console.log('WARNING! selector was released but was already unlocked'); 
     }
     for (let i = 0; i < N; ++i) {
       if (this.selectors[i] && this.selectors[i] === sel) {
@@ -464,7 +464,7 @@ export class SelectorManager {
         // remove from DOM and store reference in JS but only if it exists in the DOM
         try {
           sel.selectorGroup.setAttribute('display', 'none');
-        } catch (e) {}
+        } catch (e) {/* empty fn */}
 
         break;
       }
@@ -477,7 +477,7 @@ export class SelectorManager {
   */
   getRubberBandBox () {
     if (!this.rubberBandBox) {
-      this.rubberBandBox = this.selectorParentGroup.appendChild(
+      this.rubberBandBox =
         svgFactory_.createSVGElement({
           element: 'rect',
           attr: {
@@ -489,8 +489,8 @@ export class SelectorManager {
             display: 'none',
             style: 'pointer-events:none'
           }
-        })
-      );
+        });
+      this.selectorParentGroup.append(this.rubberBandBox);
     }
     return this.rubberBandBox;
   }

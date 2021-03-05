@@ -1,6 +1,5 @@
-/* eslint-disable node/no-unpublished-import */
-import 'elix/define/MenuButton.js';
 import 'elix/define/MenuItem.js';
+import './sePlainMenuButton.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -9,20 +8,26 @@ template.innerHTML = `
     padding: 0px;
   }
   elix-menu-button::part(menu) {
-    background-color: #eee !important;
+    background-color: var(--icon-bg-color) !important;
+    color: #fff;
   }
   elix-menu-button::part(popup-toggle) {
-    padding: 0.25em 0.60em !important
+    padding: 0.25em 0.30em !important
   }
   :host ::slotted([current]){
-    background-color: #F4E284 !important;
+    background-color: var(--icon-bg-color-hover) !important;
+    color: #fff;
+  }
+  :host ::slotted(*){
+    padding: 0.25em 1.25em 0.25em 0.25em !important;
+    margin: 2px;
   }
   </style>
-  
+
   <elix-menu-button id="MenuButton" aria-label="Main Menu">
     <slot></slot>
   </elix-menu-button>
-  
+
 `;
 /**
  * @class SeMenu
@@ -35,7 +40,7 @@ export class SeMenu extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$menu = this._shadowRoot.querySelector('elix-menu-button');
     this.$label = this.$menu.shadowRoot.querySelector('#popupToggle').shadowRoot;
   }
@@ -60,8 +65,8 @@ export class SeMenu extends HTMLElement {
     switch (name) {
     case 'src':
       image.src = newValue;
-      image.width = 18;
-      image.height = 18;
+      image.width = 24;
+      image.height = 24;
       this.$label.prepend(image);
       break;
     case 'label':
@@ -107,7 +112,7 @@ export class SeMenu extends HTMLElement {
    * @function connectedCallback
    * @returns {void}
    */
-  connectedCallback () {
+  /* connectedCallback () {
     this.$menu.addEventListener('openedchange', (e) => {
       e.preventDefault();
       const selectedItem = e?.detail?.closeResult;
@@ -115,7 +120,7 @@ export class SeMenu extends HTMLElement {
         document.getElementById(selectedItem.id).click();
       }
     });
-  }
+  } */
 }
 
 // Register

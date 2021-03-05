@@ -127,8 +127,8 @@ const refAttrs = ['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'ma
 
 if (!window.console) {
   window.console = {};
-  window.console.log = function (str) { /* empty fn */ };
-  window.console.dir = function (str) { /* empty fn */ };
+  window.console.log = function (_str) { /* empty fn */ };
+  window.console.dir = function (_str) { /* empty fn */ };
 }
 
 if (window.opera) {
@@ -1072,7 +1072,7 @@ class SvgCanvas {
  * @returns {void}
  */
     const logMatrix = function (m) {
-      console.log([m.a, m.b, m.c, m.d, m.e, m.f]); // eslint-disable-line no-console
+      console.log([m.a, m.b, m.c, m.d, m.e, m.f]); 
     };
 
     // Root Current Transformation Matrix in user units
@@ -2708,7 +2708,7 @@ class SvgCanvas {
 * @returns {module:svgcanvas.PrivateMethods}
 */
     this.getPrivateMethods = function () {
-      const obj = {
+      return {
         addCommandToHistory,
         BatchCommand,
         ChangeElementCommand,
@@ -2737,7 +2737,6 @@ class SvgCanvas {
         transformPoint,
         walkTree
       };
-      return obj;
     };
   } // End constructor
 } // End class

@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/Dialog.js';
 import {isValidUnit} from '../../common/units.js';
 
@@ -129,7 +128,7 @@ export class SeImgPropDialog extends HTMLElement {
     // create the shadowDom and insert the template
     this.eventlisten = false;
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$saveBtn = this._shadowRoot.querySelector('#tool_docprops_save');
     this.$cancelBtn = this._shadowRoot.querySelector('#tool_docprops_cancel');
     this.$resolution = this._shadowRoot.querySelector('#resolution');

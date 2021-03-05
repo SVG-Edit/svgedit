@@ -1,12 +1,5 @@
-/* globals jQuery */
-import jQueryPluginJGraduate from './jgraduate/jQuery.jGraduate.js';
-import jQueryPluginJPicker from './jgraduate/jQuery.jPicker.js';
+import {jGraduate, jGraduateMethod} from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
-
-const $ = [
-  jQueryPluginJGraduate,
-  jQueryPluginJPicker
-].reduce((jq, func) => func(jq), jQuery);
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -14,29 +7,30 @@ template.innerHTML = `
   @import "./components/jgraduate/css/jGraduate.css";
   @import "./components/jgraduate/css/jPicker.css";
   #logo {
-    height: 22px;
-    width: 22px;
+    height: 18px;
+    width: 18px;
   }
   #block {
-    height: 22px;
-    width: 22px;
+    height: 13px;
+    width: 14px;
     float: right;
     background-color: darkgrey;
   }
   #picker {
-    background: #f0f0f0;
-    height: 26px;
-    line-height: 26px;
+    background: var(--input-color);
+    height: 19px;
+    line-height: 19px;
     border-radius: 3px;
     width: 52px;
     display: flex;
     align-items: center;
     margin-right: 4px;
+    margin-top: 1px;
     justify-content: space-evenly;
   }
   #color_picker {
-    position: absolute;
-    bottom: 40px;
+    z-index: 1000;
+    top: -350px;
   }
   </style>
   <div id="picker">
@@ -59,7 +53,7 @@ export class SeColorPicker extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$logo = this._shadowRoot.getElementById('logo');
     this.$label = this._shadowRoot.getElementById('label');
     this.$block = this._shadowRoot.getElementById('block');
@@ -174,33 +168,29 @@ export class SeColorPicker extends HTMLElement {
    */
   connectedCallback () {
     this.paintBox = new PaintBox(this.$block, this.type);
-    let {paint} = this.paintBox;
-    $(this.$picker).click(() => {
-      $(this.$color_picker)
-        .draggable({
-          cancel: '.jGraduate_tabs, .jGraduate_colPick, .jGraduate_gradPick, .jPicker',
-          containment: 'window'
-        })
-        .jGraduate(
-          {
-            images: {clientPath: './components/jgraduate/images/'},
-            paint,
-            window: {pickerTitle: this.label},
-            newstop: 'inverse'
-          },
-          (p) => {
-            paint = new $.jGraduate.Paint(p);
-            this.setPaint(paint);
-            const changeEvent = new CustomEvent('change', {detail: {
-              paint
-            }});
-            this.dispatchEvent(changeEvent);
-            $('#color_picker').hide();
-          },
-          () => {
-            $('#color_picker').hide();
-          }
-        );
+    this.$picker.addEventListener('click', () => {
+      let {paint} = this.paintBox;
+      jGraduateMethod(
+        this.$color_picker,
+        {
+          images: {clientPath: './components/jgraduate/images/'},
+          paint,
+          window: {pickerTitle: this.label},
+          newstop: 'inverse'
+        },
+        (p) => {
+          paint = new jGraduate.Paint(p);
+          this.setPaint(paint);
+          const changeEvent = new CustomEvent('change', {detail: {
+            paint
+          }});
+          this.dispatchEvent(changeEvent);
+          this.$color_picker.style.display = 'none';
+        },
+        () => {
+          this.$color_picker.style.display = 'none';
+        }
+      );
     });
   }
 }

@@ -31,7 +31,6 @@ export const init = function (textActionsContext) {
   textActionsContext_ = textActionsContext;
 };
 
-/* eslint-disable jsdoc/require-property */
 /**
 * Group: Text edit functions
 * Functions relating to editing text elements.
@@ -39,7 +38,6 @@ export const init = function (textActionsContext) {
 * @memberof module:svgcanvas.SvgCanvas#
 */
 export const textActionsMethod = (function () {
-  /* eslint-enable jsdoc/require-property */
   let curtext;
   let textinput;
   let cursor;
@@ -81,7 +79,7 @@ export const textActionsMethod = (function () {
         stroke: '#333',
         'stroke-width': 1
       });
-      cursor = getElem('selectorParentGroup').appendChild(cursor);
+      getElem('selectorParentGroup').append(cursor);
     }
 
     if (!blinker) {
@@ -461,10 +459,10 @@ export const textActionsMethod = (function () {
       }
     },
     /**
-* @param {Element} inputElem Not in use
+* @param {Element} _inputElem Not in use
 * @returns {void}
 */
-    init (inputElem) {
+    init (_inputElem) {
       if (!curtext) { return; }
       let i, end;
       // if (supportsEditableText()) {

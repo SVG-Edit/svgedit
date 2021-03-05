@@ -1,5 +1,4 @@
-// eslint-disable-next-line node/no-unpublished-import
-import AlertDialog from 'elix/define/AlertDialog.js';
+import SePlainAlertDialog from './SePlainAlertDialog.js';
 /**
  * @class SePromptDialog
  */
@@ -11,7 +10,7 @@ export class SePromptDialog extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this.dialog = new AlertDialog();
+    this.dialog = new SePlainAlertDialog();
   }
   /**
    * @function observedAttributes
@@ -43,7 +42,8 @@ export class SePromptDialog extends HTMLElement {
       }
       break;
     default:
-      console.error('unkonw attr for:', name, 'newValue =', newValue);
+      // eslint-disable-next-line no-console
+      console.error('unknown attr for:', name, 'newValue =', newValue);
       break;
     }
   }

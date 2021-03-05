@@ -1,4 +1,5 @@
 /* globals $ */
+import {jGraduate} from '../components/jgraduate/jQuery.jGraduate.js';
 import SvgCanvas from '../../svgcanvas/svgcanvas.js';
 
 const {$id} = SvgCanvas;
@@ -142,7 +143,7 @@ class BottomPanelHandlers {
   * @type {module}
   */
   handleStrokeAttr (type, evt) {
-    this.svgCanvas.setStrokeAttr(type, evt.currentTarget.value);
+    this.svgCanvas.setStrokeAttr(type, evt.detail.value);
   }
   /**
   * @type {module}
@@ -160,7 +161,7 @@ class BottomPanelHandlers {
     // shift key or right click for stroke
     const {picker, color} = e.detail;
     // Webkit-based browsers returned 'initial' here for no stroke
-    const paint = color === 'none' ? new $.jGraduate.Paint() : new $.jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
+    const paint = color === 'none' ? new jGraduate.Paint() : new jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
     if (picker === 'fill') {
       $id('fill_color').setPaint(paint);
     } else {
@@ -188,8 +189,8 @@ class BottomPanelHandlers {
     $id('opacity').addEventListener('change', this.handleOpacity.bind(this));
     $id('palette').addEventListener('change', this.handlePalette.bind(this));
     const {curConfig} = this.editor.configObj;
-    $id('fill_color').setPaint(new $.jGraduate.Paint({alpha: 100, solidColor: curConfig.initFill.color}));
-    $id('stroke_color').setPaint(new $.jGraduate.Paint({alpha: 100, solidColor: curConfig.initStroke.color}));
+    $id('fill_color').setPaint(new jGraduate.Paint({alpha: 100, solidColor: curConfig.initFill.color}));
+    $id('stroke_color').setPaint(new jGraduate.Paint({alpha: 100, solidColor: curConfig.initStroke.color}));
   }
 }
 

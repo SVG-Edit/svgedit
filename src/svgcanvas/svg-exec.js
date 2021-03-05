@@ -75,7 +75,7 @@ export const svgCanvasToString = function () {
   const nakedSvgs = [];
 
   // Unwrap gsvg if it has no special attributes (only id and style)
-  $(svgContext_.getSVGContent()).find('g:data(gsvg)').each(function () {
+  $(svgContext_.getSVGContent()).find('g[data-gsvg]').each(function () {
     const attrs = this.attributes;
     let len = attrs.length;
     for (let i = 0; i < len; i++) {
@@ -456,7 +456,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (!preventUndo) svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [svgContext_.getSVGContent()]);
   } catch (e) {
-    console.log(e); // eslint-disable-line no-console
+    console.log(e); 
     return false;
   }
 
@@ -577,7 +577,7 @@ export const importSvgString = function (xmlString) {
     svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [svgContext_.getSVGContent()]);
   } catch (e) {
-    console.log(e); // eslint-disable-line no-console
+    console.log(e); 
     return null;
   }
 
@@ -598,7 +598,6 @@ export const importSvgString = function (xmlString) {
 */
 export const embedImage = function (src) {
   // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
-  // eslint-disable-next-line promise/avoid-new
   return new Promise(function (resolve, reject) {
     // load in the image and once it's loaded, get the dimensions
     $(new Image()).load(function (response, status, xhr) {
@@ -726,9 +725,11 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
   c.width = svgContext_.getCanvas().contentW;
   c.height = svgContext_.getCanvas().contentH;
   const canvg = svgContext_.getcanvg();
-  await canvg(c, svg);
+  const ctx = c.getContext('2d');
+  const v = canvg.fromString(ctx, svg);
+  // Render only first frame, ignoring animations.
+  await v.render();
   // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
-  // eslint-disable-next-line promise/avoid-new
   return new Promise((resolve, reject) => {
     const dataURLType = type.toLowerCase();
     const datauri = quality

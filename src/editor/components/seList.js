@@ -1,25 +1,29 @@
-/* eslint-disable node/no-unpublished-import */
 import 'elix/define/DropdownList.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
-[part~="source"] {
-  grid-template-columns: 20px 1fr auto;
+elix-dropdown-list {
+  margin: 1px;
 }
-::slotted(*) {
-  background: #E8E8E8;
-  border: 1px solid #B0B0B0;
+
+elix-dropdown-list:hover {
+  background-color: var(--icon-bg-color-hover);
 }
+
 ::part(popup-toggle) {
   display: none;
+}
+::slotted(*) {
+  padding:0;
+  width:100%;
 }
 </style>
   <label>Label</label>
   <elix-dropdown-list>
     <slot></slot>
   </elix-dropdown-list>
-  
+
 `;
 /**
  * @class SeList
@@ -32,7 +36,7 @@ export class SeList extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({mode: 'open'});
-    this._shadowRoot.appendChild(template.content.cloneNode(true));
+    this._shadowRoot.append(template.content.cloneNode(true));
     this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
     this.$label = this._shadowRoot.querySelector('label');
   }
@@ -41,7 +45,7 @@ export class SeList extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label'];
+    return ['label', 'width', 'height'];
   }
 
   /**
@@ -56,6 +60,12 @@ export class SeList extends HTMLElement {
     switch (name) {
     case 'label':
       this.$label.textContent = newValue;
+      break;
+    case 'height':
+      this.$dropdown.style.height = newValue;
+      break;
+    case 'width':
+      this.$dropdown.style.width = newValue;
       break;
     default:
       // eslint-disable-next-line no-console
@@ -79,15 +89,48 @@ export class SeList extends HTMLElement {
     this.setAttribute('label', value);
   }
   /**
+   * @function get
+   * @returns {any}
+   */
+  get width () {
+    return this.getAttribute('width');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set width (value) {
+    this.setAttribute('width', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get height () {
+    return this.getAttribute('height');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set height (value) {
+    this.setAttribute('height', value);
+  }
+  /**
    * @function connectedCallback
    * @returns {void}
    */
   connectedCallback () {
-    this.$dropdown.addEventListener('change', (e) => {
+    const currentObj = this;
+    this.$dropdown.addEventListener('selectedindexchange', (e) => {
       e.preventDefault();
-      const selectedItem = e?.detail?.closeResult;
-      if (selectedItem !== undefined && selectedItem?.id !== undefined) {
-        document.getElementById(selectedItem.id).click();
+      if (e?.detail?.selectedIndex !== undefined) {
+        const value = this.$dropdown.selectedItem.getAttribute('value');
+        const closeEvent = new CustomEvent('change', {detail: {value}});
+        currentObj.dispatchEvent(closeEvent);
+        currentObj.value = value;
       }
     });
   }

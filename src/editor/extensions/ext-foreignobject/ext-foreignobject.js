@@ -83,7 +83,7 @@ export default {
         svgCanvas.clearSelection();
       } catch (e) {
         // Todo: Surface error to user
-        console.log(e); // eslint-disable-line no-console
+        console.log(e); 
         return false;
       }
 
