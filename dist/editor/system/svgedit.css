@@ -306,12 +306,12 @@ hr {
 
 #tools_top {
   position: absolute;
-  left: 105px;
+  left: 96px;
   top: 2px;
   min-height: 40px;
   border-bottom: none;
-  overflow: auto;
-  right:2px;
+  overflow: visible;
+  right:1px;
 }
 
 #tools_top .tool_sep {
@@ -320,20 +320,19 @@ hr {
 
 #tools_top > div > * {
   float: left;
-  margin-right: 1px;
 }
 #tools_top se-input {
-  margin-top: 6px;
-  height: 15px;
+  margin-top: 5px;
+  height: 34px;
 }
 #tools_top se-spin-input, #tools_top se-list {
   margin-top: 5px;
-  height: 15px;
+  height: 34px;
 }
 
 #tools_top se-dropdown-list {
   margin-top: 5px;
-  height: 15px;
+  height: 34px;
 }
 
 /*—————————————————————————————*/
@@ -725,4 +724,47 @@ ul li.current {
 
 .dropdown li.tool_button {
   width: 24px;
+}
+
+@media screen and (max-width:1250px) {
+  .expanded #palette_holder {
+    left: 560px;
+    overflow-x: scroll;
+    padding: 0 5px;
+    margin-top: 2px;
+    height: 30px;
+  }
+  #tools_top {
+    height: 71px;
+    overflow-x: scroll;
+  }
+  #workarea, #sidepanels {
+    top: 70px !important;
+  }
+  #rulers #ruler_corner,
+  #rulers #ruler_x, #tools_left {
+    top: 71px;
+  }
+
+  #rulers #ruler_y {
+    top: 86px;
+  }
+
+  #cur_context_panel {
+    top: 87px;
+  }
+
+  #selected_panel {
+    clear: right;
+  }
+}
+
+@media screen and (max-width:1100px) {
+  #tools_bottom:not(.expanded) #palette_holder {
+    left: 410px;
+    overflow-x: scroll;
+    padding: 0 5px;
+    margin-top: 2px;
+    height: 30px;
+  }
 }
