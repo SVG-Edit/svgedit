@@ -103,7 +103,7 @@ const config = [{
     }),
     nodeResolve({
       browser: true,
-      preferBuiltins: true
+      preferBuiltins: false
     }),
     commonjs(),
     dynamicImportVars({include: `src/editor/locale.js`}),
