@@ -107,6 +107,7 @@
   ],
   "dependencies": {
     "@babel/polyfill": "7.12.1",
+    "@knadh/dragmove": "^0.1.2",
     "@web/dev-server-rollup": "0.3.2",
     "canvg": "3.0.7",
     "core-js": "3.9.1",

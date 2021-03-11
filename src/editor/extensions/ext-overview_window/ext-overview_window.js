@@ -6,7 +6,7 @@
  * @copyright 2013 James Sacksteder
  *
  */
-import { dragmove } from '../../dragmove/dragmove.js';
+import { dragmove } from '@knadh/dragmove';
 export default {
   name: 'overview_window',
   init ({$, isChrome}) {
