@@ -1746,7 +1746,7 @@ class Editor extends EditorStartup {
     if (this.configObj.preferences) { return; }
     this.configObj.preferences = true;
     const $editDialog = document.getElementById('se-edit-prefs');
-    $('#main_menu').hide();
+    // $('#main_menu').hide();
     // Update background color with current one
     const canvasBg = this.configObj.curPrefs.bkgd_color;
     const url = this.configObj.pref('bkgd_url');
@@ -1932,7 +1932,7 @@ class Editor extends EditorStartup {
    *  and `false` after the user confirms.
    */
   async openPrep () {
-    $('#main_menu').hide();
+    // $('#main_menu').hide();
     if (this.svgCanvas.undoMgr.getUndoStackSize() === 0) {
       return true;
     }

@@ -320,7 +320,8 @@ class EditorStartup {
     this.setPanning = (active) => {
       this.svgCanvas.spaceKey = keypan = active;
     };
-
+    // TODO: main menu move to webcomponent. so no need now
+    /*
     const button = $('#main_icon');
     const overlay = $('#main_icon span');
     const list = $('#main_menu');
@@ -390,7 +391,7 @@ class EditorStartup {
           return true;
         });
       }
-    });
+    }); */
     // Unfocus text input when this.workarea is mousedowned.
     let inp;
     /**
@@ -644,7 +645,7 @@ class EditorStartup {
         document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
         e.stopPropagation();
         e.preventDefault();
-        $('#main_menu').hide();
+        // $('#main_menu').hide();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
         if (!file) {
           document.getElementById('se-prompt-dialog').setAttribute('close', true);
