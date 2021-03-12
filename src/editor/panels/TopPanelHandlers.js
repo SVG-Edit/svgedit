@@ -301,7 +301,7 @@ class TopPanelHandlers {
   */
   clickWireframe () {
     $id('tool_wireframe').pressed = !$id('tool_wireframe').pressed;
-    this.editor.workarea.toggleClass('wireframe');
+    this.editor.workarea.classList.toggle('wireframe');
 
     const wfRules = $('#wireframe_rules');
     if (!wfRules.length) {

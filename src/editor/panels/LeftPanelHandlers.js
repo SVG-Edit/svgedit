@@ -145,7 +145,7 @@ class LeftPanelHandlers {
   clickZoom () {
     if (this.updateLeftPanel('tool_zoom')) {
       this.svgCanvas.setMode('zoom');
-      this.editor.workarea.css('cursor', this.editor.zoomInIcon);
+      this.editor.workarea.style.cursor = this.editor.zoomInIcon;
     }
   }
 
