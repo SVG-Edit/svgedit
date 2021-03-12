@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-alert */
 /* globals $ */
 import SvgCanvas from '../../svgcanvas/svgcanvas.js';
@@ -29,11 +30,11 @@ class LayersPanel {
    * @returns {void}
    */
   changeSidePanelWidth (delta) {
-    const rulerX = $('#ruler_x');
+    const rulerX = document.querySelector('#ruler_x');
     $('#sidepanels').width('+=' + delta);
     $('#layerpanel').width('+=' + delta);
-    rulerX.css('right', Number.parseInt(rulerX.css('right')) + delta);
-    this.editor.workarea.css('right', Number.parseInt(this.editor.workarea.css('right')) + delta);
+    rulerX.style.right = (parseFloat(getComputedStyle(rulerX, null).right.replace("px", ""))  + delta) + "px";
+    this.editor.workarea.style.right = (parseFloat(getComputedStyle(this.editor.workarea, null).right.replace("px", "")) + delta) + "px";
     this.svgCanvas.runExtensions('workareaResized');
   }
 
