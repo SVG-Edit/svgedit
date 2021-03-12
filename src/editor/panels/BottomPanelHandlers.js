@@ -67,8 +67,8 @@ class BottomPanelHandlers {
         width: 0,
         height: 0,
         // center pt of scroll position
-        x: (wArea[0].scrollLeft + wArea.width() / 2) / zoom,
-        y: (wArea[0].scrollTop + wArea.height() / 2) / zoom,
+        x: (wArea.scrollLeft + parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) / 2) / zoom,
+        y: (wArea.scrollTop + parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) / 2) / zoom,
         zoom: zoomlevel
       }, true);
     }

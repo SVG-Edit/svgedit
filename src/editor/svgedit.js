@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* globals jQuery seConfirm seAlert */
 /**
 * The main module for the visual SVG this.
@@ -462,20 +463,20 @@ class Editor extends EditorStartup {
     const wArea = this.workarea;
     const cnvs = $('#svgcanvas');
 
-    let w = this.workarea.width(), h = this.workarea.height();
+    let w = parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")), h = parseFloat(getComputedStyle(this.workarea, null).height.replace("px", ""));
     const wOrig = w, hOrig = h;
     const oldCtr = {
-      x: wArea[0].scrollLeft + wOrig / 2,
-      y: wArea[0].scrollTop + hOrig / 2
+      x: wArea.scrollLeft + wOrig / 2,
+      y: wArea.scrollTop + hOrig / 2
     };
     const multi = this.configObj.curConfig.canvas_expansion;
     w = Math.max(wOrig, this.svgCanvas.contentW * zoom * multi);
     h = Math.max(hOrig, this.svgCanvas.contentH * zoom * multi);
 
     if (w === wOrig && h === hOrig) {
-      this.workarea.css('overflow', 'hidden');
+      this.workarea.style.overflow = 'hidden';
     } else {
-      this.workarea.css('overflow', 'scroll');
+      this.workarea.style.overflow = 'scroll';
     }
 
     const oldCanY = cnvs.height() / 2;
@@ -508,18 +509,18 @@ class Editor extends EditorStartup {
 
     if (center) {
       // Go to top-left for larger documents
-      if (this.svgCanvas.contentW > wArea.width()) {
+      if (this.svgCanvas.contentW > parseFloat(getComputedStyle(wArea, null).width.replace("px", ""))) {
         // Top-left
-        this.workarea[0].scrollLeft = offset.x - 10;
-        this.workarea[0].scrollTop = offset.y - 10;
+        this.workarea.scrollLeft = offset.x - 10;
+        this.workarea.scrollTop = offset.y - 10;
       } else {
         // Center
-        wArea[0].scrollLeft = scrollX;
-        wArea[0].scrollTop = scrollY;
+        wArea.scrollLeft = scrollX;
+        wArea.scrollTop = scrollY;
       }
     } else {
-      wArea[0].scrollLeft = newCtr.x - wOrig / 2;
-      wArea[0].scrollTop = newCtr.y - hOrig / 2;
+      wArea.scrollLeft = newCtr.x - wOrig / 2;
+      wArea.scrollTop = newCtr.y - hOrig / 2;
     }
     if (this.configObj.curConfig.showRulers) {
       this.rulers.updateRulers(cnvs, zoom);
@@ -606,7 +607,9 @@ class Editor extends EditorStartup {
         stroke-width: ${1 / this.svgCanvas.getZoom()}px;
       }
     `;
-    $('#wireframe_rules').text(this.workarea.hasClass('wireframe') ? rule : '');
+    if(document.querySelectorAll("#wireframe_rules").length > 0){
+      document.querySelector("#wireframe_rules").textContent = (this.workarea.classList.contains('wireframe') ? rule : '');
+    }
   }
 
   /**
@@ -772,7 +775,7 @@ class Editor extends EditorStartup {
       // res =  this.svgCanvas.getResolution(), // Currently unused
       wArea = this.workarea;
     // const canvasPos = $('#svgcanvas').position(); // Currently unused
-    const zInfo = this.svgCanvas.setBBoxZoom(bbox, wArea.width() - scrbar, wArea.height() - scrbar);
+    const zInfo = this.svgCanvas.setBBoxZoom(bbox, parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) - scrbar, parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) - scrbar);
     if (!zInfo) { return; }
     const zoomlevel = zInfo.zoom,
       bb = zInfo.bbox;
@@ -1541,8 +1544,8 @@ class Editor extends EditorStartup {
   */
   pasteInCenter () {
     const zoom = this.svgCanvas.getZoom();
-    const x = (this.workarea[0].scrollLeft + this.workarea.width() / 2) / zoom - this.svgCanvas.contentW;
-    const y = (this.workarea[0].scrollTop + this.workarea.height() / 2) / zoom - this.svgCanvas.contentH;
+    const x = (this.workarea.scrollLeft + parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")) / 2) / zoom - this.svgCanvas.contentW;
+    const y = (this.workarea.scrollTop + parseFloat(getComputedStyle(this.workarea, null).height.replace("px", "")) / 2) / zoom - this.svgCanvas.contentH;
     this.svgCanvas.pasteElements('point', x, y);
   }
 

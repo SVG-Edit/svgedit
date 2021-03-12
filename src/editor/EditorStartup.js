@@ -115,7 +115,7 @@ class EditorStartup {
     this.layersPanel = new LayersPanel(this);
 
     const {undoMgr} = this.svgCanvas;
-    this.workarea = $('#workarea');
+    this.workarea = document.getElementById('workarea');
     this.canvMenu = document.getElementById('se-cmenu_canvas');
     this.exportWindow = null;
     this.defaultImageURL = this.configObj.curConfig.imgPath + 'logo.svg';
@@ -255,7 +255,7 @@ class EditorStartup {
       this.svgCanvas.setGroupTitle(evt.currentTarget.value);
     });
 
-    const wArea = this.workarea[0];
+    const wArea = this.workarea;
 
     let lastX = null, lastY = null,
       panning = false, keypan = false;
@@ -291,7 +291,7 @@ class EditorStartup {
         this.svgCanvas.spaceKey = keypan = true;
         e.preventDefault();  
       } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
-        this.workarea.css('cursor', zoomOutIcon);
+        this.workarea.style.cursor = zoomOutIcon;
         e.preventDefault();  
       } else {
         return;
@@ -304,7 +304,7 @@ class EditorStartup {
         this.svgCanvas.spaceKey = keypan = false;
         e.preventDefault();  
       } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
-        this.workarea.css('cursor', zoomInIcon);
+        this.workarea.style.cursor = zoomInIcon;
         e.preventDefault();  
       } else {
         return;
@@ -404,10 +404,10 @@ class EditorStartup {
     $('#svg_editor').find('button, select, input:not(#text)').focus(() => {
       inp = this;
       this.uiContext = 'toolbars';
-      this.workarea.mousedown(unfocus);
+      this.workarea.addEventListener('mousedown', unfocus);
     }).blur(() => {
       this.uiContext = 'canvas';
-      this.workarea.unbind('mousedown', unfocus);
+      this.workarea.removeEventListener('mousedown', unfocus);
       // Go back to selecting text if in textedit mode
       if (this.svgCanvas.getMode() === 'textedit') {
         $('#text').focus();
@@ -418,12 +418,12 @@ class EditorStartup {
     window.addEventListener('resize', (evt) => {
       Object.entries(winWh).forEach(([type, val]) => {
         const curval = $(window)[type]();
-        this.workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
+        this.workarea['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
         winWh[type] = curval;
       });
     });
 
-    this.workarea.scroll(() => {
+    this.workarea.addEventListener('scroll', () => {
     // TODO: jQuery's scrollLeft/Top() wouldn't require a null check
       this.rulers.manageScroll();
     });
@@ -448,8 +448,8 @@ class EditorStartup {
     this.layersPanel.populateLayers();
 
     const centerCanvas = () => {
-    // this centers the canvas vertically in the this.workarea (horizontal handled in CSS)
-      this.workarea.css('line-height', this.workarea.height() + 'px');
+      // this centers the canvas vertically in the this.workarea (horizontal handled in CSS)
+      this.workarea.style.lineHeight = this.workarea.style.height;
     };
 
     $(window).bind('load resize', centerCanvas);
@@ -716,10 +716,10 @@ class EditorStartup {
         }
       };
 
-      this.workarea[0].addEventListener('dragenter', this.onDragEnter);
-      this.workarea[0].addEventListener('dragover', this.onDragOver);
-      this.workarea[0].addEventListener('dragleave', this.onDragLeave);
-      this.workarea[0].addEventListener('drop', importImage);
+      this.workarea.addEventListener('dragenter', this.onDragEnter);
+      this.workarea.addEventListener('dragover', this.onDragOver);
+      this.workarea.addEventListener('dragleave', this.onDragLeave);
+      this.workarea.addEventListener('drop', importImage);
       const imgImport = $('<input type="file">').change(importImage);
       $(window).on('importImages', () => imgImport.click());
     }

@@ -43,7 +43,7 @@ class LeftPanelHandlers {
   */
   clickSelect () {
     if (this.updateLeftPanel('tool_select')) {
-      this.editor.workarea.css('cursor', 'auto');
+      this.editor.workarea.style.cursor = "auto";
       this.svgCanvas.setMode('select');
     }
   }
