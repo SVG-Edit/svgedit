@@ -25,6 +25,7 @@ import {
 import * as draw from './draw.js';
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
+import {findPos} from '../editor/components/jgraduate/Util.js';
 
 const {
   InsertElementCommand
@@ -1313,7 +1314,7 @@ export const DOMMouseScrollEvent = function (e) {
 
   eventContext_.setRootSctm($('#svgcontent g')[0].getScreenCTM().inverse());
 
-  const workarea = $('#workarea');
+  const workarea = document.getElementById('workarea');
   const scrbar = 15;
   const rulerwidth = eventContext_.getCurConfig().showRulers ? 16 : 0;
 
@@ -1321,8 +1322,8 @@ export const DOMMouseScrollEvent = function (e) {
   const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
 
   // full work area width in screen pixels
-  const editorFullW = workarea.width();
-  const editorFullH = workarea.height();
+  const editorFullW = parseFloat(getComputedStyle(workarea, null).width.replace("px", ""));
+  const editorFullH = parseFloat(getComputedStyle(workarea, null).height.replace("px", ""));
 
   // work area width minus scroll and ruler in screen pixels
   const editorW = editorFullW - scrbar - rulerwidth;
@@ -1333,7 +1334,7 @@ export const DOMMouseScrollEvent = function (e) {
   const workareaViewH = editorH * eventContext_.getrootSctm().d;
 
   // content offset from canvas in screen pixels
-  const wOffset = workarea.offset();
+  const wOffset = findPos(workarea);
   const wOffsetLeft = wOffset.left + rulerwidth;
   const wOffsetTop = wOffset.top + rulerwidth;
 
