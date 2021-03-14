@@ -237,7 +237,7 @@ export default class ConfigObj {
     const {search, searchParams} = new URL(location);
 
     if (search) {
-      this.urldata = deparam(searchParams.toString(), true);
+      this.urldata = deparam(searchParams.toString());
 
       ['initStroke', 'initFill'].forEach((prop) => {
         if (searchParams.has(`${prop}[color]`)) {
