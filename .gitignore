@@ -14,3 +14,4 @@ mochawesome.json
 .eslintcache
 .DS_Store
 .idea
+dist
