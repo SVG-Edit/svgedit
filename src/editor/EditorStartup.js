@@ -6,10 +6,6 @@ import {
 } from './contextmenu.js';
 import editorTemplate from './templates/editorTemplate.js';
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
-import LayersPanel from './panels/LayersPanel.js';
-import LeftPanelHandlers from './panels/LeftPanelHandlers.js';
-import BottomPanelHandlers from './panels/BottomPanelHandlers.js';
-import TopPanelHandlers from './panels/TopPanelHandlers.js';
 import Rulers from './Rulers.js';
 
 /**
@@ -54,6 +50,7 @@ class EditorStartup {
   constructor () {
     this.extensionsAdded = false;
     this.messageQueue = [];
+    this.$svgEditor = $id('svg_editor')
   }
   /**
   * Auto-run after a Promise microtask.
@@ -62,7 +59,7 @@ class EditorStartup {
   */
   async init () {
     // allow to prepare the dom without display
-    $id('svg_editor').style.visibility = 'hidden';
+    this.$svgEditor.style.visibility = 'hidden';
     try {
       // add editor components to the DOM
       document.body.append(editorTemplate.content.cloneNode(true));
@@ -109,10 +106,10 @@ class EditorStartup {
       this.configObj.curConfig
     );
 
-    this.leftPanelHandlers = new LeftPanelHandlers(this);
-    this.bottomPanelHandlers = new BottomPanelHandlers(this);
-    this.topPanelHandlers = new TopPanelHandlers(this);
-    this.layersPanel = new LayersPanel(this);
+    this.leftPanel.init();
+    this.bottomPanel.init();
+    this.topPanel.init();
+    this.layersPanel.init();
 
     const {undoMgr} = this.svgCanvas;
     this.workarea = document.getElementById('workarea');
@@ -461,10 +458,6 @@ class EditorStartup {
     /**
     * Associate all button actions as well as non-button keyboard shortcuts.
     */
-    this.leftPanelHandlers.init();
-    this.bottomPanelHandlers.init();
-    this.topPanelHandlers.init();
-    this.layersPanel.init();
 
     $id('tool_clear').addEventListener('click', this.clickClear.bind(this));
     $id('tool_open').addEventListener('click', (e) => {
@@ -748,7 +741,7 @@ class EditorStartup {
     const {langParam, langData} = await this.putLocale(this.configObj.pref('lang'), this.goodLangs);
     await this.setLang(langParam, langData);
 
-    $id('svg_editor').style.visibility = 'visible';
+    this.$svgEditor.style.visibility = 'visible';
 
     try {
       // load standard extensions

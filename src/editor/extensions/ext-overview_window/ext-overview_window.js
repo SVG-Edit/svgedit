@@ -6,7 +6,7 @@
  * @copyright 2013 James Sacksteder
  *
  */
-import { dragmove } from '@knadh/dragmove';
+import { dragmove } from '../../../editor/dragmove/dragmove.js';
 export default {
   name: 'overview_window',
   init ({$, isChrome}) {
@@ -105,11 +105,11 @@ export default {
       document.getElementById('workarea').scrollLeft = portX;
       document.getElementById('workarea').scrollTop = portY;
     };
-    const onStart = function () {
+    const onStart = () => {
       overviewWindowGlobals.viewBoxDragging = true;
       updateViewPortFromViewBox();
     };
-    const onEnd = function (el, parent, x, y) {
+    const onEnd = (el, parent, x, y) => {
       if((el.offsetLeft + el.offsetWidth) > $(parent).attr('width')){
         el.style.left = ($(parent).attr('width') - el.offsetWidth) + 'px';
       } else if(el.offsetLeft  < 0){
