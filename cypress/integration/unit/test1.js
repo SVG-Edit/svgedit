@@ -35,7 +35,7 @@ describe('Basic Module', function () {
     const toolsLeft = document.createElement('div');
     toolsLeft.id = 'tools_left';
  
-    svgEditor.append(workarea, toolsLeft, toolsFlyout);
+    svgEditor.append(workarea, toolsLeft);
     document.body.append(svgEditor);
 
     svgCanvas = new SvgCanvas(
