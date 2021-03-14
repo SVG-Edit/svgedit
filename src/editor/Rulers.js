@@ -27,8 +27,8 @@ class Rulers {
   manageScroll () {
     const rulerX = document.getElementById('ruler_x');
     const rulerY = document.getElementById('ruler_y');
-    if (rulerX) rulerX.scrollLeft = this.editor.workarea[0].scrollLeft;
-    if (rulerY) rulerY.scrollTop = this.editor.workarea[0].scrollTop;
+    if (rulerX) rulerX.scrollLeft = this.editor.workarea.scrollLeft;
+    if (rulerY) rulerY.scrollTop = this.editor.workarea.scrollTop;
   }
 
   /**

@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 import '../../../instrumented/editor/jquery.min.js';
-import '../../../instrumented/editor/jquery-ui/jquery-ui-1.8.17.custom.min.js';
 
 import SvgCanvas from '../../../instrumented/svgcanvas/svgcanvas.js';
 
@@ -35,10 +34,8 @@ describe('Basic Module', function () {
     workarea.append(svgcanvas);
     const toolsLeft = document.createElement('div');
     toolsLeft.id = 'tools_left';
-    const toolsFlyout = document.createElement('div');
-    toolsFlyout.id = 'tools_flyout';
-
-    svgEditor.append(workarea, toolsLeft, toolsFlyout);
+ 
+    svgEditor.append(workarea, toolsLeft);
     document.body.append(svgEditor);
 
     svgCanvas = new SvgCanvas(

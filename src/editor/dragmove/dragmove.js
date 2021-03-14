@@ -1,6 +1,7 @@
 // https://github.com/knadh/dragmove.js
 // Kailash Nadh (c) 2020.
 // MIT License.
+// can't use npm version as the dragmove is different.
 
 let _loaded = false;
 let _callbacks = [];
@@ -93,4 +94,4 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
   });
 }
 
-export { dragmove as default };
+export { dragmove as default }; 

@@ -6,7 +6,7 @@
  * @copyright 2013 James Sacksteder
  *
  */
-import { dragmove } from '../../dragmove/dragmove.js';
+import { dragmove } from '../../../editor/dragmove/dragmove.js';
 export default {
   name: 'overview_window',
   init ({$, isChrome}) {
@@ -46,10 +46,11 @@ export default {
 
     // Define dynamic animation of the view box.
     const updateViewBox = function () {
-      const portHeight = Number.parseFloat($('#workarea').css('height'));
-      const portWidth = Number.parseFloat($('#workarea').css('width'));
-      const portX = $('#workarea').scrollLeft();
-      const portY = $('#workarea').scrollTop();
+      const warea = document.getElementById('workarea');
+      const portHeight = parseFloat(getComputedStyle(warea, null).height.replace("px", ""));
+      const portWidth = parseFloat(getComputedStyle(warea, null).width.replace("px", ""));
+      const portX = warea.scrollLeft;
+      const portY = warea.scrollTop;
       const windowWidth = Number.parseFloat($('#svgcanvas').css('width'));
       const windowHeight = Number.parseFloat($('#svgcanvas').css('height'));
       const overviewWidth = $('#overviewMiniView').attr('width');
@@ -65,12 +66,12 @@ export default {
       $('#overview_window_view_box').css('top', viewBoxY + 'px');
       $('#overview_window_view_box').css('left', viewBoxX + 'px');
     };
-    $('#workarea').scroll(function () {
+    document.getElementById('workarea').addEventListener('scroll', () => {
       if (!(overviewWindowGlobals.viewBoxDragging)) {
         updateViewBox();
       }
     });
-    $('#workarea').resize(updateViewBox);
+    document.getElementById('workarea').addEventListener('resize', updateViewBox);
     updateViewBox();
 
     // Compensate for changes in zoom and canvas size.
@@ -101,15 +102,14 @@ export default {
 
       const portX = viewBoxX / overviewWidth * windowWidth;
       const portY = viewBoxY / overviewHeight * windowHeight;
-
-      $('#workarea').scrollLeft(portX);
-      $('#workarea').scrollTop(portY);
+      document.getElementById('workarea').scrollLeft = portX;
+      document.getElementById('workarea').scrollTop = portY;
     };
-    const onStart = function () {
+    const onStart = () => {
       overviewWindowGlobals.viewBoxDragging = true;
       updateViewPortFromViewBox();
     };
-    const onEnd = function (el, parent, x, y) {
+    const onEnd = (el, parent, x, y) => {
       if((el.offsetLeft + el.offsetWidth) > $(parent).attr('width')){
         el.style.left = ($(parent).attr('width') - el.offsetWidth) + 'px';
       } else if(el.offsetLeft  < 0){

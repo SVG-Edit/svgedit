@@ -7,7 +7,10 @@ For default config and extensions (and available options) available to
 import './jquery.min.js';
 import './components/index.js';
 import './dialogs/index.js';
-import svgEditor from './svgedit.js';
+import Editor from './Editor.js';
+
+const svgEditor = new Editor();
+svgEditor.init();
 
 // URL OVERRIDE CONFIG
 svgEditor.setConfig({

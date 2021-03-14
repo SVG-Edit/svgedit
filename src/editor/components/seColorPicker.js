@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {jGraduate, jGraduateMethod} from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
 

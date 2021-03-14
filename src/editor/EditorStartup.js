@@ -6,10 +6,6 @@ import {
 } from './contextmenu.js';
 import editorTemplate from './templates/editorTemplate.js';
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
-import LayersPanel from './panels/LayersPanel.js';
-import LeftPanelHandlers from './panels/LeftPanelHandlers.js';
-import BottomPanelHandlers from './panels/BottomPanelHandlers.js';
-import TopPanelHandlers from './panels/TopPanelHandlers.js';
 import Rulers from './Rulers.js';
 
 /**
@@ -54,6 +50,7 @@ class EditorStartup {
   constructor () {
     this.extensionsAdded = false;
     this.messageQueue = [];
+    this.$svgEditor = $id('svg_editor')
   }
   /**
   * Auto-run after a Promise microtask.
@@ -62,7 +59,7 @@ class EditorStartup {
   */
   async init () {
     // allow to prepare the dom without display
-    $id('svg_editor').style.visibility = 'hidden';
+    this.$svgEditor.style.visibility = 'hidden';
     try {
       // add editor components to the DOM
       document.body.append(editorTemplate.content.cloneNode(true));
@@ -109,13 +106,14 @@ class EditorStartup {
       this.configObj.curConfig
     );
 
-    this.leftPanelHandlers = new LeftPanelHandlers(this);
-    this.bottomPanelHandlers = new BottomPanelHandlers(this);
-    this.topPanelHandlers = new TopPanelHandlers(this);
-    this.layersPanel = new LayersPanel(this);
+    this.leftPanel.init();
+    this.bottomPanel.init();
+    this.topPanel.init();
+    this.layersPanel.init();
+    this.mainMenu.init();
 
     const {undoMgr} = this.svgCanvas;
-    this.workarea = $('#workarea');
+    this.workarea = document.getElementById('workarea');
     this.canvMenu = document.getElementById('se-cmenu_canvas');
     this.exportWindow = null;
     this.defaultImageURL = this.configObj.curConfig.imgPath + 'logo.svg';
@@ -255,7 +253,7 @@ class EditorStartup {
       this.svgCanvas.setGroupTitle(evt.currentTarget.value);
     });
 
-    const wArea = this.workarea[0];
+    const wArea = this.workarea;
 
     let lastX = null, lastY = null,
       panning = false, keypan = false;
@@ -291,7 +289,7 @@ class EditorStartup {
         this.svgCanvas.spaceKey = keypan = true;
         e.preventDefault();  
       } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
-        this.workarea.css('cursor', zoomOutIcon);
+        this.workarea.style.cursor = zoomOutIcon;
         e.preventDefault();  
       } else {
         return;
@@ -304,7 +302,7 @@ class EditorStartup {
         this.svgCanvas.spaceKey = keypan = false;
         e.preventDefault();  
       } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
-        this.workarea.css('cursor', zoomInIcon);
+        this.workarea.style.cursor = zoomInIcon;
         e.preventDefault();  
       } else {
         return;
@@ -320,78 +318,6 @@ class EditorStartup {
     this.setPanning = (active) => {
       this.svgCanvas.spaceKey = keypan = active;
     };
-
-    const button = $('#main_icon');
-    const overlay = $('#main_icon span');
-    const list = $('#main_menu');
-
-    let onButton = false;
-    let height = 0;
-    let jsHover = true;
-    let setClick = false;
-
-    $(window).mouseup(function (evt) {
-      if (!onButton) {
-        button.removeClass('buttondown');
-        // do not hide if it was the file input as that input needs to be visible
-        // for its change event to fire
-        if (evt.target.tagName !== 'INPUT') {
-          list.fadeOut(200);
-        } else if (!setClick) {
-          setClick = true;
-          $(evt.target).click(() => {
-            list.css('margin-left', '-9999px').show();
-          });
-        }
-      }
-      onButton = false;
-    }).mousedown(function (evt) {
-    // $('.contextMenu').hide();
-      const islib = $(evt.target).closest('.contextMenu').length;
-      if (!islib) {
-        $('.contextMenu').fadeOut(250);
-      }
-    });
-
-    overlay.bind('mousedown', () => {
-      if (!button.hasClass('buttondown')) {
-      // Margin must be reset in case it was changed before;
-        list.css('margin-left', 0).show();
-        if (!height) {
-          height = list.height();
-        }
-        // Using custom animation as slideDown has annoying 'bounce effect'
-        list.css('height', 0).animate({
-          height
-        }, 200);
-        onButton = true;
-      } else {
-        list.fadeOut(200);
-      }
-      button.toggleClass('buttondown buttonup');
-    }).hover(() => {
-      onButton = true;
-    }).mouseout(() => {
-      onButton = false;
-    });
-
-    const listItems = $('#main_menu li');
-
-    // Check if JS method of hovering needs to be used (Webkit bug)
-    listItems.mouseover(function () {
-      jsHover = ($(this).css('background-color') === 'rgba(0, 0, 0, 0)');
-
-      listItems.unbind('mouseover');
-      if (jsHover) {
-        listItems.mouseover(() => {
-          this.style.backgroundColor = '#FFC';
-        }).mouseout((evt) => {
-          evt.currentTarget.style.backgroundColor = 'transparent';
-          return true;
-        });
-      }
-    });
-    // Unfocus text input when this.workarea is mousedowned.
     let inp;
     /**
       *
@@ -404,10 +330,10 @@ class EditorStartup {
     $('#svg_editor').find('button, select, input:not(#text)').focus(() => {
       inp = this;
       this.uiContext = 'toolbars';
-      this.workarea.mousedown(unfocus);
+      this.workarea.addEventListener('mousedown', unfocus);
     }).blur(() => {
       this.uiContext = 'canvas';
-      this.workarea.unbind('mousedown', unfocus);
+      this.workarea.removeEventListener('mousedown', unfocus);
       // Go back to selecting text if in textedit mode
       if (this.svgCanvas.getMode() === 'textedit') {
         $('#text').focus();
@@ -418,12 +344,12 @@ class EditorStartup {
     window.addEventListener('resize', (evt) => {
       Object.entries(winWh).forEach(([type, val]) => {
         const curval = $(window)[type]();
-        this.workarea[0]['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
+        this.workarea['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
         winWh[type] = curval;
       });
     });
 
-    this.workarea.scroll(() => {
+    this.workarea.addEventListener('scroll', () => {
     // TODO: jQuery's scrollLeft/Top() wouldn't require a null check
       this.rulers.manageScroll();
     });
@@ -448,8 +374,8 @@ class EditorStartup {
     this.layersPanel.populateLayers();
 
     const centerCanvas = () => {
-    // this centers the canvas vertically in the this.workarea (horizontal handled in CSS)
-      this.workarea.css('line-height', this.workarea.height() + 'px');
+      // this centers the canvas vertically in the this.workarea (horizontal handled in CSS)
+      this.workarea.style.lineHeight = this.workarea.style.height;
     };
 
     $(window).bind('load resize', centerCanvas);
@@ -457,55 +383,6 @@ class EditorStartup {
     // Prevent browser from erroneously repopulating fields
     $('input,select').attr('autocomplete', 'off');
 
-    /**
-    * Associate all button actions as well as non-button keyboard shortcuts.
-    */
-    this.leftPanelHandlers.init();
-    this.bottomPanelHandlers.init();
-    this.topPanelHandlers.init();
-    this.layersPanel.init();
-
-    $id('tool_clear').addEventListener('click', this.clickClear.bind(this));
-    $id('tool_open').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.clickOpen();
-      window.dispatchEvent(new CustomEvent('openImage'));
-    });
-    $id('tool_import').addEventListener('click', (e) => {
-      this.clickImport();
-      window.dispatchEvent(new CustomEvent('importImages'));
-    });
-    $id('tool_save').addEventListener('click', function (e) {
-      const $editorDialog = document.getElementById('se-svg-editor-dialog');
-      const editingsource = $editorDialog.getAttribute('dialog') === 'open';
-      if (editingsource) {
-        this.saveSourceEditor();
-      } else {
-        this.clickSave();
-      }
-    }.bind(this));
-    // this.clickExport.bind(this)
-    $id('tool_export').addEventListener('click', function (e) {
-      document.getElementById('se-export-dialog').setAttribute('dialog', 'open');
-    });
-    $id('se-export-dialog').addEventListener('change', this.clickExport.bind(this));
-    $id('tool_docprops').addEventListener('click', this.showDocProperties.bind(this));
-    $id('tool_editor_prefs').addEventListener('click', this.showPreferences.bind(this));
-    $id('tool_editor_homepage').addEventListener('click', this.openHomePage.bind(this));
-    $id('se-img-prop').addEventListener('change', function (e) {
-      if (e.detail.dialog === 'closed') {
-        this.hideDocProperties();
-      } else {
-        this.saveDocProperties(e);
-      }
-    }.bind(this));
-    $id('se-edit-prefs').addEventListener('change', function (e) {
-      if (e.detail.dialog === 'closed') {
-        this.hidePreferences();
-      } else {
-        this.savePreferences(e);
-      }
-    }.bind(this));
     $id('se-svg-editor-dialog').addEventListener('change', function (e) {
       if (e?.detail?.copy === 'click') {
         this.cancelOverlays(e);
@@ -644,7 +521,7 @@ class EditorStartup {
         document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
         e.stopPropagation();
         e.preventDefault();
-        $('#main_menu').hide();
+        // $('#main_menu').hide();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
         if (!file) {
           document.getElementById('se-prompt-dialog').setAttribute('close', true);
@@ -716,10 +593,10 @@ class EditorStartup {
         }
       };
 
-      this.workarea[0].addEventListener('dragenter', this.onDragEnter);
-      this.workarea[0].addEventListener('dragover', this.onDragOver);
-      this.workarea[0].addEventListener('dragleave', this.onDragLeave);
-      this.workarea[0].addEventListener('drop', importImage);
+      this.workarea.addEventListener('dragenter', this.onDragEnter);
+      this.workarea.addEventListener('dragover', this.onDragOver);
+      this.workarea.addEventListener('dragleave', this.onDragLeave);
+      this.workarea.addEventListener('drop', importImage);
       const imgImport = $('<input type="file">').change(importImage);
       $(window).on('importImages', () => imgImport.click());
     }
@@ -747,7 +624,7 @@ class EditorStartup {
     const {langParam, langData} = await this.putLocale(this.configObj.pref('lang'), this.goodLangs);
     await this.setLang(langParam, langData);
 
-    $id('svg_editor').style.visibility = 'visible';
+    this.$svgEditor.style.visibility = 'visible';
 
     try {
       // load standard extensions

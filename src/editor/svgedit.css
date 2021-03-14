@@ -616,46 +616,8 @@ input[type=text] {
   overflow: visible;
 }
 
-/*–––––––––––––––––––––––––––––––––––––*/
-
-#option_lists ul {
-  display: none;
-  position: absolute;
-  height: auto;
-  z-index: 3;
-  margin: -10px;
-  list-style: none;
-  padding-left: 0;
-}
-
-#option_lists .optcols2 {
-  width: 70px;
-  margin-left: -15px;
-}
-
-#option_lists .optcols3 {
-  width: 90px;
-  margin-left: -31px;
-}
-
-#option_lists .optcols4 {
-  width: 130px;
-  margin-left: -44px;
-}
-
-#option_lists ul[class^=optcols] li {
-  float: left;
-}
-
 ul li.current {
   background-color: #F4E284;
-}
-
-#option_lists ul li {
-  margin: 0;
-  border-radius: 0;
-  -moz-border-radius: 0;
-  -webkit-border-radius: 0;
 }
 
  #copyright {
