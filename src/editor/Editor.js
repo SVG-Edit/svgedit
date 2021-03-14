@@ -34,6 +34,7 @@ import LeftPanel from './panels/LeftPanel.js';
 import TopPanel from './panels/TopPanel.js';
 import BottomPanel from './panels/BottomPanel.js';
 import LayersPanel from './panels/LayersPanel.js';
+import MainMenu from './MainMenu.js';
 
 const {$id, $qa, isNullish, encode64, decode64, blankPageObjectURL} = SvgCanvas;
 
@@ -139,6 +140,7 @@ class Editor extends EditorStartup {
     this.bottomPanel = new BottomPanel(this);
     this.topPanel = new TopPanel(this);
     this.layersPanel = new LayersPanel(this);
+    this.mainMenu = new MainMenu(this);
   }
   /**
    *
@@ -989,170 +991,6 @@ class Editor extends EditorStartup {
   }
 
   /**
-   * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
-   * @returns {void}
-   */
-  async clickClear () {
-    const [x, y] = this.configObj.curConfig.dimensions;
-    const ok = await seConfirm(this.uiStrings.notification.QwantToClear);
-    if (ok === 'Cancel') {
-      return;
-    }
-    this.leftPanel.clickSelect();
-    this.svgCanvas.clear();
-    this.svgCanvas.setResolution(x, y);
-    this.updateCanvas(true);
-    this.zoomImage();
-    this.layersPanel.populateLayers();
-    this.topPanel.updateContextPanel();
-    this.svgCanvas.runExtensions('onNewDocument');
-  }
-
-  /**
-  *
-  * @returns {void}
-  */
-  clickSave () {
-    // In the future, more options can be provided here
-    const saveOpts = {
-      images: this.configObj.pref('img_save'),
-      round_digits: 6
-    };
-    this.svgCanvas.save(saveOpts);
-  }
-
-  /**
-  *
-  * @param e
-  * @returns {Promise<void>} Resolves to `undefined`
-  */
-  async clickExport (e) {
-    if (e?.detail?.trigger !== 'ok' || e?.detail?.imgType === undefined) {
-      return;
-    }
-    const imgType = e?.detail?.imgType;
-    const quality = (e?.detail?.quality) ? (e?.detail?.quality / 100) : 1;
-    // Open placeholder window (prevents popup)
-    let exportWindowName;
-
-    /**
-     *
-     * @returns {void}
-     */
-    const openExportWindow = () => {
-      const {loadingImage} = this.uiStrings.notification;
-      if (this.configObj.curConfig.exportWindowType === 'new') {
-        this.exportWindowCt++;
-      }
-      this.exportWindowName = this.configObj.curConfig.canvasName + this.exportWindowCt;
-      let popHTML, popURL;
-      if (this.loadingURL) {
-        popURL = this.loadingURL;
-      } else {
-        popHTML = `<!DOCTYPE html><html>
-          <head>
-            <meta charset="utf-8">
-            <title>${loadingImage}</title>
-          </head>
-          <body><h1>${loadingImage}</h1></body>
-        <html>`;
-        if (typeof URL !== 'undefined' && URL.createObjectURL) {
-          const blob = new Blob([popHTML], {type: 'text/html'});
-          popURL = URL.createObjectURL(blob);
-        } else {
-          popURL = 'data:text/html;base64;charset=utf-8,' + encode64(popHTML);
-        }
-        this.loadingURL = popURL;
-      }
-      this.exportWindow = window.open(popURL, this.exportWindowName);
-    };
-    const chrome = isChrome();
-    if (imgType === 'PDF') {
-      if (!this.customExportPDF && !chrome) {
-        openExportWindow();
-      }
-      this.svgCanvas.exportPDF(exportWindowName);
-    } else {
-      if (!this.customExportImage) {
-        openExportWindow();
-      }
-      /* const results = */ await this.svgCanvas.rasterExport(imgType, quality, this.exportWindowName);
-    }
-  }
-
-  /**
-   * By default,  this.svgCanvas.open() is a no-op. It is up to an extension
-   *  mechanism (opera widget, etc.) to call `setCustomHandlers()` which
-   *  will make it do something.
-   * @returns {void}
-   */
-  clickOpen () {
-    this.svgCanvas.open();
-  }
-
-  /**
-  *
-  * @returns {void}
-  */
-  // eslint-disable-next-line class-methods-use-this
-  clickImport () {
-    /* empty fn */
-  }
-
-  /**
-  *
-  * @returns {void}
-  */
-  showDocProperties () {
-    if (this.docprops) { return; }
-    this.docprops = true;
-    const $imgDialog = document.getElementById('se-img-prop');
-
-    // update resolution option with actual resolution
-    const resolution = this.svgCanvas.getResolution();
-    if (this.configObj.curConfig.baseUnit !== 'px') {
-      resolution.w = convertUnit(resolution.w) + this.configObj.curConfig.baseUnit;
-      resolution.h = convertUnit(resolution.h) + this.configObj.curConfig.baseUnit;
-    }
-    $imgDialog.setAttribute('save', this.configObj.pref('img_save'));
-    $imgDialog.setAttribute('width', resolution.w);
-    $imgDialog.setAttribute('height', resolution.h);
-    $imgDialog.setAttribute('title', this.svgCanvas.getDocumentTitle());
-    $imgDialog.setAttribute('dialog', 'open');
-  }
-
-  /**
-  *
-  * @returns {void}
-  */
-  showPreferences () {
-    if (this.configObj.preferences) { return; }
-    this.configObj.preferences = true;
-    const $editDialog = document.getElementById('se-edit-prefs');
-    // $('#main_menu').hide();
-    // Update background color with current one
-    const canvasBg = this.configObj.curPrefs.bkgd_color;
-    const url = this.configObj.pref('bkgd_url');
-    if (url) {
-      $editDialog.setAttribute('bgurl', url);
-    }
-    $editDialog.setAttribute('gridsnappingon', this.configObj.curConfig.gridSnapping);
-    $editDialog.setAttribute('gridsnappingstep', this.configObj.curConfig.snappingStep);
-    $editDialog.setAttribute('gridcolor', this.configObj.curConfig.gridColor);
-    $editDialog.setAttribute('canvasbg', canvasBg);
-    $editDialog.setAttribute('dialog', 'open');
-  }
-
-  /**
-  *
-  * @returns {void}
-  */
-  // eslint-disable-next-line class-methods-use-this
-  openHomePage () {
-    window.open(homePage, '_blank');
-  }
-
-  /**
   *
   * @returns {void}
   */
@@ -1237,37 +1075,6 @@ class Editor extends EditorStartup {
     this.updateCanvas();
     this.hideDocProperties();
     return true;
-  }
-
-  /**
-  * Save user preferences based on current values in the UI.
-  * @param {Event} e
-  * @function module:SVGthis.savePreferences
-  * @returns {Promise<void>}
-  */
-  async savePreferences (e) {
-    const {lang, bgcolor, bgurl, gridsnappingon, gridsnappingstep, gridcolor, showrulers, baseunit} = e.detail;
-    // Set background
-    this.setBackground(bgcolor, bgurl);
-
-    // set language
-    if (lang && lang !== this.configObj.pref('lang')) {
-      const {langParam, langData} = await this.putLocale(lang, this.goodLangs);
-      await this.setLang(langParam, langData);
-    }
-
-    // set grid setting
-    this.configObj.curConfig.gridSnapping = gridsnappingon;
-    this.configObj.curConfig.snappingStep = gridsnappingstep;
-    this.configObj.curConfig.gridColor = gridcolor;
-    this.configObj.curConfig.showRulers = showrulers;
-
-    $('#rulers').toggle(this.configObj.curConfig.showRulers);
-    if (this.configObj.curConfig.showRulers) { this.rulers.updateRulers(); }
-    this.configObj.curConfig.baseUnit = baseunit;
-    this.svgCanvas.setConfig(this.configObj.curConfig);
-    this.updateCanvas();
-    this.hidePreferences();
   }
 
   /**

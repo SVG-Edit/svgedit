@@ -110,6 +110,7 @@ class EditorStartup {
     this.bottomPanel.init();
     this.topPanel.init();
     this.layersPanel.init();
+    this.mainMenu.init();
 
     const {undoMgr} = this.svgCanvas;
     this.workarea = document.getElementById('workarea');
@@ -317,79 +318,6 @@ class EditorStartup {
     this.setPanning = (active) => {
       this.svgCanvas.spaceKey = keypan = active;
     };
-    // TODO: main menu move to webcomponent. so no need now
-    /*
-    const button = $('#main_icon');
-    const overlay = $('#main_icon span');
-    const list = $('#main_menu');
-
-    let onButton = false;
-    let height = 0;
-    let jsHover = true;
-    let setClick = false;
-
-    $(window).mouseup(function (evt) {
-      if (!onButton) {
-        button.removeClass('buttondown');
-        // do not hide if it was the file input as that input needs to be visible
-        // for its change event to fire
-        if (evt.target.tagName !== 'INPUT') {
-          list.fadeOut(200);
-        } else if (!setClick) {
-          setClick = true;
-          $(evt.target).click(() => {
-            list.css('margin-left', '-9999px').show();
-          });
-        }
-      }
-      onButton = false;
-    }).mousedown(function (evt) {
-    // $('.contextMenu').hide();
-      const islib = $(evt.target).closest('.contextMenu').length;
-      if (!islib) {
-        $('.contextMenu').fadeOut(250);
-      }
-    });
-
-    overlay.bind('mousedown', () => {
-      if (!button.hasClass('buttondown')) {
-      // Margin must be reset in case it was changed before;
-        list.css('margin-left', 0).show();
-        if (!height) {
-          height = list.height();
-        }
-        // Using custom animation as slideDown has annoying 'bounce effect'
-        list.css('height', 0).animate({
-          height
-        }, 200);
-        onButton = true;
-      } else {
-        list.fadeOut(200);
-      }
-      button.toggleClass('buttondown buttonup');
-    }).hover(() => {
-      onButton = true;
-    }).mouseout(() => {
-      onButton = false;
-    });
-
-    const listItems = $('#main_menu li');
-
-    // Check if JS method of hovering needs to be used (Webkit bug)
-    listItems.mouseover(function () {
-      jsHover = ($(this).css('background-color') === 'rgba(0, 0, 0, 0)');
-
-      listItems.unbind('mouseover');
-      if (jsHover) {
-        listItems.mouseover(() => {
-          this.style.backgroundColor = '#FFC';
-        }).mouseout((evt) => {
-          evt.currentTarget.style.backgroundColor = 'transparent';
-          return true;
-        });
-      }
-    }); */
-    // Unfocus text input when this.workarea is mousedowned.
     let inp;
     /**
       *
@@ -455,51 +383,6 @@ class EditorStartup {
     // Prevent browser from erroneously repopulating fields
     $('input,select').attr('autocomplete', 'off');
 
-    /**
-    * Associate all button actions as well as non-button keyboard shortcuts.
-    */
-
-    $id('tool_clear').addEventListener('click', this.clickClear.bind(this));
-    $id('tool_open').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.clickOpen();
-      window.dispatchEvent(new CustomEvent('openImage'));
-    });
-    $id('tool_import').addEventListener('click', (e) => {
-      this.clickImport();
-      window.dispatchEvent(new CustomEvent('importImages'));
-    });
-    $id('tool_save').addEventListener('click', function (e) {
-      const $editorDialog = document.getElementById('se-svg-editor-dialog');
-      const editingsource = $editorDialog.getAttribute('dialog') === 'open';
-      if (editingsource) {
-        this.saveSourceEditor();
-      } else {
-        this.clickSave();
-      }
-    }.bind(this));
-    // this.clickExport.bind(this)
-    $id('tool_export').addEventListener('click', function (e) {
-      document.getElementById('se-export-dialog').setAttribute('dialog', 'open');
-    });
-    $id('se-export-dialog').addEventListener('change', this.clickExport.bind(this));
-    $id('tool_docprops').addEventListener('click', this.showDocProperties.bind(this));
-    $id('tool_editor_prefs').addEventListener('click', this.showPreferences.bind(this));
-    $id('tool_editor_homepage').addEventListener('click', this.openHomePage.bind(this));
-    $id('se-img-prop').addEventListener('change', function (e) {
-      if (e.detail.dialog === 'closed') {
-        this.hideDocProperties();
-      } else {
-        this.saveDocProperties(e);
-      }
-    }.bind(this));
-    $id('se-edit-prefs').addEventListener('change', function (e) {
-      if (e.detail.dialog === 'closed') {
-        this.hidePreferences();
-      } else {
-        this.savePreferences(e);
-      }
-    }.bind(this));
     $id('se-svg-editor-dialog').addEventListener('change', function (e) {
       if (e?.detail?.copy === 'click') {
         this.cancelOverlays(e);
