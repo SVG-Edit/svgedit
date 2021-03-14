@@ -18,8 +18,7 @@
 */
 
 import './touch.js';
-import {isChrome, isMac, isTouch} from '../common/browser.js';
-import {convertUnit, isValidUnit} from '../common/units.js';
+import {isMac} from '../common/browser.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import ConfigObj from './ConfigObj.js';
@@ -38,8 +37,6 @@ import MainMenu from './MainMenu.js';
 
 const {$id, $qa, isNullish, encode64, decode64, blankPageObjectURL} = SvgCanvas;
 
-// JFH hotkey is used for text input.
-const homePage = 'https://github.com/SVG-Edit/svgedit';
 /**
  *
  */
@@ -778,76 +775,6 @@ class Editor extends EditorStartup {
   }
 
   /**
-  * @param {string} elemSel
-  * @param {string} listSel
-  * @param {external:jQuery.Function} callback
-  * @param {PlainObject} opts
-  * @param {boolean} opts.dropUp
-  * @param {boolean} opts.seticon
-  * @param {boolean} opts.multiclick
-  * @todo Combine this with `addDropDown` or find other way to optimize.
-  * @returns {void}
-  */
-  addAltDropDown (elemSel, listSel, callback, opts) {
-    const self = this;
-    const button = $(elemSel);
-    const {dropUp} = opts;
-    const list = $(listSel);
-    if (dropUp) {
-      $(elemSel).addClass('dropup');
-    }
-    list.find('li').bind('mouseup', function (...args) {
-      if (opts.seticon) {
-        self.setIcon('#cur_' + button[0].id, $(this).children());
-        $(this).addClass('current').siblings().removeClass('current');
-      }
-      callback.apply(this, ...args);
-    });
-
-    let onButton = false;
-    $(window).mouseup(function (evt) {
-      if (!onButton) {
-        button.removeClass('down');
-        list.hide();
-        list.css({top: 0, left: 0});
-      }
-      onButton = false;
-    });
-
-    // const height = list.height(); // Currently unused
-    button.bind('mousedown', function () {
-      const off = button.offset();
-      if (dropUp) {
-        off.top -= list.height();
-        off.left += 8;
-      } else {
-        off.top += button.height();
-      }
-      list.offset(off);
-
-      if (!button.hasClass('down')) {
-        list.show();
-        onButton = true;
-      } else {
-        // CSS position must be reset for Webkit
-        list.hide();
-        list.css({top: 0, left: 0});
-      }
-      button.toggleClass('down');
-    }).hover(function () {
-      onButton = true;
-    }).mouseout(function () {
-      onButton = false;
-    });
-
-    if (opts.multiclick) {
-      list.mousedown(function () {
-        onButton = true;
-      });
-    }
-  }
-
-  /**
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:extension_added} ext
    * @listens module:svgcanvas.SvgCanvas#event:extension_added
@@ -1025,56 +952,6 @@ class Editor extends EditorStartup {
     }
     saveChanges();
     this.leftPanel.clickSelect();
-  }
-
-  /**
-  *
-  * @returns {void}
-  */
-  hideDocProperties () {
-    const $imgDialog = document.getElementById('se-img-prop');
-    $imgDialog.setAttribute('dialog', 'close');
-    $imgDialog.setAttribute('save', this.configObj.pref('img_save'));
-    this.docprops = false;
-  }
-
-  /**
-  *
-  * @returns {void}
-  */
-  hidePreferences () {
-    const $editDialog = document.getElementById('se-edit-prefs');
-    $editDialog.setAttribute('dialog', 'close');
-    this.configObj.preferences = false;
-  }
-
-  /**
-  * @param {Event} e
-  * @returns {boolean} Whether there were problems saving the document properties
-  */
-  saveDocProperties (e) {
-    // set title
-    const {title, w, h, save} = e.detail;
-    // set document title
-    this.svgCanvas.setDocumentTitle(title);
-
-    if (w !== 'fit' && !isValidUnit('width', w)) {
-      seAlert(this.uiStrings.notification.invalidAttrValGiven);
-      return false;
-    }
-    if (h !== 'fit' && !isValidUnit('height', h)) {
-      seAlert(this.uiStrings.notification.invalidAttrValGiven);
-      return false;
-    }
-    if (!this.svgCanvas.setResolution(w, h)) {
-      seAlert(this.uiStrings.notification.noContentToFitTo);
-      return false;
-    }
-    // Set image save option
-    this.configObj.pref('img_save', save);
-    this.updateCanvas();
-    this.hideDocProperties();
-    return true;
   }
 
   /**

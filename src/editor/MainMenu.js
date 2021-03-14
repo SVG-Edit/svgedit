@@ -1,6 +1,10 @@
 /* globals $ */
 import SvgCanvas from "../svgcanvas/svgcanvas.js";
+import {convertUnit, isValidUnit} from '../common/units.js';
+import {isChrome} from '../common/browser.js';
+
 const { $id } = SvgCanvas;
+const homePage = 'https://github.com/SVG-Edit/svgedit';
 
 /**
  *
@@ -33,19 +37,80 @@ class MainMenu {
     this.editor.svgCanvas.runExtensions("onNewDocument");
   }
   /**
-  * Save user preferences based on current values in the UI.
-  * @param {Event} e
-  * @function module:SVGthis.savePreferences
-  * @returns {Promise<void>}
-  */
-   async savePreferences (e) {
-    const {lang, bgcolor, bgurl, gridsnappingon, gridsnappingstep, gridcolor, showrulers, baseunit} = e.detail;
+   *
+   * @returns {void}
+   */
+  hideDocProperties() {
+    const $imgDialog = document.getElementById("se-img-prop");
+    $imgDialog.setAttribute("dialog", "close");
+    $imgDialog.setAttribute("save", this.editor.configObj.pref("img_save"));
+    this.editor.docprops = false;
+  }
+
+  /**
+   *
+   * @returns {void}
+   */
+  hidePreferences() {
+    const $editDialog = document.getElementById("se-edit-prefs");
+    $editDialog.setAttribute("dialog", "close");
+    this.editor.configObj.preferences = false;
+  }
+
+  /**
+   * @param {Event} e
+   * @returns {boolean} Whether there were problems saving the document properties
+   */
+  saveDocProperties(e) {
+    // set title
+    const { title, w, h, save } = e.detail;
+    // set document title
+    this.editor.svgCanvas.setDocumentTitle(title);
+
+    if (w !== "fit" && !isValidUnit("width", w)) {
+      seAlert(this.editor.uiStrings.notification.invalidAttrValGiven);
+      return false;
+    }
+    if (h !== "fit" && !isValidUnit("height", h)) {
+      seAlert(this.editor.uiStrings.notification.invalidAttrValGiven);
+      return false;
+    }
+    if (!this.editor.svgCanvas.setResolution(w, h)) {
+      seAlert(this.editor.uiStrings.notification.noContentToFitTo);
+      return false;
+    }
+    // Set image save option
+    this.editor.configObj.pref("img_save", save);
+    this.editor.updateCanvas();
+    this.editor.hideDocProperties();
+    return true;
+  }
+  /**
+   * Save user preferences based on current values in the UI.
+   * @param {Event} e
+   * @function module:SVGthis.savePreferences
+   * @returns {Promise<void>}
+   */
+  async savePreferences(e) {
+    const {
+      lang,
+      bgcolor,
+      bgurl,
+      gridsnappingon,
+      gridsnappingstep,
+      gridcolor,
+      showrulers,
+      baseunit
+    } = e.detail;
     // Set background
     this.editor.setBackground(bgcolor, bgurl);
 
     // set language
-    if (lang && lang !== this.configObj.pref('lang')) {
-      const {langParam, langData} = await this.editor.putLocale(lang, this.goodLangs);
+    if (lang && lang !== this.editor.configObj.pref("lang")) {
+      const { langParam, langData } = await this.editor.putLocale(
+        lang,
+        this.editor.goodLangs
+      );
       await this.editor.svgCanvassetLang(langParam, langData);
     }
 
@@ -55,10 +120,12 @@ class MainMenu {
     this.editor.configObj.curConfig.gridColor = gridcolor;
     this.editor.configObj.curConfig.showRulers = showrulers;
 
-    $('#rulers').toggle(this.editor.configObj.curConfig.showRulers);
-    if (this.editor.configObj.curConfig.showRulers) { this.editor.rulers.updateRulers(); }
+    $("#rulers").toggle(this.editor.configObj.curConfig.showRulers);
+    if (this.editor.configObj.curConfig.showRulers) {
+      this.editor.rulers.updateRulers();
+    }
     this.editor.configObj.curConfig.baseUnit = baseunit;
-    this.editor.svgCanvas.setConfig(this.configObj.curConfig);
+    this.editor.svgCanvas.setConfig(this.editor.configObj.curConfig);
     this.editor.updateCanvas();
     this.editor.hidePreferences();
   }
@@ -120,7 +187,10 @@ class MainMenu {
         }
         this.editor.loadingURL = popURL;
       }
-      this.editor.exportWindow = window.open(popURL, this.editor.exportWindowName);
+      this.editor.exportWindow = window.open(
+        popURL,
+        this.editor.exportWindowName
+      );
     };
     const chrome = isChrome();
     if (imgType === "PDF") {
@@ -210,7 +280,10 @@ class MainMenu {
       "gridsnappingstep",
       this.editor.configObj.curConfig.snappingStep
     );
-    $editDialog.setAttribute("gridcolor", this.editor.configObj.curConfig.gridColor);
+    $editDialog.setAttribute(
+      "gridcolor",
+      this.editor.configObj.curConfig.gridColor
+    );
     $editDialog.setAttribute("canvasbg", canvasBg);
     $editDialog.setAttribute("dialog", "open");
   }
