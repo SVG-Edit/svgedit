@@ -413,8 +413,8 @@ class Editor extends EditorStartup {
 
     if (url.startsWith('data:')) {
       // data URI found
-      $('#image_url').hide();
-      $('#change_image_url').show();
+      $id("image_url").style.display = 'none';
+      $id("change_image_url").style.display = 'block';
     } else {
       // regular URL
       this.svgCanvas.embedImage(url, function (dataURI) {
@@ -422,8 +422,8 @@ class Editor extends EditorStartup {
         $('#url_notice').toggle(!dataURI);
         this.defaultImageURL = url;
       });
-      $('#image_url').show();
-      $('#change_image_url').hide();
+      $id("image_url").style.display = 'block';
+      $id("change_image_url").style.display = 'none';
     }
   }
 
@@ -451,7 +451,7 @@ class Editor extends EditorStartup {
   updateCanvas (center, newCtr) {
     const zoom = this.svgCanvas.getZoom();
     const wArea = this.workarea;
-    const cnvs = $('#svgcanvas');
+    const cnvs = $id("svgcanvas");
 
     let w = parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")), h = parseFloat(getComputedStyle(this.workarea, null).height.replace("px", ""));
     const wOrig = w, hOrig = h;
@@ -469,9 +469,11 @@ class Editor extends EditorStartup {
       this.workarea.style.overflow = 'scroll';
     }
 
-    const oldCanY = cnvs.height() / 2;
-    const oldCanX = cnvs.width() / 2;
-    cnvs.width(w).height(h);
+    const oldCanY = parseFloat(getComputedStyle(cnvs, null).height.replace("px", "")) / 2;
+    const oldCanX = parseFloat(getComputedStyle(cnvs, null).width.replace("px", "")) / 2;
+    
+    cnvs.style.width = w + "px";
+    cnvs.style.height = h + "px";
     const newCanY = h / 2;
     const newCanX = w / 2;
     const offset = this.svgCanvas.updateCanvas(w, h);
@@ -518,7 +520,7 @@ class Editor extends EditorStartup {
     }
 
     if (this.configObj.urldata.storagePrompt !== true && this.storagePromptState === 'ignore') {
-      $('#dialog_box').hide();
+      if($id("dialog_box") != null) $id("dialog_box").style.display = 'none';      
     }
   }
 
@@ -959,7 +961,7 @@ class Editor extends EditorStartup {
   * @returns {void} Resolves to `undefined`
   */
   cancelOverlays (e) {
-    $('#dialog_box').hide();
+    if($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
     const $editorDialog = document.getElementById('se-svg-editor-dialog');
     const editingsource = $editorDialog.getAttribute('dialog') === 'open';
     if (!editingsource && !this.docprops && !this.configObj.preferences) {
@@ -999,7 +1001,6 @@ class Editor extends EditorStartup {
    *  and `false` after the user confirms.
    */
   async openPrep () {
-    // $('#main_menu').hide();
     if (this.svgCanvas.undoMgr.getUndoStackSize() === 0) {
       return true;
     }
@@ -1202,7 +1203,7 @@ class Editor extends EditorStartup {
             resolve();
           },
           complete () {
-            $('#dialog_box').hide();
+            if($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
           }
         });
       });

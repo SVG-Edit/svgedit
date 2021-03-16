@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /**
  * @file ext-overview_window.js
  *
@@ -7,9 +8,12 @@
  *
  */
 import { dragmove } from '../../../editor/dragmove/dragmove.js';
+
 export default {
   name: 'overview_window',
   init ({$, isChrome}) {
+    const svgEditor = this;
+    const {$id} = svgEditor.svgCanvas;
     const overviewWindowGlobals = {};
     // Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
     // https://code.google.com/p/chromium/issues/detail?id=565120.
@@ -42,7 +46,8 @@ export default {
           '</div>' +
         '</div>' +
       '</div>';
-    $('#sidepanels').append(propsWindowHtml);
+    // eslint-disable-next-line no-unsanitized/method
+    $id("sidepanels").insertAdjacentHTML( 'beforeend', propsWindowHtml );
 
     // Define dynamic animation of the view box.
     const updateViewBox = function () {
@@ -51,20 +56,20 @@ export default {
       const portWidth = parseFloat(getComputedStyle(warea, null).width.replace("px", ""));
       const portX = warea.scrollLeft;
       const portY = warea.scrollTop;
-      const windowWidth = Number.parseFloat($('#svgcanvas').css('width'));
-      const windowHeight = Number.parseFloat($('#svgcanvas').css('height'));
-      const overviewWidth = $('#overviewMiniView').attr('width');
-      const overviewHeight = $('#overviewMiniView').attr('height');
+      const windowWidth = parseFloat(getComputedStyle($id("svgcanvas"), null).width.replace("px", ""));
+      const windowHeight = parseFloat(getComputedStyle($id("svgcanvas"), null).height.replace("px", ""));
+      const overviewWidth = parseFloat(getComputedStyle($id("overviewMiniView"), null).width.replace("px", ""));
+      const overviewHeight = parseFloat(getComputedStyle($id("overviewMiniView"), null).height.replace("px", ""));
 
       const viewBoxX = portX / windowWidth * overviewWidth;
       const viewBoxY = portY / windowHeight * overviewHeight;
       const viewBoxWidth = portWidth / windowWidth * overviewWidth;
       const viewBoxHeight = portHeight / windowHeight * overviewHeight;
 
-      $('#overview_window_view_box').css('min-width', viewBoxWidth + 'px');
-      $('#overview_window_view_box').css('min-height', viewBoxHeight + 'px');
-      $('#overview_window_view_box').css('top', viewBoxY + 'px');
-      $('#overview_window_view_box').css('left', viewBoxX + 'px');
+      $id("overview_window_view_box").style.minWidth = viewBoxWidth + 'px';
+      $id("overview_window_view_box").style.minHeight = viewBoxHeight + 'px';
+      $id("overview_window_view_box").style.top = viewBoxY + 'px';
+      $id("overview_window_view_box").style.left = viewBoxX + 'px';
     };
     document.getElementById('workarea').addEventListener('scroll', () => {
       if (!(overviewWindowGlobals.viewBoxDragging)) {
@@ -76,16 +81,16 @@ export default {
 
     // Compensate for changes in zoom and canvas size.
     const updateViewDimensions = function () {
-      const viewWidth = $('#svgroot').attr('width');
-      const viewHeight = $('#svgroot').attr('height');
+     const viewWidth = parseFloat(getComputedStyle($id("svgroot"), null).width.replace("px", ""));
+      const viewHeight = parseFloat(getComputedStyle($id("svgroot"), null).height.replace("px", ""));
 
       const viewX = 640;
       const viewY = 480;
 
-      const svgWidthOld = $('#overviewMiniView').attr('width');
+      const svgWidthOld = parseFloat(getComputedStyle($id("overviewMiniView"), null).width.replace("px", ""));
       const svgHeightNew = viewHeight / viewWidth * svgWidthOld;
-      $('#overviewMiniView').attr('viewBox', viewX + ' ' + viewY + ' ' + viewWidth + ' ' + viewHeight);
-      $('#overviewMiniView').attr('height', svgHeightNew);
+      $id('overviewMiniView').setAttribute('viewBox', viewX + ' ' + viewY + ' ' + viewWidth + ' ' + viewHeight);
+      $id('overviewMiniView').setAttribute('height', svgHeightNew);
       updateViewBox();
     };
     updateViewDimensions();
@@ -93,30 +98,31 @@ export default {
     // Set up the overview window as a controller for the view port.
     overviewWindowGlobals.viewBoxDragging = false;
     const updateViewPortFromViewBox = function () {
-      const windowWidth = Number.parseFloat($('#svgcanvas').css('width'));
-      const windowHeight = Number.parseFloat($('#svgcanvas').css('height'));
-      const overviewWidth = $('#overviewMiniView').attr('width');
-      const overviewHeight = $('#overviewMiniView').attr('height');
-      const viewBoxX = Number.parseFloat($('#overview_window_view_box').css('left'));
-      const viewBoxY = Number.parseFloat($('#overview_window_view_box').css('top'));
+      const windowWidth = parseFloat(getComputedStyle($id("svgcanvas"), null).width.replace("px", ""));
+      const windowHeight = parseFloat(getComputedStyle($id("svgcanvas"), null).height.replace("px", ""));
+      const overviewWidth = parseFloat(getComputedStyle($id("overviewMiniView"), null).width.replace("px", ""));
+      const overviewHeight = parseFloat(getComputedStyle($id("overviewMiniView"), null).height.replace("px", ""));
+      const viewBoxX = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('left').replace("px", ""));;
+      const viewBoxY = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('top').replace("px", ""));;
+
 
       const portX = viewBoxX / overviewWidth * windowWidth;
       const portY = viewBoxY / overviewHeight * windowHeight;
-      document.getElementById('workarea').scrollLeft = portX;
-      document.getElementById('workarea').scrollTop = portY;
+      $id('workarea').scrollLeft = portX;
+      $id('workarea').scrollTop = portY;
     };
     const onStart = () => {
       overviewWindowGlobals.viewBoxDragging = true;
       updateViewPortFromViewBox();
     };
     const onEnd = (el, parent, x, y) => {
-      if((el.offsetLeft + el.offsetWidth) > $(parent).attr('width')){
-        el.style.left = ($(parent).attr('width') - el.offsetWidth) + 'px';
+      if((el.offsetLeft + el.offsetWidth) > parseFloat(getComputedStyle(parent, null).width.replace("px", ""))){
+        el.style.left = (parseFloat(getComputedStyle(parent, null).width.replace("px", "")) - el.offsetWidth) + 'px';
       } else if(el.offsetLeft  < 0){
         el.style.left = "0px"
       }
-      if((el.offsetTop + el.offsetHeight) > $(parent).attr('height')){
-        el.style.top = ($(parent).attr('height') - el.offsetHeight) + 'px';
+      if((el.offsetTop + el.offsetHeight) > parseFloat(getComputedStyle(parent, null).height.replace("px", ""))){
+        el.style.top = (parseFloat(getComputedStyle(parent, null).height.replace("px", "")) - el.offsetHeight) + 'px';
       } else if(el.offsetTop  < 0){
         el.style.top = "0px"
       }
@@ -130,14 +136,14 @@ export default {
     const parentElem = document.querySelector("#overviewMiniView");
     dragmove(dragElem, dragElem, parentElem, onStart, onEnd, onDrag);
 
-    $('#overviewMiniView').click(function (evt) {
+    $id("overviewMiniView").addEventListener("click", evt => {
       // Firefox doesn't support evt.offsetX and evt.offsetY.
       const mouseX = (evt.offsetX || evt.originalEvent.layerX);
       const mouseY = (evt.offsetY || evt.originalEvent.layerY);
-      const overviewWidth = $('#overviewMiniView').attr('width');
-      const overviewHeight = $('#overviewMiniView').attr('height');
-      const viewBoxWidth = Number.parseFloat($('#overview_window_view_box').css('min-width'));
-      const viewBoxHeight = Number.parseFloat($('#overview_window_view_box').css('min-height'));
+      const overviewWidth = parseFloat(getComputedStyle($id("overviewMiniView"), null).width.replace("px", ""));
+      const overviewHeight = parseFloat(getComputedStyle($id("overviewMiniView"), null).height.replace("px", ""));
+      const viewBoxWidth = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('min-width').replace("px", ""));;
+      const viewBoxHeight = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('min-height').replace("px", ""));;
 
       let viewBoxX = mouseX - 0.5 * viewBoxWidth;
       let viewBoxY = mouseY - 0.5 * viewBoxHeight;
@@ -154,9 +160,8 @@ export default {
       if (viewBoxY + viewBoxHeight > overviewHeight) {
         viewBoxY = overviewHeight - viewBoxHeight;
       }
-
-      $('#overview_window_view_box').css('top', viewBoxY + 'px');
-      $('#overview_window_view_box').css('left', viewBoxX + 'px');
+      $id("overview_window_view_box").style.top = viewBoxY + 'px';
+      $id("overview_window_view_box").style.left = viewBoxX + 'px';
       updateViewPortFromViewBox();
     });
 

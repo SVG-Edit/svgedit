@@ -172,11 +172,18 @@ class TopPanel {
 
     const isNode = currentMode === "pathedit"; // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
     const menuItems = document.getElementById("se-cmenu_canvas");
-    $(
-      "#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel," +
-      "#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel," +
-      " #use_panel, #a_panel"
-    ).hide();
+    $id("selected_panel").style.display = 'none';
+    $id("multiselected_panel").style.display = 'none';
+    $id("g_panel").style.display = 'none';
+    $id("rect_panel").style.display = 'none';
+    $id("circle_panel").style.display = 'none';
+    $id("ellipse_panel").style.display = 'none';
+    $id("line_panel").style.display = 'none';
+    $id("text_panel").style.display = 'none';
+    $id("image_panel").style.display = 'none';
+    $id("container_panel").style.display = 'none';
+    $id("use_panel").style.display = 'none';
+    $id("a_panel").style.display = 'none';
     if (!isNullish(elem)) {
       const elname = elem.nodeName;
       // If this is a link with no transform and one child, pretend
@@ -201,10 +208,10 @@ class TopPanel {
       }
 
       if (!isNode && currentMode !== "pathedit") {
-        $("#selected_panel").show();
+        $id("selected_panel").style.display = 'block';
         // Elements in this array already have coord fields
         if (["line", "circle", "ellipse"].includes(elname)) {
-          $("#xy_panel").hide();
+          $id("xy_panel").style.display = 'none';
         } else {
           let x, y;
 
@@ -226,7 +233,7 @@ class TopPanel {
 
           $("#selected_x").val(x || 0);
           $("#selected_y").val(y || 0);
-          $("#xy_panel").show();
+          $id("xy_panel").style.display = 'block';
         }
 
         // Elements in this array cannot be converted to a path
@@ -292,11 +299,11 @@ class TopPanel {
       let linkHref = null;
       if (tagName === "a") {
         linkHref = this.editor.svgCanvas.getHref(elem);
-        $("#g_panel").show();
+        $id("g_panel").style.display = 'block';
       }
 
       if (elem.parentNode.tagName === "a" && !$(elem).siblings().length) {
-        $("#a_panel").show();
+        $id("a_panel").style.display = 'block';
         linkHref = this.editor.svgCanvas.getHref(elem.parentNode);
       }
 
@@ -309,8 +316,7 @@ class TopPanel {
 
       if (panels[tagName]) {
         const curPanel = panels[tagName];
-
-        $("#" + tagName + "_panel").show();
+        $id(tagName + "_panel").style.display = 'block';
 
         curPanel.forEach(item => {
           let attrVal = elem.getAttribute(item);
@@ -322,13 +328,13 @@ class TopPanel {
         });
 
         if (tagName === "text") {
-          $("#text_panel").css("display", "inline-block");
-          $("#tool_font_size").css("display", "inline");
+          $id("text_panel").style.display = "inline-block";
+          $id("tool_font_size").style.display = "inline";
           $id("tool_italic").pressed = this.editor.svgCanvas.getItalic();
           $id("tool_bold").pressed = this.editor.svgCanvas.getBold();
-          $("#tool_font_family").val(elem.getAttribute("font-family"));
-          $("#font_size").val(elem.getAttribute("font-size"));
-          $("#text").val(elem.textContent);
+          $id("tool_font_family").value = elem.getAttribute("font-family");
+          $id("font_size").value = elem.getAttribute("font-size");
+          $id("text").value = elem.textContent;
           const textAnchorStart = $id("tool_text_anchor_start");
           const textAnchorMiddle = $id("tool_text_anchor_middle");
           const textAnchorEnd = $id("tool_text_anchor_end");
@@ -367,7 +373,7 @@ class TopPanel {
           );
           // image
         } else if (tagName === "g" || tagName === "use") {
-          $("#container_panel").show();
+          $id("container_panel").style.display = 'block';
           const title = this.editor.svgCanvas.getTitle();
           const label = $("#g_title")[0];
           label.value = title;
@@ -387,7 +393,7 @@ class TopPanel {
 
       // if (!isNullish(elem))
     } else if (this.multiselected) {
-      $("#multiselected_panel").show();
+      $id("multiselected_panel").style.display = 'block';
       menuItems.setAttribute("enablemenuitems", "#group");
       menuItems.setAttribute("disablemenuitems", "#ungroup");
     } else {

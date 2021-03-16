@@ -58,7 +58,7 @@ class LayersPanel {
     }
     this.sidedragging = true;
     let deltaX = this.sidedrag - evt.pageX;
-    const sideWidth = $("#sidepanels").width();
+    const sideWidth = parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", ""));
     if (sideWidth + deltaX > SIDEPANEL_MAXWIDTH) {
       deltaX = SIDEPANEL_MAXWIDTH - sideWidth;
       // sideWidth = SIDEPANEL_MAXWIDTH;
@@ -80,7 +80,7 @@ class LayersPanel {
    */
   toggleSidePanel(close) {
     const dpr = window.devicePixelRatio || 1;
-    const w = $("#sidepanels").width();
+    const w = parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", ""))
     const isOpened = (dpr < 1 ? w : w / dpr) > 2;
     const zoomAdjustedSidepanelWidth =
       (dpr < 1 ? 1 : dpr) * SIDEPANEL_OPENWIDTH;
@@ -176,7 +176,7 @@ class LayersPanel {
       this.lmenuFunc.bind(this)
     );
     $id("se-cmenu-layers-list").addEventListener("change", e => {
-      this.lmenuFunc.bind(this)(e?.detail?.trigger, e?.detail?.source);
+      this.lmenuFunc(e);
     });
     $id("sidepanel_handle").addEventListener(
       "click",

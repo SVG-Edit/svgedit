@@ -23,6 +23,7 @@ export default {
   async init (S) {
     const svgEditor = this;
     const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
     const addElem = svgCanvas.addSVGElementFromJson;
     const {$} = S; // {svgcontent},
     let
@@ -356,7 +357,7 @@ export default {
         return Object.assign(contextTools[i], contextTool);
       }),
       callback () {
-        $('#placemark_panel').hide();
+        $id("placemark_panel").style.display = 'none';
         // const endChanges = function(){};
       },
       mouseDown (opts) {

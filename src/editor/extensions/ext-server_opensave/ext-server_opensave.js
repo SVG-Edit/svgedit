@@ -32,6 +32,7 @@ export default {
       },
       canvas: svgCanvas
     } = svgEditor;
+    const {$id} = svgCanvas;
 
     /**
      *
@@ -185,8 +186,7 @@ export default {
         cancelled = false;
         return;
       }
-
-      $('#dialog_box').hide();
+      if($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
 
       if (type !== 'import_img') {
         xmlstr = decode64(str64);
@@ -247,7 +247,7 @@ export default {
         rebuildInput(form);
         await $.process_cancel(strings.uploading);
         cancelled = true;
-        $('#dialog_box').hide();
+        if($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
       }
 
       if (form[0] === openSvgForm[0]) {
@@ -274,8 +274,10 @@ export default {
     rebuildInput(importImgForm);
 
     // Add forms to buttons
-    $('#tool_open').show().prepend(openSvgForm);
-    $('#tool_import').show().prepend(importSvgForm);
+    $id("tool_open").style.display = 'block';
+    $id("tool_import").style.display = 'block';
+    $('#tool_open').prepend(openSvgForm);
+    $('#tool_import').prepend(importSvgForm);
     $('#tool_image').prepend(importImgForm);
   }
 };

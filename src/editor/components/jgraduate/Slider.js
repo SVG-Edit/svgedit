@@ -328,10 +328,10 @@ export default class Slider {
     });
     // initialize this control
     arrow.src = options.arrow && options.arrow.image;
-    arrow.w = (options.arrow && options.arrow.width) || arrow.width();
-    arrow.h = (options.arrow && options.arrow.height) || arrow.height();
-    bar.w = (options.map && options.map.width) || bar.width();
-    bar.h = (options.map && options.map.height) || bar.height();
+    arrow.w = (options.arrow && options.arrow.width) || parseFloat(getComputedStyle(arrow, null).width.replace("px", ""));
+    arrow.h = (options.arrow && options.arrow.height) || parseFloat(getComputedStyle(arrow, null).height.replace("px", ""));
+    bar.w = (options.map && options.map.width) || parseFloat(getComputedStyle(bar, null).width.replace("px", ""));
+    bar.h = (options.map && options.map.height) || parseFloat(getComputedStyle(bar, null).height.replace("px", ""));
     bar.addEventListener('mousedown', mouseDown);
     bind.call(that, draw);
   }

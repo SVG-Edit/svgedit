@@ -84,14 +84,14 @@ class BottomPanel {
         'tools_rect', 'tools_ellipse',
         'tool_text', 'tool_path'
       ];
-  
+
       if (bNoStroke) {
         buttonsNeedingStroke.forEach((btn) => {
           // if btn is pressed, change to select button
           if ($id(btn).pressed) {
             this.editor.leftPanelHandlers.clickSelect();
           }
-          $(btn).disabled = true;
+          $id(btn).disabled = true;
         });
       } else {
         buttonsNeedingStroke.forEach((btn) => {
@@ -105,7 +105,7 @@ class BottomPanel {
           if ($id(btn).pressed) {
             this.editor.leftPanelHandlers.clickSelect();
           }
-          $(btn).disabled = true;
+          $id(btn).disabled = true;
         });
       } else {
         buttonsNeedingFillAndStroke.forEach((btn) => {

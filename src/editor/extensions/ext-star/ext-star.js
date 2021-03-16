@@ -23,7 +23,7 @@ export default {
   async init (S) {
     const svgEditor = this;
     const {svgCanvas} = svgEditor;
-
+    const {$id} = svgCanvas;
     const {$} = S; // {svgcontent},
     let
       selElems,
@@ -121,7 +121,7 @@ export default {
         return Object.assign(contextTools[i], contextTool);
       }),
       callback () {
-        $('#star_panel').hide();
+        if($id("star_panel") !== null) $id("star_panel").style.display = 'none';
         // const endChanges = function(){};
       },
       mouseDown (opts) {

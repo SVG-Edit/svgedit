@@ -24,6 +24,7 @@ export default {
   name: 'imagelib',
   async init ({$, decode64, dropXMLInternalSubset}) {
     const svgEditor = this;
+    const {$id} = svgEditor.svgCanvas;
     const imagelibStrings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
     const {uiStrings, canvas: svgCanvas} = svgEditor;
@@ -41,7 +42,7 @@ export default {
     * @returns {void}
     */
     function closeBrowser () {
-      $('#imgbrowse_holder').hide();
+      $id("imgbrowse_holder").style.display = 'none';
       document.activeElement.blur(); // make sure focus is the body to correct issue #417
     }
 
@@ -352,7 +353,7 @@ export default {
             });
             preview.empty();
             multiArr = [];
-            $('#imgbrowse_holder').hide();
+            $id("imgbrowse_holder").style.display = 'none';
           }).css({
             position: 'absolute',
             bottom: 10,
@@ -390,7 +391,7 @@ export default {
         $('<button><img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel + '</button>')
           .appendTo(browser)
           .on('click touchend', function () {
-            $('#imgbrowse_holder').hide();
+            $id("imgbrowse_holder").style.display = 'none';
           }).css({
             position: 'absolute',
             top: 5,
@@ -445,7 +446,7 @@ export default {
             }).append(`<span>${description}</span>`);
         });
       } else {
-        $('#imgbrowse_holder').show();
+        $id("imgbrowse_holder").style.display = 'block';
       }
     }
 

@@ -190,6 +190,10 @@ class SvgCanvas {
 
     const canvas = this;
 
+    this.$id = $id;
+    this.$qq = $qq;
+    this.$qa = $qa;
+
     this.isLayer = draw.Layer.isLayer;
 
     // "document" element associated with the container (same as window.document using default svg-editor.js)

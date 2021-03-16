@@ -26,6 +26,7 @@ export default {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
 
     // Configuration of the MathJax extention.
 
@@ -178,14 +179,14 @@ export default {
             // Add functionality and picture to cancel button.
             $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true))
               .on('click touched', function () {
-                $('#mathjax').hide();
+                $id("mathjax").style.display = 'none';
               });
 
             // Add functionality and picture to the save button.
             $('#tool_mathjax_save').prepend($.getSvgIcon('ok', true))
               .on('click touched', function () {
                 saveMath();
-                $('#mathjax').hide();
+                $id("mathjax").style.display = 'none';
               });
 
             // MathJax preprocessing has to ignore most of the page.
@@ -231,7 +232,7 @@ export default {
           locationX = opts.mouse_x / zoom;
           locationY = opts.mouse_y / zoom;
 
-          $('#mathjax').show();
+          $id("mathjax").style.display = 'block';
           return {started: false}; // Otherwise the last selected object dissapears.
         }
         return undefined;

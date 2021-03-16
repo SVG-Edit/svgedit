@@ -521,7 +521,6 @@ class EditorStartup {
         document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
         e.stopPropagation();
         e.preventDefault();
-        // $('#main_menu').hide();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
         if (!file) {
           document.getElementById('se-prompt-dialog').setAttribute('close', true);

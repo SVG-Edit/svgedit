@@ -265,7 +265,6 @@ class MainMenu {
     }
     this.editor.configObj.preferences = true;
     const $editDialog = document.getElementById("se-edit-prefs");
-    // $('#main_menu').hide();
     // Update background color with current one
     const canvasBg = this.editor.configObj.curPrefs.bkgd_color;
     const url = this.editor.configObj.pref("bkgd_url");

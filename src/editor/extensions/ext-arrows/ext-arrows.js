@@ -25,6 +25,7 @@ export default {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
     const
       addElem = svgCanvas.addSVGElementFromJson,
       {nonce, $} = S,
@@ -285,7 +286,8 @@ export default {
         return Object.assign(contextTools[i], contextTool);
       }),
       callback () {
-        $('#arrow_panel').hide();
+        $id("arrow_panel").style.display = 'none';
+        
         // Set ID so it can be translated in locale file
         $('#arrow_list option')[0].id = 'connector_no_arrow';
       },

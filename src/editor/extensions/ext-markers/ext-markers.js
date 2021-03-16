@@ -48,6 +48,7 @@ export default {
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {$} = S;
     const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
     const // {svgcontent} = S,
       addElem = svgCanvas.addSVGElementFromJson;
     const mtypes = ['start', 'mid', 'end'];
@@ -567,7 +568,10 @@ export default {
       name: strings.name,
       svgicons: '',
       callback () {
-        $('#marker_panel').addClass('toolset').hide();
+        if($id("marker_panel") !== null) {
+          $id("marker_panel").classList.add('toolset');
+          $id("marker_panel").style.display = 'none';
+        }
       },
       /* async */ addLangData ({importLocale, lang}) {
         return {data: strings.langList};

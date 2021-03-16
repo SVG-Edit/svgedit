@@ -23,6 +23,7 @@ export default {
   async init (S) {
     const svgEditor = this;
     const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
     const {$} = S, // {svgcontent}
       // addElem = svgCanvas.addSVGElementFromJson,
       editingitex = false;
@@ -113,8 +114,7 @@ export default {
       }),
 
       callback () {
-        $('#polygon_panel').hide();
-
+        if($id("polygon_panel") !== null) $id("polygon_panel").style.display = 'none';
         const endChanges = function () {
           // Todo: Missing?
         };

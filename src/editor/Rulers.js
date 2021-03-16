@@ -39,7 +39,7 @@ class Rulers {
    */
   updateRulers (scanvas, zoom) {
     if (!zoom) { zoom = this.svgCanvas.getZoom(); }
-    if (!scanvas) { scanvas = $('#svgcanvas'); }
+    if (!scanvas) { scanvas = document.getElementById('svgcanvas'); }
 
     let d, i;
     const limit = 30000;
@@ -63,7 +63,12 @@ class Rulers {
       const hcanv = $hcanv[0];
 
       // Set the canvas size to the width of the container
-      let rulerLen = scanvas[lentype]();
+      let rulerLen;
+      if(lentype === 'width'){
+        rulerLen = parseFloat(getComputedStyle(scanvas, null).width.replace("px", ""));
+      } else if(lentype === 'height'){
+        rulerLen = parseFloat(getComputedStyle(scanvas, null).height.replace("px", ""));
+      }
       const totalLen = rulerLen;
       hcanv.parentNode.style[lentype] = totalLen + 'px';
       let ctx = hcanv.getContext('2d');
