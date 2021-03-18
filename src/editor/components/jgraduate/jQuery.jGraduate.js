@@ -750,7 +750,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     const rot = angle ? 'rotate(' + angle + ',' + cX + ',' + cY + ') ' : '';
     if (scaleX === 1 && scaleY === 1) {
       curGradient.removeAttribute('gradientTransform');
-      // $wc('#ang').addClass('dis');
     } else {
       const x = -cX * (scaleX - 1);
       const y = -cY * (scaleY - 1);
@@ -759,7 +758,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
         rot + 'translate(' + x + ',' + y + ') scale(' +
           scaleX + ',' + scaleY + ')'
       );
-      // $wc('#ang').removeClass('dis');
     }
   }
 

@@ -391,7 +391,7 @@ export const textActionsMethod = (function () {
 
       textActionsContext_.getCanvas().textActions.init();
 
-      $(curtext).css('cursor', 'text');
+      curtext.style.cursor = 'text';
 
       // if (supportsEditableText()) {
       //   curtext.setAttribute('editable', 'simple');
@@ -420,11 +420,11 @@ export const textActionsMethod = (function () {
       blinker = null;
       if (selblock) { $(selblock).attr('display', 'none'); }
       if (cursor) { $(cursor).attr('visibility', 'hidden'); }
-      $(curtext).css('cursor', 'move');
+      curtext.style.cursor = 'move';
 
       if (selectElem) {
         textActionsContext_.getCanvas().clearSelection();
-        $(curtext).css('cursor', 'move');
+        curtext.style.cursor = 'move';
 
         textActionsContext_.call('selected', [curtext]);
         textActionsContext_.getCanvas().addToSelection([curtext], true);

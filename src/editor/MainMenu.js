@@ -119,8 +119,7 @@ class MainMenu {
     this.editor.configObj.curConfig.snappingStep = gridsnappingstep;
     this.editor.configObj.curConfig.gridColor = gridcolor;
     this.editor.configObj.curConfig.showRulers = showrulers;
-
-    $("#rulers").toggle(this.editor.configObj.curConfig.showRulers);
+    $id('rulers').style.display = (this.editor.configObj.curConfig.showRulers) ? 'block' : 'none';
     if (this.editor.configObj.curConfig.showRulers) {
       this.editor.rulers.updateRulers();
     }

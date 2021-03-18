@@ -36,6 +36,7 @@ export default {
         strokeLinecap: 'butt',
         strokeLinejoin: 'miter'
       };
+      const {$id} = svgCanvas;
 
     /**
      *
@@ -47,14 +48,14 @@ export default {
       const mode = svgCanvas.getMode();
       if (mode === 'eyedropper') { return; }
 
-      const tool = $('#tool_eyedropper');
+      const tool = $id('tool_eyedropper');
       // enable-eye-dropper if one element is selected
       let elem = null;
       if (!opts.multiselected && opts.elems[0] &&
         !['svg', 'g', 'use'].includes(opts.elems[0].nodeName)
       ) {
         elem = opts.elems[0];
-        tool.removeClass('disabled');
+        tool.classList.remove('disabled');
         // grab the current style
         currentStyle.fillPaint = elem.getAttribute('fill') || 'black';
         currentStyle.fillOpacity = elem.getAttribute('fill-opacity') || 1.0;
@@ -67,7 +68,7 @@ export default {
         currentStyle.opacity = elem.getAttribute('opacity') || 1.0;
       // disable eye-dropper tool
       } else {
-        tool.addClass('disabled');
+        tool.classList.add('disabled');
       }
     }
 

@@ -281,14 +281,17 @@ class Editor extends EditorStartup {
     // Misc additional actions
 
     // Make 'return' keypress trigger the change event
-    $('.attr_changer, #image_url').bind(
-      'keydown',
-      'return',
-      function (evt) {
-        $(this).change();
+    const elements = document.getElementsByClassName("attr_changer");
+    Array.from(elements).forEach(function(element) {
+      element.addEventListener('keydown', function(evt) {
+        evt.currentTarget.dispatchEvent(new Event('change'));
         evt.preventDefault();
-      }
-    );
+      });
+    });
+    $id('image_url').addEventListener('keydown', function(evt) {
+      evt.currentTarget.dispatchEvent(new Event('change'));
+      evt.preventDefault();
+    });
   }
   /**
      * @returns {void}
@@ -348,11 +351,16 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   togglePathEditMode (editmode, elems) {
-    $('#path_node_panel').toggle(editmode);
+    $id('path_node_panel').style.display = (editmode) ? 'block' : 'none';
     if (editmode) {
       // Change select icon
-      $('.tool_button_current').removeClass('tool_button_current').addClass('tool_button');
-      $('#tool_select').addClass('tool_button_current').removeClass('tool_button');
+      const elements = document.getElementsByClassName("tool_button_current");
+      Array.from(elements).forEach(function(element) {
+        element.classList.add('tool_button_current');
+        element.classList.remove('tool_button')
+      });
+      $id('#tool_select').classList.add('tool_button_current')
+      $id('#tool_select').classList.remove('tool_button');
       this.multiselected = false;
       if (elems.length) {
         this.selectedElement = this.elems[0];
@@ -409,7 +417,7 @@ class Editor extends EditorStartup {
       url = this.defaultImageURL;
     }
     this.svgCanvas.setImageURL(url);
-    $('#image_url').val(url);
+    $id("image_url").value = url;
 
     if (url.startsWith('data:')) {
       // data URI found
@@ -609,8 +617,8 @@ class Editor extends EditorStartup {
       switch (mode) {
       case 'rotate': {
         const ang = this.svgCanvas.getRotationAngle(elem);
-        $('#angle').val(ang);
-        $('#tool_reorient').toggleClass('disabled', ang === 0);
+        $id('angle').value = ang;
+        (ang === 0) ? $id('tool_reorient').classList.add('disabled') : $id('tool_reorient').classList.remove('disabled');
         break;
       }
       }
@@ -914,7 +922,7 @@ class Editor extends EditorStartup {
   rotateSelected (cw, step) {
     if (isNullish(this.selectedElement) || this.multiselected) { return; }
     if (!cw) { step *= -1; }
-    const angle = Number.parseFloat($('#angle').val()) + step;
+    const angle = Number.parseFloat($id('angle').value) + step;
     this.svgCanvas.setRotationAngle(angle);
     this.topPanel.updateContextPanel();
   }

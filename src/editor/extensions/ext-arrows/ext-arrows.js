@@ -113,7 +113,7 @@ export default {
           val = 'none';
         }
 
-        $('#arrow_list').val(val);
+        $id('arrow_list').value = val;
       }
     }
 

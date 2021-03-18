@@ -17,7 +17,7 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
       }
 
       // On mouse move, dispatch the coords to all registered callbacks.
-      for (var i = 0; i < _callbacks.length; i++) {
+      for (let i = 0; i < _callbacks.length; i++) {
         _callbacks[i](c.clientX, c.clientY);
       }
     });

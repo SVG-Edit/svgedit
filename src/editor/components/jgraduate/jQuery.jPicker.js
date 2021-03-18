@@ -1310,7 +1310,6 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     const win = settings.window,
       popup = win.expandable ? nexts.querySelector('#Container') : null;
     container = win.expandable ? document.createElement('div') : that;
-    // container.addClass('jPicker Container');
     container.classList.add('jPicker');
     container.classList.add('Container');
     if (win.expandable) container.style.display = 'none';

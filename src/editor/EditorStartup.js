@@ -58,6 +58,7 @@ class EditorStartup {
   * @returns {void}
   */
   async init () {
+    const self = this;
     // allow to prepare the dom without display
     this.$svgEditor.style.visibility = 'hidden';
     try {
@@ -187,20 +188,20 @@ class EditorStartup {
       res.w = convertUnit(res.w) + this.configObj.curConfig.baseUnit;
       res.h = convertUnit(res.h) + this.configObj.curConfig.baseUnit;
     }
-    $('#se-img-prop').attr('dialog', 'close');
-    $('#se-img-prop').attr('title', this.svgCanvas.getDocumentTitle());
-    $('#se-img-prop').attr('width', res.w);
-    $('#se-img-prop').attr('height', res.h);
-    $('#se-img-prop').attr('save', this.configObj.pref('img_save'));
+    $id('se-img-prop').setAttribute('dialog', 'close');
+    $id('se-img-prop').setAttribute('title', this.svgCanvas.getDocumentTitle());
+    $id('se-img-prop').setAttribute('width', res.w);
+    $id('se-img-prop').setAttribute('height', res.h);
+    $id('se-img-prop').setAttribute('save', this.configObj.pref('img_save'));
 
     // Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
     $('select').change((evt) => { $(evt.currentTarget).blur(); });
 
     // fired when user wants to move elements to another layer
     let promptMoveLayerOnce = false;
-    $('#selLayerNames').change((evt) => {
+    $id('selLayerNames').addEventListener('change', function(evt) {
       const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
-      const confirmStr = this.uiStrings.notification.Qmovethis.elemsToLayer.replace('%s', destLayer);
+      const confirmStr = self.uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
       /**
     * @param {boolean} ok
     * @returns {void}
@@ -208,9 +209,9 @@ class EditorStartup {
       const moveToLayer = (ok) => {
         if (!ok) { return; }
         promptMoveLayerOnce = true;
-        this.svgCanvas.moveSelectedToLayer(destLayer);
-        this.svgCanvas.clearSelection();
-        this.layersPanel.populateLayers();
+        self.svgCanvas.moveSelectedToLayer(destLayer);
+        self.svgCanvas.clearSelection();
+        self.layersPanel.populateLayers();
       };
       if (destLayer) {
         if (promptMoveLayerOnce) {
@@ -224,33 +225,31 @@ class EditorStartup {
         }
       }
     });
-
-    $('#tool_font_family').change((evt) => {
-      this.svgCanvas.setFontFamily(evt.originalEvent.detail.value);
+    $id('tool_font_family').addEventListener('change', function(evt) {
+      self.svgCanvas.setFontFamily(evt.detail.value);
     });
 
-    $('#seg_type').change((evt) => {
-      this.svgCanvas.setSegType($(evt.currentTarget).val());
+    $id('seg_type').addEventListener('change', function(evt) {
+      self.svgCanvas.setSegType(evt.currentTarget.value);
     });
 
     $('#text').bind('keyup input', (evt) => {
       this.svgCanvas.setTextContent(evt.currentTarget.value);
     });
-
-    $('#image_url').change((evt) => {
-      this.setImageURL(evt.currentTarget.value);
+    $id('image_url').addEventListener('change', function(evt) {
+      self.setImageURL(evt.currentTarget.value);
     });
 
-    $('#link_url').change((evt) => {
+    $id('link_url').addEventListener('change', function(evt) {
       if (evt.currentTarget.value.length) {
-        this.svgCanvas.setLinkURL(evt.currentTarget.value);
+        self.svgCanvas.setLinkURL(evt.currentTarget.value);
       } else {
-        this.svgCanvas.removeHyperlink();
+        self.svgCanvas.removeHyperlink();
       }
     });
 
-    $('#g_title').change((evt) => {
-      this.svgCanvas.setGroupTitle(evt.currentTarget.value);
+    $id('g_title').addEventListener('change', function(evt) {
+      self.svgCanvas.setGroupTitle(evt.currentTarget.value);
     });
 
     const wArea = this.workarea;
@@ -339,7 +338,30 @@ class EditorStartup {
         $('#text').focus();
       }
     });
-    const winWh = {width: $(window).width(), height: $(window).height()};
+    // ref: https://stackoverflow.com/a/1038781
+    function getWidth() {
+      return Math.max(
+        document.body.scrollWidth,
+        document.documentElement.scrollWidth,
+        document.body.offsetWidth,
+        document.documentElement.offsetWidth,
+        document.documentElement.clientWidth
+      );
+    }
+
+    function getHeight() {
+      return Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight,
+        document.documentElement.clientHeight
+      );
+    }
+    const winWh = {
+      width: getWidth(), 
+      height: getHeight()
+    };
 
     window.addEventListener('resize', (evt) => {
       Object.entries(winWh).forEach(([type, val]) => {
@@ -360,15 +382,22 @@ class EditorStartup {
 
     $id('stroke_width').value = this.configObj.curConfig.initStroke.width;
     $id('opacity').value = this.configObj.curConfig.initOpacity * 100;
-
-    $('.push_button').mousedown(() => {
-      if (!$(this).hasClass('disabled')) {
-        $(this).addClass('push_button_pressed').removeClass('push_button');
-      }
-    }).mouseout(() => {
-      $(this).removeClass('push_button_pressed').addClass('push_button');
-    }).mouseup(() => {
-      $(this).removeClass('push_button_pressed').addClass('push_button');
+    const elements = document.getElementsByClassName("push_button");
+    Array.from(elements).forEach(function(element) {
+      element.addEventListener('mousedown', function(event) {
+        if (!event.currentTarget.classList.contains('disabled')) {
+          event.currentTarget.classList.add('push_button_pressed')
+          event.currentTarget.classList.remove('push_button');
+        }
+      });
+      element.addEventListener('mouseout', function(event) {
+        event.currentTarget.classList.add('push_button')
+        event.currentTarget.classList.remove('push_button_pressed');
+      });
+      element.addEventListener('mouseup', function(event) {
+        event.currentTarget.classList.add('push_button')
+        event.currentTarget.classList.remove('push_button_pressed');
+      });
     });
 
     this.layersPanel.populateLayers();

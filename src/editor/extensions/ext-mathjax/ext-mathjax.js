@@ -190,7 +190,7 @@ export default {
               });
 
             // MathJax preprocessing has to ignore most of the page.
-            $('body').addClass('tex2jax_ignore');
+            document.body.classList.add("tex2jax_ignore");
 
             try {
               await import('./mathjax/MathJax.min.js'); // ?config=TeX-AMS-MML_SVG.js');
