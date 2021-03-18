@@ -218,14 +218,6 @@ export default class ConfigObj {
     if (!curConfig.noDefaultExtensions) {
       curConfig.extensions = [...this.defaultExtensions];
     }
-    // ...and remove any dupes
-    /*
-    ['extensions', 'allowedOrigins'].forEach(function (cfg) {
-      curConfig[cfg] = $.grep(curConfig[cfg], function (n, i) { // Supposedly faster than filter per http://amandeep1986.blogspot.hk/2015/02/jquery-grep-vs-js-filter.html
-        return i === curConfig[cfg].indexOf(n);
-      });
-    });
-    */
     // Export updated config
     this.curConfig = curConfig;
   }
