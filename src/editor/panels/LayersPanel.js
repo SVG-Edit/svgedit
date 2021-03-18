@@ -30,8 +30,8 @@ class LayersPanel {
    */
   changeSidePanelWidth(delta) {
     const rulerX = document.querySelector("#ruler_x");
-    $("#sidepanels").width("+=" + delta);
-    $("#layerpanel").width("+=" + delta);
+    $id("sidepanels").style.width = (parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", "")) + delta) + "px";
+    $id("layerpanel").style.width = (parseFloat(getComputedStyle($id("layerpanel"), null).width.replace("px", "")) + delta) + "px";
     rulerX.style.right =
       parseFloat(getComputedStyle(rulerX, null).right.replace("px", "")) +
       delta +
@@ -247,8 +247,12 @@ class LayersPanel {
       // This matches what this.editor.svgCanvas does
       // TODO: make this behavior less brittle (svg-editor should get which
       // layer is selected from the canvas and then select that one in the UI)
-      $("#layerlist tr.layer").removeClass("layersel");
-      $("#layerlist tr.layer:first").addClass("layersel");
+      const elements = document.querySelectorAll('#layerlist tr.layer');
+      Array.prototype.forEach.call(elements, function(el, i){
+        el.classList.remove('layersel');
+      });
+      document.querySelector('#layerlist tr.layer').classList.add('layersel');
+
     }
   }
 
@@ -276,13 +280,22 @@ class LayersPanel {
     this.populateLayers();
   }
 
+  index(el) {
+    if (!el) return -1;
+    var i = 0;
+    do {
+      i++;
+    } while (el = el.previousElementSibling);
+    return i;
+  }
+
   /**
    *
    * @returns {void}
    */
   mergeLayer() {
     if (
-      $("#layerlist tr.layersel").index() ===
+      (this.index(document.querySelector("#layerlist tr.layersel"))-1) ===
       this.editor.svgCanvas.getCurrentDrawing().getNumLayers() - 1
     ) {
       return;
@@ -299,7 +312,7 @@ class LayersPanel {
   moveLayer(pos) {
     const total = this.editor.svgCanvas.getCurrentDrawing().getNumLayers();
 
-    let curIndex = $("#layerlist tr.layersel").index();
+    let curIndex = (this.index(document.querySelector("#layerlist tr.layersel"))-1);
     if (curIndex > 0 || curIndex < total - 1) {
       curIndex += pos;
       this.editor.svgCanvas.setCurrentLayerPosition(total - curIndex - 1);
@@ -312,7 +325,7 @@ class LayersPanel {
    */
   layerRename() {
     // const curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
-    const oldName = $("#layerlist tr.layersel td.layername").text();
+    const oldName = document.querySelector("#layerlist tr.layersel td.layername").textContent;
     const newName = prompt(this.uiStrings.notification.enterNewLayerName, "");
     if (!newName) {
       return;

@@ -359,8 +359,8 @@ class Editor extends EditorStartup {
         element.classList.add('tool_button_current');
         element.classList.remove('tool_button')
       });
-      $id('#tool_select').classList.add('tool_button_current')
-      $id('#tool_select').classList.remove('tool_button');
+      $id('tool_select').classList.add('tool_button_current')
+      $id('tool_select').classList.remove('tool_button');
       this.multiselected = false;
       if (elems.length) {
         this.selectedElement = this.elems[0];
@@ -793,7 +793,8 @@ class Editor extends EditorStartup {
   async extAdded (win, ext) {
    
     const self = this;
-    const btnSelects = [];
+    // eslint-disable-next-line sonarjs/no-unused-collection
+    let btnSelects = [];
     if (!ext) {
       return undefined;
     }
@@ -814,6 +815,95 @@ class Editor extends EditorStartup {
         ext.callback.call(this);
       }
     };
+
+    if (ext.context_tools) {
+      $.each(ext.context_tools, function (i, tool) {
+        // Add select tool
+        const contId = tool.container_id ? (' id="' + tool.container_id + '"') : '';
+
+        let panel = $('#' + tool.panel);
+        // create the panel if it doesn't exist
+        if (!panel.length) {
+          panel = $('<div>', {id: tool.panel}).appendTo('#tools_top');
+        }
+
+        let html;
+        // TODO: Allow support for other types, or adding to existing tool
+        switch (tool.type) {
+        case 'tool_button': {
+          html = '<div class="tool_button">' + tool.id + '</div>';
+          const div = $(html).appendTo(panel);
+          if (tool.events) {
+            $.each(tool.events, function (evt, func) {
+              $(div).bind(evt, func);
+            });
+          }
+          break;
+        } case 'select': {
+          html = '<label' + contId + '>' +
+            '<select id="' + tool.id + '">';
+          $.each(tool.options, function (val, text) {
+            const sel = (val === tool.defval) ? ' selected' : '';
+            html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
+          });
+          html += '</select></label>';
+          // Creates the tool, hides & adds it, returns the select element
+          const sel = $(html).appendTo(panel).find('select');
+
+          $.each(tool.events, function (evt, func) {
+            $(sel).bind(evt, func);
+          });
+          break;
+        } case 'button-select': {
+          html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' +
+            '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+
+          const list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
+
+          if (tool.colnum) {
+            list.addClass('optcols' + tool.colnum);
+          }
+
+          // Creates the tool, hides & adds it, returns the select element
+          /* const dropdown = */ $(html).appendTo(panel).children();
+
+          btnSelects.push({
+            elem: ('#' + tool.id),
+            list: ('#' + tool.id + '_opts'),
+            title: tool.title,
+            callback: tool.events.change,
+            cur: ('#cur_' + tool.id)
+          });
+
+          break;
+        } case 'input': {
+          html = '<label' + contId + '>' +
+            '<span id="' + tool.id + '_label">' +
+            tool.label + ':</span>' +
+            '<input id="' + tool.id + '" title="' + tool.title +
+            '" size="' + (tool.size || '4') +
+            '" value="' + (tool.defval || '') + '" type="text"/></label>';
+
+          // Creates the tool, hides & adds it, returns the select element
+
+          // Add to given tool.panel
+          const inp = $(html).appendTo(panel).find('input');
+
+          if (tool.spindata) {
+            inp.SpinButton(tool.spindata);
+          }
+
+          if (tool.events) {
+            $.each(tool.events, function (evt, func) {
+              inp.bind(evt, func);
+            });
+          }
+          break;
+        } default:
+          break;
+        }
+      });
+    }
 
     if (ext.events) {
       this.leftPanel.add(ext.events.id, ext.events.click);
