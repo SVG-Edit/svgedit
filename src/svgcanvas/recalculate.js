@@ -177,8 +177,7 @@ export const recalculateDimensions = function (selected) {
   }
 
   // Grouped SVG element
-  const gsvg = $(selected).data('gsvg');
-
+  const gsvg = (dataStorage.has(selected, 'gsvg')) ? dataStorage.get(selected, 'gsvg') : undefined;
   // we know we have some transforms, so set up return variable
   const batchCmd = new BatchCommand('Transform');
 
@@ -226,15 +225,17 @@ export const recalculateDimensions = function (selected) {
   } // switch on element type to get initial values
 
   if (attrs.length) {
-    changes = $(selected).attr(attrs);
-    $.each(changes, function (attr, val) {
-      changes[attr] = convertToNum(attr, val);
+    Array.prototype.forEach.call(attrs, function(attr, i){
+      changes[attr] = selected.getAttribute(attr);
     });
+    for (const [attr, val] of Object.entries(changes)) {
+      changes[attr] = convertToNum(attr, val);
+    }
   } else if (gsvg) {
     // GSVG exception
     changes = {
-      x: $(gsvg).attr('x') || 0,
-      y: $(gsvg).attr('y') || 0
+      x: gsvg.getAttribute('x') || 0,
+      y: gsvg.getAttribute('y') || 0
     };
   }
 
@@ -242,9 +243,9 @@ export const recalculateDimensions = function (selected) {
   // make a copy of initial values and include the transform
   if (isNullish(initial)) {
     initial = $.extend(true, {}, changes);
-    $.each(initial, function (attr, val) {
+    for (const [attr, val] of Object.entries(initial)) {
       initial[attr] = convertToNum(attr, val);
-    });
+    }    
   }
   // save the start transform value too
   initial.transform = context_.getStartTransform() || '';
@@ -701,7 +702,12 @@ export const recalculateDimensions = function (selected) {
       m = transformListToTransform(tlist).matrix;
       switch (selected.tagName) {
       case 'line':
-        changes = $(selected).attr(['x1', 'y1', 'x2', 'y2']);
+        changes = {
+          x1: selected.getAttribute('x1'),
+          y1: selected.getAttribute('y1'),
+          x2: selected.getAttribute('x2'),
+          y2: selected.getAttribute('y2'),
+        }
         // Fallthrough
       case 'polyline':
       case 'polygon':
@@ -776,8 +782,8 @@ export const recalculateDimensions = function (selected) {
           const child = children.item(c);
           if (child.tagName === 'tspan') {
             const tspanChanges = {
-              x: $(child).attr('x') || 0,
-              y: $(child).attr('y') || 0
+              x: child.getAttribute('x') || 0,
+              y: child.getAttribute('y') || 0
             };
             remapElement(child, tspanChanges, m);
           }

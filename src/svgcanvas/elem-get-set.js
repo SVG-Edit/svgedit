@@ -17,6 +17,7 @@ import {
 import {
   convertToNum
 } from '../common/units.js';
+import {getParents} from '../editor/components/jgraduate/Util.js';
 
 const $ = jQueryPluginSVG(jQuery);
 
@@ -62,7 +63,11 @@ export const getTitleMethod = function (elem) {
   const selectedElements = elemContext_.getSelectedElements();
   elem = elem || selectedElements[0];
   if (!elem) { return undefined; }
-  elem = $(elem).data('gsvg') || $(elem).data('symbol') || elem;
+  if(dataStorage.has(elem, 'gsvg')){
+    elem = dataStorage.get(elem, 'gsvg');
+  } else if(dataStorage.has(elem, 'symbol')) {
+    elem = dataStorage.get(elem, 'symbol');
+  }
   const childs = elem.childNodes;
   for (const child of childs) {
     if (child.nodeName === 'title') {
@@ -82,9 +87,11 @@ export const getTitleMethod = function (elem) {
 export const setGroupTitleMethod = function (val) {
   const selectedElements = elemContext_.getSelectedElements();
   let elem = selectedElements[0];
-  elem = $(elem).data('gsvg') || elem;
+  if(dataStorage.has(elem, 'gsvg')){
+    elem = dataStorage.get(elem, 'gsvg');
+  }
 
-  const ts = $(elem).children('title');
+  const ts = elem.querySelectorAll('title');
 
   const batchCmd = new BatchCommand('Set Label');
 
@@ -103,7 +110,7 @@ export const setGroupTitleMethod = function (val) {
     // Add title element
     title = elemContext_.getDOMDocument().createElementNS(NS.SVG, 'title');
     title.textContent = val;
-    $(elem).prepend(title);
+    elem.insertBefore(title, elem.firstChild);
     batchCmd.addSubCommand(new InsertElementCommand(title));
   }
 
@@ -392,7 +399,7 @@ export const setGradientMethod = function (type) {
 */
 export const findDuplicateGradient = function (grad) {
   const defs = findDefs();
-  const existingGrads = $(defs).find('linearGradient, radialGradient');
+  const existingGrads = defs.querySelectorAll('linearGradient, radialGradient');
   let i = existingGrads.length;
   const radAttrs = ['r', 'cx', 'cy', 'fx', 'fy'];
   while (i--) {
@@ -406,11 +413,23 @@ export const findDuplicateGradient = function (grad) {
         continue;
       }
     } else {
-      const gradAttrs = $(grad).attr(radAttrs);
-      const ogAttrs = $(og).attr(radAttrs);
+      const gradAttrs = {
+        r: grad.getAttribute('r'),
+        cx: grad.getAttribute('cx'),
+        cy: grad.getAttribute('cy'),
+        fx: grad.getAttribute('fx'),
+        fy: grad.getAttribute('fy')
+      };
+      const ogAttrs = {
+        r: og.getAttribute('r'),
+        cx: og.getAttribute('cx'),
+        cy: og.getAttribute('cy'),
+        fx: og.getAttribute('fx'),
+        fy: og.getAttribute('fy')
+      };
 
       let diff = false;
-      $.each(radAttrs, function (j, attr) {
+      radAttrs.forEach(function(attr, j){
         if (gradAttrs[attr] !== ogAttrs[attr]) { diff = true; }
       });
 
@@ -728,7 +747,10 @@ export const setImageURLMethod = function (val) {
   const elem = selectedElements[0];
   if (!elem) { return; }
 
-  const attrs = $(elem).attr(['width', 'height']);
+  const attrs = { 
+    width: elem.getAttribute('width'),
+    height: elem.getAttribute('height'),
+  };
   const setsize = (!attrs.width || !attrs.height);
 
   const curHref = getHref(elem);
@@ -744,21 +766,22 @@ export const setImageURLMethod = function (val) {
   batchCmd.addSubCommand(new ChangeElementCommand(elem, {
     '#href': curHref
   }));
-
-  $(new Image()).load(function () {
-    const changes = $(elem).attr(['width', 'height']);
-
-    $(elem).attr({
-      width: this.width,
-      height: this.height
-    });
+  const img = new Image();
+  img.onload = function() {
+    const changes = { 
+      width: elem.getAttribute('width'),
+      height: elem.getAttribute('height'),
+    };
+    elem.setAttribute('width', this.width);
+    elem.setAttribute('height', this.height);
 
     elemContext_.getCanvas().selectorManager.requestSelector(elem).resize();
 
     batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
     elemContext_.addCommandToHistory(batchCmd);
     elemContext_.call('changed', [elem]);
-  }).attr('src', val);
+  };
+  img.src = val;
 };
 
 /**
@@ -773,7 +796,7 @@ export const setLinkURLMethod = function (val) {
   if (!elem) { return; }
   if (elem.tagName !== 'a') {
     // See if parent is an anchor
-    const parentsA = $(elem).parents('a');
+    const parentsA = getParents(elem.parentNode, 'a');
     if (parentsA.length) {
       elem = parentsA[0];
     } else {
@@ -861,7 +884,7 @@ export const setSegTypeMethod = function (newType) {
 */
 export const setBackgroundMethod = function (color, url) {
   const bg = getElem('canvasBackground');
-  const border = $(bg).find('rect')[0];
+  const border = bg.querySelector('rect');
   let bgImg = getElem('background_image');
   let bgPattern = getElem('background_pattern');
   border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);

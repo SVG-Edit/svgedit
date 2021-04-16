@@ -214,10 +214,6 @@ class LeftPanel {
        <se-button id="tool_circle" title="Square" src="./images/circle.svg"></se-button>
        <se-button id="tool_fhellipse" title="Free-Hand Rectangle" src="./images/fh_ellipse.svg"></se-button>
      </se-flyingbutton>
-     <se-flyingbutton id="tools_polygon" title="Polygone/Star Tool">
-       <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
-       <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
-     </se-flyingbutton>
      <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
      <se-button id="tool_text" title="Text Tool" src="./images/text.svg" shortcut="T"></se-button>
      <se-button id="tool_image" title="Image Tool" src="./images/image.svg"></se-button>

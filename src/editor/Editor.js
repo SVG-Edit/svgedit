@@ -37,6 +37,33 @@ import MainMenu from './MainMenu.js';
 
 const {$id, $qa, isNullish, encode64, decode64, blankPageObjectURL} = SvgCanvas;
 
+/** A storage solution aimed at replacing jQuerys data function.
+ * Implementation Note: Elements are stored in a (WeakMap)[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap].
+ * This makes sure the data is garbage collected when the node is removed.
+ */
+ window.dataStorage = {
+  _storage: new WeakMap(),
+  put: function (element, key, obj) {
+      if (!this._storage.has(element)) {
+          this._storage.set(element, new Map());
+      }
+      this._storage.get(element).set(key, obj);
+  },
+  get: function (element, key) {
+      return this._storage.get(element).get(key);
+  },
+  has: function (element, key) {
+      return this._storage.has(element) && this._storage.get(element).has(key);
+  },
+  remove: function (element, key) {
+      var ret = this._storage.get(element).delete(key);
+      if (!this._storage.get(element).size === 0) {
+          this._storage.delete(element);
+      }
+      return ret;
+  }
+}
+
 /**
  *
  */
@@ -293,20 +320,41 @@ class Editor extends EditorStartup {
       evt.preventDefault();
     });
   }
+  // parents() https://stackoverflow.com/a/12981248
+  getParents(el, parentSelector /* optional */) {
+
+    // If no parentSelector defined will bubble up all the way to *document*
+    if (parentSelector === undefined) {
+        parentSelector = document;
+    }
+
+    var parents = [];
+    var p = el.parentNode;
+    
+    while (p !== parentSelector) {
+        var o = p;
+        parents.push(o);
+        p = o.parentNode;
+    }
+    parents.push(parentSelector); // Push that parentSelector you wanted to stop at
+    
+    return parents;
+  }
   /**
      * @returns {void}
      */
   setTitles () {
     // Tooltips not directly associated with a single function
     const keyAssocs = {
-      '4/Shift+4': '#tools_rect',
-      '5/Shift+5': '#tools_ellipse'
+      '4/Shift+4': 'tools_rect',
+      '5/Shift+5': 'tools_ellipse'
     };
     Object.entries(keyAssocs).forEach(([keyval, sel]) => {
-      const menu = ($(sel).parents('#main_menu').length);
+      const parentsElements = this.getParents($id(sel), $id('main_menu'))
+      const menu = (parentsElements.length);
 
       $qa(sel).forEach((element) => {
-        const t = (menu) ? $(element).text().split(' [')[0] : element.title.split(' [')[0];
+        const t = (menu) ? element.textContent.split(' [')[0] : element.title.split(' [')[0];
         let keyStr = '';
         // Shift+Up
         keyval.split('/').forEach((key, i) => {
@@ -427,7 +475,7 @@ class Editor extends EditorStartup {
       // regular URL
       this.svgCanvas.embedImage(url, function (dataURI) {
         // Couldn't embed, so show warning
-        $('#url_notice').toggle(!dataURI);
+        $id('url_notice').style.display = (!dataURI) ? 'block' : 'none';
         this.defaultImageURL = url;
       });
       $id("image_url").style.display = 'block';
@@ -559,7 +607,7 @@ class Editor extends EditorStartup {
     // if (this.curContext) {
     //   new_title = new_title + this.curContext;
     // }
-    $('title:first').text(newTitle);
+    document.querySelector('title').textContent = newTitle;
   }
 
   // called when we've selected a different element
@@ -707,9 +755,7 @@ class Editor extends EditorStartup {
   */
   zoomChanged (win, bbox, autoCenter) {
     const scrbar = 15,
-      // res =  this.svgCanvas.getResolution(), // Currently unused
       wArea = this.workarea;
-    // const canvasPos = $('#svgcanvas').position(); // Currently unused
     const zInfo = this.svgCanvas.setBBoxZoom(bbox, parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) - scrbar, parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) - scrbar);
     if (!zInfo) { return; }
     const zoomlevel = zInfo.zoom,
@@ -750,11 +796,11 @@ class Editor extends EditorStartup {
     if (context) {
       let str = '';
       linkStr = '<a href="#" data-root="y">' + this.svgCanvas.getCurrentDrawing().getCurrentLayerName() + '</a>';
-
-      $(context).parentsUntil('#svgcontent > g').andSelf().each(() => {
-        if (this.id) {
-          str += ' > ' + this.id;
-          linkStr += (this !== context) ? ` > <a href="#">${this.id}</a>` : ` > ${this.id}`;
+      const parentsUntil = getParentsUntil(context, '#svgcontent > g');
+      parentsUntil.forEach(function (parent) {
+        if (parent.id) {
+          str += ' > ' + parent.id;
+          linkStr += (parent !== context) ? ` > <a href="#">${parent.id}</a>` : ` > ${parent.id}`;
         }
       });
 
@@ -762,7 +808,9 @@ class Editor extends EditorStartup {
     } else {
       this.curContext = null;
     }
-    $('#cur_context_panel').toggle(Boolean(context)).html(linkStr);
+    $id('cur_context_panel').style.display = (Boolean(context)) ? 'block' : 'none';
+    // eslint-disable-next-line no-unsanitized/property
+    $id('cur_context_panel').innerHTML = linkStr;
 
     this.updateTitle();
   }
@@ -775,13 +823,18 @@ class Editor extends EditorStartup {
   */
   setIcon (elem, iconId) {
     // eslint-disable-next-line max-len
-    const icon = (typeof iconId === 'string') ? $('<img src="' + this.configObj.curConfig.imgPath + iconId + '">') : iconId.clone();
+    const img = document.createElement("img");
+    img.src = this.configObj.curConfig.imgPath + iconId;
+    const icon = (typeof iconId === 'string') ? img : iconId.cloneNode(true);
     if (!icon) {
       // Todo: Investigate why this still occurs in some cases
       console.log('NOTE: Icon image missing: ' + iconId); 
       return;
     }
-    $(elem).empty().append(icon);
+    // empty()
+    while($id(elem).firstChild)
+      $id(elem).removeChild($id(elem).firstChild);
+    $id(elem).appendChild(icon);
   }
 
   /**
@@ -817,55 +870,72 @@ class Editor extends EditorStartup {
     };
 
     if (ext.context_tools) {
-      $.each(ext.context_tools, function (i, tool) {
+      ext.context_tools.forEach(function(tool, i){
         // Add select tool
         const contId = tool.container_id ? (' id="' + tool.container_id + '"') : '';
 
-        let panel = $('#' + tool.panel);
+        let panel = $id(tool.panel);
         // create the panel if it doesn't exist
-        if (!panel.length) {
-          panel = $('<div>', {id: tool.panel}).appendTo('#tools_top');
+        if (!panel) {
+          panel = document.createElement("div");
+          panel.id = tool.panel;
+          $id('tools_top').appendChild(panel);
         }
 
         let html;
         // TODO: Allow support for other types, or adding to existing tool
         switch (tool.type) {
         case 'tool_button': {
-          html = '<div class="tool_button">' + tool.id + '</div>';
-          const div = $(html).appendTo(panel);
+          html = document.createElement("div");
+          html.className = "tool_button";
+          html.textContent = tool.id
+          panel.appendChild(html);
           if (tool.events) {
-            $.each(tool.events, function (evt, func) {
-              $(div).bind(evt, func);
+            tool.events.forEach((func, evt) => {
+              html.addEventListener(evt, func);
             });
           }
           break;
         } case 'select': {
-          html = '<label' + contId + '>' +
-            '<select id="' + tool.id + '">';
-          $.each(tool.options, function (val, text) {
+          label = document.createElement("label");
+          if (tool.container_id) {
+            label.id = tool.container_id;
+          }
+          html = '<select id="' + tool.id + '">';
+          tool.options.forEach((text, val) => {
             const sel = (val === tool.defval) ? ' selected' : '';
             html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
           });
-          html += '</select></label>';
+          html += '</select>';
+          // eslint-disable-next-line no-unsanitized/property
+          label.innerHTML = html;
           // Creates the tool, hides & adds it, returns the select element
-          const sel = $(html).appendTo(panel).find('select');
+          panel.appendChild(label);
 
-          $.each(tool.events, function (evt, func) {
-            $(sel).bind(evt, func);
+          const sel = label.querySelector('select');
+
+          tool.events.forEach((func, evt) => {
+            sel.addEventListener(evt, func);
           });
           break;
         } case 'button-select': {
-          html = '<div id="' + tool.id + '" class="dropdown toolset" title="' + tool.title + '">' +
-            '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button></div>';
+          const div = document.createElement("div");
+          div.id = tool.id;
+          div.className = "dropdown toolset";
+          div.title = tool.title;
+          // eslint-disable-next-line no-unsanitized/property
+          div.innerHTML = '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button>';
 
-          const list = $('<ul id="' + tool.id + '_opts"></ul>').appendTo('#option_lists');
+          const list = document.createElement("ul");
+          list.id = tool.id;
+
+          if($id('option_lists')) $id('option_lists').appendChild(list);
 
           if (tool.colnum) {
-            list.addClass('optcols' + tool.colnum);
+            list.className = ('optcols' + tool.colnum);
           }
-
+          panel.appendChild(div);
           // Creates the tool, hides & adds it, returns the select element
-          /* const dropdown = */ $(html).appendTo(panel).children();
 
           btnSelects.push({
             elem: ('#' + tool.id),
@@ -877,25 +947,30 @@ class Editor extends EditorStartup {
 
           break;
         } case 'input': {
-          html = '<label' + contId + '>' +
-            '<span id="' + tool.id + '_label">' +
+          const html = document.createElement("label");
+          if(tool.container_id) { html.id = tool.container_id; }
+          html.innerHTML 
+          
+          // eslint-disable-next-line no-unsanitized/property
+          html.innerHTML = '<span id="' + tool.id + '_label">' +
             tool.label + ':</span>' +
             '<input id="' + tool.id + '" title="' + tool.title +
             '" size="' + (tool.size || '4') +
-            '" value="' + (tool.defval || '') + '" type="text"/></label>';
+            '" value="' + (tool.defval || '') + '" type="text"/>';
 
           // Creates the tool, hides & adds it, returns the select element
 
           // Add to given tool.panel
-          const inp = $(html).appendTo(panel).find('input');
+          panel.appendChild(html);
+          const inp = html.querySelector('input');
 
           if (tool.spindata) {
             inp.SpinButton(tool.spindata);
           }
-
-          if (tool.events) {
-            $.each(tool.events, function (evt, func) {
-              inp.bind(evt, func);
+          if ( tool?.events !== undefined ) {
+            Object.entries(tool.events).forEach((entry) => {
+              const [evt, func] = entry;
+              inp.addEventListener(evt, func);
             });
           }
           break;
@@ -911,11 +986,6 @@ class Editor extends EditorStartup {
     return runCallback();
   }
 
-  /*
-    this.addDropDown('#font_family_dropdown', () => {
-      $('#font_family').val($(this).text()).change();
-    });
-  */
   /**
   * @param {Float} multiplier
   * @returns {void}
@@ -1166,7 +1236,7 @@ class Editor extends EditorStartup {
 
     // const notif = allStrings.notification; // Currently unused
     // $.extend will only replace the given strings
-    const oldLayerName = $('#layerlist tr.layersel td.layername').text();
+    const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
     const renameLayer = (oldLayerName === this.uiStrings.common.layer + ' 1');
 
     this.svgCanvas.setUiStrings(allStrings);
@@ -1186,14 +1256,28 @@ class Editor extends EditorStartup {
       '#linejoin_miter': '#cur_linejoin',
       '#linecap_butt': '#cur_linecap'
     };
-
-    $.each(this.elems, function (source, dest) {
-      $(dest).attr('title', $(source)[0].title);
-    });
+    for (const [source, dest] of Object.entries(this.elems)) {
+      if(dest === '#tool_stroke .color_block'){
+        if($id('tool_stroke')) {
+          $id('tool_stroke').querySelector('.color_block').setAttribute('title', $id(source).title);
+        }
+      } else if(dest === '#tool_fill label, #tool_fill .color_block'){
+        if($id('tool_fill') && $id('tool_fill').querySelector('.color_block')) {
+          $id('tool_fill').querySelector('label').setAttribute('title', $id(source).title);
+          console.log($id('tool_fill').querySelector('.color_block'));
+          $id('tool_fill').querySelector('.color_block').setAttribute('title', $id(source).title);
+        }
+      } else {
+        if ($id(dest)) {
+          $id(dest).setAttribute('title', $id(source).title);
+        }
+      }
+    }
 
     // Copy alignment titles
-    $('#multiselected_panel div[id^=tool_align]').each(() => {
-      $('#tool_pos' + this.id.substr(10))[0].title = this.title;
+    const selElements = $id('multiselected_panel').querySelectorAll('div[id^=tool_align]');
+    Array.from(selElements).forEach(function(element) {
+      $id('tool_pos' + element.id.substr(10)).title = element.title;
     });
   }
 

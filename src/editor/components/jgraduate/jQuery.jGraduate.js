@@ -223,7 +223,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     idref = '#' + $this.getAttribute('id') + ' ';
   // JFH !!!!!
   const $shadowRoot = elem.parentNode;
-  // const $wc = (selector) => $($shadowRoot.querySelectorAll(selector));
 
   if (!idref) {
     // eslint-disable-next-line no-alert

@@ -25,16 +25,9 @@ export default {
     const {svgCanvas} = svgEditor;
     const {$id} = svgCanvas;
     const {$} = S; // {svgcontent},
-    let
-      selElems,
-      // editingitex = false,
-      // svgdoc = S.svgroot.parentNode.ownerDocument,
-      started,
-      newFO;
-      // edg = 0,
-      // newFOG, newFOGParent, newDef, newImageName, newMaskID,
-      // undoCommand = 'Not image',
-      // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
+    let selElems;
+    let started;
+    let newFO;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
     /**
@@ -42,20 +35,9 @@ export default {
      * @param {boolean} on
      * @returns {void}
      */
-    function showPanel (on) {
-      let fcRules = $('#fc_rules');
-      if (!fcRules.length) {
-        fcRules = $('<style id="fc_rules"></style>').appendTo('head');
-      }
-      fcRules.text(!on ? '' : ' #tool_topath { display: none !important; }');
-      $('#star_panel').toggle(on);
+    const showPanel = (on) => {
+      $id('star_panel').style.display = (on) ? 'block' : 'none';
     }
-
-    /*
-    function toggleSourceButtons(on){
-      $('#star_save, #star_cancel').toggle(on);
-    }
-    */
 
     /**
      *
@@ -63,72 +45,63 @@ export default {
      * @param {string|Float} val
      * @returns {void}
      */
-    function setAttr (attr, val) {
+    const setAttr = (attr, val) => {
       svgCanvas.changeSelectedAttribute(attr, val);
       svgCanvas.call('changed', selElems);
     }
 
-    /*
-    function cot(n){
-      return 1 / Math.tan(n);
-    }
-
-    function sec(n){
-      return 1 / Math.cos(n);
-    }
-    */
-    const events = {
-      id: 'tool_star',
-      click () {
-        showPanel(true);
-        svgCanvas.setMode('star');
-      }
-    };
-    const contextTools = [{
-      type: 'input',
-      panel: 'star_panel',
-      id: 'starNumPoints',
-      size: 3,
-      defval: 5,
-      events: {
-        change () {
-          setAttr('point', this.value);
-        }
-      }
-    }, {
-      type: 'input',
-      panel: 'star_panel',
-      id: 'starRadiusMulitplier',
-      size: 3,
-      defval: 2.5
-    }, {
-      type: 'input',
-      panel: 'star_panel',
-      id: 'radialShift',
-      size: 3,
-      defval: 0,
-      events: {
-        change () {
-          setAttr('radialshift', this.value);
-        }
-      }
-    }];
-
     return {
       name: strings.name,
-      events,
-      context_tools: strings.contextTools.map((contextTool, i) => {
-        return Object.assign(contextTools[i], contextTool);
-      }),
+      // The callback should be used to load the DOM with the appropriate UI items
       callback () {
-        if($id("star_panel") !== null) $id("star_panel").style.display = 'none';
-        // const endChanges = function(){};
+        // Add the button and its handler(s)
+        // Note: the star extension may also add the same flying button so we check first
+        if ($id('tools_polygon') === null) {
+          const buttonTemplate = document.createElement("template");
+          buttonTemplate.innerHTML = `
+            <se-flyingbutton id="tools_polygon" title="Polygone/Star Tool">
+              <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
+              <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
+            </se-flyingbutton>
+          `
+          $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+        }
+        $id('tool_star').addEventListener("click", () => { showPanel(true);
+          if (this.leftPanel.updateLeftPanel('tool_polygon')) {
+            svgCanvas.setMode('star');
+            showPanel(true);
+          }   
+        });
+
+        // Add the context panel and its handler(s)
+        const panelTemplate = document.createElement("template");
+        panelTemplate.innerHTML = `
+          <div id="star_panel">
+            <se-spin-input id="starNumPoints" label="points" min=1 step=1 value=5 title="Change rotation angle">
+            </se-spin-input>
+            <se-spin-input id="RadiusMultiplier" label="Radis multiplier" min=1 step=2.5 value=5 title="Change rotation angle">
+            </se-spin-input>
+            <se-spin-input id="radialShift" min=0 step=1 value=0 label="radial shift" title="Change rotation angle">
+            </se-spin-input>
+          </div>
+        `
+        //add handlers for the panel
+        $id('tools_top').appendChild(panelTemplate.content.cloneNode(true));
+        $id("starNumPoints").addEventListener("change", (event) => {
+          setAttr('point', event.target.value);
+        });
+        $id("RadiusMultiplier").addEventListener("change", (event) => {
+          setAttr('starRadiusMultiplier', event.target.value);
+        });
+        $id("radialShift").addEventListener("change", (event) => {
+          setAttr('radialshift', event.target.value);
+        });
+        // don't display the star panel on start
+        $id("star_panel").style.display = 'none';
       },
       mouseDown (opts) {
         const rgb = svgCanvas.getColor('fill');
-        // const ccRgbEl = rgb.substring(1, rgb.length);
         const sRgb = svgCanvas.getColor('stroke');
-        // const ccSRgbEl = sRgb.substring(1, rgb.length);
         const sWidth = svgCanvas.getStrokeWidth();
 
         if (svgCanvas.getMode() === 'star') {
@@ -162,13 +135,20 @@ export default {
           return undefined;
         }
         if (svgCanvas.getMode() === 'star') {
-          const c = $(newFO).attr(['cx', 'cy', 'point', 'orient', 'fill', 'strokecolor', 'strokeWidth', 'radialshift']);
+          const cx = Number(newFO.getAttribute('cx'));
+          const cy = Number(newFO.getAttribute('cy'));
+          const point = Number(newFO.getAttribute('point'));
+          const orient = newFO.getAttribute('orient');
+          const fill = newFO.getAttribute('fill');
+          const strokecolor = newFO.getAttribute('strokecolor');
+          const strokeWidth = Number(newFO.getAttribute('strokeWidth'));
+          const radialshift = Number(newFO.getAttribute('radialshift'));
 
           let x = opts.mouse_x;
           let y = opts.mouse_y;
-          const {cx, cy, fill, strokecolor, strokeWidth, radialshift, point, orient} = c,
-            circumradius = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5,
-            inradius = circumradius / document.getElementById('starRadiusMulitplier').value;
+
+          const circumradius = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5;
+          const inradius = circumradius / document.getElementById('RadiusMultiplier').value;
           newFO.setAttribute('r', circumradius);
           newFO.setAttribute('r2', inradius);
 
@@ -215,10 +195,9 @@ export default {
       },
       mouseUp () {
         if (svgCanvas.getMode() === 'star') {
-          const attrs = $(newFO).attr(['r']);
-          // svgCanvas.addToSelection([newFO], true);
+          const r = newFO.getAttribute('r');
           return {
-            keep: (attrs.r !== '0'),
+            keep: (r !== '0'),
             element: newFO
           };
         }
@@ -233,9 +212,8 @@ export default {
           const elem = selElems[i];
           if (elem && elem.getAttribute('shape') === 'star') {
             if (opts.selectedElement && !opts.multiselected) {
-              // $('#starRadiusMulitplier').val(elem.getAttribute('r2'));
-              $('#starNumPoints').val(elem.getAttribute('point'));
-              $('#radialShift').val(elem.getAttribute('radialshift'));
+              $id('starNumPoints').value = elem.getAttribute('point');
+              $id('radialShift').value = elem.getAttribute('radialshift');
               showPanel(true);
             } else {
               showPanel(false);

@@ -72,7 +72,7 @@ export default {
      * @returns {void}
      */
     function showPanel (on) {
-      $('#placemark_panel').toggle(on);
+      $id('placemark_panel').style.display = (on) ? 'block' : 'none';
     }
 
     /**
@@ -104,10 +104,11 @@ export default {
       const items = txt.split(';');
       selElems.forEach((elem) => {
         if (elem && elem.getAttribute('class').includes('placemark')) {
-          $(elem).children().each((_, i) => {
+          var elements = elem.children;
+          Array.prototype.forEach.call(elements, function(i, _){
             const [, , type, n] = i.id.split('_');
             if (type === 'txt') {
-              $(i).text(items[n]);
+              t.textContent = items[n];
             }
           });
         }
@@ -124,10 +125,11 @@ export default {
       font = font.join(' ');
       selElems.forEach((elem) => {
         if (elem && elem.getAttribute('class').includes('placemark')) {
-          $(elem).children().each((_, i) => {
+          var elements = elem.children;
+          Array.prototype.forEach.call(elements, function(i, _){
             const [, , type] = i.id.split('_');
             if (type === 'txt') {
-              $(i).attr({'font-family': font, 'font-size': fontSize});
+              i.style.cssText = 'font-family:' + font + ';font-size:'+fontSize+';';
             }
           });
         }
@@ -141,13 +143,12 @@ export default {
     function addMarker (id, val) {
       let marker = svgCanvas.getElem(id);
       if (marker) { return undefined; }
-      // console.log(id);
       if (val === '' || val === 'nomarker') { return undefined; }
       const color = svgCanvas.getColor('stroke');
       // NOTE: Safari didn't like a negative value in viewBox
       // so we use a standardized 0 0 100 100
       // with 50 50 being mapped to the marker position
-      const scale = 2;// parseFloat($('#marker_size').val());
+      const scale = 2;
       const strokeWidth = 10;
       let refX = 50;
       const refY = 50;
@@ -200,7 +201,7 @@ export default {
     function setMarker (el, val) {
       const markerName = 'marker-start';
       const marker = getLinked(el, markerName);
-      if (marker) { $(marker).remove(); }
+      if (marker) { marker.remove(); }
       el.removeAttribute(markerName);
       if (val === 'nomarker') {
         svgCanvas.call('changed', [el]);
@@ -249,7 +250,7 @@ export default {
         const len = el.id.length;
         const linkid = url.substr(-len - 1, len);
         if (el.id !== linkid) {
-          const val = $('#placemark_marker').attr('value') || 'leftarrow';
+          const val = $id('placemark_marker').getAttribute('value') || 'leftarrow';
           addMarker(id, val);
           svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
           svgCanvas.call('changed', selElems);
@@ -264,7 +265,7 @@ export default {
       const parts = this.id.split('_');
       let val = parts[2];
       if (parts[3]) { val += '_' + parts[3]; }
-      $('#placemark_marker').attr('value', val);
+      $id('placemark_marker').setAttribute('value', val);
     }
 
     /**
@@ -368,8 +369,8 @@ export default {
         if (svgCanvas.getMode() === 'placemark') {
           started = true;
           const id = svgCanvas.getNextId();
-          const items = $('#placemarkText').val().split(';');
-          let font = $('#placemarkFont').val().split(' ');
+          const items = $id('placemarkText').value.split(';');
+          let font = $id('placemarkFont').value.split(' ');
           const fontSize = Number.parseInt(font.pop());
           font = font.join(' ');
           const x0 = opts.start_x + 10, y0 = opts.start_y + 10;
@@ -453,7 +454,7 @@ export default {
           });
           setMarker(
             newPM.firstElementChild,
-            $('#placemark_marker').attr('value') || 'leftarrow'
+            $id('placemark_marker').getAttribute('value') || 'leftarrow'
           );
           return {
             started: true
@@ -468,11 +469,16 @@ export default {
         if (svgCanvas.getMode() === 'placemark') {
           const x = opts.mouse_x / svgCanvas.getZoom();
           const y = opts.mouse_y / svgCanvas.getZoom();
-          const {fontSize, maxlen, lines, px, py} = $(newPM).attr(
-            ['fontSize', 'maxlen', 'lines', 'px', 'py']
-          );
-          $(newPM).attr({x, y});
-          $(newPM).children().each((_, i) => {
+          const fontSize = newPM.getAttribute('fontSize');
+          const maxlen = newPM.getAttribute('maxlen');
+          const lines = newPM.getAttribute('lines');
+          const px = newPM.getAttribute('px');
+          const py = newPM.getAttribute('py');
+
+          newPM.setAttribute('x', x);
+          newPM.setAttribute('y', y);
+          const elements = newPM.children;
+          Array.prototype.forEach.call(elements, function(i, _){
             const [, , type, n] = i.id.split('_');
             const y0 = y + (fontSize + 6) * n,
               x0 = x + maxlen * fontSize * 0.5 + fontSize;
@@ -509,7 +515,10 @@ export default {
       },
       mouseUp () {
         if (svgCanvas.getMode() === 'placemark') {
-          const {x, y, px, py} = $(newPM).attr(['x', 'y', 'px', 'py']);
+          const x = newPM.getAttribute('x');
+          const y = newPM.getAttribute('y');
+          const px = newPM.getAttribute('px');
+          const py = newPM.getAttribute('py');
           return {
             keep: (x != px && y != py), // eslint-disable-line eqeqeq
             element: newPM
@@ -523,16 +532,17 @@ export default {
         selElems.forEach((elem) => {
           if (elem && elem.getAttribute('class').includes('placemark')) {
             const txt = [];
-            $(elem).children().each((n, i) => {
+            const elements = elem.children;
+            Array.prototype.forEach.call(elements, function(i, n){
               const [, , type] = i.id.split('_');
               if (type === 'txt') {
-                $('#placemarkFont').val(
+                $id('placemarkFont').value = (
                   i.getAttribute('font-family') + ' ' + i.getAttribute('font-size')
                 );
-                txt.push($(i).text());
+                txt.push(i.textContent);
               }
             });
-            $('#placemarkText').val(txt.join(';'));
+            $id('placemarkText').value = txt.join(';');
             showPanel(true);
           } else {
             showPanel(false);

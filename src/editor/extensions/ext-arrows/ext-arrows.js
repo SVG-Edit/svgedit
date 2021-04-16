@@ -89,7 +89,7 @@ export default {
     * @returns {void}
     */
     function showPanel (on) {
-      $('#arrow_panel').toggle(on);
+      $id('arrow_panel').style.display = (on) ? 'block' : 'none';
       if (on) {
         const el = selElems[0];
         const end = el.getAttribute('marker-end');
@@ -219,21 +219,22 @@ export default {
         const marker = getLinked(elem, 'marker-' + type);
         if (!marker) { return; }
 
-        const curColor = $(marker).children().attr('fill');
-        const curD = $(marker).children().attr('d');
+        const curColor = marker.children.getAttribute('fill');        
+        const curD = marker.children.getAttribute('d');
         if (curColor === color) { return; }
 
-        const allMarkers = $(defs).find('marker');
+        const allMarkers = defs.querySelectorAll('marker');
         let newMarker = null;
         // Different color, check if already made
-        allMarkers.each(function () {
-          const attrs = $(this).children().attr(['fill', 'd']);
-          if (attrs.fill === color && attrs.d === curD) {
+        Array.from(allMarkers).forEach(function(marker) {
+          const attrsFill = marker.children.getAttribute('fill');
+          const attrsD = marker.children.getAttribute('d');
+          if (attrsFill === color && attrsD === curD) {
             // Found another marker with this color and this path
-            newMarker = this;
+            newMarker = marker;
           }
         });
-
+        
         if (!newMarker) {
           // Create a new marker with this color
           const lastId = marker.id;
@@ -241,17 +242,17 @@ export default {
 
           newMarker = addMarker(dir, type, arrowprefix + dir + allMarkers.length);
 
-          $(newMarker).children().attr('fill', color);
+          newMarker.children.setAttribute('fill', color);
         }
 
-        $(elem).attr('marker-' + type, 'url(#' + newMarker.id + ')');
+        elem.setAttribute('marker-' + type, 'url(#' + newMarker.id + ')');
 
         // Check if last marker can be removed
         let remove = true;
-        $(S.svgcontent).find('line, polyline, path, polygon').each(function () {
-          const element = this;
-          $.each(mtypes, function (j, mtype) {
-            if ($(element).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
+        const sElements = S.svgcontent.querySelectorAll('line, polyline, path, polygon');
+        Array.prototype.forEach.call(sElements, function(element, i){
+          mtypes.forEach(function(mtype, j){
+            if (element.getAttribute('marker-' + mtype) === 'url(#' + marker.id + ')') {
               remove = false;
               return remove;
             }
@@ -263,7 +264,7 @@ export default {
 
         // Not found, so can safely remove
         if (remove) {
-          $(marker).remove();
+          marker.remove();
         }
       });
     }
@@ -289,7 +290,7 @@ export default {
         $id("arrow_panel").style.display = 'none';
         
         // Set ID so it can be translated in locale file
-        $('#arrow_list option')[0].id = 'connector_no_arrow';
+        $id('arrow_list option').setAttribute('id', 'connector_no_arrow');
       },
       async addLangData ({lang, importLocale}) {
         const {langList} = await importLocale();

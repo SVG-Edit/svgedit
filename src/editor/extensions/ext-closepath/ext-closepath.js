@@ -38,7 +38,7 @@ export default {
       $id("showbutton").style.display = 'block';
     };
     const showPanel = function (on) {
-      $('#closepath_panel').toggle(on);
+      $id('closepath_panel').style.display = (on) ? 'block' : 'none';
       if (on) {
         const path = selElems[0];
         if (path) { updateButton(path); }

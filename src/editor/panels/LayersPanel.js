@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 /* eslint-disable no-alert */
-/* globals $ */
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
 
 const SIDEPANEL_MAXWIDTH = 300;
@@ -324,7 +323,6 @@ class LayersPanel {
    * @returns {void}
    */
   layerRename() {
-    // const curIndex = $('#layerlist tr.layersel').prevAll().length; // Currently unused
     const oldName = document.querySelector("#layerlist tr.layersel td.layername").textContent;
     const newName = prompt(this.uiStrings.notification.enterNewLayerName, "");
     if (!newName) {
@@ -375,58 +373,73 @@ class LayersPanel {
    */
   populateLayers() {
     this.editor.svgCanvas.clearSelection();
-    const layerlist = $("#layerlist tbody").empty();
-    const selLayerNames = $("#selLayerNames").empty();
+    const self = this;
+    const layerlist = $id("layerlist").querySelector('tbody');
+    while(layerlist.firstChild)
+      layerlist.removeChild(layerlist.firstChild);
+
+    const selLayerNames = $id("selLayerNames");
+    // empty() ref: http://youmightnotneedjquery.com/#empty
+    while(selLayerNames.firstChild)
+      selLayerNames.removeChild(selLayerNames.firstChild);
     const drawing = this.editor.svgCanvas.getCurrentDrawing();
     const currentLayerName = drawing.getCurrentLayerName();
     let layer = this.editor.svgCanvas.getCurrentDrawing().getNumLayers();
     // we get the layers in the reverse z-order (the layer rendered on top is listed first)
     while (layer--) {
       const name = drawing.getLayerName(layer);
-      const layerTr = $('<tr class="layer">').toggleClass(
-        "layersel",
-        name === currentLayerName
-      );
-      const layerVis = $('<td class="layervis">').toggleClass(
-        "layerinvis",
-        !drawing.getLayerVisibility(name)
-      );
-      const layerName = $('<td class="layername">' + name + "</td>");
-      layerlist.append(layerTr.append(layerVis, layerName));
-      selLayerNames.append(
-        '<option value="' + name + '">' + name + "</option>"
-      );
+      const layerTr = document.createElement("tr");      
+      layerTr.className = (name === currentLayerName) ? 'layer layersel' : 'layer';
+      const layerVis = document.createElement("td");
+      layerVis.className = (!drawing.getLayerVisibility(name)) ? "layerinvis layervis" : 'layervis';
+      const layerName = document.createElement("td");
+      layerName.className = 'layername';
+      layerName.textContent = name;
+      layerTr.appendChild(layerVis);
+      layerTr.appendChild(layerName);
+      layerlist.appendChild(layerTr);
+      // eslint-disable-next-line no-unsanitized/property
+      selLayerNames.innerHTML += '<option value="' + name + '">' + name + '</option>';
     }
     // handle selection of layer
-    $("#layerlist td.layername")
-      .mouseup(evt => {
-        $("#layerlist tr.layer").removeClass("layersel");
-        $(evt.currentTarget.parentNode).addClass("layersel");
-        this.editor.svgCanvas.setCurrentLayer(evt.currentTarget.textContent);
-        evt.preventDefault();
-      })
-      .mouseover(evt => {
-        this.toggleHighlightLayer(
-          this.editor.svgCanvas,
+    const nelements = $id('layerlist').querySelectorAll("td.layername");
+    Array.from(nelements).forEach(function(element) {
+      element.addEventListener('mouseup', function(evt) {
+        const trElements = $id('layerlist').querySelectorAll("tr.layer");
+        Array.from(trElements).forEach(function(element) {
+          element.classList.remove("layersel");
+        });
+        evt.currentTarget.parentNode.classList.add("layersel");
+        self.editor.svgCanvas.setCurrentLayer(evt.currentTarget.textContent);
+        evt.preventDefault();        
+      });
+      element.addEventListener('mouseup', function(evt) {
+        self.toggleHighlightLayer(
+          self.editor.svgCanvas,
           evt.currentTarget.textContent
         );
-      })
-      .mouseout(() => {
-        this.toggleHighlightLayer(this.editor.svgCanvas);
       });
-    $("#layerlist td.layervis").click(evt => {
-      const row = $(evt.currentTarget.parentNode).prevAll().length;
-      const name = $("#layerlist tr.layer:eq(" + row + ") td.layername").text();
-      const vis = $(evt.currentTarget).hasClass("layerinvis");
-      this.editor.svgCanvas.setLayerVisibility(name, vis);
-      $(evt.currentTarget).toggleClass("layerinvis");
+      element.addEventListener('mouseout', function(evt) {
+        self.toggleHighlightLayer(self.editor.svgCanvas);
+      });
+    });
+    const elements = $id('layerlist').querySelectorAll("td.layervis");
+    Array.from(elements).forEach(function(element) {
+      element.addEventListener('click', function(evt) {
+        const name = evt.currentTarget.parentNode.querySelector("td.layername").textContent;
+        const vis = evt.currentTarget.classList.contains("layerinvis");
+        self.editor.svgCanvas.setLayerVisibility(name, vis);
+        evt.currentTarget.classList.toggle("layerinvis");
+      });
     });
 
     // if there were too few rows, let's add a few to make it not so lonely
-    let num = 5 - $("#layerlist tr.layer").size();
+    let num = 5 - $id('layerlist').querySelectorAll("tr.layer").length;
     while (num-- > 0) {
       // TODO: there must a better way to do this
-      layerlist.append('<tr><td style="color:white">_</td><td/></tr>');
+      const tlayer = document.createElement("tr");
+      tlayer.innerHTML = '<td style="color:white">_</td><td/>';
+      layerlist.append(tlayer);
     }
   }
 }

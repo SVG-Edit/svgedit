@@ -20,6 +20,7 @@ import {
 import {
   BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
 } from './history.js';
+import {getParentsUntil} from '../editor/components/jgraduate/Util.js';
 
 const $ = jQuery;
 
@@ -49,10 +50,10 @@ function historyRecordingService (hrService) {
  * @returns {string} The layer name or empty string.
  */
 function findLayerNameInGroup (group) {
-  return $('title', group).text() ||
+  return group.querySelector('title').textContent ||
     (isOpera() && group.querySelectorAll
       // Hack for Opera 10.60
-      ? $(group.querySelectorAll('title')).text()
+      ? group.querySelector('title').textContent 
       : '');
 }
 
@@ -158,7 +159,7 @@ export class Drawing {
       return this.svgElem_.querySelector('#' + id);
     }
     // jQuery lookup: twice as slow as xpath in FF
-    return $(this.svgElem_).find('[id=' + id + ']')[0];
+    return this.svgElem_.querySelector('[id=' + id + ']');
   }
 
   /**
@@ -391,7 +392,7 @@ export class Drawing {
   */
   mergeLayer (hrService) {
     const currentGroup = this.current_layer.getGroup();
-    const prevGroup = $(currentGroup).prev()[0];
+    const prevGroup = currentGroup.previousElementSibling;
     if (!prevGroup) { return; }
 
     hrService.startBatchCommand('Merge Layer');
@@ -710,7 +711,6 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 /**
  * @interface module:draw.DrawCanvasInit
  * @property {module:path.pathActions} pathActions
- * @property {external:jQuery.data} elData
  * @property {module:history.UndoManager} undoMgr
  */
 /**
@@ -992,7 +992,7 @@ export const leaveContext = function () {
   if (len) {
     for (let i = 0; i < len; i++) {
       const elem = disabledElems[i];
-      const orig = canvas_.elData(elem, 'orig_opac');
+      const orig = dataStorage.get(elem, 'orig_opac');
       if (orig !== 1) {
         elem.setAttribute('opacity', orig);
       } else {
@@ -1024,15 +1024,25 @@ export const setContext = function (elem) {
   canvas_.setCurrentGroup(elem);
 
   // Disable other elements
-  $(elem).parentsUntil('#svgcontent').andSelf().siblings().each(function () {
-    const opac = this.getAttribute('opacity') || 1;
-    // Store the original's opacity
-    canvas_.elData(this, 'orig_opac', opac);
-    this.setAttribute('opacity', opac * 0.33);
-    this.setAttribute('style', 'pointer-events: none');
-    disabledElems.push(this);
+  const parentsUntil = getParentsUntil(elem, '#svgcontent');
+  let siblings = [];
+  parentsUntil.forEach(function (parent) {
+    const elements = Array.prototype.filter.call(parent.parentNode.children, function(child){
+      return child !== parent;
+    });
+    elements.forEach(function (element) {
+      siblings.push(element);
+    });
   });
 
+  siblings.forEach(function (curthis) {
+    const opac = curthis.getAttribute('opacity') || 1;
+    // Store the original's opacity
+    dataStorage.put(curthis, 'orig_opac', opac);
+    curthis.setAttribute('opacity', opac * 0.33);
+    curthis.setAttribute('style', 'pointer-events: none');
+    disabledElems.push(curthis);
+  });
   canvas_.clearSelection();
   canvas_.call('contextset', canvas_.getCurrentGroup());
 };

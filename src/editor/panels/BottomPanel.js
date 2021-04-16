@@ -140,7 +140,6 @@ class BottomPanel {
     * @type {module}
     */
     handleOpacity (evt) {
-      // if ($(this).find('div').length) { return; }
       const val = Number.parseInt(evt.currentTarget.value.split('%')[0]);
       this.editor.svgCanvas.setOpacity(val / 100);
     }

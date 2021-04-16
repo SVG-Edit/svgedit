@@ -363,8 +363,8 @@ export const mouseMoveEvent = function (evt) {
 
     break;
   } case 'circle': {
-    c = $(shape).attr(['cx', 'cy']);
-    ({cx, cy} = c);
+    cx = shape.getAttribute('cx');
+    cy = shape.getAttribute('cy');
     let rad = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
     if (eventContext_.getCurConfig().gridSnapping) {
       rad = snapToGrid(rad);
@@ -372,8 +372,8 @@ export const mouseMoveEvent = function (evt) {
     shape.setAttribute('r', rad);
     break;
   } case 'ellipse': {
-    c = $(shape).attr(['cx', 'cy']);
-    ({cx, cy} = c);
+    cx = shape.getAttribute('cx');
+    cy = shape.getAttribute('cy');
     if (eventContext_.getCurConfig().gridSnapping) {
       x = snapToGrid(x);
       cx = snapToGrid(cx);
@@ -672,23 +672,28 @@ export const mouseUpEvent = function (evt) {
     }
     break;
   } case 'line':
-    attrs = $(element).attr(['x1', 'x2', 'y1', 'y2']);
-    keep = (attrs.x1 !== attrs.x2 || attrs.y1 !== attrs.y2);
+    const x1 = element.getAttribute('x1');
+    const y1 = element.getAttribute('y1');
+    const x2 = element.getAttribute('x2');
+    const y2 = element.getAttribute('y2');
+    keep = (x1 !== x2 || y1 !== y2);
     break;
   case 'foreignObject':
   case 'square':
   case 'rect':
   case 'image':
-    attrs = $(element).attr(['width', 'height']);
+    const width = element.getAttribute('width');
+    const height = element.getAttribute('height');
     // Image should be kept regardless of size (use inherit dimensions later)
-    keep = (attrs.width || attrs.height) || eventContext_.getCurrentMode() === 'image';
+    keep = (width || height) || eventContext_.getCurrentMode() === 'image';
     break;
   case 'circle':
     keep = (element.getAttribute('r') !== '0');
     break;
   case 'ellipse':
-    attrs = $(element).attr(['rx', 'ry']);
-    keep = (attrs.rx || attrs.ry);
+    const rx = element.getAttribute('rx');
+    const ry = element.getAttribute('ry');
+    keep = (rx || ry);
     break;
   case 'fhellipse':
     if ((eventContext_.getFreehand('maxx') - eventContext_.getFreehand('minx')) > 0 &&
@@ -829,13 +834,13 @@ t.id !== 'svgcanvas' && t.id !== 'svgroot'
     const curShape = eventContext_.getCanvas().getStyle();
     const opacAni = eventContext_.getOpacAni();
     if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
-      cAni = $(opacAni).clone().attr({
-        to: curShape.opacity,
-        dur: aniDur
-      }).appendTo(element);
+      cAni = opacAni.cloneNode(true);
+      cAni.setAttribute('to', curShape.opacity);
+      cAni.setAttribute('dur', aniDur);
+      element.appendChild(cAni);
       try {
         // Fails in FF4 on foreignObject
-        cAni[0].beginElement();
+        cAni.beginElement();
       } catch (e) {/* empty fn */}
     } else {
       aniDur = 0;
@@ -916,6 +921,8 @@ export const mouseDownEvent = function (evt) {
   const selectedElements = eventContext_.getSelectedElements();
   const currentZoom = eventContext_.getCurrentZoom();
   const curShape = eventContext_.getCanvas().getStyle();
+  const svgCanvas = eventContext_.getCanvas();
+  const {$id} = svgCanvas;
   if (eventContext_.getCanvas().spaceKey || evt.button === 1) { return; }
 
   const rightClick = evt.button === 2;
@@ -924,7 +931,7 @@ export const mouseDownEvent = function (evt) {
     eventContext_.getCanvas().cloneSelectedElements(0, 0);
   }
 
-  eventContext_.setRootSctm($('#svgcontent g')[0].getScreenCTM().inverse());
+  eventContext_.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
 
   const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm()),
     mouseX = pt.x * currentZoom,
@@ -936,11 +943,6 @@ export const mouseDownEvent = function (evt) {
     eventContext_.setCurrentMode('select');
     eventContext_.setLastClickPoint(pt);
   }
-
-  // This would seem to be unnecessary...
-  // if (!['select', 'resize'].includes(currentMode)) {
-  //   setGradient();
-  // }
 
   let x = mouseX / currentZoom,
     y = mouseY / currentZoom;
@@ -970,14 +972,14 @@ export const mouseDownEvent = function (evt) {
 
   if (mouseTarget === eventContext_.getCanvas().selectorManager.selectorParentGroup && !isNullish(selectedElements[0])) {
     const grip = evt.target;
-    const griptype = eventContext_.elData(grip, 'type');
+    const griptype = dataStorage.get(grip, 'type');
     // rotating
     if (griptype === 'rotate') {
       eventContext_.setCurrentMode('rotate');
       // resizing
     } else if (griptype === 'resize') {
       eventContext_.setCurrentMode('resize');
-      eventContext_.setCurrentResizeMode(eventContext_.elData(grip, 'dir'));
+      eventContext_.setCurrentResizeMode(dataStorage.get(grip, 'dir'));
     }
     mouseTarget = selectedElements[0];
   }
@@ -1027,10 +1029,6 @@ export const mouseDownEvent = function (evt) {
       }
       eventContext_.setRStartX(eventContext_.getRStartX() * currentZoom);
       eventContext_.setRStartY(eventContext_.getRStartY() * currentZoom);
-      // console.log('p',[evt.pageX, evt.pageY]);
-      // console.log('c',[evt.clientX, evt.clientY]);
-      // console.log('o',[evt.offsetX, evt.offsetY]);
-      // console.log('s',[startX, startY]);
 
       assignAttributes(eventContext_.getRubberBox(), {
         x: eventContext_.getRStartX(),
@@ -1061,7 +1059,7 @@ export const mouseDownEvent = function (evt) {
 
     // Getting the BBox from the selection box, since we know we
     // want to orient around it
-    eventContext_.setInitBbox(utilsGetBBox($('#selectedBox0')[0]));
+    eventContext_.setInitBbox(utilsGetBBox($id('selectedBox0')));
     const bb = {};
     $.each(eventContext_.getInitBbox(), function (key, val) {
       bb[key] = val / currentZoom;
@@ -1307,12 +1305,14 @@ export const mouseDownEvent = function (evt) {
  */
 export const DOMMouseScrollEvent = function (e) {
   const currentZoom = eventContext_.getCurrentZoom();
+  const svgCanvas = eventContext_.getCanvas();
+  const {$id} = svgCanvas;
   if (!e.shiftKey) { return; }
 
   e.preventDefault();
   const evt = e.originalEvent;
 
-  eventContext_.setRootSctm($('#svgcontent g')[0].getScreenCTM().inverse());
+  eventContext_.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
 
   const workarea = document.getElementById('workarea');
   const scrbar = 15;

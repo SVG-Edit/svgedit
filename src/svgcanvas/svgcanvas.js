@@ -9,11 +9,6 @@
  *
  */
 
-/* Dependencies:
-1. Also expects jQuery UI for `svgCanvasToString` and
-`convertToGroup` use of `:data()` selector
-*/
-
 import {Canvg as canvg} from 'canvg';
 import 'pathseg';
 
@@ -115,6 +110,9 @@ import {
   clearSvgContentElementInit,
   init as clearInit
 } from './clear.js';
+import {
+  getClosest, getParents
+} from '../editor/components/jgraduate/Util.js';
 
 const $ = jQueryPluginSVG(jQuery);
 const {
@@ -193,6 +191,8 @@ class SvgCanvas {
     this.$id = $id;
     this.$qq = $qq;
     this.$qa = $qa;
+    this.getClosest = getClosest;
+    this.getParents = getParents;
 
     this.isLayer = draw.Layer.isLayer;
 
@@ -528,7 +528,10 @@ class SvgCanvas {
 
     const restoreRefElems = function (elem) {
       // Look for missing reference elements, restore any found
-      const attrs = $(elem).attr(refAttrs);
+      let attrs = {};
+      refAttrs.forEach(function(item, _){
+        attrs[item] = elem.getAttribute(item);
+      });
       Object.values(attrs).forEach((val) => {
         if (val && val.startsWith('url(')) {
           const id = getUrlFromAttr(val).substr(1);
@@ -731,16 +734,13 @@ class SvgCanvas {
     // Interface strings, usually for title elements
     const uiStrings = {};
 
-    const elData = $.data;
-
     // Animation element to change the opacity of any newly created element
     const opacAni = document.createElementNS(NS.SVG, 'animate');
-    $(opacAni).attr({
-      attributeName: 'opacity',
-      begin: 'indefinite',
-      dur: 1,
-      fill: 'freeze'
-    }).appendTo(svgroot);
+    opacAni.setAttribute('attributeName', 'opacity');
+    opacAni.setAttribute('begin', 'indefinite');
+    opacAni.setAttribute('dur', 1);
+    opacAni.setAttribute('fill', 'freeze');
+    svgroot.appendChild(opacAni);
 
     // (function () {
     // TODO For Issue 208: this is a start on a thumbnail
@@ -1140,7 +1140,11 @@ class SvgCanvas {
       const currentLayer = getCurrentDrawing().getCurrentLayer();
       if (currentLayer) {
         currentMode = 'select';
-        selectOnly($(currentGroup || currentLayer).children());
+        if(currentGroup){
+          selectOnly(currentGroup.children);
+        } else {
+          selectOnly(currentLayer.children);
+        }
       }
     };
 
@@ -1251,7 +1255,6 @@ class SvgCanvas {
           getSVGRoot,
           getSVGContent,
           call,
-          elData,
           getIntersectionList
         }
       );
@@ -1304,11 +1307,16 @@ class SvgCanvas {
 
       // Added mouseup to the container here.
       // TODO(codedread): Figure out why after the Closure compiler, the window mouseup is ignored.
-      $(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas).dblclick(dblClick).mouseup(mouseUp);
-      // $(window).mouseup(mouseUp);
+      container.addEventListener('mousedown', mouseDown);
+      container.addEventListener('mousemove', mouseMove);
+      container.addEventListener('click', handleLinkInCanvas);
+      container.addEventListener('dblclick', dblClick);
+      container.addEventListener('mouseup', mouseUp);
 
       // TODO(rafaelcastrocouto): User preference for shift key and zoom factor
-      $(container).bind('mousewheel DOMMouseScroll', DOMMouseScrollEvent);
+      container.addEventListener('mousewheel', DOMMouseScrollEvent);
+      container.addEventListener('DOMMouseScroll', DOMMouseScrollEvent);
+
     }());
 
     textActionsInit(
@@ -1620,7 +1628,6 @@ class SvgCanvas {
         getSelectedElements,
         getSVGContent,
         undoMgr,
-        elData,
         getCurrentDrawing,
         clearSelection,
         call,
@@ -1823,7 +1830,7 @@ class SvgCanvas {
 * position in the editor's canvas.
 */
     this.getOffset = function () {
-      return $(svgcontent).attr(['x', 'y']);
+      return {x: svgcontent.getAttribute('x'), y: svgcontent.getAttribute('y')};
     };
 
     /**
@@ -2753,6 +2760,8 @@ SvgCanvas.decode64 = decode64;
 SvgCanvas.$id = $id;
 SvgCanvas.$qq = $qq;
 SvgCanvas.$qa = $qa;
+SvgCanvas.getClosest = getClosest;
+SvgCanvas.getParents = getParents;
 SvgCanvas.blankPageObjectURL = blankPageObjectURL;
 
 export default SvgCanvas;

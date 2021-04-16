@@ -44,7 +44,7 @@ class Layer {
       layerTitle.textContent = name;
       this.group_.append(layerTitle);
       if (group) {
-        $(group).after(this.group_);
+        group.insertAdjacentElement('afterend', this.group_);
       } else {
         svgElem.append(this.group_);
       }
@@ -172,7 +172,8 @@ class Layer {
     // now change the underlying title element contents
     const title = this.getTitleElement();
     if (title) {
-      $(title).empty();
+      while(title.firstChild)
+        title.removeChild(title.firstChild);
       title.textContent = name;
       this.name_ = name;
       if (hrService) {

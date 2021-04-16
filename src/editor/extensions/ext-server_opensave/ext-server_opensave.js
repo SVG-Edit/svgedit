@@ -63,14 +63,16 @@ export default {
       if (avoidClientSide || avoidClientSideDownload) {
         return false;
       }
-      const support = $('<a>')[0].download === '';
+      const support = document.querySelector('a').download === '';
       let a;
       if (support) {
-        a = $('<a>hidden</a>').attr({
-          download: (filename || 'image') + suffix,
-          href: uri
-        }).css('display', 'none').appendTo('body');
-        a[0].click();
+        a = document.createElement("a");
+        a.text = 'hidden';
+        a.download = (filename || 'image') + suffix;
+        a.href = uri;
+        a.style.dispaly = 'none';
+        document.body.appendChild(a);
+        a.click();
         return true;
       }
       return false;
@@ -84,10 +86,13 @@ export default {
 
     //  Hiding by size instead of display to avoid FF console errors
     //    with `getBBox` in browser.js `supportsPathBBox_`)
-    $(
-      `<iframe name="output_frame" title="${strings.hiddenframe}"
-          style="width: 0; height: 0;" src="data:text/html;base64,PGh0bWw+"/>`
-    ).appendTo('body');
+    const iframe = document.createElement('IFRAME');
+    iframe.src="data:text/html;base64,PGh0bWw+";
+    document.body.append(iframe);
+    iframe.name = "output_frame";
+    iframe.contentWindow.document.title = strings.hiddenframe;
+    iframe.style.cssText = "width:0;height:0;";
+
     svgEditor.setCustomHandlers({
       save (win, data) {
         const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
@@ -97,15 +102,16 @@ export default {
           return;
         }
 
-        $('<form>').attr({
-          method: 'post',
-          action: saveSvgAction,
-          target: 'output_frame'
-        }).append(`
-          <input type="hidden" name="output_svg" value="${xhtmlEscape(svg)}">
-          <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">
-        `).appendTo('body')
-          .submit().remove();
+        const form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', saveSvgAction);
+        form.setAttribute('target', 'output_frame');
+        // eslint-disable-next-line no-unsanitized/property
+        form.innerHTML = `<input type="hidden" name="output_svg" value="${xhtmlEscape(svg)}">
+        <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">`;
+        document.body.append(form);
+        form.submit();
+        form.remove();
       },
       exportPDF (win, data) {
         const filename = getFileNameFromTitle(),
@@ -113,28 +119,32 @@ export default {
         if (clientDownloadSupport(filename, '.pdf', datauri)) {
           return;
         }
-        $('<form>').attr({
-          method: 'post',
-          action: saveImgAction,
-          target: 'output_frame'
-        }).append(`
-          <input type="hidden" name="output_img" value="${datauri}">
-          <input type="hidden" name="mime" value="application/pdf">
-          <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">
-        `).appendTo('body')
-          .submit().remove();
+        const form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', saveImgAction);
+        form.setAttribute('target', 'output_frame');
+        // eslint-disable-next-line no-unsanitized/property
+        form.innerHTML = `<input type="hidden" name="output_img" value="${datauri}">
+        <input type="hidden" name="mime" value="application/pdf">
+        <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">`;
+        document.body.append(form);
+        form.submit();
+        form.remove();  
       },
       // Todo: Integrate this extension with a new built-in exportWindowType, "download"
       async exportImage (win, data) {
         const {issues, mimeType, quality} = data;
 
-        if (!$('#export_canvas').length) {
-          $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+        if (!$id('export_canvas')) {
+          const canvasx = document.createElement("CANVAS");
+          canvasx.id = 'export_canvas';
+          canvasx.style.display = 'none';
+          document.body.appendChild(canvasx);
         }
-        const c = $('#export_canvas')[0];
+        const c = $id('export_canvas');
 
-        c.width = svgCanvas.contentW;
-        c.height = svgCanvas.contentH;
+        c.style.width = svgCanvas.contentW;
+        c.style.height = svgCanvas.contentH;
         await canvg(c, data.svg);
         const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
         // {uiStrings} = svgEditor;
@@ -158,16 +168,17 @@ export default {
           return;
         }
 
-        $('<form>').attr({
-          method: 'post',
-          action: saveImgAction,
-          target: 'output_frame'
-        }).append(`
-          <input type="hidden" name="output_img" value="${datauri}">
-          <input type="hidden" name="mime" value="${mimeType}">
-          <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">
-        `).appendTo('body')
-          .submit().remove();
+        const form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', saveImgAction);
+        form.setAttribute('target', 'output_frame');
+        // eslint-disable-next-line no-unsanitized/property
+        form.innerHTML = `<input type="hidden" name="output_img" value="${datauri}">
+        <input type="hidden" name="mime" value="${mimeType}">
+        <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">`;
+        document.body.append(form);
+        form.submit();
+        form.remove();
       }
     });
 
@@ -209,19 +220,21 @@ export default {
     };
 
     // Create upload form
-    const openSvgForm = $('<form>');
-    openSvgForm.attr({
-      enctype: 'multipart/form-data',
-      method: 'post',
-      action: openSvgAction,
-      target: 'output_frame'
-    });
+
+    const openSvgForm = document.createElement("FORM");
+    openSvgForm.action = openSvgAction;
+    openSvgForm.enctype = 'multipart/form-data';
+    openSvgForm.method = 'post';
+    openSvgForm.target = 'output_frame';
+    
 
     // Create import form
-    const importSvgForm = openSvgForm.clone().attr('action', importSvgAction);
+    const importSvgForm = openSvgForm.cloneNode(true);
+    importSvgForm.action =  importSvgAction;
 
     // Create image form
-    const importImgForm = openSvgForm.clone().attr('action', importImgAction);
+    const importImgForm = openSvgForm.cloneNode(true);
+    importImgForm.action = importImgAction;
 
     // It appears necessary to rebuild this input every time a file is
     // selected so the same file can be picked and the change event can fire.
@@ -233,7 +246,10 @@ export default {
      */
     function rebuildInput (form) {
       form.empty();
-      const inp = $('<input type="file" name="svg_file">').appendTo(form);
+      const inp = document.createElement('input');
+      inp.type = 'file';
+      inp.name = 'svg_file';
+      form.appendChild(inp);
 
       /**
        * Submit the form, empty its contents for reuse and show
@@ -276,8 +292,8 @@ export default {
     // Add forms to buttons
     $id("tool_open").style.display = 'block';
     $id("tool_import").style.display = 'block';
-    $('#tool_open').prepend(openSvgForm);
-    $('#tool_import').prepend(importSvgForm);
-    $('#tool_image').prepend(importImgForm);
+    $id('tool_open').insertBefore(openSvgForm, $id('tool_open').firstChild);
+    $id('tool_import').insertBefore(importSvgForm, $id('tool_import').firstChild);
+    $id('tool_image').insertBefore(importImgForm, $id('tool_image').firstChild);
   }
 };

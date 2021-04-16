@@ -27,8 +27,7 @@ export default {
     const {getElem} = svgCanvas;
     const {$, svgroot} = S,
       addElem = svgCanvas.addSVGElementFromJson,
-      selManager = S.selectorManager,
-      elData = $.data;
+      selManager = S.selectorManager;
 
     let startX,
       startY,
@@ -88,7 +87,6 @@ export default {
     */
     function getOffset (side, line) {
       const giveOffset = line.getAttribute('marker-' + side);
-      // const giveOffset = $(line).data(side+'_off');
 
       // TODO: Make this number (5) be based on marker width/height
       const size = line.getAttribute('stroke-width') * 5;
@@ -100,12 +98,14 @@ export default {
     * @returns {void}
     */
     function showPanel (on) {
-      let connRules = $('#connector_rules');
-      if (!connRules.length) {
-        connRules = $('<style id="connector_rules"></style>').appendTo('head');
+      let connRules = $id('connector_rules');
+      if (!connRules) {
+        connRules = document.createElement('style');
+        connRules.setAttribute('id', 'connector_rules');
+        document.getElementsByTagName("head")[0].appendChild(connRules);
       }
-      connRules.text(!on ? '' : '#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }');
-      $('#connector_panel').toggle(on);
+      connRules.textContent = (!on ? '' : '#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }');
+      $id('connector_panel').style.display = (on) ? 'block' : 'none';
     }
 
     /**
@@ -161,24 +161,24 @@ export default {
         // const sw = line.getAttribute('stroke-width') * 5;
 
         // Update bbox for this element
-        const bb = elData(line, pre + '_bb');
+        const bb = dataStorage.get(line, pre + '_bb');
         bb.x = conn.start_x + diffX;
         bb.y = conn.start_y + diffY;
-        elData(line, pre + '_bb', bb);
+        dataStorage.put(line, pre + '_bb', bb);
 
         const altPre = conn.is_start ? 'end' : 'start';
 
         // Get center pt of connected element
-        const bb2 = elData(line, altPre + '_bb');
+        const bb2 = dataStorage.get(line, altPre + '_bb');
         const srcX = bb2.x + bb2.width / 2;
         const srcY = bb2.y + bb2.height / 2;
 
         // Set point of element being moved
-        const pt = getBBintersect(srcX, srcY, bb, getOffset(pre, line)); // $(line).data(pre+'_off')?sw:0
+        const pt = getBBintersect(srcX, srcY, bb, getOffset(pre, line));
         setPoint(line, conn.is_start ? 0 : 'end', pt.x, pt.y, true);
 
         // Set point of connected element
-        const pt2 = getBBintersect(pt.x, pt.y, elData(line, altPre + '_bb'), getOffset(altPre, line));
+        const pt2 = getBBintersect(pt.x, pt.y, dataStorage.get(line, altPre + '_bb'), getOffset(altPre, line));
         setPoint(line, conn.is_start ? 'end' : 0, pt2.x, pt2.y, true);
       }
     }
@@ -189,54 +189,50 @@ export default {
     * @returns {void}
     */
     function findConnectors (elems = selElems) {
-      const connectors = $(svgcontent).find('.se_connector');
+      // const connectors = svgcontent.querySelectorAll('.se_connector');
+      const connectors = svgcontent.querySelectorAll('.se_connector');
       connections = [];
 
       // Loop through connectors to see if one is connected to the element
-      connectors.each(function () {
+      Array.prototype.forEach.call(connectors, function(ethis, i){
         let addThis;
-        /**
-        *
-        * @returns {void}
-        */
-        function add () {
-          if (elems.includes(this)) {
-            // Pretend this element is selected
-            addThis = true;
-          }
-        }
-
         // Grab the ends
         const parts = [];
         ['start', 'end'].forEach(function (pos, i) {
           const key = 'c_' + pos;
-          let part = elData(this, key);
+          let part = dataStorage.get(ethis, key);
           if (part === null || part === undefined) { // Does this ever return nullish values?
             part = document.getElementById(
-              this.attributes['se:connector'].value.split(' ')[i]
+              ethis.attributes['se:connector'].value.split(' ')[i]
             );
-            elData(this, 'c_' + pos, part.id);
-            elData(this, pos + '_bb', svgCanvas.getStrokedBBox([part]));
+            dataStorage.put(ethis, 'c_' + pos, part.id);
+            dataStorage.put(ethis, pos + '_bb', svgCanvas.getStrokedBBox([part]));
           } else part = document.getElementById(part);
           parts.push(part);
-        }, this);
+        }, ethis);
 
         for (let i = 0; i < 2; i++) {
           const cElem = parts[i];
 
           addThis = false;
           // The connected element might be part of a selected group
-          $(cElem).parents().each(add);
+          parents = svgCanvas.getParents(cElem.parentNode);
+          Array.prototype.forEach.call(parents, function(el, i){
+            if (elems.includes(el)) {
+              // Pretend this element is selected
+              addThis = true;
+            }
+          });
 
           if (!cElem || !cElem.parentNode) {
-            $(this).remove();
+            ethis.remove();
             continue;
           }
           if (elems.includes(cElem) || addThis) {
             const bb = svgCanvas.getStrokedBBox([cElem]);
             connections.push({
               elem: cElem,
-              connector: this,
+              connector: ethis,
               is_start: (i === 0),
               start_x: bb.x,
               start_y: bb.y
@@ -270,13 +266,13 @@ export default {
           const bb = svgCanvas.getStrokedBBox([elem]);
           bb.x = conn.start_x;
           bb.y = conn.start_y;
-          elData(line, pre + '_bb', bb);
-          /* const addOffset = */ elData(line, pre + '_off');
+          dataStorage.put(line, pre + '_bb', bb);
+          /* const addOffset = */ dataStorage.get(line, pre + '_off');
 
           const altPre = conn.is_start ? 'end' : 'start';
 
           // Get center pt of connected element
-          const bb2 = elData(line, altPre + '_bb');
+          const bb2 = dataStorage.get(line, altPre + '_bb');
           const srcX = bb2.x + bb2.width / 2;
           const srcY = bb2.y + bb2.height / 2;
 
@@ -285,7 +281,7 @@ export default {
           setPoint(line, conn.is_start ? 0 : 'end', pt.x, pt.y, true);
 
           // Set point of connected element
-          const pt2 = getBBintersect(pt.x, pt.y, elData(line, altPre + '_bb'), getOffset(altPre, line));
+          const pt2 = getBBintersect(pt.x, pt.y, dataStorage.get(line, altPre + '_bb'), getOffset(altPre, line));
           setPoint(line, conn.is_start ? 'end' : 0, pt2.x, pt2.y, true);
 
           // Update points attribute manually for webkit
@@ -308,7 +304,8 @@ export default {
       const gse = svgCanvas.groupSelectedElements;
 
       svgCanvas.groupSelectedElements = function (...args) {
-        svgCanvas.removeFromSelection($('.se_connector').toArray());
+
+        svgCanvas.removeFromSelection(document.querySelectorAll('.se_connector'));
         return gse.apply(this, args);
       };
 
@@ -329,17 +326,18 @@ export default {
     */
     function init () {
       // Make sure all connectors have data set
-      $(svgcontent).find('*').each(function () {
-        const conn = this.getAttributeNS(seNs, 'connector');
+      const elements = svgcontent.querySelectorAll('*');
+      elements.forEach(function (curthis) {
+        const conn = curthis.getAttributeNS(seNs, 'connector');
         if (conn) {
-          this.setAttribute('class', 'se_connector');
+          curthis.setAttribute('class', 'se_connector');
           const connData = conn.split(' ');
           const sbb = svgCanvas.getStrokedBBox([getElem(connData[0])]);
           const ebb = svgCanvas.getStrokedBBox([getElem(connData[1])]);
-          $(this).data('c_start', connData[0])
-            .data('c_end', connData[1])
-            .data('start_bb', sbb)
-            .data('end_bb', ebb);
+          dataStorage.put(curthis, 'c_start', connData[0]);
+          dataStorage.put(curthis, 'c_end', connData[1]);
+          dataStorage.put(curthis, 'start_bb', sbb);
+          dataStorage.put(curthis, 'end_bb', ebb);
           svgCanvas.getEditorNS(true);
         }
       });
@@ -379,13 +377,13 @@ export default {
 
           const mouseTarget = e.target;
 
-          const parents = $(mouseTarget).parents();
+          const parents = svgCanvas.getParents(mouseTarget.parentNode);
 
           if ($.inArray(svgcontent, parents) !== -1) {
             // Connectable element
 
             // If child of foreignObject, use parent
-            const fo = $(mouseTarget).closest('foreignObject');
+            const fo = svgCanvas.getClosest(mouseTarget.parentNode, 'foreignObject');
             startElem = fo.length ? fo[0] : mouseTarget;
 
             // Get center of source element
@@ -408,7 +406,7 @@ export default {
                 style: 'pointer-events:none'
               }
             });
-            elData(curLine, 'start_bb', bb);
+            dataStorage.put(curLine, 'start_bb', bb);
           }
           return {
             started: true
@@ -433,7 +431,7 @@ export default {
         if (mode === 'connector' && started) {
           // const sw = curLine.getAttribute('stroke-width') * 3;
           // Set start point (adjusts based on bb)
-          const pt = getBBintersect(x, y, elData(curLine, 'start_bb'), getOffset('start', curLine));
+          const pt = getBBintersect(x, y, dataStorage.get(curLine, 'start_bb'), getOffset('start', curLine));
           startX = pt.x;
           startY = pt.y;
 
@@ -446,7 +444,7 @@ export default {
           while (slen--) {
             const elem = selElems[slen];
             // Look for selected connector elements
-            if (elem && elData(elem, 'c_start')) {
+            if (elem && dataStorage.get(elem, 'c_start')) {
               // Remove the "translate" transform given to move
               svgCanvas.removeFromSelection([elem]);
               svgCanvas.getTransformList(elem).clear();
@@ -467,10 +465,10 @@ export default {
         if (svgCanvas.getMode() !== 'connector') {
           return undefined;
         }
-        const fo = $(mouseTarget).closest('foreignObject');
+        const fo = svgCanvas.getClosest(mouseTarget.parentNode, 'foreignObject');
         if (fo.length) { mouseTarget = fo[0]; }
 
-        const parents = $(mouseTarget).parents();
+        const parents = svgCanvas.getParents(mouseTarget.parentNode);        
 
         if (mouseTarget === startElem) {
           // Start line through click
@@ -481,9 +479,9 @@ export default {
             started
           };
         }
-        if ($.inArray(svgcontent, parents) === -1) {
+        if (parents.indexOf(svgcontent) === -1) {
           // Not a valid target element, so remove line
-          $(curLine).remove();
+          curLine.remove();
           started = false;
           return {
             keep: false,
@@ -498,13 +496,13 @@ export default {
         const connStr = startId + ' ' + endId;
         const altStr = endId + ' ' + startId;
         // Don't create connector if one already exists
-        const dupe = $(svgcontent).find('.se_connector').filter(function () {
-          const conn = this.getAttributeNS(seNs, 'connector');
+        const dupe = Array.prototype.filter.call(svgcontent.querySelectorAll('.se_connector'), function (aThis, i) {
+          const conn = aThis.getAttributeNS(seNs, 'connector');
           if (conn === connStr || conn === altStr) { return true; }
           return false;
         });
         if (dupe.length) {
-          $(curLine).remove();
+          curLine.remove();
           return {
             keep: false,
             element: null,
@@ -516,10 +514,9 @@ export default {
 
         const pt = getBBintersect(startX, startY, bb, getOffset('start', curLine));
         setPoint(curLine, 'end', pt.x, pt.y, true);
-        $(curLine)
-          .data('c_start', startId)
-          .data('c_end', endId)
-          .data('end_bb', bb);
+        dataStorage.put(curLine, 'c_start', startId);
+        dataStorage.put(curLine, 'c_end', endId);
+        dataStorage.put(curLine, 'end_bb', bb);
         seNs = svgCanvas.getEditorNS(true);
         curLine.setAttributeNS(seNs, 'se:connector', connStr);
         curLine.setAttribute('class', 'se_connector');
@@ -536,7 +533,7 @@ export default {
       },
       selectedChanged (opts) {
         // TODO: Find better way to skip operations if no connectors are in use
-        if (!$(svgcontent).find('.se_connector').length) { return; }
+        if (!svgcontent.querySelectorAll('.se_connector').length) { return; }
 
         if (svgCanvas.getMode() === 'connector') {
           svgCanvas.setMode('select');
@@ -548,7 +545,7 @@ export default {
         let i = selElems.length;
         while (i--) {
           const elem = selElems[i];
-          if (elem && elData(elem, 'c_start')) {
+          if (elem && dataStorage.get(elem, 'c_start')) {
             selManager.requestSelector(elem).showGrips(false);
             if (opts.selectedElement && !opts.multiselected) {
               // TODO: Set up context tools and hide most regular line tools
@@ -581,9 +578,8 @@ export default {
           const mid = elem.getAttribute('marker-mid');
           const end = elem.getAttribute('marker-end');
           curLine = elem;
-          $(elem)
-            .data('start_off', Boolean(start))
-            .data('end_off', Boolean(end));
+          dataStorage.put(elem, 'start_off', Boolean(start));
+          dataStorage.put(elem, 'end_off', Boolean(end));
 
           if (elem.tagName === 'line' && mid) {
             // Convert to polyline to accept mid-arrow
@@ -606,7 +602,8 @@ export default {
                 opacity: elem.getAttribute('opacity') || 1
               }
             });
-            $(elem).after(pline).remove();
+            elem.insertAdjacentElement('afterend', pline);
+            elem.remove();
             svgCanvas.clearSelection();
             pline.id = id;
             svgCanvas.addToSelection([pline]);
@@ -615,7 +612,7 @@ export default {
         }
         // Update line if it's a connector
         if (elem.getAttribute('class') === 'se_connector') {
-          const start = getElem(elData(elem, 'c_start'));
+          const start = getElem(dataStorage.get(elem, 'c_start'));
           updateConnectors([start]);
         } else {
           updateConnectors();

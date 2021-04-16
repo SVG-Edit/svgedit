@@ -1,3 +1,4 @@
+/* eslint-disable no-unsanitized/property */
 /* globals seConfirm */
 /**
  * @file ext-imagelib.js
@@ -188,8 +189,10 @@ export default {
           await seConfirm(message);
           transferStopped = true;
         } else {
-          entry = $('<div>').text(message).data('id', curMeta.id);
-          preview.append(entry);
+          entry = document.createElement('div');
+          entry.textContent = message;
+          entry.dataset.id = curMeta.id;
+          preview.appendChild(entry);
           curMeta.entry = entry;
         }
 
@@ -256,51 +259,54 @@ export default {
             // Try to find a title
             // `dropXMLInternalSubset` is to help prevent the billion laughs attack
             const xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
-            title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
+            title = xml.querySelector('title').textContent || '(SVG #' + response.length + ')';
           }
           if (curMeta) {
-            $(preview).children().each(function () {
-              if ($(this).data('id') === id) {
+            Array.from(preview.children).forEach(function(element) {
+              if (element.dataset.id === id) {
                 if (curMeta.preview_url) {
-                  $(this).html(
-                    $('<span>').append(
-                      $('<img>').attr('src', curMeta.preview_url),
-                      title
-                    )
-                  );
+                  const img = document.createElement("img");
+                  img.src = curMeta.preview_url;
+                  const span = document.createElement("span");
+                  span.appendChild(img);
+                  element.append(span);
                 } else {
-                  $(this).text(title);
+                  element.textContent = title;
                 }
-                submit.removeAttr('disabled');
+                submit.removeAttribute('disabled');
               }
             });
           } else {
-            preview.append(
-              $('<div>').text(title)
-            );
-            submit.removeAttr('disabled');
+            const div = document.createElement("div");
+            div.textContent = title;
+            preview.appendChild(div);
+            submit.removeAttribute('disabled');
           }
         } else {
           if (curMeta && curMeta.preview_url) {
             title = curMeta.name || '';
-            entry = $('<span>').append(
-              $('<img>').attr('src', curMeta.preview_url),
-              title
-            );
+            entry = document.createElement('span');
+            const img = document.createElement("img");
+            img.src = curMeta.preview_url;
+            entry.appendChild(img);
+            entry.appendChild(document.createTextNode(title))
           } else {
-            entry = $('<img>').attr('src', response);
+            entry = document.createElement("img");
+            entry.src = response;
           }
 
           if (curMeta) {
-            preview.children().each(function () {
-              if ($(this).data('id') === id) {
-                $(this).html(entry);
-                submit.removeAttr('disabled');
+            Array.from(preview.children).forEach(function(element) {
+              if (element.dataset.id === id) {
+                element.appendChild(entry);
+                submit.removeAttribute('disabled');
               }
             });
           } else {
-            preview.append($('<div>').append(entry));
-            submit.removeAttr('disabled');
+            const div = document.createElement("div");
+            div.appendChild(entry);
+            preview.appendChild(div);
+            submit.removeAttribute('disabled');
           }
         }
         break;
@@ -325,6 +331,23 @@ export default {
       referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     }
 
+    function toggleMultiLoop() {
+      $.each(multiArr, function (i) {
+        const type = this[0];
+        const data = this[1];
+        if (type === 'svg') {
+          svgCanvas.importSvgString(data);
+        } else {
+          importImage(data);
+        }
+        svgCanvas.moveSelectedElements(i * 20, i * 20, false);
+      });
+      while(preview.firstChild)
+          preview.removeChild(preview.firstChild);
+      multiArr = [];
+      $id("imgbrowse_holder").style.display = 'none';
+    }
+
     /**
     * @param {boolean} show
     * @returns {void}
@@ -339,56 +362,18 @@ export default {
         preview.setAttribute('style', `position: absolute;top: 45px;right: 10px;width: 180px;bottom: 45px;background: #fff;overflow: auto;`);
         insertAfter($id('lib_framewrap'), preview);
         
-        /* submit = document.createElement('button');
+        submit = document.createElement('button');
         submit.setAttribute('content', 'Import selected');
         submit.setAttribute('disabled', true);  
         submit.textContent = 'Import selected';
         submit.setAttribute('style', `position: absolute;bottom: 10px;right: -10px;`);  
         $id('imgbrowse').appendChild(submit);
-        submit.addEventListener('click', function () {
-          $.each(multiArr, function (i) {
-            const type = this[0];
-            const data = this[1];
-            if (type === 'svg') {
-              svgCanvas.importSvgString(data);
-            } else {
-              importImage(data);
-            }
-            svgCanvas.moveSelectedElements(i * 20, i * 20, false);
-          });
-          $(preview).empty();
-          multiArr = [];
-          $id("imgbrowse_holder").style.display = 'none';
-        }) 
-        submit.style.display = (show) ? 'block' : 'none';
-        */
-
-
-         submit = $('<button disabled>Import selected</button>')
-          .appendTo('#imgbrowse')
-          .on('click touchend', function () {
-            $.each(multiArr, function (i) {
-              const type = this[0];
-              const data = this[1];
-              if (type === 'svg') {
-                svgCanvas.importSvgString(data);
-              } else {
-                importImage(data);
-              }
-              svgCanvas.moveSelectedElements(i * 20, i * 20, false);
-            });
-            $(preview).empty();
-            multiArr = [];
-            $id("imgbrowse_holder").style.display = 'none';
-          }).css({
-            position: 'absolute',
-            bottom: 10,
-            right: -10
-          });
+        submit.addEventListener('click', toggleMultiLoop);
+        submit.addEventListener('touchend', toggleMultiLoop);
       }
-
+      submit.style.display = (show) ? 'block' : 'none'; 
       preview.style.display = (show) ? 'block' : 'none';
-      submit.toggle(show);
+     
     }
 
     /**
@@ -396,52 +381,79 @@ export default {
     * @returns {void}
     */
     function showBrowser () {
-      let browser = $('#imgbrowse');
-      if (!browser.length) {
-        $('<div id=imgbrowse_holder><div id=imgbrowse class=toolbar_button>' +
-        '</div></div>').insertAfter('#svg_editor');
-        browser = $('#imgbrowse');
+      let browser = $id('imgbrowse');
+      if (!browser) {
+        const div = document.createElement('div');
+        div.id = 'imgbrowse_holder';
+        div.innerHTML = '<div id=imgbrowse class=toolbar_button></div>';
+        insertAfter($id('svg_editor'), div);
+        browser = $id('imgbrowse');
 
         const allLibs = imagelibStrings.select_lib;
 
-        const libOpts = $('<ul id=imglib_opts>').appendTo(browser);
-        const frame = $('<iframe src="javascript:0"/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
+        const divFrameWrap = document.createElement('div');
+        divFrameWrap.id = 'lib_framewrap';
 
-        const header = $('<h1>').prependTo(browser).text(allLibs).css({
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%'
+        const libOpts = document.createElement('ul');
+        libOpts.id = 'imglib_opts';
+        browser.append(libOpts);
+        const frame = document.createElement('iframe');
+        frame.src = "javascript:0";
+        frame.style.display = 'none';
+        divFrameWrap.append(frame);
+        browser.prepend(divFrameWrap);
+
+        const header = document.createElement('h1');
+        browser.prepend(header);
+        header.textContent = allLibs;
+        header.setAttribute('style', `position: absolute;top: 0;left: 0;width: 100%;`);
+
+        const button = document.createElement('button');
+        // eslint-disable-next-line max-len
+        button.innerHTML = '<img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel ;
+        browser.appendChild(button);
+        button.addEventListener('click', function () {
+          $id("imgbrowse_holder").style.display = 'none';
         });
+        button.addEventListener('touchend', function () {
+          $id("imgbrowse_holder").style.display = 'none';
+        });
+        button.setAttribute('style', `position: absolute;top: 5;right: -10;`);
+        
+        const leftBlock = document.createElement('span');
+        leftBlock.setAttribute('style', `position: absolute;top: 5;left: 10;`);
+        browser.appendChild(leftBlock);
+        
+        const back = document.createElement('button');
+        back.style.visibility = "hidden";
         // eslint-disable-next-line max-len
-        $('<button><img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel + '</button>')
-          .appendTo(browser)
-          .on('click touchend', function () {
-            $id("imgbrowse_holder").style.display = 'none';
-          }).css({
-            position: 'absolute',
-            top: 5,
-            right: -10
-          });
+        back.innerHTML = '<img class="svg_icon" src="./images/library.svg" alt="icon" width="16" height="16" />' + imagelibStrings.show_list;
+        leftBlock.appendChild(back);
+        back.addEventListener('click', function () {
+          frame.setAttribute('src', 'about:blank');
+          frame.style.display = 'none';
+          libOpts.style.display = 'block';
+          header.textContent = allLibs;
+          back.style.display = 'none';
+        });
+        back.addEventListener('touchend', function () {
+          frame.setAttribute('src', 'about:blank');
+          frame.style.display = 'none';
+          libOpts.style.display = 'block';
+          header.textContent = allLibs;
+          back.style.display = 'none';
+        });
+        back.setAttribute('style', `margin-right: 5px;`);
+        back.style.display = 'none';
 
-        const leftBlock = $('<span>').css({position: 'absolute', top: 5, left: 10}).appendTo(browser);
-        // eslint-disable-next-line max-len
-        const back = $('<button hidden><img class="svg_icon" src="./images/library.svg" alt="icon" width="16" height="16" />' + imagelibStrings.show_list + '</button>')
-          .appendTo(leftBlock)
-          .on('click touchend', function () {
-            frame.attr('src', 'about:blank').hide();
-            libOpts.show();
-            header.text(allLibs);
-            back.hide();
-          }).css({
-            'margin-right': 5
-          }).hide();
-
-        /* const type = */ $('<select><option value=s>' +
-          imagelibStrings.import_single + '</option><option value=m>' +
-          imagelibStrings.import_multi + '</option><option value=o>' +
-          imagelibStrings.open + '</option></select>').appendTo(leftBlock).change(function () {
-          mode = $(this).val();
+        const select = document.createElement('select');
+        select.innerHTML = '<select><option value=s>' +
+        imagelibStrings.import_single + '</option><option value=m>' +
+        imagelibStrings.import_multi + '</option><option value=o>' +
+        imagelibStrings.open + '</option>';
+        leftBlock.appendChild(select);
+        select.addEventListener('change', function () {
+          mode = this.value;
           switch (mode) {
           case 's':
           case 'o':
@@ -453,23 +465,30 @@ export default {
             toggleMulti(true);
             break;
           }
-        }).css({
-          'margin-top': 10
         });
+        select.setAttribute('style', `margin-top: 10px;`);
 
         imagelibStrings.imgLibs.forEach(function ({name, url, description}) {
-          $('<li>')
-            .appendTo(libOpts)
-            .text(name)
-            .on('click touchend', function () {
-              frame.attr(
-                'src',
-                url
-              ).show();
-              header.text(name);
-              libOpts.hide();
-              back.show();
-            }).append(`<span>${description}</span>`);
+          const li = document.createElement('li');
+          libOpts.appendChild(li);
+          li.textContent = name;
+          li.addEventListener('click', function () {
+            frame.setAttribute('src', url);
+            frame.style.display = 'block';
+            header.textContent = name;
+            libOpts.style.display = 'none';
+            back.style.display = 'block';
+          });
+          li.addEventListener('touchend', function () {
+            frame.setAttribute('src', url);
+            frame.style.display = 'block';
+            header.textContent = name;
+            libOpts.style.display = 'none';
+            back.style.display = 'block';
+          });
+          var span = document.createElement("span");
+          span.textContent = description;
+          li.appendChild(span);
         });
       } else {
         $id("imgbrowse_holder").style.display = 'block';
@@ -487,81 +506,81 @@ export default {
       svgicons: 'ext-imagelib.xml',
       events,
       callback () {
-        $('<style>').text(
-          '#imgbrowse_holder {' +
-            'position: absolute;' +
-            'top: 0;' +
-            'left: 0;' +
-            'width: 100%;' +
-            'height: 100%;' +
-            'background-color: rgba(0, 0, 0, .5);' +
-            'z-index: 5;' +
-          '}' +
-          '#imgbrowse {' +
-            'position: absolute;' +
-            'top: 25px;' +
-            'left: 25px;' +
-            'right: 25px;' +
-            'bottom: 25px;' +
-            'min-width: 300px;' +
-            'min-height: 200px;' +
-            'background: #B0B0B0;' +
-            'border: 1px outset #777;' +
-          '}' +
-          '#imgbrowse h1 {' +
-            'font-size: 20px;' +
-            'margin: .4em;' +
-            'text-align: center;' +
-          '}' +
-          '#lib_framewrap,' +
-          '#imgbrowse > ul {' +
-            'position: absolute;' +
-            'top: 45px;' +
-            'left: 10px;' +
-            'right: 10px;' +
-            'bottom: 10px;' +
-            'background: white;' +
-            'margin: 0;' +
-            'padding: 0;' +
-          '}' +
-          '#imgbrowse > ul {' +
-            'overflow: auto;' +
-          '}' +
-          '#imgbrowse > div {' +
-            'border: 1px solid #666;' +
-          '}' +
-          '#imglib_preview > div {' +
-            'padding: 5px;' +
-            'font-size: 12px;' +
-          '}' +
-          '#imglib_preview img {' +
-            'display: block;' +
-            'margin: 0 auto;' +
-            'max-height: 100px;' +
-          '}' +
-          '#imgbrowse li {' +
-            'list-style: none;' +
-            'padding: .5em;' +
-            'background: #E8E8E8;' +
-            'border-bottom: 1px solid #B0B0B0;' +
-            'line-height: 1.2em;' +
-            'font-style: sans-serif;' +
-            '}' +
-          '#imgbrowse li > span {' +
-            'color: #666;' +
-            'font-size: 15px;' +
-            'display: block;' +
-            '}' +
-          '#imgbrowse li:hover {' +
-            'background: #FFC;' +
-            'cursor: pointer;' +
-            '}' +
-          '#imgbrowse iframe {' +
-            'width: 100%;' +
-            'height: 100%;' +
-            'border: 0;' +
-          '}'
-        ).appendTo('head');
+        const style = document.createElement('style');
+        style.textContent = '#imgbrowse_holder {' +
+        'position: absolute;' +
+        'top: 0;' +
+        'left: 0;' +
+        'width: 100%;' +
+        'height: 100%;' +
+        'background-color: rgba(0, 0, 0, .5);' +
+        'z-index: 5;' +
+      '}' +
+      '#imgbrowse {' +
+        'position: absolute;' +
+        'top: 25px;' +
+        'left: 25px;' +
+        'right: 25px;' +
+        'bottom: 25px;' +
+        'min-width: 300px;' +
+        'min-height: 200px;' +
+        'background: #B0B0B0;' +
+        'border: 1px outset #777;' +
+      '}' +
+      '#imgbrowse h1 {' +
+        'font-size: 20px;' +
+        'margin: .4em;' +
+        'text-align: center;' +
+      '}' +
+      '#lib_framewrap,' +
+      '#imgbrowse > ul {' +
+        'position: absolute;' +
+        'top: 45px;' +
+        'left: 10px;' +
+        'right: 10px;' +
+        'bottom: 10px;' +
+        'background: white;' +
+        'margin: 0;' +
+        'padding: 0;' +
+      '}' +
+      '#imgbrowse > ul {' +
+        'overflow: auto;' +
+      '}' +
+      '#imgbrowse > div {' +
+        'border: 1px solid #666;' +
+      '}' +
+      '#imglib_preview > div {' +
+        'padding: 5px;' +
+        'font-size: 12px;' +
+      '}' +
+      '#imglib_preview img {' +
+        'display: block;' +
+        'margin: 0 auto;' +
+        'max-height: 100px;' +
+      '}' +
+      '#imgbrowse li {' +
+        'list-style: none;' +
+        'padding: .5em;' +
+        'background: #E8E8E8;' +
+        'border-bottom: 1px solid #B0B0B0;' +
+        'line-height: 1.2em;' +
+        'font-style: sans-serif;' +
+        '}' +
+      '#imgbrowse li > span {' +
+        'color: #666;' +
+        'font-size: 15px;' +
+        'display: block;' +
+        '}' +
+      '#imgbrowse li:hover {' +
+        'background: #FFC;' +
+        'cursor: pointer;' +
+        '}' +
+      '#imgbrowse iframe {' +
+        'width: 100%;' +
+        'height: 100%;' +
+        'border: 0;' +
+      '}';
+        document.head.appendChild(style);
       }
     };
   }

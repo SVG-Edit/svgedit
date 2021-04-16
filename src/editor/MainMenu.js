@@ -1,4 +1,3 @@
-/* globals $ */
 import SvgCanvas from "../svgcanvas/svgcanvas.js";
 import {convertUnit, isValidUnit} from '../common/units.js';
 import {isChrome} from '../common/browser.js';

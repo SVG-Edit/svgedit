@@ -82,7 +82,7 @@ export default {
      * @returns {void}
      */
     function saveMath () {
-      const code = $('#mathjax_code_textarea').val();
+      const code = $id('mathjax_code_textarea').value;
       // displaystyle to force MathJax NOT to use the inline style. Because it is
       // less fancy!
       MathJax.Hub.queue.Push(['Text', math, '\\displaystyle{' + code + '}']);
@@ -145,37 +145,30 @@ export default {
           // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
           // From this point on it is very probable that it will be needed, so load it.
           if (mathjaxLoaded === false) {
-            $(
-              '<div id="mathjax">' +
-              '<!-- Here is where MathJax creates the math -->' +
-                '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' +
-                  '$${}$$' +
-                '</div>' +
-                '<div id="mathjax_overlay"></div>' +
-                '<div id="mathjax_container">' +
-                  '<div id="tool_mathjax_back" class="toolbar_button">' +
-                    '<button id="tool_mathjax_save">OK</button>' +
-                    '<button id="tool_mathjax_cancel">Cancel</button>' +
-                  '</div>' +
-                  '<fieldset>' +
-                    '<legend id="mathjax_legend">Mathematics Editor</legend>' +
-                    '<label>' +
-                      '<span id="mathjax_explication">Please type your mathematics in ' +
-                      '<a href="https://en.wikipedia.org/wiki/Help:' +
-                        'Displaying_a_formula" target="_blank">TeX</a> code.' +
-                        '</span></label>' +
-                    '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
-                  '</fieldset>' +
-                '</div>' +
-              '</div>'
-            ).insertAfter('#svg_prefs').hide();
-            // Make the MathEditor draggable.
-            // TODO: unable to reach this place
-            /* $('#mathjax_container').draggable({
-              cancel: 'button,fieldset',
-              containment: 'window'
-            }); */
-
+            const div = document.createElement('div');
+            div.id = 'mathjax';
+            div.innerHTML = '<!-- Here is where MathJax creates the math -->' +
+            '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' +
+              '$${}$$' +
+            '</div>' +
+            '<div id="mathjax_overlay"></div>' +
+            '<div id="mathjax_container">' +
+              '<div id="tool_mathjax_back" class="toolbar_button">' +
+                '<button id="tool_mathjax_save">OK</button>' +
+                '<button id="tool_mathjax_cancel">Cancel</button>' +
+              '</div>' +
+              '<fieldset>' +
+                '<legend id="mathjax_legend">Mathematics Editor</legend>' +
+                '<label>' +
+                  '<span id="mathjax_explication">Please type your mathematics in ' +
+                  '<a href="https://en.wikipedia.org/wiki/Help:' +
+                    'Displaying_a_formula" target="_blank">TeX</a> code.' +
+                    '</span></label>' +
+                '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
+              '</fieldset>' +
+            '</div>';            
+            $id('svg_prefs').parentNode.insertBefore(div, $id('svg_prefs').nextSibling);
+            div.style.display = 'none';
             // Add functionality and picture to cancel button.
             $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true))
               .on('click touched', function () {
@@ -238,59 +231,57 @@ export default {
         return undefined;
       },
       callback () {
-        $('<style>').text(
-          '#mathjax fieldset{' +
-            'padding: 5px;' +
-            'margin: 5px;' +
-            'border: 1px solid #DDD;' +
-          '}' +
-          '#mathjax label{' +
-            'display: block;' +
-            'margin: .5em;' +
-          '}' +
-          '#mathjax legend {' +
-            'max-width:195px;' +
-          '}' +
-          '#mathjax_overlay {' +
-            'position: absolute;' +
-            'top: 0;' +
-            'left: 0;' +
-            'right: 0;' +
-            'bottom: 0;' +
-            'background-color: black;' +
-            'opacity: 0.6;' +
-            'z-index: 20000;' +
-          '}' +
-          '#mathjax_container {' +
-            'position: absolute;' +
-            'top: 50px;' +
-            'padding: 10px;' +
-            'background-color: #B0B0B0;' +
-            'border: 1px outset #777;' +
-            'opacity: 1.0;' +
-            'font-family: Verdana, Helvetica, sans-serif;' +
-            'font-size: .8em;' +
-            'z-index: 20001;' +
-          '}' +
-          '#tool_mathjax_back {' +
-            'margin-left: 1em;' +
-            'overflow: auto;' +
-          '}' +
-          '#mathjax_legend{' +
-            'font-weight: bold;' +
-            'font-size:1.1em;' +
-          '}' +
-          '#mathjax_code_textarea {\\n' +
-            'margin: 5px .7em;' +
-            'overflow: hidden;' +
-            'width: 416px;' +
-            'display: block;' +
-            'height: 100px;' +
-          '}'
-        ).appendTo('head');
-
-        // Add the MathJax configuration.
-        // $(mathjaxConfiguration).appendTo('head');
+        const head = document.head || document.getElementsByTagName('head')[0],
+        style = document.createElement('style');
+        style.textContent = '#mathjax fieldset{' +
+          'padding: 5px;' +
+          'margin: 5px;' +
+          'border: 1px solid #DDD;' +
+        '}' +
+        '#mathjax label{' +
+          'display: block;' +
+          'margin: .5em;' +
+        '}' +
+        '#mathjax legend {' +
+          'max-width:195px;' +
+        '}' +
+        '#mathjax_overlay {' +
+          'position: absolute;' +
+          'top: 0;' +
+          'left: 0;' +
+          'right: 0;' +
+          'bottom: 0;' +
+          'background-color: black;' +
+          'opacity: 0.6;' +
+          'z-index: 20000;' +
+        '}' +
+        '#mathjax_container {' +
+          'position: absolute;' +
+          'top: 50px;' +
+          'padding: 10px;' +
+          'background-color: #B0B0B0;' +
+          'border: 1px outset #777;' +
+          'opacity: 1.0;' +
+          'font-family: Verdana, Helvetica, sans-serif;' +
+          'font-size: .8em;' +
+          'z-index: 20001;' +
+        '}' +
+        '#tool_mathjax_back {' +
+          'margin-left: 1em;' +
+          'overflow: auto;' +
+        '}' +
+        '#mathjax_legend{' +
+          'font-weight: bold;' +
+          'font-size:1.1em;' +
+        '}' +
+        '#mathjax_code_textarea {\\n' +
+          'margin: 5px .7em;' +
+          'overflow: hidden;' +
+          'width: 416px;' +
+          'display: block;' +
+          'height: 100px;' +
+        '}';
+      head.appendChild(style);
       }
     };
   }

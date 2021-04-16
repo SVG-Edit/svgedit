@@ -16,6 +16,7 @@ export const NS = {
   SE: 'http://svg-edit.googlecode.com',
   SVG: 'http://www.w3.org/2000/svg',
   XLINK: 'http://www.w3.org/1999/xlink',
+  OI: 'http://www.optimistik.fr/namespace/svg/OIdata',
   XML: 'http://www.w3.org/XML/1998/namespace',
   XMLNS: 'http://www.w3.org/2000/xmlns/' // see http://www.w3.org/TR/REC-xml-names/#xmlReserved
 };

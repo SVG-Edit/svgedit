@@ -18,6 +18,7 @@ import {
   isWebkit, supportsHVLineContainerBBox, supportsPathBBox, supportsXpath,
   supportsSelectors
 } from '../common/browser.js';
+import {getClosest} from '../editor/components/jgraduate/Util.js';
 
 // Constants
 const $ = jQueryPluginSVG(jQuery);
@@ -138,7 +139,10 @@ export const toXml = function (str) {
 * @returns {string} The converted string
 */
 export function fromXml (str) {
-  return $('<p/>').html(str).text();
+  const p = document.createElement('p');
+  // eslint-disable-next-line no-unsanitized/property
+  p.innerHTML = str;
+  return p.textContent;
 }
 
 // This code was written by Tyler Akins and has been placed in the
@@ -571,28 +575,36 @@ function groupBBFix (selected) {
   if (supportsHVLineContainerBBox()) {
     try { return selected.getBBox(); } catch (e) {/* empty */}
   }
-  const ref = $.data(selected, 'ref');
+  const ref = dataStorage.get(selected, 'ref');
   let matched = null;
   let ret, copy;
 
   if (ref) {
-    copy = $(ref).children().clone().attr('visibility', 'hidden');
-    $(svgroot_).append(copy);
-    matched = copy.filter('line, path');
+    let elements = [];
+    Array.prototype.forEach.call(ref.children, function(el, i){
+     const elem = el.cloneNode(true);
+     elem.setAttribute('visibility', 'hidden');
+     svgroot_.appendChild(elem);
+     copy.push(elem);
+     if(['line', 'path'].indexOf(elem.tagName) !== -1){
+      elements.push(elem);
+     }
+    });
+    matched = (elements.length) ? elements : null;
   } else {
-    matched = $(selected).find('line, path');
+    matched = selected.querySelectorAll('line, path');
   }
 
   let issue = false;
   if (matched.length) {
-    matched.each(function () {
-      const bb = this.getBBox();
+    Array.prototype.forEach.call(matched, function(match, i){
+      const bb = match.getBBox();
       if (!bb.width || !bb.height) {
         issue = true;
       }
     });
     if (issue) {
-      const elems = ref ? copy : $(selected).children();
+      const elems = ref ? copy : selected.children;
       ret = getStrokedBBox(elems);
     } else {
       ret = selected.getBBox();
@@ -678,7 +690,7 @@ export const getBBox = function (elem) {
         }
       } else {
         // Check if element is child of a foreignObject
-        const fo = $(selected).closest('foreignObject');
+        const fo = getClosest(selected.parentNode, 'foreignObject');
         if (fo.length && fo[0].getBBox) {
           ret = fo[0].getBBox();
         }
@@ -733,11 +745,12 @@ export const getPathDFromElement = function (elem) {
   switch (elem.tagName) {
   case 'ellipse':
   case 'circle': {
-    a = $(elem).attr(['rx', 'ry', 'cx', 'cy']);
-    const {cx, cy} = a;
-    ({rx, ry} = a);
+    const rx = elem.getAttribute('rx');
+    const ry = elem.getAttribute('ry');
+    const cx = elem.getAttribute('cx');
+    const cy = elem.getAttribute('cy');
     if (elem.tagName === 'circle') {
-      ry = $(elem).attr('r');
+      ry = elem.getAttribute('r');
       rx = ry;
     }
 
@@ -754,8 +767,11 @@ export const getPathDFromElement = function (elem) {
     d = elem.getAttribute('d');
     break;
   case 'line':
-    a = $(elem).attr(['x1', 'y1', 'x2', 'y2']);
-    d = 'M' + a.x1 + ',' + a.y1 + 'L' + a.x2 + ',' + a.y2;
+    const x1 = elem.getAttribute('x1');
+    const y1 = elem.getAttribute('y1');
+    const x2 = elem.getAttribute('x2');
+    const y2 = elem.getAttribute('y2');
+    d = 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2;
     break;
   case 'polyline':
     d = 'M' + elem.getAttribute('points');
@@ -764,8 +780,8 @@ export const getPathDFromElement = function (elem) {
     d = 'M' + elem.getAttribute('points') + ' Z';
     break;
   case 'rect': {
-    const r = $(elem).attr(['rx', 'ry']);
-    ({rx, ry} = r);
+    const rx = elem.getAttribute('rx');
+    const ry = elem.getAttribute('ry');
     const b = elem.getBBox();
     const {x, y} = b,
       w = b.width,
@@ -1119,11 +1135,13 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
 */
 export const getVisibleElements = function (parentElement) {
   if (!parentElement) {
-    parentElement = $(editorContext_.getSVGContent()).children(); // Prevent layers from being included
+    const svgcontent = editorContext_.getSVGContent();
+    parentElement = svgcontent.children; // Prevent layers from being included
   }
 
   const contentElems = [];
-  $(parentElement).children().each(function (i, elem) {
+  const childrens = parentElement.children
+  Array.prototype.forEach.call(childrens, function(elem, i){
     if (elem.getBBox) {
       contentElems.push(elem);
     }
@@ -1213,7 +1231,7 @@ export const getElem = (supportsSelectors())
     }
     : function (id) {
       // jQuery lookup: twice as slow as xpath in FF
-      return $(svgroot_).find(`[id=${id}]`)[0];
+      return svgroot_.querySelector('[id=${id}]');
     };
 
 /**
@@ -1305,7 +1323,12 @@ export const snapToGrid = function (value) {
  * @returns {void}
  */
 export const preventClickDefault = function (img) {
-  $(img).click(function (e) { e.preventDefault(); });
+  const elements = document.querySelectorAll("img");
+  Array.from(elements).forEach(function(element) {
+    element.addEventListener('click', function(e) {
+      e.preventDefault();
+    });
+  });
 };
 
 /**

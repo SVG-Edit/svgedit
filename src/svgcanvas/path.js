@@ -581,8 +581,9 @@ export const reorientGrads = function (elem, m) {
         };
 
         const newgrad = grad.cloneNode(true);
-        $(newgrad).attr(gCoords);
-
+        for (const [key, value] of Object.entries(gCoords)) {
+          newgrad.setAttribute(key, value);
+        }
         newgrad.id = editorContext_.getNextId();
         findDefs().append(newgrad);
         elem.setAttribute(type, 'url(#' + newgrad.id + ')');
