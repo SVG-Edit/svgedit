@@ -159,7 +159,8 @@ export const svgToString = function (elem, indent) {
       const nsuris = {};
 
       // Check elements for namespaces, add if found
-      const cElements = elem.querySelectorAll('*');
+      const csElements = elem.querySelectorAll('*');
+      const cElements = Array.prototype.slice.call(csElements);
       cElements.push(elem);
       Array.prototype.forEach.call(cElements, function(el, i){
         // const el = this;
@@ -169,13 +170,15 @@ export const svgToString = function (elem, indent) {
           nsuris[uri] = true;
           out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
         }
-        el.attributes.forEach(function(attr, i){
-          const u = attr.namespaceURI;
-          if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
-            nsuris[u] = true;
-            out.push(' xmlns:' + nsMap[u] + '="' + u + '"');
+        if(el.attributes.length > 0) {
+          for (const [i, attr] of Object.entries(el.attributes)) {
+            const u = attr.namespaceURI;
+            if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
+              nsuris[u] = true;
+              out.push(' xmlns:' + nsMap[u] + '="' + u + '"');
+            }
           }
-        });
+        }
       });
 
       let i = attrs.length;
@@ -1023,18 +1026,20 @@ export const removeUnusedDefElemsMethod = function () {
     }
   }
 
-  const defelems = defs.querySelectorAll('linearGradient, radialGradient, filter, marker, svg, symbol');
-  i = defelems.length;
-  while (i--) {
-    const defelem = defelems[i];
-    const {id} = defelem;
-    if (!defelemUses.includes(id)) {
-      // Not found, so remove (but remember)
-      svgContext_.setRemovedElements(id, defelem);
-      defelem.remove();
-      numRemoved++;
+  Array.prototype.forEach.call(defs, function(def, i){
+    const defelems = def.querySelectorAll('linearGradient, radialGradient, filter, marker, svg, symbol');
+    i = defelems.length;
+    while (i--) {
+      const defelem = defelems[i];
+      const {id} = defelem;
+      if (!defelemUses.includes(id)) {
+        // Not found, so remove (but remember)
+        svgContext_.setRemovedElements(id, defelem);
+        defelem.remove();
+        numRemoved++;
+      }
     }
-  }
+  });
 
   return numRemoved;
 };
