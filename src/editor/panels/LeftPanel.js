@@ -214,12 +214,9 @@ class LeftPanel {
        <se-button id="tool_circle" title="Square" src="./images/circle.svg"></se-button>
        <se-button id="tool_fhellipse" title="Free-Hand Rectangle" src="./images/fh_ellipse.svg"></se-button>
      </se-flyingbutton>
-     <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
      <se-button id="tool_text" title="Text Tool" src="./images/text.svg" shortcut="T"></se-button>
      <se-button id="tool_image" title="Image Tool" src="./images/image.svg"></se-button>
      <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I"></se-button>
-     <se-explorerbutton id="tool_shapelib" title="Shape library" lib="./extensions/ext-shapes/shapelib/"
-       src="./images/shapelib.svg"></se-explorerbutton>
     </div> <!-- tools_left -->
      `;
     this.editor.$svgEditor.append(template.content.cloneNode(true));

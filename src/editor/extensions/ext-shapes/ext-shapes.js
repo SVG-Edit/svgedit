@@ -12,6 +12,7 @@ export default {
   init ({$}) {
     const svgEditor = this;
     const canv = svgEditor.svgCanvas;
+    const {$id} = canv;
     const svgroot = canv.getRootElem();
     let lastBBox = {};
 
@@ -22,17 +23,19 @@ export default {
     let startX;
     let startY;
 
-    const events = {
-      id: 'tool_shapelib',
-      click () {
-        canv.setMode(modeId);
-      }
-    };
-
     return {
-      events,
       callback () {
-        // should later register the event
+        if ($id('tool_shapelib') === null) {
+          const buttonTemplate = document.createElement("template");
+          buttonTemplate.innerHTML = `
+          <se-explorerbutton id="tool_shapelib" title="Shape library" lib="./extensions/ext-shapes/shapelib/"
+          src="./images/shapelib.svg"></se-explorerbutton>
+          `
+          $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+          $id('tool_shapelib').addEventListener("click", () => { 
+            canv.setMode(modeId);
+          });
+        }
       },
       mouseDown (opts) {
         const mode = canv.getMode();
