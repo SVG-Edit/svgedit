@@ -175,7 +175,7 @@ export const addPointGripMethod = function (index, x, y) {
     pointGripContainer.append(pointGrip);
 
     const grip = document.getElementById('pathpointgrip_' + index);
-    grip.addEventListener("dblclick", (e) => {
+    grip?.addEventListener("dblclick", (e) => {
       const path = pathMethodsContext_.getPathObj();
       if (path) {
         path.setSegType();

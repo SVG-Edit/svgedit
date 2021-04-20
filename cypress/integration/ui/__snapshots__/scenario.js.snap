@@ -103,6 +103,68 @@ exports[`use various parts of svg-edit > check tool_text #0`] = `
 </svg>
 `;
 
+exports[`use various parts of svg-edit > check tool_clone #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer">
+    <title>Layer 1</title>
+    <rect
+      id="rect"
+      fill="#FF0000"
+      height="70"
+      stroke="#000000"
+      stroke-width="5"
+      width="94"
+      x="69.5"
+      y="51.5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></rect>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="116"
+      y="87"
+      id="svg_1"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+    >
+      AB
+    </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+    >
+      AB
+    </text>
+  </g>
+</svg>
+`;
+
 exports[`use various parts of svg-edit > check tool_italic #0`] = `
 <svg
   xmlns="http://www.w3.org/2000/svg"
@@ -143,6 +205,23 @@ exports[`use various parts of svg-edit > check tool_italic #0`] = `
       fill-opacity="1"
       stroke-opacity="1"
       font-=""
+    >
+      AB
+    </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
     >
       AB
     </text>
@@ -194,6 +273,23 @@ exports[`use various parts of svg-edit > check tool_bold #0`] = `
     >
       AB
     </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
+    >
+      AB
+    </text>
   </g>
 </svg>
 `;
@@ -239,6 +335,23 @@ exports[`use various parts of svg-edit > check change color #0`] = `
       stroke-opacity="1"
       font-=""
       font-weight="bold"
+    >
+      AB
+    </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
     >
       AB
     </text>
@@ -290,6 +403,23 @@ exports[`use various parts of svg-edit > check tool_text_anchor_start #0`] = `
     >
       AB
     </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
+    >
+      AB
+    </text>
   </g>
 </svg>
 `;
@@ -335,6 +465,23 @@ exports[`use various parts of svg-edit > check tool_text_anchor_middle #0`] = `
       stroke-opacity="1"
       font-=""
       font-weight="bold"
+    >
+      AB
+    </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
     >
       AB
     </text>
@@ -386,6 +533,23 @@ exports[`use various parts of svg-edit > check tool_text_anchor_end #0`] = `
     >
       AB
     </text>
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
+    >
+      AB
+    </text>
   </g>
 </svg>
 `;
@@ -434,20 +598,37 @@ exports[`use various parts of svg-edit > check tool_star #0`] = `
     >
       AB
     </text>
-    <polygon
-      cx="670"
-      cy="202"
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
       id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
+    >
+      AB
+    </text>
+    <polygon
+      cx="370"
+      cy="202"
+      id="svg_3"
       shape="star"
       point="5"
-      r="13.333333333333334"
-      radialshift=""
-      r2="5.333333333333334"
+      r="66.66666666666667"
+      radialshift="0"
+      r2="13.333333333333334"
       orient="point"
       fill="#ffff00"
       strokecolor="#000000"
       strokewidth="0"
-      points="670,188.66666666666666 673.1348546788931,197.68524269666693 682.680753550602,197.87977340833405 675.0723014202408,203.64809063666638 677.837136697233,212.78689325833264 670,207.33333333333334 662.162863302767,212.78689325833264 664.9276985797592,203.64809063666638 657.319246449398,197.87977340833405 666.8651453211069,197.68524269666693 670,188.66666666666666 673.1348546788931,197.68524269666693 "
+      points="370,135.33333333333331 377.83713669723295,191.21310674166736 433.40376775301024,181.39886704167017 382.68075355060205,206.12022659166595 409.18568348616486,255.93446629166317 370,215.33333333333334 330.81431651383514,255.93446629166317 357.31924644939795,206.12022659166595 306.59623224698976,181.39886704167017 362.16286330276705,191.21310674166736 370,135.33333333333331 377.83713669723295,191.21310674166736 "
       stroke="#000000"
       stroke-width="0"
     >
@@ -507,37 +688,54 @@ exports[`use various parts of svg-edit > check tool_polygon #0`] = `
     >
       AB
     </text>
-    <polygon
-      cx="670"
-      cy="202"
+    <text
+      fill="#000000"
+      stroke="#000000"
+      stroke-width="0"
+      x="136"
+      y="107"
+      font-size="24"
+      font-family="Serif"
+      text-anchor="middle"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
       id="svg_2"
+      transform="matrix(1 0 0 1 0 0)"
+    >
+      AB
+    </text>
+    <polygon
+      cx="370"
+      cy="202"
+      id="svg_3"
       shape="star"
       point="5"
-      r="13.333333333333334"
-      radialshift=""
-      r2="5.333333333333334"
+      r="66.66666666666667"
+      radialshift="0"
+      r2="13.333333333333334"
       orient="point"
       fill="#ffff00"
       strokecolor="#000000"
       strokewidth="0"
-      points="670,188.66666666666666 673.1348546788931,197.68524269666693 682.680753550602,197.87977340833405 675.0723014202408,203.64809063666638 677.837136697233,212.78689325833264 670,207.33333333333334 662.162863302767,212.78689325833264 664.9276985797592,203.64809063666638 657.319246449398,197.87977340833405 666.8651453211069,197.68524269666693 670,188.66666666666666 673.1348546788931,197.68524269666693 "
+      points="370,135.33333333333331 377.83713669723295,191.21310674166736 433.40376775301024,181.39886704167017 382.68075355060205,206.12022659166595 409.18568348616486,255.93446629166317 370,215.33333333333334 330.81431651383514,255.93446629166317 357.31924644939795,206.12022659166595 306.59623224698976,181.39886704167017 362.16286330276705,191.21310674166736 370,135.33333333333331 377.83713669723295,191.21310674166736 "
       stroke="#000000"
       stroke-width="0"
       fill-opacity="1"
       stroke-opacity="1"
     ></polygon>
     <polygon
-      cx="720"
-      cy="252"
-      id="svg_3"
+      cx="420"
+      cy="302"
+      id="svg_4"
       shape="regularPoly"
       sides="5"
       orient="x"
-      edge="6.666666666666667"
+      edge="80"
       fill="#ffff00"
       strokecolor="#000000"
       strokewidth="5"
-      points="725.6710053890135,252 721.7524370403971,257.3934466291663 715.4120602650961,255.33333333333334 715.4120602650961,248.66666666666666 721.7524370403971,246.6065533708337 725.6710053890135,252 "
+      points="488.0520646681632,302 441.02924448476534,366.7213595499958 364.94472318115305,342 364.94472318115305,262 441.02924448476534,237.27864045000422 488.0520646681632,302 "
       stroke="#000000"
       stroke-width="5"
     >

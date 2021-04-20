@@ -34,6 +34,7 @@ import TopPanel from './panels/TopPanel.js';
 import BottomPanel from './panels/BottomPanel.js';
 import LayersPanel from './panels/LayersPanel.js';
 import MainMenu from './MainMenu.js';
+import {getParentsUntil} from './components/jgraduate/Util.js';
 
 const {$id, $qa, isNullish, encode64, decode64, blankPageObjectURL} = SvgCanvas;
 
