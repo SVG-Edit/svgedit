@@ -308,7 +308,6 @@ class MainMenu {
         <se-menu-item id="tool_save" label="Save Image" shortcut="S" src="./images/saveImg.svg"></se-menu-item>
         <se-menu-item id="tool_import" label="Import Image" src="./images/importImg.svg"></se-menu-item>
         <se-menu-item id="tool_export" label="Export" src="./images/export.svg"></se-menu-item>
-        <se-menu-item id="tool_imagelib" label="Image library" src="./images/library.svg"></se-menu-item>
         <se-menu-item id="tool_docprops" label="Document Properties" shortcut="D" src="./images/docprop.svg">
         </se-menu-item>
         <se-menu-item id="tool_editor_prefs" label="Editor Preferences" src="./images/editPref.svg"></se-menu-item>
