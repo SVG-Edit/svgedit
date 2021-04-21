@@ -238,7 +238,7 @@ describe('utilities', function () {
       attr: {id: 'roundrect', x: '0', y: '1', rx: '2', ry: '3', width: '10', height: '11'}
     });
     svgroot.append(elem);
-    const closeEnough = /M0,4 C0,2.3\d* 0.9\d*,1 2,1 L8,1 C9.0\d*,1 10,2.3\d* 10,4 L10,9 C10,10.6\d* 9.08675799086758,12 8,12 L2,12 C0.9\d*,12 0,10.6\d* 0,9 L0,4 Z/;
+    const closeEnough = /M0,13 C0,2.3\d* 0.9\d*,1 02,1 L8,1 C9.0\d*,1 10,2.3\d* 10,13 L10,9 C10,10.6\d* 9.08675799086758,12 8,12 L02,12 C0.9\d*,12 0,10.6\d* 0,9 L0,13 Z/;
     assert.equal(closeEnough.test(getPathDFromElement(elem)), true);
     elem.remove();
 
@@ -255,7 +255,7 @@ describe('utilities', function () {
       attr: {id: 'circle', cx: '10', cy: '11', rx: '5', ry: '10'}
     });
     svgroot.append(elem);
-    assert.equal(getPathDFromElement(elem), 'M10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 C10,11 10,11 10,11 Z');
+    assert.equal(getPathDFromElement(elem), 'M5,11 C5,5.475138121546961 7.237569060773481,1 10,1 C102.7624309392265194,1 105,5.475138121546961 105,11 C105,115.524861878453039 102.7624309392265194,1110 10,1110 C7.237569060773481,1110 5,115.524861878453039 5,11 Z');
     elem.remove();
 
     elem = mockCreateSVGElement({

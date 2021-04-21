@@ -12,6 +12,28 @@ describe('select', function () {
   const mockConfig = {
     dimensions: [640, 480]
   };
+  const dataStorage = {
+    _storage: new WeakMap(),
+    put: function (element, key, obj) {
+      if (!this._storage.has(element)) {
+        this._storage.set(element, new Map());
+      }
+      this._storage.get(element).set(key, obj);
+    },
+    get: function (element, key) {
+      return this._storage.get(element).get(key);
+    },
+    has: function (element, key) {
+      return this._storage.has(element) && this._storage.get(element).has(key);
+    },
+    remove: function (element, key) {
+      var ret = this._storage.get(element).delete(key);
+      if (!this._storage.get(element).size === 0) {
+        this._storage.delete(element);
+      }
+      return ret;
+    }
+  };  
 
   /**
   * @implements {module:select.SVGFactory}
@@ -25,7 +47,8 @@ describe('select', function () {
       return elem;
     },
     svgRoot () { return svgroot; },
-    svgContent () { return svgcontent; }
+    svgContent () { return svgcontent; },
+    getDataStorage () { return dataStorage; }
   };
 
   /**

@@ -21,11 +21,11 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'connector',
-  async init (S) {
+  async init(S) {
     const svgEditor = this;
-    const {svgCanvas} = svgEditor;
-    const {getElem, $id} = svgCanvas;
-    const {$, svgroot} = S,
+    const { svgCanvas } = svgEditor;
+    const { getElem, $id } = svgCanvas;
+    const { $, svgroot } = S,
       addElem = svgCanvas.addSVGElementFromJson,
       selManager = S.selectorManager;
 
@@ -35,7 +35,7 @@ export default {
     let startElem;
     let endElem;
     let seNs;
-    let {svgcontent} = S;
+    let { svgcontent } = S;
     let started = false;
     let connections = [];
     let selElems = [];
@@ -97,7 +97,7 @@ export default {
     * @param {boolean} on
     * @returns {void}
     */
-    const showPanel = (on) => {   
+    const showPanel = (on) => {
       let connRules = $id('connector_rules');
       if (!connRules) {
         connRules = document.createElement('style');
@@ -105,7 +105,7 @@ export default {
         document.getElementsByTagName("head")[0].appendChild(connRules);
       }
       connRules.textContent = (!on ? '' : '#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }');
-      if($id('connector_panel'))
+      if ($id('connector_panel'))
         $id('connector_panel').style.display = (on) ? 'block' : 'none';
     }
 
@@ -117,7 +117,7 @@ export default {
      * @param {boolean} [setMid]
      * @returns {void}
     */
-    const setPoint = (elem, pos, x, y, setMid) => { 
+    const setPoint = (elem, pos, x, y, setMid) => {
       const pts = elem.points;
       const pt = svgroot.createSVGPoint();
       pt.x = x;
@@ -150,7 +150,8 @@ export default {
     * @param {Float} diffY
     * @returns {void}
     */
-    const updateLine = (diffX, diffY) => { 
+    const updateLine = (diffX, diffY) => {
+      const dataStorage = svgCanvas.getDataStorage();
       // Update line with element
       let i = connections.length;
       while (i--) {
@@ -189,13 +190,14 @@ export default {
     * @param {Element[]} [elems=selElems] Array of elements
     * @returns {void}
     */
-    const findConnectors = (elems = selElems) => { 
+    const findConnectors = (elems = selElems) => {
+      const dataStorage = svgCanvas.getDataStorage();
       // const connectors = svgcontent.querySelectorAll('.se_connector');
       const connectors = svgcontent.querySelectorAll('.se_connector');
       connections = [];
 
       // Loop through connectors to see if one is connected to the element
-      Array.prototype.forEach.call(connectors, function(ethis, i){
+      Array.prototype.forEach.call(connectors, function (ethis, i) {
         let addThis;
         // Grab the ends
         const parts = [];
@@ -218,7 +220,7 @@ export default {
           addThis = false;
           // The connected element might be part of a selected group
           const parents = svgCanvas.getParents(cElem.parentNode);
-          Array.prototype.forEach.call(parents, function(el, i){
+          Array.prototype.forEach.call(parents, function (el, i) {
             if (elems.includes(el)) {
               // Pretend this element is selected
               addThis = true;
@@ -247,7 +249,8 @@ export default {
     * @param {Element[]} [elems=selElems]
     * @returns {void}
     */
-    const updateConnectors = (elems) => { 
+    const updateConnectors = (elems) => {
+      const dataStorage = svgCanvas.getDataStorage();
       // Updates connector lines based on selected elements
       // Is not used on mousemove, as it runs getStrokedBBox every time,
       // which isn't necessary there.
@@ -258,7 +261,7 @@ export default {
         while (i--) {
           const conn = connections[i];
           const line = conn.connector;
-          const {elem} = conn;
+          const { elem } = conn;
 
           // const sw = line.getAttribute('stroke-width') * 5;
           const pre = conn.is_start ? 'start' : 'end';
@@ -325,7 +328,8 @@ export default {
     * Do on reset.
     * @returns {void}
     */
-    const init = () => { 
+    const init = () => {
+      const dataStorage = svgCanvas.getDataStorage();
       // Make sure all connectors have data set
       const elements = svgcontent.querySelectorAll('*');
       elements.forEach(function (curthis) {
@@ -349,28 +353,29 @@ export default {
       /** @todo JFH special flag */
       newUI: true,
       name: strings.name,
-      callback () {
+      callback() {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
         <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
         `
-        $id('tools_left').append(buttonTemplate.content.cloneNode(true)); 
+        $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('mode_connect').addEventListener("click", () => {
           svgCanvas.setMode('connector');
-        });       
+        });
       },
-      /* async */ addLangData ({lang}) { // , importLocale: importLoc
+      /* async */ addLangData({ lang }) { // , importLocale: importLoc
         return {
           data: strings.langList
         };
       },
-      mouseDown (opts) {
+      mouseDown(opts) {
+        const dataStorage = svgCanvas.getDataStorage();
         const e = opts.event;
         startX = opts.start_x;
         startY = opts.start_y;
         const mode = svgCanvas.getMode();
-        const {curConfig: {initStroke}} = svgEditor.configObj;
+        const { curConfig: { initStroke } } = svgEditor.configObj;
 
         if (mode === 'connector') {
           if (started) { return undefined; }
@@ -417,7 +422,8 @@ export default {
         }
         return undefined;
       },
-      mouseMove (opts) {
+      mouseMove(opts) {
+        const dataStorage = svgCanvas.getDataStorage();
         const zoom = svgCanvas.getZoom();
         // const e = opts.event;
         const x = opts.mouse_x / zoom;
@@ -455,7 +461,8 @@ export default {
           }
         }
       },
-      mouseUp (opts) {
+      mouseUp(opts) {
+        const dataStorage = svgCanvas.getDataStorage();
         // const zoom = svgCanvas.getZoom();
         const e = opts.event;
         // , x = opts.mouse_x / zoom,
@@ -468,7 +475,7 @@ export default {
         const fo = svgCanvas.getClosest(mouseTarget.parentNode, 'foreignObject');
         if (fo) { mouseTarget = fo; }
 
-        const parents = svgCanvas.getParents(mouseTarget.parentNode);        
+        const parents = svgCanvas.getParents(mouseTarget.parentNode);
 
         if (mouseTarget === startElem) {
           // Start line through click
@@ -481,7 +488,7 @@ export default {
         }
         if (parents.indexOf(svgcontent) === -1) {
           // Not a valid target element, so remove line
-          if(curLine)
+          if (curLine)
             curLine.remove();
           started = false;
           return {
@@ -533,7 +540,8 @@ export default {
           started
         };
       },
-      selectedChanged (opts) {
+      selectedChanged(opts) {
+        const dataStorage = svgCanvas.getDataStorage();
         // TODO: Find better way to skip operations if no connectors are in use
         if (!svgcontent.querySelectorAll('.se_connector').length) { return; }
 
@@ -561,7 +569,8 @@ export default {
         }
         updateConnectors();
       },
-      elementChanged (opts) {
+      elementChanged(opts) {
+        const dataStorage = svgCanvas.getDataStorage();
         let elem = opts.elems[0];
         if (!elem) return;
         if (elem.tagName === 'svg' && elem.id === 'svgcontent') {
@@ -590,7 +599,7 @@ export default {
             const x2 = Number(elem.getAttribute('x2'));
             const y1 = Number(elem.getAttribute('y1'));
             const y2 = Number(elem.getAttribute('y2'));
-            const {id} = elem;
+            const { id } = elem;
 
             const midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ');
             const pline = addElem({
@@ -620,7 +629,7 @@ export default {
           updateConnectors();
         }
       },
-      IDsUpdated (input) {
+      IDsUpdated(input) {
         const remove = [];
         input.elems.forEach(function (elem) {
           if ('se:connector' in elem.attr) {
@@ -634,9 +643,9 @@ export default {
             }
           }
         });
-        return {remove};
+        return { remove };
       },
-      toolButtonStateUpdate (opts) {
+      toolButtonStateUpdate(opts) {
         const button = document.getElementById('mode_connect');
         if (opts.nostroke && button.pressed === true) {
           svgEditor.clickSelect();

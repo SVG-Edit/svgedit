@@ -6,19 +6,19 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import {NS} from '../common/namespaces.js';
+import { NS } from '../common/namespaces.js';
 import {
   isNullish, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
 } from './utilities.js';
-import {transformPoint, transformListToTransform, rectsIntersect} from './math.js';
+import { transformPoint, transformListToTransform, rectsIntersect } from './math.js';
 import jQueryPluginSVG from './jQuery.attr.js';
 import {
   getTransformList
 } from './svgtransformlist.js';
 import * as hstry from './history.js';
-import {getClosest} from '../editor/components/jgraduate/Util.js';
+import { getClosest } from '../editor/components/jgraduate/Util.js';
 
-const {BatchCommand} = hstry;
+const { BatchCommand } = hstry;
 const $ = jQueryPluginSVG(jQuery);
 let selectionContext_ = null;
 
@@ -140,7 +140,7 @@ export const getMouseTargetMethod = function (evt) {
   // for foreign content, go up until we find the foreignObject
   // WebKit browsers set the mouse target to the svgcanvas div
   if ([NS.MATH, NS.HTML].includes(mouseTarget.namespaceURI) &&
-mouseTarget.id !== 'svgcanvas'
+    mouseTarget.id !== 'svgcanvas'
   ) {
     while (mouseTarget.nodeName !== 'foreignObject') {
       mouseTarget = mouseTarget.parentNode;
@@ -243,9 +243,9 @@ export const getVisibleElementsAndBBoxes = function (parent) {
   }
   const contentElems = [];
   const elements = parent.children;
-  Array.prototype.forEach.call(elements, function(elem, i){
+  Array.prototype.forEach.call(elements, function (elem, i) {
     if (elem.getBBox) {
-      contentElems.push({elem, bbox: getStrokedBBoxDefaultVisible([elem])});
+      contentElems.push({ elem, bbox: getStrokedBBoxDefaultVisible([elem]) });
     }
   });
   return contentElems.reverse();
@@ -324,6 +324,7 @@ export const getIntersectionListMethod = function (rect) {
 * @returns {void}
 */
 export const groupSvgElem = function (elem) {
+  const dataStorage = selectionContext_.getDataStorage();
   const g = document.createElementNS(NS.SVG, 'g');
   elem.replaceWith(g);
   g.appendChild(elem);

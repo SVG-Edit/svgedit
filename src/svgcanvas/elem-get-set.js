@@ -5,11 +5,11 @@
  */
 
 /* globals jQuery */
-import {jGraduate} from '../editor/components/jgraduate/jQuery.jGraduate.js';
+import { jGraduate } from '../editor/components/jgraduate/jQuery.jGraduate.js';
 
 import * as hstry from './history.js';
 import jQueryPluginSVG from './jQuery.attr.js';
-import {NS} from '../common/namespaces.js';
+import { NS } from '../common/namespaces.js';
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
   walkTree, isNullish, getHref, setHref, getElem
@@ -17,7 +17,7 @@ import {
 import {
   convertToNum
 } from '../common/units.js';
-import {getParents} from '../editor/components/jgraduate/Util.js';
+import { getParents } from '../editor/components/jgraduate/Util.js';
 
 const $ = jQueryPluginSVG(jQuery);
 
@@ -61,11 +61,12 @@ export const getResolutionMethod = function () {
 */
 export const getTitleMethod = function (elem) {
   const selectedElements = elemContext_.getSelectedElements();
+  const dataStorage = elemContext_.getDataStorage();
   elem = elem || selectedElements[0];
   if (!elem) { return undefined; }
-  if(dataStorage.has(elem, 'gsvg')){
+  if (dataStorage.has(elem, 'gsvg')) {
     elem = dataStorage.get(elem, 'gsvg');
-  } else if(dataStorage.has(elem, 'symbol')) {
+  } else if (dataStorage.has(elem, 'symbol')) {
     elem = dataStorage.get(elem, 'symbol');
   }
   const childs = elem.childNodes;
@@ -86,8 +87,9 @@ export const getTitleMethod = function (elem) {
 */
 export const setGroupTitleMethod = function (val) {
   const selectedElements = elemContext_.getSelectedElements();
+  const dataStorage = elemContext_.getDataStorage();
   let elem = selectedElements[0];
-  if(dataStorage.has(elem, 'gsvg')){
+  if (dataStorage.has(elem, 'gsvg')) {
     elem = dataStorage.get(elem, 'gsvg');
   }
 
@@ -104,7 +106,7 @@ export const setGroupTitleMethod = function (val) {
   } else if (ts.length) {
     // Change title contents
     title = ts[0];
-    batchCmd.addSubCommand(new ChangeElementCommand(title, {'#text': title.textContent}));
+    batchCmd.addSubCommand(new ChangeElementCommand(title, { '#text': title.textContent }));
     title.textContent = val;
   } else {
     // Add title element
@@ -149,7 +151,7 @@ export const setDocumentTitleMethod = function (newTitle) {
     // No title given, so element is not necessary
     docTitle.remove();
   }
-  batchCmd.addSubCommand(new ChangeElementCommand(docTitle, {'#text': oldTitle}));
+  batchCmd.addSubCommand(new ChangeElementCommand(docTitle, { '#text': oldTitle }));
   elemContext_.addCommandToHistory(batchCmd);
 };
 
@@ -166,7 +168,7 @@ export const setDocumentTitleMethod = function (newTitle) {
 export const setResolutionMethod = function (x, y) {
   const currentZoom = elemContext_.getCurrentZoom();
   const res = elemContext_.getCanvas().getResolution();
-  const {w, h} = res;
+  const { w, h } = res;
   let batchCmd;
 
   if (x === 'fit') {
@@ -206,10 +208,10 @@ export const setResolutionMethod = function (x, y) {
 
     this.contentW = x;
     this.contentH = y;
-    batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), {width: w, height: h}));
+    batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), { width: w, height: h }));
 
     elemContext_.getSVGContent().setAttribute('viewBox', [0, 0, x / currentZoom, y / currentZoom].join(' '));
-    batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), {viewBox: ['0 0', w, h].join(' ')}));
+    batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), { viewBox: ['0 0', w, h].join(' ') }));
 
     elemContext_.addCommandToHistory(batchCmd);
     elemContext_.call('changed', [elemContext_.getSVGContent()]);
@@ -254,7 +256,7 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
     const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100;
     const zoom = Math.min(wZoom, hZoom);
     elemContext_.getCanvas().setZoom(zoom);
-    return {zoom, bbox: bb};
+    return { zoom, bbox: bb };
   };
 
   if (typeof val === 'object') {
@@ -262,35 +264,35 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
     if (bb.width === 0 || bb.height === 0) {
       const newzoom = bb.zoom ? bb.zoom : currentZoom * bb.factor;
       elemContext_.getCanvas().setZoom(newzoom);
-      return {zoom: currentZoom, bbox: bb};
+      return { zoom: currentZoom, bbox: bb };
     }
     return calcZoom(bb);
   }
 
   switch (val) {
-  case 'selection': {
-    if (!selectedElements[0]) { return undefined; }
-    const selectedElems = $.map(selectedElements, function (n) {
-      if (n) {
-        return n;
-      }
+    case 'selection': {
+      if (!selectedElements[0]) { return undefined; }
+      const selectedElems = $.map(selectedElements, function (n) {
+        if (n) {
+          return n;
+        }
+        return undefined;
+      });
+      bb = getStrokedBBoxDefaultVisible(selectedElems);
+      break;
+    } case 'canvas': {
+      const res = elemContext_.getCanvas().getResolution();
+      spacer = 0.95;
+      bb = { width: res.w, height: res.h, x: 0, y: 0 };
+      break;
+    } case 'content':
+      bb = getStrokedBBoxDefaultVisible();
+      break;
+    case 'layer':
+      bb = getStrokedBBoxDefaultVisible(getVisibleElements(elemContext_.getCanvas().getCurrentDrawing().getCurrentLayer()));
+      break;
+    default:
       return undefined;
-    });
-    bb = getStrokedBBoxDefaultVisible(selectedElems);
-    break;
-  } case 'canvas': {
-    const res = elemContext_.getCanvas().getResolution();
-    spacer = 0.95;
-    bb = {width: res.w, height: res.h, x: 0, y: 0};
-    break;
-  } case 'content':
-    bb = getStrokedBBoxDefaultVisible();
-    break;
-  case 'layer':
-    bb = getStrokedBBoxDefaultVisible(getVisibleElements(elemContext_.getCanvas().getCurrentDrawing().getCurrentLayer()));
-    break;
-  default:
-    return undefined;
   }
   return calcZoom(bb);
 };
@@ -327,14 +329,14 @@ export const setZoomMethod = function (zoomLevel) {
 export const setColorMethod = function (type, val, preventUndo) {
   const selectedElements = elemContext_.getSelectedElements();
   elemContext_.setCurShape(type, val);
-  elemContext_.setCurProperties(type + '_paint', {type: 'solidColor'});
+  elemContext_.setCurProperties(type + '_paint', { type: 'solidColor' });
   const elems = [];
   /**
 *
 * @param {Element} e
 * @returns {void}
 */
-  function addNonG (e) {
+  function addNonG(e) {
     if (e.nodeName !== 'g') {
       elems.push(e);
     }
@@ -406,9 +408,9 @@ export const findDuplicateGradient = function (grad) {
     const og = existingGrads[i];
     if (grad.tagName === 'linearGradient') {
       if (grad.getAttribute('x1') !== og.getAttribute('x1') ||
-    grad.getAttribute('y1') !== og.getAttribute('y1') ||
-    grad.getAttribute('x2') !== og.getAttribute('x2') ||
-    grad.getAttribute('y2') !== og.getAttribute('y2')
+        grad.getAttribute('y1') !== og.getAttribute('y1') ||
+        grad.getAttribute('x2') !== og.getAttribute('x2') ||
+        grad.getAttribute('y2') !== og.getAttribute('y2')
       ) {
         continue;
       }
@@ -429,7 +431,7 @@ export const findDuplicateGradient = function (grad) {
       };
 
       let diff = false;
-      radAttrs.forEach(function(attr, j){
+      radAttrs.forEach(function (attr, j) {
         if (gradAttrs[attr] !== ogAttrs[attr]) { diff = true; }
       });
 
@@ -450,8 +452,8 @@ export const findDuplicateGradient = function (grad) {
       const ostop = ostops[j];
 
       if (stop.getAttribute('offset') !== ostop.getAttribute('offset') ||
-    stop.getAttribute('stop-opacity') !== ostop.getAttribute('stop-opacity') ||
-    stop.getAttribute('stop-color') !== ostop.getAttribute('stop-color')) {
+        stop.getAttribute('stop-opacity') !== ostop.getAttribute('stop-opacity') ||
+        stop.getAttribute('stop-color') !== ostop.getAttribute('stop-color')) {
         break;
       }
     }
@@ -479,14 +481,14 @@ export const setPaintMethod = function (type, paint) {
   // now set the current paint object
   elemContext_.setCurProperties(type + '_paint', p);
   switch (p.type) {
-  case 'solidColor':
-    this.setColor(type, p.solidColor !== 'none' ? '#' + p.solidColor : 'none');
-    break;
-  case 'linearGradient':
-  case 'radialGradient':
-    elemContext_.setCanvas(type + 'Grad', p[p.type]);
-    elemContext_.getCanvas().setGradient(type);
-    break;
+    case 'solidColor':
+      this.setColor(type, p.solidColor !== 'none' ? '#' + p.solidColor : 'none');
+      break;
+    case 'linearGradient':
+    case 'radialGradient':
+      elemContext_.setCanvas(type + 'Grad', p[p.type]);
+      elemContext_.getCanvas().setGradient(type);
+      break;
   }
 };
 /**
@@ -511,7 +513,7 @@ export const setStrokeWidthMethod = function (val) {
 * @param {Element} e
 * @returns {void}
 */
-  function addNonG (e) {
+  function addNonG(e) {
     if (e.nodeName !== 'g') {
       elems.push(e);
     }
@@ -572,7 +574,7 @@ export const getBoldMethod = function () {
   // should only have one element selected
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
-isNullish(selectedElements[1])) {
+    isNullish(selectedElements[1])) {
     return (selected.getAttribute('font-weight') === 'bold');
   }
   return false;
@@ -588,7 +590,7 @@ export const setBoldMethod = function (b) {
   const selectedElements = elemContext_.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
-isNullish(selectedElements[1])) {
+    isNullish(selectedElements[1])) {
     elemContext_.getCanvas().changeSelectedAttribute('font-weight', b ? 'bold' : 'normal');
   }
   if (!selectedElements[0].textContent) {
@@ -605,7 +607,7 @@ export const getItalicMethod = function () {
   const selectedElements = elemContext_.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
-isNullish(selectedElements[1])) {
+    isNullish(selectedElements[1])) {
     return (selected.getAttribute('font-style') === 'italic');
   }
   return false;
@@ -621,7 +623,7 @@ export const setItalicMethod = function (i) {
   const selectedElements = elemContext_.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
-isNullish(selectedElements[1])) {
+    isNullish(selectedElements[1])) {
     elemContext_.getCanvas().changeSelectedAttribute('font-style', i ? 'italic' : 'normal');
   }
   if (!selectedElements[0].textContent) {
@@ -638,7 +640,7 @@ export const setTextAnchorMethod = function (value) {
   const selectedElements = elemContext_.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
-      isNullish(selectedElements[1])) {
+    isNullish(selectedElements[1])) {
     elemContext_.getCanvas().changeSelectedAttribute('text-anchor', value);
   }
   if (!selectedElements[0].textContent) {
@@ -747,7 +749,7 @@ export const setImageURLMethod = function (val) {
   const elem = selectedElements[0];
   if (!elem) { return; }
 
-  const attrs = { 
+  const attrs = {
     width: elem.getAttribute('width'),
     height: elem.getAttribute('height'),
   };
@@ -767,8 +769,8 @@ export const setImageURLMethod = function (val) {
     '#href': curHref
   }));
   const img = new Image();
-  img.onload = function() {
-    const changes = { 
+  img.onload = function () {
+    const changes = {
       width: elem.getAttribute('width'),
       height: elem.getAttribute('height'),
     };
@@ -834,7 +836,7 @@ export const setRectRadiusMethod = function (val) {
     if (r !== String(val)) {
       selected.setAttribute('rx', val);
       selected.setAttribute('ry', val);
-      elemContext_.addCommandToHistory(new ChangeElementCommand(selected, {rx: r, ry: r}, 'Radius'));
+      elemContext_.addCommandToHistory(new ChangeElementCommand(selected, { rx: r, ry: r }, 'Radius'));
       elemContext_.call('changed', [selected]);
     }
   }
@@ -901,9 +903,9 @@ export const setBackgroundMethod = function (color, url) {
       const div = document.createElement('div');
       elemContext_.getCanvas().assignAttributes(div, {
         style: 'pointer-events:none;width:100%;height:100%;' +
-      'background-image:url(data:image/gif;base64,' +
-      'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
-      'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
+          'background-image:url(data:image/gif;base64,' +
+          'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
+          'gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7);'
       });
       bgPattern.append(div);
       bg.append(bgPattern);

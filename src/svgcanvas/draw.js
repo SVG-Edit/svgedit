@@ -989,6 +989,7 @@ export const mergeAllLayers = function (hrService) {
 */
 export const leaveContext = function () {
   const len = disabledElems.length;
+  const dataStorage = canvas_.getDataStorage();
   if (len) {
     for (let i = 0; i < len; i++) {
       const elem = disabledElems[i];
@@ -1015,6 +1016,7 @@ export const leaveContext = function () {
 * @returns {void}
 */
 export const setContext = function (elem) {
+  const dataStorage = canvas_.getDataStorage();
   leaveContext();
   if (typeof elem === 'string') {
     elem = getElem(elem);

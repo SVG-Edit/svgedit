@@ -6,7 +6,7 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
+import { jsPDF } from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
 import jQueryPluginSVG from './jQuery.attr.js';
 import * as hstry from './history.js';
@@ -18,18 +18,18 @@ import {
 import {
   transformPoint, transformListToTransform
 } from './math.js';
-import {resetListMap} from './svgtransformlist.js';
+import { resetListMap } from './svgtransformlist.js';
 import {
   convertUnit, shortFloat, convertToNum
 } from '../common/units.js';
-import {isGecko, isChrome, isWebkit} from '../common/browser.js';
+import { isGecko, isChrome, isWebkit } from '../common/browser.js';
 import * as pathModule from './path.js';
-import {NS} from '../common/namespaces.js';
+import { NS } from '../common/namespaces.js';
 import * as draw from './draw.js';
 import {
   recalculateDimensions
 } from './recalculate.js';
-import {getParents, getClosest} from '../editor/components/jgraduate/Util.js';
+import { getParents, getClosest } from '../editor/components/jgraduate/Util.js';
 
 const {
   InsertElementCommand, RemoveElementCommand,
@@ -59,13 +59,13 @@ export const init = function (svgContext) {
 */
 export const svgCanvasToString = function () {
   // keep calling it until there are none to remove
-  while (svgContext_.getCanvas().removeUnusedDefElems() > 0) {} // eslint-disable-line no-empty
+  while (svgContext_.getCanvas().removeUnusedDefElems() > 0) { } // eslint-disable-line no-empty
 
   svgContext_.getCanvas().pathActions.clear(true);
 
   // Keep SVG-Edit comment on top
   const childNodesElems = svgContext_.getSVGContent().childNodes;
-  childNodesElems.forEach(function(node, i){
+  childNodesElems.forEach(function (node, i) {
     if (i && node.nodeType === 8 && node.data.includes('Created with')) {
       svgContext_.getSVGContent().firstChild.before(node);
     }
@@ -81,7 +81,7 @@ export const svgCanvasToString = function () {
 
   // Unwrap gsvg if it has no special attributes (only id and style)
   const gsvgElems = svgContext_.getSVGContent().querySelectorAll('g[data-gsvg]');
-  Array.prototype.forEach.call(gsvgElems, function(element, i){
+  Array.prototype.forEach.call(gsvgElems, function (element, i) {
     const attrs = element.attributes;
     let len = attrs.length;
     for (let i = 0; i < len; i++) {
@@ -100,7 +100,7 @@ export const svgCanvasToString = function () {
 
   // Rewrap gsvg
   if (nakedSvgs.length) {
-    Array.prototype.forEach.call(nakedSvgs, function(el, i){
+    Array.prototype.forEach.call(nakedSvgs, function (el, i) {
       svgContext_.getCanvas().groupSvgElem(el);
     });
   }
@@ -162,7 +162,7 @@ export const svgToString = function (elem, indent) {
       const csElements = elem.querySelectorAll('*');
       const cElements = Array.prototype.slice.call(csElements);
       cElements.push(elem);
-      Array.prototype.forEach.call(cElements, function(el, i){
+      Array.prototype.forEach.call(cElements, function (el, i) {
         // const el = this;
         // for some elements have no attribute
         const uri = el.namespaceURI;
@@ -170,7 +170,7 @@ export const svgToString = function (elem, indent) {
           nsuris[uri] = true;
           out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
         }
-        if(el.attributes.length > 0) {
+        if (el.attributes.length > 0) {
           for (const [i, attr] of Object.entries(el.attributes)) {
             const u = attr.namespaceURI;
             if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
@@ -224,10 +224,10 @@ export const svgToString = function (elem, indent) {
 
           // Embed images when saving
           if (svgContext_.getSvgOptionApply() &&
-        elem.nodeName === 'image' &&
-        attr.localName === 'href' &&
-        svgContext_.getSvgOptionImages() &&
-        svgContext_.getSvgOptionImages() === 'embed'
+            elem.nodeName === 'image' &&
+            attr.localName === 'href' &&
+            svgContext_.getSvgOptionImages() &&
+            svgContext_.getSvgOptionImages() === 'embed'
           ) {
             const img = svgContext_.getEncodableImages(attrVal);
             if (img) { attrVal = img; }
@@ -251,31 +251,31 @@ export const svgToString = function (elem, indent) {
       for (let i = 0; i < childs.length; i++) {
         const child = childs.item(i);
         switch (child.nodeType) {
-        case 1: // element node
-          out.push('\n');
-          out.push(this.svgToString(child, indent));
-          break;
-        case 3: { // text node
-          const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
-          if (str !== '') {
-            bOneLine = true;
-            out.push(String(toXml(str)));
-          }
-          break;
-        } case 4: // cdata node
-          out.push('\n');
-          out.push(new Array(indent + 1).join(' '));
-          out.push('<![CDATA[');
-          out.push(child.nodeValue);
-          out.push(']]>');
-          break;
-        case 8: // comment
-          out.push('\n');
-          out.push(new Array(indent + 1).join(' '));
-          out.push('<!--');
-          out.push(child.data);
-          out.push('-->');
-          break;
+          case 1: // element node
+            out.push('\n');
+            out.push(this.svgToString(child, indent));
+            break;
+          case 3: { // text node
+            const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
+            if (str !== '') {
+              bOneLine = true;
+              out.push(String(toXml(str)));
+            }
+            break;
+          } case 4: // cdata node
+            out.push('\n');
+            out.push(new Array(indent + 1).join(' '));
+            out.push('<![CDATA[');
+            out.push(child.nodeValue);
+            out.push(']]>');
+            break;
+          case 8: // comment
+            out.push('\n');
+            out.push(new Array(indent + 1).join(' '));
+            out.push('<!--');
+            out.push(child.data);
+            out.push('-->');
+            break;
         } // switch on node type
       }
       indent--;
@@ -306,11 +306,12 @@ export const svgToString = function (elem, indent) {
 */
 export const setSvgString = function (xmlString, preventUndo) {
   const curConfig = svgContext_.getCurConfig();
+  const dataStorage = svgContext_.getDataStorage();
   try {
     // convert string into XML document
     const newDoc = text2xml(xmlString);
     if (newDoc.firstElementChild &&
-  newDoc.firstElementChild.namespaceURI !== NS.SVG) {
+      newDoc.firstElementChild.namespaceURI !== NS.SVG) {
       return false;
     }
 
@@ -319,7 +320,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     const batchCmd = new BatchCommand('Change Source');
 
     // remove old svg document
-    const {nextSibling} = svgContext_.getSVGContent();
+    const { nextSibling } = svgContext_.getSVGContent();
 
     svgContext_.getSVGContent().remove();
     const oldzoom = svgContext_.getSVGContent();
@@ -348,7 +349,7 @@ export const setSvgString = function (xmlString, preventUndo) {
 
     // change image href vals if possible
     const elements = content.querySelectorAll('image');
-    Array.prototype.forEach.call(elements, function(image, i){
+    Array.prototype.forEach.call(elements, function (image, i) {
       preventClickDefault(image);
       const val = svgContext_.getCanvas().getHref(this);
       if (val) {
@@ -373,7 +374,7 @@ export const setSvgString = function (xmlString, preventUndo) {
 
     // Wrap child SVGs in group elements
     const svgElements = content.querySelectorAll('svg');
-    Array.prototype.forEach.call(svgElements, function(element, i){
+    Array.prototype.forEach.call(svgElements, function (element, i) {
       // Skip if it's in a <defs>
       if (getClosest(element.parentNode, 'defs')) { return; }
 
@@ -393,7 +394,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (isGecko()) {
       const svgDefs = findDefs();
       const findElems = content.querySelectorAll('linearGradient, radialGradient, pattern');
-      Array.prototype.forEach.call(findElems, function(ele, i){
+      Array.prototype.forEach.call(findElems, function (ele, i) {
         svgDefs.appendChild(ele);
       });
     }
@@ -420,7 +421,7 @@ export const setSvgString = function (xmlString, preventUndo) {
       attrs.height = vb[3];
       // handle content that doesn't have a viewBox
     } else {
-      ['width', 'height'].forEach(function(dim, i){
+      ['width', 'height'].forEach(function (dim, i) {
         // Set to 100 if not given
         const val = content.getAttribute(dim) || '100%';
         if (String(val).substr(-1) === '%') {
@@ -437,9 +438,9 @@ export const setSvgString = function (xmlString, preventUndo) {
 
     // Give ID for any visible layer children missing one
     const chiElems = content.children;
-    Array.prototype.forEach.call(chiElems, function(chiElem, i){
+    Array.prototype.forEach.call(chiElems, function (chiElem, i) {
       const visElems = chiElem.querySelectorAll(svgContext_.getVisElems());
-      Array.prototype.forEach.call(visElems, function(elem, i){
+      Array.prototype.forEach.call(visElems, function (elem, i) {
         if (!elem.id) { elem.id = svgContext_.getCanvas().getNextId(); }
       });
     });
@@ -466,7 +467,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     // update root to the correct size
     const width = content.getAttribute('width');
     const height = content.getAttribute('height');
-    const changes = {width: width, height: height};
+    const changes = { width: width, height: height };
     batchCmd.addSubCommand(new ChangeElementCommand(svgContext_.getSVGRoot(), changes));
 
     // reset zoom
@@ -481,7 +482,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (!preventUndo) svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [svgContext_.getSVGContent()]);
   } catch (e) {
-    console.log(e); 
+    console.log(e);
     return false;
   }
 
@@ -503,7 +504,7 @@ export const setSvgString = function (xmlString, preventUndo) {
 * was obtained
 */
 export const importSvgString = function (xmlString) {
-  console.log('importSvgString --> ', xmlString);
+  const dataStorage = svgContext_.getDataStorage();
   let j, ts, useEl;
   try {
     // Get unique ID
@@ -513,7 +514,7 @@ export const importSvgString = function (xmlString) {
     // Look for symbol and make sure symbol exists in image
     if (svgContext_.getImportIds(uid) && svgContext_.getImportIds(uid).symbol) {
       const parents = getParents(svgContext_.getImportIds(uid).symbol, '#svgroot');
-      if(parents.length){
+      if (parents.length) {
         useExisting = true;
       }
     }
@@ -521,7 +522,7 @@ export const importSvgString = function (xmlString) {
     const batchCmd = new BatchCommand('Import Image');
     let symbol;
     if (useExisting) {
-      ({symbol} = svgContext_.getImportIds());
+      ({ symbol } = svgContext_.getImportIds());
       ts = svgContext_.getImportIds(uid).xform;
     } else {
       // convert string into XML document
@@ -564,7 +565,7 @@ export const importSvgString = function (xmlString) {
         // https://bugzilla.mozilla.org/show_bug.cgi?id=353575
         // TODO: Make this properly undo-able.
         const elements = svg.querySelectorAll('linearGradient, radialGradient, pattern');
-        Array.prototype.forEach.call(elements, function(el, i){
+        Array.prototype.forEach.call(elements, function (el, i) {
           defs.appendChild(el);
         });
       }
@@ -610,7 +611,7 @@ export const importSvgString = function (xmlString) {
     svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [svgContext_.getSVGContent()]);
   } catch (e) {
-    console.log(e); 
+    console.log(e);
     return null;
   }
 
@@ -689,7 +690,7 @@ export const save = function (opts) {
 * Codes only is useful for locale-independent detection.
 * @returns {module:svgcanvas.IssuesAndCodes}
 */
-function getIssues () {
+function getIssues() {
   const uiStrings = svgContext_.getUIStrings();
   // remove the selected outline before serializing
   svgContext_.getCanvas().clearSelection();
@@ -717,7 +718,7 @@ function getIssues () {
       issues.push(descr);
     }
   }
-  return {issues, issueCodes};
+  return { issues, issueCodes };
 }
 /**
 * @typedef {PlainObject} module:svgcanvas.ImageExportedResults
@@ -749,7 +750,7 @@ function getIssues () {
 export const rasterExport = async function (imgType, quality, exportWindowName, opts = {}) {
   const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
   const mimeType = 'image/' + type.toLowerCase();
-  const {issues, issueCodes} = getIssues();
+  const { issues, issueCodes } = getIssues();
   const svg = this.svgCanvasToString();
 
   if (!$id('export_canvas')) {
@@ -777,7 +778,7 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
  * Called when `bloburl` is available for export.
  * @returns {void}
  */
-    function done () {
+    function done() {
       const obj = {
         datauri, bloburl, svg, issues, issueCodes, type: imgType,
         mimeType, quality, exportWindowName
@@ -854,17 +855,17 @@ export const exportPDF = async (
     keywords: '',
     creator: '' */
   });
-  const {issues, issueCodes} = getIssues();
+  const { issues, issueCodes } = getIssues();
   // const svg = this.svgCanvasToString();
   // await doc.addSvgAsImage(svg)
-  await doc.svg(svgContext_.getSVGContent(), {x: 0, y: 0, width: res.w, height: res.h});
+  await doc.svg(svgContext_.getSVGContent(), { x: 0, y: 0, width: res.w, height: res.h });
 
   // doc.output('save'); // Works to open in a new
   //  window; todo: configure this and other export
   //  options to optionally work in this manner as
   //  opposed to opening a new tab
   outputType = outputType || 'dataurlstring';
-  const obj = {issues, issueCodes, exportWindowName, outputType};
+  const obj = { issues, issueCodes, exportWindowName, outputType };
   obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
   svgContext_.call('exportedPDF', obj);
   return obj;
@@ -895,7 +896,7 @@ export const uniquifyElemsMethod = function (g) {
         // and we haven't tracked this ID yet
         if (!(n.id in ids)) {
           // add this id to our map
-          ids[n.id] = {elem: null, attrs: [], hrefs: []};
+          ids[n.id] = { elem: null, attrs: [], hrefs: [] };
         }
         ids[n.id].elem = n;
       }
@@ -911,7 +912,7 @@ export const uniquifyElemsMethod = function (g) {
           if (refid) {
             if (!(refid in ids)) {
               // add this id to our map
-              ids[refid] = {elem: null, attrs: [], hrefs: []};
+              ids[refid] = { elem: null, attrs: [], hrefs: [] };
             }
             ids[refid].attrs.push(attrnode);
           }
@@ -926,7 +927,7 @@ export const uniquifyElemsMethod = function (g) {
         if (refid) {
           if (!(refid in ids)) {
             // add this id to our map
-            ids[refid] = {elem: null, attrs: [], hrefs: []};
+            ids[refid] = { elem: null, attrs: [], hrefs: [] };
           }
           ids[refid].hrefs.push(n);
         }
@@ -937,7 +938,7 @@ export const uniquifyElemsMethod = function (g) {
   // in ids, we now have a map of ids, elements and attributes, let's re-identify
   for (const oldid in ids) {
     if (!oldid) { continue; }
-    const {elem} = ids[oldid];
+    const { elem } = ids[oldid];
     if (elem) {
       const newid = svgContext_.getCanvas().getNextId();
 
@@ -945,7 +946,7 @@ export const uniquifyElemsMethod = function (g) {
       elem.id = newid;
 
       // remap all url() attributes
-      const {attrs} = ids[oldid];
+      const { attrs } = ids[oldid];
       let j = attrs.length;
       while (j--) {
         const attr = attrs[j];
@@ -977,7 +978,8 @@ export const setUseDataMethod = function (parent) {
     elems = elems.querySelectorAll('use');
   }
 
-  Array.prototype.forEach.call(elems, function(el, _){
+  Array.prototype.forEach.call(elems, function (el, _) {
+    const dataStorage = svgContext_.getDataStorage();
     const id = svgContext_.getCanvas().getHref(el).substr(1);
     const refElem = svgContext_.getCanvas().getElem(id);
     if (!refElem) { return; }
@@ -1026,12 +1028,12 @@ export const removeUnusedDefElemsMethod = function () {
     }
   }
 
-  Array.prototype.forEach.call(defs, function(def, i){
+  Array.prototype.forEach.call(defs, function (def, i) {
     const defelems = def.querySelectorAll('linearGradient, radialGradient, filter, marker, svg, symbol');
     i = defelems.length;
     while (i--) {
       const defelem = defelems[i];
-      const {id} = defelem;
+      const { id } = defelem;
       if (!defelemUses.includes(id)) {
         // Not found, so remove (but remember)
         svgContext_.setRemovedElements(id, defelem);
@@ -1058,7 +1060,7 @@ export const convertGradientsMethod = function (elem) {
     });
   }
 
-  Array.prototype.forEach.call(elems, function(grad, i){
+  Array.prototype.forEach.call(elems, function (grad, i) {
     if (grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
       const svgcontent = svgContext_.getSVGContent();
       // TODO: Support more than one element with this ref by duplicating parent grad
