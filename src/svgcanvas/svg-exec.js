@@ -656,7 +656,7 @@ export const embedImage = function (src) {
     imgI.addEventListener("error", (e) => {
       reject(new Error('Error loading image: '));
     });
-    imgI.attr('src', src);
+    imgI.setAttribute('src', src);
   });
 };
 
@@ -903,7 +903,7 @@ export const uniquifyElemsMethod = function (g) {
 
       // now search for all attributes on this element that might refer
       // to other elements
-      $.each(svgContext_.getrefAttrs(), function (i, attr) {
+      svgContext_.getrefAttrs().forEach(function(attr, i){
         const attrnode = n.getAttributeNode(attr);
         if (attrnode) {
           // the incoming file has been sanitized, so we should be able to safely just strip off the leading #

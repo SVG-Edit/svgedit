@@ -827,10 +827,10 @@ export const getExtraAttributesForConvertToPath = function (elem) {
   const attrs = {};
   // TODO: make this list global so that we can properly maintain it
   // TODO: what about @transform, @clip-rule, @fill-rule, etc?
-  $.each(['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'], function () {
-    const a = elem.getAttribute(this);
+  ['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'].forEach(function(item, i){
+    const a = elem.getAttribute(item);
     if (a) {
-      attrs[this] = a;
+      attrs[item] = a;
     }
   });
   return attrs;
@@ -1077,10 +1077,10 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
   if (!elems || !elems.length) { return false; }
 
   let fullBb;
-  $.each(elems, function () {
+  elems.forEach(function(elem, i){
     if (fullBb) { return; }
-    if (!this.parentNode) { return; }
-    fullBb = getBBoxWithTransform(this, addSVGElementFromJson, pathActions);
+    if (!elem.parentNode) { return; }
+    fullBb = getBBoxWithTransform(elem, addSVGElementFromJson, pathActions);
   });
 
   // This shouldn't ever happen...
@@ -1102,7 +1102,7 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
     maxX += offset;
     maxY += offset;
   } else {
-    $.each(elems, function (i, elem) {
+    elems.forEach(function(elem, i){
       const curBb = getBBoxWithTransform(elem, addSVGElementFromJson, pathActions);
       if (curBb) {
         const offset = getStrokeOffsetForBBox(elem);

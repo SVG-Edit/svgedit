@@ -215,7 +215,7 @@ export default {
       const mtypes = ['start', 'mid', 'end'];
       const defs = svgCanvas.findDefs();
 
-      $.each(mtypes, function (i, type) {
+      mtypes.forEach(function(type, i){
         const marker = getLinked(elem, 'marker-' + type);
         if (!marker) { return; }
 

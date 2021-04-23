@@ -89,7 +89,7 @@ class BottomPanel {
         buttonsNeedingStroke.forEach((btn) => {
           // if btn is pressed, change to select button
           if ($id(btn).pressed) {
-            this.editor.leftPanelHandlers.clickSelect();
+            this.editor.leftPanel.clickSelect();
           }
           $id(btn).disabled = true;
         });
@@ -103,7 +103,7 @@ class BottomPanel {
         buttonsNeedingFillAndStroke.forEach((btn) => {
           // if btn is pressed, change to select button
           if ($id(btn).pressed) {
-            this.editor.leftPanelHandlers.clickSelect();
+            this.editor.leftPanel.clickSelect();
           }
           $id(btn).disabled = true;
         });

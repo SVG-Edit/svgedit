@@ -216,7 +216,7 @@ export const convertPath = function (pth, toRel) {
  * @returns {string}
  */
 function pathDSegment (letter, points, morePoints, lastPoint) {
-  $.each(points, function (i, pnt) {
+  points.forEach(function(pnt, i){
     points[i] = shortFloat(pnt);
   });
   let segment = letter + points.join(' ');
@@ -911,7 +911,7 @@ export const pathActionsMethod = (function () {
         const type = seg.pathSegType;
         if (type === 1) { continue; }
         const pts = [];
-        $.each(['', 1, 2], function (j, n) {
+        ['', 1, 2].forEach(function(n, j){
           const x = seg['x' + n], y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
             const pt = transformPoint(x, y, m);

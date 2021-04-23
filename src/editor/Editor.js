@@ -22,6 +22,7 @@ import { isMac } from '../common/browser.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import ConfigObj from './ConfigObj.js';
+import {mergeDeep} from './components/jgraduate/Util.js';
 
 import {
   readLang, putLocale,
@@ -1207,7 +1208,7 @@ class Editor extends EditorStartup {
     // Todo: Add proper RTL Support!
     // Todo: Use RTL detection instead and take out of locales?
     // document.documentElement.dir = allStrings.dir;
-    $.extend(this.uiStrings, allStrings);
+    this.uiStrings = mergeDeep(this.uiStrings, allStrings);
 
     // const notif = allStrings.notification; // Currently unused
     // $.extend will only replace the given strings
