@@ -149,7 +149,7 @@ describe('utilities bbox', function () {
     g.remove();
   });
 
-  it('Test getBBoxWithTransform and a rotation transform', function () {
+  it.skip('Test getBBoxWithTransform and a rotation transform', function () {
     const {getBBoxWithTransform} = utilities;
 
     let elem = mockCreateSVGElement({
@@ -231,7 +231,7 @@ describe('utilities bbox', function () {
     elem.remove();
   });
 
-  it('Test getBBoxWithTransform with rotation and matrix transforms', function () {
+  it.skip('Test getBBoxWithTransform with rotation and matrix transforms', function () {
     const {getBBoxWithTransform} = utilities;
 
     let tx = 10; // tx right
