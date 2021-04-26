@@ -205,7 +205,7 @@ export default {
     enterNewImgURL: 'Geben Sie die URL für das neue Bild an',
     defsFailOnSave: 'Hinweis: Aufgrund eines Fehlers in Ihrem Browser kann dieses Bild falsch angezeigt werden (fehlende Gradienten oder Elemente). Es wird jedoch richtig angezeigt, sobald es gespeichert wird.',
     loadingImage: 'Bild wird geladen, bitte warten ...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Beachten Sie außerdem die folgenden Probleme: ',
     unsavedChanges: 'Es sind nicht-gespeicherte Änderungen vorhanden.',
     enterNewLinkURL: 'Geben Sie die neue URL ein',

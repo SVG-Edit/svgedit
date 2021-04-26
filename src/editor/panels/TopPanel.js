@@ -742,12 +742,24 @@ class TopPanel {
   init() {
     // add Top panel
     const template = document.createElement("template");
+    const i18 = this.editor.i18next
+    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
        <div id="tools_top">
        <div id="editor_panel">
          <div class="tool_sep"></div>
-         <se-button id="tool_source" title="Edit Source" shortcut="U" src="./images/source.svg"></se-button>
-         <se-button id="tool_wireframe" title="Wireframe Mode" shortcut="F" src="./images/wireframe.svg"></se-button>
+         <se-button
+          id="tool_source"
+          title="${i18.t('tools.tool_source')}"
+          shortcut="U"
+          src="./images/source.svg"
+         ></se-button>
+         <se-button
+          id="tool_wireframe"
+          title="${i18.t('tools.wireframe_mode')}"
+          shortcut="F"
+          src="./images/wireframe.svg"
+        ></se-button>
        </div> <!-- editor_panel -->
        <div id="history_panel">
          <div class="tool_sep"></div>

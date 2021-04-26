@@ -12,9 +12,6 @@
 * 2014 Brett Zamir
 * 2020 OptimistikSAS
 * @module SVGEditor
-* @borrows module:locale.putLocale as putLocale
-* @borrows module:locale.readLang as readLang
-* @borrows module:locale.setStrings as setStrings
 */
 
 import './touch.js';
@@ -22,11 +19,6 @@ import { isMac } from '../common/browser.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import ConfigObj from './ConfigObj.js';
-
-import {
-  readLang, putLocale,
-  setStrings
-} from './locale.js';
 
 import EditorStartup from './EditorStartup.js';
 import LeftPanel from './panels/LeftPanel.js';
@@ -69,18 +61,7 @@ class Editor extends EditorStartup {
      * @type {"ignore"|"waiting"|"closed"}
     */
     this.storagePromptState = 'ignore';
-    /*
-    * EDITOR PUBLIC METHODS
-    */
-    this.putLocale = putLocale;
-    this.readLang = readLang;
-    this.setStrings = setStrings;
-    /**
-      * LOCALE.
-      * @name module:SVGthis.uiStrings
-      * @type {PlainObject}
-      */
-    this.flyoutFuncs = {};
+    
     this.uiStrings = {};
     this.svgCanvas = null;
     this.isReady = false;
@@ -414,7 +395,7 @@ class Editor extends EditorStartup {
     this.exportWindow.location.href = data.bloburl || data.datauri;
     const done = this.configObj.pref('export_notice_done');
     if (done !== 'all') {
-      let note = this.uiStrings.notification.saveFromBrowser.replace('%s', data.type);
+      let note = this.i18next.t('notification.saveFromBrowser', { type: data.type});
 
       // Check if there are issues
       if (issues.length) {

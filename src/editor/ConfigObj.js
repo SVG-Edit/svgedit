@@ -37,7 +37,7 @@ export default class ConfigObj {
       /**
         * Default to "en" if locale.js detection does not detect another language.
         */
-      lang: '',
+      lang: 'en',
       /**
         * Will default to 's' if the window height is smaller than the minimum
         * height and 'm' otherwise.

@@ -44,7 +44,7 @@ export default {
         const done = this.configObj.pref('save_notice_done');
 
         if (done !== 'all') {
-          const note = this.uiStrings.notification.saveFromBrowser.replace('%s', 'SVG');
+          const note = svgEditor.i18next.t('notification.saveFromBrowser', { type: 'SVG'});
 
           this.configObj.pref('save_notice_done', 'all');
           if (done !== 'part') {

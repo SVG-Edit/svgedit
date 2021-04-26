@@ -206,7 +206,7 @@ export default {
     enterNewImgURL: 'Podaj adres URL nowego obrazu',
     defsFailOnSave: 'Uwaga: Ze względu na błąd w przeglądarce, ten obraz może się źle wyswietlać (brak gradientów lub elementów). Będzie jednak wyświetlał się poprawnie skoro został zapisany.',
     loadingImage: 'Ładowanie obrazu, proszę czekać...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Zwróć uwagę na nastepujące kwestie: ',
     unsavedChanges: 'Wykryto niezapisane zmiany.',
     enterNewLinkURL: 'Wpisz nowy adres URL hiperłącza',

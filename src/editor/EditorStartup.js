@@ -2,6 +2,9 @@
 import './touch.js';
 import {convertUnit} from '../common/units.js';
 import {
+  putLocale
+} from './locale.js';
+import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
 import editorTemplate from './templates/editorTemplate.js';
@@ -59,6 +62,8 @@ class EditorStartup {
   */
   async init () {
     const self = this;
+    const { i18next, langParam } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
+    this.i18next = i18next;
     // allow to prepare the dom without display
     this.$svgEditor.style.visibility = 'hidden';
     try {
@@ -692,11 +697,7 @@ class EditorStartup {
    * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
    */
   async extAndLocaleFunc () {
-    const {langParam, langData} = await this.putLocale(this.configObj.pref('lang'), this.goodLangs);
-    await this.setLang(langParam, langData);
-
     this.$svgEditor.style.visibility = 'visible';
-
     try {
       // load standard extensions
       await Promise.all(
@@ -713,7 +714,7 @@ class EditorStartup {
              */
             const imported = await import(`./extensions/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`);
             const {name = extname, init: initfn} = imported.default;
-            return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam});
+            return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam: 'en'}); /** @todo  change to current lng */
           } catch (err) {
             // Todo: Add config to alert any errors
             console.error('Extension failed to load: ' + extname + '; ', err);
