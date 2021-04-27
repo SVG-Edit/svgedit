@@ -366,7 +366,7 @@ class Editor extends EditorStartup {
       $id('tool_select').classList.remove('tool_button');
       this.multiselected = false;
       if (elems.length) {
-        this.selectedElement = this.elems[0];
+        this.selectedElement = elems[0];
       }
     } else {
       setTimeout(() => {
@@ -807,11 +807,6 @@ class Editor extends EditorStartup {
       return undefined;
     }
     let cbCalled = false;
-
-    if (ext.langReady && this.langChanged) { // We check for this since the "lang" pref could have been set by storage
-      const lang = this.configObj.pref('lang');
-      await ext.langReady({ lang });
-    }
 
     /**
     *

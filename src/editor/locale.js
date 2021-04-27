@@ -75,7 +75,7 @@ export const putLocale = async function (givenParam, goodLangs) {
   const module = await import(`./locale/lang.${encodeURIComponent(langParam)}.js`);
   i18next.init({
     lng: langParam,
-    debug: true,
+    debug: false,
     resources: {
       [langParam]: {
         translation: module.default,

@@ -58,7 +58,7 @@ export default {
   name: 'storage',
   init ({$}) {
     const svgEditor = this;
-    const {svgCanvas} = svgEditor;
+    const {svgCanvas, storage} = svgEditor;
 
     // We could empty any already-set data for users when they decline storage,
     //  but it would be a risk for users who wanted to store but accidentally
@@ -78,7 +78,6 @@ export default {
       noStorageOnLoad,
       forceStorage
     } = svgEditor.configObj.curConfig;
-    const {storage} = svgEditor;
 
     // storageDialog added to DOM
     const storageBox = document.createElement('se-storage-dialog');
@@ -184,7 +183,7 @@ export default {
     let loaded = false;
     return {
       name: 'storage',
-      langReady ({lang}) {
+      callback () {
         const storagePrompt = new URL(top.location).searchParams.get('storagePrompt');
         // No need to run this one-time dialog again just because the user
         //   changes the language
