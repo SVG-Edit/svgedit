@@ -14,7 +14,7 @@
   },
   "scripts": {
     "lint": "eslint --ext js,html,md .",
-    "test": "run-s cypress:instrument test-only",
+    "test": "run-s cypress:instrument test-only-no-report",
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
     "start": "echo \"Open file, e.g., to http://localhost:8000/src/editor\" && web-dev-server --node-resolve",
