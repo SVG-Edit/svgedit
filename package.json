@@ -14,10 +14,11 @@
   },
   "scripts": {
     "lint": "eslint --ext js,html,md .",
-    "test": "run-s cypress:instrument test-only-no-report",
+    "test": "run-s cypress:instrument cypress:test",
+    "cypress:test": "start-server-and-test start http://localhost:8000/instrumented/editor/index.html cypress:run",
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
-    "start": "echo \"Open file, e.g., to http://localhost:8000/src/editor\" && web-dev-server --node-resolve",
+    "start": "web-dev-server --node-resolve",
     "start:watch": "web-dev-server --node-resolve --watch",
     "cypress:open": "run-p start cypress:open-no-start",
     "cypress:open-no-start": "cypress open",
@@ -195,6 +196,7 @@
     "rollup-plugin-re": "1.0.7",
     "rollup-plugin-terser": "7.0.2",
     "stackblur-canvas": "2.5.0",
+    "start-server-and-test": "^1.12.1",
     "systemjs": "6.8.3",
     "typescript": "4.2.4",
     "underscore": "1.13.1"
