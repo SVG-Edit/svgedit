@@ -111,7 +111,7 @@ import {
   init as clearInit
 } from './clear.js';
 import {
-  getClosest, getParents
+  getClosest, getParents, mergeDeep
 } from '../editor/components/jgraduate/Util.js';
 
 const $ = jQueryPluginSVG(jQuery);
@@ -191,6 +191,7 @@ class SvgCanvas {
     this.$id = $id;
     this.$qq = $qq;
     this.$qa = $qa;
+    this.mergeDeep = mergeDeep;
     this.getClosest = getClosest;
     this.getParents = getParents;
     /** A storage solution aimed at replacing jQuerys data function.
@@ -2392,7 +2393,7 @@ class SvgCanvas {
     this.convertToPath = function (elem, getBBox) {
       if (isNullish(elem)) {
         const elems = selectedElements;
-        $.each(elems, function (i, el) {
+        elems.forEach(function(el, i){
           if (el) { canvas.convertToPath(el); }
         });
         return undefined;
@@ -2797,6 +2798,7 @@ SvgCanvas.decode64 = decode64;
 SvgCanvas.$id = $id;
 SvgCanvas.$qq = $qq;
 SvgCanvas.$qa = $qa;
+SvgCanvas.mergeDeep = mergeDeep;
 SvgCanvas.getClosest = getClosest;
 SvgCanvas.getParents = getParents;
 SvgCanvas.blankPageObjectURL = blankPageObjectURL;

@@ -180,7 +180,7 @@ export const setResolutionMethod = function (x, y) {
       const visEls = getVisibleElements();
       elemContext_.getCanvas().addToSelection(visEls);
       const dx = [], dy = [];
-      $.each(visEls, function (_i, _item) {
+      visEls.forEach(function(_item, _i){
         dx.push(bbox.x * -1);
         dy.push(bbox.y * -1);
       });
@@ -309,7 +309,7 @@ export const setZoomMethod = function (zoomLevel) {
   const res = elemContext_.getCanvas().getResolution();
   elemContext_.getSVGContent().setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel);
   elemContext_.setCurrentZoom(zoomLevel);
-  $.each(selectedElements, function (i, elem) {
+  selectedElements.forEach(function(elem, i){
     if (!elem) { return; }
     elemContext_.getCanvas().selectorManager.requestSelector(elem).resize();
   });

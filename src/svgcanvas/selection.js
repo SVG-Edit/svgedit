@@ -210,7 +210,7 @@ export const getMouseTargetMethod = function (evt) {
 */
 export const runExtensionsMethod = function (action, vars, returnArray, nameFilter) {
   let result = returnArray ? [] : false;
-  $.each(selectionContext_.getExtensions(), function (name, ext) {
+  for (const [name, ext] of Object.entries(selectionContext_.getExtensions())) {
     if (nameFilter && !nameFilter(name)) {
       return;
     }
@@ -224,7 +224,7 @@ export const runExtensionsMethod = function (action, vars, returnArray, nameFilt
         result = ext[action](vars);
       }
     }
-  });
+  }
   return result;
 };
 

@@ -24,7 +24,7 @@ export default {
   async init(S) {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
-    const { getElem, $id } = svgCanvas;
+    const { getElem, $id, mergeDeep } = svgCanvas;
     const { $, svgroot } = S,
       addElem = svgCanvas.addSVGElementFromJson,
       selManager = S.selectorManager;
@@ -51,7 +51,7 @@ export default {
     const getBBintersect = (x, y, bb, offset) => {
       if (offset) {
         offset -= 0;
-        bb = $.extend({}, bb);
+        bb = mergeDeep({}, bb);
         bb.width += offset;
         bb.height += offset;
         bb.x -= offset / 2;

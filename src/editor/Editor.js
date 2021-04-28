@@ -19,6 +19,7 @@ import { isMac } from '../common/browser.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import ConfigObj from './ConfigObj.js';
+import {mergeDeep} from './components/jgraduate/Util.js';
 
 import EditorStartup from './EditorStartup.js';
 import LeftPanel from './panels/LeftPanel.js';
@@ -1173,7 +1174,6 @@ class Editor extends EditorStartup {
     this.configObj.pref('lang', lang);
     const $editDialog = document.getElementById('se-edit-prefs');
     $editDialog.setAttribute('lang', lang);
-
     const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
     const renameLayer = (oldLayerName === this.uiStrings.common.layer + ' 1');
 

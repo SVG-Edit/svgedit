@@ -28,7 +28,7 @@ export default {
     const { $id } = svgEditor.svgCanvas;
     const imagelibStrings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
-    const { uiStrings, canvas: svgCanvas } = svgEditor;
+    const { uiStrings, svgCanvas } = svgEditor;
 
     const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({ url }) => {
       try {
@@ -332,9 +332,9 @@ export default {
     }
 
     const toggleMultiLoop = () => {
-      $.each(multiArr, function (i) {
-        const type = this[0];
-        const data = this[1];
+      multiArr.forEach(function(item, i){
+        const type = item[0];
+        const data = item[1];
         if (type === 'svg') {
           svgCanvas.importSvgString(data);
         } else {

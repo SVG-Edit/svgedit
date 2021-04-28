@@ -244,7 +244,7 @@ export const init = function (editorContext) {
     'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
     'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'
   ];
-  $.each(pathFuncsStrs, function (i, s) {
+  pathFuncsStrs.forEach(function(s, i){
     pathFuncs.push(s + 'Abs');
     pathFuncs.push(s + 'Rel');
   });
@@ -777,7 +777,7 @@ export const convertPath = function (pth, toRel) {
  * @returns {string}
  */
 function pathDSegment (letter, points, morePoints, lastPoint) {
-  $.each(points, function (i, pnt) {
+  points.forEach(function(pnt, i){
     points[i] = shortFloat(pnt);
   });
   let segment = letter + points.join(' ');

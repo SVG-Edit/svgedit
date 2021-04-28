@@ -118,7 +118,7 @@ export const pasteElementsMethod = function (type, x, y) {
       dx = [],
       dy = [];
 
-    $.each(pasted, function (i, item) {
+    pasted.forEach(function(item, i){
       dx.push(cx);
       dy.push(cy);
     });
