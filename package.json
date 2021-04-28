@@ -65,8 +65,7 @@
     "report-no-mochawesome": "nyc report",
     "report-text-summary": "nyc report --reporter=text-summary",
     "report-summary-mocha-full": "run-s report-text-summary mochawesome-cli",
-    "test-only-no-report": "run-p start cypress:run",
-    "test-only": "run-s -c test-only-no-report report",
+    "test-only-no-report": "run-p start cypress:run-only",
     "test-no-cov-no-core-rollup": "run-s eslint prep-no-core-rollup test-only",
     "test-no-cov": "run-s prep test-only",
     "test-no-core-rollup": "run-s eslint cypress:instrument test-no-cov-no-core-rollup"
