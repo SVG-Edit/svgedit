@@ -205,7 +205,7 @@ export default {
     enterNewImgURL: '请输入新图像的URLL',
     defsFailOnSave: '注意: 由于您所使用的浏览器存在缺陷, 该图像无法正确显示 (不支持渐变或相关元素). 修复该缺陷后可正确显示.',
     loadingImage: '正在加载图像, 请稍候...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: '同时注意以下几点: ',
     unsavedChanges: '存在未保存的修改.',
     enterNewLinkURL: '输入新建链接的URL地址',

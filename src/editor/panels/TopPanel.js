@@ -742,12 +742,24 @@ class TopPanel {
   init() {
     // add Top panel
     const template = document.createElement("template");
+    const {i18next} = this.editor
+    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
        <div id="tools_top">
        <div id="editor_panel">
          <div class="tool_sep"></div>
-         <se-button id="tool_source" title="Edit Source" shortcut="U" src="./images/source.svg"></se-button>
-         <se-button id="tool_wireframe" title="Wireframe Mode" shortcut="F" src="./images/wireframe.svg"></se-button>
+         <se-button
+          id="tool_source"
+          title="${i18next.t('tools.tool_source')}"
+          shortcut="U"
+          src="./images/source.svg"
+         ></se-button>
+         <se-button
+          id="tool_wireframe"
+          title="${i18next.t('tools.wireframe_mode')}"
+          shortcut="F"
+          src="./images/wireframe.svg"
+        ></se-button>
        </div> <!-- editor_panel -->
        <div id="history_panel">
          <div class="tool_sep"></div>
@@ -806,9 +818,9 @@ class TopPanel {
            </se-list-item>
          </se-list>
          <div id="xy_panel" class="toolset">
-           <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x" title="Change X coordinate">
+           <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x" title="${i18next.t('properties.pos_x')}">
            </se-spin-input>
-           <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="y" title="Change Y coordinate">
+           <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="y" title="${i18next.t('properties.pos_y')}">
            </se-spin-input>
          </div>
        </div> <!-- selected_panel -->

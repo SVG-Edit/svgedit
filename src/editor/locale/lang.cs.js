@@ -205,7 +205,7 @@ export default {
     enterNewImgURL: 'Vložte adresu URL, na které se nachází vkládaný obrázek',
     defsFailOnSave: 'POZOR: Kvůli nedokonalosti Vašeho prohlížeče se mohou některé části dokumentu špatně vykreslovat (mohou chybět barevné přechody nebo některé objekty). Po uložení dokumentu by se ale vše mělo zobrazovat správně.',
     loadingImage: 'Nahrávám obrázek ...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Mohou se vyskytnout následující problémy: ',
     unsavedChanges: 'There are unsaved changes.',
     enterNewLinkURL: 'Enter the new hyperlink URL',

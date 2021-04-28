@@ -7,8 +7,9 @@
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
+const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
+  const lang = svgEditor.configObj.pref('lang')
   try {
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
@@ -23,7 +24,7 @@ export default {
   name: 'arrows',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const strings = await loadExtensionTranslation(svgEditor);
     const {svgCanvas} = svgEditor;
     const {$id} = svgCanvas;
     const

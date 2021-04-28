@@ -12,9 +12,6 @@
 * 2014 Brett Zamir
 * 2020 OptimistikSAS
 * @module SVGEditor
-* @borrows module:locale.putLocale as putLocale
-* @borrows module:locale.readLang as readLang
-* @borrows module:locale.setStrings as setStrings
 */
 
 import './touch.js';
@@ -23,11 +20,6 @@ import { isMac } from '../common/browser.js';
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import ConfigObj from './ConfigObj.js';
 import {mergeDeep} from './components/jgraduate/Util.js';
-
-import {
-  readLang, putLocale,
-  setStrings
-} from './locale.js';
 
 import EditorStartup from './EditorStartup.js';
 import LeftPanel from './panels/LeftPanel.js';
@@ -70,19 +62,7 @@ class Editor extends EditorStartup {
      * @type {"ignore"|"waiting"|"closed"}
     */
     this.storagePromptState = 'ignore';
-    /*
-    * EDITOR PUBLIC METHODS
-    */
-    this.putLocale = putLocale;
-    this.readLang = readLang;
-    this.setStrings = setStrings;
-    /**
-      * LOCALE.
-      * @name module:SVGthis.uiStrings
-      * @type {PlainObject}
-      */
-    this.flyoutFuncs = {};
-    this.uiStrings = {};
+    
     this.svgCanvas = null;
     this.isReady = false;
     this.customExportImage = false;
@@ -153,7 +133,7 @@ class Editor extends EditorStartup {
   loadSvgString(str, { noAlert } = {}) {
     const success = this.svgCanvas.setSvgString(str) !== false;
     if (success) return;
-    if (!noAlert) seAlert(this.uiStrings.notification.errorLoadingSVG);
+    if (!noAlert) seAlert(this.i18next.t('notification.errorLoadingSVG'));
     throw new Error('Error loading SVG');
   }
 
@@ -387,7 +367,7 @@ class Editor extends EditorStartup {
       $id('tool_select').classList.remove('tool_button');
       this.multiselected = false;
       if (elems.length) {
-        this.selectedElement = this.elems[0];
+        this.selectedElement = elems[0];
       }
     } else {
       setTimeout(() => {
@@ -415,7 +395,7 @@ class Editor extends EditorStartup {
     this.exportWindow.location.href = data.bloburl || data.datauri;
     const done = this.configObj.pref('export_notice_done');
     if (done !== 'all') {
-      let note = this.uiStrings.notification.saveFromBrowser.replace('%s', data.type);
+      let note = this.i18next.t('notification.saveFromBrowser', { type: data.type});
 
       // Check if there are issues
       if (issues.length) {
@@ -829,11 +809,6 @@ class Editor extends EditorStartup {
     }
     let cbCalled = false;
 
-    if (ext.langReady && this.langChanged) { // We check for this since the "lang" pref could have been set by storage
-      const lang = this.configObj.pref('lang');
-      await ext.langReady({ lang });
-    }
-
     /**
     *
     * @returns {void}
@@ -1194,24 +1169,11 @@ class Editor extends EditorStartup {
   * @fires module:svgcanvas.SvgCanvas#event:ext_langChanged
   * @returns {void} A Promise which resolves to `undefined`
   */
-  setLang(lang, allStrings) {
+  setLang(lang) {
     this.langChanged = true;
     this.configObj.pref('lang', lang);
     const $editDialog = document.getElementById('se-edit-prefs');
     $editDialog.setAttribute('lang', lang);
-    if (!allStrings) {
-      return;
-    }
-    // Todo: Remove `allStrings.lang` property in locale in
-    //   favor of just `lang`?
-    document.documentElement.lang = allStrings.lang; // lang;
-    // Todo: Add proper RTL Support!
-    // Todo: Use RTL detection instead and take out of locales?
-    // document.documentElement.dir = allStrings.dir;
-    this.uiStrings = mergeDeep(this.uiStrings, allStrings);
-
-    // const notif = allStrings.notification; // Currently unused
-    // $.extend will only replace the given strings
     const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
     const renameLayer = (oldLayerName === this.uiStrings.common.layer + ' 1');
 
@@ -1224,37 +1186,6 @@ class Editor extends EditorStartup {
     }
 
     this.svgCanvas.runExtensions('langChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_langChanged} */ lang);
-
-    // Copy title for certain tool elements
-    this.elems = {
-      '#stroke_color': '#tool_stroke .color_block',
-      '#fill_color': '#tool_fill label, #tool_fill .color_block',
-      '#linejoin_miter': '#cur_linejoin',
-      '#linecap_butt': '#cur_linecap'
-    };
-    for (const [source, dest] of Object.entries(this.elems)) {
-      if (dest === '#tool_stroke .color_block') {
-        if ($id('tool_stroke')) {
-          $id('tool_stroke').querySelector('.color_block').setAttribute('title', $id(source).title);
-        }
-      } else if (dest === '#tool_fill label, #tool_fill .color_block') {
-        if ($id('tool_fill') && $id('tool_fill').querySelector('.color_block')) {
-          $id('tool_fill').querySelector('label').setAttribute('title', $id(source).title);
-          console.log($id('tool_fill').querySelector('.color_block'));
-          $id('tool_fill').querySelector('.color_block').setAttribute('title', $id(source).title);
-        }
-      } else {
-        if ($id(dest)) {
-          $id(dest).setAttribute('title', $id(source).title);
-        }
-      }
-    }
-
-    // Copy alignment titles
-    const selElements = $id('multiselected_panel').querySelectorAll('div[id^=tool_align]');
-    Array.from(selElements).forEach(function (element) {
-      $id('tool_pos' + element.id.substr(10)).title = element.title;
-    });
   }
 
   /**

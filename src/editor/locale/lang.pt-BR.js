@@ -204,7 +204,7 @@ export default {
     enterNewImgURL: 'Insira nova URL da imagem',
     defsFailOnSave: 'Atenção: Devido a um bug em seu navegador, esta imagem pode apresentar erros, porém será salva corretamente.',
     loadingImage: 'Carregando imagem, por favor aguarde...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Atenção para as seguintes questões: ',
     unsavedChanges: 'Existem alterações não salvas.',
     enterNewLinkURL: 'Insira novo URL do hyperlink',

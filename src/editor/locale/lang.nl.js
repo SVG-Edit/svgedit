@@ -205,7 +205,7 @@ export default {
     enterNewImgURL: 'Geef de nieuwe afbeelding URL',
     defsFailOnSave: 'Let op: Vanwege een fout in je browser, kan dit plaatje verkeerd verschijnen (missende hoeken en/of elementen). Het zal goed verschijnen zodra het plaatje echt wordt opgeslagen.',
     loadingImage: 'Laden van het plaatje, even geduld aub...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Let op de volgende problemen: ',
     unsavedChanges: 'There are unsaved changes.',
     enterNewLinkURL: 'Enter the new hyperlink URL',
