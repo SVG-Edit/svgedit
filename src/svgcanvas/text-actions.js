@@ -56,7 +56,7 @@ export const textActionsMethod = (function () {
 */
   function setCursor (index) {
     const empty = (textinput.value === '');
-    $(textinput).focus();
+    textinput.focus();
 
     if (!arguments.length) {
       if (empty) {
@@ -268,7 +268,7 @@ export const textActionsMethod = (function () {
 */
   function selectAll (evt) {
     setSelection(0, curtext.textContent.length);
-    $(this).unbind(evt);
+    evt.target.removeEventListener('click', selectAll);
   }
 
   /**
@@ -292,9 +292,10 @@ export const textActionsMethod = (function () {
     setSelection(first, last);
 
     // Set tripleclick
-    $(evt.target).click(selectAll);
+    evt.target.addEventListener('click', selectAll);
+
     setTimeout(function () {
-      $(evt.target).unbind('click', selectAll);
+      evt.target.removeEventListener('click', selectAll);
     }, 300);
   }
 
@@ -391,7 +392,7 @@ export const textActionsMethod = (function () {
 
       textActionsContext_.getCanvas().textActions.init();
 
-      $(curtext).css('cursor', 'text');
+      curtext.style.cursor = 'text';
 
       // if (supportsEditableText()) {
       //   curtext.setAttribute('editable', 'simple');
@@ -418,13 +419,13 @@ export const textActionsMethod = (function () {
       textActionsContext_.setCurrentMode('select');
       clearInterval(blinker);
       blinker = null;
-      if (selblock) { $(selblock).attr('display', 'none'); }
-      if (cursor) { $(cursor).attr('visibility', 'hidden'); }
-      $(curtext).css('cursor', 'move');
+      if (selblock) { selblock.setAttribute('display', 'none'); }
+      if (cursor) { cursor.setAttribute('visibility', 'hidden'); }
+      curtext.style.cursor = 'move';
 
       if (selectElem) {
         textActionsContext_.getCanvas().clearSelection();
-        $(curtext).css('cursor', 'move');
+        curtext.style.cursor = 'move';
 
         textActionsContext_.call('selected', [curtext]);
         textActionsContext_.getCanvas().addToSelection([curtext], true);
@@ -434,7 +435,7 @@ export const textActionsMethod = (function () {
         textActionsContext_.getCanvas().deleteSelectedElements();
       }
 
-      $(textinput).blur();
+      textinput.blur();
 
       curtext = false;
 
@@ -448,7 +449,6 @@ export const textActionsMethod = (function () {
 */
     setInputElem (elem) {
       textinput = elem;
-      // $(textinput).blur(hideCursor);
     },
     /**
 * @returns {void}
@@ -490,7 +490,8 @@ export const textActionsMethod = (function () {
       chardata.length = len;
       textinput.focus();
 
-      $(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
+      curtext.removeEventListener("dblclick", selectWord);
+      curtext.addEventListener("dblclick", selectWord);
 
       if (!len) {
         end = {x: textbb.x + (textbb.width / 2), width: 0};

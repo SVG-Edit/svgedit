@@ -204,7 +204,7 @@ export default {
     enterNewImgURL: 'Vnesite nov URL slike',
     defsFailOnSave: 'OPOMBA: Zaradi napake vašega brskalnika obstaja možnost, da ta slika ni prikazan pravilno (manjkajo določeni elementi ali gradient). Vseeno bo prikaz pravilen, ko bo slika enkrat shranjena.',
     loadingImage: 'Nalagam sliko, prosimo, počakajte ...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Also note the following issues: ',
     unsavedChanges: 'Obstajajo neshranjene spremembe.',
     enterNewLinkURL: 'Vnesite novo URL povezavo',

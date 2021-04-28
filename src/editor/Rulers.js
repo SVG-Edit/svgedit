@@ -1,4 +1,3 @@
-/* globals $ */
 import {getTypeMap} from '../common/units.js';
 import rulersTemplate from './templates/rulersTemplate.js';
 /**
@@ -39,7 +38,7 @@ class Rulers {
    */
   updateRulers (scanvas, zoom) {
     if (!zoom) { zoom = this.svgCanvas.getZoom(); }
-    if (!scanvas) { scanvas = $('#svgcanvas'); }
+    if (!scanvas) { scanvas = document.getElementById('svgcanvas'); }
 
     let d, i;
     const limit = 30000;
@@ -53,17 +52,23 @@ class Rulers {
       const dim = isX ? 'x' : 'y';
       const lentype = isX ? 'width' : 'height';
       const contentDim = Number(contentElem.getAttribute(dim));
-
-      const $hcanvOrig = $('#ruler_' + dim + ' canvas:first');
+      const {$id} = this.svgCanvas;
+      const $hcanvOrig = $id('ruler_' + dim).querySelector('canvas');
 
       // Bit of a hack to fully clear the canvas in Safari & IE9
-      const $hcanv = $hcanvOrig.clone();
+      const $hcanv = $hcanvOrig.cloneNode(true);
+      // eslint-disable-next-line no-unsanitized/property
       $hcanvOrig.replaceWith($hcanv);
 
-      const hcanv = $hcanv[0];
+      const hcanv = $hcanv;
 
       // Set the canvas size to the width of the container
-      let rulerLen = scanvas[lentype]();
+      let rulerLen;
+      if(lentype === 'width'){
+        rulerLen = parseFloat(getComputedStyle(scanvas, null).width.replace("px", ""));
+      } else if(lentype === 'height'){
+        rulerLen = parseFloat(getComputedStyle(scanvas, null).height.replace("px", ""));
+      }
       const totalLen = rulerLen;
       hcanv.parentNode.style[lentype] = totalLen + 'px';
       let ctx = hcanv.getContext('2d');
@@ -73,7 +78,12 @@ class Rulers {
       ctx.fillRect(0, 0, hcanv.width, hcanv.height);
 
       // Remove any existing canvasses
-      $hcanv.siblings().remove();
+      const elements = Array.prototype.filter.call($hcanv.parentNode.children, function(child){
+        return child !== $hcanv;
+      });
+      Array.from(elements).forEach(function(element) {
+        element.remove();
+      });
 
       // Create multiple canvases when necessary (due to browser limits)
       if (rulerLen >= limit) {

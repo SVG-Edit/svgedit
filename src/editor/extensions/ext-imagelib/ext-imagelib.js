@@ -1,3 +1,4 @@
+/* eslint-disable no-unsanitized/property */
 /* globals seConfirm */
 /**
  * @file ext-imagelib.js
@@ -22,13 +23,14 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'imagelib',
-  async init ({$, decode64, dropXMLInternalSubset}) {
+  async init({ $, decode64, dropXMLInternalSubset }) {
     const svgEditor = this;
+    const { $id } = svgEditor.svgCanvas;
     const imagelibStrings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
-    const {uiStrings, canvas: svgCanvas} = svgEditor;
+    const { uiStrings, svgCanvas } = svgEditor;
 
-    const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({url}) => {
+    const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({ url }) => {
       try {
         return new URL(url).origin;
       } catch (err) {
@@ -40,8 +42,8 @@ export default {
     *
     * @returns {void}
     */
-    function closeBrowser () {
-      $('#imgbrowse_holder').hide();
+    const closeBrowser = () => {
+      $id("imgbrowse_holder").style.display = 'none';
       document.activeElement.blur(); // make sure focus is the body to correct issue #417
     }
 
@@ -49,7 +51,7 @@ export default {
     * @param {string} url
     * @returns {void}
     */
-    function importImage (url) {
+    const importImage = (url) => {
       const newImage = svgCanvas.addSVGElementFromJson({
         element: 'image',
         attr: {
@@ -109,7 +111,7 @@ export default {
      * @param {ImageLibMetaMessage|ImageLibMessage|string} cfg.data String is deprecated when parsed to JSON `ImageLibMessage`
      * @returns {void}
      */
-    async function onMessage ({origin, data: response}) {
+    async function onMessage({ origin, data: response }) {
       if (!response || !['string', 'object'].includes(typeof response)) {
         // Do nothing
         return;
@@ -126,7 +128,7 @@ export default {
         }
         if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
           // Todo: Surface this error to user?
-          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`); 
+          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`);
           return;
         }
         const hasName = 'name' in response;
@@ -171,370 +173,416 @@ export default {
 
       let entry, curMeta, svgStr, imgStr;
       switch (type) {
-      case 'meta': {
-        // Metadata
-        transferStopped = false;
-        curMeta = response;
+        case 'meta': {
+          // Metadata
+          transferStopped = false;
+          curMeta = response;
 
-        // Should be safe to add dynamic property as passed metadata
-        pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
+          // Should be safe to add dynamic property as passed metadata
+          pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
 
-        const name = (curMeta.name || 'file');
+          const name = (curMeta.name || 'file');
 
-        const message = uiStrings.notification.retrieving.replace('%s', name);
+          const message = uiStrings.notification.retrieving.replace('%s', name);
 
-        if (mode !== 'm') {
-          await seConfirm(message);
-          transferStopped = true;
-        } else {
-          entry = $('<div>').text(message).data('id', curMeta.id);
-          preview.append(entry);
-          curMeta.entry = entry;
+          if (mode !== 'm') {
+            await seConfirm(message);
+            transferStopped = true;
+          } else {
+            entry = document.createElement('div');
+            entry.textContent = message;
+            entry.dataset.id = curMeta.id;
+            preview.appendChild(entry);
+            curMeta.entry = entry;
+          }
+
+          return;
         }
-
-        return;
-      }
-      case '<':
-        svgStr = true;
-        break;
-      case 'd': {
-        if (response.startsWith('data:image/svg+xml')) {
-          const pre = 'data:image/svg+xml;base64,';
-          const src = response.substring(pre.length);
-          response = decode64(src);
+        case '<':
           svgStr = true;
           break;
-        } else if (response.startsWith('data:image/')) {
-          imgStr = true;
-          break;
+        case 'd': {
+          if (response.startsWith('data:image/svg+xml')) {
+            const pre = 'data:image/svg+xml;base64,';
+            const src = response.substring(pre.length);
+            response = decode64(src);
+            svgStr = true;
+            break;
+          } else if (response.startsWith('data:image/')) {
+            imgStr = true;
+            break;
+          }
         }
-      }
-      // Else fall through
-      default:
-        // TODO: See if there's a way to base64 encode the binary data stream
-        // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
+        // Else fall through
+        default:
+          // TODO: See if there's a way to base64 encode the binary data stream
+          // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
 
-        // Assume it's raw image data
-        // importImage(str);
+          // Assume it's raw image data
+          // importImage(str);
 
-        // Don't give warning as postMessage may have been used by something else
-        if (mode !== 'm') {
-          closeBrowser();
-        } else {
-          pending[id].entry.remove();
-        }
-        // await alert('Unexpected data was returned: ' + response, function() {
-        //   if (mode !== 'm') {
-        //     closeBrowser();
-        //   } else {
-        //     pending[id].entry.remove();
-        //   }
-        // });
-        return;
+          // Don't give warning as postMessage may have been used by something else
+          if (mode !== 'm') {
+            closeBrowser();
+          } else {
+            pending[id].entry.remove();
+          }
+          // await alert('Unexpected data was returned: ' + response, function() {
+          //   if (mode !== 'm') {
+          //     closeBrowser();
+          //   } else {
+          //     pending[id].entry.remove();
+          //   }
+          // });
+          return;
       }
 
       switch (mode) {
-      case 's':
-        // Import one
-        if (svgStr) {
-          svgEditor.svgCanvas.importSvgString(response);
-        } else if (imgStr) {
-          importImage(response);
-        }
-        closeBrowser();
-        break;
-      case 'm': {
-        // Import multiple
-        multiArr.push([(svgStr ? 'svg' : 'img'), response]);
-        curMeta = pending[id];
-        let title;
-        if (svgStr) {
-          if (curMeta && curMeta.name) {
-            title = curMeta.name;
-          } else {
-            // Try to find a title
-            // `dropXMLInternalSubset` is to help prevent the billion laughs attack
-            const xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
-            title = $(xml).children('title').first().text() || '(SVG #' + response.length + ')';
+        case 's':
+          // Import one
+          if (svgStr) {
+            svgEditor.svgCanvas.importSvgString(response);
+          } else if (imgStr) {
+            importImage(response);
           }
-          if (curMeta) {
-            preview.children().each(function () {
-              if ($(this).data('id') === id) {
-                if (curMeta.preview_url) {
-                  $(this).html(
-                    $('<span>').append(
-                      $('<img>').attr('src', curMeta.preview_url),
-                      title
-                    )
-                  );
-                } else {
-                  $(this).text(title);
+          closeBrowser();
+          break;
+        case 'm': {
+          // Import multiple
+          multiArr.push([(svgStr ? 'svg' : 'img'), response]);
+          curMeta = pending[id];
+          let title;
+          if (svgStr) {
+            if (curMeta && curMeta.name) {
+              title = curMeta.name;
+            } else {
+              // Try to find a title
+              // `dropXMLInternalSubset` is to help prevent the billion laughs attack
+              const xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
+              title = xml.querySelector('title').textContent || '(SVG #' + response.length + ')';
+            }
+            if (curMeta) {
+              Array.from(preview.children).forEach(function (element) {
+                if (element.dataset.id === id) {
+                  if (curMeta.preview_url) {
+                    const img = document.createElement("img");
+                    img.src = curMeta.preview_url;
+                    const span = document.createElement("span");
+                    span.appendChild(img);
+                    element.append(span);
+                  } else {
+                    element.textContent = title;
+                  }
+                  submit.removeAttribute('disabled');
                 }
-                submit.removeAttr('disabled');
-              }
-            });
+              });
+            } else {
+              const div = document.createElement("div");
+              div.textContent = title;
+              preview.appendChild(div);
+              submit.removeAttribute('disabled');
+            }
           } else {
-            preview.append(
-              $('<div>').text(title)
-            );
-            submit.removeAttr('disabled');
-          }
-        } else {
-          if (curMeta && curMeta.preview_url) {
-            title = curMeta.name || '';
-            entry = $('<span>').append(
-              $('<img>').attr('src', curMeta.preview_url),
-              title
-            );
-          } else {
-            entry = $('<img>').attr('src', response);
-          }
+            if (curMeta && curMeta.preview_url) {
+              title = curMeta.name || '';
+              entry = document.createElement('span');
+              const img = document.createElement("img");
+              img.src = curMeta.preview_url;
+              entry.appendChild(img);
+              entry.appendChild(document.createTextNode(title))
+            } else {
+              entry = document.createElement("img");
+              entry.src = response;
+            }
 
-          if (curMeta) {
-            preview.children().each(function () {
-              if ($(this).data('id') === id) {
-                $(this).html(entry);
-                submit.removeAttr('disabled');
-              }
-            });
-          } else {
-            preview.append($('<div>').append(entry));
-            submit.removeAttr('disabled');
+            if (curMeta) {
+              Array.from(preview.children).forEach(function (element) {
+                if (element.dataset.id === id) {
+                  element.appendChild(entry);
+                  submit.removeAttribute('disabled');
+                }
+              });
+            } else {
+              const div = document.createElement("div");
+              div.appendChild(entry);
+              preview.appendChild(div);
+              submit.removeAttribute('disabled');
+            }
           }
+          break;
+        } case 'o': {
+          // Open
+          if (!svgStr) { break; }
+          closeBrowser();
+          const ok = await svgEditor.openPrep();
+          if (!ok) { return; }
+          svgCanvas.clear();
+          svgCanvas.setSvgString(response);
+          // updateCanvas();
+          break;
         }
-        break;
-      } case 'o': {
-        // Open
-        if (!svgStr) { break; }
-        closeBrowser();
-        const ok = await svgEditor.openPrep();
-        if (!ok) { return; }
-        svgCanvas.clear();
-        svgCanvas.setSvgString(response);
-        // updateCanvas();
-        break;
-      }
       }
     }
 
     // Receive `postMessage` data
     window.addEventListener('message', onMessage, true);
 
+    const insertAfter = (referenceNode, newNode) => {
+      referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
+
+    const toggleMultiLoop = () => {
+      multiArr.forEach(function(item, i){
+        const type = item[0];
+        const data = item[1];
+        if (type === 'svg') {
+          svgCanvas.importSvgString(data);
+        } else {
+          importImage(data);
+        }
+        svgCanvas.moveSelectedElements(i * 20, i * 20, false);
+      });
+      while (preview.firstChild)
+        preview.removeChild(preview.firstChild);
+      multiArr = [];
+      $id("imgbrowse_holder").style.display = 'none';
+    }
+
     /**
     * @param {boolean} show
     * @returns {void}
     */
-    function toggleMulti (show) {
-      $('#lib_framewrap, #imglib_opts').css({right: (show ? 200 : 10)});
+    const toggleMulti = (show) => {
+      $id('lib_framewrap').style.right = (show ? 200 : 10);
+      $id('imglib_opts').style.right = (show ? 200 : 10);
       if (!preview) {
-        preview = $('<div id=imglib_preview>').css({
-          position: 'absolute',
-          top: 45,
-          right: 10,
-          width: 180,
-          bottom: 45,
-          background: '#fff',
-          overflow: 'auto'
-        }).insertAfter('#lib_framewrap');
+        preview = document.createElement('div');
+        preview.setAttribute('id', 'imglib_preview');
+        // eslint-disable-next-line max-len
+        preview.setAttribute('style', `position: absolute;top: 45px;right: 10px;width: 180px;bottom: 45px;background: #fff;overflow: auto;`);
+        insertAfter($id('lib_framewrap'), preview);
 
-        submit = $('<button disabled>Import selected</button>')
-          .appendTo('#imgbrowse')
-          .on('click touchend', function () {
-            $.each(multiArr, function (i) {
-              const type = this[0];
-              const data = this[1];
-              if (type === 'svg') {
-                svgCanvas.importSvgString(data);
-              } else {
-                importImage(data);
-              }
-              svgCanvas.moveSelectedElements(i * 20, i * 20, false);
-            });
-            preview.empty();
-            multiArr = [];
-            $('#imgbrowse_holder').hide();
-          }).css({
-            position: 'absolute',
-            bottom: 10,
-            right: -10
-          });
+        submit = document.createElement('button');
+        submit.setAttribute('content', 'Import selected');
+        submit.setAttribute('disabled', true);
+        submit.textContent = 'Import selected';
+        submit.setAttribute('style', `position: absolute;bottom: 10px;right: -10px;`);
+        $id('imgbrowse').appendChild(submit);
+        submit.addEventListener('click', toggleMultiLoop);
+        submit.addEventListener('touchend', toggleMultiLoop);
       }
+      submit.style.display = (show) ? 'block' : 'none';
+      preview.style.display = (show) ? 'block' : 'none';
 
-      preview.toggle(show);
-      submit.toggle(show);
     }
 
     /**
     *
     * @returns {void}
     */
-    function showBrowser () {
-      let browser = $('#imgbrowse');
-      if (!browser.length) {
-        $('<div id=imgbrowse_holder><div id=imgbrowse class=toolbar_button>' +
-        '</div></div>').insertAfter('#svg_editor');
-        browser = $('#imgbrowse');
+    const showBrowser = () => {
+      let browser = $id('imgbrowse');
+      if (!browser) {
+        const div = document.createElement('div');
+        div.id = 'imgbrowse_holder';
+        div.innerHTML = '<div id=imgbrowse class=toolbar_button></div>';
+        insertAfter($id('svg_editor'), div);
+        browser = $id('imgbrowse');
 
         const allLibs = imagelibStrings.select_lib;
 
-        const libOpts = $('<ul id=imglib_opts>').appendTo(browser);
-        const frame = $('<iframe src="javascript:0"/>').prependTo(browser).hide().wrap('<div id=lib_framewrap>');
+        const divFrameWrap = document.createElement('div');
+        divFrameWrap.id = 'lib_framewrap';
 
-        const header = $('<h1>').prependTo(browser).text(allLibs).css({
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%'
+        const libOpts = document.createElement('ul');
+        libOpts.id = 'imglib_opts';
+        browser.append(libOpts);
+        const frame = document.createElement('iframe');
+        frame.src = "javascript:0";
+        frame.style.display = 'none';
+        divFrameWrap.append(frame);
+        browser.prepend(divFrameWrap);
+
+        const header = document.createElement('h1');
+        browser.prepend(header);
+        header.textContent = allLibs;
+        header.setAttribute('style', `position: absolute;top: 0;left: 0;width: 100%;`);
+
+        const button = document.createElement('button');
+        // eslint-disable-next-line max-len
+        button.innerHTML = '<img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel;
+        browser.appendChild(button);
+        button.addEventListener('click', function () {
+          $id("imgbrowse_holder").style.display = 'none';
         });
-        // eslint-disable-next-line max-len
-        $('<button><img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel + '</button>')
-          .appendTo(browser)
-          .on('click touchend', function () {
-            $('#imgbrowse_holder').hide();
-          }).css({
-            position: 'absolute',
-            top: 5,
-            right: -10
-          });
+        button.addEventListener('touchend', function () {
+          $id("imgbrowse_holder").style.display = 'none';
+        });
+        button.setAttribute('style', `position: absolute;top: 5;right: -10;`);
 
-        const leftBlock = $('<span>').css({position: 'absolute', top: 5, left: 10}).appendTo(browser);
-        // eslint-disable-next-line max-len
-        const back = $('<button hidden><img class="svg_icon" src="./images/library.svg" alt="icon" width="16" height="16" />' + imagelibStrings.show_list + '</button>')
-          .appendTo(leftBlock)
-          .on('click touchend', function () {
-            frame.attr('src', 'about:blank').hide();
-            libOpts.show();
-            header.text(allLibs);
-            back.hide();
-          }).css({
-            'margin-right': 5
-          }).hide();
+        const leftBlock = document.createElement('span');
+        leftBlock.setAttribute('style', `position: absolute;top: 5;left: 10;`);
+        browser.appendChild(leftBlock);
 
-        /* const type = */ $('<select><option value=s>' +
+        const back = document.createElement('button');
+        back.style.visibility = "hidden";
+        // eslint-disable-next-line max-len
+        back.innerHTML = '<img class="svg_icon" src="./images/library.svg" alt="icon" width="16" height="16" />' + imagelibStrings.show_list;
+        leftBlock.appendChild(back);
+        back.addEventListener('click', function () {
+          frame.setAttribute('src', 'about:blank');
+          frame.style.display = 'none';
+          libOpts.style.display = 'block';
+          header.textContent = allLibs;
+          back.style.display = 'none';
+        });
+        back.addEventListener('touchend', function () {
+          frame.setAttribute('src', 'about:blank');
+          frame.style.display = 'none';
+          libOpts.style.display = 'block';
+          header.textContent = allLibs;
+          back.style.display = 'none';
+        });
+        back.setAttribute('style', `margin-right: 5px;`);
+        back.style.display = 'none';
+
+        const select = document.createElement('select');
+        select.innerHTML = '<select><option value=s>' +
           imagelibStrings.import_single + '</option><option value=m>' +
           imagelibStrings.import_multi + '</option><option value=o>' +
-          imagelibStrings.open + '</option></select>').appendTo(leftBlock).change(function () {
-          mode = $(this).val();
+          imagelibStrings.open + '</option>';
+        leftBlock.appendChild(select);
+        select.addEventListener('change', function () {
+          mode = this.value;
           switch (mode) {
-          case 's':
-          case 'o':
-            toggleMulti(false);
-            break;
+            case 's':
+            case 'o':
+              toggleMulti(false);
+              break;
 
-          case 'm':
-            // Import multiple
-            toggleMulti(true);
-            break;
+            case 'm':
+              // Import multiple
+              toggleMulti(true);
+              break;
           }
-        }).css({
-          'margin-top': 10
         });
+        select.setAttribute('style', `margin-top: 10px;`);
 
-        imagelibStrings.imgLibs.forEach(function ({name, url, description}) {
-          $('<li>')
-            .appendTo(libOpts)
-            .text(name)
-            .on('click touchend', function () {
-              frame.attr(
-                'src',
-                url
-              ).show();
-              header.text(name);
-              libOpts.hide();
-              back.show();
-            }).append(`<span>${description}</span>`);
+        imagelibStrings.imgLibs.forEach(function ({ name, url, description }) {
+          const li = document.createElement('li');
+          libOpts.appendChild(li);
+          li.textContent = name;
+          li.addEventListener('click', function () {
+            frame.setAttribute('src', url);
+            frame.style.display = 'block';
+            header.textContent = name;
+            libOpts.style.display = 'none';
+            back.style.display = 'block';
+          });
+          li.addEventListener('touchend', function () {
+            frame.setAttribute('src', url);
+            frame.style.display = 'block';
+            header.textContent = name;
+            libOpts.style.display = 'none';
+            back.style.display = 'block';
+          });
+          var span = document.createElement("span");
+          span.textContent = description;
+          li.appendChild(span);
         });
       } else {
-        $('#imgbrowse_holder').show();
+        $id("imgbrowse_holder").style.display = 'block';
       }
     }
 
-    const events = {
-      id: 'tool_imagelib',
-      click () {
-        showBrowser();
-      }
-    };
-
     return {
       svgicons: 'ext-imagelib.xml',
-      events,
-      callback () {
-        $('<style>').text(
-          '#imgbrowse_holder {' +
-            'position: absolute;' +
-            'top: 0;' +
-            'left: 0;' +
-            'width: 100%;' +
-            'height: 100%;' +
-            'background-color: rgba(0, 0, 0, .5);' +
-            'z-index: 5;' +
+      callback() {
+        // Add the button and its handler(s)
+        const buttonTemplate = document.createElement("template");
+        buttonTemplate.innerHTML = `
+        <se-menu-item id="tool_imagelib" label="Image library" src="./images/library.svg"></se-menu-item>
+        `;
+        insertAfter($id('tool_export'), buttonTemplate.content.cloneNode(true));
+        $id('tool_imagelib').addEventListener("click", () => {
+          showBrowser();
+        });
+
+        const style = document.createElement('style');
+        style.textContent = '#imgbrowse_holder {' +
+          'position: absolute;' +
+          'top: 0;' +
+          'left: 0;' +
+          'width: 100%;' +
+          'height: 100%;' +
+          'background-color: rgba(0, 0, 0, .5);' +
+          'z-index: 5;' +
           '}' +
           '#imgbrowse {' +
-            'position: absolute;' +
-            'top: 25px;' +
-            'left: 25px;' +
-            'right: 25px;' +
-            'bottom: 25px;' +
-            'min-width: 300px;' +
-            'min-height: 200px;' +
-            'background: #B0B0B0;' +
-            'border: 1px outset #777;' +
+          'position: absolute;' +
+          'top: 25px;' +
+          'left: 25px;' +
+          'right: 25px;' +
+          'bottom: 25px;' +
+          'min-width: 300px;' +
+          'min-height: 200px;' +
+          'background: #B0B0B0;' +
+          'border: 1px outset #777;' +
           '}' +
           '#imgbrowse h1 {' +
-            'font-size: 20px;' +
-            'margin: .4em;' +
-            'text-align: center;' +
+          'font-size: 20px;' +
+          'margin: .4em;' +
+          'text-align: center;' +
           '}' +
           '#lib_framewrap,' +
           '#imgbrowse > ul {' +
-            'position: absolute;' +
-            'top: 45px;' +
-            'left: 10px;' +
-            'right: 10px;' +
-            'bottom: 10px;' +
-            'background: white;' +
-            'margin: 0;' +
-            'padding: 0;' +
+          'position: absolute;' +
+          'top: 45px;' +
+          'left: 10px;' +
+          'right: 10px;' +
+          'bottom: 10px;' +
+          'background: white;' +
+          'margin: 0;' +
+          'padding: 0;' +
           '}' +
           '#imgbrowse > ul {' +
-            'overflow: auto;' +
+          'overflow: auto;' +
           '}' +
           '#imgbrowse > div {' +
-            'border: 1px solid #666;' +
+          'border: 1px solid #666;' +
           '}' +
           '#imglib_preview > div {' +
-            'padding: 5px;' +
-            'font-size: 12px;' +
+          'padding: 5px;' +
+          'font-size: 12px;' +
           '}' +
           '#imglib_preview img {' +
-            'display: block;' +
-            'margin: 0 auto;' +
-            'max-height: 100px;' +
+          'display: block;' +
+          'margin: 0 auto;' +
+          'max-height: 100px;' +
           '}' +
           '#imgbrowse li {' +
-            'list-style: none;' +
-            'padding: .5em;' +
-            'background: #E8E8E8;' +
-            'border-bottom: 1px solid #B0B0B0;' +
-            'line-height: 1.2em;' +
-            'font-style: sans-serif;' +
-            '}' +
+          'list-style: none;' +
+          'padding: .5em;' +
+          'background: #E8E8E8;' +
+          'border-bottom: 1px solid #B0B0B0;' +
+          'line-height: 1.2em;' +
+          'font-style: sans-serif;' +
+          '}' +
           '#imgbrowse li > span {' +
-            'color: #666;' +
-            'font-size: 15px;' +
-            'display: block;' +
-            '}' +
+          'color: #666;' +
+          'font-size: 15px;' +
+          'display: block;' +
+          '}' +
           '#imgbrowse li:hover {' +
-            'background: #FFC;' +
-            'cursor: pointer;' +
-            '}' +
+          'background: #FFC;' +
+          'cursor: pointer;' +
+          '}' +
           '#imgbrowse iframe {' +
-            'width: 100%;' +
-            'height: 100%;' +
-            'border: 0;' +
-          '}'
-        ).appendTo('head');
+          'width: 100%;' +
+          'height: 100%;' +
+          'border: 0;' +
+          '}';
+        document.head.appendChild(style);
       }
     };
   }

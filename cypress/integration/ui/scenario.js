@@ -38,7 +38,7 @@ describe('use various parts of svg-edit', function () {
     cy.get('#tool_text')
       .click({force: true});
     cy.get('#rect')
-      .trigger('mousedown', 'center', {force: true})
+      .trigger('mousedown',  46, 35, {force: true})
       .trigger('mouseup', {force: true});
     // svgedit use the #text text field to capture the text
     cy.get('#text').type('AB', {force: true});
@@ -69,24 +69,6 @@ describe('use various parts of svg-edit', function () {
       .click({force: true});
     testSnapshot();
   });
-  it('check tool_star', function () {
-    cy.get('#tool_star')
-      .click({force: true});
-    cy.get('#svgcontent')
-      .trigger('mousedown', {which: 1, pageX: 600, pageY: 150, force: true})
-      .trigger('mousemove', {which: 1, pageX: 600, pageY: 170, force: true})
-      .trigger('mouseup', {force: true});
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
-  it('check tool_polygon', function () {
-    cy.get('#tool_polygon')
-      .click({force: true});
-    cy.get('#svgcontent')
-      .trigger('mousedown', {which: 1, pageX: 650, pageY: 200, force: true})
-      .trigger('mousemove', {which: 1, pageX: 650, pageY: 210, force: true})
-      .trigger('mouseup', {force: true});
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
   it('check tool_text_anchor_start', function () {
     cy.get('#svg_1').click({force: true});
     cy.get('#tool_text_anchor_start')
@@ -103,6 +85,24 @@ describe('use various parts of svg-edit', function () {
     cy.get('#svg_1').click({force: true});
     cy.get('#tool_text_anchor_end')
       .click({force: true});
+    testSnapshot();
+  });
+  it('check tool_star', function () {
+    cy.get('#tool_star')
+      .click({force: true});
+    cy.get('#svgcontent')
+      .trigger('mousedown', 300, 150, {force: true})
+      .trigger('mousemove', 300, 250, {force: true})
+      .trigger('mouseup', {force: true});
+    testSnapshot();
+  });
+  it('check tool_polygon', function () {
+    cy.get('#tool_polygon')
+      .click({force: true});
+    cy.get('#svgcontent')
+      .trigger('mousedown', 350, 250, {force: true})
+      .trigger('mousemove', 350, 370, {force: true})
+      .trigger('mouseup', {force: true});
     testSnapshot();
   });
 });

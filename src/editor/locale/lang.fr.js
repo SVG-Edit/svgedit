@@ -205,7 +205,7 @@ export default {
     enterNewImgURL: "Entrer la nouvelle URL de l'image",
     defsFailOnSave: "NOTE : En raison d'un bogue dans votre navigateur, il se peut que cette image ne soit pas correctement affichée (dégradés ou éléments manquants). Le souci sera néanmoins réglé à la sauvegarde.",
     loadingImage: "Chargement de l'image, veuillez patienter…",
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Notez également les problèmes suivants : ',
     unsavedChanges: 'Il y a des changements non sauvegardés.',
     enterNewLinkURL: "Entrez la nouvelle URL de l'hyperlien",

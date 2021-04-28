@@ -84,14 +84,14 @@ class BottomPanel {
         'tools_rect', 'tools_ellipse',
         'tool_text', 'tool_path'
       ];
-  
+
       if (bNoStroke) {
         buttonsNeedingStroke.forEach((btn) => {
           // if btn is pressed, change to select button
           if ($id(btn).pressed) {
-            this.editor.leftPanelHandlers.clickSelect();
+            this.editor.leftPanel.clickSelect();
           }
-          $(btn).disabled = true;
+          $id(btn).disabled = true;
         });
       } else {
         buttonsNeedingStroke.forEach((btn) => {
@@ -103,9 +103,9 @@ class BottomPanel {
         buttonsNeedingFillAndStroke.forEach((btn) => {
           // if btn is pressed, change to select button
           if ($id(btn).pressed) {
-            this.editor.leftPanelHandlers.clickSelect();
+            this.editor.leftPanel.clickSelect();
           }
-          $(btn).disabled = true;
+          $id(btn).disabled = true;
         });
       } else {
         buttonsNeedingFillAndStroke.forEach((btn) => {
@@ -140,7 +140,6 @@ class BottomPanel {
     * @type {module}
     */
     handleOpacity (evt) {
-      // if ($(this).find('div').length) { return; }
       const val = Number.parseInt(evt.currentTarget.value.split('%')[0]);
       this.editor.svgCanvas.setOpacity(val / 100);
     }

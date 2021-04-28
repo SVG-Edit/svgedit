@@ -23,42 +23,27 @@ export default {
   async init (S) {
     const svgEditor = this;
     const {svgCanvas} = svgEditor;
-    const {$} = S, // {svgcontent}
-      // addElem = svgCanvas.addSVGElementFromJson,
-      editingitex = false;
+    const {$id} = svgCanvas;
+    const {$} = S;
+    const  editingitex = false;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    let selElems,
-      // svgdoc = S.svgroot.parentNode.ownerDocument,
-      // newFOG, newFOGParent, newDef, newImageName, newMaskID, modeChangeG,
-      // edg = 0,
-      // undoCommand = 'Not image';
-      started, newFO;
+    let selElems;
+    let started;
+    let newFO;
     /**
     * @param {boolean} on
     * @returns {void}
     */
-    function showPanel (on) {
-      let fcRules = $('#fc_rules');
-      if (!fcRules.length) {
-        fcRules = $('<style id="fc_rules"></style>').appendTo('head');
-      }
-      fcRules.text(!on ? '' : ' #tool_topath { display: none !important; }');
-      $('#polygon_panel').toggle(on);
-    }
-
-    /*
-    function toggleSourceButtons(on){
-      $('#tool_source_save, #tool_source_cancel').toggle(!on);
-      $('#polygon_save, #polygon_cancel').toggle(on);
-    }
-    */
+    const showPanel = (on) => {
+      $id('polygon_panel').style.display = (on) ? 'block' : 'none';
+    }   
 
     /**
     * @param {string} attr
     * @param {string|Float} val
     * @returns {void}
     */
-    function setAttr (attr, val) {
+    const setAttr = (attr, val) => {
       svgCanvas.changeSelectedAttribute(attr, val);
       svgCanvas.call('changed', selElems);
     }
@@ -67,89 +52,50 @@ export default {
     * @param {Float} n
     * @returns {Float}
     */
-    function cot (n) {
-      return 1 / Math.tan(n);
-    }
+    const cot = (n) => (1 / Math.tan(n));
 
     /**
     * @param {Float} n
     * @returns {Float}
     */
-    function sec (n) {
-      return 1 / Math.cos(n);
-    }
+    const sec = (n) => (1 / Math.cos(n));
 
-    /**
-    * Obtained from http://code.google.com/p/passenger-top/source/browse/instiki/public/svg-edit/editor/extensions/ext-itex.js?r=3
-    * This function sets the content of of the currently-selected foreignObject element,
-    *   based on the itex contained in string.
-    * @param {string} tex The itex text.
-    * @returns {boolean} This function returns false if the set was unsuccessful, true otherwise.
-    */
-    const events = {
-      id: 'tool_polygon',
-      click () {
-        svgCanvas.setMode('polygon');
-        showPanel(true);
-      }
-    };
-    const contextTools = [{
-      type: 'input',
-      panel: 'polygon_panel',
-      id: 'polySides',
-      size: 3,
-      defval: 5,
-      events: {
-        change () {
-          setAttr('sides', this.value);
-        }
-      }
-    }];
     return {
       name: strings.name,
-      events,
-      context_tools: strings.contextTools.map((contextTool, i) => {
-        return Object.assign(contextTools[i], contextTool);
-      }),
-
+      // The callback should be used to load the DOM with the appropriate UI items
       callback () {
-        $('#polygon_panel').hide();
+        // Add the button and its handler(s)
+        // Note: the star extension may also add the same flying button so we check first
+        if ($id('tools_polygon') === null) {
+          const buttonTemplate = document.createElement("template");
+          buttonTemplate.innerHTML = `
+            <se-flyingbutton id="tools_polygon" title="Polygone/Star Tool">
+              <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
+              <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
+            </se-flyingbutton>
+          `
+          $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+        }
+        $id('tool_polygon').addEventListener("click", () => {
+          if (this.leftPanel.updateLeftPanel('tool_polygon')) {
+            svgCanvas.setMode('polygon');
+            showPanel(true);
+          }   
+        }); 
 
-        const endChanges = function () {
-          // Todo: Missing?
-        };
-
-        // TODO: Needs to be done after orig icon loads
-        setTimeout(function () {
-          // Create source save/cancel buttons
-          /* const save = */ $('#tool_source_save').clone().hide().attr(
-            'id', 'polygon_save'
-          ).unbind().appendTo(
-            '#tool_source_back'
-          ).click(function () {
-            if (!editingitex) {
-              return;
-            }
-            // Todo: Uncomment the setItexString() function above and handle ajaxEndpoint?
-            /*
-            if (!setItexString($('#svg_source_textarea').val())) {
-              const ok = seConfirm('Errors found. Revert to original?', function (ok) {
-              if (!ok) {
-                return false;
-              }
-              endChanges();
-            } else { */
-            endChanges();
-            // }
-            // setSelectMode();
-          });
-
-          /* const cancel = */ $('#tool_source_cancel').clone().hide().attr(
-            'id', 'polygon_cancel'
-          ).unbind().appendTo('#tool_source_back').click(function () {
-            endChanges();
-          });
-        }, 3000);
+        // Add the context panel and its handler(s)
+        const panelTemplate = document.createElement("template");
+        panelTemplate.innerHTML = `
+          <div id="polygon_panel">
+            <se-spin-input size="3" id="polySides" min=1 step=1 value=5 label="sides">
+            </se-spin-input>
+          </div>
+        `
+        $id('tools_top').appendChild(panelTemplate.content.cloneNode(true));
+        $id("polygon_panel").style.display = 'none';
+        $id("polySides").addEventListener("change", (event) => {
+          setAttr('sides', event.target.value);
+        });
       },
       mouseDown (opts) {
         if (svgCanvas.getMode() !== 'polygon') {
@@ -188,12 +134,18 @@ export default {
         if (!started || svgCanvas.getMode() !== 'polygon') {
           return undefined;
         }
-        // const e = opts.event;
-        const c = $(newFO).attr(['cx', 'cy', 'sides', 'orient', 'fill', 'strokecolor', 'strokeWidth']);
+        const cx = Number(newFO.getAttribute('cx'));
+        const cy = Number(newFO.getAttribute('cy'));
+        const sides = Number(newFO.getAttribute('sides'));
+        const orient = newFO.getAttribute('orient');
+        const fill = newFO.getAttribute('fill');
+        const strokecolor = newFO.getAttribute('strokecolor');
+        const strokeWidth = Number(newFO.getAttribute('strokeWidth'));
+  
         let x = opts.mouse_x;
         let y = opts.mouse_y;
-        const {cx, cy, fill, strokecolor, strokeWidth, sides} = c, // {orient} = c,
-          edg = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5;
+
+        const edg = (Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy))) / 1.5;
         newFO.setAttribute('edge', edg);
 
         const inradius = (edg / 2) * cot(Math.PI / sides);
@@ -212,10 +164,6 @@ export default {
         newFO.setAttribute('fill', fill);
         newFO.setAttribute('stroke', strokecolor);
         newFO.setAttribute('stroke-width', strokeWidth);
-        // newFO.setAttribute('transform', 'rotate(-90)');
-        // const shape = newFO.getAttribute('shape');
-        // newFO.append(poly);
-        // DrawPoly(cx, cy, sides, edg, orient);
         return {
           started: true
         };
@@ -225,8 +173,8 @@ export default {
         if (svgCanvas.getMode() !== 'polygon') {
           return undefined;
         }
-        const attrs = $(newFO).attr('edge');
-        const keep = (attrs.edge !== '0');
+        const edge = newFO.getAttribute('edge');
+        const keep = (edge !== '0');
         // svgCanvas.addToSelection([newFO], true);
         return {
           keep,
@@ -242,7 +190,7 @@ export default {
           const elem = selElems[i];
           if (elem && elem.getAttribute('shape') === 'regularPoly') {
             if (opts.selectedElement && !opts.multiselected) {
-              $('#polySides').val(elem.getAttribute('sides'));
+              $id('polySides').value = elem.getAttribute('sides');
 
               showPanel(true);
             } else {

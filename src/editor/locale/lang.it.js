@@ -205,7 +205,7 @@ export default {
     enterNewImgURL: "Scrivi un nuovo URL per l'immagine",
     defsFailOnSave: "NOTA: A causa dlle caratteristiche del tuo browser, l'immagine potrà apparire errata (senza elementi o gradazioni) finché non sarà salvata.",
     loadingImage: "Sto caricando l'immagine. attendere prego...",
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Nota le seguenti particolarità: ',
     unsavedChanges: 'There are unsaved changes.',
     enterNewLinkURL: 'Enter the new hyperlink URL',

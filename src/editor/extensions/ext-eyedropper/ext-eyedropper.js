@@ -21,12 +21,12 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'eyedropper',
-  async init (S) {
+  async init(S) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const {$, ChangeElementCommand} = S, // , svgcontent,
+    const { $, ChangeElementCommand } = S, // , svgcontent,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
-      {svgCanvas} = svgEditor,
+      { svgCanvas } = svgEditor,
       addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },
       currentStyle = {
         fillPaint: 'red', fillOpacity: 1.0,
@@ -36,25 +36,26 @@ export default {
         strokeLinecap: 'butt',
         strokeLinejoin: 'miter'
       };
+    const { $id } = svgCanvas;
 
     /**
      *
      * @param {module:svgcanvas.SvgCanvas#event:ext_selectedChanged|module:svgcanvas.SvgCanvas#event:ext_elementChanged} opts
      * @returns {void}
      */
-    function getStyle (opts) {
+    const getStyle = (opts) => {
       // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
       const mode = svgCanvas.getMode();
       if (mode === 'eyedropper') { return; }
 
-      const tool = $('#tool_eyedropper');
+      const tool = $id('tool_eyedropper');
       // enable-eye-dropper if one element is selected
       let elem = null;
       if (!opts.multiselected && opts.elems[0] &&
         !['svg', 'g', 'use'].includes(opts.elems[0].nodeName)
       ) {
         elem = opts.elems[0];
-        tool.removeClass('disabled');
+        tool.classList.remove('disabled');
         // grab the current style
         currentStyle.fillPaint = elem.getAttribute('fill') || 'black';
         currentStyle.fillOpacity = elem.getAttribute('fill-opacity') || 1.0;
@@ -65,30 +66,33 @@ export default {
         currentStyle.strokeLinecap = elem.getAttribute('stroke-linecap');
         currentStyle.strokeLinejoin = elem.getAttribute('stroke-linejoin');
         currentStyle.opacity = elem.getAttribute('opacity') || 1.0;
-      // disable eye-dropper tool
+        // disable eye-dropper tool
       } else {
-        tool.addClass('disabled');
+        tool.classList.add('disabled');
       }
     }
 
-    const events = {
-      id: 'tool_eyedropper',
-      click () {
-        svgCanvas.setMode('eyedropper');
-      }
-    };
-
     return {
       name: strings.name,
-      events,
+      callback() {
+        // Add the button and its handler(s)
+        const buttonTemplate = document.createElement("template");
+        buttonTemplate.innerHTML = `
+        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I"></se-button>
+        `
+        $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+        $id('tool_eyedropper').addEventListener("click", () => {
+          svgCanvas.setMode('eyedropper');
+        });
+      },
       // if we have selected an element, grab its paint and enable the eye dropper button
       selectedChanged: getStyle,
       elementChanged: getStyle,
-      mouseDown (opts) {
+      mouseDown(opts) {
         const mode = svgCanvas.getMode();
         if (mode === 'eyedropper') {
           const e = opts.event;
-          const {target} = e;
+          const { target } = e;
           if (!['svg', 'g', 'use'].includes(target.nodeName)) {
             const changes = {};
 

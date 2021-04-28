@@ -24,28 +24,44 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'panning',
-  async init ({importLocale}) {
+  async init({
+    importLocale
+  }) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const {svgCanvas} = svgEditor;
-    const events = {
-      id: 'ext-panning',
-      click () {
-        svgCanvas.setMode('ext-panning');
-      }
-    };
+    const {
+      svgCanvas
+    } = svgEditor;
+    const {
+      $id
+    } = svgCanvas;
+    const insertAfter = (referenceNode, newNode) => {
+      referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
     return {
       newUI: true,
       name: strings.name,
-      events,
-      mouseDown () {
+      callback() {
+        // Add the button and its handler(s)
+        const buttonTemplate = document.createElement("template");
+        buttonTemplate.innerHTML = `
+        <se-button id="ext-panning" title="Panning" src="./images/panning.svg"></se-button>
+        `;
+        insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true));
+        $id('ext-panning').addEventListener("click", () => {
+          svgCanvas.setMode('ext-panning');
+        });
+      },
+      mouseDown() {
         if (svgCanvas.getMode() === 'ext-panning') {
           svgEditor.setPanning(true);
-          return {started: true};
+          return {
+            started: true
+          };
         }
         return undefined;
       },
-      mouseUp () {
+      mouseUp() {
         if (svgCanvas.getMode() === 'ext-panning') {
           svgEditor.setPanning(false);
           return {

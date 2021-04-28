@@ -7,7 +7,7 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute
-import {NS} from '../common/namespaces.js';
+import { NS } from '../common/namespaces.js';
 import * as hstry from './history.js';
 import * as pathModule from './path.js';
 import {
@@ -26,6 +26,7 @@ import {
 import {
   isGecko
 } from '../common/browser.js'; // , supportsEditableText
+import { getParents } from '../editor/components/jgraduate/Util.js';
 
 const {
   MoveElementCommand, BatchCommand, InsertElementCommand, RemoveElementCommand, ChangeElementCommand
@@ -79,7 +80,7 @@ export const moveToBottomSelectedElem = function () {
     let t = selected;
     const oldParent = t.parentNode;
     const oldNextSibling = t.nextSibling;
-    let {firstChild} = t.parentNode;
+    let { firstChild } = t.parentNode;
     if (firstChild.tagName === 'title') {
       firstChild = firstChild.nextSibling;
     }
@@ -115,17 +116,17 @@ export const moveUpDownSelected = function (dir) {
   // curBBoxes = [];
   let closest, foundCur;
   // jQuery sorts this list
-  const list = $(elementContext_.getIntersectionList(getStrokedBBoxDefaultVisible([selected]))).toArray();
+  const list = elementContext_.getIntersectionList(getStrokedBBoxDefaultVisible([selected]));
   if (dir === 'Down') { list.reverse(); }
 
-  $.each(list, function () {
+  Array.prototype.forEach.call(list, function (el, i) {
     if (!foundCur) {
-      if (this === selected) {
+      if (el === selected) {
         foundCur = true;
       }
       return true;
     }
-    closest = this;
+    closest = el;
     return false;
   });
   if (!closest) { return; }
@@ -133,7 +134,11 @@ export const moveUpDownSelected = function (dir) {
   const t = selected;
   const oldParent = t.parentNode;
   const oldNextSibling = t.nextSibling;
-  $(closest)[dir === 'Down' ? 'before' : 'after'](t);
+  if (dir === 'Down') {
+    closest.insertAdjacentElement('beforebegin', t);
+  } else {
+    closest.insertAdjacentElement('afterend', t);
+  }
   // If the element actually moved position, add the command and fire the changed
   // event handler.
   if (oldNextSibling !== t.nextSibling) {
@@ -231,14 +236,24 @@ export const cloneSelectedElements = function (x, y) {
   const batchCmd = new BatchCommand('Clone Elements');
   // find all the elements selected (stop at first null)
   const len = selectedElements.length;
+
+  function index(el) {
+    if (!el) return -1;
+    var i = 0;
+    do {
+      i++;
+    } while (el = el.previousElementSibling);
+    return i;
+  }
+
   /**
 * Sorts an array numerically and ascending.
 * @param {Element} a
 * @param {Element} b
 * @returns {Integer}
 */
-  function sortfunction (a, b) {
-    return ($(b).index() - $(a).index());
+  function sortfunction(a, b) {
+    return (index(b) - index(a));
   }
   selectedElements.sort(sortfunction);
   for (i = 0; i < len; ++i) {
@@ -287,40 +302,40 @@ export const alignSelectedElements = function (type, relativeTo) {
 
     // now bbox is axis-aligned and handles rotation
     switch (relativeTo) {
-    case 'smallest':
-      if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
-    (curwidth === Number.MIN_VALUE || curwidth > bboxes[i].width)) ||
-    ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
-    (curheight === Number.MIN_VALUE || curheight > bboxes[i].height))
-      ) {
-        minx = bboxes[i].x;
-        miny = bboxes[i].y;
-        maxx = bboxes[i].x + bboxes[i].width;
-        maxy = bboxes[i].y + bboxes[i].height;
-        curwidth = bboxes[i].width;
-        curheight = bboxes[i].height;
-      }
-      break;
-    case 'largest':
-      if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
-    (curwidth === Number.MIN_VALUE || curwidth < bboxes[i].width)) ||
-    ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
-    (curheight === Number.MIN_VALUE || curheight < bboxes[i].height))
-      ) {
-        minx = bboxes[i].x;
-        miny = bboxes[i].y;
-        maxx = bboxes[i].x + bboxes[i].width;
-        maxy = bboxes[i].y + bboxes[i].height;
-        curwidth = bboxes[i].width;
-        curheight = bboxes[i].height;
-      }
-      break;
-    default: // 'selected'
-      if (bboxes[i].x < minx) { minx = bboxes[i].x; }
-      if (bboxes[i].y < miny) { miny = bboxes[i].y; }
-      if (bboxes[i].x + bboxes[i].width > maxx) { maxx = bboxes[i].x + bboxes[i].width; }
-      if (bboxes[i].y + bboxes[i].height > maxy) { maxy = bboxes[i].y + bboxes[i].height; }
-      break;
+      case 'smallest':
+        if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
+          (curwidth === Number.MIN_VALUE || curwidth > bboxes[i].width)) ||
+          ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
+            (curheight === Number.MIN_VALUE || curheight > bboxes[i].height))
+        ) {
+          minx = bboxes[i].x;
+          miny = bboxes[i].y;
+          maxx = bboxes[i].x + bboxes[i].width;
+          maxy = bboxes[i].y + bboxes[i].height;
+          curwidth = bboxes[i].width;
+          curheight = bboxes[i].height;
+        }
+        break;
+      case 'largest':
+        if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
+          (curwidth === Number.MIN_VALUE || curwidth < bboxes[i].width)) ||
+          ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
+            (curheight === Number.MIN_VALUE || curheight < bboxes[i].height))
+        ) {
+          minx = bboxes[i].x;
+          miny = bboxes[i].y;
+          maxx = bboxes[i].x + bboxes[i].width;
+          maxy = bboxes[i].y + bboxes[i].height;
+          curwidth = bboxes[i].width;
+          curheight = bboxes[i].height;
+        }
+        break;
+      default: // 'selected'
+        if (bboxes[i].x < minx) { minx = bboxes[i].x; }
+        if (bboxes[i].y < miny) { miny = bboxes[i].y; }
+        if (bboxes[i].x + bboxes[i].width > maxx) { maxx = bboxes[i].x + bboxes[i].width; }
+        if (bboxes[i].y + bboxes[i].height > maxy) { maxy = bboxes[i].y + bboxes[i].height; }
+        break;
     }
   } // loop for each element to find the bbox and adjust min/max
 
@@ -340,30 +355,30 @@ export const alignSelectedElements = function (type, relativeTo) {
     dx[i] = 0;
     dy[i] = 0;
     switch (type) {
-    case 'l': // left (horizontal)
-    case 'left': // left (horizontal)
-      dx[i] = minx - bbox.x;
-      break;
-    case 'c': // center (horizontal)
-    case 'center': // center (horizontal)
-      dx[i] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
-      break;
-    case 'r': // right (horizontal)
-    case 'right': // right (horizontal)
-      dx[i] = maxx - (bbox.x + bbox.width);
-      break;
-    case 't': // top (vertical)
-    case 'top': // top (vertical)
-      dy[i] = miny - bbox.y;
-      break;
-    case 'm': // middle (vertical)
-    case 'middle': // middle (vertical)
-      dy[i] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
-      break;
-    case 'b': // bottom (vertical)
-    case 'bottom': // bottom (vertical)
-      dy[i] = maxy - (bbox.y + bbox.height);
-      break;
+      case 'l': // left (horizontal)
+      case 'left': // left (horizontal)
+        dx[i] = minx - bbox.x;
+        break;
+      case 'c': // center (horizontal)
+      case 'center': // center (horizontal)
+        dx[i] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
+        break;
+      case 'r': // right (horizontal)
+      case 'right': // right (horizontal)
+        dx[i] = maxx - (bbox.x + bbox.width);
+        break;
+      case 't': // top (vertical)
+      case 'top': // top (vertical)
+        dy[i] = miny - bbox.y;
+        break;
+      case 'm': // middle (vertical)
+      case 'middle': // middle (vertical)
+        dy[i] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
+        break;
+      case 'b': // bottom (vertical)
+      case 'bottom': // bottom (vertical)
+        dy[i] = maxy - (bbox.y + bbox.height);
+        break;
     }
   }
   moveSelectedElements(dx, dy);
@@ -401,7 +416,7 @@ export const deleteSelectedElements = function () {
       parent = parent.parentNode;
     }
 
-    const {nextSibling} = t;
+    const { nextSibling } = t;
     t.remove();
     const elem = t;
     selectedCopy.push(selected); // for the copy
@@ -422,7 +437,7 @@ export const deleteSelectedElements = function () {
 export const copySelectedElements = function () {
   const selectedElements = elementContext_.getSelectedElements();
   const data =
-  JSON.stringify(selectedElements.map((x) => elementContext_.getJsonFromSvgElement(x)));
+    JSON.stringify(selectedElements.map((x) => elementContext_.getJsonFromSvgElement(x)));
   // Use sessionStorage for the clipboard data.
   sessionStorage.setItem(elementContext_.getClipboardID(), data);
   elementContext_.flashStorage();
@@ -446,15 +461,15 @@ export const groupSelectedElements = function (type, urlArg) {
   let url;
 
   switch (type) {
-  case 'a': {
-    cmdStr = 'Make hyperlink';
-    url = urlArg || '';
-    break;
-  } default: {
-    type = 'g';
-    cmdStr = 'Group Elements';
-    break;
-  }
+    case 'a': {
+      cmdStr = 'Make hyperlink';
+      url = urlArg || '';
+      break;
+    } default: {
+      type = 'g';
+      cmdStr = 'Group Elements';
+      break;
+    }
   }
 
   const batchCmd = new BatchCommand(cmdStr);
@@ -519,7 +534,10 @@ export const pushGroupProperty = function (g, undoable) {
 
   const gangle = getRotationAngle(g);
 
-  const gattrs = $(g).attr(['filter', 'opacity']);
+  const gattrs = {
+    filter: g.getAttribute('filter'),
+    opacity: g.getAttribute('opacity'),
+  };
   let gfilter, gblur, changes;
   const drawing = elementContext_.getDrawing();
 
@@ -692,17 +710,20 @@ export const convertToGroup = function (elem) {
   if (!elem) {
     elem = selectedElements[0];
   }
-  const $elem = $(elem);
+  const $elem = elem;
   const batchCmd = new BatchCommand();
   let ts;
-
-  if ($elem.data('gsvg')) {
+  const dataStorage = elementContext_.getDataStorage();
+  if (dataStorage.has($elem, 'gsvg')) {
     // Use the gsvg as the new group
     const svg = elem.firstChild;
-    const pt = $(svg).attr(['x', 'y']);
+    const pt = {
+      x: svg.getAttribute('x'),
+      y: svg.getAttribute('y'),
+    };
 
     $(elem.firstChild.firstChild).unwrap();
-    $(elem).removeData('gsvg');
+    dataStorage.remove(elem, 'gsvg');
 
     const tlist = getTransformList(elem);
     const xform = elementContext_.getSVGRoot().createSVGTransform();
@@ -710,8 +731,8 @@ export const convertToGroup = function (elem) {
     tlist.appendItem(xform);
     recalculateDimensions(elem);
     elementContext_.call('selected', [elem]);
-  } else if ($elem.data('symbol')) {
-    elem = $elem.data('symbol');
+  } else if (dataStorage.has($elem, 'symbol')) {
+    elem = dataStorage.get($elem, 'symbol')
 
     ts = $elem.attr('transform');
     const pos = $elem.attr(['x', 'y']);
@@ -735,7 +756,7 @@ export const convertToGroup = function (elem) {
 
     // See if other elements reference this symbol
     const svgcontent = elementContext_.getSVGContent();
-    const hasMore = $(svgcontent).find('use:data(symbol)').length;
+    const hasMore = svgcontent.querySelectorAll('use:data(symbol)').length;
 
     const g = elementContext_.getDOMDocument().createElementNS(NS.SVG, 'g');
     const childs = elem.childNodes;
@@ -747,8 +768,11 @@ export const convertToGroup = function (elem) {
 
     // Duplicate the gradients for Gecko, since they weren't included in the <symbol>
     if (isGecko()) {
-      const dupeGrads = $(findDefs()).children('linearGradient,radialGradient,pattern').clone();
-      $(g).append(dupeGrads);
+      const svgElement = findDefs();
+      const gradients = svgElement.querySelectorAll('linearGradient,radialGradient,pattern');
+      for (let i = 0, im = gradients.length; im > i; i++) {
+        g.appendChild(gradients[i].cloneNode(true));
+      }
     }
 
     if (ts) {
@@ -761,7 +785,11 @@ export const convertToGroup = function (elem) {
 
     // Put the dupe gradients back into <defs> (after uniquifying them)
     if (isGecko()) {
-      $(findDefs()).append($(g).find('linearGradient,radialGradient,pattern'));
+      const svgElement = findDefs();
+      const elements = g.querySelectorAll('linearGradient,radialGradient,pattern');
+      for (let i = 0, im = elements.length; im > i; i++) {
+        svgElement.appendChild(elements[i]);
+      }
     }
 
     // now give the g itself a new id
@@ -772,7 +800,7 @@ export const convertToGroup = function (elem) {
     if (parent) {
       if (!hasMore) {
         // remove symbol/svg element
-        const {nextSibling} = elem;
+        const { nextSibling } = elem;
         elem.remove();
         batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
       }
@@ -793,13 +821,14 @@ export const convertToGroup = function (elem) {
       try {
         recalculateDimensions(n);
       } catch (e) {
-        console.log(e); 
+        console.log(e);
       }
     });
 
     // Give ID for any visible element missing one
-    $(g).find(elementContext_.getVisElems()).each(function () {
-      if (!this.id) { this.id = elementContext_.getNextId(); }
+    const visElems = g.querySelectorAll(elementContext_.getVisElems());
+    Array.prototype.forEach.call(visElems, function (el, i) {
+      if (!el.id) { el.id = elementContext_.getNextId(); }
     });
 
     elementContext_.selectOnly([g]);
@@ -811,7 +840,7 @@ export const convertToGroup = function (elem) {
 
     elementContext_.addCommandToHistory(batchCmd);
   } else {
-    console.log('Unexpected element to ungroup:', elem); 
+    console.log('Unexpected element to ungroup:', elem);
   }
 };
 
@@ -823,11 +852,12 @@ export const convertToGroup = function (elem) {
 */
 export const ungroupSelectedElement = function () {
   const selectedElements = elementContext_.getSelectedElements();
+  const dataStorage = elementContext_.getDataStorage();
   let g = selectedElements[0];
   if (!g) {
     return;
   }
-  if ($(g).data('gsvg') || $(g).data('symbol')) {
+  if (dataStorage.has(g, 'gsvg') || dataStorage.has(g, 'symbol')) {
     // Is svg, so actually convert to group
     convertToGroup(g);
     return;
@@ -835,11 +865,12 @@ export const ungroupSelectedElement = function () {
   if (g.tagName === 'use') {
     // Somehow doesn't have data set, so retrieve
     const symbol = getElem(getHref(g).substr(1));
-    $(g).data('symbol', symbol).data('ref', symbol);
+    dataStorage.put(g, 'symbol', symbol);
+    dataStorage.put(g, 'ref', symbol);
     convertToGroup(g);
     return;
   }
-  const parentsA = $(g).parents('a');
+  const parentsA = getParents(g.parentNode, 'a');
   if (parentsA.length) {
     g = parentsA[0];
   }
@@ -862,7 +893,7 @@ export const ungroupSelectedElement = function () {
 
       // Remove child title elements
       if (elem.tagName === 'title') {
-        const {nextSibling} = elem;
+        const { nextSibling } = elem;
         batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, oldParent));
         elem.remove();
         continue;
@@ -903,7 +934,7 @@ export const updateCanvas = function (w, h) {
   elementContext_.getSVGRoot().setAttribute('width', w);
   elementContext_.getSVGRoot().setAttribute('height', h);
   const currentZoom = elementContext_.getCurrentZoom();
-  const bg = $('#canvasBackground')[0];
+  const bg = document.getElementById('canvasBackground');
   const oldX = elementContext_.getSVGContent().getAttribute('x');
   const oldY = elementContext_.getSVGContent().getAttribute('y');
   const x = ((w - this.contentW * currentZoom) / 2);
@@ -950,9 +981,9 @@ export const updateCanvas = function (w, h) {
     /**
  * @type {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated}
  */
-    {new_x: x, new_y: y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY}
+    { new_x: x, new_y: y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY }
   );
-  return {x, y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY};
+  return { x, y, old_x: oldX, old_y: oldY, d_x: x - oldX, d_y: y - oldY };
 };
 /**
 * Select the next/previous element within the current layer.

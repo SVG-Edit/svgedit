@@ -244,7 +244,7 @@ export const init = function (editorContext) {
     'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
     'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'
   ];
-  $.each(pathFuncsStrs, function (i, s) {
+  pathFuncsStrs.forEach(function(s, i){
     pathFuncs.push(s + 'Abs');
     pathFuncs.push(s + 'Rel');
   });
@@ -581,8 +581,9 @@ export const reorientGrads = function (elem, m) {
         };
 
         const newgrad = grad.cloneNode(true);
-        $(newgrad).attr(gCoords);
-
+        for (const [key, value] of Object.entries(gCoords)) {
+          newgrad.setAttribute(key, value);
+        }
         newgrad.id = editorContext_.getNextId();
         findDefs().append(newgrad);
         elem.setAttribute(type, 'url(#' + newgrad.id + ')');
@@ -776,7 +777,7 @@ export const convertPath = function (pth, toRel) {
  * @returns {string}
  */
 function pathDSegment (letter, points, morePoints, lastPoint) {
-  $.each(points, function (i, pnt) {
+  points.forEach(function(pnt, i){
     points[i] = shortFloat(pnt);
   });
   let segment = letter + points.join(' ');

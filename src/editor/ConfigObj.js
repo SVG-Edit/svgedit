@@ -37,7 +37,7 @@ export default class ConfigObj {
       /**
         * Default to "en" if locale.js detection does not detect another language.
         */
-      lang: '',
+      lang: 'en',
       /**
         * Will default to 's' if the window height is smaller than the minimum
         * height and 'm' otherwise.
@@ -166,7 +166,8 @@ export default class ConfigObj {
       'ext-eyedropper',
       'ext-grid',
       'ext-imagelib',
-      'ext-markers',
+      // 'ext-arrows',
+      // 'ext-markers',
       'ext-overview_window',
       'ext-panning',
       'ext-polygon',
@@ -218,14 +219,6 @@ export default class ConfigObj {
     if (!curConfig.noDefaultExtensions) {
       curConfig.extensions = [...this.defaultExtensions];
     }
-    // ...and remove any dupes
-    /*
-    ['extensions', 'allowedOrigins'].forEach(function (cfg) {
-      curConfig[cfg] = $.grep(curConfig[cfg], function (n, i) { // Supposedly faster than filter per http://amandeep1986.blogspot.hk/2015/02/jquery-grep-vs-js-filter.html
-        return i === curConfig[cfg].indexOf(n);
-      });
-    });
-    */
     // Export updated config
     this.curConfig = curConfig;
   }

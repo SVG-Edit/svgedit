@@ -57,10 +57,6 @@ export default {
         case 'view':
           // Populate the contents
           svgEditor.loadFromString(content);
-
-          /* if ($('#tool_save_file')) {
-            $('#tool_save_file').disabled = false;
-          } */
           break;
         case 'save-end':
           // eslint-disable-next-line no-alert

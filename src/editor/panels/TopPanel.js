@@ -1,4 +1,3 @@
-/* globals $ */
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
 import { isValidUnit, getTypeMap, convertUnit } from "../../common/units.js";
 
@@ -51,7 +50,13 @@ class TopPanel {
     if (changeElem) {
       this.svgCanvas.setStrokeAttr('stroke-' + pre, val);
     }
-    $(opt).addClass('current').siblings().removeClass('current');
+    opt.classList.add('current');
+    const elements = Array.prototype.filter.call(opt.parentNode.children, function(child){
+      return child !== opt;
+    });
+    Array.from(elements).forEach(function(element) {
+      element.classList.remove('current');
+    });
   }
 
   /**
@@ -83,31 +88,27 @@ class TopPanel {
             }
           }
 
-          $("#stroke_width").val(gWidth === null ? "" : gWidth);
+          $id("stroke_width").value = (gWidth === null ? "" : gWidth);
           this.editor.bottomPanel.updateColorpickers(true);
           break;
         }
         default: {
           this.editor.bottomPanel.updateColorpickers(true);
 
-          $("#stroke_width").val(
-            this.selectedElement.getAttribute("stroke-width") || 1
-          );
-          $("#stroke_style").val(
-            this.selectedElement.getAttribute("stroke-dasharray") || "none"
-          );
+          $id("stroke_width").value = this.selectedElement.getAttribute("stroke-width") || 1;
+          $id("stroke_style").value = this.selectedElement.getAttribute("stroke-dasharray") || "none";
 
           let attr =
             this.selectedElement.getAttribute("stroke-linejoin") || "miter";
 
-          if ($("#linejoin_" + attr).length) {
-            this.setStrokeOpt($("#linejoin_" + attr)[0]);
+          if ($id("linejoin_" + attr).length) {
+            this.setStrokeOpt($id("linejoin_" + attr));
           }
 
           attr = this.selectedElement.getAttribute("stroke-linecap") || "butt";
 
-          if ($("#linecap_" + attr).length) {
-            this.setStrokeOpt($("#linecap_" + attr)[0]);
+          if ($id("linecap_" + attr).length) {
+            this.setStrokeOpt($id("linecap_" + attr));
           }
         }
       }
@@ -153,7 +154,7 @@ class TopPanel {
   updateContextPanel() {
     const setInputWidth = elem => {
       const w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
-      $(elem).width(w);
+      elem.style.width = w + 'px';
     };
 
     let elem = this.editor.selectedElement;
@@ -172,21 +173,23 @@ class TopPanel {
 
     const isNode = currentMode === "pathedit"; // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
     const menuItems = document.getElementById("se-cmenu_canvas");
-    $(
-      "#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel," +
-      "#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel," +
-      " #use_panel, #a_panel"
-    ).hide();
+    $id("selected_panel").style.display = 'none';
+    $id("multiselected_panel").style.display = 'none';
+    $id("g_panel").style.display = 'none';
+    $id("rect_panel").style.display = 'none';
+    $id("circle_panel").style.display = 'none';
+    $id("ellipse_panel").style.display = 'none';
+    $id("line_panel").style.display = 'none';
+    $id("text_panel").style.display = 'none';
+    $id("image_panel").style.display = 'none';
+    $id("container_panel").style.display = 'none';
+    $id("use_panel").style.display = 'none';
+    $id("a_panel").style.display = 'none';
     if (!isNullish(elem)) {
       const elname = elem.nodeName;
-      // If this is a link with no transform and one child, pretend
-      // its child is selected
-      // if (elname === 'a') { // && !$(elem).attr('transform')) {
-      //   elem = elem.firstChild;
-      // }
 
       const angle = this.editor.svgCanvas.getRotationAngle(elem);
-      $("#angle").val(angle);
+      $id("angle").value = angle;
 
       const blurval = this.editor.svgCanvas.getBlur(elem) * 10;
       $id("blur").value = blurval;
@@ -201,10 +204,10 @@ class TopPanel {
       }
 
       if (!isNode && currentMode !== "pathedit") {
-        $("#selected_panel").show();
+        $id("selected_panel").style.display = 'block';
         // Elements in this array already have coord fields
         if (["line", "circle", "ellipse"].includes(elname)) {
-          $("#xy_panel").hide();
+          $id("xy_panel").style.display = 'none';
         } else {
           let x, y;
 
@@ -224,9 +227,9 @@ class TopPanel {
             y = convertUnit(y);
           }
 
-          $("#selected_x").val(x || 0);
-          $("#selected_y").val(y || 0);
-          $("#xy_panel").show();
+          $id("selected_x").value = (x || 0);
+          $id("selected_y").value = (y || 0);
+          $id("xy_panel").style.display = 'block';
         }
 
         // Elements in this array cannot be converted to a path
@@ -239,32 +242,31 @@ class TopPanel {
         ].includes(elname)
           ? "none"
           : "block";
-        $id("tool_reorient").style.display =
-          elname === "path" ? "block" : "none";
-        $id("tool_reorient").disabled = angle === 0;
+        $id("tool_reorient").style.display = (elname === "path") ? "block" : "none";
+        $id("tool_reorient").disabled = (angle === 0);
       } else {
         const point = this.path.getNodePoint();
-        $("#tool_add_subpath").pressed = false;
-        $("#tool_node_delete").toggleClass(
-          "disabled",
-          !this.path.canDeleteNodes
-        );
+        $id("tool_add_subpath").pressed = false;
+        // eslint-disable-next-line max-len
+        (!this.path.canDeleteNodes) ? $id("tool_node_delete").classList.add("disabled") : $id("tool_node_delete").classList.remove("disabled");
 
         // Show open/close button based on selected point
         // setIcon('#tool_openclose_path', path.closed_subpath ? 'open_path' : 'close_path');
 
         if (point) {
-          const segType = $("#seg_type");
+          const segType = $id("seg_type");
           if (unit) {
             point.x = convertUnit(point.x);
             point.y = convertUnit(point.y);
           }
-          $("#path_node_x").val(point.x);
-          $("#path_node_y").val(point.y);
+          $id("path_node_x").value = (point.x);
+          $id("path_node_y").value = (point.y);
           if (point.type) {
-            segType.val(point.type).removeAttr("disabled");
+            segType.value = (point.type);
+            segType.removeAttribute("disabled");
           } else {
-            segType.val(4).attr("disabled", "disabled");
+            segType.value = 4;
+            segType.setAttribute("disabled", "disabled");
           }
         }
         return;
@@ -285,32 +287,31 @@ class TopPanel {
 
       const { tagName } = elem;
 
-      // if ($(elem).data('gsvg')) {
-      //   $('#g_panel').show();
-      // }
-
       let linkHref = null;
       if (tagName === "a") {
         linkHref = this.editor.svgCanvas.getHref(elem);
-        $("#g_panel").show();
+        $id("g_panel").style.display = 'block';
       }
-
-      if (elem.parentNode.tagName === "a" && !$(elem).siblings().length) {
-        $("#a_panel").show();
+      // siblings 
+      const selements = Array.prototype.filter.call(elem.parentNode.children, function(child){
+        return child !== elem;
+      });
+      if (elem.parentNode.tagName === "a" && !selements.length) {
+        $id("a_panel").style.display = 'block';
         linkHref = this.editor.svgCanvas.getHref(elem.parentNode);
       }
 
       // Hide/show the make_link buttons
-      $("#tool_make_link, #tool_make_link_multi").toggle(!linkHref);
+      $id('tool_make_link').style.display = (!linkHref) ? 'block' : 'none';
+      $id('tool_make_link_multi').style.display = (!linkHref) ? 'block' : 'none';
 
       if (linkHref) {
-        $("#link_url").val(linkHref);
+        $id("link_url").value = linkHref;
       }
 
       if (panels[tagName]) {
         const curPanel = panels[tagName];
-
-        $("#" + tagName + "_panel").show();
+        $id(tagName + "_panel").style.display = 'block';
 
         curPanel.forEach(item => {
           let attrVal = elem.getAttribute(item);
@@ -322,13 +323,12 @@ class TopPanel {
         });
 
         if (tagName === "text") {
-          $("#text_panel").css("display", "inline-block");
-          $("#tool_font_size").css("display", "inline");
+          $id("text_panel").style.display = "inline-block";
           $id("tool_italic").pressed = this.editor.svgCanvas.getItalic();
           $id("tool_bold").pressed = this.editor.svgCanvas.getBold();
-          $("#tool_font_family").val(elem.getAttribute("font-family"));
-          $("#font_size").val(elem.getAttribute("font-size"));
-          $("#text").val(elem.textContent);
+          $id("tool_font_family").value = elem.getAttribute("font-family");
+          $id("font_size").value = elem.getAttribute("font-size");
+          $id("text").value = elem.textContent;
           const textAnchorStart = $id("tool_text_anchor_start");
           const textAnchorMiddle = $id("tool_text_anchor_middle");
           const textAnchorEnd = $id("tool_text_anchor_end");
@@ -352,9 +352,8 @@ class TopPanel {
           if (this.editor.svgCanvas.addedNew) {
             // Timeout needed for IE9
             setTimeout(() => {
-              $("#text")
-                .focus()
-                .select();
+              $id("text").focus()
+              $id("text").select();
             }, 100);
           }
           // text
@@ -367,12 +366,12 @@ class TopPanel {
           );
           // image
         } else if (tagName === "g" || tagName === "use") {
-          $("#container_panel").show();
+          $id("container_panel").style.display = 'block';
           const title = this.editor.svgCanvas.getTitle();
-          const label = $("#g_title")[0];
+          const label = $id("g_title");
           label.value = title;
           setInputWidth(label);
-          $("#g_title").prop("disabled", tagName === "use");
+          $id("g_title").disabled = (tagName === "use");
         }
       }
       menuItems.setAttribute(
@@ -387,7 +386,7 @@ class TopPanel {
 
       // if (!isNullish(elem))
     } else if (this.multiselected) {
-      $("#multiselected_panel").show();
+      $id("multiselected_panel").style.display = 'block';
       menuItems.setAttribute("enablemenuitems", "#group");
       menuItems.setAttribute("disablemenuitems", "#ungroup");
     } else {
@@ -407,9 +406,8 @@ class TopPanel {
 
     if ((elem && !isNode) || this.multiselected) {
       // update the selected elements' layer
-      $("#selLayerNames")
-        .removeAttr("disabled")
-        .val(currentLayerName);
+      $id("selLayerNames").removeAttribute("disabled")
+      $id("selLayerNames").value = currentLayerName;
 
       // Enable regular menu options
       const canCMenu = document.getElementById("se-cmenu_canvas");
@@ -418,7 +416,7 @@ class TopPanel {
         "#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back"
       );
     } else {
-      $("#selLayerNames").attr("disabled", "disabled");
+      $id("selLayerNames").disabled = "disabled";
     }
   }
   /**
@@ -443,13 +441,14 @@ class TopPanel {
     $id("tool_wireframe").pressed = !$id("tool_wireframe").pressed;
     this.editor.workarea.classList.toggle("wireframe");
 
-    const wfRules = $("#wireframe_rules");
-    if (!wfRules.length) {
-      /* wfRules = */ $('<style id="wireframe_rules"></style>').appendTo(
-      "head"
-    );
+    const wfRules = $id("wireframe_rules");
+    if (!wfRules) {
+      const fcRules = document.createElement('style');
+      fcRules.setAttribute('id', 'wireframe_rules');
+      document.getElementsByTagName("head")[0].appendChild(fcRules);
     } else {
-      wfRules.empty();
+      while(wfRules.firstChild)
+        wfRules.removeChild(wfRules.firstChild);
     }
     this.editor.updateWireFrame();
   }
@@ -495,10 +494,8 @@ class TopPanel {
    */
   changeRotationAngle(e) {
     this.editor.svgCanvas.setRotationAngle(e.target.value);
-    $("#tool_reorient").toggleClass(
-      "disabled",
-      Number.parseInt(e.target.value) === 0
-    );
+    // eslint-disable-next-line max-len
+    (Number.parseInt(e.target.value) === 0) ? $id("tool_reorient").classList.add("disabled") : $id("tool_reorient").classList.remove("disabled");
   }
 
   /**
@@ -543,7 +540,7 @@ class TopPanel {
    * @returns {void}
    */
   clickAlign(pos) {
-    let value = $("#tool_align_relative").val();
+    let value = $id("tool_align_relative").value;
     if (value === "") {
       value = "selected";
     }
@@ -665,8 +662,8 @@ class TopPanel {
    * @returns {void}
    */
   addSubPath() {
-    const button = $("#tool_add_subpath");
-    const sp = !button.hasClass("pressed");
+    const button = $id("tool_add_subpath");
+    const sp = !button.classList.contains("pressed");
     button.pressed = sp;
     // button.toggleClass('push_button_pressed tool_button');
     this.path.addSubPath(sp);
@@ -745,13 +742,24 @@ class TopPanel {
   init() {
     // add Top panel
     const template = document.createElement("template");
+    const {i18next} = this.editor
+    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
        <div id="tools_top">
        <div id="editor_panel">
          <div class="tool_sep"></div>
-         <se-button id="tool_source" title="Edit Source" shortcut="U" src="./images/source.svg"></se-button>
-         <se-button id="tool_wireframe" title="Wireframe Mode" shortcut="F" src="./images/wireframe.svg"></se-button>
-         <se-button id="view_grid" title="Show grid" src="./images/grid.svg"></se-button>
+         <se-button
+          id="tool_source"
+          title="${i18next.t('tools.tool_source')}"
+          shortcut="U"
+          src="./images/source.svg"
+         ></se-button>
+         <se-button
+          id="tool_wireframe"
+          title="${i18next.t('tools.wireframe_mode')}"
+          shortcut="F"
+          src="./images/wireframe.svg"
+        ></se-button>
        </div> <!-- editor_panel -->
        <div id="history_panel">
          <div class="tool_sep"></div>
@@ -810,9 +818,9 @@ class TopPanel {
            </se-list-item>
          </se-list>
          <div id="xy_panel" class="toolset">
-           <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x" title="Change X coordinate">
+           <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x" title="${i18next.t('properties.pos_x')}">
            </se-spin-input>
-           <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="y" title="Change Y coordinate">
+           <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="y" title="${i18next.t('properties.pos_y')}">
            </se-spin-input>
          </div>
        </div> <!-- selected_panel -->

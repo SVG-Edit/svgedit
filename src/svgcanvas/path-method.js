@@ -174,8 +174,8 @@ export const addPointGripMethod = function (index, x, y) {
     assignAttributes(pointGrip, atts);
     pointGripContainer.append(pointGrip);
 
-    const grip = $('#pathpointgrip_' + index);
-    grip.dblclick(function () {
+    const grip = document.getElementById('pathpointgrip_' + index);
+    grip?.addEventListener("dblclick", (e) => {
       const path = pathMethodsContext_.getPathObj();
       if (path) {
         path.setSegType();
@@ -429,8 +429,8 @@ export class Segment {
    * @returns {void}
    */
   selectCtrls (y) {
-    $('#ctrlpointgrip_' + this.index + 'c1, #ctrlpointgrip_' + this.index + 'c2')
-      .attr('fill', y ? '#0FF' : '#EEE');
+    document.getElementById('ctrlpointgrip_' + this.index + 'c1').setAttribute('fill', y ? '#0FF' : '#EEE');
+    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE')
   }
 
   /**
@@ -638,8 +638,10 @@ export class Path {
     // Hide all grips, etc
 
     // fixed, needed to work on all found elements, not just first
-    $(getGripContainerMethod()).find('*').each(function () {
-      $(this).attr('display', 'none');
+    const pointGripContainer = getGripContainerMethod();
+    const elements = pointGripContainer.querySelectorAll('*');
+    Array.prototype.forEach.call(elements, function(el, i){
+      el.style.display = 'none';
     });
 
     const segList = this.elem.pathSegList;

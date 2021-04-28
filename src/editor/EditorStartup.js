@@ -2,6 +2,9 @@
 import './touch.js';
 import {convertUnit} from '../common/units.js';
 import {
+  putLocale
+} from './locale.js';
+import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
 import editorTemplate from './templates/editorTemplate.js';
@@ -58,6 +61,9 @@ class EditorStartup {
   * @returns {void}
   */
   async init () {
+    const self = this;
+    const { i18next, langParam } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
+    this.i18next = i18next;
     // allow to prepare the dom without display
     this.$svgEditor.style.visibility = 'hidden';
     try {
@@ -130,16 +136,21 @@ class EditorStartup {
     this.selectedElement = null;
     this.multiselected = false;
 
-    $('#cur_context_panel').delegate('a', 'click', (evt) => {
-      const link = $(evt.currentTarget);
-      if (link.attr('data-root')) {
-        this.svgCanvas.leaveContext();
-      } else {
-        this.svgCanvas.setContext(link.text());
-      }
-      this.svgCanvas.clearSelection();
-      return false;
-    });
+    const aLinks = $id('cur_context_panel').querySelectorAll('a')
+
+    for (const aLink of aLinks) {
+      aLink.addEventListener('click', (evt) => {
+        const link = evt.currentTarget;
+        if (link.hasAttribute('data-root')) {
+          this.svgCanvas.leaveContext();
+        } else {
+          this.svgCanvas.setContext(link.textContent);
+        }
+        this.svgCanvas.clearSelection();
+        return false;
+      });
+    }
+
     // bind the selected event to our function that handles updates to the UI
     this.svgCanvas.bind('selected', this.selectedChanged.bind(this));
     this.svgCanvas.bind('transition', this.elementTransition.bind(this));
@@ -177,7 +188,7 @@ class EditorStartup {
     );
     this.svgCanvas.bind('contextset', this.contextChanged.bind(this));
     this.svgCanvas.bind('extension_added', this.extAdded.bind(this));
-    this.svgCanvas.textActions.setInputElem($('#text')[0]);
+    this.svgCanvas.textActions.setInputElem($id('text'));
 
     this.setBackground(this.configObj.pref('bkgd_color'), this.configObj.pref('bkgd_url'));
 
@@ -187,20 +198,25 @@ class EditorStartup {
       res.w = convertUnit(res.w) + this.configObj.curConfig.baseUnit;
       res.h = convertUnit(res.h) + this.configObj.curConfig.baseUnit;
     }
-    $('#se-img-prop').attr('dialog', 'close');
-    $('#se-img-prop').attr('title', this.svgCanvas.getDocumentTitle());
-    $('#se-img-prop').attr('width', res.w);
-    $('#se-img-prop').attr('height', res.h);
-    $('#se-img-prop').attr('save', this.configObj.pref('img_save'));
+    $id('se-img-prop').setAttribute('dialog', 'close');
+    $id('se-img-prop').setAttribute('title', this.svgCanvas.getDocumentTitle());
+    $id('se-img-prop').setAttribute('width', res.w);
+    $id('se-img-prop').setAttribute('height', res.h);
+    $id('se-img-prop').setAttribute('save', this.configObj.pref('img_save'));
 
     // Lose focus for select elements when changed (Allows keyboard shortcuts to work better)
-    $('select').change((evt) => { $(evt.currentTarget).blur(); });
+    const selElements = document.querySelectorAll("select");
+    Array.from(selElements).forEach(function(element) {
+      element.addEventListener('change', function(evt) {
+        evt.currentTarget.blur();
+      });
+    });
 
     // fired when user wants to move elements to another layer
     let promptMoveLayerOnce = false;
-    $('#selLayerNames').change((evt) => {
+    $id('selLayerNames').addEventListener('change', function(evt) {
       const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
-      const confirmStr = this.uiStrings.notification.Qmovethis.elemsToLayer.replace('%s', destLayer);
+      const confirmStr = self.uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
       /**
     * @param {boolean} ok
     * @returns {void}
@@ -208,9 +224,9 @@ class EditorStartup {
       const moveToLayer = (ok) => {
         if (!ok) { return; }
         promptMoveLayerOnce = true;
-        this.svgCanvas.moveSelectedToLayer(destLayer);
-        this.svgCanvas.clearSelection();
-        this.layersPanel.populateLayers();
+        self.svgCanvas.moveSelectedToLayer(destLayer);
+        self.svgCanvas.clearSelection();
+        self.layersPanel.populateLayers();
       };
       if (destLayer) {
         if (promptMoveLayerOnce) {
@@ -224,33 +240,38 @@ class EditorStartup {
         }
       }
     });
-
-    $('#tool_font_family').change((evt) => {
-      this.svgCanvas.setFontFamily(evt.originalEvent.detail.value);
+    $id('tool_font_family').addEventListener('change', function(evt) {
+      self.svgCanvas.setFontFamily(evt.detail.value);
     });
 
-    $('#seg_type').change((evt) => {
-      this.svgCanvas.setSegType($(evt.currentTarget).val());
+    $id('seg_type').addEventListener('change', function(evt) {
+      self.svgCanvas.setSegType(evt.currentTarget.value);
     });
 
-    $('#text').bind('keyup input', (evt) => {
-      this.svgCanvas.setTextContent(evt.currentTarget.value);
+    function addListenerMulti(element, eventNames, listener) {
+      var events = eventNames.split(' ');
+      for (var i=0, iLen=events.length; i<iLen; i++) {
+        element.addEventListener(events[i], listener, false);
+      }
+    }
+
+    addListenerMulti($id('text'), 'keyup input', function(evt){
+      self.svgCanvas.setTextContent(evt.currentTarget.value);
+    });
+    $id('image_url').addEventListener('change', function(evt) {
+      self.setImageURL(evt.currentTarget.value);
     });
 
-    $('#image_url').change((evt) => {
-      this.setImageURL(evt.currentTarget.value);
-    });
-
-    $('#link_url').change((evt) => {
+    $id('link_url').addEventListener('change', function(evt) {
       if (evt.currentTarget.value.length) {
-        this.svgCanvas.setLinkURL(evt.currentTarget.value);
+        self.svgCanvas.setLinkURL(evt.currentTarget.value);
       } else {
-        this.svgCanvas.removeHyperlink();
+        self.svgCanvas.removeHyperlink();
       }
     });
 
-    $('#g_title').change((evt) => {
-      this.svgCanvas.setGroupTitle(evt.currentTarget.value);
+    $id('g_title').addEventListener('change', function(evt) {
+      self.svgCanvas.setGroupTitle(evt.currentTarget.value);
     });
 
     const wArea = this.workarea;
@@ -258,7 +279,7 @@ class EditorStartup {
     let lastX = null, lastY = null,
       panning = false, keypan = false;
 
-    $('#svgcanvas').bind('mousemove mouseup', function (evt) {
+    $id('svgcanvas').addEventListener('mouseup', function(evt) {    
       if (panning === false) { return true; }
 
       wArea.scrollLeft -= (evt.clientX - lastX);
@@ -269,7 +290,20 @@ class EditorStartup {
 
       if (evt.type === 'mouseup') { panning = false; }
       return false;
-    }).mousedown(function (evt) {
+    });    
+    $id('svgcanvas').addEventListener('mousemove', function(evt) {    
+      if (panning === false) { return true; }
+
+      wArea.scrollLeft -= (evt.clientX - lastX);
+      wArea.scrollTop -= (evt.clientY - lastY);
+
+      lastX = evt.clientX;
+      lastY = evt.clientY;
+
+      if (evt.type === 'mouseup') { panning = false; }
+      return false;
+    });
+    $id('svgcanvas').addEventListener('mousedown', function(evt) {
       if (evt.button === 1 || keypan === true) {
         panning = true;
         lastX = evt.clientX;
@@ -279,7 +313,7 @@ class EditorStartup {
       return true;
     });
 
-    $(window).mouseup(() => {
+    window.addEventListener('mouseup', function(evt) {
       panning = false;
     });
 
@@ -324,26 +358,53 @@ class EditorStartup {
       * @returns {void}
       */
     const unfocus = () => {
-      $(inp).blur();
+      inp.blur();
     };
 
-    $('#svg_editor').find('button, select, input:not(#text)').focus(() => {
-      inp = this;
-      this.uiContext = 'toolbars';
-      this.workarea.addEventListener('mousedown', unfocus);
-    }).blur(() => {
-      this.uiContext = 'canvas';
-      this.workarea.removeEventListener('mousedown', unfocus);
-      // Go back to selecting text if in textedit mode
-      if (this.svgCanvas.getMode() === 'textedit') {
-        $('#text').focus();
-      }
+    const liElems = document.getElementById('svg_editor').querySelectorAll('button, select, input:not(#text)');
+    Array.prototype.forEach.call(liElems, function(el, i){
+      el.addEventListener("focus", (e) => {
+        inp = e.currentTarget;
+        this.uiContext = 'toolbars';
+        this.workarea.addEventListener('mousedown', unfocus);       
+      });
+      el.addEventListener("blur", () => {
+        this.uiContext = 'canvas';
+        this.workarea.removeEventListener('mousedown', unfocus);
+        // Go back to selecting text if in textedit mode
+        if (this.svgCanvas.getMode() === 'textedit') {
+          $id('text').focus();
+        }
+      });
     });
-    const winWh = {width: $(window).width(), height: $(window).height()};
+    // ref: https://stackoverflow.com/a/1038781
+    function getWidth() {
+      return Math.max(
+        document.body.scrollWidth,
+        document.documentElement.scrollWidth,
+        document.body.offsetWidth,
+        document.documentElement.offsetWidth,
+        document.documentElement.clientWidth
+      );
+    }
+
+    function getHeight() {
+      return Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight,
+        document.documentElement.clientHeight
+      );
+    }
+    const winWh = {
+      width: getWidth(), 
+      height: getHeight()
+    };
 
     window.addEventListener('resize', (evt) => {
       Object.entries(winWh).forEach(([type, val]) => {
-        const curval = $(window)[type]();
+        const curval = (type === 'width') ? window.innerWidth - 15 : window.innerHeight;
         this.workarea['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
         winWh[type] = curval;
       });
@@ -354,21 +415,28 @@ class EditorStartup {
       this.rulers.manageScroll();
     });
 
-    $('#url_notice').click(() => {
+    $id('url_notice').addEventListener('click', () => {
       seAlert(this.title);
     });
 
     $id('stroke_width').value = this.configObj.curConfig.initStroke.width;
     $id('opacity').value = this.configObj.curConfig.initOpacity * 100;
-
-    $('.push_button').mousedown(() => {
-      if (!$(this).hasClass('disabled')) {
-        $(this).addClass('push_button_pressed').removeClass('push_button');
-      }
-    }).mouseout(() => {
-      $(this).removeClass('push_button_pressed').addClass('push_button');
-    }).mouseup(() => {
-      $(this).removeClass('push_button_pressed').addClass('push_button');
+    const elements = document.getElementsByClassName("push_button");
+    Array.from(elements).forEach(function(element) {
+      element.addEventListener('mousedown', function(event) {
+        if (!event.currentTarget.classList.contains('disabled')) {
+          event.currentTarget.classList.add('push_button_pressed')
+          event.currentTarget.classList.remove('push_button');
+        }
+      });
+      element.addEventListener('mouseout', function(event) {
+        event.currentTarget.classList.add('push_button')
+        event.currentTarget.classList.remove('push_button_pressed');
+      });
+      element.addEventListener('mouseup', function(event) {
+        event.currentTarget.classList.add('push_button')
+        event.currentTarget.classList.remove('push_button_pressed');
+      });
     });
 
     this.layersPanel.populateLayers();
@@ -378,10 +446,17 @@ class EditorStartup {
       this.workarea.style.lineHeight = this.workarea.style.height;
     };
 
-    $(window).bind('load resize', centerCanvas);
+    addListenerMulti(window, 'load resize', centerCanvas);
 
     // Prevent browser from erroneously repopulating fields
-    $('input,select').attr('autocomplete', 'off');
+    const inputEles = document.querySelectorAll('input');
+    Array.from(inputEles).forEach(function(inputEle) {
+      inputEle.setAttribute('autocomplete', 'off');
+    });
+    const selectEles = document.querySelectorAll('select');
+    Array.from(selectEles).forEach(function(inputEle) {
+      inputEle.setAttribute('autocomplete', 'off');
+    });
 
     $id('se-svg-editor-dialog').addEventListener('change', function (e) {
       if (e?.detail?.copy === 'click') {
@@ -427,7 +502,7 @@ class EditorStartup {
         this.moveUpDownSelected('Down');
         break;
       case 'move_back':
-        this.svgCanvas.moveToBottomSelected();
+        this.svgCanvas.moveToBottomSelectedElement();
         break;
       default:
         if (hasCustomHandler(action)) {
@@ -456,7 +531,7 @@ class EditorStartup {
         $id('tool_wireframe').click();
       }
 
-      $('#rulers').toggle(Boolean(this.configObj.curConfig.showRulers));
+      $id('rulers').style.display = (Boolean(this.configObj.curConfig.showRulers)) ?  'block' : 'none';
 
       if (this.configObj.curConfig.showRulers) {
         $editDialog.setAttribute('showrulers', true);
@@ -521,7 +596,6 @@ class EditorStartup {
         document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
         e.stopPropagation();
         e.preventDefault();
-        // $('#main_menu').hide();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
         if (!file) {
           document.getElementById('se-prompt-dialog').setAttribute('close', true);
@@ -597,8 +671,10 @@ class EditorStartup {
       this.workarea.addEventListener('dragover', this.onDragOver);
       this.workarea.addEventListener('dragleave', this.onDragLeave);
       this.workarea.addEventListener('drop', importImage);
-      const imgImport = $('<input type="file">').change(importImage);
-      $(window).on('importImages', () => imgImport.click());
+      const imgImport = document.createElement('input');
+      imgImport.type="file";
+      imgImport.addEventListener('change', importImage);
+      window.addEventListener('importImages', () => imgImport.click());
     }
 
     this.updateCanvas(true);
@@ -621,11 +697,7 @@ class EditorStartup {
    * @returns {Promise<module:locale.LangAndData>} Resolves to result of {@link module:locale.readLang}
    */
   async extAndLocaleFunc () {
-    const {langParam, langData} = await this.putLocale(this.configObj.pref('lang'), this.goodLangs);
-    await this.setLang(langParam, langData);
-
     this.$svgEditor.style.visibility = 'visible';
-
     try {
       // load standard extensions
       await Promise.all(
@@ -642,7 +714,7 @@ class EditorStartup {
              */
             const imported = await import(`./extensions/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`);
             const {name = extname, init: initfn} = imported.default;
-            return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam});
+            return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam: 'en'}); /** @todo  change to current lng */
           } catch (err) {
             // Todo: Add config to alert any errors
             console.error('Extension failed to load: ' + extname + '; ', err);

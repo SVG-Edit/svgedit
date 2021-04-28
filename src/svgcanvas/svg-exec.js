@@ -6,7 +6,7 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import {jsPDF} from 'jspdf/dist/jspdf.es.min.js';
+import { jsPDF } from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
 import jQueryPluginSVG from './jQuery.attr.js';
 import * as hstry from './history.js';
@@ -18,17 +18,18 @@ import {
 import {
   transformPoint, transformListToTransform
 } from './math.js';
-import {resetListMap} from './svgtransformlist.js';
+import { resetListMap } from './svgtransformlist.js';
 import {
   convertUnit, shortFloat, convertToNum
 } from '../common/units.js';
-import {isGecko, isChrome, isWebkit} from '../common/browser.js';
+import { isGecko, isChrome, isWebkit } from '../common/browser.js';
 import * as pathModule from './path.js';
-import {NS} from '../common/namespaces.js';
+import { NS } from '../common/namespaces.js';
 import * as draw from './draw.js';
 import {
   recalculateDimensions
 } from './recalculate.js';
+import { getParents, getClosest } from '../editor/components/jgraduate/Util.js';
 
 const {
   InsertElementCommand, RemoveElementCommand,
@@ -38,6 +39,7 @@ const {
 const $ = jQueryPluginSVG(jQuery);
 
 let svgContext_ = null;
+let $id = null;
 
 /**
 * @function module:svg-exec.init
@@ -46,6 +48,8 @@ let svgContext_ = null;
 */
 export const init = function (svgContext) {
   svgContext_ = svgContext;
+  const svgCanvas = svgContext_.getCanvas();
+  $id = svgCanvas.$id;
 };
 
 /**
@@ -55,12 +59,13 @@ export const init = function (svgContext) {
 */
 export const svgCanvasToString = function () {
   // keep calling it until there are none to remove
-  while (svgContext_.getCanvas().removeUnusedDefElems() > 0) {} // eslint-disable-line no-empty
+  while (svgContext_.getCanvas().removeUnusedDefElems() > 0) { } // eslint-disable-line no-empty
 
   svgContext_.getCanvas().pathActions.clear(true);
 
   // Keep SVG-Edit comment on top
-  $.each(svgContext_.getSVGContent().childNodes, function (i, node) {
+  const childNodesElems = svgContext_.getSVGContent().childNodes;
+  childNodesElems.forEach(function (node, i) {
     if (i && node.nodeType === 8 && node.data.includes('Created with')) {
       svgContext_.getSVGContent().firstChild.before(node);
     }
@@ -75,8 +80,9 @@ export const svgCanvasToString = function () {
   const nakedSvgs = [];
 
   // Unwrap gsvg if it has no special attributes (only id and style)
-  $(svgContext_.getSVGContent()).find('g[data-gsvg]').each(function () {
-    const attrs = this.attributes;
+  const gsvgElems = svgContext_.getSVGContent().querySelectorAll('g[data-gsvg]');
+  Array.prototype.forEach.call(gsvgElems, function (element, i) {
+    const attrs = element.attributes;
     let len = attrs.length;
     for (let i = 0; i < len; i++) {
       if (attrs[i].nodeName === 'id' || attrs[i].nodeName === 'style') {
@@ -85,17 +91,17 @@ export const svgCanvasToString = function () {
     }
     // No significant attributes, so ungroup
     if (len <= 0) {
-      const svg = this.firstChild;
+      const svg = element.firstChild;
       nakedSvgs.push(svg);
-      $(this).replaceWith(svg);
+      element.replaceWith(svg);
     }
   });
   const output = this.svgToString(svgContext_.getSVGContent(), 0);
 
   // Rewrap gsvg
   if (nakedSvgs.length) {
-    $(nakedSvgs).each(function () {
-      svgContext_.getCanvas().groupSvgElem(this);
+    Array.prototype.forEach.call(nakedSvgs, function (el, i) {
+      svgContext_.getCanvas().groupSvgElem(el);
     });
   }
 
@@ -153,22 +159,26 @@ export const svgToString = function (elem, indent) {
       const nsuris = {};
 
       // Check elements for namespaces, add if found
-      $(elem).find('*').andSelf().each(function () {
+      const csElements = elem.querySelectorAll('*');
+      const cElements = Array.prototype.slice.call(csElements);
+      cElements.push(elem);
+      Array.prototype.forEach.call(cElements, function (el, i) {
         // const el = this;
         // for some elements have no attribute
-        const uri = this.namespaceURI;
+        const uri = el.namespaceURI;
         if (uri && !nsuris[uri] && nsMap[uri] && nsMap[uri] !== 'xmlns' && nsMap[uri] !== 'xml') {
           nsuris[uri] = true;
           out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
         }
-
-        $.each(this.attributes, function (i, attr) {
-          const u = attr.namespaceURI;
-          if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
-            nsuris[u] = true;
-            out.push(' xmlns:' + nsMap[u] + '="' + u + '"');
+        if (el.attributes.length > 0) {
+          for (const [i, attr] of Object.entries(el.attributes)) {
+            const u = attr.namespaceURI;
+            if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
+              nsuris[u] = true;
+              out.push(' xmlns:' + nsMap[u] + '="' + u + '"');
+            }
           }
-        });
+        }
       });
 
       let i = attrs.length;
@@ -214,10 +224,10 @@ export const svgToString = function (elem, indent) {
 
           // Embed images when saving
           if (svgContext_.getSvgOptionApply() &&
-        elem.nodeName === 'image' &&
-        attr.localName === 'href' &&
-        svgContext_.getSvgOptionImages() &&
-        svgContext_.getSvgOptionImages() === 'embed'
+            elem.nodeName === 'image' &&
+            attr.localName === 'href' &&
+            svgContext_.getSvgOptionImages() &&
+            svgContext_.getSvgOptionImages() === 'embed'
           ) {
             const img = svgContext_.getEncodableImages(attrVal);
             if (img) { attrVal = img; }
@@ -241,31 +251,31 @@ export const svgToString = function (elem, indent) {
       for (let i = 0; i < childs.length; i++) {
         const child = childs.item(i);
         switch (child.nodeType) {
-        case 1: // element node
-          out.push('\n');
-          out.push(this.svgToString(child, indent));
-          break;
-        case 3: { // text node
-          const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
-          if (str !== '') {
-            bOneLine = true;
-            out.push(String(toXml(str)));
-          }
-          break;
-        } case 4: // cdata node
-          out.push('\n');
-          out.push(new Array(indent + 1).join(' '));
-          out.push('<![CDATA[');
-          out.push(child.nodeValue);
-          out.push(']]>');
-          break;
-        case 8: // comment
-          out.push('\n');
-          out.push(new Array(indent + 1).join(' '));
-          out.push('<!--');
-          out.push(child.data);
-          out.push('-->');
-          break;
+          case 1: // element node
+            out.push('\n');
+            out.push(this.svgToString(child, indent));
+            break;
+          case 3: { // text node
+            const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
+            if (str !== '') {
+              bOneLine = true;
+              out.push(String(toXml(str)));
+            }
+            break;
+          } case 4: // cdata node
+            out.push('\n');
+            out.push(new Array(indent + 1).join(' '));
+            out.push('<![CDATA[');
+            out.push(child.nodeValue);
+            out.push(']]>');
+            break;
+          case 8: // comment
+            out.push('\n');
+            out.push(new Array(indent + 1).join(' '));
+            out.push('<!--');
+            out.push(child.data);
+            out.push('-->');
+            break;
         } // switch on node type
       }
       indent--;
@@ -296,11 +306,12 @@ export const svgToString = function (elem, indent) {
 */
 export const setSvgString = function (xmlString, preventUndo) {
   const curConfig = svgContext_.getCurConfig();
+  const dataStorage = svgContext_.getDataStorage();
   try {
     // convert string into XML document
     const newDoc = text2xml(xmlString);
     if (newDoc.firstElementChild &&
-  newDoc.firstElementChild.namespaceURI !== NS.SVG) {
+      newDoc.firstElementChild.namespaceURI !== NS.SVG) {
       return false;
     }
 
@@ -309,7 +320,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     const batchCmd = new BatchCommand('Change Source');
 
     // remove old svg document
-    const {nextSibling} = svgContext_.getSVGContent();
+    const { nextSibling } = svgContext_.getSVGContent();
 
     svgContext_.getSVGContent().remove();
     const oldzoom = svgContext_.getSVGContent();
@@ -324,7 +335,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     }
 
     svgContext_.getSVGRoot().append(svgContext_.getSVGContent());
-    const content = $(svgContext_.getSVGContent());
+    const content = svgContext_.getSVGContent();
 
     svgContext_.getCanvas().current_drawing_ = new draw.Drawing(svgContext_.getSVGContent(), svgContext_.getIdPrefix());
 
@@ -337,8 +348,8 @@ export const setSvgString = function (xmlString, preventUndo) {
     }
 
     // change image href vals if possible
-    content.find('image').each(function () {
-      const image = this;
+    const elements = content.querySelectorAll('image');
+    Array.prototype.forEach.call(elements, function (image, i) {
       preventClickDefault(image);
       const val = svgContext_.getCanvas().getHref(this);
       if (val) {
@@ -349,9 +360,11 @@ export const setSvgString = function (xmlString, preventUndo) {
           if (m) {
             const url = decodeURIComponent(m[1]);
             // const url = decodeURIComponent(m.groups.url);
-            $(new Image()).load(function () {
+            const iimg = new Image();
+            iimg.addEventListener("load", (e) => {
               image.setAttributeNS(NS.XLINK, 'xlink:href', url);
-            }).attr('src', url);
+            });
+            iimg.src = url;
           }
         }
         // Add to encodableImages if it loads
@@ -360,25 +373,30 @@ export const setSvgString = function (xmlString, preventUndo) {
     });
 
     // Wrap child SVGs in group elements
-    content.find('svg').each(function () {
+    const svgElements = content.querySelectorAll('svg');
+    Array.prototype.forEach.call(svgElements, function (element, i) {
       // Skip if it's in a <defs>
-      if ($(this).closest('defs').length) { return; }
+      if (getClosest(element.parentNode, 'defs')) { return; }
 
-      svgContext_.getCanvas().uniquifyElems(this);
+      svgContext_.getCanvas().uniquifyElems(element);
 
       // Check if it already has a gsvg group
-      const pa = this.parentNode;
+      const pa = element.parentNode;
       if (pa.childNodes.length === 1 && pa.nodeName === 'g') {
-        $(pa).data('gsvg', this);
+        dataStorage.put(pa, 'gsvg', element);
         pa.id = pa.id || svgContext_.getCanvas().getNextId();
       } else {
-        svgContext_.getCanvas().groupSvgElem(this);
+        svgContext_.getCanvas().groupSvgElem(element);
       }
     });
 
     // For Firefox: Put all paint elems in defs
     if (isGecko()) {
-      content.find('linearGradient, radialGradient, pattern').appendTo(findDefs());
+      const svgDefs = findDefs();
+      const findElems = content.querySelectorAll('linearGradient, radialGradient, pattern');
+      Array.prototype.forEach.call(findElems, function (ele, i) {
+        svgDefs.appendChild(ele);
+      });
     }
 
     // Set ref element for <use> elements
@@ -386,7 +404,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     // TODO: This should also be done if the object is re-added through "redo"
     svgContext_.getCanvas().setUseData(content);
 
-    svgContext_.getCanvas().convertGradients(content[0]);
+    svgContext_.getCanvas().convertGradients(content);
 
     const attrs = {
       id: 'svgcontent',
@@ -396,16 +414,16 @@ export const setSvgString = function (xmlString, preventUndo) {
     let percs = false;
 
     // determine proper size
-    if (content.attr('viewBox')) {
-      const vb = content.attr('viewBox').split(' ');
+    if (content.getAttribute('viewBox')) {
+      const viBox = content.getAttribute('viewBox');
+      const vb = viBox.split(' ');
       attrs.width = vb[2];
       attrs.height = vb[3];
       // handle content that doesn't have a viewBox
     } else {
-      $.each(['width', 'height'], function (i, dim) {
+      ['width', 'height'].forEach(function (dim, i) {
         // Set to 100 if not given
-        const val = content.attr(dim) || '100%';
-
+        const val = content.getAttribute(dim) || '100%';
         if (String(val).substr(-1) === '%') {
           // Use user units if percentage given
           percs = true;
@@ -419,8 +437,12 @@ export const setSvgString = function (xmlString, preventUndo) {
     draw.identifyLayers();
 
     // Give ID for any visible layer children missing one
-    content.children().find(svgContext_.getVisElems()).each(function () {
-      if (!this.id) { this.id = svgContext_.getCanvas().getNextId(); }
+    const chiElems = content.children;
+    Array.prototype.forEach.call(chiElems, function (chiElem, i) {
+      const visElems = chiElem.querySelectorAll(svgContext_.getVisElems());
+      Array.prototype.forEach.call(visElems, function (elem, i) {
+        if (!elem.id) { elem.id = svgContext_.getCanvas().getNextId(); }
+      });
     });
 
     // Percentage width/height, so let's base it on visible elements
@@ -435,13 +457,17 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (attrs.width <= 0) { attrs.width = 100; }
     if (attrs.height <= 0) { attrs.height = 100; }
 
-    content.attr(attrs);
+    for (const [key, value] of Object.entries(attrs)) {
+      content.setAttribute(key, value);
+    }
     this.contentW = attrs.width;
     this.contentH = attrs.height;
 
     batchCmd.addSubCommand(new InsertElementCommand(svgContext_.getSVGContent()));
     // update root to the correct size
-    const changes = content.attr(['width', 'height']);
+    const width = content.getAttribute('width');
+    const height = content.getAttribute('height');
+    const changes = { width: width, height: height };
     batchCmd.addSubCommand(new ChangeElementCommand(svgContext_.getSVGRoot(), changes));
 
     // reset zoom
@@ -456,7 +482,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (!preventUndo) svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [svgContext_.getSVGContent()]);
   } catch (e) {
-    console.log(e); 
+    console.log(e);
     return false;
   }
 
@@ -478,6 +504,7 @@ export const setSvgString = function (xmlString, preventUndo) {
 * was obtained
 */
 export const importSvgString = function (xmlString) {
+  const dataStorage = svgContext_.getDataStorage();
   let j, ts, useEl;
   try {
     // Get unique ID
@@ -485,14 +512,17 @@ export const importSvgString = function (xmlString) {
 
     let useExisting = false;
     // Look for symbol and make sure symbol exists in image
-    if (svgContext_.getImportIds(uid) && $(svgContext_.getImportIds(uid).symbol).parents('#svgroot').length) {
-      useExisting = true;
+    if (svgContext_.getImportIds(uid) && svgContext_.getImportIds(uid).symbol) {
+      const parents = getParents(svgContext_.getImportIds(uid).symbol, '#svgroot');
+      if (parents.length) {
+        useExisting = true;
+      }
     }
 
     const batchCmd = new BatchCommand('Import Image');
     let symbol;
     if (useExisting) {
-      ({symbol} = svgContext_.getImportIds());
+      ({ symbol } = svgContext_.getImportIds());
       ts = svgContext_.getImportIds(uid).xform;
     } else {
       // convert string into XML document
@@ -534,7 +564,10 @@ export const importSvgString = function (xmlString) {
         // Move all gradients into root for Firefox, workaround for this bug:
         // https://bugzilla.mozilla.org/show_bug.cgi?id=353575
         // TODO: Make this properly undo-able.
-        $(svg).find('linearGradient, radialGradient, pattern').appendTo(defs);
+        const elements = svg.querySelectorAll('linearGradient, radialGradient, pattern');
+        Array.prototype.forEach.call(elements, function (el, i) {
+          defs.appendChild(el);
+        });
       }
 
       while (svg.firstChild) {
@@ -567,7 +600,8 @@ export const importSvgString = function (xmlString) {
 
     useEl.setAttribute('transform', ts);
     recalculateDimensions(useEl);
-    $(useEl).data('symbol', symbol).data('ref', symbol);
+    dataStorage.put(useEl, 'symbol', symbol);
+    dataStorage.put(useEl, 'ref', symbol);
     svgContext_.getCanvas().addToSelection([useEl]);
 
     // TODO: Find way to add this in a recalculateDimensions-parsable way
@@ -577,7 +611,7 @@ export const importSvgString = function (xmlString) {
     svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [svgContext_.getSVGContent()]);
   } catch (e) {
-    console.log(e); 
+    console.log(e);
     return null;
   }
 
@@ -600,17 +634,14 @@ export const embedImage = function (src) {
   // Todo: Remove this Promise in favor of making an async/await `Image.load` utility
   return new Promise(function (resolve, reject) {
     // load in the image and once it's loaded, get the dimensions
-    $(new Image()).load(function (response, status, xhr) {
-      if (status === 'error') {
-        reject(new Error('Error loading image: ' + xhr.status + ' ' + xhr.statusText));
-        return;
-      }
+    const imgI = new Image();
+    imgI.addEventListener("load", (e) => {
       // create a canvas the same size as the raster image
       const cvs = document.createElement('canvas');
-      cvs.width = this.width;
-      cvs.height = this.height;
+      cvs.width = e.currentTarget.width;
+      cvs.height = e.currentTarget.height;
       // load the raster image into the canvas
-      cvs.getContext('2d').drawImage(this, 0, 0);
+      cvs.getContext('2d').drawImage(e.currentTarget, 0, 0);
       // retrieve the data: URL
       try {
         let urldata = ';svgedit_url=' + encodeURIComponent(src);
@@ -621,7 +652,11 @@ export const embedImage = function (src) {
       }
       svgContext_.getCanvas().setGoodImage(src);
       resolve(svgContext_.getEncodableImages(src));
-    }).attr('src', src);
+    });
+    imgI.addEventListener("error", (e) => {
+      reject(new Error('Error loading image: '));
+    });
+    imgI.setAttribute('src', src);
   });
 };
 
@@ -655,7 +690,7 @@ export const save = function (opts) {
 * Codes only is useful for locale-independent detection.
 * @returns {module:svgcanvas.IssuesAndCodes}
 */
-function getIssues () {
+function getIssues() {
   const uiStrings = svgContext_.getUIStrings();
   // remove the selected outline before serializing
   svgContext_.getCanvas().clearSelection();
@@ -670,20 +705,20 @@ function getIssues () {
     foreignObject: uiStrings.exportNoforeignObject,
     '[stroke-dasharray]': uiStrings.exportNoDashArray
   };
-  const content = $(svgContext_.getSVGContent());
+  const content = svgContext_.getSVGContent();
 
   // Add font/text check if Canvas Text API is not implemented
-  if (!('font' in $('<canvas>')[0].getContext('2d'))) {
+  if (!('font' in document.querySelector('CANVAS').getContext('2d'))) {
     issueList.text = uiStrings.exportNoText;
   }
 
-  $.each(issueList, function (sel, descr) {
-    if (content.find(sel).length) {
+  for (const [sel, descr] of Object.entries(issueList)) {
+    if (content.querySelectorAll(sel).length) {
       issueCodes.push(sel);
       issues.push(descr);
     }
-  });
-  return {issues, issueCodes};
+  }
+  return { issues, issueCodes };
 }
 /**
 * @typedef {PlainObject} module:svgcanvas.ImageExportedResults
@@ -715,15 +750,18 @@ function getIssues () {
 export const rasterExport = async function (imgType, quality, exportWindowName, opts = {}) {
   const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
   const mimeType = 'image/' + type.toLowerCase();
-  const {issues, issueCodes} = getIssues();
+  const { issues, issueCodes } = getIssues();
   const svg = this.svgCanvasToString();
 
-  if (!$('#export_canvas').length) {
-    $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+  if (!$id('export_canvas')) {
+    const canvasEx = document.createElement('CANVAS');
+    canvasEx.id = 'export_canvas';
+    canvasEx.style.display = 'none';
+    document.body.appendChild(canvasEx);
   }
-  const c = $('#export_canvas')[0];
-  c.width = svgContext_.getCanvas().contentW;
-  c.height = svgContext_.getCanvas().contentH;
+  const c = $id('export_canvas');
+  c.style.width = svgContext_.getCanvas().contentW + "px";;
+  c.style.height = svgContext_.getCanvas().contentH + "px";;
   const canvg = svgContext_.getcanvg();
   const ctx = c.getContext('2d');
   const v = canvg.fromString(ctx, svg);
@@ -740,7 +778,7 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
  * Called when `bloburl` is available for export.
  * @returns {void}
  */
-    function done () {
+    function done() {
       const obj = {
         datauri, bloburl, svg, issues, issueCodes, type: imgType,
         mimeType, quality, exportWindowName
@@ -817,17 +855,17 @@ export const exportPDF = async (
     keywords: '',
     creator: '' */
   });
-  const {issues, issueCodes} = getIssues();
+  const { issues, issueCodes } = getIssues();
   // const svg = this.svgCanvasToString();
   // await doc.addSvgAsImage(svg)
-  await doc.svg(svgContext_.getSVGContent(), {x: 0, y: 0, width: res.w, height: res.h});
+  await doc.svg(svgContext_.getSVGContent(), { x: 0, y: 0, width: res.w, height: res.h });
 
   // doc.output('save'); // Works to open in a new
   //  window; todo: configure this and other export
   //  options to optionally work in this manner as
   //  opposed to opening a new tab
   outputType = outputType || 'dataurlstring';
-  const obj = {issues, issueCodes, exportWindowName, outputType};
+  const obj = { issues, issueCodes, exportWindowName, outputType };
   obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
   svgContext_.call('exportedPDF', obj);
   return obj;
@@ -858,14 +896,14 @@ export const uniquifyElemsMethod = function (g) {
         // and we haven't tracked this ID yet
         if (!(n.id in ids)) {
           // add this id to our map
-          ids[n.id] = {elem: null, attrs: [], hrefs: []};
+          ids[n.id] = { elem: null, attrs: [], hrefs: [] };
         }
         ids[n.id].elem = n;
       }
 
       // now search for all attributes on this element that might refer
       // to other elements
-      $.each(svgContext_.getrefAttrs(), function (i, attr) {
+      svgContext_.getrefAttrs().forEach(function(attr, i){
         const attrnode = n.getAttributeNode(attr);
         if (attrnode) {
           // the incoming file has been sanitized, so we should be able to safely just strip off the leading #
@@ -874,7 +912,7 @@ export const uniquifyElemsMethod = function (g) {
           if (refid) {
             if (!(refid in ids)) {
               // add this id to our map
-              ids[refid] = {elem: null, attrs: [], hrefs: []};
+              ids[refid] = { elem: null, attrs: [], hrefs: [] };
             }
             ids[refid].attrs.push(attrnode);
           }
@@ -889,7 +927,7 @@ export const uniquifyElemsMethod = function (g) {
         if (refid) {
           if (!(refid in ids)) {
             // add this id to our map
-            ids[refid] = {elem: null, attrs: [], hrefs: []};
+            ids[refid] = { elem: null, attrs: [], hrefs: [] };
           }
           ids[refid].hrefs.push(n);
         }
@@ -900,7 +938,7 @@ export const uniquifyElemsMethod = function (g) {
   // in ids, we now have a map of ids, elements and attributes, let's re-identify
   for (const oldid in ids) {
     if (!oldid) { continue; }
-    const {elem} = ids[oldid];
+    const { elem } = ids[oldid];
     if (elem) {
       const newid = svgContext_.getCanvas().getNextId();
 
@@ -908,7 +946,7 @@ export const uniquifyElemsMethod = function (g) {
       elem.id = newid;
 
       // remap all url() attributes
-      const {attrs} = ids[oldid];
+      const { attrs } = ids[oldid];
       let j = attrs.length;
       while (j--) {
         const attr = attrs[j];
@@ -933,19 +971,22 @@ export const uniquifyElemsMethod = function (g) {
 * @returns {void}
 */
 export const setUseDataMethod = function (parent) {
-  let elems = $(parent);
+  let elems = parent;
 
   if (parent.tagName !== 'use') {
-    elems = elems.find('use');
+    // elems = elems.find('use');
+    elems = elems.querySelectorAll('use');
   }
 
-  elems.each(function () {
-    const id = svgContext_.getCanvas().getHref(this).substr(1);
+  Array.prototype.forEach.call(elems, function (el, _) {
+    const dataStorage = svgContext_.getDataStorage();
+    const id = svgContext_.getCanvas().getHref(el).substr(1);
     const refElem = svgContext_.getCanvas().getElem(id);
     if (!refElem) { return; }
-    $(this).data('ref', refElem);
+    dataStorage.put(el, 'ref', refElem);
     if (refElem.tagName === 'symbol' || refElem.tagName === 'svg') {
-      $(this).data('symbol', refElem).data('ref', refElem);
+      dataStorage.put(el, 'symbol', refElem);
+      dataStorage.put(el, 'ref', refElem);
     }
   });
 };
@@ -987,18 +1028,20 @@ export const removeUnusedDefElemsMethod = function () {
     }
   }
 
-  const defelems = $(defs).find('linearGradient, radialGradient, filter, marker, svg, symbol');
-  i = defelems.length;
-  while (i--) {
-    const defelem = defelems[i];
-    const {id} = defelem;
-    if (!defelemUses.includes(id)) {
-      // Not found, so remove (but remember)
-      svgContext_.setRemovedElements(id, defelem);
-      defelem.remove();
-      numRemoved++;
+  Array.prototype.forEach.call(defs, function (def, i) {
+    const defelems = def.querySelectorAll('linearGradient, radialGradient, filter, marker, svg, symbol');
+    i = defelems.length;
+    while (i--) {
+      const defelem = defelems[i];
+      const { id } = defelem;
+      if (!defelemUses.includes(id)) {
+        // Not found, so remove (but remember)
+        svgContext_.setRemovedElements(id, defelem);
+        defelem.remove();
+        numRemoved++;
+      }
     }
-  }
+  });
 
   return numRemoved;
 };
@@ -1009,20 +1052,19 @@ export const removeUnusedDefElemsMethod = function () {
 * @returns {void}
 */
 export const convertGradientsMethod = function (elem) {
-  let elems = $(elem).find('linearGradient, radialGradient');
+  let elems = elem.querySelectorAll('linearGradient, radialGradient');
   if (!elems.length && isWebkit()) {
     // Bug in webkit prevents regular *Gradient selector search
-    elems = $(elem).find('*').filter(function () {
-      return (this.tagName.includes('Gradient'));
+    elems = Array.prototype.filter.call(elem.querySelectorAll('*'), function (curThis, i) {
+      return (curThis.tagName.includes('Gradient'));
     });
   }
 
-  elems.each(function () {
-    const grad = this;
-    if ($(grad).attr('gradientUnits') === 'userSpaceOnUse') {
+  Array.prototype.forEach.call(elems, function (grad, i) {
+    if (grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
       const svgcontent = svgContext_.getSVGContent();
       // TODO: Support more than one element with this ref by duplicating parent grad
-      const fillStrokeElems = $(svgcontent).find('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
+      const fillStrokeElems = svgcontent.querySelectorAll('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
       if (!fillStrokeElems.length) { return; }
 
       // get object's bounding box
@@ -1033,7 +1075,12 @@ export const convertGradientsMethod = function (elem) {
       if (!bb) { return; }
 
       if (grad.tagName === 'linearGradient') {
-        const gCoords = $(grad).attr(['x1', 'y1', 'x2', 'y2']);
+        const gCoords = {
+          x1: grad.getAttribute('x1'),
+          y1: grad.getAttribute('y1'),
+          x2: grad.getAttribute('x2'),
+          y2: grad.getAttribute('y2'),
+        };
 
         // If has transform, convert
         const tlist = grad.gradientTransform.baseVal;
@@ -1048,35 +1095,12 @@ export const convertGradientsMethod = function (elem) {
           gCoords.y2 = pt2.y;
           grad.removeAttribute('gradientTransform');
         }
-
-        $(grad).attr({
-          x1: (gCoords.x1 - bb.x) / bb.width,
-          y1: (gCoords.y1 - bb.y) / bb.height,
-          x2: (gCoords.x2 - bb.x) / bb.width,
-          y2: (gCoords.y2 - bb.y) / bb.height
-        });
+        grad.setAttribute('x1', (gCoords.x1 - bb.x) / bb.width);
+        grad.setAttribute('y1', (gCoords.y1 - bb.y) / bb.height);
+        grad.setAttribute('x2', (gCoords.x2 - bb.x) / bb.width);
+        grad.setAttribute('y2', (gCoords.y2 - bb.y) / bb.height);
         grad.removeAttribute('gradientUnits');
       }
-      // else {
-      //   Note: radialGradient elements cannot be easily converted
-      //   because userSpaceOnUse will keep circular gradients, while
-      //   objectBoundingBox will x/y scale the gradient according to
-      //   its bbox.
-      //
-      //   For now we'll do nothing, though we should probably have
-      //   the gradient be updated as the element is moved, as
-      //   inkscape/illustrator do.
-      //
-      //   const gCoords = $(grad).attr(['cx', 'cy', 'r']);
-      //
-      //   $(grad).attr({
-      //     cx: (gCoords.cx - bb.x) / bb.width,
-      //     cy: (gCoords.cy - bb.y) / bb.height,
-      //     r: gCoords.r
-      //   });
-      //
-      //   grad.removeAttribute('gradientUnits');
-      // }
     }
   });
 };

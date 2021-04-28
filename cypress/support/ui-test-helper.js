@@ -9,7 +9,7 @@ export const visitAndApproveStorage = () => {
 };
 
 export const openMainMenu = () => {
-  return cy.get('#main_button').click();
+  return cy.get('#main_button').click({force: true});
 };
 
 export const openEditorPreferences = () => {
