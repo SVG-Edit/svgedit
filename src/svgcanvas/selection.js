@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Tools for selection.
  * @module selection
@@ -11,7 +10,6 @@ import {
   isNullish, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
 } from './utilities.js';
 import { transformPoint, transformListToTransform, rectsIntersect } from './math.js';
-import jQueryPluginSVG from './jQuery.attr.js';
 import {
   getTransformList
 } from './svgtransformlist.js';
@@ -19,7 +17,6 @@ import * as hstry from './history.js';
 import { getClosest } from '../editor/components/jgraduate/Util.js';
 
 const { BatchCommand } = hstry;
-const $ = jQueryPluginSVG(jQuery);
 let selectionContext_ = null;
 
 /**
@@ -243,7 +240,7 @@ export const getVisibleElementsAndBBoxes = function (parent) {
   }
   const contentElems = [];
   const elements = parent.children;
-  Array.prototype.forEach.call(elements, function (elem, i) {
+  Array.prototype.forEach.call(elements, function (elem) {
     if (elem.getBBox) {
       contentElems.push({ elem, bbox: getStrokedBBoxDefaultVisible([elem]) });
     }

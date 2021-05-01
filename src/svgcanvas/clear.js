@@ -1,14 +1,10 @@
-/* globals jQuery */
 /**
  * Tools for clear.
  * @module clear
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import jQueryPluginSVG from './jQuery.attr.js';
 import {NS} from '../common/namespaces.js';
-
-const $ = jQueryPluginSVG(jQuery);
 
 let clearContext_ = null;
 

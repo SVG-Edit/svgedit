@@ -9,6 +9,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -20,11 +21,10 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'star',
-  async init (S) {
+  async init (_S) {
     const svgEditor = this;
     const {svgCanvas} = svgEditor;
     const {$id} = svgCanvas;
-    const {$} = S; // {svgcontent},
     let selElems;
     let started;
     let newFO;
@@ -223,7 +223,7 @@ export default {
           }
         }
       },
-      elementChanged (opts) {
+      elementChanged (_opts) {
         // const elem = opts.elems[0];
       }
     };

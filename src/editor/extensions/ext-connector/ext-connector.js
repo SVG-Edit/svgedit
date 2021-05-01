@@ -10,6 +10,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -197,7 +198,7 @@ export default {
       connections = [];
 
       // Loop through connectors to see if one is connected to the element
-      Array.prototype.forEach.call(connectors, function (ethis, i) {
+      Array.prototype.forEach.call(connectors, function (ethis) {
         let addThis;
         // Grab the ends
         const parts = [];
@@ -220,7 +221,7 @@ export default {
           addThis = false;
           // The connected element might be part of a selected group
           const parents = svgCanvas.getParents(cElem.parentNode);
-          Array.prototype.forEach.call(parents, function (el, i) {
+          Array.prototype.forEach.call(parents, function (el) {
             if (elems.includes(el)) {
               // Pretend this element is selected
               addThis = true;
@@ -364,7 +365,7 @@ export default {
           svgCanvas.setMode('connector');
         });
       },
-      /* async */ addLangData({ lang }) { // , importLocale: importLoc
+      /* async */ addLangData({ _lang }) { // , importLocale: importLoc
         return {
           data: strings.langList
         };
@@ -505,7 +506,7 @@ export default {
         const connStr = startId + ' ' + endId;
         const altStr = endId + ' ' + startId;
         // Don't create connector if one already exists
-        const dupe = Array.prototype.filter.call(svgcontent.querySelectorAll('.se_connector'), function (aThis, i) {
+        const dupe = Array.prototype.filter.call(svgcontent.querySelectorAll('.se_connector'), function (aThis) {
           const conn = aThis.getAttributeNS(seNs, 'connector');
           if (conn === connStr || conn === altStr) { return true; }
           return false;

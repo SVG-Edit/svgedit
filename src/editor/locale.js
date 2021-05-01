@@ -72,6 +72,7 @@ export const putLocale = async function (givenParam, goodLangs) {
   if (!goodLangs.includes(langParam) && langParam !== 'test') {
     langParam = 'en';
   }
+  // eslint-disable-next-line no-unsanitized/method
   const module = await import(`./locale/lang.${encodeURIComponent(langParam)}.js`);
   i18next.init({
     lng: langParam,

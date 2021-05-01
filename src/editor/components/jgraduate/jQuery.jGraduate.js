@@ -46,8 +46,8 @@ const ns = {
 
 if (!window.console) {
   window.console = {
-    log (str) { /* empty fn */ },
-    dir (str) { /* empty fn */ }
+    log () { /* empty fn */ },
+    dir () { /* empty fn */ }
   };
 }
 
@@ -156,34 +156,6 @@ function mkElem (name, attrs, newparent) {
   return elem;
 }
 
-function deepExtend(out) {
-  out = out || {};
-
-  for (let i = 1, len = arguments.length; i < len; ++i) {
-    let obj = arguments[i];
-
-    if (!obj) {
-      continue;
-    }
-
-    for (const key in obj) {
-      if (!obj.hasOwnProperty(key)) {
-        continue;
-      }
-
-      // based on https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
-      if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
-        out[key] = deepExtend(out[key], obj[key]);
-        continue;
-      }
-
-      out[key] = obj[key];
-    }
-  }
-
-  return out;
-}
-
 /**
 * @typedef {PlainObject} module:jGraduate.ColorOpac Object may have one or both values
 * @property {string} [color] #Hex color
@@ -221,8 +193,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     $settings = Object.assign({}, jGraduateDefaults, options || {}),
     id = $this.getAttribute('id'),
     idref = '#' + $this.getAttribute('id') + ' ';
-  // JFH !!!!!
-  const $shadowRoot = elem.parentNode;
 
   if (!idref) {
     // eslint-disable-next-line no-alert
@@ -561,7 +531,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       $elem.style.top = e.target.value * MAX;
     }
   };
-  for (const [i, attr] of ['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'].entries()) {
+  for (const [, attr] of ['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'].entries()) {
     const isRadial = isNaN(attr[1]);
 
     let attrval = curGradient.getAttribute(attr);
@@ -653,7 +623,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
         window: {title: 'Pick the start color and opacity for the gradient'},
         images: {clientPath: $settings.images.clientPath},
         color: {active: colr, alphaSupport: true}
-      }, function (clr, arg2) {
+      }, function (clr) {
         stopColor = clr.val('hex') ? ('#' + clr.val('hex')) : 'none';
         stopOpacity = clr.val('a') !== null ? clr.val('a') / 256 : 1;
         colorhandle.setAttribute('fill', stopColor);
@@ -1118,7 +1088,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       val: angleVal
     }
   };
-  for (const [index, [type, data]] of Object.entries(Object.entries(sliders))) {
+  for (const [, [type, data]] of Object.entries(Object.entries(sliders))) {
     const handle = $this.querySelector(data.handle);
     const sInput = $this.querySelector(data.input);
     handle.addEventListener('mousedown', function (evt) {
@@ -1190,7 +1160,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     evt.preventDefault();
   };
 
-  const stopSlider = function (evt) {
+  const stopSlider = function () {
     $win.removeEventListener('mousemove', dragSlider);
     $win.removeEventListener('mouseup', stopSlider);
     slider = null;

@@ -107,6 +107,7 @@ export class SeCMenuLayerDialog extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
+    // eslint-disable-next-line sonarjs/no-small-switch
     switch (name) {
     case 'value':
       this.source = newValue;

@@ -1,7 +1,7 @@
 /* globals jQuery */
 const $ = jQuery;
 const atags = document.querySelectorAll('a');
-Array.prototype.forEach.call(atags, function (aEle, i) {
+Array.prototype.forEach.call(atags, function (aEle) {
   aEle.addEventListener('click', function (event) {
     const { href } = event.currentTarget;
     const target = window.parent;

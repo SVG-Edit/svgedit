@@ -225,7 +225,7 @@ export const recalculateDimensions = function (selected) {
   } // switch on element type to get initial values
 
   if (attrs.length) {
-    Array.prototype.forEach.call(attrs, function (attr, i) {
+    Array.prototype.forEach.call(attrs, function (attr) {
       changes[attr] = selected.getAttribute(attr);
     });
     for (const [attr, val] of Object.entries(changes)) {

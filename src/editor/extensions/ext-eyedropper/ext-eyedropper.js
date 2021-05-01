@@ -10,6 +10,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -24,7 +25,7 @@ export default {
   async init(S) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const { $, ChangeElementCommand } = S, // , svgcontent,
+    const { ChangeElementCommand } = S, // , svgcontent,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       { svgCanvas } = svgEditor,
       addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },

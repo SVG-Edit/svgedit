@@ -9,6 +9,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -20,12 +21,11 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'placemark',
-  async init (S) {
+  async init (_S) {
     const svgEditor = this;
     const {svgCanvas} = svgEditor;
     const {$id} = svgCanvas;
     const addElem = svgCanvas.addSVGElementFromJson;
-    const {$} = S; // {svgcontent},
     let
       selElems,
       // editingitex = false,
@@ -108,7 +108,7 @@ export default {
           Array.prototype.forEach.call(elements, function(i, _){
             const [, , type, n] = i.id.split('_');
             if (type === 'txt') {
-              t.textContent = items[n];
+              txt.textContent = items[n];
             }
           });
         }
@@ -261,7 +261,7 @@ export default {
     * @param {Event} ev
     * @returns {void}
     */
-    function setArrowFromButton (ev) {
+    function setArrowFromButton (_ev) {
       const parts = this.id.split('_');
       let val = parts[2];
       if (parts[3]) { val += '_' + parts[3]; }
@@ -533,7 +533,7 @@ export default {
           if (elem && elem.getAttribute('class').includes('placemark')) {
             const txt = [];
             const elements = elem.children;
-            Array.prototype.forEach.call(elements, function(i, n){
+            Array.prototype.forEach.call(elements, function(i){
               const [, , type] = i.id.split('_');
               if (type === 'txt') {
                 $id('placemarkFont').value = (

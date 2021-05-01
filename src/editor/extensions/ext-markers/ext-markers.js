@@ -32,6 +32,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -452,7 +453,7 @@ export default {
     * @param {Event} ev
     * @returns {Promise<void>} Resolves to `undefined`
     */
-    async function setArrowFromButton (ev) {
+    async function setArrowFromButton () {
       const parts = this.id.split('_');
       const pos = parts[1];
       let val = parts[2];
@@ -579,7 +580,7 @@ export default {
           $id("marker_panel").style.display = 'none';
         }
       },
-      /* async */ addLangData ({importLocale, lang}) {
+      /* async */ addLangData ({_importLocale, _lang}) {
         return {data: strings.langList};
       },
       selectedChanged (opts) {

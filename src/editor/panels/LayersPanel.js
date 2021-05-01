@@ -143,7 +143,6 @@ class LayersPanel {
   </div>
     `;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
-    this.editor.svgCanvas = this.editor.svgCanvas;
     // layer menu added to DOM
     const menuMore = document.createElement("se-cmenu-layers");
     menuMore.setAttribute("id", "se-cmenu-layers-more");
@@ -193,14 +192,14 @@ class LayersPanel {
         this.allowmove = true;
       }, 20);
     });
-    $id("sidepanel_handle").addEventListener("mouseup", evt => {
+    $id("sidepanel_handle").addEventListener("mouseup", _evt => {
       if (!this.sidedragging) {
         this.toggleSidePanel();
       }
       this.sidedrag = -1;
       this.sidedragging = false;
     });
-    window.addEventListener("mouseup", evt => {
+    window.addEventListener("mouseup", _evt => {
       this.sidedrag = -1;
       this.sidedragging = false;
       $id("svg_editor").removeEventListener(
@@ -247,7 +246,7 @@ class LayersPanel {
       // TODO: make this behavior less brittle (svg-editor should get which
       // layer is selected from the canvas and then select that one in the UI)
       const elements = document.querySelectorAll('#layerlist tr.layer');
-      Array.prototype.forEach.call(elements, function(el, i){
+      Array.prototype.forEach.call(elements, function(el){
         el.classList.remove('layersel');
       });
       document.querySelector('#layerlist tr.layer').classList.add('layersel');
@@ -284,7 +283,7 @@ class LayersPanel {
     var i = 0;
     do {
       i++;
-    } while (el = el.previousElementSibling);
+    } while (el == el.previousElementSibling);
     return i;
   }
 
@@ -419,7 +418,7 @@ class LayersPanel {
           evt.currentTarget.textContent
         );
       });
-      element.addEventListener('mouseout', function(evt) {
+      element.addEventListener('mouseout', function(_evt) {
         self.toggleHighlightLayer(self.editor.svgCanvas);
       });
     });

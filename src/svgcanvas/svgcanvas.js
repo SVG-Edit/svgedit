@@ -131,7 +131,7 @@ if (!window.console) {
 
 if (window.opera) {
   window.console.log = function (str) { window.opera.postError(str); };
-  window.console.dir = function (str) { /* empty fn */ };
+  window.console.dir = function (_str) { /* empty fn */ };
 }
 
 // Reenable after fixing eslint-plugin-jsdoc to handle
@@ -632,7 +632,7 @@ class SvgCanvas {
         getCurrentZoom,
         getRubberBox() { return rubberBox; },
         setCurBBoxes(value) { curBBoxes = value; },
-        getCurBBoxes(value) { return curBBoxes; },
+        getCurBBoxes(_value) { return curBBoxes; },
         getCurrentResizeMode() { return currentResizeMode; },
         addCommandToHistory,
         getSelector() { return Selector; }
@@ -2393,7 +2393,7 @@ class SvgCanvas {
     this.convertToPath = function (elem, getBBox) {
       if (isNullish(elem)) {
         const elems = selectedElements;
-        elems.forEach(function(el, i){
+        elems.forEach(function(el){
           if (el) { canvas.convertToPath(el); }
         });
         return undefined;

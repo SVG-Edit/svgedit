@@ -8,7 +8,6 @@ describe('UI - Accessibility', function () {
     cy.injectAxe();
   });
   // https://www.npmjs.com/package/cypress-axe
-  // eslint-disable-next-line mocha/no-skipped-tests
   it.skip('Has no detectable a11y violations on load', () => {
     // Configure aXe and test the page at initial load
     cy.configureAxe({

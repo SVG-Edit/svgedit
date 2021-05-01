@@ -34,7 +34,7 @@ html, body, div{
 #svg_editor {
   font-size: 8pt;
   font-family: Verdana, Helvetica, Arial;
-  color: var(--text-color);;
+  color: var(--text-color);
 }
 
 a {

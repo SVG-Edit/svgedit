@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Provides tools for the layer concept.
  * @module layer
@@ -10,7 +9,6 @@
 import {NS} from '../common/namespaces.js';
 import {toXml, walkTree, isNullish} from './utilities.js';
 
-const $ = jQuery;
 
 /**
  * This class encapsulates the concept of a layer in the drawing. It can be constructed with

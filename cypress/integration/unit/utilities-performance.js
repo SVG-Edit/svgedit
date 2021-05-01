@@ -135,7 +135,7 @@ describe('utilities performance', function () {
           continue;
         }
         const pts = [];
-        ['', 1, 2].forEach(function (n, j) {
+        ['', 1, 2].forEach(function (n) {
           const x = seg['x' + n],
             y = seg['y' + n];
           if (x !== undefined && y !== undefined) {

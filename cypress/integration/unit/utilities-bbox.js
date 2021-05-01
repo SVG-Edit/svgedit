@@ -55,7 +55,7 @@ describe('utilities bbox', function () {
         const type = seg.pathSegType;
         if (type === 1) { continue; }
         const pts = [];
-        ['', 1, 2].forEach(function (n, j) {
+        ['', 1, 2].forEach(function (n) {
           const x = seg['x' + n], y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
             const pt = math.transformPoint(x, y, m);

@@ -348,7 +348,7 @@ describe('utilities', function () {
     const elem = {
       tagName: 'something unknown',
       id: 'something-unknown',
-      getAttribute (attr) { return ''; },
+      getAttribute () { return ''; },
       parentNode: svgroot
     };
     const path = convertToPath(elem, attrs, mockaddSVGElementFromJson, mockPathActions, mockClearSelection, mockAddToSelection, mockHistory, mockAddCommandToHistory);

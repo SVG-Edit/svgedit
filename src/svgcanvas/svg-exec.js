@@ -81,7 +81,7 @@ export const svgCanvasToString = function () {
 
   // Unwrap gsvg if it has no special attributes (only id and style)
   const gsvgElems = svgContext_.getSVGContent().querySelectorAll('g[data-gsvg]');
-  Array.prototype.forEach.call(gsvgElems, function (element, i) {
+  Array.prototype.forEach.call(gsvgElems, function (element) {
     const attrs = element.attributes;
     let len = attrs.length;
     for (let i = 0; i < len; i++) {
@@ -100,7 +100,7 @@ export const svgCanvasToString = function () {
 
   // Rewrap gsvg
   if (nakedSvgs.length) {
-    Array.prototype.forEach.call(nakedSvgs, function (el, i) {
+    Array.prototype.forEach.call(nakedSvgs, function (el) {
       svgContext_.getCanvas().groupSvgElem(el);
     });
   }
@@ -162,7 +162,7 @@ export const svgToString = function (elem, indent) {
       const csElements = elem.querySelectorAll('*');
       const cElements = Array.prototype.slice.call(csElements);
       cElements.push(elem);
-      Array.prototype.forEach.call(cElements, function (el, i) {
+      Array.prototype.forEach.call(cElements, function (el) {
         // const el = this;
         // for some elements have no attribute
         const uri = el.namespaceURI;
@@ -171,7 +171,7 @@ export const svgToString = function (elem, indent) {
           out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
         }
         if (el.attributes.length > 0) {
-          for (const [i, attr] of Object.entries(el.attributes)) {
+          for (const [, attr] of Object.entries(el.attributes)) {
             const u = attr.namespaceURI;
             if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
               nsuris[u] = true;
@@ -349,7 +349,7 @@ export const setSvgString = function (xmlString, preventUndo) {
 
     // change image href vals if possible
     const elements = content.querySelectorAll('image');
-    Array.prototype.forEach.call(elements, function (image, i) {
+    Array.prototype.forEach.call(elements, function (image) {
       preventClickDefault(image);
       const val = svgContext_.getCanvas().getHref(this);
       if (val) {
@@ -361,7 +361,7 @@ export const setSvgString = function (xmlString, preventUndo) {
             const url = decodeURIComponent(m[1]);
             // const url = decodeURIComponent(m.groups.url);
             const iimg = new Image();
-            iimg.addEventListener("load", (e) => {
+            iimg.addEventListener("load", () => {
               image.setAttributeNS(NS.XLINK, 'xlink:href', url);
             });
             iimg.src = url;
@@ -374,7 +374,7 @@ export const setSvgString = function (xmlString, preventUndo) {
 
     // Wrap child SVGs in group elements
     const svgElements = content.querySelectorAll('svg');
-    Array.prototype.forEach.call(svgElements, function (element, i) {
+    Array.prototype.forEach.call(svgElements, function (element) {
       // Skip if it's in a <defs>
       if (getClosest(element.parentNode, 'defs')) { return; }
 
@@ -394,7 +394,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (isGecko()) {
       const svgDefs = findDefs();
       const findElems = content.querySelectorAll('linearGradient, radialGradient, pattern');
-      Array.prototype.forEach.call(findElems, function (ele, i) {
+      Array.prototype.forEach.call(findElems, function (ele) {
         svgDefs.appendChild(ele);
       });
     }
@@ -421,7 +421,7 @@ export const setSvgString = function (xmlString, preventUndo) {
       attrs.height = vb[3];
       // handle content that doesn't have a viewBox
     } else {
-      ['width', 'height'].forEach(function (dim, i) {
+      ['width', 'height'].forEach(function (dim) {
         // Set to 100 if not given
         const val = content.getAttribute(dim) || '100%';
         if (String(val).substr(-1) === '%') {
@@ -438,9 +438,9 @@ export const setSvgString = function (xmlString, preventUndo) {
 
     // Give ID for any visible layer children missing one
     const chiElems = content.children;
-    Array.prototype.forEach.call(chiElems, function (chiElem, i) {
+    Array.prototype.forEach.call(chiElems, function (chiElem) {
       const visElems = chiElem.querySelectorAll(svgContext_.getVisElems());
-      Array.prototype.forEach.call(visElems, function (elem, i) {
+      Array.prototype.forEach.call(visElems, function (elem) {
         if (!elem.id) { elem.id = svgContext_.getCanvas().getNextId(); }
       });
     });
@@ -565,7 +565,7 @@ export const importSvgString = function (xmlString) {
         // https://bugzilla.mozilla.org/show_bug.cgi?id=353575
         // TODO: Make this properly undo-able.
         const elements = svg.querySelectorAll('linearGradient, radialGradient, pattern');
-        Array.prototype.forEach.call(elements, function (el, i) {
+        Array.prototype.forEach.call(elements, function (el) {
           defs.appendChild(el);
         });
       }
@@ -653,7 +653,7 @@ export const embedImage = function (src) {
       svgContext_.getCanvas().setGoodImage(src);
       resolve(svgContext_.getEncodableImages(src));
     });
-    imgI.addEventListener("error", (e) => {
+    imgI.addEventListener("error", () => {
       reject(new Error('Error loading image: '));
     });
     imgI.setAttribute('src', src);
@@ -760,15 +760,15 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
     document.body.appendChild(canvasEx);
   }
   const c = $id('export_canvas');
-  c.style.width = svgContext_.getCanvas().contentW + "px";;
-  c.style.height = svgContext_.getCanvas().contentH + "px";;
+  c.style.width = svgContext_.getCanvas().contentW + "px";
+  c.style.height = svgContext_.getCanvas().contentH + "px";
   const canvg = svgContext_.getcanvg();
   const ctx = c.getContext('2d');
   const v = canvg.fromString(ctx, svg);
   // Render only first frame, ignoring animations.
   await v.render();
   // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const dataURLType = type.toLowerCase();
     const datauri = quality
       ? c.toDataURL('image/' + dataURLType, quality)
@@ -903,7 +903,7 @@ export const uniquifyElemsMethod = function (g) {
 
       // now search for all attributes on this element that might refer
       // to other elements
-      svgContext_.getrefAttrs().forEach(function(attr, i){
+      svgContext_.getrefAttrs().forEach(function(attr){
         const attrnode = n.getAttributeNode(attr);
         if (attrnode) {
           // the incoming file has been sanitized, so we should be able to safely just strip off the leading #
@@ -1055,12 +1055,12 @@ export const convertGradientsMethod = function (elem) {
   let elems = elem.querySelectorAll('linearGradient, radialGradient');
   if (!elems.length && isWebkit()) {
     // Bug in webkit prevents regular *Gradient selector search
-    elems = Array.prototype.filter.call(elem.querySelectorAll('*'), function (curThis, i) {
+    elems = Array.prototype.filter.call(elem.querySelectorAll('*'), function (curThis) {
       return (curThis.tagName.includes('Gradient'));
     });
   }
 
-  Array.prototype.forEach.call(elems, function (grad, i) {
+  Array.prototype.forEach.call(elems, function (grad) {
     if (grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
       const svgcontent = svgContext_.getSVGContent();
       // TODO: Support more than one element with this ref by duplicating parent grad

@@ -1,7 +1,7 @@
 import SvgCanvas from '../../svgcanvas/svgcanvas.js';
 import {jGraduate} from '../components/jgraduate/jQuery.jGraduate.js';
 
-const {$id, $qa} = SvgCanvas;
+const {$id} = SvgCanvas;
 
 /*
  * register actions for left panel
@@ -100,6 +100,7 @@ class BottomPanel {
       }
   
       if (bNoStroke && bNoFill) {
+        // eslint-disable-next-line sonarjs/no-identical-functions
         buttonsNeedingFillAndStroke.forEach((btn) => {
           // if btn is pressed, change to select button
           if ($id(btn).pressed) {

@@ -11,6 +11,7 @@ const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
   const lang = svgEditor.configObj.pref('lang')
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -29,7 +30,7 @@ export default {
     const {$id} = svgCanvas;
     const
       addElem = svgCanvas.addSVGElementFromJson,
-      {nonce, $} = S,
+      {nonce} = S,
       prefix = 'se_arrow_';
 
     let selElems, arrowprefix, randomizeIds = S.randomize_ids;
@@ -50,7 +51,7 @@ export default {
     * @param {Window} win
     * @returns {void}
     */
-    function unsetArrowNonce (win) {
+    function unsetArrowNonce (_win) {
       randomizeIds = false;
       arrowprefix = prefix;
       pathdata.fw.id = arrowprefix + 'fw';
@@ -216,7 +217,7 @@ export default {
       const mtypes = ['start', 'mid', 'end'];
       const defs = svgCanvas.findDefs();
 
-      mtypes.forEach(function(type, i){
+      mtypes.forEach(function(type){
         const marker = getLinked(elem, 'marker-' + type);
         if (!marker) { return; }
 
@@ -251,8 +252,8 @@ export default {
         // Check if last marker can be removed
         let remove = true;
         const sElements = S.svgcontent.querySelectorAll('line, polyline, path, polygon');
-        Array.prototype.forEach.call(sElements, function(element, i){
-          mtypes.forEach(function(mtype, j){
+        Array.prototype.forEach.call(sElements, function(element){
+          mtypes.forEach(function(mtype){
             if (element.getAttribute('marker-' + mtype) === 'url(#' + marker.id + ')') {
               remove = false;
               return remove;
@@ -293,7 +294,7 @@ export default {
         // Set ID so it can be translated in locale file
         $id('arrow_list option').setAttribute('id', 'connector_no_arrow');
       },
-      async addLangData ({lang, importLocale}) {
+      async addLangData ({_lang, importLocale}) {
         const {langList} = await importLocale();
         return {
           data: langList

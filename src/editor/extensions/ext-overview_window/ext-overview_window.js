@@ -11,7 +11,7 @@ import { dragmove } from '../../../editor/dragmove/dragmove.js';
 
 export default {
   name: 'overview_window',
-  init ({$, isChrome}) {
+  init ({_$, isChrome}) {
     const svgEditor = this;
     const {$id} = svgEditor.svgCanvas;
     const overviewWindowGlobals = {};
@@ -102,8 +102,8 @@ export default {
       const windowHeight = parseFloat(getComputedStyle($id("svgcanvas"), null).height.replace("px", ""));
       const overviewWidth = parseFloat(getComputedStyle($id("overviewMiniView"), null).width.replace("px", ""));
       const overviewHeight = parseFloat(getComputedStyle($id("overviewMiniView"), null).height.replace("px", ""));
-      const viewBoxX = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('left').replace("px", ""));;
-      const viewBoxY = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('top').replace("px", ""));;
+      const viewBoxX = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('left').replace("px", ""));
+      const viewBoxY = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('top').replace("px", ""));
 
 
       const portX = viewBoxX / overviewWidth * windowWidth;
@@ -115,7 +115,7 @@ export default {
       overviewWindowGlobals.viewBoxDragging = true;
       updateViewPortFromViewBox();
     };
-    const onEnd = (el, parent, x, y) => {
+    const onEnd = (el, parent, _x, _y) => {
       if((el.offsetLeft + el.offsetWidth) > parseFloat(getComputedStyle(parent, null).width.replace("px", ""))){
         el.style.left = (parseFloat(getComputedStyle(parent, null).width.replace("px", "")) - el.offsetWidth) + 'px';
       } else if(el.offsetLeft  < 0){
@@ -142,8 +142,8 @@ export default {
       const mouseY = (evt.offsetY || evt.originalEvent.layerY);
       const overviewWidth = parseFloat(getComputedStyle($id("overviewMiniView"), null).width.replace("px", ""));
       const overviewHeight = parseFloat(getComputedStyle($id("overviewMiniView"), null).height.replace("px", ""));
-      const viewBoxWidth = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('min-width').replace("px", ""));;
-      const viewBoxHeight = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('min-height').replace("px", ""));;
+      const viewBoxWidth = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('min-width').replace("px", ""));
+      const viewBoxHeight = parseFloat(getComputedStyle($id("overview_window_view_box"), null).getPropertyValue('min-height').replace("px", ""));
 
       let viewBoxX = mouseX - 0.5 * viewBoxWidth;
       let viewBoxY = mouseY - 0.5 * viewBoxHeight;

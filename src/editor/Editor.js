@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-/* globals jQuery seConfirm seAlert */
+/* globals seConfirm seAlert $ */
 /**
 * The main module for the visual SVG this.
 *
@@ -19,8 +19,6 @@ import { isMac } from '../common/browser.js';
 
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import ConfigObj from './ConfigObj.js';
-import {mergeDeep} from './components/jgraduate/Util.js';
-
 import EditorStartup from './EditorStartup.js';
 import LeftPanel from './panels/LeftPanel.js';
 import TopPanel from './panels/TopPanel.js';
@@ -29,7 +27,7 @@ import LayersPanel from './panels/LayersPanel.js';
 import MainMenu from './MainMenu.js';
 import { getParentsUntil } from './components/jgraduate/Util.js';
 
-const { $id, $qa, isNullish, encode64, decode64, blankPageObjectURL } = SvgCanvas;
+const { $id, $qa, isNullish, decode64, blankPageObjectURL } = SvgCanvas;
 
 
 /**
@@ -531,6 +529,7 @@ class Editor extends EditorStartup {
       this.workarea.scroll();
     }
 
+    // eslint-disable-next-line sonarjs/no-collapsible-if
     if (this.configObj.urldata.storagePrompt !== true && this.storagePromptState === 'ignore') {
       if ($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
     }
@@ -618,6 +617,7 @@ class Editor extends EditorStartup {
     this.multiselected = (elems.length >= 2 && !isNullish(elems[1]));
     // Only updating fields for single elements for now
     if (!this.multiselected) {
+      // eslint-disable-next-line sonarjs/no-small-switch
       switch (mode) {
         case 'rotate': {
           const ang = this.svgCanvas.getRotationAngle(elem);
@@ -764,7 +764,7 @@ class Editor extends EditorStartup {
     } else {
       this.curContext = null;
     }
-    $id('cur_context_panel').style.display = (Boolean(context)) ? 'block' : 'none';
+    $id('cur_context_panel').style.display = context ? 'block' : 'none';
     // eslint-disable-next-line no-unsanitized/property
     $id('cur_context_panel').innerHTML = linkStr;
 
@@ -801,9 +801,6 @@ class Editor extends EditorStartup {
    */
   async extAdded(win, ext) {
 
-    const self = this;
-    // eslint-disable-next-line sonarjs/no-unused-collection
-    let btnSelects = [];
     if (!ext) {
       return undefined;
     }
@@ -819,117 +816,6 @@ class Editor extends EditorStartup {
         ext.callback.call(this);
       }
     };
-
-    if (ext.context_tools) {
-      ext.context_tools.forEach(function (tool, i) {
-        // Add select tool
-        const contId = tool.container_id ? (' id="' + tool.container_id + '"') : '';
-
-        let panel = $id(tool.panel);
-        // create the panel if it doesn't exist
-        if (!panel) {
-          panel = document.createElement("div");
-          panel.id = tool.panel;
-          $id('tools_top').appendChild(panel);
-        }
-
-        let html;
-        // TODO: Allow support for other types, or adding to existing tool
-        switch (tool.type) {
-          case 'tool_button': {
-            html = document.createElement("div");
-            html.className = "tool_button";
-            html.textContent = tool.id
-            panel.appendChild(html);
-            if (tool.events) {
-              tool.events.forEach((func, evt) => {
-                html.addEventListener(evt, func);
-              });
-            }
-            break;
-          } case 'select': {
-            label = document.createElement("label");
-            if (tool.container_id) {
-              label.id = tool.container_id;
-            }
-            html = '<select id="' + tool.id + '">';
-            tool.options.forEach((text, val) => {
-              const sel = (val === tool.defval) ? ' selected' : '';
-              html += '<option value="' + val + '"' + sel + '>' + text + '</option>';
-            });
-            html += '</select>';
-            // eslint-disable-next-line no-unsanitized/property
-            label.innerHTML = html;
-            // Creates the tool, hides & adds it, returns the select element
-            panel.appendChild(label);
-
-            const sel = label.querySelector('select');
-
-            tool.events.forEach((func, evt) => {
-              sel.addEventListener(evt, func);
-            });
-            break;
-          } case 'button-select': {
-            const div = document.createElement("div");
-            div.id = tool.id;
-            div.className = "dropdown toolset";
-            div.title = tool.title;
-            // eslint-disable-next-line no-unsanitized/property
-            div.innerHTML = '<div id="cur_' + tool.id + '" class="icon_label"></div><button></button>';
-
-            const list = document.createElement("ul");
-            list.id = tool.id;
-
-            if ($id('option_lists')) $id('option_lists').appendChild(list);
-
-            if (tool.colnum) {
-              list.className = ('optcols' + tool.colnum);
-            }
-            panel.appendChild(div);
-            // Creates the tool, hides & adds it, returns the select element
-
-            btnSelects.push({
-              elem: ('#' + tool.id),
-              list: ('#' + tool.id + '_opts'),
-              title: tool.title,
-              callback: tool.events.change,
-              cur: ('#cur_' + tool.id)
-            });
-
-            break;
-          } case 'input': {
-            const html = document.createElement("label");
-            if (tool.container_id) { html.id = tool.container_id; }
-            html.innerHTML
-
-            // eslint-disable-next-line no-unsanitized/property
-            html.innerHTML = '<span id="' + tool.id + '_label">' +
-              tool.label + ':</span>' +
-              '<input id="' + tool.id + '" title="' + tool.title +
-              '" size="' + (tool.size || '4') +
-              '" value="' + (tool.defval || '') + '" type="text"/>';
-
-            // Creates the tool, hides & adds it, returns the select element
-
-            // Add to given tool.panel
-            panel.appendChild(html);
-            const inp = html.querySelector('input');
-
-            if (tool.spindata) {
-              inp.SpinButton(tool.spindata);
-            }
-            if (tool?.events !== undefined) {
-              Object.entries(tool.events).forEach((entry) => {
-                const [evt, func] = entry;
-                inp.addEventListener(evt, func);
-              });
-            }
-            break;
-          } default:
-            break;
-        }
-      });
-    }
 
     if (ext.events) {
       this.leftPanel.add(ext.events.id, ext.events.click);
@@ -1177,7 +1063,7 @@ class Editor extends EditorStartup {
     const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
     const renameLayer = (oldLayerName === this.uiStrings.common.layer + ' 1');
 
-    this.svgCanvas.setUiStrings(allStrings);
+    // this.svgCanvas.setUiStrings(allStrings);
     this.setTitles();
 
     if (renameLayer) {

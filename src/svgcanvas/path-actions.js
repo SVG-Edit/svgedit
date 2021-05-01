@@ -114,6 +114,7 @@ export const convertPath = function (pth, toRel) {
     case 2: // absolute move (M)
     case 4: // absolute line (L)
     case 18: // absolute smooth quad (T)
+    case 10: // absolute elliptical arc (A)
       x -= curx;
       y -= cury;
       // Fallthrough
@@ -165,9 +166,6 @@ export const convertPath = function (pth, toRel) {
       }
       d += pathDSegment(letter, [[x1, y1], [x, y]]);
       break;
-    case 10: // absolute elliptical arc (A)
-      x -= curx;
-      y -= cury;
       // Fallthrough
     case 11: // relative elliptical arc (a)
       if (toRel) {
@@ -449,7 +447,7 @@ export const pathActionsMethod = (function () {
               const newD = newpath.getAttribute('d');
               const origD = path.elem.getAttribute('d');
               path.elem.setAttribute('d', origD + newD);
-              newpath.parentNode.removeChild(el);
+              newpath.parentNode.removeChild();
               if (path.matrix) {
                 pathActionsContext_.recalcRotatedPath();
               }
@@ -859,7 +857,7 @@ export const pathActionsMethod = (function () {
     * @param {boolean} remove Not in use
     * @returns {void}
     */
-    clear (remove) {
+    clear () {
       editorContext_ = pathActionsContext_.getEditorContext();
       const drawnPath = editorContext_.getDrawnPath();
       currentPath = null;
@@ -870,7 +868,7 @@ export const pathActionsMethod = (function () {
         elem.parentNode.removeChild(elem);
         const pathpointgripContainer = getElem('pathpointgrip_container');
         const elements = pathpointgripContainer.querySelectorAll('*');
-        Array.prototype.forEach.call(elements, function(el, i){
+        Array.prototype.forEach.call(elements, function(el){
           el.style.display = 'none';
         });
         firstCtrl = null;
@@ -911,7 +909,7 @@ export const pathActionsMethod = (function () {
         const type = seg.pathSegType;
         if (type === 1) { continue; }
         const pts = [];
-        ['', 1, 2].forEach(function(n, j){
+        ['', 1, 2].forEach(function(n){
           const x = seg['x' + n], y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
             const pt = transformPoint(x, y, m);

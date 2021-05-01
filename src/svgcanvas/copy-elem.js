@@ -27,7 +27,7 @@ export const copyElem = function (el, getNextId) {
   }
 
   // now create copies of all children
-  el.childNodes.forEach(function(child, i){
+  el.childNodes.forEach(function(child){
     switch (child.nodeType) {
     case 1: // element node
       newEl.append(copyElem(child, getNextId));
