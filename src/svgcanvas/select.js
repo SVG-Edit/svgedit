@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * DOM element selection box tools.
  * @module select
@@ -11,8 +10,6 @@ import { isTouch, isWebkit } from '../common/browser.js'; // , isOpera
 import { getRotationAngle, getBBox, getStrokedBBox, isNullish } from './utilities.js';
 import { transformListToTransform, transformBox, transformPoint } from './math.js';
 import { getTransformList } from './svgtransformlist.js';
-
-const $ = jQuery;
 
 let svgFactory_;
 let config_;

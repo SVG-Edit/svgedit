@@ -483,13 +483,13 @@ export class SeEditPrefsDialog extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    const onCancelHandler = (ev) => {
+    const onCancelHandler = () => {
       const closeEvent = new CustomEvent('change', {detail: {
         dialog: 'closed'
       }});
       this.dispatchEvent(closeEvent);
     };
-    const onSaveHandler = (ev) => {
+    const onSaveHandler = () => {
       const color = this.$bgBlocks.querySelector('.cur_background').dataset.bgColor || '#FFF';
       const closeEvent = new CustomEvent('change', {detail: {
         lang: this.$langSelect.value,
@@ -506,7 +506,7 @@ export class SeEditPrefsDialog extends HTMLElement {
     };
     // Set up editor background functionality
     const currentObj = this;
-    this.colorBlocks.forEach(function (e, i) {
+    this.colorBlocks.forEach(function (e) {
       const newdiv = document.createElement('div');
       if (e === 'chessboard') {
         newdiv.dataset.bgColor = e;

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-collapsible-if */
 /**
  * @param {any} obj
  * @returns {any}
@@ -9,7 +10,7 @@ export function findPos(obj) {
     do {
       curleft += obj.offsetLeft;
       curtop += obj.offsetTop;
-    } while (obj = obj.offsetParent);
+    } while (obj == obj.offsetParent);
     return { left: curleft, top: curtop };
   }
   return { left: curleft, top: curtop };
@@ -93,7 +94,7 @@ export function getClosest(elem, selector) {
     }
   }
   return null;
-};
+}
 
 /**
  * Get all DOM element up the tree that contain a class, ID, or data attribute
@@ -142,7 +143,7 @@ export function getClosest(elem, selector) {
   } else {
     return parents;
   }
-};
+}
 
 export function getParentsUntil(elem, parent, selector) {
   let parents = [];
@@ -214,4 +215,4 @@ export function getParentsUntil(elem, parent, selector) {
   } else {
     return parents;
   }
-};
+}

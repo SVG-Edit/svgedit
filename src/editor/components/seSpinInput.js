@@ -178,6 +178,7 @@ export class SESpinInput extends HTMLElement {
       this.value = e.target.value;
       this.dispatchEvent(this.$event);
     });
+    // eslint-disable-next-line sonarjs/no-identical-functions
     this.$input.addEventListener('click', (e) => {
       e.preventDefault();
       this.value = e.target.value;

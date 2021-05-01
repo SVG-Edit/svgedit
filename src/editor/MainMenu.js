@@ -1,3 +1,4 @@
+/* globals seConfirm, seAlert */
 import SvgCanvas from "../svgcanvas/svgcanvas.js";
 import {convertUnit, isValidUnit} from '../common/units.js';
 import {isChrome} from '../common/browser.js';
@@ -181,7 +182,7 @@ class MainMenu {
           const blob = new Blob([popHTML], { type: "text/html" });
           popURL = URL.createObjectURL(blob);
         } else {
-          popURL = "data:text/html;base64;charset=utf-8," + encode64(popHTML);
+          popURL = "data:text/html;base64;charset=utf-8," + popHTML;
         }
         this.editor.loadingURL = popURL;
       }
@@ -334,13 +335,13 @@ class MainMenu {
       this.clickOpen();
       window.dispatchEvent(new CustomEvent("openImage"));
     });
-    $id("tool_import").addEventListener("click", e => {
+    $id("tool_import").addEventListener("click", () => {
       this.clickImport();
       window.dispatchEvent(new CustomEvent("importImages"));
     });
     $id("tool_save").addEventListener(
       "click",
-      function(e) {
+      function() {
         const $editorDialog = document.getElementById("se-svg-editor-dialog");
         const editingsource = $editorDialog.getAttribute("dialog") === "open";
         if (editingsource) {
@@ -351,7 +352,7 @@ class MainMenu {
       }.bind(this)
     );
     // this.clickExport.bind(this)
-    $id("tool_export").addEventListener("click", function(e) {
+    $id("tool_export").addEventListener("click", function() {
       document
         .getElementById("se-export-dialog")
         .setAttribute("dialog", "open");

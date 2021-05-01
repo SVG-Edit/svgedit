@@ -9,6 +9,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -20,12 +21,11 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'polygon',
-  async init (S) {
+  async init (_S) {
     const svgEditor = this;
     const {svgCanvas} = svgEditor;
     const {$id} = svgCanvas;
-    const {$} = S;
-    const  editingitex = false;
+    // const  editingitex = false;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     let selElems;
     let started;
@@ -137,7 +137,7 @@ export default {
         const cx = Number(newFO.getAttribute('cx'));
         const cy = Number(newFO.getAttribute('cy'));
         const sides = Number(newFO.getAttribute('sides'));
-        const orient = newFO.getAttribute('orient');
+        // const orient = newFO.getAttribute('orient');
         const fill = newFO.getAttribute('fill');
         const strokecolor = newFO.getAttribute('strokecolor');
         const strokeWidth = Number(newFO.getAttribute('strokeWidth'));
@@ -169,7 +169,7 @@ export default {
         };
       },
 
-      mouseUp (opts) {
+      mouseUp () {
         if (svgCanvas.getMode() !== 'polygon') {
           return undefined;
         }
@@ -201,7 +201,7 @@ export default {
           }
         }
       },
-      elementChanged (opts) {
+      elementChanged () {
         // const elem = opts.elems[0];
       }
     };

@@ -10,6 +10,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -23,7 +24,7 @@ export default {
   name: 'foreignobject',
   async init (S) {
     const svgEditor = this;
-    const {$, text2xml, NS} = S;
+    const {text2xml, NS} = S;
     const {svgCanvas} = svgEditor;
     const {$id} = svgCanvas;
     const
@@ -35,7 +36,7 @@ export default {
 
     const properlySourceSizeTextArea = function () {
       // TODO: remove magic numbers here and get values from CSS
-      const height = parseFloat(getComputedStyle($id(svg_source_container), null).height.replace("px", "")) - 80;
+      const height = parseFloat(getComputedStyle($id('svg_source_container'), null).height.replace("px", "")) - 80;
       $id('svg_source_textarea').style.height = height + "px";
     };
 
@@ -207,7 +208,7 @@ export default {
           // const oldElement = $id('tool_source_save');
           // oldElement.parentNode.replaceChild(toolSourceSave, oldElement);
           $id('tool_source_back').append(toolSourceSave);
-          toolSourceSave.addEventListener('click', (e) => function () {
+          toolSourceSave.addEventListener('click', () => function () {
             if (!editingforeign) { return; }
 
             if (!setForeignString($id('svg_source_textarea').value)) {
@@ -225,7 +226,7 @@ export default {
           toolSourceCancel.style.display = 'none';
           toolSourceCancel.id = 'foreign_cancel';
           $id('tool_source_back').append(toolSourceCancel);
-          toolSourceCancel.addEventListener('click', (e) => function () {
+          toolSourceCancel.addEventListener('click', () => function () {
             endChanges();
           });
           // unbind()
@@ -268,7 +269,7 @@ export default {
           started: true
         };
       },
-      mouseUp (opts) {
+      mouseUp (_opts) {
         // const e = opts.event;
         if (svgCanvas.getMode() !== 'foreign' || !started) {
           return undefined;
@@ -306,7 +307,7 @@ export default {
           }
         }
       },
-      elementChanged (opts) {
+      elementChanged (_opts) {
         // const elem = opts.elems[0];
       }
     };

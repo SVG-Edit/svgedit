@@ -204,13 +204,13 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    const onCancelHandler = (ev) => {
+    const onCancelHandler = () => {
       const closeEvent = new CustomEvent('change', {detail: {
         dialog: 'closed'
       }});
       this.dispatchEvent(closeEvent);
     };
-    const onCopyHandler = (ev) => {
+    const onCopyHandler = () => {
       const closeEvent = new CustomEvent('change', {
         detail: {
           copy: 'click',
@@ -219,7 +219,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
       });
       this.dispatchEvent(closeEvent);
     };
-    const onSaveHandler = (ev) => {
+    const onSaveHandler = () => {
       const closeEvent = new CustomEvent('change', {detail: {
         value: this.$sourceTxt.value,
         dialog: 'close'

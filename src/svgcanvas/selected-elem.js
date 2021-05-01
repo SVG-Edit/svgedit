@@ -119,7 +119,7 @@ export const moveUpDownSelected = function (dir) {
   const list = elementContext_.getIntersectionList(getStrokedBBoxDefaultVisible([selected]));
   if (dir === 'Down') { list.reverse(); }
 
-  Array.prototype.forEach.call(list, function (el, i) {
+  Array.prototype.forEach.call(list, function (el) {
     if (!foundCur) {
       if (el === selected) {
         foundCur = true;
@@ -242,7 +242,7 @@ export const cloneSelectedElements = function (x, y) {
     var i = 0;
     do {
       i++;
-    } while (el = el.previousElementSibling);
+    } while (el == el.previousElementSibling);
     return i;
   }
 
@@ -460,6 +460,7 @@ export const groupSelectedElements = function (type, urlArg) {
   let cmdStr = '';
   let url;
 
+  // eslint-disable-next-line sonarjs/no-small-switch
   switch (type) {
     case 'a': {
       cmdStr = 'Make hyperlink';
@@ -827,7 +828,7 @@ export const convertToGroup = function (elem) {
 
     // Give ID for any visible element missing one
     const visElems = g.querySelectorAll(elementContext_.getVisElems());
-    Array.prototype.forEach.call(visElems, function (el, i) {
+    Array.prototype.forEach.call(visElems, function (el) {
       if (!el.id) { el.id = elementContext_.getNextId(); }
     });
 

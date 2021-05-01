@@ -581,7 +581,7 @@ function groupBBFix(selected) {
 
   if (ref) {
     let elements = [];
-    Array.prototype.forEach.call(ref.children, function (el, i) {
+    Array.prototype.forEach.call(ref.children, function (el) {
       const elem = el.cloneNode(true);
       elem.setAttribute('visibility', 'hidden');
       svgroot_.appendChild(elem);
@@ -597,7 +597,7 @@ function groupBBFix(selected) {
 
   let issue = false;
   if (matched.length) {
-    Array.prototype.forEach.call(matched, function (match, i) {
+    Array.prototype.forEach.call(matched, function (match) {
       const bb = match.getBBox();
       if (!bb.width || !bb.height) {
         issue = true;
@@ -741,7 +741,7 @@ export const getPathDFromSegments = function (pathSegments) {
 export const getPathDFromElement = function (elem) {
   // Possibly the cubed root of 6, but 1.81 works best
   let num = 1.81;
-  let d, a, rx, ry;
+  let d, rx, ry;
   switch (elem.tagName) {
     case 'ellipse':
     case 'circle': {
@@ -765,12 +765,13 @@ export const getPathDFromElement = function (elem) {
     } case 'path':
       d = elem.getAttribute('d');
       break;
-    case 'line':
-      const x1 = elem.getAttribute('x1');
-      const y1 = elem.getAttribute('y1');
-      const x2 = elem.getAttribute('x2');
-      const y2 = elem.getAttribute('y2');
-      d = 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2;
+    case 'line': {
+        const x1 = elem.getAttribute('x1');
+        const y1 = elem.getAttribute('y1');
+        const x2 = elem.getAttribute('x2');
+        const y2 = elem.getAttribute('y2');
+        d = 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2;
+      }
       break;
     case 'polyline':
       d = 'M' + elem.getAttribute('points');
@@ -827,7 +828,7 @@ export const getExtraAttributesForConvertToPath = function (elem) {
   const attrs = {};
   // TODO: make this list global so that we can properly maintain it
   // TODO: what about @transform, @clip-rule, @fill-rule, etc?
-  ['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'].forEach(function(item, i){
+  ['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'].forEach(function(item){
     const a = elem.getAttribute(item);
     if (a) {
       attrs[item] = a;
@@ -1077,7 +1078,7 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
   if (!elems || !elems.length) { return false; }
 
   let fullBb;
-  elems.forEach(function(elem, i){
+  elems.forEach(function(elem){
     if (fullBb) { return; }
     if (!elem.parentNode) { return; }
     fullBb = getBBoxWithTransform(elem, addSVGElementFromJson, pathActions);
@@ -1102,7 +1103,7 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
     maxX += offset;
     maxY += offset;
   } else {
-    elems.forEach(function(elem, i){
+    elems.forEach(function(elem){
       const curBb = getBBoxWithTransform(elem, addSVGElementFromJson, pathActions);
       if (curBb) {
         const offset = getStrokeOffsetForBBox(elem);
@@ -1140,7 +1141,7 @@ export const getVisibleElements = function (parentElement) {
 
   const contentElems = [];
   const childrens = parentElement.children
-  Array.prototype.forEach.call(childrens, function (elem, i) {
+  Array.prototype.forEach.call(childrens, function (elem) {
     if (elem.getBBox) {
       contentElems.push(elem);
     }
@@ -1230,7 +1231,7 @@ export const getElem = (supportsSelectors())
     }
     : function (id) {
       // jQuery lookup: twice as slow as xpath in FF
-      return svgroot_.querySelector('[id=${id}]');
+      return svgroot_.querySelector(`[id=${id}]`);
     };
 
 /**
@@ -1322,7 +1323,7 @@ export const snapToGrid = function (value) {
  * @returns {void}
  */
 export const preventClickDefault = function (img) {
-  const elements = document.querySelectorAll("img");
+  const elements = document.querySelectorAll(img);
   Array.from(elements).forEach(function (element) {
     element.addEventListener('click', function (e) {
       e.preventDefault();

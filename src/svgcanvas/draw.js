@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Tools for drawing.
  * @module draw
@@ -21,8 +20,6 @@ import {
   BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
 } from './history.js';
 import {getParentsUntil} from '../editor/components/jgraduate/Util.js';
-
-const $ = jQuery;
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
 

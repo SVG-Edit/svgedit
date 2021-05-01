@@ -47,7 +47,7 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
   });
 
   // On leaving click, stop moving.
-  document.addEventListener(_isTouch ? "touchend" : "mouseup", function(e) {   
+  document.addEventListener(_isTouch ? "touchend" : "mouseup", function() {   
     if (onEnd && hasStarted) {
       onEnd(target, parent, parseInt(target.style.left), parseInt(target.style.top));
     }
@@ -57,7 +57,7 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
   });
 
   // On leaving click, stop moving.
-  document.addEventListener(_isTouch ? "touchmove" : "mousemove", function(e) {   
+  document.addEventListener(_isTouch ? "touchmove" : "mousemove", function() {   
     if (onDrag && hasStarted) {
       onDrag(target, parseInt(target.style.left), parseInt(target.style.top));
     }

@@ -119,6 +119,7 @@ export class SeExportDialog extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
+    // eslint-disable-next-line sonarjs/no-small-switch
     switch (name) {
     case 'dialog':
       if (newValue === 'open') {

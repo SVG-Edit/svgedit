@@ -12,6 +12,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -23,7 +24,7 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'imagelib',
-  async init({ $, decode64, dropXMLInternalSubset }) {
+  async init({ decode64, dropXMLInternalSubset }) {
     const svgEditor = this;
     const { $id } = svgEditor.svgCanvas;
     const imagelibStrings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
@@ -436,6 +437,7 @@ export default {
           header.textContent = allLibs;
           back.style.display = 'none';
         });
+        // eslint-disable-next-line sonarjs/no-identical-functions
         back.addEventListener('touchend', function () {
           frame.setAttribute('src', 'about:blank');
           frame.style.display = 'none';
@@ -479,6 +481,7 @@ export default {
             libOpts.style.display = 'none';
             back.style.display = 'block';
           });
+          // eslint-disable-next-line sonarjs/no-identical-functions
           li.addEventListener('touchend', function () {
             frame.setAttribute('src', url);
             frame.style.display = 'block';

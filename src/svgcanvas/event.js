@@ -1,11 +1,9 @@
-/* globals jQuery */
 /**
  * Tools for event.
  * @module event
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute
 import {
   assignAttributes, cleanupElement, getElem, getRotationAngle, snapToGrid, walkTree,
   getBBox as utilsGetBBox, isNullish, preventClickDefault, setHref
@@ -31,7 +29,6 @@ const {
   InsertElementCommand
 } = hstry;
 
-const $ = jQueryPluginSVG(jQuery);
 let eventContext_ = null;
 
 /**
@@ -92,7 +89,7 @@ export const mouseMoveEvent = function (evt) {
   if (!eventContext_.getStarted()) { return; }
   if (evt.button === 1 || eventContext_.getCanvas().spaceKey) { return; }
 
-  let i, xya, c, cx, cy, dx, dy, len, angle, box,
+  let i, xya, cx, cy, dx, dy, len, angle, box,
     selected = selectedElements[0];
   const
     pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm()),
@@ -559,7 +556,7 @@ export const mouseUpEvent = function (evt) {
   // TODO: Make true when in multi-unit mode
   const useUnit = false; // (eventContext_.getCurConfig().baseUnit !== 'px');
   eventContext_.setStarted(false);
-  let attrs, t;
+  let t;
   switch (eventContext_.getCurrentMode()) {
     // intentionally fall-through to select here
     case 'resize':
@@ -671,29 +668,32 @@ export const mouseUpEvent = function (evt) {
         element = eventContext_.getCanvas().pathActions.smoothPolylineIntoPath(element);
       }
       break;
-    } case 'line':
-      const x1 = element.getAttribute('x1');
-      const y1 = element.getAttribute('y1');
-      const x2 = element.getAttribute('x2');
-      const y2 = element.getAttribute('y2');
-      keep = (x1 !== x2 || y1 !== y2);
+    } case 'line': {
+        const x1 = element.getAttribute('x1');
+        const y1 = element.getAttribute('y1');
+        const x2 = element.getAttribute('x2');
+        const y2 = element.getAttribute('y2');
+        keep = (x1 !== x2 || y1 !== y2);
+      }
       break;
     case 'foreignObject':
     case 'square':
     case 'rect':
-    case 'image':
-      const width = element.getAttribute('width');
-      const height = element.getAttribute('height');
-      // Image should be kept regardless of size (use inherit dimensions later)
-      keep = (width || height) || eventContext_.getCurrentMode() === 'image';
+    case 'image': {
+        const width = element.getAttribute('width');
+        const height = element.getAttribute('height');
+        // Image should be kept regardless of size (use inherit dimensions later)
+        keep = (width || height) || eventContext_.getCurrentMode() === 'image';
+      }
       break;
     case 'circle':
       keep = (element.getAttribute('r') !== '0');
       break;
-    case 'ellipse':
-      const rx = element.getAttribute('rx');
-      const ry = element.getAttribute('ry');
-      keep = (rx || ry);
+    case 'ellipse': {
+        const rx = element.getAttribute('rx');
+        const ry = element.getAttribute('ry');
+        keep = (rx || ry);
+      }
       break;
     case 'fhellipse':
       if ((eventContext_.getFreehand('maxx') - eventContext_.getFreehand('minx')) > 0 &&
@@ -787,7 +787,7 @@ export const mouseUpEvent = function (evt) {
     mouse_y: mouseY
   }, true);
 
-  extResult.forEach(function(r, i){
+  extResult.forEach(function(r){
     if (r) {
       keep = r.keep || keep;
       ({ element } = r);
@@ -1064,7 +1064,7 @@ export const mouseDownEvent = function (evt) {
       const bb = {};
       for (const [key, val] of Object.entries(eventContext_.getInitBbox())) {
         bb[key] = val / currentZoom;
-      };
+      }
       eventContext_.setInitBbox(bb);
 
       // append three dummy transforms to the tlist so that
@@ -1292,7 +1292,7 @@ export const mouseDownEvent = function (evt) {
     selectedElements
   }, true);
 
-  extResult.forEach(function(r, i){
+  extResult.forEach(function(r){
     if (r && r.started) {
       eventContext_.setStarted(true);
     }

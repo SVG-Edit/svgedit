@@ -18,7 +18,7 @@
 
 export default {
   name: 'opensave',
-  init ({$, decode64, encode64}) {
+  init ({encode64}) {
     const svgEditor = this;
 
     svgEditor.setCustomHandlers({

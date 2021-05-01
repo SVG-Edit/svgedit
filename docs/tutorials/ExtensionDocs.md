@@ -27,7 +27,7 @@ This is the general format for an extension:
 ```js
 export default {
   name: 'extensionname',
-  init (methods) {
+  init (_methods) {
     return extensionData;
   }
 };
@@ -83,7 +83,7 @@ export default {
       mouseDown () {
         // ...
       },
-      mouseUp (opts) {
+      mouseUp (_opts) {
         // ...
       }
     };

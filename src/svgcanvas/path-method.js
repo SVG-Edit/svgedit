@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Path functionality.
  * @module path
@@ -20,7 +19,6 @@ import {
   supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
 } from '../common/browser.js';
 
-const $ = jQuery;
 let pathMethodsContext_ = null;
 let editorContext_ = null;
 
@@ -175,7 +173,7 @@ export const addPointGripMethod = function (index, x, y) {
     pointGripContainer.append(pointGrip);
 
     const grip = document.getElementById('pathpointgrip_' + index);
-    grip?.addEventListener("dblclick", (e) => {
+    grip?.addEventListener("dblclick", () => {
       const path = pathMethodsContext_.getPathObj();
       if (path) {
         path.setSegType();
@@ -640,7 +638,7 @@ export class Path {
     // fixed, needed to work on all found elements, not just first
     const pointGripContainer = getGripContainerMethod();
     const elements = pointGripContainer.querySelectorAll('*');
-    Array.prototype.forEach.call(elements, function(el, i){
+    Array.prototype.forEach.call(elements, function(el){
       el.style.display = 'none';
     });
 

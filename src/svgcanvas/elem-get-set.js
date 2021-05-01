@@ -309,7 +309,7 @@ export const setZoomMethod = function (zoomLevel) {
   const res = elemContext_.getCanvas().getResolution();
   elemContext_.getSVGContent().setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel);
   elemContext_.setCurrentZoom(zoomLevel);
-  selectedElements.forEach(function(elem, i){
+  selectedElements.forEach(function(elem){
     if (!elem) { return; }
     elemContext_.getCanvas().selectorManager.requestSelector(elem).resize();
   });
@@ -431,7 +431,7 @@ export const findDuplicateGradient = function (grad) {
       };
 
       let diff = false;
-      radAttrs.forEach(function (attr, j) {
+      radAttrs.forEach(function (attr) {
         if (gradAttrs[attr] !== ogAttrs[attr]) { diff = true; }
       });
 
@@ -513,6 +513,7 @@ export const setStrokeWidthMethod = function (val) {
 * @param {Element} e
 * @returns {void}
 */
+  // eslint-disable-next-line sonarjs/no-identical-functions
   function addNonG(e) {
     if (e.nodeName !== 'g') {
       elems.push(e);

@@ -10,6 +10,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -23,7 +24,7 @@ const loadExtensionTranslation = async function (lang) {
 // The button toggles whether the path is open or closed
 export default {
   name: 'closepath',
-  async init ({importLocale, $}) {
+  async init ({_importLocale}) {
     const svgEditor = this;
     const {svgCanvas} = svgEditor;
     const {$id} = svgCanvas;
@@ -34,8 +35,8 @@ export default {
         closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType === 1,
         showbutton = closed ? 'tool_openpath' : 'tool_closepath',
         hidebutton = closed ? 'tool_closepath' : 'tool_openpath';
-      $id("hidebutton").style.display = 'none';
-      $id("showbutton").style.display = 'block';
+      $id(hidebutton).style.display = 'none';
+      $id(showbutton).style.display = 'block';
     };
     const showPanel = function (on) {
       $id('closepath_panel').style.display = (on) ? 'block' : 'none';

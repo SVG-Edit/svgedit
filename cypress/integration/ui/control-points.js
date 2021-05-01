@@ -20,7 +20,7 @@ describe('UI - Control Points', function () {
   </svg>`, {force: true, parseSpecialCharSequences: false});
     cy.get('#tool_source_save').click({force: true});
 
-    cy.get('#svg_1').click().click();
+    cy.get('#svg_1').click({force: true}).click({force: true});
 
     cy.get('#pathpointgrip_0').trigger('mousedown', {which: 1, force: true})
       .trigger('mousemove', randomOffset(), randomOffset(), {force: true})

@@ -9,7 +9,7 @@
 
 export default {
   name: 'shapes',
-  init ({$}) {
+  init () {
     const svgEditor = this;
     const canv = svgEditor.svgCanvas;
     const {$id} = canv;

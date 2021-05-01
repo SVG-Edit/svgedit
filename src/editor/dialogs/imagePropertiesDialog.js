@@ -323,7 +323,7 @@ export class SeImgPropDialog extends HTMLElement {
         this.$canvasHeight.removeAttribute('disabled');
       }
     };
-    const onSaveHandler = (ev) => {
+    const onSaveHandler = () => {
       let saveOpt = '';
       const w = this.$canvasWidth.value;
       const h = this.$canvasHeight.value;
@@ -355,7 +355,7 @@ export class SeImgPropDialog extends HTMLElement {
       this.$resolution.selectedIndex = 0;
       this.dispatchEvent(closeEvent);
     };
-    const onCancelHandler = (ev) => {
+    const onCancelHandler = () => {
       const closeEvent = new CustomEvent('change', {detail: {
         dialog: 'closed'
       }});

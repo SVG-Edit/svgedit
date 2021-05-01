@@ -9,12 +9,12 @@ describe('history', function () {
   // TODO(codedread): Write tests for handling history events.
 
   // Mocked out methods.
-  transformlist.changeRemoveElementFromListMap((elem) => { /* empty fn */ });
+  transformlist.changeRemoveElementFromListMap(() => { /* empty fn */ });
 
   utilities.mock({
-    getHref (elem) { return '#foo'; },
-    setHref (elem, val) { /* empty fn */ },
-    getRotationAngle (elem) { return 0; }
+    getHref () { return '#foo'; },
+    setHref () { /* empty fn */ },
+    getRotationAngle () { return 0; }
   });
 
   // const svg = document.createElementNS(NS.SVG, 'svg');
@@ -452,7 +452,7 @@ describe('history', function () {
         assert.equal(val, sethrefvalue);
         justCalled = 'setHref';
       },
-      getRotationAngle (elem) { return 0; }
+      getRotationAngle () { return 0; }
     });
 
     gethrefvalue = '#newhref';
@@ -488,7 +488,7 @@ describe('history', function () {
 
   it('Test BatchCommand', function () {
     let concatResult = '';
-    MockCommand.prototype.apply = function (handler) { concatResult += this.text; };
+    MockCommand.prototype.apply = function () { concatResult += this.text; };
 
     const batch = new hstory.BatchCommand();
     assert.ok(batch.unapply);

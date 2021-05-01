@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Path functionality.
  * @module path
@@ -24,8 +23,6 @@ import {
 import {
   init as pathActionsInit, pathActionsMethod
 } from './path-actions.js';
-
-const $ = jQuery;
 
 const segData = {
   2: ['x', 'y'], // PATHSEG_MOVETO_ABS
@@ -244,7 +241,7 @@ export const init = function (editorContext) {
     'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
     'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'
   ];
-  pathFuncsStrs.forEach(function(s, i){
+  pathFuncsStrs.forEach(function(s){
     pathFuncs.push(s + 'Abs');
     pathFuncs.push(s + 'Rel');
   });
@@ -675,6 +672,7 @@ export const convertPath = function (pth, toRel) {
     case 2: // absolute move (M)
     case 4: // absolute line (L)
     case 18: // absolute smooth quad (T)
+    case 10: // absolute elliptical arc (A)
       x -= curx;
       y -= cury;
       // Fallthrough
@@ -726,9 +724,6 @@ export const convertPath = function (pth, toRel) {
       }
       d += pathDSegment(letter, [[x1, y1], [x, y]]);
       break;
-    case 10: // absolute elliptical arc (A)
-      x -= curx;
-      y -= cury;
       // Fallthrough
     case 11: // relative elliptical arc (a)
       if (toRel) {

@@ -1,12 +1,9 @@
-/* globals jQuery */
 /**
 * Attaches items to DOM for Embedded SVG support.
 * @module EmbeddedSVGEditDOM
 */
 import EmbeddedSVGEdit from './embedapi.js';
 import {isChrome} from '../common/browser.js';
-
-const $ = jQuery;
 
 let svgCanvas = null;
 
@@ -110,6 +107,7 @@ iframe.src = frameBase + framePath +
 
 iframe.addEventListener('load', function () {
   svgCanvas = new EmbeddedSVGEdit(frame, [new URL(frameBase).origin]);
+  const {$id} = svgCanvas;
   // Hide main button, as we will be controlling new, load, save, etc. from the host document
   let doc;
   try {

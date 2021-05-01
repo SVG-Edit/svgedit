@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Manipulating coordinates.
  * @module coords
@@ -12,8 +11,6 @@ import {
   transformPoint, transformListToTransform, matrixMultiply, transformBox
 } from './math.js';
 import { getTransformList } from './svgtransformlist.js';
-
-const $ = jQuery;
 
 // this is how we map paths to our preferred relative segment types
 const pathMap = [

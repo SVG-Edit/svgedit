@@ -62,7 +62,7 @@ class EditorStartup {
   */
   async init () {
     const self = this;
-    const { i18next, langParam } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
+    const { i18next } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
     this.i18next = i18next;
     // allow to prepare the dom without display
     this.$svgEditor.style.visibility = 'hidden';
@@ -291,6 +291,7 @@ class EditorStartup {
       if (evt.type === 'mouseup') { panning = false; }
       return false;
     });    
+    // eslint-disable-next-line sonarjs/no-identical-functions
     $id('svgcanvas').addEventListener('mousemove', function(evt) {    
       if (panning === false) { return true; }
 
@@ -313,7 +314,7 @@ class EditorStartup {
       return true;
     });
 
-    window.addEventListener('mouseup', function(evt) {
+    window.addEventListener('mouseup', function() {
       panning = false;
     });
 
@@ -362,7 +363,7 @@ class EditorStartup {
     };
 
     const liElems = document.getElementById('svg_editor').querySelectorAll('button, select, input:not(#text)');
-    Array.prototype.forEach.call(liElems, function(el, i){
+    Array.prototype.forEach.call(liElems, function(el){
       el.addEventListener("focus", (e) => {
         inp = e.currentTarget;
         this.uiContext = 'toolbars';
@@ -402,7 +403,7 @@ class EditorStartup {
       height: getHeight()
     };
 
-    window.addEventListener('resize', (evt) => {
+    window.addEventListener('resize', () => {
       Object.entries(winWh).forEach(([type, val]) => {
         const curval = (type === 'width') ? window.innerWidth - 15 : window.innerHeight;
         this.workarea['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
@@ -531,7 +532,7 @@ class EditorStartup {
         $id('tool_wireframe').click();
       }
 
-      $id('rulers').style.display = (Boolean(this.configObj.curConfig.showRulers)) ?  'block' : 'none';
+      $id('rulers').style.display = (this.configObj.curConfig.showRulers) ?  'block' : 'none';
 
       if (this.configObj.curConfig.showRulers) {
         $editDialog.setAttribute('showrulers', true);
@@ -712,6 +713,7 @@ class EditorStartup {
             /**
              * @type {module:SVGthis.ExtensionObject}
              */
+            // eslint-disable-next-line no-unsanitized/method
             const imported = await import(`./extensions/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`);
             const {name = extname, init: initfn} = imported.default;
             return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam: 'en'}); /** @todo  change to current lng */
@@ -735,9 +737,10 @@ class EditorStartup {
             /**
              * @type {module:SVGthis.ExtensionObject}
              */
+            // eslint-disable-next-line no-unsanitized/method
             const imported = await import(encodeURI(extPathName));
             const {name, init: initfn} = imported.default;
-            return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam});
+            return this.addExtension(name, (initfn && initfn.bind(this)), {$});
           } catch (err) {
             // Todo: Add config to alert any errors
             console.error('Extension failed to load: ' + extPathName + '; ', err);
@@ -748,12 +751,12 @@ class EditorStartup {
       this.svgCanvas.bind(
         'extensions_added',
         /**
-        * @param {external:Window} win
-        * @param {module:svgcanvas.SvgCanvas#event:extensions_added} data
+        * @param {external:Window} _win
+        * @param {module:svgcanvas.SvgCanvas#event:extensions_added} _data
         * @listens module:SvgCanvas#event:extensions_added
         * @returns {void}
         */
-        (win, data) => {
+        (_win, _data) => {
           this.extensionsAdded = true;
           this.setAll();
 

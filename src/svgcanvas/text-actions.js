@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * @module text-actions Tools for Text edit functions
  * @license MIT
@@ -6,7 +5,7 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import jQueryPluginSVG from './jQuery.attr.js';
+
 import {NS} from '../common/namespaces.js';
 import {
   transformPoint, getMatrix
@@ -17,8 +16,6 @@ import {
 import {
   supportsGoodTextCharPos
 } from '../common/browser.js';
-
-const $ = jQueryPluginSVG(jQuery);
 
 let textActionsContext_ = null;
 

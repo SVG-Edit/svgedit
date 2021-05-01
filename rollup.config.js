@@ -1,3 +1,4 @@
+/* eslint-disable node/no-unpublished-import */
 /* eslint-env node */
 // This rollup script is run by the command:
 // 'npm run build'

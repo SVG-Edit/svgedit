@@ -56,7 +56,7 @@ const replaceStoragePrompt = (val) => {
 
 export default {
   name: 'storage',
-  init ({$}) {
+  init () {
     const svgEditor = this;
     const {svgCanvas, storage} = svgEditor;
 
@@ -148,7 +148,7 @@ export default {
     * @returns {void}
     */
     function setupBeforeUnloadListener () {
-      window.addEventListener('beforeunload', function (e) {
+      window.addEventListener('beforeunload', function () {
         // Don't save anything unless the user opted in to storage
         if (!(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/).test(document.cookie)) {
           return;

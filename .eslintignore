@@ -1,15 +1,10 @@
 node_modules
-ignore
-
 coverage
 instrumented
 dist
-docs/jsdoc
 archive
 
-jsconfig.json
 mochawesome-report
-releases
 !.eslintrc.js
 !.ncurc.js
 
@@ -21,11 +16,6 @@ svgedit-custom.css
 # Vendor/minified files
 src/editor/jquery.min.js
 
-src/editor/jspdf/jspdf.min.js
-src/editor/jspdf/underscore-min.js
-
 src/editor/extensions/ext-mathjax/mathjax
 
-# jquery files
-src/editor/jgraduate/jQuery.jPicker.js
 
