@@ -1,4 +1,4 @@
-import 'elix/define/Dialog.js';
+
 
 const template = document.createElement('template');
 template.innerHTML = `

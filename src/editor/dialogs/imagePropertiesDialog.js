@@ -1,4 +1,3 @@
-import 'elix/define/Dialog.js';
 import {isValidUnit} from '../../common/units.js';
 
 const template = document.createElement('template');
