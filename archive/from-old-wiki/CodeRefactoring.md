@@ -32,7 +32,7 @@ Current Tasks
 
 1) I introduced the concept of a Drawing earlier on that would encapsulate the state of a single open SVG document. The SVG editor has a handle to the current drawing and uses that instead of accessing svg DOM elements directly. Eventually all code that deals with layers, current editing context, document history and more will be moved into draw.js but for now, much of that code still lives in svgcanvas.js.
 
-2) I'm in the process of migrating a large chunk of svgcanvas.js called "pathActions" into its own module (path.js). This piece of code did have a lot of dependencies so moving it piece-by-piece seemed like the right way to go. Currently it's about half-way migrated, with most of the 'public API' still living in svgcanvas.js.
+1) I'm in the process of migrating a large chunk of svgcanvas.js called "pathActions" into its own module (path.js). This piece of code did have a lot of dependencies so moving it piece-by-piece seemed like the right way to go. Currently it's about half-way migrated, with most of the 'public API' still living in svgcanvas.js.
 TODOs
 
     Finish moving layers functionality into the Drawing class
