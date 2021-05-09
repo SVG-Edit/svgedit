@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Tools for drawing.
  * @module draw
@@ -6,22 +5,21 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import Layer from '../common/layer.js';
+import Layer from './layer.js';
 import HistoryRecordingService from './historyrecording.js';
 
 import {NS} from '../common/namespaces.js';
 import {isOpera} from '../common/browser.js';
 import {
   toXml, getElem
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   copyElem as utilCopyElem
 } from './copy-elem.js';
 import {
   BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
 } from './history.js';
-
-const $ = jQuery;
+import {getParentsUntil} from '../editor/components/jgraduate/Util.js';
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
 
@@ -49,10 +47,10 @@ function historyRecordingService (hrService) {
  * @returns {string} The layer name or empty string.
  */
 function findLayerNameInGroup (group) {
-  return $('title', group).text() ||
+  return group.querySelector('title').textContent ||
     (isOpera() && group.querySelectorAll
       // Hack for Opera 10.60
-      ? $(group.querySelectorAll('title')).text()
+      ? group.querySelector('title').textContent 
       : '');
 }
 
@@ -158,7 +156,7 @@ export class Drawing {
       return this.svgElem_.querySelector('#' + id);
     }
     // jQuery lookup: twice as slow as xpath in FF
-    return $(this.svgElem_).find('[id=' + id + ']')[0];
+    return this.svgElem_.querySelector('[id=' + id + ']');
   }
 
   /**
@@ -341,29 +339,6 @@ export class Drawing {
   }
 
   /**
-   * Returns all objects of the currently selected layer. If an error occurs, an empty array is returned.
-   * @returns {SVGGElement[] | any[]} The objects of the currently active layer (or an empty array if no objects found).
-   */
-  getCurrentLayerChildren () {
-    return this.current_layer
-      ? [...this.current_layer.getChildren()].filter((object) => { return object.tagName !== 'title'; })
-      : [];
-  }
-
-  /**
-   * Returns the object at the current layer with the given 'objectId'. If none is found 'null' is returned.
-   * @param {string} objectId The id of the object
-   * @returns {?SVGGElement} The found object or 'null' if none is found.
-   */
-  getCurrentLayerChild (objectId) {
-    const foundElements = this.getCurrentLayerChildren()
-      .filter((obj) => { return obj.id === objectId; });
-    if (!foundElements) { return null; }
-
-    return foundElements[0];
-  }
-
-  /**
    * Set the current layer's position.
    * @param {Integer} newpos - The zero-based index of the new position of the layer. Range should be 0 to layers-1
    * @returns {{title: SVGGElement, previousName: string}|null} If the name was changed, returns {title:SVGGElement, previousName:string}; otherwise null.
@@ -414,7 +389,7 @@ export class Drawing {
   */
   mergeLayer (hrService) {
     const currentGroup = this.current_layer.getGroup();
-    const prevGroup = $(currentGroup).prev()[0];
+    const prevGroup = currentGroup.previousElementSibling;
     if (!prevGroup) { return; }
 
     hrService.startBatchCommand('Merge Layer');
@@ -654,38 +629,6 @@ export class Drawing {
   }
 
   /**
-   * Sets the visibility of the object. If the object id is not valid, this
-   * function returns `null`, otherwise it returns the `SVGElement` representing
-   * the object. This is an undo-able action.
-   * @param {string} objectId - The id of the object to change the visibility
-   * @param {boolean} bVisible - Whether the object should be visible
-   * @returns {?SVGGElement} The SVGGElement representing the object if the
-   *   `objectId` was valid, otherwise `null`.
-   */
-  setLayerChildrenVisible (objectId, bVisible) {
-    if (typeof bVisible !== 'boolean') {
-      return null;
-    }
-    const element = this.getCurrentLayerChild(objectId);
-    const expected = bVisible ? 'inline' : 'none';
-    const oldDisplay = element.getAttribute('display');
-    if (oldDisplay !== expected) {
-      element.setAttribute('display', expected);
-    }
-    return element;
-  }
-
-  /**
-   * Returns whether the object with the given id is visible or not.
-   * @param {string} objectId - id of the object on which to get the visibility.
-   * @returns {false|boolean} The visibility of the object, or `false` if the objects id was invalid.
-   */
-  isLayerChildrenVisible (objectId) {
-    const element = this.getCurrentLayerChild(objectId);
-    return element.getAttribute('display') !== 'none';
-  }
-
-  /**
    * Returns the opacity of the given layer.  If the input name is not a layer, `null` is returned.
    * @param {string} layerName - name of the layer on which to get the opacity
    * @returns {?Float} The opacity value of the given layer.  This will be a value between 0.0 and 1.0, or `null`
@@ -765,7 +708,6 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 /**
  * @interface module:draw.DrawCanvasInit
  * @property {module:path.pathActions} pathActions
- * @property {external:jQuery.data} elData
  * @property {module:history.UndoManager} undoMgr
  */
 /**
@@ -1044,10 +986,11 @@ export const mergeAllLayers = function (hrService) {
 */
 export const leaveContext = function () {
   const len = disabledElems.length;
+  const dataStorage = canvas_.getDataStorage();
   if (len) {
     for (let i = 0; i < len; i++) {
       const elem = disabledElems[i];
-      const orig = canvas_.elData(elem, 'orig_opac');
+      const orig = dataStorage.get(elem, 'orig_opac');
       if (orig !== 1) {
         elem.setAttribute('opacity', orig);
       } else {
@@ -1070,6 +1013,7 @@ export const leaveContext = function () {
 * @returns {void}
 */
 export const setContext = function (elem) {
+  const dataStorage = canvas_.getDataStorage();
   leaveContext();
   if (typeof elem === 'string') {
     elem = getElem(elem);
@@ -1079,15 +1023,25 @@ export const setContext = function (elem) {
   canvas_.setCurrentGroup(elem);
 
   // Disable other elements
-  $(elem).parentsUntil('#svgcontent').andSelf().siblings().each(function () {
-    const opac = this.getAttribute('opacity') || 1;
-    // Store the original's opacity
-    canvas_.elData(this, 'orig_opac', opac);
-    this.setAttribute('opacity', opac * 0.33);
-    this.setAttribute('style', 'pointer-events: none');
-    disabledElems.push(this);
+  const parentsUntil = getParentsUntil(elem, '#svgcontent');
+  let siblings = [];
+  parentsUntil.forEach(function (parent) {
+    const elements = Array.prototype.filter.call(parent.parentNode.children, function(child){
+      return child !== parent;
+    });
+    elements.forEach(function (element) {
+      siblings.push(element);
+    });
   });
 
+  siblings.forEach(function (curthis) {
+    const opac = curthis.getAttribute('opacity') || 1;
+    // Store the original's opacity
+    dataStorage.put(curthis, 'orig_opac', opac);
+    curthis.setAttribute('opacity', opac * 0.33);
+    curthis.setAttribute('style', 'pointer-events: none');
+    disabledElems.push(curthis);
+  });
   canvas_.clearSelection();
   canvas_.call('contextset', canvas_.getCurrentGroup());
 };

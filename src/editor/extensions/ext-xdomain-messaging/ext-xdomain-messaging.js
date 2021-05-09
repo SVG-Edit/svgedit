@@ -8,7 +8,7 @@ export default {
   name: 'xdomain-messaging',
   init () {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
     try {
       window.addEventListener('message', function (e) {
         // We accept and post strings for the sake of IE9 support
@@ -22,9 +22,9 @@ export default {
         // The default is not to allow any origins, including even the same domain or
         //  if run on a `file:///` URL. See `svgedit-config-es.js` for an example of how
         //  to configure
-        const {allowedOrigins} = svgEditor.curConfig;
+        const {allowedOrigins} = svgEditor.configObj.curConfig;
         if (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin)) {
-          console.log(`Origin ${e.origin} not whitelisted for posting to ${window.origin}`); // eslint-disable-line no-console
+          console.log(`Origin ${e.origin} not whitelisted for posting to ${window.origin}`); 
           return;
         }
         const cbid = data.id;
@@ -43,7 +43,7 @@ export default {
         e.source.postMessage(JSON.stringify(message), '*');
       });
     } catch (err) {
-      console.log('Error with xdomain message listener: ' + err); // eslint-disable-line no-console
+      console.log('Error with xdomain message listener: ' + err); 
     }
   }
 };

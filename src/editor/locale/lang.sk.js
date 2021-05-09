@@ -73,10 +73,7 @@ export default {
     italic: 'Kurzíva',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end',
-    letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing',
-    text_length: 'Lets you specify the width of the space into which the text will draw'
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Hlavné menu',
@@ -208,7 +205,7 @@ export default {
     enterNewImgURL: 'Zadajte nové URL obrázka',
     defsFailOnSave: 'POZNÁMKA: Kvôli chybe v prehliadači sa tento obrázok môže zobraziť nesprávne (napr. chýbajúce prechody či elementy). Po uložení sa zobrazí správne.',
     loadingImage: 'Nahrávam obrázok, prosím čakajte ...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Môžu sa vyskytnúť nasledujúce problémy: ',
     unsavedChanges: 'Sú tu neuložené zmeny.',
     enterNewLinkURL: 'Zadajte nové URL odkazu (hyperlink)',

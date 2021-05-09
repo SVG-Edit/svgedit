@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * DOM element selection box tools.
  * @module select
@@ -7,12 +6,10 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {isTouch, isWebkit} from '../common/browser.js'; // , isOpera
-import {getRotationAngle, getBBox, getStrokedBBox, isNullish} from '../common/utilities.js';
-import {transformListToTransform, transformBox, transformPoint} from '../common/math.js';
-import {getTransformList} from '../common/svgtransformlist.js';
-
-const $ = jQuery;
+import { isTouch, isWebkit } from '../common/browser.js'; // , isOpera
+import { getRotationAngle, getBBox, getStrokedBBox, isNullish } from './utilities.js';
+import { transformListToTransform, transformBox, transformPoint } from './math.js';
+import { getTransformList } from './svgtransformlist.js';
 
 let svgFactory_;
 let config_;
@@ -28,7 +25,7 @@ export class Selector {
   * @param {Element} elem - DOM element associated with this selector
   * @param {module:utilities.BBoxObject} [bbox] - Optional bbox to use for initialization (prevents duplicate `getBBox` call).
   */
-  constructor (id, elem, bbox) {
+  constructor(id, elem, bbox) {
     // this is the selector's unique number
     this.id = id;
 
@@ -41,24 +38,23 @@ export class Selector {
     // this holds a reference to the <g> element that holds all visual elements of the selector
     this.selectorGroup = svgFactory_.createSVGElement({
       element: 'g',
-      attr: {id: ('selectorGroup' + this.id)}
+      attr: { id: ('selectorGroup' + this.id) }
     });
 
     // this holds a reference to the path rect
-    this.selectorRect = this.selectorGroup.appendChild(
-      svgFactory_.createSVGElement({
-        element: 'path',
-        attr: {
-          id: ('selectedBox' + this.id),
-          fill: 'none',
-          stroke: '#22C',
-          'stroke-width': '1',
-          'stroke-dasharray': '5,5',
-          // need to specify this so that the rect is not selectable
-          style: 'pointer-events:none'
-        }
-      })
-    );
+    this.selectorRect = svgFactory_.createSVGElement({
+      element: 'path',
+      attr: {
+        id: ('selectedBox' + this.id),
+        fill: 'none',
+        stroke: '#22C',
+        'stroke-width': '1',
+        'stroke-dasharray': '5,5',
+        // need to specify this so that the rect is not selectable
+        style: 'pointer-events:none'
+      }
+    });
+    this.selectorGroup.append(this.selectorRect);
 
     // this holds a reference to the grip coordinates for this selector
     this.gripCoords = {
@@ -81,7 +77,7 @@ export class Selector {
   * @param {module:utilities.BBoxObject} bbox - Optional bbox to use for reset (prevents duplicate getBBox call).
   * @returns {void}
   */
-  reset (e, bbox) {
+  reset(e, bbox) {
     this.locked = true;
     this.selectedElement = e;
     this.resize(bbox);
@@ -93,7 +89,7 @@ export class Selector {
   * @param {boolean} show - Indicates whether grips should be shown or not
   * @returns {void}
   */
-  showGrips (show) {
+  showGrips(show) {
     const bShow = show ? 'inline' : 'none';
     selectorManager_.selectorGripsGroup.setAttribute('display', bShow);
     const elem = this.selectedElement;
@@ -109,7 +105,8 @@ export class Selector {
   * @param {module:utilities.BBoxObject} [bbox] - BBox to use for resize (prevents duplicate getBBox call).
   * @returns {void}
   */
-  resize (bbox) {
+  resize(bbox) {
+    const dataStorage = svgFactory_.getDataStorage();
     const selectedBox = this.selectorRect,
       mgr = selectorManager_,
       selectedGrips = mgr.selectorGrips,
@@ -121,7 +118,7 @@ export class Selector {
       offset += (sw / 2);
     }
 
-    const {tagName} = selected;
+    const { tagName } = selected;
     if (tagName === 'text') {
       offset += 2 / currentZoom;
     }
@@ -140,7 +137,7 @@ export class Selector {
     }
     // TODO: getBBox (previous line) already knows to call getStrokedBBox when tagName === 'g'. Remove this?
     // TODO: getBBox doesn't exclude 'gsvg' and calls getStrokedBBox for any 'g'. Should getBBox be updated?
-    if (tagName === 'g' && !$.data(selected, 'gsvg')) {
+    if (tagName === 'g' && !dataStorage.has(selected, 'gsvg')) {
       // The bbox for a group does not include stroke vals, so we
       // get the bbox based on its children.
       const strokedBbox = getStrokedBBox([selected.childNodes]);
@@ -160,7 +157,7 @@ export class Selector {
     offset *= currentZoom;
 
     const nbox = transformBox(l * currentZoom, t * currentZoom, w * currentZoom, h * currentZoom, m),
-      {aabox} = nbox;
+      { aabox } = nbox;
     let nbax = aabox.x - offset,
       nbay = aabox.y - offset,
       nbaw = aabox.width + (offset * 2),
@@ -181,13 +178,13 @@ export class Selector {
       nbox.br = transformPoint(nbox.br.x, nbox.br.y, rotm);
 
       // calculate the axis-aligned bbox
-      const {tl} = nbox;
+      const { tl } = nbox;
       let minx = tl.x,
         miny = tl.y,
         maxx = tl.x,
         maxy = tl.y;
 
-      const {min, max} = Math;
+      const { min, max } = Math;
 
       minx = min(minx, min(nbox.tr.x, min(nbox.bl.x, nbox.br.x))) - offset;
       miny = min(miny, min(nbox.tr.y, min(nbox.bl.y, nbox.br.y))) - offset;
@@ -243,7 +240,7 @@ export class Selector {
   * @param {Float} angle - Current rotation angle in degrees
   * @returns {void}
   */
-  static updateGripCursors (angle) {
+  static updateGripCursors(angle) {
     const dirArr = Object.keys(selectorManager_.selectorGrips);
     let steps = Math.round(angle / 45);
     if (steps < 0) { steps += 8; }
@@ -264,7 +261,7 @@ export class SelectorManager {
   /**
    * Sets up properties and calls `initGroup`.
    */
-  constructor () {
+  constructor() {
     // this will hold the <g> element that contains all selector rects/grips
     this.selectorParentGroup = null;
 
@@ -300,7 +297,8 @@ export class SelectorManager {
   * Resets the parent selector group element.
   * @returns {void}
   */
-  initGroup () {
+  initGroup() {
+    const dataStorage = svgFactory_.getDataStorage();
     // remove old selector parent group if it existed
     if (this.selectorParentGroup && this.selectorParentGroup.parentNode) {
       this.selectorParentGroup.remove();
@@ -309,11 +307,11 @@ export class SelectorManager {
     // create parent selector group and add it to svgroot
     this.selectorParentGroup = svgFactory_.createSVGElement({
       element: 'g',
-      attr: {id: 'selectorParentGroup'}
+      attr: { id: 'selectorParentGroup' }
     });
     this.selectorGripsGroup = svgFactory_.createSVGElement({
       element: 'g',
-      attr: {display: 'none'}
+      attr: { display: 'none' }
     });
     this.selectorParentGroup.append(this.selectorGripsGroup);
     svgFactory_.svgRoot().append(this.selectorParentGroup);
@@ -340,13 +338,14 @@ export class SelectorManager {
         }
       });
 
-      $.data(grip, 'dir', dir);
-      $.data(grip, 'type', 'resize');
-      this.selectorGrips[dir] = this.selectorGripsGroup.appendChild(grip);
+      dataStorage.put(grip, 'dir', dir);
+      dataStorage.put(grip, 'type', 'resize');
+      this.selectorGrips[dir] = grip;
+      this.selectorGripsGroup.append(grip);
     });
 
     // add rotator elems
-    this.rotateGripConnector = this.selectorGripsGroup.appendChild(
+    this.rotateGripConnector =
       svgFactory_.createSVGElement({
         element: 'line',
         attr: {
@@ -354,10 +353,10 @@ export class SelectorManager {
           stroke: '#22C',
           'stroke-width': '1'
         }
-      })
-    );
+      });
+    this.selectorGripsGroup.append(this.rotateGripConnector);
 
-    this.rotateGrip = this.selectorGripsGroup.appendChild(
+    this.rotateGrip =
       svgFactory_.createSVGElement({
         element: 'circle',
         attr: {
@@ -366,13 +365,13 @@ export class SelectorManager {
           r: gripRadius,
           stroke: '#22C',
           'stroke-width': 2,
-          style: 'cursor:url(' + config_.imgPath + 'rotate.png) 12 12, auto;'
+          style: 'cursor:url(' + config_.imgPath + 'rotate.svg) 12 12, auto;'
         }
-      })
-    );
-    $.data(this.rotateGrip, 'type', 'rotate');
+      });
+    this.selectorGripsGroup.append(this.rotateGrip);
+    dataStorage.put(this.rotateGrip, 'type', 'rotate');
 
-    if ($('#canvasBackground').length) { return; }
+    if (document.getElementById('canvasBackground')) { return; }
 
     const [width, height] = config_.dimensions;
     const canvasbg = svgFactory_.createSVGElement({
@@ -416,7 +415,7 @@ export class SelectorManager {
   * @param {module:utilities.BBoxObject} [bbox] - Optional bbox to use for reset (prevents duplicate getBBox call).
   * @returns {Selector} The selector based on the given element
   */
-  requestSelector (elem, bbox) {
+  requestSelector(elem, bbox) {
     if (isNullish(elem)) { return null; }
 
     const N = this.selectors.length;
@@ -446,13 +445,13 @@ export class SelectorManager {
   * @param {Element} elem - DOM element to remove the selector for
   * @returns {void}
   */
-  releaseSelector (elem) {
+  releaseSelector(elem) {
     if (isNullish(elem)) { return; }
     const N = this.selectors.length,
       sel = this.selectorMap[elem.id];
     if (sel && !sel.locked) {
       // TODO(codedread): Ensure this exists in this module.
-      console.log('WARNING! selector was released but was already unlocked'); // eslint-disable-line no-console
+      console.log('WARNING! selector was released but was already unlocked');
     }
     for (let i = 0; i < N; ++i) {
       if (this.selectors[i] && this.selectors[i] === sel) {
@@ -464,7 +463,7 @@ export class SelectorManager {
         // remove from DOM and store reference in JS but only if it exists in the DOM
         try {
           sel.selectorGroup.setAttribute('display', 'none');
-        } catch (e) {}
+        } catch (e) {/* empty fn */ }
 
         break;
       }
@@ -475,9 +474,9 @@ export class SelectorManager {
   * @returns {SVGRectElement} The rubberBandBox DOM element. This is the rectangle drawn by
   * the user for selecting/zooming
   */
-  getRubberBandBox () {
+  getRubberBandBox() {
     if (!this.rubberBandBox) {
-      this.rubberBandBox = this.selectorParentGroup.appendChild(
+      this.rubberBandBox =
         svgFactory_.createSVGElement({
           element: 'rect',
           attr: {
@@ -489,8 +488,8 @@ export class SelectorManager {
             display: 'none',
             style: 'pointer-events:none'
           }
-        })
-      );
+        });
+      this.selectorParentGroup.append(this.rubberBandBox);
     }
     return this.rubberBandBox;
   }

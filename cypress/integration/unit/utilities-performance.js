@@ -3,9 +3,9 @@ import 'pathseg';
 import '../../../instrumented/editor/jquery.min.js';
 
 import {NS} from '../../../instrumented/common/namespaces.js';
-import * as utilities from '../../../instrumented/common/utilities.js';
-import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
-import * as math from '../../../instrumented/common/math.js';
+import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
+import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
+import * as math from '../../../instrumented/svgcanvas/math.js';
 
 describe('utilities performance', function () {
   let currentLayer, groupWithMatrixTransform, textWithMatrixTransform;
@@ -135,7 +135,7 @@ describe('utilities performance', function () {
           continue;
         }
         const pts = [];
-        ['', 1, 2].forEach(function (n, j) {
+        ['', 1, 2].forEach(function (n) {
           const x = seg['x' + n],
             y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
@@ -211,7 +211,6 @@ describe('utilities performance', function () {
     assert.isBelow(ave, 20, 'svgedit.utilities.getStrokedBBox average execution time is less than 20 ms');
     console.log('Pass1 svgCanvas.getStrokedBBox total ms ' + total + ', ave ms ' + ave.toFixed(1) + ',\t min/max ' + min + ' ' + max);
 
-    // eslint-disable-next-line promise/avoid-new
     return new Promise((resolve) => {
       // The second pass is two to ten times faster.
       setTimeout(function () {

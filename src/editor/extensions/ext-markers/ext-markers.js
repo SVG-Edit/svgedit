@@ -32,6 +32,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -45,9 +46,10 @@ export default {
   name: 'markers',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {$} = S;
-    const svgCanvas = svgEditor.canvas;
+    const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
     const // {svgcontent} = S,
       addElem = svgCanvas.addSVGElementFromJson;
     const mtypes = ['start', 'mid', 'end'];
@@ -120,9 +122,17 @@ export default {
      */
     function setIcon (pos, id) {
       if (id.substr(0, 1) !== '\\') { id = '\\textmarker'; }
-      const ci = '#' + idPrefix + pos + '_' + id.substr(1);
-      svgEditor.setIcon('#cur_' + pos + '_marker_list', $(ci).children());
-      $(ci).addClass('current').siblings().removeClass('current');
+      const ci = idPrefix + pos + '_' + id.substr(1);
+      console.log(ci)
+      console.log('cur_' + pos + '_marker_list')
+      svgEditor.setIcon('cur_' + pos + '_marker_list', $id(ci).children);
+      $id(ci).classList.add('current');
+      const siblings = Array.prototype.filter.call($id(ci).parentNode.children, function(child){
+        return child !== $id(ci);
+      });
+      Array.from(siblings).forEach(function(sibling) {
+        sibling.classList.remove('current');
+      });
     }
 
     let selElems;
@@ -133,7 +143,7 @@ export default {
      * @returns {void}
     */
     function showPanel (on) {
-      $('#marker_panel').toggle(on);
+      $id('marker_panel').style.display = (on) ? 'block' : 'none';
 
       if (on) {
         const el = selElems[0];
@@ -141,11 +151,11 @@ export default {
         let val, ci;
         $.each(mtypes, function (i, pos) {
           const m = getLinked(el, 'marker-' + pos);
-          const txtbox = $('#' + pos + '_marker');
+          const txtbox = $id(pos + '_marker');
           if (!m) {
             val = '\\nomarker';
             ci = val;
-            txtbox.hide(); // hide text box
+            txtbox.style.display = 'none';
           } else {
             if (!m.attributes.se_type) { return; } // not created by this extension
             val = '\\' + m.attributes.se_type.textContent;
@@ -154,10 +164,10 @@ export default {
               val = m.lastChild.textContent;
               // txtbox.show(); // show text box
             } else {
-              txtbox.hide(); // hide text box
+              txtbox.style.display = 'none';
             }
           }
-          txtbox.val(val);
+          txtbox.value = val;
           setIcon(pos, ci);
         });
       }
@@ -189,7 +199,7 @@ export default {
       let viewBox = '0 0 100 100';
       let markerWidth = 5;
       let markerHeight = 5;
-      const seType = val.substr(0, 1) === '\\' ? val.substr(1) : 'textmarker';
+      const seType = (val.substr(0, 1) === '\\') ? val.substr(1) : 'textmarker';
 
       if (!markerTypes[seType]) { return undefined; } // an unknown type!
 
@@ -301,7 +311,8 @@ export default {
       batchCmd.addSubCommand(new S.RemoveElementCommand(elem, elem.parentNode));
       batchCmd.addSubCommand(new S.InsertElementCommand(pline));
 
-      $(elem).after(pline).remove();
+      elem.insertAdjacentElement('afterend', pline);
+      elem.remove();
       svgCanvas.clearSelection();
       pline.id = id;
       svgCanvas.addToSelection([pline]);
@@ -319,7 +330,7 @@ export default {
       const markerName = 'marker-' + pos;
       const el = selElems[0];
       const marker = getLinked(el, markerName);
-      if (marker) { $(marker).remove(); }
+      if (marker) { marker.remove(); }
       el.removeAttribute(markerName);
       let val = this.value;
       if (val === '') { val = '\\nomarker'; }
@@ -378,7 +389,7 @@ export default {
           const len = el.id.length;
           const linkid = url.substr(-len - 1, len);
           if (el.id !== linkid) {
-            const val = $('#' + pos + '_marker').attr('value');
+            const val = $id(pos + '_marker').getAttribute('value');
             addMarker(id, val);
             svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
             if (el.tagName === 'line' && pos === 'mid') { el = convertline(el); }
@@ -395,21 +406,19 @@ export default {
     * @returns {void}
     */
     function triggerTextEntry (pos, val) {
-      $('#' + pos + '_marker').val(val);
-      $('#' + pos + '_marker').change();
-      // const txtbox = $('#'+pos+'_marker');
-      // if (val.substr(0,1)=='\\') {txtbox.hide();}
-      // else {txtbox.show();}
+      $id(pos + '_marker').value = val;
+      $id(pos + '_marker').change();
     }
 
     /**
     * @param {"start"|"mid"|"end"} pos
-    * @returns {Promise<void>} Resolves to `undefined`
+    * @returns {void} Resolves to `undefined`
     */
-    async function showTextPrompt (pos) {
-      let def = $('#' + pos + '_marker').val();
+    function showTextPrompt (pos) {
+      let def = $id(pos + '_marker').value;
       if (def.substr(0, 1) === '\\') { def = ''; }
-      const txt = await $.prompt('Enter text for ' + pos + ' marker', def);
+      // eslint-disable-next-line no-alert
+      const txt = prompt('Enter text for ' + pos + ' marker', def);
       if (txt) {
         triggerTextEntry(pos, txt);
       }
@@ -444,7 +453,7 @@ export default {
     * @param {Event} ev
     * @returns {Promise<void>} Resolves to `undefined`
     */
-    async function setArrowFromButton (ev) {
+    async function setArrowFromButton () {
       const parts = this.id.split('_');
       const pos = parts[1];
       let val = parts[2];
@@ -507,7 +516,7 @@ export default {
           buttons.push({
             id: idPrefix + pos + '_' + id,
             svgicon: id,
-            icon: 'markers-' + id + '.png',
+            icon: id + '.svg',
             title,
             type: 'context',
             events: {click: setArrowFromButton},
@@ -564,11 +573,14 @@ export default {
 
     return {
       name: strings.name,
-      svgicons: 'markers-icons.xml',
+      svgicons: '',
       callback () {
-        $('#marker_panel').addClass('toolset').hide();
+        if($id("marker_panel") !== null) {
+          $id("marker_panel").classList.add('toolset');
+          $id("marker_panel").style.display = 'none';
+        }
       },
-      /* async */ addLangData ({importLocale, lang}) {
+      /* async */ addLangData ({_importLocale, _lang}) {
         return {data: strings.langList};
       },
       selectedChanged (opts) {
@@ -594,7 +606,6 @@ export default {
       },
 
       elementChanged (opts) {
-        // console.log('elementChanged',opts);
         const elem = opts.elems[0];
         if (elem && (
           elem.getAttribute('marker-start') ||

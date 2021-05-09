@@ -1,3 +1,4 @@
+/* eslint-disable node/no-unpublished-import */
 /* eslint-env node */
 // This rollup script is run by the command:
 // 'npm run build'
@@ -91,7 +92,7 @@ const config = [{
           dest: 'dist/editor/system'
         },
         {src: 'src/editor/images', dest},
-        {src: 'src/editor/shapelib', dest},
+        {src: 'src/editor/extensions/ext-shapes/shapelib', dest: dest.map((d) => `${d}/extensions/ext-shapes`)},
         {src: 'src/editor/jgraduate', dest},
         {src: 'src/editor/spinbtn', dest},
         {src: 'src/editor/embedapi.html', dest},
@@ -103,7 +104,7 @@ const config = [{
     }),
     nodeResolve({
       browser: true,
-      preferBuiltins: true
+      preferBuiltins: false
     }),
     commonjs(),
     dynamicImportVars({include: `src/editor/locale.js`}),

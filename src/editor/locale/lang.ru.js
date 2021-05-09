@@ -73,10 +73,7 @@ export default {
     italic: 'Курсив',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end',
-    letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing',
-    text_length: 'Lets you specify the width of the space into which the text will draw'
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Главное меню',

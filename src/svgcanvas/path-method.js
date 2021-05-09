@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Path functionality.
  * @module path
@@ -11,16 +10,15 @@ import {NS} from '../common/namespaces.js';
 import {ChangeElementCommand} from './history.js';
 import {
   transformPoint, getMatrix
-} from '../common/math.js';
+} from './math.js';
 import {
   assignAttributes, getRotationAngle, isNullish,
   getElem
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
 } from '../common/browser.js';
 
-const $ = jQuery;
 let pathMethodsContext_ = null;
 let editorContext_ = null;
 
@@ -134,7 +132,8 @@ export const getGripContainerMethod = function () {
   let c = getElem('pathpointgrip_container');
   if (!c) {
     const parentElement = getElem('selectorParentGroup');
-    c = parentElement.appendChild(document.createElementNS(NS.SVG, 'g'));
+    c = document.createElementNS(NS.SVG, 'g');
+    parentElement.append(c);
     c.id = 'pathpointgrip_container';
   }
   return c;
@@ -171,10 +170,10 @@ export const addPointGripMethod = function (index, x, y) {
       atts['xlink:title'] = uiStrings.pathNodeTooltip;
     }
     assignAttributes(pointGrip, atts);
-    pointGrip = pointGripContainer.appendChild(pointGrip);
+    pointGripContainer.append(pointGrip);
 
-    const grip = $('#pathpointgrip_' + index);
-    grip.dblclick(function () {
+    const grip = document.getElementById('pathpointgrip_' + index);
+    grip?.addEventListener("dblclick", () => {
       const path = pathMethodsContext_.getPathObj();
       if (path) {
         path.setSegType();
@@ -428,8 +427,8 @@ export class Segment {
    * @returns {void}
    */
   selectCtrls (y) {
-    $('#ctrlpointgrip_' + this.index + 'c1, #ctrlpointgrip_' + this.index + 'c2')
-      .attr('fill', y ? '#0FF' : '#EEE');
+    document.getElementById('ctrlpointgrip_' + this.index + 'c1').setAttribute('fill', y ? '#0FF' : '#EEE');
+    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE')
   }
 
   /**
@@ -637,8 +636,10 @@ export class Path {
     // Hide all grips, etc
 
     // fixed, needed to work on all found elements, not just first
-    $(getGripContainerMethod()).find('*').each(function () {
-      $(this).attr('display', 'none');
+    const pointGripContainer = getGripContainerMethod();
+    const elements = pointGripContainer.querySelectorAll('*');
+    Array.prototype.forEach.call(elements, function(el){
+      el.style.display = 'none';
     });
 
     const segList = this.elem.pathSegList;
@@ -1012,10 +1013,8 @@ export class Path {
     if (!Array.isArray(indexes)) { indexes = [indexes]; }
     indexes.forEach((index) => {
       const seg = this.segs[index];
-      if (seg.ptgrip) {
-        if (!this.selected_pts.includes(index) && index >= 0) {
-          this.selected_pts.push(index);
-        }
+      if (seg.ptgrip && !this.selected_pts.includes(index) && index >= 0) {
+        this.selected_pts.push(index);
       }
     });
     this.selected_pts.sort();

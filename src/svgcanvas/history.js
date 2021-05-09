@@ -6,8 +6,8 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import {getHref, setHref, getRotationAngle, isNullish} from '../common/utilities.js';
-import {removeElementFromListMap} from '../common/svgtransformlist.js';
+import {getHref, setHref, getRotationAngle, isNullish} from './utilities.js';
+import {removeElementFromListMap} from './svgtransformlist.js';
 
 /**
 * Group: Undo/Redo history management.
@@ -260,10 +260,8 @@ export class RemoveElementCommand extends Command {
   unapply (handler) {
     super.unapply(handler, () => {
       removeElementFromListMap(this.elem);
-      if (isNullish(this.nextSibling)) {
-        if (window.console) {
-          console.error('Reference element was lost');
-        }
+      if (isNullish(this.nextSibling) && window.console) {
+        console.error('Reference element was lost');
       }
       this.parent.insertBefore(this.elem, this.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
     });

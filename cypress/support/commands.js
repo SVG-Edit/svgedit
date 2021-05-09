@@ -32,7 +32,7 @@ Cypress.Commands.add(
   {
     prevSubject: true
   },
-  (subject, snapshotOptions) => {
+  (subject, _snapshotOptions) => {
     let html = subject[0].outerHTML;
 
     for (const attribute of ngAttributes) {

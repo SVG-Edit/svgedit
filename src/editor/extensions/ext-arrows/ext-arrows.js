@@ -7,9 +7,11 @@
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
+const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
+  const lang = svgEditor.configObj.pref('lang')
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -23,11 +25,12 @@ export default {
   name: 'arrows',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
-    const svgCanvas = svgEditor.canvas;
+    const strings = await loadExtensionTranslation(svgEditor);
+    const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
     const
       addElem = svgCanvas.addSVGElementFromJson,
-      {nonce, $} = S,
+      {nonce} = S,
       prefix = 'se_arrow_';
 
     let selElems, arrowprefix, randomizeIds = S.randomize_ids;
@@ -48,7 +51,7 @@ export default {
     * @param {Window} win
     * @returns {void}
     */
-    function unsetArrowNonce (win) {
+    function unsetArrowNonce (_win) {
       randomizeIds = false;
       arrowprefix = prefix;
       pathdata.fw.id = arrowprefix + 'fw';
@@ -58,7 +61,7 @@ export default {
     svgCanvas.bind('setnonce', setArrowNonce);
     svgCanvas.bind('unsetnonce', unsetArrowNonce);
 
-    arrowprefix = randomizeIds ? prefix + nonce + '_' : prefix;
+    arrowprefix = (randomizeIds) ? `${prefix}${nonce}_` : prefix;
 
     const pathdata = {
       fw: {d: 'm0,0l10,5l-10,5l5,-5l-5,-5z', refx: 8, id: arrowprefix + 'fw'},
@@ -88,7 +91,7 @@ export default {
     * @returns {void}
     */
     function showPanel (on) {
-      $('#arrow_panel').toggle(on);
+      $id('arrow_panel').style.display = (on) ? 'block' : 'none';
       if (on) {
         const el = selElems[0];
         const end = el.getAttribute('marker-end');
@@ -112,7 +115,7 @@ export default {
           val = 'none';
         }
 
-        $('#arrow_list').val(val);
+        $id('arrow_list').value = val;
       }
     }
 
@@ -214,25 +217,26 @@ export default {
       const mtypes = ['start', 'mid', 'end'];
       const defs = svgCanvas.findDefs();
 
-      $.each(mtypes, function (i, type) {
+      mtypes.forEach(function(type){
         const marker = getLinked(elem, 'marker-' + type);
         if (!marker) { return; }
 
-        const curColor = $(marker).children().attr('fill');
-        const curD = $(marker).children().attr('d');
+        const curColor = marker.children.getAttribute('fill');        
+        const curD = marker.children.getAttribute('d');
         if (curColor === color) { return; }
 
-        const allMarkers = $(defs).find('marker');
+        const allMarkers = defs.querySelectorAll('marker');
         let newMarker = null;
         // Different color, check if already made
-        allMarkers.each(function () {
-          const attrs = $(this).children().attr(['fill', 'd']);
-          if (attrs.fill === color && attrs.d === curD) {
+        Array.from(allMarkers).forEach(function(marker) {
+          const attrsFill = marker.children.getAttribute('fill');
+          const attrsD = marker.children.getAttribute('d');
+          if (attrsFill === color && attrsD === curD) {
             // Found another marker with this color and this path
-            newMarker = this;
+            newMarker = marker;
           }
         });
-
+        
         if (!newMarker) {
           // Create a new marker with this color
           const lastId = marker.id;
@@ -240,17 +244,17 @@ export default {
 
           newMarker = addMarker(dir, type, arrowprefix + dir + allMarkers.length);
 
-          $(newMarker).children().attr('fill', color);
+          newMarker.children.setAttribute('fill', color);
         }
 
-        $(elem).attr('marker-' + type, 'url(#' + newMarker.id + ')');
+        elem.setAttribute('marker-' + type, 'url(#' + newMarker.id + ')');
 
         // Check if last marker can be removed
         let remove = true;
-        $(S.svgcontent).find('line, polyline, path, polygon').each(function () {
-          const element = this;
-          $.each(mtypes, function (j, mtype) {
-            if ($(element).attr('marker-' + mtype) === 'url(#' + marker.id + ')') {
+        const sElements = S.svgcontent.querySelectorAll('line, polyline, path, polygon');
+        Array.prototype.forEach.call(sElements, function(element){
+          mtypes.forEach(function(mtype){
+            if (element.getAttribute('marker-' + mtype) === 'url(#' + marker.id + ')') {
               remove = false;
               return remove;
             }
@@ -262,7 +266,7 @@ export default {
 
         // Not found, so can safely remove
         if (remove) {
-          $(marker).remove();
+          marker.remove();
         }
       });
     }
@@ -285,11 +289,12 @@ export default {
         return Object.assign(contextTools[i], contextTool);
       }),
       callback () {
-        $('#arrow_panel').hide();
+        $id("arrow_panel").style.display = 'none';
+        
         // Set ID so it can be translated in locale file
-        $('#arrow_list option')[0].id = 'connector_no_arrow';
+        $id('arrow_list option').setAttribute('id', 'connector_no_arrow');
       },
-      async addLangData ({lang, importLocale}) {
+      async addLangData ({_lang, importLocale}) {
         const {langList} = await importLocale();
         return {
           data: langList

@@ -1,7 +1,7 @@
 import '../../../instrumented/editor/jquery.min.js';
 
 import {NS} from '../../../instrumented/common/namespaces.js';
-import * as utilities from '../../../instrumented/common/utilities.js';
+import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as coords from '../../../instrumented/svgcanvas/coords.js';
 
 describe('coords', function () {

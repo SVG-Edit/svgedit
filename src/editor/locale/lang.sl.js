@@ -73,10 +73,7 @@ export default {
     italic: 'Poševno',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end',
-    letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing',
-    text_length: 'Lets you specify the width of the space into which the text will draw'
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Glavni meni',
@@ -207,7 +204,7 @@ export default {
     enterNewImgURL: 'Vnesite nov URL slike',
     defsFailOnSave: 'OPOMBA: Zaradi napake vašega brskalnika obstaja možnost, da ta slika ni prikazan pravilno (manjkajo določeni elementi ali gradient). Vseeno bo prikaz pravilen, ko bo slika enkrat shranjena.',
     loadingImage: 'Nalagam sliko, prosimo, počakajte ...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Also note the following issues: ',
     unsavedChanges: 'Obstajajo neshranjene spremembe.',
     enterNewLinkURL: 'Vnesite novo URL povezavo',

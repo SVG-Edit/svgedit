@@ -16,6 +16,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -27,39 +28,22 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'helloworld',
-  async init ({$, importLocale}) {
+  async init ({_importLocale}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
-    const svgCanvas = svgEditor.canvas;
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const {svgCanvas} = svgEditor;
     return {
       name: strings.name,
-      // For more notes on how to make an icon file, see the source of
-      // the helloworld-icon.xml
-      svgicons: 'helloworld-icon.xml',
-
-      // Multiple buttons can be added in this array
-      buttons: [{
+      events: [{
         // Must match the icon ID in helloworld-icon.xml
         id: 'hello_world',
-
-        // Fallback, e.g., for `file:///` access
-        icon: 'helloworld.png',
-
-        // This indicates that the button will be added to the "mode"
-        // button panel on the left side
-        type: 'mode',
-
         // Tooltip text
         title: strings.buttons[0].title,
-
-        // Events
-        events: {
-          click () {
-            // The action taken when the button is clicked on.
-            // For "mode" buttons, any other button will
-            // automatically be de-pressed.
-            svgCanvas.setMode('hello_world');
-          }
+        click () {
+          // The action taken when the button is clicked on.
+          // For "mode" buttons, any other button will
+          // automatically be de-pressed.
+          svgCanvas.setMode('hello_world');
         }
       }],
       // This is triggered when the main mouse button is pressed down
@@ -95,7 +79,7 @@ export default {
           });
 
           // Show the text using the custom alert function
-          $.alert(text);
+          alert(text); 
         }
       }
     };

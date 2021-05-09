@@ -73,10 +73,7 @@ export default {
     italic: 'Text Înclinat',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end',
-    letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing',
-    text_length: 'Lets you specify the width of the space into which the text will draw'
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menu Principal',
@@ -207,7 +204,7 @@ export default {
     enterNewImgURL: 'Introduceţi noul URL pentru Imagine',
     defsFailOnSave: 'NOTE: Din cauza unei erori in browserul dv., aceasta imagine poate apare gresit (fara gradiente sau elemente). Însă va apare corect dupa salvare.',
     loadingImage: 'Imaginea se incarcă, va rugam asteptaţi...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'De asemenea remarcati urmatoarele probleme: ',
     unsavedChanges: 'Sunt schimbări nesalvate.',
     enterNewLinkURL: 'IntroduAliniere în raport cu ...sceţi noul URL',

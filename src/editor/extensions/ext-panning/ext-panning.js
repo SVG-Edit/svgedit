@@ -13,6 +13,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -24,34 +25,42 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'panning',
-  async init ({importLocale}) {
+  async init() {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
-    const svgCanvas = svgEditor.canvas;
-    const buttons = [{
-      id: 'ext-panning',
-      icon: 'panning.png',
-      type: 'mode',
-      events: {
-        click () {
-          svgCanvas.setMode('ext-panning');
-        }
-      }
-    }];
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const {
+      svgCanvas
+    } = svgEditor;
+    const {
+      $id
+    } = svgCanvas;
+    const insertAfter = (referenceNode, newNode) => {
+      referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
     return {
+      newUI: true,
       name: strings.name,
-      svgicons: 'ext-panning.xml',
-      buttons: strings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      }),
-      mouseDown () {
+      callback() {
+        // Add the button and its handler(s)
+        const buttonTemplate = document.createElement("template");
+        buttonTemplate.innerHTML = `
+        <se-button id="ext-panning" title="Panning" src="./images/panning.svg"></se-button>
+        `;
+        insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true));
+        $id('ext-panning').addEventListener("click", () => {
+          svgCanvas.setMode('ext-panning');
+        });
+      },
+      mouseDown() {
         if (svgCanvas.getMode() === 'ext-panning') {
           svgEditor.setPanning(true);
-          return {started: true};
+          return {
+            started: true
+          };
         }
         return undefined;
       },
-      mouseUp () {
+      mouseUp() {
         if (svgCanvas.getMode() === 'ext-panning') {
           svgEditor.setPanning(false);
           return {

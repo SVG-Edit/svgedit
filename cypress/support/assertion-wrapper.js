@@ -3,7 +3,7 @@
  * @param {external:chai_utils} utils
  * @returns {void}
  */
-function setAssertionMethods (_chai, utils) {
+function setAssertionMethods (_chai, _utils) {
   return (method) => {
     return (...args) => {
       const {result, message, actual, expected} = method(...args);

@@ -73,10 +73,7 @@ export default {
     italic: 'Texto en cursiva',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end',
-    letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing',
-    text_length: 'Lets you specify the width of the space into which the text will draw'
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menú principal',
@@ -208,7 +205,7 @@ export default {
     enterNewImgURL: 'Introduzca la nueva URL de la imagen.',
     defsFailOnSave: 'NOTA: Debido a un fallo de su navegador, es posible que la imagen aparezca de forma incorrecta (ciertas gradaciones o elementos podría perderse). La imagen aparecerá en su forma correcta una vez guardada.',
     loadingImage: 'Cargando imagen. Espere, por favor.',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Existen además los problemas siguientes:',
     unsavedChanges: 'There are unsaved changes.',
     enterNewLinkURL: 'Enter the new hyperlink URL',

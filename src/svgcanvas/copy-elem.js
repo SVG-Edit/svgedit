@@ -1,12 +1,6 @@
-/* globals jQuery */
-
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import {isWebkit} from '../common/browser.js';
 import {convertPath} from './path.js';
-import {preventClickDefault} from '../common/utilities.js';
-
-// Constants
-const $ = jQueryPluginSVG(jQuery);
+import {preventClickDefault} from './utilities.js';
 
 /**
  * Create a clone of an element, updating its ID and its children's IDs when needed.
@@ -18,10 +12,8 @@ const $ = jQueryPluginSVG(jQuery);
 export const copyElem = function (el, getNextId) {
   // manually create a copy of the element
   const newEl = document.createElementNS(el.namespaceURI, el.nodeName);
-  $.each(el.attributes, function (i, attr) {
-    if (attr.localName !== '-moz-math-font-style') {
+  Object.values(el.attributes).forEach((attr) => {
       newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
-    }
   });
   // set the copied element's new id
   newEl.removeAttribute('id');
@@ -35,7 +27,7 @@ export const copyElem = function (el, getNextId) {
   }
 
   // now create copies of all children
-  $.each(el.childNodes, function (i, child) {
+  el.childNodes.forEach(function(child){
     switch (child.nodeType) {
     case 1: // element node
       newEl.append(copyElem(child, getNextId));
@@ -48,11 +40,12 @@ export const copyElem = function (el, getNextId) {
     }
   });
 
-  if ($(el).data('gsvg')) {
-    $(newEl).data('gsvg', newEl.firstChild);
-  } else if ($(el).data('symbol')) {
-    const ref = $(el).data('symbol');
-    $(newEl).data('ref', ref).data('symbol', ref);
+  if (el.dataset.gsvg) {
+    newEl.dataset.gsvg = newEl.firstChild
+  } else if (el.dataset.symbol) {
+    const ref = el.dataset.symbol;
+    newEl.dataset.ref =  ref;
+    newEl.dataset.symbol =  ref;
   } else if (newEl.tagName === 'image') {
     preventClickDefault(newEl);
   }

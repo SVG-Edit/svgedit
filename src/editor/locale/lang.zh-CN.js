@@ -73,10 +73,7 @@ export default {
     italic: '斜体',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end',
-    letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing',
-    text_length: 'Lets you specify the width of the space into which the text will draw'
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: '主菜单',
@@ -208,7 +205,7 @@ export default {
     enterNewImgURL: '请输入新图像的URLL',
     defsFailOnSave: '注意: 由于您所使用的浏览器存在缺陷, 该图像无法正确显示 (不支持渐变或相关元素). 修复该缺陷后可正确显示.',
     loadingImage: '正在加载图像, 请稍候...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: '同时注意以下几点: ',
     unsavedChanges: '存在未保存的修改.',
     enterNewLinkURL: '输入新建链接的URL地址',

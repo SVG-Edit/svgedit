@@ -73,10 +73,7 @@ export default {
     italic: 'Texte en italique',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end',
-    letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing',
-    text_length: 'Lets you specify the width of the space into which the text will draw'
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menu principal',
@@ -208,7 +205,7 @@ export default {
     enterNewImgURL: "Entrer la nouvelle URL de l'image",
     defsFailOnSave: "NOTE : En raison d'un bogue dans votre navigateur, il se peut que cette image ne soit pas correctement affichée (dégradés ou éléments manquants). Le souci sera néanmoins réglé à la sauvegarde.",
     loadingImage: "Chargement de l'image, veuillez patienter…",
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Notez également les problèmes suivants : ',
     unsavedChanges: 'Il y a des changements non sauvegardés.',
     enterNewLinkURL: "Entrez la nouvelle URL de l'hyperlien",

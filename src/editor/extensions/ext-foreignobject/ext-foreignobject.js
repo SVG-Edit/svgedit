@@ -1,3 +1,4 @@
+/* globals  seConfirm */
 /**
  * @file ext-foreignobject.js
  *
@@ -6,10 +7,10 @@
  * @copyright 2010 Jacques Distler, 2010 Alexis Deveria
  *
  */
-
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -23,19 +24,20 @@ export default {
   name: 'foreignobject',
   async init (S) {
     const svgEditor = this;
-    const {$, text2xml, NS} = S;
-    const svgCanvas = svgEditor.canvas;
+    const {text2xml, NS} = S;
+    const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
     const
       // {svgcontent} = S,
       // addElem = svgCanvas.addSVGElementFromJson,
       svgdoc = S.svgroot.parentNode.ownerDocument;
 
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
     const properlySourceSizeTextArea = function () {
       // TODO: remove magic numbers here and get values from CSS
-      const height = $('#svg_source_container').height() - 80;
-      $('#svg_source_textarea').css('height', height);
+      const height = parseFloat(getComputedStyle($id('svg_source_container'), null).height.replace("px", "")) - 80;
+      $id('svg_source_textarea').style.height = height + "px";
     };
 
     /**
@@ -43,12 +45,14 @@ export default {
     * @returns {void}
     */
     function showPanel (on) {
-      let fcRules = $('#fc_rules');
-      if (!fcRules.length) {
-        fcRules = $('<style id="fc_rules"></style>').appendTo('head');
+      let fcRules = $id('fc_rules');
+      if (!fcRules) {
+        fcRules = document.createElement('style');
+        fcRules.setAttribute('id', 'fc_rules');
+        document.getElementsByTagName("head")[0].appendChild(fcRules);        
       }
-      fcRules.text(!on ? '' : ' #tool_topath { display: none !important; }');
-      $('#foreignObject_panel').toggle(on);
+      fcRules.textContent = !on ? '' : ' #tool_topath { display: none !important; }';
+      $id('foreignObject_panel').style.display = (on) ? 'block' : 'none';
     }
 
     /**
@@ -56,8 +60,10 @@ export default {
     * @returns {void}
     */
     function toggleSourceButtons (on) {
-      $('#tool_source_save, #tool_source_cancel').toggle(!on);
-      $('#foreign_save, #foreign_cancel').toggle(on);
+      $id('tool_source_save').style.display = (!on) ? 'block' : 'none';
+      $id('tool_source_cancel').style.display = (!on) ? 'block' : 'none';
+      $id('foreign_save').style.display = (on) ? 'block' : 'none';
+      $id('foreign_cancel').style.display = (on) ? 'block' : 'none';
     }
 
     let selElems,
@@ -74,7 +80,8 @@ export default {
       const elt = selElems[0]; // The parent `Element` to append to
       try {
         // convert string into XML document
-        const newDoc = text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '">' + xmlString + '</svg>');
+        const oi = (xmlString.indexOf('xmlns:oi') !== -1) ? ' xmlns:oi="' + NS.OI + '"' : '';
+        const newDoc = text2xml('<svg xmlns="' + NS.SVG + '" xmlns:xlink="' + NS.XLINK + '" '+ oi +'>' + xmlString + '</svg>');
         // run it through our sanitizer to remove anything we do not support
         svgCanvas.sanitizeSvg(newDoc.documentElement);
         elt.replaceWith(svgdoc.importNode(newDoc.documentElement.firstChild, true));
@@ -82,7 +89,7 @@ export default {
         svgCanvas.clearSelection();
       } catch (e) {
         // Todo: Surface error to user
-        console.log(e); // eslint-disable-line no-console
+        console.log(e); 
         return false;
       }
 
@@ -101,10 +108,10 @@ export default {
       elt.removeAttribute('fill');
 
       const str = svgCanvas.svgToString(elt, 0);
-      $('#svg_source_textarea').val(str);
-      $('#svg_source_editor').fadeIn();
+      $id('svg_source_textarea').value = str;
+      $id('#svg_source_editor').style.display = 'block';
       properlySourceSizeTextArea();
-      $('#svg_source_textarea').focus();
+      $id('svg_source_textarea').focus();
     }
 
     /**
@@ -182,38 +189,50 @@ export default {
         return Object.assign(contextTools[i], contextTool);
       }),
       callback () {
-        $('#foreignObject_panel').hide();
+        $id("foreignObject_panel").style.display = 'none';
 
         const endChanges = function () {
-          $('#svg_source_editor').hide();
+          $id("svg_source_editor").style.display = 'none';
           editingforeign = false;
-          $('#svg_source_textarea').blur();
+          $id('svg_source_textarea').blur();
           toggleSourceButtons(false);
         };
 
         // TODO: Needs to be done after orig icon loads
         setTimeout(function () {
           // Create source save/cancel buttons
-          /* const save = */ $('#tool_source_save').clone()
-            .hide().attr('id', 'foreign_save').unbind()
-            .appendTo('#tool_source_back').click(async function () {
-              if (!editingforeign) { return; }
+          const toolSourceSave = $id('tool_source_save').cloneNode(true);
+          toolSourceSave.style.display = 'none';
+          toolSourceSave.id = 'foreign_save';
+          // unbind()
+          // const oldElement = $id('tool_source_save');
+          // oldElement.parentNode.replaceChild(toolSourceSave, oldElement);
+          $id('tool_source_back').append(toolSourceSave);
+          toolSourceSave.addEventListener('click', () => function () {
+            if (!editingforeign) { return; }
 
-              if (!setForeignString($('#svg_source_textarea').val())) {
-                const ok = await $.confirm('Errors found. Revert to original?');
-                if (!ok) { return; }
-                endChanges();
-              } else {
-                endChanges();
-              }
-              // setSelectMode();
-            });
-
-          /* const cancel = */ $('#tool_source_cancel').clone()
-            .hide().attr('id', 'foreign_cancel').unbind()
-            .appendTo('#tool_source_back').click(function () {
+            if (!setForeignString($id('svg_source_textarea').value)) {
+              const ok = seConfirm('Errors found. Revert to original?');
+              if (!ok) { return; }
               endChanges();
-            });
+            } else {
+              endChanges();
+            }
+            // setSelectMode();
+          });
+
+          var oldToolSourceCancel = $id('tool_source_cancel');
+          const toolSourceCancel = oldToolSourceCancel.cloneNode(true);
+          toolSourceCancel.style.display = 'none';
+          toolSourceCancel.id = 'foreign_cancel';
+          $id('tool_source_back').append(toolSourceCancel);
+          toolSourceCancel.addEventListener('click', () => function () {
+            endChanges();
+          });
+          // unbind()
+          // var oldToolSourceCancel = $id('tool_source_cancel');
+          // oldToolSourceCancel.parentNode.replaceChild(toolSourceCancel, oldToolSourceCancel);
+
         }, 3000);
       },
       mouseDown (opts) {
@@ -250,12 +269,15 @@ export default {
           started: true
         };
       },
-      mouseUp (opts) {
+      mouseUp (_opts) {
         // const e = opts.event;
         if (svgCanvas.getMode() !== 'foreign' || !started) {
           return undefined;
         }
-        const attrs = $(newFO).attr(['width', 'height']);
+        const attrs = {
+          width: newFO.getAttribute('width'),
+          height: newFO.getAttribute('height'),
+        }
         const keep = (attrs.width !== '0' || attrs.height !== '0');
         svgCanvas.addToSelection([newFO], true);
 
@@ -273,9 +295,9 @@ export default {
           const elem = selElems[i];
           if (elem && elem.tagName === 'foreignObject') {
             if (opts.selectedElement && !opts.multiselected) {
-              $('#foreign_font_size').val(elem.getAttribute('font-size'));
-              $('#foreign_width').val(elem.getAttribute('width'));
-              $('#foreign_height').val(elem.getAttribute('height'));
+              $id('foreign_font_size').value = elem.getAttribute('font-size');
+              $id('foreign_width').value = elem.getAttribute('width');
+              $id('foreign_height').value = elem.getAttribute('height');
               showPanel(true);
             } else {
               showPanel(false);
@@ -285,7 +307,7 @@ export default {
           }
         }
       },
-      elementChanged (opts) {
+      elementChanged (_opts) {
         // const elem = opts.elems[0];
       }
     };

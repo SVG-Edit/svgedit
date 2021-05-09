@@ -20,7 +20,7 @@ describe('Fix issue 407', function () {
         <text fill="#000000" id="a_text" text-anchor="middle" x="260.5" xml:space="preserve" y="192.5">hello</text>
        </g>
       </g>
-     </svg>`, {parseSpecialCharSequences: false});
+     </svg>`, {force: true, parseSpecialCharSequences: false});
     cy.get('#tool_source_save').click();
     cy.get('#svg_1').click().dblclick();
     cy.get('#a_text').should('exist');

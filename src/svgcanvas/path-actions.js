@@ -9,16 +9,16 @@
 
 import {NS} from '../common/namespaces.js';
 import {shortFloat} from '../common/units.js';
-import {getTransformList} from '../common/svgtransformlist.js';
+import {getTransformList} from './svgtransformlist.js';
 import {ChangeElementCommand, BatchCommand} from './history.js';
 import {
   transformPoint, snapToAngle, rectsIntersect,
   transformListToTransform
-} from '../common/math.js';
+} from './math.js';
 import {
   assignAttributes, getElem, getRotationAngle, snapToGrid, isNullish,
   getBBox as utilsGetBBox
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   isWebkit
 } from '../common/browser.js';
@@ -114,6 +114,7 @@ export const convertPath = function (pth, toRel) {
     case 2: // absolute move (M)
     case 4: // absolute line (L)
     case 18: // absolute smooth quad (T)
+    case 10: // absolute elliptical arc (A)
       x -= curx;
       y -= cury;
       // Fallthrough
@@ -165,10 +166,6 @@ export const convertPath = function (pth, toRel) {
       }
       d += pathDSegment(letter, [[x1, y1], [x, y]]);
       break;
-    // eslint-disable-next-line sonarjs/no-duplicated-branches
-    case 10: // absolute elliptical arc (A)
-      x -= curx;
-      y -= cury;
       // Fallthrough
     case 11: // relative elliptical arc (a)
       if (toRel) {
@@ -217,7 +214,7 @@ export const convertPath = function (pth, toRel) {
  * @returns {string}
  */
 function pathDSegment (letter, points, morePoints, lastPoint) {
-  $.each(points, function (i, pnt) {
+  points.forEach(function(pnt, i){
     points[i] = shortFloat(pnt);
   });
   let segment = letter + points.join(' ');
@@ -230,7 +227,6 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
   return segment;
 }
 
-/* eslint-disable jsdoc/require-property */
 /**
 * Group: Path edit functions.
 * Functions relating to editing path elements.
@@ -238,7 +234,6 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
 * @memberof module:path
 */
 export const pathActionsMethod = (function () {
-  /* eslint-enable jsdoc/require-property */
   let subpath = false;
   let newPoint, firstCtrl;
 
@@ -361,7 +356,7 @@ export const pathActionsMethod = (function () {
             'stroke-width': '0.5',
             fill: 'none'
           });
-          stretchy = getElem('selectorParentGroup').appendChild(stretchy);
+          getElem('selectorParentGroup').append(stretchy);
         }
         stretchy.setAttribute('display', 'inline');
 
@@ -437,7 +432,7 @@ export const pathActionsMethod = (function () {
               keep = false;
               return keep;
             }
-            $(stretchy).remove();
+            stretchy.remove();
 
             // This will signal to commit the path
             // const element = newpath; // Other event handlers define own `element`, so this was probably not meant to interact with them or one which shares state (as there were none); I therefore adding a missing `var` to avoid a global
@@ -450,9 +445,9 @@ export const pathActionsMethod = (function () {
               }
 
               const newD = newpath.getAttribute('d');
-              const origD = $(path.elem).attr('d');
-              $(path.elem).attr('d', origD + newD);
-              $(newpath).remove();
+              const origD = path.elem.getAttribute('d');
+              path.elem.setAttribute('d', origD + newD);
+              newpath.parentNode.removeChild();
               if (path.matrix) {
                 pathActionsContext_.recalcRotatedPath();
               }
@@ -675,7 +670,7 @@ export const pathActionsMethod = (function () {
         }
       } else {
         path.selected_pts = [];
-        path.eachSeg(function (i) {
+        path.eachSeg(function (_i) {
           const seg = this;
           if (!seg.next && !seg.prev) { return; }
 
@@ -708,11 +703,11 @@ export const pathActionsMethod = (function () {
     /**
     * @param {Event} evt
     * @param {Element} element
-    * @param {Float} mouseX
-    * @param {Float} mouseY
+    * @param {Float} _mouseX
+    * @param {Float} _mouseY
     * @returns {module:path.keepElement|void}
     */
-    mouseUp (evt, element, mouseX, mouseY) {
+    mouseUp (evt, element, _mouseX, _mouseY) {
       editorContext_ = pathActionsContext_.getEditorContext();
       const drawnPath = editorContext_.getDrawnPath();
       // Create mode
@@ -862,15 +857,20 @@ export const pathActionsMethod = (function () {
     * @param {boolean} remove Not in use
     * @returns {void}
     */
-    clear (remove) {
+    clear () {
       editorContext_ = pathActionsContext_.getEditorContext();
       const drawnPath = editorContext_.getDrawnPath();
       currentPath = null;
       if (drawnPath) {
         const elem = getElem(editorContext_.getId());
-        $(getElem('path_stretch_line')).remove();
-        $(elem).remove();
-        $(getElem('pathpointgrip_container')).find('*').attr('display', 'none');
+        const psl = getElem('path_stretch_line');
+        psl.parentNode.removeChild(psl);
+        elem.parentNode.removeChild(elem);
+        const pathpointgripContainer = getElem('pathpointgrip_container');
+        const elements = pathpointgripContainer.querySelectorAll('*');
+        Array.prototype.forEach.call(elements, function(el){
+          el.style.display = 'none';
+        });
         firstCtrl = null;
         editorContext_.setDrawnPath(null);
         editorContext_.setStarted(false);
@@ -909,7 +909,7 @@ export const pathActionsMethod = (function () {
         const type = seg.pathSegType;
         if (type === 1) { continue; }
         const pts = [];
-        $.each(['', 1, 2], function (j, n) {
+        ['', 1, 2].forEach(function(n){
           const x = seg['x' + n], y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
             const pt = transformPoint(x, y, m);
@@ -1134,20 +1134,18 @@ export const pathActionsMethod = (function () {
               cleanup();
               break;
             }
-          } else if (item.pathSegType === 2) {
-            if (len > 0) {
-              const prevType = segList.getItem(len - 1).pathSegType;
-              // Path has M M
-              if (prevType === 2) {
-                remItems(len - 1, 1);
-                cleanup();
-                break;
+          } else if (item.pathSegType === 2 && len > 0) {
+            const prevType = segList.getItem(len - 1).pathSegType;
+            // Path has M M
+            if (prevType === 2) {
+              remItems(len - 1, 1);
+              cleanup();
+              break;
               // Entire path ends with Z M
-              } else if (prevType === 1 && segList.numberOfItems - 1 === len) {
-                remItems(len, 1);
-                cleanup();
-                break;
-              }
+            } else if (prevType === 1 && segList.numberOfItems - 1 === len) {
+              remItems(len, 1);
+              cleanup();
+              break;
             }
           }
         }
@@ -1170,12 +1168,10 @@ export const pathActionsMethod = (function () {
       // TODO: Find right way to select point now
       // path.selectPt(selPt);
       if (window.opera) { // Opera repaints incorrectly
-        const cp = $(path.elem);
-        cp.attr('d', cp.attr('d'));
+        path.elem.setAttribute('d',  path.elem.getAttribute('d'));
       }
       path.endChanges('Delete path node(s)');
     },
-    /* eslint-disable jsdoc/require-returns */
     // Can't seem to use `@borrows` here, so using `@see`
     /**
     * Smooth polyline into path.
@@ -1183,7 +1179,7 @@ export const pathActionsMethod = (function () {
     * @see module:path~smoothPolylineIntoPath
     */
     smoothPolylineIntoPath,
-    /* eslint-enable jsdoc/require-returns */
+    /* eslint-enable  */
     /**
     * @param {?Integer} v See {@link https://www.w3.org/TR/SVG/single-page.html#paths-InterfaceSVGPathSeg}
     * @returns {void}
@@ -1242,7 +1238,6 @@ export const pathActionsMethod = (function () {
       editorContext_ = pathActionsContext_.getEditorContext();
       if (isWebkit()) { editorContext_.resetD(elem); }
     },
-    /* eslint-disable jsdoc/require-returns */
     // Can't seem to use `@borrows` here, so using `@see`
     /**
     * Convert a path to one with only absolute or relative values.
@@ -1250,7 +1245,6 @@ export const pathActionsMethod = (function () {
     * @see module:path.convertPath
     */
     convertPath
-    /* eslint-enable jsdoc/require-returns */
   });
 })();
 // end pathActions

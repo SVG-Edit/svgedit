@@ -74,10 +74,7 @@ export default {
     italic: 'Kursywa',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end',
-    letter_spacing: 'Change the letter spacing',
-    word_spacing: 'Change the word spacing',
-    text_length: 'Lets you specify the width of the space into which the text will draw'
+    text_anchor_end: 'Align the text in end'
   },
   tools: {
     main_menu: 'Menu główne',
@@ -209,7 +206,7 @@ export default {
     enterNewImgURL: 'Podaj adres URL nowego obrazu',
     defsFailOnSave: 'Uwaga: Ze względu na błąd w przeglądarce, ten obraz może się źle wyswietlać (brak gradientów lub elementów). Będzie jednak wyświetlał się poprawnie skoro został zapisany.',
     loadingImage: 'Ładowanie obrazu, proszę czekać...',
-    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a %s file.",
+    saveFromBrowser: "Select 'Save As...' in your browser (possibly via file menu or right-click context-menu) to save this image as a {{type}} file.",
     noteTheseIssues: 'Zwróć uwagę na nastepujące kwestie: ',
     unsavedChanges: 'Wykryto niezapisane zmiany.',
     enterNewLinkURL: 'Wpisz nowy adres URL hiperłącza',

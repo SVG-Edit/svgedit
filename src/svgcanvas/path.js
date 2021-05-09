@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Path functionality.
  * @module path
@@ -7,14 +6,14 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import {getTransformList} from '../common/svgtransformlist.js';
+import {getTransformList} from './svgtransformlist.js';
 import {shortFloat} from '../common/units.js';
-import {transformPoint} from '../common/math.js';
+import {transformPoint} from './math.js';
 import {
   getRotationAngle, getBBox,
   getRefElem, findDefs, isNullish,
   getBBox as utilsGetBBox
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   init as pathMethodInit, insertItemBeforeMethod, ptObjToArrMethod, getGripPtMethod,
   getPointFromGripMethod, addPointGripMethod, getGripContainerMethod, addCtrlGripMethod,
@@ -24,8 +23,6 @@ import {
 import {
   init as pathActionsInit, pathActionsMethod
 } from './path-actions.js';
-
-const $ = jQuery;
 
 const segData = {
   2: ['x', 'y'], // PATHSEG_MOVETO_ABS
@@ -77,7 +74,7 @@ export const setLinkControlPoints = function (lcp) {
  * @type {null|module:path.Path}
  * @memberof module:path
 */
-export let path = null; // eslint-disable-line import/no-mutable-exports
+export let path = null;
 
 let editorContext_ = null;
 
@@ -244,7 +241,7 @@ export const init = function (editorContext) {
     'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
     'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'
   ];
-  $.each(pathFuncsStrs, function (i, s) {
+  pathFuncsStrs.forEach(function(s){
     pathFuncs.push(s + 'Abs');
     pathFuncs.push(s + 'Rel');
   });
@@ -581,8 +578,9 @@ export const reorientGrads = function (elem, m) {
         };
 
         const newgrad = grad.cloneNode(true);
-        $(newgrad).attr(gCoords);
-
+        for (const [key, value] of Object.entries(gCoords)) {
+          newgrad.setAttribute(key, value);
+        }
         newgrad.id = editorContext_.getNextId();
         findDefs().append(newgrad);
         elem.setAttribute(type, 'url(#' + newgrad.id + ')');
@@ -674,6 +672,7 @@ export const convertPath = function (pth, toRel) {
     case 2: // absolute move (M)
     case 4: // absolute line (L)
     case 18: // absolute smooth quad (T)
+    case 10: // absolute elliptical arc (A)
       x -= curx;
       y -= cury;
       // Fallthrough
@@ -725,10 +724,6 @@ export const convertPath = function (pth, toRel) {
       }
       d += pathDSegment(letter, [[x1, y1], [x, y]]);
       break;
-    // eslint-disable-next-line sonarjs/no-duplicated-branches
-    case 10: // absolute elliptical arc (A)
-      x -= curx;
-      y -= cury;
       // Fallthrough
     case 11: // relative elliptical arc (a)
       if (toRel) {
@@ -777,7 +772,7 @@ export const convertPath = function (pth, toRel) {
  * @returns {string}
  */
 function pathDSegment (letter, points, morePoints, lastPoint) {
-  $.each(points, function (i, pnt) {
+  points.forEach(function(pnt, i){
     points[i] = shortFloat(pnt);
   });
   let segment = letter + points.join(' ');

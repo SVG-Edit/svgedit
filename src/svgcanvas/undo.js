@@ -8,16 +8,16 @@ import * as draw from './draw.js';
 import * as hstry from './history.js';
 import {
   getRotationAngle, getBBox as utilsGetBBox, isNullish, setHref, getStrokedBBoxDefaultVisible
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   isGecko
 } from '../common/browser.js';
 import {
   transformPoint, transformListToTransform
-} from '../common/math.js';
+} from './math.js';
 import {
   getTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 
 const {
   UndoManager, HistoryEventTypes
@@ -188,7 +188,13 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
         // }
       } else if (attr === '#href') {
         setHref(elem, newValue);
-      } else { elem.setAttribute(attr, newValue); }
+      } else if (newValue) {
+        elem.setAttribute(attr, newValue);
+      } else if (typeof newValue === 'number') {
+        elem.setAttribute(attr, newValue);
+      } else {
+        elem.removeAttribute(attr);
+      }
 
       // Go into "select" mode for text changes
       // NOTE: Important that this happens AFTER elem.setAttribute() or else attributes like
@@ -204,12 +210,11 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
 
       // Use the Firefox ffClone hack for text elements with gradients or
       // where other text attributes are changed.
-      if (isGecko() && elem.nodeName === 'text' && (/rotate/).test(elem.getAttribute('transform'))) {
-        if (
-          String(newValue).startsWith('url') || (['font-size', 'font-family', 'x', 'y'].includes(attr) && elem.textContent)
-        ) {
-          elem = ffClone(elem);
-        }
+      if (isGecko() &&
+        elem.nodeName === 'text' &&
+        (/rotate/).test(elem.getAttribute('transform')) &&
+        (String(newValue).startsWith('url') || (['font-size', 'font-family', 'x', 'y'].includes(attr) && elem.textContent))) {
+        elem = ffClone(elem);
       }
       // Timeout needed for Opera & Firefox
       // codedread: it is now possible for this function to be called with elements

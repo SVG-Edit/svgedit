@@ -10,6 +10,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -23,20 +24,22 @@ const loadExtensionTranslation = async function (lang) {
 // The button toggles whether the path is open or closed
 export default {
   name: 'closepath',
-  async init ({importLocale, $}) {
+  async init ({_importLocale}) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const {svgCanvas} = svgEditor;
+    const {$id} = svgCanvas;
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     let selElems;
     const updateButton = function (path) {
       const seglist = path.pathSegList,
         closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType === 1,
-        showbutton = closed ? '#tool_openpath' : '#tool_closepath',
-        hidebutton = closed ? '#tool_closepath' : '#tool_openpath';
-      $(hidebutton).hide();
-      $(showbutton).show();
+        showbutton = closed ? 'tool_openpath' : 'tool_closepath',
+        hidebutton = closed ? 'tool_closepath' : 'tool_openpath';
+      $id(hidebutton).style.display = 'none';
+      $id(showbutton).style.display = 'block';
     };
     const showPanel = function (on) {
-      $('#closepath_panel').toggle(on);
+      $id('closepath_panel').style.display = (on) ? 'block' : 'none';
       if (on) {
         const path = selElems[0];
         if (path) { updateButton(path); }
@@ -89,7 +92,7 @@ export default {
         return Object.assign(buttons[i], button);
       }),
       callback () {
-        $('#closepath_panel').hide();
+        $id("closepath_panel").style.display = 'none';
       },
       selectedChanged (opts) {
         selElems = opts.elems;

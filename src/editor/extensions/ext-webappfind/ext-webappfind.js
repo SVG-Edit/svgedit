@@ -9,6 +9,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -20,9 +21,9 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'webappfind',
-  async init ({$}) {
+  async init () {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const saveMessage = 'save',
       readMessage = 'read',
       excludedMessages = [readMessage, saveMessage];
@@ -39,7 +40,7 @@ export default {
       * @throws {Error} Unexpected event type
       * @returns {void}
       */
-      (win, {data, origin}) => { // eslint-disable-line no-shadow
+      (win, {data, origin}) => {
         // console.log('data, origin', data, origin);
         let type, content;
         try {
@@ -57,13 +58,10 @@ export default {
         case 'view':
           // Populate the contents
           svgEditor.loadFromString(content);
-
-          /* if ($('#tool_save_file')) {
-            $('#tool_save_file').disabled = false;
-          } */
           break;
         case 'save-end':
-          $.alert(`save complete for pathID ${pathID}!`);
+          // eslint-disable-next-line no-alert
+          alert(`save complete for pathID ${pathID}!`);
           break;
         default:
           throw new Error('Unexpected WebAppFind event type');
@@ -98,7 +96,7 @@ export default {
               webappfind: {
                 type: saveMessage,
                 pathID,
-                content: svgEditor.canvas.getSvgString()
+                content: svgEditor.svgCanvas.getSvgString()
               }
             }, window.location.origin === 'null'
               // Avoid "null" string error for `file:` protocol (even

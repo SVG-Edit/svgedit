@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * @module text-actions Tools for Text edit functions
  * @license MIT
@@ -6,19 +5,17 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import jQueryPluginSVG from '../common/jQuery.attr.js';
+
 import {NS} from '../common/namespaces.js';
 import {
   transformPoint, getMatrix
-} from '../common/math.js';
+} from './math.js';
 import {
   assignAttributes, getElem, getBBox as utilsGetBBox
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   supportsGoodTextCharPos
 } from '../common/browser.js';
-
-const $ = jQueryPluginSVG(jQuery);
 
 let textActionsContext_ = null;
 
@@ -31,7 +28,6 @@ export const init = function (textActionsContext) {
   textActionsContext_ = textActionsContext;
 };
 
-/* eslint-disable jsdoc/require-property */
 /**
 * Group: Text edit functions
 * Functions relating to editing text elements.
@@ -39,7 +35,6 @@ export const init = function (textActionsContext) {
 * @memberof module:svgcanvas.SvgCanvas#
 */
 export const textActionsMethod = (function () {
-  /* eslint-enable jsdoc/require-property */
   let curtext;
   let textinput;
   let cursor;
@@ -58,7 +53,7 @@ export const textActionsMethod = (function () {
 */
   function setCursor (index) {
     const empty = (textinput.value === '');
-    $(textinput).focus();
+    textinput.focus();
 
     if (!arguments.length) {
       if (empty) {
@@ -81,7 +76,7 @@ export const textActionsMethod = (function () {
         stroke: '#333',
         'stroke-width': 1
       });
-      cursor = getElem('selectorParentGroup').appendChild(cursor);
+      getElem('selectorParentGroup').append(cursor);
     }
 
     if (!blinker) {
@@ -263,15 +258,6 @@ export const textActionsMethod = (function () {
     return out;
   }
 
-  /*
-// Not currently in use
-function hideCursor () {
-if (cursor) {
-cursor.setAttribute('visibility', 'hidden');
-}
-}
-*/
-
   /**
 *
 * @param {Event} evt
@@ -279,7 +265,7 @@ cursor.setAttribute('visibility', 'hidden');
 */
   function selectAll (evt) {
     setSelection(0, curtext.textContent.length);
-    $(this).unbind(evt);
+    evt.target.removeEventListener('click', selectAll);
   }
 
   /**
@@ -303,9 +289,10 @@ cursor.setAttribute('visibility', 'hidden');
     setSelection(first, last);
 
     // Set tripleclick
-    $(evt.target).click(selectAll);
+    evt.target.addEventListener('click', selectAll);
+
     setTimeout(function () {
-      $(evt.target).unbind('click', selectAll);
+      evt.target.removeEventListener('click', selectAll);
     }, 300);
   }
 
@@ -402,7 +389,7 @@ cursor.setAttribute('visibility', 'hidden');
 
       textActionsContext_.getCanvas().textActions.init();
 
-      $(curtext).css('cursor', 'text');
+      curtext.style.cursor = 'text';
 
       // if (supportsEditableText()) {
       //   curtext.setAttribute('editable', 'simple');
@@ -429,13 +416,13 @@ cursor.setAttribute('visibility', 'hidden');
       textActionsContext_.setCurrentMode('select');
       clearInterval(blinker);
       blinker = null;
-      if (selblock) { $(selblock).attr('display', 'none'); }
-      if (cursor) { $(cursor).attr('visibility', 'hidden'); }
-      $(curtext).css('cursor', 'move');
+      if (selblock) { selblock.setAttribute('display', 'none'); }
+      if (cursor) { cursor.setAttribute('visibility', 'hidden'); }
+      curtext.style.cursor = 'move';
 
       if (selectElem) {
         textActionsContext_.getCanvas().clearSelection();
-        $(curtext).css('cursor', 'move');
+        curtext.style.cursor = 'move';
 
         textActionsContext_.call('selected', [curtext]);
         textActionsContext_.getCanvas().addToSelection([curtext], true);
@@ -445,7 +432,7 @@ cursor.setAttribute('visibility', 'hidden');
         textActionsContext_.getCanvas().deleteSelectedElements();
       }
 
-      $(textinput).blur();
+      textinput.blur();
 
       curtext = false;
 
@@ -459,7 +446,6 @@ cursor.setAttribute('visibility', 'hidden');
 */
     setInputElem (elem) {
       textinput = elem;
-      // $(textinput).blur(hideCursor);
     },
     /**
 * @returns {void}
@@ -470,10 +456,10 @@ cursor.setAttribute('visibility', 'hidden');
       }
     },
     /**
-* @param {Element} inputElem Not in use
+* @param {Element} _inputElem Not in use
 * @returns {void}
 */
-    init (inputElem) {
+    init (_inputElem) {
       if (!curtext) { return; }
       let i, end;
       // if (supportsEditableText()) {
@@ -501,7 +487,8 @@ cursor.setAttribute('visibility', 'hidden');
       chardata.length = len;
       textinput.focus();
 
-      $(curtext).unbind('dblclick', selectWord).dblclick(selectWord);
+      curtext.removeEventListener("dblclick", selectWord);
+      curtext.addEventListener("dblclick", selectWord);
 
       if (!len) {
         end = {x: textbb.x + (textbb.width / 2), width: 0};

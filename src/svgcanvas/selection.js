@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Tools for selection.
  * @module selection
@@ -6,19 +5,18 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import {NS} from '../common/namespaces.js';
+import { NS } from '../common/namespaces.js';
 import {
   isNullish, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
-} from '../common/utilities.js';
-import {transformPoint, transformListToTransform, rectsIntersect} from '../common/math.js';
-import jQueryPluginSVG from '../common/jQuery.attr.js';
+} from './utilities.js';
+import { transformPoint, transformListToTransform, rectsIntersect } from './math.js';
 import {
   getTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 import * as hstry from './history.js';
+import { getClosest } from '../editor/components/jgraduate/Util.js';
 
-const {BatchCommand} = hstry;
-const $ = jQueryPluginSVG(jQuery);
+const { BatchCommand } = hstry;
 let selectionContext_ = null;
 
 /**
@@ -139,7 +137,7 @@ export const getMouseTargetMethod = function (evt) {
   // for foreign content, go up until we find the foreignObject
   // WebKit browsers set the mouse target to the svgcanvas div
   if ([NS.MATH, NS.HTML].includes(mouseTarget.namespaceURI) &&
-mouseTarget.id !== 'svgcanvas'
+    mouseTarget.id !== 'svgcanvas'
   ) {
     while (mouseTarget.nodeName !== 'foreignObject') {
       mouseTarget = mouseTarget.parentNode;
@@ -157,10 +155,10 @@ mouseTarget.id !== 'svgcanvas'
     return selectionContext_.getSVGRoot();
   }
 
-  const $target = $(mouseTarget);
+  const $target = mouseTarget;
 
   // If it's a selection grip, return the grip parent
-  if ($target.closest('#selectorParentGroup').length) {
+  if (getClosest($target.parentNode, '#selectorParentGroup')) {
     // While we could instead have just returned mouseTarget,
     // this makes it easier to indentify as being a selector grip
     return selectionContext_.getCanvas().selectorManager.selectorParentGroup;
@@ -209,7 +207,7 @@ mouseTarget.id !== 'svgcanvas'
 */
 export const runExtensionsMethod = function (action, vars, returnArray, nameFilter) {
   let result = returnArray ? [] : false;
-  $.each(selectionContext_.getExtensions(), function (name, ext) {
+  for (const [name, ext] of Object.entries(selectionContext_.getExtensions())) {
     if (nameFilter && !nameFilter(name)) {
       return;
     }
@@ -223,7 +221,7 @@ export const runExtensionsMethod = function (action, vars, returnArray, nameFilt
         result = ext[action](vars);
       }
     }
-  });
+  }
   return result;
 };
 
@@ -237,12 +235,14 @@ export const runExtensionsMethod = function (action, vars, returnArray, nameFilt
 */
 export const getVisibleElementsAndBBoxes = function (parent) {
   if (!parent) {
-    parent = $(selectionContext_.getSVGContent()).children(); // Prevent layers from being included
+    const svgcontent = selectionContext_.getSVGContent();
+    parent = svgcontent.children; // Prevent layers from being included
   }
   const contentElems = [];
-  $(parent).children().each(function (i, elem) {
+  const elements = parent.children;
+  Array.prototype.forEach.call(elements, function (elem) {
     if (elem.getBBox) {
-      contentElems.push({elem, bbox: getStrokedBBoxDefaultVisible([elem])});
+      contentElems.push({ elem, bbox: getStrokedBBoxDefaultVisible([elem]) });
     }
   });
   return contentElems.reverse();
@@ -284,15 +284,6 @@ export const getIntersectionListMethod = function (rect) {
   }
 
   let resultList = null;
-  if (!selectionContext_.isIE()) {
-    if (typeof selectionContext_.getSVGRoot().getIntersectionList === 'function') {
-      // Offset the bbox of the rubber box by the offset of the svgcontent element.
-      rubberBBox.x += Number.parseInt(selectionContext_.getSVGContent().getAttribute('x'));
-      rubberBBox.y += Number.parseInt(selectionContext_.getSVGContent().getAttribute('y'));
-
-      resultList = selectionContext_.getSVGRoot().getIntersectionList(rubberBBox, parent);
-    }
-  }
 
   if (isNullish(resultList) || typeof resultList.item !== 'function') {
     resultList = [];
@@ -330,9 +321,12 @@ export const getIntersectionListMethod = function (rect) {
 * @returns {void}
 */
 export const groupSvgElem = function (elem) {
+  const dataStorage = selectionContext_.getDataStorage();
   const g = document.createElementNS(NS.SVG, 'g');
   elem.replaceWith(g);
-  $(g).append(elem).data('gsvg', elem)[0].id = selectionContext_.getCanvas().getNextId();
+  g.appendChild(elem);
+  dataStorage.put(g, 'gsvg', elem);
+  g.id = selectionContext_.getCanvas().getNextId();
 };
 
 /**
@@ -351,12 +345,6 @@ export const prepareSvg = function (newDoc) {
     selectionContext_.getCanvas().pathActions.fixEnd(path);
   });
 };
-// `this.each` is deprecated, if any extension used this it can be recreated by doing this:
-// * @example $(canvas.getRootElem()).children().each(...)
-// * @function module:svgcanvas.SvgCanvas#each
-// this.each = function (cb) {
-//  $(svgroot).children().each(cb);
-// };
 
 /**
 * Removes any old rotations if present, prepends a new rotation at the
@@ -402,7 +390,11 @@ export const setRotationAngle = function (val, preventUndo) {
     // we need to undo it, then redo it so it can be undo-able! :)
     // TODO: figure out how to make changes to transform list undo-able cross-browser?
     const newTransform = elem.getAttribute('transform');
-    elem.setAttribute('transform', oldTransform);
+    if (oldTransform) {
+      elem.setAttribute('transform', oldTransform);
+    } else {
+      elem.removeAttribute('transform');
+    }
     selectionContext_.getCanvas().changeSelectedAttribute('transform', newTransform, selectedElements);
     selectionContext_.getCanvas().call('changed', selectedElements);
   }
