@@ -165,7 +165,7 @@ class EditorStartup {
         this.exportWindow = window.open('', this.exportWindowName); // A hack to get the window via JSON-able name without opening a new one
       }
       if (!this.exportWindow || this.exportWindow.closed) {
-        seAlert(this.uiStrings.notification.popupWindowBlocked);
+        seAlert(this.i18next.t('notification.popupWindowBlocked'));
         return;
       }
       this.exportWindow.location.href = data.output;
@@ -577,8 +577,8 @@ class EditorStartup {
       // showSaveWarning is set to 'false' when the page is saved.
       if (!this.configObj.curConfig.no_save_warning && this.showSaveWarning) {
       // Browser already asks question about closing the page
-        e.returnValue = this.uiStrings.notification.unsavedChanges; // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
-        return this.uiStrings.notification.unsavedChanges;
+        e.returnValue = this.i18next.t('notification.unsavedChanges'); // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
+        return this.i18next.t('notification.unsavedChanges');
       }
       return true;
     }.bind(this));

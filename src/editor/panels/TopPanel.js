@@ -558,7 +558,7 @@ class TopPanel {
     if (!valid) {
       e.target.value = this.editor.selectedElement().getAttribute(attr);
       // eslint-disable-next-line no-alert
-      alert(this.uiStrings.notification.invalidAttrValGiven);
+      alert(this.i18next.t('notification.invalidAttrValGiven'));
       return false;
     }
 
@@ -619,7 +619,7 @@ class TopPanel {
     if (!isNullish(this.editor.selectedElement) || this.multiselected) {
       // eslint-disable-next-line no-alert
       const url = prompt(
-        this.uiStrings.notification.enterNewLinkURL,
+        this.i18next.t('notification.enterNewLinkURL'),
         "http://"
       );
       if (url) {

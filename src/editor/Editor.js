@@ -377,7 +377,7 @@ class Editor extends EditorStartup {
     this.exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!this.exportWindow || this.exportWindow.closed) {
-      seAlert(this.uiStrings.notification.popupWindowBlocked);
+      seAlert(this.i18next.t('notification.popupWindowBlocked'));
       return;
     }
 
@@ -389,7 +389,7 @@ class Editor extends EditorStartup {
       // Check if there are issues
       if (issues.length) {
         const pre = '\n \u2022 ';
-        note += ('\n\n' + this.uiStrings.notification.noteTheseIssues + pre + issues.join(pre));
+        note += ('\n\n' + this.i18next.t('notification..noteTheseIssues') + pre + issues.join(pre));
       }
 
       // Note that this will also prevent the notice even though new issues may appear later.
@@ -941,7 +941,7 @@ class Editor extends EditorStartup {
     };
 
     if (!this.svgCanvas.setSvgString(e.detail.value)) {
-      const ok = await seConfirm(this.uiStrings.notification.QerrorsRevertToSource);
+      const ok = await seConfirm(this.i18next.t('notification.QerrorsRevertToSource'));
       if (ok === false || ok === 'Cancel') {
         return;
       }
@@ -970,7 +970,7 @@ class Editor extends EditorStartup {
     if (editingsource) {
       const origSource = this.svgCanvas.getSvgString();
       if (origSource !== e.detail.value) {
-        const ok = seConfirm(this.uiStrings.notification.QignoreSourceChanges);
+        const ok = seConfirm(this.i18next.t('notification.QignoreSourceChanges'));
         if (ok) {
           this.hideSourceEditor();
         }
@@ -1000,7 +1000,7 @@ class Editor extends EditorStartup {
     if (this.svgCanvas.undoMgr.getUndoStackSize() === 0) {
       return true;
     }
-    return await seConfirm(this.uiStrings.notification.QwantToOpen);
+    return await seConfirm(this.i18next.t('notification.QwantToOpen'));
   }
 
   /**
@@ -1052,13 +1052,13 @@ class Editor extends EditorStartup {
     const $editDialog = document.getElementById('se-edit-prefs');
     $editDialog.setAttribute('lang', lang);
     const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
-    const renameLayer = (oldLayerName === this.uiStrings.common.layer + ' 1');
+    const renameLayer = (oldLayerName === this.i18next.t('notification.common.layer') + ' 1');
 
     // this.svgCanvas.setUiStrings(allStrings);
     this.setTitles();
 
     if (renameLayer) {
-      this.svgCanvas.renameCurrentLayer(this.uiStrings.common.layer + ' 1');
+      this.svgCanvas.renameCurrentLayer(this.i18next.t('notification.common.layer') + ' 1');
       this.layersPanel.populateLayers();
     }
 
@@ -1151,7 +1151,7 @@ class Editor extends EditorStartup {
           dataType: 'text',
           cache: Boolean(cache),
           beforeSend() {
-            $.process_cancel(this.uiStrings.notification.loadingImage);
+            $.process_cancel(this.i18next.t('notification.loadingImage'));
           },
           success(str) {
             this.loadSvgString(str, { noAlert });
