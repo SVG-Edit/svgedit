@@ -15,6 +15,10 @@ class MainMenu {
    */
   constructor(editor) {
     this.editor = editor;
+    /**
+     * @type {Integer}
+     */
+    this.exportWindowCt = 0;
   }
 
   /**

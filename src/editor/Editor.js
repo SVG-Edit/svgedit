@@ -40,14 +40,6 @@ class Editor extends EditorStartup {
   constructor() {
     super();
     /**
-    * @type {Float}
-    */
-    this.tool_scale = 1;
-    /**
-    * @type {Integer}
-    */
-    this.exportWindowCt = 0;
-    /**
     * @type {boolean}
     */
     this.langChanged = false;
@@ -77,42 +69,41 @@ class Editor extends EditorStartup {
     // eslint-disable-next-line max-len
     this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW'];
     const modKey = (isMac() ? 'meta+' : 'ctrl+');
-    const curObj = this;
-    this.toolButtons = [
+    this.shortcuts = [
       // Shortcuts not associated with buttons
-      { key: 'ctrl+arrowleft', fn() { curObj.rotateSelected(0, 1); } },
-      { key: 'ctrl+arrowright', fn() { curObj.rotateSelected(1, 1); } },
-      { key: 'ctrl+shift+arrowleft', fn() { curObj.rotateSelected(0, 5); } },
-      { key: 'ctrl+shift+arrowright', fn() { curObj.rotateSelected(1, 5); } },
-      { key: 'shift+o', fn() { curObj.svgCanvas.cycleElement(0); } },
-      { key: 'shift+p', fn() { curObj.svgCanvas.cycleElement(1); } },
-      { key: 'tab', fn() { curObj.svgCanvas.cycleElement(0); } },
-      { key: 'shift+tab', fn() { curObj.svgCanvas.cycleElement(1); } },
-      { key: [modKey + 'arrowup', true], fn() { curObj.zoomImage(2); } },
-      { key: [modKey + 'arrowdown', true], fn() { curObj.zoomImage(0.5); } },
-      { key: [modKey + ']', true], fn() { curObj.moveUpDownSelected('Up'); } },
-      { key: [modKey + '[', true], fn() { curObj.moveUpDownSelected('Down'); } },
-      { key: ['arrowup', true], fn() { curObj.moveSelected(0, -1); } },
-      { key: ['arrowdown', true], fn() { curObj.moveSelected(0, 1); } },
-      { key: ['arrowleft', true], fn() { curObj.moveSelected(-1, 0); } },
-      { key: ['arrowright', true], fn() { curObj.moveSelected(1, 0); } },
-      { key: 'shift+arrowup', fn() { curObj.moveSelected(0, -10); } },
-      { key: 'shift+arrowdown', fn() { curObj.moveSelected(0, 10); } },
-      { key: 'shift+arrowleft', fn() { curObj.moveSelected(-10, 0); } },
-      { key: 'shift+arrowright', fn() { curObj.moveSelected(10, 0); } },
-      { key: ['alt+arrowup', true], fn() { curObj.svgCanvas.cloneSelectedElements(0, -1); } },
-      { key: ['alt+arrowdown', true], fn() { curObj.svgCanvas.cloneSelectedElements(0, 1); } },
-      { key: ['alt+arrowleft', true], fn() { curObj.svgCanvas.cloneSelectedElements(-1, 0); } },
-      { key: ['alt+arrowright', true], fn() { curObj.svgCanvas.cloneSelectedElements(1, 0); } },
-      { key: ['alt+shift+arrowup', true], fn() { curObj.svgCanvas.cloneSelectedElements(0, -10); } },
-      { key: ['alt+shift+arrowdown', true], fn() { curObj.svgCanvas.cloneSelectedElements(0, 10); } },
-      { key: ['alt+shift+arrowleft', true], fn() { curObj.svgCanvas.cloneSelectedElements(-10, 0); } },
-      { key: ['alt+shift+arrowright', true], fn() { curObj.svgCanvas.cloneSelectedElements(10, 0); } },
-      { key: 'a', fn() { curObj.svgCanvas.selectAllInCurrentLayer(); } },
-      { key: modKey + 'a', fn() { curObj.svgCanvas.selectAllInCurrentLayer(); } },
-      { key: modKey + 'x', fn() { curObj.cutSelected(); } },
-      { key: modKey + 'c', fn() { curObj.copySelected(); } },
-      { key: modKey + 'v', fn() { curObj.pasteInCenter(); } }
+      { key: 'ctrl+arrowleft', fn: () => { this.rotateSelected(0, 1); } },
+      { key: 'ctrl+arrowright', fn: () => { this.rotateSelected(1, 1); } },
+      { key: 'ctrl+shift+arrowleft', fn: () => { this.rotateSelected(0, 5); } },
+      { key: 'ctrl+shift+arrowright', fn: () => { this.rotateSelected(1, 5); } },
+      { key: 'shift+o', fn: () => { this.svgCanvas.cycleElement(0); } },
+      { key: 'shift+p', fn: () => { this.svgCanvas.cycleElement(1); } },
+      { key: 'tab', fn: () => { this.svgCanvas.cycleElement(0); } },
+      { key: 'shift+tab', fn: () => { this.svgCanvas.cycleElement(1); } },
+      { key: [modKey + 'arrowup', true], fn: () => { this.zoomImage(2); } },
+      { key: [modKey + 'arrowdown', true], fn: () => { this.zoomImage(0.5); } },
+      { key: [modKey + ']', true], fn: () => { this.moveUpDownSelected('Up'); } },
+      { key: [modKey + '[', true], fn: () => { this.moveUpDownSelected('Down'); } },
+      { key: ['arrowup', true], fn: () => { this.moveSelected(0, -1); } },
+      { key: ['arrowdown', true], fn: () => { this.moveSelected(0, 1); } },
+      { key: ['arrowleft', true], fn: () => { this.moveSelected(-1, 0); } },
+      { key: ['arrowright', true], fn: () => { this.moveSelected(1, 0); } },
+      { key: 'shift+arrowup', fn: () => { this.moveSelected(0, -10); } },
+      { key: 'shift+arrowdown', fn: () => { this.moveSelected(0, 10); } },
+      { key: 'shift+arrowleft', fn: () => { this.moveSelected(-10, 0); } },
+      { key: 'shift+arrowright', fn: () => { this.moveSelected(10, 0); } },
+      { key: ['alt+arrowup', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, -1); } },
+      { key: ['alt+arrowdown', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, 1); } },
+      { key: ['alt+arrowleft', true], fn: () => { this.svgCanvas.cloneSelectedElements(-1, 0); } },
+      { key: ['alt+arrowright', true], fn: () => { this.svgCanvas.cloneSelectedElements(1, 0); } },
+      { key: ['alt+shift+arrowup', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, -10); } },
+      { key: ['alt+shift+arrowdown', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, 10); } },
+      { key: ['alt+shift+arrowleft', true], fn: () => { this.svgCanvas.cloneSelectedElements(-10, 0); } },
+      { key: ['alt+shift+arrowright', true], fn: () => { this.svgCanvas.cloneSelectedElements(10, 0); } },
+      { key: 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer(); } },
+      { key: modKey + 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer(); } },
+      { key: modKey + 'x', fn: () => { this.cutSelected(); } },
+      { key: modKey + 'c', fn: () => { this.copySelected(); } },
+      { key: modKey + 'v', fn: () => { this.pasteInCenter(); } }
     ];
     this.leftPanel = new LeftPanel(this);
     this.bottomPanel = new BottomPanel(this);
@@ -228,18 +219,18 @@ class Editor extends EditorStartup {
   setAll() {
     const keyHandler = {}; // will contain the action for each pressed key
 
-    this.toolButtons.forEach((opts) => {
+    this.shortcuts.forEach((shortcut) => {
       // Bind function to shortcut key
-      if (opts.key) {
+      if (shortcut.key) {
         // Set shortcut based on options
-        let keyval = opts.key;
+        let keyval = shortcut.key;
         let pd = false;
-        if (Array.isArray(opts.key)) {
-          keyval = opts.key[0];
-          if (opts.key.length > 1) { pd = opts.key[1]; }
+        if (Array.isArray(shortcut.key)) {
+          keyval = shortcut.key[0];
+          if (shortcut.key.length > 1) { pd = shortcut.key[1]; }
         }
         keyval = String(keyval);
-        const { fn } = opts;
+        const { fn } = shortcut;
         keyval.split('/').forEach((key) => { keyHandler[key] = { fn, pd }; });
       }
       return true;
@@ -333,7 +324,7 @@ class Editor extends EditorStartup {
      * @returns {module:SVGthis.ToolButton}
      */
   getButtonData(sel) {
-    return Object.values(this.toolButtons).find((btn) => {
+    return Object.values(this.shortcuts).find((btn) => {
       return btn.sel === sel;
     });
   }
