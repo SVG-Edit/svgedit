@@ -165,7 +165,7 @@ class MainMenu {
      * @returns {void}
      */
     const openExportWindow = () => {
-      const { loadingImage } = this.editor.uiStrings.notification;
+      const loadingImage  = this.editor.i18next.t('notification.loadingImage');
       if (this.editor.configObj.curConfig.exportWindowType === "new") {
         this.editor.exportWindowCt++;
       }

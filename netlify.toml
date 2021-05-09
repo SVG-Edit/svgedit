@@ -14,26 +14,12 @@
   # Default build command.
   command = "npm run build"
 
-# Production context: all deploys from the Production branch set in your site's
-# deploy contexts will inherit these settings.
-[context."v7-preview"]
-  publish = "/"
-
 [context."release-v6.0.0"]
   publish = "/"
   command = "echo 'branch release-v6.0.0 already built'"
-
+  
 [context."release-v5.1.0"]
   publish = "/"
   command = "echo 'branch release-v5.1.0 already built'"
 
-[context.master]
-  publish = "/"
-  command = "echo 'already built'"
-
-# Production context: all deploys from the Production branch set in your site's
-# deploy contexts will inherit these settings.
-[context."V7-preview"]
-  publish = "/"
-  command = "npm run build"
 
