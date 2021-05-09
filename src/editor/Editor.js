@@ -1165,7 +1165,7 @@ class Editor extends EditorStartup {
               reject(new Error('URLLoadFail'));
               return;
             }
-            seAlert(this.uiStrings.notification.URLLoadFail + ': \n' + err);
+            seAlert(this.i18next.t('notification.URLLoadFail') + ': \n' + err);
             resolve();
           },
           complete() {

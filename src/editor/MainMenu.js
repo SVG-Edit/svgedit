@@ -27,7 +27,7 @@ class MainMenu {
    */
   async clickClear() {
     const [x, y] = this.editor.configObj.curConfig.dimensions;
-    const ok = await seConfirm(this.editor.uiStrings.notification.QwantToClear);
+    const ok = await seConfirm(this.editor.i18next.t('notification.QwantToClear'));
     if (ok === "Cancel") {
       return;
     }
@@ -72,15 +72,15 @@ class MainMenu {
     this.editor.svgCanvas.setDocumentTitle(title);
 
     if (w !== "fit" && !isValidUnit("width", w)) {
-      seAlert(this.editor.uiStrings.notification.invalidAttrValGiven);
+      seAlert(this.editor.i18next.t('notification.invalidAttrValGiven'));
       return false;
     }
     if (h !== "fit" && !isValidUnit("height", h)) {
-      seAlert(this.editor.uiStrings.notification.invalidAttrValGiven);
+      seAlert(this.editor.i18next.t('notification.invalidAttrValGiven'));
       return false;
     }
     if (!this.editor.svgCanvas.setResolution(w, h)) {
-      seAlert(this.editor.uiStrings.notification.noContentToFitTo);
+      seAlert(this.editor.i18next.t('notification.noContentToFitTo'));
       return false;
     }
     // Set image save option

@@ -226,7 +226,7 @@ class LayersPanel {
       return;
     }
     if (this.editor.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      alert(this.uiStrings.notification.dupeLayerName);
+      alert(this.i18next.t('notification.dupeLayerName'));
       return;
     }
     this.editor.svgCanvas.createLayer(newName);
@@ -270,7 +270,7 @@ class LayersPanel {
       return;
     }
     if (this.editor.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      alert(this.uiStrings.notification.dupeLayerName);
+      alert(this.i18next.t('notification.dupeLayerName'));
       return;
     }
     this.editor.svgCanvas.cloneLayer(newName);
@@ -323,7 +323,7 @@ class LayersPanel {
    */
   layerRename() {
     const oldName = document.querySelector("#layerlist tr.layersel td.layername").textContent;
-    const newName = prompt(this.uiStrings.notification.enterNewLayerName, "");
+    const newName = prompt(this.i18next.t('notification.enterNewLayerName'), "");
     if (!newName) {
       return;
     }

@@ -216,7 +216,7 @@ class EditorStartup {
     let promptMoveLayerOnce = false;
     $id('selLayerNames').addEventListener('change', function(evt) {
       const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
-      const confirmStr = self.uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
+      const confirmStr = self.i18next.t('notification.QmoveElemsToLayer').replace('%s', destLayer);
       /**
     * @param {boolean} ok
     * @returns {void}
@@ -594,7 +594,7 @@ class EditorStartup {
     */
       const editorObj = this;
       const importImage = function (e) {
-        document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
+        document.getElementById('se-prompt-dialog').title = editorObj.i18next.t('notification.loadingImage');
         e.stopPropagation();
         e.preventDefault();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
