@@ -138,7 +138,7 @@ class TopPanel {
     curhref = curhref.startsWith("data:") ? "" : curhref;
     // eslint-disable-next-line no-alert
     const url = prompt(
-      this.editor.uiStrings.notification.enterNewImgURL,
+      this.editor.i18next.t('notification.enterNewImgURL'),
       curhref
     );
     if (url) {
