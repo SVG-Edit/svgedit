@@ -219,7 +219,7 @@ class LayersPanel {
     } while (this.editor.svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 
     const newName = prompt(
-      this.uiStrings.notification.enterUniqueLayerName,
+      this.i18next.t('notification.enterUniqueLayerName'),
       uniqName
     );
     if (!newName) {
@@ -263,7 +263,7 @@ class LayersPanel {
       this.editor.svgCanvas.getCurrentDrawing().getCurrentLayerName() + " copy";
 
     const newName = prompt(
-      this.uiStrings.notification.enterUniqueLayerName,
+      this.i18next.t('notification.enterUniqueLayerName'),
       name
     );
     if (!newName) {
@@ -331,7 +331,7 @@ class LayersPanel {
       oldName === newName ||
       this.editor.svgCanvas.getCurrentDrawing().hasLayer(newName)
     ) {
-      alert(this.uiStrings.notification.layerHasThatName);
+      alert(this.i18next.t('notification.layerHasThatName'));
       return;
     }
     this.editor.svgCanvas.renameCurrentLayer(newName);
