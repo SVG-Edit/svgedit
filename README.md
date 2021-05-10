@@ -1,4 +1,4 @@
-# ![LOGO](src/editor/images/logo.svg) SVG-edit
+# ![LOGO](<img src="src/editor/images/logo.svg" width="50" height="50" />) SVG-edit
 
 [![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
