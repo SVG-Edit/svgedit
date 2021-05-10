@@ -1,4 +1,6 @@
-# ![LOGO](<img src="https://svg-edit.github.io/svgedit/src/editor/images/logo.svg" width="50" height="50" />) SVG-edit
+<img src="https://svg-edit.github.io/svgedit/src/editor/images/logo.svg" width="50" height="50" />
+
+# SVG-Edit
 
 [![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
@@ -32,13 +34,12 @@ We need more maintainers for SVG-Edit
 
 ## Demo
 
-### [Try SVG-edit here](https://svg-edit.github.io/svgedit/src/editor/index.html)
+### [Try SVG-edit here](https://svgedit.netlify.app/editor/index.html)
 
 Thanks to netlify, you can test the following builds: 
 
 [Try SVG-edit 5.1.0 here](https://6098683962bf91702907ee33--svgedit.netlify.app/editor/svg-editor.html)
 
-latest master build: https://svgedit.netlify.app/editor/index.html
 
 ## Installation
 
