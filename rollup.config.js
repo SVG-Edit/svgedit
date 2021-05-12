@@ -28,7 +28,8 @@ const getDirectories = (source) => {
 // capture the list of files to build for extensions and ext-locales
 const extensionDirs = getDirectories('src/editor/extensions');
 
-const dest = ['dist/editor', 'dist/editor/system'];
+/** @todo should we support systemjs? */
+const dest = ['dist/editor' /* , 'dist/editor/system' */];
 
 // remove existing distribution
 // eslint-disable-next-line no-console
@@ -50,15 +51,16 @@ const config = [{
       sourcemap: true,
       file: 'dist/editor/xdomain-index.js',
       intro: 'const XDOMAIN = true;'
-    },
+    }
+    /*
     {
       format: 'system',
       dir: 'dist/editor/system',
       inlineDynamicImports: true
     }
+    */
   ],
   plugins: [
-    // progress(),
     copy({
       targets: [
         {
@@ -72,6 +74,7 @@ const config = [{
           transform: (contents) => contents.toString()
             .replace('<script type="module" src="index.js">', '<script type="module" src="xdomain-index.js">')
         },
+        /*
         {
           src: 'src/editor/index.html',
           dest: ['dist/editor/system'],
@@ -91,14 +94,13 @@ const config = [{
           src: ['node_modules/systemjs/dist/s.min.js', 'node_modules/systemjs/dist/s.min.js.map'],
           dest: 'dist/editor/system'
         },
+        */
         {src: 'src/editor/images', dest},
         {src: 'src/editor/extensions/ext-shapes/shapelib', dest: dest.map((d) => `${d}/extensions/ext-shapes`)},
-        {src: 'src/editor/jgraduate', dest},
-        {src: 'src/editor/spinbtn', dest},
         {src: 'src/editor/embedapi.html', dest},
         {src: 'src/editor/embedapi.js', dest},
         {src: 'src/editor/browser-not-supported.html', dest},
-        {src: 'src/editor/redirect-on-lacking-support.js', dest},
+        {src: 'src/editor/browser-not-supported.js', dest},
         {src: 'src/editor/svgedit.css', dest}
       ]
     }),
@@ -127,15 +129,17 @@ extensionDirs.forEach((extensionDir) => {
           dir: `dist/editor/extensions/${extensionName}`,
           inlineDynamicImports: true,
           sourcemap: true
-        },
+        }
+        /*
+        ,
         {
           format: 'system',
           dir: `dist/editor/system/extensions/${extensionName}`,
           inlineDynamicImports: true
         }
+        */
       ],
       plugins: [
-        // progress(),
         url({
           include: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif', '**/*.xml'],
           limit: 0,
