@@ -260,7 +260,7 @@ export default {
           'position: absolute;' +
           'top: 50px;' +
           'padding: 10px;' +
-          'background-color: #B0B0B0;' +
+          'background-color: #5a6162;' +
           'border: 1px outset #777;' +
           'opacity: 1.0;' +
           'font-family: Verdana, Helvetica, sans-serif;' +

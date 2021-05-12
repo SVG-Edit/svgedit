@@ -67,7 +67,7 @@ template.innerHTML = `
   .menu-item {
     line-height: 1em;
     padding: 0.5em;
-    border: 1px solid #B0B0B0;
+    border: 1px solid #5a6162;
     background: #E8E8E8;
     margin-bottom: -1px;
     white-space: nowrap;

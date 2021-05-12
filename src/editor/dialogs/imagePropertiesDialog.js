@@ -16,7 +16,8 @@ template.innerHTML = `
   }
   #svg_docprops #svg_docprops_container {
     padding: 10px;
-    background-color: #B0B0B0;
+    background-color: #5a6162;
+    color: #c5c5c5;
     border: 1px outset #777;
     opacity: 1.0;
     font-family: Verdana, Helvetica, sans-serif;

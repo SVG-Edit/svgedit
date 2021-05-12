@@ -529,7 +529,7 @@ export default {
           'bottom: 25px;' +
           'min-width: 300px;' +
           'min-height: 200px;' +
-          'background: #B0B0B0;' +
+          'background: #5a6162;' +
           'border: 1px outset #777;' +
           '}' +
           '#imgbrowse h1 {' +
@@ -567,7 +567,7 @@ export default {
           'list-style: none;' +
           'padding: .5em;' +
           'background: #E8E8E8;' +
-          'border-bottom: 1px solid #B0B0B0;' +
+          'border-bottom: 1px solid #5a6162;' +
           'line-height: 1.2em;' +
           'font-style: sans-serif;' +
           '}' +

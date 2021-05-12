@@ -9,7 +9,7 @@ template.innerHTML = `
     background: #DDD;
     overflow: auto;
     text-align: left;
-    border: 1px solid #B0B0B0;
+    border: 1px solid #5a6162;
   }
 
   #dialog_content p, #dialog_content select, #dialog_content label {
@@ -24,7 +24,7 @@ template.innerHTML = `
     top: 50%;
     max-width: 400px;
     z-index: 50001;
-    background: #CCC;
+    background: #5a6162;
     border: 1px outset #777;
     font-family:Verdana,Helvetica,sans-serif;
     font-size:0.8em;

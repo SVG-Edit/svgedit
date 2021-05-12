@@ -71,7 +71,8 @@ template.innerHTML = `
   }
   #svg_prefs #svg_prefs_container {
     padding: 10px;
-    background-color: #B0B0B0;
+    background-color: #5a6162;
+    color: #c5c5c5;
     border: 1px outset #777;
     opacity: 1.0;
     font-family: Verdana, Helvetica, sans-serif;
@@ -82,6 +83,17 @@ template.innerHTML = `
   #tool_prefs_back {
     margin-left: 1em;
     overflow: auto;
+  }
+
+  #tool_prefs_save {
+    width: 30%;
+    background-color: #c79605;
+    margin-left: 20%;
+  }
+
+  #tool_prefs_cancel {
+    width: 30%;
+    background-color: #c8c8c8;
   }
   
   #svg_prefs #svg_docprops_prefs {
@@ -138,11 +150,9 @@ template.innerHTML = `
     <div id="svg_prefs_container">
       <div id="tool_prefs_back" class="toolbar_button">
         <button id="tool_prefs_save">
-          <img class="svg_icon" src="./images/ok.svg" alt="icon" width="16" height="16" />
           OK
         </button>
         <button id="tool_prefs_cancel">
-          <img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />
           Cancel
         </button>
       </div>
