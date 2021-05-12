@@ -344,7 +344,7 @@ div.jGraduate_Swatch {
 }
 div.jGraduate_GradContainer {
   border: 2px inset #EEE;
-  background-image: url(../images/map-opacity.png);
+  background-image: url(./components/jgraduate/images/map-opacity.png);
   background-position: 0px 0px;
   height: 256px;
   width: 256px;
