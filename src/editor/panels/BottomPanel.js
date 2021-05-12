@@ -217,7 +217,7 @@ class BottomPanel {
           src="./images/opacity.svg"></se-spin-input>
         <se-palette id="palette"></se-palette>
       </div> <!-- tools_bottom -->
-    `
+    `;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
     $id('palette').addEventListener('change', this.handlePalette.bind(this));
     const {curConfig} = this.editor.configObj;

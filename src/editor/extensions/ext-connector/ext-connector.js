@@ -79,7 +79,7 @@ export default {
         x: midX + lenX * ratio,
         y: midY + lenY * ratio
       };
-    }
+    };
 
     /**
     * @param {"start"|"end"} side
@@ -92,7 +92,7 @@ export default {
       // TODO: Make this number (5) be based on marker width/height
       const size = line.getAttribute('stroke-width') * 5;
       return giveOffset ? size : 0;
-    }
+    };
 
     /**
     * @param {boolean} on
@@ -108,7 +108,7 @@ export default {
       connRules.textContent = (!on ? '' : '#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }');
       if ($id('connector_panel'))
         $id('connector_panel').style.display = (on) ? 'block' : 'none';
-    }
+    };
 
     /**
      * @param {Element} elem
@@ -144,7 +144,7 @@ export default {
         const ptEnd = pts.getItem(pts.numberOfItems - 1);
         setPoint(elem, 1, (ptEnd.x + ptStart.x) / 2, (ptEnd.y + ptStart.y) / 2);
       }
-    }
+    };
 
     /**
     * @param {Float} diffX
@@ -184,7 +184,7 @@ export default {
         const pt2 = getBBintersect(pt.x, pt.y, dataStorage.get(line, altPre + '_bb'), getOffset(altPre, line));
         setPoint(line, conn.is_start ? 'end' : 0, pt2.x, pt2.y, true);
       }
-    }
+    };
 
     /**
     *
@@ -244,7 +244,7 @@ export default {
           }
         }
       });
-    }
+    };
 
     /**
     * @param {Element[]} [elems=selElems]
@@ -302,7 +302,7 @@ export default {
           }
         }
       }
-    }
+    };
 
     // Do once
     (function () {
@@ -347,7 +347,7 @@ export default {
           svgCanvas.getEditorNS(true);
         }
       });
-    }
+    };
 
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     return {
@@ -359,7 +359,7 @@ export default {
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
         <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
-        `
+        `;
         $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('mode_connect').addEventListener("click", () => {
           svgCanvas.setMode('connector');

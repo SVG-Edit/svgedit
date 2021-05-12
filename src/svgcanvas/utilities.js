@@ -1140,7 +1140,7 @@ export const getVisibleElements = function (parentElement) {
   }
 
   const contentElems = [];
-  const childrens = parentElement.children
+  const childrens = parentElement.children;
   Array.prototype.forEach.call(childrens, function (elem) {
     if (elem.getBBox) {
       contentElems.push(elem);

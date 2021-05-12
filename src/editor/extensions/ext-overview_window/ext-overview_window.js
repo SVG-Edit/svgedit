@@ -119,12 +119,12 @@ export default {
       if((el.offsetLeft + el.offsetWidth) > parseFloat(getComputedStyle(parent, null).width.replace("px", ""))){
         el.style.left = (parseFloat(getComputedStyle(parent, null).width.replace("px", "")) - el.offsetWidth) + 'px';
       } else if(el.offsetLeft  < 0){
-        el.style.left = "0px"
+        el.style.left = "0px";
       }
       if((el.offsetTop + el.offsetHeight) > parseFloat(getComputedStyle(parent, null).height.replace("px", ""))){
         el.style.top = (parseFloat(getComputedStyle(parent, null).height.replace("px", "")) - el.offsetHeight) + 'px';
       } else if(el.offsetTop  < 0){
-        el.style.top = "0px"
+        el.style.top = "0px";
       }
       overviewWindowGlobals.viewBoxDragging = false;
       updateViewPortFromViewBox();

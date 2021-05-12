@@ -30,7 +30,7 @@ export default {
           buttonTemplate.innerHTML = `
           <se-explorerbutton id="tool_shapelib" title="Shape library" lib="./extensions/ext-shapes/shapelib/"
           src="./images/shapelib.svg"></se-explorerbutton>
-          `
+          `;
           $id('tools_left').append(buttonTemplate.content.cloneNode(true));
           $id('tool_shapelib').addEventListener("click", () => { 
             canv.setMode(modeId);

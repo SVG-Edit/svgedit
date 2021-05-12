@@ -41,7 +41,7 @@ export const copyElem = function (el, getNextId) {
   });
 
   if (el.dataset.gsvg) {
-    newEl.dataset.gsvg = newEl.firstChild
+    newEl.dataset.gsvg = newEl.firstChild;
   } else if (el.dataset.symbol) {
     const ref = el.dataset.symbol;
     newEl.dataset.ref =  ref;

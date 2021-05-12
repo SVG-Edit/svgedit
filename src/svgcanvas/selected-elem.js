@@ -733,7 +733,7 @@ export const convertToGroup = function (elem) {
     recalculateDimensions(elem);
     elementContext_.call('selected', [elem]);
   } else if (dataStorage.has($elem, 'symbol')) {
-    elem = dataStorage.get($elem, 'symbol')
+    elem = dataStorage.get($elem, 'symbol');
 
     ts = $elem.attr('transform');
     const pos = $elem.attr(['x', 'y']);

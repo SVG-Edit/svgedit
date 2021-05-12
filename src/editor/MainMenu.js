@@ -305,7 +305,7 @@ class MainMenu {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    const {i18next} = this.editor
+    const {i18next} = this.editor;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg" alt="logo">

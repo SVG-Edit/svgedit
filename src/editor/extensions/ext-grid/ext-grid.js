@@ -138,7 +138,7 @@ export default {
       gridimg.parentNode.setAttribute('width', bigInt);
       gridimg.parentNode.setAttribute('height', bigInt);
       svgCanvas.setHref(gridimg, datauri);
-    }
+    };
 
     /**
      *
@@ -150,7 +150,7 @@ export default {
       }
       $id('canvasGrid').style.display = (showGrid) ? 'block' : 'none';
       document.getElementById('view_grid').pressed = showGrid;
-    }
+    };
     return {
       name: strings.name,
       zoomChanged (zoom) {
@@ -161,7 +161,7 @@ export default {
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
           <se-button id="view_grid" title="Show grid" src="./images/grid.svg"></se-button>
-        `
+        `;
         $id('editor_panel').append(buttonTemplate.content.cloneNode(true));
         $id('view_grid').addEventListener("click", () => {
           svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid;

@@ -46,7 +46,7 @@ export default {
     const closeBrowser = () => {
       $id("imgbrowse_holder").style.display = 'none';
       document.activeElement.blur(); // make sure focus is the body to correct issue #417
-    }
+    };
 
     /**
     * @param {string} url
@@ -67,7 +67,7 @@ export default {
       svgCanvas.clearSelection();
       svgCanvas.addToSelection([newImage]);
       svgCanvas.setImageURL(url);
-    }
+    };
 
     const pending = {};
 
@@ -290,7 +290,7 @@ export default {
               const img = document.createElement("img");
               img.src = curMeta.preview_url;
               entry.appendChild(img);
-              entry.appendChild(document.createTextNode(title))
+              entry.appendChild(document.createTextNode(title));
             } else {
               entry = document.createElement("img");
               entry.src = response;
@@ -330,7 +330,7 @@ export default {
 
     const insertAfter = (referenceNode, newNode) => {
       referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    }
+    };
 
     const toggleMultiLoop = () => {
       multiArr.forEach(function(item, i){
@@ -347,7 +347,7 @@ export default {
         preview.removeChild(preview.firstChild);
       multiArr = [];
       $id("imgbrowse_holder").style.display = 'none';
-    }
+    };
 
     /**
     * @param {boolean} show
@@ -375,7 +375,7 @@ export default {
       submit.style.display = (show) ? 'block' : 'none';
       preview.style.display = (show) ? 'block' : 'none';
 
-    }
+    };
 
     /**
     *
@@ -496,7 +496,7 @@ export default {
       } else {
         $id("imgbrowse_holder").style.display = 'block';
       }
-    }
+    };
 
     return {
       svgicons: 'ext-imagelib.xml',

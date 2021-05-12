@@ -71,7 +71,7 @@ export default {
       } else {
         tool.classList.add('disabled');
       }
-    }
+    };
 
     return {
       name: strings.name,
@@ -80,7 +80,7 @@ export default {
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
         <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I"></se-button>
-        `
+        `;
         $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('tool_eyedropper').addEventListener("click", () => {
           svgCanvas.setMode('eyedropper');

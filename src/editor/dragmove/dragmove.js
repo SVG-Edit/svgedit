@@ -92,6 +92,6 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
     target.style.left = lastX + "px";
     target.style.top = lastY + "px";
   });
-}
+};
 
 export { dragmove as default }; 

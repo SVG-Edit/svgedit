@@ -36,7 +36,7 @@ export default {
     */
     const showPanel = (on) => {
       $id('polygon_panel').style.display = (on) ? 'block' : 'none';
-    }   
+    };   
 
     /**
     * @param {string} attr
@@ -46,7 +46,7 @@ export default {
     const setAttr = (attr, val) => {
       svgCanvas.changeSelectedAttribute(attr, val);
       svgCanvas.call('changed', selElems);
-    }
+    };
 
     /**
     * @param {Float} n
@@ -73,7 +73,7 @@ export default {
               <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
               <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
             </se-flyingbutton>
-          `
+          `;
           $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         }
         $id('tool_polygon').addEventListener("click", () => {
@@ -90,7 +90,7 @@ export default {
             <se-spin-input size="3" id="polySides" min=1 step=1 value=5 label="sides">
             </se-spin-input>
           </div>
-        `
+        `;
         $id('tools_top').appendChild(panelTemplate.content.cloneNode(true));
         $id("polygon_panel").style.display = 'none';
         $id("polySides").addEventListener("change", (event) => {

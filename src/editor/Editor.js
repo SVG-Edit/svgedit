@@ -295,7 +295,7 @@ class Editor extends EditorStartup {
       '5/Shift+5': 'tools_ellipse'
     };
     Object.entries(keyAssocs).forEach(([keyval, sel]) => {
-      const parentsElements = this.getParents($id(sel), $id('main_menu'))
+      const parentsElements = this.getParents($id(sel), $id('main_menu'));
       const menu = (parentsElements.length);
 
       $qa(sel).forEach((element) => {
@@ -350,9 +350,9 @@ class Editor extends EditorStartup {
       const elements = document.getElementsByClassName("tool_button_current");
       Array.from(elements).forEach(function (element) {
         element.classList.add('tool_button_current');
-        element.classList.remove('tool_button')
+        element.classList.remove('tool_button');
       });
-      $id('tool_select').classList.add('tool_button_current')
+      $id('tool_select').classList.add('tool_button_current');
       $id('tool_select').classList.remove('tool_button');
       this.multiselected = false;
       if (elems.length) {

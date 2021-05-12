@@ -352,7 +352,7 @@ class TopPanel {
           if (this.editor.svgCanvas.addedNew) {
             // Timeout needed for IE9
             setTimeout(() => {
-              $id("text").focus()
+              $id("text").focus();
               $id("text").select();
             }, 100);
           }
@@ -406,7 +406,7 @@ class TopPanel {
 
     if ((elem && !isNode) || this.multiselected) {
       // update the selected elements' layer
-      $id("selLayerNames").removeAttribute("disabled")
+      $id("selLayerNames").removeAttribute("disabled");
       $id("selLayerNames").value = currentLayerName;
 
       // Enable regular menu options
@@ -742,7 +742,7 @@ class TopPanel {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    const {i18next} = this.editor
+    const {i18next} = this.editor;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
        <div id="tools_top">

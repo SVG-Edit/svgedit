@@ -9,7 +9,7 @@
 
 const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
-  const lang = svgEditor.configObj.pref('lang')
+  const lang = svgEditor.configObj.pref('lang');
   try {
     // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);

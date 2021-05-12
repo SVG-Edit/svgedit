@@ -1368,7 +1368,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       if (!that.querySelectorAll('div.jPicker.Container').length) {
         document.body.insertBefore(container, document.body.firstChild);
       } else {
-        that.querySelector('div.jPicker.Container:last').insertAdjacentElement('afterend', container)
+        that.querySelector('div.jPicker.Container:last').insertAdjacentElement('afterend', container);
       }
       container.addEventListener('mousedown', function () {
         container.style.zIndex = 20;
@@ -1520,7 +1520,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       iconAlpha = that.icon.querySelector('.Alpha');
       setImg.call(that, iconAlpha, images.clientPath + 'bar-opacity.png');
       setAlpha.call(that, iconAlpha, toFixedNumeric(((255 - (!isNullish(all) ? all.a : 0)) * 100) / 255, 4));
-      iconImage = that.icon.querySelector('.Image')
+      iconImage = that.icon.querySelector('.Image');
       iconImage.style.backgroundImage = 'url(\'' + images.clientPath + images.picker.file + '\')';
       iconImage.addEventListener('click', iconImageClicked);
       if (win.bindToInput && win.updateInputColor) {

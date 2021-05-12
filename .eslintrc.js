@@ -25,6 +25,7 @@ module.exports = {
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "sonarjs/cognitive-complexity": ["warn", 40],
     "sonarjs/no-duplicate-string": 0,
+    "semi" : "error",
   },
   overrides: [
     {

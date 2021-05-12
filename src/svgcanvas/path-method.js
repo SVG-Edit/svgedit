@@ -428,7 +428,7 @@ export class Segment {
    */
   selectCtrls (y) {
     document.getElementById('ctrlpointgrip_' + this.index + 'c1').setAttribute('fill', y ? '#0FF' : '#EEE');
-    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE')
+    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE');
   }
 
   /**

@@ -37,7 +37,7 @@ export default {
      */
     const showPanel = (on) => {
       $id('star_panel').style.display = (on) ? 'block' : 'none';
-    }
+    };
 
     /**
      *
@@ -48,7 +48,7 @@ export default {
     const setAttr = (attr, val) => {
       svgCanvas.changeSelectedAttribute(attr, val);
       svgCanvas.call('changed', selElems);
-    }
+    };
 
     return {
       name: strings.name,
@@ -63,7 +63,7 @@ export default {
               <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
               <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
             </se-flyingbutton>
-          `
+          `;
           $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         }
         $id('tool_star').addEventListener("click", () => { showPanel(true);
@@ -84,7 +84,7 @@ export default {
             <se-spin-input id="radialShift" min=0 step=1 value=0 label="radial shift" title="Change rotation angle">
             </se-spin-input>
           </div>
-        `
+        `;
         //add handlers for the panel
         $id('tools_top').appendChild(panelTemplate.content.cloneNode(true));
         $id("starNumPoints").addEventListener("change", (event) => {

@@ -79,7 +79,7 @@ class LayersPanel {
    */
   toggleSidePanel(close) {
     const dpr = window.devicePixelRatio || 1;
-    const w = parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", ""))
+    const w = parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", ""));
     const isOpened = (dpr < 1 ? w : w / dpr) > 2;
     const zoomAdjustedSidepanelWidth =
       (dpr < 1 ? 1 : dpr) * SIDEPANEL_OPENWIDTH;

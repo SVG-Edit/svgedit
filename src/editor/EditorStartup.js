@@ -53,7 +53,7 @@ class EditorStartup {
   constructor () {
     this.extensionsAdded = false;
     this.messageQueue = [];
-    this.$svgEditor = $id('svg_editor')
+    this.$svgEditor = $id('svg_editor');
   }
   /**
   * Auto-run after a Promise microtask.
@@ -136,7 +136,7 @@ class EditorStartup {
     this.selectedElement = null;
     this.multiselected = false;
 
-    const aLinks = $id('cur_context_panel').querySelectorAll('a')
+    const aLinks = $id('cur_context_panel').querySelectorAll('a');
 
     for (const aLink of aLinks) {
       aLink.addEventListener('click', (evt) => {
@@ -426,16 +426,16 @@ class EditorStartup {
     Array.from(elements).forEach(function(element) {
       element.addEventListener('mousedown', function(event) {
         if (!event.currentTarget.classList.contains('disabled')) {
-          event.currentTarget.classList.add('push_button_pressed')
+          event.currentTarget.classList.add('push_button_pressed');
           event.currentTarget.classList.remove('push_button');
         }
       });
       element.addEventListener('mouseout', function(event) {
-        event.currentTarget.classList.add('push_button')
+        event.currentTarget.classList.add('push_button');
         event.currentTarget.classList.remove('push_button_pressed');
       });
       element.addEventListener('mouseup', function(event) {
-        event.currentTarget.classList.add('push_button')
+        event.currentTarget.classList.add('push_button');
         event.currentTarget.classList.remove('push_button_pressed');
       });
     });
