@@ -19,7 +19,7 @@ template.innerHTML = `
   elix-number-spin-box {
     background-color: var(--input-color);
     border-radius: 3px;
-    height: 20px !important;
+    height: 20px;
     margin-top: 1px;
     vertical-align: top;
   }
