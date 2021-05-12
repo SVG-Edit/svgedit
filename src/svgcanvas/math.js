@@ -19,8 +19,8 @@
 * @property {Float} y
 */
 
-import {NS} from '../common/namespaces.js';
-import {getTransformList} from './svgtransformlist.js';
+import { NS } from '../common/namespaces.js';
+import { getTransformList } from './svgtransformlist.js';
 
 // Constants
 const NEAR_ZERO = 1e-14;
@@ -38,7 +38,7 @@ const svg = document.createElementNS(NS.SVG, 'svg');
  * @returns {module:math.XYObject} An x, y object representing the transformed point
 */
 export const transformPoint = function (x, y, m) {
-  return {x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f};
+  return { x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f };
 };
 
 /**

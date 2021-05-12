@@ -22,7 +22,7 @@ export class SeMenuItem extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$img = this._shadowRoot.querySelector('img');
     this.$label = this._shadowRoot.querySelector('span');
@@ -35,7 +35,7 @@ export class SeMenuItem extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label', 'src'];
+    return [ 'label', 'src' ];
   }
   /**
    * @function attributeChangedCallback

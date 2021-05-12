@@ -45,7 +45,7 @@ class TopPanel {
   setStrokeOpt(opt, changeElem) {
     const { id } = opt;
     const bits = id.split('_');
-    const [pre, val] = bits;
+    const [ pre, val ] = bits;
 
     if (changeElem) {
       this.svgCanvas.setStrokeAttr('stroke-' + pre, val);
@@ -206,14 +206,14 @@ class TopPanel {
       if (!isNode && currentMode !== "pathedit") {
         $id("selected_panel").style.display = 'block';
         // Elements in this array already have coord fields
-        if (["line", "circle", "ellipse"].includes(elname)) {
+        if ([ "line", "circle", "ellipse" ].includes(elname)) {
           $id("xy_panel").style.display = 'none';
         } else {
           let x, y;
 
           // Get BBox vals for g, polyline and path
-          if (["g", "polyline", "path"].includes(elname)) {
-            const bb = this.editor.svgCanvas.getStrokedBBox([elem]);
+          if ([ "g", "polyline", "path" ].includes(elname)) {
+            const bb = this.editor.svgCanvas.getStrokedBBox([ elem ]);
             if (bb) {
               ({ x, y } = bb);
             }
@@ -276,11 +276,11 @@ class TopPanel {
       const panels = {
         g: [],
         a: [],
-        rect: ["rx", "width", "height"],
-        image: ["width", "height"],
-        circle: ["cx", "cy", "r"],
-        ellipse: ["cx", "cy", "rx", "ry"],
-        line: ["x1", "y1", "x2", "y2"],
+        rect: [ "rx", "width", "height" ],
+        image: [ "width", "height" ],
+        circle: [ "cx", "cy", "r" ],
+        ellipse: [ "cx", "cy", "rx", "ry" ],
+        line: [ "x1", "y1", "x2", "y2" ],
         text: [],
         use: []
       };
@@ -292,7 +292,7 @@ class TopPanel {
         linkHref = this.editor.svgCanvas.getHref(elem);
         $id("g_panel").style.display = 'block';
       }
-      // siblings 
+      // siblings
       const selements = Array.prototype.filter.call(elem.parentNode.children, function(child){
         return child !== elem;
       });
@@ -587,7 +587,7 @@ class TopPanel {
       const elem = this.editor.selectedElement;
       this.editor.svgCanvas.clearSelection();
       elem.id = val;
-      this.editor.svgCanvas.addToSelection([elem], true);
+      this.editor.svgCanvas.addToSelection([ elem ], true);
     } else {
       this.editor.svgCanvas.changeSelectedAttribute(attr, val);
     }
@@ -742,7 +742,7 @@ class TopPanel {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    const {i18next} = this.editor;
+    const { i18next } = this.editor;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
        <div id="tools_top">

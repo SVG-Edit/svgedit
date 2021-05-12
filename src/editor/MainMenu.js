@@ -1,7 +1,7 @@
 /* globals seConfirm, seAlert */
 import SvgCanvas from "../svgcanvas/svgcanvas.js";
-import {convertUnit, isValidUnit} from '../common/units.js';
-import {isChrome} from '../common/browser.js';
+import { convertUnit, isValidUnit } from '../common/units.js';
+import { isChrome } from '../common/browser.js';
 
 const { $id } = SvgCanvas;
 const homePage = 'https://github.com/SVG-Edit/svgedit';
@@ -26,7 +26,7 @@ class MainMenu {
    * @returns {void}
    */
   async clickClear() {
-    const [x, y] = this.editor.configObj.curConfig.dimensions;
+    const [ x, y ] = this.editor.configObj.curConfig.dimensions;
     const ok = await seConfirm(this.editor.i18next.t('notification.QwantToClear'));
     if (ok === "Cancel") {
       return;
@@ -183,7 +183,7 @@ class MainMenu {
           <body><h1>${loadingImage}</h1></body>
         <html>`;
         if (typeof URL !== "undefined" && URL.createObjectURL) {
-          const blob = new Blob([popHTML], { type: "text/html" });
+          const blob = new Blob([ popHTML ], { type: "text/html" });
           popURL = URL.createObjectURL(blob);
         } else {
           popURL = "data:text/html;base64;charset=utf-8," + popHTML;
@@ -305,7 +305,7 @@ class MainMenu {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    const {i18next} = this.editor;
+    const { i18next } = this.editor;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg" alt="logo">

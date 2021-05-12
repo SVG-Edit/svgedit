@@ -11,7 +11,7 @@ describe('UI - Tool selection', function () {
     cy.get('#tools_rect')
       .should('not.have.attr', 'pressed');
     cy.get('#tools_rect')
-      .trigger('click', {force: true})
+      .trigger('click', { force: true })
       .should('have.attr', 'pressed');
   });
 });

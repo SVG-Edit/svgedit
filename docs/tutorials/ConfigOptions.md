@@ -43,7 +43,7 @@ repository editor code
 
 ```js
 svgEditor.setConfig({
-  dimensions: [320, 240],
+  dimensions: [ 320, 240 ],
   canvas_expansion: 5,
   initFill: {
     color: '0000FF'
@@ -160,7 +160,7 @@ To add your own stylesheets along with the default stylesheets, ensure
 `"@default"` is present in the array along with your own. For example:
 
 ```js
-svgEditor.setConfig({stylesheets: ['@default', 'myStylesheet.css']});
+svgEditor.setConfig({ stylesheets: [ '@default', 'myStylesheet.css' ] });
 ```
 
 (In version 2.8, the CSS file `editor/custom.css` was included by default,

@@ -49,7 +49,7 @@ export class SESpinInput extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$img = this._shadowRoot.querySelector('img');
@@ -62,7 +62,7 @@ export class SESpinInput extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['value', 'label', 'src', 'size', 'min', 'max', 'step'];
+    return [ 'value', 'label', 'src', 'size', 'min', 'max', 'step' ];
   }
   /**
    * @function attributeChangedCallback

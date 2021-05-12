@@ -91,7 +91,7 @@ export class SeExportDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#export_box');
     this.$okBtn = this._shadowRoot.querySelector('#export_ok');
@@ -106,7 +106,7 @@ export class SeExportDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog'];
+    return [ 'dialog' ];
   }
   /**
    * @function attributeChangedCallback
@@ -161,11 +161,11 @@ export class SeExportDialog extends HTMLElement {
       if (action === 'cancel') {
         document.getElementById('se-export-dialog').setAttribute('dialog', 'close');
       } else {
-        const triggerEvent = new CustomEvent('change', {detail: {
+        const triggerEvent = new CustomEvent('change', { detail: {
           trigger: action,
           imgType: this.$exportOption.value,
           quality: this.value
-        }});
+        } });
         this.dispatchEvent(triggerEvent);
       }
     };

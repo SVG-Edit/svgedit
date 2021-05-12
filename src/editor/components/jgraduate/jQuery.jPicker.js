@@ -19,7 +19,7 @@
 /* eslint-disable max-len */
 import ColorValuePicker from './ColorValuePicker.js';
 import Slider from './Slider.js';
-import {findPos,mergeDeep} from './Util.js';
+import { findPos, mergeDeep } from './Util.js';
 
 /**
 * @external Math
@@ -121,7 +121,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
         if (isNullish(name) || name === '') name = 'all';
         if (isNullish(r)) return null;
         switch (name.toLowerCase()) {
-        case 'ahex': return ColorMethods.rgbaToHex({r, g, b, a});
+        case 'ahex': return ColorMethods.rgbaToHex({ r, g, b, a });
         case 'hex': return val('ahex').substring(0, 6);
         case 'all': return {
           r, g, b, a, h, s, v,
@@ -131,7 +131,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
         default: {
           ret = {};
           const nameLength = name.length;
-          [...name].forEach((ch) => {
+          [ ...name ].forEach((ch) => {
             switch (ch) {
             case 'r':
               if (nameLength === 1) ret = r;
@@ -234,7 +234,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
         if (value.h !== undefined && !name.includes('h')) name += 'h';
         if (value.s !== undefined && !name.includes('s')) name += 's';
         if (value.v !== undefined && !name.includes('v')) name += 'v';
-        [...name].forEach((ch) => {
+        [ ...name ].forEach((ch) => {
           switch (ch) {
           case 'r':
             if (hsv) return;
@@ -243,7 +243,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
             if (newV.r < 0) newV.r = 0;
             else if (newV.r > 255) newV.r = 255;
             if (r !== newV.r) {
-              ({r} = newV);
+              ({ r } = newV);
               changed = true;
             }
             break;
@@ -254,7 +254,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
             if (newV.g < 0) newV.g = 0;
             else if (newV.g > 255) newV.g = 255;
             if (g !== newV.g) {
-              ({g} = newV);
+              ({ g } = newV);
               changed = true;
             }
             break;
@@ -265,7 +265,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
             if (newV.b < 0) newV.b = 0;
             else if (newV.b > 255) newV.b = 255;
             if (b !== newV.b) {
-              ({b} = newV);
+              ({ b } = newV);
               changed = true;
             }
             break;
@@ -274,7 +274,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
             if (newV.a < 0) newV.a = 0;
             else if (newV.a > 255) newV.a = 255;
             if (a !== newV.a) {
-              ({a} = newV);
+              ({ a } = newV);
               changed = true;
             }
             break;
@@ -285,7 +285,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
             if (newV.h < 0) newV.h = 0;
             else if (newV.h > 360) newV.h = 360;
             if (h !== newV.h) {
-              ({h} = newV);
+              ({ h } = newV);
               changed = true;
             }
             break;
@@ -296,7 +296,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
             if (newV.s < 0) newV.s = 0;
             else if (newV.s > 100) newV.s = 100;
             if (s !== newV.s) {
-              ({s} = newV);
+              ({ s } = newV);
               changed = true;
             }
             break;
@@ -307,7 +307,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
             if (newV.v < 0) newV.v = 0;
             else if (newV.v > 100) newV.v = 100;
             if (v !== newV.v) {
-              ({v} = newV);
+              ({ v } = newV);
               changed = true;
             }
             break;
@@ -318,14 +318,14 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
             r = r || 0;
             g = g || 0;
             b = b || 0;
-            const ret = ColorMethods.rgbToHsv({r, g, b});
-            ({h, s, v} = ret);
+            const ret = ColorMethods.rgbToHsv({ r, g, b });
+            ({ h, s, v } = ret);
           } else if (hsv) {
             h = h || 0;
             s = !isNullish(s) ? s : 100;
             v = !isNullish(v) ? v : 100;
-            const ret = ColorMethods.hsvToRgb({h, s, v});
-            ({r, g, b} = ret);
+            const ret = ColorMethods.hsvToRgb({ h, s, v });
+            ({ r, g, b } = ret);
           }
           a = !isNullish(a) ? a : 255;
           fireChangeEvents.call(that, context || that);
@@ -375,7 +375,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
         val(
           (!isNullish(init.a) ? 'a' : '') + 'hex',
           !isNullish(init.a)
-            ? {ahex: init.hex + ColorMethods.intToHex(init.a)}
+            ? { ahex: init.hex + ColorMethods.intToHex(init.a) }
             : init
         );
       } else if (!isNullish(init.r) && !isNullish(init.g) && !isNullish(init.b)) {
@@ -408,7 +408,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
     * @returns {module:jPicker.RGBA}
     */
     hexToRgba (hex) {
-      if (hex === '' || hex === 'none') return {r: null, g: null, b: null, a: null};
+      if (hex === '' || hex === 'none') return { r: null, g: null, b: null, a: null };
       hex = this.validateHex(hex);
       let r = '00', g = '00', b = '00', a = '255';
       if (hex.length === 6) hex += 'ff';
@@ -476,7 +476,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
     * @returns {module:jPicker.HSV}
     */
     rgbToHsv (rgb) {
-      const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255, hsv = {h: 0, s: 0, v: 0};
+      const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255, hsv = { h: 0, s: 0, v: 0 };
       let min = 0, max = 0;
       if (r >= g && r >= b) {
         max = r;
@@ -509,8 +509,8 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
     * @returns {module:jPicker.RGB}
     */
     hsvToRgb (hsv) {
-      const rgb = {r: 0, g: 0, b: 0, a: 100};
-      let {h, s, v} = hsv;
+      const rgb = { r: 0, g: 0, b: 0, a: 100 };
+      let { h, s, v } = hsv;
       if (s === 0) {
         if (v === 0) rgb.r = rgb.g = rgb.b = 0;
         else rgb.r = rgb.g = rgb.b = (v * 255 / 100) | 0;
@@ -564,7 +564,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
     }
   }
 };
-const {Color, List, ColorMethods} = jPicker; // local copies for YUI compressor
+const { Color, List, ColorMethods } = jPicker; // local copies for YUI compressor
 /**
  * @function external:jQuery.fn.jPicker
  * @see {@link external:jQuery.fn.$.fn.jPicker}
@@ -617,11 +617,11 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       }
     });
     if (that.value === '') {
-      settings.color.active = new Color({hex: null});
-      settings.color.current = new Color({hex: null});
+      settings.color.active = new Color({ hex: null });
+      settings.color.current = new Color({ hex: null });
     } else if (ColorMethods.validateHex(that.value)) {
-      settings.color.active = new Color({hex: that.value, a: settings.color.active.val('a')});
-      settings.color.current = new Color({hex: that.value, a: settings.color.active.val('a')});
+      settings.color.active = new Color({ hex: that.value, a: settings.color.active.val('a') });
+      settings.color.current = new Color({ hex: that.value, a: settings.color.active.val('a') });
     }
   }
   if (settings.window.expandable) {
@@ -646,7 +646,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
    * @returns {void}
    */
   function setColorMode (colorMode) {
-    const {active} = color, // local copies for YUI compressor
+    const { active } = color, // local copies for YUI compressor
       // {clientPath} = images,
       hex = active.val('hex');
     let rgbMap, rgbBar;
@@ -671,10 +671,10 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         setImgLoc.call(that, colorBarL6, 260);
         setAlpha.call(that, colorBarL6, 100);
       }, 0);
-      colorMap.range('all', {minX: 0, maxX: 100, minY: 0, maxY: 100});
-      colorBar.range('rangeY', {minY: 0, maxY: 360});
+      colorMap.range('all', { minX: 0, maxX: 100, minY: 0, maxY: 100 });
+      colorBar.range('rangeY', { minY: 0, maxY: 360 });
       if (isNullish(active.val('ahex'))) break;
-      colorMap.val('xy', {x: active.val('s'), y: 100 - active.val('v')}, colorMap);
+      colorMap.val('xy', { x: active.val('s'), y: 100 - active.val('v') }, colorMap);
       colorBar.val('y', 360 - active.val('h'), colorBar);
       break;
     case 's':
@@ -687,10 +687,10 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         setImgLoc.call(that, colorBarL6, 260);
         setAlpha.call(that, colorBarL6, 100);
       }, 0);
-      colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
-      colorBar.range('rangeY', {minY: 0, maxY: 100});
+      colorMap.range('all', { minX: 0, maxX: 360, minY: 0, maxY: 100 });
+      colorBar.range('rangeY', { minY: 0, maxY: 100 });
       if (isNullish(active.val('ahex'))) break;
-      colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
+      colorMap.val('xy', { x: active.val('h'), y: 100 - active.val('v') }, colorMap);
       colorBar.val('y', 100 - active.val('s'), colorBar);
       break;
     case 'v':
@@ -705,37 +705,37 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         setImgLoc.call(that, colorBarL6, 260);
         setAlpha.call(that, colorBarL6, 100);
       }, 0);
-      colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
-      colorBar.range('rangeY', {minY: 0, maxY: 100});
+      colorMap.range('all', { minX: 0, maxX: 360, minY: 0, maxY: 100 });
+      colorBar.range('rangeY', { minY: 0, maxY: 100 });
       if (isNullish(active.val('ahex'))) break;
-      colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('s')}, colorMap);
+      colorMap.val('xy', { x: active.val('h'), y: 100 - active.val('s') }, colorMap);
       colorBar.val('y', 100 - active.val('v'), colorBar);
       break;
     case 'r':
       rgbMap = -1040;
       rgbBar = -780;
-      colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
-      colorBar.range('rangeY', {minY: 0, maxY: 255});
+      colorMap.range('all', { minX: 0, maxX: 255, minY: 0, maxY: 255 });
+      colorBar.range('rangeY', { minY: 0, maxY: 255 });
       if (isNullish(active.val('ahex'))) break;
-      colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('g')}, colorMap);
+      colorMap.val('xy', { x: active.val('b'), y: 255 - active.val('g') }, colorMap);
       colorBar.val('y', 255 - active.val('r'), colorBar);
       break;
     case 'g':
       rgbMap = -1560;
       rgbBar = -1820;
-      colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
-      colorBar.range('rangeY', {minY: 0, maxY: 255});
+      colorMap.range('all', { minX: 0, maxX: 255, minY: 0, maxY: 255 });
+      colorBar.range('rangeY', { minY: 0, maxY: 255 });
       if (isNullish(active.val('ahex'))) break;
-      colorMap.val('xy', {x: active.val('b'), y: 255 - active.val('r')}, colorMap);
+      colorMap.val('xy', { x: active.val('b'), y: 255 - active.val('r') }, colorMap);
       colorBar.val('y', 255 - active.val('g'), colorBar);
       break;
     case 'b':
       rgbMap = -2080;
       rgbBar = -2860;
-      colorMap.range('all', {minX: 0, maxX: 255, minY: 0, maxY: 255});
-      colorBar.range('rangeY', {minY: 0, maxY: 255});
+      colorMap.range('all', { minX: 0, maxX: 255, minY: 0, maxY: 255 });
+      colorBar.range('rangeY', { minY: 0, maxY: 255 });
       if (isNullish(active.val('ahex'))) break;
-      colorMap.val('xy', {x: active.val('r'), y: 255 - active.val('g')}, colorMap);
+      colorMap.val('xy', { x: active.val('r'), y: 255 - active.val('g') }, colorMap);
       colorBar.val('y', 255 - active.val('b'), colorBar);
       break;
     case 'a':
@@ -749,10 +749,10 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         setImgLoc.call(that, colorBarL6, 0);
         setAlpha.call(that, colorBarL6, 100);
       }, 0);
-      colorMap.range('all', {minX: 0, maxX: 360, minY: 0, maxY: 100});
-      colorBar.range('rangeY', {minY: 0, maxY: 255});
+      colorMap.range('all', { minX: 0, maxX: 360, minY: 0, maxY: 100 });
+      colorBar.range('rangeY', { minY: 0, maxY: 255 });
       if (isNullish(active.val('ahex'))) break;
-      colorMap.val('xy', {x: active.val('h'), y: 100 - active.val('v')}, colorMap);
+      colorMap.val('xy', { x: active.val('h'), y: 100 - active.val('v') }, colorMap);
       colorBar.val('y', 255 - active.val('a'), colorBar);
       break;
     default:
@@ -817,28 +817,28 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
    * @returns {void}
   */
   function mapValueChanged (ui, context) {
-    const {active} = color;
+    const { active } = color;
     if (context !== colorMap && isNullish(active.val())) return;
     const xy = ui.val('all');
     switch (settings.color.mode) {
     case 'h':
-      active.val('sv', {s: xy.x, v: 100 - xy.y}, context);
+      active.val('sv', { s: xy.x, v: 100 - xy.y }, context);
       break;
     case 's':
     case 'a':
-      active.val('hv', {h: xy.x, v: 100 - xy.y}, context);
+      active.val('hv', { h: xy.x, v: 100 - xy.y }, context);
       break;
     case 'v':
-      active.val('hs', {h: xy.x, s: 100 - xy.y}, context);
+      active.val('hs', { h: xy.x, s: 100 - xy.y }, context);
       break;
     case 'r':
-      active.val('gb', {g: 255 - xy.y, b: xy.x}, context);
+      active.val('gb', { g: 255 - xy.y, b: xy.x }, context);
       break;
     case 'g':
-      active.val('rb', {r: 255 - xy.y, b: xy.x}, context);
+      active.val('rb', { r: 255 - xy.y, b: xy.x }, context);
       break;
     case 'b':
-      active.val('rg', {r: xy.x, g: 255 - xy.y}, context);
+      active.val('rg', { r: xy.x, g: 255 - xy.y }, context);
       break;
     }
   }
@@ -850,26 +850,26 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
    * @returns {void}
   */
   function colorBarValueChanged (ui, context) {
-    const {active} = color;
+    const { active } = color;
     if (context !== colorBar && isNullish(active.val())) return;
     switch (settings.color.mode) {
     case 'h':
-      active.val('h', {h: 360 - ui.val('y')}, context);
+      active.val('h', { h: 360 - ui.val('y') }, context);
       break;
     case 's':
-      active.val('s', {s: 100 - ui.val('y')}, context);
+      active.val('s', { s: 100 - ui.val('y') }, context);
       break;
     case 'v':
-      active.val('v', {v: 100 - ui.val('y')}, context);
+      active.val('v', { v: 100 - ui.val('y') }, context);
       break;
     case 'r':
-      active.val('r', {r: 255 - ui.val('y')}, context);
+      active.val('r', { r: 255 - ui.val('y') }, context);
       break;
     case 'g':
-      active.val('g', {g: 255 - ui.val('y')}, context);
+      active.val('g', { g: 255 - ui.val('y') }, context);
       break;
     case 'b':
-      active.val('b', {b: 255 - ui.val('y')}, context);
+      active.val('b', { b: 255 - ui.val('y') }, context);
       break;
     case 'a':
       active.val('a', 255 - ui.val('y'), context);
@@ -888,29 +888,29 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       switch (settings.color.mode) {
       case 'h': {
         const sv = ui.val('sv');
-        colorMap.val('xy', {x: !isNullish(sv) ? sv.s : 100, y: 100 - (!isNullish(sv) ? sv.v : 100)}, context);
+        colorMap.val('xy', { x: !isNullish(sv) ? sv.s : 100, y: 100 - (!isNullish(sv) ? sv.v : 100) }, context);
         break;
       } case 's':
       // Fall through
       case 'a': {
         const hv = ui.val('hv');
-        colorMap.val('xy', {x: (hv && hv.h) || 0, y: 100 - (!isNullish(hv) ? hv.v : 100)}, context);
+        colorMap.val('xy', { x: (hv && hv.h) || 0, y: 100 - (!isNullish(hv) ? hv.v : 100) }, context);
         break;
       } case 'v': {
         const hs = ui.val('hs');
-        colorMap.val('xy', {x: (hs && hs.h) || 0, y: 100 - (!isNullish(hs) ? hs.s : 100)}, context);
+        colorMap.val('xy', { x: (hs && hs.h) || 0, y: 100 - (!isNullish(hs) ? hs.s : 100) }, context);
         break;
       } case 'r': {
         const bg = ui.val('bg');
-        colorMap.val('xy', {x: (bg && bg.b) || 0, y: 255 - ((bg && bg.g) || 0)}, context);
+        colorMap.val('xy', { x: (bg && bg.b) || 0, y: 255 - ((bg && bg.g) || 0) }, context);
         break;
       } case 'g': {
         const br = ui.val('br');
-        colorMap.val('xy', {x: (br && br.b) || 0, y: 255 - ((br && br.r) || 0)}, context);
+        colorMap.val('xy', { x: (br && br.b) || 0, y: 255 - ((br && br.r) || 0) }, context);
         break;
       } case 'b': {
         const rg = ui.val('rg');
-        colorMap.val('xy', {x: (rg && rg.r) || 0, y: 255 - ((rg && rg.g) || 0)}, context);
+        colorMap.val('xy', { x: (rg && rg.r) || 0, y: 255 - ((rg && rg.g) || 0) }, context);
         break;
       }
       }
@@ -963,7 +963,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   function updateMapVisuals (ui) {
     switch (settings.color.mode) {
     case 'h':
-      setBG.call(that, colorMapDiv, new Color({h: ui.val('h') || 0, s: 100, v: 100}).val('hex'));
+      setBG.call(that, colorMapDiv, new Color({ h: ui.val('h') || 0, s: 100, v: 100 }).val('hex'));
       break;
     case 's':
     case 'a': {
@@ -999,14 +999,14 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       break;
     } case 's': {
       const hva = ui.val('hva'),
-        saturatedColor = new Color({h: (hva && hva.h) || 0, s: 100, v: !isNullish(hva) ? hva.v : 100});
+        saturatedColor = new Color({ h: (hva && hva.h) || 0, s: 100, v: !isNullish(hva) ? hva.v : 100 });
       setBG.call(that, colorBarDiv, saturatedColor.val('hex'));
       setAlpha.call(that, colorBarL2, 100 - (!isNullish(hva) ? hva.v : 100));
       setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - ((hva && hva.a) || 0)) * 100) / 255, 4));
       break;
     } case 'v': {
       const hsa = ui.val('hsa'),
-        valueColor = new Color({h: (hsa && hsa.h) || 0, s: !isNullish(hsa) ? hsa.s : 100, v: 100});
+        valueColor = new Color({ h: (hsa && hsa.h) || 0, s: !isNullish(hsa) ? hsa.s : 100, v: 100 });
       setBG.call(that, colorBarDiv, valueColor.val('hex'));
       setAlpha.call(that, colorBarL5, toFixedNumeric(((255 - ((hsa && hsa.a) || 0)) * 100) / 255, 4));
       break;
@@ -1487,7 +1487,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       for (let i = 0; i < color.quickList.length; i++) {
         /* if default colors are hex strings, change them to color objects */
         if ((typeof (color.quickList[i])).toString().toLowerCase() === 'string') {
-          color.quickList[i] = new Color({hex: color.quickList[i]});
+          color.quickList[i] = new Color({ hex: color.quickList[i] });
         }
         const alpha = color.quickList[i].val('a');
         let ahex = color.quickList[i].val('ahex');
@@ -1588,23 +1588,23 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       }
     }
   }
-  const {images, localization} = settings; // local copies for YUI compressor
+  const { images, localization } = settings; // local copies for YUI compressor
   const color = {
     active: (typeof settings.color.active).toString().toLowerCase() === 'string'
-      ? new Color({ahex: !settings.window.alphaSupport && settings.color.active
+      ? new Color({ ahex: !settings.window.alphaSupport && settings.color.active
         ? settings.color.active.substring(0, 6) + 'ff'
         : settings.color.active
       })
-      : new Color({ahex: !settings.window.alphaSupport &&
+      : new Color({ ahex: !settings.window.alphaSupport &&
           settings.color.active.val('ahex')
         ? settings.color.active.val('ahex').substring(0, 6) + 'ff'
         : settings.color.active.val('ahex')
       }),
     current: (typeof settings.color.active).toString().toLowerCase() === 'string'
-      ? new Color({ahex: !settings.window.alphaSupport && settings.color.active
+      ? new Color({ ahex: !settings.window.alphaSupport && settings.color.active
         ? settings.color.active.substring(0, 6) + 'ff'
-        : settings.color.active})
-      : new Color({ahex: !settings.window.alphaSupport &&
+        : settings.color.active })
+      : new Color({ ahex: !settings.window.alphaSupport &&
           settings.color.active.val('ahex')
         ? settings.color.active.val('ahex').substring(0, 6) + 'ff'
         : settings.color.active.val('ahex')
@@ -1770,79 +1770,79 @@ export const jPickerDefaults = {
   },
   color: {
     mode: 'h',
-    active: new Color({ahex: '#ffcc00ff'}),
+    active: new Color({ ahex: '#ffcc00ff' }),
     quickList: [
-      new Color({h: 360, s: 33, v: 100}),
-      new Color({h: 360, s: 66, v: 100}),
-      new Color({h: 360, s: 100, v: 100}),
-      new Color({h: 360, s: 100, v: 75}),
-      new Color({h: 360, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 100}),
-      new Color({h: 30, s: 33, v: 100}),
-      new Color({h: 30, s: 66, v: 100}),
-      new Color({h: 30, s: 100, v: 100}),
-      new Color({h: 30, s: 100, v: 75}),
-      new Color({h: 30, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 90}),
-      new Color({h: 60, s: 33, v: 100}),
-      new Color({h: 60, s: 66, v: 100}),
-      new Color({h: 60, s: 100, v: 100}),
-      new Color({h: 60, s: 100, v: 75}),
-      new Color({h: 60, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 80}),
-      new Color({h: 90, s: 33, v: 100}),
-      new Color({h: 90, s: 66, v: 100}),
-      new Color({h: 90, s: 100, v: 100}),
-      new Color({h: 90, s: 100, v: 75}),
-      new Color({h: 90, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 70}),
-      new Color({h: 120, s: 33, v: 100}),
-      new Color({h: 120, s: 66, v: 100}),
-      new Color({h: 120, s: 100, v: 100}),
-      new Color({h: 120, s: 100, v: 75}),
-      new Color({h: 120, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 60}),
-      new Color({h: 150, s: 33, v: 100}),
-      new Color({h: 150, s: 66, v: 100}),
-      new Color({h: 150, s: 100, v: 100}),
-      new Color({h: 150, s: 100, v: 75}),
-      new Color({h: 150, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 50}),
-      new Color({h: 180, s: 33, v: 100}),
-      new Color({h: 180, s: 66, v: 100}),
-      new Color({h: 180, s: 100, v: 100}),
-      new Color({h: 180, s: 100, v: 75}),
-      new Color({h: 180, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 40}),
-      new Color({h: 210, s: 33, v: 100}),
-      new Color({h: 210, s: 66, v: 100}),
-      new Color({h: 210, s: 100, v: 100}),
-      new Color({h: 210, s: 100, v: 75}),
-      new Color({h: 210, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 30}),
-      new Color({h: 240, s: 33, v: 100}),
-      new Color({h: 240, s: 66, v: 100}),
-      new Color({h: 240, s: 100, v: 100}),
-      new Color({h: 240, s: 100, v: 75}),
-      new Color({h: 240, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 20}),
-      new Color({h: 270, s: 33, v: 100}),
-      new Color({h: 270, s: 66, v: 100}),
-      new Color({h: 270, s: 100, v: 100}),
-      new Color({h: 270, s: 100, v: 75}),
-      new Color({h: 270, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 10}),
-      new Color({h: 300, s: 33, v: 100}),
-      new Color({h: 300, s: 66, v: 100}),
-      new Color({h: 300, s: 100, v: 100}),
-      new Color({h: 300, s: 100, v: 75}),
-      new Color({h: 300, s: 100, v: 50}),
-      new Color({h: 180, s: 0, v: 0}),
-      new Color({h: 330, s: 33, v: 100}),
-      new Color({h: 330, s: 66, v: 100}),
-      new Color({h: 330, s: 100, v: 100}),
-      new Color({h: 330, s: 100, v: 75}),
-      new Color({h: 330, s: 100, v: 50}),
+      new Color({ h: 360, s: 33, v: 100 }),
+      new Color({ h: 360, s: 66, v: 100 }),
+      new Color({ h: 360, s: 100, v: 100 }),
+      new Color({ h: 360, s: 100, v: 75 }),
+      new Color({ h: 360, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 100 }),
+      new Color({ h: 30, s: 33, v: 100 }),
+      new Color({ h: 30, s: 66, v: 100 }),
+      new Color({ h: 30, s: 100, v: 100 }),
+      new Color({ h: 30, s: 100, v: 75 }),
+      new Color({ h: 30, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 90 }),
+      new Color({ h: 60, s: 33, v: 100 }),
+      new Color({ h: 60, s: 66, v: 100 }),
+      new Color({ h: 60, s: 100, v: 100 }),
+      new Color({ h: 60, s: 100, v: 75 }),
+      new Color({ h: 60, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 80 }),
+      new Color({ h: 90, s: 33, v: 100 }),
+      new Color({ h: 90, s: 66, v: 100 }),
+      new Color({ h: 90, s: 100, v: 100 }),
+      new Color({ h: 90, s: 100, v: 75 }),
+      new Color({ h: 90, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 70 }),
+      new Color({ h: 120, s: 33, v: 100 }),
+      new Color({ h: 120, s: 66, v: 100 }),
+      new Color({ h: 120, s: 100, v: 100 }),
+      new Color({ h: 120, s: 100, v: 75 }),
+      new Color({ h: 120, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 60 }),
+      new Color({ h: 150, s: 33, v: 100 }),
+      new Color({ h: 150, s: 66, v: 100 }),
+      new Color({ h: 150, s: 100, v: 100 }),
+      new Color({ h: 150, s: 100, v: 75 }),
+      new Color({ h: 150, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 50 }),
+      new Color({ h: 180, s: 33, v: 100 }),
+      new Color({ h: 180, s: 66, v: 100 }),
+      new Color({ h: 180, s: 100, v: 100 }),
+      new Color({ h: 180, s: 100, v: 75 }),
+      new Color({ h: 180, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 40 }),
+      new Color({ h: 210, s: 33, v: 100 }),
+      new Color({ h: 210, s: 66, v: 100 }),
+      new Color({ h: 210, s: 100, v: 100 }),
+      new Color({ h: 210, s: 100, v: 75 }),
+      new Color({ h: 210, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 30 }),
+      new Color({ h: 240, s: 33, v: 100 }),
+      new Color({ h: 240, s: 66, v: 100 }),
+      new Color({ h: 240, s: 100, v: 100 }),
+      new Color({ h: 240, s: 100, v: 75 }),
+      new Color({ h: 240, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 20 }),
+      new Color({ h: 270, s: 33, v: 100 }),
+      new Color({ h: 270, s: 66, v: 100 }),
+      new Color({ h: 270, s: 100, v: 100 }),
+      new Color({ h: 270, s: 100, v: 75 }),
+      new Color({ h: 270, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 10 }),
+      new Color({ h: 300, s: 33, v: 100 }),
+      new Color({ h: 300, s: 66, v: 100 }),
+      new Color({ h: 300, s: 100, v: 100 }),
+      new Color({ h: 300, s: 100, v: 75 }),
+      new Color({ h: 300, s: 100, v: 50 }),
+      new Color({ h: 180, s: 0, v: 0 }),
+      new Color({ h: 330, s: 33, v: 100 }),
+      new Color({ h: 330, s: 66, v: 100 }),
+      new Color({ h: 330, s: 100, v: 100 }),
+      new Color({ h: 330, s: 100, v: 75 }),
+      new Color({ h: 330, s: 100, v: 50 }),
       new Color()
     ]
   },

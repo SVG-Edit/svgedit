@@ -23,8 +23,8 @@ export default {
   name: 'polygon',
   async init (_S) {
     const svgEditor = this;
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     // const  editingitex = false;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     let selElems;
@@ -36,7 +36,7 @@ export default {
     */
     const showPanel = (on) => {
       $id('polygon_panel').style.display = (on) ? 'block' : 'none';
-    };   
+    };
 
     /**
     * @param {string} attr
@@ -80,8 +80,8 @@ export default {
           if (this.leftPanel.updateLeftPanel('tool_polygon')) {
             svgCanvas.setMode('polygon');
             showPanel(true);
-          }   
-        }); 
+          }
+        });
 
         // Add the context panel and its handler(s)
         const panelTemplate = document.createElement("template");
@@ -141,7 +141,7 @@ export default {
         const fill = newFO.getAttribute('fill');
         const strokecolor = newFO.getAttribute('strokecolor');
         const strokeWidth = Number(newFO.getAttribute('strokeWidth'));
-  
+
         let x = opts.mouse_x;
         let y = opts.mouse_y;
 

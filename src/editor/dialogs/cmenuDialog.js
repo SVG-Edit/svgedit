@@ -127,7 +127,7 @@ export class SeCMenuDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this._workarea = document.getElementById('workarea');
     this.$dialog = this._shadowRoot.querySelector('#cmenu_canvas');
@@ -148,7 +148,7 @@ export class SeCMenuDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['disableallmenu', 'enablemenuitems', 'disablemenuitems'];
+    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems' ];
   }
   /**
    * @function attributeChangedCallback
@@ -251,9 +251,9 @@ export class SeCMenuDialog extends HTMLElement {
       }
     };
     const onMenuClickHandler = (e, action) => {
-      const triggerEvent = new CustomEvent('change', {detail: {
+      const triggerEvent = new CustomEvent('change', { detail: {
         trigger: action
-      }});
+      } });
       this.dispatchEvent(triggerEvent);
     };
     this._workarea.addEventListener('contextmenu', onMenuOpenHandler);

@@ -77,7 +77,7 @@ class HistoryRecordingService {
     if (this.currentBatchCommand_) {
       const batchCommand = this.currentBatchCommand_;
       this.batchCommandStack_.pop();
-      const {length: len} = this.batchCommandStack_;
+      const { length: len } = this.batchCommandStack_;
       this.currentBatchCommand_ = len ? this.batchCommandStack_[len - 1] : null;
       this.addCommand_(batchCommand);
     }

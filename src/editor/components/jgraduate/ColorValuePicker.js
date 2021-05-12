@@ -232,7 +232,7 @@ export default class ColorValuePicker {
           break;
         case ahex:
           color.value = 'ahex';
-          ahex.value = color.value.substring(6); 
+          ahex.value = color.value.substring(6);
           break;
         }
       }
@@ -349,7 +349,7 @@ export default class ColorValuePicker {
       value = inputs[2],
       hex = inputs[(inputs.length > 7) ? 7 : 6],
       ahex = inputs.length > 7 ? inputs[8] : null;
-    Object.assign(that, {destroy});
+    Object.assign(that, { destroy });
     red.addEventListener('keyup', keyUp);
     green.addEventListener('keyup', keyUp);
     blue.addEventListener('keyup', keyUp);

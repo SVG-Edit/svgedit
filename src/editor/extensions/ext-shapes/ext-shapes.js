@@ -12,7 +12,7 @@ export default {
   init () {
     const svgEditor = this;
     const canv = svgEditor.svgCanvas;
-    const {$id} = canv;
+    const { $id } = canv;
     const svgroot = canv.getRootElem();
     let lastBBox = {};
 
@@ -32,7 +32,7 @@ export default {
           src="./images/shapelib.svg"></se-explorerbutton>
           `;
           $id('tools_left').append(buttonTemplate.content.cloneNode(true));
-          $id('tool_shapelib').addEventListener("click", () => { 
+          $id('tool_shapelib').addEventListener("click", () => {
             canv.setMode(modeId);
           });
         }

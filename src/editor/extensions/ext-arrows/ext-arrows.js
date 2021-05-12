@@ -26,11 +26,11 @@ export default {
   async init (S) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor);
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const
       addElem = svgCanvas.addSVGElementFromJson,
-      {nonce} = S,
+      { nonce } = S,
       prefix = 'se_arrow_';
 
     let selElems, arrowprefix, randomizeIds = S.randomize_ids;
@@ -64,8 +64,8 @@ export default {
     arrowprefix = (randomizeIds) ? `${prefix}${nonce}_` : prefix;
 
     const pathdata = {
-      fw: {d: 'm0,0l10,5l-10,5l5,-5l-5,-5z', refx: 8, id: arrowprefix + 'fw'},
-      bk: {d: 'm10,0l-10,5l10,5l-5,-5l5,-5z', refx: 2, id: arrowprefix + 'bk'}
+      fw: { d: 'm0,0l10,5l-10,5l5,-5l-5,-5z', refx: 8, id: arrowprefix + 'fw' },
+      bk: { d: 'm10,0l-10,5l10,5l-5,-5l5,-5z', refx: 2, id: arrowprefix + 'bk' }
     };
 
     /**
@@ -214,14 +214,14 @@ export default {
     */
     function colorChanged (elem) {
       const color = elem.getAttribute('stroke');
-      const mtypes = ['start', 'mid', 'end'];
+      const mtypes = [ 'start', 'mid', 'end' ];
       const defs = svgCanvas.findDefs();
 
       mtypes.forEach(function(type){
         const marker = getLinked(elem, 'marker-' + type);
         if (!marker) { return; }
 
-        const curColor = marker.children.getAttribute('fill');        
+        const curColor = marker.children.getAttribute('fill');
         const curD = marker.children.getAttribute('d');
         if (curColor === color) { return; }
 
@@ -236,7 +236,7 @@ export default {
             newMarker = marker;
           }
         });
-        
+
         if (!newMarker) {
           // Create a new marker with this color
           const lastId = marker.id;
@@ -290,12 +290,12 @@ export default {
       }),
       callback () {
         $id("arrow_panel").style.display = 'none';
-        
+
         // Set ID so it can be translated in locale file
         $id('arrow_list option').setAttribute('id', 'connector_no_arrow');
       },
-      async addLangData ({_lang, importLocale}) {
-        const {langList} = await importLocale();
+      async addLangData ({ _lang, importLocale }) {
+        const { langList } = await importLocale();
         return {
           data: langList
         };
@@ -304,7 +304,7 @@ export default {
         // Use this to update the current selected elements
         selElems = opts.elems;
 
-        const markerElems = ['line', 'path', 'polyline', 'polygon'];
+        const markerElems = [ 'line', 'path', 'polyline', 'polygon' ];
         let i = selElems.length;
         while (i--) {
           const elem = selElems[i];

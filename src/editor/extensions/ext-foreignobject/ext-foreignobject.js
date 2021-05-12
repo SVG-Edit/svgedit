@@ -24,9 +24,9 @@ export default {
   name: 'foreignobject',
   async init (S) {
     const svgEditor = this;
-    const {text2xml, NS} = S;
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { text2xml, NS } = S;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const
       // {svgcontent} = S,
       // addElem = svgCanvas.addSVGElementFromJson,
@@ -49,7 +49,7 @@ export default {
       if (!fcRules) {
         fcRules = document.createElement('style');
         fcRules.setAttribute('id', 'fc_rules');
-        document.getElementsByTagName("head")[0].appendChild(fcRules);        
+        document.getElementsByTagName("head")[0].appendChild(fcRules);
       }
       fcRules.textContent = !on ? '' : ' #tool_topath { display: none !important; }';
       $id('foreignObject_panel').style.display = (on) ? 'block' : 'none';
@@ -85,11 +85,11 @@ export default {
         // run it through our sanitizer to remove anything we do not support
         svgCanvas.sanitizeSvg(newDoc.documentElement);
         elt.replaceWith(svgdoc.importNode(newDoc.documentElement.firstChild, true));
-        svgCanvas.call('changed', [elt]);
+        svgCanvas.call('changed', [ elt ]);
         svgCanvas.clearSelection();
       } catch (e) {
         // Todo: Surface error to user
-        console.log(e); 
+        console.log(e);
         return false;
       }
 
@@ -124,7 +124,7 @@ export default {
       svgCanvas.call('changed', selElems);
     }
 
-    const buttons = [{
+    const buttons = [ {
       id: 'tool_foreign',
       icon: 'foreignobject-tool.png',
       type: 'mode',
@@ -143,7 +143,7 @@ export default {
           showForeignEditor();
         }
       }
-    }];
+    } ];
 
     const contextTools = [
       {
@@ -279,7 +279,7 @@ export default {
           height: newFO.getAttribute('height'),
         };
         const keep = (attrs.width !== '0' || attrs.height !== '0');
-        svgCanvas.addToSelection([newFO], true);
+        svgCanvas.addToSelection([ newFO ], true);
 
         return {
           keep,

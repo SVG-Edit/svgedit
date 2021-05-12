@@ -1,7 +1,7 @@
 import SvgCanvas from '../../svgcanvas/svgcanvas.js';
-import {jGraduate} from '../components/jgraduate/jQuery.jGraduate.js';
+import { jGraduate } from '../components/jgraduate/jQuery.jGraduate.js';
 
-const {$id} = SvgCanvas;
+const { $id } = SvgCanvas;
 
 /*
  * register actions for left panel
@@ -28,18 +28,18 @@ class BottomPanel {
     get multiselected () {
       return this.editor.multiselected;
     }
-  
+
     /**
     * @type {module}
     */
     changeStrokeWidth (e) {
       let val = e.target.value;
-      if (val === 0 && this.editor.selectedElement && ['line', 'polyline'].includes(this.editor.selectedElement.nodeName)) {
+      if (val === 0 && this.editor.selectedElement && [ 'line', 'polyline' ].includes(this.editor.selectedElement.nodeName)) {
         val = 1;
       }
       this.editor.svgCanvas.setStrokeWidth(val);
     }
-  
+
     /**
     * @type {module}
     */
@@ -60,7 +60,7 @@ class BottomPanel {
         }
         const zoom = this.editor.svgCanvas.getZoom();
         const wArea = this.editor.workarea;
-  
+
         this.editor.zoomChanged(window, {
           width: 0,
           height: 0,
@@ -79,7 +79,7 @@ class BottomPanel {
     updateToolButtonState () {
       const bNoFill = (this.editor.svgCanvas.getColor('fill') === 'none');
       const bNoStroke = (this.editor.svgCanvas.getColor('stroke') === 'none');
-      const buttonsNeedingStroke = ['tool_fhpath', 'tool_line'];
+      const buttonsNeedingStroke = [ 'tool_fhpath', 'tool_line' ];
       const buttonsNeedingFillAndStroke = [
         'tools_rect', 'tools_ellipse',
         'tool_text', 'tool_path'
@@ -98,7 +98,7 @@ class BottomPanel {
           $id(btn).disabled = false;
         });
       }
-  
+
       if (bNoStroke && bNoFill) {
         // eslint-disable-next-line sonarjs/no-identical-functions
         buttonsNeedingFillAndStroke.forEach((btn) => {
@@ -113,7 +113,7 @@ class BottomPanel {
           $id(btn).disabled = false;
         });
       }
-  
+
       this.editor.svgCanvas.runExtensions(
         'toolButtonStateUpdate',
         /** @type {module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate} */ {
@@ -122,12 +122,12 @@ class BottomPanel {
         }
       );
     }
-  
+
     /**
     * @type {module}
     */
     handleColorPicker (type, evt) {
-      const {paint} = evt.detail;
+      const { paint } = evt.detail;
       this.editor.svgCanvas.setPaint(type, paint);
       this.updateToolButtonState();
     }
@@ -150,9 +150,9 @@ class BottomPanel {
    handlePalette (e) {
     e.preventDefault();
     // shift key or right click for stroke
-    const {picker, color} = e.detail;
+    const { picker, color } = e.detail;
     // Webkit-based browsers returned 'initial' here for no stroke
-    const paint = color === 'none' ? new jGraduate.Paint() : new jGraduate.Paint({alpha: 100, solidColor: color.substr(1)});
+    const paint = color === 'none' ? new jGraduate.Paint() : new jGraduate.Paint({ alpha: 100, solidColor: color.substr(1) });
     if (picker === 'fill') {
       $id('fill_color').setPaint(paint);
     } else {
@@ -164,7 +164,7 @@ class BottomPanel {
     }
     this.updateToolButtonState();
   }
-  
+
   /**
   * @type {module}
   */
@@ -220,9 +220,9 @@ class BottomPanel {
     `;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
     $id('palette').addEventListener('change', this.handlePalette.bind(this));
-    const {curConfig} = this.editor.configObj;
-    $id('fill_color').setPaint(new jGraduate.Paint({alpha: 100, solidColor: curConfig.initFill.color}));
-    $id('stroke_color').setPaint(new jGraduate.Paint({alpha: 100, solidColor: curConfig.initStroke.color}));
+    const { curConfig } = this.editor.configObj;
+    $id('fill_color').setPaint(new jGraduate.Paint({ alpha: 100, solidColor: curConfig.initFill.color }));
+    $id('stroke_color').setPaint(new jGraduate.Paint({ alpha: 100, solidColor: curConfig.initStroke.color }));
     $id('zoom').addEventListener('change', (e) => this.changeZoom.bind(this)(e.detail.value));
     $id('stroke_color').addEventListener('change', (evt) => this.handleColorPicker.bind(this)('stroke', evt));
     $id('fill_color').addEventListener('change', (evt) => this.handleColorPicker.bind(this)('fill', evt));

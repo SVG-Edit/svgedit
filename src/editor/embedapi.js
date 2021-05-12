@@ -43,7 +43,7 @@ function getCallbackSetter (funcName) {
 * @param {Integer} data.id
 * @returns {void}
 */
-function addCallback (t, {result, error, id: callbackID}) {
+function addCallback (t, { result, error, id: callbackID }) {
   if (typeof callbackID === 'number' && t.callbacks[callbackID]) {
     // These should be safe both because we check `cbid` is numeric and
     //   because the calls are from trusted origins
@@ -62,10 +62,10 @@ function addCallback (t, {result, error, id: callbackID}) {
 function messageListener (e) {
   // We accept and post strings as opposed to objects for the sake of IE9 support; this
   //   will most likely be changed in the future
-  if (!e.data || !['string', 'object'].includes(typeof e.data)) {
+  if (!e.data || ![ 'string', 'object' ].includes(typeof e.data)) {
     return;
   }
-  const {allowedOrigins} = this,
+  const { allowedOrigins } = this,
     data = typeof e.data === 'object' ? e.data : JSON.parse(e.data);
   if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
     e.source !== this.frame.contentWindow ||
@@ -329,10 +329,10 @@ class EmbeddedSVGEdit {
     // Older IE may need a polyfill for addEventListener, but so it would for SVG
     window.addEventListener('message', getMessageListener(this));
     window.addEventListener('keydown', (e) => {
-      const {type, key} = e;
+      const { type, key } = e;
       if (key === 'Backspace') {
         e.preventDefault();
-        const keyboardEvent = new KeyboardEvent(type, {key});
+        const keyboardEvent = new KeyboardEvent(type, { key });
         that.frame.contentDocument.dispatchEvent(keyboardEvent);
       }
     });
@@ -372,8 +372,8 @@ class EmbeddedSVGEdit {
           //  of the current JSON-based communication API (e.g., not passing
           //  callbacks). We might be able to address these shortcomings; see
           //  the todo elsewhere in this file.
-          const message = {id: callbackID},
-            {svgEditor: {canvas: svgCanvas}} = that.frame.contentWindow;
+          const message = { id: callbackID },
+            { svgEditor: { canvas: svgCanvas } } = that.frame.contentWindow;
           try {
             message.result = svgCanvas[name](...args);
           } catch (err) {

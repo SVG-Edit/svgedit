@@ -7,8 +7,8 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {NS} from '../common/namespaces.js';
-import {supportsNativeTransformLists} from '../common/browser.js';
+import { NS } from '../common/namespaces.js';
+import { supportsNativeTransformLists } from '../common/browser.js';
 
 const svgroot = document.createElementNS(NS.SVG, 'svg');
 
@@ -22,7 +22,7 @@ function transformToString (xform) {
   let text = '';
   switch (xform.type) {
   case 1: // MATRIX
-    text = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')';
+    text = 'matrix(' + [ m.a, m.b, m.c, m.d, m.e, m.f ].join(',') + ')';
     break;
   case 2: // TRANSLATE
     text = 'translate(' + m.e + ',' + m.f + ')';
@@ -175,7 +175,7 @@ export class SVGTransformList {
           });
           const xform = svgroot.createSVGTransform();
           const fname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
-          const values = name === 'matrix' ? [mtx] : valArr;
+          const values = name === 'matrix' ? [ mtx ] : valArr;
 
           if (name === 'scale' && values.length === 1) {
             values.push(values[0]);
@@ -222,7 +222,7 @@ export class SVGTransformList {
   initialize (newItem) {
     this.numberOfItems = 1;
     this._removeFromOtherLists(newItem);
-    this._xforms = [newItem];
+    this._xforms = [ newItem ];
   }
 
   /**

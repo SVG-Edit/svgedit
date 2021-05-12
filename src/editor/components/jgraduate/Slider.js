@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-import {findPos} from './Util.js';
+import { findPos } from './Util.js';
 /**
  * Whether a value is `null` or `undefined`.
  * @param {any} val
@@ -38,7 +38,7 @@ export default class Slider {
      */
     function mouseDown (e) {
       const off = findPos(bar);
-      offset = {l: off.left | 0, t: off.top | 0};
+      offset = { l: off.left | 0, t: off.top | 0 };
       clearTimeout(timeout);
       // using setTimeout for visual updates - once the style is updated the browser will re-render internally allowing the next Javascript to run
       timeout = setTimeout(function () {
@@ -146,7 +146,7 @@ export default class Slider {
         case 'x': return x;
         case 'y': return y;
         case 'xy':
-        default: return {x, y};
+        default: return { x, y };
         }
       }
       if (!isNullish(context) && context === that) return undefined;
@@ -216,12 +216,12 @@ export default class Slider {
         switch (name.toLowerCase()) {
         case 'minx': return minX;
         case 'maxx': return maxX;
-        case 'rangex': return {minX, maxX, rangeX};
+        case 'rangex': return { minX, maxX, rangeX };
         case 'miny': return minY;
         case 'maxy': return maxY;
-        case 'rangey': return {minY, maxY, rangeY};
+        case 'rangey': return { minY, maxY, rangeY };
         case 'all':
-        default: return {minX, maxX, rangeX, minY, maxY, rangeY};
+        default: return { minX, maxX, rangeX, minY, maxY, rangeY };
         }
       }
       let // changed = false,

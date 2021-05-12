@@ -1,7 +1,7 @@
 export default {
   name: 'Arrows',
   langList: [
-    {id: 'arrow_none', textContent: 'No arrow'}
+    { id: 'arrow_none', textContent: 'No arrow' }
   ],
   contextTools: [
     {

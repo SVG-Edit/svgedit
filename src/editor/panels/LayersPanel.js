@@ -387,7 +387,7 @@ class LayersPanel {
     // we get the layers in the reverse z-order (the layer rendered on top is listed first)
     while (layer--) {
       const name = drawing.getLayerName(layer);
-      const layerTr = document.createElement("tr");      
+      const layerTr = document.createElement("tr");
       layerTr.className = (name === currentLayerName) ? 'layer layersel' : 'layer';
       const layerVis = document.createElement("td");
       layerVis.className = (!drawing.getLayerVisibility(name)) ? "layerinvis layervis" : 'layervis';
@@ -410,7 +410,7 @@ class LayersPanel {
         });
         evt.currentTarget.parentNode.classList.add("layersel");
         self.editor.svgCanvas.setCurrentLayer(evt.currentTarget.textContent);
-        evt.preventDefault();        
+        evt.preventDefault();
       });
       element.addEventListener('mouseup', function(evt) {
         self.toggleHighlightLayer(

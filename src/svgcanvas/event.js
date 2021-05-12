@@ -51,10 +51,10 @@ export const getBsplinePoint = function (t) {
     t3 = t2 * t;
 
   const m = [
-    [-1, 3, -3, 1],
-    [3, -6, 3, 0],
-    [-3, 0, 3, 0],
-    [1, 4, 1, 0]
+    [ -1, 3, -3, 1 ],
+    [ 3, -6, 3, 0 ],
+    [ -3, 0, 3, 0 ],
+    [ 1, 4, 1, 0 ]
   ];
 
   spline.x = S * (
@@ -619,7 +619,7 @@ export const mouseUpEvent = function (evt) {
             // if it was a path
             // else, if it was selected and this is a shift-click, remove it from selection
           } else if (evt.shiftKey && tempJustSelected !== t) {
-            eventContext_.getCanvas().removeFromSelection([t]);
+            eventContext_.getCanvas().removeFromSelection([ t ]);
           }
         } // no change in mouse position
 
@@ -709,7 +709,7 @@ export const mouseUpEvent = function (evt) {
             id: eventContext_.getId()
           }
         });
-        eventContext_.getCanvas().call('changed', [element]);
+        eventContext_.getCanvas().call('changed', [ element ]);
         keep = true;
       }
       break;
@@ -727,13 +727,13 @@ export const mouseUpEvent = function (evt) {
             id: eventContext_.getId()
           }
         });
-        eventContext_.getCanvas().call('changed', [element]);
+        eventContext_.getCanvas().call('changed', [ element ]);
         keep = true;
       }
       break;
     case 'text':
       keep = true;
-      eventContext_.getCanvas().selectOnly([element]);
+      eventContext_.getCanvas().selectOnly([ element ]);
       eventContext_.getCanvas().textActions.start(element);
       break;
     case 'path': {
@@ -818,7 +818,7 @@ export const mouseUpEvent = function (evt) {
     ) {
       // switch into "select" mode if we've clicked on an element
       eventContext_.getCanvas().setMode('select');
-      eventContext_.getCanvas().selectOnly([t], true);
+      eventContext_.getCanvas().selectOnly([ t ], true);
     }
   } else if (!isNullish(element)) {
     /**
@@ -856,12 +856,12 @@ export const mouseUpEvent = function (evt) {
       if (eventContext_.getCurrentMode() === 'path') {
         eventContext_.getCanvas().pathActions.toEditMode(element);
       } else if (eventContext_.getCurConfig().selectNew) {
-        eventContext_.getCanvas().selectOnly([element], true);
+        eventContext_.getCanvas().selectOnly([ element ], true);
       }
       // we create the insert command that is stored on the stack
       // undo means to call cmd.unapply(), redo means to call cmd.apply()
       eventContext_.addCommandToHistory(new InsertElementCommand(element));
-      eventContext_.getCanvas().call('changed', [element]);
+      eventContext_.getCanvas().call('changed', [ element ]);
     }, aniDur * 1000);
   }
   eventContext_.setStartTransform(null);
@@ -1003,7 +1003,7 @@ export const mouseDownEvent = function (evt) {
             // No need to do the call here as it will be done on addToSelection
             eventContext_.getCanvas().clearSelection(true);
           }
-          eventContext_.getCanvas().addToSelection([mouseTarget]);
+          eventContext_.getCanvas().addToSelection([ mouseTarget ]);
           eventContext_.setJustSelected(mouseTarget);
           eventContext_.getCanvas().pathActions.clear();
         }
@@ -1062,7 +1062,7 @@ export const mouseDownEvent = function (evt) {
       // want to orient around it
       eventContext_.setInitBbox(utilsGetBBox($id('selectedBox0')));
       const bb = {};
-      for (const [key, val] of Object.entries(eventContext_.getInitBbox())) {
+      for (const [ key, val ] of Object.entries(eventContext_.getInitBbox())) {
         bb[key] = val / currentZoom;
       }
       eventContext_.setInitBbox(bb);

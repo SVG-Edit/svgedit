@@ -70,7 +70,7 @@ export const pasteElementsMethod = function (type, x, y) {
   pasteContext_.getCanvas().runExtensions(
     'IDsUpdated',
     /** @type {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} */
-    {elems: clipb, changes: changedIDs},
+    { elems: clipb, changes: changedIDs },
     true
   ).forEach(function (extChanges) {
     if (!extChanges || !('remove' in extChanges)) return;

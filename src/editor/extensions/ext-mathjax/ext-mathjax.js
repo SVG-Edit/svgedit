@@ -23,11 +23,11 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'mathjax',
-  async init ({$}) {
+  async init ({ $ }) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
 
     // Configuration of the MathJax extention.
 
@@ -57,7 +57,7 @@ export default {
       // mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
       // Had been on https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js
       // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js
-      {uiStrings} = svgEditor;
+      { uiStrings } = svgEditor;
     let
       math,
       locationX,
@@ -86,7 +86,7 @@ export default {
       const code = $id('mathjax_code_textarea').value;
       // displaystyle to force MathJax NOT to use the inline style. Because it is
       // less fancy!
-      MathJax.Hub.queue.Push(['Text', math, '\\displaystyle{' + code + '}']);
+      MathJax.Hub.queue.Push([ 'Text', math, '\\displaystyle{' + code + '}' ]);
 
       /*
        * The MathJax library doesn't want to bloat your webpage so it creates
@@ -134,7 +134,7 @@ export default {
       );
     }
 
-    const buttons = [{
+    const buttons = [ {
       id: 'tool_mathjax',
       type: 'mode',
       icon: 'mathjax.png',
@@ -167,7 +167,7 @@ export default {
                     '</span></label>' +
                 '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
               '</fieldset>' +
-            '</div>';            
+            '</div>';
             $id('svg_prefs').parentNode.insertBefore(div, $id('svg_prefs').nextSibling);
             div.style.display = 'none';
             // Add functionality and picture to cancel button.
@@ -191,19 +191,19 @@ export default {
               // When MathJax is loaded get the div where the math will be rendered.
               MathJax.Hub.queue.Push(function () {
                 math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
-                console.log(math); 
+                console.log(math);
                 mathjaxLoaded = true;
-                console.log('MathJax Loaded'); 
+                console.log('MathJax Loaded');
               });
             } catch (e) {
-              console.log('Failed loading MathJax.'); 
+              console.log('Failed loading MathJax.');
               // eslint-disable-next-line no-alert
               alert('Failed loading MathJax. You will not be able to change the mathematics.');
             }
           }
         }
       }
-    }];
+    } ];
 
     return {
       name: strings.name,
@@ -214,7 +214,7 @@ export default {
 
       mouseDown () {
         if (svgCanvas.getMode() === 'mathjax') {
-          return {started: true};
+          return { started: true };
         }
         return undefined;
       },
@@ -227,7 +227,7 @@ export default {
           locationY = opts.mouse_y / zoom;
 
           $id("mathjax").style.display = 'block';
-          return {started: false}; // Otherwise the last selected object dissapears.
+          return { started: false }; // Otherwise the last selected object dissapears.
         }
         return undefined;
       },

@@ -1,7 +1,7 @@
 export default {
   name: '箭头',
   langList: [
-    {id: 'arrow_none', textContent: '无箭头'}
+    { id: 'arrow_none', textContent: '无箭头' }
   ],
   contextTools: [
     {

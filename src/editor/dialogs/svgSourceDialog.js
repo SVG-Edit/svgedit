@@ -89,7 +89,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#svg_source_editor');
     this.$copyBtn = this._shadowRoot.querySelector('#copy_save_done');
@@ -104,7 +104,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog', 'value', 'applysec', 'copysec'];
+    return [ 'dialog', 'value', 'applysec', 'copysec' ];
   }
   /**
    * @function attributeChangedCallback
@@ -213,9 +213,9 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    */
   connectedCallback () {
     const onCancelHandler = () => {
-      const closeEvent = new CustomEvent('change', {detail: {
+      const closeEvent = new CustomEvent('change', { detail: {
         dialog: 'closed'
-      }});
+      } });
       this.dispatchEvent(closeEvent);
     };
     const onCopyHandler = () => {
@@ -228,10 +228,10 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
       this.dispatchEvent(closeEvent);
     };
     const onSaveHandler = () => {
-      const closeEvent = new CustomEvent('change', {detail: {
+      const closeEvent = new CustomEvent('change', { detail: {
         value: this.$sourceTxt.value,
         dialog: 'close'
-      }});
+      } });
       this.dispatchEvent(closeEvent);
     };
     this.$copyBtn.addEventListener('click', onCopyHandler);

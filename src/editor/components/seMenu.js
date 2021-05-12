@@ -39,7 +39,7 @@ export class SeMenu extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$menu = this._shadowRoot.querySelector('elix-menu-button');
     this.$label = this.$menu.shadowRoot.querySelector('#popupToggle').shadowRoot;
@@ -49,7 +49,7 @@ export class SeMenu extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label', 'src'];
+    return [ 'label', 'src' ];
   }
 
   /**

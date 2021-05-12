@@ -57,7 +57,7 @@ export const remapElement = function (selected, changes, m) {
     doSnapping = editorContext_.getGridSnapping() && selected.parentNode.parentNode.localName === 'svg',
     finishUp = function () {
       if (doSnapping) {
-        Object.entries(changes).forEach(([o, value]) => {
+        Object.entries(changes).forEach(([ o, value ]) => {
           changes[o] = snapToGrid(value);
         });
       }

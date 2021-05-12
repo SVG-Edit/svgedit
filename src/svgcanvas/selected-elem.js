@@ -52,7 +52,7 @@ export const init = function (elementContext) {
 * @returns {void}
 */
 export const moveToTopSelectedElem = function () {
-  const [selected] = elementContext_.getSelectedElements();
+  const [ selected ] = elementContext_.getSelectedElements();
   if (!isNullish(selected)) {
     const t = selected;
     const oldParent = t.parentNode;
@@ -62,7 +62,7 @@ export const moveToTopSelectedElem = function () {
     // event handler.
     if (oldNextSibling !== t.nextSibling) {
       elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'top'));
-      elementContext_.call('changed', [t]);
+      elementContext_.call('changed', [ t ]);
     }
   }
 };
@@ -75,7 +75,7 @@ export const moveToTopSelectedElem = function () {
 * @returns {void}
 */
 export const moveToBottomSelectedElem = function () {
-  const [selected] = elementContext_.getSelectedElements();
+  const [ selected ] = elementContext_.getSelectedElements();
   if (!isNullish(selected)) {
     let t = selected;
     const oldParent = t.parentNode;
@@ -94,7 +94,7 @@ export const moveToBottomSelectedElem = function () {
     // event handler.
     if (oldNextSibling !== t.nextSibling) {
       elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'bottom'));
-      elementContext_.call('changed', [t]);
+      elementContext_.call('changed', [ t ]);
     }
   }
 };
@@ -116,7 +116,7 @@ export const moveUpDownSelected = function (dir) {
   // curBBoxes = [];
   let closest, foundCur;
   // jQuery sorts this list
-  const list = elementContext_.getIntersectionList(getStrokedBBoxDefaultVisible([selected]));
+  const list = elementContext_.getIntersectionList(getStrokedBBoxDefaultVisible([ selected ]));
   if (dir === 'Down') { list.reverse(); }
 
   Array.prototype.forEach.call(list, function (el) {
@@ -143,7 +143,7 @@ export const moveUpDownSelected = function (dir) {
   // event handler.
   if (oldNextSibling !== t.nextSibling) {
     elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'Move ' + dir));
-    elementContext_.call('changed', [t]);
+    elementContext_.call('changed', [ t ]);
   }
 };
 
@@ -298,7 +298,7 @@ export const alignSelectedElements = function (type, relativeTo) {
   for (let i = 0; i < len; ++i) {
     if (isNullish(selectedElements[i])) { break; }
     const elem = selectedElements[i];
-    bboxes[i] = getStrokedBBoxDefaultVisible([elem]);
+    bboxes[i] = getStrokedBBoxDefaultVisible([ elem ]);
 
     // now bbox is axis-aligned and handles rotation
     switch (relativeTo) {
@@ -505,7 +505,7 @@ export const groupSelectedElements = function (type, urlArg) {
   if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
 
   // update selection
-  elementContext_.selectOnly([g], true);
+  elementContext_.selectOnly([ g ], true);
 };
 
 /**
@@ -550,7 +550,7 @@ export const pushGroupProperty = function (g, undoable) {
     if (gattrs.opacity !== null && gattrs.opacity !== 1) {
       // const c_opac = elem.getAttribute('opacity') || 1;
       const newOpac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100) / 100;
-      elementContext_.changeSelectedAttribute('opacity', newOpac, [elem]);
+      elementContext_.changeSelectedAttribute('opacity', newOpac, [ elem ]);
     }
 
     if (gattrs.filter) {
@@ -581,11 +581,11 @@ export const pushGroupProperty = function (g, undoable) {
       // Change this in future for different filters
       const suffix = (gfilter.firstChild.tagName === 'feGaussianBlur') ? 'blur' : 'filter';
       gfilter.id = elem.id + '_' + suffix;
-      elementContext_.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [elem]);
+      elementContext_.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [ elem ]);
 
       // Update blur value
       if (cblur) {
-        elementContext_.changeSelectedAttribute('stdDeviation', cblur, [gfilter.firstChild]);
+        elementContext_.changeSelectedAttribute('stdDeviation', cblur, [ gfilter.firstChild ]);
         elementContext_.getCanvas().setBlurOffsets(gfilter, cblur);
       }
     }
@@ -731,12 +731,12 @@ export const convertToGroup = function (elem) {
     xform.setTranslate(pt.x, pt.y);
     tlist.appendItem(xform);
     recalculateDimensions(elem);
-    elementContext_.call('selected', [elem]);
+    elementContext_.call('selected', [ elem ]);
   } else if (dataStorage.has($elem, 'symbol')) {
     elem = dataStorage.get($elem, 'symbol');
 
     ts = $elem.attr('transform');
-    const pos = $elem.attr(['x', 'y']);
+    const pos = $elem.attr([ 'x', 'y' ]);
 
     const vb = elem.getAttribute('viewBox');
 
@@ -832,7 +832,7 @@ export const convertToGroup = function (elem) {
       if (!el.id) { el.id = elementContext_.getNextId(); }
     });
 
-    elementContext_.selectOnly([g]);
+    elementContext_.selectOnly([ g ]);
 
     const cm = pushGroupProperty(g, true);
     if (cm) {
@@ -1019,6 +1019,6 @@ export const cycleElement = function (next) {
       }
     }
   }
-  elementContext_.getCanvas().selectOnly([elem], true);
+  elementContext_.getCanvas().selectOnly([ elem ], true);
   elementContext_.call('selected', selectedElements);
 };

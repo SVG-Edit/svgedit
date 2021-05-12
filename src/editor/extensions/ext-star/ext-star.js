@@ -23,8 +23,8 @@ export default {
   name: 'star',
   async init (_S) {
     const svgEditor = this;
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     let selElems;
     let started;
     let newFO;
@@ -70,7 +70,7 @@ export default {
           if (this.leftPanel.updateLeftPanel('tool_polygon')) {
             svgCanvas.setMode('star');
             showPanel(true);
-          }   
+          }
         });
 
         // Add the context panel and its handler(s)

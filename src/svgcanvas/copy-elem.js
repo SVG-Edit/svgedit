@@ -1,6 +1,6 @@
-import {isWebkit} from '../common/browser.js';
-import {convertPath} from './path.js';
-import {preventClickDefault} from './utilities.js';
+import { isWebkit } from '../common/browser.js';
+import { convertPath } from './path.js';
+import { preventClickDefault } from './utilities.js';
 
 /**
  * Create a clone of an element, updating its ID and its children's IDs when needed.

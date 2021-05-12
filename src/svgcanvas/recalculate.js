@@ -134,7 +134,7 @@ export const recalculateDimensions = function (selected) {
     while (k--) {
       const xform = tlist.getItem(k);
       if (xform.type === 1) {
-        mxs.push([xform.matrix, k]);
+        mxs.push([ xform.matrix, k ]);
       } else if (mxs.length) {
         mxs = [];
       }
@@ -187,23 +187,23 @@ export const recalculateDimensions = function (selected) {
   let attrs = [];
   switch (selected.tagName) {
     case 'line':
-      attrs = ['x1', 'y1', 'x2', 'y2'];
+      attrs = [ 'x1', 'y1', 'x2', 'y2' ];
       break;
     case 'circle':
-      attrs = ['cx', 'cy', 'r'];
+      attrs = [ 'cx', 'cy', 'r' ];
       break;
     case 'ellipse':
-      attrs = ['cx', 'cy', 'rx', 'ry'];
+      attrs = [ 'cx', 'cy', 'rx', 'ry' ];
       break;
     case 'foreignObject':
     case 'rect':
     case 'image':
-      attrs = ['width', 'height', 'x', 'y'];
+      attrs = [ 'width', 'height', 'x', 'y' ];
       break;
     case 'use':
     case 'text':
     case 'tspan':
-      attrs = ['x', 'y'];
+      attrs = [ 'x', 'y' ];
       break;
     case 'polygon':
     case 'polyline': {
@@ -228,7 +228,7 @@ export const recalculateDimensions = function (selected) {
     Array.prototype.forEach.call(attrs, function (attr) {
       changes[attr] = selected.getAttribute(attr);
     });
-    for (const [attr, val] of Object.entries(changes)) {
+    for (const [ attr, val ] of Object.entries(changes)) {
       changes[attr] = convertToNum(attr, val);
     }
   } else if (gsvg) {
@@ -243,7 +243,7 @@ export const recalculateDimensions = function (selected) {
   // make a copy of initial values and include the transform
   if (isNullish(initial)) {
     initial = $.extend(true, {}, changes);
-    for (const [attr, val] of Object.entries(initial)) {
+    for (const [ attr, val ] of Object.entries(initial)) {
       initial[attr] = convertToNum(attr, val);
     }
   }
@@ -652,7 +652,7 @@ export const recalculateDimensions = function (selected) {
           const gtlist = getTransformList(paint);
           const gmatrix = transformListToTransform(gtlist).matrix;
           m = matrixMultiply(m, gmatrix);
-          const mStr = 'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].join(',') + ')';
+          const mStr = 'matrix(' + [ m.a, m.b, m.c, m.d, m.e, m.f ].join(',') + ')';
           paint.setAttribute(type + 'Transform', mStr);
         }
       }

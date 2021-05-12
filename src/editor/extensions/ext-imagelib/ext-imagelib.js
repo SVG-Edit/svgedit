@@ -65,7 +65,7 @@ export default {
         }
       });
       svgCanvas.clearSelection();
-      svgCanvas.addToSelection([newImage]);
+      svgCanvas.addToSelection([ newImage ]);
       svgCanvas.setImageURL(url);
     };
 
@@ -113,7 +113,7 @@ export default {
      * @returns {void}
      */
     async function onMessage({ origin, data: response }) {
-      if (!response || !['string', 'object'].includes(typeof response)) {
+      if (!response || ![ 'string', 'object' ].includes(typeof response)) {
         // Do nothing
         return;
       }
@@ -250,7 +250,7 @@ export default {
           break;
         case 'm': {
           // Import multiple
-          multiArr.push([(svgStr ? 'svg' : 'img'), response]);
+          multiArr.push([ (svgStr ? 'svg' : 'img'), response ]);
           curMeta = pending[id];
           let title;
           if (svgStr) {

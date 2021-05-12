@@ -23,8 +23,8 @@ export default {
   name: 'placemark',
   async init (_S) {
     const svgEditor = this;
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const addElem = svgCanvas.addSVGElementFromJson;
     let
       selElems,
@@ -40,29 +40,29 @@ export default {
     const markerTypes = {
       nomarker: {},
       forwardslash:
-        {element: 'path', attr: {d: 'M30,100 L70,0'}},
+        { element: 'path', attr: { d: 'M30,100 L70,0' } },
       reverseslash:
-        {element: 'path', attr: {d: 'M30,0 L70,100'}},
+        { element: 'path', attr: { d: 'M30,0 L70,100' } },
       verticalslash:
-        {element: 'path', attr: {d: 'M50,0 L50,100'}},
+        { element: 'path', attr: { d: 'M50,0 L50,100' } },
       xmark:
-        {element: 'path', attr: {d: 'M20,80 L80,20 M80,80 L20,20'}},
+        { element: 'path', attr: { d: 'M20,80 L80,20 M80,80 L20,20' } },
       leftarrow:
-        {element: 'path', attr: {d: 'M0,50 L100,90 L70,50 L100,10 Z'}},
+        { element: 'path', attr: { d: 'M0,50 L100,90 L70,50 L100,10 Z' } },
       rightarrow:
-        {element: 'path', attr: {d: 'M100,50 L0,90 L30,50 L0,10 Z'}},
+        { element: 'path', attr: { d: 'M100,50 L0,90 L30,50 L0,10 Z' } },
       box:
-        {element: 'path', attr: {d: 'M20,20 L20,80 L80,80 L80,20 Z'}},
+        { element: 'path', attr: { d: 'M20,20 L20,80 L80,80 L80,20 Z' } },
       star:
-        {element: 'path', attr: {d: 'M10,30 L90,30 L20,90 L50,10 L80,90 Z'}},
+        { element: 'path', attr: { d: 'M10,30 L90,30 L20,90 L50,10 L80,90 Z' } },
       mcircle:
-        {element: 'circle', attr: {r: 30, cx: 50, cy: 50}},
+        { element: 'circle', attr: { r: 30, cx: 50, cy: 50 } },
       triangle:
-        {element: 'path', attr: {d: 'M10,80 L50,20 L80,80 Z'}}
+        { element: 'path', attr: { d: 'M10,80 L50,20 L80,80 Z' } }
     };
 
     // duplicate shapes to support unfilled (open) marker types with an _o suffix
-    ['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'].forEach((v) => {
+    [ 'leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle' ].forEach((v) => {
       markerTypes[v + '_o'] = markerTypes[v];
     });
 
@@ -106,7 +106,7 @@ export default {
         if (elem && elem.getAttribute('class').includes('placemark')) {
           var elements = elem.children;
           Array.prototype.forEach.call(elements, function(i, _){
-            const [, , type, n] = i.id.split('_');
+            const [ , , type, n ] = i.id.split('_');
             if (type === 'txt') {
               txt.textContent = items[n];
             }
@@ -127,7 +127,7 @@ export default {
         if (elem && elem.getAttribute('class').includes('placemark')) {
           var elements = elem.children;
           Array.prototype.forEach.call(elements, function(i, _){
-            const [, , type] = i.id.split('_');
+            const [ , , type ] = i.id.split('_');
             if (type === 'txt') {
               i.style.cssText = 'font-family:' + font + ';font-size:'+fontSize+';';
             }
@@ -204,14 +204,14 @@ export default {
       if (marker) { marker.remove(); }
       el.removeAttribute(markerName);
       if (val === 'nomarker') {
-        svgCanvas.call('changed', [el]);
+        svgCanvas.call('changed', [ el ]);
         return;
       }
       // Set marker on element
       const id = 'placemark_marker_' + el.id;
       addMarker(id, val);
       el.setAttribute(markerName, 'url(#' + id + ')');
-      svgCanvas.call('changed', [el]);
+      svgCanvas.call('changed', [ el ]);
     }
 
     /**
@@ -273,7 +273,7 @@ export default {
     * @returns {string}
     */
     function getTitle (id) {
-      const {langList} = strings;
+      const { langList } = strings;
       const item = langList.find((itm) => {
         return itm.id === id;
       });
@@ -294,7 +294,7 @@ export default {
           icon: 'markers-' + id + '.png',
           title,
           type: 'context',
-          events: {click: setArrowFromButton},
+          events: { click: setArrowFromButton },
           panel: 'placemark_panel',
           list: 'placemark_marker',
           isDefault: id === 'leftarrow'
@@ -303,7 +303,7 @@ export default {
       return buttons;
     }
 
-    const buttons = [{
+    const buttons = [ {
       id: 'tool_placemark',
       icon: 'placemark.png',
       type: 'mode',
@@ -314,14 +314,14 @@ export default {
           svgCanvas.setMode('placemark');
         }
       }
-    }];
+    } ];
     const contextTools = [
       {
         type: 'button-select',
         panel: 'placemark_panel',
         id: 'placemark_marker',
         colnum: 3,
-        events: {change: setArrowFromButton}
+        events: { change: setArrowFromButton }
       },
       {
         type: 'input',
@@ -375,7 +375,7 @@ export default {
           font = font.join(' ');
           const x0 = opts.start_x + 10, y0 = opts.start_y + 10;
           let maxlen = 0;
-          const children = [{
+          const children = [ {
             element: 'line',
             attr: {
               id: id + '_pline_0',
@@ -388,7 +388,7 @@ export default {
               x2: x0,
               y2: y0
             }
-          }];
+          } ];
           items.forEach((i, n) => {
             maxlen = Math.max(maxlen, i.length);
             children.push({
@@ -418,7 +418,7 @@ export default {
                 'font-size': fontSize,
                 'text-anchor': 'start'
               },
-              children: [i]
+              children: [ i ]
             });
           });
           if (items.length > 0) {
@@ -479,7 +479,7 @@ export default {
           newPM.setAttribute('y', y);
           const elements = newPM.children;
           Array.prototype.forEach.call(elements, function(i, _){
-            const [, , type, n] = i.id.split('_');
+            const [ , , type, n ] = i.id.split('_');
             const y0 = y + (fontSize + 6) * n,
               x0 = x + maxlen * fontSize * 0.5 + fontSize;
             const nx = (x + (x0 - x) / 2 < px) ? x0 : x;
@@ -534,7 +534,7 @@ export default {
             const txt = [];
             const elements = elem.children;
             Array.prototype.forEach.call(elements, function(i){
-              const [, , type] = i.id.split('_');
+              const [ , , type ] = i.id.split('_');
               if (type === 'txt') {
                 $id('placemarkFont').value = (
                   i.getAttribute('font-family') + ' ' + i.getAttribute('font-size')

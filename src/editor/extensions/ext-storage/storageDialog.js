@@ -85,7 +85,7 @@ export class SeStorageDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#dialog_box');
     this.$storage = this._shadowRoot.querySelector('#js-storage');
@@ -99,7 +99,7 @@ export class SeStorageDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog', 'storage'];
+    return [ 'dialog', 'storage' ];
   }
   /**
    * @function attributeChangedCallback
@@ -149,11 +149,11 @@ export class SeStorageDialog extends HTMLElement {
    */
   connectedCallback () {
     const onSubmitHandler = (e, action) => {
-      const triggerEvent = new CustomEvent('change', {detail: {
+      const triggerEvent = new CustomEvent('change', { detail: {
         trigger: action,
         select: this.$storageInput.value,
         checkbox: this.$rememberInput.checked
-      }});
+      } });
       this.dispatchEvent(triggerEvent);
     };
     this.$okBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'ok'));

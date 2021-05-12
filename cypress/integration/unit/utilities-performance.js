@@ -2,7 +2,7 @@
 import 'pathseg';
 import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
 import * as math from '../../../instrumented/svgcanvas/math.js';
@@ -82,7 +82,7 @@ describe('utilities performance', function () {
    */
   function mockCreateSVGElement (jsonMap) {
     const elem = document.createElementNS(NS.SVG, jsonMap.element);
-    Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+    Object.entries(jsonMap.attr).forEach(([ attr, value ]) => {
       elem.setAttribute(attr, value);
     });
     return elem;
@@ -111,7 +111,7 @@ describe('utilities performance', function () {
       const clone = elem.cloneNode(true); // t: deep clone
       // Make sure you set a unique ID like a real document.
       clone.setAttribute('id', elemId + index);
-      const {parentNode} = elem;
+      const { parentNode } = elem;
       parentNode.append(clone);
     }
   }
@@ -135,7 +135,7 @@ describe('utilities performance', function () {
           continue;
         }
         const pts = [];
-        ['', 1, 2].forEach(function (n) {
+        [ '', 1, 2 ].forEach(function (n) {
           const x = seg['x' + n],
             y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
@@ -183,8 +183,8 @@ describe('utilities performance', function () {
   //   Pass2 svgCanvas.getStrokedBBox total ms    17, ave ms 0.2,   min/max 0 23
 
   it('Test svgCanvas.getStrokedBBox() performance with matrix transforms', function () {
-    const {getStrokedBBox} = utilities;
-    const {children} = currentLayer;
+    const { getStrokedBBox } = utilities;
+    const { children } = currentLayer;
 
     let lastTime, now,
       min = Number.MAX_VALUE,
@@ -200,7 +200,7 @@ describe('utilities performance', function () {
     // Skip the first child which is the title.
     for (let index = 1; index < count; index++) {
       const child = children[index];
-      /* const obj = */ getStrokedBBox([child], mockaddSVGElementFromJson, mockPathActions);
+      /* const obj = */ getStrokedBBox([ child ], mockaddSVGElementFromJson, mockPathActions);
       now = Date.now(); const delta = now - lastTime; lastTime = now;
       total += delta;
       min = Math.min(min, delta);
@@ -220,7 +220,7 @@ describe('utilities performance', function () {
         // Skip the first child which is the title.
         for (let index = 1; index < ct; index++) {
           const child = children[index];
-          /* const obj = */ getStrokedBBox([child], mockaddSVGElementFromJson, mockPathActions);
+          /* const obj = */ getStrokedBBox([ child ], mockaddSVGElementFromJson, mockPathActions);
           now = Date.now(); const delta = now - lastTime; lastTime = now;
           total += delta;
           min = Math.min(min, delta);

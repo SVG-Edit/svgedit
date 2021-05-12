@@ -1,6 +1,6 @@
 import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
 import * as math from '../../../instrumented/svgcanvas/math.js';
 
 describe('math', function () {
@@ -17,7 +17,7 @@ describe('math', function () {
   });
 
   it('Test svgedit.math.transformPoint() function', function () {
-    const {transformPoint} = math;
+    const { transformPoint } = math;
 
     const m = svg.createSVGMatrix();
     m.a = 1; m.b = 0;
@@ -51,7 +51,7 @@ describe('math', function () {
 
   it('Test svgedit.math.matrixMultiply() function', function () {
     const mult = math.matrixMultiply;
-    const {isIdentity} = math;
+    const { isIdentity } = math;
 
     // translate there and back
     const tr1 = svg.createSVGMatrix().translate(100, 50),
@@ -84,7 +84,7 @@ describe('math', function () {
   });
 
   it('Test svgedit.math.transformBox() function', function () {
-    const {transformBox} = math;
+    const { transformBox } = math;
 
     const m = svg.createSVGMatrix();
     m.a = 1; m.b = 0;

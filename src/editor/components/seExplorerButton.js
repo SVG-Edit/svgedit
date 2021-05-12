@@ -107,7 +107,7 @@ export class ExplorerButton extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button');
@@ -124,7 +124,7 @@ export class ExplorerButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'pressed', 'disabled', 'lib', 'src'];
+    return [ 'title', 'pressed', 'disabled', 'lib', 'src' ];
   }
   /**
    * @function attributeChangedCallback
@@ -160,7 +160,7 @@ export class ExplorerButton extends HTMLElement {
       try {
         const response = await fetch(`${newValue}index.json`);
         const json = await response.json();
-        const {lib} = json;
+        const { lib } = json;
         this.$menu.innerHTML = lib.map((menu, i) => (
           `<div data-menu="${menu}" class="menu-item ${(i === 0) ? 'pressed' : ''} ">${menu}</div>`
         )).join('');
@@ -295,9 +295,9 @@ export class ExplorerButton extends HTMLElement {
       const size = json.size ?? 300;
       const fill = json.fill ? '#333' : 'none';
       const off = size * 0.05;
-      const vb = [-off, -off, size + off * 2, size + off * 2].join(' ');
+      const vb = [ -off, -off, size + off * 2, size + off * 2 ].join(' ');
       const stroke = json.fill ? 0 : (size / 30);
-      this.$lib.innerHTML = Object.entries(this.data).map(([key, path]) => {
+      this.$lib.innerHTML = Object.entries(this.data).map(([ key, path ]) => {
         const encoded = btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
           <svg viewBox="${vb}"><path fill="${fill}" stroke="#000" stroke-width="${stroke}" d="${path}"></path></svg>

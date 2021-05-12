@@ -1,6 +1,6 @@
 import PlainAlertDialog from 'elix/src/plain/PlainAlertDialog.js';
-import {template} from 'elix/src/base/internal.js';
-import {fragmentFrom} from 'elix/src/core/htmlLiterals.js';
+import { template } from 'elix/src/base/internal.js';
+import { fragmentFrom } from 'elix/src/core/htmlLiterals.js';
 
 /**
  * @class SePlainAlertDialog

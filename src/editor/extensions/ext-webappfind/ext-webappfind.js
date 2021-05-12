@@ -26,7 +26,7 @@ export default {
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const saveMessage = 'save',
       readMessage = 'read',
-      excludedMessages = [readMessage, saveMessage];
+      excludedMessages = [ readMessage, saveMessage ];
 
     let pathID;
     this.canvas.bind(
@@ -40,11 +40,11 @@ export default {
       * @throws {Error} Unexpected event type
       * @returns {void}
       */
-      (win, {data, origin}) => {
+      (win, { data, origin }) => {
         // console.log('data, origin', data, origin);
         let type, content;
         try {
-          ({type, pathID, content} = data.webappfind); // May throw if data is not an object
+          ({ type, pathID, content } = data.webappfind); // May throw if data is not an object
           if (origin !== location.origin || // We are only interested in a message sent as though within this URL by our browser add-on
               excludedMessages.includes(type) // Avoid our post below (other messages might be possible in the future which may also need to be excluded if your subsequent code makes assumptions on the type of message this is)
           ) {
@@ -81,7 +81,7 @@ export default {
       : window.location.origin
     );
     */
-    const buttons = [{
+    const buttons = [ {
       id: 'webappfind_save', //
       icon: 'webappfind.png',
       type: 'app_menu',
@@ -106,7 +106,7 @@ export default {
           );
         }
       }
-    }];
+    } ];
 
     return {
       name: strings.name,

@@ -251,8 +251,8 @@ export class SeEditPrefsDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this.colorBlocks = ['#FFF', '#888', '#000', 'chessboard'];
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this.colorBlocks = [ '#FFF', '#888', '#000', 'chessboard' ];
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#svg_prefs');
     this.$saveBtn = this._shadowRoot.querySelector('#tool_prefs_save');
@@ -273,7 +273,7 @@ export class SeEditPrefsDialog extends HTMLElement {
    */
   static get observedAttributes () {
     // eslint-disable-next-line max-len
-    return ['dialog', 'lang', 'iconsize', 'canvasbg', 'bgurl', 'gridsnappingon', 'gridsnappingstep', 'gridcolor', 'showrulers', 'baseunit'];
+    return [ 'dialog', 'lang', 'iconsize', 'canvasbg', 'bgurl', 'gridsnappingon', 'gridsnappingstep', 'gridcolor', 'showrulers', 'baseunit' ];
   }
   /**
    * @function attributeChangedCallback
@@ -494,14 +494,14 @@ export class SeEditPrefsDialog extends HTMLElement {
    */
   connectedCallback () {
     const onCancelHandler = () => {
-      const closeEvent = new CustomEvent('change', {detail: {
+      const closeEvent = new CustomEvent('change', { detail: {
         dialog: 'closed'
-      }});
+      } });
       this.dispatchEvent(closeEvent);
     };
     const onSaveHandler = () => {
       const color = this.$bgBlocks.querySelector('.cur_background').dataset.bgColor || '#FFF';
-      const closeEvent = new CustomEvent('change', {detail: {
+      const closeEvent = new CustomEvent('change', { detail: {
         lang: this.$langSelect.value,
         dialog: 'close',
         iconsize: this.$iconSize.value,
@@ -511,7 +511,7 @@ export class SeEditPrefsDialog extends HTMLElement {
         gridsnappingstep: this.$gridSnappingStep.value,
         showrulers: this.$showRulers.checked,
         baseunit: this.$baseUnit.value
-      }});
+      } });
       this.dispatchEvent(closeEvent);
     };
     // Set up editor background functionality

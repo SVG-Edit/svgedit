@@ -28,13 +28,13 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'helloworld',
-  async init ({_importLocale}) {
+  async init ({ _importLocale }) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const {svgCanvas} = svgEditor;
+    const { svgCanvas } = svgEditor;
     return {
       name: strings.name,
-      events: [{
+      events: [ {
         // Must match the icon ID in helloworld-icon.xml
         id: 'hello_world',
         // Tooltip text
@@ -45,7 +45,7 @@ export default {
           // automatically be de-pressed.
           svgCanvas.setMode('hello_world');
         }
-      }],
+      } ],
       // This is triggered when the main mouse button is pressed down
       // on the editor canvas (not the tool panels)
       mouseDown () {
@@ -53,7 +53,7 @@ export default {
         if (svgCanvas.getMode() === 'hello_world') {
           // The returned object must include "started" with
           // a value of true in order for mouseUp to be triggered
-          return {started: true};
+          return { started: true };
         }
         return undefined;
       },
@@ -70,16 +70,16 @@ export default {
           const y = opts.mouse_y / zoom;
 
           // We do our own formatting
-          let {text} = strings;
+          let { text } = strings;
           [
-            ['x', x],
-            ['y', y]
-          ].forEach(([prop, val]) => {
+            [ 'x', x ],
+            [ 'y', y ]
+          ].forEach(([ prop, val ]) => {
             text = text.replace('{' + prop + '}', val);
           });
 
           // Show the text using the custom alert function
-          alert(text); 
+          alert(text);
         }
       }
     };

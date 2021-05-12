@@ -88,7 +88,7 @@ export class FlyingButton extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$button = this._shadowRoot.querySelector('.menu-button');
@@ -105,7 +105,7 @@ export class FlyingButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'pressed', 'disabled', 'opened'];
+    return [ 'title', 'pressed', 'disabled', 'opened' ];
   }
   /**
    * @function attributeChangedCallback

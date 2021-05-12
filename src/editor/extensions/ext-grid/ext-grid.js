@@ -22,17 +22,17 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'grid',
-  async init ({NS, getTypeMap}) {
+  async init ({ NS, getTypeMap }) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const svgdoc = document.getElementById('svgcanvas').ownerDocument;
-    const {assignAttributes} = svgCanvas;
+    const { assignAttributes } = svgCanvas;
     const hcanvas = document.createElement('canvas');
     const canvBG = $id('canvasBackground');
     const units = getTypeMap(); // Assumes prior `init()` call on `units.js` module
-    const intervals = [0.01, 0.1, 1, 10, 100, 1000];
+    const intervals = [ 0.01, 0.1, 1, 10, 100, 1000 ];
     let showGrid = svgEditor.configObj.curConfig.showGrid || false;
 
     hcanvas.style.display = 'none';
@@ -166,7 +166,7 @@ export default {
         $id('view_grid').addEventListener("click", () => {
           svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid;
           gridUpdate();
-        }); 
+        });
 
         if (showGrid) {
           gridUpdate();

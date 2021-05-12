@@ -53,7 +53,7 @@ export default {
       // enable-eye-dropper if one element is selected
       let elem = null;
       if (!opts.multiselected && opts.elems[0] &&
-        !['svg', 'g', 'use'].includes(opts.elems[0].nodeName)
+        ![ 'svg', 'g', 'use' ].includes(opts.elems[0].nodeName)
       ) {
         elem = opts.elems[0];
         tool.classList.remove('disabled');
@@ -94,7 +94,7 @@ export default {
         if (mode === 'eyedropper') {
           const e = opts.event;
           const { target } = e;
-          if (!['svg', 'g', 'use'].includes(target.nodeName)) {
+          if (![ 'svg', 'g', 'use' ].includes(target.nodeName)) {
             const changes = {};
 
             const change = function (elem, attrname, newvalue) {
