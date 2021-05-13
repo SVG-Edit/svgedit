@@ -61,6 +61,10 @@ class EditorStartup {
   * @returns {void}
   */
   async init () {
+    if ('localStorage' in window) { // && onWeb removed so Webkit works locally
+      this.storage = window.localStorage;
+    }
+    this.configObj.load();
     const self = this;
     const { i18next } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
     this.i18next = i18next;
@@ -96,12 +100,6 @@ class EditorStartup {
     } catch (err) {
       console.error(err);
     }
-
-    if ('localStorage' in window) { // && onWeb removed so Webkit works locally
-      this.storage = window.localStorage;
-    }
-
-    this.configObj.load();
 
     /**
     * @name module:SVGthis.canvas

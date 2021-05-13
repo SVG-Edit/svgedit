@@ -111,11 +111,8 @@ class MainMenu {
 
     // set language
     if (lang && lang !== this.editor.configObj.pref("lang")) {
-      const { langParam, langData } = await this.editor.putLocale(
-        lang,
-        this.editor.goodLangs
-      );
-      await this.editor.svgCanvassetLang(langParam, langData);
+      this.editor.configObj.pref("lang", lang);
+      seAlert('Changing the language needs reload');
     }
 
     // set grid setting
@@ -130,7 +127,7 @@ class MainMenu {
     this.editor.configObj.curConfig.baseUnit = baseunit;
     this.editor.svgCanvas.setConfig(this.editor.configObj.curConfig);
     this.editor.updateCanvas();
-    this.editor.hidePreferences();
+    this.hidePreferences();
   }
 
   /**
