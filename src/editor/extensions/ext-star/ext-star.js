@@ -6,21 +6,12 @@
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
-  let translationModule;
-  try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
-  } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
-  }
-  return translationModule.default;
-};
+ import { loadExtensionTranslation } from '../../locale.js';
 
-export default {
-  name: 'star',
+ const name = "star";
+
+ export default {
+   name,
   async init (_S) {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
@@ -28,7 +19,7 @@ export default {
     let selElems;
     let started;
     let newFO;
-    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    await loadExtensionTranslation(svgEditor, name);
 
     /**
      *
@@ -51,21 +42,23 @@ export default {
     };
 
     return {
-      name: strings.name,
+      name: svgEditor.i18next.t(`${name}:name`),
       // The callback should be used to load the DOM with the appropriate UI items
       callback () {
         // Add the button and its handler(s)
-        // Note: the star extension may also add the same flying button so we check first
-        if ($id('tools_polygon') === null) {
-          const buttonTemplate = document.createElement("template");
-          buttonTemplate.innerHTML = `
-            <se-flyingbutton id="tools_polygon" title="Polygone/Star Tool">
-              <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
-              <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
+        // Note: the star extension needs to be loaded before the polygon extension
+        const fbtitle = svgEditor.i18next.t(`${name}:title`);
+        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
+        const buttonTemplate = document.createElement("template");
+        // eslint-disable-next-line no-unsanitized/property
+        buttonTemplate.innerHTML = `
+            <se-flyingbutton id="tools_polygon" title="${fbtitle}">
+              <se-button id="tool_star" title="${title}" src="./images/star.svg">
+              </se-button>
             </se-flyingbutton>
           `;
-          $id('tools_left').append(buttonTemplate.content.cloneNode(true));
-        }
+        $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+        // handler
         $id('tool_star').addEventListener("click", () => { showPanel(true);
           if (this.leftPanel.updateLeftPanel('tool_polygon')) {
             svgCanvas.setMode('star');
@@ -73,15 +66,22 @@ export default {
           }
         });
 
+        const label0 = svgEditor.i18next.t(`${name}:contextTools.0.label`);
+        const title0 = svgEditor.i18next.t(`${name}:contextTools.0.title`);
+        const label1 = svgEditor.i18next.t(`${name}:contextTools.1.label`);
+        const title1 = svgEditor.i18next.t(`${name}:contextTools.1.title`);
+        const label2 = svgEditor.i18next.t(`${name}:contextTools.2.label`);
+        const title2 = svgEditor.i18next.t(`${name}:contextTools.2.title`);
         // Add the context panel and its handler(s)
         const panelTemplate = document.createElement("template");
+        // eslint-disable-next-line no-unsanitized/property
         panelTemplate.innerHTML = `
           <div id="star_panel">
-            <se-spin-input id="starNumPoints" label="points" min=1 step=1 value=5 title="Change rotation angle">
+            <se-spin-input id="starNumPoints" label="${label0}" min=1 step=1 value=5 title="${title0}">
             </se-spin-input>
-            <se-spin-input id="RadiusMultiplier" label="Radis multiplier" min=1 step=2.5 value=5 title="Change rotation angle">
+            <se-spin-input id="RadiusMultiplier" label="${label1}" min=1 step=2.5 value=5 title="${title1}">
             </se-spin-input>
-            <se-spin-input id="radialShift" min=0 step=1 value=0 label="radial shift" title="Change rotation angle">
+            <se-spin-input id="radialShift" min=0 step=1 value=0 label="${label2}" title="${title2}">
             </se-spin-input>
           </div>
         `;

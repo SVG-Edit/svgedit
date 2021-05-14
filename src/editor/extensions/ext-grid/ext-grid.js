@@ -7,24 +7,15 @@
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
-  let translationModule;
-  try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
-  } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
-  }
-  return translationModule.default;
-};
+ import { loadExtensionTranslation } from '../../locale.js';
+
+ const name = "grid";
 
 export default {
-  name: 'grid',
+  name,
   async init ({ NS, getTypeMap }) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    await loadExtensionTranslation(svgEditor, name);
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
     const svgdoc = document.getElementById('svgcanvas').ownerDocument;
@@ -152,15 +143,18 @@ export default {
       document.getElementById('view_grid').pressed = showGrid;
     };
     return {
-      name: strings.name,
+      name: svgEditor.i18next.t(`${name}:name`),
       zoomChanged (zoom) {
         if (showGrid) { updateGrid(zoom); }
       },
       callback () {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
+        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
+
+        // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-          <se-button id="view_grid" title="Show grid" src="./images/grid.svg"></se-button>
+          <se-button id="view_grid" title="${title}" src="./images/grid.svg"></se-button>
         `;
         $id('editor_panel').append(buttonTemplate.content.cloneNode(true));
         $id('view_grid').addEventListener("click", () => {
