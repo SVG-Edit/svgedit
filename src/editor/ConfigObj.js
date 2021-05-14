@@ -175,7 +175,7 @@ export default class ConfigObj {
       'ext-polygon',
       'ext-storage',
       'ext-opensave',
-      'ext-helloworld',
+      // 'ext-helloworld',
     ];
     this.curConfig = {
       // We do not put on defaultConfig to simplify object copying
