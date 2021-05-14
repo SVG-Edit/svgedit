@@ -553,10 +553,10 @@ class TopPanel {
   attrChanger(e) {
     const attr = e.target.getAttribute("data-attr");
     let val = e.target.value;
-    const valid = isValidUnit(attr, val, this.editor.selectedElement);
+    const valid = isValidUnit(attr, val, this.selectedElement);
 
     if (!valid) {
-      e.target.value = this.editor.selectedElement().getAttribute(attr);
+      e.target.value = this.selectedElement.getAttribute(attr);
       // eslint-disable-next-line no-alert
       alert(this.i18next.t('notification.invalidAttrValGiven'));
       return false;
