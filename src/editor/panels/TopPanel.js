@@ -152,7 +152,7 @@ class TopPanel {
    * @returns {void}
    */
   updateContextPanel() {
-    const setInputWidth = elem => {
+    const setInputWidth = (elem) => {
       const w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
       elem.style.width = w + 'px';
     };
@@ -313,7 +313,7 @@ class TopPanel {
         const curPanel = panels[tagName];
         $id(tagName + "_panel").style.display = 'block';
 
-        curPanel.forEach(item => {
+        curPanel.forEach((item) => {
           let attrVal = elem.getAttribute(item);
           if (this.editor.configObj.curConfig.baseUnit !== "px" && elem[item]) {
             const bv = elem[item].baseVal.value;
@@ -1040,7 +1040,7 @@ class TopPanel {
       "click",
       this.clickGroup.bind(this)
     );
-    $id("tool_position").addEventListener("change", evt =>
+    $id("tool_position").addEventListener("change", (evt) =>
       this.clickAlignEle.bind(this)(evt)
     );
     $id("tool_align_left").addEventListener("click", () =>
@@ -1130,7 +1130,7 @@ class TopPanel {
       "image_height",
       "path_node_x",
       "path_node_y"
-    ].forEach(attrId =>
+    ].forEach((attrId) =>
       $id(attrId).addEventListener("change", this.attrChanger.bind(this))
     );
   }

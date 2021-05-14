@@ -136,7 +136,7 @@ export default {
     const parentElem = document.querySelector("#overviewMiniView");
     dragmove(dragElem, dragElem, parentElem, onStart, onEnd, onDrag);
 
-    $id("overviewMiniView").addEventListener("click", evt => {
+    $id("overviewMiniView").addEventListener("click", (evt) => {
       // Firefox doesn't support evt.offsetX and evt.offsetY.
       const mouseX = (evt.offsetX || evt.originalEvent.layerX);
       const mouseY = (evt.offsetY || evt.originalEvent.layerY);

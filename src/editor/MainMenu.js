@@ -331,7 +331,7 @@ class MainMenu {
      */
 
     $id("tool_clear").addEventListener("click", this.clickClear.bind(this));
-    $id("tool_open").addEventListener("click", e => {
+    $id("tool_open").addEventListener("click", (e) => {
       e.preventDefault();
       this.clickOpen();
       window.dispatchEvent(new CustomEvent("openImage"));

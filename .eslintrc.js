@@ -30,6 +30,14 @@ module.exports = {
     "array-bracket-spacing": [ "error", "always" ],
     "comma-spacing": "error",
     "object-curly-spacing": [ "error", "always" ],
+    "valid-jsdoc": "warn",
+    "no-console": [
+      "warn",
+      { "allow": [ "warn", "error", "info", "table" ] }
+    ],
+    "no-param-reassign": [ "warn", { "props": false } ],
+    "max-len": [ "warn", { "code": 150 } ],
+    "arrow-parens": [ "error", "always" ],
   },
   overrides: [
     {
@@ -41,9 +49,7 @@ module.exports = {
         mocha: true,
         node: true
       },
-      globals: {
-        "assert": true
-      },
+      globals: { "assert": true },
       rules: {
         // with ci, instrumented is not created before linter
         "import/no-unresolved": [ 2, { ignore: [ 'instrumented' ] } ],

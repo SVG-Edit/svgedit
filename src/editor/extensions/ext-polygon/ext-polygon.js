@@ -25,7 +25,7 @@ export default {
      * @param {boolean} on
      * @returns {void}
      */
-    const showPanel = on => {
+    const showPanel = (on) => {
       $id("polygon_panel").style.display = on ? "block" : "none";
     };
 
@@ -43,13 +43,13 @@ export default {
      * @param {Float} n
      * @returns {Float}
      */
-    const cot = n => 1 / Math.tan(n);
+    const cot = (n) => 1 / Math.tan(n);
 
     /**
      * @param {Float} n
      * @returns {Float}
      */
-    const sec = n => 1 / Math.cos(n);
+    const sec = (n) => 1 / Math.cos(n);
 
     return {
       name: svgEditor.i18next.t(`${name}:name`),
@@ -88,7 +88,7 @@ export default {
         `;
         $id("tools_top").appendChild(panelTemplate.content.cloneNode(true));
         $id("polygon_panel").style.display = "none";
-        $id("polySides").addEventListener("change", event => {
+        $id("polySides").addEventListener("change", (event) => {
           setAttr("sides", event.target.value);
         });
       },
