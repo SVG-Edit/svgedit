@@ -7,15 +7,28 @@
  *
  */
 
- import { loadExtensionTranslation } from '../../locale.js';
-
  const name = "grid";
+
+ const loadExtensionTranslation = async function (svgEditor) {
+  let translationModule;
+  const lang = svgEditor.configObj.pref('lang');
+  try {
+    // eslint-disable-next-line no-unsanitized/method
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
+    // eslint-disable-next-line no-unsanitized/method
+    translationModule = await import(`./locale/en.js`);
+  }
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
+};
 
 export default {
   name,
   async init ({ NS, getTypeMap }) {
     const svgEditor = this;
-    await loadExtensionTranslation(svgEditor, name);
+    await loadExtensionTranslation(svgEditor);
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
     const svgdoc = document.getElementById('svgcanvas').ownerDocument;
