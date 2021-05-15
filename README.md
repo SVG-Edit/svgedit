@@ -40,6 +40,11 @@ Thanks to netlify, you can test the following builds:
 
 [Try SVG-edit 5.1.0 here](https://6098683962bf91702907ee33--svgedit.netlify.app/editor/svg-editor.html)
 
+[Try SVG-edit 6.1.0 here](https://60a0000fc9900b0008fd268d--svgedit.netlify.app/editor/index.html)
+
+/
+
+
 
 ## Installation
 
