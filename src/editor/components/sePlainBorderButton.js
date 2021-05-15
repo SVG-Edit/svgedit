@@ -1,5 +1,5 @@
-import {template} from 'elix/src/base/internal.js';
-import {fragmentFrom} from 'elix/src/core/htmlLiterals.js';
+import { template } from 'elix/src/base/internal.js';
+import { fragmentFrom } from 'elix/src/core/htmlLiterals.js';
 import PlainButton from 'elix/src/plain/PlainButton.js';
 
 /**

@@ -1,4 +1,5 @@
-import {fromRollup} from '@web/dev-server-rollup';
+import { fromRollup } from '@web/dev-server-rollup';
+// eslint-disable-next-line node/no-unpublished-import
 import rollupCommonjs from '@rollup/plugin-commonjs';
 
 const commonjs = fromRollup(rollupCommonjs);
@@ -6,7 +7,7 @@ const commonjs = fromRollup(rollupCommonjs);
 export default {
   plugins: [
     commonjs({
-      exclude: ['src', 'dist', 'instrumented']
+      exclude: [ 'src', 'dist', 'instrumented' ]
     })
   ]
 };

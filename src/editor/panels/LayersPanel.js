@@ -79,7 +79,7 @@ class LayersPanel {
    */
   toggleSidePanel(close) {
     const dpr = window.devicePixelRatio || 1;
-    const w = parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", ""))
+    const w = parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", ""));
     const isOpened = (dpr < 1 ? w : w / dpr) > 2;
     const zoomAdjustedSidepanelWidth =
       (dpr < 1 ? 1 : dpr) * SIDEPANEL_OPENWIDTH;
@@ -173,7 +173,7 @@ class LayersPanel {
       "change",
       this.lmenuFunc.bind(this)
     );
-    $id("se-cmenu-layers-list").addEventListener("change", e => {
+    $id("se-cmenu-layers-list").addEventListener("change", (e) => {
       this.lmenuFunc(e);
     });
     $id("sidepanel_handle").addEventListener(
@@ -183,7 +183,7 @@ class LayersPanel {
     if (this.editor.configObj.curConfig.showlayers) {
       this.toggleSidePanel();
     }
-    $id("sidepanel_handle").addEventListener("mousedown", evt => {
+    $id("sidepanel_handle").addEventListener("mousedown", (evt) => {
       this.sidedrag = evt.pageX;
       window.addEventListener("mousemove", this.resizeSidePanel.bind(this));
       this.allowmove = false;
@@ -192,14 +192,14 @@ class LayersPanel {
         this.allowmove = true;
       }, 20);
     });
-    $id("sidepanel_handle").addEventListener("mouseup", _evt => {
+    $id("sidepanel_handle").addEventListener("mouseup", (_evt) => {
       if (!this.sidedragging) {
         this.toggleSidePanel();
       }
       this.sidedrag = -1;
       this.sidedragging = false;
     });
-    window.addEventListener("mouseup", _evt => {
+    window.addEventListener("mouseup", (_evt) => {
       this.sidedrag = -1;
       this.sidedragging = false;
       $id("svg_editor").removeEventListener(
@@ -353,7 +353,7 @@ class LayersPanel {
     }
 
     if (layerNameToHighlight) {
-      curNames.forEach(curName => {
+      curNames.forEach((curName) => {
         if (curName !== layerNameToHighlight) {
           this.editor.svgCanvas
             .getCurrentDrawing()
@@ -361,7 +361,7 @@ class LayersPanel {
         }
       });
     } else {
-      curNames.forEach(curName => {
+      curNames.forEach((curName) => {
         this.editor.svgCanvas.getCurrentDrawing().setLayerOpacity(curName, 1.0);
       });
     }
@@ -387,7 +387,7 @@ class LayersPanel {
     // we get the layers in the reverse z-order (the layer rendered on top is listed first)
     while (layer--) {
       const name = drawing.getLayerName(layer);
-      const layerTr = document.createElement("tr");      
+      const layerTr = document.createElement("tr");
       layerTr.className = (name === currentLayerName) ? 'layer layersel' : 'layer';
       const layerVis = document.createElement("td");
       layerVis.className = (!drawing.getLayerVisibility(name)) ? "layerinvis layervis" : 'layervis';
@@ -410,7 +410,7 @@ class LayersPanel {
         });
         evt.currentTarget.parentNode.classList.add("layersel");
         self.editor.svgCanvas.setCurrentLayer(evt.currentTarget.textContent);
-        evt.preventDefault();        
+        evt.preventDefault();
       });
       element.addEventListener('mouseup', function(evt) {
         self.toggleHighlightLayer(

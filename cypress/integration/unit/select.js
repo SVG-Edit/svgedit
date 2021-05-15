@@ -1,7 +1,7 @@
 import '../../../instrumented/editor/jquery.min.js';
 
 import * as select from '../../../instrumented/svgcanvas/select.js';
-import {NS} from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
 
 describe('select', function () {
   const sandbox = document.createElement('div');
@@ -10,7 +10,7 @@ describe('select', function () {
   let svgroot;
   let svgcontent;
   const mockConfig = {
-    dimensions: [640, 480]
+    dimensions: [ 640, 480 ]
   };
   const dataStorage = {
     _storage: new WeakMap(),
@@ -33,7 +33,7 @@ describe('select', function () {
       }
       return ret;
     }
-  };  
+  };
 
   /**
   * @implements {module:select.SVGFactory}
@@ -41,7 +41,7 @@ describe('select', function () {
   const mockFactory = {
     createSVGElement (jsonMap) {
       const elem = document.createElementNS(NS.SVG, jsonMap.element);
-      Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+      Object.entries(jsonMap.attr).forEach(([ attr, value ]) => {
         elem.setAttribute(attr, value);
       });
       return elem;
@@ -58,11 +58,11 @@ describe('select', function () {
   beforeEach(() => {
     svgroot = mockFactory.createSVGElement({
       element: 'svg',
-      attr: {id: 'svgroot'}
+      attr: { id: 'svgroot' }
     });
     svgcontent = mockFactory.createSVGElement({
       element: 'svg',
-      attr: {id: 'svgcontent'}
+      attr: { id: 'svgcontent' }
     });
 
     svgroot.append(svgcontent);

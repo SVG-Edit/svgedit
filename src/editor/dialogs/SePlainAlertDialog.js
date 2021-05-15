@@ -1,6 +1,6 @@
 import PlainAlertDialog from 'elix/src/plain/PlainAlertDialog.js';
-import {template} from 'elix/src/base/internal.js';
-import {fragmentFrom} from 'elix/src/core/htmlLiterals.js';
+import { template } from 'elix/src/base/internal.js';
+import { fragmentFrom } from 'elix/src/core/htmlLiterals.js';
 
 /**
  * @class SePlainAlertDialog
@@ -52,7 +52,7 @@ export default class SePlainAlertDialog extends PlainAlertDialog {
             background: #DDD;
             overflow: auto;
             text-align: left;
-            border: 1px solid #B0B0B0;
+            border: 1px solid #5a6162;
             padding: 1em;
             border-radius: 5px;
             -moz-border-radius: 5px;

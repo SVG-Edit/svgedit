@@ -3,7 +3,7 @@ import '../../../instrumented/editor/jquery.min.js';
 
 import * as browser from '../../../instrumented/common/browser.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
-import {NS} from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
 
 describe('utilities', function () {
   /**
@@ -13,7 +13,7 @@ describe('utilities', function () {
    */
   function mockCreateSVGElement (jsonMap) {
     const elem = document.createElementNS(NS.SVG, jsonMap.element);
-    Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+    Object.entries(jsonMap.attr).forEach(([ attr, value ]) => {
       elem.setAttribute(attr, value);
     });
     return elem;
@@ -28,7 +28,7 @@ describe('utilities', function () {
     svgroot.append(elem);
     return elem;
   }
-  const mockPathActions = {resetOrientation () { /* empty fn */ }};
+  const mockPathActions = { resetOrientation () { /* empty fn */ } };
   let mockHistorySubCommands = [];
   const mockHistory = {
     BatchCommand: class {
@@ -92,7 +92,7 @@ describe('utilities', function () {
     svg = document.createElementNS(NS.SVG, 'svg');
     svgroot = mockCreateSVGElement({
       element: 'svg',
-      attr: {id: 'svgroot'}
+      attr: { id: 'svgroot' }
     });
     sandbox.append(svgroot);
     document.body.append(sandbox);
@@ -105,7 +105,7 @@ describe('utilities', function () {
   });
 
   it('Test svgedit.utilities.toXml() function', function () {
-    const {toXml} = utilities;
+    const { toXml } = utilities;
 
     assert.equal(toXml('a'), 'a');
     assert.equal(toXml('ABC_'), 'ABC_');
@@ -116,7 +116,7 @@ describe('utilities', function () {
   });
 
   it('Test svgedit.utilities.fromXml() function', function () {
-    const {fromXml} = utilities;
+    const { fromXml } = utilities;
 
     assert.equal(fromXml('a'), 'a');
     assert.equal(fromXml('ABC_'), 'ABC_');
@@ -127,7 +127,7 @@ describe('utilities', function () {
   });
 
   it('Test svgedit.utilities.encode64() function', function () {
-    const {encode64} = utilities;
+    const { encode64 } = utilities;
 
     assert.equal(encode64('abcdef'), 'YWJjZGVm');
     assert.equal(encode64('12345'), 'MTIzNDU=');
@@ -136,7 +136,7 @@ describe('utilities', function () {
   });
 
   it('Test svgedit.utilities.decode64() function', function () {
-    const {decode64} = utilities;
+    const { decode64 } = utilities;
 
     assert.equal(decode64('YWJjZGVm'), 'abcdef');
     assert.equal(decode64('MTIzNDU='), '12345');
@@ -151,7 +151,7 @@ describe('utilities', function () {
   });
 
   it('Test svgedit.utilities.bboxToObj() function', function () {
-    const {bboxToObj} = utilities;
+    const { bboxToObj } = utilities;
 
     const rect = svg.createSVGRect();
     rect.x = 1;
@@ -188,38 +188,38 @@ describe('utilities', function () {
   });
 
   it('Test getPathDFromSegments', function () {
-    const {getPathDFromSegments} = utilities;
+    const { getPathDFromSegments } = utilities;
 
     const doc = utilities.text2xml('<svg></svg>');
     const path = doc.createElementNS(NS.SVG, 'path');
     path.setAttribute('d', 'm0,0l5,0l0,5l-5,0l0,-5z');
     let d = getPathDFromSegments([
-      ['M', [1, 2]],
-      ['Z', []]
+      [ 'M', [ 1, 2 ] ],
+      [ 'Z', [] ]
     ]);
     assert.equal(d, 'M1,2 Z');
 
     d = getPathDFromSegments([
-      ['M', [1, 2]],
-      ['M', [3, 4]],
-      ['Z', []]
+      [ 'M', [ 1, 2 ] ],
+      [ 'M', [ 3, 4 ] ],
+      [ 'Z', [] ]
     ]);
     assert.equal(d, 'M1,2 M3,4 Z');
 
     d = getPathDFromSegments([
-      ['M', [1, 2]],
-      ['C', [3, 4, 5, 6]],
-      ['Z', []]
+      [ 'M', [ 1, 2 ] ],
+      [ 'C', [ 3, 4, 5, 6 ] ],
+      [ 'Z', [] ]
     ]);
     assert.equal(d, 'M1,2 C3,4 5,6 Z');
   });
 
   it('Test getPathDFromElement', function () {
-    const {getPathDFromElement} = utilities;
+    const { getPathDFromElement } = utilities;
 
     let elem = mockCreateSVGElement({
       element: 'path',
-      attr: {id: 'path', d: 'M0,1 Z'}
+      attr: { id: 'path', d: 'M0,1 Z' }
     });
     svgroot.append(elem);
     assert.equal(getPathDFromElement(elem), 'M0,1 Z');
@@ -227,7 +227,7 @@ describe('utilities', function () {
 
     elem = mockCreateSVGElement({
       element: 'rect',
-      attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
+      attr: { id: 'rect', x: '0', y: '1', width: '5', height: '10' }
     });
     svgroot.append(elem);
     assert.equal(getPathDFromElement(elem), 'M0,1 L5,1 L5,11 L0,11 L0,1 Z');
@@ -235,7 +235,7 @@ describe('utilities', function () {
 
     elem = mockCreateSVGElement({
       element: 'rect',
-      attr: {id: 'roundrect', x: '0', y: '1', rx: '2', ry: '3', width: '10', height: '11'}
+      attr: { id: 'roundrect', x: '0', y: '1', rx: '2', ry: '3', width: '10', height: '11' }
     });
     svgroot.append(elem);
     const closeEnough = /M0,13 C0,2.3\d* 0.9\d*,1 02,1 L8,1 C9.0\d*,1 10,2.3\d* 10,13 L10,9 C10,10.6\d* 9.08675799086758,12 8,12 L02,12 C0.9\d*,12 0,10.6\d* 0,9 L0,13 Z/;
@@ -244,7 +244,7 @@ describe('utilities', function () {
 
     elem = mockCreateSVGElement({
       element: 'line',
-      attr: {id: 'line', x1: '0', y1: '1', x2: '5', y2: '6'}
+      attr: { id: 'line', x1: '0', y1: '1', x2: '5', y2: '6' }
     });
     svgroot.append(elem);
     assert.equal(getPathDFromElement(elem), 'M0,1L5,6');
@@ -252,7 +252,7 @@ describe('utilities', function () {
 
     elem = mockCreateSVGElement({
       element: 'circle',
-      attr: {id: 'circle', cx: '10', cy: '11', rx: '5', ry: '10'}
+      attr: { id: 'circle', cx: '10', cy: '11', rx: '5', ry: '10' }
     });
     svgroot.append(elem);
     assert.equal(getPathDFromElement(elem), 'M5,11 C5,5.475138121546961 7.237569060773481,1 10,1 C102.7624309392265194,1 105,5.475138121546961 105,11 C105,115.524861878453039 102.7624309392265194,1110 10,1110 C7.237569060773481,1110 5,115.524861878453039 5,11 Z');
@@ -260,13 +260,13 @@ describe('utilities', function () {
 
     elem = mockCreateSVGElement({
       element: 'polyline',
-      attr: {id: 'polyline', points: '0,1 5,1 5,11 0,11'}
+      attr: { id: 'polyline', points: '0,1 5,1 5,11 0,11' }
     });
     svgroot.append(elem);
     assert.equal(getPathDFromElement(elem), 'M0,1 5,1 5,11 0,11');
     elem.remove();
 
-    assert.equal(getPathDFromElement({tagName: 'something unknown'}), undefined);
+    assert.equal(getPathDFromElement({ tagName: 'something unknown' }), undefined);
   });
 
   it('Test getBBoxOfElementAsPath', function () {
@@ -281,36 +281,36 @@ describe('utilities', function () {
 
     let elem = mockCreateSVGElement({
       element: 'path',
-      attr: {id: 'path', d: 'M0,1 Z'}
+      attr: { id: 'path', d: 'M0,1 Z' }
     });
     svgroot.append(elem);
     let bbox = getBBoxOfElementAsPath(elem, mockaddSVGElementFromJson, mockPathActions);
-    assert.deepEqual(bbox, {x: 0, y: 1, width: 0, height: 0});
+    assert.deepEqual(bbox, { x: 0, y: 1, width: 0, height: 0 });
     elem.remove();
 
     elem = mockCreateSVGElement({
       element: 'rect',
-      attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
+      attr: { id: 'rect', x: '0', y: '1', width: '5', height: '10' }
     });
     svgroot.append(elem);
     bbox = getBBoxOfElementAsPath(elem, mockaddSVGElementFromJson, mockPathActions);
-    assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 10});
+    assert.deepEqual(bbox, { x: 0, y: 1, width: 5, height: 10 });
     elem.remove();
 
     elem = mockCreateSVGElement({
       element: 'line',
-      attr: {id: 'line', x1: '0', y1: '1', x2: '5', y2: '6'}
+      attr: { id: 'line', x1: '0', y1: '1', x2: '5', y2: '6' }
     });
     svgroot.append(elem);
     bbox = getBBoxOfElementAsPath(elem, mockaddSVGElementFromJson, mockPathActions);
-    assert.deepEqual(bbox, {x: 0, y: 1, width: 5, height: 5});
+    assert.deepEqual(bbox, { x: 0, y: 1, width: 5, height: 5 });
     elem.remove();
 
     // TODO: test element with transform. Need resetOrientation above to be working or mock it.
   });
 
   it('Test convertToPath rect', function () {
-    const {convertToPath} = utilities;
+    const { convertToPath } = utilities;
     const attrs = {
       fill: 'red',
       stroke: 'white',
@@ -320,7 +320,7 @@ describe('utilities', function () {
 
     const elem = mockCreateSVGElement({
       element: 'rect',
-      attr: {id: 'rect', x: '0', y: '1', width: '5', height: '10'}
+      attr: { id: 'rect', x: '0', y: '1', width: '5', height: '10' }
     });
     svgroot.append(elem);
     const path = convertToPath(elem, attrs, mockaddSVGElementFromJson, mockPathActions, mockClearSelection, mockAddToSelection, mockHistory, mockAddCommandToHistory);
@@ -337,7 +337,7 @@ describe('utilities', function () {
   });
 
   it('Test convertToPath unknown element', function () {
-    const {convertToPath} = utilities;
+    const { convertToPath } = utilities;
     const attrs = {
       fill: 'red',
       stroke: 'white',

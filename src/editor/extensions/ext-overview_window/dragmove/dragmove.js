@@ -47,7 +47,7 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
   });
 
   // On leaving click, stop moving.
-  document.addEventListener(_isTouch ? "touchend" : "mouseup", function() {   
+  document.addEventListener(_isTouch ? "touchend" : "mouseup", function() {
     if (onEnd && hasStarted) {
       onEnd(target, parent, parseInt(target.style.left), parseInt(target.style.top));
     }
@@ -57,11 +57,11 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
   });
 
   // On leaving click, stop moving.
-  document.addEventListener(_isTouch ? "touchmove" : "mousemove", function() {   
+  document.addEventListener(_isTouch ? "touchmove" : "mousemove", function() {
     if (onDrag && hasStarted) {
       onDrag(target, parseInt(target.style.left), parseInt(target.style.top));
     }
-  });  
+  });
 
   // Register mouse-move callback to move the element.
   _callbacks.push(function move(x, y) {
@@ -92,6 +92,6 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
     target.style.left = lastX + "px";
     target.style.top = lastY + "px";
   });
-}
+};
 
-export { dragmove as default }; 
+export { dragmove as default };

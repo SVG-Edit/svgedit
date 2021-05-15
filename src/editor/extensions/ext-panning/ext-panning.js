@@ -36,7 +36,7 @@ export default {
     } = svgCanvas;
     const insertAfter = (referenceNode, newNode) => {
       referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    }
+    };
     return {
       newUI: true,
       name: strings.name,

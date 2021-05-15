@@ -8,8 +8,8 @@
 import Layer from './layer.js';
 import HistoryRecordingService from './historyrecording.js';
 
-import {NS} from '../common/namespaces.js';
-import {isOpera} from '../common/browser.js';
+import { NS } from '../common/namespaces.js';
+import { isOpera } from '../common/browser.js';
 import {
   toXml, getElem
 } from './utilities.js';
@@ -19,7 +19,7 @@ import {
 import {
   BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
 } from './history.js';
-import {getParentsUntil} from '../editor/components/jgraduate/Util.js';
+import { getParentsUntil } from '../editor/components/jgraduate/Util.js';
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
 
@@ -50,7 +50,7 @@ function findLayerNameInGroup (group) {
   return group.querySelector('title').textContent ||
     (isOpera() && group.querySelectorAll
       // Hack for Opera 10.60
-      ? group.querySelector('title').textContent 
+      ? group.querySelector('title').textContent
       : '');
 }
 
@@ -574,7 +574,7 @@ export class Drawing {
     const group = layer.getGroup();
 
     // Clone children
-    const children = [...currentGroup.childNodes];
+    const children = [ ...currentGroup.childNodes ];
     children.forEach((child) => {
       if (child.localName === 'title') { return; }
       group.append(this.copyElem(child));
@@ -791,7 +791,7 @@ export const createLayer = function (name, hrService) {
     historyRecordingService(hrService)
   );
   canvas_.clearSelection();
-  canvas_.call('changed', [newLayer]);
+  canvas_.call('changed', [ newLayer ]);
 };
 
 /**
@@ -810,7 +810,7 @@ export const cloneLayer = function (name, hrService) {
 
   canvas_.clearSelection();
   leaveContext();
-  canvas_.call('changed', [newLayer]);
+  canvas_.call('changed', [ newLayer ]);
 };
 
 /**
@@ -822,7 +822,7 @@ export const cloneLayer = function (name, hrService) {
 */
 export const deleteCurrentLayer = function () {
   let currentLayer = canvas_.getCurrentDrawing().getCurrentLayer();
-  const {nextSibling} = currentLayer;
+  const { nextSibling } = currentLayer;
   const parent = currentLayer.parentNode;
   currentLayer = canvas_.getCurrentDrawing().deleteCurrentLayer();
   if (currentLayer) {
@@ -831,7 +831,7 @@ export const deleteCurrentLayer = function () {
     batchCmd.addSubCommand(new RemoveElementCommand(currentLayer, nextSibling, parent));
     canvas_.addCommandToHistory(batchCmd);
     canvas_.clearSelection();
-    canvas_.call('changed', [parent]);
+    canvas_.call('changed', [ parent ]);
     return true;
   }
   return false;
@@ -867,7 +867,7 @@ export const renameCurrentLayer = function (newName) {
   if (layer) {
     const result = drawing.setCurrentLayerName(newName, historyRecordingService());
     if (result) {
-      canvas_.call('changed', [layer]);
+      canvas_.call('changed', [ layer ]);
       return true;
     }
   }
@@ -907,7 +907,7 @@ export const setLayerVisibility = function (layerName, bVisible) {
   const layer = drawing.setLayerVisibility(layerName, bVisible);
   if (layer) {
     const oldDisplay = prevVisibility ? 'inline' : 'none';
-    canvas_.addCommandToHistory(new ChangeElementCommand(layer, {display: oldDisplay}, 'Layer Visibility'));
+    canvas_.addCommandToHistory(new ChangeElementCommand(layer, { display: oldDisplay }, 'Layer Visibility'));
   } else {
     return false;
   }
@@ -1051,4 +1051,4 @@ export const setContext = function (elem) {
 * @class Layer
 * @see {@link module:layer.Layer}
 */
-export {Layer};
+export { Layer };

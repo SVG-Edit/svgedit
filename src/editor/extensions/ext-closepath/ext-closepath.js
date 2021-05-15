@@ -24,10 +24,10 @@ const loadExtensionTranslation = async function (lang) {
 // The button toggles whether the path is open or closed
 export default {
   name: 'closepath',
-  async init ({_importLocale}) {
+  async init ({ _importLocale }) {
     const svgEditor = this;
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     let selElems;
     const updateButton = function (path) {

@@ -14,7 +14,8 @@ template.innerHTML = `
   }
  
   #svg_source_editor #svg_source_container {
-    background-color: #B0B0B0;
+    background-color: #5a6162;
+    color: #c5c5c5;
     opacity: 1.0;
     text-align: center;
     border: 1px outset #777;
@@ -42,18 +43,27 @@ template.innerHTML = `
   
   #svg_source_editor #tool_source_back {
     text-align: left;
-    margin: 5px 10px;
+    height: 30px;
   }  
+  #tool_source_save {
+    width: 20%;
+    background-color: #c79605;
+    margin-left: 30%;
+    margin-top: 5px;
+  }
+
+  #tool_source_cancel {
+    width: 20%;
+    background-color: #c8c8c8;
+  }
   </style>
   <elix-dialog id="svg_source_editor" aria-label="SVG Source Editor" closed>
     <div id="svg_source_container">
       <div id="tool_source_back" class="toolbar_button">
         <button id="tool_source_save">
-          <img class="svg_icon" src="./images/ok.svg" alt="icon" width="16" height="16" />
           Apply Changes
         </button>
         <button id="tool_source_cancel">
-          <img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />
           Cancel
         </button>
       </div>
@@ -79,7 +89,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#svg_source_editor');
     this.$copyBtn = this._shadowRoot.querySelector('#copy_save_done');
@@ -94,7 +104,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog', 'value', 'applysec', 'copysec'];
+    return [ 'dialog', 'value', 'applysec', 'copysec' ];
   }
   /**
    * @function attributeChangedCallback
@@ -203,9 +213,9 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    */
   connectedCallback () {
     const onCancelHandler = () => {
-      const closeEvent = new CustomEvent('change', {detail: {
+      const closeEvent = new CustomEvent('change', { detail: {
         dialog: 'closed'
-      }});
+      } });
       this.dispatchEvent(closeEvent);
     };
     const onCopyHandler = () => {
@@ -218,10 +228,10 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
       this.dispatchEvent(closeEvent);
     };
     const onSaveHandler = () => {
-      const closeEvent = new CustomEvent('change', {detail: {
+      const closeEvent = new CustomEvent('change', { detail: {
         value: this.$sourceTxt.value,
         dialog: 'close'
-      }});
+      } });
       this.dispatchEvent(closeEvent);
     };
     this.$copyBtn.addEventListener('click', onCopyHandler);

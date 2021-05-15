@@ -136,7 +136,7 @@ export const getMouseTargetMethod = function (evt) {
 
   // for foreign content, go up until we find the foreignObject
   // WebKit browsers set the mouse target to the svgcanvas div
-  if ([NS.MATH, NS.HTML].includes(mouseTarget.namespaceURI) &&
+  if ([ NS.MATH, NS.HTML ].includes(mouseTarget.namespaceURI) &&
     mouseTarget.id !== 'svgcanvas'
   ) {
     while (mouseTarget.nodeName !== 'foreignObject') {
@@ -151,7 +151,7 @@ export const getMouseTargetMethod = function (evt) {
   const svgRoot = selectionContext_.getSVGRoot();
   const container = selectionContext_.getDOMContainer();
   const content = selectionContext_.getSVGContent();
-  if ([svgRoot, container, content, currentLayer].includes(mouseTarget)) {
+  if ([ svgRoot, container, content, currentLayer ].includes(mouseTarget)) {
     return selectionContext_.getSVGRoot();
   }
 
@@ -207,7 +207,7 @@ export const getMouseTargetMethod = function (evt) {
 */
 export const runExtensionsMethod = function (action, vars, returnArray, nameFilter) {
   let result = returnArray ? [] : false;
-  for (const [name, ext] of Object.entries(selectionContext_.getExtensions())) {
+  for (const [ name, ext ] of Object.entries(selectionContext_.getExtensions())) {
     if (nameFilter && !nameFilter(name)) {
       return;
     }
@@ -242,7 +242,7 @@ export const getVisibleElementsAndBBoxes = function (parent) {
   const elements = parent.children;
   Array.prototype.forEach.call(elements, function (elem) {
     if (elem.getBBox) {
-      contentElems.push({ elem, bbox: getStrokedBBoxDefaultVisible([elem]) });
+      contentElems.push({ elem, bbox: getStrokedBBoxDefaultVisible([ elem ]) });
     }
   });
   return contentElems.reverse();
@@ -271,7 +271,7 @@ export const getIntersectionListMethod = function (rect) {
     rubberBBox = selectionContext_.getRubberBox().getBBox();
     const bb = selectionContext_.getSVGContent().createSVGRect();
 
-    ['x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left'].forEach((o) => {
+    [ 'x', 'y', 'width', 'height', 'top', 'right', 'bottom', 'left' ].forEach((o) => {
       bb[o] = rubberBBox[o] / currentZoom;
     });
     rubberBBox = bb;
@@ -339,7 +339,7 @@ export const prepareSvg = function (newDoc) {
   selectionContext_.getCanvas().sanitizeSvg(newDoc.documentElement);
 
   // convert paths into absolute commands
-  const paths = [...newDoc.getElementsByTagNameNS(NS.SVG, 'path')];
+  const paths = [ ...newDoc.getElementsByTagNameNS(NS.SVG, 'path') ];
   paths.forEach((path) => {
     path.setAttribute('d', selectionContext_.getCanvas().pathActions.convertPath(path));
     selectionContext_.getCanvas().pathActions.fixEnd(path);

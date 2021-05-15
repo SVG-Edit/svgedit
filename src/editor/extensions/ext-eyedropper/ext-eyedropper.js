@@ -4,27 +4,19 @@
  * @license MIT
  *
  * @copyright 2010 Jeff Schiller
+ * @copyright 2021 OptimistikSAS
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
-  let translationModule;
-  try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
-  } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
-  }
-  return translationModule.default;
-};
+import { loadExtensionTranslation } from '../../locale.js';
+
+const name = "eyedropper";
 
 export default {
-  name: 'eyedropper',
+  name,
   async init(S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    await loadExtensionTranslation(svgEditor, name);
     const { ChangeElementCommand } = S, // , svgcontent,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
       { svgCanvas } = svgEditor,
@@ -53,7 +45,7 @@ export default {
       // enable-eye-dropper if one element is selected
       let elem = null;
       if (!opts.multiselected && opts.elems[0] &&
-        !['svg', 'g', 'use'].includes(opts.elems[0].nodeName)
+        ![ 'svg', 'g', 'use' ].includes(opts.elems[0].nodeName)
       ) {
         elem = opts.elems[0];
         tool.classList.remove('disabled');
@@ -71,16 +63,19 @@ export default {
       } else {
         tool.classList.add('disabled');
       }
-    }
+    };
 
     return {
-      name: strings.name,
+      name: svgEditor.i18next.t(`${name}:name`),
       callback() {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
+        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
+        const key = svgEditor.i18next.t(`${name}:buttons.0.key`);
+        // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-        <se-button id="tool_eyedropper" title="Eye Dropper Tool" src="./images/eye_dropper.svg" shortcut="I"></se-button>
-        `
+        <se-button id="tool_eyedropper" title="${title}" src="./images/eye_dropper.svg" shortcut=${key}></se-button>
+        `;
         $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('tool_eyedropper').addEventListener("click", () => {
           svgCanvas.setMode('eyedropper');
@@ -94,7 +89,7 @@ export default {
         if (mode === 'eyedropper') {
           const e = opts.event;
           const { target } = e;
-          if (!['svg', 'g', 'use'].includes(target.nodeName)) {
+          if (![ 'svg', 'g', 'use' ].includes(target.nodeName)) {
             const changes = {};
 
             const change = function (elem, attrname, newvalue) {

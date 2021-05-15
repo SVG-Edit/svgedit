@@ -1,6 +1,6 @@
 import ListComboBox from 'elix/define/ListComboBox.js';
 import * as internal from 'elix/src/base/internal.js';
-import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';
+import { templateFrom, fragmentFrom } from 'elix/src/core/htmlLiterals.js';
 import NumberSpinBox from '../dialogs/se-elix/define/NumberSpinBox.js';
 
 /**
@@ -66,7 +66,7 @@ class Zoom extends ListComboBox {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'inputsize', 'value'];
+    return [ 'title', 'src', 'inputsize', 'value' ];
   }
   /**
    * @function attributeChangedCallback
@@ -115,7 +115,7 @@ class Zoom extends ListComboBox {
         e.preventDefault();
         const value = e.detail?.closeResult?.getAttribute('value');
         if (value) {
-          const closeEvent = new CustomEvent('change', {detail: {value}});
+          const closeEvent = new CustomEvent('change', { detail: { value } });
           this.dispatchEvent(closeEvent);
         }
       });
@@ -133,7 +133,7 @@ class Zoom extends ListComboBox {
    * @returns {void}
    */
   set src (src) {
-    this[internal.setState]({src});
+    this[internal.setState]({ src });
   }
   /**
    * @function inputsize
@@ -147,7 +147,7 @@ class Zoom extends ListComboBox {
    * @returns {void}
    */
   set inputsize (inputsize) {
-    this[internal.setState]({inputsize});
+    this[internal.setState]({ inputsize });
   }
   /**
    * @function value
@@ -161,7 +161,7 @@ class Zoom extends ListComboBox {
    * @returns {void}
    */
   set value (value) {
-    this[internal.setState]({value});
+    this[internal.setState]({ value });
   }
 }
 

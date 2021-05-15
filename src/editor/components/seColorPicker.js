@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import {jGraduate, jGraduateMethod} from './jgraduate/jQuery.jGraduate.js';
+import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
 
 const template = document.createElement('template');
@@ -344,7 +344,7 @@ div.jGraduate_Swatch {
 }
 div.jGraduate_GradContainer {
   border: 2px inset #EEE;
-  background-image: url(../images/map-opacity.png);
+  background-image: url(./components/jgraduate/images/map-opacity.png);
   background-position: 0px 0px;
   height: 256px;
   width: 256px;
@@ -658,7 +658,7 @@ export class SeColorPicker extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$logo = this._shadowRoot.getElementById('logo');
     this.$label = this._shadowRoot.getElementById('label');
@@ -672,7 +672,7 @@ export class SeColorPicker extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label', 'src', 'type'];
+    return [ 'label', 'src', 'type' ];
   }
   /**
    * @function attributeChangedCallback
@@ -754,9 +754,9 @@ export class SeColorPicker extends HTMLElement {
   update (svgCanvas, selectedElement, apply) {
     const paint = this.paintBox.update(svgCanvas, selectedElement);
     if (paint && apply) {
-      const changeEvent = new CustomEvent('change', {detail: {
+      const changeEvent = new CustomEvent('change', { detail: {
         paint
-      }});
+      } });
       this.dispatchEvent(changeEvent);
     }
   }
@@ -775,21 +775,21 @@ export class SeColorPicker extends HTMLElement {
   connectedCallback () {
     this.paintBox = new PaintBox(this.$block, this.type);
     this.$picker.addEventListener('click', () => {
-      let {paint} = this.paintBox;
+      let { paint } = this.paintBox;
       jGraduateMethod(
         this.$color_picker,
         {
-          images: {clientPath: './components/jgraduate/images/'},
+          images: { clientPath: './components/jgraduate/images/' },
           paint,
-          window: {pickerTitle: this.label},
+          window: { pickerTitle: this.label },
           newstop: 'inverse'
         },
         (p) => {
           paint = new jGraduate.Paint(p);
           this.setPaint(paint);
-          const changeEvent = new CustomEvent('change', {detail: {
+          const changeEvent = new CustomEvent('change', { detail: {
             paint
-          }});
+          } });
           this.dispatchEvent(changeEvent);
           this.$color_picker.style.display = 'none';
         },

@@ -28,17 +28,17 @@
 import SvgCanvas from '../src/svgcanvas/svgcanvas.js';
 
 const container = document.querySelector('#editorContainer');
-const {width, height} = {width: 500, height: 300};
+const { width, height } = { width: 500, height: 300 };
 window.width = width;
 window.height = height;
 
 const config = {
-  initFill: {color: 'FFFFFF', opacity: 1},
-  initStroke: {color: '000000', opacity: 1, width: 1},
-  text: {stroke_width: 0, font_size: 24, font_family: 'serif'},
+  initFill: { color: 'FFFFFF', opacity: 1 },
+  initStroke: { color: '000000', opacity: 1, width: 1 },
+  text: { stroke_width: 0, font_size: 24, font_family: 'serif' },
   initOpacity: 1,
   imgPath: 'editor/images/',
-  dimensions: [width, height],
+  dimensions: [ width, height ],
   baseUnit: 'px'
 };
 

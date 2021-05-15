@@ -1,7 +1,7 @@
 /* globals seConfirm, seAlert */
 import SvgCanvas from "../svgcanvas/svgcanvas.js";
-import {convertUnit, isValidUnit} from '../common/units.js';
-import {isChrome} from '../common/browser.js';
+import { convertUnit, isValidUnit } from '../common/units.js';
+import { isChrome } from '../common/browser.js';
 
 const { $id } = SvgCanvas;
 const homePage = 'https://github.com/SVG-Edit/svgedit';
@@ -26,7 +26,7 @@ class MainMenu {
    * @returns {void}
    */
   async clickClear() {
-    const [x, y] = this.editor.configObj.curConfig.dimensions;
+    const [ x, y ] = this.editor.configObj.curConfig.dimensions;
     const ok = await seConfirm(this.editor.i18next.t('notification.QwantToClear'));
     if (ok === "Cancel") {
       return;
@@ -111,11 +111,8 @@ class MainMenu {
 
     // set language
     if (lang && lang !== this.editor.configObj.pref("lang")) {
-      const { langParam, langData } = await this.editor.putLocale(
-        lang,
-        this.editor.goodLangs
-      );
-      await this.editor.svgCanvassetLang(langParam, langData);
+      this.editor.configObj.pref("lang", lang);
+      seAlert('Changing the language needs reload');
     }
 
     // set grid setting
@@ -130,7 +127,7 @@ class MainMenu {
     this.editor.configObj.curConfig.baseUnit = baseunit;
     this.editor.svgCanvas.setConfig(this.editor.configObj.curConfig);
     this.editor.updateCanvas();
-    this.editor.hidePreferences();
+    this.hidePreferences();
   }
 
   /**
@@ -183,7 +180,7 @@ class MainMenu {
           <body><h1>${loadingImage}</h1></body>
         <html>`;
         if (typeof URL !== "undefined" && URL.createObjectURL) {
-          const blob = new Blob([popHTML], { type: "text/html" });
+          const blob = new Blob([ popHTML ], { type: "text/html" });
           popURL = URL.createObjectURL(blob);
         } else {
           popURL = "data:text/html;base64;charset=utf-8," + popHTML;
@@ -305,7 +302,7 @@ class MainMenu {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    const {i18next} = this.editor
+    const { i18next } = this.editor;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg" alt="logo">
@@ -334,7 +331,7 @@ class MainMenu {
      */
 
     $id("tool_clear").addEventListener("click", this.clickClear.bind(this));
-    $id("tool_open").addEventListener("click", e => {
+    $id("tool_open").addEventListener("click", (e) => {
       e.preventDefault();
       this.clickOpen();
       window.dispatchEvent(new CustomEvent("openImage"));

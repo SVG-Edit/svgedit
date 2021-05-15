@@ -1,4 +1,4 @@
-import {isValidUnit} from '../../common/units.js';
+import { isValidUnit } from '../../common/units.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -16,7 +16,8 @@ template.innerHTML = `
   }
   #svg_docprops #svg_docprops_container {
     padding: 10px;
-    background-color: #B0B0B0;
+    background-color: #5a6162;
+    color: #c5c5c5;
     border: 1px outset #777;
     opacity: 1.0;
     font-family: Verdana, Helvetica, sans-serif;
@@ -126,7 +127,7 @@ export class SeImgPropDialog extends HTMLElement {
     super();
     // create the shadowDom and insert the template
     this.eventlisten = false;
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$saveBtn = this._shadowRoot.querySelector('#tool_docprops_save');
     this.$cancelBtn = this._shadowRoot.querySelector('#tool_docprops_cancel');
@@ -143,7 +144,7 @@ export class SeImgPropDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'width', 'height', 'save', 'dialog', 'embed'];
+    return [ 'title', 'width', 'height', 'save', 'dialog', 'embed' ];
   }
   /**
    * @function attributeChangedCallback
@@ -342,22 +343,22 @@ export class SeImgPropDialog extends HTMLElement {
       if (this.$imageOptRef.getAttribute('checked') === 'true') {
         saveOpt = 'ref';
       }
-      const closeEvent = new CustomEvent('change', {detail: {
+      const closeEvent = new CustomEvent('change', { detail: {
         title: this.$canvasTitle.value,
         w: this.$canvasWidth.value,
         h: this.$canvasHeight.value,
         save: saveOpt,
         dialog: 'close'
-      }});
+      } });
       this.$canvasWidth.removeAttribute('disabled');
       this.$canvasHeight.removeAttribute('disabled');
       this.$resolution.selectedIndex = 0;
       this.dispatchEvent(closeEvent);
     };
     const onCancelHandler = () => {
-      const closeEvent = new CustomEvent('change', {detail: {
+      const closeEvent = new CustomEvent('change', { detail: {
         dialog: 'closed'
-      }});
+      } });
       this.$canvasWidth.removeAttribute('disabled');
       this.$canvasHeight.removeAttribute('disabled');
       this.$resolution.selectedIndex = 0;

@@ -13,10 +13,10 @@ describe('UI - Accessibility', function () {
     cy.configureAxe({
       // Todo: Reenable when have time to fix
       // See https://www.deque.com/axe/axe-for-web/documentation/api-documentation/#user-content-parameters-1
-      rules: [{
+      rules: [ {
         id: 'meta-viewport',
         enabled: false
-      }]
+      } ]
       /*
       branding: {
         brand: String,
@@ -32,10 +32,10 @@ describe('UI - Accessibility', function () {
       {},
       {
         rules: {
-          'label-title-only': {enabled: false},
-          'page-has-heading-one': {enabled: false},
-          region: {enabled: false},
-          'scrollable-region-focusable': {enabled: false}
+          'label-title-only': { enabled: false },
+          'page-has-heading-one': { enabled: false },
+          region: { enabled: false },
+          'scrollable-region-focusable': { enabled: false }
         }
       }
     );

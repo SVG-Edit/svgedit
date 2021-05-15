@@ -7,13 +7,13 @@
  * @copyright 2013 James Sacksteder
  *
  */
-import { dragmove } from '../../../editor/dragmove/dragmove.js';
+import { dragmove } from './dragmove/dragmove.js';
 
 export default {
   name: 'overview_window',
-  init ({_$, isChrome}) {
+  init ({ _$, isChrome }) {
     const svgEditor = this;
-    const {$id} = svgEditor.svgCanvas;
+    const { $id } = svgEditor.svgCanvas;
     const overviewWindowGlobals = {};
     // Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
     // https://code.google.com/p/chromium/issues/detail?id=565120.
@@ -119,12 +119,12 @@ export default {
       if((el.offsetLeft + el.offsetWidth) > parseFloat(getComputedStyle(parent, null).width.replace("px", ""))){
         el.style.left = (parseFloat(getComputedStyle(parent, null).width.replace("px", "")) - el.offsetWidth) + 'px';
       } else if(el.offsetLeft  < 0){
-        el.style.left = "0px"
+        el.style.left = "0px";
       }
       if((el.offsetTop + el.offsetHeight) > parseFloat(getComputedStyle(parent, null).height.replace("px", ""))){
         el.style.top = (parseFloat(getComputedStyle(parent, null).height.replace("px", "")) - el.offsetHeight) + 'px';
       } else if(el.offsetTop  < 0){
-        el.style.top = "0px"
+        el.style.top = "0px";
       }
       overviewWindowGlobals.viewBoxDragging = false;
       updateViewPortFromViewBox();
@@ -136,7 +136,7 @@ export default {
     const parentElem = document.querySelector("#overviewMiniView");
     dragmove(dragElem, dragElem, parentElem, onStart, onEnd, onDrag);
 
-    $id("overviewMiniView").addEventListener("click", evt => {
+    $id("overviewMiniView").addEventListener("click", (evt) => {
       // Firefox doesn't support evt.offsetX and evt.offsetY.
       const mouseX = (evt.offsetX || evt.originalEvent.layerX);
       const mouseY = (evt.offsetY || evt.originalEvent.layerY);

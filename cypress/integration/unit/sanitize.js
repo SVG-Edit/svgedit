@@ -1,6 +1,6 @@
 import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
 import * as sanitize from '../../../instrumented/svgcanvas/sanitize.js';
 
 describe('sanitize', function () {

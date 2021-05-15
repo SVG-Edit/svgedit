@@ -80,7 +80,7 @@ export class SeCMenuLayerDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.source = '';
     this._workarea = undefined;
@@ -96,7 +96,7 @@ export class SeCMenuLayerDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['value', 'leftclick'];
+    return [ 'value', 'leftclick' ];
   }
   /**
    * @function attributeChangedCallback
@@ -168,10 +168,10 @@ export class SeCMenuLayerDialog extends HTMLElement {
       }
     };
     const onMenuClickHandler = (e, action, id) => {
-      const triggerEvent = new CustomEvent('change', {detail: {
+      const triggerEvent = new CustomEvent('change', { detail: {
         trigger: action,
         source: id
-      }});
+      } });
       this.dispatchEvent(triggerEvent);
       current.$dialog.style.display = 'none';
     };

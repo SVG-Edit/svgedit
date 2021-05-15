@@ -52,7 +52,7 @@ class Editor extends EditorStartup {
      * @type {"ignore"|"waiting"|"closed"}
     */
     this.storagePromptState = 'ignore';
-    
+
     this.svgCanvas = null;
     this.isReady = false;
     this.customExportImage = false;
@@ -67,7 +67,7 @@ class Editor extends EditorStartup {
     this.configObj.preferences = false;
     this.canvMenu = null;
     // eslint-disable-next-line max-len
-    this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW'];
+    this.goodLangs = [ 'ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW' ];
     const modKey = (isMac() ? 'meta+' : 'ctrl+');
     this.shortcuts = [
       // Shortcuts not associated with buttons
@@ -79,26 +79,26 @@ class Editor extends EditorStartup {
       { key: 'shift+p', fn: () => { this.svgCanvas.cycleElement(1); } },
       { key: 'tab', fn: () => { this.svgCanvas.cycleElement(0); } },
       { key: 'shift+tab', fn: () => { this.svgCanvas.cycleElement(1); } },
-      { key: [modKey + 'arrowup', true], fn: () => { this.zoomImage(2); } },
-      { key: [modKey + 'arrowdown', true], fn: () => { this.zoomImage(0.5); } },
-      { key: [modKey + ']', true], fn: () => { this.moveUpDownSelected('Up'); } },
-      { key: [modKey + '[', true], fn: () => { this.moveUpDownSelected('Down'); } },
-      { key: ['arrowup', true], fn: () => { this.moveSelected(0, -1); } },
-      { key: ['arrowdown', true], fn: () => { this.moveSelected(0, 1); } },
-      { key: ['arrowleft', true], fn: () => { this.moveSelected(-1, 0); } },
-      { key: ['arrowright', true], fn: () => { this.moveSelected(1, 0); } },
+      { key: [ modKey + 'arrowup', true ], fn: () => { this.zoomImage(2); } },
+      { key: [ modKey + 'arrowdown', true ], fn: () => { this.zoomImage(0.5); } },
+      { key: [ modKey + ']', true ], fn: () => { this.moveUpDownSelected('Up'); } },
+      { key: [ modKey + '[', true ], fn: () => { this.moveUpDownSelected('Down'); } },
+      { key: [ 'arrowup', true ], fn: () => { this.moveSelected(0, -1); } },
+      { key: [ 'arrowdown', true ], fn: () => { this.moveSelected(0, 1); } },
+      { key: [ 'arrowleft', true ], fn: () => { this.moveSelected(-1, 0); } },
+      { key: [ 'arrowright', true ], fn: () => { this.moveSelected(1, 0); } },
       { key: 'shift+arrowup', fn: () => { this.moveSelected(0, -10); } },
       { key: 'shift+arrowdown', fn: () => { this.moveSelected(0, 10); } },
       { key: 'shift+arrowleft', fn: () => { this.moveSelected(-10, 0); } },
       { key: 'shift+arrowright', fn: () => { this.moveSelected(10, 0); } },
-      { key: ['alt+arrowup', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, -1); } },
-      { key: ['alt+arrowdown', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, 1); } },
-      { key: ['alt+arrowleft', true], fn: () => { this.svgCanvas.cloneSelectedElements(-1, 0); } },
-      { key: ['alt+arrowright', true], fn: () => { this.svgCanvas.cloneSelectedElements(1, 0); } },
-      { key: ['alt+shift+arrowup', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, -10); } },
-      { key: ['alt+shift+arrowdown', true], fn: () => { this.svgCanvas.cloneSelectedElements(0, 10); } },
-      { key: ['alt+shift+arrowleft', true], fn: () => { this.svgCanvas.cloneSelectedElements(-10, 0); } },
-      { key: ['alt+shift+arrowright', true], fn: () => { this.svgCanvas.cloneSelectedElements(10, 0); } },
+      { key: [ 'alt+arrowup', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, -1); } },
+      { key: [ 'alt+arrowdown', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, 1); } },
+      { key: [ 'alt+arrowleft', true ], fn: () => { this.svgCanvas.cloneSelectedElements(-1, 0); } },
+      { key: [ 'alt+arrowright', true ], fn: () => { this.svgCanvas.cloneSelectedElements(1, 0); } },
+      { key: [ 'alt+shift+arrowup', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, -10); } },
+      { key: [ 'alt+shift+arrowdown', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, 10); } },
+      { key: [ 'alt+shift+arrowleft', true ], fn: () => { this.svgCanvas.cloneSelectedElements(-10, 0); } },
+      { key: [ 'alt+shift+arrowright', true ], fn: () => { this.svgCanvas.cloneSelectedElements(10, 0); } },
       { key: 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer(); } },
       { key: modKey + 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer(); } },
       { key: modKey + 'x', fn: () => { this.cutSelected(); } },
@@ -294,8 +294,8 @@ class Editor extends EditorStartup {
       '4/Shift+4': 'tools_rect',
       '5/Shift+5': 'tools_ellipse'
     };
-    Object.entries(keyAssocs).forEach(([keyval, sel]) => {
-      const parentsElements = this.getParents($id(sel), $id('main_menu'))
+    Object.entries(keyAssocs).forEach(([ keyval, sel ]) => {
+      const parentsElements = this.getParents($id(sel), $id('main_menu'));
       const menu = (parentsElements.length);
 
       $qa(sel).forEach((element) => {
@@ -350,9 +350,9 @@ class Editor extends EditorStartup {
       const elements = document.getElementsByClassName("tool_button_current");
       Array.from(elements).forEach(function (element) {
         element.classList.add('tool_button_current');
-        element.classList.remove('tool_button')
+        element.classList.remove('tool_button');
       });
-      $id('tool_select').classList.add('tool_button_current')
+      $id('tool_select').classList.add('tool_button_current');
       $id('tool_select').classList.remove('tool_button');
       this.multiselected = false;
       if (elems.length) {
@@ -384,7 +384,7 @@ class Editor extends EditorStartup {
     this.exportWindow.location.href = data.bloburl || data.datauri;
     const done = this.configObj.pref('export_notice_done');
     if (done !== 'all') {
-      let note = this.i18next.t('notification.saveFromBrowser', { type: data.type});
+      let note = this.i18next.t('notification.saveFromBrowser', { type: data.type });
 
       // Check if there are issues
       if (issues.length) {
@@ -775,7 +775,7 @@ class Editor extends EditorStartup {
     const icon = (typeof iconId === 'string') ? img : iconId.cloneNode(true);
     if (!icon) {
       // Todo: Investigate why this still occurs in some cases
-      console.log('NOTE: Icon image missing: ' + iconId);
+      console.warn('NOTE: Icon image missing: ' + iconId);
       return;
     }
     // empty()
@@ -1083,7 +1083,7 @@ class Editor extends EditorStartup {
         resolve(cb());
         return;
       }
-      this.callbacks.push([cb, resolve, reject]);
+      this.callbacks.push([ cb, resolve, reject ]);
     });
   }
 
@@ -1094,16 +1094,16 @@ class Editor extends EditorStartup {
 */
   async runCallbacks() {
     try {
-      await Promise.all(this.callbacks.map(([cb]) => {
+      await Promise.all(this.callbacks.map(([ cb ]) => {
         return cb();
       }));
     } catch (err) {
-      this.callbacks.forEach(([, , reject]) => {
+      this.callbacks.forEach(([ , , reject ]) => {
         reject();
       });
       throw err;
     }
-    this.callbacks.forEach(([, resolve]) => {
+    this.callbacks.forEach(([ , resolve ]) => {
       resolve();
     });
     this.isReady = true;

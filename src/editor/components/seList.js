@@ -35,7 +35,7 @@ export class SeList extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
     this.$label = this._shadowRoot.querySelector('label');
@@ -45,7 +45,7 @@ export class SeList extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['label', 'width', 'height'];
+    return [ 'label', 'width', 'height' ];
   }
 
   /**
@@ -128,7 +128,7 @@ export class SeList extends HTMLElement {
       e.preventDefault();
       if (e?.detail?.selectedIndex !== undefined) {
         const value = this.$dropdown.selectedItem.getAttribute('value');
-        const closeEvent = new CustomEvent('change', {detail: {value}});
+        const closeEvent = new CustomEvent('change', { detail: { value } });
         currentObj.dispatchEvent(closeEvent);
         currentObj.value = value;
       }

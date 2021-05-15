@@ -6,11 +6,11 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {NS} from './namespaces.js';
+import { NS } from './namespaces.js';
 
-const wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
-const hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
-const unitAttrs = ['r', 'radius', ...wAttrs, ...hAttrs];
+const wAttrs = [ 'x', 'x1', 'cx', 'rx', 'width' ];
+const hAttrs = [ 'y', 'y1', 'cy', 'ry', 'height' ];
+const unitAttrs = [ 'r', 'radius', ...wAttrs, ...hAttrs ];
 // unused
 /*
 const unitNumMap = {
@@ -202,14 +202,14 @@ export const setUnitAttr = function (elem, attr, val) {
 };
 
 const attrsToConvert = {
-  line: ['x1', 'x2', 'y1', 'y2'],
-  circle: ['cx', 'cy', 'r'],
-  ellipse: ['cx', 'cy', 'rx', 'ry'],
-  foreignObject: ['x', 'y', 'width', 'height'],
-  rect: ['x', 'y', 'width', 'height'],
-  image: ['x', 'y', 'width', 'height'],
-  use: ['x', 'y', 'width', 'height'],
-  text: ['x', 'y']
+  line: [ 'x1', 'x2', 'y1', 'y2' ],
+  circle: [ 'cx', 'cy', 'r' ],
+  ellipse: [ 'cx', 'cy', 'rx', 'ry' ],
+  foreignObject: [ 'x', 'y', 'width', 'height' ],
+  rect: [ 'x', 'y', 'width', 'height' ],
+  image: [ 'x', 'y', 'width', 'height' ],
+  use: [ 'x', 'y', 'width', 'height' ],
+  text: [ 'x', 'y' ]
 };
 
 /**

@@ -7,7 +7,7 @@
  *  adopted for moinmoins item storage. It sends in one post png and svg data
  *  (I agree to dual license my work to additional GPLv2 or later)
  */
-import {Canvg as canvg} from 'canvg';
+import { Canvg as canvg } from 'canvg';
 
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
@@ -24,11 +24,11 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'server_moinsave',
-  async init ({encode64}) {
+  async init ({ encode64 }) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const saveSvgAction = '/+modify';
 
     // Create upload target (hidden iframe)
@@ -44,7 +44,7 @@ export default {
     svgEditor.setCustomHandlers({
       async save (win, data) {
         const svg = '<?xml version="1.0"?>\n' + data;
-        const {pathname} = new URL(location);
+        const { pathname } = new URL(location);
         const name = pathname.replace(/\/+get\//, '');
         const svgData = encode64(svg);
         if (!$id('export_canvas')) {

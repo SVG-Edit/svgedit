@@ -1,4 +1,4 @@
-import {getTypeMap} from '../common/units.js';
+import { getTypeMap } from '../common/units.js';
 import rulersTemplate from './templates/rulersTemplate.js';
 /**
  *
@@ -52,7 +52,7 @@ class Rulers {
       const dim = isX ? 'x' : 'y';
       const lentype = isX ? 'width' : 'height';
       const contentDim = Number(contentElem.getAttribute(dim));
-      const {$id} = this.svgCanvas;
+      const { $id } = this.svgCanvas;
       const $hcanvOrig = $id('ruler_' + dim).querySelector('canvas');
 
       // Bit of a hack to fully clear the canvas in Safari & IE9

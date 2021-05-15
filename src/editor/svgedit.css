@@ -471,7 +471,7 @@ input[type=text] {
   border-top: 1px solid var(--border-color);
   border-right: 1px solid #FFFFFF;
   border-bottom: 1px solid #FFFFFF;
-  background-color: #B0B0B0;
+  background-color: #5a6162;
 }
 
 .dropdown ul {
@@ -495,7 +495,7 @@ input[type=text] {
   width: 120px;
   padding: 4px;
   background: #E8E8E8;
-  border: 1px solid #B0B0B0;
+  border: 1px solid #5a6162;
   margin: 0 0 -1px 0;
   line-height: 16px;
 }
@@ -625,10 +625,6 @@ ul li.current {
   padding-right: .3em;
 }
 
-#svg_source_editor {
-  display: none;
-}
-
 .overlay {
   position: absolute;
   top: 0;
@@ -638,19 +634,6 @@ ul li.current {
   background-color: black;
   opacity: 0.6;
   z-index: 5;
-}
-
-#svg_source_editor #svg_source_container {
-  position: absolute;
-  top: 30px;
-  left: 30px;
-  right: 30px;
-  bottom: 30px;
-  background-color: #B0B0B0;
-  opacity: 1.0;
-  text-align: center;
-  border: 1px outset #777;
-  z-index: 6;
 }
 
 #save_output_btns {
@@ -666,20 +649,6 @@ ul li.current {
 #bg_blocks {
   overflow: auto;
   margin-left: 30px;
-}
-
-#svg_docprops #svg_docprops_container,
-#svg_prefs #svg_prefs_container {
-  position: absolute;
-  top: 50px;
-  padding: 10px;
-  background-color: #B0B0B0;
-  border: 1px outset #777;
-  opacity: 1.0;
-/*  width: 450px;*/
-  font-family: Verdana, Helvetica, sans-serif;
-  font-size: .8em;
-  z-index: 20001;
 }
 
 /* ------------ */
