@@ -21,22 +21,25 @@ module.exports = {
     es6: true
   },
   rules: {
+    /** @todo len should probably more 120-150 */
+    "max-len": [ "warn", { "code": 250 } ],
+    /** @todo jsdoc should be made warn or error */
+    "valid-jsdoc": "off",
+      /** @todo cognitive complexity should be much lower (25-50?) */
+    "sonarjs/cognitive-complexity": [ "warn", 200 ],
     "node/no-unsupported-features/es-syntax": 0,
     "no-unused-vars": [ "error", { "argsIgnorePattern": "^_" } ],
-    "sonarjs/cognitive-complexity": [ "warn", 40 ],
     "sonarjs/no-duplicate-string": 0,
     "semi" : "error",
     "no-trailing-spaces": "error",
     "array-bracket-spacing": [ "error", "always" ],
     "comma-spacing": "error",
     "object-curly-spacing": [ "error", "always" ],
-    "valid-jsdoc": "warn",
     "no-console": [
       "warn",
       { "allow": [ "warn", "error", "info", "table" ] }
     ],
     "no-param-reassign": [ "warn", { "props": false } ],
-    "max-len": [ "warn", { "code": 150 } ],
     "arrow-parens": [ "error", "always" ],
   },
   overrides: [

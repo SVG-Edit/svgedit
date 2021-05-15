@@ -4,6 +4,9 @@ export default {
   buttons: [
     {
       title: 'Outil Etoile'
+    },
+    {
+      title: 'Outil Polygone'
     }
   ],
   contextTools: [
@@ -18,6 +21,10 @@ export default {
     {
       title: 'Torsion Etoile',
       label: 'Décalage Radial'
+    },
+    {
+      title: 'Nombre de côtés',
+      label: 'côtés'
     }
   ]
 };
