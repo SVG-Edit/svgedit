@@ -727,7 +727,6 @@ describe('draw.Drawing', function () {
     drawing.setLayerOpacity(LAYER3, -1.4);
 
     assert.strictEqual(drawing.getLayerOpacity(LAYER1), 0.4);
-    // console.log('layer2 opacity ' + drawing.getLayerOpacity(LAYER2));
     assert.strictEqual(drawing.getLayerOpacity(LAYER2), 1.0);
     assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
 

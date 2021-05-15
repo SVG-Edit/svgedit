@@ -318,8 +318,7 @@ export const pathActionsMethod = (function () {
     }
     return element;
   };
-  // console.log(pathActionsContext_);
-  // const convertPath = pathActionsContext_.getConvertPath();
+
   return (/** @lends module:path.pathActions */ {
     /**
     * @param {MouseEvent} evt
@@ -464,7 +463,6 @@ export const pathActionsMethod = (function () {
               editorContext_.getMouseTarget(evt)
             )) {
               // Clicked outside canvas, so don't make point
-              // console.log('Clicked outside canvas');
               return false;
             }
 

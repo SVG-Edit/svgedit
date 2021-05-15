@@ -159,8 +159,6 @@ describe('Basic Module', function () {
       assert.strictEqual(attrVal, 'bar', true, 'Preserved namespaced attribute on import');
 
       const output = svgCanvas.getSvgString();
-      // } catch(e) {console.log(e)}
-      // console.log('output',output);
       const hasXlink = output.includes('xmlns:xlink="http://www.w3.org/1999/xlink"');
       const hasSe = output.includes('xmlns:se=');
       const hasFoo = output.includes('xmlns:foo=');

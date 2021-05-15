@@ -223,7 +223,6 @@ export default {
     function colorChanged (el) {
       const color = el.getAttribute('stroke');
       const marker = getLinked(el, 'marker-start');
-      // console.log(marker);
       if (!marker) { return; }
       if (!marker.attributes.class) { return; } // not created by this extension
       const ch = marker.lastElementChild;

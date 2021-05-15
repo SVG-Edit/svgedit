@@ -34,7 +34,6 @@ async function processResults (url) {
 
   const r = await fetch(url);
   const json = await r.json();
-  // console.log('json', json);
 
   if (!json || json.msg !== 'success') {
     // Todo: This could use a generic alert library instead
@@ -87,7 +86,6 @@ async function processResults (url) {
           async click (e) {
             e.preventDefault();
             const { value: svgurl } = this.dataset;
-            // console.log('this', id, svgurl);
             const post = (message) => {
               // Todo: Make origin customizable as set by opening window
               // Todo: If dropping IE9, avoid stringifying
@@ -103,7 +101,6 @@ async function processResults (url) {
             });
             const result = await fetch(svgurl);
             const svg = await result.text();
-            // console.log('url and svg', svgurl, svg);
             post({
               href: svgurl,
               data: svg

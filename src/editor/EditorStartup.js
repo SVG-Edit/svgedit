@@ -789,7 +789,6 @@ class EditorStartup {
  * @returns {void}
  */
   messageListener ({ data, origin }) {
-  // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
     const messageObj = { data, origin };
     if (!this.extensionsAdded) {
       this.messageQueue.push(messageObj);

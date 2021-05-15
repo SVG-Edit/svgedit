@@ -41,7 +41,6 @@ export default {
       * @returns {void}
       */
       (win, { data, origin }) => {
-        // console.log('data, origin', data, origin);
         let type, content;
         try {
           ({ type, pathID, content } = data.webappfind); // May throw if data is not an object

@@ -775,7 +775,7 @@ class Editor extends EditorStartup {
     const icon = (typeof iconId === 'string') ? img : iconId.cloneNode(true);
     if (!icon) {
       // Todo: Investigate why this still occurs in some cases
-      console.log('NOTE: Icon image missing: ' + iconId);
+      console.warn('NOTE: Icon image missing: ' + iconId);
       return;
     }
     // empty()
