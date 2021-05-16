@@ -414,7 +414,7 @@ class LayersPanel {
       element.addEventListener('mouseup', (evt) => {
         self.toggleHighlightLayer(evt.currentTarget.textContent);
       });
-      element.addEventListener('mouseout', (evt) => {
+      element.addEventListener('mouseout', (_evt) => {
         self.toggleHighlightLayer();
       });
     });
