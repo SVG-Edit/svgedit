@@ -225,7 +225,7 @@ class LayersPanel {
       return;
     }
     if (this.editor.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      alert(this.i18next.t('notification.dupeLayerName'));
+      alert(this.editor.i18next.t('notification.dupeLayerName'));
       return;
     }
     this.editor.svgCanvas.createLayer(newName);
@@ -262,14 +262,14 @@ class LayersPanel {
       this.editor.svgCanvas.getCurrentDrawing().getCurrentLayerName() + " copy";
 
     const newName = prompt(
-      this.i18next.t('notification.enterUniqueLayerName'),
+      this.editor.i18next.t('notification.enterUniqueLayerName'),
       name
     );
     if (!newName) {
       return;
     }
     if (this.editor.svgCanvas.getCurrentDrawing().hasLayer(newName)) {
-      alert(this.i18next.t('notification.dupeLayerName'));
+      alert(this.editor.i18next.t('notification.dupeLayerName'));
       return;
     }
     this.editor.svgCanvas.cloneLayer(newName);
@@ -322,7 +322,7 @@ class LayersPanel {
    */
   layerRename() {
     const oldName = document.querySelector("#layerlist tr.layersel td.layername").textContent;
-    const newName = prompt(this.i18next.t('notification.enterNewLayerName'), "");
+    const newName = prompt(this.editor.i18next.t('notification.enterNewLayerName'), "");
     if (!newName) {
       return;
     }
@@ -330,7 +330,7 @@ class LayersPanel {
       oldName === newName ||
       this.editor.svgCanvas.getCurrentDrawing().hasLayer(newName)
     ) {
-      alert(this.i18next.t('notification.layerHasThatName'));
+      alert(this.editor.i18next.t('notification.layerHasThatName'));
       return;
     }
     this.editor.svgCanvas.renameCurrentLayer(newName);
