@@ -148,7 +148,6 @@ export default {
         c.style.height = svgCanvas.contentH;
         await canvg(c, data.svg);
         const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
-        // {uiStrings} = svgEditor;
 
         // Check if there are issues
         let pre, note = '';

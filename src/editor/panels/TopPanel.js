@@ -15,7 +15,6 @@ class TopPanel {
    */
   constructor(editor) {
     this.editor = editor;
-    this.uiStrings = editor.uiStrings;
   }
   /**
    * @type {module}

@@ -29,7 +29,7 @@ export default {
     const { $id } = svgEditor.svgCanvas;
     const imagelibStrings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
-    const { uiStrings, svgCanvas } = svgEditor;
+    const { svgCanvas } = svgEditor;
 
     const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({ url }) => {
       try {
@@ -184,7 +184,7 @@ export default {
 
           const name = (curMeta.name || 'file');
 
-          const message = uiStrings.notification.retrieving.replace('%s', name);
+          const message = svgEditor.i18next.t('notification.retrieving').replace('%s', name);
 
           if (mode !== 'm') {
             await seConfirm(message);
@@ -411,7 +411,7 @@ export default {
 
         const button = document.createElement('button');
         // eslint-disable-next-line max-len
-        button.innerHTML = '<img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel;
+        button.innerHTML = '<img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + svgEditor.i18next.t('common.cancel');
         browser.appendChild(button);
         button.addEventListener('click', function () {
           $id("imgbrowse_holder").style.display = 'none';

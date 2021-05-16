@@ -14,7 +14,6 @@ class LayersPanel {
    * @param {PlainObject} editor
    */
   constructor(editor) {
-    this.uiStrings = editor.uiStrings;
     this.updateContextPanel = editor.topPanel.updateContextPanel;
     this.sidedrag = -1;
     this.sidedragging = false;
@@ -215,11 +214,11 @@ class LayersPanel {
     let uniqName;
     let i = this.editor.svgCanvas.getCurrentDrawing().getNumLayers();
     do {
-      uniqName = this.uiStrings.layers.layer + " " + ++i;
+      uniqName = this.editor.i18next.t("layers.layer") + " " + ++i;
     } while (this.editor.svgCanvas.getCurrentDrawing().hasLayer(uniqName));
 
     const newName = prompt(
-      this.i18next.t('notification.enterUniqueLayerName'),
+      this.editor.i18next.t('notification.enterUniqueLayerName'),
       uniqName
     );
     if (!newName) {

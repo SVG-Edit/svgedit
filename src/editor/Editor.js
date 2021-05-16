@@ -309,7 +309,7 @@ class Editor extends EditorStartup {
             mod = modBits[0] + '+';
             key = modBits[1];
           }
-          keyStr += (i ? '/' : '') + mod + (this.uiStrings['key_' + key] || key);
+          keyStr += (i ? '/' : '') + mod + (this.i18next.t('key_' + key) || key);
         });
         if (menu) {
           this.lastChild.textContent = t + ' [' + keyStr + ']';
@@ -327,15 +327,6 @@ class Editor extends EditorStartup {
     return Object.values(this.shortcuts).find((btn) => {
       return btn.sel === sel;
     });
-  }
-
-  /**
-  * Expose the `uiStrings`.
-  * @function module:SVGthis.canvas.getUIStrings
-  * @returns {module:SVGthis.uiStrings}
-  */
-  getUIStrings() {
-    return this.uiStrings;
   }
 
   /**
@@ -1054,7 +1045,6 @@ class Editor extends EditorStartup {
     const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
     const renameLayer = (oldLayerName === this.i18next.t('notification.common.layer') + ' 1');
 
-    // this.svgCanvas.setUiStrings(allStrings);
     this.setTitles();
 
     if (renameLayer) {
