@@ -411,14 +411,11 @@ class LayersPanel {
         self.editor.svgCanvas.setCurrentLayer(evt.currentTarget.textContent);
         evt.preventDefault();
       });
-      element.addEventListener('mouseup', function(evt) {
-        self.toggleHighlightLayer(
-          self.editor.svgCanvas,
-          evt.currentTarget.textContent
-        );
+      element.addEventListener('mouseup', (evt) => {
+        self.toggleHighlightLayer(evt.currentTarget.textContent);
       });
-      element.addEventListener('mouseout', function(_evt) {
-        self.toggleHighlightLayer(self.editor.svgCanvas);
+      element.addEventListener('mouseout', (evt) => {
+        self.toggleHighlightLayer();
       });
     });
     const elements = $id('layerlist').querySelectorAll("td.layervis");
