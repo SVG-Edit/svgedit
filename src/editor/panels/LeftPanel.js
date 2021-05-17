@@ -205,12 +205,12 @@ class LeftPanel {
      <se-button id="tool_fhpath" title="${i18next.t('tools.mode_fhpath')}" src="./images/pencil.svg" shortcut="Q"></se-button>
      <se-button id="tool_line" title="${i18next.t('tools.mode_line')}" src="./images/pen.svg" shortcut="L"></se-button>
      <se-button id="tool_path" title="${i18next.t('tools.mode_path')}" src="./images/path.svg" shortcut="P"></se-button>
-     <se-flyingbutton id="tools_rect" title="${i18next.t('tools.mode_rect')}">
+     <se-flyingbutton id="tools_rect" title="${i18next.t('tools.square_rect_tool')}">
        <se-button id="tool_rect" title="${i18next.t('tools.mode_rect')}" src="./images/rect.svg" shortcut="R"></se-button>
        <se-button id="tool_square" title="${i18next.t('tools.mode_square')}" src="./images/square.svg"></se-button>
        <se-button id="tool_fhrect" title="${i18next.t('tools.mode_fhrect')}" src="./images/fh_rect.svg"></se-button>
      </se-flyingbutton>
-     <se-flyingbutton id="tools_ellipse" title="${i18next.t('tools.mode_ellipse')}">
+     <se-flyingbutton id="tools_ellipse" title="${i18next.t('tools.ellipse_circle_tool')}">
        <se-button id="tool_ellipse" title="${i18next.t('tools.mode_ellipse')}" src="./images/ellipse.svg" shortcut="E"></se-button>
        <se-button id="tool_circle" title="${i18next.t('tools.mode_circle')}" src="./images/circle.svg"></se-button>
        <se-button id="tool_fhellipse" title="${i18next.t('tools.mode_fhellipse')}" src="./images/fh_ellipse.svg"></se-button>
