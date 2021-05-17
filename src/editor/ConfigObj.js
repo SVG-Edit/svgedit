@@ -287,8 +287,7 @@ export default class ConfigObj {
             this.editor.loadFromString(source);
           }
           return;
-        }
-        if (this.urldata.url) {
+        } else if (this.urldata.url) {
           this.editor.loadFromURL(this.urldata.url);
           return;
         }
