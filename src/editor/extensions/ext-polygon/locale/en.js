@@ -8,7 +8,10 @@ export default {
   contextTools: [
     {
       title: 'Number of Sides',
-      label: 'sides'
+      label: 'sides',
+      polyStarTool: 'Polygone/Star Tool',
+      polygonTool: 'Polygon Tool',
+      starTool: 'Star Tool'
     }
   ]
 };

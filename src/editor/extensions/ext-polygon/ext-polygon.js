@@ -27,6 +27,9 @@ export default {
     const {$id} = svgCanvas;
     // const  editingitex = false;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const {
+      contextTools
+    } = strings;
     let selElems;
     let started;
     let newFO;
@@ -68,10 +71,11 @@ export default {
         // Note: the star extension may also add the same flying button so we check first
         if ($id('tools_polygon') === null) {
           const buttonTemplate = document.createElement("template");
+          // eslint-disable-next-line no-unsanitized/property
           buttonTemplate.innerHTML = `
-            <se-flyingbutton id="tools_polygon" title="Polygone/Star Tool">
-              <se-button id="tool_polygon" title="Polygon Tool" src="./images/polygon.svg"></se-button>
-              <se-button id="tool_star" title="Star Tool" src="./images/star.svg"></se-button>
+            <se-flyingbutton id="tools_polygon" title="${contextTools[0].polyStarTool}">
+              <se-button id="tool_polygon" title="${contextTools[0].polygonTool}" src="./images/polygon.svg"></se-button>
+              <se-button id="tool_star" title="${contextTools[0].starTool}" src="./images/star.svg"></se-button>
             </se-flyingbutton>
           `
           $id('tools_left').append(buttonTemplate.content.cloneNode(true));
@@ -85,9 +89,10 @@ export default {
 
         // Add the context panel and its handler(s)
         const panelTemplate = document.createElement("template");
+        // eslint-disable-next-line no-unsanitized/property
         panelTemplate.innerHTML = `
           <div id="polygon_panel">
-            <se-spin-input size="3" id="polySides" min=1 step=1 value=5 label="sides">
+            <se-spin-input size="3" id="polySides" min=1 step=1 value=5 label="${contextTools[0].label}">
             </se-spin-input>
           </div>
         `

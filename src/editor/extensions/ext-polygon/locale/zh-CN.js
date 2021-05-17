@@ -8,7 +8,10 @@ export default {
   contextTools: [
     {
       title: '边数',
-      label: '边数'
+      label: '边数',
+      polyStarTool: '多边形',
+      polygonTool: '多边形工具',
+      starTool: '星形工具'      
     }
   ]
 };
