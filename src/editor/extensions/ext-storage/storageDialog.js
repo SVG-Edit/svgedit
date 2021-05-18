@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/* globals i18next */
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -50,26 +51,26 @@ template.innerHTML = `
     <div class="overlay"></div>
     <div id="dialog_container">
       <div id="dialog_content">
-        <p> 
-          By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.
+        <p>
+          ${i18next.t('notification.editorPreferencesMsg')} 
         </p>
         <select id="se-storage-pref">
-          <option value="prefsAndContent">Store preferences and SVG content locally</option>
-          <option value="prefsOnly">Only store preferences locally</option>
-          <option value="noPrefsOrContent">Do not store my preferences or SVG content locally</option>
+          <option value="prefsAndContent">${i18next.t('properties.prefs_and_content')}</option>
+          <option value="prefsOnly">${i18next.t('properties.prefs_only')}</option>
+          <option value="noPrefsOrContent">${i18next.t('properties.no_prefs_or_content')}</option>
         </select> 
         <label title="If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.">
-          Remember this choice?<input type="checkbox" id="se-remember" value="" checked>
+        ${i18next.t('tools.remember_this_choice')}<input type="checkbox" id="se-remember" value="" checked>
         </label>     
       </div>
       <div id="dialog_buttons">
         <button id="storage_ok">
           <img class="svg_icon" src="./images/ok.svg" alt="icon" width="16" height="16" />
-          Ok
+          ${i18next.t('common.ok')}
         </button>
         <button id="storage_cancel">
           <img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />
-          Cancel
+          ${i18next.t('common.cancel')}
         </button>
       </div>
     </div>
