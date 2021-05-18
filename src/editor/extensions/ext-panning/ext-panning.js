@@ -48,6 +48,7 @@ export default {
         const btitle = svgEditor.i18next.t(`${name}:buttons.0.title`);
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
+        // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
         <se-button id="ext-panning" title="${btitle}" src="./images/panning.svg"></se-button>
         `;

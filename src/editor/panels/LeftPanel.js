@@ -194,7 +194,7 @@ class LeftPanel {
    * @type {module}
    */
   init() {
-    const { i18next } = this.editor
+    const { i18next } = this.editor;
     // add Left panel
     const template = document.createElement("template");
     // eslint-disable-next-line no-unsanitized/property

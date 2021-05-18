@@ -10,6 +10,7 @@ const remember_this_choice = i18next.t('tools.remember_this_choice');
 const remember_this_choice_title = i18next.t('tools.remember_this_choice_title');
 const ok = i18next.t('common.ok');
 const cancel = i18next.t('common.cancel');
+// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
  

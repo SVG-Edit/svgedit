@@ -362,6 +362,7 @@ export default {
         const btitle = svgEditor.i18next.t(`${name}:langListTitle`);
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
+        // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
         <se-button id="mode_connect" title="${btitle}" src="./images/conn.svg"></se-button>
         `;
