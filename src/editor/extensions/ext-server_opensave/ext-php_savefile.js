@@ -3,7 +3,7 @@
 
 export default {
   name: 'php_savefile',
-  init ({$}) {
+  init ({ $ }) {
     const svgEditor = this;
     const {
       canvas: svgCanvas
@@ -22,7 +22,7 @@ export default {
         const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
           filename = getFileNameFromTitle();
 
-        $.post(saveSvgAction, {output_svg: svg, filename});
+        $.post(saveSvgAction, { output_svg: svg, filename });
       }
     });
   }

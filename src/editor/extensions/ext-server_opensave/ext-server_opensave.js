@@ -6,7 +6,7 @@
  * @copyright 2010 Alexis Deveria
  *
  */
-import {Canvg as canvg} from 'canvg';
+import { Canvg as canvg } from 'canvg';
 
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
@@ -23,7 +23,7 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'server_opensave',
-  async init ({$, decode64, encode64}) {
+  async init ({ $, decode64, encode64 }) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {
@@ -33,7 +33,7 @@ export default {
       },
       canvas: svgCanvas
     } = svgEditor;
-    const {$id} = svgCanvas;
+    const { $id } = svgCanvas;
 
     /**
      *
@@ -96,7 +96,8 @@ export default {
 
     svgEditor.setCustomHandlers({
       save (win, data) {
-        const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data, // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
+        // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
+        const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
           filename = getFileNameFromTitle();
 
         if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + encode64(svg))) {
@@ -130,11 +131,11 @@ export default {
         <input type="hidden" name="filename" value="${xhtmlEscape(filename)}">`;
         document.body.append(form);
         form.submit();
-        form.remove();  
+        form.remove();
       },
       // Todo: Integrate this extension with a new built-in exportWindowType, "download"
       async exportImage (win, data) {
-        const {issues, mimeType, quality} = data;
+        const { issues, mimeType, quality } = data;
 
         if (!$id('export_canvas')) {
           const canvasx = document.createElement("CANVAS");
@@ -148,7 +149,6 @@ export default {
         c.style.height = svgCanvas.contentH;
         await canvg(c, data.svg);
         const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
-        // {uiStrings} = svgEditor;
 
         // Check if there are issues
         let pre, note = '';
@@ -227,7 +227,6 @@ export default {
     openSvgForm.enctype = 'multipart/form-data';
     openSvgForm.method = 'post';
     openSvgForm.target = 'output_frame';
-    
 
     // Create import form
     const importSvgForm = openSvgForm.cloneNode(true);

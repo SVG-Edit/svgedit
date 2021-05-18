@@ -1,6 +1,6 @@
 /* globals $ seConfirm seAlert */
 import './touch.js';
-import {convertUnit} from '../common/units.js';
+import { convertUnit } from '../common/units.js';
 import {
   putLocale
 } from './locale.js';
@@ -41,7 +41,7 @@ const readySignal = () => {
   }
 };
 
-const {$id} = SvgCanvas;
+const { $id } = SvgCanvas;
 
 /**
  *
@@ -53,7 +53,7 @@ class EditorStartup {
   constructor () {
     this.extensionsAdded = false;
     this.messageQueue = [];
-    this.$svgEditor = $id('svg_editor')
+    this.$svgEditor = $id('svg_editor');
   }
   /**
   * Auto-run after a Promise microtask.
@@ -61,6 +61,10 @@ class EditorStartup {
   * @returns {void}
   */
   async init () {
+    if ('localStorage' in window) { // && onWeb removed so Webkit works locally
+      this.storage = window.localStorage;
+    }
+    this.configObj.load();
     const self = this;
     const { i18next } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
     this.i18next = i18next;
@@ -97,12 +101,6 @@ class EditorStartup {
       console.error(err);
     }
 
-    if ('localStorage' in window) { // && onWeb removed so Webkit works locally
-      this.storage = window.localStorage;
-    }
-
-    this.configObj.load();
-
     /**
     * @name module:SVGthis.canvas
     * @type {module:svgcanvas.SvgCanvas}
@@ -118,7 +116,7 @@ class EditorStartup {
     this.layersPanel.init();
     this.mainMenu.init();
 
-    const {undoMgr} = this.svgCanvas;
+    const { undoMgr } = this.svgCanvas;
     this.workarea = document.getElementById('workarea');
     this.canvMenu = document.getElementById('se-cmenu_canvas');
     this.exportWindow = null;
@@ -136,7 +134,7 @@ class EditorStartup {
     this.selectedElement = null;
     this.multiselected = false;
 
-    const aLinks = $id('cur_context_panel').querySelectorAll('a')
+    const aLinks = $id('cur_context_panel').querySelectorAll('a');
 
     for (const aLink of aLinks) {
       aLink.addEventListener('click', (evt) => {
@@ -160,12 +158,12 @@ class EditorStartup {
       if (!data.output) { // Ignore Chrome
         return;
       }
-      const {exportWindowName} = data;
+      const { exportWindowName } = data;
       if (exportWindowName) {
         this.exportWindow = window.open('', this.exportWindowName); // A hack to get the window via JSON-able name without opening a new one
       }
       if (!this.exportWindow || this.exportWindow.closed) {
-        seAlert(this.uiStrings.notification.popupWindowBlocked);
+        seAlert(this.i18next.t('notification.popupWindowBlocked'));
         return;
       }
       this.exportWindow.location.href = data.output;
@@ -182,7 +180,7 @@ class EditorStartup {
      * @listens module:svgcanvas.SvgCanvas#event:updateCanvas
      * @returns {void}
      */
-      function (win, {center, newCtr}) {
+      function (win, { center, newCtr }) {
         this.updateCanvas(center, newCtr);
       }.bind(this)
     );
@@ -216,7 +214,7 @@ class EditorStartup {
     let promptMoveLayerOnce = false;
     $id('selLayerNames').addEventListener('change', function(evt) {
       const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
-      const confirmStr = self.uiStrings.notification.QmoveElemsToLayer.replace('%s', destLayer);
+      const confirmStr = self.i18next.t('notification.QmoveElemsToLayer').replace('%s', destLayer);
       /**
     * @param {boolean} ok
     * @returns {void}
@@ -279,7 +277,7 @@ class EditorStartup {
     let lastX = null, lastY = null,
       panning = false, keypan = false;
 
-    $id('svgcanvas').addEventListener('mouseup', function(evt) {    
+    $id('svgcanvas').addEventListener('mouseup', function(evt) {
       if (panning === false) { return true; }
 
       wArea.scrollLeft -= (evt.clientX - lastX);
@@ -290,9 +288,9 @@ class EditorStartup {
 
       if (evt.type === 'mouseup') { panning = false; }
       return false;
-    });    
+    });
     // eslint-disable-next-line sonarjs/no-identical-functions
-    $id('svgcanvas').addEventListener('mousemove', function(evt) {    
+    $id('svgcanvas').addEventListener('mousemove', function(evt) {
       if (panning === false) { return true; }
 
       wArea.scrollLeft -= (evt.clientX - lastX);
@@ -322,10 +320,10 @@ class EditorStartup {
       if (e.target.nodeName !== 'BODY') return;
       if(e.code.toLowerCase() === 'space'){
         this.svgCanvas.spaceKey = keypan = true;
-        e.preventDefault();  
+        e.preventDefault();
       } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
         this.workarea.style.cursor = zoomOutIcon;
-        e.preventDefault();  
+        e.preventDefault();
       } else {
         return;
       }
@@ -335,10 +333,10 @@ class EditorStartup {
       if (e.target.nodeName !== 'BODY') return;
       if(e.code.toLowerCase() === 'space'){
         this.svgCanvas.spaceKey = keypan = false;
-        e.preventDefault();  
+        e.preventDefault();
       } else if((e.key.toLowerCase() === 'shift') && (this.svgCanvas.getMode() === 'zoom')){
         this.workarea.style.cursor = zoomInIcon;
-        e.preventDefault();  
+        e.preventDefault();
       } else {
         return;
       }
@@ -367,7 +365,7 @@ class EditorStartup {
       el.addEventListener("focus", (e) => {
         inp = e.currentTarget;
         this.uiContext = 'toolbars';
-        this.workarea.addEventListener('mousedown', unfocus);       
+        this.workarea.addEventListener('mousedown', unfocus);
       });
       el.addEventListener("blur", () => {
         this.uiContext = 'canvas';
@@ -399,12 +397,12 @@ class EditorStartup {
       );
     }
     const winWh = {
-      width: getWidth(), 
+      width: getWidth(),
       height: getHeight()
     };
 
     window.addEventListener('resize', () => {
-      Object.entries(winWh).forEach(([type, val]) => {
+      Object.entries(winWh).forEach(([ type, val ]) => {
         const curval = (type === 'width') ? window.innerWidth - 15 : window.innerHeight;
         this.workarea['scroll' + (type === 'width' ? 'Left' : 'Top')] -= (curval - val) / 2;
         winWh[type] = curval;
@@ -426,16 +424,16 @@ class EditorStartup {
     Array.from(elements).forEach(function(element) {
       element.addEventListener('mousedown', function(event) {
         if (!event.currentTarget.classList.contains('disabled')) {
-          event.currentTarget.classList.add('push_button_pressed')
+          event.currentTarget.classList.add('push_button_pressed');
           event.currentTarget.classList.remove('push_button');
         }
       });
       element.addEventListener('mouseout', function(event) {
-        event.currentTarget.classList.add('push_button')
+        event.currentTarget.classList.add('push_button');
         event.currentTarget.classList.remove('push_button_pressed');
       });
       element.addEventListener('mouseup', function(event) {
-        event.currentTarget.classList.add('push_button')
+        event.currentTarget.classList.add('push_button');
         event.currentTarget.classList.remove('push_button_pressed');
       });
     });
@@ -577,8 +575,8 @@ class EditorStartup {
       // showSaveWarning is set to 'false' when the page is saved.
       if (!this.configObj.curConfig.no_save_warning && this.showSaveWarning) {
       // Browser already asks question about closing the page
-        e.returnValue = this.uiStrings.notification.unsavedChanges; // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
-        return this.uiStrings.notification.unsavedChanges;
+        e.returnValue = this.i18next.t('notification.unsavedChanges'); // Firefox needs this when beforeunload set by addEventListener (even though message is not used)
+        return this.i18next.t('notification.unsavedChanges');
       }
       return true;
     }.bind(this));
@@ -594,7 +592,7 @@ class EditorStartup {
     */
       const editorObj = this;
       const importImage = function (e) {
-        document.getElementById('se-prompt-dialog').title = editorObj.uiStrings.notification.loadingImage;
+        document.getElementById('se-prompt-dialog').title = editorObj.i18next.t('notification.loadingImage');
         e.stopPropagation();
         e.preventDefault();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
@@ -619,14 +617,14 @@ class EditorStartup {
             editorObj.svgCanvas.alignSelectedElements('m', 'page');
             editorObj.svgCanvas.alignSelectedElements('c', 'page');
             // highlight imported element, otherwise we get strange empty selectbox
-            editorObj.svgCanvas.selectOnly([newElement]);
+            editorObj.svgCanvas.selectOnly([ newElement ]);
             document.getElementById('se-prompt-dialog').setAttribute('close', true);
           };
           reader.readAsText(file);
         } else {
         // bitmap handling
           reader = new FileReader();
-          reader.onloadend = function ({target: {result}}) {
+          reader.onloadend = function ({ target: { result } }) {
           /**
           * Insert the new image until we know its dimensions.
           * @param {Float} imageWidth
@@ -646,7 +644,7 @@ class EditorStartup {
                 }
               });
               editorObj.svgCanvas.setHref(newImage, result);
-              editorObj.svgCanvas.selectOnly([newImage]);
+              editorObj.svgCanvas.selectOnly([ newImage ]);
               editorObj.svgCanvas.alignSelectedElements('m', 'page');
               editorObj.svgCanvas.alignSelectedElements('c', 'page');
               editorObj.topPanelHandlers.updateContextPanel();
@@ -715,8 +713,8 @@ class EditorStartup {
              */
             // eslint-disable-next-line no-unsanitized/method
             const imported = await import(`./extensions/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`);
-            const {name = extname, init: initfn} = imported.default;
-            return this.addExtension(name, (initfn && initfn.bind(this)), {$, langParam: 'en'}); /** @todo  change to current lng */
+            const { name = extname, init: initfn } = imported.default;
+            return this.addExtension(name, (initfn && initfn.bind(this)), { $, langParam: 'en' }); /** @todo  change to current lng */
           } catch (err) {
             // Todo: Add config to alert any errors
             console.error('Extension failed to load: ' + extname + '; ', err);
@@ -739,8 +737,8 @@ class EditorStartup {
              */
             // eslint-disable-next-line no-unsanitized/method
             const imported = await import(encodeURI(extPathName));
-            const {name, init: initfn} = imported.default;
-            return this.addExtension(name, (initfn && initfn.bind(this)), {$});
+            const { name, init: initfn } = imported.default;
+            return this.addExtension(name, (initfn && initfn.bind(this)), { $ });
           } catch (err) {
             // Todo: Add config to alert any errors
             console.error('Extension failed to load: ' + extPathName + '; ', err);
@@ -790,9 +788,8 @@ class EditorStartup {
  * @fires module:svgcanvas.SvgCanvas#event:message
  * @returns {void}
  */
-  messageListener ({data, origin}) {
-  // console.log('data, origin, extensionsAdded', data, origin, extensionsAdded);
-    const messageObj = {data, origin};
+  messageListener ({ data, origin }) {
+    const messageObj = { data, origin };
     if (!this.extensionsAdded) {
       this.messageQueue.push(messageObj);
     } else {

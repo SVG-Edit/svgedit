@@ -210,11 +210,11 @@ export const setResolutionMethod = function (x, y) {
     this.contentH = y;
     batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), { width: w, height: h }));
 
-    elemContext_.getSVGContent().setAttribute('viewBox', [0, 0, x / currentZoom, y / currentZoom].join(' '));
-    batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), { viewBox: ['0 0', w, h].join(' ') }));
+    elemContext_.getSVGContent().setAttribute('viewBox', [ 0, 0, x / currentZoom, y / currentZoom ].join(' '));
+    batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), { viewBox: [ '0 0', w, h ].join(' ') }));
 
     elemContext_.addCommandToHistory(batchCmd);
-    elemContext_.call('changed', [elemContext_.getSVGContent()]);
+    elemContext_.call('changed', [ elemContext_.getSVGContent() ]);
   }
   return true;
 };
@@ -403,7 +403,7 @@ export const findDuplicateGradient = function (grad) {
   const defs = findDefs();
   const existingGrads = defs.querySelectorAll('linearGradient, radialGradient');
   let i = existingGrads.length;
-  const radAttrs = ['r', 'cx', 'cy', 'fx', 'fy'];
+  const radAttrs = [ 'r', 'cx', 'cy', 'fx', 'fy' ];
   while (i--) {
     const og = existingGrads[i];
     if (grad.tagName === 'linearGradient') {
@@ -501,7 +501,7 @@ export const setPaintMethod = function (type, paint) {
 */
 export const setStrokeWidthMethod = function (val) {
   const selectedElements = elemContext_.getSelectedElements();
-  if (val === 0 && ['line', 'path'].includes(elemContext_.getCanvas().getMode())) {
+  if (val === 0 && [ 'line', 'path' ].includes(elemContext_.getCanvas().getMode())) {
     elemContext_.getCanvas().setStrokeWidth(1);
     return;
   }
@@ -782,7 +782,7 @@ export const setImageURLMethod = function (val) {
 
     batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
     elemContext_.addCommandToHistory(batchCmd);
-    elemContext_.call('changed', [elem]);
+    elemContext_.call('changed', [ elem ]);
   };
   img.src = val;
 };
@@ -838,7 +838,7 @@ export const setRectRadiusMethod = function (val) {
       selected.setAttribute('rx', val);
       selected.setAttribute('ry', val);
       elemContext_.addCommandToHistory(new ChangeElementCommand(selected, { rx: r, ry: r }, 'Radius'));
-      elemContext_.call('changed', [selected]);
+      elemContext_.call('changed', [ selected ]);
     }
   }
 };

@@ -20,8 +20,8 @@
  * @example $.jGraduate.Paint({hex: '#rrggbb', linearGradient: o}); // throws an exception?
 */
 import Paint from './paint.js';
-import {jPickerDefaults, jPickerMethod} from './jQuery.jPicker.js';
-import {findPos} from './Util.js';
+import { jPickerDefaults, jPickerMethod } from './jQuery.jPicker.js';
+import { findPos } from './Util.js';
 
 /**
  * @todo JFH: This jQuery plugin was adapted to work within a Web Component.
@@ -126,11 +126,11 @@ const isGecko = navigator.userAgent.includes('Gecko/');
 */
 function setAttrs (elem, attrs) {
   if (isGecko) {
-    Object.entries(attrs).forEach(([aname, val]) => {
+    Object.entries(attrs).forEach(([ aname, val ]) => {
       elem.setAttribute(aname, val);
     });
   } else {
-    Object.entries(attrs).forEach(([aname, val]) => {
+    Object.entries(attrs).forEach(([ aname, val ]) => {
       const prop = elem[aname];
       if (prop && prop.constructor === 'SVGLength') {
         prop.baseVal.value = val;
@@ -221,7 +221,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   };
   Object.assign($this,     {
     // make a copy of the incoming paint
-    paint: new jGraduate.Paint({copy: $settings.paint}),
+    paint: new jGraduate.Paint({ copy: $settings.paint }),
     okCallback: typeof okCallback === 'function' ? okCallback : null,
     cancelCallback: typeof cancelCallback === 'function' ? cancelCallback : null
   });
@@ -231,7 +231,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   const $win = window;
 
   if ($this.paint.type === 'none') {
-    $this.paint = new jGraduate.Paint({solidColor: 'ffffff'});
+    $this.paint = new jGraduate.Paint({ solidColor: 'ffffff' });
   }
   $this.classList.add('jGraduate_Picker');
   /* eslint-disable max-len */
@@ -531,7 +531,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       $elem.style.top = e.target.value * MAX;
     }
   };
-  for (const [, attr] of ['x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy'].entries()) {
+  for (const [ , attr ] of [ 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'fx', 'fy' ].entries()) {
     const isRadial = isNaN(attr[1]);
 
     let attrval = curGradient.getAttribute(attr);
@@ -620,9 +620,9 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       jqPickerElem.style.left = '100px';
       jqPickerElem.style.bottom = '15px';
       jPickerMethod(jqPickerElem, {
-        window: {title: 'Pick the start color and opacity for the gradient'},
-        images: {clientPath: $settings.images.clientPath},
-        color: {active: colr, alphaSupport: true}
+        window: { title: 'Pick the start color and opacity for the gradient' },
+        images: { clientPath: $settings.images.clientPath },
+        color: { active: colr, alphaSupport: true }
       }, function (clr) {
         stopColor = clr.val('hex') ? ('#' + clr.val('hex')) : 'none';
         stopOpacity = clr.val('a') !== null ? clr.val('a') / 256 : 1;
@@ -752,9 +752,9 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     }
 
     drag.setAttribute('transform', xfStr);
-    const jqpgpath = $this.querySelector('#'+drag.dataset.bg); 
+    const jqpgpath = $this.querySelector('#'+drag.dataset.bg);
     jqpgpath.setAttribute('transform', xfStr);
-    const stop = $this.querySelector('#'+drag.dataset.stop); 
+    const stop = $this.querySelector('#'+drag.dataset.stop);
     const sX = (x - 10) / MAX;
 
     stop.setAttribute('offset', sX);
@@ -795,7 +795,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
 
   stopMakerSVG.addEventListener('click', function (evt) {
     stopOffset = findPos(stopMakerDiv);
-    const {target} = evt;
+    const { target } = evt;
     if (target.tagName === 'path') return;
     let x = evt.pageX - stopOffset.left - 8;
     x = x < 10 ? 10 : x > MAX + 10 ? MAX + 10 : x;
@@ -983,7 +983,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   let slider;
 
   const setSlider = function (e) {
-    const {offset: {left}} = slider;
+    const { offset: { left } } = slider;
     const divi = slider.parent;
     let x = (e.pageX - left - Number.parseInt(getComputedStyle(divi, null).getPropertyValue('border-left-width')));
     if (x > SLIDERW) x = SLIDERW;
@@ -1088,7 +1088,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
       val: angleVal
     }
   };
-  for (const [, [type, data]] of Object.entries(Object.entries(sliders))) {
+  for (const [ , [ type, data ] ] of Object.entries(Object.entries(sliders))) {
     const handle = $this.querySelector(data.handle);
     const sInput = $this.querySelector(data.input);
     handle.addEventListener('mousedown', function (evt) {
@@ -1177,15 +1177,15 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
   }
   // This should be done somewhere else, probably
   Object.assign(jPickerDefaults.window, {
-    alphaSupport: true, effects: {type: 'show', speed: 0}
+    alphaSupport: true, effects: { type: 'show', speed: 0 }
   });
 
   jPickerMethod(
     colPicker,
     {
-      window: {title: $settings.window.pickerTitle},
-      images: {clientPath: $settings.images.clientPath},
-      color: {active: color, alphaSupport: true}
+      window: { title: $settings.window.pickerTitle },
+      images: { clientPath: $settings.images.clientPath },
+      color: { active: color, alphaSupport: true }
     },
     function (clr) {
       $this.paint.type = 'solidColor';

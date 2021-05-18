@@ -1,4 +1,6 @@
-# ![LOGO](src/editor/images/logo.png) SVG-edit
+<img src="https://svg-edit.github.io/svgedit/src/editor/images/logo.svg" width="50" height="50" />
+
+# SVG-Edit
 
 [![npm](https://img.shields.io/npm/v/svgedit.svg)](https://www.npmjs.com/package/svgedit)
 [![Dependencies](https://img.shields.io/david/SVG-Edit/svgedit.svg)](https://david-dm.org/SVG-Edit/svgedit)
@@ -18,14 +20,6 @@
 
 (see also [licenses for dev. deps.](https://raw.githubusercontent.com/SVG-Edit/svgedit/master/badges/licenses-badge-dev.svg?sanitize=true))
 
-(Note: The license provenance of the images in `/editor/images` may not be
-fully clear, even with the origin of some of the images listed as being from <http://tango.freedesktop.org/static/cvs/tango-art-libre/22x22/>. We would like to
-replace these images if their provenance cannot be determined or is found to
-be under a protective license. If you know of the original terms, or can help
-create SVG replacement images, please let us know at:
-[#377](https://github.com/SVG-Edit/svgedit/issues/377).)
-<!-- [![License](https://img.shields.io/npm/l/svgedit.svg)](LICENSE-MIT) -->
-
 [![issuehunt-to-marktext](https://issuehunt.io/static/embed/issuehunt-button-v1.svg)](https://issuehunt.io/r/SVG-Edit/svgedit)
 
 SVG-edit is a fast, web-based, JavaScript-driven SVG drawing editor that
@@ -36,25 +30,21 @@ works in any modern browser.
 
 ## Help wanted
 
-While we have made some recent releases to SVG-edit for bug fixes,
-refactoring and documentation to make the codebase more maintainable, the
-core developers responsible for the bulk of the drawing features are no
-longer active with the project, so we would love others familiar with SVG
-to join the project.
+We need more maintainers for SVG-Edit
 
 ## Demo
 
-### [Try SVG-edit here](https://svg-edit.github.io/svgedit/dist/editor/index.html)
+### [Try SVG-edit here](https://svgedit.netlify.app/editor/index.html)
 
-We also build a systemJS version at [`master`](https://svg-edit.github.io/svgedit/dist/editor/system/index.html)
+Thanks to netlify, you can test the following builds: 
 
-You may also obtain URLs for specific [releases](https://github.com/SVG-Edit/svgedit/releases).
+[Try SVG-edit 5.1.0 here](https://6098683962bf91702907ee33--svgedit.netlify.app/editor/svg-editor.html)
 
-Thanks to netlify, you can test the following versions: 
+[Try SVG-edit 6.1.0 here](https://60a0000fc9900b0008fd268d--svgedit.netlify.app/editor/index.html)
 
-latest master build (V6): https://svgedit.netlify.app/editor/index.html
+/
 
-V7 preview (under development): https://deploy-preview-465--svgedit.netlify.app/editor/index.html
+
 
 ## Installation
 

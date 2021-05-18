@@ -19,7 +19,7 @@ function expectOutOfBoundsException (obj, fn, arg1) {
     }
   }
   const actual = result;
-  return {result, message, actual, expected};
+  return { result, message, actual, expected };
 }
 
 /**

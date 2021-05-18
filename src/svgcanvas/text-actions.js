@@ -6,7 +6,7 @@
  */
 
 
-import {NS} from '../common/namespaces.js';
+import { NS } from '../common/namespaces.js';
 import {
   transformPoint, getMatrix
 } from './math.js';
@@ -424,8 +424,8 @@ export const textActionsMethod = (function () {
         textActionsContext_.getCanvas().clearSelection();
         curtext.style.cursor = 'move';
 
-        textActionsContext_.call('selected', [curtext]);
-        textActionsContext_.getCanvas().addToSelection([curtext], true);
+        textActionsContext_.call('selected', [ curtext ]);
+        textActionsContext_.getCanvas().addToSelection([ curtext ], true);
       }
       if (curtext && !curtext.textContent.length) {
         // No content, so delete
@@ -491,7 +491,7 @@ export const textActionsMethod = (function () {
       curtext.addEventListener("dblclick", selectWord);
 
       if (!len) {
-        end = {x: textbb.x + (textbb.width / 2), width: 0};
+        end = { x: textbb.x + (textbb.width / 2), width: 0 };
       }
 
       for (i = 0; i < len; i++) {

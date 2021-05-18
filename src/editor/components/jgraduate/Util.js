@@ -23,7 +23,7 @@ export function isObject(item) {
 export function mergeDeep(target, source) {
   let output = Object.assign({}, target);
   if (isObject(target) && isObject(source)) {
-    Object.keys(source).forEach(key => {
+    Object.keys(source).forEach((key) => {
       if (isObject(source[key])) {
         if (!(key in target))
           Object.assign(output, { [key]: source[key] });

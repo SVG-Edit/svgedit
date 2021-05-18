@@ -58,7 +58,7 @@ export default {
   name: 'storage',
   init () {
     const svgEditor = this;
-    const {svgCanvas, storage} = svgEditor;
+    const { svgCanvas, storage } = svgEditor;
 
     // We could empty any already-set data for users when they decline storage,
     //  but it would be a risk for users who wanted to store but accidentally
@@ -157,12 +157,12 @@ export default {
           setSVGContentStorage(svgCanvas.getSvgString());
         }
 
-        svgEditor.setConfig({no_save_warning: true}); // No need for explicit saving at all once storage is on
+        svgEditor.setConfig({ no_save_warning: true }); // No need for explicit saving at all once storage is on
         // svgEditor.showSaveWarning = false;
 
-        const {curPrefs} = svgEditor.configObj;
+        const { curPrefs } = svgEditor.configObj;
 
-        Object.entries(curPrefs).forEach(([key, val]) => {
+        Object.entries(curPrefs).forEach(([ key, val ]) => {
           const store = (val !== undefined);
           key = 'svg-edit-' + key;
           if (!store) {

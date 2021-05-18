@@ -74,7 +74,7 @@ export const svgCanvasToString = function () {
   // Move out of in-group editing mode
   if (svgContext_.getCurrentGroup()) {
     draw.leaveContext();
-    svgContext_.getCanvas().selectOnly([svgContext_.getCurrentGroup()]);
+    svgContext_.getCanvas().selectOnly([ svgContext_.getCurrentGroup() ]);
   }
 
   const nakedSvgs = [];
@@ -124,7 +124,7 @@ export const svgToString = function (elem, indent) {
 
   if (elem) {
     cleanupElement(elem);
-    const attrs = [...elem.attributes];
+    const attrs = [ ...elem.attributes ];
     const childs = elem.childNodes;
     attrs.sort((a, b) => {
       return a.name > b.name ? -1 : 1;
@@ -171,7 +171,7 @@ export const svgToString = function (elem, indent) {
           out.push(' xmlns:' + nsMap[uri] + '="' + uri + '"');
         }
         if (el.attributes.length > 0) {
-          for (const [, attr] of Object.entries(el.attributes)) {
+          for (const [ , attr ] of Object.entries(el.attributes)) {
             const u = attr.namespaceURI;
             if (u && !nsuris[u] && nsMap[u] !== 'xmlns' && nsMap[u] !== 'xml') {
               nsuris[u] = true;
@@ -182,7 +182,7 @@ export const svgToString = function (elem, indent) {
       });
 
       let i = attrs.length;
-      const attrNames = ['width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow'];
+      const attrNames = [ 'width', 'height', 'xmlns', 'x', 'y', 'viewBox', 'id', 'overflow' ];
       while (i--) {
         const attr = attrs[i];
         const attrVal = toXml(attr.value);
@@ -201,7 +201,7 @@ export const svgToString = function (elem, indent) {
       // Skip empty defs
       if (elem.nodeName === 'defs' && !elem.firstChild) { return ''; }
 
-      const mozAttrs = ['-moz-math-font-style', '_moz-math-font-style'];
+      const mozAttrs = [ '-moz-math-font-style', '_moz-math-font-style' ];
       for (let i = attrs.length - 1; i >= 0; i--) {
         const attr = attrs[i];
         let attrVal = toXml(attr.value);
@@ -421,7 +421,7 @@ export const setSvgString = function (xmlString, preventUndo) {
       attrs.height = vb[3];
       // handle content that doesn't have a viewBox
     } else {
-      ['width', 'height'].forEach(function (dim) {
+      [ 'width', 'height' ].forEach(function (dim) {
         // Set to 100 if not given
         const val = content.getAttribute(dim) || '100%';
         if (String(val).substr(-1) === '%') {
@@ -457,7 +457,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (attrs.width <= 0) { attrs.width = 100; }
     if (attrs.height <= 0) { attrs.height = 100; }
 
-    for (const [key, value] of Object.entries(attrs)) {
+    for (const [ key, value ] of Object.entries(attrs)) {
       content.setAttribute(key, value);
     }
     this.contentW = attrs.width;
@@ -480,7 +480,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     svgContext_.getSVGRoot().append(svgContext_.getCanvas().selectorManager.selectorParentGroup);
 
     if (!preventUndo) svgContext_.addCommandToHistory(batchCmd);
-    svgContext_.call('changed', [svgContext_.getSVGContent()]);
+    svgContext_.call('changed', [ svgContext_.getSVGContent() ]);
   } catch (e) {
     console.log(e);
     return false;
@@ -542,7 +542,7 @@ export const importSvgString = function (xmlString) {
         innerh = convertToNum('height', svg.getAttribute('height')),
         innervb = svg.getAttribute('viewBox'),
         // if no explicit viewbox, create one out of the width and height
-        vb = innervb ? innervb.split(' ') : [0, 0, innerw, innerh];
+        vb = innervb ? innervb.split(' ') : [ 0, 0, innerw, innerh ];
       for (j = 0; j < 4; ++j) {
         vb[j] = Number(vb[j]);
       }
@@ -602,14 +602,14 @@ export const importSvgString = function (xmlString) {
     recalculateDimensions(useEl);
     dataStorage.put(useEl, 'symbol', symbol);
     dataStorage.put(useEl, 'ref', symbol);
-    svgContext_.getCanvas().addToSelection([useEl]);
+    svgContext_.getCanvas().addToSelection([ useEl ]);
 
     // TODO: Find way to add this in a recalculateDimensions-parsable way
     // if (vb[0] !== 0 || vb[1] !== 0) {
     //   ts = 'translate(' + (-vb[0]) + ',' + (-vb[1]) + ') ' + ts;
     // }
     svgContext_.addCommandToHistory(batchCmd);
-    svgContext_.call('changed', [svgContext_.getSVGContent()]);
+    svgContext_.call('changed', [ svgContext_.getSVGContent() ]);
   } catch (e) {
     console.log(e);
     return null;
@@ -712,7 +712,7 @@ function getIssues() {
     issueList.text = uiStrings.exportNoText;
   }
 
-  for (const [sel, descr] of Object.entries(issueList)) {
+  for (const [ sel, descr ] of Object.entries(issueList)) {
     if (content.querySelectorAll(sel).length) {
       issueCodes.push(sel);
       issues.push(descr);
@@ -844,7 +844,7 @@ export const exportPDF = async (
   const doc = jsPDF({
     orientation,
     unit,
-    format: [res.w, res.h]
+    format: [ res.w, res.h ]
     // , compressPdf: true
   });
   const docTitle = svgContext_.getCanvas().getDocumentTitle();
@@ -886,7 +886,7 @@ export const uniquifyElemsMethod = function (g) {
   //
   // Problem #1: if svg_1 gets renamed, we do not update the polyline's se:connector attribute
   // Problem #2: if the polyline svg_7 gets renamed, we do not update the marker id nor the polyline's marker-end attribute
-  const refElems = ['filter', 'linearGradient', 'pattern', 'radialGradient', 'symbol', 'textPath', 'use'];
+  const refElems = [ 'filter', 'linearGradient', 'pattern', 'radialGradient', 'symbol', 'textPath', 'use' ];
 
   walkTree(g, function (n) {
     // if it's an element node
@@ -1005,7 +1005,7 @@ export const removeUnusedDefElemsMethod = function () {
 
   const defelemUses = [];
   let numRemoved = 0;
-  const attrs = ['fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end'];
+  const attrs = [ 'fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end' ];
   const alen = attrs.length;
 
   const allEls = svgContext_.getSVGContent().getElementsByTagNameNS(NS.SVG, '*');

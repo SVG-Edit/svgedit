@@ -6,9 +6,9 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import {getTransformList} from './svgtransformlist.js';
-import {shortFloat} from '../common/units.js';
-import {transformPoint} from './math.js';
+import { getTransformList } from './svgtransformlist.js';
+import { shortFloat } from '../common/units.js';
+import { transformPoint } from './math.js';
 import {
   getRotationAngle, getBBox,
   getRefElem, findDefs, isNullish,
@@ -25,15 +25,15 @@ import {
 } from './path-actions.js';
 
 const segData = {
-  2: ['x', 'y'], // PATHSEG_MOVETO_ABS
-  4: ['x', 'y'], // PATHSEG_LINETO_ABS
-  6: ['x', 'y', 'x1', 'y1', 'x2', 'y2'], // PATHSEG_CURVETO_CUBIC_ABS
-  8: ['x', 'y', 'x1', 'y1'], // PATHSEG_CURVETO_QUADRATIC_ABS
-  10: ['x', 'y', 'r1', 'r2', 'angle', 'largeArcFlag', 'sweepFlag'], // PATHSEG_ARC_ABS
-  12: ['x'], // PATHSEG_LINETO_HORIZONTAL_ABS
-  14: ['y'], // PATHSEG_LINETO_VERTICAL_ABS
-  16: ['x', 'y', 'x2', 'y2'], // PATHSEG_CURVETO_CUBIC_SMOOTH_ABS
-  18: ['x', 'y'] // PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS
+  2: [ 'x', 'y' ], // PATHSEG_MOVETO_ABS
+  4: [ 'x', 'y' ], // PATHSEG_LINETO_ABS
+  6: [ 'x', 'y', 'x1', 'y1', 'x2', 'y2' ], // PATHSEG_CURVETO_CUBIC_ABS
+  8: [ 'x', 'y', 'x1', 'y1' ], // PATHSEG_CURVETO_QUADRATIC_ABS
+  10: [ 'x', 'y', 'r1', 'r2', 'angle', 'largeArcFlag', 'sweepFlag' ], // PATHSEG_ARC_ABS
+  12: [ 'x' ], // PATHSEG_LINETO_HORIZONTAL_ABS
+  14: [ 'y' ], // PATHSEG_LINETO_VERTICAL_ABS
+  16: [ 'x', 'y', 'x2', 'y2' ], // PATHSEG_CURVETO_CUBIC_SMOOTH_ABS
+  18: [ 'x', 'y' ] // PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS
 };
 
 /**
@@ -86,7 +86,8 @@ let editorContext_ = null;
 * Object with the following keys/values.
 * @typedef {PlainObject} module:path.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
-* @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element. An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
+* @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element.
+*   An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
 * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
 * @property {module:path.SVGElementJSON[]} [children] - Data objects to be added recursively as children
 * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -99,7 +100,8 @@ let editorContext_ = null;
 /**
  * @function module:path.EditorContext#call
  * @param {"selected"|"changed"} ev - String with the event name
- * @param {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed} arg - Argument to pass through to the callback function. If the event is "changed", an array of `Element`s is passed; if "selected", a single-item array of `Element` is passed.
+ * @param {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed} arg - Argument to pass through to the callback function.
+ *  If the event is "changed", an array of `Element`s is passed; if "selected", a single-item array of `Element` is passed.
  * @returns {void}
  */
 /**
@@ -236,7 +238,7 @@ let editorContext_ = null;
 export const init = function (editorContext) {
   editorContext_ = editorContext;
 
-  pathFuncs = [0, 'ClosePath'];
+  pathFuncs = [ 0, 'ClosePath' ];
   const pathFuncsStrs = [
     'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
     'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'
@@ -413,7 +415,7 @@ export const smoothControlPoints = function (ct1, ct2, pt) {
     nct2.x = r2 * Math.cos(newAngleb) + pt.x;
     nct2.y = r2 * Math.sin(newAngleb) + pt.y;
 
-    return [nct1, nct2];
+    return [ nct1, nct2 ];
   }
   return undefined;
 };
@@ -462,8 +464,8 @@ const getRotVals = function (x, y) {
   r = Math.sqrt(dx * dx + dy * dy);
   theta = Math.atan2(dy, dx) - angle;
 
-  return {x: r * Math.cos(theta) + newcx,
-    y: r * Math.sin(theta) + newcy};
+  return { x: r * Math.cos(theta) + newcx,
+    y: r * Math.sin(theta) + newcy };
 };
 
 // If the path was rotated, we must now pay the piper:
@@ -508,7 +510,7 @@ export const recalcRotatedPath = function () {
     if (type === 1) { continue; }
 
     const rvals = getRotVals(seg.x, seg.y),
-      points = [rvals.x, rvals.y];
+      points = [ rvals.x, rvals.y ];
     if (!isNullish(seg.x1) && !isNullish(seg.x2)) {
       const cVals1 = getRotVals(seg.x1, seg.y1);
       const cVals2 = getRotVals(seg.x2, seg.y2);
@@ -578,7 +580,7 @@ export const reorientGrads = function (elem, m) {
         };
 
         const newgrad = grad.cloneNode(true);
-        for (const [key, value] of Object.entries(gCoords)) {
+        for (const [ key, value ] of Object.entries(gCoords)) {
           newgrad.setAttribute(key, value);
         }
         newgrad.id = editorContext_.getNextId();
@@ -608,7 +610,7 @@ const pathMap = [
  * @returns {string}
  */
 export const convertPath = function (pth, toRel) {
-  const {pathSegList} = pth;
+  const { pathSegList } = pth;
   const len = pathSegList.numberOfItems;
   let curx = 0, cury = 0;
   let d = '';
@@ -650,7 +652,7 @@ export const convertPath = function (pth, toRel) {
         letter = 'L';
       }
       // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[x, y]]);
+      d += pathDSegment(letter, [ [ x, y ] ]);
       break;
     case 14: // absolute vertical line (V)
       y -= cury;
@@ -667,7 +669,7 @@ export const convertPath = function (pth, toRel) {
         letter = 'L';
       }
       // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[x, y]]);
+      d += pathDSegment(letter, [ [ x, y ] ]);
       break;
     case 2: // absolute move (M)
     case 4: // absolute line (L)
@@ -688,9 +690,9 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      if (type === 2 || type === 3) { lastM = [curx, cury]; }
+      if (type === 2 || type === 3) { lastM = [ curx, cury ]; }
 
-      d += pathDSegment(letter, [[x, y]]);
+      d += pathDSegment(letter, [ [ x, y ] ]);
       break;
     case 6: // absolute cubic (C)
       x -= curx; x1 -= curx; x2 -= curx;
@@ -706,7 +708,7 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      d += pathDSegment(letter, [[x1, y1], [x2, y2], [x, y]]);
+      d += pathDSegment(letter, [ [ x1, y1 ], [ x2, y2 ], [ x, y ] ]);
       break;
     case 8: // absolute quad (Q)
       x -= curx; x1 -= curx;
@@ -722,7 +724,7 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      d += pathDSegment(letter, [[x1, y1], [x, y]]);
+      d += pathDSegment(letter, [ [ x1, y1 ], [ x, y ] ]);
       break;
       // Fallthrough
     case 11: // relative elliptical arc (a)
@@ -735,11 +737,11 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      d += pathDSegment(letter, [[seg.r1, seg.r2]], [
+      d += pathDSegment(letter, [ [ seg.r1, seg.r2 ] ], [
         seg.angle,
         (seg.largeArcFlag ? 1 : 0),
         (seg.sweepFlag ? 1 : 0)
-      ], [x, y]);
+      ], [ x, y ]);
       break;
     case 16: // absolute smooth cubic (S)
       x -= curx; x2 -= curx;
@@ -755,7 +757,7 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      d += pathDSegment(letter, [[x2, y2], [x, y]]);
+      d += pathDSegment(letter, [ [ x2, y2 ], [ x, y ] ]);
       break;
     } // switch on path segment type
   } // for each segment

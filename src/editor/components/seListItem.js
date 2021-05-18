@@ -25,7 +25,7 @@ export class SeListItem extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$menuitem = this._shadowRoot.querySelector('elix-option');
     this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
@@ -36,7 +36,7 @@ export class SeListItem extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['option'];
+    return [ 'option' ];
   }
 
   /**

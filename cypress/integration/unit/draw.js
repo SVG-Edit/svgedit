@@ -1,6 +1,6 @@
 import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
 import * as draw from '../../../instrumented/svgcanvas/draw.js';
 import * as units from '../../../instrumented/common/units.js';
 
@@ -61,7 +61,7 @@ describe('draw.Drawing', function () {
    */
   function createSVGElement (jsonMap) {
     const elem = document.createElementNS(NS.SVG, jsonMap.element);
-    Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+    Object.entries(jsonMap.attr).forEach(([ attr, value ]) => {
       elem.setAttribute(attr, value);
     });
     return elem;
@@ -86,7 +86,7 @@ describe('draw.Drawing', function () {
     layer3.append(layer3Title);
     svgElem.append(layer3);
 
-    return [layer1, layer2, layer3];
+    return [ layer1, layer2, layer3 ];
   };
 
   const createSomeElementsInGroup = function (group) {
@@ -101,11 +101,11 @@ describe('draw.Drawing', function () {
       // }),
       createSVGElement({
         element: 'rect',
-        attr: {x: '0', y: '1', width: '5', height: '10'}
+        attr: { x: '0', y: '1', width: '5', height: '10' }
       }),
       createSVGElement({
         element: 'line',
-        attr: {x1: '0', y1: '1', x2: '5', y2: '6'}
+        attr: { x1: '0', y1: '1', x2: '5', y2: '6' }
       })
     );
 
@@ -115,7 +115,7 @@ describe('draw.Drawing', function () {
     });
     g.append(createSVGElement({
       element: 'rect',
-      attr: {x: '0', y: '1', width: '5', height: '10'}
+      attr: { x: '0', y: '1', width: '5', height: '10' }
     }));
     group.append(g);
     return 4;
@@ -727,7 +727,6 @@ describe('draw.Drawing', function () {
     drawing.setLayerOpacity(LAYER3, -1.4);
 
     assert.strictEqual(drawing.getLayerOpacity(LAYER1), 0.4);
-    // console.log('layer2 opacity ' + drawing.getLayerOpacity(LAYER2));
     assert.strictEqual(drawing.getLayerOpacity(LAYER2), 1.0);
     assert.strictEqual(drawing.getLayerOpacity(LAYER3), 1.0);
 

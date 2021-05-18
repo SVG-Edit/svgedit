@@ -11,7 +11,7 @@ describe('Fix issue 423', function () {
   it('should not throw when undoing the move', function () {
     cy.get('#tool_source').click();
     cy.get('#svg_source_textarea')
-      .type('{selectall}', {force: true})
+      .type('{selectall}', { force: true })
       .type(`<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
       <g class="layer">
        <title>Layer 1</title>
@@ -22,12 +22,12 @@ describe('Fix issue 423', function () {
         <rect clip-path="url(#svg_2)" fill="#0033b5" height="174.9" id="TANK1" width="78" x="77.5" y="29"/>
        </g>
       </g>
-     </svg>`, {parseSpecialCharSequences: false, force: true});
-    cy.get('#tool_source_save').click({force: true});
+     </svg>`, { parseSpecialCharSequences: false, force: true });
+    cy.get('#tool_source_save').click({ force: true });
     cy.get('#TANK1')
-      .trigger('mousedown', {force: true})
-      .trigger('mousemove', 50, 0, {force: true})
-      .trigger('mouseup', {force: true});
-    cy.get('#tool_undo').click({force: true});
+      .trigger('mousedown', { force: true })
+      .trigger('mousemove', 50, 0, { force: true })
+      .trigger('mouseup', { force: true });
+    cy.get('#tool_undo').click({ force: true });
   });
 });

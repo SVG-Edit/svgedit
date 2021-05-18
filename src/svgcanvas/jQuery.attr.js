@@ -58,7 +58,7 @@ export default function jQueryPluginSVG ($) {
         }
         if (typeof key === 'object') {
           // Setting attributes from object
-          for (const [name, val] of Object.entries(key)) {
+          for (const [ name, val ] of Object.entries(key)) {
             elem.setAttribute(name, val);
           }
         // Getting attribute

@@ -79,7 +79,7 @@ export default {
   init () {
     return {
       svgicons: 'extensions/helloworld-icon.xml',
-      buttons: [{ /* ... */ }],
+      buttons: [ { /* ... */ } ],
       mouseDown () {
         // ...
       },
@@ -139,7 +139,7 @@ property should follow the format
 naming conflicts in the non-modular version of SVGEdit.
 
 ```js
-import {importSetGlobalDefault} from '../external/dynamic-import-polyfill/importModule.js';
+import { importSetGlobalDefault } from '../external/dynamic-import-polyfill/importModule.js';
 
 // ...
 

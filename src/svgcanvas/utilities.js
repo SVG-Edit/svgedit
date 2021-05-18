@@ -281,7 +281,7 @@ export const dataURLToObjectURL = function (dataurl) {
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
   }
-  const blob = new Blob([u8arr], { type: mime });
+  const blob = new Blob([ u8arr ], { type: mime });
   return URL.createObjectURL(blob);
 };
 
@@ -305,7 +305,7 @@ export const blankPageObjectURL = (function () {
   if (typeof Blob === 'undefined') {
     return '';
   }
-  const blob = new Blob(['<html><head><title>SVG-edit</title></head><body>&nbsp;</body></html>'], { type: 'text/html' });
+  const blob = new Blob([ '<html><head><title>SVG-edit</title></head><body>&nbsp;</body></html>' ], { type: 'text/html' });
   return createObjectURL(blob);
 })();
 
@@ -317,7 +317,7 @@ export const blankPageObjectURL = (function () {
 */
 export const convertToXMLReferences = function (input) {
   let output = '';
-  [...input].forEach((ch) => {
+  [ ...input ].forEach((ch) => {
     const c = ch.charCodeAt();
     output += (c <= 127) ? ch : `&#${c};`;
   });
@@ -495,9 +495,9 @@ export const getPathBBox = function (path) {
   const seglist = path.pathSegList;
   const tot = seglist.numberOfItems;
 
-  const bounds = [[], []];
+  const bounds = [ [], [] ];
   const start = seglist.getItem(0);
-  let P0 = [start.x, start.y];
+  let P0 = [ start.x, start.y ];
 
   const getCalc = function (j, P1, P2, P3) {
     return function (t) {
@@ -518,9 +518,9 @@ export const getPathBBox = function (path) {
     bounds[1].push(P0[1]);
 
     if (seg.x1) {
-      const P1 = [seg.x1, seg.y1],
-        P2 = [seg.x2, seg.y2],
-        P3 = [seg.x, seg.y];
+      const P1 = [ seg.x1, seg.y1 ],
+        P2 = [ seg.x2, seg.y2 ],
+        P3 = [ seg.x, seg.y ];
 
       for (let j = 0; j < 2; j++) {
         const calc = getCalc(j, P1, P2, P3);
@@ -586,7 +586,7 @@ function groupBBFix(selected) {
       elem.setAttribute('visibility', 'hidden');
       svgroot_.appendChild(elem);
       copy.push(elem);
-      if (['line', 'path'].indexOf(elem.tagName) !== -1) {
+      if ([ 'line', 'path' ].indexOf(elem.tagName) !== -1) {
         elements.push(elem);
       }
     });
@@ -722,7 +722,7 @@ export const getBBox = function (elem) {
 export const getPathDFromSegments = function (pathSegments) {
   let d = '';
 
-  $.each(pathSegments, function (j, [singleChar, pts]) {
+  $.each(pathSegments, function (j, [ singleChar, pts ]) {
     d += singleChar;
     for (let i = 0; i < pts.length; i += 2) {
       d += (pts[i] + ',' + pts[i + 1]) + ' ';
@@ -754,12 +754,12 @@ export const getPathDFromElement = function (elem) {
         rx = ry;
       }
       d = getPathDFromSegments([
-        ['M', [(cx - rx), (cy)]],
-        ['C', [(cx - rx), (cy - ry / num), (cx - rx / num), (cy - ry), (cx), (cy - ry)]],
-        ['C', [(cx + rx / num), (cy - ry), (cx + rx), (cy - ry / num), (cx + rx), (cy)]],
-        ['C', [(cx + rx), (cy + ry / num), (cx + rx / num), (cy + ry), (cx), (cy + ry)]],
-        ['C', [(cx - rx / num), (cy + ry), (cx - rx), (cy + ry / num), (cx - rx), (cy)]],
-        ['Z', []]
+        [ 'M', [ (cx - rx), (cy) ] ],
+        [ 'C', [ (cx - rx), (cy - ry / num), (cx - rx / num), (cy - ry), (cx), (cy - ry) ] ],
+        [ 'C', [ (cx + rx / num), (cy - ry), (cx + rx), (cy - ry / num), (cx + rx), (cy) ] ],
+        [ 'C', [ (cx + rx), (cy + ry / num), (cx + rx / num), (cy + ry), (cx), (cy + ry) ] ],
+        [ 'C', [ (cx - rx / num), (cy + ry), (cx - rx), (cy + ry / num), (cx - rx), (cy) ] ],
+        [ 'Z', [] ]
       ]);
       break;
     } case 'path':
@@ -791,24 +791,24 @@ export const getPathDFromElement = function (elem) {
       d = (!rx && !ry)
         // Regular rect
         ? getPathDFromSegments([
-          ['M', [x, y]],
-          ['L', [x + w, y]],
-          ['L', [x + w, y + h]],
-          ['L', [x, y + h]],
-          ['L', [x, y]],
-          ['Z', []]
+          [ 'M', [ x, y ] ],
+          [ 'L', [ x + w, y ] ],
+          [ 'L', [ x + w, y + h ] ],
+          [ 'L', [ x, y + h ] ],
+          [ 'L', [ x, y ] ],
+          [ 'Z', [] ]
         ])
         : getPathDFromSegments([
-          ['M', [x, y + ry]],
-          ['C', [x, y + ry / num, x + rx / num, y, x + rx, y]],
-          ['L', [x + w - rx, y]],
-          ['C', [x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry]],
-          ['L', [x + w, y + h - ry]],
-          ['C', [x + w, y + h - ry / num, x + w - rx / num, y + h, x + w - rx, y + h]],
-          ['L', [x + rx, y + h]],
-          ['C', [x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry]],
-          ['L', [x, y + ry]],
-          ['Z', []]
+          [ 'M', [ x, y + ry ] ],
+          [ 'C', [ x, y + ry / num, x + rx / num, y, x + rx, y ] ],
+          [ 'L', [ x + w - rx, y ] ],
+          [ 'C', [ x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry ] ],
+          [ 'L', [ x + w, y + h - ry ] ],
+          [ 'C', [ x + w, y + h - ry / num, x + w - rx / num, y + h, x + w - rx, y + h ] ],
+          [ 'L', [ x + rx, y + h ] ],
+          [ 'C', [ x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry ] ],
+          [ 'L', [ x, y + ry ] ],
+          [ 'Z', [] ]
         ]);
       break;
     } default:
@@ -828,7 +828,7 @@ export const getExtraAttributesForConvertToPath = function (elem) {
   const attrs = {};
   // TODO: make this list global so that we can properly maintain it
   // TODO: what about @transform, @clip-rule, @fill-rule, etc?
-  ['marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path'].forEach(function(item){
+  [ 'marker-start', 'marker-end', 'marker-mid', 'filter', 'clip-path' ].forEach(function(item){
     const a = elem.getAttribute(item);
     if (a) {
       attrs[item] = a;
@@ -944,7 +944,7 @@ export const convertToPath = function (
     elem.remove();
     path.setAttribute('id', id);
     path.removeAttribute('visibility');
-    addToSelection([path], true);
+    addToSelection([ path ], true);
 
     addCommandToHistory(batchCmd);
 
@@ -1010,7 +1010,7 @@ export const getBBoxWithTransform = function (elem, addSVGElementFromJson, pathA
     if (bBoxCanBeOptimizedOverNativeGetBBox(angle, hasMatrixXForm)) {
       // Get the BBox from the raw path for these elements
       // TODO: why ellipse and not circle
-      const elemNames = ['ellipse', 'path', 'line', 'polyline', 'polygon'];
+      const elemNames = [ 'ellipse', 'path', 'line', 'polyline', 'polygon' ];
       if (elemNames.includes(elem.tagName)) {
         goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
         bb = goodBb;
@@ -1140,7 +1140,7 @@ export const getVisibleElements = function (parentElement) {
   }
 
   const contentElems = [];
-  const childrens = parentElement.children
+  const childrens = parentElement.children;
   Array.prototype.forEach.call(childrens, function (elem) {
     if (elem.getBBox) {
       contentElems.push(elem);
@@ -1244,7 +1244,7 @@ export const getElem = (supportsSelectors())
 * @returns {void}
 */
 export const assignAttributes = function (elem, attrs, suspendLength, unitCheck) {
-  for (const [key, value] of Object.entries(attrs)) {
+  for (const [ key, value ] of Object.entries(attrs)) {
     const ns = (key.substr(0, 4) === 'xml:'
       ? NS.XML
       : key.substr(0, 6) === 'xlink:' ? NS.XLINK : null);
@@ -1293,7 +1293,7 @@ export const cleanupElement = function (element) {
     delete defaults.ry;
   }
 
-  Object.entries(defaults).forEach(([attr, val]) => {
+  Object.entries(defaults).forEach(([ attr, val ]) => {
     if (element.getAttribute(attr) === String(val)) {
       element.removeAttribute(attr);
     }
@@ -1365,4 +1365,4 @@ export const mock = ({
 // shortcuts to common DOM functions
 export const $id = (id) => document.getElementById(id);
 export const $qq = (sel) => document.querySelector(sel);
-export const $qa = (sel) => [...document.querySelectorAll(sel)];
+export const $qa = (sel) => [ ...document.querySelectorAll(sel) ];

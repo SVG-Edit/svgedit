@@ -8,7 +8,7 @@
 
 import 'pathseg';
 
-import {NS} from './namespaces.js';
+import { NS } from './namespaces.js';
 
 const supportsSVG_ = (function () {
 return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
@@ -20,7 +20,7 @@ return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg
 */
 export const supportsSvg = () => supportsSVG_;
 
-const {userAgent} = navigator;
+const { userAgent } = navigator;
 const svg = document.createElementNS(NS.SVG, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible

@@ -1,4 +1,4 @@
-import {jGraduate} from './jgraduate/jQuery.jGraduate.js';
+import { jGraduate } from './jgraduate/jQuery.jGraduate.js';
 /**
  *
  */
@@ -67,7 +67,7 @@ class PaintBox {
   */
   static getPaint (svgCanvas, color, opac, type) {
     // update the editor's fill paint
-    const opts = {alpha: opac};
+    const opts = { alpha: opac };
     if (color.startsWith('url(#')) {
       let refElem = svgCanvas.getRefElem(color);
       refElem = (refElem) ? refElem.cloneNode(true) : document.querySelectorAll('#' + type + '_color defs *')[0];
@@ -88,7 +88,7 @@ class PaintBox {
   update (svgcanvas, selectedElement) {
     if (!selectedElement) { return null; }
 
-    const {type} = this;
+    const { type } = this;
     switch (selectedElement.tagName) {
     case 'use':
     case 'image':

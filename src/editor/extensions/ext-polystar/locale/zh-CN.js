@@ -1,8 +1,12 @@
 export default {
   name: '星形',
+  title: 'Polygone/Star Tool',
   buttons: [
     {
       title: '星形工具'
+    },
+    {
+      title: '多边形工具'
     }
   ],
   contextTools: [
@@ -17,6 +21,10 @@ export default {
     {
       title: '径向',
       label: '径向'
+    },
+    {
+      title: '边数',
+      label: '边数'
     }
   ]
 };

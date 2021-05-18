@@ -14,7 +14,7 @@ describe('UI - Export tests', function () {
 
   it('Editor - No parameters: Export button clicking; dialog opens', () => {
     openMainMenu();
-    cy.get('#tool_export').click({force: true});
+    cy.get('#tool_export').click({ force: true });
     cy.get('#dialog_content select');
   });
 });

@@ -1,5 +1,5 @@
 import PlainMenuButton from 'elix/src/plain/PlainMenuButton.js';
-import {defaultState} from 'elix/src/base/internal.js';
+import { defaultState } from 'elix/src/base/internal.js';
 import sePlainBorderButton from './sePlainBorderButton.js';
 
 /**

@@ -27,7 +27,7 @@ export const NS = {
 */
 export const getReverseNS = function () {
   const reverseNS = {};
-  Object.entries(NS).forEach(([name, URI]) => {
+  Object.entries(NS).forEach(([ name, URI ]) => {
     reverseNS[URI] = name.toLowerCase();
   });
   return reverseNS;

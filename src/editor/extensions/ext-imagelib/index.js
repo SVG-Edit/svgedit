@@ -48,5 +48,5 @@ Array.prototype.forEach.call(atags, function (aEle) {
       }, 'html'); // 'html' is necessary to keep returned data as a string
     }
     return false;
-  })
+  });
 });
