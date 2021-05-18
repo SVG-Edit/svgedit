@@ -10,24 +10,28 @@
   This is a very basic SVG-Edit extension to let tablet/mobile devices pan without problem
 */
 
-const loadExtensionTranslation = async function (lang) {
+const name = "panning";
+
+const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
+  const lang = svgEditor.configObj.pref('lang');
   try {
     // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
+    translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
-  return translationModule.default;
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
 };
 
 export default {
-  name: 'panning',
+  name,
   async init() {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    await loadExtensionTranslation(svgEditor);
     const {
       svgCanvas
     } = svgEditor;
@@ -39,12 +43,12 @@ export default {
     };
     return {
       newUI: true,
-      name: strings.name,
+      name: svgEditor.i18next.t(`${name}:name`),
       callback() {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
-        <se-button id="ext-panning" title="Panning" src="./images/panning.svg"></se-button>
+        <se-button id="ext-panning" title="${svgEditor.i18next.t(`${name}:buttons.0.title`)}" src="./images/panning.svg"></se-button>
         `;
         insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true));
         $id('ext-panning').addEventListener("click", () => {
