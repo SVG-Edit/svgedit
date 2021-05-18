@@ -25,7 +25,8 @@ export default {
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
-    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity'
+    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
+    group_identify_label: 'Group identification label'
   },
   properties: {
     id: 'Element identifizieren',
@@ -73,7 +74,16 @@ export default {
     italic: 'Kursiver Text',
     text_anchor_start: 'Den Text linksbündig ausrichten',
     text_anchor_middle: 'Den Text zentriert ausrichten',
-    text_anchor_end: 'Den Text rechtsbündig ausrichten'
+    text_anchor_end: 'Den Text rechtsbündig ausrichten',
+    class: 'Element class',
+    serif: 'Serif',
+    sans_serif: 'Sans-serif',
+    cursive: 'Cursive',
+    fantasy: 'Fantasy',
+    monospace: 'Monospace',
+    courier: 'Courier',
+    helvetica: 'Helvetica',
+    times: 'times'
   },
   tools: {
     main_menu: 'Hauptmenü',
@@ -147,7 +157,10 @@ export default {
     move_front: 'Nach ganz oben verschieben',
     move_up: 'Hochschieben',
     move_down: 'Herunterschieben',
-    move_back: 'Nach ganz unten verschieben'
+    move_back: 'Nach ganz unten verschieben',
+    tool_unlink_use: 'Break link to reference element (make unique)',
+    ellipse_circle_tool: 'Ellipse/Circle Tool',
+    square_rect_tool: 'Square/Rect Tool'
   },
   layers: {
     layer: 'Ebene',

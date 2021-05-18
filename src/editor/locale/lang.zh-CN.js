@@ -25,7 +25,8 @@ export default {
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
-    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity'
+    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
+    group_identify_label: 'Group identification label'
   },
   properties: {
     id: '元素ID',
@@ -73,7 +74,16 @@ export default {
     italic: '斜体',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end'
+    text_anchor_end: 'Align the text in end',
+    class: 'Element class',
+    serif: 'Serif',
+    sans_serif: 'Sans-serif',
+    cursive: 'Cursive',
+    fantasy: 'Fantasy',
+    monospace: 'Monospace',
+    courier: 'Courier',
+    helvetica: 'Helvetica',
+    times: 'times'
   },
   tools: {
     main_menu: '主菜单',
@@ -147,7 +157,10 @@ export default {
     move_front: '移至顶部',
     move_up: '向上移动',
     move_down: '向下移动',
-    move_back: '移至底部'
+    move_back: '移至底部',
+    tool_unlink_use: 'Break link to reference element (make unique)',
+    ellipse_circle_tool: 'Ellipse/Circle Tool',
+    square_rect_tool: 'Square/Rect Tool'
   },
   layers: {
     layer: '图层',
