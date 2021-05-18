@@ -228,6 +228,7 @@ export default {
     openSvgForm.method = 'post';
     openSvgForm.target = 'output_frame';
 
+
     // Create import form
     const importSvgForm = openSvgForm.cloneNode(true);
     importSvgForm.action =  importSvgAction;

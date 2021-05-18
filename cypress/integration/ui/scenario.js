@@ -105,22 +105,4 @@ describe('use various parts of svg-edit', function () {
       .trigger('mouseup', { force: true });
     testSnapshot();
   });
-  it('check tool_star', function () {
-    cy.get('#tool_star')
-      .click({force: true});
-    cy.get('#svgcontent')
-      .trigger('mousedown', 300, 150, {force: true})
-      .trigger('mousemove', 300, 250, {force: true})
-      .trigger('mouseup', {force: true});
-    testSnapshot();
-  });
-  it('check tool_polygon', function () {
-    cy.get('#tool_polygon')
-      .click({force: true});
-    cy.get('#svgcontent')
-      .trigger('mousedown', 350, 250, {force: true})
-      .trigger('mousemove', 350, 370, {force: true})
-      .trigger('mouseup', {force: true});
-    testSnapshot();
-  });
 });

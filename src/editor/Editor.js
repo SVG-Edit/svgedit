@@ -52,6 +52,7 @@ class Editor extends EditorStartup {
      * @type {"ignore"|"waiting"|"closed"}
     */
     this.storagePromptState = 'ignore';
+
     this.svgCanvas = null;
     this.isReady = false;
     this.customExportImage = false;
