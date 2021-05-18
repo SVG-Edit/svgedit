@@ -236,7 +236,7 @@ export default {
             newMarker = marker;
           }
         });
-        
+
         if (!newMarker) {
           // Create a new marker with this color
           const lastId = marker.id;
