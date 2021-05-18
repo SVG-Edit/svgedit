@@ -25,7 +25,8 @@ export default {
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
-    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity'
+    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
+    group_identify_label: 'Group identification label'
   },
   properties: {
     id: 'Identify the element',
@@ -73,7 +74,19 @@ export default {
     italic: 'Italic Text [I]',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end'
+    text_anchor_end: 'Align the text in end',
+    class: 'Element class',
+    serif: 'Serif',
+    sans_serif: 'Sans-serif',
+    cursive: 'Cursive',
+    fantasy: 'Fantasy',
+    monospace: 'Monospace',
+    courier: 'Courier',
+    helvetica: 'Helvetica',
+    times: 'times',
+    prefs_and_content: 'Store preferences and SVG content locally',
+    prefs_only: 'Only store preferences locally',
+    no_prefs_or_content: 'Do not store my preferences or SVG content locally'
   },
   tools: {
     main_menu: 'Main Menu',
@@ -147,7 +160,10 @@ export default {
     move_front: 'Bring to Front',
     move_up: 'Bring Forward',
     move_down: 'Send Backward',
-    move_back: 'Send to Back'
+    move_back: 'Send to Back',
+    tool_unlink_use: 'Break link to reference element (make unique)',
+    ellipse_circle_tool: 'Ellipse/Circle Tool',
+    square_rect_tool: 'Square/Rect Tool'
   },
   layers: {
     layer: 'Layer',
@@ -216,6 +232,7 @@ export default {
     exportNoBlur: 'Blurred elements will appear as un-blurred',
     exportNoforeignObject: 'foreignObject elements will not appear',
     exportNoDashArray: 'Strokes will appear filled',
-    exportNoText: 'Text may not appear as expected'
+    exportNoText: 'Text may not appear as expected',
+    editorPreferencesMsg: 'By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.'
   }
 };

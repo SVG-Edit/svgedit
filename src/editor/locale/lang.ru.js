@@ -25,7 +25,17 @@ export default {
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
-    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity'
+    pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
+    group_identify_label: 'Group identification label',
+    class: 'Element class',
+    serif: 'Serif',
+    sans_serif: 'Sans-serif',
+    cursive: 'Cursive',
+    fantasy: 'Fantasy',
+    monospace: 'Monospace',
+    courier: 'Courier',
+    helvetica: 'Helvetica',
+    times: 'times'
   },
   properties: {
     id: 'Идентификатор элемента',
@@ -147,7 +157,10 @@ export default {
     move_front: 'На передний план',
     move_up: 'Передвинуть вперед',
     move_down: 'Передвинуть назад',
-    move_back: 'На задний план'
+    move_back: 'На задний план',
+    tool_unlink_use: 'Break link to reference element (make unique)',
+    ellipse_circle_tool: 'Ellipse/Circle Tool',
+    square_rect_tool: 'Square/Rect Tool'
   },
   layers: {
     layer: 'Слой',

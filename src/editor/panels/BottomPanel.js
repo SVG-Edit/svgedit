@@ -164,6 +164,8 @@ class BottomPanel {
   init () {
     // register actions for Bottom panel
     const template = document.createElement('template');
+    const { i18next } = this.editor;
+    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
       <div id="tools_bottom">
         <!-- Zoom buttons -->
@@ -174,39 +176,39 @@ class BottomPanel {
           <div value="100">100</div>
           <div value="50">50</div>
           <div value="25">25</div>
-          <div value="canvas">Fit to canvas</div>
-          <div value="selection">Fit to selection</div>
-          <div value="layer">Fit to layer content</div>
-          <div value="content">Fit to all content</div>
+          <div value="canvas">${i18next.t('tools.fit_to_canvas')}</div>
+          <div value="selection">${i18next.t('tools.fit_to_sel')}</div>
+          <div value="layer">${i18next.t('tools.fit_to_layer_content')}</div>
+          <div value="content">${i18next.t('tools.fit_to_all')}</div>
         </se-zoom>
-        <se-colorpicker id="fill_color" src="./images/fill.svg" title="Change fill color" type="fill"></se-colorpicker>
-        <se-colorpicker id="stroke_color" src="./images/stroke.svg" title="Change stroke color" type="stroke">
+        <se-colorpicker id="fill_color" src="./images/fill.svg" title="${i18next.t('properties.fill_color')}" type="fill"></se-colorpicker>
+        <se-colorpicker id="stroke_color" src="./images/stroke.svg" title="${i18next.t('properties.stroke_color')}" type="stroke">
         </se-colorpicker>
-        <se-spin-input id="stroke_width" min=0 max=99 step=1 title="Change stroke width" label=""></se-spin-input>
-        <se-list id="stroke_style" title="Change stroke dash style" label="" width="22px" height="24px">
+        <se-spin-input id="stroke_width" min=0 max=99 step=1 title="${i18next.t('properties.stroke_width')}" label=""></se-spin-input>
+        <se-list id="stroke_style" title="${i18next.t('properties.stroke_style')}" label="" width="22px" height="24px">
           <se-list-item value="none">&#8212;</se-list-item>
           <se-list-item value="2,2">...</se-list-item>
           <se-list-item value="5,5">- -</se-list-item>
           <se-list-item value="5,2,2,2">- .</se-list-item>
           <se-list-item value="5,2,2,2,2,2">- ..</se-list-item>
         </se-list>
-        <se-list id="stroke_linejoin" title="Linejoin: Miter" label="" width="22px" height="24px">
-          <se-list-item id="linejoin_miter" value="miter"><img title="Linejoin: Miter" src="./images/linejoin_miter.svg"
+        <se-list id="stroke_linejoin" title="${i18next.t('properties.linejoin_miter')}" label="" width="22px" height="24px">
+          <se-list-item id="linejoin_miter" value="miter"><img title="${i18next.t('properties.linejoin_miter')}" src="./images/linejoin_miter.svg"
               height="22px"></img></se-list-item>
-          <se-list-item id="linejoin_round" value="round"><img title="Linejoin: Round" src="./images/linejoin_round.svg"
+          <se-list-item id="linejoin_round" value="round"><img title="${i18next.t('properties.linejoin_round')}" src="./images/linejoin_round.svg"
               height="22px"></img></se-list-item>
-          <se-list-item id="linejoin_bevel" value="bevel"><img title="Linejoin: Bevel" src="./images/linejoin_bevel.svg"
-              height="22px"></img></se-list-item>
-        </se-list>
-        <se-list id="stroke_linecap" title="Linecap: Butt" label="" width="22px" height="24px">
-          <se-list-item id="linecap_butt" value="butt"><img title="Linecap: Butt" src="./images/linecap_butt.svg"
-              height="22px"></img></se-list-item>
-          <se-list-item id="linecap_square" value="square"><img title="Linecap: Square" src="./images/linecap_square.svg"
-              height="22px"></img></se-list-item>
-          <se-list-item id="linecap_round" value="round"><img title="Linecap: Round" src="./images/linecap_round.svg"
+          <se-list-item id="linejoin_bevel" value="bevel"><img title="${i18next.t('properties.linejoin_bevel')}" src="./images/linejoin_bevel.svg"
               height="22px"></img></se-list-item>
         </se-list>
-        <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="Change selected item opacity"
+        <se-list id="stroke_linecap" title="${i18next.t('properties.linecap_butt')}" label="" width="22px" height="24px">
+          <se-list-item id="linecap_butt" value="butt"><img title="${i18next.t('properties.linecap_butt')}" src="./images/linecap_butt.svg"
+              height="22px"></img></se-list-item>
+          <se-list-item id="linecap_square" value="square"><img title="${i18next.t('properties.linecap_square')}" src="./images/linecap_square.svg"
+              height="22px"></img></se-list-item>
+          <se-list-item id="linecap_round" value="round"><img title="${i18next.t('properties.linecap_round')}" src="./images/linecap_round.svg"
+              height="22px"></img></se-list-item>
+        </se-list>
+        <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="${i18next.t('properties.opacity')}"
           src="./images/opacity.svg"></se-spin-input>
         <se-palette id="palette"></se-palette>
       </div> <!-- tools_bottom -->

@@ -113,17 +113,19 @@ class LayersPanel {
    */
   init() {
     const template = document.createElement("template");
+    const { i18next } = this.editor;
+    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <div id="sidepanels">
     <div id="layerpanel">
-      <h3 id="layersLabel">Layers</h3>
+      <h3 id="layersLabel">${i18next.t('layers.layers')}</h3>
       <fieldset id="layerbuttons">
-        <se-button id="layer_new" title="New Layer" size="small" src="./images/new.svg"></se-button>
-        <se-button id="layer_delete" title="Delete Layer" size="small" src="./images/delete.svg"></se-button>
-        <se-button id="layer_rename" title="Rename Layer" size="small" src="./images/text.svg"></se-button>
-        <se-button id="layer_up" title="Move Layer Up" size="small" src="./images/go_up.svg"></se-button>
-        <se-button id="layer_down" title="Move Layer Down" size="small" src="./images/go_down.svg"></se-button>
-        <se-button id="layer_moreopts" title="More Options" size="small" src="./images/context_menu.svg">
+        <se-button id="layer_new" title="${i18next.t('layers.new')}" size="small" src="./images/new.svg"></se-button>
+        <se-button id="layer_delete" title="${i18next.t('layers.del')}" size="small" src="./images/delete.svg"></se-button>
+        <se-button id="layer_rename" title="${i18next.t('layers.rename')}" size="small" src="./images/text.svg"></se-button>
+        <se-button id="layer_up" title="${i18next.t('layers.move_up')}" size="small" src="./images/go_up.svg"></se-button>
+        <se-button id="layer_down" title="${i18next.t('layers.move_down')}" size="small" src="./images/go_down.svg"></se-button>
+        <se-button id="layer_moreopts" title="${i18next.t('common.more_opts')}" size="small" src="./images/context_menu.svg">
         </se-button>
       </fieldset>
       <table id="layerlist">
@@ -132,12 +134,12 @@ class LayersPanel {
           <td class="layername">Layer 1</td>
         </tr>
       </table>
-      <span id="selLayerLabel">Move elements to:</span>
-      <select id="selLayerNames" title="Move selected elements to a different layer" disabled="disabled">
+      <span id="selLayerLabel">${i18next.t('layers.move_elems_to')}</span>
+      <select id="selLayerNames" title="${i18next.t('layers.move_selected')}" disabled="disabled">
         <option selected="selected" value="layer1">Layer 1</option>
       </select>
     </div>
-    <div id="sidepanel_handle" title="Drag left/right to resize side panel [X]">L a y e r s
+    <div id="sidepanel_handle" title="${i18next.t('ui.panel_drag')}">L a y e r s
     </div>
   </div>
     `;
