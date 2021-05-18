@@ -51,7 +51,7 @@ export class ToolButton extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$div = this._shadowRoot.querySelector('div');
@@ -62,7 +62,7 @@ export class ToolButton extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'pressed', 'disabled', 'size', 'style'];
+    return [ 'title', 'src', 'pressed', 'disabled', 'size', 'style' ];
   }
   /**
    * @function attributeChangedCallback

@@ -7,10 +7,10 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import {NS} from '../common/namespaces.js';
-import {shortFloat} from '../common/units.js';
-import {getTransformList} from './svgtransformlist.js';
-import {ChangeElementCommand, BatchCommand} from './history.js';
+import { NS } from '../common/namespaces.js';
+import { shortFloat } from '../common/units.js';
+import { getTransformList } from './svgtransformlist.js';
+import { ChangeElementCommand, BatchCommand } from './history.js';
 import {
   transformPoint, snapToAngle, rectsIntersect,
   transformListToTransform
@@ -49,7 +49,7 @@ export const init = function (pathActionsContext) {
  * @returns {string}
  */
 export const convertPath = function (pth, toRel) {
-  const {pathSegList} = pth;
+  const { pathSegList } = pth;
   const len = pathSegList.numberOfItems;
   let curx = 0, cury = 0;
   let d = '';
@@ -92,7 +92,7 @@ export const convertPath = function (pth, toRel) {
         letter = 'L';
       }
       // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[x, y]]);
+      d += pathDSegment(letter, [ [ x, y ] ]);
       break;
     case 14: // absolute vertical line (V)
       y -= cury;
@@ -109,7 +109,7 @@ export const convertPath = function (pth, toRel) {
         letter = 'L';
       }
       // Convert to "line" for easier editing
-      d += pathDSegment(letter, [[x, y]]);
+      d += pathDSegment(letter, [ [ x, y ] ]);
       break;
     case 2: // absolute move (M)
     case 4: // absolute line (L)
@@ -130,9 +130,9 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      if (type === 2 || type === 3) { lastM = [curx, cury]; }
+      if (type === 2 || type === 3) { lastM = [ curx, cury ]; }
 
-      d += pathDSegment(letter, [[x, y]]);
+      d += pathDSegment(letter, [ [ x, y ] ]);
       break;
     case 6: // absolute cubic (C)
       x -= curx; x1 -= curx; x2 -= curx;
@@ -148,7 +148,7 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      d += pathDSegment(letter, [[x1, y1], [x2, y2], [x, y]]);
+      d += pathDSegment(letter, [ [ x1, y1 ], [ x2, y2 ], [ x, y ] ]);
       break;
     case 8: // absolute quad (Q)
       x -= curx; x1 -= curx;
@@ -164,7 +164,7 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      d += pathDSegment(letter, [[x1, y1], [x, y]]);
+      d += pathDSegment(letter, [ [ x1, y1 ], [ x, y ] ]);
       break;
       // Fallthrough
     case 11: // relative elliptical arc (a)
@@ -177,11 +177,11 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      d += pathDSegment(letter, [[seg.r1, seg.r2]], [
+      d += pathDSegment(letter, [ [ seg.r1, seg.r2 ] ], [
         seg.angle,
         (seg.largeArcFlag ? 1 : 0),
         (seg.sweepFlag ? 1 : 0)
-      ], [x, y]);
+      ], [ x, y ]);
       break;
     case 16: // absolute smooth cubic (S)
       x -= curx; x2 -= curx;
@@ -197,7 +197,7 @@ export const convertPath = function (pth, toRel) {
         curx = x;
         cury = y;
       }
-      d += pathDSegment(letter, [[x2, y2], [x, y]]);
+      d += pathDSegment(letter, [ [ x2, y2 ], [ x, y ] ]);
       break;
     } // switch on path segment type
   } // for each segment
@@ -252,7 +252,7 @@ export const pathActionsMethod = (function () {
   */
   const smoothPolylineIntoPath = function (element) {
     let i;
-    const {points} = element;
+    const { points } = element;
     const N = points.numberOfItems;
     if (N >= 4) {
       // loop through every 3 points and convert to a cubic bezier curve segment
@@ -270,7 +270,7 @@ export const pathActionsMethod = (function () {
       // - https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
       let curpos = points.getItem(0), prevCtlPt = null;
       let d = [];
-      d.push(['M', curpos.x, ',', curpos.y, ' C'].join(''));
+      d.push([ 'M', curpos.x, ',', curpos.y, ' C' ].join(''));
       for (i = 1; i <= (N - 4); i += 3) {
         let ct1 = points.getItem(i);
         const ct2 = points.getItem(i + 1);
@@ -289,7 +289,7 @@ export const pathActionsMethod = (function () {
           }
         }
 
-        d.push([ct1.x, ct1.y, ct2.x, ct2.y, end.x, end.y].join(','));
+        d.push([ ct1.x, ct1.y, ct2.x, ct2.y, end.x, end.y ].join(','));
 
         curpos = end;
         prevCtlPt = ct2;
@@ -298,7 +298,7 @@ export const pathActionsMethod = (function () {
       d.push('L');
       while (i < N) {
         const pt = points.getItem(i);
-        d.push([pt.x, pt.y].join(','));
+        d.push([ pt.x, pt.y ].join(','));
         i++;
       }
       d = d.join(' ');
@@ -318,8 +318,7 @@ export const pathActionsMethod = (function () {
     }
     return element;
   };
-  // console.log(pathActionsContext_);
-  // const convertPath = pathActionsContext_.getConvertPath();
+
   return (/** @lends module:path.pathActions */ {
     /**
     * @param {MouseEvent} evt
@@ -339,7 +338,7 @@ export const pathActionsMethod = (function () {
         let x = mouseX / currentZoom,
           y = mouseY / currentZoom,
           stretchy = getElem('path_stretch_line');
-        newPoint = [x, y];
+        newPoint = [ x, y ];
 
         if (editorContext_.getGridSnapping()) {
           x = snapToGrid(x);
@@ -376,7 +375,7 @@ export const pathActionsMethod = (function () {
             }
           }));
           // set stretchy line to first point
-          stretchy.setAttribute('d', ['M', mouseX, mouseY, mouseX, mouseY].join(' '));
+          stretchy.setAttribute('d', [ 'M', mouseX, mouseY, mouseX, mouseY ].join(' '));
           index = subpath ? path.segs.length : 0;
           pathActionsContext_.addPointGrip(index, mouseX, mouseY);
         } else {
@@ -464,7 +463,6 @@ export const pathActionsMethod = (function () {
               editorContext_.getMouseTarget(evt)
             )) {
               // Clicked outside canvas, so don't make point
-              // console.log('Clicked outside canvas');
               return false;
             }
 
@@ -474,7 +472,7 @@ export const pathActionsMethod = (function () {
 
             if (evt.shiftKey) {
               const xya = snapToAngle(lastx, lasty, x, y);
-              ({x, y} = xya);
+              ({ x, y } = xya);
             }
 
             // Use the segment defined by stretchy
@@ -496,7 +494,7 @@ export const pathActionsMethod = (function () {
             y *= currentZoom;
 
             // set stretchy line to latest point
-            stretchy.setAttribute('d', ['M', x, y, x, y].join(' '));
+            stretchy.setAttribute('d', [ 'M', x, y, x, y ].join(' '));
             index = num;
             if (subpath) { index += path.segs.length; }
             pathActionsContext_.addPointGrip(index, x, y);
@@ -512,12 +510,12 @@ export const pathActionsMethod = (function () {
 
       path.storeD();
 
-      ({id} = evt.target);
+      ({ id } = evt.target);
       let curPt;
       if (id.substr(0, 14) === 'pathpointgrip_') {
         // Select this point
         curPt = path.cur_pt = Number.parseInt(id.substr(14));
-        path.dragging = [startX, startY];
+        path.dragging = [ startX, startY ];
         const seg = path.segs[curPt];
 
         // only clear selection if shift is not pressed (otherwise, add
@@ -533,7 +531,7 @@ export const pathActionsMethod = (function () {
           path.addPtsToSelection(curPt);
         }
       } else if (id.startsWith('ctrlpointgrip_')) {
-        path.dragging = [startX, startY];
+        path.dragging = [ startX, startY ];
 
         const parts = id.split('_')[1].split('c');
         curPt = Number(parts[0]);
@@ -612,7 +610,7 @@ export const pathActionsMethod = (function () {
           });
 
           if (index === 0) {
-            firstCtrl = [mouseX, mouseY];
+            firstCtrl = [ mouseX, mouseY ];
           } else {
             const last = seglist.getItem(index - 1);
             let lastX = last.x;
@@ -625,7 +623,7 @@ export const pathActionsMethod = (function () {
               lastX = firstCtrl[0] / currentZoom;
               lastY = firstCtrl[1] / currentZoom;
             }
-            pathActionsContext_.replacePathSeg(6, index, [ptX, ptY, lastX, lastY, altX, altY], drawnPath);
+            pathActionsContext_.replacePathSeg(6, index, [ ptX, ptY, lastX, lastY, altX, altY ], drawnPath);
           }
         } else {
           const stretchy = getElem('path_stretch_line');
@@ -637,13 +635,13 @@ export const pathActionsMethod = (function () {
               pathActionsContext_.replacePathSeg(
                 6,
                 1,
-                [mouseX, mouseY, prevX * currentZoom, prevY * currentZoom, mouseX, mouseY],
+                [ mouseX, mouseY, prevX * currentZoom, prevY * currentZoom, mouseX, mouseY ],
                 stretchy
               );
             } else if (firstCtrl) {
-              pathActionsContext_.replacePathSeg(6, 1, [mouseX, mouseY, firstCtrl[0], firstCtrl[1], mouseX, mouseY], stretchy);
+              pathActionsContext_.replacePathSeg(6, 1, [ mouseX, mouseY, firstCtrl[0], firstCtrl[1], mouseX, mouseY ], stretchy);
             } else {
-              pathActionsContext_.replacePathSeg(4, 1, [mouseX, mouseY], stretchy);
+              pathActionsContext_.replacePathSeg(4, 1, [ mouseX, mouseY ], stretchy);
             }
           }
         }
@@ -661,7 +659,7 @@ export const pathActionsMethod = (function () {
         }, path);
         const diffX = mpt.x - pt.x;
         const diffY = mpt.y - pt.y;
-        path.dragging = [mouseX, mouseY];
+        path.dragging = [ mouseX, mouseY ];
 
         if (path.dragctrl) {
           path.moveCtrl(diffX, diffY);
@@ -788,8 +786,8 @@ export const pathActionsMethod = (function () {
       }
 
       if (selPath) {
-        editorContext_.call('selected', [elem]);
-        editorContext_.addToSelection([elem], true);
+        editorContext_.call('selected', [ elem ]);
+        editorContext_.addToSelection([ elem ], true);
       }
     },
     /**
@@ -849,7 +847,7 @@ export const pathActionsMethod = (function () {
 
       this.clear();
 
-      editorContext_.addToSelection([elem], true);
+      editorContext_.addToSelection([ elem ], true);
       editorContext_.call('changed', editorContext_.getSelectedElements());
     },
 
@@ -909,7 +907,7 @@ export const pathActionsMethod = (function () {
         const type = seg.pathSegType;
         if (type === 1) { continue; }
         const pts = [];
-        ['', 1, 2].forEach(function(n){
+        [ '', 1, 2 ].forEach(function(n){
           const x = seg['x' + n], y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
             const pt = transformPoint(x, y, m);
@@ -988,7 +986,7 @@ export const pathActionsMethod = (function () {
       // Only allow one selected node for now
       if (selPts.length !== 1) { return; }
 
-      const {elem} = path;
+      const { elem } = path;
       const list = elem.pathSegList;
 
       // const len = list.numberOfItems;
@@ -1086,7 +1084,7 @@ export const pathActionsMethod = (function () {
       const pt = list.getItem(lastM);
 
       // Make this point the new "M"
-      pathActionsContext_.replacePathSeg(2, lastM, [pt.x, pt.y]);
+      pathActionsContext_.replacePathSeg(2, lastM, [ pt.x, pt.y ]);
 
       // i = index; // i is local here, so has no effect; what was the intent for this?
 
@@ -1200,7 +1198,7 @@ export const pathActionsMethod = (function () {
 
       // Get first selected point
       const seg = path.segs[selPts[0]];
-      const diff = {x: 0, y: 0};
+      const diff = { x: 0, y: 0 };
       diff[attr] = newValue - seg.item[attr];
 
       seg.move(diff.x, diff.y);

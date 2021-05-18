@@ -33,7 +33,7 @@ svgEditor.setConfig(
     //   other config options have already explicitly prevented one or the
     //   other)
   },
-  {allowInitialUserOverride: true}
+  { allowInitialUserOverride: true }
 );
 
 // EXTENSION CONFIG
@@ -139,7 +139,7 @@ try { // try clause to avoid js to complain if XDOMAIN undefined
   if (XDOMAIN) {
     svgEditor.setConfig({
       canvasName: 'xdomain', // Namespace this
-      allowedOrigins: ['*']
+      allowedOrigins: [ '*' ]
     });
     console.info('xdomain config activated');
   }

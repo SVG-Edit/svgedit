@@ -9,7 +9,7 @@ export class SePromptDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this.dialog = new SePlainAlertDialog();
   }
   /**
@@ -17,7 +17,7 @@ export class SePromptDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'close'];
+    return [ 'title', 'close' ];
   }
   /**
    * @function attributeChangedCallback
@@ -33,7 +33,7 @@ export class SePromptDialog extends HTMLElement {
         this.dialog.close();
       }
       this.dialog.textContent = newValue;
-      this.dialog.choices = ['Cancel'];
+      this.dialog.choices = [ 'Cancel' ];
       this.dialog.open();
       break;
     case 'close':

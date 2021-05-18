@@ -15,7 +15,6 @@ class TopPanel {
    */
   constructor(editor) {
     this.editor = editor;
-    this.uiStrings = editor.uiStrings;
   }
   /**
    * @type {module}
@@ -45,7 +44,7 @@ class TopPanel {
   setStrokeOpt(opt, changeElem) {
     const { id } = opt;
     const bits = id.split('_');
-    const [pre, val] = bits;
+    const [ pre, val ] = bits;
 
     if (changeElem) {
       this.svgCanvas.setStrokeAttr('stroke-' + pre, val);
@@ -138,7 +137,7 @@ class TopPanel {
     curhref = curhref.startsWith("data:") ? "" : curhref;
     // eslint-disable-next-line no-alert
     const url = prompt(
-      this.editor.uiStrings.notification.enterNewImgURL,
+      this.editor.i18next.t('notification.enterNewImgURL'),
       curhref
     );
     if (url) {
@@ -152,7 +151,7 @@ class TopPanel {
    * @returns {void}
    */
   updateContextPanel() {
-    const setInputWidth = elem => {
+    const setInputWidth = (elem) => {
       const w = Math.min(Math.max(12 + elem.value.length * 6, 50), 300);
       elem.style.width = w + 'px';
     };
@@ -206,14 +205,14 @@ class TopPanel {
       if (!isNode && currentMode !== "pathedit") {
         $id("selected_panel").style.display = 'block';
         // Elements in this array already have coord fields
-        if (["line", "circle", "ellipse"].includes(elname)) {
+        if ([ "line", "circle", "ellipse" ].includes(elname)) {
           $id("xy_panel").style.display = 'none';
         } else {
           let x, y;
 
           // Get BBox vals for g, polyline and path
-          if (["g", "polyline", "path"].includes(elname)) {
-            const bb = this.editor.svgCanvas.getStrokedBBox([elem]);
+          if ([ "g", "polyline", "path" ].includes(elname)) {
+            const bb = this.editor.svgCanvas.getStrokedBBox([ elem ]);
             if (bb) {
               ({ x, y } = bb);
             }
@@ -276,11 +275,11 @@ class TopPanel {
       const panels = {
         g: [],
         a: [],
-        rect: ["rx", "width", "height"],
-        image: ["width", "height"],
-        circle: ["cx", "cy", "r"],
-        ellipse: ["cx", "cy", "rx", "ry"],
-        line: ["x1", "y1", "x2", "y2"],
+        rect: [ "rx", "width", "height" ],
+        image: [ "width", "height" ],
+        circle: [ "cx", "cy", "r" ],
+        ellipse: [ "cx", "cy", "rx", "ry" ],
+        line: [ "x1", "y1", "x2", "y2" ],
         text: [],
         use: []
       };
@@ -292,7 +291,7 @@ class TopPanel {
         linkHref = this.editor.svgCanvas.getHref(elem);
         $id("g_panel").style.display = 'block';
       }
-      // siblings 
+      // siblings
       const selements = Array.prototype.filter.call(elem.parentNode.children, function(child){
         return child !== elem;
       });
@@ -313,7 +312,7 @@ class TopPanel {
         const curPanel = panels[tagName];
         $id(tagName + "_panel").style.display = 'block';
 
-        curPanel.forEach(item => {
+        curPanel.forEach((item) => {
           let attrVal = elem.getAttribute(item);
           if (this.editor.configObj.curConfig.baseUnit !== "px" && elem[item]) {
             const bv = elem[item].baseVal.value;
@@ -352,7 +351,7 @@ class TopPanel {
           if (this.editor.svgCanvas.addedNew) {
             // Timeout needed for IE9
             setTimeout(() => {
-              $id("text").focus()
+              $id("text").focus();
               $id("text").select();
             }, 100);
           }
@@ -406,7 +405,7 @@ class TopPanel {
 
     if ((elem && !isNode) || this.multiselected) {
       // update the selected elements' layer
-      $id("selLayerNames").removeAttribute("disabled")
+      $id("selLayerNames").removeAttribute("disabled");
       $id("selLayerNames").value = currentLayerName;
 
       // Enable regular menu options
@@ -553,12 +552,12 @@ class TopPanel {
   attrChanger(e) {
     const attr = e.target.getAttribute("data-attr");
     let val = e.target.value;
-    const valid = isValidUnit(attr, val, this.editor.selectedElement);
+    const valid = isValidUnit(attr, val, this.selectedElement);
 
     if (!valid) {
-      e.target.value = this.editor.selectedElement().getAttribute(attr);
+      e.target.value = this.selectedElement.getAttribute(attr);
       // eslint-disable-next-line no-alert
-      alert(this.uiStrings.notification.invalidAttrValGiven);
+      alert(this.i18next.t('notification.invalidAttrValGiven'));
       return false;
     }
 
@@ -587,7 +586,7 @@ class TopPanel {
       const elem = this.editor.selectedElement;
       this.editor.svgCanvas.clearSelection();
       elem.id = val;
-      this.editor.svgCanvas.addToSelection([elem], true);
+      this.editor.svgCanvas.addToSelection([ elem ], true);
     } else {
       this.editor.svgCanvas.changeSelectedAttribute(attr, val);
     }
@@ -619,7 +618,7 @@ class TopPanel {
     if (!isNullish(this.editor.selectedElement) || this.multiselected) {
       // eslint-disable-next-line no-alert
       const url = prompt(
-        this.uiStrings.notification.enterNewLinkURL,
+        this.i18next.t('notification.enterNewLinkURL'),
         "http://"
       );
       if (url) {
@@ -742,7 +741,7 @@ class TopPanel {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    const {i18next} = this.editor
+    const { i18next } = this.editor;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
        <div id="tools_top">
@@ -1040,7 +1039,7 @@ class TopPanel {
       "click",
       this.clickGroup.bind(this)
     );
-    $id("tool_position").addEventListener("change", evt =>
+    $id("tool_position").addEventListener("change", (evt) =>
       this.clickAlignEle.bind(this)(evt)
     );
     $id("tool_align_left").addEventListener("click", () =>
@@ -1130,7 +1129,7 @@ class TopPanel {
       "image_height",
       "path_node_x",
       "path_node_y"
-    ].forEach(attrId =>
+    ].forEach((attrId) =>
       $id(attrId).addEventListener("change", this.attrChanger.bind(this))
     );
   }

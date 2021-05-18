@@ -51,7 +51,7 @@ describe('units', function () {
     assert.ok(units.shortFloat);
     assert.equal(typeof units.shortFloat, typeof function () { /* empty fn */ });
 
-    const {shortFloat} = units;
+    const { shortFloat } = units;
     assert.equal(shortFloat(0.00000001), 0);
     assert.equal(shortFloat(1), 1);
     assert.equal(shortFloat(3.45678), 3.4568);
@@ -63,7 +63,7 @@ describe('units', function () {
     assert.ok(units.isValidUnit);
     assert.equal(typeof units.isValidUnit, typeof function () { /* empty fn */ });
 
-    const {isValidUnit} = units;
+    const { isValidUnit } = units;
     assert.ok(isValidUnit('0'));
     assert.ok(isValidUnit('1'));
     assert.ok(isValidUnit('1.1'));

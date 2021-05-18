@@ -140,7 +140,7 @@ export class Selector {
     if (tagName === 'g' && !dataStorage.has(selected, 'gsvg')) {
       // The bbox for a group does not include stroke vals, so we
       // get the bbox based on its children.
-      const strokedBbox = getStrokedBBox([selected.childNodes]);
+      const strokedBbox = getStrokedBBox([ selected.childNodes ]);
       if (strokedBbox) {
         bbox = strokedBbox;
       }
@@ -203,22 +203,22 @@ export class Selector {
       ' ' + nbax + ',' + (nbay + nbah) + 'z';
     selectedBox.setAttribute('d', dstr);
 
-    const xform = angle ? 'rotate(' + [angle, cx, cy].join(',') + ')' : '';
+    const xform = angle ? 'rotate(' + [ angle, cx, cy ].join(',') + ')' : '';
     this.selectorGroup.setAttribute('transform', xform);
 
     // TODO(codedread): Is this needed?
     //  if (selected === selectedElements[0]) {
     this.gripCoords = {
-      nw: [nbax, nbay],
-      ne: [nbax + nbaw, nbay],
-      sw: [nbax, nbay + nbah],
-      se: [nbax + nbaw, nbay + nbah],
-      n: [nbax + (nbaw) / 2, nbay],
-      w: [nbax, nbay + (nbah) / 2],
-      e: [nbax + nbaw, nbay + (nbah) / 2],
-      s: [nbax + (nbaw) / 2, nbay + nbah]
+      nw: [ nbax, nbay ],
+      ne: [ nbax + nbaw, nbay ],
+      sw: [ nbax, nbay + nbah ],
+      se: [ nbax + nbaw, nbay + nbah ],
+      n: [ nbax + (nbaw) / 2, nbay ],
+      w: [ nbax, nbay + (nbah) / 2 ],
+      e: [ nbax + nbaw, nbay + (nbah) / 2 ],
+      s: [ nbax + (nbaw) / 2, nbay + nbah ]
     };
-    Object.entries(this.gripCoords).forEach(([dir, coords]) => {
+    Object.entries(this.gripCoords).forEach(([ dir, coords ]) => {
       selectedGrips[dir].setAttribute('cx', coords[0]);
       selectedGrips[dir].setAttribute('cy', coords[1]);
     });
@@ -373,7 +373,7 @@ export class SelectorManager {
 
     if (document.getElementById('canvasBackground')) { return; }
 
-    const [width, height] = config_.dimensions;
+    const [ width, height ] = config_.dimensions;
     const canvasbg = svgFactory_.createSVGElement({
       element: 'svg',
       attr: {

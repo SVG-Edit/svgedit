@@ -3,7 +3,7 @@
 * @module EmbeddedSVGEditDOM
 */
 import EmbeddedSVGEdit from './embedapi.js';
-import {isChrome} from '../common/browser.js';
+import { isChrome } from '../common/browser.js';
 
 let svgCanvas = null;
 
@@ -106,8 +106,8 @@ iframe.src = frameBase + framePath +
     : ''); // Append arguments to this file onto the iframe
 
 iframe.addEventListener('load', function () {
-  svgCanvas = new EmbeddedSVGEdit(frame, [new URL(frameBase).origin]);
-  const {$id} = svgCanvas;
+  svgCanvas = new EmbeddedSVGEdit(frame, [ new URL(frameBase).origin ]);
+  const { $id } = svgCanvas;
   // Hide main button, as we will be controlling new, load, save, etc. from the host document
   let doc;
   try {

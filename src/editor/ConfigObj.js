@@ -1,6 +1,6 @@
 // eslint-disable-next-line node/no-unpublished-import
 import deparam from 'deparam';
-import {mergeDeep} from './components/jgraduate/Util.js';
+import { mergeDeep } from './components/jgraduate/Util.js';
 
 /**
 * Escapes special characters in a regular expression.
@@ -126,7 +126,7 @@ export default class ConfigObj {
       imgPath: './images/',
       // DOCUMENT PROPERTIES
       // Change the following to a preference (already in the Document Properties dialog)?
-      dimensions: [640, 480],
+      dimensions: [ 640, 480 ],
       // EDITOR OPTIONS
       // Change the following to preferences (already in the Editor Options dialog)?
       gridSnapping: false,
@@ -170,11 +170,11 @@ export default class ConfigObj {
       // 'ext-markers',
       'ext-overview_window',
       'ext-panning',
-      'ext-polygon',
       'ext-shapes',
-      'ext-star',
+      'ext-polystar',
       'ext-storage',
-      'ext-opensave'
+      'ext-opensave',
+      // 'ext-helloworld',
     ];
     this.curConfig = {
       // We do not put on defaultConfig to simplify object copying
@@ -204,7 +204,7 @@ export default class ConfigObj {
    * @returns {void}
    */
   setupCurPrefs () {
-    const curPrefs = {...this.defaultPrefs, ...this.curPrefs}; // Now safe to merge with priority for curPrefs in the event any are already set
+    const curPrefs = { ...this.defaultPrefs, ...this.curPrefs }; // Now safe to merge with priority for curPrefs in the event any are already set
     // Export updated prefs
     this.curPrefs = curPrefs;
   }
@@ -213,11 +213,11 @@ export default class ConfigObj {
    * @returns {void}
    */
   setupCurConfig () {
-    const curConfig = {...this.defaultConfig, ...this.curConfig}; // Now safe to merge with priority for curConfig in the event any are already set
+    const curConfig = { ...this.defaultConfig, ...this.curConfig }; // Now safe to merge with priority for curConfig in the event any are already set
 
     // Now deal with extensions and other array config
     if (!curConfig.noDefaultExtensions) {
-      curConfig.extensions = [...this.defaultExtensions];
+      curConfig.extensions = [ ...this.defaultExtensions ];
     }
     // Export updated config
     this.curConfig = curConfig;
@@ -227,12 +227,12 @@ export default class ConfigObj {
    * @returns {void}
    */
   loadFromURL () {
-    const {search, searchParams} = new URL(location);
+    const { search, searchParams } = new URL(location);
 
     if (search) {
       this.urldata = deparam(searchParams.toString());
 
-      ['initStroke', 'initFill'].forEach((prop) => {
+      [ 'initStroke', 'initFill' ].forEach((prop) => {
         if (searchParams.has(`${prop}[color]`)) {
           // Restore back to original non-deparamed value to avoid color
           //  strings being converted to numbers
@@ -260,7 +260,7 @@ export default class ConfigObj {
       // security reasons, even for same-domain
       // ones given potential to interact in undesirable
       // ways with other script resources
-      ['userExtensions', 'imgPath']
+      [ 'userExtensions', 'imgPath' ]
         .forEach(function (pathConfig) {
           if (this.urldata[pathConfig]) {
             delete this.urldata[pathConfig];
@@ -269,11 +269,11 @@ export default class ConfigObj {
 
       // Note: `source` and `url` (as with `storagePrompt` later) are not
       //  set on config but are used below
-      this.setConfig(this.urldata, {overwrite: false});
+      this.setConfig(this.urldata, { overwrite: false });
       this.setupCurConfig();
 
       if (!this.curConfig.preventURLContentLoading) {
-        let {source} = this.urldata;
+        let { source } = this.urldata;
         if (!source) { // urldata.source may have been null if it ended with '='
           const src = searchParams.get('source');
           if (src && src.startsWith('data:')) {
@@ -396,7 +396,7 @@ export default class ConfigObj {
         cfgObj[key] = val;
       }
     };
-    Object.entries(opts).forEach(([key, val]) => {
+    Object.entries(opts).forEach(([ key, val ]) => {
       // Only allow prefs defined in configObj.defaultPrefs or...
       if (this.defaultPrefs[key]) {
         if (cfgCfg.overwrite === false && (
@@ -410,11 +410,11 @@ export default class ConfigObj {
         } else {
           this.pref(key, val);
         }
-      } else if (['extensions', 'userExtensions', 'allowedOrigins'].includes(key)) {
+      } else if ([ 'extensions', 'userExtensions', 'allowedOrigins' ].includes(key)) {
         if (cfgCfg.overwrite === false &&
           (
             this.curConfig.preventAllURLConfig ||
-            ['allowedOrigins'].includes(key) ||
+            [ 'allowedOrigins' ].includes(key) ||
             (key === 'extensions' && this.curConfig.lockExtensions)
           )
         ) {

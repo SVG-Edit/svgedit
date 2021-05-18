@@ -1,8 +1,12 @@
 export default {
   name: 'star',
+  title: 'Polygone/Star Tool',
   buttons: [
     {
       title: 'Star Tool'
+    },
+    {
+      title: 'Polygon Tool'
     }
   ],
   contextTools: [
@@ -17,6 +21,10 @@ export default {
     {
       title: 'Twists the star',
       label: 'Radial Shift'
+    },
+    {
+      title: 'Number of Sides',
+      label: 'sides'
     }
   ]
 };

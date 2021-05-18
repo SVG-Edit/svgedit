@@ -18,7 +18,7 @@
 
 export default {
   name: 'opensave',
-  init ({encode64}) {
+  init ({ encode64 }) {
     const svgEditor = this;
 
     svgEditor.setCustomHandlers({
@@ -44,7 +44,7 @@ export default {
         const done = this.configObj.pref('save_notice_done');
 
         if (done !== 'all') {
-          const note = svgEditor.i18next.t('notification.saveFromBrowser', { type: 'SVG'});
+          const note = svgEditor.i18next.t('notification.saveFromBrowser', { type: 'SVG' });
 
           this.configObj.pref('save_notice_done', 'all');
           if (done !== 'part') {

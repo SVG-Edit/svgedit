@@ -47,12 +47,12 @@ export default {
   async init (S) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const {$} = S;
-    const {svgCanvas} = svgEditor;
-    const {$id} = svgCanvas;
+    const { $ } = S;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const // {svgcontent} = S,
       addElem = svgCanvas.addSVGElementFromJson;
-    const mtypes = ['start', 'mid', 'end'];
+    const mtypes = [ 'start', 'mid', 'end' ];
     const markerPrefix = 'se_marker_';
     const idPrefix = 'mkr_';
 
@@ -64,35 +64,35 @@ export default {
     const markerTypes = {
       nomarker: {},
       leftarrow:
-        {element: 'path', attr: {d: 'M0,50 L100,90 L70,50 L100,10 Z'}},
+        { element: 'path', attr: { d: 'M0,50 L100,90 L70,50 L100,10 Z' } },
       rightarrow:
-        {element: 'path', attr: {d: 'M100,50 L0,90 L30,50 L0,10 Z'}},
+        { element: 'path', attr: { d: 'M100,50 L0,90 L30,50 L0,10 Z' } },
       textmarker:
-        {element: 'text', attr: {
+        { element: 'text', attr: {
           x: 0, y: 0, 'stroke-width': 0, stroke: 'none',
           'font-size': 75, 'font-family': 'serif', 'text-anchor': 'left',
           'xml:space': 'preserve'
-        }},
+        } },
       forwardslash:
-        {element: 'path', attr: {d: 'M30,100 L70,0'}},
+        { element: 'path', attr: { d: 'M30,100 L70,0' } },
       reverseslash:
-        {element: 'path', attr: {d: 'M30,0 L70,100'}},
+        { element: 'path', attr: { d: 'M30,0 L70,100' } },
       verticalslash:
-        {element: 'path', attr: {d: 'M50,0 L50,100'}},
+        { element: 'path', attr: { d: 'M50,0 L50,100' } },
       box:
-        {element: 'path', attr: {d: 'M20,20 L20,80 L80,80 L80,20 Z'}},
+        { element: 'path', attr: { d: 'M20,20 L20,80 L80,80 L80,20 Z' } },
       star:
-        {element: 'path', attr: {d: 'M10,30 L90,30 L20,90 L50,10 L80,90 Z'}},
+        { element: 'path', attr: { d: 'M10,30 L90,30 L20,90 L50,10 L80,90 Z' } },
       xmark:
-        {element: 'path', attr: {d: 'M20,80 L80,20 M80,80 L20,20'}},
+        { element: 'path', attr: { d: 'M20,80 L80,20 M80,80 L20,20' } },
       triangle:
-        {element: 'path', attr: {d: 'M10,80 L50,20 L80,80 Z'}},
+        { element: 'path', attr: { d: 'M10,80 L50,20 L80,80 Z' } },
       mcircle:
-        {element: 'circle', attr: {r: 30, cx: 50, cy: 50}}
+        { element: 'circle', attr: { r: 30, cx: 50, cy: 50 } }
     };
 
     // duplicate shapes to support unfilled (open) marker types with an _o suffix
-    ['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'].forEach((v) => {
+    [ 'leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle' ].forEach((v) => {
       markerTypes[v + '_o'] = markerTypes[v];
     });
 
@@ -123,8 +123,6 @@ export default {
     function setIcon (pos, id) {
       if (id.substr(0, 1) !== '\\') { id = '\\textmarker'; }
       const ci = idPrefix + pos + '_' + id.substr(1);
-      console.log(ci)
-      console.log('cur_' + pos + '_marker_list')
       svgEditor.setIcon('cur_' + pos + '_marker_list', $id(ci).children);
       $id(ci).classList.add('current');
       const siblings = Array.prototype.filter.call($id(ci).parentNode.children, function(child){
@@ -288,7 +286,7 @@ export default {
       const x2 = Number(elem.getAttribute('x2'));
       const y1 = Number(elem.getAttribute('y1'));
       const y2 = Number(elem.getAttribute('y2'));
-      const {id} = elem;
+      const { id } = elem;
 
       const midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ');
       const pline = addElem({
@@ -315,7 +313,7 @@ export default {
       elem.remove();
       svgCanvas.clearSelection();
       pline.id = id;
-      svgCanvas.addToSelection([pline]);
+      svgCanvas.addToSelection([ pline ]);
       S.addCommandToHistory(batchCmd);
       return pline;
     }
@@ -325,7 +323,7 @@ export default {
     * @returns {void}
     */
     function setMarker () {
-      const poslist = {start_marker: 'start', mid_marker: 'mid', end_marker: 'end'};
+      const poslist = { start_marker: 'start', mid_marker: 'mid', end_marker: 'end' };
       const pos = poslist[this.id];
       const markerName = 'marker-' + pos;
       const el = selElems[0];
@@ -471,7 +469,7 @@ export default {
     * @returns {string}
     */
     function getTitle (id) {
-      const {langList} = strings;
+      const { langList } = strings;
       const item = langList.find((itm) => {
         return itm.id === id;
       });
@@ -519,7 +517,7 @@ export default {
             icon: id + '.svg',
             title,
             type: 'context',
-            events: {click: setArrowFromButton},
+            events: { click: setArrowFromButton },
             panel: 'marker_panel',
             list: listname,
             isDefault: def
@@ -536,38 +534,38 @@ export default {
         panel: 'marker_panel',
         id: 'start_marker',
         size: 3,
-        events: {change: setMarker}
+        events: { change: setMarker }
       }, {
         type: 'button-select',
         panel: 'marker_panel',
         id: 'start_marker_list',
         colnum: 3,
-        events: {change: setArrowFromButton}
+        events: { change: setArrowFromButton }
       }, {
         type: 'input',
         panel: 'marker_panel',
         id: 'mid_marker',
         defval: '',
         size: 3,
-        events: {change: setMarker}
+        events: { change: setMarker }
       }, {
         type: 'button-select',
         panel: 'marker_panel',
         id: 'mid_marker_list',
         colnum: 3,
-        events: {change: setArrowFromButton}
+        events: { change: setArrowFromButton }
       }, {
         type: 'input',
         panel: 'marker_panel',
         id: 'end_marker',
         size: 3,
-        events: {change: setMarker}
+        events: { change: setMarker }
       }, {
         type: 'button-select',
         panel: 'marker_panel',
         id: 'end_marker_list',
         colnum: 3,
-        events: {change: setArrowFromButton}
+        events: { change: setArrowFromButton }
       }
     ];
 
@@ -580,15 +578,14 @@ export default {
           $id("marker_panel").style.display = 'none';
         }
       },
-      /* async */ addLangData ({_importLocale, _lang}) {
-        return {data: strings.langList};
+      /* async */ addLangData ({ _importLocale, _lang }) {
+        return { data: strings.langList };
       },
       selectedChanged (opts) {
         // Use this to update the current selected elements
-        // console.log('selectChanged',opts);
         selElems = opts.elems;
 
-        const markerElems = ['line', 'path', 'polyline', 'polygon'];
+        const markerElems = [ 'line', 'path', 'polyline', 'polygon' ];
 
         let i = selElems.length;
         while (i--) {

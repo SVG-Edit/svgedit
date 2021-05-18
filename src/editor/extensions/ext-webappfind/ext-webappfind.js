@@ -26,27 +26,24 @@ export default {
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const saveMessage = 'save',
       readMessage = 'read',
-      excludedMessages = [readMessage, saveMessage];
+      excludedMessages = [ readMessage, saveMessage ];
 
     let pathID;
     this.canvas.bind(
       'message',
       /**
-      * @param {external:Window} win
-      * @param {PlainObject} info
-      * @param {module:svgcanvas.SvgCanvas#event:message} info.data
-      * @param {string} info.origin
-      * @listens module:svgcanvas.SvgCanvas#event:message
-      * @throws {Error} Unexpected event type
-      * @returns {void}
-      */
-      (win, {data, origin}) => {
-        // console.log('data, origin', data, origin);
+       *
+       * @param {external:Window} win external Window handler
+       * @param {*} param1 info
+       * @returns {void}
+       */
+      (win, { data, origin }) => {
         let type, content;
         try {
-          ({type, pathID, content} = data.webappfind); // May throw if data is not an object
+          ({ type, pathID, content } = data.webappfind); // May throw if data is not an object
           if (origin !== location.origin || // We are only interested in a message sent as though within this URL by our browser add-on
-              excludedMessages.includes(type) // Avoid our post below (other messages might be possible in the future which may also need to be excluded if your subsequent code makes assumptions on the type of message this is)
+              // Avoid our post below (other msgs might be possible which may need to be excluded if code makes assumptions on the type of message)
+              excludedMessages.includes(type)
           ) {
             return;
           }
@@ -81,7 +78,7 @@ export default {
       : window.location.origin
     );
     */
-    const buttons = [{
+    const buttons = [ {
       id: 'webappfind_save', //
       icon: 'webappfind.png',
       type: 'app_menu',
@@ -106,7 +103,7 @@ export default {
           );
         }
       }
-    }];
+    } ];
 
     return {
       name: strings.name,

@@ -1,4 +1,3 @@
-import 'elix/define/Dialog.js';
 import './se-elix/define/NumberSpinBox.js';
 
 const template = document.createElement('template');
@@ -7,10 +6,10 @@ template.innerHTML = `
  
   #dialog_content {
     margin: 10px 10px 5px 10px;
-    background: #DDD;
+    background: #5a6162;
     overflow: auto;
     text-align: left;
-    border: 1px solid #B0B0B0;
+    border: 1px solid #c8c8c8;
   }
 
   #dialog_content p, #dialog_content select, #dialog_content label {
@@ -25,7 +24,7 @@ template.innerHTML = `
     top: 50%;
     max-width: 400px;
     z-index: 50001;
-    background: #CCC;
+    background: #5a6162;
     border: 1px outset #777;
     font-family:Verdana,Helvetica,sans-serif;
     font-size:0.8em;
@@ -73,11 +72,9 @@ template.innerHTML = `
       </div>
       <div id="dialog_buttons">
         <button id="export_ok">
-          <img class="svg_icon" src="./images/ok.svg" alt="icon" width="16" height="16" />
           Ok
         </button>
         <button id="export_cancel">
-          <img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />
           Cancel
         </button>
       </div>
@@ -94,7 +91,7 @@ export class SeExportDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#export_box');
     this.$okBtn = this._shadowRoot.querySelector('#export_ok');
@@ -109,7 +106,7 @@ export class SeExportDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog'];
+    return [ 'dialog' ];
   }
   /**
    * @function attributeChangedCallback
@@ -164,11 +161,11 @@ export class SeExportDialog extends HTMLElement {
       if (action === 'cancel') {
         document.getElementById('se-export-dialog').setAttribute('dialog', 'close');
       } else {
-        const triggerEvent = new CustomEvent('change', {detail: {
+        const triggerEvent = new CustomEvent('change', { detail: {
           trigger: action,
           imgType: this.$exportOption.value,
           quality: this.value
-        }});
+        } });
         this.dispatchEvent(triggerEvent);
       }
     };

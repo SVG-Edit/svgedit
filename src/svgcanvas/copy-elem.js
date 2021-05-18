@@ -1,6 +1,6 @@
-import {isWebkit} from '../common/browser.js';
-import {convertPath} from './path.js';
-import {preventClickDefault} from './utilities.js';
+import { isWebkit } from '../common/browser.js';
+import { convertPath } from './path.js';
+import { preventClickDefault } from './utilities.js';
 
 /**
  * Create a clone of an element, updating its ID and its children's IDs when needed.
@@ -41,7 +41,7 @@ export const copyElem = function (el, getNextId) {
   });
 
   if (el.dataset.gsvg) {
-    newEl.dataset.gsvg = newEl.firstChild
+    newEl.dataset.gsvg = newEl.firstChild;
   } else if (el.dataset.symbol) {
     const ref = el.dataset.symbol;
     newEl.dataset.ref =  ref;

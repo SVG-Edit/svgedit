@@ -4,7 +4,7 @@
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import {NS} from '../common/namespaces.js';
+import { NS } from '../common/namespaces.js';
 
 let clearContext_ = null;
 
@@ -19,7 +19,7 @@ export const init = function (clearContext) {
 
 export const clearSvgContentElementInit = function () {
   const curConfig = clearContext_.getCurConfig();
-  const {dimensions} = curConfig;
+  const { dimensions } = curConfig;
   const el = clearContext_.getSVGContent();
   // empty()
   while(el.firstChild)

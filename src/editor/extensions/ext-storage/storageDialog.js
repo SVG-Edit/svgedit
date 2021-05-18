@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-import 'elix/define/Dialog.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -10,7 +9,7 @@ template.innerHTML = `
     background: #DDD;
     overflow: auto;
     text-align: left;
-    border: 1px solid #B0B0B0;
+    border: 1px solid #5a6162;
   }
 
   #dialog_content p, #dialog_content select, #dialog_content label {
@@ -25,7 +24,7 @@ template.innerHTML = `
     top: 50%;
     max-width: 400px;
     z-index: 50001;
-    background: #CCC;
+    background: #5a6162;
     border: 1px outset #777;
     font-family:Verdana,Helvetica,sans-serif;
     font-size:0.8em;
@@ -86,7 +85,7 @@ export class SeStorageDialog extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dialog = this._shadowRoot.querySelector('#dialog_box');
     this.$storage = this._shadowRoot.querySelector('#js-storage');
@@ -100,7 +99,7 @@ export class SeStorageDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['dialog', 'storage'];
+    return [ 'dialog', 'storage' ];
   }
   /**
    * @function attributeChangedCallback
@@ -150,11 +149,11 @@ export class SeStorageDialog extends HTMLElement {
    */
   connectedCallback () {
     const onSubmitHandler = (e, action) => {
-      const triggerEvent = new CustomEvent('change', {detail: {
+      const triggerEvent = new CustomEvent('change', { detail: {
         trigger: action,
         select: this.$storageInput.value,
         checkbox: this.$rememberInput.checked
-      }});
+      } });
       this.dispatchEvent(triggerEvent);
     };
     this.$okBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'ok'));

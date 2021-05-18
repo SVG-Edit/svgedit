@@ -1,7 +1,7 @@
 import ListComboBox from 'elix/define/ListComboBox.js';
-import {defaultState} from 'elix/src/base/internal.js';
-import {templateFrom, fragmentFrom} from 'elix/src/core/htmlLiterals.js';
-import {internal} from 'elix';
+import { defaultState } from 'elix/src/base/internal.js';
+import { templateFrom, fragmentFrom } from 'elix/src/core/htmlLiterals.js';
+import { internal } from 'elix';
 import NumberSpinBox from '../dialogs/se-elix/define/NumberSpinBox.js';
 
 /**
@@ -40,7 +40,7 @@ class Dropdown extends ListComboBox {
         ::slotted(*) {
           padding: 4px;
           background: #E8E8E8;
-          border: 1px solid #B0B0B0;
+          border: 1px solid #5a6162;
           width: 100%;
         }
         [part~="popup"] {
@@ -56,7 +56,7 @@ class Dropdown extends ListComboBox {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['title', 'src', 'inputsize', 'value'];
+    return [ 'title', 'src', 'inputsize', 'value' ];
   }
   /**
    * @function attributeChangedCallback
@@ -105,7 +105,7 @@ class Dropdown extends ListComboBox {
         e.preventDefault();
         const value = e.detail?.closeResult?.getAttribute('value');
         if (value) {
-          const closeEvent = new CustomEvent('change', {detail: {value}});
+          const closeEvent = new CustomEvent('change', { detail: { value } });
           this.dispatchEvent(closeEvent);
         }
       });
@@ -123,7 +123,7 @@ class Dropdown extends ListComboBox {
    * @returns {void}
    */
   set src (src) {
-    this[internal.setState]({src});
+    this[internal.setState]({ src });
   }
   /**
    * @function inputsize
@@ -137,7 +137,7 @@ class Dropdown extends ListComboBox {
    * @returns {void}
    */
   set inputsize (inputsize) {
-    this[internal.setState]({inputsize});
+    this[internal.setState]({ inputsize });
   }
   /**
    * @function value
@@ -151,7 +151,7 @@ class Dropdown extends ListComboBox {
    * @returns {void}
    */
   set value (value) {
-    this[internal.setState]({value});
+    this[internal.setState]({ value });
   }
 }
 

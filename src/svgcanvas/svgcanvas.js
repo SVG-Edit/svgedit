@@ -121,7 +121,7 @@ const {
 } = hstry;
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
-const refAttrs = ['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'];
+const refAttrs = [ 'clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke' ];
 
 if (!window.console) {
   window.console = {};
@@ -175,7 +175,7 @@ class SvgCanvas {
     const curConfig = {
       show_outside_canvas: true,
       selectNew: true,
-      dimensions: [640, 480]
+      dimensions: [ 640, 480 ]
     };
 
     // Update config with new one if given
@@ -740,7 +740,7 @@ class SvgCanvas {
      */
         endChanges({ cmd, elem }) {
           addCommandToHistory(cmd);
-          call('changed', [elem]);
+          call('changed', [ elem ]);
         },
         getCurrentZoom,
         getId,
@@ -1109,7 +1109,7 @@ class SvgCanvas {
  * @returns {void}
  */
     const logMatrix = function (m) {
-      console.log([m.a, m.b, m.c, m.d, m.e, m.f]);
+      console.log([ m.a, m.b, m.c, m.d, m.e, m.f ]);
     };
 
     // Root Current Transformation Matrix in user units
@@ -1645,7 +1645,7 @@ class SvgCanvas {
       setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
       leaveContext, setContext
     };
-    Object.entries(dr).forEach(([prop, propVal]) => {
+    Object.entries(dr).forEach(([ prop, propVal ]) => {
       canvas[prop] = propVal;
     });
     draw.init(
@@ -1673,7 +1673,7 @@ class SvgCanvas {
      * @returns {void}
      */
         changeSVGContent() {
-          call('changed', [svgcontent]);
+          call('changed', [ svgcontent ]);
         }
       }
     );

@@ -6,8 +6,8 @@
  * @copyright 2011 Jeff Schiller, 2016 Flint O'Brien
  */
 
-import {NS} from '../common/namespaces.js';
-import {toXml, walkTree, isNullish} from './utilities.js';
+import { NS } from '../common/namespaces.js';
+import { toXml, walkTree, isNullish } from './utilities.js';
 
 
 /**
@@ -175,7 +175,7 @@ class Layer {
       title.textContent = name;
       this.name_ = name;
       if (hrService) {
-        hrService.changeElement(title, {'#text': previousName});
+        hrService.changeElement(title, { '#text': previousName });
       }
       return this.name_;
     }

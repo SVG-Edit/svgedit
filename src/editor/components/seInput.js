@@ -35,7 +35,7 @@ export class SEInput extends HTMLElement {
   constructor () {
     super();
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({mode: 'open'});
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
     this.$img = this._shadowRoot.querySelector('img');
@@ -48,7 +48,7 @@ export class SEInput extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return ['value', 'label', 'src', 'size'];
+    return [ 'value', 'label', 'src', 'size' ];
   }
   /**
    * @function attributeChangedCallback

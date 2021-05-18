@@ -24,7 +24,7 @@ const Suite = require('mocha/lib/suite.js');
 const Test = require('mocha/lib/test.js');
 const Runner = require('mocha/lib/runner.js');
 
-const {constants: {
+const { constants: {
   EVENT_RUN_BEGIN,
   EVENT_RUN_END,
   EVENT_SUITE_BEGIN,
@@ -32,9 +32,9 @@ const {constants: {
   EVENT_TEST_FAIL,
   EVENT_TEST_PASS,
   EVENT_TEST_PENDING
-}} = require('mocha/lib/runner.js');
+} } = require('mocha/lib/runner.js');
 
-const {results, stats} = require(path);
+const { results, stats } = require(path);
 
 const runner = new Runner(
   new Suite('', null, true)
@@ -47,7 +47,7 @@ console.log('Mocha results:');
 new MochaReporter(runner);
 
 runner.emit(EVENT_RUN_BEGIN);
-results.forEach(({suites}) => {
+results.forEach(({ suites }) => {
   suites.forEach(function handleSuite (st) {
     const ste = Object.assign(new Suite(''), st);
 
@@ -60,7 +60,7 @@ results.forEach(({suites}) => {
       const tst = new Test('', () => {
         //
       });
-      Object.entries(ts).forEach(([k, v]) => {
+      Object.entries(ts).forEach(([ k, v ]) => {
         // `fullTitle` is a string in mochawesome but a function in Mocha
         if (k !== 'fullTitle') {
           tst[k] = v;

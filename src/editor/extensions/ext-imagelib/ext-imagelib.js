@@ -29,7 +29,7 @@ export default {
     const { $id } = svgEditor.svgCanvas;
     const imagelibStrings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
 
-    const { uiStrings, svgCanvas } = svgEditor;
+    const { svgCanvas } = svgEditor;
 
     const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({ url }) => {
       try {
@@ -46,7 +46,7 @@ export default {
     const closeBrowser = () => {
       $id("imgbrowse_holder").style.display = 'none';
       document.activeElement.blur(); // make sure focus is the body to correct issue #417
-    }
+    };
 
     /**
     * @param {string} url
@@ -65,9 +65,9 @@ export default {
         }
       });
       svgCanvas.clearSelection();
-      svgCanvas.addToSelection([newImage]);
+      svgCanvas.addToSelection([ newImage ]);
       svgCanvas.setImageURL(url);
-    }
+    };
 
     const pending = {};
 
@@ -112,8 +112,9 @@ export default {
      * @param {ImageLibMetaMessage|ImageLibMessage|string} cfg.data String is deprecated when parsed to JSON `ImageLibMessage`
      * @returns {void}
      */
-    async function onMessage({ origin, data: response }) {
-      if (!response || !['string', 'object'].includes(typeof response)) {
+    async function onMessage({ origin, data }) {
+      let response = data;
+      if (!response || ![ 'string', 'object' ].includes(typeof response)) {
         // Do nothing
         return;
       }
@@ -129,7 +130,7 @@ export default {
         }
         if (!allowedImageLibOrigins.includes('*') && !allowedImageLibOrigins.includes(origin)) {
           // Todo: Surface this error to user?
-          console.log(`Origin ${origin} not whitelisted for posting to ${window.origin}`);
+          console.error(`Origin ${origin} not whitelisted for posting to ${window.origin}`);
           return;
         }
         const hasName = 'name' in response;
@@ -184,7 +185,7 @@ export default {
 
           const name = (curMeta.name || 'file');
 
-          const message = uiStrings.notification.retrieving.replace('%s', name);
+          const message = svgEditor.i18next.t('notification.retrieving').replace('%s', name);
 
           if (mode !== 'm') {
             await seConfirm(message);
@@ -250,7 +251,7 @@ export default {
           break;
         case 'm': {
           // Import multiple
-          multiArr.push([(svgStr ? 'svg' : 'img'), response]);
+          multiArr.push([ (svgStr ? 'svg' : 'img'), response ]);
           curMeta = pending[id];
           let title;
           if (svgStr) {
@@ -290,7 +291,7 @@ export default {
               const img = document.createElement("img");
               img.src = curMeta.preview_url;
               entry.appendChild(img);
-              entry.appendChild(document.createTextNode(title))
+              entry.appendChild(document.createTextNode(title));
             } else {
               entry = document.createElement("img");
               entry.src = response;
@@ -330,7 +331,7 @@ export default {
 
     const insertAfter = (referenceNode, newNode) => {
       referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    }
+    };
 
     const toggleMultiLoop = () => {
       multiArr.forEach(function(item, i){
@@ -347,7 +348,7 @@ export default {
         preview.removeChild(preview.firstChild);
       multiArr = [];
       $id("imgbrowse_holder").style.display = 'none';
-    }
+    };
 
     /**
     * @param {boolean} show
@@ -375,7 +376,7 @@ export default {
       submit.style.display = (show) ? 'block' : 'none';
       preview.style.display = (show) ? 'block' : 'none';
 
-    }
+    };
 
     /**
     *
@@ -411,7 +412,7 @@ export default {
 
         const button = document.createElement('button');
         // eslint-disable-next-line max-len
-        button.innerHTML = '<img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + uiStrings.common.cancel;
+        button.innerHTML = '<img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + svgEditor.i18next.t('common.cancel');
         browser.appendChild(button);
         button.addEventListener('click', function () {
           $id("imgbrowse_holder").style.display = 'none';
@@ -496,7 +497,7 @@ export default {
       } else {
         $id("imgbrowse_holder").style.display = 'block';
       }
-    }
+    };
 
     return {
       svgicons: 'ext-imagelib.xml',
@@ -529,7 +530,7 @@ export default {
           'bottom: 25px;' +
           'min-width: 300px;' +
           'min-height: 200px;' +
-          'background: #B0B0B0;' +
+          'background: #5a6162;' +
           'border: 1px outset #777;' +
           '}' +
           '#imgbrowse h1 {' +
@@ -567,7 +568,7 @@ export default {
           'list-style: none;' +
           'padding: .5em;' +
           'background: #E8E8E8;' +
-          'border-bottom: 1px solid #B0B0B0;' +
+          'border-bottom: 1px solid #5a6162;' +
           'line-height: 1.2em;' +
           'font-style: sans-serif;' +
           '}' +

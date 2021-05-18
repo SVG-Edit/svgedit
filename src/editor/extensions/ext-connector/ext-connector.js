@@ -79,7 +79,7 @@ export default {
         x: midX + lenX * ratio,
         y: midY + lenY * ratio
       };
-    }
+    };
 
     /**
     * @param {"start"|"end"} side
@@ -92,7 +92,7 @@ export default {
       // TODO: Make this number (5) be based on marker width/height
       const size = line.getAttribute('stroke-width') * 5;
       return giveOffset ? size : 0;
-    }
+    };
 
     /**
     * @param {boolean} on
@@ -108,7 +108,7 @@ export default {
       connRules.textContent = (!on ? '' : '#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }');
       if ($id('connector_panel'))
         $id('connector_panel').style.display = (on) ? 'block' : 'none';
-    }
+    };
 
     /**
      * @param {Element} elem
@@ -144,7 +144,7 @@ export default {
         const ptEnd = pts.getItem(pts.numberOfItems - 1);
         setPoint(elem, 1, (ptEnd.x + ptStart.x) / 2, (ptEnd.y + ptStart.y) / 2);
       }
-    }
+    };
 
     /**
     * @param {Float} diffX
@@ -184,7 +184,7 @@ export default {
         const pt2 = getBBintersect(pt.x, pt.y, dataStorage.get(line, altPre + '_bb'), getOffset(altPre, line));
         setPoint(line, conn.is_start ? 'end' : 0, pt2.x, pt2.y, true);
       }
-    }
+    };
 
     /**
     *
@@ -202,7 +202,7 @@ export default {
         let addThis;
         // Grab the ends
         const parts = [];
-        ['start', 'end'].forEach(function (pos, i) {
+        [ 'start', 'end' ].forEach(function (pos, i) {
           const key = 'c_' + pos;
           let part = dataStorage.get(ethis, key);
           if (part === null || part === undefined) { // Does this ever return nullish values?
@@ -210,7 +210,7 @@ export default {
               ethis.attributes['se:connector'].value.split(' ')[i]
             );
             dataStorage.put(ethis, 'c_' + pos, part.id);
-            dataStorage.put(ethis, pos + '_bb', svgCanvas.getStrokedBBox([part]));
+            dataStorage.put(ethis, pos + '_bb', svgCanvas.getStrokedBBox([ part ]));
           } else part = document.getElementById(part);
           parts.push(part);
         }, ethis);
@@ -233,7 +233,7 @@ export default {
             continue;
           }
           if (elems.includes(cElem) || addThis) {
-            const bb = svgCanvas.getStrokedBBox([cElem]);
+            const bb = svgCanvas.getStrokedBBox([ cElem ]);
             connections.push({
               elem: cElem,
               connector: ethis,
@@ -244,7 +244,7 @@ export default {
           }
         }
       });
-    }
+    };
 
     /**
     * @param {Element[]} [elems=selElems]
@@ -268,7 +268,7 @@ export default {
           const pre = conn.is_start ? 'start' : 'end';
 
           // Update bbox for this element
-          const bb = svgCanvas.getStrokedBBox([elem]);
+          const bb = svgCanvas.getStrokedBBox([ elem ]);
           bb.x = conn.start_x;
           bb.y = conn.start_y;
           dataStorage.put(line, pre + '_bb', bb);
@@ -302,7 +302,7 @@ export default {
           }
         }
       }
-    }
+    };
 
     // Do once
     (function () {
@@ -338,8 +338,8 @@ export default {
         if (conn) {
           curthis.setAttribute('class', 'se_connector');
           const connData = conn.split(' ');
-          const sbb = svgCanvas.getStrokedBBox([getElem(connData[0])]);
-          const ebb = svgCanvas.getStrokedBBox([getElem(connData[1])]);
+          const sbb = svgCanvas.getStrokedBBox([ getElem(connData[0]) ]);
+          const ebb = svgCanvas.getStrokedBBox([ getElem(connData[1]) ]);
           dataStorage.put(curthis, 'c_start', connData[0]);
           dataStorage.put(curthis, 'c_end', connData[1]);
           dataStorage.put(curthis, 'start_bb', sbb);
@@ -347,7 +347,7 @@ export default {
           svgCanvas.getEditorNS(true);
         }
       });
-    }
+    };
 
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     return {
@@ -359,7 +359,7 @@ export default {
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
         <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
-        `
+        `;
         $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('mode_connect').addEventListener("click", () => {
           svgCanvas.setMode('connector');
@@ -393,7 +393,7 @@ export default {
             startElem = fo ? fo : mouseTarget;
 
             // Get center of source element
-            const bb = svgCanvas.getStrokedBBox([startElem]);
+            const bb = svgCanvas.getStrokedBBox([ startElem ]);
             const x = bb.x + bb.width / 2;
             const y = bb.y + bb.height / 2;
 
@@ -453,7 +453,7 @@ export default {
             // Look for selected connector elements
             if (elem && dataStorage.has(elem, 'c_start')) {
               // Remove the "translate" transform given to move
-              svgCanvas.removeFromSelection([elem]);
+              svgCanvas.removeFromSelection([ elem ]);
               svgCanvas.getTransformList(elem).clear();
             }
           }
@@ -520,7 +520,7 @@ export default {
           };
         }
 
-        const bb = svgCanvas.getStrokedBBox([endElem]);
+        const bb = svgCanvas.getStrokedBBox([ endElem ]);
 
         const pt = getBBintersect(startX, startY, bb, getOffset('start', curLine));
         setPoint(curLine, 'end', pt.x, pt.y, true);
@@ -531,7 +531,7 @@ export default {
         curLine.setAttributeNS(seNs, 'se:connector', connStr);
         curLine.setAttribute('class', 'se_connector');
         curLine.setAttribute('opacity', 1);
-        svgCanvas.addToSelection([curLine]);
+        svgCanvas.addToSelection([ curLine ]);
         svgCanvas.moveToBottomSelectedElement();
         selManager.requestSelector(curLine).showGrips(false);
         started = false;
@@ -618,14 +618,14 @@ export default {
             elem.remove();
             svgCanvas.clearSelection();
             pline.id = id;
-            svgCanvas.addToSelection([pline]);
+            svgCanvas.addToSelection([ pline ]);
             elem = pline;
           }
         }
         // Update line if it's a connector
         if (elem.getAttribute('class') === 'se_connector') {
           const start = getElem(dataStorage.get(elem, 'c_start'));
-          updateConnectors([start]);
+          updateConnectors([ start ]);
         } else {
           updateConnectors();
         }

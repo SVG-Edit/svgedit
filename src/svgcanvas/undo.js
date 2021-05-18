@@ -142,7 +142,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
   }
   elems = elems || selectedElements;
   let i = elems.length;
-  const noXYElems = ['g', 'polyline', 'path'];
+  const noXYElems = [ 'g', 'polyline', 'path' ];
   // const goodGAttrs = ['transform', 'opacity', 'filter'];
 
   while (i--) {
@@ -151,7 +151,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
 
     // Set x,y vals on elements that don't have them
     if ((attr === 'x' || attr === 'y') && noXYElems.includes(elem.tagName)) {
-      const bbox = getStrokedBBoxDefaultVisible([elem]);
+      const bbox = getStrokedBBoxDefaultVisible([ elem ]);
       const diffX = attr === 'x' ? newValue - bbox.x : 0;
       const diffY = attr === 'y' ? newValue - bbox.y : 0;
       undoContext_.getCanvas().moveSelectedElements(diffX * currentZoom, diffY * currentZoom, true);
@@ -213,7 +213,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       if (isGecko() &&
         elem.nodeName === 'text' &&
         (/rotate/).test(elem.getAttribute('transform')) &&
-        (String(newValue).startsWith('url') || (['font-size', 'font-family', 'x', 'y'].includes(attr) && elem.textContent))) {
+        (String(newValue).startsWith('url') || ([ 'font-size', 'font-family', 'x', 'y' ].includes(attr) && elem.textContent))) {
         elem = ffClone(elem);
       }
       // Timeout needed for Opera & Firefox

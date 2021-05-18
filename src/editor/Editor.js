@@ -40,14 +40,6 @@ class Editor extends EditorStartup {
   constructor() {
     super();
     /**
-    * @type {Float}
-    */
-    this.tool_scale = 1;
-    /**
-    * @type {Integer}
-    */
-    this.exportWindowCt = 0;
-    /**
     * @type {boolean}
     */
     this.langChanged = false;
@@ -60,7 +52,6 @@ class Editor extends EditorStartup {
      * @type {"ignore"|"waiting"|"closed"}
     */
     this.storagePromptState = 'ignore';
-    
     this.svgCanvas = null;
     this.isReady = false;
     this.customExportImage = false;
@@ -75,44 +66,43 @@ class Editor extends EditorStartup {
     this.configObj.preferences = false;
     this.canvMenu = null;
     // eslint-disable-next-line max-len
-    this.goodLangs = ['ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW'];
+    this.goodLangs = [ 'ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW' ];
     const modKey = (isMac() ? 'meta+' : 'ctrl+');
-    const curObj = this;
-    this.toolButtons = [
+    this.shortcuts = [
       // Shortcuts not associated with buttons
-      { key: 'ctrl+arrowleft', fn() { curObj.rotateSelected(0, 1); } },
-      { key: 'ctrl+arrowright', fn() { curObj.rotateSelected(1, 1); } },
-      { key: 'ctrl+shift+arrowleft', fn() { curObj.rotateSelected(0, 5); } },
-      { key: 'ctrl+shift+arrowright', fn() { curObj.rotateSelected(1, 5); } },
-      { key: 'shift+o', fn() { curObj.svgCanvas.cycleElement(0); } },
-      { key: 'shift+p', fn() { curObj.svgCanvas.cycleElement(1); } },
-      { key: 'tab', fn() { curObj.svgCanvas.cycleElement(0); } },
-      { key: 'shift+tab', fn() { curObj.svgCanvas.cycleElement(1); } },
-      { key: [modKey + 'arrowup', true], fn() { curObj.zoomImage(2); } },
-      { key: [modKey + 'arrowdown', true], fn() { curObj.zoomImage(0.5); } },
-      { key: [modKey + ']', true], fn() { curObj.moveUpDownSelected('Up'); } },
-      { key: [modKey + '[', true], fn() { curObj.moveUpDownSelected('Down'); } },
-      { key: ['arrowup', true], fn() { curObj.moveSelected(0, -1); } },
-      { key: ['arrowdown', true], fn() { curObj.moveSelected(0, 1); } },
-      { key: ['arrowleft', true], fn() { curObj.moveSelected(-1, 0); } },
-      { key: ['arrowright', true], fn() { curObj.moveSelected(1, 0); } },
-      { key: 'shift+arrowup', fn() { curObj.moveSelected(0, -10); } },
-      { key: 'shift+arrowdown', fn() { curObj.moveSelected(0, 10); } },
-      { key: 'shift+arrowleft', fn() { curObj.moveSelected(-10, 0); } },
-      { key: 'shift+arrowright', fn() { curObj.moveSelected(10, 0); } },
-      { key: ['alt+arrowup', true], fn() { curObj.svgCanvas.cloneSelectedElements(0, -1); } },
-      { key: ['alt+arrowdown', true], fn() { curObj.svgCanvas.cloneSelectedElements(0, 1); } },
-      { key: ['alt+arrowleft', true], fn() { curObj.svgCanvas.cloneSelectedElements(-1, 0); } },
-      { key: ['alt+arrowright', true], fn() { curObj.svgCanvas.cloneSelectedElements(1, 0); } },
-      { key: ['alt+shift+arrowup', true], fn() { curObj.svgCanvas.cloneSelectedElements(0, -10); } },
-      { key: ['alt+shift+arrowdown', true], fn() { curObj.svgCanvas.cloneSelectedElements(0, 10); } },
-      { key: ['alt+shift+arrowleft', true], fn() { curObj.svgCanvas.cloneSelectedElements(-10, 0); } },
-      { key: ['alt+shift+arrowright', true], fn() { curObj.svgCanvas.cloneSelectedElements(10, 0); } },
-      { key: 'a', fn() { curObj.svgCanvas.selectAllInCurrentLayer(); } },
-      { key: modKey + 'a', fn() { curObj.svgCanvas.selectAllInCurrentLayer(); } },
-      { key: modKey + 'x', fn() { curObj.cutSelected(); } },
-      { key: modKey + 'c', fn() { curObj.copySelected(); } },
-      { key: modKey + 'v', fn() { curObj.pasteInCenter(); } }
+      { key: 'ctrl+arrowleft', fn: () => { this.rotateSelected(0, 1); } },
+      { key: 'ctrl+arrowright', fn: () => { this.rotateSelected(1, 1); } },
+      { key: 'ctrl+shift+arrowleft', fn: () => { this.rotateSelected(0, 5); } },
+      { key: 'ctrl+shift+arrowright', fn: () => { this.rotateSelected(1, 5); } },
+      { key: 'shift+o', fn: () => { this.svgCanvas.cycleElement(0); } },
+      { key: 'shift+p', fn: () => { this.svgCanvas.cycleElement(1); } },
+      { key: 'tab', fn: () => { this.svgCanvas.cycleElement(0); } },
+      { key: 'shift+tab', fn: () => { this.svgCanvas.cycleElement(1); } },
+      { key: [ modKey + 'arrowup', true ], fn: () => { this.zoomImage(2); } },
+      { key: [ modKey + 'arrowdown', true ], fn: () => { this.zoomImage(0.5); } },
+      { key: [ modKey + ']', true ], fn: () => { this.moveUpDownSelected('Up'); } },
+      { key: [ modKey + '[', true ], fn: () => { this.moveUpDownSelected('Down'); } },
+      { key: [ 'arrowup', true ], fn: () => { this.moveSelected(0, -1); } },
+      { key: [ 'arrowdown', true ], fn: () => { this.moveSelected(0, 1); } },
+      { key: [ 'arrowleft', true ], fn: () => { this.moveSelected(-1, 0); } },
+      { key: [ 'arrowright', true ], fn: () => { this.moveSelected(1, 0); } },
+      { key: 'shift+arrowup', fn: () => { this.moveSelected(0, -10); } },
+      { key: 'shift+arrowdown', fn: () => { this.moveSelected(0, 10); } },
+      { key: 'shift+arrowleft', fn: () => { this.moveSelected(-10, 0); } },
+      { key: 'shift+arrowright', fn: () => { this.moveSelected(10, 0); } },
+      { key: [ 'alt+arrowup', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, -1); } },
+      { key: [ 'alt+arrowdown', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, 1); } },
+      { key: [ 'alt+arrowleft', true ], fn: () => { this.svgCanvas.cloneSelectedElements(-1, 0); } },
+      { key: [ 'alt+arrowright', true ], fn: () => { this.svgCanvas.cloneSelectedElements(1, 0); } },
+      { key: [ 'alt+shift+arrowup', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, -10); } },
+      { key: [ 'alt+shift+arrowdown', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, 10); } },
+      { key: [ 'alt+shift+arrowleft', true ], fn: () => { this.svgCanvas.cloneSelectedElements(-10, 0); } },
+      { key: [ 'alt+shift+arrowright', true ], fn: () => { this.svgCanvas.cloneSelectedElements(10, 0); } },
+      { key: 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer(); } },
+      { key: modKey + 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer(); } },
+      { key: modKey + 'x', fn: () => { this.cutSelected(); } },
+      { key: modKey + 'c', fn: () => { this.copySelected(); } },
+      { key: modKey + 'v', fn: () => { this.pasteInCenter(); } }
     ];
     this.leftPanel = new LeftPanel(this);
     this.bottomPanel = new BottomPanel(this);
@@ -228,18 +218,18 @@ class Editor extends EditorStartup {
   setAll() {
     const keyHandler = {}; // will contain the action for each pressed key
 
-    this.toolButtons.forEach((opts) => {
+    this.shortcuts.forEach((shortcut) => {
       // Bind function to shortcut key
-      if (opts.key) {
+      if (shortcut.key) {
         // Set shortcut based on options
-        let keyval = opts.key;
+        let keyval = shortcut.key;
         let pd = false;
-        if (Array.isArray(opts.key)) {
-          keyval = opts.key[0];
-          if (opts.key.length > 1) { pd = opts.key[1]; }
+        if (Array.isArray(shortcut.key)) {
+          keyval = shortcut.key[0];
+          if (shortcut.key.length > 1) { pd = shortcut.key[1]; }
         }
         keyval = String(keyval);
-        const { fn } = opts;
+        const { fn } = shortcut;
         keyval.split('/').forEach((key) => { keyHandler[key] = { fn, pd }; });
       }
       return true;
@@ -303,8 +293,8 @@ class Editor extends EditorStartup {
       '4/Shift+4': 'tools_rect',
       '5/Shift+5': 'tools_ellipse'
     };
-    Object.entries(keyAssocs).forEach(([keyval, sel]) => {
-      const parentsElements = this.getParents($id(sel), $id('main_menu'))
+    Object.entries(keyAssocs).forEach(([ keyval, sel ]) => {
+      const parentsElements = this.getParents($id(sel), $id('main_menu'));
       const menu = (parentsElements.length);
 
       $qa(sel).forEach((element) => {
@@ -318,7 +308,7 @@ class Editor extends EditorStartup {
             mod = modBits[0] + '+';
             key = modBits[1];
           }
-          keyStr += (i ? '/' : '') + mod + (this.uiStrings['key_' + key] || key);
+          keyStr += (i ? '/' : '') + mod + (this.i18next.t('key_' + key) || key);
         });
         if (menu) {
           this.lastChild.textContent = t + ' [' + keyStr + ']';
@@ -333,18 +323,9 @@ class Editor extends EditorStartup {
      * @returns {module:SVGthis.ToolButton}
      */
   getButtonData(sel) {
-    return Object.values(this.toolButtons).find((btn) => {
+    return Object.values(this.shortcuts).find((btn) => {
       return btn.sel === sel;
     });
-  }
-
-  /**
-  * Expose the `uiStrings`.
-  * @function module:SVGthis.canvas.getUIStrings
-  * @returns {module:SVGthis.uiStrings}
-  */
-  getUIStrings() {
-    return this.uiStrings;
   }
 
   /**
@@ -359,9 +340,9 @@ class Editor extends EditorStartup {
       const elements = document.getElementsByClassName("tool_button_current");
       Array.from(elements).forEach(function (element) {
         element.classList.add('tool_button_current');
-        element.classList.remove('tool_button')
+        element.classList.remove('tool_button');
       });
-      $id('tool_select').classList.add('tool_button_current')
+      $id('tool_select').classList.add('tool_button_current');
       $id('tool_select').classList.remove('tool_button');
       this.multiselected = false;
       if (elems.length) {
@@ -386,19 +367,19 @@ class Editor extends EditorStartup {
     this.exportWindow = window.open(blankPageObjectURL || '', exportWindowName); // A hack to get the window via JSON-able name without opening a new one
 
     if (!this.exportWindow || this.exportWindow.closed) {
-      seAlert(this.uiStrings.notification.popupWindowBlocked);
+      seAlert(this.i18next.t('notification.popupWindowBlocked'));
       return;
     }
 
     this.exportWindow.location.href = data.bloburl || data.datauri;
     const done = this.configObj.pref('export_notice_done');
     if (done !== 'all') {
-      let note = this.i18next.t('notification.saveFromBrowser', { type: data.type});
+      let note = this.i18next.t('notification.saveFromBrowser', { type: data.type });
 
       // Check if there are issues
       if (issues.length) {
         const pre = '\n \u2022 ';
-        note += ('\n\n' + this.uiStrings.notification.noteTheseIssues + pre + issues.join(pre));
+        note += ('\n\n' + this.i18next.t('notification..noteTheseIssues') + pre + issues.join(pre));
       }
 
       // Note that this will also prevent the notice even though new issues may appear later.
@@ -784,7 +765,7 @@ class Editor extends EditorStartup {
     const icon = (typeof iconId === 'string') ? img : iconId.cloneNode(true);
     if (!icon) {
       // Todo: Investigate why this still occurs in some cases
-      console.log('NOTE: Icon image missing: ' + iconId);
+      console.warn('NOTE: Icon image missing: ' + iconId);
       return;
     }
     // empty()
@@ -950,7 +931,7 @@ class Editor extends EditorStartup {
     };
 
     if (!this.svgCanvas.setSvgString(e.detail.value)) {
-      const ok = await seConfirm(this.uiStrings.notification.QerrorsRevertToSource);
+      const ok = await seConfirm(this.i18next.t('notification.QerrorsRevertToSource'));
       if (ok === false || ok === 'Cancel') {
         return;
       }
@@ -979,7 +960,7 @@ class Editor extends EditorStartup {
     if (editingsource) {
       const origSource = this.svgCanvas.getSvgString();
       if (origSource !== e.detail.value) {
-        const ok = seConfirm(this.uiStrings.notification.QignoreSourceChanges);
+        const ok = seConfirm(this.i18next.t('notification.QignoreSourceChanges'));
         if (ok) {
           this.hideSourceEditor();
         }
@@ -1009,7 +990,7 @@ class Editor extends EditorStartup {
     if (this.svgCanvas.undoMgr.getUndoStackSize() === 0) {
       return true;
     }
-    return await seConfirm(this.uiStrings.notification.QwantToOpen);
+    return await seConfirm(this.i18next.t('notification.QwantToOpen'));
   }
 
   /**
@@ -1061,13 +1042,12 @@ class Editor extends EditorStartup {
     const $editDialog = document.getElementById('se-edit-prefs');
     $editDialog.setAttribute('lang', lang);
     const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
-    const renameLayer = (oldLayerName === this.uiStrings.common.layer + ' 1');
+    const renameLayer = (oldLayerName === this.i18next.t('notification.common.layer') + ' 1');
 
-    // this.svgCanvas.setUiStrings(allStrings);
     this.setTitles();
 
     if (renameLayer) {
-      this.svgCanvas.renameCurrentLayer(this.uiStrings.common.layer + ' 1');
+      this.svgCanvas.renameCurrentLayer(this.i18next.t('notification.common.layer') + ' 1');
       this.layersPanel.populateLayers();
     }
 
@@ -1092,7 +1072,7 @@ class Editor extends EditorStartup {
         resolve(cb());
         return;
       }
-      this.callbacks.push([cb, resolve, reject]);
+      this.callbacks.push([ cb, resolve, reject ]);
     });
   }
 
@@ -1103,16 +1083,16 @@ class Editor extends EditorStartup {
 */
   async runCallbacks() {
     try {
-      await Promise.all(this.callbacks.map(([cb]) => {
+      await Promise.all(this.callbacks.map(([ cb ]) => {
         return cb();
       }));
     } catch (err) {
-      this.callbacks.forEach(([, , reject]) => {
+      this.callbacks.forEach(([ , , reject ]) => {
         reject();
       });
       throw err;
     }
-    this.callbacks.forEach(([, resolve]) => {
+    this.callbacks.forEach(([ , resolve ]) => {
       resolve();
     });
     this.isReady = true;
@@ -1160,7 +1140,7 @@ class Editor extends EditorStartup {
           dataType: 'text',
           cache: Boolean(cache),
           beforeSend() {
-            $.process_cancel(this.uiStrings.notification.loadingImage);
+            $.process_cancel(this.i18next.t('notification.loadingImage'));
           },
           success(str) {
             this.loadSvgString(str, { noAlert });
@@ -1174,7 +1154,7 @@ class Editor extends EditorStartup {
               reject(new Error('URLLoadFail'));
               return;
             }
-            seAlert(this.uiStrings.notification.URLLoadFail + ': \n' + err);
+            seAlert(this.i18next.t('notification.URLLoadFail') + ': \n' + err);
             resolve();
           },
           complete() {
