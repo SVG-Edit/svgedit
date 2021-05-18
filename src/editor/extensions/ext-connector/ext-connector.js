@@ -359,10 +359,11 @@ export default {
       newUI: true,
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
+        const btitle = svgEditor.i18next.t(`${name}:langListTitle`);
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
-        <se-button id="mode_connect" title="${svgEditor.i18next.t(`${name}:langListTitle`)}" src="./images/conn.svg"></se-button>
+        <se-button id="mode_connect" title="${btitle}" src="./images/conn.svg"></se-button>
         `;
         $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('mode_connect').addEventListener("click", () => {

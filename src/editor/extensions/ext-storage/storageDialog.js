@@ -2,6 +2,14 @@
 /* globals i18next */
 
 const template = document.createElement('template');
+const notification = i18next.t('notification.editorPreferencesMsg');
+const prefs_and_content = i18next.t('properties.prefs_and_content');
+const prefs_only = i18next.t('properties.prefs_only');
+const no_prefs_or_content = i18next.t('properties.no_prefs_or_content');
+const remember_this_choice = i18next.t('tools.remember_this_choice');
+const remember_this_choice_title = i18next.t('notification.remember_this_choice_title');
+const ok = i18next.t('common.ok');
+const cancel = i18next.t('common.cancel');
 template.innerHTML = `
   <style>
  
@@ -52,25 +60,25 @@ template.innerHTML = `
     <div id="dialog_container">
       <div id="dialog_content">
         <p>
-          ${i18next.t('notification.editorPreferencesMsg')} 
+          ${notification} 
         </p>
         <select id="se-storage-pref">
-          <option value="prefsAndContent">${i18next.t('properties.prefs_and_content')}</option>
-          <option value="prefsOnly">${i18next.t('properties.prefs_only')}</option>
-          <option value="noPrefsOrContent">${i18next.t('properties.no_prefs_or_content')}</option>
+          <option value="prefsAndContent">${prefs_and_content}</option>
+          <option value="prefsOnly">${prefs_only}</option>
+          <option value="noPrefsOrContent">${no_prefs_or_content}</option>
         </select> 
-        <label title="If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.">
-        ${i18next.t('tools.remember_this_choice')}<input type="checkbox" id="se-remember" value="" checked>
+        <label title="${remember_this_choice_title}">
+        ${remember_this_choice}<input type="checkbox" id="se-remember" value="" checked>
         </label>     
       </div>
       <div id="dialog_buttons">
         <button id="storage_ok">
           <img class="svg_icon" src="./images/ok.svg" alt="icon" width="16" height="16" />
-          ${i18next.t('common.ok')}
+          ${ok}
         </button>
         <button id="storage_cancel">
           <img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />
-          ${i18next.t('common.cancel')}
+          ${cancel}
         </button>
       </div>
     </div>

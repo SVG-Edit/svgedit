@@ -45,10 +45,11 @@ export default {
       newUI: true,
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
+        const btitle = svgEditor.i18next.t(`${name}:buttons.0.title`);
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
-        <se-button id="ext-panning" title="${svgEditor.i18next.t(`${name}:buttons.0.title`)}" src="./images/panning.svg"></se-button>
+        <se-button id="ext-panning" title="${btitle}" src="./images/panning.svg"></se-button>
         `;
         insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true));
         $id('ext-panning').addEventListener("click", () => {
