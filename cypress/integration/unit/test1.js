@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+/* eslint-disable max-len, no-console */
 import '../../../instrumented/editor/jquery.min.js';
 
 import SvgCanvas from '../../../instrumented/svgcanvas/svgcanvas.js';

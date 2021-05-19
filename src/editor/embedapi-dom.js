@@ -113,7 +113,7 @@ iframe.addEventListener('load', function () {
   try {
     doc = frame.contentDocument || frame.contentWindow.document;
   } catch (err) {
-    console.log('Blocked from accessing document', err);
+    console.error('Blocked from accessing document', err);
   }
   if (doc) {
     // Todo: Provide a way to get this to occur by `postMessage`

@@ -25,8 +25,10 @@ module.exports = {
     "max-len": [ "warn", { "code": 250 } ],
     /** @todo jsdoc should be made warn or error */
     "valid-jsdoc": "off",
-      /** @todo cognitive complexity should be much lower (25-50?) */
+    /** @todo cognitive complexity should be much lower (25-50?) */
     "sonarjs/cognitive-complexity": [ "warn", 200 ],
+    /** @todo no param reassign creates too many warnings but should be a warning */
+    "no-param-reassign": "off",
     "node/no-unsupported-features/es-syntax": 0,
     "no-unused-vars": [ "error", { "argsIgnorePattern": "^_" } ],
     "sonarjs/no-duplicate-string": 0,
@@ -39,7 +41,6 @@ module.exports = {
       "warn",
       { "allow": [ "warn", "error", "info", "table" ] }
     ],
-    "no-param-reassign": [ "warn", { "props": false } ],
     "arrow-parens": [ "error", "always" ],
   },
   overrides: [
@@ -74,6 +75,12 @@ module.exports = {
             checkProperties: true
           }
         ]
+      }
+    },
+    {
+      files: [ 'src/editor/locale/*.js' ],
+      rules: { // lang files may have long length
+        "max-len": "off",
       }
     }
   ]

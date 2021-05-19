@@ -89,7 +89,7 @@ export default {
         svgCanvas.clearSelection();
       } catch (e) {
         // Todo: Surface error to user
-        console.log(e);
+        console.error(e);
         return false;
       }
 

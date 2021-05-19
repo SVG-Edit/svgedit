@@ -822,7 +822,7 @@ export const convertToGroup = function (elem) {
       try {
         recalculateDimensions(n);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     });
 
@@ -841,7 +841,7 @@ export const convertToGroup = function (elem) {
 
     elementContext_.addCommandToHistory(batchCmd);
   } else {
-    console.log('Unexpected element to ungroup:', elem);
+    console.warn('Unexpected element to ungroup:', elem);
   }
 };
 

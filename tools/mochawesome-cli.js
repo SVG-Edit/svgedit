@@ -41,7 +41,7 @@ const runner = new Runner(
 );
 runner.stats = stats;
 
-console.log('Mocha results:');
+console.info('Mocha results:');
 
 // eslint-disable-next-line no-new -- Has side effects
 new MochaReporter(runner);
@@ -109,6 +109,6 @@ const lastRan = new Intl.DateTimeFormat('en-US', {
   hour: 'numeric', minute: 'numeric'
 }).format(endDate);
 
-console.log(
+console.info(
   `Tests finished: ${lastRan}`
 );

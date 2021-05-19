@@ -451,7 +451,7 @@ export class SelectorManager {
       sel = this.selectorMap[elem.id];
     if (sel && !sel.locked) {
       // TODO(codedread): Ensure this exists in this module.
-      console.log('WARNING! selector was released but was already unlocked');
+      console.warn('WARNING! selector was released but was already unlocked');
     }
     for (let i = 0; i < N; ++i) {
       if (this.selectors[i] && this.selectors[i] === sel) {

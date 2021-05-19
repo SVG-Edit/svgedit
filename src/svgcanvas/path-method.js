@@ -60,7 +60,7 @@ export const insertItemBeforeMethod = function (elem, newseg, index) {
     list.appendItem(arr[i]);
   }
 };
-
+/* eslint-disable max-len */
 /**
 * @function module:path.ptObjToArr
 * @todo See if this should just live in `replacePathSeg`
@@ -68,6 +68,7 @@ export const insertItemBeforeMethod = function (elem, newseg, index) {
 * @param {SVGPathSegMovetoAbs|SVGPathSegLinetoAbs|SVGPathSegCurvetoCubicAbs|SVGPathSegCurvetoQuadraticAbs|SVGPathSegArcAbs|SVGPathSegLinetoHorizontalAbs|SVGPathSegLinetoVerticalAbs|SVGPathSegCurvetoCubicSmoothAbs|SVGPathSegCurvetoQuadraticSmoothAbs} segItem
 * @returns {ArgumentsArray}
 */
+/* eslint-enable max-len */
 export const ptObjToArrMethod = function (type, segItem) {
   const segData = pathMethodsContext_.getSegData();
   const props = segData[type];

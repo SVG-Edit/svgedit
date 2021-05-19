@@ -781,7 +781,7 @@ class EditorStartup {
       this.svgCanvas.call('extensions_added');
     } catch (err) {
       // Todo: Report errors through the UI
-      console.log(err);
+      console.error(err);
     }
   }
 

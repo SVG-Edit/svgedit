@@ -151,7 +151,7 @@ const localeStrings = await importSetGlobalDefault(url, {
 });
 
 // Use `localeStrings`
-console.log(localeStrings);
+console.info(localeStrings);
 
 })();
 ```

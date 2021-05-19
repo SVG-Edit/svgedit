@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+/* eslint-disable max-len, no-console */
 import 'pathseg';
 import '../../../instrumented/editor/jquery.min.js';
 

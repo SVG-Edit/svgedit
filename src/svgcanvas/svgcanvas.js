@@ -849,7 +849,8 @@ class SvgCanvas {
     this.runExtension = function (name, action, vars) {
       return this.runExtensions(action, vars, false, (n) => n === name);
     };
-    /**
+/* eslint-disable max-len */
+/**
 * @todo Consider: Should this return an array by default, so extension results aren't overwritten?
 * @todo Would be easier to document if passing in object with key of action and vars as value; could then define an interface which tied both together
 * @function module:svgcanvas.SvgCanvas#runExtensions
@@ -859,6 +860,8 @@ class SvgCanvas {
 * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
 * @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
 */
+/* eslint-enable max-len */
+
     this.runExtensions = runExtensionsMethod;
 
     /**
@@ -1040,12 +1043,14 @@ class SvgCanvas {
  * @event module:svgcanvas.SvgCanvas#event:exportedPDF
  * @type {module:svgcanvas.PDFExportedResults}
  */
-    /**
+/* eslint-disable max-len */
+/**
  * Creating a cover-all class until {@link https://github.com/jsdoc3/jsdoc/issues/1545} may be supported.
  * `undefined` may be returned by {@link module:svgcanvas.SvgCanvas#event:extension_added} if the extension's `init` returns `undefined` It is also the type for the following events "zoomDone", "unsetnonce", "cleared", and "extensions_added".
  * @event module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
  * @type {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset|module:svgcanvas.SvgCanvas#event:pointsAdded|module:svgcanvas.SvgCanvas#event:extension_added|module:svgcanvas.SvgCanvas#event:extensions_added|module:svgcanvas.SvgCanvas#event:message|module:svgcanvas.SvgCanvas#event:transition|module:svgcanvas.SvgCanvas#event:zoomed|module:svgcanvas.SvgCanvas#event:updateCanvas|module:svgcanvas.SvgCanvas#event:saved|module:svgcanvas.SvgCanvas#event:exported|module:svgcanvas.SvgCanvas#event:exportedPDF|module:svgcanvas.SvgCanvas#event:setnonce|module:svgcanvas.SvgCanvas#event:unsetnonce|void}
  */
+/* eslint-enable max-len */
 
     /**
  * The promise return, if present, resolves to `undefined`
@@ -1060,7 +1065,7 @@ class SvgCanvas {
 * @listens module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
 * @returns {module:svgcanvas.EventHandlerReturn}
 */
-
+/* eslint-disable max-len */
     /**
 * Attaches a callback function to an event.
 * @function module:svgcanvas.SvgCanvas#bind
@@ -1068,6 +1073,7 @@ class SvgCanvas {
 * @param {module:svgcanvas.EventHandler} f - The callback function to bind to the event
 * @returns {module:svgcanvas.EventHandler} The previous event
 */
+/* eslint-enable max-len */
     canvas.bind = function (ev, f) {
       const old = events[ev];
       events[ev] = f;
@@ -1109,7 +1115,7 @@ class SvgCanvas {
  * @returns {void}
  */
     const logMatrix = function (m) {
-      console.log([ m.a, m.b, m.c, m.d, m.e, m.f ]);
+      console.info([ m.a, m.b, m.c, m.d, m.e, m.f ]);
     };
 
     // Root Current Transformation Matrix in user units

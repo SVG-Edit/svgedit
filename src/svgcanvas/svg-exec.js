@@ -482,7 +482,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     if (!preventUndo) svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [ svgContext_.getSVGContent() ]);
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return false;
   }
 
@@ -611,7 +611,7 @@ export const importSvgString = function (xmlString) {
     svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [ svgContext_.getSVGContent() ]);
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return null;
   }
 
