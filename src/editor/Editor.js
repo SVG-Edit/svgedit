@@ -110,6 +110,7 @@ class Editor extends EditorStartup {
     this.topPanel = new TopPanel(this);
     this.layersPanel = new LayersPanel(this);
     this.mainMenu = new MainMenu(this);
+    window.svgEditor = this;
   }
   /**
    *

@@ -68,7 +68,6 @@ class EditorStartup {
     const self = this;
     const { i18next } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
     this.i18next = i18next;
-    window.i18next = i18next;
     // allow to prepare the dom without display
     this.$svgEditor.style.visibility = 'hidden';
     try {

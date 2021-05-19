@@ -1,15 +1,15 @@
 /* eslint-disable max-len */
-/* globals i18next */
+/* globals svgEditor */
 
 const template = document.createElement('template');
-const notification = i18next.t('notification.editorPreferencesMsg');
-const prefs_and_content = i18next.t('properties.prefs_and_content');
-const prefs_only = i18next.t('properties.prefs_only');
-const no_prefs_or_content = i18next.t('properties.no_prefs_or_content');
-const remember_this_choice = i18next.t('tools.remember_this_choice');
-const remember_this_choice_title = i18next.t('tools.remember_this_choice_title');
-const ok = i18next.t('common.ok');
-const cancel = i18next.t('common.cancel');
+const notification = svgEditor.i18next.t('notification.editorPreferencesMsg');
+const prefs_and_content = svgEditor.i18next.t('properties.prefs_and_content');
+const prefs_only = svgEditor.i18next.t('properties.prefs_only');
+const no_prefs_or_content = svgEditor.i18next.t('properties.no_prefs_or_content');
+const remember_this_choice = svgEditor.i18next.t('tools.remember_this_choice');
+const remember_this_choice_title = svgEditor.i18next.t('tools.remember_this_choice_title');
+const ok = svgEditor.i18next.t('common.ok');
+const cancel = svgEditor.i18next.t('common.cancel');
 // eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
