@@ -86,7 +86,7 @@ class MainMenu {
     // Set image save option
     this.editor.configObj.pref("img_save", save);
     this.editor.updateCanvas();
-    this.editor.hideDocProperties();
+    this.hideDocProperties();
     return true;
   }
   /**
