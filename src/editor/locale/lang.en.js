@@ -26,7 +26,8 @@ export default {
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
-    group_identify_label: 'Group identification label'
+    group_identify_label: 'Group identification label',
+    export_type_label: 'Select an image type for export:',
   },
   properties: {
     id: 'Identify the element',
