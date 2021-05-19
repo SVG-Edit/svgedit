@@ -1,6 +1,8 @@
+/* globals svgEditor */
 import './se-elix/define/NumberSpinBox.js';
 
 const template = document.createElement('template');
+// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
  
@@ -56,8 +58,8 @@ template.innerHTML = `
     <div class="overlay"></div>
     <div id="dialog_container">
       <div id="dialog_content">
-        <p class="se-select"> 
-        Select an image type for export:
+        <p class="se-select">
+          ${svgEditor.i18next.t('ui.export_type_label')} 
         </p>
         <p class="se-select">
         <select id="se-storage-pref">
@@ -68,14 +70,14 @@ template.innerHTML = `
           <option value="PDF">PDF</option>
         </select> 
         </p>
-        <p id="se-quality">Quality:<elix-number-spin-box min="-1" max="101" step="5" value="100"></elix-number-spin-box></p>
+        <p id="se-quality">${svgEditor.i18next.t('ui.quality')}<elix-number-spin-box min="-1" max="101" step="5" value="100"></elix-number-spin-box></p>
       </div>
       <div id="dialog_buttons">
         <button id="export_ok">
-          Ok
+          ${svgEditor.i18next.t('common.ok')}
         </button>
         <button id="export_cancel">
-          Cancel
+          ${svgEditor.i18next.t('common.cancel')}
         </button>
       </div>
     </div>

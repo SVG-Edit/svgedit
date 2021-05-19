@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/* globals svgEditor */
 const palette = [
   // Todo: Make into configuration item?
   'none', '#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
@@ -14,6 +15,7 @@ const palette = [
 ];
 
 const template = document.createElement('template');
+// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   .square {
@@ -76,7 +78,7 @@ template.innerHTML = `
     }
   }   
   </style>
-  <div id="palette_holder" title="Click to change fill color, shift-click to change stroke color">
+  <div id="palette_holder" title="${svgEditor.i18next.t('ui.palette_info')}">
     <div id="js-se-palette">
     </div>
   </div>

@@ -27,15 +27,7 @@ export default {
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
     group_identify_label: 'Group identification label',
-    class: 'Element class',
-    serif: 'Serif',
-    sans_serif: 'Sans-serif',
-    cursive: 'Cursive',
-    fantasy: 'Fantasy',
-    monospace: 'Monospace',
-    courier: 'Courier',
-    helvetica: 'Helvetica',
-    times: 'times'
+    export_type_label: 'Select an image type for export:',
   },
   properties: {
     id: 'Идентификатор элемента',
@@ -83,7 +75,19 @@ export default {
     italic: 'Курсив',
     text_anchor_start: 'Align the text in start',
     text_anchor_middle: 'Align the text in middle',
-    text_anchor_end: 'Align the text in end'
+    text_anchor_end: 'Align the text in end',
+    class: 'Element class',
+    serif: 'Serif',
+    sans_serif: 'Sans-serif',
+    cursive: 'Cursive',
+    fantasy: 'Fantasy',
+    monospace: 'Monospace',
+    courier: 'Courier',
+    helvetica: 'Helvetica',
+    times: 'times',
+    prefs_and_content: 'Store preferences and SVG content locally',
+    prefs_only: 'Only store preferences locally',
+    no_prefs_or_content: 'Do not store my preferences or SVG content locally'
   },
   tools: {
     main_menu: 'Главное меню',
@@ -160,7 +164,9 @@ export default {
     move_back: 'На задний план',
     tool_unlink_use: 'Break link to reference element (make unique)',
     ellipse_circle_tool: 'Ellipse/Circle Tool',
-    square_rect_tool: 'Square/Rect Tool'
+    square_rect_tool: 'Square/Rect Tool',
+    remember_this_choice: 'Remember this choice?',
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
   },
   layers: {
     layer: 'Слой',
@@ -200,7 +206,8 @@ export default {
     grid: 'Сетка',
     snapping_onoff: 'Привязка вкл/выкл',
     snapping_stepsize: 'Шаг привязки:',
-    grid_color: 'Цвет сетки'
+    grid_color: 'Цвет сетки',
+    done: 'Done',
   },
   notification: {
     invalidAttrValGiven: 'Некорректное значение аргумента',
@@ -229,6 +236,8 @@ export default {
     exportNoBlur: 'Размытые элементы отображены как неразмытые',
     exportNoforeignObject: 'foreignObject elements will not appear',
     exportNoDashArray: 'Strokes will appear filled',
-    exportNoText: 'Текст может показываться не так как должен'
+    exportNoText: 'Текст может показываться не так как должен',
+    editorPreferencesMsg: 'By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.',
+    source_dialog_note: 'Copy the contents of this box into a text editor, then save the file with a .svg extension.'
   }
 };
