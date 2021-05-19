@@ -6,15 +6,32 @@
  * @copyright 2010 Christian Tzurcanu, 2010 Alexis Deveria
  *
  */
+const name = "shapes";
+
+const loadExtensionTranslation = async function (svgEditor) {
+  let translationModule;
+  const lang = svgEditor.configObj.pref('lang');
+  try {
+    // eslint-disable-next-line no-unsanitized/method
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
+    // eslint-disable-next-line no-unsanitized/method
+    translationModule = await import(`./locale/en.js`);
+  }
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
+};
 
 export default {
-  name: 'shapes',
-  init () {
+  name,
+  async init () {
     const svgEditor = this;
     const canv = svgEditor.svgCanvas;
     const { $id } = canv;
     const svgroot = canv.getRootElem();
     let lastBBox = {};
+    await loadExtensionTranslation(svgEditor);
 
     const modeId = 'shapelib';
     const startClientPos = {};
@@ -27,8 +44,9 @@ export default {
       callback () {
         if ($id('tool_shapelib') === null) {
           const buttonTemplate = document.createElement("template");
+          // eslint-disable-next-line no-unsanitized/property
           buttonTemplate.innerHTML = `
-          <se-explorerbutton id="tool_shapelib" title="Shape library" lib="./extensions/ext-shapes/shapelib/"
+          <se-explorerbutton id="tool_shapelib" title="${svgEditor.i18next.t(`${name}:buttons.0.title`)}" lib="./extensions/ext-shapes/shapelib/"
           src="./images/shapelib.svg"></se-explorerbutton>
           `;
           $id('tools_left').append(buttonTemplate.content.cloneNode(true));
