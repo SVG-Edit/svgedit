@@ -8,7 +8,7 @@
  *
  */
 
- const name = "polystar";
+const name = "polystar";
 
 const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;

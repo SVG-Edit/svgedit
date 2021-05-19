@@ -9,29 +9,46 @@
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
-  let translationModule;
-  try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
-  } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
-  }
-  return translationModule.default;
-};
+ const name = "imagelib";
+
+ const loadExtensionTranslation = async function (svgEditor) {
+   let translationModule;
+   const lang = svgEditor.configObj.pref('lang');
+   try {
+     // eslint-disable-next-line no-unsanitized/method
+     translationModule = await import(`./locale/${lang}.js`);
+   } catch (_error) {
+     // eslint-disable-next-line no-console
+     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
+     // eslint-disable-next-line no-unsanitized/method
+     translationModule = await import(`./locale/en.js`);
+   }
+   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
+ };
 
 export default {
-  name: 'imagelib',
+  name,
   async init({ decode64, dropXMLInternalSubset }) {
     const svgEditor = this;
     const { $id } = svgEditor.svgCanvas;
-    const imagelibStrings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    await loadExtensionTranslation(svgEditor);
 
     const { svgCanvas } = svgEditor;
 
-    const allowedImageLibOrigins = imagelibStrings.imgLibs.map(({ url }) => {
+    const imgLibs = [
+      {
+        name: svgEditor.i18next.t(`${name}:imgLibs_0_name`),
+        url: 'extensions/ext-imagelib/index.html',
+        description: svgEditor.i18next.t(`${name}:imgLibs_0_description`)
+      },
+      {
+        name: svgEditor.i18next.t(`${name}:imgLibs_1_name`),
+        url: 'https://ian.umces.edu/symbols/catalog/svgedit/album_chooser.php?svgedit=3',
+        description: svgEditor.i18next.t(`${name}:imgLibs_1_description`)
+      }
+    ];
+
+    const allowedImageLibOrigins = imgLibs.map(({ url }) => {
       try {
         return new URL(url).origin;
       } catch (err) {
@@ -391,7 +408,7 @@ export default {
         insertAfter($id('svg_editor'), div);
         browser = $id('imgbrowse');
 
-        const allLibs = imagelibStrings.select_lib;
+        const allLibs = svgEditor.i18next.t(`${name}:select_lib`);
 
         const divFrameWrap = document.createElement('div');
         divFrameWrap.id = 'lib_framewrap';
@@ -429,7 +446,7 @@ export default {
         const back = document.createElement('button');
         back.style.visibility = "hidden";
         // eslint-disable-next-line max-len
-        back.innerHTML = '<img class="svg_icon" src="./images/library.svg" alt="icon" width="16" height="16" />' + imagelibStrings.show_list;
+        back.innerHTML = '<img class="svg_icon" src="./images/library.svg" alt="icon" width="16" height="16" />' + svgEditor.i18next.t(`${name}:show_list`);
         leftBlock.appendChild(back);
         back.addEventListener('click', function () {
           frame.setAttribute('src', 'about:blank');
@@ -451,9 +468,9 @@ export default {
 
         const select = document.createElement('select');
         select.innerHTML = '<select><option value=s>' +
-          imagelibStrings.import_single + '</option><option value=m>' +
-          imagelibStrings.import_multi + '</option><option value=o>' +
-          imagelibStrings.open + '</option>';
+          svgEditor.i18next.t(`${name}:import_single`) + '</option><option value=m>' +
+          svgEditor.i18next.t(`${name}:import_multi`) + '</option><option value=o>' +
+          svgEditor.i18next.t(`${name}:open`) + '</option>';
         leftBlock.appendChild(select);
         select.addEventListener('change', function () {
           mode = this.value;
@@ -471,7 +488,7 @@ export default {
         });
         select.setAttribute('style', `margin-top: 10px;`);
 
-        imagelibStrings.imgLibs.forEach(function ({ name, url, description }) {
+        imgLibs.forEach(function ({ name, url, description }) {
           const li = document.createElement('li');
           libOpts.appendChild(li);
           li.textContent = name;

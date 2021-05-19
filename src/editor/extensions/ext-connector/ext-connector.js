@@ -7,21 +7,25 @@
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
+const name = "connector";
+
+const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
+  const lang = svgEditor.configObj.pref('lang');
   try {
     // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
+    translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
-  return translationModule.default;
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
 };
 
 export default {
-  name: 'connector',
+  name,
   async init(S) {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
@@ -29,6 +33,7 @@ export default {
     const { $, svgroot } = S,
       addElem = svgCanvas.addSVGElementFromJson,
       selManager = S.selectorManager;
+    await loadExtensionTranslation(svgEditor);
 
     let startX;
     let startY;
@@ -349,16 +354,17 @@ export default {
       });
     };
 
-    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     return {
       /** @todo JFH special flag */
       newUI: true,
-      name: strings.name,
+      name: svgEditor.i18next.t(`${name}:name`),
       callback() {
+        const btitle = svgEditor.i18next.t(`${name}:langListTitle`);
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
+        // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-        <se-button id="mode_connect" title="Connect two objects" src="./images/conn.svg"></se-button>
+        <se-button id="mode_connect" title="${btitle}" src="./images/conn.svg"></se-button>
         `;
         $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('mode_connect').addEventListener("click", () => {
@@ -367,7 +373,9 @@ export default {
       },
       /* async */ addLangData({ _lang }) { // , importLocale: importLoc
         return {
-          data: strings.langList
+          data: [
+            { id: 'mode_connect', title: svgEditor.i18next.t(`${name}:langListTitle`) }
+          ]
         };
       },
       mouseDown(opts) {
