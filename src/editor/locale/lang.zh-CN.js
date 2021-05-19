@@ -26,7 +26,8 @@ export default {
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
-    group_identify_label: 'Group identification label'
+    group_identify_label: 'Group identification label',
+    export_type_label: 'Select an image type for export:',
   },
   properties: {
     id: '元素ID',
@@ -83,7 +84,10 @@ export default {
     monospace: 'Monospace',
     courier: 'Courier',
     helvetica: 'Helvetica',
-    times: 'times'
+    times: 'times',
+    prefs_and_content: 'Store preferences and SVG content locally',
+    prefs_only: 'Only store preferences locally',
+    no_prefs_or_content: 'Do not store my preferences or SVG content locally'
   },
   tools: {
     main_menu: '主菜单',
@@ -160,7 +164,9 @@ export default {
     move_back: '移至底部',
     tool_unlink_use: 'Break link to reference element (make unique)',
     ellipse_circle_tool: 'Ellipse/Circle Tool',
-    square_rect_tool: 'Square/Rect Tool'
+    square_rect_tool: 'Square/Rect Tool',
+    remember_this_choice: 'Remember this choice?',
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
   },
   layers: {
     layer: '图层',
@@ -200,7 +206,8 @@ export default {
     grid: '网格',
     snapping_onoff: '吸附开/关',
     snapping_stepsize: '吸附步长:',
-    grid_color: '网格颜色'
+    grid_color: '网格颜色',
+    done: 'Done',
   },
   notification: {
     invalidAttrValGiven: '无效的参数',
@@ -229,6 +236,8 @@ export default {
     exportNoBlur: 'Blurred elements will appear as un-blurred',
     exportNoforeignObject: 'foreignObject elements will not appear',
     exportNoDashArray: 'Strokes will appear filled',
-    exportNoText: 'Text may not appear as expected'
+    exportNoText: 'Text may not appear as expected',
+    editorPreferencesMsg: 'By default and where supported, SVG-Edit can store your editor preferences and SVG content locally on your machine so you do not need to add these back each time you load SVG-Edit. If, for privacy reasons, you do not wish to store this information on your machine, you can change away from the default option below.',
+    source_dialog_note: 'Copy the contents of this box into a text editor, then save the file with a .svg extension.'
   }
 };
