@@ -1,6 +1,6 @@
-
-
+/* globals svgEditor */
 const template = document.createElement('template');
+// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   :not(:defined) {
@@ -150,16 +150,16 @@ template.innerHTML = `
     <div id="svg_prefs_container">
       <div id="tool_prefs_back" class="toolbar_button">
         <button id="tool_prefs_save">
-          OK
+          ${svgEditor.i18next.t('common.ok')}
         </button>
         <button id="tool_prefs_cancel">
-          Cancel
+          ${svgEditor.i18next.t('common.cancel')}
         </button>
       </div>
       <fieldset>
-        <legend id="svginfo_editor_prefs">Editor Preferences</legend>
+        <legend id="svginfo_editor_prefs">${svgEditor.i18next.t('config.editor_prefs')}</legend>
         <label>
-          <span id="svginfo_lang">Language:</span>
+          <span id="svginfo_lang">${svgEditor.i18next.t('config.language')}</span>
           <!-- Source: https://en.wikipedia.org/wiki/Language_names -->
           <select id="lang_select">
             <option id="lang_ar" value="ar">العربية</option>
@@ -185,46 +185,46 @@ template.innerHTML = `
           </select>
         </label>
         <label>
-          <span id="svginfo_icons">Icon size:</span>
+          <span id="svginfo_icons">${svgEditor.i18next.t('config.icon_size')}</span>
           <select id="iconsize">
-            <option id="icon_small" value="s">Small</option>
-            <option id="icon_medium" value="m" selected="selected">Medium</option>
-            <option id="icon_large" value="l">Large</option>
-            <option id="icon_xlarge" value="xl">Extra Large</option>
+            <option id="icon_small" value="s">${svgEditor.i18next.t('config.icon_small')}</option>
+            <option id="icon_medium" value="m" selected="selected">${svgEditor.i18next.t('config.icon_medium')}</option>
+            <option id="icon_large" value="l">${svgEditor.i18next.t('config.icon_large')}</option>
+            <option id="icon_xlarge" value="xl">${svgEditor.i18next.t('config.icon_xlarge')}</option>
           </select>
         </label>
         <fieldset id="change_background">
-          <legend id="svginfo_change_background">Editor Background</legend>
+          <legend id="svginfo_change_background">${svgEditor.i18next.t('config.background')}</legend>
           <div id="bg_blocks"></div>
           <label>
-            <span id="svginfo_bg_url">URL:</span>
+            <span id="svginfo_bg_url">${svgEditor.i18next.t('common.url')}</span>
             <input type="text" id="canvas_bg_url" />
           </label>
-          <p id="svginfo_bg_note">Note: Background will not be saved with image.</p>
+          <p id="svginfo_bg_note">${svgEditor.i18next.t('config.editor_bg_note')}</p>
         </fieldset>
         <fieldset id="change_grid">
-          <legend id="svginfo_grid_settings">Grid</legend>
+          <legend id="svginfo_grid_settings">${svgEditor.i18next.t('config.grid')}</legend>
           <label for="svginfo_snap_onoff">
-            <span id="svginfo_snap_onoff">Snapping on/off</span>
+            <span id="svginfo_snap_onoff">${svgEditor.i18next.t('config.snapping_onoff')}</span>
             <input type="checkbox" value="snapping_on" id="grid_snapping_on" />
           </label>
           <label for="grid_snapping_step">
-            <span id="svginfo_snap_step">Snapping Step-Size:</span>
+            <span id="svginfo_snap_step">${svgEditor.i18next.t('config.snapping_stepsize')}</span>
             <input type="text" id="grid_snapping_step" size="3" value="10" />
           </label>
           <label>
-            <span id="svginfo_grid_color">Grid color:</span>
+            <span id="svginfo_grid_color">${svgEditor.i18next.t('config.grid_color')}</span>
             <input type="text" id="grid_color" size="3" value="#000" />
           </label>
         </fieldset>
         <fieldset id="units_rulers">
-          <legend id="svginfo_units_rulers">Units &amp; Rulers</legend>
+          <legend id="svginfo_units_rulers">${svgEditor.i18next.t('config.units_and_rulers')}</legend>
           <label>
-            <span id="svginfo_rulers_onoff">Show rulers</span>
+            <span id="svginfo_rulers_onoff">${svgEditor.i18next.t('config.show_rulers')}</span>
             <input id="show_rulers" type="checkbox" value="show_rulers" checked="checked" />
           </label>
           <label>
-            <span id="svginfo_unit">Base Unit:</span>
+            <span id="svginfo_unit">${svgEditor.i18next.t('config.base_unit')}</span>
             <select id="base_unit">
               <option value="px">Pixels</option>
               <option value="cm">Centimeters</option>

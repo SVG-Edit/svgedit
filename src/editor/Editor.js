@@ -111,6 +111,16 @@ class Editor extends EditorStartup {
     this.layersPanel = new LayersPanel(this);
     this.mainMenu = new MainMenu(this);
     window.svgEditor = this;
+    this.loadComponentAndDialog();
+  }
+  /**
+  * @returns {void}
+  */
+  async loadComponentAndDialog() {
+    // eslint-disable-next-line no-unsanitized/method
+    // await import(`./components/index.js`);
+    // eslint-disable-next-line no-unsanitized/method
+    await import(`./dialogs/index.js`);
   }
   /**
    *
