@@ -5,7 +5,6 @@ For default config and extensions (and available options) available to
 */
 
 import './jquery.min.js';
-import './components/index.js';
 import Editor from './Editor.js';
 
 const svgEditor = new Editor();
