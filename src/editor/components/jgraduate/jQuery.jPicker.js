@@ -1591,7 +1591,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
       }
     }
   }
-  const { images, localization } = settings; // local copies for YUI compressor
+  const { images } = settings; // local copies for YUI compressor
   const color = {
     active: (typeof settings.color.active).toString().toLowerCase() === 'string'
       ? new Color({ ahex: !settings.window.alphaSupport && settings.color.active

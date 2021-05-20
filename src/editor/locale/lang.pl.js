@@ -249,7 +249,7 @@ export default {
     jgraduate_enter_ending_y: 'Enter ending y value between 0.0 and 1.0',
     jgraduate_center_point: 'Center Point',
     jgraduate_enter_value_x: 'Enter x value between 0.0 and 1.0',
-    jgraduate_enter_value_x: 'Enter y value between 0.0 and 1.0',
+    jgraduate_enter_value_y: 'Enter y value between 0.0 and 1.0',
     jgraduate_focal_point: 'Focal Point',
     jgraduate_match_center: 'Match center:',
     jgraduate_enter_focal_x: 'Enter x value between 0.0 and 1.0',
