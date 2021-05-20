@@ -208,6 +208,8 @@ export default {
     snapping_stepsize: 'Snapping Step-Size:',
     grid_color: 'Grid color:',
     done: "Done",
+    change_xxx_color: 'Change xxx color',
+    pick_paint_opavity: 'Pick a {{newValue}} Paint and Opacity'
   },
   notification: {
     invalidAttrValGiven: 'Invalid value given',
