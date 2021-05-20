@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-/* globals svgEditor */
+/* gl#bals svgEditor */
 const palette = [
   // Todo: Make into configuration item?
   'none', '#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
@@ -78,7 +78,8 @@ template.innerHTML = `
     }
   }   
   </style>
-  <div id="palette_holder" title="${svgEditor.i18next.t('ui.palette_info')}">
+  <div id="palette_holder" title="$
+  #{svgEditor.i18next.t('ui.palette_info')}">
     <div id="js-se-palette">
     </div>
   </div>

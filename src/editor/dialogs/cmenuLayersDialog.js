@@ -1,4 +1,4 @@
-/* globals svgEditor */
+/* gl#bals svgEditor */
 const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
@@ -66,10 +66,10 @@ template.innerHTML = `
   }  
   </style>
   <ul id="cmenu_layers" class="contextMenu">
-    <li><a href="#dupe" id="se-dupe">${svgEditor.i18next.t('layers.dupe')}</a></li>
-    <li><a href="#delete" id="se-layer-delete">${svgEditor.i18next.t('layers.del')}</a></li>
-    <li><a href="#merge_down" id="se-merge-down">${svgEditor.i18next.t('layers.merge_down')}</a></li>
-    <li><a href="#merge_all" id="se-merge-all">${svgEditor.i18next.t('layers.merge_all')}</a></li>
+    <li><a href="#dupe" id="se-dupe">#{svgEditor.i18next.t('layers.dupe')}</a></li>
+    <li><a href="#delete" id="se-layer-delete">#{svgEditor.i18next.t('layers.del')}</a></li>
+    <li><a href="#merge_down" id="se-merge-down">#{svgEditor.i18next.t('layers.merge_down')}</a></li>
+    <li><a href="#merge_all" id="se-merge-all">#{svgEditor.i18next.t('layers.merge_all')}</a></li>
   </ul>
 `;
 /**

@@ -1,4 +1,4 @@
-/* globals svgEditor */
+/* gl#bals svgEditor */
 const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
@@ -68,53 +68,53 @@ template.innerHTML = `
   <ul id="cmenu_canvas" class="contextMenu">
     <li>
       <a href="#cut" id="se-cut">
-      ${svgEditor.i18next.t('tools.cut')}<span class="shortcut">META+X</span>
+      #{svgEditor.i18next.t('tools.cut')}<span class="shortcut">META+X</span>
       </a>
     </li>
     <li>
       <a href="#copy" id="se-copy">
-      ${svgEditor.i18next.t('tools.copy')}<span class="shortcut">META+C</span>
+      #{svgEditor.i18next.t('tools.copy')}<span class="shortcut">META+C</span>
       </a>
     </li>
     <li>
-      <a href="#paste" id="se-paste">${svgEditor.i18next.t('tools.paste')}</a>
+      <a href="#paste" id="se-paste">#{svgEditor.i18next.t('tools.paste')}</a>
     </li>
     <li>
-      <a href="#paste_in_place" id="se-paste-in-place">${svgEditor.i18next.t('tools.paste_in_place')}</a>
+      <a href="#paste_in_place" id="se-paste-in-place">#{svgEditor.i18next.t('tools.paste_in_place')}</a>
     </li>
     <li class="separator">
       <a href="#delete" id="se-delete">
-      ${svgEditor.i18next.t('tools.delete')}<span class="shortcut">BACKSPACE</span>
+      #{svgEditor.i18next.t('tools.delete')}<span class="shortcut">BACKSPACE</span>
       </a>
     </li>
     <li class="separator">
       <a href="#group" id="se-group">
-      ${svgEditor.i18next.t('tools.group')}<span class="shortcut">G</span>
+      #{svgEditor.i18next.t('tools.group')}<span class="shortcut">G</span>
       </a>
     </li>
     <li>
       <a href="#ungroup" id="se-ungroup">
-      ${svgEditor.i18next.t('tools.ungroup')}<span class="shortcut">G</span>
+      #{svgEditor.i18next.t('tools.ungroup')}<span class="shortcut">G</span>
       </a>
     </li>
     <li class="separator">
       <a href="#move_front" id="se-move-front">
-      ${svgEditor.i18next.t('tools.move_front')}<span class="shortcut">CTRL+SHFT+]</span>
+      #{svgEditor.i18next.t('tools.move_front')}<span class="shortcut">CTRL+SHFT+]</span>
       </a>
     </li>
     <li>
       <a href="#move_up" id="se-move-up">
-      ${svgEditor.i18next.t('tools.move_up')}<span class="shortcut">CTRL+]</span>
+      #{svgEditor.i18next.t('tools.move_up')}<span class="shortcut">CTRL+]</span>
       </a>
     </li>
     <li>
       <a href="#move_down" id="se-move-down">
-      ${svgEditor.i18next.t('tools.move_down')}<span class="shortcut">CTRL+[</span>
+      #{svgEditor.i18next.t('tools.move_down')}<span class="shortcut">CTRL+[</span>
       </a>
     </li>
     <li>
       <a href="#move_back" id="se-move-back">
-      ${svgEditor.i18next.t('tools.move_back')}<span class="shortcut">CTRL+SHFT+[</span>
+      #{svgEditor.i18next.t('tools.move_back')}<span class="shortcut">CTRL+SHFT+[</span>
       </a>
     </li> 
   </ul>
