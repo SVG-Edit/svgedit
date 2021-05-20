@@ -4,6 +4,7 @@ import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
 
 const template = document.createElement('template');
+// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   .jPicker .Icon {
