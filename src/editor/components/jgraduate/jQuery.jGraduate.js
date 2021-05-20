@@ -1,6 +1,7 @@
 /* eslint-disable no-loop-func */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-unsanitized/property */
+/* globals svgEditor */
 /**
  * @file jGraduate 0.4
  *
@@ -234,109 +235,110 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback) {
     $this.paint = new jGraduate.Paint({ solidColor: 'ffffff' });
   }
   $this.classList.add('jGraduate_Picker');
-  /* eslint-disable max-len */
-  $this.innerHTML = '<ul class="jGraduate_tabs">' +
-      '<li class="jGraduate_tab_color jGraduate_tab_current" id="jGraduate_tab_color" data-type="col">Solid Color</li>' +
-      '<li class="jGraduate_tab_lingrad" id="jGraduate_tab_lingrad" data-type="lg">Linear Gradient</li>' +
-      '<li class="jGraduate_tab_radgrad" id="jGraduate_tab_radgrad" data-type="rg">Radial Gradient</li>' +
-    '</ul>' +
-    '<div class="jGraduate_colPick" id="jGraduate_colPick"></div>' +
-    '<div class="jGraduate_gradPick" id="jGraduate_gradPick"></div>' +
-    '<div class="jGraduate_LightBox" id="jGraduate_LightBox"></div>' +
-    '<div id="' + id + '_jGraduate_stopPicker" class="jGraduate_stopPicker"></div>';
+  // eslint-disable-next-line no-unsanitized/property
+  $this.innerHTML = `<ul class="jGraduate_tabs">
+      <li class="jGraduate_tab_color jGraduate_tab_current" id="jGraduate_tab_color" data-type="col">${svgEditor.i18next.t('config.jgraduate_solid_color')}</li>
+      <li class="jGraduate_tab_lingrad" id="jGraduate_tab_lingrad" data-type="lg">${svgEditor.i18next.t('config.jgraduate_linear_gradient')}</li>
+      <li class="jGraduate_tab_radgrad" id="jGraduate_tab_radgrad" data-type="rg">${svgEditor.i18next.t('config.jgraduate_radial_gradient')}</li>
+    </ul>
+    <div class="jGraduate_colPick" id="jGraduate_colPick"></div>
+    <div class="jGraduate_gradPick" id="jGraduate_gradPick"></div>
+    <div class="jGraduate_LightBox" id="jGraduate_LightBox"></div>
+    <div id="${id}_jGraduate_stopPicker" class="jGraduate_stopPicker"></div>`;
   /* JFH !!!! */
   const colPicker = $this.querySelector('#jGraduate_colPick');
   const gradPicker = $this.querySelector('#jGraduate_gradPick');
-  const html = '<div id="' + id + '_jGraduate_Swatch" class="jGraduate_Swatch">' +
-        '<h2 class="jGraduate_Title">' + $settings.window.pickerTitle + '</h2>' +
-        '<div id="' + id + '_jGraduate_GradContainer" class="jGraduate_GradContainer"></div>' +
-        '<div id="' + id + '_jGraduate_StopSlider" class="jGraduate_StopSlider"></div>' +
-      '</div>' +
-      '<div class="jGraduate_Form jGraduate_Points jGraduate_lg_field">' +
-        '<div class="jGraduate_StopSection">' +
-          '<label class="jGraduate_Form_Heading">Begin Point</label>' +
-          '<div class="jGraduate_Form_Section">' +
-            '<label>x:</label>' +
-            '<input type="text" id="' + id + '_jGraduate_x1" size="3" title="Enter starting x value between 0.0 and 1.0"/>' +
-            '<label>y:</label>' +
-            '<input type="text" id="' + id + '_jGraduate_y1" size="3" title="Enter starting y value between 0.0 and 1.0"/>' +
-          '</div>' +
-        '</div>' +
-        '<div class="jGraduate_StopSection">' +
-          '<label class="jGraduate_Form_Heading">End Point</label>' +
-          '<div class="jGraduate_Form_Section">' +
-            '<label>x:</label>' +
-            '<input type="text" id="' + id + '_jGraduate_x2" size="3" title="Enter ending x value between 0.0 and 1.0"/>' +
-            '<label>y:</label>' +
-            '<input type="text" id="' + id + '_jGraduate_y2" size="3" title="Enter ending y value between 0.0 and 1.0"/>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="jGraduate_Form jGraduate_Points jGraduate_rg_field">' +
-        '<div class="jGraduate_StopSection">' +
-          '<label class="jGraduate_Form_Heading">Center Point</label>' +
-          '<div class="jGraduate_Form_Section">' +
-            '<label>x:</label>' +
-            '<input type="text" id="' + id + '_jGraduate_cx" size="3" title="Enter x value between 0.0 and 1.0"/>' +
-            '<label>y:</label>' +
-            '<input type="text" id="' + id + '_jGraduate_cy" size="3" title="Enter y value between 0.0 and 1.0"/>' +
-          '</div>' +
-        '</div>' +
-        '<div class="jGraduate_StopSection">' +
-          '<label class="jGraduate_Form_Heading">Focal Point</label>' +
-          '<div class="jGraduate_Form_Section">' +
-            '<label>Match center: <input type="checkbox" checked="checked" id="' + id + '_jGraduate_match_ctr"/></label><br/>' +
-            '<label>x:</label>' +
-            '<input type="text" id="' + id + '_jGraduate_fx" size="3" title="Enter x value between 0.0 and 1.0"/>' +
-            '<label>y:</label>' +
-            '<input type="text" id="' + id + '_jGraduate_fy" size="3" title="Enter y value between 0.0 and 1.0"/>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="jGraduate_StopSection jGraduate_SpreadMethod">' +
-        '<label class="jGraduate_Form_Heading">Spread method</label>' +
-        '<div class="jGraduate_Form_Section">' +
-          '<select class="jGraduate_spreadMethod" id="jGraduate_spreadMethod">' +
-            '<option value=pad selected>Pad</option>' +
-            '<option value=reflect>Reflect</option>' +
-            '<option value=repeat>Repeat</option>' +
-          '</select>' +
-        '</div>' +
-      '</div>' +
-      '<div class="jGraduate_Form">' +
-        '<div class="jGraduate_Slider jGraduate_RadiusField jGraduate_rg_field">' +
-          '<label class="prelabel">Radius:</label>' +
-          '<div id="' + id + '_jGraduate_Radius" class="jGraduate_SliderBar jGraduate_Radius" title="Click to set radius">' +
-            '<img id="' + id + '_jGraduate_RadiusArrows" class="jGraduate_RadiusArrows" src="' + $settings.images.clientPath + 'rangearrows2.gif">' +
-          '</div>' +
-          '<label><input type="text" id="' + id + '_jGraduate_RadiusInput" size="3" value="100"/>%</label>' +
-        '</div>' +
-        '<div class="jGraduate_Slider jGraduate_EllipField jGraduate_rg_field">' +
-          '<label class="prelabel">Ellip:</label>' +
-          '<div id="' + id + '_jGraduate_Ellip" class="jGraduate_SliderBar jGraduate_Ellip" title="Click to set Ellip">' +
-            '<img id="' + id + '_jGraduate_EllipArrows" class="jGraduate_EllipArrows" src="' + $settings.images.clientPath + 'rangearrows2.gif">' +
-          '</div>' +
-          '<label><input type="text" id="' + id + '_jGraduate_EllipInput" size="3" value="0"/>%</label>' +
-        '</div>' +
-        '<div class="jGraduate_Slider jGraduate_AngleField jGraduate_rg_field">' +
-          '<label class="prelabel">Angle:</label>' +
-          '<div id="' + id + '_jGraduate_Angle" class="jGraduate_SliderBar jGraduate_Angle" title="Click to set Angle">' +
-            '<img id="' + id + '_jGraduate_AngleArrows" class="jGraduate_AngleArrows" src="' + $settings.images.clientPath + 'rangearrows2.gif">' +
-          '</div>' +
-          '<label><input type="text" id="' + id + '_jGraduate_AngleInput" size="3" value="0"/>deg</label>' +
-        '</div>' +
-        '<div class="jGraduate_Slider jGraduate_OpacField">' +
-          '<label class="prelabel">Opac:</label>' +
-          '<div id="' + id + '_jGraduate_Opac" class="jGraduate_SliderBar jGraduate_Opac" title="Click to set Opac">' +
-            '<img id="' + id + '_jGraduate_OpacArrows" class="jGraduate_OpacArrows" src="' + $settings.images.clientPath + 'rangearrows2.gif">' +
-          '</div>' +
-          '<label><input type="text" id="' + id + '_jGraduate_OpacInput" size="3" value="100"/>%</label>' +
-        '</div>' +
-      '</div>' +
-      '<div class="jGraduate_OkCancel">' +
-        '<input type="button" id="' + id + '_jGraduate_Ok" class="jGraduate_Ok" value="OK"/>' +
-        '<input type="button" id="' + id + '_jGraduate_Cancel" class="jGraduate_Cancel" value="Cancel"/>' +
-      '</div>';
+  // eslint-disable-next-line no-unsanitized/property
+  const html = `<div id="${id}_jGraduate_Swatch" class="jGraduate_Swatch">
+        <h2 class="jGraduate_Title">${$settings.window.pickerTitle}</h2>
+        <div id="${id}_jGraduate_GradContainer" class="jGraduate_GradContainer"></div>
+        <div id="${id}_jGraduate_StopSlider" class="jGraduate_StopSlider"></div>
+      </div>
+      <div class="jGraduate_Form jGraduate_Points jGraduate_lg_field">
+        <div class="jGraduate_StopSection">
+          <label class="jGraduate_Form_Heading">${svgEditor.i18next.t('config.jgraduate_begin_point')}</label>
+          <div class="jGraduate_Form_Section">
+            <label>x:</label>
+              <input type="text" id="${id}_jGraduate_x1" size="3" title="${svgEditor.i18next.t('config.jgraduate_enter_starting_x')}"/>
+            <label>y:</label>
+            <input type="text" id="${id}_jGraduate_y1" size="3" title="${svgEditor.i18next.t('config.jgraduate_enter_starting_y')}"/>
+          </div>
+        </div>
+        <div class="jGraduate_StopSection">
+          <label class="jGraduate_Form_Heading">${svgEditor.i18next.t('config.jgraduate_end_point')}</label>
+          <div class="jGraduate_Form_Section">
+            <label>x:</label>
+            <input type="text" id="${id}_jGraduate_x2" size="3" title="${svgEditor.i18next.t('config.jgraduate_enter_ending_x')}"/>
+            <label>y:</label>
+            <input type="text" id="${id}_jGraduate_y2" size="3" title="${svgEditor.i18next.t('config.jgraduate_enter_ending_y')}"/>
+          </div>
+        </div>
+      </div>
+      <div class="jGraduate_Form jGraduate_Points jGraduate_rg_field">
+        <div class="jGraduate_StopSection">
+          <label class="jGraduate_Form_Heading">${svgEditor.i18next.t('config.jgraduate_center_point')}</label>
+          <div class="jGraduate_Form_Section">
+            <label>x:</label>
+            <input type="text" id="${id}_jGraduate_cx" size="3" title="${svgEditor.i18next.t('config.jgraduate_enter_value_x')}"/>
+            <label>y:</label>
+            <input type="text" id="${id}_jGraduate_cy" size="3" title="${svgEditor.i18next.t('config.jgraduate_enter_value_y')}"/>
+          </div>
+        </div>
+        <div class="jGraduate_StopSection">
+          <label class="jGraduate_Form_Heading">${svgEditor.i18next.t('config.jgraduate_focal_point')}</label>
+          <div class="jGraduate_Form_Section">
+            <label>${svgEditor.i18next.t('config.jgraduate_match_center')} <input type="checkbox" checked="checked" id="${id}_jGraduate_match_ctr"/></label><br/>
+            <label>x:</label>
+            <input type="text" id="${id}_jGraduate_fx" size="3" title="${svgEditor.i18next.t('config.jgraduate_enter_focal_x')}"/>
+            <label>y:</label>
+            <input type="text" id="${id}_jGraduate_fy" size="3" title="${svgEditor.i18next.t('config.jgraduate_enter_focal_y')}"/>
+          </div>
+        </div>
+      </div>
+      <div class="jGraduate_StopSection jGraduate_SpreadMethod">
+        <label class="jGraduate_Form_Heading">${svgEditor.i18next.t('config.jgraduate_spread_method')}</label>
+        <div class="jGraduate_Form_Section">
+          <select class="jGraduate_spreadMethod" id="jGraduate_spreadMethod">
+            <option value=pad selected>${svgEditor.i18next.t('properties.jgraduate_pad')}</option>
+            <option value=reflect>${svgEditor.i18next.t('properties.jgraduate_reflect')}</option>
+            <option value=repeat>${svgEditor.i18next.t('properties.jgraduate_repeat')}</option>
+          </select>
+        </div>
+      </div>
+      <div class="jGraduate_Form">
+        <div class="jGraduate_Slider jGraduate_RadiusField jGraduate_rg_field">
+          <label class="prelabel">${svgEditor.i18next.t('config.jgraduate_radius')}</label>
+          <div id="${id}_jGraduate_Radius" class="jGraduate_SliderBar jGraduate_Radius" title="${svgEditor.i18next.t('config.jgraduate_set_radius')}">
+            <img id="${id}_jGraduate_RadiusArrows" class="jGraduate_RadiusArrows" src="${$settings.images.clientPath}rangearrows2.gif">
+          </div>
+          <label><input type="text" id="${id}_jGraduate_RadiusInput" size="3" value="100"/>%</label>
+        </div>
+        <div class="jGraduate_Slider jGraduate_EllipField jGraduate_rg_field">
+          <label class="prelabel">${svgEditor.i18next.t('config.jgraduate_ellip')}</label>
+          <div id="${id}_jGraduate_Ellip" class="jGraduate_SliderBar jGraduate_Ellip" title="${svgEditor.i18next.t('config.jgraduate_set_ellip')}">
+            <img id="${id}_jGraduate_EllipArrows" class="jGraduate_EllipArrows" src="${$settings.images.clientPath}rangearrows2.gif">
+          </div>
+          <label><input type="text" id="${id}_jGraduate_EllipInput" size="3" value="0"/>%</label>
+        </div>
+        <div class="jGraduate_Slider jGraduate_AngleField jGraduate_rg_field">
+          <label class="prelabel">${svgEditor.i18next.t('config.jgraduate_angle')}</label>
+          <div id="${id}_jGraduate_Angle" class="jGraduate_SliderBar jGraduate_Angle" title="${svgEditor.i18next.t('config.jgraduate_set_angle')}">
+            <img id="${id}_jGraduate_AngleArrows" class="jGraduate_AngleArrows" src="${$settings.images.clientPath}rangearrows2.gif">
+          </div>
+          <label><input type="text" id="${id}_jGraduate_AngleInput" size="3" value="0"/>${svgEditor.i18next.t('config.jgraduate_deg')}</label>
+        </div>
+        <div class="jGraduate_Slider jGraduate_OpacField">
+          <label class="prelabel">${svgEditor.i18next.t('config.jgraduate_opac')}</label>
+          <div id="${id}_jGraduate_Opac" class="jGraduate_SliderBar jGraduate_Opac" title="${svgEditor.i18next.t('config.jgraduate_set_opac')}">
+            <img id="${id}_jGraduate_OpacArrows" class="jGraduate_OpacArrows" src="${$settings.images.clientPath}rangearrows2.gif">
+          </div>
+          <label><input type="text" id="${id}_jGraduate_OpacInput" size="3" value="100"/>%</label>
+        </div>
+      </div>
+      <div class="jGraduate_OkCancel">
+        <input type="button" id="${id}_jGraduate_Ok" class="jGraduate_Ok" value="${svgEditor.i18next.t("common.ok")}"/>
+        <input type="button" id="${id}_jGraduate_Cancel" class="jGraduate_Cancel" value="${svgEditor.i18next.t("common.cancel")}"/>
+      </div>`;
   const div = document.createElement('div');
   div.innerHTML = html;
   while (div.children.length > 0) {
