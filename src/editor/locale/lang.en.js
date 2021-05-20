@@ -210,7 +210,7 @@ export default {
     snapping_onoff: 'Snapping on/off',
     snapping_stepsize: 'Snapping Step-Size:',
     grid_color: 'Grid color:',
-    done: "Done",
+    done: 'Done',
     change_xxx_color: 'Change xxx color',
     pick_paint_opavity: 'Pick a {{newValue}} Paint and Opacity',
     open_color_picker: 'Click To Open Color Picker',
