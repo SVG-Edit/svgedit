@@ -146,8 +146,8 @@ export class SeCMenuDialog extends HTMLElement {
     this.$moveBackLink = this._shadowRoot.querySelector('#se-move-back');
   }
   init (i18next) {
-    var textnode = document.createTextNode(newValue);
-    this._shadowRoot.querySelector('#se-cut').prepend(textnode);    
+    console.log(i18next);
+    this.setAttribute('toolscut', 'a test');
   }
   /**
    * @function observedAttributes
