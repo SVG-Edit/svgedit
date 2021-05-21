@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-/* globals svgEditor */
+/* gl#bals svgEditor */
 import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
 
@@ -643,7 +643,7 @@ div.jGraduate_Slider img {
   </style>
   <div id="picker">
       <img src="./images/logo.svg" alt="icon" id="logo">
-      <label for="color" title="${svgEditor.i18next.t('config.change_xxx_color')}" id="label"></label>
+      <label for="color" title="#svgEditor.i18next.t('config.change_xxx_color')}" id="label"></label>
       <div id="block">
       </div>
   </div>
@@ -693,7 +693,7 @@ export class SeColorPicker extends HTMLElement {
       this.setAttribute('title', newValue);
       break;
     case 'type':
-      this.$label.setAttribute('title', svgEditor.i18next.t('config.pick_paint_opavity', { newValue: newValue }));
+      this.$label.setAttribute('title', 'config.pick_paint_opavity');
       break;
     default:
       // eslint-disable-next-line no-console

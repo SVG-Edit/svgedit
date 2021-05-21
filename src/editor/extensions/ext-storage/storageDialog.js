@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 /* globals svgEditor */
-import 'elix/define/Dialog.js';
 const template = document.createElement('template');
 const notification = svgEditor.i18next.t('notification.editorPreferencesMsg');
 const prefs_and_content = svgEditor.i18next.t('properties.prefs_and_content');

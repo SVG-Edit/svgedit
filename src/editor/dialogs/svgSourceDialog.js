@@ -1,4 +1,4 @@
-/* globals svgEditor */
+/* gl#bals svgEditor */
 const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
@@ -63,17 +63,17 @@ template.innerHTML = `
     <div id="svg_source_container">
       <div id="tool_source_back" class="toolbar_button">
         <button id="tool_source_save">
-          ${svgEditor.i18next.t('tools.source_save')}
+          #{svgEditor.i18next.t('tools.source_save')}
         </button>
         <button id="tool_source_cancel">
-          ${svgEditor.i18next.t('common.cancel')}
+          #{svgEditor.i18next.t('common.cancel')}
         </button>
       </div>
       <div id="save_output_btns">
         <p id="copy_save_note">
-          ${svgEditor.i18next.t('notification.source_dialog_note')}
+          #{svgEditor.i18next.t('notification.source_dialog_note')}
         </p>
-        <button id="copy_save_done">${svgEditor.i18next.t('config.done')}</button>
+        <button id="copy_save_done">#{svgEditor.i18next.t('config.done')}</button>
       </div>
       <form>
         <textarea id="svg_source_textarea" spellcheck="false" rows="5" cols="80"></textarea>

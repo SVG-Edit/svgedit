@@ -1,4 +1,4 @@
-/* globals svgEditor */
+/* gl#bals svgEditor */
 import { isValidUnit } from '../../common/units.js';
 
 const template = document.createElement('template');
@@ -71,46 +71,46 @@ template.innerHTML = `
   <elix-dialog id="svg_docprops" aria-label="Sample dialog" closed>
     <div id="svg_docprops_container">
       <div id="tool_docprops_back" class="toolbar_button">
-        <button id="tool_docprops_save">${svgEditor.i18next.t('common.ok')}</button>
-        <button id="tool_docprops_cancel">${svgEditor.i18next.t('common.cancel')}</button>
+        <button id="tool_docprops_save">#{svgEditor.i18next.t('common.ok')}</button>
+        <button id="tool_docprops_cancel">#{svgEditor.i18next.t('common.cancel')}</button>
       </div>
       <fieldset id="svg_docprops_docprops">
-        <legend id="svginfo_image_props">${svgEditor.i18next.t('config.image_props')}</legend>
+        <legend id="svginfo_image_props">#{svgEditor.i18next.t('config.image_props')}</legend>
         <label>
-          <span id="svginfo_title">${svgEditor.i18next.t('config.doc_title')}</span>
+          <span id="svginfo_title">#{svgEditor.i18next.t('config.doc_title')}</span>
           <input type="text" id="canvas_title" />
         </label>
         <fieldset id="change_resolution">
-          <legend id="svginfo_dim">${svgEditor.i18next.t('config.doc_dims')}</legend>
+          <legend id="svginfo_dim">#{svgEditor.i18next.t('config.doc_dims')}</legend>
           <label>
-            <span id="svginfo_width">${svgEditor.i18next.t('common.width')}</span>
+            <span id="svginfo_width">#{svgEditor.i18next.t('common.width')}</span>
             <input type="text" id="canvas_width" size="6" />
           </label>
           <label>
-            <span id="svginfo_height">${svgEditor.i18next.t('common.height')}</span>
+            <span id="svginfo_height">#{svgEditor.i18next.t('common.height')}</span>
             <input type="text" id="canvas_height" size="6" />
           </label>
           <label>
             <select id="resolution">
-              <option id="selectedPredefined" selected="selected">${svgEditor.i18next.t('config.select_predefined')}</option>
+              <option id="selectedPredefined" selected="selected">#{svgEditor.i18next.t('config.select_predefined')}</option>
               <option>640x480</option>
               <option>800x600</option>
               <option>1024x768</option>
               <option>1280x960</option>
               <option>1600x1200</option>
-              <option id="fitToContent" value="content">${svgEditor.i18next.t('tools.fitToContent')}</option>
+              <option id="fitToContent" value="content">#{svgEditor.i18next.t('tools.fitToContent')}</option>
             </select>
           </label>
         </fieldset>
         <fieldset id="image_save_opts">
-          <legend id="includedImages">${svgEditor.i18next.t('config.included_images')}</legend>
+          <legend id="includedImages">#{svgEditor.i18next.t('config.included_images')}</legend>
           <label>
             <input type="radio" id="image_embed" name="image_opt" value="embed" checked="checked" />
-            <span id="image_opt_embed">${svgEditor.i18next.t('config.image_opt_embed')}</span>
+            <span id="image_opt_embed">#{svgEditor.i18next.t('config.image_opt_embed')}</span>
           </label>
           <label>
             <input type="radio" id="image_ref" name="image_opt" value="ref" />
-            <span id="image_opt_ref">${svgEditor.i18next.t('config.image_opt_ref')}</span>
+            <span id="image_opt_ref">#{svgEditor.i18next.t('config.image_opt_ref')}</span>
           </label>
         </fieldset>
       </fieldset>
