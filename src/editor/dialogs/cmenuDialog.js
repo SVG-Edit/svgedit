@@ -145,12 +145,16 @@ export class SeCMenuDialog extends HTMLElement {
     this.$moveDownLink = this._shadowRoot.querySelector('#se-move-down');
     this.$moveBackLink = this._shadowRoot.querySelector('#se-move-back');
   }
+  init (i18next) {
+    var textnode = document.createTextNode(newValue);
+    this._shadowRoot.querySelector('#se-cut').prepend(textnode);    
+  }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems', 'i18next-tools-cut' ];
+    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems', 'toolscut' ];
   }
   /**
    * @function attributeChangedCallback
@@ -185,7 +189,7 @@ export class SeCMenuDialog extends HTMLElement {
         selEle.parentElement.classList.add('disabled');
       });
       break;
-    case 'i18next-tools-cut':
+    case 'toolscut':
       var textnode = document.createTextNode(newValue);
       this._shadowRoot.querySelector('#se-cut').prepend(textnode);
       break;
