@@ -94,11 +94,22 @@ export class SeCMenuLayerDialog extends HTMLElement {
     this.$mergeAllLink = this._shadowRoot.querySelector('#se-merge-all');
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void} 
+   */  
+   init (i18next) {
+    this.setAttribute('layers-dupe', i18next.t('layers.dupe'));
+    this.setAttribute('layers-del', i18next.t('layers.del'));
+    this.setAttribute('layers-merge_down', i18next.t('layers.merge_down'));
+    this.setAttribute('layers-merge_all', i18next.t('layers.merge_all'));
+  }   
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'value', 'leftclick' ];
+    return [ 'value', 'leftclick', 'layers-dupe', 'layers-del', 'layers-merge_down', 'layers-merge_all' ];
   }
   /**
    * @function attributeChangedCallback
@@ -116,6 +127,18 @@ export class SeCMenuLayerDialog extends HTMLElement {
       if (newValue !== '' && newValue !== undefined) {
         this._workarea = document.getElementById(this.source);
       }
+      break;
+    case 'layers-dupe':
+      this.$duplicateLink.textContent = newValue;
+      break;
+    case 'layers-del':
+      this.$deleteLink.textContent = newValue;
+      break;
+    case 'layers-merge_down':
+      this.$mergeDownLink.textContent = newValue;
+      break;
+    case 'layers-merge_all':
+      this.$mergeAllLink.textContent = newValue;
       break;
     default:
       // super.attributeChangedCallback(name, oldValue, newValue);
