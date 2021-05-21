@@ -1,4 +1,3 @@
-/* gl#bals svgEditor */
 import './se-elix/define/NumberSpinBox.js';
 
 const template = document.createElement('template');

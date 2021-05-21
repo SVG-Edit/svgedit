@@ -1,4 +1,3 @@
-/* gl#bals svgEditor */
 import { isValidUnit } from '../../common/units.js';
 
 const template = document.createElement('template');
