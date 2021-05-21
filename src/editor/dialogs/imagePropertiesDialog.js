@@ -71,46 +71,46 @@ template.innerHTML = `
   <elix-dialog id="svg_docprops" aria-label="Sample dialog" closed>
     <div id="svg_docprops_container">
       <div id="tool_docprops_back" class="toolbar_button">
-        <button id="tool_docprops_save">#{svgEditor.i18next.t('common.ok')}</button>
-        <button id="tool_docprops_cancel">#{svgEditor.i18next.t('common.cancel')}</button>
+        <button id="tool_docprops_save"></button>
+        <button id="tool_docprops_cancel"></button>
       </div>
       <fieldset id="svg_docprops_docprops">
-        <legend id="svginfo_image_props">#{svgEditor.i18next.t('config.image_props')}</legend>
+        <legend id="svginfo_image_props"></legend>
         <label>
-          <span id="svginfo_title">#{svgEditor.i18next.t('config.doc_title')}</span>
+          <span id="svginfo_title"></span>
           <input type="text" id="canvas_title" />
         </label>
         <fieldset id="change_resolution">
-          <legend id="svginfo_dim">#{svgEditor.i18next.t('config.doc_dims')}</legend>
+          <legend id="svginfo_dim"></legend>
           <label>
-            <span id="svginfo_width">#{svgEditor.i18next.t('common.width')}</span>
+            <span id="svginfo_width"></span>
             <input type="text" id="canvas_width" size="6" />
           </label>
           <label>
-            <span id="svginfo_height">#{svgEditor.i18next.t('common.height')}</span>
+            <span id="svginfo_height"></span>
             <input type="text" id="canvas_height" size="6" />
           </label>
           <label>
             <select id="resolution">
-              <option id="selectedPredefined" selected="selected">#{svgEditor.i18next.t('config.select_predefined')}</option>
+              <option id="selectedPredefined" selected="selected"></option>
               <option>640x480</option>
               <option>800x600</option>
               <option>1024x768</option>
               <option>1280x960</option>
               <option>1600x1200</option>
-              <option id="fitToContent" value="content">#{svgEditor.i18next.t('tools.fitToContent')}</option>
+              <option id="fitToContent" value="content"></option>
             </select>
           </label>
         </fieldset>
         <fieldset id="image_save_opts">
-          <legend id="includedImages">#{svgEditor.i18next.t('config.included_images')}</legend>
+          <legend id="includedImages"></legend>
           <label>
             <input type="radio" id="image_embed" name="image_opt" value="embed" checked="checked" />
-            <span id="image_opt_embed">#{svgEditor.i18next.t('config.image_opt_embed')}</span>
+            <span id="image_opt_embed"></span>
           </label>
           <label>
             <input type="radio" id="image_ref" name="image_opt" value="ref" />
-            <span id="image_opt_ref">#{svgEditor.i18next.t('config.image_opt_ref')}</span>
+            <span id="image_opt_ref"></span>
           </label>
         </fieldset>
       </fieldset>
@@ -142,11 +142,31 @@ export class SeImgPropDialog extends HTMLElement {
     this.$dialog = this._shadowRoot.querySelector('#svg_docprops');
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void} 
+   */  
+   init (i18next) {
+    this.setAttribute('common-ok', i18next.t('common.ok'));
+    this.setAttribute('common-cancel', i18next.t('common.cancel'));
+    this.setAttribute('config-image_props', i18next.t('config.image_props'));
+    this.setAttribute('config-doc_title', i18next.t('config.doc_title'));
+    this.setAttribute('config-doc_dims', i18next.t('config.doc_dims'));
+    this.setAttribute('common-width', i18next.t('common.width'));
+    this.setAttribute('common-height', i18next.t('common.height'));
+    this.setAttribute('config-select_predefined', i18next.t('config.select_predefined'));
+    this.setAttribute('tools-fit-to-content', i18next.t('tools.fitToContent'));
+    this.setAttribute('config-included_images', i18next.t('config.included_images'));
+    this.setAttribute('config-image_opt_embed', i18next.t('config.image_opt_embed'));
+    this.setAttribute('config-image_opt_ref', i18next.t('config.image_opt_ref'));
+  }
+
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'title', 'width', 'height', 'save', 'dialog', 'embed' ];
+    return [ 'title', 'width', 'height', 'save', 'dialog', 'embed', 'common-ok', 'common-cancel', 'config-image_props', 'config-doc_title', 'config-doc_dims', 'common-width', 'common-height', 'config-select_predefined', 'tools-fit-to-content', 'config-included_images', 'config-image_opt_embed', 'config-image_opt_ref' ];
   }
   /**
    * @function attributeChangedCallback
@@ -157,6 +177,7 @@ export class SeImgPropDialog extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
+    let node ;
     switch (name) {
     case 'title':
       this.$canvasTitle.value = newValue;
@@ -208,6 +229,52 @@ export class SeImgPropDialog extends HTMLElement {
           this._shadowRoot.querySelector('#image_opt_embed').style.color = '#666';
         }
       }
+      break;
+    case 'common-ok':
+      this.$saveBtn.textContent = newValue;
+      break;
+    case 'common-cancel':
+      this.$cancelBtn.textContent = newValue;
+      break;
+    case 'config-image_props':
+      node = this._shadowRoot.querySelector('#svginfo_image_props');
+      node.textContent = newValue;
+      break;
+    case 'config-doc_title':
+      node = this._shadowRoot.querySelector('#svginfo_title');
+      node.textContent = newValue;
+      break;
+    case 'config-doc_dims':      
+      node = this._shadowRoot.querySelector('#svginfo_dim');
+      node.textContent = newValue;
+      break;
+    case 'common-width':
+      node = this._shadowRoot.querySelector('#svginfo_width');
+      node.textContent = newValue;
+      break;
+    case 'common-height':      
+      node = this._shadowRoot.querySelector('#svginfo_height');
+      node.textContent = newValue;
+      break;
+    case 'config-select_predefined':
+      node = this._shadowRoot.querySelector('#selectedPredefined');
+      node.textContent = newValue;
+      break;
+    case 'tools-fit-to-content':
+      node = this._shadowRoot.querySelector('#fitToContent');
+      node.textContent = newValue;
+      break;
+    case 'config-included_images':
+      node = this._shadowRoot.querySelector('#includedImages');
+      node.textContent = newValue;
+      break;
+    case 'config-image_opt_embed':
+      node = this._shadowRoot.querySelector('#image_opt_embed');
+      node.textContent = newValue;
+      break;
+    case 'config-image_opt_ref':
+      node = this._shadowRoot.querySelector('#image_opt_ref');
+      node.textContent = newValue;
       break;
     default:
       super.attributeChangedCallback(name, oldValue, newValue);

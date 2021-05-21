@@ -145,6 +145,11 @@ export class SeCMenuDialog extends HTMLElement {
     this.$moveDownLink = this._shadowRoot.querySelector('#se-move-down');
     this.$moveBackLink = this._shadowRoot.querySelector('#se-move-back');
   }
+  /**
+   * @function init
+   * @param {any} name
+   * @returns {void} 
+   */  
   init (i18next) {
     this.setAttribute('tools-cut', i18next.t('tools.cut'));
     this.setAttribute('tools-copy', i18next.t('tools.copy'));
