@@ -99,14 +99,14 @@ export class SeExportDialog extends HTMLElement {
   /**
    * @function init
    * @param {any} name
-   * @returns {void} 
-   */  
+   * @returns {void}
+   */
    init (i18next) {
     this.setAttribute('common-ok', i18next.t('common.ok'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
     this.setAttribute('ui-quality', i18next.t('ui.quality'));
     this.setAttribute('ui-export_type_label', i18next.t('ui.export_type_label'));
-  }  
+  }
   /**
    * @function observedAttributes
    * @returns {any} observed
@@ -145,7 +145,7 @@ export class SeExportDialog extends HTMLElement {
     case 'ui-export_type_label':
       node = this._shadowRoot.querySelector('#export_select');
       node.textContent = newValue;
-      break;      
+      break;
     default:
       // super.attributeChangedCallback(name, oldValue, newValue);
       break;

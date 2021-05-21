@@ -97,14 +97,14 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
   /**
    * @function init
    * @param {any} name
-   * @returns {void} 
-   */  
+   * @returns {void}
+   */
    init (i18next) {
     this.setAttribute('tools-source_save', i18next.t('tools.source_save'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
     this.setAttribute('notification-source_dialog_note', i18next.t('notification.source_dialog_note'));
     this.setAttribute('config-done', i18next.t('config.done'));
-  }   
+  }
   /**
    * @function observedAttributes
    * @returns {any} observed
@@ -121,6 +121,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
+    let node;
     switch (name) {
     case 'dialog':
       if (newValue === 'open') {
@@ -155,12 +156,12 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
       this.$cancelBtn.textContent = newValue;
       break;
     case 'notification-source_dialog_note':
-      const node = this._shadowRoot.querySelector('#copy_save_note');
+      node = this._shadowRoot.querySelector('#copy_save_note');
       node.textContent = newValue;
       break;
     case 'config-done':
       this.$copyBtn.textContent = newValue;
-      break;      
+      break;
     default:
       super.attributeChangedCallback(name, oldValue, newValue);
       break;

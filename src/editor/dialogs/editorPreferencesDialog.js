@@ -265,8 +265,8 @@ export class SeEditPrefsDialog extends HTMLElement {
   /**
    * @function init
    * @param {any} name
-   * @returns {void} 
-   */  
+   * @returns {void}
+   */
    init (i18next) {
     this.setAttribute('common-ok', i18next.t('common.ok'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
@@ -287,7 +287,7 @@ export class SeEditPrefsDialog extends HTMLElement {
     this.setAttribute('config-units_and_rulers', i18next.t('config.units_and_rulers'));
     this.setAttribute('config-show_rulers', i18next.t('config.show_rulers'));
     this.setAttribute('config-base_unit', i18next.t('config.base_unit'));
-  }  
+  }
   /**
    * @function observedAttributes
    * @returns {any} observed

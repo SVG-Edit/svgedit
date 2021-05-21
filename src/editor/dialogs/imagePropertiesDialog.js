@@ -143,8 +143,8 @@ export class SeImgPropDialog extends HTMLElement {
   /**
    * @function init
    * @param {any} name
-   * @returns {void} 
-   */  
+   * @returns {void}
+   */
    init (i18next) {
     this.setAttribute('common-ok', i18next.t('common.ok'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
@@ -165,7 +165,11 @@ export class SeImgPropDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'title', 'width', 'height', 'save', 'dialog', 'embed', 'common-ok', 'common-cancel', 'config-image_props', 'config-doc_title', 'config-doc_dims', 'common-width', 'common-height', 'config-select_predefined', 'tools-fit-to-content', 'config-included_images', 'config-image_opt_embed', 'config-image_opt_ref' ];
+    return [ 'title', 'width', 'height', 'save', 'dialog', 'embed', 'common-ok',
+    'common-cancel', 'config-image_props', 'config-doc_title', 'config-doc_dims',
+    'common-width', 'common-height', 'config-select_predefined',
+    'tools-fit-to-content', 'config-included_images', 'config-image_opt_embed',
+    'config-image_opt_ref' ];
   }
   /**
    * @function attributeChangedCallback
@@ -243,7 +247,7 @@ export class SeImgPropDialog extends HTMLElement {
       node = this._shadowRoot.querySelector('#svginfo_title');
       node.textContent = newValue;
       break;
-    case 'config-doc_dims':      
+    case 'config-doc_dims':
       node = this._shadowRoot.querySelector('#svginfo_dim');
       node.textContent = newValue;
       break;
@@ -251,7 +255,7 @@ export class SeImgPropDialog extends HTMLElement {
       node = this._shadowRoot.querySelector('#svginfo_width');
       node.textContent = newValue;
       break;
-    case 'common-height':      
+    case 'common-height':
       node = this._shadowRoot.querySelector('#svginfo_height');
       node.textContent = newValue;
       break;

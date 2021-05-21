@@ -147,8 +147,8 @@ export class SeCMenuDialog extends HTMLElement {
   /**
    * @function init
    * @param {any} name
-   * @returns {void} 
-   */  
+   * @returns {void}
+   */
   init (i18next) {
     this.setAttribute('tools-cut', i18next.t('tools.cut'));
     this.setAttribute('tools-copy', i18next.t('tools.copy'));
@@ -167,7 +167,10 @@ export class SeCMenuDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems', 'tools-cut', 'tools-copy', 'tools-paste', 'tools-paste_in_place', 'tools-delete', 'tools-group', 'tools-ungroup', 'tools-move_front', 'tools-move_up', 'tools-move_down', 'tools-move_back' ];
+    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems', 'tools-cut',
+    'tools-copy', 'tools-paste', 'tools-paste_in_place', 'tools-delete', 'tools-group',
+    'tools-ungroup', 'tools-move_front', 'tools-move_up', 'tools-move_down',
+    'tools-move_back' ];
   }
   /**
    * @function attributeChangedCallback

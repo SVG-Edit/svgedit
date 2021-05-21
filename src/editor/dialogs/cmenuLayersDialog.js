@@ -95,14 +95,14 @@ export class SeCMenuLayerDialog extends HTMLElement {
   /**
    * @function init
    * @param {any} name
-   * @returns {void} 
-   */  
+   * @returns {void}
+   */
    init (i18next) {
     this.setAttribute('layers-dupe', i18next.t('layers.dupe'));
     this.setAttribute('layers-del', i18next.t('layers.del'));
     this.setAttribute('layers-merge_down', i18next.t('layers.merge_down'));
     this.setAttribute('layers-merge_all', i18next.t('layers.merge_all'));
-  }   
+  }
   /**
    * @function observedAttributes
    * @returns {any} observed
