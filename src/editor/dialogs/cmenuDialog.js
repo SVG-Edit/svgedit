@@ -73,48 +73,48 @@ template.innerHTML = `
     </li>
     <li>
       <a href="#copy" id="se-copy">
-      #{svgEditor.i18next.t('tools.copy')}<span class="shortcut">META+C</span>
+        <span class="shortcut">META+C</span>
       </a>
     </li>
     <li>
-      <a href="#paste" id="se-paste">#{svgEditor.i18next.t('tools.paste')}</a>
+      <a href="#paste" id="se-paste"></a>
     </li>
     <li>
-      <a href="#paste_in_place" id="se-paste-in-place">#{svgEditor.i18next.t('tools.paste_in_place')}</a>
+      <a href="#paste_in_place" id="se-paste-in-place"></a>
     </li>
     <li class="separator">
       <a href="#delete" id="se-delete">
-      #{svgEditor.i18next.t('tools.delete')}<span class="shortcut">BACKSPACE</span>
+        <span class="shortcut">BACKSPACE</span>
       </a>
     </li>
     <li class="separator">
       <a href="#group" id="se-group">
-      #{svgEditor.i18next.t('tools.group')}<span class="shortcut">G</span>
+        <span class="shortcut">G</span>
       </a>
     </li>
     <li>
       <a href="#ungroup" id="se-ungroup">
-      #{svgEditor.i18next.t('tools.ungroup')}<span class="shortcut">G</span>
+        <span class="shortcut">G</span>
       </a>
     </li>
     <li class="separator">
       <a href="#move_front" id="se-move-front">
-      #{svgEditor.i18next.t('tools.move_front')}<span class="shortcut">CTRL+SHFT+]</span>
+        <span class="shortcut">CTRL+SHFT+]</span>
       </a>
     </li>
     <li>
       <a href="#move_up" id="se-move-up">
-      #{svgEditor.i18next.t('tools.move_up')}<span class="shortcut">CTRL+]</span>
+        <span class="shortcut">CTRL+]</span>
       </a>
     </li>
     <li>
       <a href="#move_down" id="se-move-down">
-      #{svgEditor.i18next.t('tools.move_down')}<span class="shortcut">CTRL+[</span>
+        <span class="shortcut">CTRL+[</span>
       </a>
     </li>
     <li>
       <a href="#move_back" id="se-move-back">
-      #{svgEditor.i18next.t('tools.move_back')}<span class="shortcut">CTRL+SHFT+[</span>
+        <span class="shortcut">CTRL+SHFT+[</span>
       </a>
     </li> 
   </ul>
@@ -146,15 +146,24 @@ export class SeCMenuDialog extends HTMLElement {
     this.$moveBackLink = this._shadowRoot.querySelector('#se-move-back');
   }
   init (i18next) {
-    console.log(i18next);
-    this.setAttribute('toolscut', 'a test');
+    this.setAttribute('tools-cut', i18next.t('tools.cut'));
+    this.setAttribute('tools-copy', i18next.t('tools.copy'));
+    this.setAttribute('tools-paste', i18next.t('tools.paste'));
+    this.setAttribute('tools-paste_in_place', i18next.t('tools.paste_in_place'));
+    this.setAttribute('tools-delete', i18next.t('tools.delete'));
+    this.setAttribute('tools-group', i18next.t('tools.group'));
+    this.setAttribute('tools-ungroup', i18next.t('tools.ungroup'));
+    this.setAttribute('tools-move_front', i18next.t('tools.move_front'));
+    this.setAttribute('tools-move_up', i18next.t('tools.move_up'));
+    this.setAttribute('tools-move_down', i18next.t('tools.move_down'));
+    this.setAttribute('tools-move_back', i18next.t('tools.move_back'));
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems', 'toolscut' ];
+    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems', 'tools-cut', 'tools-copy', 'tools-paste', 'tools-paste_in_place', 'tools-delete', 'tools-group', 'tools-ungroup', 'tools-move_front', 'tools-move_up', 'tools-move_down', 'tools-move_back' ];
   }
   /**
    * @function attributeChangedCallback
@@ -165,6 +174,7 @@ export class SeCMenuDialog extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     let eles = [];
+    let textnode;
     const sdowRoot = this._shadowRoot;
     switch (name) {
     case 'disableallmenu':
@@ -189,9 +199,47 @@ export class SeCMenuDialog extends HTMLElement {
         selEle.parentElement.classList.add('disabled');
       });
       break;
-    case 'toolscut':
-      var textnode = document.createTextNode(newValue);
-      this._shadowRoot.querySelector('#se-cut').prepend(textnode);
+    case 'tools-cut':
+      textnode = document.createTextNode(newValue);
+      this.$cutLink.prepend(textnode);
+      break;
+    case 'tools-copy':
+      textnode = document.createTextNode(newValue);
+      this.$copyLink.prepend(textnode);
+      break;
+    case 'tools-paste':
+      this.$pasteLink.textContent = newValue;
+      break;
+    case 'tools-paste_in_place':
+      this.$pasteInPlaceLink.textContent = newValue;
+      break;
+    case 'tools-delete':
+      textnode = document.createTextNode(newValue);
+      this.$deleteLink.prepend(textnode);
+      break;
+    case 'tools-group':
+      textnode = document.createTextNode(newValue);
+      this.$groupLink.prepend(textnode);
+      break;
+    case 'tools-ungroup':
+      textnode = document.createTextNode(newValue);
+      this.$ungroupLink.prepend(textnode);
+      break;
+    case 'tools-move_front':
+      textnode = document.createTextNode(newValue);
+      this.$moveFrontLink.prepend(textnode);
+      break;
+    case 'tools-move_up':
+      textnode = document.createTextNode(newValue);
+      this.$moveUpLink.prepend(textnode);
+      break;
+    case 'tools-move_down':
+      textnode = document.createTextNode(newValue);
+      this.$moveDownLink.prepend(textnode);
+      break;
+    case 'tools-move_back':
+      textnode = document.createTextNode(newValue);
+      this.$moveBackLink.prepend(textnode);
       break;
     default:
       // super.attributeChangedCallback(name, oldValue, newValue);

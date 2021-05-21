@@ -87,11 +87,9 @@ class EditorStartup {
       document.body.append(newSeEditPrefsDialog);
       // canvas menu added to DOM
       const dialogBox = document.createElement('se-cmenu_canvas-dialog');
-      dialogBox.setAttribute('id', 'se-cmenu_canvas');     
-      // dialogBox.setAttribute('toolscut', this.i18next.t('tools.cut'));
+      dialogBox.setAttribute('id', 'se-cmenu_canvas');
       document.body.append(dialogBox);
       dialogBox.init(this.i18next);
-      console.log(dialogBox);      
       // alertDialog added to DOM
       const alertBox = document.createElement('se-alert-dialog');
       alertBox.setAttribute('id', 'se-alert-dialog');
