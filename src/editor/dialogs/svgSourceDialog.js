@@ -1,4 +1,3 @@
-/* gl#bals svgEditor */
 const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
@@ -62,18 +61,12 @@ template.innerHTML = `
   <elix-dialog id="svg_source_editor" aria-label="SVG Source Editor" closed>
     <div id="svg_source_container">
       <div id="tool_source_back" class="toolbar_button">
-        <button id="tool_source_save">
-          #{svgEditor.i18next.t('tools.source_save')}
-        </button>
-        <button id="tool_source_cancel">
-          #{svgEditor.i18next.t('common.cancel')}
-        </button>
+        <button id="tool_source_save"></button>
+        <button id="tool_source_cancel"></button>
       </div>
       <div id="save_output_btns">
-        <p id="copy_save_note">
-          #{svgEditor.i18next.t('notification.source_dialog_note')}
-        </p>
-        <button id="copy_save_done">#{svgEditor.i18next.t('config.done')}</button>
+        <p id="copy_save_note"></p>
+        <button id="copy_save_done"></button>
       </div>
       <form>
         <textarea id="svg_source_textarea" spellcheck="false" rows="5" cols="80"></textarea>
@@ -102,11 +95,22 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
     this.$applySec = this._shadowRoot.querySelector('#tool_source_back');
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+   init (i18next) {
+    this.setAttribute('tools-source_save', i18next.t('tools.source_save'));
+    this.setAttribute('common-cancel', i18next.t('common.cancel'));
+    this.setAttribute('notification-source_dialog_note', i18next.t('notification.source_dialog_note'));
+    this.setAttribute('config-done', i18next.t('config.done'));
+  }
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'dialog', 'value', 'applysec', 'copysec' ];
+    return [ 'dialog', 'value', 'applysec', 'copysec', 'tools-source_save', 'common-cancel', 'notification-source_dialog_note', 'config-done' ];
   }
   /**
    * @function attributeChangedCallback
@@ -117,6 +121,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
+    let node;
     switch (name) {
     case 'dialog':
       if (newValue === 'open') {
@@ -143,6 +148,19 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
       break;
     case 'value':
       this.$sourceTxt.value = newValue;
+      break;
+    case 'tools-source_save':
+      this.$saveBtn.textContent = newValue;
+      break;
+    case 'common-cancel':
+      this.$cancelBtn.textContent = newValue;
+      break;
+    case 'notification-source_dialog_note':
+      node = this._shadowRoot.querySelector('#copy_save_note');
+      node.textContent = newValue;
+      break;
+    case 'config-done':
+      this.$copyBtn.textContent = newValue;
       break;
     default:
       super.attributeChangedCallback(name, oldValue, newValue);

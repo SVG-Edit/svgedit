@@ -1,4 +1,3 @@
-/* gl#bals svgEditor */
 const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
@@ -149,17 +148,13 @@ template.innerHTML = `
   <elix-dialog id="svg_prefs" aria-label="Editor Preferences" closed>
     <div id="svg_prefs_container">
       <div id="tool_prefs_back" class="toolbar_button">
-        <button id="tool_prefs_save">
-          #{svgEditor.i18next.t('common.ok')}
-        </button>
-        <button id="tool_prefs_cancel">
-          #{svgEditor.i18next.t('common.cancel')}
-        </button>
+        <button id="tool_prefs_save"></button>
+        <button id="tool_prefs_cancel"></button>
       </div>
       <fieldset>
-        <legend id="svginfo_editor_prefs">#{svgEditor.i18next.t('config.editor_prefs')}</legend>
+        <legend id="svginfo_editor_prefs"></legend>
         <label>
-          <span id="svginfo_lang">#{svgEditor.i18next.t('config.language')}</span>
+          <span id="svginfo_lang"></span>
           <!-- Source: https://en.wikipedia.org/wiki/Language_names -->
           <select id="lang_select">
             <option id="lang_ar" value="ar">العربية</option>
@@ -185,46 +180,46 @@ template.innerHTML = `
           </select>
         </label>
         <label>
-          <span id="svginfo_icons">#{svgEditor.i18next.t('config.icon_size')}</span>
+          <span id="svginfo_icons"></span>
           <select id="iconsize">
-            <option id="icon_small" value="s">#{svgEditor.i18next.t('config.icon_small')}</option>
-            <option id="icon_medium" value="m" selected="selected">#{svgEditor.i18next.t('config.icon_medium')}</option>
-            <option id="icon_large" value="l">#{svgEditor.i18next.t('config.icon_large')}</option>
-            <option id="icon_xlarge" value="xl">#{svgEditor.i18next.t('config.icon_xlarge')}</option>
+            <option id="icon_small" value="s"></option>
+            <option id="icon_medium" value="m" selected="selected"></option>
+            <option id="icon_large" value="l"></option>
+            <option id="icon_xlarge" value="xl"></option>
           </select>
         </label>
         <fieldset id="change_background">
-          <legend id="svginfo_change_background">#{svgEditor.i18next.t('config.background')}</legend>
+          <legend id="svginfo_change_background"></legend>
           <div id="bg_blocks"></div>
           <label>
-            <span id="svginfo_bg_url">#{svgEditor.i18next.t('common.url')}</span>
+            <span id="svginfo_bg_url"></span>
             <input type="text" id="canvas_bg_url" />
           </label>
-          <p id="svginfo_bg_note">#{svgEditor.i18next.t('config.editor_bg_note')}</p>
+          <p id="svginfo_bg_note"></p>
         </fieldset>
         <fieldset id="change_grid">
-          <legend id="svginfo_grid_settings">#{svgEditor.i18next.t('config.grid')}</legend>
+          <legend id="svginfo_grid_settings"></legend>
           <label for="svginfo_snap_onoff">
-            <span id="svginfo_snap_onoff">#{svgEditor.i18next.t('config.snapping_onoff')}</span>
+            <span id="svginfo_snap_onoff"></span>
             <input type="checkbox" value="snapping_on" id="grid_snapping_on" />
           </label>
           <label for="grid_snapping_step">
-            <span id="svginfo_snap_step">#{svgEditor.i18next.t('config.snapping_stepsize')}</span>
+            <span id="svginfo_snap_step"></span>
             <input type="text" id="grid_snapping_step" size="3" value="10" />
           </label>
           <label>
-            <span id="svginfo_grid_color">#{svgEditor.i18next.t('config.grid_color')}</span>
+            <span id="svginfo_grid_color"></span>
             <input type="text" id="grid_color" size="3" value="#000" />
           </label>
         </fieldset>
         <fieldset id="units_rulers">
-          <legend id="svginfo_units_rulers">#{svgEditor.i18next.t('config.units_and_rulers')}</legend>
+          <legend id="svginfo_units_rulers"></legend>
           <label>
-            <span id="svginfo_rulers_onoff">#{svgEditor.i18next.t('config.show_rulers')}</span>
+            <span id="svginfo_rulers_onoff"></span>
             <input id="show_rulers" type="checkbox" value="show_rulers" checked="checked" />
           </label>
           <label>
-            <span id="svginfo_unit">#{svgEditor.i18next.t('config.base_unit')}</span>
+            <span id="svginfo_unit"></span>
             <select id="base_unit">
               <option value="px">Pixels</option>
               <option value="cm">Centimeters</option>
@@ -268,12 +263,38 @@ export class SeEditPrefsDialog extends HTMLElement {
     this.$baseUnit = this._shadowRoot.querySelector('#base_unit');
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+   init (i18next) {
+    this.setAttribute('common-ok', i18next.t('common.ok'));
+    this.setAttribute('common-cancel', i18next.t('common.cancel'));
+    this.setAttribute('config-editor_prefs', i18next.t('config.editor_prefs'));
+    this.setAttribute('config-language', i18next.t('config.language'));
+    this.setAttribute('config-icon_size', i18next.t('config.icon_size'));
+    this.setAttribute('config-icon_small', i18next.t('config.icon_small'));
+    this.setAttribute('config-icon_medium', i18next.t('config.icon_medium'));
+    this.setAttribute('config-icon_large', i18next.t('config.icon_large'));
+    this.setAttribute('config-icon_xlarge', i18next.t('config.icon_xlarge'));
+    this.setAttribute('config-background', i18next.t('config.background'));
+    this.setAttribute('common-url', i18next.t('common.url'));
+    this.setAttribute('config-editor_bg_note', i18next.t('config.editor_bg_note'));
+    this.setAttribute('config-grid', i18next.t('config.grid'));
+    this.setAttribute('config-snapping_onoff', i18next.t('config.snapping_onoff'));
+    this.setAttribute('config-snapping_stepsize', i18next.t('config.snapping_stepsize'));
+    this.setAttribute('config-grid_color', i18next.t('config.grid_color'));
+    this.setAttribute('config-units_and_rulers', i18next.t('config.units_and_rulers'));
+    this.setAttribute('config-show_rulers', i18next.t('config.show_rulers'));
+    this.setAttribute('config-base_unit', i18next.t('config.base_unit'));
+  }
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
     // eslint-disable-next-line max-len
-    return [ 'dialog', 'lang', 'iconsize', 'canvasbg', 'bgurl', 'gridsnappingon', 'gridsnappingstep', 'gridcolor', 'showrulers', 'baseunit' ];
+    return [ 'dialog', 'lang', 'iconsize', 'canvasbg', 'bgurl', 'gridsnappingon', 'gridsnappingstep', 'gridcolor', 'showrulers', 'baseunit', 'common-ok', 'common-cancel', 'config-editor_prefs', 'config-language', 'config-icon_size', 'config-icon_small', 'config-icon_medium', 'config-icon_large', 'config-icon_xlarge', 'config-background', 'common-url', 'config-editor_bg_note', 'config-grid', 'config-snapping_onoff', 'config-snapping_stepsize', 'config-grid_color', 'config-units_and_rulers', 'config-show_rulers', 'config-base_unit' ];
   }
   /**
    * @function attributeChangedCallback
@@ -286,6 +307,7 @@ export class SeEditPrefsDialog extends HTMLElement {
     if (oldValue === newValue) return;
     const blocks = this.$bgBlocks.querySelectorAll('div');
     const curBg = 'cur_background';
+    let node;
     switch (name) {
     case 'dialog':
       if (newValue === 'open') {
@@ -341,6 +363,80 @@ export class SeEditPrefsDialog extends HTMLElement {
       break;
     case 'baseunit':
       this.$baseUnit.value = newValue;
+      break;
+    case 'common-ok':
+      this.$saveBtn.textContent = newValue;
+      break;
+    case 'common-cancel':
+      this.$cancelBtn.textContent = newValue;
+      break;
+    case 'config-editor_prefs':
+      node = this._shadowRoot.querySelector('#svginfo_editor_prefs');
+      node.textContent = newValue;
+      break;
+    case 'config-language':
+      node = this._shadowRoot.querySelector('#svginfo_lang');
+      node.textContent = newValue;
+      break;
+    case 'config-icon_size':
+      node = this._shadowRoot.querySelector('#svginfo_icons');
+      node.textContent = newValue;
+      break;
+    case 'config-icon_small':
+      node = this._shadowRoot.querySelector('#icon_small');
+      node.textContent = newValue;
+      break;
+    case 'config-icon_medium':
+      node = this._shadowRoot.querySelector('#icon_medium');
+      node.textContent = newValue;
+      break;
+    case 'config-icon_large':
+      node = this._shadowRoot.querySelector('#icon_large');
+      node.textContent = newValue;
+      break;
+    case 'config-icon_xlarge':
+      node = this._shadowRoot.querySelector('#icon_xlarge');
+      node.textContent = newValue;
+      break;
+    case 'config-background':
+      node = this._shadowRoot.querySelector('#svginfo_change_background');
+      node.textContent = newValue;
+      break;
+    case 'common-url':
+      node = this._shadowRoot.querySelector('#svginfo_bg_url');
+      node.textContent = newValue;
+      break;
+    case 'config-editor_bg_note':
+      node = this._shadowRoot.querySelector('#svginfo_bg_note');
+      node.textContent = newValue;
+      break;
+    case 'config-grid':
+      node = this._shadowRoot.querySelector('#svginfo_grid_settings');
+      node.textContent = newValue;
+      break;
+    case 'config-snapping_onoff':
+      node = this._shadowRoot.querySelector('#svginfo_snap_onoff');
+      node.textContent = newValue;
+      break;
+    case 'config-snapping_stepsize':
+      node = this._shadowRoot.querySelector('#svginfo_snap_step');
+      node.textContent = newValue;
+      break;
+    case 'config-grid_color':
+      node = this._shadowRoot.querySelector('#svginfo_grid_color');
+      node.textContent = newValue;
+      break;
+    case 'config-units_and_rulers':
+      node = this._shadowRoot.querySelector('#svginfo_units_rulers');
+      node.textContent = newValue;
+      break;
+    case 'config-show_rulers':
+      node = this._shadowRoot.querySelector('#svginfo_rulers_onoff');
+      node.textContent = newValue;
+      break;
+    case 'config-base_unit':
+      node = this._shadowRoot.querySelector('#svginfo_unit');
+      node.textContent = newValue;
       break;
     default:
       super.attributeChangedCallback(name, oldValue, newValue);

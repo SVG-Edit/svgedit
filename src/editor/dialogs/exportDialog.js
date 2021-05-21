@@ -1,4 +1,3 @@
-/* gl#bals svgEditor */
 import './se-elix/define/NumberSpinBox.js';
 
 const template = document.createElement('template');
@@ -58,9 +57,7 @@ template.innerHTML = `
     <div class="overlay"></div>
     <div id="dialog_container">
       <div id="dialog_content">
-        <p class="se-select">
-          #{svgEditor.i18next.t('ui.export_type_label')} 
-        </p>
+        <p class="se-select" id="export_select"></p>
         <p class="se-select">
         <select id="se-storage-pref">
           <option value="PNG">PNG</option>
@@ -70,15 +67,11 @@ template.innerHTML = `
           <option value="PDF">PDF</option>
         </select> 
         </p>
-        <p id="se-quality">#{svgEditor.i18next.t('ui.quality')}<elix-number-spin-box min="-1" max="101" step="5" value="100"></elix-number-spin-box></p>
+        <p id="se-quality"><elix-number-spin-box min="-1" max="101" step="5" value="100"></elix-number-spin-box></p>
       </div>
       <div id="dialog_buttons">
-        <button id="export_ok">
-          #{svgEditor.i18next.t('common.ok')}
-        </button>
-        <button id="export_cancel">
-          #{svgEditor.i18next.t('common.cancel')}
-        </button>
+        <button id="export_ok"></button>
+        <button id="export_cancel"></button>
       </div>
     </div>
   </elix-dialog>
@@ -104,11 +97,22 @@ export class SeExportDialog extends HTMLElement {
     this.value = 1;
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+   init (i18next) {
+    this.setAttribute('common-ok', i18next.t('common.ok'));
+    this.setAttribute('common-cancel', i18next.t('common.cancel'));
+    this.setAttribute('ui-quality', i18next.t('ui.quality'));
+    this.setAttribute('ui-export_type_label', i18next.t('ui.export_type_label'));
+  }
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'dialog' ];
+    return [ 'dialog', 'common-ok', 'common-cancel', 'ui-quality', 'ui-export_type_label' ];
   }
   /**
    * @function attributeChangedCallback
@@ -119,6 +123,7 @@ export class SeExportDialog extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     // eslint-disable-next-line sonarjs/no-small-switch
+    let node;
     switch (name) {
     case 'dialog':
       if (newValue === 'open') {
@@ -126,6 +131,20 @@ export class SeExportDialog extends HTMLElement {
       } else {
         this.$dialog.close();
       }
+      break;
+    case 'common-ok':
+      this.$okBtn.textContent = newValue;
+      break;
+    case 'common-cancel':
+      this.$cancelBtn.textContent = newValue;
+      break;
+    case 'ui-quality':
+      node = this._shadowRoot.querySelector('#se-quality');
+      node.prepend(newValue);
+      break;
+    case 'ui-export_type_label':
+      node = this._shadowRoot.querySelector('#export_select');
+      node.textContent = newValue;
       break;
     default:
       // super.attributeChangedCallback(name, oldValue, newValue);
