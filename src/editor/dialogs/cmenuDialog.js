@@ -68,7 +68,7 @@ template.innerHTML = `
   <ul id="cmenu_canvas" class="contextMenu">
     <li>
       <a href="#cut" id="se-cut">
-      ${svgEditor.i18next.t('tools.cut')}<span class="shortcut">META+X</span>
+        <span class="shortcut">META+X</span>
       </a>
     </li>
     <li>
@@ -150,7 +150,7 @@ export class SeCMenuDialog extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems' ];
+    return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems', 'i18next-tools-cut' ];
   }
   /**
    * @function attributeChangedCallback
@@ -184,6 +184,10 @@ export class SeCMenuDialog extends HTMLElement {
         const selEle = sdowRoot.querySelector('a[href*="' + ele + '"]');
         selEle.parentElement.classList.add('disabled');
       });
+      break;
+    case 'i18next-tools-cut':
+      var textnode = document.createTextNode(newValue);
+      this._shadowRoot.querySelector('#se-cut').prepend(textnode);
       break;
     default:
       // super.attributeChangedCallback(name, oldValue, newValue);
