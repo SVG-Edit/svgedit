@@ -557,7 +557,7 @@ class TopPanel {
     if (!valid) {
       e.target.value = this.selectedElement.getAttribute(attr);
       // eslint-disable-next-line no-alert
-      alert(this.i18next.t('notification.invalidAttrValGiven'));
+      alert(this.editor.i18next.t('notification.invalidAttrValGiven'));
       return false;
     }
 
@@ -618,7 +618,7 @@ class TopPanel {
     if (!isNullish(this.editor.selectedElement) || this.multiselected) {
       // eslint-disable-next-line no-alert
       const url = prompt(
-        this.i18next.t('notification.enterNewLinkURL'),
+        this.editor.i18next.t('notification.enterNewLinkURL'),
         "http://"
       );
       if (url) {

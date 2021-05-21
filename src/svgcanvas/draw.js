@@ -9,7 +9,6 @@ import Layer from './layer.js';
 import HistoryRecordingService from './historyrecording.js';
 
 import { NS } from '../common/namespaces.js';
-import { isOpera } from '../common/browser.js';
 import {
   toXml, getElem
 } from './utilities.js';
