@@ -227,6 +227,8 @@ class BottomPanel {
     $id('stroke_linejoin').addEventListener('change', (evt) => this.handleStrokeAttr.bind(this)('stroke-linejoin', evt));
     $id('stroke_linecap').addEventListener('change', (evt) => this.handleStrokeAttr.bind(this)('stroke-linecap', evt));
     $id('opacity').addEventListener('change', this.handleOpacity.bind(this));
+    $id('fill_color').init(i18next);
+    $id('stroke_color').init(i18next);
   }
   /**
   * @type {module}

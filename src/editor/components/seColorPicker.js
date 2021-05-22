@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-/* gl#bals svgEditor */
 import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
 
@@ -643,7 +642,7 @@ div.jGraduate_Slider img {
   </style>
   <div id="picker">
       <img src="./images/logo.svg" alt="icon" id="logo">
-      <label for="color" title="#svgEditor.i18next.t('config.change_xxx_color')}" id="label"></label>
+      <label for="color" title="" id="label"></label>
       <div id="block">
       </div>
   </div>
@@ -670,11 +669,19 @@ export class SeColorPicker extends HTMLElement {
     this.$color_picker = this._shadowRoot.getElementById('color_picker');
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+   init (i18next) {
+    this.setAttribute('config-change_xxx_color', i18next.t('config.change_xxx_color'));
+  }
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'label', 'src', 'type' ];
+    return [ 'label', 'src', 'type', 'config-change_xxx_color' ];
   }
   /**
    * @function attributeChangedCallback
@@ -694,6 +701,9 @@ export class SeColorPicker extends HTMLElement {
       break;
     case 'type':
       this.$label.setAttribute('title', 'config.pick_paint_opavity');
+      break;
+    case 'config-change_xxx_color':
+      this.$label.setAttribute('title', newValue);
       break;
     default:
       // eslint-disable-next-line no-console
