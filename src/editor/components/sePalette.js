@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-/* gl#bals svgEditor */
 const palette = [
   // Todo: Make into configuration item?
   'none', '#000000', '#3f3f3f', '#7f7f7f', '#bfbfbf', '#ffffff',
@@ -78,8 +77,7 @@ template.innerHTML = `
     }
   }   
   </style>
-  <div id="palette_holder" title="$
-  #{svgEditor.i18next.t('ui.palette_info')}">
+  <div id="palette_holder" title="">
     <div id="js-se-palette">
     </div>
   </div>
@@ -127,6 +125,35 @@ export class SEPalette extends HTMLElement {
     });
   }
 
+  /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+  init (i18next) {
+    this.setAttribute('ui-palette_info', i18next.t('ui.palette_info'));
+  }
+  /**
+   * @function observedAttributes
+   * @returns {any} observed
+   */
+  static get observedAttributes () {
+    return [ 'ui-palette_info' ];
+  }
+  /**
+   * @function attributeChangedCallback
+   * @param {string} name
+   * @param {string} oldValue
+   * @param {string} newValue
+   * @returns {void}
+   */
+  attributeChangedCallback (name, oldValue, newValue) {
+    let node;
+    if (name === 'ui-palette_info') {
+      node = this._shadowRoot.querySelector('#palette_holder');
+      node.setAttribute('title', newValue);
+    }
+  }
   /**
    * @function connectedCallback
    * @returns {void}

@@ -215,6 +215,7 @@ class BottomPanel {
     `;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
     $id('palette').addEventListener('change', this.handlePalette.bind(this));
+    $id('palette').init(i18next);
     const { curConfig } = this.editor.configObj;
     $id('fill_color').setPaint(new jGraduate.Paint({ alpha: 100, solidColor: curConfig.initFill.color }));
     $id('stroke_color').setPaint(new jGraduate.Paint({ alpha: 100, solidColor: curConfig.initStroke.color }));
