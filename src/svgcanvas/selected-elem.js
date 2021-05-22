@@ -735,8 +735,11 @@ export const convertToGroup = function (elem) {
   } else if (dataStorage.has($elem, 'symbol')) {
     elem = dataStorage.get($elem, 'symbol');
 
-    ts = $elem.attr('transform');
-    const pos = $elem.attr([ 'x', 'y' ]);
+    ts = $elem.getAttribute('transform');
+    const pos = {
+      x: $elem.getAttribute('x'),
+      y: $elem.getAttribute('y')
+    };
 
     const vb = elem.getAttribute('viewBox');
 
