@@ -1,15 +1,5 @@
 /* eslint-disable max-len */
-/* globals svgEditor */
 const template = document.createElement('template');
-const notification = svgEditor.i18next.t('notification.editorPreferencesMsg');
-const prefs_and_content = svgEditor.i18next.t('properties.prefs_and_content');
-const prefs_only = svgEditor.i18next.t('properties.prefs_only');
-const no_prefs_or_content = svgEditor.i18next.t('properties.no_prefs_or_content');
-const remember_this_choice = svgEditor.i18next.t('tools.remember_this_choice');
-const remember_this_choice_title = svgEditor.i18next.t('tools.remember_this_choice_title');
-const ok = svgEditor.i18next.t('common.ok');
-const cancel = svgEditor.i18next.t('common.cancel');
-// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
  
@@ -59,26 +49,22 @@ template.innerHTML = `
     <div class="overlay"></div>
     <div id="dialog_container">
       <div id="dialog_content">
-        <p>
-          ${notification} 
-        </p>
+        <p id="notificationNote"> </p>
         <select id="se-storage-pref">
-          <option value="prefsAndContent">${prefs_and_content}</option>
-          <option value="prefsOnly">${prefs_only}</option>
-          <option value="noPrefsOrContent">${no_prefs_or_content}</option>
+          <option value="prefsAndContent" id="prefsAndContent"></option>
+          <option value="prefsOnly" id="prefsOnly"></option>
+          <option value="noPrefsOrContent" id="noPrefsOrContent"></option>
         </select> 
-        <label title="${remember_this_choice_title}">
-        ${remember_this_choice}<input type="checkbox" id="se-remember" value="" checked>
+        <label title="" id="se-remember-title">
+          <input type="checkbox" id="se-remember" value="" checked>
         </label>     
       </div>
       <div id="dialog_buttons">
         <button id="storage_ok">
           <img class="svg_icon" src="./images/ok.svg" alt="icon" width="16" height="16" />
-          ${ok}
         </button>
         <button id="storage_cancel">
           <img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />
-          ${cancel}
         </button>
       </div>
     </div>
@@ -104,11 +90,26 @@ export class SeStorageDialog extends HTMLElement {
     this.$rememberInput = this._shadowRoot.querySelector('#se-remember');
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+   init (i18next) {
+    this.setAttribute('common-ok', i18next.t('common.ok'));
+    this.setAttribute('common-cancel', i18next.t('common.cancel'));
+    this.setAttribute('notify-editor_pref_msg', i18next.t('notification.editorPreferencesMsg'));
+    this.setAttribute('properties-prefs_and_content', i18next.t('properties.prefs_and_content'));
+    this.setAttribute('properties-prefs_only', i18next.t('properties.prefs_only'));
+    this.setAttribute('properties-no_prefs_or_content', i18next.t('properties.no_prefs_or_content'));
+    this.setAttribute('tools-remember_this_choice', i18next.t('tools.remember_this_choice'));
+    this.setAttribute('tools-remember_this_choice_title', i18next.t('tools.remember_this_choice_title'));
+  }
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'dialog', 'storage' ];
+    return [ 'dialog', 'storage', 'common-ok', 'common-cancel', 'notify-editor_pref_msg', 'properties-prefs_and_content', 'tools-remember_this_choice', 'tools-remember_this_choice_title', 'properties-prefs_only', 'properties-no_prefs_or_content' ];
   }
   /**
    * @function attributeChangedCallback
@@ -118,6 +119,7 @@ export class SeStorageDialog extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
+    let node;
     switch (name) {
     case 'dialog':
       if (newValue === 'open') {
@@ -132,6 +134,36 @@ export class SeStorageDialog extends HTMLElement {
       } else {
         this.$storageInput.options[0].disabled = true;
       }
+      break;
+    case 'common-ok':
+      this.$okBtn.append(newValue);
+      break;
+    case 'common-cancel':
+      this.$cancelBtn.append(newValue);
+      break;
+    case 'notify-editor_pref_msg':
+      node = this._shadowRoot.querySelector('#notificationNote');
+      node.textContent = newValue;
+      break;
+    case 'properties-prefs_and_content':
+      node = this._shadowRoot.querySelector('#prefsAndContent');
+      node.textContent = newValue;
+      break;
+    case 'properties-prefs_only':
+      node = this._shadowRoot.querySelector('#prefsOnly');
+      node.textContent = newValue;
+      break;
+    case 'properties-no_prefs_or_content':
+      node = this._shadowRoot.querySelector('#noPrefsOrContent');
+      node.textContent = newValue;
+      break;
+    case 'tools-remember_this_choice':
+      node = this._shadowRoot.querySelector('#se-remember-title');
+      node.prepend(newValue);
+      break;
+    case 'tools-remember_this_choice_title':
+      node = this._shadowRoot.querySelector('#se-remember-title');
+      node.setAttribute('title', newValue);
       break;
     default:
       // super.attributeChangedCallback(name, oldValue, newValue);

@@ -603,7 +603,7 @@ const { Color, List, ColorMethods } = jPicker; // local copies for YUI compresso
 * @param {module:jPicker.CancelCallback} [cancelCallback]
 * @returns {void}
 */
-export function jPickerMethod (elem, options, commitCallback, liveCallback, cancelCallback) {
+export function jPickerMethod (elem, options, commitCallback, liveCallback, cancelCallback, i18next) {
   let sets = mergeDeep({}, jPickerDefaults); // local copies for YUI compressor
   sets = mergeDeep(sets, options);
 
@@ -632,7 +632,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     content.innerHTML = `<span class="Icon" id="jq-ae-Icon">
       <span class="Color" id="jq-ae-Color">&nbsp;</span>
       <span class="Alpha" id="jq-ae-Alpha">&nbsp;</span>
-      <span class="Image" id="jq-ae-Image" title="#svgEditor.i18next.t('config.open_color_picker')}">&nbsp;</span>
+      <span class="Image" id="jq-ae-Image" title="${i18next.t('config.open_color_picker')}">&nbsp;</span>
       <span class="Container" id="Container">&nbsp;</span>
     </span>`;
     that.insertAdjacentElement('afterend', content);
@@ -1331,39 +1331,39 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
         <tr>
           <td rowspan="9"><h2 class="Title">${win.title || 'config.jpicker_title'}</h2><div class="Map" id="Map"><span class="Map1" id="MMap1">&nbsp;</span><span class="Map2" id="MMap2">&nbsp;</span><span class="Map3" id="MMap3">&nbsp;</span><img src="${images.clientPath + images.colorMap.arrow.file}" class="Arrow"/></div></td>
           <td rowspan="9"><div class="Bar" id="Bar"><span class="Map1" id="Map1">&nbsp;</span><span class="Map2" id="Map2">&nbsp;</span><span class="Map3" id="Map3">&nbsp;</span><span class="Map4" id="Map4">&nbsp;</span><span class="Map5" id="Map5">&nbsp;</span><span class="Map6" id="Map6">&nbsp;</span><img src="${images.clientPath + images.colorBar.arrow.file}" class="Arrow"/></div></td>
-          <td colspan="2" class="Preview" id="Preview">#svgEditor.i18next.t('config.jpicker_new_color')}<div id="preview-div"><span class="Active" id="Active" title="#svgEditor.i18next.t('config.jpicker_tooltip_colors_new_color')}">&nbsp;</span><span class="Current" id="Current" title="#svgEditor.i18next.t('config.jpicker_tooltip_colors_current_color')}">&nbsp;</span></div>#svgEditor.i18next.t('config.jpicker_current_color')}</td>
-          <td rowspan="9" class="Button" id="Button"><input type="button" class="Ok" id="Ok" value="#svgEditor.i18next.t('common.ok')}" title="#svgEditor.i18next.t('config.jpicker_tooltip_buttons_ok')}"/><input type="button" class="Cancel" id="Cancel" value="#svgEditor.i18next.t('common.cancel')}" title="#svgEditor.i18next.t('config.jpicker_tooltip_buttons_cancel')}"/><hr/><div class="Grid" id="Grid"></div></td>
+          <td colspan="2" class="Preview" id="Preview">${i18next.t('config.jpicker_new_color')}<div id="preview-div"><span class="Active" id="Active" title="${i18next.t('config.jpicker_tooltip_colors_new_color')}">&nbsp;</span><span class="Current" id="Current" title="${i18next.t('config.jpicker_tooltip_colors_current_color')}">&nbsp;</span></div>${i18next.t('config.jpicker_current_color')}</td>
+          <td rowspan="9" class="Button" id="Button"><input type="button" class="Ok" id="Ok" value="${i18next.t('common.ok')}" title="${i18next.t('config.jpicker_tooltip_buttons_ok')}"/><input type="button" class="Cancel" id="Cancel" value="${i18next.t('common.cancel')}" title="${i18next.t('config.jpicker_tooltip_buttons_cancel')}"/><hr/><div class="Grid" id="Grid"></div></td>
         </tr>
         <tr class="Hue">
-          <td class="Radio"><label title="#svgEditor.i18next.t('config.jpicker_tooltip_hue_radio')}"><input type="radio" value="h"${settings.color.mode === 'h' ? ' checked="checked"' : ''}/>H:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.h : ''}" title="#svgEditor.i18next.t('config.jpicker_tooltip_hue_textbox')}"/>&nbsp;&deg;</td>
+          <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_hue_radio')}"><input type="radio" value="h"${settings.color.mode === 'h' ? ' checked="checked"' : ''}/>H:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.h : ''}" title="${i18next.t('config.jpicker_tooltip_hue_textbox')}"/>&nbsp;&deg;</td>
         </tr>
         <tr class="Saturation">
-          <td class="Radio"><label title="#svgEditor.i18next.t('config.jpicker_tooltip_saturation_radio')}"><input type="radio" value="s"${settings.color.mode === 's' ? ' checked="checked"' : ''}/>S:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.s : ''}" title="#svgEditor.i18next.t('config.jpicker_tooltip_saturation_textbox')}"/>&nbsp;%</td>
+          <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_saturation_radio')}"><input type="radio" value="s"${settings.color.mode === 's' ? ' checked="checked"' : ''}/>S:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.s : ''}" title="${i18next.t('config.jpicker_tooltip_saturation_textbox')}"/>&nbsp;%</td>
         </tr>
         <tr class="Value">
-          <td class="Radio"><label title="#svgEditor.i18next.t('config.jpicker_tooltip_value_radio')}"><input type="radio" value="v"${settings.color.mode === 'v' ? ' checked="checked"' : ''}/>V:</label><br/><br/></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.v : ''}" title="#svgEditor.i18next.t('config.jpicker_tooltip_value_textbox')}"/>&nbsp;%<br/><br/></td>
+          <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_value_radio')}"><input type="radio" value="v"${settings.color.mode === 'v' ? ' checked="checked"' : ''}/>V:</label><br/><br/></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.v : ''}" title="${i18next.t('config.jpicker_tooltip_value_textbox')}"/>&nbsp;%<br/><br/></td>
         </tr>
         <tr class="Red">
-          <td class="Radio"><label title="#svgEditor.i18next.t('config.jpicker_tooltip_red_radio')}"><input type="radio" value="r"${settings.color.mode === 'r' ? ' checked="checked"' : ''}/>R:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.r : ''}" title="#svgEditor.i18next.t('config.jpicker_tooltip_red_textbox')}"/></td>
+          <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_red_radio')}"><input type="radio" value="r"${settings.color.mode === 'r' ? ' checked="checked"' : ''}/>R:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.r : ''}" title="${i18next.t('config.jpicker_tooltip_red_textbox')}"/></td>
         </tr>
         <tr class="Green">
-          <td class="Radio"><label title="#svgEditor.i18next.t('config.jpicker_tooltip_green_radio')}"><input type="radio" value="g"${settings.color.mode === 'g' ? ' checked="checked"' : ''}/>G:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.g : ''}" title="#svgEditor.i18next.t('config.jpicker_tooltip_green_textbox')}"/></td>
+          <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_green_radio')}"><input type="radio" value="g"${settings.color.mode === 'g' ? ' checked="checked"' : ''}/>G:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.g : ''}" title="${i18next.t('config.jpicker_tooltip_green_textbox')}"/></td>
         </tr>
         <tr class="Blue">
-          <td class="Radio"><label title="#svgEditor.i18next.t('config.jpicker_tooltip_blue_radio')}"><input type="radio" value="b"${settings.color.mode === 'b' ? ' checked="checked"' : ''}/>B:</label></td>
-          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.b : ''}" title="#svgEditor.i18next.t('config.jpicker_tooltip_blue_textbox')}"/></td>
+          <td class="Radio"><label title="${i18next.t('config.jpicker_tooltip_blue_radio')}"><input type="radio" value="b"${settings.color.mode === 'b' ? ' checked="checked"' : ''}/>B:</label></td>
+          <td class="Text"><input type="text" maxlength="3" value="${!isNullish(all) ? all.b : ''}" title="${i18next.t('config.jpicker_tooltip_blue_textbox')}"/></td>
         </tr>
         <tr class="Alpha">
-          <td class="Radio">${win.alphaSupport ? `<label title="#svgEditor.i18next.t('config.jpicker_tooltip_alpha_radio')}"><input type="radio" value="a"${settings.color.mode === 'a' ? ' checked="checked"' : ''}/>A:</label>` : '&nbsp;'}</td>
-          <td class="Text">${win.alphaSupport ? `<input type="text" maxlength="${3 + win.alphaPrecision}" value="${!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, win.alphaPrecision) : ''}" title="#svgEditor.i18next.t('config.jpicker_tooltip_alpha_textbox')}"/>&nbsp;%` : '&nbsp;'}</td>
+          <td class="Radio">${win.alphaSupport ? `<label title="${i18next.t('config.jpicker_tooltip_alpha_radio')}"><input type="radio" value="a"${settings.color.mode === 'a' ? ' checked="checked"' : ''}/>A:</label>` : '&nbsp;'}</td>
+          <td class="Text">${win.alphaSupport ? `<input type="text" maxlength="${3 + win.alphaPrecision}" value="${!isNullish(all) ? toFixedNumeric((all.a * 100) / 255, win.alphaPrecision) : ''}" title="${i18next.t('config.jpicker_tooltip_alpha_textbox')}"/>&nbsp;%` : '&nbsp;'}</td>
         </tr>
         <tr class="Hex">
-          <td colspan="2" class="Text"><label title="#svgEditor.i18next.t('config.jpicker_tooltip_hex_textbox')}">#:<input type="text" maxlength="6" class="Hex" value="${!isNullish(all) ? all.hex : ''}"/></label>${win.alphaSupport ? `<input type="text" maxlength="2" class="AHex" value="${!isNullish(all) ? all.ahex.substring(6) : ''}" title="#svgEditor.i18next.t('config.jpicker_tooltip_hex_alpha')}"/></td>` : '&nbsp;'}
+          <td colspan="2" class="Text"><label title="${i18next.t('config.jpicker_tooltip_hex_textbox')}">#:<input type="text" maxlength="6" class="Hex" value="${!isNullish(all) ? all.hex : ''}"/></label>${win.alphaSupport ? `<input type="text" maxlength="2" class="AHex" value="${!isNullish(all) ? all.ahex.substring(6) : ''}" title="${i18next.t('config.jpicker_tooltip_hex_alpha')}"/></td>` : '&nbsp;'}
         </tr>
       </tbody></table>`;
     if (win.expandable) {
