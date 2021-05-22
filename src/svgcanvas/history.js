@@ -294,7 +294,7 @@ export class ChangeElementCommand extends Command {
     this.oldValues = attrs;
     for (const attr in attrs) {
       if (attr === '#text') {
-        this.newValues[attr] = elem.textContent;
+        this.newValues[attr] = (elem) ? elem.textContent : '';
       } else if (attr === '#href') {
         this.newValues[attr] = getHref(elem);
       } else {
