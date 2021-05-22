@@ -1,6 +1,5 @@
-/* eslint-disable max-len */
+/* eslint-disable max-len, no-console */
 import '../../../instrumented/editor/jquery.min.js';
-import '../../../instrumented/editor/jquery-ui/jquery-ui-1.8.17.custom.min.js';
 
 import SvgCanvas from '../../../instrumented/svgcanvas/svgcanvas.js';
 
@@ -35,16 +34,14 @@ describe('Basic Module', function () {
     workarea.append(svgcanvas);
     const toolsLeft = document.createElement('div');
     toolsLeft.id = 'tools_left';
-    const toolsFlyout = document.createElement('div');
-    toolsFlyout.id = 'tools_flyout';
 
-    svgEditor.append(workarea, toolsLeft, toolsFlyout);
+    svgEditor.append(workarea, toolsLeft);
     document.body.append(svgEditor);
 
     svgCanvas = new SvgCanvas(
       document.getElementById('svgcanvas'), {
         canvas_expansion: 3,
-        dimensions: [640, 480],
+        dimensions: [ 640, 480 ],
         initFill: {
           color: 'FF0000', // solid red
           opacity: 1
@@ -58,7 +55,7 @@ describe('Basic Module', function () {
         imgPath: '../editor/images/',
         langPath: 'locale/',
         extPath: 'extensions/',
-        extensions: ['ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js'],
+        extensions: [ 'ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js' ],
         initTool: 'select',
         wireframe: false
       }
@@ -162,8 +159,6 @@ describe('Basic Module', function () {
       assert.strictEqual(attrVal, 'bar', true, 'Preserved namespaced attribute on import');
 
       const output = svgCanvas.getSvgString();
-      // } catch(e) {console.log(e)}
-      // console.log('output',output);
       const hasXlink = output.includes('xmlns:xlink="http://www.w3.org/1999/xlink"');
       const hasSe = output.includes('xmlns:se=');
       const hasFoo = output.includes('xmlns:foo=');

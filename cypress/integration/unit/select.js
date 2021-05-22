@@ -1,7 +1,7 @@
 import '../../../instrumented/editor/jquery.min.js';
 
 import * as select from '../../../instrumented/svgcanvas/select.js';
-import {NS} from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
 
 describe('select', function () {
   const sandbox = document.createElement('div');
@@ -10,7 +10,29 @@ describe('select', function () {
   let svgroot;
   let svgcontent;
   const mockConfig = {
-    dimensions: [640, 480]
+    dimensions: [ 640, 480 ]
+  };
+  const dataStorage = {
+    _storage: new WeakMap(),
+    put: function (element, key, obj) {
+      if (!this._storage.has(element)) {
+        this._storage.set(element, new Map());
+      }
+      this._storage.get(element).set(key, obj);
+    },
+    get: function (element, key) {
+      return this._storage.get(element).get(key);
+    },
+    has: function (element, key) {
+      return this._storage.has(element) && this._storage.get(element).has(key);
+    },
+    remove: function (element, key) {
+      var ret = this._storage.get(element).delete(key);
+      if (!this._storage.get(element).size === 0) {
+        this._storage.delete(element);
+      }
+      return ret;
+    }
   };
 
   /**
@@ -19,13 +41,14 @@ describe('select', function () {
   const mockFactory = {
     createSVGElement (jsonMap) {
       const elem = document.createElementNS(NS.SVG, jsonMap.element);
-      Object.entries(jsonMap.attr).forEach(([attr, value]) => {
+      Object.entries(jsonMap.attr).forEach(([ attr, value ]) => {
         elem.setAttribute(attr, value);
       });
       return elem;
     },
     svgRoot () { return svgroot; },
-    svgContent () { return svgcontent; }
+    svgContent () { return svgcontent; },
+    getDataStorage () { return dataStorage; }
   };
 
   /**
@@ -35,15 +58,15 @@ describe('select', function () {
   beforeEach(() => {
     svgroot = mockFactory.createSVGElement({
       element: 'svg',
-      attr: {id: 'svgroot'}
+      attr: { id: 'svgroot' }
     });
-    svgcontent = svgroot.appendChild(
-      mockFactory.createSVGElement({
-        element: 'svg',
-        attr: {id: 'svgcontent'}
-      })
-    );
-    /* const rect = */ svgcontent.appendChild(
+    svgcontent = mockFactory.createSVGElement({
+      element: 'svg',
+      attr: { id: 'svgcontent' }
+    });
+
+    svgroot.append(svgcontent);
+    /* const rect = */ svgcontent.append(
       mockFactory.createSVGElement({
         element: 'rect',
         attr: {

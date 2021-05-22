@@ -7,11 +7,12 @@
  *  adopted for moinmoins item storage. It sends in one post png and svg data
  *  (I agree to dual license my work to additional GPLv2 or later)
  */
-import {Canvg as canvg} from 'canvg';
+import { Canvg as canvg } from 'canvg';
 
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -23,48 +24,58 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'server_moinsave',
-  async init ({$, encode64, importLocale}) {
+  async init ({ encode64 }) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
-    const svgCanvas = svgEditor.canvas;
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const saveSvgAction = '/+modify';
 
     // Create upload target (hidden iframe)
     //  Hiding by size instead of display to avoid FF console errors
     //    with `getBBox` in browser.js `supportsPathBBox_`)
-    /* const target = */ $(
-      `<iframe name="output_frame" title="${strings.hiddenframe}"
-        style="width: 0; height: 0;" src="data:text/html;base64,PGh0bWw+PC9odG1sPg=="/>`
-    ).appendTo('body');
+    const iframe = document.createElement('IFRAME');
+    iframe.src="data:text/html;base64,PGh0bWw+PC9odG1sPg==";
+    document.body.append(iframe);
+    iframe.name = "output_frame";
+    iframe.contentWindow.document.title = strings.hiddenframe;
+    iframe.style.cssText = "width:0;height:0;";
 
     svgEditor.setCustomHandlers({
       async save (win, data) {
         const svg = '<?xml version="1.0"?>\n' + data;
-        const {pathname} = new URL(location);
+        const { pathname } = new URL(location);
         const name = pathname.replace(/\/+get\//, '');
         const svgData = encode64(svg);
-        if (!$('#export_canvas').length) {
-          $('<canvas>', {id: 'export_canvas'}).hide().appendTo('body');
+        if (!$id('export_canvas')) {
+          const canvas = document.createElement('canvas');
+          canvas.setAttribute('id', 'export_canvas');
+          canvas.style.display = 'none';
+          document.body.appendChild(canvas);
         }
-        const c = $('#export_canvas')[0];
-        c.width = svgCanvas.contentW;
-        c.height = svgCanvas.contentH;
+        const c = $id('export_canvas');
+        c.style.width = svgCanvas.contentW;
+        c.style.height = svgCanvas.contentH;
         await canvg(c, svg);
         const datauri = c.toDataURL('image/png');
         // const {uiStrings} = svgEditor;
         const pngData = encode64(datauri); // Brett: This encoding seems unnecessary
-        /* const form = */ $('<form>').attr({
-          method: 'post',
-          action: saveSvgAction + '/' + name,
-          target: 'output_frame'
-        }).append(`
-          <input type="hidden" name="png_data" value="${pngData}">
-          <input type="hidden" name="filepath" value="${svgData}">
-          <input type="hidden" name="filename" value="drawing.svg">
-          <input type="hidden" name="contenttype" value="application/x-svgdraw">
-        `).appendTo('body')
-          .submit().remove();
-        $.alert(strings.saved);
+
+        const form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', saveSvgAction + '/' + name);
+        form.setAttribute('target', 'output_frame');
+        // eslint-disable-next-line no-unsanitized/property
+        form.innerHTML = `<input type="hidden" name="png_data" value="${pngData}">
+        <input type="hidden" name="filepath" value="${svgData}">
+        <input type="hidden" name="filename" value="drawing.svg">
+        <input type="hidden" name="contenttype" value="application/x-svgdraw">`;
+        document.body.append(form);
+        form.submit();
+        form.remove();
+
+        // eslint-disable-next-line no-alert
+        alert(strings.saved);
         top.window.location = '/' + name;
       }
     });

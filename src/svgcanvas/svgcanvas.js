@@ -9,16 +9,10 @@
  *
  */
 
-/* Dependencies:
-1. Also expects jQuery UI for `svgCanvasToString` and
-`convertToGroup` use of `:data()` selector
-*/
-
-import {Canvg as canvg} from 'canvg';
+import { Canvg as canvg } from 'canvg';
 import 'pathseg';
 
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
-import jQueryPluginDBox from './dbox.js';
+import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
@@ -34,7 +28,7 @@ import {
   setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
   leaveContext, setContext
 } from './draw.js';
-import {svgRootElement} from './svgroot.js';
+import { svgRootElement } from './svgroot.js';
 import {
   init as undoInit, getUndoManager, changeSelectedAttributeNoUndoMethod,
   changeSelectedAttributeMethod, ffClone
@@ -51,13 +45,13 @@ import {
   init as eventInit, mouseMoveEvent, mouseUpEvent,
   dblClickEvent, mouseDownEvent, DOMMouseScrollEvent
 } from './event.js';
-import {init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson} from './json.js';
+import { init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson } from './json.js';
 import {
   init as elemInit, getResolutionMethod, getTitleMethod, setGroupTitleMethod,
   setDocumentTitleMethod, setResolutionMethod, getEditorNSMethod, setBBoxZoomMethod,
   setZoomMethod, setColorMethod, setGradientMethod, findDuplicateGradient, setPaintMethod,
   setStrokeWidthMethod, setStrokeAttrMethod, getBoldMethod, setBoldMethod, getItalicMethod,
-  setItalicMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
+  setItalicMethod, setTextAnchorMethod, getFontFamilyMethod, setFontFamilyMethod, setFontColorMethod, getFontColorMethod,
   getFontSizeMethod, setFontSizeMethod, getTextMethod, setTextContentMethod,
   setImageURLMethod, setLinkURLMethod, setRectRadiusMethod, makeHyperlinkMethod,
   removeHyperlinkMethod, setSegTypeMethod, setBackgroundMethod
@@ -71,19 +65,20 @@ import {
 import {
   init as blurInit, setBlurNoUndo, setBlurOffsets, setBlur
 } from './blur-event.js';
-import {sanitizeSvg} from './sanitize.js';
-import {getReverseNS, NS} from '../common/namespaces.js';
+import { sanitizeSvg } from './sanitize.js';
+import { getReverseNS, NS } from '../common/namespaces.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,
   preventClickDefault, walkTree, getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, dropXMLInternalSubset, init as utilsInit,
-  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish
-} from '../common/utilities.js';
+  getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish, blankPageObjectURL,
+  $id, $qa, $qq
+} from './utilities.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
   isIdentity, transformBox
-} from '../common/math.js';
+} from './math.js';
 import {
   convertToNum, getTypeMap, init as unitsInit
 } from '../common/units.js';
@@ -93,11 +88,11 @@ import {
   uniquifyElemsMethod, removeUnusedDefElemsMethod, convertGradientsMethod
 } from './svg-exec.js';
 import {
-  isChrome, isIE, isWebkit
+  isChrome, isWebkit
 } from '../common/browser.js'; // , supportsEditableText
 import {
   getTransformList, SVGTransformList as SVGEditTransformList
-} from '../common/svgtransformlist.js';
+} from './svgtransformlist.js';
 import {
   remapElement,
   init as coordsInit
@@ -115,25 +110,28 @@ import {
   clearSvgContentElementInit,
   init as clearInit
 } from './clear.js';
+import {
+  getClosest, getParents, mergeDeep
+} from '../editor/components/jgraduate/Util.js';
 
-let $ = jQueryPluginSVG(jQuery);
+const $ = jQueryPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand, BatchCommand
 } = hstry;
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use';
-const refAttrs = ['clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke'];
+const refAttrs = [ 'clip-path', 'fill', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'stroke' ];
 
 if (!window.console) {
   window.console = {};
-  window.console.log = function (str) { /* empty fn */ };
-  window.console.dir = function (str) { /* empty fn */ };
+  window.console.log = function (_str) { /* empty fn */ };
+  window.console.dir = function (_str) { /* empty fn */ };
 }
 
 if (window.opera) {
   window.console.log = function (str) { window.opera.postError(str); };
-  window.console.dir = function (str) { /* empty fn */ };
+  window.console.dir = function (_str) { /* empty fn */ };
 }
 
 // Reenable after fixing eslint-plugin-jsdoc to handle
@@ -168,16 +166,16 @@ if (window.opera) {
 class SvgCanvas {
   /**
   * @param {HTMLElement} container - The container HTML element that should hold the SVG root element
-  * @param {module:SVGEditor.curConfig} config - An object that contains configuration data
+  * @param {module:SVGeditor.configObj.curConfig} config - An object that contains configuration data
   */
-  constructor (container, config) {
-  // Alias Namespace constants
+  constructor(container, config) {
+    // Alias Namespace constants
 
     // Default configuration options
     const curConfig = {
       show_outside_canvas: true,
       selectNew: true,
-      dimensions: [640, 480]
+      dimensions: [ 640, 480 ]
     };
 
     // Update config with new one if given
@@ -186,9 +184,45 @@ class SvgCanvas {
     }
 
     // Array with width/height of canvas
-    const {dimensions} = curConfig;
+    const { dimensions } = curConfig;
 
     const canvas = this;
+
+    this.$id = $id;
+    this.$qq = $qq;
+    this.$qa = $qa;
+    this.mergeDeep = mergeDeep;
+    this.getClosest = getClosest;
+    this.getParents = getParents;
+    /** A storage solution aimed at replacing jQuerys data function.
+ * Implementation Note: Elements are stored in a (WeakMap)[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap].
+ * This makes sure the data is garbage collected when the node is removed.
+ */
+    this.dataStorage = {
+      _storage: new WeakMap(),
+      put: function (element, key, obj) {
+        if (!this._storage.has(element)) {
+          this._storage.set(element, new Map());
+        }
+        this._storage.get(element).set(key, obj);
+      },
+      get: function (element, key) {
+        return this._storage.get(element).get(key);
+      },
+      has: function (element, key) {
+        return this._storage.has(element) && this._storage.get(element).has(key);
+      },
+      remove: function (element, key) {
+        var ret = this._storage.get(element).delete(key);
+        if (!this._storage.get(element).size === 0) {
+          this._storage.delete(element);
+        }
+        return ret;
+      }
+    };
+    const getDataStorage = this.getDataStorage = function () { return canvas.dataStorage; };
+
+    this.isLayer = draw.Layer.isLayer;
 
     // "document" element associated with the container (same as window.document using default svg-editor.js)
     // NOTE: This is not actually a SVG document, but an HTML document.
@@ -223,10 +257,10 @@ class SvgCanvas {
   */
       {
         getSVGContent,
-        getDOMDocument () { return svgdoc; },
-        getDOMContainer () { return container; },
+        getDOMDocument() { return svgdoc; },
+        getDOMContainer() { return container; },
         getSVGRoot,
-        getCurConfig () { return curConfig; }
+        getCurConfig() { return curConfig; }
       }
     );
     /**
@@ -312,10 +346,10 @@ class SvgCanvas {
   * @implements {module:json.jsonContext}
   */
       {
-        getDOMDocument () { return svgdoc; },
-        getDrawing () { return getCurrentDrawing(); },
-        getCurShape () { return curShape; },
-        getCurrentGroup () { return currentGroup; }
+        getDOMDocument() { return svgdoc; },
+        getDrawing() { return getCurrentDrawing(); },
+        getCurShape() { return curShape; },
+        getCurrentGroup() { return currentGroup; }
       }
     );
 
@@ -361,9 +395,9 @@ class SvgCanvas {
       {
         getBaseUnit,
         getElement: getElem,
-        getHeight () { return svgcontent.getAttribute('height') / currentZoom; },
-        getWidth () { return svgcontent.getAttribute('width') / currentZoom; },
-        getRoundDigits () { return saveOptions.round_digits; }
+        getHeight() { return svgcontent.getAttribute('height') / currentZoom; },
+        getWidth() { return svgcontent.getAttribute('width') / currentZoom; },
+        getRoundDigits() { return saveOptions.round_digits; }
       }
     );
 
@@ -385,7 +419,7 @@ class SvgCanvas {
       selectedElements = [];
     };
 
-    const {pathActions} = pathModule;
+    const { pathActions } = pathModule;
 
     /**
 * This should actually be an intersection as all interfaces should be met.
@@ -401,12 +435,13 @@ class SvgCanvas {
         getSVGContent,
         addSVGElementFromJson,
         getSelectedElements,
-        getDOMDocument () { return svgdoc; },
-        getDOMContainer () { return container; },
+        getDOMDocument() { return svgdoc; },
+        getDOMContainer() { return container; },
         getSVGRoot,
         // TODO: replace this mostly with a way to get the current drawing.
         getBaseUnit,
-        getSnappingStep () { return curConfig.snappingStep; }
+        getSnappingStep() { return curConfig.snappingStep; },
+        getDataStorage
       }
     );
 
@@ -433,7 +468,8 @@ class SvgCanvas {
   * @implements {module:coords.EditorContext}
   */
       {
-        getDrawing () { return getCurrentDrawing(); },
+        getDrawing() { return getCurrentDrawing(); },
+        getDataStorage,
         getSVGRoot,
         getGridSnapping
       }
@@ -446,8 +482,9 @@ class SvgCanvas {
   */
       {
         getSVGRoot,
-        getStartTransform () { return startTransform; },
-        setStartTransform (transform) { startTransform = transform; }
+        getStartTransform() { return startTransform; },
+        setStartTransform(transform) { startTransform = transform; },
+        getDataStorage
       }
     );
     this.recalculateDimensions = recalculateDimensions;
@@ -479,9 +516,10 @@ class SvgCanvas {
   * @implements {module:select.SVGFactory}
   */
       {
-        createSVGElement (jsonMap) { return canvas.addSVGElementFromJson(jsonMap); },
-        svgRoot () { return svgroot; },
-        svgContent () { return svgcontent; },
+        createSVGElement(jsonMap) { return canvas.addSVGElementFromJson(jsonMap); },
+        svgRoot() { return svgroot; },
+        svgContent() { return svgcontent; },
+        getDataStorage,
         getCurrentZoom
       }
     );
@@ -522,7 +560,10 @@ class SvgCanvas {
 
     const restoreRefElems = function (elem) {
       // Look for missing reference elements, restore any found
-      const attrs = $(elem).attr(refAttrs);
+      let attrs = {};
+      refAttrs.forEach(function (item, _) {
+        attrs[item] = elem.getAttribute(item);
+      });
       Object.values(attrs).forEach((val) => {
         if (val && val.startsWith('url(')) {
           const id = getUrlFromAttr(val).substr(1);
@@ -551,8 +592,8 @@ class SvgCanvas {
         call,
         restoreRefElems,
         getSVGContent,
-        getCanvas () { return canvas; },
-        getCurrentMode () { return currentMode; },
+        getCanvas() { return canvas; },
+        getCurrentMode() { return currentMode; },
         getCurrentZoom,
         getSVGRoot,
         getSelectedElements
@@ -579,22 +620,22 @@ class SvgCanvas {
   * @implements {module:selection.selectionContext}
   */
       {
-        getCanvas () { return canvas; },
-        getCurrentGroup () { return currentGroup; },
+        getCanvas() { return canvas; },
+        getDataStorage,
+        getCurrentGroup() { return currentGroup; },
         getSelectedElements,
         getSVGRoot,
         getSVGContent,
-        getDOMContainer () { return container; },
-        getExtensions () { return extensions; },
-        setExtensions (key, value) { extensions[key] = value; },
+        getDOMContainer() { return container; },
+        getExtensions() { return extensions; },
+        setExtensions(key, value) { extensions[key] = value; },
         getCurrentZoom,
-        isIE,
-        getRubberBox () { return rubberBox; },
-        setCurBBoxes (value) { curBBoxes = value; },
-        getCurBBoxes (value) { return curBBoxes; },
-        getCurrentResizeMode () { return currentResizeMode; },
+        getRubberBox() { return rubberBox; },
+        setCurBBoxes(value) { curBBoxes = value; },
+        getCurBBoxes(_value) { return curBBoxes; },
+        getCurrentResizeMode() { return currentResizeMode; },
         addCommandToHistory,
-        getSelector () { return Selector; }
+        getSelector() { return Selector; }
       }
     );
 
@@ -637,7 +678,7 @@ class SvgCanvas {
     /**
 * @type {module:path.EditorContext#resetD}
 */
-    function resetD (p) {
+    function resetD(p) {
       if (typeof pathActions.convertPath === 'function') {
         p.setAttribute('d', pathActions.convertPath(p));
       } else if (typeof pathActions.convertPaths === 'function') {
@@ -662,16 +703,16 @@ class SvgCanvas {
         getGridSnapping,
         getOpacity,
         getSelectedElements,
-        getContainer () {
+        getContainer() {
           return container;
         },
-        setStarted (s) {
+        setStarted(s) {
           started = s;
         },
-        getRubberBox () {
+        getRubberBox() {
           return rubberBox;
         },
-        setRubberBox (rb) {
+        setRubberBox(rb) {
           rubberBox = rb;
           return rubberBox;
         },
@@ -683,11 +724,11 @@ class SvgCanvas {
      * @fires module:svgcanvas.SvgCanvas#event:selected
      * @returns {void}
      */
-        addPtsToSelection ({closedSubpath, grips}) {
+        addPtsToSelection({ closedSubpath, grips }) {
           // TODO: Correct this:
           pathActions.canDeleteNodes = true;
           pathActions.closed_subpath = closedSubpath;
-          call('pointsAdded', {closedSubpath, grips});
+          call('pointsAdded', { closedSubpath, grips });
           call('selected', grips);
         },
         /**
@@ -697,25 +738,25 @@ class SvgCanvas {
      * @fires module:svgcanvas.SvgCanvas#event:changed
      * @returns {void}
      */
-        endChanges ({cmd, elem}) {
+        endChanges({ cmd, elem }) {
           addCommandToHistory(cmd);
-          call('changed', [elem]);
+          call('changed', [ elem ]);
         },
         getCurrentZoom,
         getId,
         getNextId,
         getMouseTarget,
-        getCurrentMode () {
+        getCurrentMode() {
           return currentMode;
         },
-        setCurrentMode (cm) {
+        setCurrentMode(cm) {
           currentMode = cm;
           return currentMode;
         },
-        getDrawnPath () {
+        getDrawnPath() {
           return drawnPath;
         },
-        setDrawnPath (dp) {
+        setDrawnPath(dp) {
           drawnPath = dp;
           return drawnPath;
         },
@@ -726,16 +767,13 @@ class SvgCanvas {
     // Interface strings, usually for title elements
     const uiStrings = {};
 
-    const elData = $.data;
-
     // Animation element to change the opacity of any newly created element
     const opacAni = document.createElementNS(NS.SVG, 'animate');
-    $(opacAni).attr({
-      attributeName: 'opacity',
-      begin: 'indefinite',
-      dur: 1,
-      fill: 'freeze'
-    }).appendTo(svgroot);
+    opacAni.setAttribute('attributeName', 'opacity');
+    opacAni.setAttribute('begin', 'indefinite');
+    opacAni.setAttribute('dur', 1);
+    opacAni.setAttribute('fill', 'freeze');
+    svgroot.appendChild(opacAni);
 
     // (function () {
     // TODO For Issue 208: this is a start on a thumbnail
@@ -760,7 +798,7 @@ class SvgCanvas {
       /**
    * @type {module:svgcanvas.SaveOptions}
    */
-      saveOptions = {round_digits: 5},
+      saveOptions = { round_digits: 5 },
 
       // Object with IDs for imported files, to see if one was already added
       importIds = {},
@@ -776,7 +814,7 @@ class SvgCanvas {
 
     let
       // String with image URL of last loadable image
-      lastGoodImgUrl = curConfig.imgPath + 'logo.png',
+      lastGoodImgUrl = curConfig.imgPath + 'logo.svg',
 
       // Boolean indicating whether or not a draw action has been started
       started = false,
@@ -811,7 +849,8 @@ class SvgCanvas {
     this.runExtension = function (name, action, vars) {
       return this.runExtensions(action, vars, false, (n) => n === name);
     };
-    /**
+/* eslint-disable max-len */
+/**
 * @todo Consider: Should this return an array by default, so extension results aren't overwritten?
 * @todo Would be easier to document if passing in object with key of action and vars as value; could then define an interface which tied both together
 * @function module:svgcanvas.SvgCanvas#runExtensions
@@ -821,6 +860,8 @@ class SvgCanvas {
 * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
 * @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
 */
+/* eslint-enable max-len */
+
     this.runExtensions = runExtensionsMethod;
 
     /**
@@ -834,7 +875,7 @@ class SvgCanvas {
 *   if extension of supplied name already exists
 * @returns {Promise<void>} Resolves to `undefined`
 */
-    this.addExtension = async function (name, extInitFunc, {$: jq, importLocale}) {
+    this.addExtension = async function (name, extInitFunc, { $: jq, importLocale }) {
       if (typeof extInitFunc !== 'function') {
         throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
       }
@@ -1002,12 +1043,14 @@ class SvgCanvas {
  * @event module:svgcanvas.SvgCanvas#event:exportedPDF
  * @type {module:svgcanvas.PDFExportedResults}
  */
-    /**
+/* eslint-disable max-len */
+/**
  * Creating a cover-all class until {@link https://github.com/jsdoc3/jsdoc/issues/1545} may be supported.
  * `undefined` may be returned by {@link module:svgcanvas.SvgCanvas#event:extension_added} if the extension's `init` returns `undefined` It is also the type for the following events "zoomDone", "unsetnonce", "cleared", and "extensions_added".
  * @event module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
  * @type {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset|module:svgcanvas.SvgCanvas#event:pointsAdded|module:svgcanvas.SvgCanvas#event:extension_added|module:svgcanvas.SvgCanvas#event:extensions_added|module:svgcanvas.SvgCanvas#event:message|module:svgcanvas.SvgCanvas#event:transition|module:svgcanvas.SvgCanvas#event:zoomed|module:svgcanvas.SvgCanvas#event:updateCanvas|module:svgcanvas.SvgCanvas#event:saved|module:svgcanvas.SvgCanvas#event:exported|module:svgcanvas.SvgCanvas#event:exportedPDF|module:svgcanvas.SvgCanvas#event:setnonce|module:svgcanvas.SvgCanvas#event:unsetnonce|void}
  */
+/* eslint-enable max-len */
 
     /**
  * The promise return, if present, resolves to `undefined`
@@ -1022,7 +1065,7 @@ class SvgCanvas {
 * @listens module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
 * @returns {module:svgcanvas.EventHandlerReturn}
 */
-
+/* eslint-disable max-len */
     /**
 * Attaches a callback function to an event.
 * @function module:svgcanvas.SvgCanvas#bind
@@ -1030,6 +1073,7 @@ class SvgCanvas {
 * @param {module:svgcanvas.EventHandler} f - The callback function to bind to the event
 * @returns {module:svgcanvas.EventHandler} The previous event
 */
+/* eslint-enable max-len */
     canvas.bind = function (ev, f) {
       const old = events[ev];
       events[ev] = f;
@@ -1071,7 +1115,7 @@ class SvgCanvas {
  * @returns {void}
  */
     const logMatrix = function (m) {
-      console.log([m.a, m.b, m.c, m.d, m.e, m.f]); // eslint-disable-line no-console
+      console.info([ m.a, m.b, m.c, m.d, m.e, m.f ]);
     };
 
     // Root Current Transformation Matrix in user units
@@ -1135,7 +1179,11 @@ class SvgCanvas {
       const currentLayer = getCurrentDrawing().getCurrentLayer();
       if (currentLayer) {
         currentMode = 'select';
-        selectOnly($(currentGroup || currentLayer).children());
+        if (currentGroup) {
+          selectOnly(currentGroup.children);
+        } else {
+          selectOnly(currentLayer.children);
+        }
       }
     };
 
@@ -1158,12 +1206,12 @@ class SvgCanvas {
       let rStartY = null;
       let initBbox = {};
       let sumDistance = 0;
-      const controllPoint2 = {x: 0, y: 0};
-      const controllPoint1 = {x: 0, y: 0};
-      let start = {x: 0, y: 0};
-      const end = {x: 0, y: 0};
-      let bSpline = {x: 0, y: 0};
-      let nextPos = {x: 0, y: 0};
+      const controllPoint2 = { x: 0, y: 0 };
+      const controllPoint1 = { x: 0, y: 0 };
+      let start = { x: 0, y: 0 };
+      const end = { x: 0, y: 0 };
+      let bSpline = { x: 0, y: 0 };
+      let nextPos = { x: 0, y: 0 };
       let parameter;
       let nextParameter;
 
@@ -1172,73 +1220,74 @@ class SvgCanvas {
       * @returns {void}
       */
       eventInit(
-      /**
-      * @implements {module:event.eventContext_}
-      */
+        /**
+        * @implements {module:event.eventContext_}
+        */
         {
-          getStarted () { return started; },
-          getCanvas () { return canvas; },
-          getCurConfig () { return curConfig; },
-          getCurrentMode () { return currentMode; },
-          getrootSctm () { return rootSctm; },
-          getStartX () { return startX; },
-          setStartX (value) { startX = value; },
-          getStartY () { return startY; },
-          setStartY (value) { startY = value; },
-          getRStartX () { return rStartX; },
-          getRStartY () { return rStartY; },
-          getRubberBox () { return rubberBox; },
-          getInitBbox () { return initBbox; },
-          getCurrentResizeMode () { return currentResizeMode; },
-          getCurrentGroup () { return currentGroup; },
-          getDrawnPath () { return drawnPath; },
-          getJustSelected () { return justSelected; },
-          getOpacAni () { return opacAni; },
-          getParameter () { return parameter; },
-          getNextParameter () { return nextParameter; },
-          getStepCount () { return STEP_COUNT; },
-          getThreSholdDist () { return THRESHOLD_DIST; },
-          getSumDistance () { return sumDistance; },
-          getStart (key) { return start[key]; },
-          getEnd (key) { return end[key]; },
-          getbSpline (key) { return bSpline[key]; },
-          getNextPos (key) { return nextPos[key]; },
-          getControllPoint1 (key) { return controllPoint1[key]; },
-          getControllPoint2 (key) { return controllPoint2[key]; },
-          getFreehand (key) { return freehand[key]; },
-          getDrawing () { return getCurrentDrawing(); },
-          getCurShape () { return curShape; },
-          getDAttr () { return dAttr; },
-          getLastGoodImgUrl () { return lastGoodImgUrl; },
-          getCurText (key) { return curText[key]; },
-          setDAttr (value) { dAttr = value; },
-          setEnd (key, value) { end[key] = value; },
-          setControllPoint1 (key, value) { controllPoint1[key] = value; },
-          setControllPoint2 (key, value) { controllPoint2[key] = value; },
-          setJustSelected (value) { justSelected = value; },
-          setParameter (value) { parameter = value; },
-          setStart (value) { start = value; },
-          setRStartX (value) { rStartX = value; },
-          setRStartY (value) { rStartY = value; },
-          setSumDistance (value) { sumDistance = value; },
-          setbSpline (value) { bSpline = value; },
-          setNextPos (value) { nextPos = value; },
-          setNextParameter (value) { nextParameter = value; },
-          setCurProperties (key, value) { curProperties[key] = value; },
-          setCurText (key, value) { curText[key] = value; },
-          setStarted (s) { started = s; },
-          setStartTransform (transform) { startTransform = transform; },
-          setCurrentMode (cm) {
+          getStarted() { return started; },
+          getCanvas() { return canvas; },
+          getDataStorage,
+          getCurConfig() { return curConfig; },
+          getCurrentMode() { return currentMode; },
+          getrootSctm() { return rootSctm; },
+          getStartX() { return startX; },
+          setStartX(value) { startX = value; },
+          getStartY() { return startY; },
+          setStartY(value) { startY = value; },
+          getRStartX() { return rStartX; },
+          getRStartY() { return rStartY; },
+          getRubberBox() { return rubberBox; },
+          getInitBbox() { return initBbox; },
+          getCurrentResizeMode() { return currentResizeMode; },
+          getCurrentGroup() { return currentGroup; },
+          getDrawnPath() { return drawnPath; },
+          getJustSelected() { return justSelected; },
+          getOpacAni() { return opacAni; },
+          getParameter() { return parameter; },
+          getNextParameter() { return nextParameter; },
+          getStepCount() { return STEP_COUNT; },
+          getThreSholdDist() { return THRESHOLD_DIST; },
+          getSumDistance() { return sumDistance; },
+          getStart(key) { return start[key]; },
+          getEnd(key) { return end[key]; },
+          getbSpline(key) { return bSpline[key]; },
+          getNextPos(key) { return nextPos[key]; },
+          getControllPoint1(key) { return controllPoint1[key]; },
+          getControllPoint2(key) { return controllPoint2[key]; },
+          getFreehand(key) { return freehand[key]; },
+          getDrawing() { return getCurrentDrawing(); },
+          getCurShape() { return curShape; },
+          getDAttr() { return dAttr; },
+          getLastGoodImgUrl() { return lastGoodImgUrl; },
+          getCurText(key) { return curText[key]; },
+          setDAttr(value) { dAttr = value; },
+          setEnd(key, value) { end[key] = value; },
+          setControllPoint1(key, value) { controllPoint1[key] = value; },
+          setControllPoint2(key, value) { controllPoint2[key] = value; },
+          setJustSelected(value) { justSelected = value; },
+          setParameter(value) { parameter = value; },
+          setStart(value) { start = value; },
+          setRStartX(value) { rStartX = value; },
+          setRStartY(value) { rStartY = value; },
+          setSumDistance(value) { sumDistance = value; },
+          setbSpline(value) { bSpline = value; },
+          setNextPos(value) { nextPos = value; },
+          setNextParameter(value) { nextParameter = value; },
+          setCurProperties(key, value) { curProperties[key] = value; },
+          setCurText(key, value) { curText[key] = value; },
+          setStarted(s) { started = s; },
+          setStartTransform(transform) { startTransform = transform; },
+          setCurrentMode(cm) {
             currentMode = cm;
             return currentMode;
           },
-          setFreehand (key, value) { freehand[key] = value; },
-          setCurBBoxes (value) { curBBoxes = value; },
-          setRubberBox (value) { rubberBox = value; },
-          setInitBbox (value) { initBbox = value; },
-          setRootSctm (value) { rootSctm = value; },
-          setCurrentResizeMode (value) { currentResizeMode = value; },
-          setLastClickPoint (value) { lastClickPoint = value; },
+          setFreehand(key, value) { freehand[key] = value; },
+          setCurBBoxes(value) { curBBoxes = value; },
+          setRubberBox(value) { rubberBox = value; },
+          setInitBbox(value) { initBbox = value; },
+          setRootSctm(value) { rootSctm = value; },
+          setCurrentResizeMode(value) { currentResizeMode = value; },
+          setLastClickPoint(value) { lastClickPoint = value; },
           getSelectedElements,
           getCurrentZoom,
           getId,
@@ -1246,7 +1295,6 @@ class SvgCanvas {
           getSVGRoot,
           getSVGContent,
           call,
-          elData,
           getIntersectionList
         }
       );
@@ -1299,11 +1347,16 @@ class SvgCanvas {
 
       // Added mouseup to the container here.
       // TODO(codedread): Figure out why after the Closure compiler, the window mouseup is ignored.
-      $(container).mousedown(mouseDown).mousemove(mouseMove).click(handleLinkInCanvas).dblclick(dblClick).mouseup(mouseUp);
-      // $(window).mouseup(mouseUp);
+      container.addEventListener('mousedown', mouseDown);
+      container.addEventListener('mousemove', mouseMove);
+      container.addEventListener('click', handleLinkInCanvas);
+      container.addEventListener('dblclick', dblClick);
+      container.addEventListener('mouseup', mouseUp);
 
       // TODO(rafaelcastrocouto): User preference for shift key and zoom factor
-      $(container).bind('mousewheel DOMMouseScroll', DOMMouseScrollEvent);
+      container.addEventListener('mousewheel', DOMMouseScrollEvent);
+      container.addEventListener('DOMMouseScroll', DOMMouseScrollEvent);
+
     }());
 
     textActionsInit(
@@ -1311,14 +1364,14 @@ class SvgCanvas {
   * @implements {module:text-actions.textActionsContext}
   */
       {
-        getCanvas () { return canvas; },
-        getrootSctm () { return rootSctm; },
+        getCanvas() { return canvas; },
+        getrootSctm() { return rootSctm; },
         getSelectedElements,
         getCurrentZoom,
-        getCurrentMode () {
+        getCurrentMode() {
           return currentMode;
         },
-        setCurrentMode (cm) {
+        setCurrentMode(cm) {
           currentMode = cm;
           return currentMode;
         },
@@ -1334,34 +1387,35 @@ class SvgCanvas {
 */
 
     svgInit(
-    /**
-    * @implements {module:elem-get-set.elemInit}
-    */
+      /**
+      * @implements {module:elem-get-set.elemInit}
+      */
       {
-        getCanvas () { return canvas; },
+        getCanvas() { return canvas; },
+        getDataStorage,
         getSVGContent,
         getSVGRoot,
-        getUIStrings () { return uiStrings; },
-        getCurrentGroup () { return currentGroup; },
-        getCurConfig () { return curConfig; },
-        getNsMap () { return nsMap; },
-        getSvgOption () { return saveOptions; },
-        setSvgOption (key, value) { saveOptions[key] = value; },
-        getSvgOptionApply () { return saveOptions.apply; },
-        getSvgOptionImages () { return saveOptions.images; },
-        getEncodableImages (key) { return encodableImages[key]; },
-        setEncodableImages (key, value) { encodableImages[key] = value; },
+        getUIStrings() { return uiStrings; },
+        getCurrentGroup() { return currentGroup; },
+        getCurConfig() { return curConfig; },
+        getNsMap() { return nsMap; },
+        getSvgOption() { return saveOptions; },
+        setSvgOption(key, value) { saveOptions[key] = value; },
+        getSvgOptionApply() { return saveOptions.apply; },
+        getSvgOptionImages() { return saveOptions.images; },
+        getEncodableImages(key) { return encodableImages[key]; },
+        setEncodableImages(key, value) { encodableImages[key] = value; },
         call,
-        getDOMDocument () { return svgdoc; },
-        getVisElems () { return visElems; },
-        getIdPrefix () { return idprefix; },
-        setCurrentZoom (value) { currentZoom = value; },
-        getImportIds (key) { return importIds[key]; },
-        setImportIds (key, value) { importIds[key] = value; },
-        setRemovedElements (key, value) { removedElements[key] = value; },
-        setSVGContent (value) { svgcontent = value; },
-        getrefAttrs () { return refAttrs; },
-        getcanvg () { return canvg; },
+        getDOMDocument() { return svgdoc; },
+        getVisElems() { return visElems; },
+        getIdPrefix() { return idprefix; },
+        setCurrentZoom(value) { currentZoom = value; },
+        getImportIds(key) { return importIds[key]; },
+        setImportIds(key, value) { importIds[key] = value; },
+        setRemovedElements(key, value) { removedElements[key] = value; },
+        setSVGContent(value) { svgcontent = value; },
+        getrefAttrs() { return refAttrs; },
+        getcanvg() { return canvg; },
         addCommandToHistory
       }
     );
@@ -1597,7 +1651,7 @@ class SvgCanvas {
       setLayerVisibility, moveSelectedToLayer, mergeLayer, mergeAllLayers,
       leaveContext, setContext
     };
-    Object.entries(dr).forEach(([prop, propVal]) => {
+    Object.entries(dr).forEach(([ prop, propVal ]) => {
       canvas[prop] = propVal;
     });
     draw.init(
@@ -1606,16 +1660,16 @@ class SvgCanvas {
   */
       {
         pathActions,
-        getCurrentGroup () {
+        getDataStorage,
+        getCurrentGroup() {
           return currentGroup;
         },
-        setCurrentGroup (cg) {
+        setCurrentGroup(cg) {
           currentGroup = cg;
         },
         getSelectedElements,
         getSVGContent,
         undoMgr,
-        elData,
         getCurrentDrawing,
         clearSelection,
         call,
@@ -1624,8 +1678,8 @@ class SvgCanvas {
      * @fires module:svgcanvas.SvgCanvas#event:changed
      * @returns {void}
      */
-        changeSVGContent () {
-          call('changed', [svgcontent]);
+        changeSVGContent() {
+          call('changed', [ svgcontent ]);
         }
       }
     );
@@ -1692,15 +1746,16 @@ class SvgCanvas {
         getSelectedElements,
         call,
         changeSelectedAttributeNoUndoMethod,
-        getDOMDocument () { return svgdoc; },
-        getCanvas () { return canvas; },
-        setCanvas (key, value) { canvas[key] = value; },
-        setCurrentZoom (value) { currentZoom = value; },
-        setCurProperties (key, value) { curProperties[key] = value; },
-        getCurProperties (key) { return curProperties[key]; },
-        setCurShape (key, value) { curShape[key] = value; },
-        getCurText (key) { return curText[key]; },
-        setCurText (key, value) { curText[key] = value; }
+        getDOMDocument() { return svgdoc; },
+        getCanvas() { return canvas; },
+        getDataStorage,
+        setCanvas(key, value) { canvas[key] = value; },
+        setCurrentZoom(value) { currentZoom = value; },
+        setCurProperties(key, value) { curProperties[key] = value; },
+        getCurProperties(key) { return curProperties[key]; },
+        setCurShape(key, value) { curShape[key] = value; },
+        getCurText(key) { return curText[key]; },
+        setCurText(key, value) { curText[key] = value; }
       }
     );
 
@@ -1739,7 +1794,6 @@ class SvgCanvas {
 */
     this.setUiStrings = function (strs) {
       Object.assign(uiStrings, strs.notification);
-      $ = jQueryPluginDBox($, strs.common);
       pathModule.setUiStrings(strs);
     };
 
@@ -1819,7 +1873,7 @@ class SvgCanvas {
 * position in the editor's canvas.
 */
     this.getOffset = function () {
-      return $(svgcontent).attr(['x', 'y']);
+      return { x: svgcontent.getAttribute('x'), y: svgcontent.getAttribute('y') };
     };
 
     /**
@@ -2142,13 +2196,13 @@ class SvgCanvas {
         * @implements {module:elem-get-set.elemInit}
         */
         {
-          getCanvas () { return canvas; },
-          getCurCommand () { return curCommand; },
-          setCurCommand (value) { curCommand = value; },
-          getFilter () { return filter; },
-          setFilter (value) { filter = value; },
-          getFilterHidden () { return filterHidden; },
-          setFilterHidden (value) { filterHidden = value; },
+          getCanvas() { return canvas; },
+          getCurCommand() { return curCommand; },
+          setCurCommand(value) { curCommand = value; },
+          getFilter() { return filter; },
+          setFilter(value) { filter = value; },
+          getFilterHidden() { return filterHidden; },
+          setFilterHidden(value) { filterHidden = value; },
           changeSelectedAttributeNoUndoMethod,
           changeSelectedAttributeMethod,
           isWebkit,
@@ -2214,6 +2268,14 @@ class SvgCanvas {
 * @returns {void}
 */
     this.setItalic = setItalicMethod;
+
+    /**
+* Set the new text anchor.
+* @function module:svgcanvas.SvgCanvas#setTextAnchor
+* @param {string} textAnchor - The value of the text anchor (start, middle or end)
+* @returns {void}
+*/
+    this.setTextAnchor = setTextAnchorMethod;
 
     /**
 * @function module:svgcanvas.SvgCanvas#getFontFamily
@@ -2337,7 +2399,7 @@ class SvgCanvas {
     this.convertToPath = function (elem, getBBox) {
       if (isNullish(elem)) {
         const elems = selectedElements;
-        $.each(elems, function (i, el) {
+        elems.forEach(function(el){
           if (el) { canvas.convertToPath(el); }
         });
         return undefined;
@@ -2405,17 +2467,17 @@ class SvgCanvas {
         flashStorage,
         call,
         getIntersectionList,
-        setCurBBoxes (value) { curBBoxes = value; },
+        setCurBBoxes(value) { curBBoxes = value; },
         getSVGRoot,
-        gettingSelectorManager () { return selectorManager; },
+        gettingSelectorManager() { return selectorManager; },
         getCurrentZoom,
-        getDrawing () { return getCurrentDrawing(); },
-        getCurrentGroup () { return currentGroup; },
+        getDrawing() { return getCurrentDrawing(); },
+        getCurrentGroup() { return currentGroup; },
         addToSelection,
-        getContentW () { return canvas.contentW; },
-        getContentH () { return canvas.contentH; },
-        getClipboardID () { return CLIPBOARD_ID; },
-        getDOMDocument () { return svgdoc; },
+        getContentW() { return canvas.contentW; },
+        getContentH() { return canvas.contentH; },
+        getClipboardID() { return CLIPBOARD_ID; },
+        getDOMDocument() { return svgdoc; },
         clearSelection,
         getNextId,
         selectOnly,
@@ -2423,8 +2485,9 @@ class SvgCanvas {
         setUseData,
         convertGradients,
         getSVGContent,
-        getCanvas () { return canvas; },
-        getVisElems () { return visElems; }
+        getCanvas() { return canvas; },
+        getDataStorage,
+        getVisElems() { return visElems; }
       }
     );
 
@@ -2454,7 +2517,7 @@ class SvgCanvas {
 * Flash the clipboard data momentarily on localStorage so all tabs can see.
 * @returns {void}
 */
-    function flashStorage () {
+    function flashStorage() {
       const data = sessionStorage.getItem(CLIPBOARD_ID);
       localStorage.setItem(CLIPBOARD_ID, data);
       setTimeout(function () {
@@ -2467,7 +2530,7 @@ class SvgCanvas {
 * @param {!Event} ev Storage event.
 * @returns {void}
 */
-    function storageChange (ev) {
+    function storageChange(ev) {
       if (!ev.newValue) return; // This is a call from removeItem.
       if (ev.key === CLIPBOARD_ID + '_startup') {
         // Another tab asked for our sessionStorage.
@@ -2496,13 +2559,13 @@ class SvgCanvas {
     * paste element functionality
     */
     pasteInit(
-    /**
-    * @implements {module:event.eventContext_}
-    */
+      /**
+      * @implements {module:event.eventContext_}
+      */
       {
-        getCanvas () { return canvas; },
-        getClipBoardID () { return CLIPBOARD_ID; },
-        getLastClickPoint (key) { return lastClickPoint[key]; },
+        getCanvas() { return canvas; },
+        getClipBoardID() { return CLIPBOARD_ID; },
+        getLastClickPoint(key) { return lastClickPoint[key]; },
         addCommandToHistory,
         restoreRefElems
       }
@@ -2676,7 +2739,6 @@ class SvgCanvas {
 * @property {module:history.HistoryCommand} InsertElementCommand
 * @property {module:browser.isChrome} isChrome
 * @property {module:math.isIdentity} isIdentity
-* @property {module:browser.isIE} isIE
 * @property {module:svgcanvas~logMatrix} logMatrix
 * @property {module:history.HistoryCommand} MoveElementCommand
 * @property {module:namespaces.NS} NS
@@ -2719,7 +2781,6 @@ class SvgCanvas {
         InsertElementCommand,
         isChrome,
         isIdentity,
-        isIE,
         logMatrix,
         MoveElementCommand,
         NS,
@@ -2734,5 +2795,18 @@ class SvgCanvas {
     };
   } // End constructor
 } // End class
+
+// attach utilities function to the class that are used by SvgEdit so
+// we can avoid using the whole utilities.js file in svgEdit.js
+SvgCanvas.isNullish = isNullish;
+SvgCanvas.encode64 = encode64;
+SvgCanvas.decode64 = decode64;
+SvgCanvas.$id = $id;
+SvgCanvas.$qq = $qq;
+SvgCanvas.$qa = $qa;
+SvgCanvas.mergeDeep = mergeDeep;
+SvgCanvas.getClosest = getClosest;
+SvgCanvas.getParents = getParents;
+SvgCanvas.blankPageObjectURL = blankPageObjectURL;
 
 export default SvgCanvas;

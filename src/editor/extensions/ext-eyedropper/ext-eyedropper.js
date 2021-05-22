@@ -4,29 +4,35 @@
  * @license MIT
  *
  * @copyright 2010 Jeff Schiller
+ * @copyright 2021 OptimistikSAS
  *
  */
 
-const loadExtensionTranslation = async function (lang) {
+const name = "eyedropper";
+
+const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
+  const lang = svgEditor.configObj.pref('lang');
   try {
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
+    // eslint-disable-next-line no-unsanitized/method
+    translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
-  return translationModule.default;
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
 };
 
 export default {
-  name: 'eyedropper',
-  async init (S) {
+  name,
+  async init(S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
-    const {$, ChangeElementCommand} = S, // , svgcontent,
+    await loadExtensionTranslation(svgEditor);
+    const { ChangeElementCommand } = S, // , svgcontent,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
-      svgCanvas = svgEditor.canvas,
+      { svgCanvas } = svgEditor,
       addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },
       currentStyle = {
         fillPaint: 'red', fillOpacity: 1.0,
@@ -36,25 +42,26 @@ export default {
         strokeLinecap: 'butt',
         strokeLinejoin: 'miter'
       };
+    const { $id } = svgCanvas;
 
     /**
      *
      * @param {module:svgcanvas.SvgCanvas#event:ext_selectedChanged|module:svgcanvas.SvgCanvas#event:ext_elementChanged} opts
      * @returns {void}
      */
-    function getStyle (opts) {
+    const getStyle = (opts) => {
       // if we are in eyedropper mode, we don't want to disable the eye-dropper tool
       const mode = svgCanvas.getMode();
       if (mode === 'eyedropper') { return; }
 
-      const tool = $('#tool_eyedropper');
+      const tool = $id('tool_eyedropper');
       // enable-eye-dropper if one element is selected
       let elem = null;
       if (!opts.multiselected && opts.elems[0] &&
-        !['svg', 'g', 'use'].includes(opts.elems[0].nodeName)
+        ![ 'svg', 'g', 'use' ].includes(opts.elems[0].nodeName)
       ) {
         elem = opts.elems[0];
-        tool.removeClass('disabled');
+        tool.classList.remove('disabled');
         // grab the current style
         currentStyle.fillPaint = elem.getAttribute('fill') || 'black';
         currentStyle.fillOpacity = elem.getAttribute('fill-opacity') || 1.0;
@@ -65,42 +72,37 @@ export default {
         currentStyle.strokeLinecap = elem.getAttribute('stroke-linecap');
         currentStyle.strokeLinejoin = elem.getAttribute('stroke-linejoin');
         currentStyle.opacity = elem.getAttribute('opacity') || 1.0;
-      // disable eye-dropper tool
+        // disable eye-dropper tool
       } else {
-        tool.addClass('disabled');
+        tool.classList.add('disabled');
       }
-    }
-
-    const buttons = [
-      {
-        id: 'tool_eyedropper',
-        icon: 'eyedropper.png',
-        type: 'mode',
-        events: {
-          click () {
-            svgCanvas.setMode('eyedropper');
-          }
-        }
-      }
-    ];
+    };
 
     return {
-      name: strings.name,
-      svgicons: 'eyedropper-icon.xml',
-      buttons: strings.buttons.map((button, i) => {
-        return Object.assign(buttons[i], button);
-      }),
-
+      name: svgEditor.i18next.t(`${name}:name`),
+      callback() {
+        // Add the button and its handler(s)
+        const buttonTemplate = document.createElement("template");
+        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
+        const key = svgEditor.i18next.t(`${name}:buttons.0.key`);
+        // eslint-disable-next-line no-unsanitized/property
+        buttonTemplate.innerHTML = `
+        <se-button id="tool_eyedropper" title="${title}" src="./images/eye_dropper.svg" shortcut=${key}></se-button>
+        `;
+        $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+        $id('tool_eyedropper').addEventListener("click", () => {
+          svgCanvas.setMode('eyedropper');
+        });
+      },
       // if we have selected an element, grab its paint and enable the eye dropper button
       selectedChanged: getStyle,
       elementChanged: getStyle,
-
-      mouseDown (opts) {
+      mouseDown(opts) {
         const mode = svgCanvas.getMode();
         if (mode === 'eyedropper') {
           const e = opts.event;
-          const {target} = e;
-          if (!['svg', 'g', 'use'].includes(target.nodeName)) {
+          const { target } = e;
+          if (![ 'svg', 'g', 'use' ].includes(target.nodeName)) {
             const changes = {};
 
             const change = function (elem, attrname, newvalue) {

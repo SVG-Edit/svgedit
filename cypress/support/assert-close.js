@@ -25,7 +25,7 @@ function close (actual, expected, maxDifference, message) {
   const actualDiff = (actual === expected) ? 0 : Math.abs(actual - expected),
     result = actualDiff <= maxDifference;
   message = message || (actual + ' should be within ' + maxDifference + ' (inclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff));
-  return {result, message, actual, expected};
+  return { result, message, actual, expected };
 }
 
 /**
@@ -55,7 +55,7 @@ function closePercent (actual, expected, maxPercentDifference, message) {
   }
   message = message || (actual + ' should be within ' + maxPercentDifference + '% (inclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff + '%'));
 
-  return {result, message, actual, expected};
+  return { result, message, actual, expected };
 }
 
 /**
@@ -74,7 +74,7 @@ function notClose (actual, expected, minDifference, message) {
   const actualDiff = Math.abs(actual - expected),
     result = actualDiff > minDifference;
   message = message || (actual + ' should not be within ' + minDifference + ' (exclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff));
-  return {result, message, actual, expected};
+  return { result, message, actual, expected };
 }
 
 /**
@@ -104,7 +104,7 @@ function notClosePercent (actual, expected, minPercentDifference, message) {
   }
   message = message || (actual + ' should not be within ' + minPercentDifference + '% (exclusive) of ' + expected + (result ? '' : '. Actual: ' + actualDiff + '%'));
 
-  return {result, message, actual, expected};
+  return { result, message, actual, expected };
 }
 
 /**

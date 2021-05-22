@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Tools for drawing.
  * @module draw
@@ -6,22 +5,20 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import Layer from '../common/layer.js';
+import Layer from './layer.js';
 import HistoryRecordingService from './historyrecording.js';
 
-import {NS} from '../common/namespaces.js';
-import {isOpera} from '../common/browser.js';
+import { NS } from '../common/namespaces.js';
 import {
   toXml, getElem
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   copyElem as utilCopyElem
 } from './copy-elem.js';
 import {
   BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
 } from './history.js';
-
-const $ = jQuery;
+import { getParentsUntil } from '../editor/components/jgraduate/Util.js';
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
 
@@ -49,11 +46,8 @@ function historyRecordingService (hrService) {
  * @returns {string} The layer name or empty string.
  */
 function findLayerNameInGroup (group) {
-  return $('title', group).text() ||
-    (isOpera() && group.querySelectorAll
-      // Hack for Opera 10.60
-      ? $(group.querySelectorAll('title')).text()
-      : '');
+  const sel = group.querySelector('title');
+  return sel ? sel.textContent : '';
 }
 
 /**
@@ -158,7 +152,7 @@ export class Drawing {
       return this.svgElem_.querySelector('#' + id);
     }
     // jQuery lookup: twice as slow as xpath in FF
-    return $(this.svgElem_).find('[id=' + id + ']')[0];
+    return this.svgElem_.querySelector('[id=' + id + ']');
   }
 
   /**
@@ -391,7 +385,7 @@ export class Drawing {
   */
   mergeLayer (hrService) {
     const currentGroup = this.current_layer.getGroup();
-    const prevGroup = $(currentGroup).prev()[0];
+    const prevGroup = currentGroup.previousElementSibling;
     if (!prevGroup) { return; }
 
     hrService.startBatchCommand('Merge Layer');
@@ -576,7 +570,7 @@ export class Drawing {
     const group = layer.getGroup();
 
     // Clone children
-    const children = [...currentGroup.childNodes];
+    const children = [ ...currentGroup.childNodes ];
     children.forEach((child) => {
       if (child.localName === 'title') { return; }
       group.append(this.copyElem(child));
@@ -710,7 +704,6 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
 /**
  * @interface module:draw.DrawCanvasInit
  * @property {module:path.pathActions} pathActions
- * @property {external:jQuery.data} elData
  * @property {module:history.UndoManager} undoMgr
  */
 /**
@@ -794,7 +787,7 @@ export const createLayer = function (name, hrService) {
     historyRecordingService(hrService)
   );
   canvas_.clearSelection();
-  canvas_.call('changed', [newLayer]);
+  canvas_.call('changed', [ newLayer ]);
 };
 
 /**
@@ -813,7 +806,7 @@ export const cloneLayer = function (name, hrService) {
 
   canvas_.clearSelection();
   leaveContext();
-  canvas_.call('changed', [newLayer]);
+  canvas_.call('changed', [ newLayer ]);
 };
 
 /**
@@ -825,7 +818,7 @@ export const cloneLayer = function (name, hrService) {
 */
 export const deleteCurrentLayer = function () {
   let currentLayer = canvas_.getCurrentDrawing().getCurrentLayer();
-  const {nextSibling} = currentLayer;
+  const { nextSibling } = currentLayer;
   const parent = currentLayer.parentNode;
   currentLayer = canvas_.getCurrentDrawing().deleteCurrentLayer();
   if (currentLayer) {
@@ -834,7 +827,7 @@ export const deleteCurrentLayer = function () {
     batchCmd.addSubCommand(new RemoveElementCommand(currentLayer, nextSibling, parent));
     canvas_.addCommandToHistory(batchCmd);
     canvas_.clearSelection();
-    canvas_.call('changed', [parent]);
+    canvas_.call('changed', [ parent ]);
     return true;
   }
   return false;
@@ -870,7 +863,7 @@ export const renameCurrentLayer = function (newName) {
   if (layer) {
     const result = drawing.setCurrentLayerName(newName, historyRecordingService());
     if (result) {
-      canvas_.call('changed', [layer]);
+      canvas_.call('changed', [ layer ]);
       return true;
     }
   }
@@ -910,7 +903,7 @@ export const setLayerVisibility = function (layerName, bVisible) {
   const layer = drawing.setLayerVisibility(layerName, bVisible);
   if (layer) {
     const oldDisplay = prevVisibility ? 'inline' : 'none';
-    canvas_.addCommandToHistory(new ChangeElementCommand(layer, {display: oldDisplay}, 'Layer Visibility'));
+    canvas_.addCommandToHistory(new ChangeElementCommand(layer, { display: oldDisplay }, 'Layer Visibility'));
   } else {
     return false;
   }
@@ -989,10 +982,11 @@ export const mergeAllLayers = function (hrService) {
 */
 export const leaveContext = function () {
   const len = disabledElems.length;
+  const dataStorage = canvas_.getDataStorage();
   if (len) {
     for (let i = 0; i < len; i++) {
       const elem = disabledElems[i];
-      const orig = canvas_.elData(elem, 'orig_opac');
+      const orig = dataStorage.get(elem, 'orig_opac');
       if (orig !== 1) {
         elem.setAttribute('opacity', orig);
       } else {
@@ -1015,6 +1009,7 @@ export const leaveContext = function () {
 * @returns {void}
 */
 export const setContext = function (elem) {
+  const dataStorage = canvas_.getDataStorage();
   leaveContext();
   if (typeof elem === 'string') {
     elem = getElem(elem);
@@ -1024,15 +1019,25 @@ export const setContext = function (elem) {
   canvas_.setCurrentGroup(elem);
 
   // Disable other elements
-  $(elem).parentsUntil('#svgcontent').andSelf().siblings().each(function () {
-    const opac = this.getAttribute('opacity') || 1;
-    // Store the original's opacity
-    canvas_.elData(this, 'orig_opac', opac);
-    this.setAttribute('opacity', opac * 0.33);
-    this.setAttribute('style', 'pointer-events: none');
-    disabledElems.push(this);
+  const parentsUntil = getParentsUntil(elem, '#svgcontent');
+  let siblings = [];
+  parentsUntil.forEach(function (parent) {
+    const elements = Array.prototype.filter.call(parent.parentNode.children, function(child){
+      return child !== parent;
+    });
+    elements.forEach(function (element) {
+      siblings.push(element);
+    });
   });
 
+  siblings.forEach(function (curthis) {
+    const opac = curthis.getAttribute('opacity') || 1;
+    // Store the original's opacity
+    dataStorage.put(curthis, 'orig_opac', opac);
+    curthis.setAttribute('opacity', opac * 0.33);
+    curthis.setAttribute('style', 'pointer-events: none');
+    disabledElems.push(curthis);
+  });
   canvas_.clearSelection();
   canvas_.call('contextset', canvas_.getCurrentGroup());
 };
@@ -1042,4 +1047,4 @@ export const setContext = function (elem) {
 * @class Layer
 * @see {@link module:layer.Layer}
 */
-export {Layer};
+export { Layer };

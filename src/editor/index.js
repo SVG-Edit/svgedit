@@ -5,8 +5,10 @@ For default config and extensions (and available options) available to
 */
 
 import './jquery.min.js';
-import './jquery-ui/jquery-ui-1.8.17.custom.min.js';
-import svgEditor from './svgedit.js';
+import Editor from './Editor.js';
+
+const svgEditor = new Editor();
+svgEditor.init();
 
 // URL OVERRIDE CONFIG
 svgEditor.setConfig({
@@ -29,7 +31,7 @@ svgEditor.setConfig(
     //   other config options have already explicitly prevented one or the
     //   other)
   },
-  {allowInitialUserOverride: true}
+  { allowInitialUserOverride: true }
 );
 
 // EXTENSION CONFIG
@@ -56,7 +58,6 @@ svgEditor.setConfig({
   //   opacity: 1
   // },
   // initOpacity: 1,
-  // colorPickerCSS: null,
   // initTool: 'select',
   // exportWindowType: 'new', // 'same'
   // wireframe: false,
@@ -136,10 +137,8 @@ try { // try clause to avoid js to complain if XDOMAIN undefined
   if (XDOMAIN) {
     svgEditor.setConfig({
       canvasName: 'xdomain', // Namespace this
-      allowedOrigins: ['*']
+      allowedOrigins: [ '*' ]
     });
-    // eslint-disable-next-line no-console
     console.info('xdomain config activated');
   }
-} catch (error) {
-}
+} catch (error) {/* empty fn */}

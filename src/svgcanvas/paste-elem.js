@@ -1,12 +1,7 @@
-/* globals jQuery */
-
-import jQueryPluginSVG from '../common/jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import {
   getStrokedBBoxDefaultVisible
-} from '../common/utilities.js';
+} from './utilities.js';
 import * as hstry from './history.js';
-// Constants
-const $ = jQueryPluginSVG(jQuery);
 
 const {
   InsertElementCommand, BatchCommand
@@ -75,7 +70,7 @@ export const pasteElementsMethod = function (type, x, y) {
   pasteContext_.getCanvas().runExtensions(
     'IDsUpdated',
     /** @type {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} */
-    {elems: clipb, changes: changedIDs},
+    { elems: clipb, changes: changedIDs },
     true
   ).forEach(function (extChanges) {
     if (!extChanges || !('remove' in extChanges)) return;
@@ -118,7 +113,7 @@ export const pasteElementsMethod = function (type, x, y) {
       dx = [],
       dy = [];
 
-    $.each(pasted, function (i, item) {
+    pasted.forEach(function(_item){
       dx.push(cx);
       dy.push(cy);
     });

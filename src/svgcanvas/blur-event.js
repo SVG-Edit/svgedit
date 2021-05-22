@@ -44,12 +44,12 @@ export const setBlurNoUndo = function (val) {
       blurContext_.changeSelectedAttributeNoUndoMethod('filter', 'url(#' + elem.id + '_blur)');
     }
     if (blurContext_.isWebkit()) {
-      // console.log('e', elem); // eslint-disable-line no-console
+      // console.log('e', elem);
       elem.removeAttribute('filter');
       elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
     }
     const filter = blurContext_.getFilter();
-    blurContext_.changeSelectedAttributeNoUndoMethod('stdDeviation', val, [filter.firstChild]);
+    blurContext_.changeSelectedAttributeNoUndoMethod('stdDeviation', val, [ filter.firstChild ]);
     blurContext_.getCanvas().setBlurOffsets(filter, val);
   }
 };
@@ -122,14 +122,14 @@ export const setBlur = function (val, complete) {
     }
   } else {
     // Not found, so create
-    const newblur = blurContext_.getCanvas().addSVGElementFromJson({element: 'feGaussianBlur',
+    const newblur = blurContext_.getCanvas().addSVGElementFromJson({ element: 'feGaussianBlur',
       attr: {
         in: 'SourceGraphic',
         stdDeviation: val
       }
     });
 
-    blurContext_.setFilter(blurContext_.getCanvas().addSVGElementFromJson({element: 'filter',
+    blurContext_.setFilter(blurContext_.getCanvas().addSVGElementFromJson({ element: 'filter',
       attr: {
         id: elemId + '_blur'
       }
@@ -140,7 +140,7 @@ export const setBlur = function (val, complete) {
     batchCmd.addSubCommand(new InsertElementCommand(blurContext_.getFilter()));
   }
 
-  const changes = {filter: elem.getAttribute('filter')};
+  const changes = { filter: elem.getAttribute('filter') };
 
   if (val === 0) {
     elem.removeAttribute('filter');
@@ -153,7 +153,7 @@ export const setBlur = function (val, complete) {
   blurContext_.getCanvas().setBlurOffsets(blurContext_.getFilter(), val);
   const filter = blurContext_.getFilter();
   blurContext_.setCurCommand(batchCmd);
-  blurContext_.getCanvas().undoMgr.beginUndoableChange('stdDeviation', [filter ? filter.firstChild : null]);
+  blurContext_.getCanvas().undoMgr.beginUndoableChange('stdDeviation', [ filter ? filter.firstChild : null ]);
   if (complete) {
     blurContext_.getCanvas().setBlurNoUndo(val);
     finishChange();

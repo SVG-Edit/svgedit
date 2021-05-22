@@ -1,6 +1,6 @@
 export const approveStorage = () => {
-  return cy.get('#dialog_buttons > input[type=button][data-ok]')
-    .click();
+  // JFH will need to be chnaged when dialog is changed...
+  cy.get('#storage_ok').click();
 };
 
 export const visitAndApproveStorage = () => {
@@ -9,7 +9,7 @@ export const visitAndApproveStorage = () => {
 };
 
 export const openMainMenu = () => {
-  return cy.get('#main_icon').click();
+  return cy.get('#main_button').click({ force: true });
 };
 
 export const openEditorPreferences = () => {

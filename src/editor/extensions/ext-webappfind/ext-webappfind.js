@@ -9,6 +9,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -20,32 +21,29 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'webappfind',
-  async init ({$}) {
+  async init () {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const saveMessage = 'save',
       readMessage = 'read',
-      excludedMessages = [readMessage, saveMessage];
+      excludedMessages = [ readMessage, saveMessage ];
 
     let pathID;
     this.canvas.bind(
       'message',
       /**
-      * @param {external:Window} win
-      * @param {PlainObject} info
-      * @param {module:svgcanvas.SvgCanvas#event:message} info.data
-      * @param {string} info.origin
-      * @listens module:svgcanvas.SvgCanvas#event:message
-      * @throws {Error} Unexpected event type
-      * @returns {void}
-      */
-      (win, {data, origin}) => { // eslint-disable-line no-shadow
-        // console.log('data, origin', data, origin);
+       *
+       * @param {external:Window} win external Window handler
+       * @param {*} param1 info
+       * @returns {void}
+       */
+      (win, { data, origin }) => {
         let type, content;
         try {
-          ({type, pathID, content} = data.webappfind); // May throw if data is not an object
+          ({ type, pathID, content } = data.webappfind); // May throw if data is not an object
           if (origin !== location.origin || // We are only interested in a message sent as though within this URL by our browser add-on
-              excludedMessages.includes(type) // Avoid our post below (other messages might be possible in the future which may also need to be excluded if your subsequent code makes assumptions on the type of message this is)
+              // Avoid our post below (other msgs might be possible which may need to be excluded if code makes assumptions on the type of message)
+              excludedMessages.includes(type)
           ) {
             return;
           }
@@ -57,13 +55,10 @@ export default {
         case 'view':
           // Populate the contents
           svgEditor.loadFromString(content);
-
-          /* if ($('#tool_save_file')) {
-            $('#tool_save_file').disabled = false;
-          } */
           break;
         case 'save-end':
-          $.alert(`save complete for pathID ${pathID}!`);
+          // eslint-disable-next-line no-alert
+          alert(`save complete for pathID ${pathID}!`);
           break;
         default:
           throw new Error('Unexpected WebAppFind event type');
@@ -83,7 +78,7 @@ export default {
       : window.location.origin
     );
     */
-    const buttons = [{
+    const buttons = [ {
       id: 'webappfind_save', //
       icon: 'webappfind.png',
       type: 'app_menu',
@@ -98,7 +93,7 @@ export default {
               webappfind: {
                 type: saveMessage,
                 pathID,
-                content: svgEditor.canvas.getSvgString()
+                content: svgEditor.svgCanvas.getSvgString()
               }
             }, window.location.origin === 'null'
               // Avoid "null" string error for `file:` protocol (even
@@ -108,7 +103,7 @@ export default {
           );
         }
       }
-    }];
+    } ];
 
     return {
       name: strings.name,

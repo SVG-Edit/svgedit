@@ -20,17 +20,12 @@ svgedit-custom.css
 
 # Vendor/minified files
 src/editor/jquery.min.js
-src/editor/jquery-ui
 
 # Previously minified though exporting
 src/editor/js-hotkeys
 
-src/editor/jspdf/jspdf.min.js
-src/editor/jspdf/underscore-min.js
-
 src/editor/extensions/ext-mathjax/mathjax
 
 # jquery files
-src/editor/svgicons/jQuery.svgIcons.js
 src/editor/jgraduate/jQuery.jPicker.js
 

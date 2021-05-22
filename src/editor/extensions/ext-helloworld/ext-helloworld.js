@@ -13,55 +13,45 @@
 *  will show the user the point on the canvas that was clicked on.
 */
 
-const loadExtensionTranslation = async function (lang) {
+const name = "helloworld";
+
+const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
+  const lang = svgEditor.configObj.pref('lang');
   try {
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
+    // eslint-disable-next-line no-unsanitized/method
+    translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
-  return translationModule.default;
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
 };
 
 export default {
-  name: 'helloworld',
-  async init ({$, importLocale}) {
+  name,
+  async init ({ _importLocale }) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
-    const svgCanvas = svgEditor.canvas;
+    await loadExtensionTranslation(svgEditor);
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     return {
-      name: strings.name,
-      // For more notes on how to make an icon file, see the source of
-      // the helloworld-icon.xml
-      svgicons: 'helloworld-icon.xml',
-
-      // Multiple buttons can be added in this array
-      buttons: [{
-        // Must match the icon ID in helloworld-icon.xml
-        id: 'hello_world',
-
-        // Fallback, e.g., for `file:///` access
-        icon: 'helloworld.png',
-
-        // This indicates that the button will be added to the "mode"
-        // button panel on the left side
-        type: 'mode',
-
-        // Tooltip text
-        title: strings.buttons[0].title,
-
-        // Events
-        events: {
-          click () {
-            // The action taken when the button is clicked on.
-            // For "mode" buttons, any other button will
-            // automatically be de-pressed.
-            svgCanvas.setMode('hello_world');
-          }
-        }
-      }],
+      name: svgEditor.i18next.t(`${name}:name`),
+      callback() {
+        // Add the button and its handler(s)
+        const buttonTemplate = document.createElement("template");
+        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
+        // eslint-disable-next-line no-unsanitized/property
+        buttonTemplate.innerHTML = `
+        <se-button id="hello_world" title="${title}" src="./images/hello_world.svg"></se-button>
+        `;
+        $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+        $id('hello_world').addEventListener("click", () => {
+          svgCanvas.setMode('hello_world');
+        });
+      },
       // This is triggered when the main mouse button is pressed down
       // on the editor canvas (not the tool panels)
       mouseDown () {
@@ -69,7 +59,7 @@ export default {
         if (svgCanvas.getMode() === 'hello_world') {
           // The returned object must include "started" with
           // a value of true in order for mouseUp to be triggered
-          return {started: true};
+          return { started: true };
         }
         return undefined;
       },
@@ -86,16 +76,9 @@ export default {
           const y = opts.mouse_y / zoom;
 
           // We do our own formatting
-          let {text} = strings;
-          [
-            ['x', x],
-            ['y', y]
-          ].forEach(([prop, val]) => {
-            text = text.replace('{' + prop + '}', val);
-          });
-
+          let text = svgEditor.i18next.t(`${name}:text`, { x, y });
           // Show the text using the custom alert function
-          $.alert(text);
+          alert(text);
         }
       }
     };

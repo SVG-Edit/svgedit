@@ -6,12 +6,7 @@ module.exports = {
   "functions": 45,
   exclude: [
     'editor/jquery.min.js',
-    'editor/jgraduate/**',
-    'editor/svgicons/**',
-    'editor/jquery-ui/**',
-    'editor/js-hotkeys/**',
-    'editor/contextmenu/**',
-    'editor/spinbtn'
+    'editor/jgraduate/**'
   ],
   "reporter": [
     "json-summary",

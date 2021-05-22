@@ -3,11 +3,11 @@ import 'pathseg';
 
 import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/common/namespaces.js';
-import * as utilities from '../../../instrumented/common/utilities.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
+import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as pathModule from '../../../instrumented/svgcanvas/path.js';
-import {Path, Segment} from '../../../instrumented/svgcanvas/path-method.js';
-import {init as unitsInit} from '../../../instrumented/common/units.js';
+import { Path, Segment } from '../../../instrumented/svgcanvas/path-method.js';
+import { init as unitsInit } from '../../../instrumented/common/units.js';
 
 describe('path', function () {
   /**
@@ -48,7 +48,7 @@ describe('path', function () {
     const path = document.createElementNS(NS.SVG, 'path');
     path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
 
-    const [mockPathContext, mockUtilitiesContext] = getMockContexts();
+    const [ mockPathContext, mockUtilitiesContext ] = getMockContexts();
     pathModule.init(mockPathContext);
     utilities.init(mockUtilitiesContext);
     new Path(path); // eslint-disable-line no-new
@@ -57,7 +57,7 @@ describe('path', function () {
     assert.equal(path.pathSegList.getItem(1).x, 10);
     assert.equal(path.pathSegList.getItem(1).y, 11);
 
-    pathModule.replacePathSeg(SVGPathSeg.PATHSEG_LINETO_REL, 1, [30, 31], path);
+    pathModule.replacePathSeg(SVGPathSeg.PATHSEG_LINETO_REL, 1, [ 30, 31 ], path);
 
     assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'l');
     assert.equal(path.pathSegList.getItem(1).x, 30);
@@ -68,7 +68,7 @@ describe('path', function () {
     const path = document.createElementNS(NS.SVG, 'path');
     path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
 
-    const [mockPathContext, mockUtilitiesContext] = getMockContexts();
+    const [ mockPathContext, mockUtilitiesContext ] = getMockContexts();
     pathModule.init(mockPathContext);
     utilities.init(mockUtilitiesContext);
     new Path(path); // eslint-disable-line no-new
@@ -78,7 +78,7 @@ describe('path', function () {
     assert.equal(path.pathSegList.getItem(1).y, 11);
 
     const segment = new Segment(1, path.pathSegList.getItem(1));
-    segment.setType(SVGPathSeg.PATHSEG_LINETO_REL, [30, 31]);
+    segment.setType(SVGPathSeg.PATHSEG_LINETO_REL, [ 30, 31 ]);
     assert.equal(segment.item.pathSegTypeAsLetter, 'l');
     assert.equal(segment.item.x, 30);
     assert.equal(segment.item.y, 31);
@@ -96,7 +96,7 @@ describe('path', function () {
     path.setAttribute('d', 'M0,0 C11,12 13,14 15,16 Z');
     svg.append(path);
 
-    const [mockPathContext, mockUtilitiesContext] = getMockContexts(svg);
+    const [ mockPathContext, mockUtilitiesContext ] = getMockContexts(svg);
     pathModule.init(mockPathContext);
     utilities.init(mockUtilitiesContext);
     const segment = new Segment(1, path.pathSegList.getItem(1));
@@ -110,7 +110,7 @@ describe('path', function () {
     assert.equal(path.pathSegList.getItem(1).x, 15);
     assert.equal(path.pathSegList.getItem(1).y, 16);
 
-    segment.setType(SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL, [30, 31, 32, 33, 34, 35]);
+    segment.setType(SVGPathSeg.PATHSEG_CURVETO_CUBIC_REL, [ 30, 31, 32, 33, 34, 35 ]);
     assert.equal(path.pathSegList.getItem(1).pathSegTypeAsLetter, 'c');
     assert.equal(path.pathSegList.getItem(1).x1, 32);
     assert.equal(path.pathSegList.getItem(1).y1, 33);
@@ -124,7 +124,7 @@ describe('path', function () {
     const path = document.createElementNS(NS.SVG, 'path');
     path.setAttribute('d', 'M0,0 L10,11 L20,21Z');
 
-    const [mockPathContext, mockUtilitiesContext] = getMockContexts();
+    const [ mockPathContext, mockUtilitiesContext ] = getMockContexts();
     pathModule.init(mockPathContext);
     utilities.init(mockUtilitiesContext);
     new Path(path); // eslint-disable-line no-new
@@ -144,7 +144,7 @@ describe('path', function () {
     const path = document.createElementNS(NS.SVG, 'path');
     path.setAttribute('d', 'M0,0 C11,12 13,14 15,16 Z');
 
-    const [mockPathContext, mockUtilitiesContext] = getMockContexts();
+    const [ mockPathContext, mockUtilitiesContext ] = getMockContexts();
     pathModule.init(mockPathContext);
     utilities.init(mockUtilitiesContext);
     new Path(path); // eslint-disable-line no-new

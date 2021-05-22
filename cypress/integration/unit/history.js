@@ -1,20 +1,20 @@
 import '../../../instrumented/editor/jquery.min.js';
 
-import {NS} from '../../../instrumented/common/namespaces.js';
-import * as transformlist from '../../../instrumented/common/svgtransformlist.js';
-import * as utilities from '../../../instrumented/common/utilities.js';
+import { NS } from '../../../instrumented/common/namespaces.js';
+import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
+import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as hstory from '../../../instrumented/svgcanvas/history.js';
 
 describe('history', function () {
   // TODO(codedread): Write tests for handling history events.
 
   // Mocked out methods.
-  transformlist.changeRemoveElementFromListMap((elem) => { /* empty fn */ });
+  transformlist.changeRemoveElementFromListMap(() => { /* empty fn */ });
 
   utilities.mock({
-    getHref (elem) { return '#foo'; },
-    setHref (elem, val) { /* empty fn */ },
-    getRotationAngle (elem) { return 0; }
+    getHref () { return '#foo'; },
+    setHref () { /* empty fn */ },
+    getRotationAngle () { return 0; }
   });
 
   // const svg = document.createElementNS(NS.SVG, 'svg');
@@ -402,7 +402,7 @@ describe('history', function () {
   it('Test ChangeElementCommand', function () {
     this.div1.setAttribute('title', 'new title');
     let change = new hstory.ChangeElementCommand(this.div1,
-      {title: 'old title', class: 'foo'});
+      { title: 'old title', class: 'foo' });
     assert.ok(change.unapply);
     assert.ok(change.apply);
     assert.equal(typeof change.unapply, typeof function () { /* empty fn */ });
@@ -418,7 +418,7 @@ describe('history', function () {
 
     this.div1.textContent = 'inner text';
     change = new hstory.ChangeElementCommand(this.div1,
-      {'#text': null});
+      { '#text': null });
 
     change.unapply();
     assert.ok(!this.div1.textContent);
@@ -428,7 +428,7 @@ describe('history', function () {
 
     this.div1.textContent = '';
     change = new hstory.ChangeElementCommand(this.div1,
-      {'#text': 'old text'});
+      { '#text': 'old text' });
 
     change.unapply();
     assert.equal(this.div1.textContent, 'old text');
@@ -452,12 +452,12 @@ describe('history', function () {
         assert.equal(val, sethrefvalue);
         justCalled = 'setHref';
       },
-      getRotationAngle (elem) { return 0; }
+      getRotationAngle () { return 0; }
     });
 
     gethrefvalue = '#newhref';
     change = new hstory.ChangeElementCommand(rect,
-      {'#href': '#oldhref'});
+      { '#href': '#oldhref' });
     assert.equal(justCalled, 'getHref');
 
     justCalled = null;
@@ -472,7 +472,7 @@ describe('history', function () {
 
     const line = document.createElementNS(NS.SVG, 'line');
     line.setAttribute('class', 'newClass');
-    change = new hstory.ChangeElementCommand(line, {class: 'oldClass'});
+    change = new hstory.ChangeElementCommand(line, { class: 'oldClass' });
 
     assert.ok(change.unapply);
     assert.ok(change.apply);
@@ -488,7 +488,7 @@ describe('history', function () {
 
   it('Test BatchCommand', function () {
     let concatResult = '';
-    MockCommand.prototype.apply = function (handler) { concatResult += this.text; };
+    MockCommand.prototype.apply = function () { concatResult += this.text; };
 
     const batch = new hstory.BatchCommand();
     assert.ok(batch.unapply);

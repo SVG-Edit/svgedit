@@ -4,9 +4,8 @@
     <meta charset="utf-8" />
     <title>Minimal demo of SvgCanvas</title>
     <script src="../src/editor/jquery.min.js"></script>
-    <script src="../src/editor/jquery-ui/jquery-ui-1.8.17.custom.min.js"></script>
     <style> #svgroot { overflow: hidden; } </style>
-    <link rel="shortcut icon" type="image/x-icon" href="../src/editor/images/logo.png" />
+    <link rel="shortcut icon" type="image/x-icon" href="../src/editor/images/logo.svg" />
   </head>
 
   <body>
@@ -29,17 +28,17 @@
 import SvgCanvas from '../src/svgcanvas/svgcanvas.js';
 
 const container = document.querySelector('#editorContainer');
-const {width, height} = {width: 500, height: 300};
+const { width, height } = { width: 500, height: 300 };
 window.width = width;
 window.height = height;
 
 const config = {
-  initFill: {color: 'FFFFFF', opacity: 1},
-  initStroke: {color: '000000', opacity: 1, width: 1},
-  text: {stroke_width: 0, font_size: 24, font_family: 'serif'},
+  initFill: { color: 'FFFFFF', opacity: 1 },
+  initStroke: { color: '000000', opacity: 1, width: 1 },
+  text: { stroke_width: 0, font_size: 24, font_family: 'serif' },
   initOpacity: 1,
-  imgPath: 'editor/images/',
-  dimensions: [width, height],
+  imgPath: '../src/editor/images/',
+  dimensions: [ width, height ],
   baseUnit: 'px'
 };
 

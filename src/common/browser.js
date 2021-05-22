@@ -6,12 +6,9 @@
  * @copyright 2010 Jeff Schiller, 2010 Alexis Deveria
  */
 
-// Dependencies:
-// 1) jQuery (for $.alert())
-
 import 'pathseg';
 
-import {NS} from './namespaces.js';
+import { NS } from './namespaces.js';
 
 const supportsSVG_ = (function () {
 return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
@@ -23,14 +20,13 @@ return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg
 */
 export const supportsSvg = () => supportsSVG_;
 
-const {userAgent} = navigator;
+const { userAgent } = navigator;
 const svg = document.createElementNS(NS.SVG, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
 const isOpera_ = Boolean(window.opera);
 const isWebkit_ = userAgent.includes('AppleWebKit');
 const isGecko_ = userAgent.includes('Gecko/');
-const isIE_ = userAgent.includes('MSIE');
 const isChrome_ = userAgent.includes('Chrome/');
 const isWindows_ = userAgent.includes('Windows');
 const isMac_ = userAgent.includes('Macintosh');
@@ -53,7 +49,7 @@ const seg = path.createSVGPathSegLinetoAbs(5, 5);
 try {
   seglist.replaceItem(seg, 1);
   return true;
-} catch (err) {}
+}catch (err) {/* empty */}
 return false;
 }());
 
@@ -65,7 +61,7 @@ const seg = path.createSVGPathSegLinetoAbs(5, 5);
 try {
   seglist.insertItemBefore(seg, 1);
   return true;
-} catch (err) {}
+}catch (err) {/* empty */}
 return false;
 }());
 
@@ -165,11 +161,6 @@ export const isWebkit = () => isWebkit_;
  * @returns {boolean}
 */
 export const isGecko = () => isGecko_;
-/**
- * @function module:browser.isIE
- * @returns {boolean}
-*/
-export const isIE = () => isIE_;
 /**
  * @function module:browser.isChrome
  * @returns {boolean}

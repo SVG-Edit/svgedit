@@ -11,6 +11,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -22,10 +23,11 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'mathjax',
-  async init ({$}) {
+  async init ({ $ }) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
-    const svgCanvas = svgEditor.canvas;
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
 
     // Configuration of the MathJax extention.
 
@@ -55,7 +57,7 @@ export default {
       // mathjaxSrc = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
       // Had been on https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG.js
       // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js
-      {uiStrings} = svgEditor;
+      { uiStrings } = svgEditor;
     let
       math,
       locationX,
@@ -81,10 +83,10 @@ export default {
      * @returns {void}
      */
     function saveMath () {
-      const code = $('#mathjax_code_textarea').val();
+      const code = $id('mathjax_code_textarea').value;
       // displaystyle to force MathJax NOT to use the inline style. Because it is
       // less fancy!
-      MathJax.Hub.queue.Push(['Text', math, '\\displaystyle{' + code + '}']);
+      MathJax.Hub.queue.Push([ 'Text', math, '\\displaystyle{' + code + '}' ]);
 
       /*
        * The MathJax library doesn't want to bloat your webpage so it creates
@@ -132,7 +134,7 @@ export default {
       );
     }
 
-    const buttons = [{
+    const buttons = [ {
       id: 'tool_mathjax',
       type: 'mode',
       icon: 'mathjax.png',
@@ -144,70 +146,63 @@ export default {
           // Only load Mathjax when needed, we don't want to strain Svg-Edit any more.
           // From this point on it is very probable that it will be needed, so load it.
           if (mathjaxLoaded === false) {
-            $(
-              '<div id="mathjax">' +
-              '<!-- Here is where MathJax creates the math -->' +
-                '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' +
-                  '$${}$$' +
-                '</div>' +
-                '<div id="mathjax_overlay"></div>' +
-                '<div id="mathjax_container">' +
-                  '<div id="tool_mathjax_back" class="toolbar_button">' +
-                    '<button id="tool_mathjax_save">OK</button>' +
-                    '<button id="tool_mathjax_cancel">Cancel</button>' +
-                  '</div>' +
-                  '<fieldset>' +
-                    '<legend id="mathjax_legend">Mathematics Editor</legend>' +
-                    '<label>' +
-                      '<span id="mathjax_explication">Please type your mathematics in ' +
-                      '<a href="https://en.wikipedia.org/wiki/Help:' +
-                        'Displaying_a_formula" target="_blank">TeX</a> code.' +
-                        '</span></label>' +
-                    '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
-                  '</fieldset>' +
-                '</div>' +
-              '</div>'
-            ).insertAfter('#svg_prefs').hide();
-
-            // Make the MathEditor draggable.
-            $('#mathjax_container').draggable({
-              cancel: 'button,fieldset',
-              containment: 'window'
-            });
-
+            const div = document.createElement('div');
+            div.id = 'mathjax';
+            div.innerHTML = '<!-- Here is where MathJax creates the math -->' +
+            '<div id="mathjax_creator" class="tex2jax_process" style="display:none">' +
+              '$${}$$' +
+            '</div>' +
+            '<div id="mathjax_overlay"></div>' +
+            '<div id="mathjax_container">' +
+              '<div id="tool_mathjax_back" class="toolbar_button">' +
+                '<button id="tool_mathjax_save">OK</button>' +
+                '<button id="tool_mathjax_cancel">Cancel</button>' +
+              '</div>' +
+              '<fieldset>' +
+                '<legend id="mathjax_legend">Mathematics Editor</legend>' +
+                '<label>' +
+                  '<span id="mathjax_explication">Please type your mathematics in ' +
+                  '<a href="https://en.wikipedia.org/wiki/Help:' +
+                    'Displaying_a_formula" target="_blank">TeX</a> code.' +
+                    '</span></label>' +
+                '<textarea id="mathjax_code_textarea" spellcheck="false"></textarea>' +
+              '</fieldset>' +
+            '</div>';
+            $id('svg_prefs').parentNode.insertBefore(div, $id('svg_prefs').nextSibling);
+            div.style.display = 'none';
             // Add functionality and picture to cancel button.
             $('#tool_mathjax_cancel').prepend($.getSvgIcon('cancel', true))
               .on('click touched', function () {
-                $('#mathjax').hide();
+                $id("mathjax").style.display = 'none';
               });
 
             // Add functionality and picture to the save button.
             $('#tool_mathjax_save').prepend($.getSvgIcon('ok', true))
               .on('click touched', function () {
                 saveMath();
-                $('#mathjax').hide();
+                $id("mathjax").style.display = 'none';
               });
 
             // MathJax preprocessing has to ignore most of the page.
-            $('body').addClass('tex2jax_ignore');
+            document.body.classList.add("tex2jax_ignore");
 
             try {
               await import('./mathjax/MathJax.min.js'); // ?config=TeX-AMS-MML_SVG.js');
               // When MathJax is loaded get the div where the math will be rendered.
               MathJax.Hub.queue.Push(function () {
                 math = MathJax.Hub.getAllJax('#mathjax_creator')[0];
-                console.log(math); // eslint-disable-line no-console
                 mathjaxLoaded = true;
-                console.log('MathJax Loaded'); // eslint-disable-line no-console
+                console.info('MathJax Loaded');
               });
             } catch (e) {
-              console.log('Failed loading MathJax.'); // eslint-disable-line no-console
-              $.alert('Failed loading MathJax. You will not be able to change the mathematics.');
+              console.warn('Failed loading MathJax.');
+              // eslint-disable-next-line no-alert
+              alert('Failed loading MathJax. You will not be able to change the mathematics.');
             }
           }
         }
       }
-    }];
+    } ];
 
     return {
       name: strings.name,
@@ -218,7 +213,7 @@ export default {
 
       mouseDown () {
         if (svgCanvas.getMode() === 'mathjax') {
-          return {started: true};
+          return { started: true };
         }
         return undefined;
       },
@@ -230,65 +225,63 @@ export default {
           locationX = opts.mouse_x / zoom;
           locationY = opts.mouse_y / zoom;
 
-          $('#mathjax').show();
-          return {started: false}; // Otherwise the last selected object dissapears.
+          $id("mathjax").style.display = 'block';
+          return { started: false }; // Otherwise the last selected object dissapears.
         }
         return undefined;
       },
       callback () {
-        $('<style>').text(
-          '#mathjax fieldset{' +
-            'padding: 5px;' +
-            'margin: 5px;' +
-            'border: 1px solid #DDD;' +
-          '}' +
-          '#mathjax label{' +
-            'display: block;' +
-            'margin: .5em;' +
-          '}' +
-          '#mathjax legend {' +
-            'max-width:195px;' +
-          '}' +
-          '#mathjax_overlay {' +
-            'position: absolute;' +
-            'top: 0;' +
-            'left: 0;' +
-            'right: 0;' +
-            'bottom: 0;' +
-            'background-color: black;' +
-            'opacity: 0.6;' +
-            'z-index: 20000;' +
-          '}' +
-          '#mathjax_container {' +
-            'position: absolute;' +
-            'top: 50px;' +
-            'padding: 10px;' +
-            'background-color: #B0B0B0;' +
-            'border: 1px outset #777;' +
-            'opacity: 1.0;' +
-            'font-family: Verdana, Helvetica, sans-serif;' +
-            'font-size: .8em;' +
-            'z-index: 20001;' +
-          '}' +
-          '#tool_mathjax_back {' +
-            'margin-left: 1em;' +
-            'overflow: auto;' +
-          '}' +
-          '#mathjax_legend{' +
-            'font-weight: bold;' +
-            'font-size:1.1em;' +
-          '}' +
-          '#mathjax_code_textarea {\\n' +
-            'margin: 5px .7em;' +
-            'overflow: hidden;' +
-            'width: 416px;' +
-            'display: block;' +
-            'height: 100px;' +
-          '}'
-        ).appendTo('head');
-
-        // Add the MathJax configuration.
-        // $(mathjaxConfiguration).appendTo('head');
+        const head = document.head || document.getElementsByTagName('head')[0],
+        style = document.createElement('style');
+        style.textContent = '#mathjax fieldset{' +
+          'padding: 5px;' +
+          'margin: 5px;' +
+          'border: 1px solid #DDD;' +
+        '}' +
+        '#mathjax label{' +
+          'display: block;' +
+          'margin: .5em;' +
+        '}' +
+        '#mathjax legend {' +
+          'max-width:195px;' +
+        '}' +
+        '#mathjax_overlay {' +
+          'position: absolute;' +
+          'top: 0;' +
+          'left: 0;' +
+          'right: 0;' +
+          'bottom: 0;' +
+          'background-color: black;' +
+          'opacity: 0.6;' +
+          'z-index: 20000;' +
+        '}' +
+        '#mathjax_container {' +
+          'position: absolute;' +
+          'top: 50px;' +
+          'padding: 10px;' +
+          'background-color: #5a6162;' +
+          'border: 1px outset #777;' +
+          'opacity: 1.0;' +
+          'font-family: Verdana, Helvetica, sans-serif;' +
+          'font-size: .8em;' +
+          'z-index: 20001;' +
+        '}' +
+        '#tool_mathjax_back {' +
+          'margin-left: 1em;' +
+          'overflow: auto;' +
+        '}' +
+        '#mathjax_legend{' +
+          'font-weight: bold;' +
+          'font-size:1.1em;' +
+        '}' +
+        '#mathjax_code_textarea {\\n' +
+          'margin: 5px .7em;' +
+          'overflow: hidden;' +
+          'width: 416px;' +
+          'display: block;' +
+          'height: 100px;' +
+        '}';
+      head.appendChild(style);
       }
     };
   }

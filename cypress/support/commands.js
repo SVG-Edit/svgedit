@@ -25,14 +25,14 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 // remove the style attributes that is causing differences in snapshots
-const ngAttributes = ['style'];
+const ngAttributes = [ 'style' ];
 
 Cypress.Commands.add(
   'cleanSnapshot',
   {
     prevSubject: true
   },
-  (subject, snapshotOptions) => {
+  (subject, _snapshotOptions) => {
     let html = subject[0].outerHTML;
 
     for (const attribute of ngAttributes) {

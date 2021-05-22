@@ -6,8 +6,8 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import {getHref, setHref, getRotationAngle, isNullish} from '../common/utilities.js';
-import {removeElementFromListMap} from '../common/svgtransformlist.js';
+import { getHref, setHref, getRotationAngle, isNullish } from './utilities.js';
+import { removeElementFromListMap } from './svgtransformlist.js';
 
 /**
 * Group: Undo/Redo history management.
@@ -56,7 +56,7 @@ export class Command {
    * This function needs to be surcharged if multiple elements are returned.
   */
   elements () {
-    return [this.elem];
+    return [ this.elem ];
   }
 
   /**
@@ -260,10 +260,8 @@ export class RemoveElementCommand extends Command {
   unapply (handler) {
     super.unapply(handler, () => {
       removeElementFromListMap(this.elem);
-      if (isNullish(this.nextSibling)) {
-        if (window.console) {
-          console.error('Reference element was lost');
-        }
+      if (isNullish(this.nextSibling) && window.console) {
+        console.error('Reference element was lost');
       }
       this.parent.insertBefore(this.elem, this.nextSibling); // Don't use `before` or `prepend` as `this.nextSibling` may be `null`
     });
@@ -314,7 +312,7 @@ export class ChangeElementCommand extends Command {
   apply (handler) {
     super.apply(handler, () => {
       let bChangedTransform = false;
-      Object.entries(this.newValues).forEach(([attr, value]) => {
+      Object.entries(this.newValues).forEach(([ attr, value ]) => {
         if (value) {
           if (attr === '#text') {
             this.elem.textContent = value;
@@ -340,7 +338,7 @@ export class ChangeElementCommand extends Command {
           const bbox = this.elem.getBBox();
           const cx = bbox.x + bbox.width / 2;
           const cy = bbox.y + bbox.height / 2;
-          const rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('');
+          const rotate = [ 'rotate(', angle, ' ', cx, ',', cy, ')' ].join('');
           if (rotate !== this.elem.getAttribute('transform')) {
             this.elem.setAttribute('transform', rotate);
           }
@@ -358,7 +356,7 @@ export class ChangeElementCommand extends Command {
   unapply (handler) {
     super.unapply(handler, () => {
       let bChangedTransform = false;
-      Object.entries(this.oldValues).forEach(([attr, value]) => {
+      Object.entries(this.oldValues).forEach(([ attr, value ]) => {
         if (value) {
           if (attr === '#text') {
             this.elem.textContent = value;
@@ -381,7 +379,7 @@ export class ChangeElementCommand extends Command {
           const bbox = this.elem.getBBox();
           const cx = bbox.x + bbox.width / 2,
             cy = bbox.y + bbox.height / 2;
-          const rotate = ['rotate(', angle, ' ', cx, ',', cy, ')'].join('');
+          const rotate = [ 'rotate(', angle, ' ', cx, ',', cy, ')' ].join('');
           if (rotate !== this.elem.getAttribute('transform')) {
             this.elem.setAttribute('transform', rotate);
           }
@@ -610,7 +608,7 @@ export class UndoManager {
   finishUndoableChange () {
     const p = this.undoChangeStackPointer--;
     const changeset = this.undoableChangeStack[p];
-    const {attrName} = changeset;
+    const { attrName } = changeset;
     const batchCmd = new BatchCommand('Change ' + attrName);
     let i = changeset.elements.length;
     while (i--) {

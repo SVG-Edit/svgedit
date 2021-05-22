@@ -6,11 +6,11 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import {NS} from './namespaces.js';
+import { NS } from './namespaces.js';
 
-const wAttrs = ['x', 'x1', 'cx', 'rx', 'width'];
-const hAttrs = ['y', 'y1', 'cy', 'ry', 'height'];
-const unitAttrs = ['r', 'radius', ...wAttrs, ...hAttrs];
+const wAttrs = [ 'x', 'x1', 'cx', 'rx', 'width' ];
+const hAttrs = [ 'y', 'y1', 'cy', 'ry', 'height' ];
+const unitAttrs = [ 'r', 'radius', ...wAttrs, ...hAttrs ];
 // unused
 /*
 const unitNumMap = {
@@ -55,7 +55,6 @@ let typeMap_ = {};
  * @returns {Integer} The number of digits number should be rounded to
  */
 
-/* eslint-disable jsdoc/valid-types */
 /**
  * @typedef {PlainObject} module:units.TypeMap
  * @property {Float} em
@@ -68,7 +67,6 @@ let typeMap_ = {};
  * @property {Integer} px
  * @property {0} %
  */
-/* eslint-enable jsdoc/valid-types */
 
 /**
  * Initializes this module.
@@ -204,14 +202,14 @@ export const setUnitAttr = function (elem, attr, val) {
 };
 
 const attrsToConvert = {
-  line: ['x1', 'x2', 'y1', 'y2'],
-  circle: ['cx', 'cy', 'r'],
-  ellipse: ['cx', 'cy', 'rx', 'ry'],
-  foreignObject: ['x', 'y', 'width', 'height'],
-  rect: ['x', 'y', 'width', 'height'],
-  image: ['x', 'y', 'width', 'height'],
-  use: ['x', 'y', 'width', 'height'],
-  text: ['x', 'y']
+  line: [ 'x1', 'x2', 'y1', 'y2' ],
+  circle: [ 'cx', 'cy', 'r' ],
+  ellipse: [ 'cx', 'cy', 'rx', 'ry' ],
+  foreignObject: [ 'x', 'y', 'width', 'height' ],
+  rect: [ 'x', 'y', 'width', 'height' ],
+  image: [ 'x', 'y', 'width', 'height' ],
+  use: [ 'x', 'y', 'width', 'height' ],
+  text: [ 'x', 'y' ]
 };
 
 /**
@@ -230,13 +228,8 @@ export const convertAttrs = function (element) {
   for (let i = 0; i < len; i++) {
     const attr = attrs[i];
     const cur = element.getAttribute(attr);
-    if (cur) {
-      if (!isNaN(cur)) {
-        element.setAttribute(attr, (cur / typeMap_[unit]) + unit);
-      }
-      // else {
-      // Convert existing?
-      // }
+    if (cur && !isNaN(cur)) {
+      element.setAttribute(attr, (cur / typeMap_[unit]) + unit);
     }
   }
 };
@@ -306,7 +299,7 @@ export const isValidUnit = function (attr, val, selectedElement) {
     try {
       const elem = elementContainer_.getElement(val);
       result = (!elem || elem === selectedElement);
-    } catch (e) {}
+    } catch (e) {/* empty fn */}
     return result;
   }
   return true;

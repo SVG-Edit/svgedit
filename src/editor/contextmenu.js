@@ -48,7 +48,6 @@ export const add = function (menuItem) {
     throw new Error('Cannot add extension "' + menuItem.id + '", an extension by that name already exists"');
   }
   // Register menuItem action, see below for deferred menu dom injection
-  console.log('Registered contextmenu item: {id:' + menuItem.id + ', label:' + menuItem.label + '}'); // eslint-disable-line no-console
   contextMenuExtensions[menuItem.id] = menuItem;
   // TODO: Need to consider how to handle custom enable/disable behavior
 };

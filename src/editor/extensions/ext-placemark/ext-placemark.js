@@ -9,6 +9,7 @@
 const loadExtensionTranslation = async function (lang) {
   let translationModule;
   try {
+    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
   } catch (_error) {
     // eslint-disable-next-line no-console
@@ -20,11 +21,11 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'placemark',
-  async init (S) {
+  async init (_S) {
     const svgEditor = this;
-    const svgCanvas = svgEditor.canvas;
+    const { svgCanvas } = svgEditor;
+    const { $id } = svgCanvas;
     const addElem = svgCanvas.addSVGElementFromJson;
-    const {$} = S; // {svgcontent},
     let
       selElems,
       // editingitex = false,
@@ -35,33 +36,33 @@ export default {
       // newFOG, newFOGParent, newDef, newImageName, newMaskID,
       // undoCommand = 'Not image',
       // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
-    const strings = await loadExtensionTranslation(svgEditor.curPrefs.lang);
+    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const markerTypes = {
       nomarker: {},
       forwardslash:
-        {element: 'path', attr: {d: 'M30,100 L70,0'}},
+        { element: 'path', attr: { d: 'M30,100 L70,0' } },
       reverseslash:
-        {element: 'path', attr: {d: 'M30,0 L70,100'}},
+        { element: 'path', attr: { d: 'M30,0 L70,100' } },
       verticalslash:
-        {element: 'path', attr: {d: 'M50,0 L50,100'}},
+        { element: 'path', attr: { d: 'M50,0 L50,100' } },
       xmark:
-        {element: 'path', attr: {d: 'M20,80 L80,20 M80,80 L20,20'}},
+        { element: 'path', attr: { d: 'M20,80 L80,20 M80,80 L20,20' } },
       leftarrow:
-        {element: 'path', attr: {d: 'M0,50 L100,90 L70,50 L100,10 Z'}},
+        { element: 'path', attr: { d: 'M0,50 L100,90 L70,50 L100,10 Z' } },
       rightarrow:
-        {element: 'path', attr: {d: 'M100,50 L0,90 L30,50 L0,10 Z'}},
+        { element: 'path', attr: { d: 'M100,50 L0,90 L30,50 L0,10 Z' } },
       box:
-        {element: 'path', attr: {d: 'M20,20 L20,80 L80,80 L80,20 Z'}},
+        { element: 'path', attr: { d: 'M20,20 L20,80 L80,80 L80,20 Z' } },
       star:
-        {element: 'path', attr: {d: 'M10,30 L90,30 L20,90 L50,10 L80,90 Z'}},
+        { element: 'path', attr: { d: 'M10,30 L90,30 L20,90 L50,10 L80,90 Z' } },
       mcircle:
-        {element: 'circle', attr: {r: 30, cx: 50, cy: 50}},
+        { element: 'circle', attr: { r: 30, cx: 50, cy: 50 } },
       triangle:
-        {element: 'path', attr: {d: 'M10,80 L50,20 L80,80 Z'}}
+        { element: 'path', attr: { d: 'M10,80 L50,20 L80,80 Z' } }
     };
 
     // duplicate shapes to support unfilled (open) marker types with an _o suffix
-    ['leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle'].forEach((v) => {
+    [ 'leftarrow', 'rightarrow', 'box', 'star', 'mcircle', 'triangle' ].forEach((v) => {
       markerTypes[v + '_o'] = markerTypes[v];
     });
 
@@ -71,7 +72,7 @@ export default {
      * @returns {void}
      */
     function showPanel (on) {
-      $('#placemark_panel').toggle(on);
+      $id('placemark_panel').style.display = (on) ? 'block' : 'none';
     }
 
     /**
@@ -103,10 +104,11 @@ export default {
       const items = txt.split(';');
       selElems.forEach((elem) => {
         if (elem && elem.getAttribute('class').includes('placemark')) {
-          $(elem).children().each((_, i) => {
-            const [, , type, n] = i.id.split('_');
+          var elements = elem.children;
+          Array.prototype.forEach.call(elements, function(i, _){
+            const [ , , type, n ] = i.id.split('_');
             if (type === 'txt') {
-              $(i).text(items[n]);
+              txt.textContent = items[n];
             }
           });
         }
@@ -123,10 +125,11 @@ export default {
       font = font.join(' ');
       selElems.forEach((elem) => {
         if (elem && elem.getAttribute('class').includes('placemark')) {
-          $(elem).children().each((_, i) => {
-            const [, , type] = i.id.split('_');
+          var elements = elem.children;
+          Array.prototype.forEach.call(elements, function(i, _){
+            const [ , , type ] = i.id.split('_');
             if (type === 'txt') {
-              $(i).attr({'font-family': font, 'font-size': fontSize});
+              i.style.cssText = 'font-family:' + font + ';font-size:'+fontSize+';';
             }
           });
         }
@@ -140,13 +143,12 @@ export default {
     function addMarker (id, val) {
       let marker = svgCanvas.getElem(id);
       if (marker) { return undefined; }
-      // console.log(id);
       if (val === '' || val === 'nomarker') { return undefined; }
       const color = svgCanvas.getColor('stroke');
       // NOTE: Safari didn't like a negative value in viewBox
       // so we use a standardized 0 0 100 100
       // with 50 50 being mapped to the marker position
-      const scale = 2;// parseFloat($('#marker_size').val());
+      const scale = 2;
       const strokeWidth = 10;
       let refX = 50;
       const refY = 50;
@@ -199,17 +201,17 @@ export default {
     function setMarker (el, val) {
       const markerName = 'marker-start';
       const marker = getLinked(el, markerName);
-      if (marker) { $(marker).remove(); }
+      if (marker) { marker.remove(); }
       el.removeAttribute(markerName);
       if (val === 'nomarker') {
-        svgCanvas.call('changed', [el]);
+        svgCanvas.call('changed', [ el ]);
         return;
       }
       // Set marker on element
       const id = 'placemark_marker_' + el.id;
       addMarker(id, val);
       el.setAttribute(markerName, 'url(#' + id + ')');
-      svgCanvas.call('changed', [el]);
+      svgCanvas.call('changed', [ el ]);
     }
 
     /**
@@ -221,7 +223,6 @@ export default {
     function colorChanged (el) {
       const color = el.getAttribute('stroke');
       const marker = getLinked(el, 'marker-start');
-      // console.log(marker);
       if (!marker) { return; }
       if (!marker.attributes.class) { return; } // not created by this extension
       const ch = marker.lastElementChild;
@@ -248,7 +249,7 @@ export default {
         const len = el.id.length;
         const linkid = url.substr(-len - 1, len);
         if (el.id !== linkid) {
-          const val = $('#placemark_marker').attr('value') || 'leftarrow';
+          const val = $id('placemark_marker').getAttribute('value') || 'leftarrow';
           addMarker(id, val);
           svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
           svgCanvas.call('changed', selElems);
@@ -259,11 +260,11 @@ export default {
     * @param {Event} ev
     * @returns {void}
     */
-    function setArrowFromButton (ev) {
+    function setArrowFromButton (_ev) {
       const parts = this.id.split('_');
       let val = parts[2];
       if (parts[3]) { val += '_' + parts[3]; }
-      $('#placemark_marker').attr('value', val);
+      $id('placemark_marker').setAttribute('value', val);
     }
 
     /**
@@ -271,7 +272,7 @@ export default {
     * @returns {string}
     */
     function getTitle (id) {
-      const {langList} = strings;
+      const { langList } = strings;
       const item = langList.find((itm) => {
         return itm.id === id;
       });
@@ -292,7 +293,7 @@ export default {
           icon: 'markers-' + id + '.png',
           title,
           type: 'context',
-          events: {click: setArrowFromButton},
+          events: { click: setArrowFromButton },
           panel: 'placemark_panel',
           list: 'placemark_marker',
           isDefault: id === 'leftarrow'
@@ -301,7 +302,7 @@ export default {
       return buttons;
     }
 
-    const buttons = [{
+    const buttons = [ {
       id: 'tool_placemark',
       icon: 'placemark.png',
       type: 'mode',
@@ -312,14 +313,14 @@ export default {
           svgCanvas.setMode('placemark');
         }
       }
-    }];
+    } ];
     const contextTools = [
       {
         type: 'button-select',
         panel: 'placemark_panel',
         id: 'placemark_marker',
         colnum: 3,
-        events: {change: setArrowFromButton}
+        events: { change: setArrowFromButton }
       },
       {
         type: 'input',
@@ -356,7 +357,7 @@ export default {
         return Object.assign(contextTools[i], contextTool);
       }),
       callback () {
-        $('#placemark_panel').hide();
+        $id("placemark_panel").style.display = 'none';
         // const endChanges = function(){};
       },
       mouseDown (opts) {
@@ -367,13 +368,13 @@ export default {
         if (svgCanvas.getMode() === 'placemark') {
           started = true;
           const id = svgCanvas.getNextId();
-          const items = $('#placemarkText').val().split(';');
-          let font = $('#placemarkFont').val().split(' ');
+          const items = $id('placemarkText').value.split(';');
+          let font = $id('placemarkFont').value.split(' ');
           const fontSize = Number.parseInt(font.pop());
           font = font.join(' ');
           const x0 = opts.start_x + 10, y0 = opts.start_y + 10;
           let maxlen = 0;
-          const children = [{
+          const children = [ {
             element: 'line',
             attr: {
               id: id + '_pline_0',
@@ -386,7 +387,7 @@ export default {
               x2: x0,
               y2: y0
             }
-          }];
+          } ];
           items.forEach((i, n) => {
             maxlen = Math.max(maxlen, i.length);
             children.push({
@@ -416,7 +417,7 @@ export default {
                 'font-size': fontSize,
                 'text-anchor': 'start'
               },
-              children: [i]
+              children: [ i ]
             });
           });
           if (items.length > 0) {
@@ -452,7 +453,7 @@ export default {
           });
           setMarker(
             newPM.firstElementChild,
-            $('#placemark_marker').attr('value') || 'leftarrow'
+            $id('placemark_marker').getAttribute('value') || 'leftarrow'
           );
           return {
             started: true
@@ -467,12 +468,17 @@ export default {
         if (svgCanvas.getMode() === 'placemark') {
           const x = opts.mouse_x / svgCanvas.getZoom();
           const y = opts.mouse_y / svgCanvas.getZoom();
-          const {fontSize, maxlen, lines, px, py} = $(newPM).attr(
-            ['fontSize', 'maxlen', 'lines', 'px', 'py']
-          );
-          $(newPM).attr({x, y});
-          $(newPM).children().each((_, i) => {
-            const [, , type, n] = i.id.split('_');
+          const fontSize = newPM.getAttribute('fontSize');
+          const maxlen = newPM.getAttribute('maxlen');
+          const lines = newPM.getAttribute('lines');
+          const px = newPM.getAttribute('px');
+          const py = newPM.getAttribute('py');
+
+          newPM.setAttribute('x', x);
+          newPM.setAttribute('y', y);
+          const elements = newPM.children;
+          Array.prototype.forEach.call(elements, function(i, _){
+            const [ , , type, n ] = i.id.split('_');
             const y0 = y + (fontSize + 6) * n,
               x0 = x + maxlen * fontSize * 0.5 + fontSize;
             const nx = (x + (x0 - x) / 2 < px) ? x0 : x;
@@ -508,7 +514,10 @@ export default {
       },
       mouseUp () {
         if (svgCanvas.getMode() === 'placemark') {
-          const {x, y, px, py} = $(newPM).attr(['x', 'y', 'px', 'py']);
+          const x = newPM.getAttribute('x');
+          const y = newPM.getAttribute('y');
+          const px = newPM.getAttribute('px');
+          const py = newPM.getAttribute('py');
           return {
             keep: (x != px && y != py), // eslint-disable-line eqeqeq
             element: newPM
@@ -522,16 +531,17 @@ export default {
         selElems.forEach((elem) => {
           if (elem && elem.getAttribute('class').includes('placemark')) {
             const txt = [];
-            $(elem).children().each((n, i) => {
-              const [, , type] = i.id.split('_');
+            const elements = elem.children;
+            Array.prototype.forEach.call(elements, function(i){
+              const [ , , type ] = i.id.split('_');
               if (type === 'txt') {
-                $('#placemarkFont').val(
+                $id('placemarkFont').value = (
                   i.getAttribute('font-family') + ' ' + i.getAttribute('font-size')
                 );
-                txt.push($(i).text());
+                txt.push(i.textContent);
               }
             });
-            $('#placemarkText').val(txt.join(';'));
+            $id('placemarkText').value = txt.join(';');
             showPanel(true);
           } else {
             showPanel(false);

@@ -1,4 +1,3 @@
-/* globals jQuery */
 /**
  * Path functionality.
  * @module path
@@ -7,20 +6,19 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import {NS} from '../common/namespaces.js';
-import {ChangeElementCommand} from './history.js';
+import { NS } from '../common/namespaces.js';
+import { ChangeElementCommand } from './history.js';
 import {
   transformPoint, getMatrix
-} from '../common/math.js';
+} from './math.js';
 import {
   assignAttributes, getRotationAngle, isNullish,
   getElem
-} from '../common/utilities.js';
+} from './utilities.js';
 import {
   supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
 } from '../common/browser.js';
 
-const $ = jQuery;
 let pathMethodsContext_ = null;
 let editorContext_ = null;
 
@@ -62,7 +60,7 @@ export const insertItemBeforeMethod = function (elem, newseg, index) {
     list.appendItem(arr[i]);
   }
 };
-
+/* eslint-disable max-len */
 /**
 * @function module:path.ptObjToArr
 * @todo See if this should just live in `replacePathSeg`
@@ -70,6 +68,7 @@ export const insertItemBeforeMethod = function (elem, newseg, index) {
 * @param {SVGPathSegMovetoAbs|SVGPathSegLinetoAbs|SVGPathSegCurvetoCubicAbs|SVGPathSegCurvetoQuadraticAbs|SVGPathSegArcAbs|SVGPathSegLinetoHorizontalAbs|SVGPathSegLinetoVerticalAbs|SVGPathSegCurvetoCubicSmoothAbs|SVGPathSegCurvetoQuadraticSmoothAbs} segItem
 * @returns {ArgumentsArray}
 */
+/* eslint-enable max-len */
 export const ptObjToArrMethod = function (type, segItem) {
   const segData = pathMethodsContext_.getSegData();
   const props = segData[type];
@@ -85,7 +84,7 @@ export const ptObjToArrMethod = function (type, segItem) {
 * @returns {module:math.XYObject}
 */
 export const getGripPtMethod = function (seg, altPt) {
-  const {path: pth} = seg;
+  const { path: pth } = seg;
   let out = {
     x: altPt ? altPt.x : seg.item.x,
     y: altPt ? altPt.y : seg.item.y
@@ -134,7 +133,8 @@ export const getGripContainerMethod = function () {
   let c = getElem('pathpointgrip_container');
   if (!c) {
     const parentElement = getElem('selectorParentGroup');
-    c = parentElement.appendChild(document.createElementNS(NS.SVG, 'g'));
+    c = document.createElementNS(NS.SVG, 'g');
+    parentElement.append(c);
     c.id = 'pathpointgrip_container';
   }
   return c;
@@ -171,10 +171,10 @@ export const addPointGripMethod = function (index, x, y) {
       atts['xlink:title'] = uiStrings.pathNodeTooltip;
     }
     assignAttributes(pointGrip, atts);
-    pointGrip = pointGripContainer.appendChild(pointGrip);
+    pointGripContainer.append(pointGrip);
 
-    const grip = $('#pathpointgrip_' + index);
-    grip.dblclick(function () {
+    const grip = document.getElementById('pathpointgrip_' + index);
+    grip?.addEventListener("dblclick", () => {
       const path = pathMethodsContext_.getPathObj();
       if (path) {
         path.setSegType();
@@ -247,7 +247,7 @@ export const getCtrlLineMethod = function (id) {
 * @returns {SVGCircleElement}
 */
 export const getPointGripMethod = function (seg, update) {
-  const {index} = seg;
+  const { index } = seg;
   const pointGrip = addPointGripMethod(index);
 
   if (update) {
@@ -267,7 +267,7 @@ export const getPointGripMethod = function (seg, update) {
 * @returns {PlainObject<string, SVGLineElement|SVGCircleElement>}
 */
 export const getControlPointsMethod = function (seg) {
-  const {item, index} = seg;
+  const { item, index } = seg;
   if (!('x1' in item) || !('x2' in item)) { return null; }
   const cpt = {};
   /* const pointGripContainer = */ getGripContainerMethod();
@@ -276,15 +276,15 @@ export const getControlPointsMethod = function (seg) {
   const path = pathMethodsContext_.getPathObj();
   const prev = path.segs[index - 1].item;
 
-  const segItems = [prev, item];
+  const segItems = [ prev, item ];
 
   for (let i = 1; i < 3; i++) {
     const id = index + 'c' + i;
 
     const ctrlLine = cpt['c' + i + '_line'] = getCtrlLineMethod(id);
 
-    const pt = getGripPtMethod(seg, {x: item['x' + i], y: item['y' + i]});
-    const gpt = getGripPtMethod(seg, {x: segItems[i - 1].x, y: segItems[i - 1].y});
+    const pt = getGripPtMethod(seg, { x: item['x' + i], y: item['y' + i] });
+    const gpt = getGripPtMethod(seg, { x: segItems[i - 1].x, y: segItems[i - 1].y });
 
     assignAttributes(ctrlLine, {
       x1: pt.x,
@@ -351,7 +351,7 @@ export const replacePathSegMethod = function (type, index, pts, elem) {
 * @returns {SVGPathElement}
 */
 export const getSegSelectorMethod = function (seg, update) {
-  const {index} = seg;
+  const { index } = seg;
   let segLine = getElem('segline_' + index);
   if (!segLine) {
     const pointGripContainer = getGripContainerMethod();
@@ -370,7 +370,7 @@ export const getSegSelectorMethod = function (seg, update) {
   }
 
   if (update) {
-    const {prev} = seg;
+    const { prev } = seg;
     if (!prev) {
       segLine.setAttribute('display', 'none');
       return segLine;
@@ -378,11 +378,11 @@ export const getSegSelectorMethod = function (seg, update) {
 
     const pt = getGripPtMethod(prev);
     // Set start point
-    replacePathSegMethod(2, 0, [pt.x, pt.y], segLine);
+    replacePathSegMethod(2, 0, [ pt.x, pt.y ], segLine);
 
     const pts = ptObjToArrMethod(seg.type, seg.item); // , true);
     for (let i = 0; i < pts.length; i += 2) {
-      const point = getGripPtMethod(seg, {x: pts[i], y: pts[i + 1]});
+      const point = getGripPtMethod(seg, { x: pts[i], y: pts[i + 1] });
       pts[i] = point.x;
       pts[i + 1] = point.y;
     }
@@ -428,8 +428,8 @@ export class Segment {
    * @returns {void}
    */
   selectCtrls (y) {
-    $('#ctrlpointgrip_' + this.index + 'c1, #ctrlpointgrip_' + this.index + 'c2')
-      .attr('fill', y ? '#0FF' : '#EEE');
+    document.getElementById('ctrlpointgrip_' + this.index + 'c1').setAttribute('fill', y ? '#0FF' : '#EEE');
+    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE');
   }
 
   /**
@@ -501,14 +501,14 @@ export class Segment {
    * @returns {void}
    */
   move (dx, dy) {
-    const {item} = this;
+    const { item } = this;
 
     const curPts = this.ctrlpts
       ? [
         item.x += dx, item.y += dy,
         item.x1, item.y1, item.x2 += dx, item.y2 += dy
       ]
-      : [item.x += dx, item.y += dy];
+      : [ item.x += dx, item.y += dy ];
 
     replacePathSegMethod(
       this.type,
@@ -529,8 +529,8 @@ export class Segment {
     if (this.mate) {
       // The last point of a closed subpath has a 'mate',
       // which is the 'M' segment of the subpath
-      const {item: itm} = this.mate;
-      const pts = [itm.x += dx, itm.y += dy];
+      const { item: itm } = this.mate;
+      const pts = [ itm.x += dx, itm.y += dy ];
       replacePathSegMethod(this.mate.type, this.mate.index, pts);
       // Has no grip, so does not need 'updating'?
     }
@@ -557,7 +557,7 @@ export class Segment {
       pt = seg.item;
     }
 
-    const {item} = seg;
+    const { item } = seg;
     item['x' + anum] = pt.x + (pt.x - this.item['x' + num]);
     item['y' + anum] = pt.y + (pt.y - this.item['y' + num]);
 
@@ -578,7 +578,7 @@ export class Segment {
    * @returns {void}
    */
   moveCtrl (num, dx, dy) {
-    const {item} = this;
+    const { item } = this;
     item['x' + num] += dx;
     item['y' + num] += dy;
 
@@ -637,8 +637,10 @@ export class Path {
     // Hide all grips, etc
 
     // fixed, needed to work on all found elements, not just first
-    $(getGripContainerMethod()).find('*').each(function () {
-      $(this).attr('display', 'none');
+    const pointGripContainer = getGripContainerMethod();
+    const elements = pointGripContainer.querySelectorAll('*');
+    Array.prototype.forEach.call(elements, function(el){
+      el.style.display = 'none';
     });
 
     const segList = this.elem.pathSegList;
@@ -655,7 +657,7 @@ export class Path {
       this.segs.push(segment);
     }
 
-    const {segs} = this;
+    const { segs } = this;
 
     let startI = null;
     for (let i = 0; i < len; i++) {
@@ -741,7 +743,7 @@ export class Path {
     const seg = this.segs[index];
     if (!seg.prev) { return; }
 
-    const {prev} = seg;
+    const { prev } = seg;
     let newseg, newX, newY;
     switch (seg.item.pathSegType) {
     case 4: {
@@ -764,7 +766,7 @@ export class Path {
       const p12y = (p1y + p2y) / 2;
       newY = (p01y + p12y) / 2;
       newseg = this.elem.createSVGPathSegCurvetoCubicAbs(newX, newY, p0x, p0y, p01x, p01y);
-      const pts = [seg.item.x, seg.item.y, p12x, p12y, p2x, p2y];
+      const pts = [ seg.item.x, seg.item.y, p12x, p12y, p2x, p2y ];
       replacePathSegMethod(seg.type, index, pts);
       break;
     }
@@ -782,10 +784,10 @@ export class Path {
     const list = this.elem.pathSegList;
 
     seg.show(false);
-    const {next} = seg;
+    const { next } = seg;
     if (seg.mate) {
       // Make the next point be the "M" point
-      const pt = [next.item.x, next.item.y];
+      const pt = [ next.item.x, next.item.y ];
       replacePathSegMethod(2, next.index, pt);
 
       // Reposition last node
@@ -795,7 +797,7 @@ export class Path {
     } else if (!seg.prev) {
       // First node of open path, make next point the M
       // const {item} = seg;
-      const pt = [next.item.x, next.item.y];
+      const pt = [ next.item.x, next.item.y ];
       replacePathSegMethod(2, seg.next.index, pt);
       list.removeItem(index);
     } else {
@@ -890,7 +892,7 @@ export class Path {
 
       // Selected seg
       const cur = this.segs[selPt];
-      const {prev} = cur;
+      const { prev } = cur;
       if (!prev) { continue; }
 
       if (!newType) { // double-click, so just toggle
@@ -913,7 +915,7 @@ export class Path {
       case 6: {
         if (cur.olditem) {
           const old = cur.olditem;
-          points = [curX, curY, old.x1, old.y1, old.x2, old.y2];
+          points = [ curX, curY, old.x1, old.y1, old.x2, old.y2 ];
         } else {
           const diffX = curX - prevX;
           const diffY = curY - prevY;
@@ -929,11 +931,11 @@ export class Path {
           const ct1y = (prevY + (diffY / 3));
           const ct2x = (curX - (diffX / 3));
           const ct2y = (curY - (diffY / 3));
-          points = [curX, curY, ct1x, ct1y, ct2x, ct2y];
+          points = [ curX, curY, ct1x, ct1y, ct2x, ct2y ];
         }
         break;
       } case 4: {
-        points = [curX, curY];
+        points = [ curX, curY ];
 
         // Store original prevve segment nums
         cur.olditem = cur.item;
@@ -977,7 +979,7 @@ export class Path {
   * @returns {Path}
   */
   update () {
-    const {elem} = this;
+    const { elem } = this;
     if (getRotationAngle(elem)) {
       this.matrix = getMatrix(elem);
       this.imatrix = this.matrix.inverse();
@@ -1000,8 +1002,8 @@ export class Path {
   */
   endChanges (text) {
     if (isWebkit()) { editorContext_.resetD(this.elem); }
-    const cmd = new ChangeElementCommand(this.elem, {d: this.last_d}, text);
-    editorContext_.endChanges({cmd, elem: this.elem});
+    const cmd = new ChangeElementCommand(this.elem, { d: this.last_d }, text);
+    editorContext_.endChanges({ cmd, elem: this.elem });
   }
 
   /**
@@ -1009,13 +1011,11 @@ export class Path {
   * @returns {void}
   */
   addPtsToSelection (indexes) {
-    if (!Array.isArray(indexes)) { indexes = [indexes]; }
+    if (!Array.isArray(indexes)) { indexes = [ indexes ]; }
     indexes.forEach((index) => {
       const seg = this.segs[index];
-      if (seg.ptgrip) {
-        if (!this.selected_pts.includes(index) && index >= 0) {
-          this.selected_pts.push(index);
-        }
+      if (seg.ptgrip && !this.selected_pts.includes(index) && index >= 0) {
+        this.selected_pts.push(index);
       }
     });
     this.selected_pts.sort();
@@ -1031,7 +1031,7 @@ export class Path {
     }
 
     const closedSubpath = Path.subpathIsClosed(this.selected_pts[0]);
-    editorContext_.addPtsToSelection({grips, closedSubpath});
+    editorContext_.addPtsToSelection({ grips, closedSubpath });
   }
 
   // STATIC

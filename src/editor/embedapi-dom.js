@@ -1,12 +1,9 @@
-/* globals jQuery */
 /**
 * Attaches items to DOM for Embedded SVG support.
 * @module EmbeddedSVGEditDOM
 */
 import EmbeddedSVGEdit from './embedapi.js';
-import {isChrome} from '../common/browser.js';
-
-const $ = jQuery;
+import { isChrome } from '../common/browser.js';
 
 let svgCanvas = null;
 
@@ -18,10 +15,10 @@ let svgCanvas = null;
 function handleSvgData (data, error) {
   if (error) {
     // Todo: This should be replaced with a general purpose dialog alert library call
-    alert('error ' + error); // eslint-disable-line no-alert
+    alert('error ' + error);
   } else {
     // Todo: This should be replaced with a general purpose dialog alert library call
-    alert('Congratulations. Your SVG string is back in the host page, do with it what you will\n\n' + data); // eslint-disable-line no-alert
+    alert('Congratulations. Your SVG string is back in the host page, do with it what you will\n\n' + data);
   }
 }
 
@@ -98,21 +95,25 @@ function exportPDF () {
 const frameBase = 'https://raw.githack.com/SVG-Edit/svgedit/master';
 // const frameBase = 'http://localhost:8001';
 const framePath = '/editor/xdomain-svg-editor-es.html?extensions=ext-xdomain-messaging.js';
-const iframe = $('<iframe width="900px" height="600px" id="svgedit" src="javascript:0"></iframe>');
-iframe[0].src = frameBase + framePath +
+const iframe = document.createElement('iframe');
+iframe.id = "svgedit";
+iframe.style.width = "900px";
+iframe.style.width = "600px";
+iframe.src = frameBase + framePath +
   (location.href.includes('?')
     // ? location.href.replace(/\?(?<search>.*)$/, '&$<search>')
     ? location.href.replace(/\?(.*)$/, '&$1')
     : ''); // Append arguments to this file onto the iframe
 
-iframe[0].addEventListener('load', function () {
-  svgCanvas = new EmbeddedSVGEdit(frame, [new URL(frameBase).origin]);
+iframe.addEventListener('load', function () {
+  svgCanvas = new EmbeddedSVGEdit(frame, [ new URL(frameBase).origin ]);
+  const { $id } = svgCanvas;
   // Hide main button, as we will be controlling new, load, save, etc. from the host document
   let doc;
   try {
     doc = frame.contentDocument || frame.contentWindow.document;
   } catch (err) {
-    console.log('Blocked from accessing document', err); // eslint-disable-line no-console
+    console.error('Blocked from accessing document', err);
   }
   if (doc) {
     // Todo: Provide a way to get this to occur by `postMessage`
@@ -121,10 +122,10 @@ iframe[0].addEventListener('load', function () {
   }
 
   // Add event handlers now that `svgCanvas` is ready
-  $('#load').click(loadSvg);
-  $('#save').click(saveSvg);
-  $('#exportPNG').click(exportPNG);
-  $('#exportPDF').click(exportPDF);
+  $id('load').addEventListener('click', loadSvg);
+  $id('save').addEventListener('click', saveSvg);
+  $id('exportPNG').addEventListener('click', exportPNG);
+  $id('exportPDF').addEventListener('click', exportPDF);
 });
-$('body').append(iframe);
+document.body.appendChild(iframe);
 const frame = document.getElementById('svgedit');
