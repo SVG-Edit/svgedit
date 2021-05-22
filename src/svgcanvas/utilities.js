@@ -1324,11 +1324,8 @@ export const snapToGrid = function (value) {
  * @returns {void}
  */
 export const preventClickDefault = function (img) {
-  const elements = document.querySelectorAll(img);
-  Array.from(elements).forEach(function (element) {
-    element.addEventListener('click', function (e) {
-      e.preventDefault();
-    });
+  img.addEventListener('click', function (e) {
+    e.preventDefault();
   });
 };
 

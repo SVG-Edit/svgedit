@@ -655,7 +655,7 @@ class EditorStartup {
               editorObj.svgCanvas.selectOnly([ newImage ]);
               editorObj.svgCanvas.alignSelectedElements('m', 'page');
               editorObj.svgCanvas.alignSelectedElements('c', 'page');
-              editorObj.topPanelHandlers.updateContextPanel();
+              editorObj.topPanel.updateContextPanel();
               document.getElementById('se-prompt-dialog').setAttribute('close', true);
             };
             // create dummy img so we know the default dimensions

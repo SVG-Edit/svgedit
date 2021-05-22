@@ -351,7 +351,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     const elements = content.querySelectorAll('image');
     Array.prototype.forEach.call(elements, function (image) {
       preventClickDefault(image);
-      const val = svgContext_.getCanvas().getHref(this);
+      const val = svgContext_.getCanvas().getHref(image);
       if (val) {
         if (val.startsWith('data:')) {
           // Check if an SVG-edit data URI
