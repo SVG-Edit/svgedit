@@ -875,7 +875,7 @@ export const ungroupSelectedElement = function () {
     return;
   }
   const parentsA = getParents(g.parentNode, 'a');
-  if (parentsA.length) {
+  if (parentsA?.length) {
     g = parentsA[0];
   }
 

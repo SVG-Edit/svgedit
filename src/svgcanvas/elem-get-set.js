@@ -794,7 +794,7 @@ export const setLinkURLMethod = function (val) {
   if (elem.tagName !== 'a') {
     // See if parent is an anchor
     const parentsA = getParents(elem.parentNode, 'a');
-    if (parentsA.length) {
+    if (parentsA?.length) {
       elem = parentsA[0];
     } else {
       return;

@@ -151,9 +151,9 @@ export class ExplorerButton extends HTMLElement {
       break;
     case 'disabled':
       if (newValue) {
-        this.$div.classList.add('disabled');
+        this.$overall.classList.add('disabled');
       } else {
-        this.$div.classList.remove('disabled');
+        this.$overall.classList.remove('disabled');
       }
       break;
     case 'lib':
