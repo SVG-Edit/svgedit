@@ -665,6 +665,7 @@ export class SeColorPicker extends HTMLElement {
     this.$label = this._shadowRoot.getElementById('label');
     this.$block = this._shadowRoot.getElementById('block');
     this.paintBox = null;
+    this.i18next = null;
     this.$picker = this._shadowRoot.getElementById('picker');
     this.$color_picker = this._shadowRoot.getElementById('color_picker');
   }
@@ -674,6 +675,7 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
    init (i18next) {
+    this.i18next = i18next;
     this.setAttribute('config-change_xxx_color', i18next.t('config.change_xxx_color'));
   }
   /**
@@ -807,7 +809,8 @@ export class SeColorPicker extends HTMLElement {
         },
         () => {
           this.$color_picker.style.display = 'none';
-        }
+        },
+        this.i18next
       );
     });
   }
