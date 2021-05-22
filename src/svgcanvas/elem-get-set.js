@@ -722,7 +722,7 @@ export const getTextMethod = function () {
   const selectedElements = elemContext_.getSelectedElements();
   const selected = selectedElements[0];
   if (isNullish(selected)) { return ''; }
-  return selected.textContent;
+  return (selected) ? selected.textContent : '';
 };
 
 /**

@@ -325,7 +325,8 @@ class LayersPanel {
    * @returns {void}
    */
   layerRename() {
-    const oldName = document.querySelector("#layerlist tr.layersel td.layername").textContent;
+    const ele = document.querySelector("#layerlist tr.layersel td.layername");
+    const oldName = (ele) ? ele.textContent : '';
     const newName = prompt(this.editor.i18next.t('notification.enterNewLayerName'), "");
     if (!newName) {
       return;
@@ -425,7 +426,8 @@ class LayersPanel {
     const elements = $id('layerlist').querySelectorAll("td.layervis");
     Array.from(elements).forEach(function(element) {
       element.addEventListener('click', function(evt) {
-        const name = evt.currentTarget.parentNode.querySelector("td.layername").textContent;
+        const ele = evt.currentTarget.parentNode.querySelector("td.layername");
+        const name = (ele)? ele.textContent : '';
         const vis = evt.currentTarget.classList.contains("layerinvis");
         self.editor.svgCanvas.setLayerVisibility(name, vis);
         evt.currentTarget.classList.toggle("layerinvis");
