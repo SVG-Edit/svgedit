@@ -1,4 +1,4 @@
-/* globals jQuery */
+/* globals $ */
 /**
  * Path functionality.
  * @module path
@@ -22,8 +22,6 @@ import {
 import {
   isWebkit
 } from '../common/browser.js';
-
-const $ = jQuery;
 
 let pathActionsContext_ = null;
 let editorContext_ = null;

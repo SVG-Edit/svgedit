@@ -3,6 +3,7 @@
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
+
 import { jGraduate } from '../editor/components/jgraduate/jQuery.jGraduate.js';
 import * as hstry from './history.js';
 import { NS } from '../common/namespaces.js';

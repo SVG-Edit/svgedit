@@ -4,8 +4,14 @@ For default config and extensions (and available options) available to
 `setConfig()`, see the file `docs/tutorials/ConfigOptions.md`
 */
 
-import './jquery.min.js';
+import jQuery from 'jquery/dist/jquery.slim.js';
+import jQueryPluginSVG from '../svgcanvas/jQuery.attr.js'; // Needed for SVG attribute
+import './components/index.js';
+import './dialogs/index.js';
 import Editor from './Editor.js';
+
+// Global Constant
+window.$ = jQueryPluginSVG(jQuery);
 
 const svgEditor = new Editor();
 svgEditor.init();
