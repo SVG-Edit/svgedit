@@ -1,5 +1,5 @@
-import '../../../instrumented/editor/jquery.min.js';
-
+import $ from 'jquery';
+window.$ = $;
 import * as units from '../../../instrumented/common/units.js';
 
 describe('units', function () {
