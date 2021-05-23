@@ -1,7 +1,7 @@
 /* globals SVGPathSeg */
 import 'pathseg';
-
-import '../../../instrumented/editor/jquery.min.js';
+import $ from 'jquery';
+window.$ = $;
 
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';

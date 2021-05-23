@@ -1,5 +1,6 @@
 /* eslint-disable max-len, no-console */
-import '../../../instrumented/editor/jquery.min.js';
+import $ from 'jquery';
+window.$ = $;
 
 import SvgCanvas from '../../../instrumented/svgcanvas/svgcanvas.js';
 
