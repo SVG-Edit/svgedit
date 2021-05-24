@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Numerous tools for working with the editor's "canvas".
  * @module svgcanvas

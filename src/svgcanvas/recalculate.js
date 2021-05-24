@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Recalculate.
  * @module recalculate

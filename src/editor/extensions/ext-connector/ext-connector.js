@@ -30,7 +30,7 @@ export default {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
     const { getElem, $id, mergeDeep } = svgCanvas;
-    const { $, svgroot } = S,
+    const { svgroot } = S,
       addElem = svgCanvas.addSVGElementFromJson,
       selManager = S.selectorManager;
     await loadExtensionTranslation(svgEditor);

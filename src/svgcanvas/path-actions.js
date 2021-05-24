@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Path functionality.
  * @module path
