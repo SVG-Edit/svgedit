@@ -393,7 +393,7 @@ export default {
 
           const parents = svgCanvas.getParents(mouseTarget.parentNode);
 
-          if ($.inArray(svgcontent, parents) !== -1) {
+          if (parents.indexOf(svgcontent) !== -1) {
             // Connectable element
 
             // If child of foreignObject, use parent
