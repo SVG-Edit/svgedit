@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Miscellaneous utilities.
  * @module utilities
