@@ -47,7 +47,6 @@ template.innerHTML = `
   }
   .menu {
     position: absolute;
-    top:-2px;
     left:32px;
     background: none !important;
     display:none;
@@ -68,13 +67,14 @@ template.innerHTML = `
   </style>
 
   <div class="overall">
+  <div class="menu">
+  <slot></slot>
+</div>
     <div class="menu-button">
       <img class="button-icon" src="./images/logo.svg" alt="icon">
       <div class="handle"></div>
     </div>
-    <div class="menu">
-      <slot></slot>
-    </div>
+   
   </div>
 
 `;
@@ -139,9 +139,9 @@ export class FlyingButton extends HTMLElement {
       break;
     case 'disabled':
       if (newValue) {
-        this.$div.classList.add('disabled');
+        this.$overall.classList.add('disabled');
       } else {
-        this.$div.classList.remove('disabled');
+        this.$overall.classList.remove('disabled');
       }
       break;
     default:

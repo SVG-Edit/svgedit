@@ -1,4 +1,4 @@
-/* globals jQuery */
+/* globals $ */
 /**
  * Numerous tools for working with the editor's "canvas".
  * @module svgcanvas
@@ -11,8 +11,6 @@
 
 import { Canvg as canvg } from 'canvg';
 import 'pathseg';
-
-import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
@@ -114,7 +112,6 @@ import {
   getClosest, getParents, mergeDeep
 } from '../editor/components/jgraduate/Util.js';
 
-const $ = jQueryPluginSVG(jQuery);
 const {
   MoveElementCommand, InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand, BatchCommand
@@ -207,7 +204,7 @@ class SvgCanvas {
         this._storage.get(element).set(key, obj);
       },
       get: function (element, key) {
-        return this._storage.get(element).get(key);
+        return this._storage.get(element)?.get(key);
       },
       has: function (element, key) {
         return this._storage.has(element) && this._storage.get(element).has(key);

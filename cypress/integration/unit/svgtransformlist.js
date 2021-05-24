@@ -1,5 +1,5 @@
-import '../../../instrumented/editor/jquery.min.js';
-
+import $ from 'jquery';
+window.$ = $;
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
 import { disableSupportsNativeTransformLists } from '../../../instrumented/common/browser.js';

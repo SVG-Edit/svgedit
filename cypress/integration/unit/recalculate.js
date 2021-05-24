@@ -1,9 +1,10 @@
-import '../../../instrumented/editor/jquery.min.js';
-
+import $ from 'jquery';
+window.$ = $;
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as coords from '../../../instrumented/svgcanvas/coords.js';
 import * as recalculate from '../../../instrumented/svgcanvas/recalculate.js';
+
 
 describe('recalculate', function () {
   // eslint-disable-next-line no-shadow

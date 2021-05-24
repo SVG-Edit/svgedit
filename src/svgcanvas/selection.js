@@ -155,16 +155,14 @@ export const getMouseTargetMethod = function (evt) {
     return selectionContext_.getSVGRoot();
   }
 
-  const $target = mouseTarget;
-
   // If it's a selection grip, return the grip parent
-  if (getClosest($target.parentNode, '#selectorParentGroup')) {
+  if (getClosest(mouseTarget.parentNode, '#selectorParentGroup')) {
     // While we could instead have just returned mouseTarget,
     // this makes it easier to indentify as being a selector grip
     return selectionContext_.getCanvas().selectorManager.selectorParentGroup;
   }
 
-  while (mouseTarget.parentNode !== (selectionContext_.getCurrentGroup() || currentLayer)) {
+  while (!mouseTarget.parentNode.isSameNode(selectionContext_.getCurrentGroup() || currentLayer)) {
     mouseTarget = mouseTarget.parentNode;
   }
 

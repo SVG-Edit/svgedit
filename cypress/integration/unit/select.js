@@ -1,5 +1,5 @@
-import '../../../instrumented/editor/jquery.min.js';
-
+import $ from 'jquery';
+window.$ = $;
 import * as select from '../../../instrumented/svgcanvas/select.js';
 import { NS } from '../../../instrumented/common/namespaces.js';
 

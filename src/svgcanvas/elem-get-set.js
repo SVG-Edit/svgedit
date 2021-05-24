@@ -4,11 +4,8 @@
  * @copyright 2011 Jeff Schiller
  */
 
-/* globals jQuery */
 import { jGraduate } from '../editor/components/jgraduate/jQuery.jGraduate.js';
-
 import * as hstry from './history.js';
-import jQueryPluginSVG from './jQuery.attr.js';
 import { NS } from '../common/namespaces.js';
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
@@ -18,8 +15,6 @@ import {
   convertToNum
 } from '../common/units.js';
 import { getParents } from '../editor/components/jgraduate/Util.js';
-
-const $ = jQueryPluginSVG(jQuery);
 
 const {
   InsertElementCommand, RemoveElementCommand,
@@ -272,7 +267,7 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
   switch (val) {
     case 'selection': {
       if (!selectedElements[0]) { return undefined; }
-      const selectedElems = $.map(selectedElements, function (n) {
+      const selectedElems = selectedElements.map(function (n, _) {
         if (n) {
           return n;
         }
@@ -722,7 +717,7 @@ export const getTextMethod = function () {
   const selectedElements = elemContext_.getSelectedElements();
   const selected = selectedElements[0];
   if (isNullish(selected)) { return ''; }
-  return selected.textContent;
+  return (selected) ? selected.textContent : '';
 };
 
 /**
@@ -800,7 +795,7 @@ export const setLinkURLMethod = function (val) {
   if (elem.tagName !== 'a') {
     // See if parent is an anchor
     const parentsA = getParents(elem.parentNode, 'a');
-    if (parentsA.length) {
+    if (parentsA?.length) {
       elem = parentsA[0];
     } else {
       return;

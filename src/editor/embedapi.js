@@ -113,7 +113,6 @@ svgCanvas.setSvgString('string')(function (data, error) {
      throw error
      } else {
      // Handle data
-     console.log(data)
      }
 });
 

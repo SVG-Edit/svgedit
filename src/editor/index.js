@@ -4,7 +4,6 @@ For default config and extensions (and available options) available to
 `setConfig()`, see the file `docs/tutorials/ConfigOptions.md`
 */
 
-import './jquery.min.js';
 import Editor from './Editor.js';
 
 const svgEditor = new Editor();

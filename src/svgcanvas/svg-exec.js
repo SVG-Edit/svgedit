@@ -1,4 +1,4 @@
-/* globals jQuery */
+/* globals $ */
 /**
  * Tools for svg.
  * @module svg
@@ -8,7 +8,6 @@
 
 import { jsPDF } from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
-import jQueryPluginSVG from './jQuery.attr.js';
 import * as hstry from './history.js';
 import {
   text2xml, cleanupElement, findDefs, getHref, preventClickDefault,
@@ -35,8 +34,6 @@ const {
   InsertElementCommand, RemoveElementCommand,
   ChangeElementCommand, BatchCommand
 } = hstry;
-
-const $ = jQueryPluginSVG(jQuery);
 
 let svgContext_ = null;
 let $id = null;
@@ -351,7 +348,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     const elements = content.querySelectorAll('image');
     Array.prototype.forEach.call(elements, function (image) {
       preventClickDefault(image);
-      const val = svgContext_.getCanvas().getHref(this);
+      const val = svgContext_.getCanvas().getHref(image);
       if (val) {
         if (val.startsWith('data:')) {
           // Check if an SVG-edit data URI

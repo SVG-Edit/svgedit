@@ -1,4 +1,4 @@
-/* globals jQuery */
+/* globals $ */
 /**
  * Tools for SVG selected element operation.
  * @module selected-elem
@@ -6,7 +6,7 @@
  *
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
-import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute
+
 import { NS } from '../common/namespaces.js';
 import * as hstry from './history.js';
 import * as pathModule from './path.js';
@@ -31,7 +31,6 @@ import { getParents } from '../editor/components/jgraduate/Util.js';
 const {
   MoveElementCommand, BatchCommand, InsertElementCommand, RemoveElementCommand, ChangeElementCommand
 } = hstry;
-const $ = jQueryPluginSVG(jQuery);
 
 let elementContext_ = null;
 
@@ -735,8 +734,11 @@ export const convertToGroup = function (elem) {
   } else if (dataStorage.has($elem, 'symbol')) {
     elem = dataStorage.get($elem, 'symbol');
 
-    ts = $elem.attr('transform');
-    const pos = $elem.attr([ 'x', 'y' ]);
+    ts = $elem.getAttribute('transform');
+    const pos = {
+      x: $elem.getAttribute('x'),
+      y: $elem.getAttribute('y')
+    };
 
     const vb = elem.getAttribute('viewBox');
 
@@ -872,7 +874,7 @@ export const ungroupSelectedElement = function () {
     return;
   }
   const parentsA = getParents(g.parentNode, 'a');
-  if (parentsA.length) {
+  if (parentsA?.length) {
     g = parentsA[0];
   }
 

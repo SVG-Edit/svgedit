@@ -1,4 +1,4 @@
-/* globals jQuery */
+/* globals $ */
 /**
  * Miscellaneous utilities.
  * @module utilities
@@ -7,7 +7,6 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import jQueryPluginSVG from './jQuery.attr.js'; // Needed for SVG attribute setting and array form with `attr`
 import { NS } from '../common/namespaces.js';
 import { getTransformList } from './svgtransformlist.js';
 import { setUnitAttr, getTypeMap } from '../common/units.js';
@@ -19,9 +18,6 @@ import {
   supportsSelectors
 } from '../common/browser.js';
 import { getClosest } from '../editor/components/jgraduate/Util.js';
-
-// Constants
-const $ = jQueryPluginSVG(jQuery);
 
 // String used to encode base64.
 const KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
@@ -1324,11 +1320,8 @@ export const snapToGrid = function (value) {
  * @returns {void}
  */
 export const preventClickDefault = function (img) {
-  const elements = document.querySelectorAll(img);
-  Array.from(elements).forEach(function (element) {
-    element.addEventListener('click', function (e) {
-      e.preventDefault();
-    });
+  img.addEventListener('click', function (e) {
+    e.preventDefault();
   });
 };
 
