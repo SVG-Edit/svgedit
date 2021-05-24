@@ -480,7 +480,8 @@ class SvgCanvas {
         getSVGRoot,
         getStartTransform() { return startTransform; },
         setStartTransform(transform) { startTransform = transform; },
-        getDataStorage
+        getDataStorage,
+        getCanvas() { return canvas; },
       }
     );
     this.recalculateDimensions = recalculateDimensions;

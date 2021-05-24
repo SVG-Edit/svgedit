@@ -402,7 +402,6 @@ export default class ConfigObj {
      */
     const extendOrAdd = (cfgObj, key, val) => {
       if (cfgObj[key] && typeof cfgObj[key] === 'object') {
-        // $.extend(true, cfgObj[key], val);
         cfgObj[key] = mergeDeep(cfgObj[key], val);
       } else {
         cfgObj[key] = val;
@@ -452,7 +451,6 @@ export default class ConfigObj {
         } else if (this.defaultConfig[key] && typeof this.defaultConfig[key] === 'object') {
           this.curConfig[key] = Array.isArray(this.defaultConfig[key]) ? [] : {};
           this.curConfig[key] = mergeDeep(this.curConfig[key], val);
-          // $.extend(true, this.curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
         } else {
           this.curConfig[key] = val;
         }
