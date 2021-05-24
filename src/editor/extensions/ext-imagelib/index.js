@@ -1,4 +1,3 @@
-/* globals $ */
 const atags = document.querySelectorAll('a');
 Array.prototype.forEach.call(atags, function (aEle) {
   aEle.addEventListener('click', function (event) {
@@ -41,10 +40,22 @@ Array.prototype.forEach.call(atags, function (aEle) {
       });
       img.src = href;
     } else {
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4) {
+            let data = xhr.responseText;
+            post({ href, data });
+            return data;
+          } else {
+            return false;
+          }
+      };
+      xhr.open('GET', href, false);
+      xhr.send(null);
       // Do ajax request for image's href value
-      $.get(href, function (data) {
+      /*  $.get(href, function (data) {
         post({ href, data });
-      }, 'html'); // 'html' is necessary to keep returned data as a string
+      }, 'html'); */ // 'html' is necessary to keep returned data as a string
     }
     return false;
   });
