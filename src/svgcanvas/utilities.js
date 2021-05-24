@@ -719,7 +719,7 @@ export const getBBox = function (elem) {
 export const getPathDFromSegments = function (pathSegments) {
   let d = '';
 
-  $.each(pathSegments, function (j, [ singleChar, pts ]) {
+  pathSegments.forEach(function([ singleChar, pts ], _j){
     d += singleChar;
     for (let i = 0; i < pts.length; i += 2) {
       d += (pts[i] + ',' + pts[i + 1]) + ' ';
