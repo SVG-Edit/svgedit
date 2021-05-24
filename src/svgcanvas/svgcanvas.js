@@ -322,9 +322,8 @@ class SvgCanvas {
         opacity: curConfig.initOpacity
       }
     };
-
-    allProperties.text = $.extend(true, {}, allProperties.shape);
-    $.extend(allProperties.text, {
+    allProperties.text = this.mergeDeep({}, allProperties.shape);
+    allProperties.text = this.mergeDeep(allProperties.text, {
       fill: '#000000',
       stroke_width: curConfig.text && curConfig.text.stroke_width,
       font_size: curConfig.text && curConfig.text.font_size,
@@ -892,7 +891,7 @@ class SvgCanvas {
    * @type {module:svgcanvas.ExtensionArgumentObject}
    * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
    */
-      const argObj = $.extend(canvas.getPrivateMethods(), {
+      const argObj = canvas.mergeDeep(canvas.getPrivateMethods(), {
         $: jq,
         importLocale,
         svgroot,
@@ -904,7 +903,6 @@ class SvgCanvas {
       if (extObj) {
         extObj.name = name;
       }
-
       extensions[name] = extObj;
       return call('extension_added', extObj);
     };
