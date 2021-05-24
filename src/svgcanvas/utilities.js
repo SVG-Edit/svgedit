@@ -17,7 +17,7 @@ import {
   isWebkit, supportsHVLineContainerBBox, supportsPathBBox, supportsXpath,
   supportsSelectors
 } from '../common/browser.js';
-import { getClosest } from '../editor/components/jgraduate/Util.js';
+import { getClosest, mergeDeep } from '../editor/components/jgraduate/Util.js';
 
 // String used to encode base64.
 const KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
@@ -899,7 +899,7 @@ export const convertToPath = function (
   const batchCmd = new hstry.BatchCommand('Convert element to Path');
 
   // Any attribute on the element not covered by the passed-in attributes
-  attrs = $.extend({}, attrs, getExtraAttributesForConvertToPath(elem));
+  attrs = mergeDeep(attrs, getExtraAttributesForConvertToPath(elem));
 
   const path = addSVGElementFromJson({
     element: 'path',
