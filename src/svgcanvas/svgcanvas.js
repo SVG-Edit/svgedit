@@ -169,15 +169,16 @@ class SvgCanvas {
     // Alias Namespace constants
 
     // Default configuration options
-    const curConfig = {
+    let curConfig = {
       show_outside_canvas: true,
       selectNew: true,
       dimensions: [ 640, 480 ]
     };
 
     // Update config with new one if given
+    this.mergeDeep = mergeDeep;
     if (config) {
-      $.extend(curConfig, config);
+      curConfig = this.mergeDeep(curConfig, config);
     }
 
     // Array with width/height of canvas
@@ -188,7 +189,6 @@ class SvgCanvas {
     this.$id = $id;
     this.$qq = $qq;
     this.$qa = $qa;
-    this.mergeDeep = mergeDeep;
     this.getClosest = getClosest;
     this.getParents = getParents;
     /** A storage solution aimed at replacing jQuerys data function.
