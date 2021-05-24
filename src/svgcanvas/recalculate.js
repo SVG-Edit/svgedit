@@ -16,6 +16,9 @@ import {
   isIdentity, matrixMultiply, transformPoint, transformListToTransform,
   hasMatrixTransform
 } from './math.js';
+import {
+  mergeDeep
+} from '../editor/components/jgraduate/Util.js';
 
 let context_;
 
@@ -239,8 +242,7 @@ export const recalculateDimensions = function (selected) {
   // if we haven't created an initial array in polygon/polyline/path, then
   // make a copy of initial values and include the transform
   if (isNullish(initial)) {
-    const canvas = context_.getCanvas();
-    initial = canvas.mergeDeep({}, changes);
+    initial = mergeDeep({}, changes);
     for (const [ attr, val ] of Object.entries(initial)) {
       initial[attr] = convertToNum(attr, val);
     }

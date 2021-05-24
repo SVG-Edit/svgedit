@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Tools for svg.
  * @module svg
@@ -670,7 +669,12 @@ export const save = function (opts) {
   // remove the selected outline before serializing
   svgContext_.getCanvas().clearSelection();
   // Update save options if provided
-  if (opts) { $.extend(svgContext_.getSvgOption(), opts); }
+  if (opts) {
+    const saveOptions = svgContext_.getCanvas().mergeDeep(svgContext_.getSvgOption(), opts);
+    for (const [ key, value ] of Object.entries(saveOptions)) {
+      svgContext_.setSvgOption(key, value);
+    }
+  }
   svgContext_.setSvgOption('apply', true);
 
   // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
