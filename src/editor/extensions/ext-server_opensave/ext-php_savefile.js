@@ -3,7 +3,7 @@
 
 export default {
   name: 'php_savefile',
-  init ({ $ }) {
+  init () {
     const svgEditor = this;
     const {
       canvas: svgCanvas
