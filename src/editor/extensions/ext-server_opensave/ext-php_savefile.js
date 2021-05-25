@@ -22,7 +22,15 @@ export default {
         const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
           filename = getFileNameFromTitle();
 
-        $.post(saveSvgAction, { output_svg: svg, filename });
+        // $.post(saveSvgAction, { output_svg: svg, filename });
+        let postData =  { output_svg: svg, filename };
+        fetch(saveSvgAction, {
+          method: "POST",
+          body: JSON.stringify(postData)
+        }).then( (res) => {
+          return res;
+        })
+        .catch( (error) => { console.info('error =', error);});
       }
     });
   }
