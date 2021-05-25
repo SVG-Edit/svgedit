@@ -261,7 +261,7 @@ export const cloneSelectedElements = function (x, y) {
   }
   // use slice to quickly get the subset of elements we need
   const copiedElements = selectedElements.slice(0, i);
-  this.clearSelection(true);
+  elementContext_.clearSelection(true);
   // note that we loop in the reverse way because of the way elements are added
   // to the selectedElements array (top-first)
   const drawing = elementContext_.getDrawing();
