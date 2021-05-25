@@ -162,20 +162,9 @@ export const getMouseTargetMethod = function (evt) {
     return selectionContext_.getCanvas().selectorManager.selectorParentGroup;
   }
 
-  while (!mouseTarget.parentNode.isSameNode(selectionContext_.getCurrentGroup() || currentLayer)) {
+  while (!mouseTarget.parentNode?.isSameNode(selectionContext_.getCurrentGroup() || currentLayer)) {
     mouseTarget = mouseTarget.parentNode;
   }
-
-  //
-  // // go up until we hit a child of a layer
-  // while (mouseTarget.parentNode.parentNode.tagName == 'g') {
-  //   mouseTarget = mouseTarget.parentNode;
-  // }
-  // Webkit bubbles the mouse event all the way up to the div, so we
-  // set the mouseTarget to the svgroot like the other browsers
-  // if (mouseTarget.nodeName.toLowerCase() == 'div') {
-  //   mouseTarget = svgroot;
-  // }
 
   return mouseTarget;
 };
