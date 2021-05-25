@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Tools for SVG selected element operation.
  * @module selected-elem
