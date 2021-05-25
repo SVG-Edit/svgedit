@@ -25,19 +25,20 @@ const svgWhiteList_ = {
   a: [ 'class', 'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'id', 'mask', 'opacity', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'xlink:href', 'xlink:title' ],
   circle: [ 'class', 'clip-path', 'clip-rule', 'cx', 'cy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'id', 'mask', 'opacity', 'r', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform' ],
   clipPath: [ 'class', 'clipPathUnits', 'id' ],
-  defs: [],
-  style: [ 'type' ],
+  defs: [ 'id' ],
+  style: [ 'id', 'type' ],
   desc: [],
   ellipse: [ 'class', 'clip-path', 'clip-rule', 'cx', 'cy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'id', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform' ],
   feBlend: [ 'in', 'in2' ],
-  feComposite: [ 'operator', 'result', 'in2' ],
-  feFlood: [ 'flood-color', 'in' ],
-  feGaussianBlur: [ 'class', 'color-interpolation-filters', 'id', 'requiredFeatures', 'stdDeviation' ],
+  feColorMatrix: [ 'in', 'type', 'value', 'result', 'values', 'id' ],
+  feComposite: [ 'in', 'id', 'operator', 'result', 'in2' ],
+  feFlood: [ 'flood-color', 'in', 'id', 'result', 'flood-opacity' ],
+  feGaussianBlur: [ 'class', 'color-interpolation-filters', 'id', 'in', 'requiredFeatures', 'stdDeviation', 'result' ],
   feMerge: [],
   feMergeNode: [ 'in' ],
   feMorphology: [ 'class', 'in', 'operator', 'radius' ],
-  feOffset: [ 'dx', 'in', 'dy', 'result' ],
-  filter: [ 'class', 'color-interpolation-filters', 'filterRes', 'filterUnits', 'height', 'id', 'primitiveUnits', 'requiredFeatures', 'width', 'x', 'xlink:href', 'y' ],
+  feOffset: [ 'dx', 'id', 'in', 'dy', 'result' ],
+  filter: [ 'class', 'color-interpolation-filters', 'filterRes', 'filterUnits', 'height', 'id', 'primitiveUnits', 'requiredFeatures', 'style', 'width', 'x', 'xlink:href', 'y' ],
   foreignObject: [ 'class', 'font-size', 'height', 'id', 'opacity', 'requiredFeatures', 'style', 'transform', 'width', 'x', 'y' ],
   g: [ 'class', 'clip-path', 'clip-rule', 'id', 'display', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor' ],
   image: [ 'class', 'clip-path', 'clip-rule', 'filter', 'height', 'id', 'mask', 'opacity', 'requiredFeatures', 'style', 'systemLanguage', 'transform', 'width', 'x', 'xlink:href', 'xlink:title', 'y' ],
@@ -53,7 +54,7 @@ const svgWhiteList_ = {
   radialGradient: [ 'class', 'cx', 'cy', 'fx', 'fy', 'gradientTransform', 'gradientUnits', 'id', 'r', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'xlink:href' ],
   rect: [ 'class', 'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height', 'id', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'width', 'x', 'y' ],
   stop: [ 'class', 'id', 'offset', 'requiredFeatures', 'stop-color', 'stop-opacity', 'style', 'systemLanguage' ],
-  svg: [ 'class', 'clip-path', 'clip-rule', 'filter', 'id', 'height', 'mask', 'preserveAspectRatio', 'requiredFeatures', 'style', 'systemLanguage', 'viewBox', 'width', 'x', 'xmlns', 'xmlns:se', 'xmlns:xlink', 'xmlns:oi', 'oi:animations', 'y' ],
+  svg: [ 'class', 'clip-path', 'clip-rule', 'filter', 'id', 'height', 'mask', 'preserveAspectRatio', 'requiredFeatures', 'style', 'systemLanguage', 'version', 'viewBox', 'width', 'x', 'xmlns', 'xmlns:se', 'xmlns:xlink', 'xmlns:oi', 'oi:animations', 'y' ],
   switch: [ 'class', 'id', 'requiredFeatures', 'systemLanguage' ],
   symbol: [ 'class', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight', 'id', 'opacity', 'preserveAspectRatio', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'transform', 'viewBox' ],
   text: [ 'class', 'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight', 'id', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'text-anchor', 'transform', 'x', 'xml:space', 'y' ],
@@ -123,7 +124,7 @@ export const sanitizeSvg = function (node) {
   // Cleanup text nodes
   if (node.nodeType === 3) { // 3 === TEXT_NODE
     // Trim whitespace
-    node.nodeValue = node.nodeValue.replace(/^\s+|\s+$/g, '');
+    node.nodeValue = node.nodeValue.trim();
     // Remove if empty
     if (!node.nodeValue.length) {
       node.remove();
@@ -151,7 +152,6 @@ export const sanitizeSvg = function (node) {
     let i = node.attributes.length;
     while (i--) {
       // if the attribute is not in our whitelist, then remove it
-      // could use jQuery's inArray(), but I don't know if that's any better
       const attr = node.attributes.item(i);
       const attrName = attr.nodeName;
       const attrLocalName = attr.localName;
@@ -162,12 +162,12 @@ export const sanitizeSvg = function (node) {
         attrNsURI === allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS
       ) &&
         !(attrNsURI === NS.XMLNS && REVERSE_NS[attr.value])) {
-        // TODO(codedread): Programmatically add the se: attributes to the NS-aware whitelist.
         // Bypassing the whitelist to allow se: prefixes.
         // Is there a more appropriate way to do this?
         if (attrName.startsWith('se:') || attrName.startsWith('data-')) {
           seAttrs.push([ attrName, attr.value ]);
         }
+        console.warn(`sanitizeSvg: attribute ${attrName} in element ${node.nodeName} not in whitelist is removed`);
         node.removeAttributeNS(attrNsURI, attrLocalName);
       }
 
@@ -214,11 +214,13 @@ export const sanitizeSvg = function (node) {
         'radialGradient', 'textPath', 'use' ].includes(node.nodeName) && href[0] !== '#') {
       // remove the attribute (but keep the element)
       setHref(node, '');
+      console.warn(`sanitizeSvg: attribute href in element ${node.nodeName} pointing to a non-local reference (${href}) is removed`);
       node.removeAttributeNS(NS.XLINK, 'href');
     }
 
     // Safari crashes on a <use> without a xlink:href, so we just remove the node here
     if (node.nodeName === 'use' && !getHref(node)) {
+      console.warn(`sanitizeSvg: element ${node.nodeName} without a xlink:href is removed`);
       node.remove();
       return;
     }
@@ -231,6 +233,7 @@ export const sanitizeSvg = function (node) {
         // simply check for first character being a '#'
         if (val && val[0] !== '#') {
           node.setAttribute(attr, '');
+          console.warn(`sanitizeSvg: attribute ${attr} in element ${node.nodeName} pointing to a non-local reference (${val}) is removed`);
           node.removeAttribute(attr);
         }
       }
@@ -243,6 +246,7 @@ export const sanitizeSvg = function (node) {
   } else {
     // remove all children from this node and insert them before this node
     // TODO: in the case of animation elements this will hardly ever be correct
+    console.warn(`sanitizeSvg: element ${node.nodeName} not supported is removed`);
     const children = [];
     while (node.hasChildNodes()) {
       children.push(parent.insertBefore(node.firstChild, node));
