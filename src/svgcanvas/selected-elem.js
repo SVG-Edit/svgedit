@@ -553,9 +553,9 @@ export const pushGroupProperty = function (g, undoable) {
     }
 
     if (gattrs.filter) {
-      let cblur = this.getBlur(elem);
+      let cblur = elementContext_.getCanvas().getBlur(elem);
       const origCblur = cblur;
-      if (!gblur) { gblur = this.getBlur(g); }
+      if (!gblur) { gblur = elementContext_.getCanvas().getBlur(g); }
       if (cblur) {
         // Is this formula correct?
         cblur = Number(gblur) + Number(cblur);
