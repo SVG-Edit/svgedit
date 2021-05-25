@@ -722,7 +722,12 @@ export const convertToGroup = function (elem) {
       y: svg.getAttribute('y'),
     };
 
-    $(elem.firstChild.firstChild).unwrap();
+    // $(elem.firstChild.firstChild).unwrap();
+    const firstChild = elem.firstChild.firstChild;
+    if (firstChild) {
+      // eslint-disable-next-line no-unsanitized/property
+      firstChild.outerHTML = firstChild.innerHTML;
+    }
     dataStorage.remove(elem, 'gsvg');
 
     const tlist = getTransformList(elem);
