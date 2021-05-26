@@ -12,7 +12,7 @@ import * as hstry from './history.js';
 import * as pathModule from './path.js';
 import {
   isNullish, getStrokedBBoxDefaultVisible, setHref, getElem, getHref, getVisibleElements,
-  findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost, assignAttributes
+  findDefs, getRotationAngle, getRefElem, getBBox as utilsGetBBox, walkTreePost, assignAttributes, getFeGaussianBlur
 } from './utilities.js';
 import {
   transformPoint, matrixMultiply, transformListToTransform
@@ -576,15 +576,16 @@ export const pushGroupProperty = function (g, undoable) {
       } else {
         gfilter = getRefElem(elem.getAttribute('filter'));
       }
-
+      // const filterElem = getRefElem(gfilter);
+      const blurElem = getFeGaussianBlur(gfilter);
       // Change this in future for different filters
-      const suffix = (gfilter.firstChild.tagName === 'feGaussianBlur') ? 'blur' : 'filter';
+      const suffix = (blurElem?.tagName === 'feGaussianBlur') ? 'blur' : 'filter';
       gfilter.id = elem.id + '_' + suffix;
       elementContext_.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [ elem ]);
 
       // Update blur value
       if (cblur) {
-        elementContext_.changeSelectedAttribute('stdDeviation', cblur, [ gfilter.firstChild ]);
+        elementContext_.changeSelectedAttribute('stdDeviation', cblur, [ blurElem ]);
         elementContext_.getCanvas().setBlurOffsets(gfilter, cblur);
       }
     }

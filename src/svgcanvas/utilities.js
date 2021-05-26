@@ -1203,6 +1203,26 @@ export let getRotationAngle = function (elem, toRad) {
 export const getRefElem = function (attrVal) {
   return getElem(getUrlFromAttr(attrVal).substr(1));
 };
+/**
+* Get the reference element associated with the given attribute value.
+* @function module:utilities.getFeGaussianBlur
+* @param {any} Element
+* @returns {any} Reference element
+*/
+export const getFeGaussianBlur = function (ele) {
+  if (ele?.firstChild?.tagName === 'feGaussianBlur') {
+    return ele.firstChild;
+  } else {
+    const childrens = ele.children;
+    // eslint-disable-next-line no-unused-vars
+    for (const [ _, value ] of Object.entries(childrens)) {
+      if (value.tagName === 'feGaussianBlur') {
+        return value;
+      }
+    }
+  }
+  return null;
+};
 
 /**
 * Get a DOM element by ID within the SVG root element.
