@@ -649,8 +649,8 @@ export const embedImage = function (src) {
       svgContext_.getCanvas().setGoodImage(src);
       resolve(svgContext_.getEncodableImages(src));
     });
-    imgI.addEventListener("error", () => {
-      reject(new Error('Error loading image: '));
+    imgI.addEventListener("error", (e) => {
+      reject(new Error(`error loading image: ${e.currentTarget.attributes.src.value}`));
     });
     imgI.setAttribute('src', src);
   });
