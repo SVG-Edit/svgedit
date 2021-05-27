@@ -71,11 +71,14 @@ class PaintBox {
     if (color.startsWith('url(#')) {
       let refElem = svgCanvas.getRefElem(color);
       refElem = (refElem) ? refElem.cloneNode(true) : document.querySelectorAll('#' + type + '_color defs *')[0];
+      if (!refElem) {
+        console.error(`the color ${color} is referenced by an url that can't be identified - using 'none'`);
+        opts.solidColor = 'none';
+      } else {
       opts[refElem.tagName] = refElem;
+      }
     } else if (color.startsWith('#')) {
       opts.solidColor = color.substr(1);
-    } else {
-      opts.solidColor = 'none';
     }
     return new jGraduate.Paint(opts);
   }
