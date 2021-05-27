@@ -238,6 +238,7 @@ export default class ConfigObj {
    * @returns {void}
    */
   loadFromURL () {
+    const self = this;
     const { search, searchParams } = new URL(location);
     if (search) {
       this.urldata = {};
@@ -276,8 +277,8 @@ export default class ConfigObj {
       // ways with other script resources
       [ 'userExtensions', 'imgPath' ]
         .forEach(function (pathConfig) {
-          if (this.urldata[pathConfig]) {
-            delete this.urldata[pathConfig];
+          if (self.urldata[pathConfig]) {
+            delete self.urldata[pathConfig];
           }
         });
 
