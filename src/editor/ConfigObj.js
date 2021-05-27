@@ -1,5 +1,4 @@
 // eslint-disable-next-line node/no-unpublished-import
-import deparam from 'deparam';
 import { mergeDeep } from './components/jgraduate/Util.js';
 
 /**
@@ -240,9 +239,12 @@ export default class ConfigObj {
    */
   loadFromURL () {
     const { search, searchParams } = new URL(location);
-
     if (search) {
-      this.urldata = deparam(searchParams.toString());
+      this.urldata = {};
+      const entries = searchParams.entries();
+      for(const entry of entries) {
+        this.urldata[entry[0]] = entry[1];
+      }
 
       [ 'initStroke', 'initFill' ].forEach((prop) => {
         if (searchParams.has(`${prop}[color]`)) {
