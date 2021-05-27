@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Numerous tools for working with the editor's "canvas".
  * @module svgcanvas
@@ -169,15 +168,16 @@ class SvgCanvas {
     // Alias Namespace constants
 
     // Default configuration options
-    const curConfig = {
+    let curConfig = {
       show_outside_canvas: true,
       selectNew: true,
       dimensions: [ 640, 480 ]
     };
 
     // Update config with new one if given
+    this.mergeDeep = mergeDeep;
     if (config) {
-      $.extend(curConfig, config);
+      curConfig = this.mergeDeep(curConfig, config);
     }
 
     // Array with width/height of canvas
@@ -188,7 +188,6 @@ class SvgCanvas {
     this.$id = $id;
     this.$qq = $qq;
     this.$qa = $qa;
-    this.mergeDeep = mergeDeep;
     this.getClosest = getClosest;
     this.getParents = getParents;
     /** A storage solution aimed at replacing jQuerys data function.
@@ -322,9 +321,8 @@ class SvgCanvas {
         opacity: curConfig.initOpacity
       }
     };
-
-    allProperties.text = $.extend(true, {}, allProperties.shape);
-    $.extend(allProperties.text, {
+    allProperties.text = this.mergeDeep({}, allProperties.shape);
+    allProperties.text = this.mergeDeep(allProperties.text, {
       fill: '#000000',
       stroke_width: curConfig.text && curConfig.text.stroke_width,
       font_size: curConfig.text && curConfig.text.font_size,
@@ -892,7 +890,7 @@ class SvgCanvas {
    * @type {module:svgcanvas.ExtensionArgumentObject}
    * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
    */
-      const argObj = $.extend(canvas.getPrivateMethods(), {
+      const argObj = canvas.mergeDeep(canvas.getPrivateMethods(), {
         $: jq,
         importLocale,
         svgroot,
@@ -904,7 +902,6 @@ class SvgCanvas {
       if (extObj) {
         extObj.name = name;
       }
-
       extensions[name] = extObj;
       return call('extension_added', extObj);
     };

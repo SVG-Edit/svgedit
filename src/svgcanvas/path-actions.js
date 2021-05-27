@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Path functionality.
  * @module path
@@ -456,10 +455,9 @@ export const pathActionsMethod = (function () {
           // else, create a new point, update path element
           } else {
             // Checks if current target or parents are #svgcontent
-            if (!$.contains(
-              editorContext_.getContainer(),
+            if (!(editorContext_.getContainer() !== editorContext_.getMouseTarget(evt) && editorContext_.getContainer().contains(
               editorContext_.getMouseTarget(evt)
-            )) {
+            ))) {
               // Clicked outside canvas, so don't make point
               return false;
             }

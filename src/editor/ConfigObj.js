@@ -1,5 +1,4 @@
 // eslint-disable-next-line node/no-unpublished-import
-import deparam from 'deparam';
 import { mergeDeep } from './components/jgraduate/Util.js';
 
 /**
@@ -239,10 +238,14 @@ export default class ConfigObj {
    * @returns {void}
    */
   loadFromURL () {
+    const self = this;
     const { search, searchParams } = new URL(location);
-
     if (search) {
-      this.urldata = deparam(searchParams.toString());
+      this.urldata = {};
+      const entries = searchParams.entries();
+      for(const entry of entries) {
+        this.urldata[entry[0]] = entry[1];
+      }
 
       [ 'initStroke', 'initFill' ].forEach((prop) => {
         if (searchParams.has(`${prop}[color]`)) {
@@ -274,8 +277,8 @@ export default class ConfigObj {
       // ways with other script resources
       [ 'userExtensions', 'imgPath' ]
         .forEach(function (pathConfig) {
-          if (this.urldata[pathConfig]) {
-            delete this.urldata[pathConfig];
+          if (self.urldata[pathConfig]) {
+            delete self.urldata[pathConfig];
           }
         });
 
@@ -402,7 +405,6 @@ export default class ConfigObj {
      */
     const extendOrAdd = (cfgObj, key, val) => {
       if (cfgObj[key] && typeof cfgObj[key] === 'object') {
-        // $.extend(true, cfgObj[key], val);
         cfgObj[key] = mergeDeep(cfgObj[key], val);
       } else {
         cfgObj[key] = val;
@@ -452,7 +454,6 @@ export default class ConfigObj {
         } else if (this.defaultConfig[key] && typeof this.defaultConfig[key] === 'object') {
           this.curConfig[key] = Array.isArray(this.defaultConfig[key]) ? [] : {};
           this.curConfig[key] = mergeDeep(this.curConfig[key], val);
-          // $.extend(true, this.curConfig[key], val); // Merge properties recursively, e.g., on initFill, initStroke objects
         } else {
           this.curConfig[key] = val;
         }

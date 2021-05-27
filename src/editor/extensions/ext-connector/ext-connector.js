@@ -30,7 +30,7 @@ export default {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
     const { getElem, $id, mergeDeep } = svgCanvas;
-    const { $, svgroot } = S,
+    const { svgroot } = S,
       addElem = svgCanvas.addSVGElementFromJson,
       selManager = S.selectorManager;
     await loadExtensionTranslation(svgEditor);
@@ -392,8 +392,7 @@ export default {
           const mouseTarget = e.target;
 
           const parents = svgCanvas.getParents(mouseTarget.parentNode);
-
-          if ($.inArray(svgcontent, parents) !== -1) {
+          if (parents.includes(svgcontent)) {
             // Connectable element
 
             // If child of foreignObject, use parent

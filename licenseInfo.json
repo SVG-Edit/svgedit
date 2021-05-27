@@ -7,8 +7,7 @@
     "stackblur-canvas",
     "regenerator-runtime",
     "core-js-bundle",
-    "underscore",
-    "deparam"
+    "underscore"
   ],
   "filesByLicense": {
     "(MIT OR GPL-2.0)": ["src/editor/jquerybbq/jquery.bbq.min.js"],

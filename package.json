@@ -96,7 +96,6 @@
     "@web/dev-server-rollup": "0.3.4",
     "canvg": "3.0.7",
     "core-js": "3.12.1",
-    "deparam": "1.0.5",
     "elix": "15.0.0",
     "i18next": "20.3.0",
     "jquery": "3.6.0",

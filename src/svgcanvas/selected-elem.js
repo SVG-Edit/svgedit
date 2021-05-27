@@ -1,4 +1,3 @@
-/* globals $ */
 /**
  * Tools for SVG selected element operation.
  * @module selected-elem
@@ -261,7 +260,7 @@ export const cloneSelectedElements = function (x, y) {
   }
   // use slice to quickly get the subset of elements we need
   const copiedElements = selectedElements.slice(0, i);
-  this.clearSelection(true);
+  elementContext_.clearSelection(true);
   // note that we loop in the reverse way because of the way elements are added
   // to the selectedElements array (top-first)
   const drawing = elementContext_.getDrawing();
@@ -723,7 +722,12 @@ export const convertToGroup = function (elem) {
       y: svg.getAttribute('y'),
     };
 
-    $(elem.firstChild.firstChild).unwrap();
+    // $(elem.firstChild.firstChild).unwrap();
+    const firstChild = elem.firstChild.firstChild;
+    if (firstChild) {
+      // eslint-disable-next-line no-unsanitized/property
+      firstChild.outerHTML = firstChild.innerHTML;
+    }
     dataStorage.remove(elem, 'gsvg');
 
     const tlist = getTransformList(elem);
