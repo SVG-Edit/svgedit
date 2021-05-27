@@ -425,7 +425,7 @@ export default {
         const header = document.createElement('h1');
         browser.prepend(header);
         header.textContent = allLibs;
-        header.setAttribute('style', `position: absolute;top: 0;left: 0;width: 100%;`);
+        header.setAttribute('style', `position: absolute;top: 0px;left: 0px;width: 100%;`);
 
         const button = document.createElement('button');
         // eslint-disable-next-line max-len
@@ -437,10 +437,10 @@ export default {
         button.addEventListener('touchend', function () {
           $id("imgbrowse_holder").style.display = 'none';
         });
-        button.setAttribute('style', `position: absolute;top: 5;right: -10;`);
+        button.setAttribute('style', `position: absolute;top: 5px;right: 10px;`);
 
         const leftBlock = document.createElement('span');
-        leftBlock.setAttribute('style', `position: absolute;top: 5;left: 10;`);
+        leftBlock.setAttribute('style', `position: absolute;top: 5px;left: 10px;display: inline-flex;`);
         browser.appendChild(leftBlock);
 
         const back = document.createElement('button');

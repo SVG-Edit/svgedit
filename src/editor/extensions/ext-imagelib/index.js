@@ -40,22 +40,15 @@ Array.prototype.forEach.call(atags, function (aEle) {
       });
       img.src = href;
     } else {
-      const xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
-          if (xhr.readyState == 4) {
-            let data = xhr.responseText;
-            post({ href, data });
-            return data;
-          } else {
-            return false;
-          }
-      };
-      xhr.open('GET', href, false);
-      xhr.send(null);
-      // Do ajax request for image's href value
-      /*  $.get(href, function (data) {
+      fetch(href)
+      .then( (r) => r.text())
+      // eslint-disable-next-line promise/always-return
+      .then( (data) => {
         post({ href, data });
-      }, 'html'); */ // 'html' is necessary to keep returned data as a string
+        return data;
+      })
+      // eslint-disable-next-line no-console
+      .catch( (error) => console.log(error));
     }
     return false;
   });
