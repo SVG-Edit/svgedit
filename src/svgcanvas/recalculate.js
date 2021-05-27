@@ -642,17 +642,19 @@ export const recalculateDimensions = function (selected) {
       const fill = selected.getAttribute('fill');
       if (fill && fill.startsWith('url(')) {
         const paint = getRefElem(fill);
-        let type = 'pattern';
-        if (paint.tagName !== type) type = 'gradient';
-        const attrVal = paint.getAttribute(type + 'Units');
-        if (attrVal === 'userSpaceOnUse') {
-          // Update the userSpaceOnUse element
-          m = transformListToTransform(tlist).matrix;
-          const gtlist = getTransformList(paint);
-          const gmatrix = transformListToTransform(gtlist).matrix;
-          m = matrixMultiply(m, gmatrix);
-          const mStr = 'matrix(' + [ m.a, m.b, m.c, m.d, m.e, m.f ].join(',') + ')';
-          paint.setAttribute(type + 'Transform', mStr);
+        if (paint) {
+          let type = 'pattern';
+          if (paint?.tagName !== type) type = 'gradient';
+          const attrVal = paint.getAttribute(type + 'Units');
+          if (attrVal === 'userSpaceOnUse') {
+            // Update the userSpaceOnUse element
+            m = transformListToTransform(tlist).matrix;
+            const gtlist = getTransformList(paint);
+            const gmatrix = transformListToTransform(gtlist).matrix;
+            m = matrixMultiply(m, gmatrix);
+            const mStr = 'matrix(' + [ m.a, m.b, m.c, m.d, m.e, m.f ].join(',') + ')';
+            paint.setAttribute(type + 'Transform', mStr);
+          }
         }
       }
     }

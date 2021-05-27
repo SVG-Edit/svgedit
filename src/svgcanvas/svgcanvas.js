@@ -70,7 +70,7 @@ import {
   preventClickDefault, walkTree, getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, dropXMLInternalSubset, init as utilsInit,
   getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish, blankPageObjectURL,
-  $id, $qa, $qq
+  $id, $qa, $qq, getFeGaussianBlur
 } from './utilities.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
@@ -2174,6 +2174,12 @@ class SvgCanvas {
           const blur = getElem(elem.id + '_blur');
           if (blur) {
             val = blur.firstChild.getAttribute('stdDeviation');
+          } else {
+            const filterElem = getRefElem(filterUrl);
+            const blurElem = getFeGaussianBlur(filterElem);
+            if (blurElem !== null) {
+              val = blurElem.getAttribute('stdDeviation');
+            }
           }
         }
       }
