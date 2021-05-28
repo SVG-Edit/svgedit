@@ -163,8 +163,8 @@ export function encode64(input) {
   }
   const output = new Array(Math.floor((input.length + 2) / 3) * 4);
 
-  let i = 0,
-    p = 0;
+  let i = 0;
+  let p = 0;
   do {
     const chr1 = input.charCodeAt(i++);
     const chr2 = input.charCodeAt(i++);
@@ -264,9 +264,9 @@ export const dataURLToObjectURL = function (dataurl) {
   if (typeof Uint8Array === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) {
     return '';
   }
-  const arr = dataurl.split(','),
-    mime = arr[0].match(/:(.*?);/)[1],
-    bstr = atob(arr[1]);
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
   /*
   const [prefix, suffix] = dataurl.split(','),
     {groups: {mime}} = prefix.match(/:(?<mime>.*?);/),
@@ -333,7 +333,7 @@ export const text2xml = function (sXML) {
     sXML = sXML.replace(/<(\/?)svg:/g, '<$1').replace('xmlns:svg', 'xmlns');
   }
 
-  let out, dXML;
+  let out; let dXML;
   try {
     dXML = (window.DOMParser) ? new DOMParser() : new window.ActiveXObject('Microsoft.XMLDOM');
     dXML.async = false;
@@ -514,9 +514,9 @@ export const getPathBBox = function (path) {
     bounds[1].push(P0[1]);
 
     if (seg.x1) {
-      const P1 = [ seg.x1, seg.y1 ],
-        P2 = [ seg.x2, seg.y2 ],
-        P3 = [ seg.x, seg.y ];
+      const P1 = [ seg.x1, seg.y1 ];
+      const P2 = [ seg.x2, seg.y2 ];
+      const P3 = [ seg.x, seg.y ];
 
       for (let j = 0; j < 2; j++) {
         const calc = getCalc(j, P1, P2, P3);
@@ -573,7 +573,7 @@ function groupBBFix(selected) {
   }
   const ref = editorContext_.getDataStorage().get(selected, 'ref');
   let matched = null;
-  let ret, copy;
+  let ret; let copy;
 
   if (ref) {
     let elements = [];
@@ -737,7 +737,7 @@ export const getPathDFromSegments = function (pathSegments) {
 export const getPathDFromElement = function (elem) {
   // Possibly the cubed root of 6, but 1.81 works best
   let num = 1.81;
-  let d, rx, ry;
+  let d; let rx; let ry;
   switch (elem.tagName) {
   case 'ellipse':
   case 'circle': {
@@ -779,9 +779,9 @@ export const getPathDFromElement = function (elem) {
     rx = elem.getAttribute('rx');
     ry = elem.getAttribute('ry');
     const b = elem.getBBox();
-    const { x, y } = b,
-      w = b.width,
-      h = b.height;
+    const { x, y } = b;
+    const w = b.width;
+    const h = b.height;
     num = 4 - num; // Why? Because!
 
     d = (!rx && !ry)

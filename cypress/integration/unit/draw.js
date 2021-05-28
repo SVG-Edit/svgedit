@@ -125,7 +125,7 @@ describe('draw.Drawing', function () {
     while (svgElem.firstChild) { svgElem.firstChild.remove(); }
   };
 
-  let sandbox, currentDrawing_, svg, svgN;
+  let sandbox; let currentDrawing_; let svg; let svgN;
   beforeEach(() => {
     sandbox = document.createElement('div');
     sandbox.id = 'sandbox';

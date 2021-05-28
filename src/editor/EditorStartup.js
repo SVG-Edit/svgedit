@@ -282,8 +282,8 @@ class EditorStartup {
 
     const wArea = this.workarea;
 
-    let lastX = null, lastY = null,
-      panning = false, keypan = false;
+    let lastX = null; let lastY = null;
+    let panning = false; let keypan = false;
 
     $id('svgcanvas').addEventListener('mouseup', function(evt) {
       if (panning === false) { return true; }

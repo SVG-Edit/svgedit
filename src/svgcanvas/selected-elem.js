@@ -112,7 +112,7 @@ export const moveUpDownSelected = function (dir) {
 
   elementContext_.setCurBBoxes([]);
   // curBBoxes = [];
-  let closest, foundCur;
+  let closest; let foundCur;
   // jQuery sorts this list
   const list = elementContext_.getIntersectionList(getStrokedBBoxDefaultVisible([ selected ]));
   if (dir === 'Down') { list.reverse(); }
@@ -230,7 +230,7 @@ export const moveSelectedElements = function (dx, dy, undoable) {
 export const cloneSelectedElements = function (x, y) {
   const selectedElements = elementContext_.getSelectedElements();
   const currentGroup = elementContext_.getCurrentGroup();
-  let i, elem;
+  let i; let elem;
   const batchCmd = new BatchCommand('Clone Elements');
   // find all the elements selected (stop at first null)
   const len = selectedElements.length;
@@ -290,9 +290,9 @@ export const alignSelectedElements = function (type, relativeTo) {
   const bboxes = []; // angles = [];
   const len = selectedElements.length;
   if (!len) { return; }
-  let minx = Number.MAX_VALUE, maxx = Number.MIN_VALUE,
-    miny = Number.MAX_VALUE, maxy = Number.MIN_VALUE;
-  let curwidth = Number.MIN_VALUE, curheight = Number.MIN_VALUE;
+  let minx = Number.MAX_VALUE; let maxx = Number.MIN_VALUE;
+  let miny = Number.MAX_VALUE; let maxy = Number.MIN_VALUE;
+  let curwidth = Number.MIN_VALUE; let curheight = Number.MIN_VALUE;
   for (let i = 0; i < len; ++i) {
     if (isNullish(selectedElements[i])) { break; }
     const elem = selectedElements[i];
@@ -537,7 +537,7 @@ export const pushGroupProperty = function (g, undoable) {
     filter: g.getAttribute('filter'),
     opacity: g.getAttribute('opacity'),
   };
-  let gfilter, gblur, changes;
+  let gfilter; let gblur; let changes;
   const drawing = elementContext_.getDrawing();
 
   for (let i = 0; i < len; i++) {
@@ -672,8 +672,8 @@ export const pushGroupProperty = function (g, undoable) {
 
         // [ gm ] [ chm ] = [ chm ] [ gm' ]
         // [ gm' ] = [ chmInv ] [ gm ] [ chm ]
-        const chm = transformListToTransform(chtlist).matrix,
-          chmInv = chm.inverse();
+        const chm = transformListToTransform(chtlist).matrix;
+        const chmInv = chm.inverse();
         const gm = matrixMultiply(chmInv, m, chm);
         newxform.setMatrix(gm);
         chtlist.appendItem(newxform);

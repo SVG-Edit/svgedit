@@ -51,19 +51,19 @@ export const init = function (editorContext) {
  * @type {module:path.EditorContext#remapElement}
 */
 export const remapElement = function (selected, changes, m) {
-  const remap = function (x, y) { return transformPoint(x, y, m); },
-    scalew = function (w) { return m.a * w; },
-    scaleh = function (h) { return m.d * h; },
-    doSnapping = editorContext_.getGridSnapping() && selected.parentNode.parentNode.localName === 'svg',
-    finishUp = function () {
-      if (doSnapping) {
-        Object.entries(changes).forEach(([ o, value ]) => {
-          changes[o] = snapToGrid(value);
-        });
-      }
-      assignAttributes(selected, changes, 1000, true);
-    },
-    box = getBBox(selected);
+  const remap = function (x, y) { return transformPoint(x, y, m); };
+  const scalew = function (w) { return m.a * w; };
+  const scaleh = function (h) { return m.d * h; };
+  const doSnapping = editorContext_.getGridSnapping() && selected.parentNode.parentNode.localName === 'svg';
+  const finishUp = function () {
+    if (doSnapping) {
+      Object.entries(changes).forEach(([ o, value ]) => {
+        changes[o] = snapToGrid(value);
+      });
+    }
+    assignAttributes(selected, changes, 1000, true);
+  };
+  const box = getBBox(selected);
 
   for (let i = 0; i < 2; i++) {
     const type = i === 0 ? 'fill' : 'stroke';
@@ -98,8 +98,8 @@ export const remapElement = function (selected, changes, m) {
     if (m.a === 1 && m.b === 0 && m.c === 0 && m.d === 1 && (m.e !== 0 || m.f !== 0)) {
       // [T][M] = [M][T']
       // therefore [T'] = [M_inv][T][M]
-      const existing = transformListToTransform(selected).matrix,
-        tNew = matrixMultiply(existing.inverse(), m, existing);
+      const existing = transformListToTransform(selected).matrix;
+      const tNew = matrixMultiply(existing.inverse(), m, existing);
       changes.x = Number.parseFloat(changes.x) + tNew.e;
       changes.y = Number.parseFloat(changes.y) + tNew.f;
     } else {
@@ -153,7 +153,7 @@ export const remapElement = function (selected, changes, m) {
     changes.cy = c.y;
     // take the minimum of the new selected box's dimensions for the new circle radius
     const tbox = transformBox(box.x, box.y, box.width, box.height, m);
-    const w = tbox.tr.x - tbox.tl.x, h = tbox.bl.y - tbox.tl.y;
+    const w = tbox.tr.x - tbox.tl.x; const h = tbox.bl.y - tbox.tl.y;
     changes.r = Math.min(w / 2, h / 2);
 
     if (changes.r) { changes.r = Math.abs(changes.r); }
@@ -220,8 +220,8 @@ export const remapElement = function (selected, changes, m) {
     }
 
     len = changes.d.length;
-    const firstseg = changes.d[0],
-      currentpt = remap(firstseg.x, firstseg.y);
+    const firstseg = changes.d[0];
+    const currentpt = remap(firstseg.x, firstseg.y);
     changes.d[0].x = currentpt.x;
     changes.d[0].y = currentpt.y;
     for (let i = 1; i < len; ++i) {
@@ -230,8 +230,8 @@ export const remapElement = function (selected, changes, m) {
       // if absolute or first segment, we want to remap x, y, x1, y1, x2, y2
       // if relative, we want to scalew, scaleh
       if (type % 2 === 0) { // absolute
-        const thisx = (seg.x !== undefined) ? seg.x : currentpt.x, // for V commands
-          thisy = (seg.y !== undefined) ? seg.y : currentpt.y; // for H commands
+        const thisx = (seg.x !== undefined) ? seg.x : currentpt.x; // for V commands
+        const thisy = (seg.y !== undefined) ? seg.y : currentpt.y; // for H commands
         const pt = remap(thisx, thisy);
         const pt1 = remap(seg.x1, seg.y1);
         const pt2 = remap(seg.x2, seg.y2);

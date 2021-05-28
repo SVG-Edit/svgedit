@@ -24,8 +24,8 @@ export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag
   }
 
   _loaded = true;
-  let isMoving = false, hasStarted = false;
-  let startX = 0, startY = 0, lastX = 0, lastY = 0;
+  let isMoving = false; let hasStarted = false;
+  let startX = 0; let startY = 0; let lastX = 0; let lastY = 0;
 
   // On the first click and hold, record the offset of the pointer in relation
   // to the point of click inside the element.

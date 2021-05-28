@@ -245,8 +245,8 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
             const center = transformPoint(
               box.x + box.width / 2, box.y + box.height / 2, transformListToTransform(tlist).matrix
             );
-            const cx = center.x,
-              cy = center.y;
+            const cx = center.x;
+            const cy = center.y;
             const newrot = undoContext_.getSVGRoot().createSVGTransform();
             newrot.setRotate(angle, cx, cy);
             tlist.insertItemBefore(newrot, n);

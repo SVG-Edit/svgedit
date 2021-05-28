@@ -79,7 +79,7 @@ describe('utilities', function () {
     mockCount.addCommandToHistory++;
   }
 
-  let svg, svgroot;
+  let svg; let svgroot;
   beforeEach(() => {
     document.body.textContent = '';
 

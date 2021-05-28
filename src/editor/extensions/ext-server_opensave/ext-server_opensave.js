@@ -79,9 +79,9 @@ export default {
       return false;
     }
     const
-      saveSvgAction = './filesave.php',
-      saveImgAction = './filesave.php';
-      // Create upload target (hidden iframe)
+      saveSvgAction = './filesave.php';
+    const saveImgAction = './filesave.php';
+    // Create upload target (hidden iframe)
 
     let cancelled = false;
 
@@ -97,8 +97,8 @@ export default {
     svgEditor.setCustomHandlers({
       save (win, data) {
         // Firefox doesn't seem to know it is UTF-8 (no matter whether we use or skip the clientDownload code) despite the Content-Disposition header containing UTF-8, but adding the encoding works
-        const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
-          filename = getFileNameFromTitle();
+        const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data;
+        const filename = getFileNameFromTitle();
 
         if (clientDownloadSupport(filename, '.svg', 'data:image/svg+xml;charset=UTF-8;base64,' + encode64(svg))) {
           return;
@@ -116,8 +116,8 @@ export default {
         form.remove();
       },
       exportPDF (win, data) {
-        const filename = getFileNameFromTitle(),
-          datauri = data.output;
+        const filename = getFileNameFromTitle();
+        const datauri = data.output;
         if (clientDownloadSupport(filename, '.pdf', datauri)) {
           return;
         }
@@ -151,7 +151,7 @@ export default {
         const datauri = quality ? c.toDataURL(mimeType, quality) : c.toDataURL(mimeType);
 
         // Check if there are issues
-        let pre, note = '';
+        let pre; let note = '';
         if (issues.length) {
           pre = '\n \u2022 '; // Bullet
           note += ('\n\n' + pre + issues.join(pre));

@@ -453,8 +453,8 @@ class Editor extends EditorStartup {
     const wArea = this.workarea;
     const cnvs = $id("svgcanvas");
 
-    let w = parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")), h = parseFloat(getComputedStyle(this.workarea, null).height.replace("px", ""));
-    const wOrig = w, hOrig = h;
+    let w = parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")); let h = parseFloat(getComputedStyle(this.workarea, null).height.replace("px", ""));
+    const wOrig = w; const hOrig = h;
     const oldCtr = {
       x: wArea.scrollLeft + wOrig / 2,
       y: wArea.scrollTop + hOrig / 2
@@ -700,12 +700,12 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   zoomChanged(win, bbox, autoCenter) {
-    const scrbar = 15,
-      wArea = this.workarea;
+    const scrbar = 15;
+    const wArea = this.workarea;
     const zInfo = this.svgCanvas.setBBoxZoom(bbox, parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) - scrbar, parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) - scrbar);
     if (!zInfo) { return; }
-    const zoomlevel = zInfo.zoom,
-      bb = zInfo.bbox;
+    const zoomlevel = zInfo.zoom;
+    const bb = zInfo.bbox;
 
     if (zoomlevel < 0.001) {
       this.changeZoom(0.1);

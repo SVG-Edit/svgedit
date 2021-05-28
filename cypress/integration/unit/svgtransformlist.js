@@ -13,7 +13,7 @@ chai.use(expectOutOfBoundsExceptionPlugin);
 describe('svgtransformlist', function () {
   disableSupportsNativeTransformLists();
 
-  let svgroot, svgcontent, rect, circle;
+  let svgroot; let svgcontent; let rect; let circle;
 
   /**
    * Set up tests, adding elements.
@@ -93,9 +93,9 @@ describe('svgtransformlist', function () {
     const rxform = transformlist.getTransformList(rect);
     const cxform = transformlist.getTransformList(circle);
 
-    const t1 = svgcontent.createSVGTransform(),
-      t2 = svgcontent.createSVGTransform(),
-      t3 = svgcontent.createSVGTransform();
+    const t1 = svgcontent.createSVGTransform();
+    const t2 = svgcontent.createSVGTransform();
+    const t3 = svgcontent.createSVGTransform();
 
     assert.ok(rxform.appendItem);
     assert.ok(rxform.getItem);
@@ -127,8 +127,8 @@ describe('svgtransformlist', function () {
   it('Test SVGTransformList.removeItem()', function () {
     const rxform = transformlist.getTransformList(rect);
 
-    const t1 = svgcontent.createSVGTransform(),
-      t2 = svgcontent.createSVGTransform();
+    const t1 = svgcontent.createSVGTransform();
+    const t2 = svgcontent.createSVGTransform();
     assert.ok(rxform.removeItem);
     assert.equal(typeof rxform.removeItem, typeof function () { /* empty fn */ });
     rxform.appendItem(t1);
@@ -150,9 +150,9 @@ describe('svgtransformlist', function () {
     assert.ok(rxform.replaceItem);
     assert.equal(typeof rxform.replaceItem, typeof function () { /* empty fn */ });
 
-    const t1 = svgcontent.createSVGTransform(),
-      t2 = svgcontent.createSVGTransform(),
-      t3 = svgcontent.createSVGTransform();
+    const t1 = svgcontent.createSVGTransform();
+    const t2 = svgcontent.createSVGTransform();
+    const t3 = svgcontent.createSVGTransform();
 
     rxform.appendItem(t1);
     rxform.appendItem(t2);
@@ -182,9 +182,9 @@ describe('svgtransformlist', function () {
     assert.ok(rxform.insertItemBefore);
     assert.equal(typeof rxform.insertItemBefore, typeof function () { /* empty fn */ });
 
-    const t1 = svgcontent.createSVGTransform(),
-      t2 = svgcontent.createSVGTransform(),
-      t3 = svgcontent.createSVGTransform();
+    const t1 = svgcontent.createSVGTransform();
+    const t2 = svgcontent.createSVGTransform();
+    const t3 = svgcontent.createSVGTransform();
 
     rxform.appendItem(t1);
     rxform.appendItem(t2);

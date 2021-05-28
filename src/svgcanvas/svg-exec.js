@@ -501,7 +501,7 @@ export const setSvgString = function (xmlString, preventUndo) {
 */
 export const importSvgString = function (xmlString) {
   const dataStorage = svgContext_.getDataStorage();
-  let j, ts, useEl;
+  let j; let ts; let useEl;
   try {
     // Get unique ID
     const uid = encode64(xmlString.length + xmlString).substr(0, 32);
@@ -534,11 +534,11 @@ export const importSvgString = function (xmlString) {
 
       svgContext_.getCanvas().uniquifyElems(svg);
 
-      const innerw = convertToNum('width', svg.getAttribute('width')),
-        innerh = convertToNum('height', svg.getAttribute('height')),
-        innervb = svg.getAttribute('viewBox'),
-        // if no explicit viewbox, create one out of the width and height
-        vb = innervb ? innervb.split(' ') : [ 0, 0, innerw, innerh ];
+      const innerw = convertToNum('width', svg.getAttribute('width'));
+      const innerh = convertToNum('height', svg.getAttribute('height'));
+      const innervb = svg.getAttribute('viewBox');
+      // if no explicit viewbox, create one out of the width and height
+      const vb = innervb ? innervb.split(' ') : [ 0, 0, innerw, innerh ];
       for (j = 0; j < 4; ++j) {
         vb[j] = Number(vb[j]);
       }
@@ -908,8 +908,8 @@ export const uniquifyElemsMethod = function (g) {
         const attrnode = n.getAttributeNode(attr);
         if (attrnode) {
           // the incoming file has been sanitized, so we should be able to safely just strip off the leading #
-          const url = svgContext_.getCanvas().getUrlFromAttr(attrnode.value),
-            refid = url ? url.substr(1) : null;
+          const url = svgContext_.getCanvas().getUrlFromAttr(attrnode.value);
+          const refid = url ? url.substr(1) : null;
           if (refid) {
             if (!(refid in ids)) {
               // add this id to our map
@@ -1012,7 +1012,7 @@ export const removeUnusedDefElemsMethod = function () {
   const allEls = svgContext_.getSVGContent().getElementsByTagNameNS(NS.SVG, '*');
   const allLen = allEls.length;
 
-  let i, j;
+  let i; let j;
   for (i = 0; i < allLen; i++) {
     const el = allEls[i];
     for (j = 0; j < alen; j++) {

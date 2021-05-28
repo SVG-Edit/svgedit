@@ -20,8 +20,8 @@ describe('Basic Module', function () {
   const
     // svgroot = document.getElementById('svgroot'),
     // svgdoc = svgroot.documentElement,
-    svgns = 'http://www.w3.org/2000/svg',
-    xlinkns = 'http://www.w3.org/1999/xlink';
+    svgns = 'http://www.w3.org/2000/svg';
+  const xlinkns = 'http://www.w3.org/1999/xlink';
 
   beforeEach(() => {
     document.body.textContent = '';
@@ -83,10 +83,10 @@ describe('Basic Module', function () {
         '</svg>'
       );
 
-      const p1 = document.getElementById('p1'),
-        p2 = document.getElementById('p2'),
-        dAbs = p1.getAttribute('d'),
-        seglist = p1.pathSegList;
+      const p1 = document.getElementById('p1');
+      const p2 = document.getElementById('p2');
+      const dAbs = p1.getAttribute('d');
+      const seglist = p1.pathSegList;
 
       assert.equal(p1.nodeName, 'path', "Expected 'path', got");
 
@@ -123,9 +123,9 @@ describe('Basic Module', function () {
         '</svg>'
       );
 
-      const u = document.getElementById('the-use'),
-        fu = document.getElementById('foreign-use'),
-        nfu = document.getElementById('no-use');
+      const u = document.getElementById('the-use');
+      const fu = document.getElementById('foreign-use');
+      const nfu = document.getElementById('no-use');
 
       assert.equal((u && u.nodeName), 'use', 'Did not import <use> element');
       assert.equal(fu, null, 'Removed <use> element that had a foreign href');
@@ -211,10 +211,10 @@ describe('Basic Module', function () {
         '</svg>'
       );
 
-      const svgcontent = document.getElementById('svgcontent'),
-        circles = svgcontent.getElementsByTagNameNS(svgns, 'circle'),
-        rects = svgcontent.getElementsByTagNameNS(svgns, 'rect'),
-        ellipses = svgcontent.getElementsByTagNameNS(svgns, 'ellipse');
+      const svgcontent = document.getElementById('svgcontent');
+      const circles = svgcontent.getElementsByTagNameNS(svgns, 'circle');
+      const rects = svgcontent.getElementsByTagNameNS(svgns, 'rect');
+      const ellipses = svgcontent.getElementsByTagNameNS(svgns, 'ellipse');
       assert.equal(circles.length, 2, 'Found two circles upon importing');
       assert.equal(rects.length, 1, 'Found one rectangle upon importing');
       assert.equal(ellipses.length, 1, 'Found one ellipse upon importing');
@@ -245,13 +245,13 @@ describe('Basic Module', function () {
         '</svg>'
       );
 
-      const svgcontent = document.getElementById('svgcontent'),
-        circles = svgcontent.getElementsByTagNameNS(svgns, 'circle'),
-        rects = svgcontent.getElementsByTagNameNS(svgns, 'rect'),
-        // ellipses = svgcontent.getElementsByTagNameNS(svgns, 'ellipse'),
-        defs = svgcontent.getElementsByTagNameNS(svgns, 'defs'),
-        // grads = svgcontent.getElementsByTagNameNS(svgns, 'linearGradient'),
-        uses = svgcontent.getElementsByTagNameNS(svgns, 'use');
+      const svgcontent = document.getElementById('svgcontent');
+      const circles = svgcontent.getElementsByTagNameNS(svgns, 'circle');
+      const rects = svgcontent.getElementsByTagNameNS(svgns, 'rect');
+      // ellipses = svgcontent.getElementsByTagNameNS(svgns, 'ellipse'),
+      const defs = svgcontent.getElementsByTagNameNS(svgns, 'defs');
+      // grads = svgcontent.getElementsByTagNameNS(svgns, 'linearGradient'),
+      const uses = svgcontent.getElementsByTagNameNS(svgns, 'use');
       assert.notEqual(circles.item(0).id, 'svg_1', 'Circle not re-identified');
       assert.notEqual(rects.item(0).id, 'svg_3', 'Rectangle not re-identified');
       // TODO: determine why this test fails in WebKit browsers

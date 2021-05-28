@@ -41,14 +41,14 @@ export const init = function (eventContext) {
 };
 
 export const getBsplinePoint = function (t) {
-  const spline = { x: 0, y: 0 },
-    p0 = { x: eventContext_.getControllPoint2('x'), y: eventContext_.getControllPoint2('y') },
-    p1 = { x: eventContext_.getControllPoint1('x'), y: eventContext_.getControllPoint1('y') },
-    p2 = { x: eventContext_.getStart('x'), y: eventContext_.getStart('y') },
-    p3 = { x: eventContext_.getEnd('x'), y: eventContext_.getEnd('y') },
-    S = 1.0 / 6.0,
-    t2 = t * t,
-    t3 = t2 * t;
+  const spline = { x: 0, y: 0 };
+  const p0 = { x: eventContext_.getControllPoint2('x'), y: eventContext_.getControllPoint2('y') };
+  const p1 = { x: eventContext_.getControllPoint1('x'), y: eventContext_.getControllPoint1('y') };
+  const p2 = { x: eventContext_.getStart('x'), y: eventContext_.getStart('y') };
+  const p3 = { x: eventContext_.getEnd('x'), y: eventContext_.getEnd('y') };
+  const S = 1.0 / 6.0;
+  const t2 = t * t;
+  const t3 = t2 * t;
 
   const m = [
     [ -1, 3, -3, 1 ],
@@ -89,14 +89,14 @@ export const mouseMoveEvent = function (evt) {
   if (!eventContext_.getStarted()) { return; }
   if (evt.button === 1 || eventContext_.getCanvas().spaceKey) { return; }
 
-  let i, xya, cx, cy, dx, dy, len, angle, box,
-    selected = selectedElements[0];
+  let i; let xya; let cx; let cy; let dx; let dy; let len; let angle; let box;
+  let selected = selectedElements[0];
   const
-    pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm()),
+    pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
 
-    mouseX = pt.x * currentZoom,
-    mouseY = pt.y * currentZoom,
-    shape = getElem(eventContext_.getId());
+  const mouseX = pt.x * currentZoom;
+  const mouseY = pt.y * currentZoom;
+  const shape = getElem(eventContext_.getId());
 
   let realX = mouseX / currentZoom;
   let x = realX;
@@ -171,8 +171,8 @@ export const mouseMoveEvent = function (evt) {
     // - if newList contains selected, do nothing
     // - if newList doesn't contain selected, remove it from selected
     // - for any newList that was not in selectedElements, add it to selected
-    const elemsToRemove = selectedElements.slice(), elemsToAdd = [],
-      newList = eventContext_.getIntersectionList();
+    const elemsToRemove = selectedElements.slice(); const elemsToAdd = [];
+    const newList = eventContext_.getIntersectionList();
 
     // For every element in the intersection, add if not present in selectedElements.
     len = newList.length;
@@ -205,9 +205,9 @@ export const mouseMoveEvent = function (evt) {
     tlist = getTransformList(selected);
     const hasMatrix = hasMatrixTransform(tlist);
     box = hasMatrix ? eventContext_.getInitBbox() : utilsGetBBox(selected);
-    let left = box.x,
-      top = box.y,
-      { width, height } = box;
+    let left = box.x;
+    let top = box.y;
+    let { width, height } = box;
     dx = (x - eventContext_.getStartX());
     dy = (y - eventContext_.getStartY());
 
@@ -221,8 +221,8 @@ export const mouseMoveEvent = function (evt) {
     // if rotated, adjust the dx,dy values
     angle = getRotationAngle(selected);
     if (angle) {
-      const r = Math.sqrt(dx * dx + dy * dy),
-        theta = Math.atan2(dy, dx) - angle * Math.PI / 180.0;
+      const r = Math.sqrt(dx * dx + dy * dy);
+      const theta = Math.atan2(dy, dx) - angle * Math.PI / 180.0;
       dx = r * Math.cos(theta);
       dy = r * Math.sin(theta);
     }
@@ -237,10 +237,10 @@ export const mouseMoveEvent = function (evt) {
     }
 
     let // ts = null,
-      tx = 0, ty = 0,
-      sy = height ? (height + dy) / height : 1,
-      sx = width ? (width + dx) / width : 1;
-      // if we are dragging on the north side, then adjust the scale factor and ty
+      tx = 0; let ty = 0;
+    let sy = height ? (height + dy) / height : 1;
+    let sx = width ? (width + dx) / width : 1;
+    // if we are dragging on the north side, then adjust the scale factor and ty
     if (eventContext_.getCurrentResizeMode().includes('n')) {
       sy = height ? (height - dy) / height : 1;
       ty = height;
@@ -253,9 +253,9 @@ export const mouseMoveEvent = function (evt) {
     }
 
     // update the transform list with translate,scale,translate
-    const translateOrigin = eventContext_.getSVGRoot().createSVGTransform(),
-      scale = eventContext_.getSVGRoot().createSVGTransform(),
-      translateBack = eventContext_.getSVGRoot().createSVGTransform();
+    const translateOrigin = eventContext_.getSVGRoot().createSVGTransform();
+    const scale = eventContext_.getSVGRoot().createSVGTransform();
+    const translateBack = eventContext_.getSVGRoot().createSVGTransform();
 
     if (eventContext_.getCurConfig().gridSnapping) {
       left = snapToGrid(left);
@@ -332,9 +332,9 @@ export const mouseMoveEvent = function (evt) {
   case 'image': {
     const square = (eventContext_.getCurrentMode() === 'square') || evt.shiftKey;
     let
-      w = Math.abs(x - eventContext_.getStartX()),
-      h = Math.abs(y - eventContext_.getStartY());
-    let newX, newY;
+      w = Math.abs(x - eventContext_.getStartX());
+    let h = Math.abs(y - eventContext_.getStartY());
+    let newX; let newY;
     if (square) {
       w = h = Math.max(w, h);
       newX = eventContext_.getStartX() < x ? eventContext_.getStartX() : eventContext_.getStartX() - w;
@@ -440,7 +440,7 @@ export const mouseMoveEvent = function (evt) {
     }
     if (evt.shiftKey) {
       const { path } = pathModule;
-      let x1, y1;
+      let x1; let y1;
       if (path) {
         x1 = path.dragging ? path.dragging[0] : eventContext_.getStartX();
         y1 = path.dragging ? path.dragging[1] : eventContext_.getStartY();
@@ -484,8 +484,8 @@ export const mouseMoveEvent = function (evt) {
     box = utilsGetBBox(selected);
     cx = box.x + box.width / 2;
     cy = box.y + box.height / 2;
-    const m = getMatrix(selected),
-      center = transformPoint(cx, cy, m);
+    const m = getMatrix(selected);
+    const center = transformPoint(cx, cy, m);
     cx = center.x;
     cy = center.y;
     angle = ((Math.atan2(cy - y, cx - x) * (180 / Math.PI)) - 90) % 360;
@@ -541,11 +541,11 @@ export const mouseUpEvent = function (evt) {
   const tempJustSelected = eventContext_.getJustSelected();
   eventContext_.setJustSelected(null);
   if (!eventContext_.getStarted()) { return; }
-  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm()),
-    mouseX = pt.x * currentZoom,
-    mouseY = pt.y * currentZoom,
-    x = mouseX / currentZoom,
-    y = mouseY / currentZoom;
+  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
+  const mouseX = pt.x * currentZoom;
+  const mouseY = pt.y * currentZoom;
+  const x = mouseX / currentZoom;
+  const y = mouseY / currentZoom;
 
   let element = getElem(eventContext_.getId());
   let keep = false;
@@ -934,9 +934,9 @@ export const mouseDownEvent = function (evt) {
 
   eventContext_.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
 
-  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm()),
-    mouseX = pt.x * currentZoom,
-    mouseY = pt.y * currentZoom;
+  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
+  const mouseX = pt.x * currentZoom;
+  const mouseY = pt.y * currentZoom;
 
   evt.preventDefault();
 
@@ -945,8 +945,8 @@ export const mouseDownEvent = function (evt) {
     eventContext_.setLastClickPoint(pt);
   }
 
-  let x = mouseX / currentZoom,
-    y = mouseY / currentZoom;
+  let x = mouseX / currentZoom;
+  let y = mouseY / currentZoom;
   let mouseTarget = eventContext_.getCanvas().getMouseTarget(evt);
 
   if (mouseTarget.tagName === 'a' && mouseTarget.childNodes.length === 1) {
@@ -1099,8 +1099,8 @@ export const mouseDownEvent = function (evt) {
         mouseTarget.style.vectorEffect = 'non-scaling-stroke';
         if (iswebkit) { delayedStroke(mouseTarget); }
 
-        const all = mouseTarget.getElementsByTagName('*'),
-          len = all.length;
+        const all = mouseTarget.getElementsByTagName('*');
+        const len = all.length;
         for (let i = 0; i < len; i++) {
           if (!all[i].style) { // mathML
             continue;
@@ -1344,7 +1344,7 @@ export const DOMMouseScrollEvent = function (e) {
 
   let factor = Math.max(3 / 4, Math.min(4 / 3, (delta)));
 
-  let wZoom, hZoom;
+  let wZoom; let hZoom;
   if (factor > 1) {
     wZoom = Math.ceil(editorW / workareaViewW * factor * 100) / 100;
     hZoom = Math.ceil(editorH / workareaViewH * factor * 100) / 100;

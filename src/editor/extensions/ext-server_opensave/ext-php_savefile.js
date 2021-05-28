@@ -19,8 +19,8 @@ export default {
     const saveSvgAction = './savefile.php';
     svgEditor.setCustomHandlers({
       save (win, data) {
-        const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data,
-          filename = getFileNameFromTitle();
+        const svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + data;
+        const filename = getFileNameFromTitle();
 
         // $.post(saveSvgAction, { output_svg: svg, filename });
         let postData =  { output_svg: svg, filename };

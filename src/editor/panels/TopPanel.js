@@ -65,7 +65,7 @@ class TopPanel {
    * @returns {void}
    */
   update() {
-    let i, len;
+    let i; let len;
     if (!isNullish(this.selectedElement)) {
       switch (this.selectedElement.tagName) {
       case "use":
@@ -208,7 +208,7 @@ class TopPanel {
         if ([ "line", "circle", "ellipse" ].includes(elname)) {
           $id("xy_panel").style.display = 'none';
         } else {
-          let x, y;
+          let x; let y;
 
           // Get BBox vals for g, polyline and path
           if ([ "g", "polyline", "path" ].includes(elname)) {

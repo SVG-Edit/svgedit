@@ -91,7 +91,7 @@ export default {
     let mode = 's';
     let multiArr = [];
     let transferStopped = false;
-    let preview, submit;
+    let preview; let submit;
 
     /**
      * Contains the SVG to insert.
@@ -190,7 +190,7 @@ export default {
         }
       }
 
-      let entry, curMeta, svgStr, imgStr;
+      let entry; let curMeta; let svgStr; let imgStr;
       switch (type) {
       case 'meta': {
         // Metadata

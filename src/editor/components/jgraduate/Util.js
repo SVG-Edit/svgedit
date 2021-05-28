@@ -46,7 +46,7 @@ export function mergeDeep(target, source) {
 export function getClosest(elem, selector) {
   const firstChar = selector.charAt(0);
   const supports = 'classList' in document.documentElement;
-  let attribute, value;
+  let attribute; let value;
   // If selector is a data attribute, split attribute from value
   if (firstChar === '[') {
     selector = selector.substr(1, selector.length - 2);

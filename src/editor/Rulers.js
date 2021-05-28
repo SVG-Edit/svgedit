@@ -40,7 +40,7 @@ class Rulers {
     if (!zoom) { zoom = this.svgCanvas.getZoom(); }
     if (!scanvas) { scanvas = document.getElementById('svgcanvas'); }
 
-    let d, i;
+    let d; let i;
     const limit = 30000;
     const contentElem = this.svgCanvas.getContentElem();
     const units = getTypeMap();
@@ -72,7 +72,7 @@ class Rulers {
       const totalLen = rulerLen;
       hcanv.parentNode.style[lentype] = totalLen + 'px';
       let ctx = hcanv.getContext('2d');
-      let ctxArr, num, ctxArrNum;
+      let ctxArr; let num; let ctxArrNum;
 
       ctx.fillStyle = 'rgb(200,0,0)';
       ctx.fillRect(0, 0, hcanv.width, hcanv.height);

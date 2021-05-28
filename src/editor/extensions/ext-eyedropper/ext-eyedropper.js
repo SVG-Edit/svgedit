@@ -30,18 +30,18 @@ export default {
   async init(S) {
     const svgEditor = this;
     await loadExtensionTranslation(svgEditor);
-    const { ChangeElementCommand } = S, // , svgcontent,
-      // svgdoc = S.svgroot.parentNode.ownerDocument,
-      { svgCanvas } = svgEditor,
-      addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); },
-      currentStyle = {
-        fillPaint: 'red', fillOpacity: 1.0,
-        strokePaint: 'black', strokeOpacity: 1.0,
-        strokeWidth: 5, strokeDashArray: null,
-        opacity: 1.0,
-        strokeLinecap: 'butt',
-        strokeLinejoin: 'miter'
-      };
+    const { ChangeElementCommand } = S; // , svgcontent,
+    // svgdoc = S.svgroot.parentNode.ownerDocument,
+    const { svgCanvas } = svgEditor;
+    const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
+    const currentStyle = {
+      fillPaint: 'red', fillOpacity: 1.0,
+      strokePaint: 'black', strokeOpacity: 1.0,
+      strokeWidth: 5, strokeDashArray: null,
+      opacity: 1.0,
+      strokeLinecap: 'butt',
+      strokeLinejoin: 'miter'
+    };
     const { $id } = svgCanvas;
 
     /**

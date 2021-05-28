@@ -24,9 +24,9 @@ export default {
   async init () {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
-    const saveMessage = 'save',
-      readMessage = 'read',
-      excludedMessages = [ readMessage, saveMessage ];
+    const saveMessage = 'save';
+    const readMessage = 'read';
+    const excludedMessages = [ readMessage, saveMessage ];
 
     let pathID;
     this.canvas.bind(
@@ -38,7 +38,7 @@ export default {
        * @returns {void}
        */
       (win, { data, origin }) => {
-        let type, content;
+        let type; let content;
         try {
           ({ type, pathID, content } = data.webappfind); // May throw if data is not an object
           if (origin !== location.origin || // We are only interested in a message sent as though within this URL by our browser add-on

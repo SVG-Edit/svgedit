@@ -350,8 +350,8 @@ class LayersPanel {
    */
   toggleHighlightLayer(layerNameToHighlight) {
     let i;
-    const curNames = [],
-      numLayers = this.editor.svgCanvas.getCurrentDrawing().getNumLayers();
+    const curNames = [];
+    const numLayers = this.editor.svgCanvas.getCurrentDrawing().getNumLayers();
     for (i = 0; i < numLayers; i++) {
       curNames[i] = this.editor.svgCanvas.getCurrentDrawing().getLayerName(i);
     }

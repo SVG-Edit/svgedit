@@ -249,7 +249,7 @@ export const recalculateDimensions = function (selected) {
   // save the start transform value too
   initial.transform = context_.getStartTransform() || '';
 
-  let oldcenter, newcenter;
+  let oldcenter; let newcenter;
 
   // if it's a regular group, we have special processing to flatten transforms
   if ((selected.tagName === 'g' && !gsvg) || selected.tagName === 'a') {
@@ -281,7 +281,7 @@ export const recalculateDimensions = function (selected) {
       }
     }
     const N = tlist.numberOfItems;
-    let tx = 0, ty = 0, operation = 0;
+    let tx = 0; let ty = 0; let operation = 0;
 
     let firstM;
     if (N) {
@@ -296,9 +296,9 @@ export const recalculateDimensions = function (selected) {
 
       // if the children are unrotated, pass the scale down directly
       // otherwise pass the equivalent matrix() down directly
-      const tm = tlist.getItem(N - 3).matrix,
-        sm = tlist.getItem(N - 2).matrix,
-        tmn = tlist.getItem(N - 1).matrix;
+      const tm = tlist.getItem(N - 3).matrix;
+      const sm = tlist.getItem(N - 2).matrix;
+      const tmn = tlist.getItem(N - 1).matrix;
 
       const children = selected.childNodes;
       let c = children.length;
@@ -360,9 +360,9 @@ export const recalculateDimensions = function (selected) {
             // [S2] = [T2_inv][M_inv][T][S][-T][M][-T2_inv]
             const s2 = matrixMultiply(t2.inverse(), m.inverse(), tm, sm, tmn, m, t2n.inverse());
 
-            const translateOrigin = svgroot.createSVGTransform(),
-              scale = svgroot.createSVGTransform(),
-              translateBack = svgroot.createSVGTransform();
+            const translateOrigin = svgroot.createSVGTransform();
+            const scale = svgroot.createSVGTransform();
+            const translateBack = svgroot.createSVGTransform();
             translateOrigin.setTranslate(t2n.e, t2n.f);
             scale.setScale(s2.a, s2.d);
             translateBack.setTranslate(t2.e, t2.f);
@@ -477,8 +477,8 @@ export const recalculateDimensions = function (selected) {
       // keep pushing it down to the children
     } else if (N === 1 && tlist.getItem(0).type === 1 && !gangle) {
       operation = 1;
-      const m = tlist.getItem(0).matrix,
-        children = selected.childNodes;
+      const m = tlist.getItem(0).matrix;
+      const children = selected.childNodes;
       let c = children.length;
       while (c--) {
         const child = children.item(c);
@@ -549,9 +549,9 @@ export const recalculateDimensions = function (selected) {
       const rold = roldt.matrix;
       const rnew = svgroot.createSVGTransform();
       rnew.setRotate(gangle, newcenter.x, newcenter.y);
-      const rnewInv = rnew.matrix.inverse(),
-        mInv = m.inverse(),
-        extrat = matrixMultiply(mInv, rnewInv, rold, m);
+      const rnewInv = rnew.matrix.inverse();
+      const mInv = m.inverse();
+      const extrat = matrixMultiply(mInv, rnewInv, rold, m);
 
       tx = extrat.e;
       ty = extrat.f;
@@ -691,9 +691,9 @@ export const recalculateDimensions = function (selected) {
     } else if ((N === 1 || (N > 1 && tlist.getItem(1).type !== 3)) &&
       tlist.getItem(0).type === 2) {
       operation = 2; // translate
-      const oldxlate = tlist.getItem(0).matrix,
-        meq = transformListToTransform(tlist, 1).matrix,
-        meqInv = meq.inverse();
+      const oldxlate = tlist.getItem(0).matrix;
+      const meq = transformListToTransform(tlist, 1).matrix;
+      const meqInv = meq.inverse();
       m = matrixMultiply(meqInv, oldxlate, meq);
       tlist.removeItem(0);
       // else if this child now has a matrix imposition (from a parent group)

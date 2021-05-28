@@ -30,9 +30,9 @@ export default {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
     const { getElem, $id, mergeDeep } = svgCanvas;
-    const { svgroot } = S,
-      addElem = svgCanvas.addSVGElementFromJson,
-      selManager = S.selectorManager;
+    const { svgroot } = S;
+    const addElem = svgCanvas.addSVGElementFromJson;
+    const selManager = S.selectorManager;
     await loadExtensionTranslation(svgEditor);
 
     let startX;
@@ -437,8 +437,8 @@ export default {
         const x = opts.mouse_x / zoom;
         const y = opts.mouse_y / zoom;
 
-        const diffX = x - startX,
-          diffY = y - startY;
+        const diffX = x - startX;
+        const diffY = y - startY;
 
         const mode = svgCanvas.getMode();
 

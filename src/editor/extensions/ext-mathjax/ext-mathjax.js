@@ -59,10 +59,10 @@ export default {
       // Obtained Text-AMS-MML_SVG.js from https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/config/TeX-AMS-MML_SVG.js
       { uiStrings } = svgEditor;
     let
-      math,
-      locationX,
-      locationY,
-      mathjaxLoaded = false;
+      math;
+    let locationX;
+    let locationY;
+    let mathjaxLoaded = false;
 
     // TODO: Implement language support. Move these uiStrings to the locale files and
     //   the code to the langReady callback. Also i18nize alert and HTML below
@@ -231,8 +231,8 @@ export default {
         return undefined;
       },
       callback () {
-        const head = document.head || document.getElementsByTagName('head')[0],
-          style = document.createElement('style');
+        const head = document.head || document.getElementsByTagName('head')[0];
+        const style = document.createElement('style');
         style.textContent = '#mathjax fieldset{' +
           'padding: 5px;' +
           'margin: 5px;' +

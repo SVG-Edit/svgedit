@@ -382,26 +382,26 @@ export const getSegSelector = getSegSelectorMethod;
 */
 export const smoothControlPoints = function (ct1, ct2, pt) {
   // each point must not be the origin
-  const x1 = ct1.x - pt.x,
-    y1 = ct1.y - pt.y,
-    x2 = ct2.x - pt.x,
-    y2 = ct2.y - pt.y;
+  const x1 = ct1.x - pt.x;
+  const y1 = ct1.y - pt.y;
+  const x2 = ct2.x - pt.x;
+  const y2 = ct2.y - pt.y;
 
   if ((x1 !== 0 || y1 !== 0) && (x2 !== 0 || y2 !== 0)) {
     const
-      r1 = Math.sqrt(x1 * x1 + y1 * y1),
-      r2 = Math.sqrt(x2 * x2 + y2 * y2),
-      nct1 = editorContext_.getSVGRoot().createSVGPoint(),
-      nct2 = editorContext_.getSVGRoot().createSVGPoint();
-    let anglea = Math.atan2(y1, x1),
-      angleb = Math.atan2(y2, x2);
+      r1 = Math.sqrt(x1 * x1 + y1 * y1);
+    const r2 = Math.sqrt(x2 * x2 + y2 * y2);
+    const nct1 = editorContext_.getSVGRoot().createSVGPoint();
+    const nct2 = editorContext_.getSVGRoot().createSVGPoint();
+    let anglea = Math.atan2(y1, x1);
+    let angleb = Math.atan2(y2, x2);
     if (anglea < 0) { anglea += 2 * Math.PI; }
     if (angleb < 0) { angleb += 2 * Math.PI; }
 
-    const angleBetween = Math.abs(anglea - angleb),
-      angleDiff = Math.abs(Math.PI - angleBetween) / 2;
+    const angleBetween = Math.abs(anglea - angleb);
+    const angleDiff = Math.abs(Math.PI - angleBetween) / 2;
 
-    let newAnglea, newAngleb;
+    let newAnglea; let newAngleb;
     if (anglea - angleb > 0) {
       newAnglea = angleBetween < Math.PI ? (anglea + angleDiff) : (anglea - angleDiff);
       newAngleb = angleBetween < Math.PI ? (angleb - angleDiff) : (angleb + angleDiff);
@@ -443,7 +443,7 @@ export const removePath_ = function (id) {
   if (id in pathData) { delete pathData[id]; }
 };
 
-let newcx, newcy, oldcx, oldcy, angle;
+let newcx; let newcy; let oldcx; let oldcy; let angle;
 
 const getRotVals = function (x, y) {
   let dx = x - oldcx;
@@ -493,10 +493,10 @@ export const recalcRotatedPath = function () {
   newcy = box.y + box.height / 2;
 
   // un-rotate the new center to the proper position
-  const dx = newcx - oldcx,
-    dy = newcy - oldcy,
-    r = Math.sqrt(dx * dx + dy * dy),
-    theta = Math.atan2(dy, dx) + angle;
+  const dx = newcx - oldcx;
+  const dy = newcy - oldcy;
+  const r = Math.sqrt(dx * dx + dy * dy);
+  const theta = Math.atan2(dy, dx) + angle;
 
   newcx = r * Math.cos(theta) + oldcx;
   newcy = r * Math.sin(theta) + oldcy;
@@ -506,12 +506,12 @@ export const recalcRotatedPath = function () {
   let i = list.numberOfItems;
   while (i) {
     i -= 1;
-    const seg = list.getItem(i),
-      type = seg.pathSegType;
+    const seg = list.getItem(i);
+    const type = seg.pathSegType;
     if (type === 1) { continue; }
 
-    const rvals = getRotVals(seg.x, seg.y),
-      points = [ rvals.x, rvals.y ];
+    const rvals = getRotVals(seg.x, seg.y);
+    const points = [ rvals.x, rvals.y ];
     if (!isNullish(seg.x1) && !isNullish(seg.x2)) {
       const cVals1 = getRotVals(seg.x1, seg.y1);
       const cVals2 = getRotVals(seg.x2, seg.y2);
@@ -525,8 +525,8 @@ export const recalcRotatedPath = function () {
   // selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 
   // now we must set the new transform to be rotated around the new center
-  const Rnc = editorContext_.getSVGRoot().createSVGTransform(),
-    tlist = getTransformList(currentPath);
+  const Rnc = editorContext_.getSVGRoot().createSVGTransform();
+  const tlist = getTransformList(currentPath);
   Rnc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
   tlist.replaceItem(Rnc, 0);
 };
@@ -613,19 +613,19 @@ const pathMap = [
 export const convertPath = function (pth, toRel) {
   const { pathSegList } = pth;
   const len = pathSegList.numberOfItems;
-  let curx = 0, cury = 0;
+  let curx = 0; let cury = 0;
   let d = '';
   let lastM = null;
 
   for (let i = 0; i < len; ++i) {
     const seg = pathSegList.getItem(i);
     // if these properties are not in the segment, set them to zero
-    let x = seg.x || 0,
-      y = seg.y || 0,
-      x1 = seg.x1 || 0,
-      y1 = seg.y1 || 0,
-      x2 = seg.x2 || 0,
-      y2 = seg.y2 || 0;
+    let x = seg.x || 0;
+    let y = seg.y || 0;
+    let x1 = seg.x1 || 0;
+    let y1 = seg.y1 || 0;
+    let x2 = seg.x2 || 0;
+    let y2 = seg.y2 || 0;
 
     const type = seg.pathSegType;
     let letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();

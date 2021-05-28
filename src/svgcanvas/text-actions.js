@@ -43,7 +43,7 @@ export const textActionsMethod = (function () {
   let chardata = [];
   let textbb; // , transbb;
   let matrix;
-  let lastX, lastY;
+  let lastX; let lastY;
   let allowDbl;
 
   /**
@@ -135,10 +135,10 @@ export const textActionsMethod = (function () {
 
     cursor.setAttribute('visibility', 'hidden');
 
-    const tl = ptToScreen(startbb.x, textbb.y),
-      tr = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y),
-      bl = ptToScreen(startbb.x, textbb.y + textbb.height),
-      br = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y + textbb.height);
+    const tl = ptToScreen(startbb.x, textbb.y);
+    const tr = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y);
+    const bl = ptToScreen(startbb.x, textbb.y + textbb.height);
+    const br = ptToScreen(startbb.x + (endbb.x - startbb.x), textbb.y + textbb.height);
 
     const dstr = 'M' + tl.x + ',' + tl.y +
 ' L' + tr.x + ',' + tr.y +
@@ -276,9 +276,9 @@ export const textActionsMethod = (function () {
   function selectWord (evt) {
     if (!allowDbl || !curtext) { return; }
     const currentZoom = textActionsContext_.getCurrentZoom();
-    const ept = transformPoint(evt.pageX, evt.pageY, textActionsContext_.getrootSctm()),
-      mouseX = ept.x * currentZoom,
-      mouseY = ept.y * currentZoom;
+    const ept = transformPoint(evt.pageX, evt.pageY, textActionsContext_.getrootSctm());
+    const mouseX = ept.x * currentZoom;
+    const mouseY = ept.y * currentZoom;
     const pt = screenToPt(mouseX, mouseY);
 
     const index = getIndexFromPoint(pt.x, pt.y);
@@ -461,7 +461,7 @@ export const textActionsMethod = (function () {
 */
     init (_inputElem) {
       if (!curtext) { return; }
-      let i, end;
+      let i; let end;
       // if (supportsEditableText()) {
       //   curtext.select();
       //   return;

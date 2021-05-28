@@ -123,7 +123,7 @@ export const setGroupTitleMethod = function (val) {
 */
 export const setDocumentTitleMethod = function (newTitle) {
   const childs = elemContext_.getSVGContent().childNodes;
-  let docTitle = false, oldTitle = '';
+  let docTitle = false; let oldTitle = '';
 
   const batchCmd = new BatchCommand('Change Image Title');
 
@@ -174,7 +174,7 @@ export const setResolutionMethod = function (x, y) {
       batchCmd = new BatchCommand('Fit Canvas to Content');
       const visEls = getVisibleElements();
       elemContext_.getCanvas().addToSelection(visEls);
-      const dx = [], dy = [];
+      const dx = []; const dy = [];
       visEls.forEach(function(_item, _i){
         dx.push(bbox.x * -1);
         dy.push(bbox.y * -1);

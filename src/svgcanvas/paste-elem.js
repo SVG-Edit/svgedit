@@ -97,7 +97,7 @@ export const pasteElementsMethod = function (type, x, y) {
   pasteContext_.getCanvas().selectOnly(pasted);
 
   if (type !== 'in_place') {
-    let ctrX, ctrY;
+    let ctrX; let ctrY;
 
     if (!type) {
       ctrX = pasteContext_.getLastClickPoint('x');
@@ -108,10 +108,10 @@ export const pasteElementsMethod = function (type, x, y) {
     }
 
     const bbox = getStrokedBBoxDefaultVisible(pasted);
-    const cx = ctrX - (bbox.x + bbox.width / 2),
-      cy = ctrY - (bbox.y + bbox.height / 2),
-      dx = [],
-      dy = [];
+    const cx = ctrX - (bbox.x + bbox.width / 2);
+    const cy = ctrY - (bbox.y + bbox.height / 2);
+    const dx = [];
+    const dy = [];
 
     pasted.forEach(function(_item){
       dx.push(cx);

@@ -31,10 +31,10 @@ export default {
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     let selElems;
     const updateButton = function (path) {
-      const seglist = path.pathSegList,
-        closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType === 1,
-        showbutton = closed ? 'tool_openpath' : 'tool_closepath',
-        hidebutton = closed ? 'tool_closepath' : 'tool_openpath';
+      const seglist = path.pathSegList;
+      const closed = seglist.getItem(seglist.numberOfItems - 1).pathSegType === 1;
+      const showbutton = closed ? 'tool_openpath' : 'tool_closepath';
+      const hidebutton = closed ? 'tool_closepath' : 'tool_openpath';
       $id(hidebutton).style.display = 'none';
       $id(showbutton).style.display = 'block';
     };
@@ -48,8 +48,8 @@ export default {
     const toggleClosed = function () {
       const path = selElems[0];
       if (path) {
-        const seglist = path.pathSegList,
-          last = seglist.numberOfItems - 1;
+        const seglist = path.pathSegList;
+        const last = seglist.numberOfItems - 1;
         // is closed
         if (seglist.getItem(last).pathSegType === 1) {
           seglist.removeItem(last);

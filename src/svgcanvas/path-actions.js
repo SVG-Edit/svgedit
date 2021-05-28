@@ -48,19 +48,19 @@ export const init = function (pathActionsContext) {
 export const convertPath = function (pth, toRel) {
   const { pathSegList } = pth;
   const len = pathSegList.numberOfItems;
-  let curx = 0, cury = 0;
+  let curx = 0; let cury = 0;
   let d = '';
   let lastM = null;
 
   for (let i = 0; i < len; ++i) {
     const seg = pathSegList.getItem(i);
     // if these properties are not in the segment, set them to zero
-    let x = seg.x || 0,
-      y = seg.y || 0,
-      x1 = seg.x1 || 0,
-      y1 = seg.y1 || 0,
-      x2 = seg.x2 || 0,
-      y2 = seg.y2 || 0;
+    let x = seg.x || 0;
+    let y = seg.y || 0;
+    let x1 = seg.x1 || 0;
+    let y1 = seg.y1 || 0;
+    let x2 = seg.x2 || 0;
+    let y2 = seg.y2 || 0;
 
     const type = seg.pathSegType;
     const pathMap = pathActionsContext_.getPathMap();
@@ -232,7 +232,7 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
 */
 export const pathActionsMethod = (function () {
   let subpath = false;
-  let newPoint, firstCtrl;
+  let newPoint; let firstCtrl;
 
   let currentPath = null;
   let hasMoved = false;
@@ -265,7 +265,7 @@ export const pathActionsMethod = (function () {
       // - https://www.codeproject.com/KB/graphics/BezierSpline.aspx?msg=2956963
       // - https://www.ian-ko.com/ET_GeoWizards/UserGuide/smooth.htm
       // - https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
-      let curpos = points.getItem(0), prevCtlPt = null;
+      let curpos = points.getItem(0); let prevCtlPt = null;
       let d = [];
       d.push([ 'M', curpos.x, ',', curpos.y, ' C' ].join(''));
       for (i = 1; i <= (N - 4); i += 3) {
@@ -332,9 +332,9 @@ export const pathActionsMethod = (function () {
         let mouseY = startY; // Was this meant to work with the other `mouseY`? (was defined globally so adding `let` to at least avoid a global)
 
         const currentZoom = editorContext_.getCurrentZoom();
-        let x = mouseX / currentZoom,
-          y = mouseY / currentZoom,
-          stretchy = getElem('path_stretch_line');
+        let x = mouseX / currentZoom;
+        let y = mouseY / currentZoom;
+        let stretchy = getElem('path_stretch_line');
         newPoint = [ x, y ];
 
         if (editorContext_.getGridSnapping()) {
@@ -384,7 +384,7 @@ export const pathActionsMethod = (function () {
           while (i) {
             i--;
             const item = seglist.getItem(i);
-            const px = item.x, py = item.y;
+            const px = item.x; const py = item.y;
             // found a matching point
             if (x >= (px - FUZZ) && x <= (px + FUZZ) &&
               y >= (py - FUZZ) && y <= (py + FUZZ)
@@ -464,7 +464,7 @@ export const pathActionsMethod = (function () {
 
             const num = drawnPath.pathSegList.numberOfItems;
             const last = drawnPath.pathSegList.getItem(num - 1);
-            const lastx = last.x, lasty = last.y;
+            const lastx = last.x; const lasty = last.y;
 
             if (evt.shiftKey) {
               const xya = snapToAngle(lastx, lasty, x, y);
@@ -904,7 +904,7 @@ export const pathActionsMethod = (function () {
         if (type === 1) { continue; }
         const pts = [];
         [ '', 1, 2 ].forEach(function(n){
-          const x = seg['x' + n], y = seg['y' + n];
+          const x = seg['x' + n]; const y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
             const pt = transformPoint(x, y, m);
             pts.splice(pts.length, 0, pt.x, pt.y);
@@ -1050,7 +1050,7 @@ export const pathActionsMethod = (function () {
         return;
       }
 
-      let lastM, zSeg;
+      let lastM; let zSeg;
 
       // Find this sub-path's closing point and remove
       for (let i = 0; i < list.numberOfItems; i++) {

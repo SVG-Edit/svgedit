@@ -377,8 +377,8 @@ export class ChangeElementCommand extends Command {
         const angle = getRotationAngle(this.elem);
         if (angle) {
           const bbox = this.elem.getBBox();
-          const cx = bbox.x + bbox.width / 2,
-            cy = bbox.y + bbox.height / 2;
+          const cx = bbox.x + bbox.width / 2;
+          const cy = bbox.y + bbox.height / 2;
           const rotate = [ 'rotate(', angle, ' ', cx, ',', cy, ')' ].join('');
           if (rotate !== this.elem.getAttribute('transform')) {
             this.elem.setAttribute('transform', rotate);
@@ -585,7 +585,7 @@ export class UndoManager {
   beginUndoableChange (attrName, elems) {
     const p = ++this.undoChangeStackPointer;
     let i = elems.length;
-    const oldValues = new Array(i), elements = new Array(i);
+    const oldValues = new Array(i); const elements = new Array(i);
     while (i--) {
       const elem = elems[i];
       if (isNullish(elem)) { continue; }

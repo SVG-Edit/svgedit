@@ -340,15 +340,15 @@ export default class ColorValuePicker {
       ahex = null;
     }
     let
-      red = inputs[3],
-      green = inputs[4],
-      blue = inputs[5],
-      alpha = inputs.length > 7 ? inputs[6] : null,
-      hue = inputs[0],
-      saturation = inputs[1],
-      value = inputs[2],
-      hex = inputs[(inputs.length > 7) ? 7 : 6],
-      ahex = inputs.length > 7 ? inputs[8] : null;
+      red = inputs[3];
+    let green = inputs[4];
+    let blue = inputs[5];
+    let alpha = inputs.length > 7 ? inputs[6] : null;
+    let hue = inputs[0];
+    let saturation = inputs[1];
+    let value = inputs[2];
+    let hex = inputs[(inputs.length > 7) ? 7 : 6];
+    let ahex = inputs.length > 7 ? inputs[8] : null;
     Object.assign(that, { destroy });
     red.addEventListener('keyup', keyUp);
     green.addEventListener('keyup', keyUp);

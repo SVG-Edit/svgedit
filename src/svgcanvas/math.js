@@ -114,15 +114,15 @@ export const hasMatrixTransform = function (tlist) {
  * @returns {module:math.TransformedBox}
 */
 export const transformBox = function (l, t, w, h, m) {
-  const tl = transformPoint(l, t, m),
-    tr = transformPoint((l + w), t, m),
-    bl = transformPoint(l, (t + h), m),
-    br = transformPoint((l + w), (t + h), m),
+  const tl = transformPoint(l, t, m);
+  const tr = transformPoint((l + w), t, m);
+  const bl = transformPoint(l, (t + h), m);
+  const br = transformPoint((l + w), (t + h), m);
 
-    minx = Math.min(tl.x, tr.x, bl.x, br.x),
-    maxx = Math.max(tl.x, tr.x, bl.x, br.x),
-    miny = Math.min(tl.y, tr.y, bl.y, br.y),
-    maxy = Math.max(tl.y, tr.y, bl.y, br.y);
+  const minx = Math.min(tl.x, tr.x, bl.x, br.x);
+  const maxx = Math.max(tl.x, tr.x, bl.x, br.x);
+  const miny = Math.min(tl.y, tr.y, bl.y, br.y);
+  const maxy = Math.max(tl.y, tr.y, bl.y, br.y);
 
   return {
     tl,

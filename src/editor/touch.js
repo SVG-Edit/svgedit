@@ -5,8 +5,8 @@
  * @returns {void}
  */
 function touchHandler (ev) {
-  const { changedTouches } = ev,
-    first = changedTouches[0];
+  const { changedTouches } = ev;
+  const first = changedTouches[0];
 
   let type = '';
   switch (ev.type) {

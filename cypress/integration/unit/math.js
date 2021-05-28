@@ -54,25 +54,25 @@ describe('math', function () {
     const { isIdentity } = math;
 
     // translate there and back
-    const tr1 = svg.createSVGMatrix().translate(100, 50),
-      tr2 = svg.createSVGMatrix().translate(-90, 0),
-      tr3 = svg.createSVGMatrix().translate(-10, -50);
+    const tr1 = svg.createSVGMatrix().translate(100, 50);
+    const tr2 = svg.createSVGMatrix().translate(-90, 0);
+    const tr3 = svg.createSVGMatrix().translate(-10, -50);
     let I = mult(tr1, tr2, tr3);
     assert.ok(isIdentity(I), 'Expected identity matrix when translating there and back');
 
     // rotate there and back
     // TODO: currently Mozilla fails this when rotating back at -50 and then -40 degrees
     // (b and c are *almost* zero, but not zero)
-    const rotThere = svg.createSVGMatrix().rotate(90),
-      rotBack = svg.createSVGMatrix().rotate(-90), // TODO: set this to -50
-      rotBackMore = svg.createSVGMatrix().rotate(0); // TODO: set this to -40
+    const rotThere = svg.createSVGMatrix().rotate(90);
+    const rotBack = svg.createSVGMatrix().rotate(-90); // TODO: set this to -50
+    const rotBackMore = svg.createSVGMatrix().rotate(0); // TODO: set this to -40
     I = mult(rotThere, rotBack, rotBackMore);
     assert.ok(isIdentity(I), 'Expected identity matrix when rotating there and back');
 
     // scale up and down
-    const scaleUp = svg.createSVGMatrix().scale(4),
-      scaleDown = svg.createSVGMatrix().scaleNonUniform(0.25, 1),
-      scaleDownMore = svg.createSVGMatrix().scaleNonUniform(1, 0.25);
+    const scaleUp = svg.createSVGMatrix().scale(4);
+    const scaleDown = svg.createSVGMatrix().scaleNonUniform(0.25, 1);
+    const scaleDownMore = svg.createSVGMatrix().scaleNonUniform(1, 0.25);
     I = mult(scaleUp, scaleDown, scaleDownMore);
     assert.ok(isIdentity(I), 'Expected identity matrix when scaling up and down');
 

@@ -1131,8 +1131,8 @@ class SvgCanvas {
       if (!elemsToRemove.length) { return; }
 
       // find every element and remove it from our array copy
-      const newSelectedItems = [],
-        len = selectedElements.length;
+      const newSelectedItems = [];
+      const len = selectedElements.length;
       for (let i = 0; i < len; ++i) {
         const elem = selectedElements[i];
         if (elem) {
@@ -1175,8 +1175,8 @@ class SvgCanvas {
         maxx: null,
         maxy: null
       };
-      const THRESHOLD_DIST = 0.8,
-        STEP_COUNT = 10;
+      const THRESHOLD_DIST = 0.8;
+      const STEP_COUNT = 10;
       let dAttr = null;
       let startX = null;
       let startY = null;

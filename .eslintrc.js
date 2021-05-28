@@ -25,6 +25,8 @@ module.exports = {
     "max-len": [ "warn", { "code": 250 } ],
     "indent": [ "error", 2 ],
     "no-var": "error",
+    /** @todo this rule should be actived. needs some courage as this rule is broken in many places... */
+    "one-var": [ "error", "never" ],
     /** @todo jsdoc should be made warn or error */
     "valid-jsdoc": "off",
     /** @todo cognitive complexity should be much lower (25-50?) */

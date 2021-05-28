@@ -23,8 +23,8 @@ let cbid = 0;
 */
 function getCallbackSetter (funcName) {
   return function (...args) {
-    const that = this, // New callback
-      callbackID = this.send(funcName, args, function () { /* empty fn */ }); // The callback (currently it's nothing, but will be set later)
+    const that = this; // New callback
+    const callbackID = this.send(funcName, args, function () { /* empty fn */ }); // The callback (currently it's nothing, but will be set later)
 
     return function (newCallback) {
       that.callbacks[callbackID] = newCallback; // Set callback
@@ -65,8 +65,8 @@ function messageListener (e) {
   if (!e.data || ![ 'string', 'object' ].includes(typeof e.data)) {
     return;
   }
-  const { allowedOrigins } = this,
-    data = typeof e.data === 'object' ? e.data : JSON.parse(e.data);
+  const { allowedOrigins } = this;
+  const data = typeof e.data === 'object' ? e.data : JSON.parse(e.data);
   if (!data || typeof data !== 'object' || data.namespace !== 'svg-edit' ||
     e.source !== this.frame.contentWindow ||
     (!allowedOrigins.includes('*') && !allowedOrigins.includes(e.origin))
@@ -372,8 +372,8 @@ class EmbeddedSVGEdit {
           //  of the current JSON-based communication API (e.g., not passing
           //  callbacks). We might be able to address these shortcomings; see
           //  the todo elsewhere in this file.
-          const message = { id: callbackID },
-            { svgEditor: { canvas: svgCanvas } } = that.frame.contentWindow;
+          const message = { id: callbackID };
+          const { svgEditor: { canvas: svgCanvas } } = that.frame.contentWindow;
           try {
             message.result = svgCanvas[name](...args);
           } catch (err) {

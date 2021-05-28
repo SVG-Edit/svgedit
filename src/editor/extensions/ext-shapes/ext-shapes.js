@@ -110,9 +110,9 @@ export default {
         const x = opts.mouse_x / zoom;
         const y = opts.mouse_y / zoom;
 
-        const tlist = canv.getTransformList(curShape),
-          box = curShape.getBBox(),
-          left = box.x, top = box.y;
+        const tlist = canv.getTransformList(curShape);
+        const box = curShape.getBBox();
+        const left = box.x; const top = box.y;
 
         const newbox = {
           x: Math.min(startX, x),
@@ -135,9 +135,9 @@ export default {
         }
 
         // update the transform list with translate,scale,translate
-        const translateOrigin = svgroot.createSVGTransform(),
-          scale = svgroot.createSVGTransform(),
-          translateBack = svgroot.createSVGTransform();
+        const translateOrigin = svgroot.createSVGTransform();
+        const scale = svgroot.createSVGTransform();
+        const translateBack = svgroot.createSVGTransform();
 
         translateOrigin.setTranslate(-(left + tx), -(top + ty));
         if (!evt.shiftKey) {

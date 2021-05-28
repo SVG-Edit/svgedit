@@ -189,10 +189,10 @@ function mkElem (name, attrs, newparent) {
 * @returns {external:jQuery}
 */
 export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18next) {
-  const $this = elem,
-    $settings = Object.assign({}, jGraduateDefaults, options || {}),
-    id = $this.getAttribute('id'),
-    idref = '#' + $this.getAttribute('id') + ' ';
+  const $this = elem;
+  const $settings = Object.assign({}, jGraduateDefaults, options || {});
+  const id = $this.getAttribute('id');
+  const idref = '#' + $this.getAttribute('id') + ' ';
 
   if (!idref) {
     // eslint-disable-next-line no-alert
@@ -346,12 +346,12 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
   /* eslint-enable max-len */
   // --------------
   // Set up all the SVG elements (the gradient, stops and rectangle)
-  const MAX = 256,
-    MARGINX = 0,
-    MARGINY = 0,
-    // STOP_RADIUS = 15 / 2,
-    SIZEX = MAX - 2 * MARGINX,
-    SIZEY = MAX - 2 * MARGINY;
+  const MAX = 256;
+  const MARGINX = 0;
+  const MARGINY = 0;
+  // STOP_RADIUS = 15 / 2,
+  const SIZEX = MAX - 2 * MARGINX;
+  const SIZEY = MAX - 2 * MARGINY;
 
   const attrInput = {};
 
@@ -448,15 +448,15 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
     }
   }
 
-  const x1 = Number.parseFloat(grad.getAttribute('x1') || 0.0),
-    y1 = Number.parseFloat(grad.getAttribute('y1') || 0.0),
-    x2 = Number.parseFloat(grad.getAttribute('x2') || 1.0),
-    y2 = Number.parseFloat(grad.getAttribute('y2') || 0.0);
+  const x1 = Number.parseFloat(grad.getAttribute('x1') || 0.0);
+  const y1 = Number.parseFloat(grad.getAttribute('y1') || 0.0);
+  const x2 = Number.parseFloat(grad.getAttribute('x2') || 1.0);
+  const y2 = Number.parseFloat(grad.getAttribute('y2') || 0.0);
 
-  const cx = Number.parseFloat(grad.getAttribute('cx') || 0.5),
-    cy = Number.parseFloat(grad.getAttribute('cy') || 0.5),
-    fx = Number.parseFloat(grad.getAttribute('fx') || cx),
-    fy = Number.parseFloat(grad.getAttribute('fy') || cy);
+  const cx = Number.parseFloat(grad.getAttribute('cx') || 0.5);
+  const cy = Number.parseFloat(grad.getAttribute('cy') || 0.5);
+  const fx = Number.parseFloat(grad.getAttribute('fx') || cx);
+  const fy = Number.parseFloat(grad.getAttribute('fy') || cy);
 
   const previewRect = mkElem('rect', {
     id: id + '_jgraduate_rect',
@@ -676,7 +676,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
 
   const stopMakerDiv = $this.querySelector('#' + id + '_jGraduate_StopSlider');
 
-  let stops, curStop, drag;
+  let stops; let curStop; let drag;
 
   const delStop = mkElem('path', {
     d: 'm9.75,-6l-19.5,19.5m0,-19.5l19.5,19.5',
@@ -710,7 +710,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
     drag = null;
   }
 
-  let scaleX = 1, scaleY = 1, angle = 0;
+  let scaleX = 1; let scaleY = 1; let angle = 0;
 
   let cX = cx;
   let cY = cy;
@@ -946,7 +946,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
 
   $this.querySelector('#' + id + '_jGraduate_match_ctr').checked = !showFocus;
 
-  let lastfx, lastfy;
+  let lastfx; let lastfy;
   const onMatchCtrHandler = (e) => {
     showFocus = !e.target.checked;
     if (showFocus) {
@@ -1034,7 +1034,7 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
     slider.input.value = x;
   };
 
-  let ellipVal = 0, angleVal = 0;
+  let ellipVal = 0; let angleVal = 0;
 
   if (curType === 'radialGradient') {
     const tlist = curGradient.gradientTransform.baseVal;

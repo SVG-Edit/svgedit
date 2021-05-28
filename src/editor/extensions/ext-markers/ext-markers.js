@@ -146,7 +146,7 @@ export default {
       if (on) {
         const el = selElems[0];
 
-        let val, ci;
+        let val; let ci;
         $.each(mtypes, function (i, pos) {
           const m = getLinked(el, 'marker-' + pos);
           const txtbox = $id(pos + '_marker');

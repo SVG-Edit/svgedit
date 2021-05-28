@@ -56,7 +56,7 @@ describe('utilities bbox', function () {
         if (type === 1) { continue; }
         const pts = [];
         [ '', 1, 2 ].forEach(function (n) {
-          const x = seg['x' + n], y = seg['y' + n];
+          const x = seg['x' + n]; const y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
             const pt = math.transformPoint(x, y, m);
             pts.splice(pts.length, 0, pt.x, pt.y);

@@ -168,7 +168,7 @@ class MainMenu {
       }
       this.editor.exportWindowName =
         this.editor.configObj.curConfig.canvasName + this.editor.exportWindowCt;
-      let popHTML, popURL;
+      let popHTML; let popURL;
       if (this.editor.loadingURL) {
         popURL = this.editor.loadingURL;
       } else {

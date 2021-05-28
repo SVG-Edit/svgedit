@@ -351,7 +351,7 @@ export const setRotationAngle = function (val, preventUndo) {
   const elem = selectedElements[0];
   const oldTransform = elem.getAttribute('transform');
   const bbox = utilsGetBBox(elem);
-  const cx = bbox.x + bbox.width / 2, cy = bbox.y + bbox.height / 2;
+  const cx = bbox.x + bbox.width / 2; const cy = bbox.y + bbox.height / 2;
   const tlist = getTransformList(elem);
 
   // only remove the real rotational transform if present (i.e. at index=0)

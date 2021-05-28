@@ -29,11 +29,11 @@ export default {
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
     const
-      addElem = svgCanvas.addSVGElementFromJson,
-      { nonce } = S,
-      prefix = 'se_arrow_';
+      addElem = svgCanvas.addSVGElementFromJson;
+    const { nonce } = S;
+    const prefix = 'se_arrow_';
 
-    let selElems, arrowprefix, randomizeIds = S.randomize_ids;
+    let selElems; let arrowprefix; let randomizeIds = S.randomize_ids;
 
     /**
     * @param {Window} win

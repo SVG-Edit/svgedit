@@ -479,7 +479,7 @@ export class Drawing {
     this.layer_map = {};
     const numchildren = this.svgElem_.childNodes.length;
     // loop through all children of SVG element
-    const orphans = [], layernames = [];
+    const orphans = []; const layernames = [];
     let layer = null;
     let childgroups = false;
     for (let i = 0; i < numchildren; ++i) {

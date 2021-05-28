@@ -107,12 +107,12 @@ export class Selector {
   */
   resize(bbox) {
     const dataStorage = svgFactory_.getDataStorage();
-    const selectedBox = this.selectorRect,
-      mgr = selectorManager_,
-      selectedGrips = mgr.selectorGrips,
-      selected = this.selectedElement,
-      sw = selected.getAttribute('stroke-width'),
-      currentZoom = svgFactory_.getCurrentZoom();
+    const selectedBox = this.selectorRect;
+    const mgr = selectorManager_;
+    const selectedGrips = mgr.selectorGrips;
+    const selected = this.selectedElement;
+    const sw = selected.getAttribute('stroke-width');
+    const currentZoom = svgFactory_.getCurrentZoom();
     let offset = 1 / currentZoom;
     if (selected.getAttribute('stroke') !== 'none' && !isNaN(sw)) {
       offset += (sw / 2);
@@ -147,7 +147,7 @@ export class Selector {
     }
 
     // apply the transforms
-    const l = bbox.x, t = bbox.y, w = bbox.width, h = bbox.height;
+    const l = bbox.x; const t = bbox.y; const w = bbox.width; const h = bbox.height;
     // bbox = {x: l, y: t, width: w, height: h}; // Not in use
 
     // we need to handle temporary transforms too
@@ -156,16 +156,16 @@ export class Selector {
     // *
     offset *= currentZoom;
 
-    const nbox = transformBox(l * currentZoom, t * currentZoom, w * currentZoom, h * currentZoom, m),
-      { aabox } = nbox;
-    let nbax = aabox.x - offset,
-      nbay = aabox.y - offset,
-      nbaw = aabox.width + (offset * 2),
-      nbah = aabox.height + (offset * 2);
+    const nbox = transformBox(l * currentZoom, t * currentZoom, w * currentZoom, h * currentZoom, m);
+    const { aabox } = nbox;
+    let nbax = aabox.x - offset;
+    let nbay = aabox.y - offset;
+    let nbaw = aabox.width + (offset * 2);
+    let nbah = aabox.height + (offset * 2);
 
     // now if the shape is rotated, un-rotate it
-    const cx = nbax + nbaw / 2,
-      cy = nbay + nbah / 2;
+    const cx = nbax + nbaw / 2;
+    const cy = nbay + nbah / 2;
 
     const angle = getRotationAngle(selected);
     if (angle) {
@@ -179,10 +179,10 @@ export class Selector {
 
       // calculate the axis-aligned bbox
       const { tl } = nbox;
-      let minx = tl.x,
-        miny = tl.y,
-        maxx = tl.x,
-        maxy = tl.y;
+      let minx = tl.x;
+      let miny = tl.y;
+      let maxx = tl.x;
+      let maxy = tl.y;
 
       const { min, max } = Math;
 
@@ -447,8 +447,8 @@ export class SelectorManager {
   */
   releaseSelector(elem) {
     if (isNullish(elem)) { return; }
-    const N = this.selectors.length,
-      sel = this.selectorMap[elem.id];
+    const N = this.selectors.length;
+    const sel = this.selectorMap[elem.id];
     if (sel && !sel.locked) {
       // TODO(codedread): Ensure this exists in this module.
       console.warn('WARNING! selector was released but was already unlocked');

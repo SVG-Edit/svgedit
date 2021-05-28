@@ -27,15 +27,15 @@ export default {
     const { $id } = svgCanvas;
     const addElem = svgCanvas.addSVGElementFromJson;
     let
-      selElems,
+      selElems;
       // editingitex = false,
       // svgdoc = S.svgroot.parentNode.ownerDocument,
-      started,
-      newPM;
-      // edg = 0,
-      // newFOG, newFOGParent, newDef, newImageName, newMaskID,
-      // undoCommand = 'Not image',
-      // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
+    let started;
+    let newPM;
+    // edg = 0,
+    // newFOG, newFOGParent, newDef, newImageName, newMaskID,
+    // undoCommand = 'Not image',
+    // modeChangeG, ccZoom, wEl, hEl, wOffset, hOffset, ccRgbEl, brushW, brushH;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const markerTypes = {
       nomarker: {},
@@ -372,7 +372,7 @@ export default {
           let font = $id('placemarkFont').value.split(' ');
           const fontSize = Number.parseInt(font.pop());
           font = font.join(' ');
-          const x0 = opts.start_x + 10, y0 = opts.start_y + 10;
+          const x0 = opts.start_x + 10; const y0 = opts.start_y + 10;
           let maxlen = 0;
           const children = [ {
             element: 'line',
@@ -479,8 +479,8 @@ export default {
           const elements = newPM.children;
           Array.prototype.forEach.call(elements, function(i, _){
             const [ , , type, n ] = i.id.split('_');
-            const y0 = y + (fontSize + 6) * n,
-              x0 = x + maxlen * fontSize * 0.5 + fontSize;
+            const y0 = y + (fontSize + 6) * n;
+            const x0 = x + maxlen * fontSize * 0.5 + fontSize;
             const nx = (x + (x0 - x) / 2 < px) ? x0 : x;
             const ny = (y + ((fontSize + 6) * (lines - 1)) / 2 < py)
               ? y + (fontSize + 6) * (lines - 1)

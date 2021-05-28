@@ -82,10 +82,10 @@ export default class Slider {
      * @returns {void}
      */
     function setValuesFromMousePosition (e) {
-      const barW = bar.w, // local copies for YUI compressor
-        barH = bar.h;
-      let locX = e.pageX - offset.l,
-        locY = e.pageY - offset.t;
+      const barW = bar.w; // local copies for YUI compressor
+      const barH = bar.h;
+      let locX = e.pageX - offset.l;
+      let locY = e.pageY - offset.t;
       // keep the arrow within the bounds of the bar
       if (locX < 0) locX = 0;
       else if (locX > barW) locX = barW;
@@ -102,12 +102,12 @@ export default class Slider {
      */
     function draw () {
       const
-        barW = bar.w,
-        barH = bar.h,
-        arrowW = arrow.w,
-        arrowH = arrow.h;
-      let arrowOffsetX = 0,
-        arrowOffsetY = 0;
+        barW = bar.w;
+      const barH = bar.h;
+      const arrowW = arrow.w;
+      const arrowH = arrow.h;
+      let arrowOffsetX = 0;
+      let arrowOffsetY = 0;
       setTimeout(function () {
         if (rangeX > 0) { // range is greater than zero
           // constrain to bounds
@@ -152,7 +152,7 @@ export default class Slider {
       if (!isNullish(context) && context === that) return undefined;
       let changed = false;
 
-      let newX, newY;
+      let newX; let newY;
       if (isNullish(name)) name = 'xy';
       switch (name.toLowerCase()) {
       case 'x':
@@ -225,10 +225,10 @@ export default class Slider {
         }
       }
       let // changed = false,
-        newMinX,
-        newMaxX,
-        newMinY,
-        newMaxY;
+        newMinX;
+      let newMaxX;
+      let newMinY;
+      let newMaxY;
       if (isNullish(name)) name = 'all';
       switch (name.toLowerCase()) {
       case 'minx':
@@ -307,18 +307,18 @@ export default class Slider {
       arrow = null;
       changeEvents = null;
     }
-    let offset,
-      timeout,
-      x = 0,
-      y = 0,
-      minX = 0,
-      maxX = 100,
-      rangeX = 100,
-      minY = 0,
-      maxY = 100,
-      rangeY = 100,
-      arrow = bar.querySelector('img'), // the arrow image to drag
-      changeEvents = [];
+    let offset;
+    let timeout;
+    let x = 0;
+    let y = 0;
+    let minX = 0;
+    let maxX = 100;
+    let rangeX = 100;
+    let minY = 0;
+    let maxY = 100;
+    let rangeY = 100;
+    let arrow = bar.querySelector('img'); // the arrow image to drag
+    let changeEvents = [];
     Object.assign(that, {
       val,
       range,

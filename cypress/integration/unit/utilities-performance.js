@@ -9,7 +9,7 @@ import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist
 import * as math from '../../../instrumented/svgcanvas/math.js';
 
 describe('utilities performance', function () {
-  let currentLayer, groupWithMatrixTransform, textWithMatrixTransform;
+  let currentLayer; let groupWithMatrixTransform; let textWithMatrixTransform;
   beforeEach(() => {
     document.body.textContent = '';
     const style = document.createElement('style');
@@ -137,8 +137,8 @@ describe('utilities performance', function () {
         }
         const pts = [];
         [ '', 1, 2 ].forEach(function (n) {
-          const x = seg['x' + n],
-            y = seg['y' + n];
+          const x = seg['x' + n];
+          const y = seg['y' + n];
           if (x !== undefined && y !== undefined) {
             const pt = math.transformPoint(x, y, m);
             pts.splice(pts.length, 0, pt.x, pt.y);
@@ -187,10 +187,10 @@ describe('utilities performance', function () {
     const { getStrokedBBox } = utilities;
     const { children } = currentLayer;
 
-    let lastTime, now,
-      min = Number.MAX_VALUE,
-      max = 0,
-      total = 0;
+    let lastTime; let now;
+    let min = Number.MAX_VALUE;
+    let max = 0;
+    let total = 0;
 
     fillDocumentByCloningElement(groupWithMatrixTransform, 50);
     fillDocumentByCloningElement(textWithMatrixTransform, 50);

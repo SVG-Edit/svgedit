@@ -544,7 +544,7 @@ export class Segment {
    * @returns {void}
    */
   setLinked (num) {
-    let seg, anum, pt;
+    let seg; let anum; let pt;
     if (num === 2) {
       anum = 1;
       seg = this.next;
@@ -744,7 +744,7 @@ export class Path {
     if (!seg.prev) { return; }
 
     const { prev } = seg;
-    let newseg, newX, newY;
+    let newseg; let newX; let newY;
     switch (seg.item.pathSegType) {
     case 4: {
       newX = (seg.item.x + prev.item.x) / 2;

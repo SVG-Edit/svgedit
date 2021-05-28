@@ -66,10 +66,10 @@ export default {
       $id('foreign_cancel').style.display = (on) ? 'block' : 'none';
     }
 
-    let selElems,
-      started,
-      newFO,
-      editingforeign = false;
+    let selElems;
+    let started;
+    let newFO;
+    let editingforeign = false;
 
     /**
     * This function sets the content of element elt to the input XML.
