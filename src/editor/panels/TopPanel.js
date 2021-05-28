@@ -68,48 +68,48 @@ class TopPanel {
     let i, len;
     if (!isNullish(this.selectedElement)) {
       switch (this.selectedElement.tagName) {
-        case "use":
-        case "image":
-        case "foreignObject":
-          break;
-        case "g":
-        case "a": {
-          // Look for common styles
-          const childs = this.selectedElement.getElementsByTagName("*");
-          let gWidth = null;
-          for (i = 0, len = childs.length; i < len; i++) {
-            const swidth = childs[i].getAttribute("stroke-width");
+      case "use":
+      case "image":
+      case "foreignObject":
+        break;
+      case "g":
+      case "a": {
+        // Look for common styles
+        const childs = this.selectedElement.getElementsByTagName("*");
+        let gWidth = null;
+        for (i = 0, len = childs.length; i < len; i++) {
+          const swidth = childs[i].getAttribute("stroke-width");
 
-            if (i === 0) {
-              gWidth = swidth;
-            } else if (gWidth !== swidth) {
-              gWidth = null;
-            }
+          if (i === 0) {
+            gWidth = swidth;
+          } else if (gWidth !== swidth) {
+            gWidth = null;
           }
-
-          $id("stroke_width").value = (gWidth === null ? "" : gWidth);
-          this.editor.bottomPanel.updateColorpickers(true);
-          break;
         }
-        default: {
-          this.editor.bottomPanel.updateColorpickers(true);
 
-          $id("stroke_width").value = this.selectedElement.getAttribute("stroke-width") || 1;
-          $id("stroke_style").value = this.selectedElement.getAttribute("stroke-dasharray") || "none";
+        $id("stroke_width").value = (gWidth === null ? "" : gWidth);
+        this.editor.bottomPanel.updateColorpickers(true);
+        break;
+      }
+      default: {
+        this.editor.bottomPanel.updateColorpickers(true);
 
-          let attr =
+        $id("stroke_width").value = this.selectedElement.getAttribute("stroke-width") || 1;
+        $id("stroke_style").value = this.selectedElement.getAttribute("stroke-dasharray") || "none";
+
+        let attr =
             this.selectedElement.getAttribute("stroke-linejoin") || "miter";
 
-          if ($id("linejoin_" + attr).length) {
-            this.setStrokeOpt($id("linejoin_" + attr));
-          }
-
-          attr = this.selectedElement.getAttribute("stroke-linecap") || "butt";
-
-          if ($id("linecap_" + attr).length) {
-            this.setStrokeOpt($id("linecap_" + attr));
-          }
+        if ($id("linejoin_" + attr).length) {
+          this.setStrokeOpt($id("linejoin_" + attr));
         }
+
+        attr = this.selectedElement.getAttribute("stroke-linecap") || "butt";
+
+        if ($id("linecap_" + attr).length) {
+          this.setStrokeOpt($id("linecap_" + attr));
+        }
+      }
       }
     }
 
@@ -332,21 +332,21 @@ class TopPanel {
           const textAnchorMiddle = $id("tool_text_anchor_middle");
           const textAnchorEnd = $id("tool_text_anchor_end");
           switch (elem.getAttribute("text-anchor")) {
-            case "start":
-              textAnchorStart.pressed = true;
-              textAnchorMiddle.pressed = false;
-              textAnchorEnd.pressed = false;
-              break;
-            case "middle":
-              textAnchorStart.pressed = false;
-              textAnchorMiddle.pressed = true;
-              textAnchorEnd.pressed = false;
-              break;
-            case "end":
-              textAnchorStart.pressed = false;
-              textAnchorMiddle.pressed = false;
-              textAnchorEnd.pressed = true;
-              break;
+          case "start":
+            textAnchorStart.pressed = true;
+            textAnchorMiddle.pressed = false;
+            textAnchorEnd.pressed = false;
+            break;
+          case "middle":
+            textAnchorStart.pressed = false;
+            textAnchorMiddle.pressed = true;
+            textAnchorEnd.pressed = false;
+            break;
+          case "end":
+            textAnchorStart.pressed = false;
+            textAnchorMiddle.pressed = false;
+            textAnchorEnd.pressed = true;
+            break;
           }
           if (this.editor.svgCanvas.addedNew) {
             // Timeout needed for IE9

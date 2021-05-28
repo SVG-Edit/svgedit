@@ -145,7 +145,7 @@ export class SeImgPropDialog extends HTMLElement {
    * @param {any} name
    * @returns {void}
    */
-   init (i18next) {
+  init (i18next) {
     this.setAttribute('common-ok', i18next.t('common.ok'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
     this.setAttribute('config-image_props', i18next.t('config.image_props'));
@@ -166,10 +166,10 @@ export class SeImgPropDialog extends HTMLElement {
    */
   static get observedAttributes () {
     return [ 'title', 'width', 'height', 'save', 'dialog', 'embed', 'common-ok',
-    'common-cancel', 'config-image_props', 'config-doc_title', 'config-doc_dims',
-    'common-width', 'common-height', 'config-select_predefined',
-    'tools-fit-to-content', 'config-included_images', 'config-image_opt_embed',
-    'config-image_opt_ref' ];
+      'common-cancel', 'config-image_props', 'config-doc_title', 'config-doc_dims',
+      'common-width', 'common-height', 'config-select_predefined',
+      'tools-fit-to-content', 'config-included_images', 'config-image_opt_embed',
+      'config-image_opt_ref' ];
   }
   /**
    * @function attributeChangedCallback

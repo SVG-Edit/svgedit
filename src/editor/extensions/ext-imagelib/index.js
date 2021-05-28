@@ -41,14 +41,14 @@ Array.prototype.forEach.call(atags, function (aEle) {
       img.src = href;
     } else {
       fetch(href)
-      .then( (r) => r.text())
+        .then( (r) => r.text())
       // eslint-disable-next-line promise/always-return
-      .then( (data) => {
-        post({ href, data });
-        return data;
-      })
+        .then( (data) => {
+          post({ href, data });
+          return data;
+        })
       // eslint-disable-next-line no-console
-      .catch( (error) => console.log(error));
+        .catch( (error) => console.log(error));
     }
     return false;
   });

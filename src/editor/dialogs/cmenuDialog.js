@@ -168,9 +168,9 @@ export class SeCMenuDialog extends HTMLElement {
    */
   static get observedAttributes () {
     return [ 'disableallmenu', 'enablemenuitems', 'disablemenuitems', 'tools-cut',
-    'tools-copy', 'tools-paste', 'tools-paste_in_place', 'tools-delete', 'tools-group',
-    'tools-ungroup', 'tools-move_front', 'tools-move_up', 'tools-move_down',
-    'tools-move_back' ];
+      'tools-copy', 'tools-paste', 'tools-paste_in_place', 'tools-delete', 'tools-group',
+      'tools-ungroup', 'tools-move_front', 'tools-move_up', 'tools-move_down',
+      'tools-move_back' ];
   }
   /**
    * @function attributeChangedCallback

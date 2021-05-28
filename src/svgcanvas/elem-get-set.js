@@ -265,29 +265,29 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
   }
 
   switch (val) {
-    case 'selection': {
-      if (!selectedElements[0]) { return undefined; }
-      const selectedElems = selectedElements.map(function (n, _) {
-        if (n) {
-          return n;
-        }
-        return undefined;
-      });
-      bb = getStrokedBBoxDefaultVisible(selectedElems);
-      break;
-    } case 'canvas': {
-      const res = elemContext_.getCanvas().getResolution();
-      spacer = 0.95;
-      bb = { width: res.w, height: res.h, x: 0, y: 0 };
-      break;
-    } case 'content':
-      bb = getStrokedBBoxDefaultVisible();
-      break;
-    case 'layer':
-      bb = getStrokedBBoxDefaultVisible(getVisibleElements(elemContext_.getCanvas().getCurrentDrawing().getCurrentLayer()));
-      break;
-    default:
+  case 'selection': {
+    if (!selectedElements[0]) { return undefined; }
+    const selectedElems = selectedElements.map(function (n, _) {
+      if (n) {
+        return n;
+      }
       return undefined;
+    });
+    bb = getStrokedBBoxDefaultVisible(selectedElems);
+    break;
+  } case 'canvas': {
+    const res = elemContext_.getCanvas().getResolution();
+    spacer = 0.95;
+    bb = { width: res.w, height: res.h, x: 0, y: 0 };
+    break;
+  } case 'content':
+    bb = getStrokedBBoxDefaultVisible();
+    break;
+  case 'layer':
+    bb = getStrokedBBoxDefaultVisible(getVisibleElements(elemContext_.getCanvas().getCurrentDrawing().getCurrentLayer()));
+    break;
+  default:
+    return undefined;
   }
   return calcZoom(bb);
 };
@@ -476,14 +476,14 @@ export const setPaintMethod = function (type, paint) {
   // now set the current paint object
   elemContext_.setCurProperties(type + '_paint', p);
   switch (p.type) {
-    case 'solidColor':
-      this.setColor(type, p.solidColor !== 'none' ? '#' + p.solidColor : 'none');
-      break;
-    case 'linearGradient':
-    case 'radialGradient':
-      elemContext_.setCanvas(type + 'Grad', p[p.type]);
-      elemContext_.getCanvas().setGradient(type);
-      break;
+  case 'solidColor':
+    this.setColor(type, p.solidColor !== 'none' ? '#' + p.solidColor : 'none');
+    break;
+  case 'linearGradient':
+  case 'radialGradient':
+    elemContext_.setCanvas(type + 'Grad', p[p.type]);
+    elemContext_.getCanvas().setGradient(type);
+    break;
   }
 };
 /**

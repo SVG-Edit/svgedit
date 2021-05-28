@@ -267,7 +267,7 @@ export class SeEditPrefsDialog extends HTMLElement {
    * @param {any} name
    * @returns {void}
    */
-   init (i18next) {
+  init (i18next) {
     this.setAttribute('common-ok', i18next.t('common.ok'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
     this.setAttribute('config-editor_prefs', i18next.t('config.editor_prefs'));

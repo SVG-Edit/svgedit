@@ -7,9 +7,9 @@
  *
  */
 
- const name = "grid";
+const name = "grid";
 
- const loadExtensionTranslation = async function (svgEditor) {
+const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
   const lang = svgEditor.configObj.pref('lang');
   try {

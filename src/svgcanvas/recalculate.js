@@ -163,17 +163,17 @@ export const recalculateDimensions = function (selected) {
 
   // If it still has a single [M] or [R][M], return null too (prevents BatchCommand from being returned).
   switch (selected.tagName) {
-    // Ignore these elements, as they can absorb the [M]
-    case 'line':
-    case 'polyline':
-    case 'polygon':
-    case 'path':
-      break;
-    default:
-      if ((tlist.numberOfItems === 1 && tlist.getItem(0).type === 1) ||
+  // Ignore these elements, as they can absorb the [M]
+  case 'line':
+  case 'polyline':
+  case 'polygon':
+  case 'path':
+    break;
+  default:
+    if ((tlist.numberOfItems === 1 && tlist.getItem(0).type === 1) ||
         (tlist.numberOfItems === 2 && tlist.getItem(0).type === 1 && tlist.getItem(0).type === 4)) {
-        return null;
-      }
+      return null;
+    }
   }
   // Grouped SVG element
   const gsvg = (dataStorage.has(selected, 'gsvg')) ? dataStorage.get(selected, 'gsvg') : undefined;
@@ -185,42 +185,42 @@ export const recalculateDimensions = function (selected) {
   let initial = null;
   let attrs = [];
   switch (selected.tagName) {
-    case 'line':
-      attrs = [ 'x1', 'y1', 'x2', 'y2' ];
-      break;
-    case 'circle':
-      attrs = [ 'cx', 'cy', 'r' ];
-      break;
-    case 'ellipse':
-      attrs = [ 'cx', 'cy', 'rx', 'ry' ];
-      break;
-    case 'foreignObject':
-    case 'rect':
-    case 'image':
-      attrs = [ 'width', 'height', 'x', 'y' ];
-      break;
-    case 'use':
-    case 'text':
-    case 'tspan':
-      attrs = [ 'x', 'y' ];
-      break;
-    case 'polygon':
-    case 'polyline': {
-      initial = {};
-      initial.points = selected.getAttribute('points');
-      const list = selected.points;
-      const len = list.numberOfItems;
-      changes.points = new Array(len);
-      for (let i = 0; i < len; ++i) {
-        const pt = list.getItem(i);
-        changes.points[i] = { x: pt.x, y: pt.y };
-      }
-      break;
-    } case 'path':
-      initial = {};
-      initial.d = selected.getAttribute('d');
-      changes.d = selected.getAttribute('d');
-      break;
+  case 'line':
+    attrs = [ 'x1', 'y1', 'x2', 'y2' ];
+    break;
+  case 'circle':
+    attrs = [ 'cx', 'cy', 'r' ];
+    break;
+  case 'ellipse':
+    attrs = [ 'cx', 'cy', 'rx', 'ry' ];
+    break;
+  case 'foreignObject':
+  case 'rect':
+  case 'image':
+    attrs = [ 'width', 'height', 'x', 'y' ];
+    break;
+  case 'use':
+  case 'text':
+  case 'tspan':
+    attrs = [ 'x', 'y' ];
+    break;
+  case 'polygon':
+  case 'polyline': {
+    initial = {};
+    initial.points = selected.getAttribute('points');
+    const list = selected.points;
+    const len = list.numberOfItems;
+    changes.points = new Array(len);
+    for (let i = 0; i < len; ++i) {
+      const pt = list.getItem(i);
+      changes.points[i] = { x: pt.x, y: pt.y };
+    }
+    break;
+  } case 'path':
+    initial = {};
+    initial.d = selected.getAttribute('d');
+    changes.d = selected.getAttribute('d');
+    break;
   } // switch on element type to get initial values
 
   if (attrs.length) {
@@ -702,34 +702,34 @@ export const recalculateDimensions = function (selected) {
       // Remap all point-based elements
       m = transformListToTransform(tlist).matrix;
       switch (selected.tagName) {
-        case 'line':
-          changes = {
-            x1: selected.getAttribute('x1'),
-            y1: selected.getAttribute('y1'),
-            x2: selected.getAttribute('x2'),
-            y2: selected.getAttribute('y2'),
-          };
+      case 'line':
+        changes = {
+          x1: selected.getAttribute('x1'),
+          y1: selected.getAttribute('y1'),
+          x2: selected.getAttribute('x2'),
+          y2: selected.getAttribute('y2'),
+        };
         // Fallthrough
-        case 'polyline':
-        case 'polygon':
-          changes.points = selected.getAttribute('points');
-          if (changes.points) {
-            const list = selected.points;
-            const len = list.numberOfItems;
-            changes.points = new Array(len);
-            for (let i = 0; i < len; ++i) {
-              const pt = list.getItem(i);
-              changes.points[i] = { x: pt.x, y: pt.y };
-            }
+      case 'polyline':
+      case 'polygon':
+        changes.points = selected.getAttribute('points');
+        if (changes.points) {
+          const list = selected.points;
+          const len = list.numberOfItems;
+          changes.points = new Array(len);
+          for (let i = 0; i < len; ++i) {
+            const pt = list.getItem(i);
+            changes.points[i] = { x: pt.x, y: pt.y };
           }
+        }
         // Fallthrough
-        case 'path':
-          changes.d = selected.getAttribute('d');
-          operation = 1;
-          tlist.clear();
-          break;
-        default:
-          break;
+      case 'path':
+        changes.d = selected.getAttribute('d');
+        operation = 1;
+        tlist.clear();
+        break;
+      default:
+        break;
       }
       // if it was a rotation, put the rotate back and return without a command
       // (this function has zero work to do for a rotate())

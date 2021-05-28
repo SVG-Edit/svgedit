@@ -237,7 +237,7 @@ export const cloneSelectedElements = function (x, y) {
 
   function index(el) {
     if (!el) return -1;
-    var i = 0;
+    let i = 0;
     do {
       i++;
     } while (el == el.previousElementSibling);
@@ -300,40 +300,40 @@ export const alignSelectedElements = function (type, relativeTo) {
 
     // now bbox is axis-aligned and handles rotation
     switch (relativeTo) {
-      case 'smallest':
-        if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
+    case 'smallest':
+      if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
           (curwidth === Number.MIN_VALUE || curwidth > bboxes[i].width)) ||
           ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
             (curheight === Number.MIN_VALUE || curheight > bboxes[i].height))
-        ) {
-          minx = bboxes[i].x;
-          miny = bboxes[i].y;
-          maxx = bboxes[i].x + bboxes[i].width;
-          maxy = bboxes[i].y + bboxes[i].height;
-          curwidth = bboxes[i].width;
-          curheight = bboxes[i].height;
-        }
-        break;
-      case 'largest':
-        if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
+      ) {
+        minx = bboxes[i].x;
+        miny = bboxes[i].y;
+        maxx = bboxes[i].x + bboxes[i].width;
+        maxy = bboxes[i].y + bboxes[i].height;
+        curwidth = bboxes[i].width;
+        curheight = bboxes[i].height;
+      }
+      break;
+    case 'largest':
+      if (((type === 'l' || type === 'c' || type === 'r' || type === 'left' || type === 'center' || type === 'right') &&
           (curwidth === Number.MIN_VALUE || curwidth < bboxes[i].width)) ||
           ((type === 't' || type === 'm' || type === 'b' || type === 'top' || type === 'middle' || type === 'bottom') &&
             (curheight === Number.MIN_VALUE || curheight < bboxes[i].height))
-        ) {
-          minx = bboxes[i].x;
-          miny = bboxes[i].y;
-          maxx = bboxes[i].x + bboxes[i].width;
-          maxy = bboxes[i].y + bboxes[i].height;
-          curwidth = bboxes[i].width;
-          curheight = bboxes[i].height;
-        }
-        break;
-      default: // 'selected'
-        if (bboxes[i].x < minx) { minx = bboxes[i].x; }
-        if (bboxes[i].y < miny) { miny = bboxes[i].y; }
-        if (bboxes[i].x + bboxes[i].width > maxx) { maxx = bboxes[i].x + bboxes[i].width; }
-        if (bboxes[i].y + bboxes[i].height > maxy) { maxy = bboxes[i].y + bboxes[i].height; }
-        break;
+      ) {
+        minx = bboxes[i].x;
+        miny = bboxes[i].y;
+        maxx = bboxes[i].x + bboxes[i].width;
+        maxy = bboxes[i].y + bboxes[i].height;
+        curwidth = bboxes[i].width;
+        curheight = bboxes[i].height;
+      }
+      break;
+    default: // 'selected'
+      if (bboxes[i].x < minx) { minx = bboxes[i].x; }
+      if (bboxes[i].y < miny) { miny = bboxes[i].y; }
+      if (bboxes[i].x + bboxes[i].width > maxx) { maxx = bboxes[i].x + bboxes[i].width; }
+      if (bboxes[i].y + bboxes[i].height > maxy) { maxy = bboxes[i].y + bboxes[i].height; }
+      break;
     }
   } // loop for each element to find the bbox and adjust min/max
 
@@ -353,30 +353,30 @@ export const alignSelectedElements = function (type, relativeTo) {
     dx[i] = 0;
     dy[i] = 0;
     switch (type) {
-      case 'l': // left (horizontal)
-      case 'left': // left (horizontal)
-        dx[i] = minx - bbox.x;
-        break;
-      case 'c': // center (horizontal)
-      case 'center': // center (horizontal)
-        dx[i] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
-        break;
-      case 'r': // right (horizontal)
-      case 'right': // right (horizontal)
-        dx[i] = maxx - (bbox.x + bbox.width);
-        break;
-      case 't': // top (vertical)
-      case 'top': // top (vertical)
-        dy[i] = miny - bbox.y;
-        break;
-      case 'm': // middle (vertical)
-      case 'middle': // middle (vertical)
-        dy[i] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
-        break;
-      case 'b': // bottom (vertical)
-      case 'bottom': // bottom (vertical)
-        dy[i] = maxy - (bbox.y + bbox.height);
-        break;
+    case 'l': // left (horizontal)
+    case 'left': // left (horizontal)
+      dx[i] = minx - bbox.x;
+      break;
+    case 'c': // center (horizontal)
+    case 'center': // center (horizontal)
+      dx[i] = (minx + maxx) / 2 - (bbox.x + bbox.width / 2);
+      break;
+    case 'r': // right (horizontal)
+    case 'right': // right (horizontal)
+      dx[i] = maxx - (bbox.x + bbox.width);
+      break;
+    case 't': // top (vertical)
+    case 'top': // top (vertical)
+      dy[i] = miny - bbox.y;
+      break;
+    case 'm': // middle (vertical)
+    case 'middle': // middle (vertical)
+      dy[i] = (miny + maxy) / 2 - (bbox.y + bbox.height / 2);
+      break;
+    case 'b': // bottom (vertical)
+    case 'bottom': // bottom (vertical)
+      dy[i] = maxy - (bbox.y + bbox.height);
+      break;
     }
   }
   moveSelectedElements(dx, dy);
@@ -460,15 +460,15 @@ export const groupSelectedElements = function (type, urlArg) {
 
   // eslint-disable-next-line sonarjs/no-small-switch
   switch (type) {
-    case 'a': {
-      cmdStr = 'Make hyperlink';
-      url = urlArg || '';
-      break;
-    } default: {
-      type = 'g';
-      cmdStr = 'Group Elements';
-      break;
-    }
+  case 'a': {
+    cmdStr = 'Make hyperlink';
+    url = urlArg || '';
+    break;
+  } default: {
+    type = 'g';
+    cmdStr = 'Group Elements';
+    break;
+  }
   }
 
   const batchCmd = new BatchCommand(cmdStr);

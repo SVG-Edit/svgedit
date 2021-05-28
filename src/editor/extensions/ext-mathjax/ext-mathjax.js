@@ -232,7 +232,7 @@ export default {
       },
       callback () {
         const head = document.head || document.getElementsByTagName('head')[0],
-        style = document.createElement('style');
+          style = document.createElement('style');
         style.textContent = '#mathjax fieldset{' +
           'padding: 5px;' +
           'margin: 5px;' +
@@ -281,7 +281,7 @@ export default {
           'display: block;' +
           'height: 100px;' +
         '}';
-      head.appendChild(style);
+        head.appendChild(style);
       }
     };
   }

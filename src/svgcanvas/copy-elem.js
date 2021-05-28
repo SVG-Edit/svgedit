@@ -13,7 +13,7 @@ export const copyElem = function (el, getNextId) {
   // manually create a copy of the element
   const newEl = document.createElementNS(el.namespaceURI, el.nodeName);
   Object.values(el.attributes).forEach((attr) => {
-      newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
+    newEl.setAttributeNS(attr.namespaceURI, attr.nodeName, attr.value);
   });
   // set the copied element's new id
   newEl.removeAttribute('id');

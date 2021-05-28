@@ -11,7 +11,7 @@ import 'pathseg';
 import { NS } from './namespaces.js';
 
 const supportsSVG_ = (function () {
-return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
+  return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
 }());
 
 /**
@@ -33,108 +33,108 @@ const isMac_ = userAgent.includes('Macintosh');
 const isTouch_ = 'ontouchstart' in window;
 
 const supportsSelectors_ = (function () {
-return Boolean(svg.querySelector);
+  return Boolean(svg.querySelector);
 }());
 
 const supportsXpath_ = (function () {
-return Boolean(document.evaluate);
+  return Boolean(document.evaluate);
 }());
 
 // segList functions (for FF1.5 and 2.0)
 const supportsPathReplaceItem_ = (function () {
-const path = document.createElementNS(NS.SVG, 'path');
-path.setAttribute('d', 'M0,0 10,10');
-const seglist = path.pathSegList;
-const seg = path.createSVGPathSegLinetoAbs(5, 5);
-try {
-  seglist.replaceItem(seg, 1);
-  return true;
-}catch (err) {/* empty */}
-return false;
+  const path = document.createElementNS(NS.SVG, 'path');
+  path.setAttribute('d', 'M0,0 10,10');
+  const seglist = path.pathSegList;
+  const seg = path.createSVGPathSegLinetoAbs(5, 5);
+  try {
+    seglist.replaceItem(seg, 1);
+    return true;
+  }catch (err) {/* empty */}
+  return false;
 }());
 
 const supportsPathInsertItemBefore_ = (function () {
-const path = document.createElementNS(NS.SVG, 'path');
-path.setAttribute('d', 'M0,0 10,10');
-const seglist = path.pathSegList;
-const seg = path.createSVGPathSegLinetoAbs(5, 5);
-try {
-  seglist.insertItemBefore(seg, 1);
-  return true;
-}catch (err) {/* empty */}
-return false;
+  const path = document.createElementNS(NS.SVG, 'path');
+  path.setAttribute('d', 'M0,0 10,10');
+  const seglist = path.pathSegList;
+  const seg = path.createSVGPathSegLinetoAbs(5, 5);
+  try {
+    seglist.insertItemBefore(seg, 1);
+    return true;
+  }catch (err) {/* empty */}
+  return false;
 }());
 
 // text character positioning (for IE9 and now Chrome)
 const supportsGoodTextCharPos_ = (function () {
-const svgroot = document.createElementNS(NS.SVG, 'svg');
-const svgcontent = document.createElementNS(NS.SVG, 'svg');
-document.documentElement.append(svgroot);
-svgcontent.setAttribute('x', 5);
-svgroot.append(svgcontent);
-const text = document.createElementNS(NS.SVG, 'text');
-text.textContent = 'a';
-svgcontent.append(text);
-try { // Chrome now fails here
-  const pos = text.getStartPositionOfChar(0).x;
-  return (pos === 0);
-} catch (err) {
-  return false;
-} finally {
-  svgroot.remove();
-}
+  const svgroot = document.createElementNS(NS.SVG, 'svg');
+  const svgcontent = document.createElementNS(NS.SVG, 'svg');
+  document.documentElement.append(svgroot);
+  svgcontent.setAttribute('x', 5);
+  svgroot.append(svgcontent);
+  const text = document.createElementNS(NS.SVG, 'text');
+  text.textContent = 'a';
+  svgcontent.append(text);
+  try { // Chrome now fails here
+    const pos = text.getStartPositionOfChar(0).x;
+    return (pos === 0);
+  } catch (err) {
+    return false;
+  } finally {
+    svgroot.remove();
+  }
 }());
 
 const supportsPathBBox_ = (function () {
-const svgcontent = document.createElementNS(NS.SVG, 'svg');
-document.documentElement.append(svgcontent);
-const path = document.createElementNS(NS.SVG, 'path');
-path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
-svgcontent.append(path);
-const bbox = path.getBBox();
-svgcontent.remove();
-return (bbox.height > 4 && bbox.height < 5);
+  const svgcontent = document.createElementNS(NS.SVG, 'svg');
+  document.documentElement.append(svgcontent);
+  const path = document.createElementNS(NS.SVG, 'path');
+  path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
+  svgcontent.append(path);
+  const bbox = path.getBBox();
+  svgcontent.remove();
+  return (bbox.height > 4 && bbox.height < 5);
 }());
 
 // Support for correct bbox sizing on groups with horizontal/vertical lines
 const supportsHVLineContainerBBox_ = (function () {
-const svgcontent = document.createElementNS(NS.SVG, 'svg');
-document.documentElement.append(svgcontent);
-const path = document.createElementNS(NS.SVG, 'path');
-path.setAttribute('d', 'M0,0 10,0');
-const path2 = document.createElementNS(NS.SVG, 'path');
-path2.setAttribute('d', 'M5,0 15,0');
-const g = document.createElementNS(NS.SVG, 'g');
-g.append(path, path2);
-svgcontent.append(g);
-const bbox = g.getBBox();
-svgcontent.remove();
-// Webkit gives 0, FF gives 10, Opera (correctly) gives 15
-return (bbox.width === 15);
+  const svgcontent = document.createElementNS(NS.SVG, 'svg');
+  document.documentElement.append(svgcontent);
+  const path = document.createElementNS(NS.SVG, 'path');
+  path.setAttribute('d', 'M0,0 10,0');
+  const path2 = document.createElementNS(NS.SVG, 'path');
+  path2.setAttribute('d', 'M5,0 15,0');
+  const g = document.createElementNS(NS.SVG, 'g');
+  g.append(path, path2);
+  svgcontent.append(g);
+  const bbox = g.getBBox();
+  svgcontent.remove();
+  // Webkit gives 0, FF gives 10, Opera (correctly) gives 15
+  return (bbox.width === 15);
 }());
 
 const supportsEditableText_ = (function () {
 // TODO: Find better way to check support for this
-return isOpera_;
+  return isOpera_;
 }());
 
 const supportsNonScalingStroke_ = (function () {
-const rect = document.createElementNS(NS.SVG, 'rect');
-rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
-return rect.style.vectorEffect === 'non-scaling-stroke';
+  const rect = document.createElementNS(NS.SVG, 'rect');
+  rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
+  return rect.style.vectorEffect === 'non-scaling-stroke';
 }());
 
 let supportsNativeSVGTransformLists_ = (function () {
-const rect = document.createElementNS(NS.SVG, 'rect');
-const rxform = rect.transform.baseVal;
-const t1 = svg.createSVGTransform();
-rxform.appendItem(t1);
-const r1 = rxform.getItem(0);
-const isSVGTransform = (o) => {
+  const rect = document.createElementNS(NS.SVG, 'rect');
+  const rxform = rect.transform.baseVal;
+  const t1 = svg.createSVGTransform();
+  rxform.appendItem(t1);
+  const r1 = rxform.getItem(0);
+  const isSVGTransform = (o) => {
   // https://developer.mozilla.org/en-US/docs/Web/API/SVGTransform
-  return o && typeof o === 'object' && typeof o.setMatrix === 'function' && 'angle' in o;
-};
-return isSVGTransform(r1) && isSVGTransform(t1) &&
+    return o && typeof o === 'object' && typeof o.setMatrix === 'function' && 'angle' in o;
+  };
+  return isSVGTransform(r1) && isSVGTransform(t1) &&
   r1.type === t1.type && r1.angle === t1.angle &&
   r1.matrix.a === t1.matrix.a &&
   r1.matrix.b === t1.matrix.b &&

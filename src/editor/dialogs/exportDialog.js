@@ -101,7 +101,7 @@ export class SeExportDialog extends HTMLElement {
    * @param {any} name
    * @returns {void}
    */
-   init (i18next) {
+  init (i18next) {
     this.setAttribute('common-ok', i18next.t('common.ok'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
     this.setAttribute('ui-quality', i18next.t('ui.quality'));

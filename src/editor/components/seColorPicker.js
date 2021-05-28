@@ -674,7 +674,7 @@ export class SeColorPicker extends HTMLElement {
    * @param {any} name
    * @returns {void}
    */
-   init (i18next) {
+  init (i18next) {
     this.i18next = i18next;
     this.setAttribute('config-change_xxx_color', i18next.t('config.change_xxx_color'));
   }

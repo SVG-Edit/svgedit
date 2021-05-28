@@ -145,13 +145,13 @@ import { importSetGlobalDefault } from '../external/dynamic-import-polyfill/impo
 
 (async () => {
 
-const url = `${svgEditor.curConfig.extPath}ext-locale/<extNameWithoutExtPrefix>/<lang>.js`;
-const localeStrings = await importSetGlobalDefault(url, {
-  global: 'svgEditorExtensionLocale_imagelib_' + lang
-});
+  const url = `${svgEditor.curConfig.extPath}ext-locale/<extNameWithoutExtPrefix>/<lang>.js`;
+  const localeStrings = await importSetGlobalDefault(url, {
+    global: 'svgEditorExtensionLocale_imagelib_' + lang
+  });
 
-// Use `localeStrings`
-console.info(localeStrings);
+  // Use `localeStrings`
+  console.info(localeStrings);
 
 })();
 ```

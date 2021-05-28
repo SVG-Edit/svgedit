@@ -92,20 +92,20 @@ class LayersPanel {
   lmenuFunc(e) {
     const action = e?.detail?.trigger;
     switch (action) {
-      case "dupe":
-        this.cloneLayer();
-        break;
-      case "delete":
-        this.deleteLayer();
-        break;
-      case "merge_down":
-        this.mergeLayer();
-        break;
-      case "merge_all":
-        this.editor.svgCanvas.mergeAllLayers();
-        this.updateContextPanel();
-        this.populateLayers();
-        break;
+    case "dupe":
+      this.cloneLayer();
+      break;
+    case "delete":
+      this.deleteLayer();
+      break;
+    case "merge_down":
+      this.mergeLayer();
+      break;
+    case "merge_all":
+      this.editor.svgCanvas.mergeAllLayers();
+      this.updateContextPanel();
+      this.populateLayers();
+      break;
     }
   }
   /**
@@ -283,7 +283,7 @@ class LayersPanel {
 
   index(el) {
     if (!el) return -1;
-    var i = 0;
+    let i = 0;
     do {
       i++;
     } while (el == el.previousElementSibling);

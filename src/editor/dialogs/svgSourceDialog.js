@@ -99,7 +99,7 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @param {any} name
    * @returns {void}
    */
-   init (i18next) {
+  init (i18next) {
     this.setAttribute('tools-source_save', i18next.t('tools.source_save'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
     this.setAttribute('notification-source_dialog_note', i18next.t('notification.source_dialog_note'));

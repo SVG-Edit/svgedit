@@ -8,7 +8,7 @@
  *
  */
 
- import i18next from 'i18next';
+import i18next from 'i18next';
 
 /**
  * Used, for example, in the ImageLibs extension, to present libraries

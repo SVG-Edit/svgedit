@@ -23,6 +23,8 @@ module.exports = {
   rules: {
     /** @todo len should probably more 120-150 */
     "max-len": [ "warn", { "code": 250 } ],
+    "indent": [ "error", 2 ],
+    "no-var": "error",
     /** @todo jsdoc should be made warn or error */
     "valid-jsdoc": "off",
     /** @todo cognitive complexity should be much lower (25-50?) */

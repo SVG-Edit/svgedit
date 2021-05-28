@@ -104,7 +104,7 @@ export default {
       const items = txt.split(';');
       selElems.forEach((elem) => {
         if (elem && elem.getAttribute('class').includes('placemark')) {
-          var elements = elem.children;
+          let elements = elem.children;
           Array.prototype.forEach.call(elements, function(i, _){
             const [ , , type, n ] = i.id.split('_');
             if (type === 'txt') {
@@ -125,7 +125,7 @@ export default {
       font = font.join(' ');
       selElems.forEach((elem) => {
         if (elem && elem.getAttribute('class').includes('placemark')) {
-          var elements = elem.children;
+          let elements = elem.children;
           Array.prototype.forEach.call(elements, function(i, _){
             const [ , , type ] = i.id.split('_');
             if (type === 'txt') {

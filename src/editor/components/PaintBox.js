@@ -75,7 +75,7 @@ class PaintBox {
         console.error(`the color ${color} is referenced by an url that can't be identified - using 'none'`);
         opts.solidColor = 'none';
       } else {
-      opts[refElem.tagName] = refElem;
+        opts[refElem.tagName] = refElem;
       }
     } else if (color.startsWith('#')) {
       opts.solidColor = color.substr(1);

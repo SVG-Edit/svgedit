@@ -281,11 +281,11 @@ class Editor extends EditorStartup {
       parentSelector = document;
     }
 
-    var parents = [];
-    var p = el.parentNode;
+    let parents = [];
+    let p = el.parentNode;
 
     while (p !== parentSelector) {
-      var o = p;
+      let o = p;
       parents.push(o);
       p = o.parentNode;
     }
@@ -609,12 +609,12 @@ class Editor extends EditorStartup {
     if (!this.multiselected) {
       // eslint-disable-next-line sonarjs/no-small-switch
       switch (mode) {
-        case 'rotate': {
-          const ang = this.svgCanvas.getRotationAngle(elem);
-          $id('angle').value = ang;
-          (ang === 0) ? $id('tool_reorient').classList.add('disabled') : $id('tool_reorient').classList.remove('disabled');
-          break;
-        }
+      case 'rotate': {
+        const ang = this.svgCanvas.getRotationAngle(elem);
+        $id('angle').value = ang;
+        (ang === 0) ? $id('tool_reorient').classList.add('disabled') : $id('tool_reorient').classList.remove('disabled');
+        break;
+      }
       }
     }
     this.svgCanvas.runExtensions('elementTransition', /** @type {module:svgcanvas.SvgCanvas#event:ext_elementTransition} */ {

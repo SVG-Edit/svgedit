@@ -247,31 +247,31 @@ export const svgToString = function (elem, indent) {
       for (let i = 0; i < childs.length; i++) {
         const child = childs.item(i);
         switch (child.nodeType) {
-          case 1: // element node
-            out.push('\n');
-            out.push(this.svgToString(child, indent));
-            break;
-          case 3: { // text node
-            const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
-            if (str !== '') {
-              bOneLine = true;
-              out.push(String(toXml(str)));
-            }
-            break;
-          } case 4: // cdata node
-            out.push('\n');
-            out.push(new Array(indent + 1).join(' '));
-            out.push('<![CDATA[');
-            out.push(child.nodeValue);
-            out.push(']]>');
-            break;
-          case 8: // comment
-            out.push('\n');
-            out.push(new Array(indent + 1).join(' '));
-            out.push('<!--');
-            out.push(child.data);
-            out.push('-->');
-            break;
+        case 1: // element node
+          out.push('\n');
+          out.push(this.svgToString(child, indent));
+          break;
+        case 3: { // text node
+          const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
+          if (str !== '') {
+            bOneLine = true;
+            out.push(String(toXml(str)));
+          }
+          break;
+        } case 4: // cdata node
+          out.push('\n');
+          out.push(new Array(indent + 1).join(' '));
+          out.push('<![CDATA[');
+          out.push(child.nodeValue);
+          out.push(']]>');
+          break;
+        case 8: // comment
+          out.push('\n');
+          out.push(new Array(indent + 1).join(' '));
+          out.push('<!--');
+          out.push(child.data);
+          out.push('-->');
+          break;
         } // switch on node type
       }
       indent--;

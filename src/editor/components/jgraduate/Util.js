@@ -102,7 +102,7 @@ export function getClosest(elem, selector) {
  * @param  {String} selector The class, id, data attribute, or tag to look for
  * @return {Array} Null if no match
  */
- export function getParents(elem, selector) {
+export function getParents(elem, selector) {
   const parents = [];
   let firstChar;
   if ( selector ) {

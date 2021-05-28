@@ -27,7 +27,7 @@ describe('select', function () {
       return this._storage.has(element) && this._storage.get(element).has(key);
     },
     remove: function (element, key) {
-      var ret = this._storage.get(element).delete(key);
+      let ret = this._storage.get(element).delete(key);
       if (!this._storage.get(element).size === 0) {
         this._storage.delete(element);
       }

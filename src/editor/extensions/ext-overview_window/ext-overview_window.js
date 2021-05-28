@@ -81,7 +81,7 @@ export default {
 
     // Compensate for changes in zoom and canvas size.
     const updateViewDimensions = function () {
-     const viewWidth = parseFloat(getComputedStyle($id("svgroot"), null).width.replace("px", ""));
+      const viewWidth = parseFloat(getComputedStyle($id("svgroot"), null).width.replace("px", ""));
       const viewHeight = parseFloat(getComputedStyle($id("svgroot"), null).height.replace("px", ""));
 
       const viewX = 640;

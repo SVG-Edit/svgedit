@@ -16,132 +16,132 @@ class BottomPanel {
   constructor (editor) {
     this.editor = editor;
   }
-    /**
+  /**
    * @type {module}
    */
-     get selectedElement () {
-      return this.editor.selectedElement;
-    }
-    /**
+  get selectedElement () {
+    return this.editor.selectedElement;
+  }
+  /**
      * @type {module}
      */
-    get multiselected () {
-      return this.editor.multiselected;
-    }
-    /**
+  get multiselected () {
+    return this.editor.multiselected;
+  }
+  /**
     * @type {module}
     */
-    changeStrokeWidth (e) {
-      let val = e.target.value;
-      if (val === 0 && this.editor.selectedElement && [ 'line', 'polyline' ].includes(this.editor.selectedElement.nodeName)) {
-        val = 1;
-      }
-      this.editor.svgCanvas.setStrokeWidth(val);
+  changeStrokeWidth (e) {
+    let val = e.target.value;
+    if (val === 0 && this.editor.selectedElement && [ 'line', 'polyline' ].includes(this.editor.selectedElement.nodeName)) {
+      val = 1;
     }
-    /**
+    this.editor.svgCanvas.setStrokeWidth(val);
+  }
+  /**
     * @type {module}
     */
-    changeZoom (value) {
-      switch (value) {
-      case 'canvas':
-      case 'selection':
-      case 'layer':
-      case 'content':
-        this.editor.zoomChanged(window, value);
-        break;
-      default:
-      {
-        const zoomlevel = Number(value) / 100;
-        if (zoomlevel < 0.001) {
-          value = 0.1;
-          return;
-        }
-        const zoom = this.editor.svgCanvas.getZoom();
-        const wArea = this.editor.workarea;
-        this.editor.zoomChanged(window, {
-          width: 0,
-          height: 0,
-          // center pt of scroll position
-          x: (wArea.scrollLeft + parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) / 2) / zoom,
-          y: (wArea.scrollTop + parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) / 2) / zoom,
-          zoom: zoomlevel
-        }, true);
+  changeZoom (value) {
+    switch (value) {
+    case 'canvas':
+    case 'selection':
+    case 'layer':
+    case 'content':
+      this.editor.zoomChanged(window, value);
+      break;
+    default:
+    {
+      const zoomlevel = Number(value) / 100;
+      if (zoomlevel < 0.001) {
+        value = 0.1;
+        return;
       }
-      }
+      const zoom = this.editor.svgCanvas.getZoom();
+      const wArea = this.editor.workarea;
+      this.editor.zoomChanged(window, {
+        width: 0,
+        height: 0,
+        // center pt of scroll position
+        x: (wArea.scrollLeft + parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) / 2) / zoom,
+        y: (wArea.scrollTop + parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) / 2) / zoom,
+        zoom: zoomlevel
+      }, true);
     }
-    /**
+    }
+  }
+  /**
      * @fires module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate
      * @returns {void}
      */
-    updateToolButtonState () {
-      const bNoFill = (this.editor.svgCanvas.getColor('fill') === 'none');
-      const bNoStroke = (this.editor.svgCanvas.getColor('stroke') === 'none');
-      const buttonsNeedingStroke = [ 'tool_fhpath', 'tool_line' ];
-      const buttonsNeedingFillAndStroke = [
-        'tools_rect', 'tools_ellipse',
-        'tool_text', 'tool_path'
-      ];
+  updateToolButtonState () {
+    const bNoFill = (this.editor.svgCanvas.getColor('fill') === 'none');
+    const bNoStroke = (this.editor.svgCanvas.getColor('stroke') === 'none');
+    const buttonsNeedingStroke = [ 'tool_fhpath', 'tool_line' ];
+    const buttonsNeedingFillAndStroke = [
+      'tools_rect', 'tools_ellipse',
+      'tool_text', 'tool_path'
+    ];
 
-      if (bNoStroke) {
-        buttonsNeedingStroke.forEach((btn) => {
-          // if btn is pressed, change to select button
-          if ($id(btn).pressed) {
-            this.editor.leftPanel.clickSelect();
-          }
-          $id(btn).disabled = true;
-        });
-      } else {
-        buttonsNeedingStroke.forEach((btn) => {
-          $id(btn).disabled = false;
-        });
-      }
-      if (bNoStroke && bNoFill) {
-        // eslint-disable-next-line sonarjs/no-identical-functions
-        buttonsNeedingFillAndStroke.forEach((btn) => {
-          // if btn is pressed, change to select button
-          if ($id(btn).pressed) {
-            this.editor.leftPanel.clickSelect();
-          }
-          $id(btn).disabled = true;
-        });
-      } else {
-        buttonsNeedingFillAndStroke.forEach((btn) => {
-          $id(btn).disabled = false;
-        });
-      }
-      this.editor.svgCanvas.runExtensions(
-        'toolButtonStateUpdate',
-        /** @type {module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate} */ {
-          nofill: bNoFill,
-          nostroke: bNoStroke
+    if (bNoStroke) {
+      buttonsNeedingStroke.forEach((btn) => {
+        // if btn is pressed, change to select button
+        if ($id(btn).pressed) {
+          this.editor.leftPanel.clickSelect();
         }
-      );
+        $id(btn).disabled = true;
+      });
+    } else {
+      buttonsNeedingStroke.forEach((btn) => {
+        $id(btn).disabled = false;
+      });
     }
-    /**
+    if (bNoStroke && bNoFill) {
+      // eslint-disable-next-line sonarjs/no-identical-functions
+      buttonsNeedingFillAndStroke.forEach((btn) => {
+        // if btn is pressed, change to select button
+        if ($id(btn).pressed) {
+          this.editor.leftPanel.clickSelect();
+        }
+        $id(btn).disabled = true;
+      });
+    } else {
+      buttonsNeedingFillAndStroke.forEach((btn) => {
+        $id(btn).disabled = false;
+      });
+    }
+    this.editor.svgCanvas.runExtensions(
+      'toolButtonStateUpdate',
+      /** @type {module:svgcanvas.SvgCanvas#event:ext_toolButtonStateUpdate} */ {
+        nofill: bNoFill,
+        nostroke: bNoStroke
+      }
+    );
+  }
+  /**
     * @type {module}
     */
-    handleColorPicker (type, evt) {
-      const { paint } = evt.detail;
-      this.editor.svgCanvas.setPaint(type, paint);
-      this.updateToolButtonState();
-    }
-    /**
+  handleColorPicker (type, evt) {
+    const { paint } = evt.detail;
+    this.editor.svgCanvas.setPaint(type, paint);
+    this.updateToolButtonState();
+  }
+  /**
     * @type {module}
     */
-    handleStrokeAttr (type, evt) {
-      this.editor.svgCanvas.setStrokeAttr(type, evt.detail.value);
-    }
-    /**
+  handleStrokeAttr (type, evt) {
+    this.editor.svgCanvas.setStrokeAttr(type, evt.detail.value);
+  }
+  /**
     * @type {module}
     */
-    handleOpacity (evt) {
-      const val = Number.parseInt(evt.currentTarget.value.split('%')[0]);
-      this.editor.svgCanvas.setOpacity(val / 100);
-    }
+  handleOpacity (evt) {
+    const val = Number.parseInt(evt.currentTarget.value.split('%')[0]);
+    this.editor.svgCanvas.setOpacity(val / 100);
+  }
   /**
   * @type {module}
   */
-   handlePalette (e) {
+  handlePalette (e) {
     e.preventDefault();
     // shift key or right click for stroke
     const { picker, color } = e.detail;
@@ -233,7 +233,7 @@ class BottomPanel {
   /**
   * @type {module}
   */
-   updateColorpickers (apply) {
+  updateColorpickers (apply) {
     $id('fill_color').update(this.editor.svgCanvas, this.editor.selectedElement, apply);
     $id('stroke_color').update(this.editor.svgCanvas, this.editor.selectedElement, apply);
   }

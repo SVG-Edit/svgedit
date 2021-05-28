@@ -94,7 +94,7 @@ export class SeStorageDialog extends HTMLElement {
    * @param {any} name
    * @returns {void}
    */
-   init (i18next) {
+  init (i18next) {
     this.setAttribute('common-ok', i18next.t('common.ok'));
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
     this.setAttribute('notify-editor_pref_msg', i18next.t('notification.editorPreferencesMsg'));

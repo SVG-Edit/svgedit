@@ -9,22 +9,22 @@
  *
  */
 
- const name = "imagelib";
+const name = "imagelib";
 
- const loadExtensionTranslation = async function (svgEditor) {
-   let translationModule;
-   const lang = svgEditor.configObj.pref('lang');
-   try {
-     // eslint-disable-next-line no-unsanitized/method
-     translationModule = await import(`./locale/${lang}.js`);
-   } catch (_error) {
-     // eslint-disable-next-line no-console
-     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-     // eslint-disable-next-line no-unsanitized/method
-     translationModule = await import(`./locale/en.js`);
-   }
-   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
- };
+const loadExtensionTranslation = async function (svgEditor) {
+  let translationModule;
+  const lang = svgEditor.configObj.pref('lang');
+  try {
+    // eslint-disable-next-line no-unsanitized/method
+    translationModule = await import(`./locale/${lang}.js`);
+  } catch (_error) {
+    // eslint-disable-next-line no-console
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
+    // eslint-disable-next-line no-unsanitized/method
+    translationModule = await import(`./locale/en.js`);
+  }
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
+};
 
 export default {
   name,
@@ -192,154 +192,154 @@ export default {
 
       let entry, curMeta, svgStr, imgStr;
       switch (type) {
-        case 'meta': {
-          // Metadata
-          transferStopped = false;
-          curMeta = response;
+      case 'meta': {
+        // Metadata
+        transferStopped = false;
+        curMeta = response;
 
-          // Should be safe to add dynamic property as passed metadata
-          pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
+        // Should be safe to add dynamic property as passed metadata
+        pending[curMeta.id] = curMeta; // lgtm [js/remote-property-injection]
 
-          const name = (curMeta.name || 'file');
+        const name = (curMeta.name || 'file');
 
-          const message = svgEditor.i18next.t('notification.retrieving').replace('%s', name);
+        const message = svgEditor.i18next.t('notification.retrieving').replace('%s', name);
 
-          if (mode !== 'm') {
-            await seConfirm(message);
-            transferStopped = true;
-          } else {
-            entry = document.createElement('div');
-            entry.textContent = message;
-            entry.dataset.id = curMeta.id;
-            preview.appendChild(entry);
-            curMeta.entry = entry;
-          }
-
-          return;
+        if (mode !== 'm') {
+          await seConfirm(message);
+          transferStopped = true;
+        } else {
+          entry = document.createElement('div');
+          entry.textContent = message;
+          entry.dataset.id = curMeta.id;
+          preview.appendChild(entry);
+          curMeta.entry = entry;
         }
-        case '<':
+
+        return;
+      }
+      case '<':
+        svgStr = true;
+        break;
+      case 'd': {
+        if (response.startsWith('data:image/svg+xml')) {
+          const pre = 'data:image/svg+xml;base64,';
+          const src = response.substring(pre.length);
+          response = decode64(src);
           svgStr = true;
           break;
-        case 'd': {
-          if (response.startsWith('data:image/svg+xml')) {
-            const pre = 'data:image/svg+xml;base64,';
-            const src = response.substring(pre.length);
-            response = decode64(src);
-            svgStr = true;
-            break;
-          } else if (response.startsWith('data:image/')) {
-            imgStr = true;
-            break;
-          }
+        } else if (response.startsWith('data:image/')) {
+          imgStr = true;
+          break;
         }
-        // Else fall through
-        default:
-          // TODO: See if there's a way to base64 encode the binary data stream
-          // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
+      }
+      // Else fall through
+      default:
+        // TODO: See if there's a way to base64 encode the binary data stream
+        // const str = 'data:;base64,' + svgedit.utilities.encode64(response, true);
 
-          // Assume it's raw image data
-          // importImage(str);
+        // Assume it's raw image data
+        // importImage(str);
 
-          // Don't give warning as postMessage may have been used by something else
-          if (mode !== 'm') {
-            closeBrowser();
-          } else {
-            pending[id].entry.remove();
-          }
-          // await alert('Unexpected data was returned: ' + response, function() {
-          //   if (mode !== 'm') {
-          //     closeBrowser();
-          //   } else {
-          //     pending[id].entry.remove();
-          //   }
-          // });
-          return;
+        // Don't give warning as postMessage may have been used by something else
+        if (mode !== 'm') {
+          closeBrowser();
+        } else {
+          pending[id].entry.remove();
+        }
+        // await alert('Unexpected data was returned: ' + response, function() {
+        //   if (mode !== 'm') {
+        //     closeBrowser();
+        //   } else {
+        //     pending[id].entry.remove();
+        //   }
+        // });
+        return;
       }
 
       switch (mode) {
-        case 's':
-          // Import one
-          if (svgStr) {
-            svgEditor.svgCanvas.importSvgString(response);
-          } else if (imgStr) {
-            importImage(response);
-          }
-          closeBrowser();
-          break;
-        case 'm': {
-          // Import multiple
-          multiArr.push([ (svgStr ? 'svg' : 'img'), response ]);
-          curMeta = pending[id];
-          let title;
-          if (svgStr) {
-            if (curMeta && curMeta.name) {
-              title = curMeta.name;
-            } else {
-              // Try to find a title
-              // `dropXMLInternalSubset` is to help prevent the billion laughs attack
-              const xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
-              title = xml.querySelector('title').textContent || '(SVG #' + response.length + ')';
-            }
-            if (curMeta) {
-              Array.from(preview.children).forEach(function (element) {
-                if (element.dataset.id === id) {
-                  if (curMeta.preview_url) {
-                    const img = document.createElement("img");
-                    img.src = curMeta.preview_url;
-                    const span = document.createElement("span");
-                    span.appendChild(img);
-                    element.append(span);
-                  } else {
-                    element.textContent = title;
-                  }
-                  submit.removeAttribute('disabled');
-                }
-              });
-            } else {
-              const div = document.createElement("div");
-              div.textContent = title;
-              preview.appendChild(div);
-              submit.removeAttribute('disabled');
-            }
-          } else {
-            if (curMeta && curMeta.preview_url) {
-              title = curMeta.name || '';
-              entry = document.createElement('span');
-              const img = document.createElement("img");
-              img.src = curMeta.preview_url;
-              entry.appendChild(img);
-              entry.appendChild(document.createTextNode(title));
-            } else {
-              entry = document.createElement("img");
-              entry.src = response;
-            }
-
-            if (curMeta) {
-              Array.from(preview.children).forEach(function (element) {
-                if (element.dataset.id === id) {
-                  element.appendChild(entry);
-                  submit.removeAttribute('disabled');
-                }
-              });
-            } else {
-              const div = document.createElement("div");
-              div.appendChild(entry);
-              preview.appendChild(div);
-              submit.removeAttribute('disabled');
-            }
-          }
-          break;
-        } case 'o': {
-          // Open
-          if (!svgStr) { break; }
-          closeBrowser();
-          const ok = await svgEditor.openPrep();
-          if (!ok) { return; }
-          svgCanvas.clear();
-          svgCanvas.setSvgString(response);
-          // updateCanvas();
-          break;
+      case 's':
+        // Import one
+        if (svgStr) {
+          svgEditor.svgCanvas.importSvgString(response);
+        } else if (imgStr) {
+          importImage(response);
         }
+        closeBrowser();
+        break;
+      case 'm': {
+        // Import multiple
+        multiArr.push([ (svgStr ? 'svg' : 'img'), response ]);
+        curMeta = pending[id];
+        let title;
+        if (svgStr) {
+          if (curMeta && curMeta.name) {
+            title = curMeta.name;
+          } else {
+            // Try to find a title
+            // `dropXMLInternalSubset` is to help prevent the billion laughs attack
+            const xml = new DOMParser().parseFromString(dropXMLInternalSubset(response), 'text/xml').documentElement; // lgtm [js/xml-bomb]
+            title = xml.querySelector('title').textContent || '(SVG #' + response.length + ')';
+          }
+          if (curMeta) {
+            Array.from(preview.children).forEach(function (element) {
+              if (element.dataset.id === id) {
+                if (curMeta.preview_url) {
+                  const img = document.createElement("img");
+                  img.src = curMeta.preview_url;
+                  const span = document.createElement("span");
+                  span.appendChild(img);
+                  element.append(span);
+                } else {
+                  element.textContent = title;
+                }
+                submit.removeAttribute('disabled');
+              }
+            });
+          } else {
+            const div = document.createElement("div");
+            div.textContent = title;
+            preview.appendChild(div);
+            submit.removeAttribute('disabled');
+          }
+        } else {
+          if (curMeta && curMeta.preview_url) {
+            title = curMeta.name || '';
+            entry = document.createElement('span');
+            const img = document.createElement("img");
+            img.src = curMeta.preview_url;
+            entry.appendChild(img);
+            entry.appendChild(document.createTextNode(title));
+          } else {
+            entry = document.createElement("img");
+            entry.src = response;
+          }
+
+          if (curMeta) {
+            Array.from(preview.children).forEach(function (element) {
+              if (element.dataset.id === id) {
+                element.appendChild(entry);
+                submit.removeAttribute('disabled');
+              }
+            });
+          } else {
+            const div = document.createElement("div");
+            div.appendChild(entry);
+            preview.appendChild(div);
+            submit.removeAttribute('disabled');
+          }
+        }
+        break;
+      } case 'o': {
+        // Open
+        if (!svgStr) { break; }
+        closeBrowser();
+        const ok = await svgEditor.openPrep();
+        if (!ok) { return; }
+        svgCanvas.clear();
+        svgCanvas.setSvgString(response);
+        // updateCanvas();
+        break;
+      }
       }
     }
 
@@ -475,15 +475,15 @@ export default {
         select.addEventListener('change', function () {
           mode = this.value;
           switch (mode) {
-            case 's':
-            case 'o':
-              toggleMulti(false);
-              break;
+          case 's':
+          case 'o':
+            toggleMulti(false);
+            break;
 
-            case 'm':
-              // Import multiple
-              toggleMulti(true);
-              break;
+          case 'm':
+            // Import multiple
+            toggleMulti(true);
+            break;
           }
         });
         select.setAttribute('style', `margin-top: 10px;`);
@@ -507,7 +507,7 @@ export default {
             libOpts.style.display = 'none';
             back.style.display = 'block';
           });
-          var span = document.createElement("span");
+          let span = document.createElement("span");
           span.textContent = description;
           li.appendChild(span);
         });

@@ -628,70 +628,70 @@ export const getBBox = function (elem) {
 
   let ret = null;
   switch (elname) {
-    case 'text':
-      if (selected.textContent === '') {
-        selected.textContent = 'a'; // Some character needed for the selector to use.
-        ret = selected.getBBox();
-        selected.textContent = '';
-      } else if (selected.getBBox) {
-        ret = selected.getBBox();
-      }
-      break;
-    case 'path':
-      if (!supportsPathBBox()) {
-        ret = getPathBBox(selected);
-      } else if (selected.getBBox) {
-        ret = selected.getBBox();
-      }
-      break;
-    case 'g':
-    case 'a':
-      ret = groupBBFix(selected);
-      break;
-    default:
+  case 'text':
+    if (selected.textContent === '') {
+      selected.textContent = 'a'; // Some character needed for the selector to use.
+      ret = selected.getBBox();
+      selected.textContent = '';
+    } else if (selected.getBBox) {
+      ret = selected.getBBox();
+    }
+    break;
+  case 'path':
+    if (!supportsPathBBox()) {
+      ret = getPathBBox(selected);
+    } else if (selected.getBBox) {
+      ret = selected.getBBox();
+    }
+    break;
+  case 'g':
+  case 'a':
+    ret = groupBBFix(selected);
+    break;
+  default:
 
-      if (elname === 'use') {
-        ret = groupBBFix(selected); // , true);
+    if (elname === 'use') {
+      ret = groupBBFix(selected); // , true);
+    }
+    if (elname === 'use' || (elname === 'foreignObject' && isWebkit())) {
+      if (!ret) { ret = selected.getBBox(); }
+      // This is resolved in later versions of webkit, perhaps we should
+      // have a featured detection for correct 'use' behavior?
+      // ——————————
+      if (!isWebkit()) {
+        const { x, y, width, height } = ret;
+        const bb = {
+          width,
+          height,
+          x: x + Number.parseFloat(selected.getAttribute('x') || 0),
+          y: y + Number.parseFloat(selected.getAttribute('y') || 0)
+        };
+        ret = bb;
       }
-      if (elname === 'use' || (elname === 'foreignObject' && isWebkit())) {
-        if (!ret) { ret = selected.getBBox(); }
-        // This is resolved in later versions of webkit, perhaps we should
-        // have a featured detection for correct 'use' behavior?
-        // ——————————
-        if (!isWebkit()) {
-          const { x, y, width, height } = ret;
-          const bb = {
+    } else if (visElemsArr.includes(elname)) {
+      if (selected) {
+        try {
+          ret = selected.getBBox();
+        } catch (err) {
+          // tspan (and textPath apparently) have no `getBBox` in Firefox: https://bugzilla.mozilla.org/show_bug.cgi?id=937268
+          // Re: Chrome returning bbox for containing text element, see: https://bugs.chromium.org/p/chromium/issues/detail?id=349835
+          const extent = selected.getExtentOfChar(0); // pos+dimensions of the first glyph
+          const width = selected.getComputedTextLength(); // width of the tspan
+          ret = {
+            x: extent.x,
+            y: extent.y,
             width,
-            height,
-            x: x + Number.parseFloat(selected.getAttribute('x') || 0),
-            y: y + Number.parseFloat(selected.getAttribute('y') || 0)
+            height: extent.height
           };
-          ret = bb;
         }
-      } else if (visElemsArr.includes(elname)) {
-        if (selected) {
-          try {
-            ret = selected.getBBox();
-          } catch (err) {
-            // tspan (and textPath apparently) have no `getBBox` in Firefox: https://bugzilla.mozilla.org/show_bug.cgi?id=937268
-            // Re: Chrome returning bbox for containing text element, see: https://bugs.chromium.org/p/chromium/issues/detail?id=349835
-            const extent = selected.getExtentOfChar(0); // pos+dimensions of the first glyph
-            const width = selected.getComputedTextLength(); // width of the tspan
-            ret = {
-              x: extent.x,
-              y: extent.y,
-              width,
-              height: extent.height
-            };
-          }
-        } else {
-          // Check if element is child of a foreignObject
-          const fo = getClosest(selected.parentNode, 'foreignObject');
-          if (fo.length && fo[0].getBBox) {
-            ret = fo[0].getBBox();
-          }
+      } else {
+        // Check if element is child of a foreignObject
+        const fo = getClosest(selected.parentNode, 'foreignObject');
+        if (fo.length && fo[0].getBBox) {
+          ret = fo[0].getBBox();
         }
       }
+    }
   }
   if (ret) {
     ret = bboxToObj(ret);
@@ -739,76 +739,76 @@ export const getPathDFromElement = function (elem) {
   let num = 1.81;
   let d, rx, ry;
   switch (elem.tagName) {
-    case 'ellipse':
-    case 'circle': {
-      rx = elem.getAttribute('rx');
-      ry = elem.getAttribute('ry');
-      const cx = elem.getAttribute('cx');
-      const cy = elem.getAttribute('cy');
-      if (elem.tagName === 'circle' && elem.hasAttribute('r')) {
-        ry = elem.getAttribute('r');
-        rx = ry;
-      }
-      d = getPathDFromSegments([
-        [ 'M', [ (cx - rx), (cy) ] ],
-        [ 'C', [ (cx - rx), (cy - ry / num), (cx - rx / num), (cy - ry), (cx), (cy - ry) ] ],
-        [ 'C', [ (cx + rx / num), (cy - ry), (cx + rx), (cy - ry / num), (cx + rx), (cy) ] ],
-        [ 'C', [ (cx + rx), (cy + ry / num), (cx + rx / num), (cy + ry), (cx), (cy + ry) ] ],
-        [ 'C', [ (cx - rx / num), (cy + ry), (cx - rx), (cy + ry / num), (cx - rx), (cy) ] ],
+  case 'ellipse':
+  case 'circle': {
+    rx = elem.getAttribute('rx');
+    ry = elem.getAttribute('ry');
+    const cx = elem.getAttribute('cx');
+    const cy = elem.getAttribute('cy');
+    if (elem.tagName === 'circle' && elem.hasAttribute('r')) {
+      ry = elem.getAttribute('r');
+      rx = ry;
+    }
+    d = getPathDFromSegments([
+      [ 'M', [ (cx - rx), (cy) ] ],
+      [ 'C', [ (cx - rx), (cy - ry / num), (cx - rx / num), (cy - ry), (cx), (cy - ry) ] ],
+      [ 'C', [ (cx + rx / num), (cy - ry), (cx + rx), (cy - ry / num), (cx + rx), (cy) ] ],
+      [ 'C', [ (cx + rx), (cy + ry / num), (cx + rx / num), (cy + ry), (cx), (cy + ry) ] ],
+      [ 'C', [ (cx - rx / num), (cy + ry), (cx - rx), (cy + ry / num), (cx - rx), (cy) ] ],
+      [ 'Z', [] ]
+    ]);
+    break;
+  } case 'path':
+    d = elem.getAttribute('d');
+    break;
+  case 'line': {
+    const x1 = elem.getAttribute('x1');
+    const y1 = elem.getAttribute('y1');
+    const x2 = elem.getAttribute('x2');
+    const y2 = elem.getAttribute('y2');
+    d = 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2;
+  }
+    break;
+  case 'polyline':
+    d = 'M' + elem.getAttribute('points');
+    break;
+  case 'polygon':
+    d = 'M' + elem.getAttribute('points') + ' Z';
+    break;
+  case 'rect': {
+    rx = elem.getAttribute('rx');
+    ry = elem.getAttribute('ry');
+    const b = elem.getBBox();
+    const { x, y } = b,
+      w = b.width,
+      h = b.height;
+    num = 4 - num; // Why? Because!
+
+    d = (!rx && !ry)
+    // Regular rect
+      ? getPathDFromSegments([
+        [ 'M', [ x, y ] ],
+        [ 'L', [ x + w, y ] ],
+        [ 'L', [ x + w, y + h ] ],
+        [ 'L', [ x, y + h ] ],
+        [ 'L', [ x, y ] ],
+        [ 'Z', [] ]
+      ])
+      : getPathDFromSegments([
+        [ 'M', [ x, y + ry ] ],
+        [ 'C', [ x, y + ry / num, x + rx / num, y, x + rx, y ] ],
+        [ 'L', [ x + w - rx, y ] ],
+        [ 'C', [ x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry ] ],
+        [ 'L', [ x + w, y + h - ry ] ],
+        [ 'C', [ x + w, y + h - ry / num, x + w - rx / num, y + h, x + w - rx, y + h ] ],
+        [ 'L', [ x + rx, y + h ] ],
+        [ 'C', [ x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry ] ],
+        [ 'L', [ x, y + ry ] ],
         [ 'Z', [] ]
       ]);
-      break;
-    } case 'path':
-      d = elem.getAttribute('d');
-      break;
-    case 'line': {
-        const x1 = elem.getAttribute('x1');
-        const y1 = elem.getAttribute('y1');
-        const x2 = elem.getAttribute('x2');
-        const y2 = elem.getAttribute('y2');
-        d = 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2;
-      }
-      break;
-    case 'polyline':
-      d = 'M' + elem.getAttribute('points');
-      break;
-    case 'polygon':
-      d = 'M' + elem.getAttribute('points') + ' Z';
-      break;
-    case 'rect': {
-      rx = elem.getAttribute('rx');
-      ry = elem.getAttribute('ry');
-      const b = elem.getBBox();
-      const { x, y } = b,
-        w = b.width,
-        h = b.height;
-      num = 4 - num; // Why? Because!
-
-      d = (!rx && !ry)
-        // Regular rect
-        ? getPathDFromSegments([
-          [ 'M', [ x, y ] ],
-          [ 'L', [ x + w, y ] ],
-          [ 'L', [ x + w, y + h ] ],
-          [ 'L', [ x, y + h ] ],
-          [ 'L', [ x, y ] ],
-          [ 'Z', [] ]
-        ])
-        : getPathDFromSegments([
-          [ 'M', [ x, y + ry ] ],
-          [ 'C', [ x, y + ry / num, x + rx / num, y, x + rx, y ] ],
-          [ 'L', [ x + w - rx, y ] ],
-          [ 'C', [ x + w - rx / num, y, x + w, y + ry / num, x + w, y + ry ] ],
-          [ 'L', [ x + w, y + h - ry ] ],
-          [ 'C', [ x + w, y + h - ry / num, x + w - rx / num, y + h, x + w - rx, y + h ] ],
-          [ 'L', [ x + rx, y + h ] ],
-          [ 'C', [ x + rx / num, y + h, x, y + h - ry / num, x, y + h - ry ] ],
-          [ 'L', [ x, y + ry ] ],
-          [ 'Z', [] ]
-        ]);
-      break;
-    } default:
-      break;
+    break;
+  } default:
+    break;
   }
 
   return d;

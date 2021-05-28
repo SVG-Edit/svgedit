@@ -608,7 +608,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   sets = mergeDeep(sets, options);
 
   const that = elem,
-        settings = sets;
+    settings = sets;
   if (that.nodeName.toLowerCase() === 'input') { // Add color picker icon if binding to an input element and bind the events to the input
     Object.assign(settings, {
       window: {

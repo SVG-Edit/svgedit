@@ -209,7 +209,7 @@ class SvgCanvas {
         return this._storage.has(element) && this._storage.get(element).has(key);
       },
       remove: function (element, key) {
-        var ret = this._storage.get(element).delete(key);
+        let ret = this._storage.get(element).delete(key);
         if (!this._storage.get(element).size === 0) {
           this._storage.delete(element);
         }
@@ -787,65 +787,49 @@ class SvgCanvas {
  */
 
     // Object to contain image data for raster images that were found encodable
-    const encodableImages = {},
+    const encodableImages = {};
+    // Object with save options
+    /**
+    * @type {module:svgcanvas.SaveOptions}
+    */
+    const saveOptions = { round_digits: 5 };
+    // Object with IDs for imported files, to see if one was already added
+    const importIds = {};
+    // Current text style properties
+    const curText = allProperties.text;
+    // Object to contain all included extensions
+    const extensions = {};
+    // Map of deleted reference elements
+    const removedElements = {};
 
-      // Object with save options
-      /**
-   * @type {module:svgcanvas.SaveOptions}
-   */
-      saveOptions = { round_digits: 5 },
-
-      // Object with IDs for imported files, to see if one was already added
-      importIds = {},
-
-      // Current text style properties
-      curText = allProperties.text,
-
-      // Object to contain all included extensions
-      extensions = {},
-
-      // Map of deleted reference elements
-      removedElements = {};
-
-    let
-      // String with image URL of last loadable image
-      lastGoodImgUrl = curConfig.imgPath + 'logo.svg',
-
-      // Boolean indicating whether or not a draw action has been started
-      started = false,
-
-      // String with an element's initial transform attribute value
-      startTransform = null,
-
-      // String indicating the current editor mode
-      currentMode = 'select',
-
-      // String with the current direction in which an element is being resized
-      currentResizeMode = 'none',
-
-      // Current general properties
-      curProperties = curShape,
-
-      // Array with selected elements' Bounding box object
-      // selectedBBoxes = new Array(1),
-
-      // The DOM element that was just selected
-      justSelected = null,
-
-      // DOM element for selection rectangle drawn by the user
-      rubberBox = null,
-
-      // Array of current BBoxes, used in getIntersectionList().
-      curBBoxes = [],
-
-      // Canvas point for the most recent right click
-      lastClickPoint = null;
+    // String with image URL of last loadable image
+    let lastGoodImgUrl = curConfig.imgPath + 'logo.svg';
+    // Boolean indicating whether or not a draw action has been started
+    let started = false;
+    // String with an element's initial transform attribute value
+    let startTransform = null;
+    // String indicating the current editor mode
+    let currentMode = 'select';
+    // String with the current direction in which an element is being resized
+    let currentResizeMode = 'none';
+    // Current general properties
+    let curProperties = curShape;
+    // Array with selected elements' Bounding box object
+    // selectedBBoxes = new Array(1),
+    // The DOM element that was just selected
+    let justSelected = null;
+    // DOM element for selection rectangle drawn by the user
+    let rubberBox = null;
+    // Array of current BBoxes, used in getIntersectionList().
+    let curBBoxes = [];
+    // Canvas point for the most recent right click
+    let lastClickPoint = null;
 
     this.runExtension = function (name, action, vars) {
       return this.runExtensions(action, vars, false, (n) => n === name);
     };
-/* eslint-disable max-len */
-/**
+    /* eslint-disable max-len */
+    /**
 * @todo Consider: Should this return an array by default, so extension results aren't overwritten?
 * @todo Would be easier to document if passing in object with key of action and vars as value; could then define an interface which tied both together
 * @function module:svgcanvas.SvgCanvas#runExtensions
@@ -855,7 +839,7 @@ class SvgCanvas {
 * @param {module:svgcanvas.ExtensionNameFilter} nameFilter
 * @returns {GenericArray<module:svgcanvas.ExtensionStatus>|module:svgcanvas.ExtensionStatus|false} See {@tutorial ExtensionDocs} on the ExtensionStatus.
 */
-/* eslint-enable max-len */
+    /* eslint-enable max-len */
 
     this.runExtensions = runExtensionsMethod;
 
@@ -1037,14 +1021,14 @@ class SvgCanvas {
  * @event module:svgcanvas.SvgCanvas#event:exportedPDF
  * @type {module:svgcanvas.PDFExportedResults}
  */
-/* eslint-disable max-len */
-/**
+    /* eslint-disable max-len */
+    /**
  * Creating a cover-all class until {@link https://github.com/jsdoc3/jsdoc/issues/1545} may be supported.
  * `undefined` may be returned by {@link module:svgcanvas.SvgCanvas#event:extension_added} if the extension's `init` returns `undefined` It is also the type for the following events "zoomDone", "unsetnonce", "cleared", and "extensions_added".
  * @event module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
  * @type {module:svgcanvas.SvgCanvas#event:selected|module:svgcanvas.SvgCanvas#event:changed|module:svgcanvas.SvgCanvas#event:contextset|module:svgcanvas.SvgCanvas#event:pointsAdded|module:svgcanvas.SvgCanvas#event:extension_added|module:svgcanvas.SvgCanvas#event:extensions_added|module:svgcanvas.SvgCanvas#event:message|module:svgcanvas.SvgCanvas#event:transition|module:svgcanvas.SvgCanvas#event:zoomed|module:svgcanvas.SvgCanvas#event:updateCanvas|module:svgcanvas.SvgCanvas#event:saved|module:svgcanvas.SvgCanvas#event:exported|module:svgcanvas.SvgCanvas#event:exportedPDF|module:svgcanvas.SvgCanvas#event:setnonce|module:svgcanvas.SvgCanvas#event:unsetnonce|void}
  */
-/* eslint-enable max-len */
+    /* eslint-enable max-len */
 
     /**
  * The promise return, if present, resolves to `undefined`
@@ -1059,7 +1043,7 @@ class SvgCanvas {
 * @listens module:svgcanvas.SvgCanvas#event:GenericCanvasEvent
 * @returns {module:svgcanvas.EventHandlerReturn}
 */
-/* eslint-disable max-len */
+    /* eslint-disable max-len */
     /**
 * Attaches a callback function to an event.
 * @function module:svgcanvas.SvgCanvas#bind
@@ -1067,7 +1051,7 @@ class SvgCanvas {
 * @param {module:svgcanvas.EventHandler} f - The callback function to bind to the event
 * @returns {module:svgcanvas.EventHandler} The previous event
 */
-/* eslint-enable max-len */
+    /* eslint-enable max-len */
     canvas.bind = function (ev, f) {
       const old = events[ev];
       events[ev] = f;
