@@ -84,20 +84,24 @@ export const getUndoManager = function () {
           if (values.stdDeviation) {
             undoContext_.getCanvas().setBlurOffsets(cmd.elem.parentNode, values.stdDeviation);
           }
-          // This is resolved in later versions of webkit, perhaps we should
-          // have a featured detection for correct 'use' behavior?
-          // ——————————
-          // Remove & Re-add hack for Webkit (issue 775)
-          // if (cmd.elem.tagName === 'use' && isWebkit()) {
-          //  const {elem} = cmd;
-          //  if (!elem.getAttribute('x') && !elem.getAttribute('y')) {
-          //    const parent = elem.parentNode;
-          //    const sib = elem.nextSibling;
-          //    elem.remove();
-          //    parent.insertBefore(elem, sib);
-          //    // Ok to replace above with this? `sib.before(elem);`
-          //  }
-          // }
+          if (cmd.elem.tagName === 'text'){
+            const [ dx, dy ] = [ cmd.newValues.x - cmd.oldValues.x,
+              cmd.newValues.y - cmd.oldValues.y ];
+
+            const tspans = cmd.elem.children;
+
+            for (let i = 0; i < tspans.length; i++){
+              let x = +tspans[i].getAttribute('x');
+              let y = +tspans[i].getAttribute('y');
+
+              const unapply = (eventType === EventTypes.AFTER_UNAPPLY);
+              x = unapply? x - dx: x + dx;
+              y = unapply? y - dy: y + dy;
+
+              tspans[i].setAttribute('x', x);
+              tspans[i].setAttribute('y', y);
+            }
+          }
         }
       }
     }
