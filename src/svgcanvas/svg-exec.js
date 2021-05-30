@@ -36,6 +36,7 @@ const {
 
 let svgContext_ = null;
 let $id = null;
+let svgCanvas = null;
 
 /**
 * @function module:svg-exec.init
@@ -44,7 +45,7 @@ let $id = null;
 */
 export const init = function (svgContext) {
   svgContext_ = svgContext;
-  const svgCanvas = svgContext_.getCanvas();
+  svgCanvas = svgContext_.getCanvas();
   $id = svgCanvas.$id;
 };
 
@@ -55,9 +56,9 @@ export const init = function (svgContext) {
 */
 export const svgCanvasToString = function () {
   // keep calling it until there are none to remove
-  while (svgContext_.getCanvas().removeUnusedDefElems() > 0) { } // eslint-disable-line no-empty
+  while (svgCanvas.removeUnusedDefElems() > 0) { } // eslint-disable-line no-empty
 
-  svgContext_.getCanvas().pathActions.clear(true);
+  svgCanvas.pathActions.clear(true);
 
   // Keep SVG-Edit comment on top
   const childNodesElems = svgContext_.getSVGContent().childNodes;
@@ -70,7 +71,7 @@ export const svgCanvasToString = function () {
   // Move out of in-group editing mode
   if (svgContext_.getCurrentGroup()) {
     draw.leaveContext();
-    svgContext_.getCanvas().selectOnly([ svgContext_.getCurrentGroup() ]);
+    svgCanvas.selectOnly([ svgContext_.getCurrentGroup() ]);
   }
 
   const nakedSvgs = [];
@@ -92,12 +93,12 @@ export const svgCanvasToString = function () {
       element.replaceWith(svg);
     }
   });
-  const output = this.svgToString(svgContext_.getSVGContent(), 0);
+  const output = svgCanvas.svgToString(svgContext_.getSVGContent(), 0);
 
   // Rewrap gsvg
   if (nakedSvgs.length) {
     Array.prototype.forEach.call(nakedSvgs, function (el) {
-      svgContext_.getCanvas().groupSvgElem(el);
+      svgCanvas.groupSvgElem(el);
     });
   }
 
@@ -130,7 +131,7 @@ export const svgToString = function (elem, indent) {
     out.push('<'); out.push(elem.nodeName);
     if (elem.id === 'svgcontent') {
       // Process root element separately
-      const res = svgContext_.getCanvas().getResolution();
+      const res = svgCanvas.getResolution();
 
       const vb = '';
       // TODO: Allow this by dividing all values by current baseVal
@@ -211,7 +212,7 @@ export const svgToString = function (elem, indent) {
           if (attrVal.startsWith('pointer-events')) { continue; }
           if (attr.localName === 'class' && attrVal.startsWith('se_')) { continue; }
           out.push(' ');
-          if (attr.localName === 'd') { attrVal = svgContext_.getCanvas().pathActions.convertPath(elem, true); }
+          if (attr.localName === 'd') { attrVal = svgCanvas.pathActions.convertPath(elem, true); }
           if (!isNaN(attrVal)) {
             attrVal = shortFloat(attrVal);
           } else if (unitRe.test(attrVal)) {
@@ -249,7 +250,7 @@ export const svgToString = function (elem, indent) {
         switch (child.nodeType) {
         case 1: // element node
           out.push('\n');
-          out.push(this.svgToString(child, indent));
+          out.push(svgCanvas.svgToString(child, indent));
           break;
         case 3: { // text node
           const str = child.nodeValue.replace(/^\s+|\s+$/g, '');
@@ -311,7 +312,7 @@ export const setSvgString = function (xmlString, preventUndo) {
       return false;
     }
 
-    this.prepareSvg(newDoc);
+    svgCanvas.prepareSvg(newDoc);
 
     const batchCmd = new BatchCommand('Change Source');
 
@@ -333,10 +334,10 @@ export const setSvgString = function (xmlString, preventUndo) {
     svgContext_.getSVGRoot().append(svgContext_.getSVGContent());
     const content = svgContext_.getSVGContent();
 
-    svgContext_.getCanvas().current_drawing_ = new draw.Drawing(svgContext_.getSVGContent(), svgContext_.getIdPrefix());
+    svgCanvas.current_drawing_ = new draw.Drawing(svgContext_.getSVGContent(), svgContext_.getIdPrefix());
 
     // retrieve or set the nonce
-    const nonce = svgContext_.getCanvas().getCurrentDrawing().getNonce();
+    const nonce = svgCanvas.getCurrentDrawing().getNonce();
     if (nonce) {
       svgContext_.call('setnonce', nonce);
     } else {
@@ -347,7 +348,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     const elements = content.querySelectorAll('image');
     Array.prototype.forEach.call(elements, function (image) {
       preventClickDefault(image);
-      const val = svgContext_.getCanvas().getHref(image);
+      const val = svgCanvas.getHref(image);
       if (val) {
         if (val.startsWith('data:')) {
           // Check if an SVG-edit data URI
@@ -364,7 +365,7 @@ export const setSvgString = function (xmlString, preventUndo) {
           }
         }
         // Add to encodableImages if it loads
-        svgContext_.getCanvas().embedImage(val);
+        svgCanvas.embedImage(val);
       }
     });
 
@@ -374,15 +375,15 @@ export const setSvgString = function (xmlString, preventUndo) {
       // Skip if it's in a <defs>
       if (getClosest(element.parentNode, 'defs')) { return; }
 
-      svgContext_.getCanvas().uniquifyElems(element);
+      svgCanvas.uniquifyElems(element);
 
       // Check if it already has a gsvg group
       const pa = element.parentNode;
       if (pa.childNodes.length === 1 && pa.nodeName === 'g') {
         dataStorage.put(pa, 'gsvg', element);
-        pa.id = pa.id || svgContext_.getCanvas().getNextId();
+        pa.id = pa.id || svgCanvas.getNextId();
       } else {
-        svgContext_.getCanvas().groupSvgElem(element);
+        svgCanvas.groupSvgElem(element);
       }
     });
 
@@ -398,9 +399,9 @@ export const setSvgString = function (xmlString, preventUndo) {
     // Set ref element for <use> elements
 
     // TODO: This should also be done if the object is re-added through "redo"
-    svgContext_.getCanvas().setUseData(content);
+    svgCanvas.setUseData(content);
 
-    svgContext_.getCanvas().convertGradients(content);
+    svgCanvas.convertGradients(content);
 
     const attrs = {
       id: 'svgcontent',
@@ -437,7 +438,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     Array.prototype.forEach.call(chiElems, function (chiElem) {
       const visElems = chiElem.querySelectorAll(svgContext_.getVisElems());
       Array.prototype.forEach.call(visElems, function (elem) {
-        if (!elem.id) { elem.id = svgContext_.getCanvas().getNextId(); }
+        if (!elem.id) { elem.id = svgCanvas.getNextId(); }
       });
     });
 
@@ -456,8 +457,8 @@ export const setSvgString = function (xmlString, preventUndo) {
     for (const [ key, value ] of Object.entries(attrs)) {
       content.setAttribute(key, value);
     }
-    this.contentW = attrs.width;
-    this.contentH = attrs.height;
+    svgCanvas.contentW = attrs.width;
+    svgCanvas.contentH = attrs.height;
 
     batchCmd.addSubCommand(new InsertElementCommand(svgContext_.getSVGContent()));
     // update root to the correct size
@@ -471,9 +472,9 @@ export const setSvgString = function (xmlString, preventUndo) {
 
     // reset transform lists
     resetListMap();
-    svgContext_.getCanvas().clearSelection();
+    svgCanvas.clearSelection();
     pathModule.clearData();
-    svgContext_.getSVGRoot().append(svgContext_.getCanvas().selectorManager.selectorParentGroup);
+    svgContext_.getSVGRoot().append(svgCanvas.selectorManager.selectorParentGroup);
 
     if (!preventUndo) svgContext_.addCommandToHistory(batchCmd);
     svgContext_.call('changed', [ svgContext_.getSVGContent() ]);
@@ -524,7 +525,7 @@ export const importSvgString = function (xmlString) {
       // convert string into XML document
       const newDoc = text2xml(xmlString);
 
-      this.prepareSvg(newDoc);
+      svgCanvas.prepareSvg(newDoc);
 
       // import new svg document into our document
       // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
@@ -532,7 +533,7 @@ export const importSvgString = function (xmlString) {
         ? svgContext_.getDOMDocument().adoptNode(newDoc.documentElement)
         : svgContext_.getDOMDocument().importNode(newDoc.documentElement, true);
 
-      svgContext_.getCanvas().uniquifyElems(svg);
+      svgCanvas.uniquifyElems(svg);
 
       const innerw = convertToNum('width', svg.getAttribute('width'));
       const innerh = convertToNum('height', svg.getAttribute('height'));
@@ -574,7 +575,7 @@ export const importSvgString = function (xmlString) {
       for (const attr of attrs) { // Ok for `NamedNodeMap`
         symbol.setAttribute(attr.nodeName, attr.value);
       }
-      symbol.id = svgContext_.getCanvas().getNextId();
+      symbol.id = svgCanvas.getNextId();
 
       // Store data
       svgContext_.setImportIds(uid, {
@@ -587,18 +588,18 @@ export const importSvgString = function (xmlString) {
     }
 
     useEl = svgContext_.getDOMDocument().createElementNS(NS.SVG, 'use');
-    useEl.id = svgContext_.getCanvas().getNextId();
-    svgContext_.getCanvas().setHref(useEl, '#' + symbol.id);
+    useEl.id = svgCanvas.getNextId();
+    svgCanvas.setHref(useEl, '#' + symbol.id);
 
-    (svgContext_.getCurrentGroup() || svgContext_.getCanvas().getCurrentDrawing().getCurrentLayer()).append(useEl);
+    (svgContext_.getCurrentGroup() || svgCanvas.getCurrentDrawing().getCurrentLayer()).append(useEl);
     batchCmd.addSubCommand(new InsertElementCommand(useEl));
-    svgContext_.getCanvas().clearSelection();
+    svgCanvas.clearSelection();
 
     useEl.setAttribute('transform', ts);
     recalculateDimensions(useEl);
     dataStorage.put(useEl, 'symbol', symbol);
     dataStorage.put(useEl, 'ref', symbol);
-    svgContext_.getCanvas().addToSelection([ useEl ]);
+    svgCanvas.addToSelection([ useEl ]);
 
     // TODO: Find way to add this in a recalculateDimensions-parsable way
     // if (vb[0] !== 0 || vb[1] !== 0) {
@@ -646,7 +647,7 @@ export const embedImage = function (src) {
       } catch (e) {
         svgContext_.setEncodableImages(src, false);
       }
-      svgContext_.getCanvas().setGoodImage(src);
+      svgCanvas.setGoodImage(src);
       resolve(svgContext_.getEncodableImages(src));
     });
     imgI.addEventListener("error", (e) => {
@@ -667,10 +668,10 @@ export const embedImage = function (src) {
 */
 export const save = function (opts) {
   // remove the selected outline before serializing
-  svgContext_.getCanvas().clearSelection();
+  svgCanvas.clearSelection();
   // Update save options if provided
   if (opts) {
-    const saveOptions = svgContext_.getCanvas().mergeDeep(svgContext_.getSvgOption(), opts);
+    const saveOptions = svgCanvas.mergeDeep(svgContext_.getSvgOption(), opts);
     for (const [ key, value ] of Object.entries(saveOptions)) {
       svgContext_.setSvgOption(key, value);
     }
@@ -678,7 +679,7 @@ export const save = function (opts) {
   svgContext_.setSvgOption('apply', true);
 
   // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
-  const str = svgContext_.getCanvas().svgCanvasToString();
+  const str = svgCanvas.svgCanvasToString();
   svgContext_.call('saved', str);
 };
 /**
@@ -694,7 +695,7 @@ export const save = function (opts) {
 function getIssues() {
   const uiStrings = svgContext_.getUIStrings();
   // remove the selected outline before serializing
-  svgContext_.getCanvas().clearSelection();
+  svgCanvas.clearSelection();
 
   // Check for known CanVG issues
   const issues = [];
@@ -752,7 +753,7 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
   const type = imgType === 'ICO' ? 'BMP' : (imgType || 'PNG');
   const mimeType = 'image/' + type.toLowerCase();
   const { issues, issueCodes } = getIssues();
-  const svg = this.svgCanvasToString();
+  const svg = svgCanvas.svgCanvasToString();
 
   if (!$id('export_canvas')) {
     const canvasEx = document.createElement('CANVAS');
@@ -761,8 +762,8 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
     document.body.appendChild(canvasEx);
   }
   const c = $id('export_canvas');
-  c.style.width = svgContext_.getCanvas().contentW + "px";
-  c.style.height = svgContext_.getCanvas().contentH + "px";
+  c.style.width = svgCanvas.contentW + "px";
+  c.style.height = svgCanvas.contentH + "px";
   const canvg = svgContext_.getcanvg();
   const ctx = c.getContext('2d');
   const v = canvg.fromString(ctx, svg);
@@ -837,7 +838,7 @@ export const exportPDF = async (
   exportWindowName,
   outputType = isChrome() ? 'save' : undefined
 ) => {
-  const res = svgContext_.getCanvas().getResolution();
+  const res = svgCanvas.getResolution();
   const orientation = res.w > res.h ? 'landscape' : 'portrait';
   const unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
 
@@ -848,7 +849,7 @@ export const exportPDF = async (
     format: [ res.w, res.h ]
     // , compressPdf: true
   });
-  const docTitle = svgContext_.getCanvas().getDocumentTitle();
+  const docTitle = svgCanvas.getDocumentTitle();
   doc.setProperties({
     title: docTitle /* ,
     subject: '',
@@ -908,7 +909,7 @@ export const uniquifyElemsMethod = function (g) {
         const attrnode = n.getAttributeNode(attr);
         if (attrnode) {
           // the incoming file has been sanitized, so we should be able to safely just strip off the leading #
-          const url = svgContext_.getCanvas().getUrlFromAttr(attrnode.value);
+          const url = svgCanvas.getUrlFromAttr(attrnode.value);
           const refid = url ? url.substr(1) : null;
           if (refid) {
             if (!(refid in ids)) {
@@ -921,7 +922,7 @@ export const uniquifyElemsMethod = function (g) {
       });
 
       // check xlink:href now
-      const href = svgContext_.getCanvas().getHref(n);
+      const href = svgCanvas.getHref(n);
       // TODO: what if an <image> or <a> element refers to an element internally?
       if (href && refElems.includes(n.nodeName)) {
         const refid = href.substr(1);
@@ -941,7 +942,7 @@ export const uniquifyElemsMethod = function (g) {
     if (!oldid) { continue; }
     const { elem } = ids[oldid];
     if (elem) {
-      const newid = svgContext_.getCanvas().getNextId();
+      const newid = svgCanvas.getNextId();
 
       // assign element its new id
       elem.id = newid;
@@ -959,7 +960,7 @@ export const uniquifyElemsMethod = function (g) {
       let k = hreffers.length;
       while (k--) {
         const hreffer = hreffers[k];
-        svgContext_.getCanvas().setHref(hreffer, '#' + newid);
+        svgCanvas.setHref(hreffer, '#' + newid);
       }
     }
   }
@@ -981,8 +982,8 @@ export const setUseDataMethod = function (parent) {
 
   Array.prototype.forEach.call(elems, function (el, _) {
     const dataStorage = svgContext_.getDataStorage();
-    const id = svgContext_.getCanvas().getHref(el).substr(1);
-    const refElem = svgContext_.getCanvas().getElem(id);
+    const id = svgCanvas.getHref(el).substr(1);
+    const refElem = svgCanvas.getElem(id);
     if (!refElem) { return; }
     dataStorage.put(el, 'ref', refElem);
     if (refElem.tagName === 'symbol' || refElem.tagName === 'svg') {
@@ -1016,7 +1017,7 @@ export const removeUnusedDefElemsMethod = function () {
   for (i = 0; i < allLen; i++) {
     const el = allEls[i];
     for (j = 0; j < alen; j++) {
-      const ref = svgContext_.getCanvas().getUrlFromAttr(el.getAttribute(attrs[j]));
+      const ref = svgCanvas.getUrlFromAttr(el.getAttribute(attrs[j]));
       if (ref) {
         defelemUses.push(ref.substr(1));
       }
@@ -1080,7 +1081,7 @@ export const convertGradientsMethod = function (elem) {
           x1: grad.getAttribute('x1'),
           y1: grad.getAttribute('y1'),
           x2: grad.getAttribute('x2'),
-          y2: grad.getAttribute('y2'),
+          y2: grad.getAttribute('y2')
         };
 
         // If has transform, convert
