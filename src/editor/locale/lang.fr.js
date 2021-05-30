@@ -27,7 +27,7 @@ export default {
     pick_stroke_paint_opacity: 'Pick a Stroke Paint and Opacity',
     pick_fill_paint_opacity: 'Pick a Fill Paint and Opacity',
     group_identify_label: 'Group identification label',
-    export_type_label: 'Select an image type for export:',
+    export_type_label: 'Select an image type for export:'
   },
   properties: {
     id: "Identifier l'élément",
@@ -90,7 +90,7 @@ export default {
     no_prefs_or_content: 'Do not store my preferences or SVG content locally',
     jgraduate_pad: 'Pad',
     jgraduate_reflect: 'Reflect',
-    jgraduate_repeat: 'Repeat',
+    jgraduate_repeat: 'Repeat'
   },
   tools: {
     main_menu: 'Menu principal',
@@ -169,7 +169,7 @@ export default {
     ellipse_circle_tool: 'Ellipse/Circle Tool',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Remember this choice?',
-    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.',
+    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
   },
   layers: {
     layer: 'Calque',
@@ -262,7 +262,7 @@ export default {
     jgraduate_set_angle: 'Click to set Angle',
     jgraduate_deg: 'deg:',
     jgraduate_opac: 'Opac:',
-    jgraduate_set_opac: 'Click to set Opac',
+    jgraduate_set_opac: 'Click to set Opac'
   },
   notification: {
     invalidAttrValGiven: 'Valeur fournie invalide',

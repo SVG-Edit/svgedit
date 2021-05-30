@@ -747,7 +747,7 @@ export const setImageURLMethod = function (val) {
 
   const attrs = {
     width: elem.getAttribute('width'),
-    height: elem.getAttribute('height'),
+    height: elem.getAttribute('height')
   };
   const setsize = (!attrs.width || !attrs.height);
 
@@ -768,7 +768,7 @@ export const setImageURLMethod = function (val) {
   img.onload = function () {
     const changes = {
       width: elem.getAttribute('width'),
-      height: elem.getAttribute('height'),
+      height: elem.getAttribute('height')
     };
     elem.setAttribute('width', this.width);
     elem.setAttribute('height', this.height);

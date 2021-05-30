@@ -276,7 +276,7 @@ export default {
         }
         const attrs = {
           width: newFO.getAttribute('width'),
-          height: newFO.getAttribute('height'),
+          height: newFO.getAttribute('height')
         };
         const keep = (attrs.width !== '0' || attrs.height !== '0');
         svgCanvas.addToSelection([ newFO ], true);
