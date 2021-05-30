@@ -76,7 +76,7 @@ export default {
           const y = opts.mouse_y / zoom;
 
           // We do our own formatting
-          let text = svgEditor.i18next.t(`${name}:text`, { x, y });
+          const text = svgEditor.i18next.t(`${name}:text`, { x, y });
           // Show the text using the custom alert function
           alert(text);
         }

@@ -1652,7 +1652,7 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   let iconColor = null; // iconColor for popup icon
   let iconAlpha = null; // iconAlpha for popup icon
   let iconImage = null; // iconImage popup icon
-  let moveBar = null; // drag bar
+  const moveBar = null; // drag bar
   Object.assign(that, {
     // public properties, methods, and callbacks
     commitCallback, // commitCallback function can be overridden to return the selected color to a method you specify when the user clicks "OK"

@@ -707,7 +707,7 @@ export const recalculateDimensions = function (selected) {
           x1: selected.getAttribute('x1'),
           y1: selected.getAttribute('y1'),
           x2: selected.getAttribute('x2'),
-          y2: selected.getAttribute('y2'),
+          y2: selected.getAttribute('y2')
         };
         // Fallthrough
       case 'polyline':

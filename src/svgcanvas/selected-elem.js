@@ -535,7 +535,7 @@ export const pushGroupProperty = function (g, undoable) {
 
   const gattrs = {
     filter: g.getAttribute('filter'),
-    opacity: g.getAttribute('opacity'),
+    opacity: g.getAttribute('opacity')
   };
   let gfilter; let gblur; let changes;
   const drawing = elementContext_.getDrawing();
@@ -719,7 +719,7 @@ export const convertToGroup = function (elem) {
     const svg = elem.firstChild;
     const pt = {
       x: svg.getAttribute('x'),
-      y: svg.getAttribute('y'),
+      y: svg.getAttribute('y')
     };
 
     // $(elem.firstChild.firstChild).unwrap();

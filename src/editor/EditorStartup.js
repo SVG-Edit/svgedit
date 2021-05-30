@@ -255,7 +255,7 @@ class EditorStartup {
     });
 
     function addListenerMulti(element, eventNames, listener) {
-      let events = eventNames.split(' ');
+      const events = eventNames.split(' ');
       for (let i=0, iLen=events.length; i<iLen; i++) {
         element.addEventListener(events[i], listener, false);
       }

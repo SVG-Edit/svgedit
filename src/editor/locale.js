@@ -79,7 +79,7 @@ export const putLocale = async function (givenParam, goodLangs) {
     debug: false,
     resources: {
       [langParam]: {
-        translation: module.default,
+        translation: module.default
       }
     }
   });

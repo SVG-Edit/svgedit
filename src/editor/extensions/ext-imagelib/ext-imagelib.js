@@ -507,7 +507,7 @@ export default {
             libOpts.style.display = 'none';
             back.style.display = 'block';
           });
-          let span = document.createElement("span");
+          const span = document.createElement("span");
           span.textContent = description;
           li.appendChild(span);
         });

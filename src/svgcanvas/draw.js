@@ -1020,7 +1020,7 @@ export const setContext = function (elem) {
 
   // Disable other elements
   const parentsUntil = getParentsUntil(elem, '#svgcontent');
-  let siblings = [];
+  const siblings = [];
   parentsUntil.forEach(function (parent) {
     const elements = Array.prototype.filter.call(parent.parentNode.children, function(child){
       return child !== parent;

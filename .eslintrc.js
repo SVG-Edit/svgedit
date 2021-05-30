@@ -33,10 +33,16 @@ module.exports = {
     "sonarjs/cognitive-complexity": [ "warn", 200 ],
     /** @todo no param reassign creates too many warnings but should be a warning */
     "no-param-reassign": "off",
+    /** @todo no use before define creates too many warnings but should be a warning */
+    "no-use-before-define": "off",
+    /** @todo camel case creates too many warnings but should be a warning */
+    "camelcase": "off",
+    "comma-dangle": [ "error" ],
     "node/no-unsupported-features/es-syntax": 0,
     "no-unused-vars": [ "error", { "argsIgnorePattern": "^_" } ],
     "sonarjs/no-duplicate-string": 0,
     "semi" : "error",
+    "prefer-const": "error",
     "no-trailing-spaces": "error",
     "array-bracket-spacing": [ "error", "always" ],
     "comma-spacing": "error",
@@ -45,7 +51,7 @@ module.exports = {
       "warn",
       { "allow": [ "warn", "error", "info", "table" ] }
     ],
-    "arrow-parens": [ "error", "always" ],
+    "arrow-parens": [ "error", "always" ]
   },
   overrides: [
     {
@@ -85,6 +91,7 @@ module.exports = {
       files: [ 'src/editor/locale/*.js' ],
       rules: { // lang files may have long length
         "max-len": "off",
+        "camelcase": "off"
       }
     }
   ]
