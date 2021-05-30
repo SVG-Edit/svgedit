@@ -23,7 +23,7 @@ export default {
         const filename = getFileNameFromTitle();
 
         // $.post(saveSvgAction, { output_svg: svg, filename });
-        let postData =  { output_svg: svg, filename };
+        const postData =  { output_svg: svg, filename };
         fetch(saveSvgAction, {
           method: "POST",
           body: JSON.stringify(postData)

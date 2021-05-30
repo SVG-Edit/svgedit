@@ -576,7 +576,7 @@ function groupBBFix(selected) {
   let ret; let copy;
 
   if (ref) {
-    let elements = [];
+    const elements = [];
     Array.prototype.forEach.call(ref.children, function (el) {
       const elem = el.cloneNode(true);
       elem.setAttribute('visibility', 'hidden');

@@ -281,11 +281,11 @@ class Editor extends EditorStartup {
       parentSelector = document;
     }
 
-    let parents = [];
+    const parents = [];
     let p = el.parentNode;
 
     while (p !== parentSelector) {
-      let o = p;
+      const o = p;
       parents.push(o);
       p = o.parentNode;
     }

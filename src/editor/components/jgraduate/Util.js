@@ -21,7 +21,7 @@ export function isObject(item) {
 }
 
 export function mergeDeep(target, source) {
-  let output = Object.assign({}, target);
+  const output = Object.assign({}, target);
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach((key) => {
       if (isObject(source[key])) {
@@ -146,7 +146,7 @@ export function getParents(elem, selector) {
 }
 
 export function getParentsUntil(elem, parent, selector) {
-  let parents = [];
+  const parents = [];
   let parentType;
   let selectorType;
   if ( parent ) {

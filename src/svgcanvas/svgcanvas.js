@@ -209,7 +209,7 @@ class SvgCanvas {
         return this._storage.has(element) && this._storage.get(element).has(key);
       },
       remove: function (element, key) {
-        let ret = this._storage.get(element).delete(key);
+        const ret = this._storage.get(element).delete(key);
         if (!this._storage.get(element).size === 0) {
           this._storage.delete(element);
         }
@@ -555,7 +555,7 @@ class SvgCanvas {
 
     const restoreRefElems = function (elem) {
       // Look for missing reference elements, restore any found
-      let attrs = {};
+      const attrs = {};
       refAttrs.forEach(function (item, _) {
         attrs[item] = elem.getAttribute(item);
       });

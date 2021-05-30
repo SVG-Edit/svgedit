@@ -221,7 +221,7 @@ export default {
             // setSelectMode();
           });
 
-          let oldToolSourceCancel = $id('tool_source_cancel');
+          const oldToolSourceCancel = $id('tool_source_cancel');
           const toolSourceCancel = oldToolSourceCancel.cloneNode(true);
           toolSourceCancel.style.display = 'none';
           toolSourceCancel.id = 'foreign_cancel';

@@ -4,7 +4,7 @@
 // can't use npm version as the dragmove is different.
 
 let _loaded = false;
-let _callbacks = [];
+const _callbacks = [];
 const _isTouch = window.ontouchstart !== undefined;
 
 export const dragmove = function(target, handler, parent, onStart, onEnd, onDrag) {
