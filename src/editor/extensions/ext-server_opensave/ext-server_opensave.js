@@ -23,7 +23,7 @@ const loadExtensionTranslation = async function (lang) {
 
 export default {
   name: 'server_opensave',
-  async init ({ $, decode64, encode64 }) {
+  async init ({ decode64, encode64 }) {
     const svgEditor = this;
     const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const {
@@ -262,7 +262,7 @@ export default {
         form.submit();
 
         rebuildInput(form);
-        await $.process_cancel(strings.uploading);
+        // await $.process_cancel(strings.uploading);
         cancelled = true;
         if($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
       }

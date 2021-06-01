@@ -98,7 +98,6 @@
     "core-js": "3.12.1",
     "elix": "15.0.0",
     "i18next": "20.3.0",
-    "jquery": "3.6.0",
     "jspdf": "2.3.1",
     "pathseg": "1.2.0",
     "regenerator-runtime": "0.13.7",

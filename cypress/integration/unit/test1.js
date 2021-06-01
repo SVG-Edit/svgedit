@@ -1,7 +1,4 @@
 /* eslint-disable max-len, no-console */
-import $ from 'jquery';
-window.$ = $;
-
 import SvgCanvas from '../../../instrumented/svgcanvas/svgcanvas.js';
 
 describe('Basic Module', function () {

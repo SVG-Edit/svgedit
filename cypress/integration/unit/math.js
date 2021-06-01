@@ -1,5 +1,3 @@
-import $ from 'jquery';
-window.$ = $;
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as math from '../../../instrumented/svgcanvas/math.js';
 

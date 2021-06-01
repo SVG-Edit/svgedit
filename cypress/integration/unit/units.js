@@ -1,5 +1,3 @@
-import $ from 'jquery';
-window.$ = $;
 import * as units from '../../../instrumented/common/units.js';
 
 describe('units', function () {

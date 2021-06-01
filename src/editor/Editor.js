@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-/* globals seConfirm seAlert $ */
+/* globals seConfirm seAlert */
 /**
 * The main module for the visual SVG this.
 *
@@ -14,12 +14,8 @@
 * @module SVGEditor
 */
 
-import jQuery from 'jquery/dist/jquery.slim.js';
-import jQueryPluginSVG from '../svgcanvas/jQuery.attr.js'; // Needed for SVG attribute
 import './components/index.js';
 import './dialogs/index.js';
-// Global Constant
-window.$ = jQueryPluginSVG(jQuery);
 
 import './touch.js';
 import { isMac } from '../common/browser.js';
@@ -1144,32 +1140,32 @@ class Editor extends EditorStartup {
   loadFromURL(url, { cache, noAlert } = {}) {
     return this.ready(() => {
       return new Promise((resolve, reject) => {
-        $.ajax({
-          url,
-          dataType: 'text',
-          cache: Boolean(cache),
-          beforeSend() {
-            $.process_cancel(this.i18next.t('notification.loadingImage'));
-          },
-          success(str) {
-            this.loadSvgString(str, { noAlert });
-          },
-          error(xhr, stat, err) {
-            if (xhr.status !== 404 && xhr.responseText) {
-              this.loadSvgString(xhr.responseText, { noAlert });
-              return;
+        fetch (url, { cache: cache ? 'force-cache' : 'no-cache' })
+          .then( (response) =>
+          {
+            if (!response.ok) {
+              if (noAlert) {
+                reject(new Error('URLLoadFail'));
+                return;
+              }
+              seAlert(this.i18next.t('notification.URLLoadFail') );
+              resolve();
             }
+            return response.text();
+          })
+          .then( (str) =>
+          {
+            this.loadSvgString(str, { noAlert });
+            return str;
+          })
+          .catch( (error) => {
             if (noAlert) {
               reject(new Error('URLLoadFail'));
               return;
             }
-            seAlert(this.i18next.t('notification.URLLoadFail') + ': \n' + err);
+            seAlert(this.i18next.t('notification.URLLoadFail') + ': \n' + error);
             resolve();
-          },
-          complete() {
-            if ($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
-          }
-        });
+          });
       });
     });
   }

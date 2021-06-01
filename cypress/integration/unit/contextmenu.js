@@ -1,5 +1,3 @@
-import $ from 'jquery';
-window.$ = $;
 import * as contextmenu from '../../../instrumented/editor/contextmenu.js';
 
 describe('contextmenu', function () {
