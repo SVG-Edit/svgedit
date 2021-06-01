@@ -14,12 +14,8 @@
 * @module SVGEditor
 */
 
-import jQuery from 'jquery/dist/jquery.slim.js';
-import jQueryPluginSVG from '../svgcanvas/jQuery.attr.js'; // Needed for SVG attribute
 import './components/index.js';
 import './dialogs/index.js';
-// Global Constant
-window.$ = jQueryPluginSVG(jQuery);
 
 import './touch.js';
 import { isMac } from '../common/browser.js';
