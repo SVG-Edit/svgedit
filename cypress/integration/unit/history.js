@@ -1,5 +1,3 @@
-import $ from 'jquery';
-window.$ = $;
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';

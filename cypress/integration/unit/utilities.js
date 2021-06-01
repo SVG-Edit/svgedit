@@ -1,6 +1,4 @@
 /* eslint-disable max-len */
-import $ from 'jquery';
-window.$ = $;
 import * as browser from '../../../instrumented/common/browser.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import { NS } from '../../../instrumented/common/namespaces.js';

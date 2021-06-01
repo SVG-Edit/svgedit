@@ -1,5 +1,3 @@
-import $ from 'jquery';
-window.$ = $;
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as sanitize from '../../../instrumented/svgcanvas/sanitize.js';
 

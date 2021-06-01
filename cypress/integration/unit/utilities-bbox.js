@@ -1,7 +1,5 @@
 /* eslint-disable max-len */
 import 'pathseg';
-import $ from 'jquery';
-window.$ = $;
 
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
