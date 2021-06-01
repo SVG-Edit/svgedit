@@ -854,7 +854,7 @@ class SvgCanvas {
 *   if extension of supplied name already exists
 * @returns {Promise<void>} Resolves to `undefined`
 */
-    this.addExtension = async function (name, extInitFunc, { $: jq, importLocale }) {
+    this.addExtension = async function (name, extInitFunc, { importLocale }) {
       if (typeof extInitFunc !== 'function') {
         throw new TypeError('Function argument expected for `svgcanvas.addExtension`');
       }
@@ -875,7 +875,6 @@ class SvgCanvas {
    * @see {@link module:svgcanvas.PrivateMethods} source for the other methods/properties
    */
       const argObj = canvas.mergeDeep(canvas.getPrivateMethods(), {
-        $: jq,
         importLocale,
         svgroot,
         svgcontent,

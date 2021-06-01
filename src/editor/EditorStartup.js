@@ -722,7 +722,7 @@ class EditorStartup {
             // eslint-disable-next-line no-unsanitized/method
             const imported = await import(`./extensions/${encodeURIComponent(extname)}/${encodeURIComponent(extname)}.js`);
             const { name = extname, init: initfn } = imported.default;
-            return this.addExtension(name, (initfn && initfn.bind(this)), { $, langParam: 'en' }); /** @todo  change to current lng */
+            return this.addExtension(name, (initfn && initfn.bind(this)), { langParam: 'en' }); /** @todo  change to current lng */
           } catch (err) {
             // Todo: Add config to alert any errors
             console.error('Extension failed to load: ' + extname + '; ', err);
@@ -746,7 +746,7 @@ class EditorStartup {
             // eslint-disable-next-line no-unsanitized/method
             const imported = await import(encodeURI(extPathName));
             const { name, init: initfn } = imported.default;
-            return this.addExtension(name, (initfn && initfn.bind(this)), { $ });
+            return this.addExtension(name, (initfn && initfn.bind(this)), {});
           } catch (err) {
             // Todo: Add config to alert any errors
             console.error('Extension failed to load: ' + extPathName + '; ', err);
