@@ -188,6 +188,7 @@ export class SeExportDialog extends HTMLElement {
           quality: this.value
         } });
         this.dispatchEvent(triggerEvent);
+        document.getElementById('se-export-dialog').setAttribute('dialog', 'close');
       }
     };
     const onChangeHandler = (e) => {
