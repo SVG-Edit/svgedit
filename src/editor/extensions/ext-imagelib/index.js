@@ -1,6 +1,7 @@
 const atags = document.querySelectorAll('a');
 Array.prototype.forEach.call(atags, function (aEle) {
   aEle.addEventListener('click', function (event) {
+    event.preventDefault();
     const { href } = event.currentTarget;
     const target = window.parent;
     const post = (message) => {

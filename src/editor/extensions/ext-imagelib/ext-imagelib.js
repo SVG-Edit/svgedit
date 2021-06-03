@@ -429,7 +429,7 @@ export default {
 
         const button = document.createElement('button');
         // eslint-disable-next-line max-len
-        button.innerHTML = '<img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />' + svgEditor.i18next.t('common.cancel');
+        button.innerHTML = svgEditor.i18next.t('common.cancel');
         browser.appendChild(button);
         button.addEventListener('click', function () {
           $id("imgbrowse_holder").style.display = 'none';
