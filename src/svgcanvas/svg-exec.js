@@ -519,7 +519,7 @@ export const importSvgString = function (xmlString) {
     const batchCmd = new BatchCommand('Import Image');
     let symbol;
     if (useExisting) {
-      ({ symbol } = svgContext_.getImportIds());
+      symbol = svgContext_.getImportIds(uid).symbol;
       ts = svgContext_.getImportIds(uid).xform;
     } else {
       // convert string into XML document
