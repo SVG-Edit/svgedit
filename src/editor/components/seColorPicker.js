@@ -618,15 +618,15 @@ div.jGraduate_Slider img {
     width: 18px;
   }
   #block {
-    height: 13px;
+    height: 17px;
     width: 14px;
     float: right;
     background-color: darkgrey;
   }
   #picker {
     background: var(--input-color);
-    height: 19px;
-    line-height: 19px;
+    height: 24px;
+    line-height: 24px;
     border-radius: 3px;
     width: 52px;
     display: flex;
