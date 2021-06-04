@@ -24,7 +24,6 @@ template.innerHTML = `
   }
   #palette_holder {
     overflow: hidden;
-    margin-top: 5px;
     padding: 5px;
     position: absolute;
     right: 15px;
