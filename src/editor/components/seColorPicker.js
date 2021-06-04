@@ -625,8 +625,8 @@ div.jGraduate_Slider img {
   }
   #picker {
     background: var(--input-color);
-    height: 24px;
-    line-height: 24px;
+    height: 23px;
+    line-height: 23px;
     border-radius: 3px;
     width: 52px;
     display: flex;
