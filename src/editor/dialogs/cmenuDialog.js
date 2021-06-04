@@ -306,8 +306,21 @@ export class SeCMenuDialog extends HTMLElement {
     const current = this;
     const onMenuOpenHandler = (e) => {
       e.preventDefault();
-      current.$dialog.style.top = e.pageY + 'px';
-      current.$dialog.style.left = e.pageX + 'px';
+      // Detect mouse position
+      let x = e.pageX;
+      let y = e.pageY;
+
+      const xOff = screen.width - 250; // menu width
+      const yOff = screen.height - (276 + 150); // menu height + bottom panel height and scroll bar
+
+      if (x > xOff) {
+        x = xOff;
+      }
+      if (y > yOff) {
+        y = yOff;
+      }
+      current.$dialog.style.top = y + 'px';
+      current.$dialog.style.left = x + 'px';
       current.$dialog.style.display = 'block';
     };
     const onMenuCloseHandler = (e) => {
