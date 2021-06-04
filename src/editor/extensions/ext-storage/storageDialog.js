@@ -21,7 +21,7 @@ template.innerHTML = `
     text-align: center;
     left: 50%;
     top: 50%;
-    max-width: 400px;
+    max-width: 440px;
     z-index: 50001;
     background: #5a6162;
     border: 1px outset #777;
@@ -60,12 +60,8 @@ template.innerHTML = `
         </label>     
       </div>
       <div id="dialog_buttons">
-        <button id="storage_ok">
-          <img class="svg_icon" src="./images/ok.svg" alt="icon" width="16" height="16" />
-        </button>
-        <button id="storage_cancel">
-          <img class="svg_icon" src="./images/cancel.svg" alt="icon" width="16" height="16" />
-        </button>
+        <button id="storage_ok"></button>
+        <button id="storage_cancel"></button>
       </div>
     </div>
   </elix-dialog>
@@ -136,10 +132,10 @@ export class SeStorageDialog extends HTMLElement {
       }
       break;
     case 'common-ok':
-      this.$okBtn.append(newValue);
+      this.$okBtn.textContent = newValue;
       break;
     case 'common-cancel':
-      this.$cancelBtn.append(newValue);
+      this.$cancelBtn.textContent = newValue;
       break;
     case 'notify-editor_pref_msg':
       node = this._shadowRoot.querySelector('#notificationNote');
