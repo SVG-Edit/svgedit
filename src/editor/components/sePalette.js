@@ -54,7 +54,7 @@ template.innerHTML = `
       overflow-x: scroll;
       padding: 0 5px;
       margin-top: 2px;
-      height: 30px;
+      height: 22px;
     }
   } 
   @media screen and (max-width:1250px) {
@@ -63,7 +63,7 @@ template.innerHTML = `
       overflow-x: scroll;
       padding: 0 5px;
       margin-top: 2px;
-      height: 30px;
+      height: 22px;
     }
   }
   @media screen and (max-width:540px) {
@@ -72,7 +72,7 @@ template.innerHTML = `
       overflow-x: scroll;
       padding: 0 5px;
       margin-top: 32px;
-      height: 30px;
+      height: 22px;
     }
   }   
   </style>

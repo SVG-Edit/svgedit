@@ -125,13 +125,18 @@ export class SeList extends HTMLElement {
   connectedCallback () {
     const currentObj = this;
     this.$dropdown.addEventListener('selectedindexchange', (e) => {
-      e.preventDefault();
       if (e?.detail?.selectedIndex !== undefined) {
         const value = this.$dropdown.selectedItem.getAttribute('value');
         const closeEvent = new CustomEvent('change', { detail: { value } });
         currentObj.dispatchEvent(closeEvent);
         currentObj.value = value;
       }
+    });
+    this.$dropdown.addEventListener('close', (_e) => {
+      /** @todo: with Chrome, selectedindexchange does not fire consistently
+      * unless you forec change in this close event
+      */
+      this.$dropdown.selectedIndex = this.$dropdown.currentIndex;
     });
   }
 }
