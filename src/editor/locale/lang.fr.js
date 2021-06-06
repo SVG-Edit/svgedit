@@ -146,7 +146,7 @@ export default {
     reorient_path: 'Réorienter le chemin',
     ungroup: 'Dégrouper les éléments',
     docprops: 'Propriétés du document',
-    editor_homepage: 'SVG-Edit Home Page',
+    editor_homepage: 'Page d\'accueil de SVG-Edit',
     move_bottom: 'Déplacer vers le bas',
     move_top: 'Déplacer vers le haut',
     node_clone: 'Cloner le nœud',
@@ -166,9 +166,9 @@ export default {
     move_down: "Reculer d'un plan",
     move_back: 'Placer au fond',
     tool_unlink_use: 'Break link to reference element (make unique)',
-    ellipse_circle_tool: 'Ellipse/Circle Tool',
+    ellipse_circle_tool: 'Outil Elipse/Cercle',
     square_rect_tool: 'Square/Rect Tool',
-    remember_this_choice: 'Remember this choice?',
+    remember_this_choice: 'Se souvenir de ce choix ?',
     remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
   },
   layers: {
@@ -259,7 +259,7 @@ export default {
     jgraduate_ellip: 'Ellip:',
     jgraduate_set_ellip: 'Click to set Ellip',
     jgraduate_angle: 'Angle:',
-    jgraduate_set_angle: 'Click to set Angle',
+    jgraduate_set_angle: 'Cliquez pour définire l\'angle Angle',
     jgraduate_deg: 'deg:',
     jgraduate_opac: 'Opac:',
     jgraduate_set_opac: 'Click to set Opac'
