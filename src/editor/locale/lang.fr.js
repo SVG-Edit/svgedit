@@ -169,7 +169,7 @@ export default {
     ellipse_circle_tool: 'Outil Elipse/Cercle',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Se souvenir de ce choix ?',
-    remember_this_choice_title: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
+    remember_this_choice_title: 'Si vous choisissez de désactiver le stockage tout en mémorisant ce choix, l\'URL changera afin d\'éviter de vous le demander à nouveau.'
   },
   layers: {
     layer: 'Calque',
@@ -217,7 +217,7 @@ export default {
     jpicker_title: 'Drag Markers To Pick A Color',
     jpicker_new_color: 'new',
     jpicker_current_color: 'current',
-    jpicker_tooltip_colors_new_color: 'New Color - Press &ldquo;OK&rdquo; To Commit',
+    jpicker_tooltip_colors_new_color: 'Nouvelle couleur - Appuyez sur &ldquo;OK&rdquo; pour valider',
     jpicker_tooltip_colors_current_color: 'Click To Revert To Original Color',
     jpicker_tooltip_buttons_ok: 'Commit To This Color Selection',
     jpicker_tooltip_buttons_cancel: 'Cancel And Revert To Original Color',
@@ -238,8 +238,8 @@ export default {
     jpicker_tooltip_hex_textbox: 'Enter A &ldquo;Hex&rdquo; Color Value (#000000-#ffffff)',
     jpicker_tooltip_hex_alpha: 'Enter A &ldquo;Alpha&rdquo; Value (#00-#ff)',
     jgraduate_solid_color: 'Solid Color',
-    jgraduate_linear_gradient: 'Linear Gradient',
-    jgraduate_radial_gradient: 'Radial Gradient',
+    jgraduate_linear_gradient: 'Dégradé linéaire',
+    jgraduate_radial_gradient: 'Dégradé radial',
     jgraduate_begin_point: 'Begin Point',
     jgraduate_enter_starting_x: 'Enter starting x value between 0.0 and 1.0',
     jgraduate_enter_starting_y: 'Enter starting y value between 0.0 and 1.0',
