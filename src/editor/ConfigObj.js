@@ -251,6 +251,7 @@ export default class ConfigObj {
         if (searchParams.has(`${prop}[color]`)) {
           // Restore back to original non-deparamed value to avoid color
           //  strings being converted to numbers
+          if(this.urldata[prop] === undefined) { this.urldata[prop] = {}; }
           this.urldata[prop].color = searchParams.get(`${prop}[color]`);
         }
       });
