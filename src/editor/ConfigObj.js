@@ -23,7 +23,6 @@ export default class ConfigObj {
       * Preferences.
       * @interface module:SVGEditor.Prefs
       * @property {string} [lang="en"] Two-letter language code. The language must exist in the Editor Preferences language list. Defaults to "en" if `locale.js` detection does not detect another language.
-      * @property {module:SVGEditor.IconSize} [iconsize="s" || "m"] Size of the toolbar icons. Will default to 's' if the window height is smaller than the minimum height and 'm' otherwise.
       * @property {string} [bkgd_color="#FFF"] Color hex for canvas background color. Defaults to white.
       * @property {string} [bkgd_url=""] Background raster image URL. This image will fill the background of the document; useful for tracing purposes.
       * @property {"embed"|"ref"} [img_save="embed"] Defines whether included raster images should be saved as Data URIs when possible, or as URL references. Settable in the Document Properties dialog.
@@ -41,7 +40,6 @@ export default class ConfigObj {
         * Will default to 's' if the window height is smaller than the minimum
         * height and 'm' otherwise.
         */
-      iconsize: '',
       bkgd_color: '#FFF',
       bkgd_url: '',
       // DOCUMENT PROPERTIES (DIALOG)
