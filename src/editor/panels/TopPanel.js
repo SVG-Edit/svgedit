@@ -681,7 +681,7 @@ class TopPanel {
    * @returns {void}
    */
   deleteSelected() {
-    if (!isNullish(this.editor.selectedElement) || this.multiselected) {
+    if (!isNullish(this.editor.selectedElement) || this.editor.multiselected) {
       this.editor.svgCanvas.deleteSelectedElements();
     }
   }
@@ -770,7 +770,7 @@ class TopPanel {
          <div class="toolset">
            <div class="tool_sep"></div>
            <se-button id="tool_clone" title="${i18next.t('tools.clone')}" shortcut="D" src="./images/clone.svg"></se-button>
-           <se-button id="tool_delete" title="${i18next.t('tools.del')}" shortcut="BACKSPACE" src="./images/delete.svg">
+           <se-button id="tool_delete" title="${i18next.t('tools.del')}" shortcut="Delete/Backspace" src="./images/delete.svg">
            </se-button>
          </div>
          <div class="toolset">
