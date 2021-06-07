@@ -102,6 +102,10 @@ class Editor extends EditorStartup {
       { key: [ 'alt+shift+arrowdown', true ], fn: () => { this.svgCanvas.cloneSelectedElements(0, 10); } },
       { key: [ 'alt+shift+arrowleft', true ], fn: () => { this.svgCanvas.cloneSelectedElements(-10, 0); } },
       { key: [ 'alt+shift+arrowright', true ], fn: () => { this.svgCanvas.cloneSelectedElements(10, 0); } },
+      { key: [ 'delete/backspace', true ], fn: () => {
+        if (!isNullish(this.selectedElement) || this.multiselected)
+          this.svgCanvas.deleteSelectedElements();
+      } },
       { key: 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer(); } },
       { key: modKey + 'a', fn: () => { this.svgCanvas.selectAllInCurrentLayer(); } },
       { key: modKey + 'x', fn: () => { this.cutSelected(); } },

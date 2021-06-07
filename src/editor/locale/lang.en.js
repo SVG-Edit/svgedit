@@ -138,7 +138,7 @@ export default {
     tool_source: 'Edit Source',
     wireframe_mode: 'Wireframe Mode',
     clone: 'Duplicate Element(s) [D]',
-    del: 'Delete Element(s) [Delete/Backspace]',
+    del: 'Delete Element(s)',
     group_elements: 'Group Elements [G]',
     make_link: 'Make (hyper)link',
     set_link_url: 'Set link URL (leave empty to remove)',
