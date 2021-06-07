@@ -179,15 +179,6 @@ template.innerHTML = `
             <option id="lang_zh-TW" value="zh-TW">繁體中文</option>
           </select>
         </label>
-        <label>
-          <span id="svginfo_icons"></span>
-          <select id="iconsize">
-            <option id="icon_small" value="s"></option>
-            <option id="icon_medium" value="m" selected="selected"></option>
-            <option id="icon_large" value="l"></option>
-            <option id="icon_xlarge" value="xl"></option>
-          </select>
-        </label>
         <fieldset id="change_background">
           <legend id="svginfo_change_background"></legend>
           <div id="bg_blocks"></div>
@@ -253,7 +244,6 @@ export class SeEditPrefsDialog extends HTMLElement {
     this.$saveBtn = this._shadowRoot.querySelector('#tool_prefs_save');
     this.$cancelBtn = this._shadowRoot.querySelector('#tool_prefs_cancel');
     this.$langSelect = this._shadowRoot.querySelector('#lang_select');
-    this.$iconSize = this._shadowRoot.querySelector('#iconsize');
     this.$bgBlocks = this._shadowRoot.querySelector('#bg_blocks');
     this.$bgURL = this._shadowRoot.querySelector('#canvas_bg_url');
     this.$gridSnappingOn = this._shadowRoot.querySelector('#grid_snapping_on');
@@ -272,11 +262,6 @@ export class SeEditPrefsDialog extends HTMLElement {
     this.setAttribute('common-cancel', i18next.t('common.cancel'));
     this.setAttribute('config-editor_prefs', i18next.t('config.editor_prefs'));
     this.setAttribute('config-language', i18next.t('config.language'));
-    this.setAttribute('config-icon_size', i18next.t('config.icon_size'));
-    this.setAttribute('config-icon_small', i18next.t('config.icon_small'));
-    this.setAttribute('config-icon_medium', i18next.t('config.icon_medium'));
-    this.setAttribute('config-icon_large', i18next.t('config.icon_large'));
-    this.setAttribute('config-icon_xlarge', i18next.t('config.icon_xlarge'));
     this.setAttribute('config-background', i18next.t('config.background'));
     this.setAttribute('common-url', i18next.t('common.url'));
     this.setAttribute('config-editor_bg_note', i18next.t('config.editor_bg_note'));
@@ -294,7 +279,7 @@ export class SeEditPrefsDialog extends HTMLElement {
    */
   static get observedAttributes () {
     // eslint-disable-next-line max-len
-    return [ 'dialog', 'lang', 'iconsize', 'canvasbg', 'bgurl', 'gridsnappingon', 'gridsnappingstep', 'gridcolor', 'showrulers', 'baseunit', 'common-ok', 'common-cancel', 'config-editor_prefs', 'config-language', 'config-icon_size', 'config-icon_small', 'config-icon_medium', 'config-icon_large', 'config-icon_xlarge', 'config-background', 'common-url', 'config-editor_bg_note', 'config-grid', 'config-snapping_onoff', 'config-snapping_stepsize', 'config-grid_color', 'config-units_and_rulers', 'config-show_rulers', 'config-base_unit' ];
+    return [ 'dialog', 'lang', 'canvasbg', 'bgurl', 'gridsnappingon', 'gridsnappingstep', 'gridcolor', 'showrulers', 'baseunit', 'common-ok', 'common-cancel', 'config-editor_prefs', 'config-language', 'config-background', 'common-url', 'config-editor_bg_note', 'config-grid', 'config-snapping_onoff', 'config-snapping_stepsize', 'config-grid_color', 'config-units_and_rulers', 'config-show_rulers', 'config-base_unit' ];
   }
   /**
    * @function attributeChangedCallback
@@ -318,9 +303,6 @@ export class SeEditPrefsDialog extends HTMLElement {
       break;
     case 'lang':
       this.$langSelect.value = newValue;
-      break;
-    case 'iconsize':
-      this.$iconSize.value = newValue;
       break;
     case 'canvasbg':
       if (!newValue) {
@@ -376,26 +358,6 @@ export class SeEditPrefsDialog extends HTMLElement {
       break;
     case 'config-language':
       node = this._shadowRoot.querySelector('#svginfo_lang');
-      node.textContent = newValue;
-      break;
-    case 'config-icon_size':
-      node = this._shadowRoot.querySelector('#svginfo_icons');
-      node.textContent = newValue;
-      break;
-    case 'config-icon_small':
-      node = this._shadowRoot.querySelector('#icon_small');
-      node.textContent = newValue;
-      break;
-    case 'config-icon_medium':
-      node = this._shadowRoot.querySelector('#icon_medium');
-      node.textContent = newValue;
-      break;
-    case 'config-icon_large':
-      node = this._shadowRoot.querySelector('#icon_large');
-      node.textContent = newValue;
-      break;
-    case 'config-icon_xlarge':
-      node = this._shadowRoot.querySelector('#icon_xlarge');
       node.textContent = newValue;
       break;
     case 'config-background':
@@ -457,20 +419,6 @@ export class SeEditPrefsDialog extends HTMLElement {
    */
   set lang (value) {
     this.setAttribute('lang', value);
-  }
-  /**
-   * @function get
-   * @returns {any}
-   */
-  get iconsize () {
-    return this.getAttribute('iconsize');
-  }
-  /**
-   * @function set
-   * @returns {void}
-   */
-  set iconsize (value) {
-    this.setAttribute('iconsize', value);
   }
   /**
    * @function get
@@ -600,7 +548,6 @@ export class SeEditPrefsDialog extends HTMLElement {
       const closeEvent = new CustomEvent('change', { detail: {
         lang: this.$langSelect.value,
         dialog: 'close',
-        iconsize: this.$iconSize.value,
         bgcolor: color,
         bgurl: this.$bgURL.value,
         gridsnappingon: this.$gridSnappingOn.checked,

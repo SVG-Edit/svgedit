@@ -114,7 +114,6 @@ svgEditor.setConfig({
   // lang: '',
   // Will default to 's' if the window height is smaller than the minimum
   //  height and 'm' otherwise
-  // iconsize: '',
   /**
   * When showing the preferences dialog, svg-editor.js currently relies
   * on `curPrefs` instead of `svgEditor.pref`, so allowing an override for
