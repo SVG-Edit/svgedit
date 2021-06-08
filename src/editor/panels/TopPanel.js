@@ -460,7 +460,9 @@ class TopPanel {
     if (undoMgr.getUndoStackSize() > 0) {
       undoMgr.undo();
       this.editor.layersPanel.populateLayers();
-      textActions.clear();
+      if(this.editor.svgCanvas.getMode() === 'textedit') {
+        textActions.clear();
+      }
     }
   }
 
