@@ -658,7 +658,7 @@ export const getBBox = function (elem) {
       // This is resolved in later versions of webkit, perhaps we should
       // have a featured detection for correct 'use' behavior?
       // ——————————
-      if (!isWebkit()) {
+      /* if (!isWebkit()) {
         const { x, y, width, height } = ret;
         const bb = {
           width,
@@ -667,7 +667,7 @@ export const getBBox = function (elem) {
           y: y + Number.parseFloat(selected.getAttribute('y') || 0)
         };
         ret = bb;
-      }
+      } */
     } else if (visElemsArr.includes(elname)) {
       if (selected) {
         try {
