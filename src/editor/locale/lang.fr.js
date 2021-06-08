@@ -259,7 +259,7 @@ export default {
     jgraduate_ellip: 'Ellip:',
     jgraduate_set_ellip: 'Click to set Ellip',
     jgraduate_angle: 'Angle:',
-    jgraduate_set_angle: 'Cliquez pour définire l\'angle',
+    jgraduate_set_angle: 'Cliquez pour définir l\'angle',
     jgraduate_deg: 'deg:',
     jgraduate_opac: 'Opac:',
     jgraduate_set_opac: 'Click to set Opac'
