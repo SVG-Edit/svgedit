@@ -456,10 +456,13 @@ class TopPanel {
    * @returns {void}
    */
   clickUndo() {
-    const { undoMgr } = this.editor.svgCanvas;
+    const { undoMgr, textActions } = this.editor.svgCanvas;
     if (undoMgr.getUndoStackSize() > 0) {
       undoMgr.undo();
       this.editor.layersPanel.populateLayers();
+      if(this.editor.svgCanvas.getMode() === 'textedit') {
+        textActions.clear();
+      }
     }
   }
 
