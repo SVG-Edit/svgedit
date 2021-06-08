@@ -322,7 +322,7 @@ class TopPanel {
         });
 
         if (tagName === "text") {
-          $id("text_panel").style.display = "inline-block";
+          $id("text_panel").style.display = 'block';
           $id("tool_italic").pressed = this.editor.svgCanvas.getItalic();
           $id("tool_bold").pressed = this.editor.svgCanvas.getBold();
           $id("tool_font_family").value = elem.getAttribute("font-family");
@@ -914,17 +914,19 @@ class TopPanel {
          </div>
        </div> <!-- line_panel -->
        <div id="text_panel">
-         <div class="toolset">
+          <div class="toolset">
            <se-button id="tool_bold" title="${i18next.t('properties.bold')}" src="./images/bold.svg" shortcut="B"></se-button>
            <se-button id="tool_italic" title="${i18next.t('properties.italic')}" src="./images/italic.svg" shortcut="I"></se-button>
+          </div>
+          <div class="toolset">
            <se-button id="tool_text_anchor_start" title="${i18next.t('properties.text_anchor_start')}" src="./images/anchor_start.svg">
            </se-button>
            <se-button id="tool_text_anchor_middle" title="${i18next.t('properties.text_anchor_middle')}" src="./images/anchor_middle.svg">
            </se-button>
            <se-button id="tool_text_anchor_end" title="${i18next.t('properties.text_anchor_end')}" src="./images/anchor_end.svg">
            </se-button>
-         </div>
-         <se-list id="tool_font_family" label="Font:">
+          </div>
+          <se-list id="tool_font_family" label="Font:">
            <se-list-item value="Serif" style="font-family:serif;">${i18next.t('properties.serif')}</se-list-item>
            <se-list-item value="Sans-serif" style="font-family:sans-serif;">${i18next.t('properties.sans_serif')}</se-list-item>
            <se-list-item value="Cursive" style="font-family:cursive;">${i18next.t('properties.cursive')}</se-list-item>
@@ -933,12 +935,12 @@ class TopPanel {
            <se-list-item value="Courier" style="font-family:courier;">${i18next.t('properties.courier')} </se-list-item>
            <se-list-item value="Helvetica" style="font-family:helvetica;">${i18next.t('properties.helvetica')}</se-list-item>
            <se-list-item value="Times" style="font-family:times;">${i18next.t('properties.times')}</se-list-item>
-         </se-list>
-         <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="${i18next.t('properties.font_size')}"
+          </se-list>
+          <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="${i18next.t('properties.font_size')}"
            src="./images/fontsize.svg"></se-spin-input>
-         <!-- Not visible, but still used -->
-         <input id="text" type="text" size="35" />
-       </div> <!-- text_panel -->
+          <!-- Not visible, but still used -->
+          <input id="text" type="text" size="35" />
+        </div> <!-- text_panel -->
        <!-- formerly gsvg_panel -->
        <div id="container_panel">
          <div class="tool_sep"></div>

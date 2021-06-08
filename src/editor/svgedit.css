@@ -326,8 +326,10 @@ hr {
   height: 34px;
 }
 #tools_top se-spin-input, #tools_top se-list {
-  margin-top: 5px;
+  margin-top: 0;
   height: 34px;
+  position: relative;
+  top: 5px;
 }
 
 #tools_top se-dropdown-list {
