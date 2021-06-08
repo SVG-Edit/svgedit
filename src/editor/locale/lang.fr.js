@@ -4,7 +4,7 @@ export default {
   common: {
     ok: 'OK',
     cancel: 'Annuler',
-    key_backspace: 'Retour Arr.',
+    key_backspace: 'Retour en Arrière',
     key_del: 'Suppr.',
     key_down: 'Bas',
     key_up: 'Haut',
@@ -166,7 +166,7 @@ export default {
     move_down: "Reculer d'un plan",
     move_back: 'Placer au fond',
     tool_unlink_use: 'Break link to reference element (make unique)',
-    ellipse_circle_tool: 'Outil Elipse/Cercle',
+    ellipse_circle_tool: 'Outil Ellipse/Cercle',
     square_rect_tool: 'Square/Rect Tool',
     remember_this_choice: 'Se souvenir de ce choix ?',
     remember_this_choice_title: 'Si vous choisissez de désactiver le stockage tout en mémorisant ce choix, l\'URL changera afin d\'éviter de vous le demander à nouveau.'
@@ -259,7 +259,7 @@ export default {
     jgraduate_ellip: 'Ellip:',
     jgraduate_set_ellip: 'Click to set Ellip',
     jgraduate_angle: 'Angle:',
-    jgraduate_set_angle: 'Cliquez pour définire l\'angle Angle',
+    jgraduate_set_angle: 'Cliquez pour définire l\'angle',
     jgraduate_deg: 'deg:',
     jgraduate_opac: 'Opac:',
     jgraduate_set_opac: 'Click to set Opac'
