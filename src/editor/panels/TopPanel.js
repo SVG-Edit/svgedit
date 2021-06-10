@@ -292,12 +292,14 @@ class TopPanel {
         $id("g_panel").style.display = 'block';
       }
       // siblings
-      const selements = Array.prototype.filter.call(elem.parentNode.children, function(child){
-        return child !== elem;
-      });
-      if (elem.parentNode.tagName === "a" && !selements.length) {
-        $id("a_panel").style.display = 'block';
-        linkHref = this.editor.svgCanvas.getHref(elem.parentNode);
+      if (elem.parentNode) {
+        const selements = Array.prototype.filter.call(elem.parentNode.children, function(child){
+          return child !== elem;
+        });
+        if (elem.parentNode.tagName === "a" && !selements.length) {
+          $id("a_panel").style.display = 'block';
+          linkHref = this.editor.svgCanvas.getHref(elem.parentNode);
+        }
       }
 
       // Hide/show the make_link buttons
