@@ -346,13 +346,8 @@ class Editor extends EditorStartup {
     $id('path_node_panel').style.display = (editmode) ? 'block' : 'none';
     if (editmode) {
       // Change select icon
-      const elements = document.getElementsByClassName("tool_button_current");
-      Array.from(elements).forEach(function (element) {
-        element.classList.add('tool_button_current');
-        element.classList.remove('tool_button');
-      });
-      $id('tool_select').classList.add('tool_button_current');
-      $id('tool_select').classList.remove('tool_button');
+      $id('tool_path').pressed = false;
+      $id('tool_select').pressed = true;
       this.multiselected = false;
       if (elems.length) {
         this.selectedElement = elems[0];
