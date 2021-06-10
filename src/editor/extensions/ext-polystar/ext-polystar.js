@@ -149,29 +149,31 @@ export default {
           let i = selElems.length;
           while (i--) {
             const elem = selElems[i];
-            let xpos = 0;
-            let ypos = 0;
-            if (elem.points) {
-              const list = elem.points;
-              const len = list.numberOfItems;
-              for (let i = 0; i < len; ++i) {
-                const pt = list.getItem(i);
-                xpos += parseFloat(pt.x);
-                ypos += parseFloat(pt.y);
+            if (elem.hasAttribute('edge')) {
+              let xpos = 0;
+              let ypos = 0;
+              if (elem.points) {
+                const list = elem.points;
+                const len = list.numberOfItems;
+                for (let i = 0; i < len; ++i) {
+                  const pt = list.getItem(i);
+                  xpos += parseFloat(pt.x);
+                  ypos += parseFloat(pt.y);
+                }
+                const cx = xpos / len;
+                const cy = ypos / len;
+                const edg = elem.getAttribute('edge');
+                const inradius = (edg / 2) * cot(Math.PI / sides);
+                const circumradius = inradius * sec(Math.PI / sides);
+                let points = "";
+                for (let s = 0; sides >= s; s++) {
+                  const angle = (2.0 * Math.PI * s) / sides;
+                  const x = circumradius * Math.cos(angle) + cx;
+                  const y = circumradius * Math.sin(angle) + cy;
+                  points += x + "," + y + " ";
+                }
+                elem.setAttribute("points", points);
               }
-              const cx = xpos / len;
-              const cy = ypos / len;
-              const edg = elem.getAttribute('edge');
-              const inradius = (edg / 2) * cot(Math.PI / sides);
-              const circumradius = inradius * sec(Math.PI / sides);
-              let points = "";
-              for (let s = 0; sides >= s; s++) {
-                const angle = (2.0 * Math.PI * s) / sides;
-                const x = circumradius * Math.cos(angle) + cx;
-                const y = circumradius * Math.sin(angle) + cy;
-                points += x + "," + y + " ";
-              }
-              elem.setAttribute("points", points);
             }
           }
         });
