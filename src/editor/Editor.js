@@ -417,11 +417,22 @@ class Editor extends EditorStartup {
       $id("change_image_url").style.display = 'block';
     } else {
       // regular URL
-      this.svgCanvas.embedImage(url, function (dataURI) {
-        // Couldn't embed, so show warning
-        $id('url_notice').style.display = (!dataURI) ? 'block' : 'none';
-        this.defaultImageURL = url;
-      });
+      const self = this;
+      const promised = this.svgCanvas.embedImage(url);
+      // eslint-disable-next-line promise/catch-or-return
+      promised
+        .then( function (dataURI) {
+          // eslint-disable-next-line promise/always-return
+          $id('url_notice').style.display = (!dataURI) ? 'block' : 'none';
+          // switch into "select" mode if we've clicked on an element
+          self.svgCanvas.setMode('select');
+          self.svgCanvas.selectOnly(self.svgCanvas.getSelectedElems(), true);
+        }, function (error) {
+          // eslint-disable-next-line no-console
+          console.log("error =", error);
+          seAlert(self.i18next.t('tools.no_embed'));
+          self.svgCanvas.deleteSelectedElements();
+        });
       $id("image_url").style.display = 'block';
       $id("change_image_url").style.display = 'none';
     }
