@@ -348,13 +348,14 @@ class Editor extends EditorStartup {
       // Change select icon
       $id('tool_path').pressed = false;
       $id('tool_select').pressed = true;
+      $id('tool_select').setAttribute('src', './images/select_node.svg');
       this.multiselected = false;
       if (elems.length) {
         this.selectedElement = elems[0];
       }
     } else {
       setTimeout(() => {
-        // setIcon('#tool_select', 'select');
+        $id('tool_select').setAttribute('src', './images/select.svg');
       }, 1000);
     }
   }
