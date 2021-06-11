@@ -968,7 +968,7 @@ class TopPanel {
        </div> <!-- a_panel -->
        <div id="path_node_panel">
          <div class="tool_sep"></div>
-        <se-button id="tool_node_link" title="${i18next.t('tools.node_link')}" src="./images/tool_node_link.svg" pressed="${true}">
+        <se-button id="tool_node_link" title="${i18next.t('tools.node_link')}" src="./images/tool_node_link.svg" pressed>
          </se-button>
          <div class="tool_sep"></div>
          <se-spin-input id="path_node_x" data-attr="x" size="4" title="${i18next.t('properties.node_x')}" label="x:">
