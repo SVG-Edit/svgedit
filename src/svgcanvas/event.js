@@ -528,6 +528,19 @@ export const mouseMoveEvent = function (evt) {
   });
 }; // mouseMove()
 
+/**
+*
+* @returns {void}
+*/
+export const mouseOutEvent = function () {
+  const svgCanvas = eventContext_.getCanvas();
+  const { $id } = svgCanvas;
+  if(eventContext_.getCurrentMode() !== 'select' && eventContext_.getStarted()) {
+    const event = new Event("mouseup");
+    $id('svgcanvas').dispatchEvent(event);
+  }
+};
+
 // - in create mode, the element's opacity is set properly, we create an InsertElementCommand
 // and store it on the Undo stack
 // - in move/resize mode, the element's attributes which were affected by the move/resize are

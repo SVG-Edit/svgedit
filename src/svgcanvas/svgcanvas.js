@@ -39,7 +39,7 @@ import {
   init as textActionsInit, textActionsMethod
 } from './text-actions.js';
 import {
-  init as eventInit, mouseMoveEvent, mouseUpEvent,
+  init as eventInit, mouseMoveEvent, mouseUpEvent, mouseOutEvent,
   dblClickEvent, mouseDownEvent, DOMMouseScrollEvent
 } from './event.js';
 import { init as jsonInit, getJsonFromSvgElements, addSVGElementsFromJson } from './json.js';
@@ -1313,6 +1313,7 @@ class SvgCanvas {
  * @returns {void}
  */
       const mouseUp = mouseUpEvent;
+      const mouseOut = mouseOutEvent;
 
       const dblClick = dblClickEvent;
 
@@ -1329,6 +1330,7 @@ class SvgCanvas {
       container.addEventListener('click', handleLinkInCanvas);
       container.addEventListener('dblclick', dblClick);
       container.addEventListener('mouseup', mouseUp);
+      container.addEventListener('mouseleave', mouseOut);
 
       // TODO(rafaelcastrocouto): User preference for shift key and zoom factor
       container.addEventListener('mousewheel', DOMMouseScrollEvent);
