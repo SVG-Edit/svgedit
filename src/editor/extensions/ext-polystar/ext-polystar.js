@@ -313,6 +313,7 @@ export default {
           const inradius =
             circumradius / RadiusMultiplier;
           newFO.setAttribute("r", circumradius);
+          newFO.setAttribute("r2", inradius);
           newFO.setAttribute('starRadiusMultiplier', RadiusMultiplier);
 
           let polyPoints = "";
