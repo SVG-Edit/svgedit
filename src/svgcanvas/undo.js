@@ -98,6 +98,24 @@ export const getUndoManager = function () {
           //    // Ok to replace above with this? `sib.before(elem);`
           //  }
           // }
+          if (cmd.elem.tagName === 'text'){
+            const [ dx, dy ] = [ cmd.newValues.x - cmd.oldValues.x,
+              cmd.newValues.y - cmd.oldValues.y ];
+
+            const tspans = cmd.elem.children;
+
+            for (let i = 0; i < tspans.length; i++){
+              let x = +tspans[i].getAttribute('x');
+              let y = +tspans[i].getAttribute('y');
+
+              const unapply = (eventType === EventTypes.AFTER_UNAPPLY);
+              x = unapply? x - dx: x + dx;
+              y = unapply? y - dy: y + dy;
+
+              tspans[i].setAttribute('x', x);
+              tspans[i].setAttribute('y', y);
+            }
+          }
         }
       }
     }

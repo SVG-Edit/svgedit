@@ -87,10 +87,10 @@ export class ToolButton extends HTMLElement {
       this.$img.setAttribute('src', newValue);
       break;
     case 'pressed':
-      if (newValue) {
-        this.$div.classList.add('pressed');
-      } else {
+      if (newValue === null) {
         this.$div.classList.remove('pressed');
+      } else {
+        this.$div.classList.add('pressed');
       }
       break;
     case 'size':
@@ -145,7 +145,7 @@ export class ToolButton extends HTMLElement {
     if (value) {
       this.setAttribute('pressed', 'true');
     } else {
-      this.removeAttribute('pressed', '');
+      this.removeAttribute('pressed');
     }
   }
   /**
@@ -165,7 +165,7 @@ export class ToolButton extends HTMLElement {
     if (value) {
       this.setAttribute('disabled', 'true');
     } else {
-      this.removeAttribute('disabled', '');
+      this.removeAttribute('disabled');
     }
   }
   /**

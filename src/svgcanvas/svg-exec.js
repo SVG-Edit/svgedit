@@ -368,6 +368,28 @@ export const setSvgString = function (xmlString, preventUndo) {
         svgCanvas.embedImage(val);
       }
     });
+    // Duplicate id replace changes
+    const nodes = content.querySelectorAll('[id]');
+    const ids = {};
+    const totalNodes = nodes.length;
+
+    for(let i=0; i<totalNodes; i++) {
+      const currentId = nodes[i].id ? nodes[i].id : "undefined";
+      if(isNaN(ids[currentId])) {
+        ids[currentId] = 0;
+      }
+      ids[currentId]++;
+    }
+
+    Object.entries(ids).forEach(([ key, value ]) => {
+      if (value > 1) {
+        const nodes = content.querySelectorAll('[id="'+key+'"]');
+        for(let i=1; i<nodes.length; i++) {
+          nodes[i].setAttribute('id', svgCanvas.getNextId());
+        }
+      }
+    });
+
 
     // Wrap child SVGs in group elements
     const svgElements = content.querySelectorAll('svg');
