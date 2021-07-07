@@ -571,16 +571,19 @@ export const pushGroupProperty = function (g, undoable) {
           // Clone the group's filter
           gfilter = drawing.copyElem(gfilter);
           findDefs().append(gfilter);
+
+          // const filterElem = getRefElem(gfilter);
+          const blurElem = getFeGaussianBlur(gfilter);
+          // Change this in future for different filters
+          const suffix = (blurElem?.tagName === 'feGaussianBlur') ? 'blur' : 'filter';
+          gfilter.id = elem.id + '_' + suffix;
+          elementContext_.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [ elem ]);
         }
       } else {
         gfilter = getRefElem(elem.getAttribute('filter'));
       }
       // const filterElem = getRefElem(gfilter);
       const blurElem = getFeGaussianBlur(gfilter);
-      // Change this in future for different filters
-      const suffix = (blurElem?.tagName === 'feGaussianBlur') ? 'blur' : 'filter';
-      gfilter.id = elem.id + '_' + suffix;
-      elementContext_.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [ elem ]);
 
       // Update blur value
       if (cblur) {
