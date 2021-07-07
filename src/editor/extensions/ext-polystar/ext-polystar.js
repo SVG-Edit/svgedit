@@ -29,6 +29,8 @@ export default {
   name,
   async init(_S) {
     const svgEditor = this;
+    const { ChangeElementCommand } = _S; // , svgcontent,
+    const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
     let selElems;
@@ -142,6 +144,8 @@ export default {
           while (i--) {
             const elem = selElems[i];
             if (elem.hasAttribute('r')) {
+              const oldPoint = elem.getAttribute('point');
+              const oldPoints = elem.getAttribute('points');
               const radialshift = elem.getAttribute('radialshift');
               let xpos = 0;
               let ypos = 0;
@@ -188,6 +192,7 @@ export default {
                   }
                 }
                 elem.setAttribute("points", polyPoints);
+                addToHistory(new ChangeElementCommand(elem, { 'point': oldPoint, 'points': oldPoints }));
               }
             }
           }
@@ -205,6 +210,8 @@ export default {
           while (i--) {
             const elem = selElems[i];
             if (elem.hasAttribute('edge')) {
+              const oldSides = elem.getAttribute('sides');
+              const oldPoints = elem.getAttribute('points');
               let xpos = 0;
               let ypos = 0;
               if (elem.points) {
@@ -228,6 +235,7 @@ export default {
                   points += x + "," + y + " ";
                 }
                 elem.setAttribute("points", points);
+                addToHistory(new ChangeElementCommand(elem, { 'sides': oldSides, 'points': oldPoints }));
               }
             }
           }
