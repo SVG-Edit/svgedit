@@ -877,6 +877,7 @@ export const mouseUpEvent = function (evt) {
       if (eventContext_.getCurrentMode() === 'path') {
         svgCanvas.pathActions.toEditMode(element);
       } else if (eventContext_.getCurConfig().selectNew) {
+        svgCanvas.setMode('select');
         svgCanvas.selectOnly([ element ], true);
       }
       // we create the insert command that is stored on the stack
