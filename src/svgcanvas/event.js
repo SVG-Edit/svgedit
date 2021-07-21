@@ -966,6 +966,9 @@ export const mouseDownEvent = function (evt) {
   evt.preventDefault();
 
   if (rightClick) {
+    if(eventContext_.getCurrentMode() === 'path'){
+      return;
+    }
     eventContext_.setCurrentMode('select');
     eventContext_.setLastClickPoint(pt);
   }
