@@ -7,6 +7,7 @@
 
 import { jsPDF } from 'jspdf/dist/jspdf.es.min.js';
 import 'svg2pdf.js/dist/svg2pdf.es.js';
+import html2canvas from 'html2canvas';
 import * as hstry from './history.js';
 import {
   text2xml, cleanupElement, findDefs, getHref, preventClickDefault,
@@ -863,36 +864,37 @@ export const exportPDF = async (
   const res = svgCanvas.getResolution();
   const orientation = res.w > res.h ? 'landscape' : 'portrait';
   const unit = 'pt'; // curConfig.baseUnit; // We could use baseUnit, but that is presumably not intended for export purposes
-
-  // Todo: Give options to use predefined jsPDF formats like "a4", etc. from pull-down (with option to keep customizable)
-  const doc = jsPDF({
-    orientation,
-    unit,
-    format: [ res.w, res.h ]
-    // , compressPdf: true
-  });
-  const docTitle = svgCanvas.getDocumentTitle();
-  doc.setProperties({
-    title: docTitle /* ,
-    subject: '',
-    author: '',
-    keywords: '',
-    creator: '' */
-  });
-  const { issues, issueCodes } = getIssues();
-  // const svg = this.svgCanvasToString();
-  // await doc.addSvgAsImage(svg)
-  await doc.svg(svgContext_.getSVGContent(), { x: 0, y: 0, width: res.w, height: res.h });
-
-  // doc.output('save'); // Works to open in a new
-  //  window; todo: configure this and other export
-  //  options to optionally work in this manner as
-  //  opposed to opening a new tab
-  outputType = outputType || 'dataurlstring';
-  const obj = { issues, issueCodes, exportWindowName, outputType };
-  obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
-  svgContext_.call('exportedPDF', obj);
-  return obj;
+  const iframe = document.createElement('iframe');
+  iframe.onload = function() {
+    const iframedoc=iframe.contentDocument||iframe.contentWindow.document;
+    const ele = svgContext_.getSVGContent();
+    const cln = ele.cloneNode(true);
+    iframedoc.body.appendChild(cln);
+    setTimeout(function(){
+      // eslint-disable-next-line promise/catch-or-return
+      html2canvas(iframedoc.body, { useCORS: true, allowTaint: true }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const doc = new jsPDF({
+          orientation: orientation,
+          unit: unit,
+          format: [ res.w, res.h ]
+        });
+        const docTitle = svgCanvas.getDocumentTitle();
+        doc.setProperties({
+          title: docTitle
+        });
+        doc.addImage(imgData, 'PNG', 0, 0, res.w, res.h);
+        iframe.parentNode.removeChild(iframe);
+        const { issues, issueCodes } = getIssues();
+        outputType = outputType || 'dataurlstring';
+        const obj = { issues, issueCodes, exportWindowName, outputType };
+        obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
+        svgContext_.call('exportedPDF', obj);
+        return obj;
+      });
+    }, 1000);
+  };
+  document.body.appendChild(iframe);
 };
 /**
 * Ensure each element has a unique ID.
