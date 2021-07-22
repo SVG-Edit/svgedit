@@ -778,51 +778,47 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
   const { issues, issueCodes } = getIssues();
   const svg = svgCanvas.svgCanvasToString();
 
-  if (!$id('export_canvas')) {
-    const canvasEx = document.createElement('CANVAS');
-    canvasEx.id = 'export_canvas';
-    canvasEx.style.display = 'none';
-    document.body.appendChild(canvasEx);
-  }
-  const c = $id('export_canvas');
-  c.style.width = svgCanvas.contentW + "px";
-  c.style.height = svgCanvas.contentH + "px";
-  const canvg = svgContext_.getcanvg();
-  const ctx = c.getContext('2d');
-  const v = canvg.fromString(ctx, svg);
-  // Render only first frame, ignoring animations.
-  await v.render();
-  // Todo: Make async/await utility in place of `toBlob`, so we can remove this constructor
-  return new Promise((resolve) => {
-    const dataURLType = type.toLowerCase();
-    const datauri = quality
-      ? c.toDataURL('image/' + dataURLType, quality)
-      : c.toDataURL('image/' + dataURLType);
-    let bloburl;
-    /**
- * Called when `bloburl` is available for export.
- * @returns {void}
- */
-    function done() {
-      const obj = {
-        datauri, bloburl, svg, issues, issueCodes, type: imgType,
-        mimeType, quality, exportWindowName
-      };
-      if (!opts.avoidEvent) {
-        svgContext_.call('exported', obj);
-      }
-      resolve(obj);
-    }
-    if (c.toBlob) {
-      c.toBlob((blob) => {
-        bloburl = createObjectURL(blob);
-        done();
-      }, mimeType, quality);
-      return;
-    }
-    bloburl = dataURLToObjectURL(datauri);
-    done();
-  });
+  const iframe = document.createElement('iframe');
+  iframe.onload = function() {
+    const iframedoc=iframe.contentDocument||iframe.contentWindow.document;
+    const ele = svgContext_.getSVGContent();
+    const cln = ele.cloneNode(true);
+    iframedoc.body.appendChild(cln);
+    setTimeout(function(){
+      // eslint-disable-next-line promise/catch-or-return
+      html2canvas(iframedoc.body, { useCORS: true, allowTaint: true }).then((canvas) => {
+        return new Promise((resolve) => {
+          const dataURLType = type.toLowerCase();
+          const datauri = quality
+            ? canvas.toDataURL('image/' + dataURLType, quality)
+            : canvas.toDataURL('image/' + dataURLType);
+          iframe.parentNode.removeChild(iframe);
+          let bloburl;
+
+          function done() {
+            const obj = {
+              datauri, bloburl, svg, issues, issueCodes, type: imgType,
+              mimeType, quality, exportWindowName
+            };
+            if (!opts.avoidEvent) {
+              svgContext_.call('exported', obj);
+            }
+            resolve(obj);
+          }
+          if (canvas.toBlob) {
+            canvas.toBlob((blob) => {
+              bloburl = createObjectURL(blob);
+              done();
+            }, mimeType, quality);
+            return;
+          }
+          bloburl = dataURLToObjectURL(datauri);
+          done();
+        });
+      });
+    }, 1000);
+  };
+  document.body.appendChild(iframe);
 };
 
 /**
