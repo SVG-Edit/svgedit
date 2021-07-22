@@ -36,7 +36,6 @@ const {
 } = hstry;
 
 let svgContext_ = null;
-let $id = null;
 let svgCanvas = null;
 
 /**
@@ -47,7 +46,6 @@ let svgCanvas = null;
 export const init = function (svgContext) {
   svgContext_ = svgContext;
   svgCanvas = svgContext_.getCanvas();
-  $id = svgCanvas.$id;
 };
 
 /**
