@@ -877,7 +877,10 @@ export const mouseUpEvent = function (evt) {
       if (eventContext_.getCurrentMode() === 'path') {
         svgCanvas.pathActions.toEditMode(element);
       } else if (eventContext_.getCurConfig().selectNew) {
-        svgCanvas.setMode('select');
+        const modes = [ 'circle', 'ellipse', 'square', 'rect', 'fhpath', 'line', 'fhellipse', 'fhrect', 'star', 'polygon' ];
+        if ( modes.indexOf(eventContext_.getCurrentMode()) !== -1) {
+          svgCanvas.setMode('select');
+        }
         svgCanvas.selectOnly([ element ], true);
       }
       // we create the insert command that is stored on the stack
