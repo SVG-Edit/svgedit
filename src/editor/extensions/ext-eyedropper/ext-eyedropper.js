@@ -82,14 +82,13 @@ export default {
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
         // Add the button and its handler(s)
-        const buttonTemplate = document.createElement("template");
         const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
         const key = svgEditor.i18next.t(`${name}:buttons.0.key`);
         // eslint-disable-next-line no-unsanitized/property
-        buttonTemplate.innerHTML = `
+        const buttonTemplate = `
         <se-button id="tool_eyedropper" title="${title}" src="./images/eye_dropper.svg" shortcut=${key}></se-button>
         `;
-        $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+        svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 12);
         $id('tool_eyedropper').addEventListener("click", () => {
           svgCanvas.setMode('eyedropper');
         });

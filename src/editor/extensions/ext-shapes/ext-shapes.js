@@ -43,13 +43,12 @@ export default {
     return {
       callback () {
         if ($id('tool_shapelib') === null) {
-          const buttonTemplate = document.createElement("template");
           // eslint-disable-next-line no-unsanitized/property
-          buttonTemplate.innerHTML = `
+          const buttonTemplate = `
           <se-explorerbutton id="tool_shapelib" title="${svgEditor.i18next.t(`${name}:buttons.0.title`)}" lib="./extensions/ext-shapes/shapelib/"
           src="./images/shapelib.svg"></se-explorerbutton>
           `;
-          $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+          canv.insertChildAtIndex($id('tools_left'), buttonTemplate, 9);
           $id('tool_shapelib').addEventListener("click", () => {
             canv.setMode(modeId);
           });

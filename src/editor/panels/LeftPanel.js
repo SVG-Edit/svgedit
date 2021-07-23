@@ -1,4 +1,5 @@
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
+import { insertChildAtIndex } from '../../svgcanvas/utilities.js';
 
 const { $id, $qa } = SvgCanvas;
 
@@ -196,30 +197,60 @@ class LeftPanel {
   init() {
     const { i18next } = this.editor;
     // add Left panel
+    const leftMenu = [
+      {
+        menu: `<se-button id="tool_select" title="${i18next.t('tools.mode_select')}" src="./images/select.svg"></se-button>`,
+        position: 1
+      },
+      {
+        menu: `<se-button id="tool_zoom" title="${i18next.t('tools.mode_zoom')}" src="./images/zoom.svg" shortcut="Z"></se-button>`,
+        position: 2
+      },
+      {
+        menu: `<se-button id="tool_fhpath" title="${i18next.t('tools.mode_fhpath')}" src="./images/pencil.svg" shortcut="Q"></se-button>`,
+        position: 3
+      },
+      {
+        menu: `<se-button id="tool_line" title="${i18next.t('tools.mode_line')}" src="./images/pen.svg" shortcut="L"></se-button>`,
+        position: 4
+      },
+      {
+        menu: `<se-button id="tool_path" title="${i18next.t('tools.mode_path')}" src="./images/path.svg" shortcut="P"></se-button>`,
+        position: 5
+      },
+      {
+        menu: `<se-flyingbutton id="tools_rect" title="${i18next.t('tools.square_rect_tool')}">
+        <se-button id="tool_rect" title="${i18next.t('tools.mode_rect')}" src="./images/rect.svg" shortcut="R"></se-button>
+        <se-button id="tool_square" title="${i18next.t('tools.mode_square')}" src="./images/square.svg"></se-button>
+        <se-button id="tool_fhrect" title="${i18next.t('tools.mode_fhrect')}" src="./images/fh_rect.svg"></se-button>
+      </se-flyingbutton>`,
+        position: 6
+      },
+      {
+        menu: `<se-flyingbutton id="tools_ellipse" title="${i18next.t('tools.ellipse_circle_tool')}">
+          <se-button id="tool_ellipse" title="${i18next.t('tools.mode_ellipse')}" src="./images/ellipse.svg" shortcut="E"></se-button>
+          <se-button id="tool_circle" title="${i18next.t('tools.mode_circle')}" src="./images/circle.svg"></se-button>
+          <se-button id="tool_fhellipse" title="${i18next.t('tools.mode_fhellipse')}" src="./images/fh_ellipse.svg"></se-button>
+        </se-flyingbutton>`,
+        position: 7
+      },
+      {
+        menu: `<se-button id="tool_text" title="${i18next.t('tools.mode_text')}" src="./images/text.svg" shortcut="T"></se-button>`,
+        position: 8
+      },
+      {
+        menu: `<se-button id="tool_image" title="${i18next.t('tools.mode_image')}" src="./images/image.svg"></se-button>`,
+        position: 11
+      }
+    ];
     const template = document.createElement("template");
-    // eslint-disable-next-line no-unsanitized/property
-    template.innerHTML = `
-    <div id="tools_left">
-     <se-button id="tool_select" title="${i18next.t('tools.mode_select')}" src="./images/select.svg"></se-button>
-     <se-button id="tool_zoom" title="${i18next.t('tools.mode_zoom')}" src="./images/zoom.svg" shortcut="Z"></se-button>
-     <se-button id="tool_fhpath" title="${i18next.t('tools.mode_fhpath')}" src="./images/pencil.svg" shortcut="Q"></se-button>
-     <se-button id="tool_line" title="${i18next.t('tools.mode_line')}" src="./images/pen.svg" shortcut="L"></se-button>
-     <se-button id="tool_path" title="${i18next.t('tools.mode_path')}" src="./images/path.svg" shortcut="P"></se-button>
-     <se-flyingbutton id="tools_rect" title="${i18next.t('tools.square_rect_tool')}">
-       <se-button id="tool_rect" title="${i18next.t('tools.mode_rect')}" src="./images/rect.svg" shortcut="R"></se-button>
-       <se-button id="tool_square" title="${i18next.t('tools.mode_square')}" src="./images/square.svg"></se-button>
-       <se-button id="tool_fhrect" title="${i18next.t('tools.mode_fhrect')}" src="./images/fh_rect.svg"></se-button>
-     </se-flyingbutton>
-     <se-flyingbutton id="tools_ellipse" title="${i18next.t('tools.ellipse_circle_tool')}">
-       <se-button id="tool_ellipse" title="${i18next.t('tools.mode_ellipse')}" src="./images/ellipse.svg" shortcut="E"></se-button>
-       <se-button id="tool_circle" title="${i18next.t('tools.mode_circle')}" src="./images/circle.svg"></se-button>
-       <se-button id="tool_fhellipse" title="${i18next.t('tools.mode_fhellipse')}" src="./images/fh_ellipse.svg"></se-button>
-     </se-flyingbutton>
-     <se-button id="tool_text" title="${i18next.t('tools.mode_text')}" src="./images/text.svg" shortcut="T"></se-button>
-     <se-button id="tool_image" title="${i18next.t('tools.mode_image')}" src="./images/image.svg"></se-button>
-    </div> <!-- tools_left -->
-     `;
+    template.innerHTML = `<div id="tools_left"></div> <!-- tools_left -->`;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
+    const leftMenuSort = leftMenu.sort((a, b) => (a.position > b.position) ? 1 : ((b.position > a.position) ? -1 : 0));
+    const parent = $id("tools_left");
+    leftMenuSort.forEach(function (value) {
+      insertChildAtIndex(parent, value.menu, value.position);
+    });
     // register actions for left panel
     $id("tool_select").addEventListener("click", this.clickSelect.bind(this));
     $id("tool_fhpath").addEventListener("click", this.clickFHPath.bind(this));

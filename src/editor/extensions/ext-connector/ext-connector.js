@@ -360,13 +360,11 @@ export default {
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
         const btitle = svgEditor.i18next.t(`${name}:langListTitle`);
-        // Add the button and its handler(s)
-        const buttonTemplate = document.createElement("template");
         // eslint-disable-next-line no-unsanitized/property
-        buttonTemplate.innerHTML = `
+        const buttonTemplate = `
         <se-button id="mode_connect" title="${btitle}" src="./images/conn.svg"></se-button>
         `;
-        $id('tools_left').append(buttonTemplate.content.cloneNode(true));
+        svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 13);
         $id('mode_connect').addEventListener("click", () => {
           svgCanvas.setMode('connector');
         });
