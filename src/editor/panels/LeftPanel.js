@@ -1,5 +1,5 @@
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
-import { insertChildAtIndex, stringToHTML } from '../../svgcanvas/utilities.js';
+import { insertChildAtIndex } from '../../svgcanvas/utilities.js';
 
 const { $id, $qa } = SvgCanvas;
 
