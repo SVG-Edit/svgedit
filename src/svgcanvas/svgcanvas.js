@@ -70,7 +70,7 @@ import {
   preventClickDefault, walkTree, getBBoxOfElementAsPath, convertToPath, encode64, decode64,
   getVisibleElements, dropXMLInternalSubset, init as utilsInit,
   getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible, isNullish, blankPageObjectURL,
-  $id, $qa, $qq, getFeGaussianBlur
+  $id, $qa, $qq, getFeGaussianBlur, stringToHTML, insertChildAtIndex
 } from './utilities.js';
 import {
   transformPoint, matrixMultiply, hasMatrixTransform, transformListToTransform,
@@ -188,6 +188,8 @@ class SvgCanvas {
     this.$id = $id;
     this.$qq = $qq;
     this.$qa = $qa;
+    this.stringToHTML = stringToHTML;
+    this.insertChildAtIndex = insertChildAtIndex;
     this.getClosest = getClosest;
     this.getParents = getParents;
     /** A storage solution aimed at replacing jQuerys data function.

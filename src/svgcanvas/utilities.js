@@ -1375,6 +1375,22 @@ export const mock = ({
   getRotationAngle = getRotationAngleUser;
 };
 
+export const stringToHTML = (str) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(str, 'text/html');
+  return doc.body.firstChild;
+};
+
+export const insertChildAtIndex = function(parent, child, index) {
+  const doc = stringToHTML(child);
+  if (!index) index = 0;
+  if (index >= parent.children.length) {
+    parent.appendChild(doc);
+  } else {
+    parent.insertBefore(doc, parent.children[index]);
+  }
+};
+
 // shortcuts to common DOM functions
 export const $id = (id) => document.getElementById(id);
 export const $qq = (sel) => document.querySelector(sel);

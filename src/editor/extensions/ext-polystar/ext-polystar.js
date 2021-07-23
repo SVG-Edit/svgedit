@@ -79,9 +79,8 @@ export default {
         const fbtitle = svgEditor.i18next.t(`${name}:title`);
         const title_star = svgEditor.i18next.t(`${name}:buttons.0.title`);
         const title_polygon = svgEditor.i18next.t(`${name}:buttons.1.title`);
-        const buttonTemplate = document.createElement("template");
         // eslint-disable-next-line no-unsanitized/property
-        buttonTemplate.innerHTML = `
+        const buttonTemplate = `
             <se-flyingbutton id="tools_polygon" title="${fbtitle}">
               <se-button id="tool_star" title="${title_star}" src="./images/star.svg">
               </se-button>
@@ -89,7 +88,7 @@ export default {
               </se-button>
             </se-flyingbutton>
           `;
-        $id("tools_left").append(buttonTemplate.content.cloneNode(true));
+        svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 10);
         // handler
         $id("tool_star").addEventListener("click", () => {
           if (this.leftPanel.updateLeftPanel("tool_star")) {
