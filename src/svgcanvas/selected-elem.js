@@ -155,43 +155,28 @@ export const moveUpDownSelected = function (dir) {
 * @returns {BatchCommand|void} Batch command for the move
 */
 
-export const moveSelectedElements = function (dx, dy, undoable) {
+export const moveSelectedElements = function (dx, dy, undoable = true) {
   const selectedElements = elementContext_.getSelectedElements();
   const currentZoom = elementContext_.getCurrentZoom();
   // if undoable is not sent, default to true
   // if single values, scale them to the zoom
-  if (dx.constructor !== Array) {
+  if (!Array.isArray(dx)) {
     dx /= currentZoom;
     dy /= currentZoom;
   }
-  undoable = undoable || true;
+
   const batchCmd = new BatchCommand('position');
   let i = selectedElements.length;
   while (i--) {
     const selected = selectedElements[i];
     if (!isNullish(selected)) {
-      // if (i === 0) {
-      //   selectedBBoxes[0] = utilsGetBBox(selected);
-      // }
-      // const b = {};
-      // for (const j in selectedBBoxes[i]) b[j] = selectedBBoxes[i][j];
-      // selectedBBoxes[i] = b;
-
       const xform = elementContext_.getSVGRoot().createSVGTransform();
       const tlist = getTransformList(selected);
 
       // dx and dy could be arrays
-      if (dx.constructor === Array) {
-        // if (i === 0) {
-        //   selectedBBoxes[0].x += dx[0];
-        //   selectedBBoxes[0].y += dy[0];
-        // }
+      if (Array.isArray(dx)) {
         xform.setTranslate(dx[i], dy[i]);
       } else {
-        // if (i === 0) {
-        //   selectedBBoxes[0].x += dx;
-        //   selectedBBoxes[0].y += dy;
-        // }
         xform.setTranslate(dx, dy);
       }
 

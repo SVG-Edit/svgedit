@@ -61,16 +61,14 @@ class EditorStartup {
   * @returns {void}
   */
   async init () {
-    if ('localStorage' in window) { // && onWeb removed so Webkit works locally
+    if ('localStorage' in window) {
       this.storage = window.localStorage;
     }
     this.configObj.load();
     const self = this;
     const { i18next } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
     this.i18next = i18next;
-    // eslint-disable-next-line no-unsanitized/method
     await import(`./components/index.js`);
-    // eslint-disable-next-line no-unsanitized/method
     await import(`./dialogs/index.js`);
     // allow to prepare the dom without display
     this.$svgEditor.style.visibility = 'hidden';
