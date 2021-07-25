@@ -52,13 +52,6 @@ const config = [ {
       file: 'dist/editor/xdomain-index.js',
       intro: 'const XDOMAIN = true;'
     }
-    /*
-    {
-      format: 'system',
-      dir: 'dist/editor/system',
-      inlineDynamicImports: true
-    }
-    */
   ],
   plugins: [
     copy({
@@ -74,27 +67,6 @@ const config = [ {
           transform: (contents) => contents.toString()
             .replace('<script type="module" src="index.js">', '<script type="module" src="xdomain-index.js">')
         },
-        /*
-        {
-          src: 'src/editor/index.html',
-          dest: ['dist/editor/system'],
-          rename: 'index.html',
-          transform: (contents) => contents.toString()
-            .replace('<script type="module" src="index.js">',
-              `<script>
-              const systemJsLoaderTag = document.createElement('script');
-              systemJsLoaderTag.src = './s.min.js';
-              systemJsLoaderTag.addEventListener('load', function () {
-                System.import('./index.js');
-                });
-              document.head.appendChild(systemJsLoaderTag);
-              `)
-        },
-        {
-          src: ['node_modules/systemjs/dist/s.min.js', 'node_modules/systemjs/dist/s.min.js.map'],
-          dest: 'dist/editor/system'
-        },
-        */
         { src: 'src/editor/images', dest },
         { src: 'src/editor/extensions/ext-shapes/shapelib', dest: dest.map((d) => `${d}/extensions/ext-shapes`) },
         { src: 'src/editor/embedapi.html', dest },
