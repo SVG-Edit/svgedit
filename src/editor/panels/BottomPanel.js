@@ -96,7 +96,6 @@ class BottomPanel {
       });
     }
     if (bNoStroke && bNoFill) {
-      // eslint-disable-next-line sonarjs/no-identical-functions
       buttonsNeedingFillAndStroke.forEach((btn) => {
         // if btn is pressed, change to select button
         if ($id(btn).pressed) {

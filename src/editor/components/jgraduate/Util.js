@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-collapsible-if */
 /**
  * @param {any} obj
  * @returns {any}

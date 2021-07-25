@@ -443,7 +443,6 @@ export const groupSelectedElements = function (type, urlArg) {
   let cmdStr = '';
   let url;
 
-  // eslint-disable-next-line sonarjs/no-small-switch
   switch (type) {
   case 'a': {
     cmdStr = 'Make hyperlink';
