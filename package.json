@@ -15,8 +15,6 @@
   "scripts": {
     "lint": "eslint --ext js,html,md .",
     "test": "run-s cypress:instrument cypress:test",
-    "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && nyc instrument --compact=false src instrumented",
-    "cypress:test": "start-server-and-test start:test http://localhost:8000/instrumented/editor/index.html cypress:run",
     "build": "rollup -c",
     "build:watch": "rollup -c --watch",
     "start": "web-dev-server --app-index src/editor/index.html --open --node-resolve",
@@ -24,6 +22,10 @@
     "start:watch": "web-dev-server --app-index src/editor/index.html --open --node-resolve --watch",
     "cypress:open": "run-p start cypress:open-no-start",
     "cypress:open-no-start": "cypress open",
+    "cypress:run": "rimraf \".nyc_output/*\" && cypress run -q && cypress:summary",
+    "cypress:summary": "nyc report --reporter=text-summary",
+    "cypress:instrument": "rimraf instrumented && cp-cli src instrumented && nyc instrument --compact=false src instrumented",
+    "cypress:test": "start-server-and-test start:test http://localhost:8000/instrumented/editor/index.html cypress:run",
     "start-allow-origin": "static -p 8001 -H '{\"Access-Control-Allow-Origin\": \"*\"}'",
     "start-embedded": "run-p start start-allow-origin",
     "open-docs-no-start": "open-cli http://localhost:8000/docs/jsdoc/",
@@ -35,9 +37,7 @@
     "build-and-open-docs": "run-s build-docs open-docs",
     "compress-images": "imageoptim \"src/editor/extensions/*.png\" \"src/editor/spinbtn/*.png\" \"src/editor/jgraduate/images/*.{png,gif}\" \"src/editor/images/*.png\"",
     "remark": "remark -q -f .",
-    "prepublishOnly": "run-s license-badges copy prep build-docs",
-    "cypress:run": "rimraf \".nyc_output/*\" && cypress run -q",
-    "report-text-summary": "nyc report --reporter=text-summary"
+    "prepublishOnly": "run-s license-badges copy prep build-docs"
   },
   "repository": {
     "type": "git",
