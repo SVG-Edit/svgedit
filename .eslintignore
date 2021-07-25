@@ -8,7 +8,6 @@ docs/jsdoc
 archive
 
 jsconfig.json
-mochawesome-report
 releases
 !.eslintrc.js
 !.ncurc.js
