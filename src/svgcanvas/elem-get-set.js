@@ -508,7 +508,6 @@ export const setStrokeWidthMethod = function (val) {
 * @param {Element} e
 * @returns {void}
 */
-  // eslint-disable-next-line sonarjs/no-identical-functions
   function addNonG(e) {
     if (e.nodeName !== 'g') {
       elems.push(e);

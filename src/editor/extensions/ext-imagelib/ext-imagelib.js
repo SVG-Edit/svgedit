@@ -455,7 +455,6 @@ export default {
           header.textContent = allLibs;
           back.style.display = 'none';
         });
-        // eslint-disable-next-line sonarjs/no-identical-functions
         back.addEventListener('touchend', function () {
           frame.setAttribute('src', 'about:blank');
           frame.style.display = 'none';
@@ -499,7 +498,6 @@ export default {
             libOpts.style.display = 'none';
             back.style.display = 'block';
           });
-          // eslint-disable-next-line sonarjs/no-identical-functions
           li.addEventListener('touchend', function () {
             frame.setAttribute('src', url);
             frame.style.display = 'block';

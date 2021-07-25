@@ -8,8 +8,6 @@ cypress.env.json
 coverage
 instrumented
 .nyc_output
-mochawesome-report
-mochawesome.json
 .vscode
 .eslintcache
 .DS_Store

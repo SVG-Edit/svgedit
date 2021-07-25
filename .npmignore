@@ -12,8 +12,6 @@ cypress.env.json
 coverage/**
 .nyc_output
 instrumented/**
-mochawesome-report/**
-mochawesome.json
 
 releases
 

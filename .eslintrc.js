@@ -8,10 +8,9 @@ module.exports = {
     "plugin:promise/recommended",
     "plugin:import/errors",
     "plugin:markdown/recommended",
-    "plugin:sonarjs/recommended",
     "eslint:recommended"
   ],
-  plugins: [ "jsdoc", "promise", "html", "import", "sonarjs" ],
+  plugins: [ "jsdoc", "promise", "html", "import" ],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: "module"
@@ -29,8 +28,6 @@ module.exports = {
     "one-var": [ "error", "never" ],
     /** @todo jsdoc should be made warn or error */
     "valid-jsdoc": "off",
-    /** @todo cognitive complexity should be much lower (25-50?) */
-    "sonarjs/cognitive-complexity": [ "warn", 200 ],
     /** @todo no param reassign creates too many warnings but should be a warning */
     "no-param-reassign": "off",
     /** @todo no use before define creates too many warnings but should be a warning */
@@ -40,7 +37,6 @@ module.exports = {
     "comma-dangle": [ "error" ],
     "node/no-unsupported-features/es-syntax": 0,
     "no-unused-vars": [ "error", { "argsIgnorePattern": "^_" } ],
-    "sonarjs/no-duplicate-string": 0,
     "semi" : "error",
     "prefer-const": "error",
     "no-trailing-spaces": "error",

@@ -526,7 +526,6 @@ class Editor extends EditorStartup {
       this.workarea.scroll();
     }
 
-    // eslint-disable-next-line sonarjs/no-collapsible-if
     if (this.configObj.urldata.storagePrompt !== true && this.storagePromptState === 'ignore') {
       if ($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
     }
@@ -614,7 +613,6 @@ class Editor extends EditorStartup {
     this.multiselected = (elems.length >= 2 && !isNullish(elems[1]));
     // Only updating fields for single elements for now
     if (!this.multiselected) {
-      // eslint-disable-next-line sonarjs/no-small-switch
       switch (mode) {
       case 'rotate': {
         const ang = this.svgCanvas.getRotationAngle(elem);

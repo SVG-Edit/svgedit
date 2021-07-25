@@ -295,7 +295,6 @@ class EditorStartup {
       if (evt.type === 'mouseup') { panning = false; }
       return false;
     });
-    // eslint-disable-next-line sonarjs/no-identical-functions
     $id('svgcanvas').addEventListener('mousemove', function(evt) {
       if (panning === false) { return true; }
 
