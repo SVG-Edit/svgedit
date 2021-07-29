@@ -300,7 +300,7 @@ export class ExplorerButton extends HTMLElement {
       this.$lib.innerHTML = Object.entries(this.data).map(([ key, path ]) => {
         const encoded = btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-          <svg viewBox="${vb}"><path fill="${fill}" stroke="#000" stroke-width="${stroke}" d="${path}"></path></svg>
+          <svg viewBox="${vb}"><path fill="${fill}" stroke="#f8bb00" stroke-width="${stroke}" d="${path}"></path></svg>
         </svg>`);
         return `<se-button data-shape="${key}"src="data:image/svg+xml;base64,${encoded}"></se-button>`;
       }).join('');
