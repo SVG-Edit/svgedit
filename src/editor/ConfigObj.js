@@ -183,7 +183,6 @@ export default class ConfigObj {
       'ext-polystar',
       'ext-storage',
       'ext-opensave'
-      // 'ext-helloworld',
     ];
     this.curConfig = {
       // We do not put on defaultConfig to simplify object copying

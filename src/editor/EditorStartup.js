@@ -50,10 +50,10 @@ class EditorStartup {
   /**
    *
    */
-  constructor () {
+  constructor (div) {
     this.extensionsAdded = false;
     this.messageQueue = [];
-    this.$svgEditor = $id('svg_editor');
+    this.$svgEditor = div??$id('svg_editor');
   }
   /**
   * Auto-run after a Promise microtask.
@@ -365,7 +365,7 @@ class EditorStartup {
       inp.blur();
     };
 
-    const liElems = document.getElementById('svg_editor').querySelectorAll('button, select, input:not(#text)');
+    const liElems = this.$svgEditor.querySelectorAll('button, select, input:not(#text)');
     Array.prototype.forEach.call(liElems, function(el){
       el.addEventListener("focus", (e) => {
         inp = e.currentTarget;
