@@ -205,7 +205,7 @@ class LayersPanel {
     window.addEventListener("mouseup", (_evt) => {
       this.sidedrag = -1;
       this.sidedragging = false;
-      $id("svg_editor").removeEventListener(
+      this.editor.$svgEditor.removeEventListener(
         "mousemove",
         this.resizeSidePanel.bind(this)
       );

@@ -40,8 +40,8 @@ class Editor extends EditorStartup {
   /**
    *
    */
-  constructor() {
-    super();
+  constructor(div = null) {
+    super(div);
     /**
     * @type {boolean}
     */

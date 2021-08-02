@@ -15,23 +15,14 @@ body {
 }
 
 html, body, div{
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -o-user-select: text;
   user-select: text;
-  /* this will work for QtWebKit in future */
-  -webkit-user-drag: text;
 }
 
-#svg_editor * {
+.svg_editor * {
   transform-origin: 0 0;
-  -moz-transform-origin: 0 0;
-  -o-transform-origin: 0 0;
-  -webkit-transform-origin: 0 0;
 }
 
-#svg_editor {
+.svg_editor {
   font-size: 8pt;
   font-family: Verdana, Helvetica, Arial;
   color: var(--text-color);
@@ -76,8 +67,7 @@ hr {
   width: 0;
   overflow: hidden;
   margin: 0;
-  -moz-user-select: none;
-  -webkit-user-select: none;
+  user-select: none;
 }
 
 /*
@@ -98,16 +88,12 @@ hr {
   margin-left: 6px;
   cursor: pointer;
   border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -moz-user-select: none;
-  -webkit-user-select: none;
+  user-select: none;
 }
 
 #sidepanel_handle * {
   cursor: pointer;
-  -moz-user-select: none;
-  -webkit-user-select: none;
+  user-select: none;
 }
 #layerbuttons {
   margin: 0;
