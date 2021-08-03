@@ -6,7 +6,6 @@ import PlainButton from 'elix/src/plain/PlainButton.js';
  * @class SePlainBorderButton
  * Button with a border in the Plain reference design system
  *
- * @inherits PlainButton
  */
 class SePlainBorderButton extends PlainButton {
   /**

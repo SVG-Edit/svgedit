@@ -36,7 +36,7 @@
     "build-and-open-docs": "run-s build-docs open-docs",
     "compress-images": "imageoptim \"src/editor/extensions/*.png\" \"src/editor/spinbtn/*.png\" \"src/editor/jgraduate/images/*.{png,gif}\" \"src/editor/images/*.png\"",
     "remark": "remark -q -f .",
-    "prepublishOnly": "run-s license-badges copy prep build-docs"
+    "prepublishOnly": "run-s build-docs"
   },
   "repository": {
     "type": "git",
