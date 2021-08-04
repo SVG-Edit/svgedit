@@ -18,7 +18,7 @@ class Rulers {
     this.svgCanvas = editor.svgCanvas;
     this.editor = editor;
     // add rulers component to the DOM
-    document.body.append(rulersTemplate.content.cloneNode(true));
+    this.editor.$svgEditor.append(rulersTemplate.content.cloneNode(true));
   }
   /**
    * @type {Module}

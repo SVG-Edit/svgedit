@@ -996,7 +996,7 @@ class TopPanel {
       "se-svg-source-editor-dialog"
     );
     newSeEditorDialog.setAttribute("id", "se-svg-editor-dialog");
-    document.body.append(newSeEditorDialog);
+    this.editor.$svgEditor.append(newSeEditorDialog);
     newSeEditorDialog.init(i18next);
     // register action to top panel buttons
     $id("tool_source").addEventListener(

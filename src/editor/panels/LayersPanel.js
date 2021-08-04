@@ -149,13 +149,13 @@ class LayersPanel {
     menuMore.setAttribute("id", "se-cmenu-layers-more");
     menuMore.value = "layer_moreopts";
     menuMore.setAttribute("leftclick", true);
-    document.body.append(menuMore);
+    this.editor.$svgEditor.append(menuMore);
     menuMore.init(i18next);
     const menuLayerBox = document.createElement("se-cmenu-layers");
     menuLayerBox.setAttribute("id", "se-cmenu-layers-list");
     menuLayerBox.value = "layerlist";
     menuLayerBox.setAttribute("leftclick", false);
-    document.body.append(menuLayerBox);
+    this.editor.$svgEditor.append(menuLayerBox);
     menuLayerBox.init(i18next);
     document
       .getElementById("layer_new")

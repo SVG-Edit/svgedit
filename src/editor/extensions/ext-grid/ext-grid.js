@@ -40,7 +40,7 @@ export default {
     let showGrid = svgEditor.configObj.curConfig.showGrid || false;
 
     hcanvas.style.display = 'none';
-    document.body.appendChild(hcanvas);
+    svgEditor.$svgEditor.appendChild(hcanvas);
 
     const canvasGrid = svgdoc.createElementNS(NS.SVG, 'svg');
     assignAttributes(canvasGrid, {

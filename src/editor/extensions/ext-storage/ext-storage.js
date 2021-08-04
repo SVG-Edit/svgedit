@@ -82,7 +82,7 @@ export default {
     // storageDialog added to DOM
     const storageBox = document.createElement('se-storage-dialog');
     storageBox.setAttribute('id', 'se-storage-dialog');
-    document.body.append(storageBox);
+    svgEditor.$svgEditor.append(storageBox);
     storageBox.init(svgEditor.i18next);
 
     // manage the change in the storageDialog

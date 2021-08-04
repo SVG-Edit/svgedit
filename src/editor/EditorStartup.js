@@ -74,34 +74,34 @@ class EditorStartup {
     this.$svgEditor.style.visibility = 'hidden';
     try {
       // add editor components to the DOM
-      document.body.append(editorTemplate.content.cloneNode(true));
+      this.$svgEditor.append(editorTemplate.content.cloneNode(true));
       // Image props dialog added to DOM
       const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
       newSeImgPropDialog.setAttribute('id', 'se-img-prop');
-      document.body.append(newSeImgPropDialog);
+      this.$svgEditor.append(newSeImgPropDialog);
       newSeImgPropDialog.init(this.i18next);
       // editor prefences dialoag added to DOM
       const newSeEditPrefsDialog = document.createElement('se-edit-prefs-dialog');
       newSeEditPrefsDialog.setAttribute('id', 'se-edit-prefs');
-      document.body.append(newSeEditPrefsDialog);
+      this.$svgEditor.append(newSeEditPrefsDialog);
       newSeEditPrefsDialog.init(this.i18next);
       // canvas menu added to DOM
       const dialogBox = document.createElement('se-cmenu_canvas-dialog');
       dialogBox.setAttribute('id', 'se-cmenu_canvas');
-      document.body.append(dialogBox);
+      this.$svgEditor.append(dialogBox);
       dialogBox.init(this.i18next);
       // alertDialog added to DOM
       const alertBox = document.createElement('se-alert-dialog');
       alertBox.setAttribute('id', 'se-alert-dialog');
-      document.body.append(alertBox);
+      this.$svgEditor.append(alertBox);
       // promptDialog added to DOM
       const promptBox = document.createElement('se-prompt-dialog');
       promptBox.setAttribute('id', 'se-prompt-dialog');
-      document.body.append(promptBox);
+      this.$svgEditor.append(promptBox);
       // Export dialog added to DOM
       const exportDialog = document.createElement('se-export-dialog');
       exportDialog.setAttribute('id', 'se-export-dialog');
-      document.body.append(exportDialog);
+      this.$svgEditor.append(exportDialog);
       exportDialog.init(this.i18next);
     } catch (err) {
       console.error(err);
