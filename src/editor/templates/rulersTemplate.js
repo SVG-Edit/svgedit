@@ -5,9 +5,11 @@ rulersTemplate.innerHTML = `
  
   /* Rulers
 ——————————————————————————————————————*/
-
+#rulers {
+  position: relative;
+  top: -14px;
+}
 #rulers > div {
-  position: absolute;
   background: var(--ruler-color);
   z-index: 1;
   overflow: hidden;
@@ -54,32 +56,20 @@ rulersTemplate.innerHTML = `
 #ruler_y > div {
   overflow: hidden;
 }
-/*
-@media screen and (max-width: 1250px) {
-  #rulers #ruler_corner,
-  #rulers #ruler_x {
-    top: 71px;
-  }
-  
-  #rulers #ruler_y {
-    top: 57px;
-  }
-}
-*/
   </style>
   <div id="rulers">
- <div id="ruler_corner"></div>
- <div id="ruler_x">
-   <div>
-     <canvas height="15"></canvas>
-   </div>
- </div>
- <div id="ruler_y">
-   <div>
-     <canvas width="15"></canvas>
-   </div>
- </div>
-</div>
+    <div id="ruler_corner"></div>
+    <div id="ruler_x">
+      <div>
+        <canvas height="15"></canvas>
+      </div>
+    </div>
+    <div id="ruler_y">
+      <div>
+        <canvas width="15"></canvas>
+      </div>
+    </div>
+  </div>
 `;
 
 export default rulersTemplate;

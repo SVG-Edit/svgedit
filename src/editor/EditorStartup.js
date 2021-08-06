@@ -41,7 +41,7 @@ const readySignal = () => {
   }
 };
 
-const { $id } = SvgCanvas;
+const { $id, $qq } = SvgCanvas;
 
 /**
  *
@@ -53,7 +53,7 @@ class EditorStartup {
   constructor (div) {
     this.extensionsAdded = false;
     this.messageQueue = [];
-    this.$svgEditor = div??$id('svg_editor');
+    this.$container = div??$id('svg_editor');
   }
   /**
   * Auto-run after a Promise microtask.
@@ -65,43 +65,44 @@ class EditorStartup {
       this.storage = window.localStorage;
     }
     this.configObj.load();
-    const self = this;
     const { i18next } = await putLocale(this.configObj.pref('lang'), this.goodLangs);
     this.i18next = i18next;
     await import(`./components/index.js`);
     await import(`./dialogs/index.js`);
-    // allow to prepare the dom without display
-    this.$svgEditor.style.visibility = 'hidden';
     try {
       // add editor components to the DOM
-      this.$svgEditor.append(editorTemplate.content.cloneNode(true));
+      this.$container.append(editorTemplate.content.cloneNode(true));
+      this.$svgEditor = $qq('.svg_editor');
+      // allow to prepare the dom without display
+      // JFH this.$svgEditor.style.visibility = 'hidden';
+      this.workarea = $id('workarea');
       // Image props dialog added to DOM
       const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
       newSeImgPropDialog.setAttribute('id', 'se-img-prop');
-      this.$svgEditor.append(newSeImgPropDialog);
+      this.$container.append(newSeImgPropDialog);
       newSeImgPropDialog.init(this.i18next);
       // editor prefences dialoag added to DOM
       const newSeEditPrefsDialog = document.createElement('se-edit-prefs-dialog');
       newSeEditPrefsDialog.setAttribute('id', 'se-edit-prefs');
-      this.$svgEditor.append(newSeEditPrefsDialog);
+      this.$container.append(newSeEditPrefsDialog);
       newSeEditPrefsDialog.init(this.i18next);
       // canvas menu added to DOM
       const dialogBox = document.createElement('se-cmenu_canvas-dialog');
       dialogBox.setAttribute('id', 'se-cmenu_canvas');
-      this.$svgEditor.append(dialogBox);
+      this.$container.append(dialogBox);
       dialogBox.init(this.i18next);
       // alertDialog added to DOM
       const alertBox = document.createElement('se-alert-dialog');
       alertBox.setAttribute('id', 'se-alert-dialog');
-      this.$svgEditor.append(alertBox);
+      this.$container.append(alertBox);
       // promptDialog added to DOM
       const promptBox = document.createElement('se-prompt-dialog');
       promptBox.setAttribute('id', 'se-prompt-dialog');
-      this.$svgEditor.append(promptBox);
+      this.$container.append(promptBox);
       // Export dialog added to DOM
       const exportDialog = document.createElement('se-export-dialog');
       exportDialog.setAttribute('id', 'se-export-dialog');
-      this.$svgEditor.append(exportDialog);
+      this.$container.append(exportDialog);
       exportDialog.init(this.i18next);
     } catch (err) {
       console.error(err);
@@ -123,8 +124,7 @@ class EditorStartup {
     this.mainMenu.init();
 
     const { undoMgr } = this.svgCanvas;
-    this.workarea = document.getElementById('workarea');
-    this.canvMenu = document.getElementById('se-cmenu_canvas');
+    this.canvMenu = $id('se-cmenu_canvas');
     this.exportWindow = null;
     this.defaultImageURL = this.configObj.curConfig.imgPath + 'logo.svg';
     const zoomInIcon = 'crosshair';
@@ -218,9 +218,9 @@ class EditorStartup {
 
     // fired when user wants to move elements to another layer
     let promptMoveLayerOnce = false;
-    $id('selLayerNames').addEventListener('change', function(evt) {
+    $id('selLayerNames').addEventListener('change', (evt) => {
       const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
-      const confirmStr = self.i18next.t('notification.QmoveElemsToLayer').replace('%s', destLayer);
+      const confirmStr = this.i18next.t('notification.QmoveElemsToLayer').replace('%s', destLayer);
       /**
     * @param {boolean} ok
     * @returns {void}
@@ -228,9 +228,9 @@ class EditorStartup {
       const moveToLayer = (ok) => {
         if (!ok) { return; }
         promptMoveLayerOnce = true;
-        self.svgCanvas.moveSelectedToLayer(destLayer);
-        self.svgCanvas.clearSelection();
-        self.layersPanel.populateLayers();
+        this.svgCanvas.moveSelectedToLayer(destLayer);
+        this.svgCanvas.clearSelection();
+        this.layersPanel.populateLayers();
       };
       if (destLayer) {
         if (promptMoveLayerOnce) {
@@ -244,12 +244,12 @@ class EditorStartup {
         }
       }
     });
-    $id('tool_font_family').addEventListener('change', function(evt) {
-      self.svgCanvas.setFontFamily(evt.detail.value);
+    $id('tool_font_family').addEventListener('change', (evt) => {
+      this.svgCanvas.setFontFamily(evt.detail.value);
     });
 
-    $id('seg_type').addEventListener('change', function(evt) {
-      self.svgCanvas.setSegType(evt.currentTarget.value);
+    $id('seg_type').addEventListener('change', (evt) => {
+      this.svgCanvas.setSegType(evt.currentTarget.value);
     });
 
     function addListenerMulti(element, eventNames, listener) {
@@ -259,35 +259,33 @@ class EditorStartup {
       }
     }
 
-    addListenerMulti($id('text'), 'keyup input', function(evt){
-      self.svgCanvas.setTextContent(evt.currentTarget.value);
+    addListenerMulti($id('text'), 'keyup input', (evt) => {
+      this.svgCanvas.setTextContent(evt.currentTarget.value);
     });
-    $id('image_url').addEventListener('change', function(evt) {
-      self.setImageURL(evt.currentTarget.value);
+    $id('image_url').addEventListener('change', (evt) => {
+      this.setImageURL(evt.currentTarget.value);
     });
 
-    $id('link_url').addEventListener('change', function(evt) {
+    $id('link_url').addEventListener('change', (evt) => {
       if (evt.currentTarget.value.length) {
-        self.svgCanvas.setLinkURL(evt.currentTarget.value);
+        this.svgCanvas.setLinkURL(evt.currentTarget.value);
       } else {
-        self.svgCanvas.removeHyperlink();
+        this.svgCanvas.removeHyperlink();
       }
     });
 
-    $id('g_title').addEventListener('change', function(evt) {
-      self.svgCanvas.setGroupTitle(evt.currentTarget.value);
+    $id('g_title').addEventListener('change', (evt) => {
+      this.svgCanvas.setGroupTitle(evt.currentTarget.value);
     });
-
-    const wArea = this.workarea;
 
     let lastX = null; let lastY = null;
     let panning = false; let keypan = false;
 
-    $id('svgcanvas').addEventListener('mouseup', function(evt) {
+    $id('svgcanvas').addEventListener('mouseup', (evt) => {
       if (panning === false) { return true; }
 
-      wArea.scrollLeft -= (evt.clientX - lastX);
-      wArea.scrollTop -= (evt.clientY - lastY);
+      this.workarea.scrollLeft -= (evt.clientX - lastX);
+      this.workarea.scrollTop -= (evt.clientY - lastY);
 
       lastX = evt.clientX;
       lastY = evt.clientY;
@@ -298,8 +296,8 @@ class EditorStartup {
     $id('svgcanvas').addEventListener('mousemove', function(evt) {
       if (panning === false) { return true; }
 
-      wArea.scrollLeft -= (evt.clientX - lastX);
-      wArea.scrollTop -= (evt.clientY - lastY);
+      this.workarea.scrollLeft -= (evt.clientX - lastX);
+      this.workarea.scrollTop -= (evt.clientY - lastY);
 
       lastX = evt.clientX;
       lastY = evt.clientY;
@@ -535,7 +533,11 @@ class EditorStartup {
         $id('tool_wireframe').click();
       }
 
-      $id('rulers').style.display = (this.configObj.curConfig.showRulers) ?  'block' : 'none';
+      if (this.configObj.curConfig.showRulers) {
+        $id('rulers').style.removeProperty('display');
+      } else {
+        $id('rulers').style.display = 'none';
+      }
 
       if (this.configObj.curConfig.showRulers) {
         $editDialog.setAttribute('showrulers', true);

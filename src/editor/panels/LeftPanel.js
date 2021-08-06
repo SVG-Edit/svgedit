@@ -244,7 +244,7 @@ class LeftPanel {
       }
     ];
     const template = document.createElement("template");
-    template.innerHTML = `<div id="tools_left"></div> <!-- tools_left -->`;
+    template.innerHTML = `<div id="tools_left"></div>`;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
     const leftMenuSort = leftMenu.sort((a, b) => (a.position > b.position) ? 1 : ((b.position > a.position) ? -1 : 0));
     const parent = $id("tools_left");

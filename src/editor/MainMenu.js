@@ -306,7 +306,6 @@ class MainMenu {
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg" alt="logo">
-        <!-- File-like buttons: New, Save, Source -->
         <se-menu-item id="tool_clear" label="${i18next.t('tools.new_doc')}" shortcut="N" src="./images/new.svg">
         </se-menu-item>
         <se-menu-item id="tool_open" label="${i18next.t('tools.open_doc')}" src="./images/open.svg">

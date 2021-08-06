@@ -457,23 +457,23 @@ class Editor extends EditorStartup {
   */
   updateCanvas(center, newCtr) {
     const zoom = this.svgCanvas.getZoom();
-    const wArea = this.workarea;
+    const { workarea } = this;
     const cnvs = $id("svgcanvas");
 
-    let w = parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")); let h = parseFloat(getComputedStyle(this.workarea, null).height.replace("px", ""));
+    let w = parseFloat(getComputedStyle(workarea, null).width.replace("px", "")); let h = parseFloat(getComputedStyle(workarea, null).height.replace("px", ""));
     const wOrig = w; const hOrig = h;
     const oldCtr = {
-      x: wArea.scrollLeft + wOrig / 2,
-      y: wArea.scrollTop + hOrig / 2
+      x: workarea.scrollLeft + wOrig / 2,
+      y: workarea.scrollTop + hOrig / 2
     };
     const multi = this.configObj.curConfig.canvas_expansion;
     w = Math.max(wOrig, this.svgCanvas.contentW * zoom * multi);
     h = Math.max(hOrig, this.svgCanvas.contentH * zoom * multi);
 
     if (w === wOrig && h === hOrig) {
-      this.workarea.style.overflow = 'hidden';
+      workarea.style.overflow = 'hidden';
     } else {
-      this.workarea.style.overflow = 'scroll';
+      workarea.style.overflow = 'scroll';
     }
 
     const oldCanY = parseFloat(getComputedStyle(cnvs, null).height.replace("px", "")) / 2;
@@ -508,22 +508,22 @@ class Editor extends EditorStartup {
 
     if (center) {
       // Go to top-left for larger documents
-      if (this.svgCanvas.contentW > parseFloat(getComputedStyle(wArea, null).width.replace("px", ""))) {
+      if (this.svgCanvas.contentW > parseFloat(getComputedStyle(workarea, null).width.replace("px", ""))) {
         // Top-left
-        this.workarea.scrollLeft = offset.x - 10;
-        this.workarea.scrollTop = offset.y - 10;
+        workarea.scrollLeft = offset.x - 10;
+        workarea.scrollTop = offset.y - 10;
       } else {
         // Center
-        wArea.scrollLeft = scrollX;
-        wArea.scrollTop = scrollY;
+        workarea.scrollLeft = scrollX;
+        workarea.scrollTop = scrollY;
       }
     } else {
-      wArea.scrollLeft = newCtr.x - wOrig / 2;
-      wArea.scrollTop = newCtr.y - hOrig / 2;
+      workarea.scrollLeft = newCtr.x - wOrig / 2;
+      workarea.scrollTop = newCtr.y - hOrig / 2;
     }
     if (this.configObj.curConfig.showRulers) {
       this.rulers.updateRulers(cnvs, zoom);
-      this.workarea.scroll();
+      workarea.scroll();
     }
 
     if (this.configObj.urldata.storagePrompt !== true && this.storagePromptState === 'ignore') {
@@ -706,8 +706,7 @@ class Editor extends EditorStartup {
   */
   zoomChanged(win, bbox, autoCenter) {
     const scrbar = 15;
-    const wArea = this.workarea;
-    const zInfo = this.svgCanvas.setBBoxZoom(bbox, parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) - scrbar, parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) - scrbar);
+    const zInfo = this.svgCanvas.setBBoxZoom(bbox, parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")) - scrbar, parseFloat(getComputedStyle(this.workarea, null).height.replace("px", "")) - scrbar);
     if (!zInfo) { return; }
     const zoomlevel = zInfo.zoom;
     const bb = zInfo.bbox;
@@ -857,9 +856,10 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   pasteInCenter() {
+    const { workarea } = this;
     const zoom = this.svgCanvas.getZoom();
-    const x = (this.workarea.scrollLeft + parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")) / 2) / zoom - this.svgCanvas.contentW;
-    const y = (this.workarea.scrollTop + parseFloat(getComputedStyle(this.workarea, null).height.replace("px", "")) / 2) / zoom - this.svgCanvas.contentH;
+    const x = (workarea.scrollLeft + parseFloat(getComputedStyle(workarea, null).width.replace("px", "")) / 2) / zoom - this.svgCanvas.contentW;
+    const y = (workarea.scrollTop + parseFloat(getComputedStyle(workarea, null).height.replace("px", "")) / 2) / zoom - this.svgCanvas.contentH;
     this.svgCanvas.pasteElements('point', x, y);
   }
 

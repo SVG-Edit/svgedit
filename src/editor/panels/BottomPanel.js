@@ -57,13 +57,13 @@ class BottomPanel {
         return;
       }
       const zoom = this.editor.svgCanvas.getZoom();
-      const wArea = this.editor.workarea;
+      const { workarea } = this.editor;
       this.editor.zoomChanged(window, {
         width: 0,
         height: 0,
         // center pt of scroll position
-        x: (wArea.scrollLeft + parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) / 2) / zoom,
-        y: (wArea.scrollTop + parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) / 2) / zoom,
+        x: (workarea.scrollLeft + parseFloat(getComputedStyle(workarea, null).width.replace("px", "")) / 2) / zoom,
+        y: (workarea.scrollTop + parseFloat(getComputedStyle(workarea, null).height.replace("px", "")) / 2) / zoom,
         zoom: zoomlevel
       }, true);
     }
@@ -210,7 +210,7 @@ class BottomPanel {
         <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="${i18next.t('properties.opacity')}"
           src="./images/opacity.svg"></se-spin-input>
         <se-palette id="palette"></se-palette>
-      </div> <!-- tools_bottom -->
+      </div>
     `;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
     $id('palette').addEventListener('change', this.handlePalette.bind(this));

@@ -1,4 +1,4 @@
-:root{
+:root {
   --main-bg-color: #72797A;
   --text-color: #000000;
   --border-color: #808080;
@@ -10,26 +10,50 @@
   --input-color: #B2B2B2;
 }
 
-body {
-  background: var(--main-bg-color);
-}
-
-html, body, div{
-  user-select: text;
-}
-
 .svg_editor * {
   transform-origin: 0 0;
 }
 
 .svg_editor {
+  display: grid;
+  grid-template-rows: 40px 1fr 40px;
+  grid-template-columns: 34px 1fr 10px;
+  grid-template-areas: "top top top" "left  workarea side" "left  bottom bottom";
   font-size: 8pt;
+  background: var(--main-bg-color);
   font-family: Verdana, Helvetica, Arial;
   color: var(--text-color);
+  user-select: text;
+  width: 100%;
+  height: 100%;
+}
+
+#svgroot {
+  user-select: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#workarea {
+  grid-area: workarea;
+  background-color: #A0A0A0;
+  border: 1px solid var(--border-color);
+  overflow: auto;
+  text-align: center;
+}
+
+#svgcanvas {
+  line-height: normal;
+  display: inline-block;
+  background: var(--canvas-bg-color);
+  text-align: center;
+  vertical-align: middle;
+  position:relative;
 }
 
 a {
-  color:var(--link-color);
+  color: var(--link-color);
 }
 
 hr {
@@ -37,14 +61,14 @@ hr {
   border-bottom: 1px solid var(--border-color);
 }
 
-#linkLabel > svg {
+#linkLabel>svg {
   height: 20px;
   padding-top: 4px;
 }
 
 #sidepanels {
   display: inline-block;
-  position:absolute;
+  position: absolute;
   top: 40px;
   bottom: 40px;
   right: 0;
@@ -54,13 +78,13 @@ hr {
   border-style: solid;
   border-width: 1px;
   border-left: none;
-  overflow-x:hidden;
-  overflow-y:visible;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 #layerpanel {
   display: inline-block;
-  position:relative;
+  position: relative;
   top: 0px;
   bottom: 0;
   left: 12px;
@@ -70,11 +94,6 @@ hr {
   user-select: none;
 }
 
-/*
-  border-style: solid;
-  border-color: #666;
-  border-width: 0px 0px 0px 1px;
-*/
 #sidepanel_handle {
   display: inline-block;
   position: absolute;
@@ -95,6 +114,7 @@ hr {
   cursor: pointer;
   user-select: none;
 }
+
 #layerbuttons {
   margin: 0;
   padding: 0;
@@ -175,12 +195,11 @@ hr {
 —————————————————————————————*/
 
 #main_button {
-  position: absolute;
-  top: 4px;
-  left: 5px;
-  z-index: 5;
+  grid-area: top;
   color: #fff;
   border-radius: 3px;
+  padding-block: 2px;
+  padding-left: 3px;
 }
 
 #main_button:hover {
@@ -218,7 +237,7 @@ hr {
   height: 28px;
 }
 
-#main_icon > div {
+#main_icon>div {
   float: left;
 }
 
@@ -258,15 +277,14 @@ hr {
   top: -9px;
 }
 
-#main_menu ul,
-#main_menu li {
+#main_menu ul, #main_menu li {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 #main_menu li {
-/*  height: 35px;*/
+  /*  height: 35px;*/
   line-height: 22px;
   padding-top: 7px;
   padding-left: 7px;
@@ -279,7 +297,7 @@ hr {
   background: #FFC;
 }
 
-#main_menu li > div {
+#main_menu li>div {
   float: left;
   padding-right: 5px;
 }
@@ -291,46 +309,21 @@ hr {
 /*—————————————————————————————*/
 
 #tools_top {
-  position: absolute;
-  left: 96px;
-  top: 2px;
-  min-height: 40px;
-  border-bottom: none;
-  overflow: visible;
-  right:1px;
-}
-
-#tools_top .tool_sep {
-  margin-top: 5px;
-}
-
-#tools_top > div > * {
-  float: left;
-}
-#tools_top se-input {
-  margin-top: 5px;
-  height: 34px;
-}
-#tools_top se-spin-input, #tools_top se-list {
-  margin-top: 0;
-  height: 34px;
+  grid-area: top;
+  display: flex;
+  flex-direction: row;
+  /* leave space for the main menu */ 
   position: relative;
-  top: 5px;
+  left: 95px; 
 }
-
-#tools_top se-dropdown-list {
-  margin-top: 5px;
-  height: 34px;
+#tools_top > *{
+  display:flex;
+  flex-direction: row;
 }
-
 /*—————————————————————————————*/
 
 #tools_bottom {
-  position: absolute;
-  left: 40px;
-  right: 0;
-  bottom: 0;
-  height: 33px;
+  grid-area: bottom;
   overflow: visible;
 }
 
@@ -342,25 +335,19 @@ hr {
 #tools_bottom se-spin-input {
   float: left;
   vertical-align: middle;
-  display:flex;
+  display: flex;
   align-items: center;
 }
-#tools_bottom elix-dropdown-list{
-  width:22px;
+
+#tools_bottom elix-dropdown-list {
+  width: 22px;
 }
 
 /*—————————————————————————————*/
 
 #tools_left {
-  position: absolute;
+  grid-area: left;
   border-right: none;
-  width: 32px;
-  top: 40px;
-  left: 1px;
-  margin-top: -2px;
-  padding-left: 2px;
-  background: --main-bg-color;
-  z-index: 4;
 }
 
 /*—————————————————————————————*/
@@ -381,7 +368,7 @@ hr {
   stroke: none;
 }
 
-#workarea.wireframe #canvasBackground > rect {
+#workarea.wireframe #canvasBackground>rect {
   fill: #FFF !important;
 }
 
@@ -395,6 +382,7 @@ hr {
 }
 
 /*TODO: Adjust position of rulers are not visible*/
+
 #cur_context_panel {
   position: absolute;
   top: 57px;
@@ -418,21 +406,10 @@ hr {
   text-decoration: underline;
 }
 
-div.toolset, div.toolset > * {
-  float: left;
+.toolset {
+  display: flex;
+  flex-direction: row;
 }
-
-div.toolset {
-  height: 34px;
-}
-
-div.toolset label span {
-/*  outline: 1px solid red;*/
-  padding-top: 3px;
-  display: inline-block;
-}
-
-
 
 input[type=text] {
   padding: 2px;
@@ -509,7 +486,7 @@ input[type=text] {
   margin-right: 0;
 }
 
- #main_menu li#tool_open,  #main_menu li#tool_import {
+#main_menu li#tool_open, #main_menu li#tool_import {
   position: relative;
   overflow: hidden;
 }
@@ -518,16 +495,15 @@ input[type=text] {
   overflow: hidden;
 }
 
-#tool_open input,
-#tool_import input,
-#tool_image input {
+#tool_open input, #tool_import input, #tool_image input {
   position: absolute;
   opacity: 0;
   font-size: 10em;
   top: -5px;
   right: -5px;
   margin: 0;
-  cursor: pointer; /* Sadly doesn't appear to have an effect */
+  cursor: pointer;
+  /* Sadly doesn't appear to have an effect */
 }
 
 .disabled {
@@ -536,12 +512,8 @@ input[type=text] {
 }
 
 .tool_sep {
-  width: 1px;
-  background: #888;
   border-left: 1px outset #EEE;
-  margin: 2px 3px;
-  padding: 0;
-  height: 24px;
+  margin: 6px 2px;
 }
 
 .width_label {
@@ -561,7 +533,6 @@ input[type=text] {
 .bottom-icon {
   width: 22px;
 }
-
 
 #palette {
   float: right;
@@ -598,7 +569,9 @@ input[type=text] {
   background: white;
 }
 
-#tool_opacity { right: 0;}
+#tool_opacity {
+  right: 0;
+}
 
 #tool_opacity {
   overflow: visible;
@@ -608,7 +581,7 @@ ul li.current {
   background-color: #F4E284;
 }
 
- #copyright {
+#copyright {
   text-align: right;
   padding-right: .3em;
 }
@@ -660,21 +633,8 @@ ul li.current {
   #workarea, #sidepanels {
     top: 70px !important;
   }
-  #rulers #ruler_corner,
-  #rulers #ruler_x, #tools_left {
-    top: 71px;
-  }
-
-  #rulers #ruler_y {
-    top: 86px;
-  }
-
   #cur_context_panel {
     top: 87px;
-  }
-
-  #selected_panel {
-    clear: right;
   }
 }
 

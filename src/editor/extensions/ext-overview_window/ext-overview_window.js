@@ -51,11 +51,11 @@ export default {
 
     // Define dynamic animation of the view box.
     const updateViewBox = function () {
-      const warea = document.getElementById('workarea');
-      const portHeight = parseFloat(getComputedStyle(warea, null).height.replace("px", ""));
-      const portWidth = parseFloat(getComputedStyle(warea, null).width.replace("px", ""));
-      const portX = warea.scrollLeft;
-      const portY = warea.scrollTop;
+      const { workarea } = svgEditor;
+      const portHeight = parseFloat(getComputedStyle(workarea, null).height.replace("px", ""));
+      const portWidth = parseFloat(getComputedStyle(workarea, null).width.replace("px", ""));
+      const portX = workarea.scrollLeft;
+      const portY = workarea.scrollTop;
       const windowWidth = parseFloat(getComputedStyle($id("svgcanvas"), null).width.replace("px", ""));
       const windowHeight = parseFloat(getComputedStyle($id("svgcanvas"), null).height.replace("px", ""));
       const overviewWidth = parseFloat(getComputedStyle($id("overviewMiniView"), null).width.replace("px", ""));
