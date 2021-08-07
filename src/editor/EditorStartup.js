@@ -74,7 +74,7 @@ class EditorStartup {
       this.$container.append(editorTemplate.content.cloneNode(true));
       this.$svgEditor = $qq('.svg_editor');
       // allow to prepare the dom without display
-      // JFH this.$svgEditor.style.visibility = 'hidden';
+      this.$svgEditor.style.visibility = 'hidden';
       this.workarea = $id('workarea');
       // Image props dialog added to DOM
       const newSeImgPropDialog = document.createElement('se-img-prop-dialog');
@@ -413,7 +413,6 @@ class EditorStartup {
     });
 
     this.workarea.addEventListener('scroll', () => {
-    // TODO: jQuery's scrollLeft/Top() wouldn't require a null check
       this.rulers.manageScroll();
     });
 
@@ -534,9 +533,9 @@ class EditorStartup {
       }
 
       if (this.configObj.curConfig.showRulers) {
-        $id('rulers').style.removeProperty('display');
+        this.rulers.display(true);
       } else {
-        $id('rulers').style.display = 'none';
+        this.rulers.display(false);
       }
 
       if (this.configObj.curConfig.showRulers) {

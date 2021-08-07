@@ -355,8 +355,6 @@ export default {
     };
 
     return {
-      /** @todo JFH special flag */
-      newUI: true,
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
         const btitle = svgEditor.i18next.t(`${name}:langListTitle`);

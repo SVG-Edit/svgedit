@@ -16,9 +16,13 @@
 
 .svg_editor {
   display: grid;
-  grid-template-rows: 40px 1fr 40px;
-  grid-template-columns: 34px 1fr 10px;
-  grid-template-areas: "top top top" "left  workarea side" "left  bottom bottom";
+  grid-template-rows: 40px 15px 1fr 40px;
+  grid-template-columns: 34px 15px 1fr 10px;
+  grid-template-areas: 
+    "top   top    top    top"
+    "left  corner rulerX side"
+    "left  rulerY workarea side"
+    "left  bottom bottom bottom";
   font-size: 8pt;
   background: var(--main-bg-color);
   font-family: Verdana, Helvetica, Arial;
@@ -195,16 +199,11 @@ hr {
 —————————————————————————————*/
 
 #main_button {
-  grid-area: top;
   color: #fff;
   border-radius: 3px;
   padding-block: 2px;
   padding-left: 3px;
-}
-
-#main_button:hover {
-  background-color: var(--icon-bg-color-hover);
-  color: #fff;
+  height: 34px;
 }
 
 #main_icon {
@@ -314,7 +313,6 @@ hr {
   flex-direction: row;
   /* leave space for the main menu */ 
   position: relative;
-  left: 95px; 
 }
 #tools_top > *{
   display:flex;
@@ -380,8 +378,6 @@ hr {
 #multiselected_panel .selected_tool {
   vertical-align: 12px;
 }
-
-/*TODO: Adjust position of rulers are not visible*/
 
 #cur_context_panel {
   position: absolute;

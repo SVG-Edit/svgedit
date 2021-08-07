@@ -306,23 +306,17 @@ class MainMenu {
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg" alt="logo">
-        <se-menu-item id="tool_clear" label="${i18next.t('tools.new_doc')}" shortcut="N" src="./images/new.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_open" label="${i18next.t('tools.open_doc')}" src="./images/open.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_save" label="${i18next.t('tools.save_doc')}" shortcut="S" src="./images/saveImg.svg">
-        </se-menu-item>
+        <se-menu-item id="tool_clear" label="${i18next.t('tools.new_doc')}" shortcut="N" src="./images/new.svg"></se-menu-item>
+        <se-menu-item id="tool_open" label="${i18next.t('tools.open_doc')}" src="./images/open.svg"></se-menu-item>
+        <se-menu-item id="tool_save" label="${i18next.t('tools.save_doc')}" shortcut="S" src="./images/saveImg.svg"></se-menu-item>
         <se-menu-item id="tool_import" label="${i18next.t('tools.import_doc')}" src="./images/importImg.svg"></se-menu-item>
         <se-menu-item id="tool_export" label="${i18next.t('tools.export_img')}" src="./images/export.svg"></se-menu-item>
-        <se-menu-item id="tool_docprops" label="${i18next.t('tools.docprops')}" shortcut="D" src="./images/docprop.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_editor_prefs" label="${i18next.t('config.editor_prefs')}" src="./images/editPref.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_editor_homepage" label="${i18next.t('tools.editor_homepage')}" src="./images/logo.svg">
-        </se-menu-item>
+        <se-menu-item id="tool_docprops" label="${i18next.t('tools.docprops')}" shortcut="D" src="./images/docprop.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_prefs" label="${i18next.t('config.editor_prefs')}" src="./images/editPref.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_homepage" label="${i18next.t('tools.editor_homepage')}" src="./images/logo.svg"></se-menu-item>
     </se-menu>
        `;
-    this.editor.$svgEditor.append(template.content.cloneNode(true));
+    $id('tools_top').prepend(template.content.cloneNode(true));
 
     // register action to main menu entries
     /**
