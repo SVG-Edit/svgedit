@@ -21,7 +21,7 @@ template.innerHTML = `
     padding:5px 10px 5px 7px; /* Firefox */
     line-height:17px; /* Safari */
     margin: 5px 20px 0 0;
-    border: 1px #808080 solid;
+    border: 1px var(--border-color) solid;
     border-top-color: #FFF;
     border-left-color: #FFF;
     border-radius: 5px;

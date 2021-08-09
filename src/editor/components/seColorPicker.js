@@ -404,9 +404,6 @@ div.jGraduate_StopSection {
   text-align: center;
 }
 
-
-
-
 input.jGraduate_Ok, input.jGraduate_Cancel {
   display: block;
   width: 100px;
@@ -421,7 +418,7 @@ input.jGraduate_Ok {
   float: left;
   height: 16px;
   width: 16px;
-  border: 1px solid #808080;
+  border: 1px solid var(--border-color);
   cursor: pointer;
   margin: 4px 4px 4px 30px;
 }

@@ -16,7 +16,7 @@
 
 .svg_editor {
   display: grid;
-  grid-template-rows: 40px 15px 1fr 40px;
+  grid-template-rows: auto 15px 1fr 40px;
   grid-template-columns: 34px 15px 1fr 10px;
   grid-template-areas: 
     "top   top    top    top"
@@ -311,12 +311,16 @@ hr {
   grid-area: top;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   /* leave space for the main menu */ 
   position: relative;
+  background-color: var(--main-bg-color);
 }
 #tools_top > *{
   display:flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  background-color: var(--main-bg-color);
 }
 /*—————————————————————————————*/
 
@@ -612,34 +616,4 @@ ul li.current {
 
 .dropdown li.tool_button {
   width: 24px;
-}
-
-@media screen and (max-width:1250px) {
-  .expanded #palette_holder {
-    left: 560px;
-    overflow-x: scroll;
-    padding: 0 5px;
-    margin-top: 2px;
-    height: 30px;
-  }
-  #tools_top {
-    height: 71px;
-    overflow-x: scroll;
-  }
-  #workarea, #sidepanels {
-    top: 70px !important;
-  }
-  #cur_context_panel {
-    top: 87px;
-  }
-}
-
-@media screen and (max-width:1100px) {
-  #tools_bottom:not(.expanded) #palette_holder {
-    left: 410px;
-    overflow-x: scroll;
-    padding: 0 5px;
-    margin-top: 2px;
-    height: 30px;
-  }
 }

@@ -289,7 +289,7 @@ class TopPanel {
       let linkHref = null;
       if (tagName === "a") {
         linkHref = this.editor.svgCanvas.getHref(elem);
-        $id("g_panel").style.display = 'block';
+        $id("g_panel").style.removeProperty('display');
       }
       // siblings
       if (elem.parentNode) {
@@ -297,7 +297,7 @@ class TopPanel {
           return child !== elem;
         });
         if (elem.parentNode.tagName === "a" && !selements.length) {
-          $id("a_panel").style.display = 'block';
+          $id("a_panel").style.removeProperty('display');
           linkHref = this.editor.svgCanvas.getHref(elem.parentNode);
         }
       }
@@ -312,7 +312,7 @@ class TopPanel {
 
       if (panels[tagName]) {
         const curPanel = panels[tagName];
-        $id(tagName + "_panel").style.display = 'block';
+        $id(tagName + "_panel").style.removeProperty('display');
 
         curPanel.forEach((item) => {
           let attrVal = elem.getAttribute(item);
@@ -367,7 +367,7 @@ class TopPanel {
           );
           // image
         } else if (tagName === "g" || tagName === "use") {
-          $id("container_panel").style.display = 'block';
+          $id("container_panel").style.removeProperty('display');
           const title = this.editor.svgCanvas.getTitle();
           const label = $id("g_title");
           label.value = title;
@@ -387,7 +387,7 @@ class TopPanel {
 
       // if (!isNullish(elem))
     } else if (this.multiselected) {
-      $id("multiselected_panel").style.display = 'block';
+      $id("multiselected_panel").style.removeProperty('display');
       menuItems.setAttribute("enablemenuitems", "#group");
       menuItems.setAttribute("disablemenuitems", "#ungroup");
     } else {

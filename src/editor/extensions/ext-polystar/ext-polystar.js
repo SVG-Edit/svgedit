@@ -44,7 +44,11 @@ export default {
      * @returns {void}
      */
     const showPanel = (on, tool) => {
-      $id(`${tool}_panel`).style.display = on ? "block" : "none";
+      if (on) {
+        $id(`${tool}_panel`).style.removeProperty('display');
+      } else {
+        $id(`${tool}_panel`).style.display = 'none';
+      }
     };
 
     /**
