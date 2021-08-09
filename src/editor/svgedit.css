@@ -350,6 +350,7 @@ hr {
 #tools_left {
   grid-area: left;
   border-right: none;
+  overflow-y: scroll;
 }
 
 /*—————————————————————————————*/

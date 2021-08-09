@@ -1,6 +1,6 @@
 {
   "name": "svgedit",
-  "version": "7.0.0-beta.3",
+  "version": "7.0.0-beta.4",
   "description": "Powerful SVG-Editor for your browser ",
   "main": "dist/Editor.js",
   "module": "dist/Editor.js",
@@ -36,7 +36,7 @@
     "build-and-open-docs": "run-s build-docs open-docs",
     "compress-images": "imageoptim \"src/editor/extensions/*.png\" \"src/editor/spinbtn/*.png\" \"src/editor/jgraduate/images/*.{png,gif}\" \"src/editor/images/*.png\"",
     "remark": "remark -q -f .",
-    "prepublishOnly": "run-s build-docs"
+    "prepublishOnly": "run-s build-docs build"
   },
   "repository": {
     "type": "git",
