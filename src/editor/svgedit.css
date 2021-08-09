@@ -32,6 +32,13 @@
   height: 100%;
 }
 
+/* on smaller screen, allow 2 lines for the toolbar */
+@media screen and (max-width:1250px) {
+  .svg_editor {
+    grid-template-rows: minmax(80px, auto) 15px 1fr 40px;
+  }
+} 
+
 #svgroot {
   user-select: none;
   position: absolute;
