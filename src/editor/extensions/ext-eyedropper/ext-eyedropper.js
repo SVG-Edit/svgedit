@@ -29,6 +29,7 @@ export default {
   name,
   async init(S) {
     const svgEditor = this;
+    const { imgPath } = svgEditor.configObj.curConfig;
     await loadExtensionTranslation(svgEditor);
     const { ChangeElementCommand } = S; // , svgcontent,
     // svgdoc = S.svgroot.parentNode.ownerDocument,
@@ -86,7 +87,7 @@ export default {
         const key = svgEditor.i18next.t(`${name}:buttons.0.key`);
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
-        <se-button id="tool_eyedropper" title="${title}" src="./images/eye_dropper.svg" shortcut=${key}></se-button>
+        <se-button id="tool_eyedropper" title="${title}" src="${imgPath}/eye_dropper.svg" shortcut=${key}></se-button>
         `;
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 12);
         $id('tool_eyedropper').addEventListener("click", () => {

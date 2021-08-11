@@ -28,6 +28,7 @@ export default {
   name,
   async init ({ NS, getTypeMap }) {
     const svgEditor = this;
+    const { imgPath } = svgEditor.configObj.curConfig;
     await loadExtensionTranslation(svgEditor);
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
@@ -167,14 +168,13 @@ export default {
 
         // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-          <se-button id="view_grid" title="${title}" src="./images/grid.svg"></se-button>
+          <se-button id="view_grid" title="${title}" src="${imgPath}/grid.svg"></se-button>
         `;
         $id('editor_panel').append(buttonTemplate.content.cloneNode(true));
         $id('view_grid').addEventListener("click", () => {
           svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid;
           gridUpdate();
         });
-
         if (showGrid) {
           gridUpdate();
         }

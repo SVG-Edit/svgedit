@@ -7,7 +7,7 @@ template.innerHTML = `
   </style>
   <elix-menu-item>
     <div style="display:flex; align-items: center;">
-      <img src="./images/logo.svg" alt="icon" style="display:none;" width="24"/>
+      <img src="logo.svg" alt="icon" style="display:none;" width="24"/>
       <span style="margin-left: 7px;"></span>
     </div>
   </elix-menu-item>

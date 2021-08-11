@@ -71,7 +71,7 @@ template.innerHTML = `
   <slot></slot>
 </div>
     <div class="menu-button">
-      <img class="button-icon" src="./images/logo.svg" alt="icon">
+      <img class="button-icon" src="logo.svg" alt="icon">
       <div class="handle"></div>
     </div>
    

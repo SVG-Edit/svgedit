@@ -31,6 +31,7 @@ export default {
     const { svgCanvas } = svgEditor;
     const { getElem, $id, mergeDeep } = svgCanvas;
     const { svgroot } = S;
+    const { imgPath } = svgEditor.configObj.curConfig;
     const addElem = svgCanvas.addSVGElementFromJson;
     const selManager = S.selectorManager;
     await loadExtensionTranslation(svgEditor);
@@ -360,7 +361,7 @@ export default {
         const btitle = svgEditor.i18next.t(`${name}:langListTitle`);
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
-        <se-button id="mode_connect" title="${btitle}" src="./images/conn.svg"></se-button>
+        <se-button id="mode_connect" title="${btitle}" src="${imgPath}/conn.svg"></se-button>
         `;
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 13);
         $id('mode_connect').addEventListener("click", () => {

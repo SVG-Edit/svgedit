@@ -342,20 +342,25 @@ class Editor extends EditorStartup {
   * @param {module:svgcanvas.SvgCanvas#event:selected} elems
   * @returns {void}
   */
-  togglePathEditMode(editmode, elems) {
-    $id('path_node_panel').style.display = (editmode) ? 'block' : 'none';
-    if (editmode) {
+  togglePathEditMode(editMode, elems) {
+    const { imgPath } = this.configObj.curConfig;
+    if (editMode) {
+      $id('path_node_panel').style.removeProperty('display');
+    } else {
+      $id('path_node_panel').style.display = 'none';
+    }
+    if (editMode) {
       // Change select icon
       $id('tool_path').pressed = false;
       $id('tool_select').pressed = true;
-      $id('tool_select').setAttribute('src', './images/select_node.svg');
+      $id('tool_select').setAttribute('src', `${imgPath}/select_node.svg`);
       this.multiselected = false;
       if (elems.length) {
         this.selectedElement = elems[0];
       }
     } else {
       setTimeout(() => {
-        $id('tool_select').setAttribute('src', './images/select.svg');
+        $id('tool_select').setAttribute('src', `${imgPath}/select.svg`);
       }, 1000);
     }
   }

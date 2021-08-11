@@ -126,7 +126,7 @@ class EditorStartup {
     const { undoMgr } = this.svgCanvas;
     this.canvMenu = $id('se-cmenu_canvas');
     this.exportWindow = null;
-    this.defaultImageURL = this.configObj.curConfig.imgPath + 'logo.svg';
+    this.defaultImageURL = `${this.configObj.curConfig.imgPath}/logo.svg`;
     const zoomInIcon = 'crosshair';
     const zoomOutIcon = 'crosshair';
     this.uiContext = 'toolbars';

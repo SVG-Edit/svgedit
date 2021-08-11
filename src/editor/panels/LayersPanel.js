@@ -114,18 +114,20 @@ class LayersPanel {
   init() {
     const template = document.createElement("template");
     const { i18next } = this.editor;
+    const { imgPath } = this.editor.configObj.curConfig;
+
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <div id="sidepanels">
     <div id="layerpanel">
       <h3 id="layersLabel">${i18next.t('layers.layers')}</h3>
       <fieldset id="layerbuttons">
-        <se-button id="layer_new" title="${i18next.t('layers.new')}" size="small" src="./images/new.svg"></se-button>
-        <se-button id="layer_delete" title="${i18next.t('layers.del')}" size="small" src="./images/delete.svg"></se-button>
-        <se-button id="layer_rename" title="${i18next.t('layers.rename')}" size="small" src="./images/text.svg"></se-button>
-        <se-button id="layer_up" title="${i18next.t('layers.move_up')}" size="small" src="./images/go_up.svg"></se-button>
-        <se-button id="layer_down" title="${i18next.t('layers.move_down')}" size="small" src="./images/go_down.svg"></se-button>
-        <se-button id="layer_moreopts" title="${i18next.t('common.more_opts')}" size="small" src="./images/context_menu.svg">
+        <se-button id="layer_new" title="${i18next.t('layers.new')}" size="small" src="${imgPath}/new.svg"></se-button>
+        <se-button id="layer_delete" title="${i18next.t('layers.del')}" size="small" src="${imgPath}/delete.svg"></se-button>
+        <se-button id="layer_rename" title="${i18next.t('layers.rename')}" size="small" src="${imgPath}/text.svg"></se-button>
+        <se-button id="layer_up" title="${i18next.t('layers.move_up')}" size="small" src="${imgPath}/go_up.svg"></se-button>
+        <se-button id="layer_down" title="${i18next.t('layers.move_down')}" size="small" src="${imgPath}/go_down.svg"></se-button>
+        <se-button id="layer_moreopts" title="${i18next.t('common.more_opts')}" size="small" src="${imgPath}/context_menu.svg">
         </se-button>
       </fieldset>
       <table id="layerlist">

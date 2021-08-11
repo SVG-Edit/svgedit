@@ -365,7 +365,7 @@ export class SelectorManager {
           r: gripRadius,
           stroke: '#22C',
           'stroke-width': 2,
-          style: 'cursor:url(' + config_.imgPath + 'rotate.svg) 12 12, auto;'
+          style: `cursor:url(${config_.imgPath}/rotate.svg) 12 12, auto;`
         }
       });
     this.selectorGripsGroup.append(this.rotateGrip);

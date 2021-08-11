@@ -14,7 +14,7 @@ class Zoom extends ListComboBox {
   get [internal.defaultState] () {
     return Object.assign(super[internal.defaultState], {
       inputPartType: NumberSpinBox,
-      src: './images/logo.svg',
+      src: 'logo.svg',
       inputsize: '100%'
     });
   }
@@ -27,7 +27,8 @@ class Zoom extends ListComboBox {
     const source = result.content.getElementById('source');
     // add a icon before our dropdown
     source.prepend(fragmentFrom.html`
-      <img src="./images/logo.svg" alt="icon" width="18" height="18"></img>
+      <img src="zoom" alt="icon" width="18" height="18">
+      </img>
       `.cloneNode(true));
     // change the style so it fits in our toolbar
     result.content.append(
@@ -39,9 +40,6 @@ class Zoom extends ListComboBox {
         ::slotted(*) {
           padding: 4px;
           width: 100%;
-          background-color: var(--icon-bg-color);
-          color: #fff;
-        }
         }
         [part~="popup"] {
           width: 150%;
@@ -167,22 +165,3 @@ class Zoom extends ListComboBox {
 
 // Register
 customElements.define('se-zoom', Zoom);
-
-/*
-{TODO
-    min: 0.001, max: 10000, step: 50, stepfunc: stepZoom,
-  function stepZoom (elem, step) {
-    const origVal = Number(elem.value);
-    if (origVal === 0) { return 100; }
-    const sugVal = origVal + step;
-    if (step === 0) { return origVal; }
-
-    if (origVal >= 100) {
-      return sugVal;
-    }
-    if (sugVal >= origVal) {
-      return origVal * 2;
-    }
-    return origVal / 2;
-  }
-*/

@@ -638,7 +638,7 @@ div.jGraduate_Slider img {
   }
   </style>
   <div id="picker">
-      <img src="./images/logo.svg" alt="icon" id="logo">
+      <img src="logo.svg" alt="icon" id="logo">
       <label for="color" title="" id="label"></label>
       <div id="block">
       </div>

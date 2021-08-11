@@ -29,6 +29,7 @@ export default {
   name,
   async init(_S) {
     const svgEditor = this;
+    const { imgPath } = svgEditor.configObj.curConfig;
     const { ChangeElementCommand } = _S; // , svgcontent,
     const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
     const { svgCanvas } = svgEditor;
@@ -86,9 +87,9 @@ export default {
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
             <se-flyingbutton id="tools_polygon" title="${fbtitle}">
-              <se-button id="tool_star" title="${title_star}" src="./images/star.svg">
+              <se-button id="tool_star" title="${title_star}" src="${imgPath}/star.svg">
               </se-button>
-              <se-button id="tool_polygon" title="${title_polygon}" src="./images/polygon.svg">
+              <se-button id="tool_polygon" title="${title_polygon}" src="${imgPath}/polygon.svg">
               </se-button>
             </se-flyingbutton>
           `;
