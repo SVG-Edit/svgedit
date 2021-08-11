@@ -333,23 +333,9 @@ hr {
 
 #tools_bottom {
   grid-area: bottom;
-  overflow: visible;
-}
-
-#tools_bottom * {
-  float: left;
-  margin-right: 2px;
-}
-
-#tools_bottom se-spin-input {
-  float: left;
-  vertical-align: middle;
+  overflow: scroll;
   display: flex;
   align-items: center;
-}
-
-#tools_bottom elix-dropdown-list {
-  width: 22px;
 }
 
 /*—————————————————————————————*/
@@ -543,7 +529,7 @@ input[type=text] {
 }
 
 #palette {
-  float: right;
+  margin-left:auto;
 }
 
 #stroke_expand {
