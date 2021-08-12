@@ -100,7 +100,7 @@ export const mouseMoveEvent = function (evt) {
   let angle;
   let box;
   let selected = selectedElements()[0];
-  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
+  const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
   const mouseX = pt.x * currentZoom;
   const mouseY = pt.y * currentZoom;
   const shape = getElem(eventContext_.getId());
@@ -562,7 +562,7 @@ export const mouseUpEvent = function (evt) {
   const tempJustSelected = eventContext_.getJustSelected();
   eventContext_.setJustSelected(null);
   if (!eventContext_.getStarted()) { return; }
-  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
+  const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
   const mouseX = pt.x * currentZoom;
   const mouseY = pt.y * currentZoom;
   const x = mouseX / currentZoom;
@@ -902,7 +902,7 @@ export const dblClickEvent = function (evt) {
   const { tagName } = mouseTarget;
 
   if (tagName === 'text' && eventContext_.getCurrentMode() !== 'textedit') {
-    const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
+    const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
     svgCanvas.textActions.select(mouseTarget, pt.x, pt.y);
   }
 
@@ -962,7 +962,7 @@ export const mouseDownEvent = function (evt) {
 
   eventContext_.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
 
-  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
+  const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
   const mouseX = pt.x * currentZoom;
   const mouseY = pt.y * currentZoom;
 
@@ -1322,7 +1322,7 @@ export const DOMMouseScrollEvent = function (e) {
   const rulerwidth = eventContext_.getCurConfig().showRulers ? 16 : 0;
 
   // mouse relative to content area in content pixels
-  const pt = transformPoint(evt.pageX, evt.pageY, eventContext_.getrootSctm());
+  const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
 
   // full work area width in screen pixels
   const editorFullW = parseFloat(getComputedStyle(workarea, null).width.replace("px", ""));
