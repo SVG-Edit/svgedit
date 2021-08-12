@@ -634,7 +634,7 @@ div.jGraduate_Slider img {
   }
   #color_picker {
     z-index: 1000;
-    top: -350px;
+    top: 60%;
   }
   </style>
   <div id="picker">
