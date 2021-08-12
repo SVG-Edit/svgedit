@@ -13,13 +13,12 @@ template.innerHTML = `
     right: -4px;
   }
   span {
-    bottom: -3px;
+    bottom: -0.5em;
     right: -4px;
     position: relative;
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-left: -4px;
+    margin-right: 1px;
     color: #fff;
-    vertical-align: ;
   }
   elix-number-spin-box {
     background-color: var(--input-color);

@@ -797,12 +797,11 @@ class TopPanel {
           </div>
           <div class="toolset">
             <se-input id="elem_class" data-attr="class" size="10" label="class" title="${i18next.t('properties.class')}"></se-input>
-          </div>
-          <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="${imgPath}/angle.svg"
+            <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="${imgPath}/angle.svg"
             title="${i18next.t('properties.angle')}"></se-spin-input>
           <se-spin-input size="2" id="blur" min=0 max=100 step=5 src="${imgPath}/blur.svg"
             title="${i18next.t('properties.blur')}"></se-spin-input>
-          <se-list id="tool_position" title="${i18next.t('tools.align_to_page')}" label="" width="22px" height="24px">
+          <se-list id="tool_position" title="${i18next.t('tools.align_to_page')}" label="" width="22px" height="22px">
             <se-list-item id="tool_posleft" value="l">
               <img title="${i18next.t('tools.align_left')}" src="${imgPath}/align_left.svg" height="22px">
             </se-list-item>
@@ -822,7 +821,9 @@ class TopPanel {
               <img title="${i18next.t('tools.align_bottom')}" src="${imgPath}/align_bottom.svg" height="22px">
             </se-list-item>
           </se-list>
-          <div id="xy_panel" class="toolset">
+   
+          </div>
+        <div id="xy_panel" class="toolset">
             <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x" title="${i18next.t('properties.pos_x')}">
             </se-spin-input>
             <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="y" title="${i18next.t('properties.pos_y')}">
@@ -947,11 +948,7 @@ class TopPanel {
         <!-- formerly gsvg_panel -->
         <div id="container_panel">
           <div class="tool_sep"></div>
-          <!-- Add viewBox field here? -->
-          <label id="group_title" title="${i18next.t('ui.group_identify_label')}">
-            <span>label</span>
-            <input id="g_title" data-attr="title" size="10" type="text" />
-          </label>
+          <se-input id="g_title" data-attr="title" label="${i18next.t('ui.label')}"></se-input> 
         </div> <!-- container_panel -->
         <div id="use_panel">
           <se-button id="tool_unlink_use" title="${i18next.t('tools.tool_unlink_use')}"

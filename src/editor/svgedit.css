@@ -507,7 +507,8 @@ input[type=text] {
 
 .tool_sep {
   border-left: 1px outset #EEE;
-  margin: 6px 2px;
+  margin: 5px 1px;
+  height: 30px;
 }
 
 .width_label {
