@@ -217,7 +217,7 @@ export default {
             );
             dataStorage.put(ethis, 'c_' + pos, part.id);
             dataStorage.put(ethis, pos + '_bb', svgCanvas.getStrokedBBox([ part ]));
-          } else part = document.getElementById(part);
+          } else part = $id(part);
           parts.push(part);
         }, ethis);
 

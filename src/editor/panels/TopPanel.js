@@ -1,3 +1,5 @@
+/* globals seAlert */
+
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
 import { isValidUnit, getTypeMap, convertUnit } from "../../common/units.js";
 
@@ -15,6 +17,19 @@ class TopPanel {
    */
   constructor(editor) {
     this.editor = editor;
+  }
+  /**
+   * @type {module}
+   */
+  displayTool(id) {
+    // default display is 'none' so removing the property will make the panel visible
+    $id(id).style.removeProperty('display');
+  }
+  /**
+   * @type {module}
+   */
+  hideTool(id) {
+    $id(id).style.display = 'none';
   }
   /**
    * @type {module}
@@ -50,10 +65,10 @@ class TopPanel {
       this.svgCanvas.setStrokeAttr('stroke-' + pre, val);
     }
     opt.classList.add('current');
-    const elements = Array.prototype.filter.call(opt.parentNode.children, function(child){
+    const elements = Array.prototype.filter.call(opt.parentNode.children, function (child) {
       return child !== opt;
     });
-    Array.from(elements).forEach(function(element) {
+    Array.from(elements).forEach(function (element) {
       element.classList.remove('current');
     });
   }
@@ -119,10 +134,7 @@ class TopPanel {
         (this.selectedElement.getAttribute("opacity") || 1.0) * 100;
       $id("opacity").value = opacPerc;
       $id("elem_id").value = this.selectedElement.id;
-      $id("elem_class").value =
-        this.selectedElement.getAttribute("class") !== null
-          ? this.selectedElement.getAttribute("class")
-          : "";
+      $id("elem_class").value = this.selectedElement.getAttribute("class") ?? "";
     }
 
     this.editor.bottomPanel.updateToolButtonState();
@@ -141,7 +153,7 @@ class TopPanel {
       curhref
     );
     if (url) {
-      this.editor.setImageURL(url);
+      this.setImageURL(url);
     } else if (cancelDeletes) {
       this.editor.svgCanvas.deleteSelectedElements();
     }
@@ -167,19 +179,19 @@ class TopPanel {
 
     const isNode = currentMode === "pathedit"; // elem ? (elem.id && elem.id.startsWith('pathpointgrip')) : false;
     const menuItems = document.getElementById("se-cmenu_canvas");
-    $id("selected_panel").style.display = 'none';
-    $id("multiselected_panel").style.display = 'none';
-    $id("g_panel").style.display = 'none';
-    $id("rect_panel").style.display = 'none';
-    $id("circle_panel").style.display = 'none';
-    $id("ellipse_panel").style.display = 'none';
-    $id("line_panel").style.display = 'none';
-    $id("text_panel").style.display = 'none';
-    $id("image_panel").style.display = 'none';
-    $id("container_panel").style.display = 'none';
-    $id("use_panel").style.display = 'none';
-    $id("a_panel").style.display = 'none';
-    if (!isNullish(elem)) {
+    this.hideTool("selected_panel");
+    this.hideTool("multiselected_panel");
+    this.hideTool("g_panel");
+    this.hideTool("rect_panel");
+    this.hideTool("circle_panel");
+    this.hideTool("ellipse_panel");
+    this.hideTool("line_panel");
+    this.hideTool("text_panel");
+    this.hideTool("image_panel");
+    this.hideTool("container_panel");
+    this.hideTool("use_panel");
+    this.hideTool("a_panel");
+    if (elem) {
       const elname = elem.nodeName;
 
       const angle = this.editor.svgCanvas.getRotationAngle(elem);
@@ -198,10 +210,10 @@ class TopPanel {
       }
 
       if (!isNode && currentMode !== "pathedit") {
-        $id("selected_panel").style.removeProperty('display');
+        this.displayTool("selected_panel");
         // Elements in this array already have coord fields
         if ([ "line", "circle", "ellipse" ].includes(elname)) {
-          $id("xy_panel").style.display = 'none';
+          this.hideTool("xy_panel");
         } else {
           let x; let y;
 
@@ -223,20 +235,26 @@ class TopPanel {
 
           $id("selected_x").value = (x || 0);
           $id("selected_y").value = (y || 0);
-          $id("xy_panel").style.removeProperty('display');
+          this.displayTool("xy_panel");
         }
 
         // Elements in this array cannot be converted to a path
-        $id("tool_topath").style.display = [
+        if ([
           "image",
           "text",
           "path",
           "g",
           "use"
-        ].includes(elname)
-          ? "none"
-          : "block";
-        $id("tool_reorient").style.display = (elname === "path") ? "block" : "none";
+        ].includes(elname)) {
+          this.hideTool("tool_topath");
+        } else {
+          this.displayTool("tool_topath");
+        }
+        if (elname === "path") {
+          this.displayTool("tool_reorient");
+        } else {
+          this.hideTool("tool_reorient");
+        }
         $id("tool_reorient").disabled = (angle === 0);
       } else {
         const point = this.path.getNodePoint();
@@ -284,30 +302,32 @@ class TopPanel {
       let linkHref = null;
       if (tagName === "a") {
         linkHref = this.editor.svgCanvas.getHref(elem);
-        $id("g_panel").style.removeProperty('display');
+        this.displayTool("g_panel");
       }
       // siblings
       if (elem.parentNode) {
-        const selements = Array.prototype.filter.call(elem.parentNode.children, function(child){
+        const selements = Array.prototype.filter.call(elem.parentNode.children, function (child) {
           return child !== elem;
         });
         if (elem.parentNode.tagName === "a" && !selements.length) {
-          $id("a_panel").style.removeProperty('display');
+          this.displayTool("a_panel");
           linkHref = this.editor.svgCanvas.getHref(elem.parentNode);
         }
       }
 
       // Hide/show the make_link buttons
-      $id('tool_make_link').style.display = (!linkHref) ? 'block' : 'none';
-      $id('tool_make_link_multi').style.display = (!linkHref) ? 'block' : 'none';
-
       if (linkHref) {
+        this.displayTool('tool_make_link');
+        this.displayTool('tool_make_link_multi');
         $id("link_url").value = linkHref;
+      } else {
+        this.hideTool('tool_make_link');
+        this.hideTool('tool_make_link_multi');
       }
 
       if (panels[tagName]) {
         const curPanel = panels[tagName];
-        $id(tagName + "_panel").style.removeProperty('display');
+        this.displayTool(tagName + "_panel");
 
         curPanel.forEach((item) => {
           let attrVal = elem.getAttribute(item);
@@ -319,7 +339,7 @@ class TopPanel {
         });
 
         if (tagName === "text") {
-          $id("text_panel").style.removeProperty('display');
+          this.displayTool("text_panel");
           $id("tool_italic").pressed = this.editor.svgCanvas.getItalic();
           $id("tool_bold").pressed = this.editor.svgCanvas.getBold();
           $id("tool_font_family").value = elem.getAttribute("font-family");
@@ -362,7 +382,7 @@ class TopPanel {
           );
           // image
         } else if (tagName === "g" || tagName === "use") {
-          $id("container_panel").style.removeProperty('display');
+          this.displayTool("container_panel");
           const title = this.editor.svgCanvas.getTitle();
           const label = $id("g_title");
           label.value = title;
@@ -381,7 +401,7 @@ class TopPanel {
 
       // if (!isNullish(elem))
     } else if (this.multiselected) {
-      $id("multiselected_panel").style.removeProperty('display');
+      this.displayTool("multiselected_panel");
       menuItems.setAttribute("enablemenuitems", "#group");
       menuItems.setAttribute("disablemenuitems", "#ungroup");
     } else {
@@ -442,7 +462,7 @@ class TopPanel {
       fcRules.setAttribute('id', 'wireframe_rules');
       document.getElementsByTagName("head")[0].appendChild(fcRules);
     } else {
-      while(wfRules.firstChild)
+      while (wfRules.firstChild)
         wfRules.removeChild(wfRules.firstChild);
     }
     this.editor.updateWireFrame();
@@ -456,7 +476,7 @@ class TopPanel {
     if (undoMgr.getUndoStackSize() > 0) {
       undoMgr.undo();
       this.editor.layersPanel.populateLayers();
-      if(this.editor.svgCanvas.getMode() === 'textedit') {
+      if (this.editor.svgCanvas.getMode() === 'textedit') {
         textActions.clear();
       }
     }
@@ -733,6 +753,42 @@ class TopPanel {
     this.updateContextPanel();
     return false;
   }
+  /**
+  * Set a selected image's URL.
+  * @function module:SVGthis.setImageURL
+  * @param {string} url
+  * @returns {void}
+  */
+  setImageURL(url) {
+    const { editor } = this;
+    if (!url) {
+      url = editor.defaultImageURL;
+    }
+    editor.svgCanvas.setImageURL(url);
+    $id("image_url").value = url;
+
+    if (url.startsWith('data:')) {
+      // data URI found
+      this.hideTool("image_url");
+    } else {
+      // regular URL
+      const promised = editor.svgCanvas.embedImage(url);
+      // eslint-disable-next-line promise/catch-or-return
+      promised
+        // eslint-disable-next-line promise/always-return
+        .then(() => {
+          // switch into "select" mode if we've clicked on an element
+          editor.svgCanvas.setMode('select');
+          editor.svgCanvas.selectOnly(editor.svgCanvas.getSelectedElems(), true);
+        }, (error) => {
+          // eslint-disable-next-line no-console
+          console.log("error =", error);
+          seAlert(editor.i18next.t('tools.no_embed'));
+          editor.svgCanvas.deleteSelectedElements();
+        });
+      this.displayTool("image_url");
+    }
+  }
 
   /**
    * @type {module}
@@ -866,14 +922,7 @@ class TopPanel {
               title="${i18next.t('properties.image_height')}"></se-spin-input>
           </div>
           <div class="toolset">
-            <label id="tool_image_url">url:
-              <input id="image_url" type="text" title="${i18next.t('properties.image_url')}" size="35" />
-            </label>
-            <label id="tool_change_image">
-              <button id="change_image_url" style="display: none;">Change Image</button>
-              <span id="url_notice"
-                title="${i18next.t('tools.no_embed')}"></span>
-            </label>
+            <se-input id="image_url" data-attr="image_url" size="15" label="${i18next.t('properties.image_url')}"></se-input> 
           </div>
         </div> <!-- image_panel -->
         <div id="circle_panel">
@@ -1098,10 +1147,10 @@ class TopPanel {
       "click",
       this.clickGroup.bind(this)
     );
-    $id("change_image_url").addEventListener(
-      "click",
-      this.promptImgURL.bind(this)
-    );
+    $id('image_url').addEventListener('change', (evt) => {
+      this.setImageURL(evt.currentTarget.value);
+    });
+
     // all top panel attributes
     [
       "elem_id",

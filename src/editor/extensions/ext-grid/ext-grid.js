@@ -32,7 +32,7 @@ export default {
     await loadExtensionTranslation(svgEditor);
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
-    const svgdoc = document.getElementById('svgcanvas').ownerDocument;
+    const svgdoc = $id('svgcanvas').ownerDocument;
     const { assignAttributes } = svgCanvas;
     const hcanvas = document.createElement('canvas');
     const canvBG = $id('canvasBackground');
@@ -154,7 +154,7 @@ export default {
         updateGrid(svgCanvas.getZoom());
       }
       $id('canvasGrid').style.display = (showGrid) ? 'block' : 'none';
-      document.getElementById('view_grid').pressed = showGrid;
+      $id('view_grid').pressed = showGrid;
     };
     return {
       name: svgEditor.i18next.t(`${name}:name`),

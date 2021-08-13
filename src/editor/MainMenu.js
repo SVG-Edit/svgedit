@@ -45,7 +45,7 @@ class MainMenu {
    * @returns {void}
    */
   hideDocProperties() {
-    const $imgDialog = document.getElementById("se-img-prop");
+    const $imgDialog = $id("se-img-prop");
     $imgDialog.setAttribute("dialog", "close");
     $imgDialog.setAttribute("save", this.editor.configObj.pref("img_save"));
     this.editor.docprops = false;
@@ -56,7 +56,7 @@ class MainMenu {
    * @returns {void}
    */
   hidePreferences() {
-    const $editDialog = document.getElementById("se-edit-prefs");
+    const $editDialog = $id("se-edit-prefs");
     $editDialog.setAttribute("dialog", "close");
     this.editor.configObj.preferences = false;
   }
@@ -238,7 +238,7 @@ class MainMenu {
       return;
     }
     this.editor.docprops = true;
-    const $imgDialog = document.getElementById("se-img-prop");
+    const $imgDialog = $id("se-img-prop");
 
     // update resolution option with actual resolution
     const resolution = this.editor.svgCanvas.getResolution();
@@ -264,7 +264,7 @@ class MainMenu {
       return;
     }
     this.editor.configObj.preferences = true;
-    const $editDialog = document.getElementById("se-edit-prefs");
+    const $editDialog = $id("se-edit-prefs");
     // Update background color with current one
     const canvasBg = this.editor.configObj.curPrefs.bkgd_color;
     const url = this.editor.configObj.pref("bkgd_url");
@@ -337,7 +337,7 @@ class MainMenu {
     $id("tool_save").addEventListener(
       "click",
       function() {
-        const $editorDialog = document.getElementById("se-svg-editor-dialog");
+        const $editorDialog = $id("se-svg-editor-dialog");
         const editingsource = $editorDialog.getAttribute("dialog") === "open";
         if (editingsource) {
           this.saveSourceEditor();

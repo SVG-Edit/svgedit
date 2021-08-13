@@ -71,12 +71,12 @@ export default {
       $id("overview_window_view_box").style.top = viewBoxY + 'px';
       $id("overview_window_view_box").style.left = viewBoxX + 'px';
     };
-    document.getElementById('workarea').addEventListener('scroll', () => {
+    $id('workarea').addEventListener('scroll', () => {
       if (!(overviewWindowGlobals.viewBoxDragging)) {
         updateViewBox();
       }
     });
-    document.getElementById('workarea').addEventListener('resize', updateViewBox);
+    $id('workarea').addEventListener('resize', updateViewBox);
     updateViewBox();
 
     // Compensate for changes in zoom and canvas size.

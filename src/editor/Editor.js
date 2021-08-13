@@ -400,46 +400,6 @@ class Editor extends EditorStartup {
   }
 
   /**
-  * Set a selected image's URL.
-  * @function module:SVGthis.setImageURL
-  * @param {string} url
-  * @returns {void}
-  */
-  setImageURL(url) {
-    if (!url) {
-      url = this.defaultImageURL;
-    }
-    this.svgCanvas.setImageURL(url);
-    $id("image_url").value = url;
-
-    if (url.startsWith('data:')) {
-      // data URI found
-      $id("image_url").style.display = 'none';
-      $id("change_image_url").style.display = 'block';
-    } else {
-      // regular URL
-      const self = this;
-      const promised = this.svgCanvas.embedImage(url);
-      // eslint-disable-next-line promise/catch-or-return
-      promised
-        .then( function (dataURI) {
-          // eslint-disable-next-line promise/always-return
-          $id('url_notice').style.display = (!dataURI) ? 'block' : 'none';
-          // switch into "select" mode if we've clicked on an element
-          self.svgCanvas.setMode('select');
-          self.svgCanvas.selectOnly(self.svgCanvas.getSelectedElems(), true);
-        }, function (error) {
-          // eslint-disable-next-line no-console
-          console.log("error =", error);
-          seAlert(self.i18next.t('tools.no_embed'));
-          self.svgCanvas.deleteSelectedElements();
-        });
-      $id("image_url").style.display = 'block';
-      $id("change_image_url").style.display = 'none';
-    }
-  }
-
-  /**
    *
    * @param {string} color
    * @param {string} url
@@ -930,7 +890,7 @@ class Editor extends EditorStartup {
   */
   // eslint-disable-next-line class-methods-use-this
   hideSourceEditor() {
-    const $editorDialog = document.getElementById('se-svg-editor-dialog');
+    const $editorDialog = $id('se-svg-editor-dialog');
     $editorDialog.setAttribute('dialog', 'closed');
   }
 
@@ -939,7 +899,7 @@ class Editor extends EditorStartup {
   * @returns {void} Resolves to `undefined`
   */
   async saveSourceEditor(e) {
-    const $editorDialog = document.getElementById('se-svg-editor-dialog');
+    const $editorDialog = $id('se-svg-editor-dialog');
     if ($editorDialog.getAttribute('dialog') !== 'open') return;
     const saveChanges = () => {
       this.svgCanvas.clearSelection();
@@ -967,7 +927,7 @@ class Editor extends EditorStartup {
   */
   cancelOverlays(e) {
     if ($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
-    const $editorDialog = document.getElementById('se-svg-editor-dialog');
+    const $editorDialog = $id('se-svg-editor-dialog');
     const editingsource = $editorDialog.getAttribute('dialog') === 'open';
     if (!editingsource && !this.docprops && !this.configObj.preferences) {
       if (this.curContext) {
@@ -1058,7 +1018,7 @@ class Editor extends EditorStartup {
   setLang(lang) {
     this.langChanged = true;
     this.configObj.pref('lang', lang);
-    const $editDialog = document.getElementById('se-edit-prefs');
+    const $editDialog = $id('se-edit-prefs');
     $editDialog.setAttribute('lang', lang);
     const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
     const renameLayer = (oldLayerName === this.i18next.t('notification.common.layer') + ' 1');

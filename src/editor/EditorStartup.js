@@ -262,9 +262,6 @@ class EditorStartup {
     addListenerMulti($id('text'), 'keyup input', (evt) => {
       this.svgCanvas.setTextContent(evt.currentTarget.value);
     });
-    $id('image_url').addEventListener('change', (evt) => {
-      this.setImageURL(evt.currentTarget.value);
-    });
 
     $id('link_url').addEventListener('change', (evt) => {
       if (evt.currentTarget.value.length) {
@@ -414,10 +411,6 @@ class EditorStartup {
 
     this.workarea.addEventListener('scroll', () => {
       this.rulers.manageScroll();
-    });
-
-    $id('url_notice').addEventListener('click', () => {
-      seAlert(this.title);
     });
 
     $id('stroke_width').value = this.configObj.curConfig.initStroke.width;
@@ -598,12 +591,12 @@ class EditorStartup {
     */
       const editorObj = this;
       const importImage = function (e) {
-        document.getElementById('se-prompt-dialog').title = editorObj.i18next.t('notification.loadingImage');
+        $id('se-prompt-dialog').title = editorObj.i18next.t('notification.loadingImage');
         e.stopPropagation();
         e.preventDefault();
         const file = (e.type === 'drop') ? e.dataTransfer.files[0] : this.files[0];
         if (!file) {
-          document.getElementById('se-prompt-dialog').setAttribute('close', true);
+          $id('se-prompt-dialog').setAttribute('close', true);
           return;
         }
 
@@ -624,7 +617,7 @@ class EditorStartup {
             editorObj.svgCanvas.alignSelectedElements('c', 'page');
             // highlight imported element, otherwise we get strange empty selectbox
             editorObj.svgCanvas.selectOnly([ newElement ]);
-            document.getElementById('se-prompt-dialog').setAttribute('close', true);
+            $id('se-prompt-dialog').setAttribute('close', true);
           };
           reader.readAsText(file);
         } else {
@@ -654,7 +647,7 @@ class EditorStartup {
               editorObj.svgCanvas.alignSelectedElements('m', 'page');
               editorObj.svgCanvas.alignSelectedElements('c', 'page');
               editorObj.topPanel.updateContextPanel();
-              document.getElementById('se-prompt-dialog').setAttribute('close', true);
+              $id('se-prompt-dialog').setAttribute('close', true);
             };
             // create dummy img so we know the default dimensions
             let imgWidth = 100;

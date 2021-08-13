@@ -520,11 +520,6 @@ input[type=text] {
   left: -9999px;
 }
 
-#url_notice {
-  padding-top: 4px;
-  display: none;
-}
-
 .bottom-icon {
   width: 22px;
 }
