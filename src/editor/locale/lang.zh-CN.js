@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: '显示/隐藏更式边线工具',
     palette_info: '点击更改填充颜色，按住Shift键单击更改线条颜色',
     zoom_level: '更改缩放级别',
-    panel_drag: '左右拖拽调整面板大小',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

@@ -21,7 +21,7 @@ export default {
     toggle_stroke_tools: 'Pokaż/ukryj więcej opcji obramowania',
     palette_info: 'Kliknij aby zmienić kolor wypełnienia, przytrzymaj shift aby zmienić kolor obramowania',
     zoom_level: 'Zmiana powiększenia',
-    panel_drag: 'Przeciągnij w lewo/prawo aby zmienić szerokość panelu',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

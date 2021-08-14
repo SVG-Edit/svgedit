@@ -85,7 +85,7 @@ template.innerHTML = `
 
   <div class="overall">
     <div class="menu-button">
-      <img class="button-icon" src="logo.svg" alt="icon">
+      <img class="button-icon" src="explorer.svg" alt="icon">
       <div class="handle"></div>
     </div>
     <div class="image-lib"">

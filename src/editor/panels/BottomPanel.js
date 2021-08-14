@@ -186,14 +186,14 @@ class BottomPanel {
         <se-colorpicker id="stroke_color" src="${imgPath}/stroke.svg" title="${i18next.t('properties.stroke_color')}" type="stroke">
         </se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="${i18next.t('properties.stroke_width')}" label=""></se-spin-input>
-        <se-list id="stroke_style" title="${i18next.t('properties.stroke_style')}" label="" width="22px" height="24px">
+        <se-list id="stroke_style" title="${i18next.t('properties.stroke_style')}" label="" width="22px" height="22px">
           <se-list-item value="none">&#8212;</se-list-item>
           <se-list-item value="2,2">...</se-list-item>
           <se-list-item value="5,5">- -</se-list-item>
           <se-list-item value="5,2,2,2">- .</se-list-item>
           <se-list-item value="5,2,2,2,2,2">- ..</se-list-item>
         </se-list>
-        <se-list id="stroke_linejoin" title="${i18next.t('properties.linejoin_miter')}" label="" width="22px" height="24px">
+        <se-list id="stroke_linejoin" title="${i18next.t('properties.linejoin_miter')}" label="" width="22px" height="22px">
           <se-list-item id="linejoin_miter" value="miter"><img title="${i18next.t('properties.linejoin_miter')}" src="${imgPath}/linejoin_miter.svg"
               height="22px"></img></se-list-item>
           <se-list-item id="linejoin_round" value="round"><img title="${i18next.t('properties.linejoin_round')}" src="${imgPath}/linejoin_round.svg"
@@ -201,7 +201,7 @@ class BottomPanel {
           <se-list-item id="linejoin_bevel" value="bevel"><img title="${i18next.t('properties.linejoin_bevel')}" src="${imgPath}/linejoin_bevel.svg"
               height="22px"></img></se-list-item>
         </se-list>
-        <se-list id="stroke_linecap" title="${i18next.t('properties.linecap_butt')}" label="" width="22px" height="24px">
+        <se-list id="stroke_linecap" title="${i18next.t('properties.linecap_butt')}" label="" width="22px" height="22px">
           <se-list-item id="linecap_butt" value="butt"><img title="${i18next.t('properties.linecap_butt')}" src="${imgPath}/linecap_butt.svg"
               height="22px"></img></se-list-item>
           <se-list-item id="linecap_square" value="square"><img title="${i18next.t('properties.linecap_square')}" src="${imgPath}/linecap_square.svg"

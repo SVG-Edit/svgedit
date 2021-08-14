@@ -17,7 +17,7 @@
 .svg_editor {
   display: grid;
   grid-template-rows: auto 15px 1fr 40px;
-  grid-template-columns: 34px 15px 1fr 10px;
+  grid-template-columns: 34px 15px 1fr 15px;
   grid-template-areas: 
     "top   top    top    top"
     "left  corner rulerX side"
@@ -32,12 +32,17 @@
   height: 100%;
 }
 
+.svg_editor.open {
+  grid-template-columns: 34px 15px 1fr 150px;
+}
+
 /* on smaller screen, allow 2 lines for the toolbar */
+
 @media screen and (max-width:1250px) {
   .svg_editor {
     grid-template-rows: minmax(80px, auto) 15px 1fr 40px;
   }
-} 
+}
 
 #svgroot {
   user-select: none;
@@ -60,7 +65,24 @@
   background: var(--canvas-bg-color);
   text-align: center;
   vertical-align: middle;
-  position:relative;
+  position: relative;
+}
+
+#sidepanels {
+  grid-area: side;
+}
+
+#sidepanel_handle {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  color: white;
+  position: absolute;
+  cursor: pointer;
+  top:50%;
+}
+
+.svg_editor:not(.open) #sidepanel_content {
+  display: none;
 }
 
 a {
@@ -77,53 +99,13 @@ hr {
   padding-top: 4px;
 }
 
-#sidepanels {
-  display: inline-block;
-  position: absolute;
-  top: 40px;
-  bottom: 40px;
-  right: 0;
-  width: 2px;
-  padding: 10px;
-  border-color: var(--border-color);
-  border-style: solid;
-  border-width: 1px;
-  border-left: none;
-  overflow-x: hidden;
-  overflow-y: visible;
+#layersLabel {
+  color: white;
 }
 
 #layerpanel {
-  display: inline-block;
-  position: relative;
-  top: 0px;
-  bottom: 0;
-  left: 12px;
-  width: 0;
-  overflow: hidden;
-  margin: 0;
   user-select: none;
-}
-
-#sidepanel_handle {
-  display: inline-block;
-  position: absolute;
-  background-color: --main-bg-color;
-  color: #fff;
-  font-weight: 100;
-  left: 0;
-  top: 40%;
-  width: 1em;
-  padding: 5px 5px 5px 5px;
-  margin-left: 6px;
-  cursor: pointer;
-  border-radius: 5px;
-  user-select: none;
-}
-
-#sidepanel_handle * {
-  cursor: pointer;
-  user-select: none;
+  padding-left: 15px;
 }
 
 #layerbuttons {
@@ -133,10 +115,7 @@ hr {
   padding-right: 2px;
   width: 125px;
   height: 20px;
-  border-right: 1px solid #FFFFFF;
-  border-bottom: 1px solid #FFFFFF;
-  border-left: 1px solid var(--border-color);
-  border-top: 1px solid var(--border-color);
+  border: 0px;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -146,7 +125,7 @@ hr {
 #layerlist {
   margin: 1px;
   padding: 0;
-  width: 127px;
+  width: 132px;
   border-collapse: collapse;
   border: 1px solid var(--border-color);
   background-color: #FFFFFF;
@@ -319,16 +298,18 @@ hr {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  /* leave space for the main menu */ 
+  /* leave space for the main menu */
   position: relative;
   background-color: var(--main-bg-color);
 }
-#tools_top > *{
-  display:flex;
+
+#tools_top>* {
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   background-color: var(--main-bg-color);
 }
+
 /*—————————————————————————————*/
 
 #tools_bottom {
@@ -337,6 +318,11 @@ hr {
   display: flex;
   align-items: center;
 }
+
+#tools_bottom se-list {
+  margin-bottom: 8px;
+}
+
 
 /*—————————————————————————————*/
 
@@ -525,7 +511,7 @@ input[type=text] {
 }
 
 #palette {
-  margin-left:auto;
+  margin-left: auto;
 }
 
 #stroke_expand {

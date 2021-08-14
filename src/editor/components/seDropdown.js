@@ -28,7 +28,7 @@ class Dropdown extends ListComboBox {
     const source = result.content.getElementById('source');
     // add a icon before our dropdown
     source.prepend(fragmentFrom.html`
-      <img src="logo.svg" alt="icon" width="18" height="18"></img>
+      <img src="dropdown.svg" alt="icon" width="18" height="18"></img>
       `.cloneNode(true));
     // change the style so it fits in our toolbar
     result.content.append(

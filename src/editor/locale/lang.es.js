@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Mostrar/ocultar herramientas de trazo adicionales',
     palette_info: 'Haga clic para cambiar el color de relleno. Pulse Mayús y haga clic para cambiar el color del contorno.',
     zoom_level: 'Cambiar el nivel de zoom',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

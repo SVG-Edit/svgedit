@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Show/hide more stroke tools',
     palette_info: 'クリックで塗りの色を選択、Shift+クリックで線の色を選択',
     zoom_level: 'ズーム倍率の変更',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

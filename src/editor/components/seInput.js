@@ -26,7 +26,7 @@ template.innerHTML = `
   }
   </style>
   <div>
-  <img src="logo.svg" alt="icon" width="12" height="12" />
+  <img alt="icon" width="12" height="12" />
   <span id="label">label</span>
   <elix-input></elix-input>
   </div>

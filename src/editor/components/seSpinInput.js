@@ -39,7 +39,7 @@ template.innerHTML = `
   }
   </style>
   <div>
-  <img src="./images/logo.svg" alt="icon" width="24" height="24" aria-labelledby="label" />
+  <img alt="icon" width="24" height="24" aria-labelledby="label" />
   <span id="label">label</span>
   <elix-number-spin-box min="1" step="1"></elix-number-spin-box>
   </div>

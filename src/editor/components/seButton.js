@@ -36,7 +36,7 @@ template.innerHTML = `
   }
   </style>
   <div title="title">
-    <img src="logo.svg" alt="icon">
+    <img alt="icon">
   </div>
 `;
 /**

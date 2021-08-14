@@ -290,7 +290,7 @@ class EditorStartup {
       if (evt.type === 'mouseup') { panning = false; }
       return false;
     });
-    $id('svgcanvas').addEventListener('mousemove', function(evt) {
+    $id('svgcanvas').addEventListener('mousemove', (evt) => {
       if (panning === false) { return true; }
 
       this.workarea.scrollLeft -= (evt.clientX - lastX);
@@ -302,7 +302,7 @@ class EditorStartup {
       if (evt.type === 'mouseup') { panning = false; }
       return false;
     });
-    $id('svgcanvas').addEventListener('mousedown', function(evt) {
+    $id('svgcanvas').addEventListener('mousedown', (evt) => {
       if (evt.button === 1 || keypan === true) {
         panning = true;
         lastX = evt.clientX;
@@ -312,7 +312,7 @@ class EditorStartup {
       return true;
     });
 
-    window.addEventListener('mouseup', function() {
+    window.addEventListener('mouseup', () => {
       panning = false;
     });
 

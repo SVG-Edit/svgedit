@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Show/hide more stroke tools',
     palette_info: 'रंग बदलने पर क्लिक करें, बदलाव भरने के क्लिक करने के लिए स्ट्रोक का रंग बदलने के लिए',
     zoom_level: 'बदलें स्तर ज़ूम',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

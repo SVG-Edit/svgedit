@@ -25,9 +25,15 @@ class Rulers {
     this.rulerCorner = $id('ruler_corner');
   }
   display (on) {
-    this.rulerX.style.display = on ? 'block' : 'none';
-    this.rulerY.style.display = on ? 'block': 'none';
-    this.rulerCorner.style.display = on ? 'block': 'none';
+    if (on) {
+      this.rulerX.style.removeProperty('display');
+      this.rulerY.style.removeProperty('display');
+      this.rulerCorner.style.removeProperty('display');
+    } else {
+      this.rulerX.style.display = 'none';
+      this.rulerY.style.display = 'none';
+      this.rulerCorner.style.display = 'none';
+    }
   }
   /**
    * @type {Module}
