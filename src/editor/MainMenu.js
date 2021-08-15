@@ -45,7 +45,7 @@ class MainMenu {
    * @returns {void}
    */
   hideDocProperties() {
-    const $imgDialog = document.getElementById("se-img-prop");
+    const $imgDialog = $id("se-img-prop");
     $imgDialog.setAttribute("dialog", "close");
     $imgDialog.setAttribute("save", this.editor.configObj.pref("img_save"));
     this.editor.docprops = false;
@@ -56,7 +56,7 @@ class MainMenu {
    * @returns {void}
    */
   hidePreferences() {
-    const $editDialog = document.getElementById("se-edit-prefs");
+    const $editDialog = $id("se-edit-prefs");
     $editDialog.setAttribute("dialog", "close");
     this.editor.configObj.preferences = false;
   }
@@ -238,7 +238,7 @@ class MainMenu {
       return;
     }
     this.editor.docprops = true;
-    const $imgDialog = document.getElementById("se-img-prop");
+    const $imgDialog = $id("se-img-prop");
 
     // update resolution option with actual resolution
     const resolution = this.editor.svgCanvas.getResolution();
@@ -264,7 +264,7 @@ class MainMenu {
       return;
     }
     this.editor.configObj.preferences = true;
-    const $editDialog = document.getElementById("se-edit-prefs");
+    const $editDialog = $id("se-edit-prefs");
     // Update background color with current one
     const canvasBg = this.editor.configObj.curPrefs.bkgd_color;
     const url = this.editor.configObj.pref("bkgd_url");
@@ -303,27 +303,21 @@ class MainMenu {
     // add Top panel
     const template = document.createElement("template");
     const { i18next } = this.editor;
+    const { imgPath } = this.editor.configObj.curConfig;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
-    <se-menu id="main_button" label="SVG-Edit" src="./images/logo.svg" alt="logo">
-        <!-- File-like buttons: New, Save, Source -->
-        <se-menu-item id="tool_clear" label="${i18next.t('tools.new_doc')}" shortcut="N" src="./images/new.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_open" label="${i18next.t('tools.open_doc')}" src="./images/open.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_save" label="${i18next.t('tools.save_doc')}" shortcut="S" src="./images/saveImg.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_import" label="${i18next.t('tools.import_doc')}" src="./images/importImg.svg"></se-menu-item>
-        <se-menu-item id="tool_export" label="${i18next.t('tools.export_img')}" src="./images/export.svg"></se-menu-item>
-        <se-menu-item id="tool_docprops" label="${i18next.t('tools.docprops')}" shortcut="D" src="./images/docprop.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_editor_prefs" label="${i18next.t('config.editor_prefs')}" src="./images/editPref.svg">
-        </se-menu-item>
-        <se-menu-item id="tool_editor_homepage" label="${i18next.t('tools.editor_homepage')}" src="./images/logo.svg">
-        </se-menu-item>
+    <se-menu id="main_button" label="SVG-Edit" src="${imgPath}/logo.svg" alt="logo">
+        <se-menu-item id="tool_clear" label="${i18next.t('tools.new_doc')}" shortcut="N" src="${imgPath}/new.svg"></se-menu-item>
+        <se-menu-item id="tool_open" label="${i18next.t('tools.open_doc')}" src="${imgPath}/open.svg"></se-menu-item>
+        <se-menu-item id="tool_save" label="${i18next.t('tools.save_doc')}" shortcut="S" src="${imgPath}/saveImg.svg"></se-menu-item>
+        <se-menu-item id="tool_import" label="${i18next.t('tools.import_doc')}" src="${imgPath}/importImg.svg"></se-menu-item>
+        <se-menu-item id="tool_export" label="${i18next.t('tools.export_img')}" src="${imgPath}/export.svg"></se-menu-item>
+        <se-menu-item id="tool_docprops" label="${i18next.t('tools.docprops')}" shortcut="D" src="${imgPath}/docprop.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_prefs" label="${i18next.t('config.editor_prefs')}" src="${imgPath}/editPref.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_homepage" label="${i18next.t('tools.editor_homepage')}" src="${imgPath}/logo.svg"></se-menu-item>
     </se-menu>
        `;
-    this.editor.$svgEditor.append(template.content.cloneNode(true));
+    $id('tools_top').prepend(template.content.cloneNode(true));
 
     // register action to main menu entries
     /**
@@ -343,7 +337,7 @@ class MainMenu {
     $id("tool_save").addEventListener(
       "click",
       function() {
-        const $editorDialog = document.getElementById("se-svg-editor-dialog");
+        const $editorDialog = $id("se-svg-editor-dialog");
         const editingsource = $editorDialog.getAttribute("dialog") === "open";
         if (editingsource) {
           this.saveSourceEditor();

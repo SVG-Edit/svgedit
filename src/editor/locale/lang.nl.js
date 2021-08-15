@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Toon/verberg meer lijn gereedschap',
     palette_info: 'Klik om de vul kleur te veranderen, shift-klik om de lijn kleur te veranderen',
     zoom_level: 'In-/uitzoomen',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

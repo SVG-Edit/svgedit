@@ -28,10 +28,11 @@ export default {
   name,
   async init ({ NS, getTypeMap }) {
     const svgEditor = this;
+    const { imgPath } = svgEditor.configObj.curConfig;
     await loadExtensionTranslation(svgEditor);
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
-    const svgdoc = document.getElementById('svgcanvas').ownerDocument;
+    const svgdoc = $id('svgcanvas').ownerDocument;
     const { assignAttributes } = svgCanvas;
     const hcanvas = document.createElement('canvas');
     const canvBG = $id('canvasBackground');
@@ -153,7 +154,7 @@ export default {
         updateGrid(svgCanvas.getZoom());
       }
       $id('canvasGrid').style.display = (showGrid) ? 'block' : 'none';
-      document.getElementById('view_grid').pressed = showGrid;
+      $id('view_grid').pressed = showGrid;
     };
     return {
       name: svgEditor.i18next.t(`${name}:name`),
@@ -167,14 +168,13 @@ export default {
 
         // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-          <se-button id="view_grid" title="${title}" src="./images/grid.svg"></se-button>
+          <se-button id="view_grid" title="${title}" src="${imgPath}/grid.svg"></se-button>
         `;
         $id('editor_panel').append(buttonTemplate.content.cloneNode(true));
         $id('view_grid').addEventListener("click", () => {
           svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid;
           gridUpdate();
         });
-
         if (showGrid) {
           gridUpdate();
         }

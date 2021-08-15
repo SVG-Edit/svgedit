@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Mais opções de traço',
     palette_info: 'Click para mudar a cor de preenchimento, shift-click para mudar a cor do traço',
     zoom_level: 'Mudar zoom',
-    panel_drag: 'Arraste para redimensionar o painel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

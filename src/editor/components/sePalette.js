@@ -24,10 +24,7 @@ template.innerHTML = `
   }
   #palette_holder {
     overflow: hidden;
-    padding: 5px;
-    position: absolute;
-    right: 15px;
-    height: 16px;
+    padding: 4px;
     background: #f0f0f0;
     border-radius: 3px;
     z-index: 2;
@@ -48,33 +45,7 @@ template.innerHTML = `
   div.palette_item:first-child {
     background: white;
   }
-  @media screen and (max-width:1100px) {
-    #palette_holder {
-      left: 410px;
-      overflow-x: scroll;
-      padding: 0 5px;
-      margin-top: 2px;
-      height: 22px;
-    }
-  } 
-  @media screen and (max-width:1250px) {
-    #palette_holder {
-      left: 560px;
-      overflow-x: scroll;
-      padding: 0 5px;
-      margin-top: 2px;
-      height: 22px;
-    }
-  }
-  @media screen and (max-width:540px) {
-    #palette_holder {
-      left: 0px;
-      overflow-x: scroll;
-      padding: 0 5px;
-      margin-top: 32px;
-      height: 22px;
-    }
-  }   
+  
   </style>
   <div id="palette_holder" title="">
     <div id="js-se-palette">

@@ -342,20 +342,25 @@ class Editor extends EditorStartup {
   * @param {module:svgcanvas.SvgCanvas#event:selected} elems
   * @returns {void}
   */
-  togglePathEditMode(editmode, elems) {
-    $id('path_node_panel').style.display = (editmode) ? 'block' : 'none';
-    if (editmode) {
+  togglePathEditMode(editMode, elems) {
+    const { imgPath } = this.configObj.curConfig;
+    if (editMode) {
+      $id('path_node_panel').style.removeProperty('display');
+    } else {
+      $id('path_node_panel').style.display = 'none';
+    }
+    if (editMode) {
       // Change select icon
       $id('tool_path').pressed = false;
       $id('tool_select').pressed = true;
-      $id('tool_select').setAttribute('src', './images/select_node.svg');
+      $id('tool_select').setAttribute('src', `${imgPath}/select_node.svg`);
       this.multiselected = false;
       if (elems.length) {
         this.selectedElement = elems[0];
       }
     } else {
       setTimeout(() => {
-        $id('tool_select').setAttribute('src', './images/select.svg');
+        $id('tool_select').setAttribute('src', `${imgPath}/select.svg`);
       }, 1000);
     }
   }
@@ -395,46 +400,6 @@ class Editor extends EditorStartup {
   }
 
   /**
-  * Set a selected image's URL.
-  * @function module:SVGthis.setImageURL
-  * @param {string} url
-  * @returns {void}
-  */
-  setImageURL(url) {
-    if (!url) {
-      url = this.defaultImageURL;
-    }
-    this.svgCanvas.setImageURL(url);
-    $id("image_url").value = url;
-
-    if (url.startsWith('data:')) {
-      // data URI found
-      $id("image_url").style.display = 'none';
-      $id("change_image_url").style.display = 'block';
-    } else {
-      // regular URL
-      const self = this;
-      const promised = this.svgCanvas.embedImage(url);
-      // eslint-disable-next-line promise/catch-or-return
-      promised
-        .then( function (dataURI) {
-          // eslint-disable-next-line promise/always-return
-          $id('url_notice').style.display = (!dataURI) ? 'block' : 'none';
-          // switch into "select" mode if we've clicked on an element
-          self.svgCanvas.setMode('select');
-          self.svgCanvas.selectOnly(self.svgCanvas.getSelectedElems(), true);
-        }, function (error) {
-          // eslint-disable-next-line no-console
-          console.log("error =", error);
-          seAlert(self.i18next.t('tools.no_embed'));
-          self.svgCanvas.deleteSelectedElements();
-        });
-      $id("image_url").style.display = 'block';
-      $id("change_image_url").style.display = 'none';
-    }
-  }
-
-  /**
    *
    * @param {string} color
    * @param {string} url
@@ -457,23 +422,23 @@ class Editor extends EditorStartup {
   */
   updateCanvas(center, newCtr) {
     const zoom = this.svgCanvas.getZoom();
-    const wArea = this.workarea;
+    const { workarea } = this;
     const cnvs = $id("svgcanvas");
 
-    let w = parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")); let h = parseFloat(getComputedStyle(this.workarea, null).height.replace("px", ""));
+    let w = parseFloat(getComputedStyle(workarea, null).width.replace("px", "")); let h = parseFloat(getComputedStyle(workarea, null).height.replace("px", ""));
     const wOrig = w; const hOrig = h;
     const oldCtr = {
-      x: wArea.scrollLeft + wOrig / 2,
-      y: wArea.scrollTop + hOrig / 2
+      x: workarea.scrollLeft + wOrig / 2,
+      y: workarea.scrollTop + hOrig / 2
     };
     const multi = this.configObj.curConfig.canvas_expansion;
     w = Math.max(wOrig, this.svgCanvas.contentW * zoom * multi);
     h = Math.max(hOrig, this.svgCanvas.contentH * zoom * multi);
 
     if (w === wOrig && h === hOrig) {
-      this.workarea.style.overflow = 'hidden';
+      workarea.style.overflow = 'hidden';
     } else {
-      this.workarea.style.overflow = 'scroll';
+      workarea.style.overflow = 'scroll';
     }
 
     const oldCanY = parseFloat(getComputedStyle(cnvs, null).height.replace("px", "")) / 2;
@@ -508,22 +473,22 @@ class Editor extends EditorStartup {
 
     if (center) {
       // Go to top-left for larger documents
-      if (this.svgCanvas.contentW > parseFloat(getComputedStyle(wArea, null).width.replace("px", ""))) {
+      if (this.svgCanvas.contentW > parseFloat(getComputedStyle(workarea, null).width.replace("px", ""))) {
         // Top-left
-        this.workarea.scrollLeft = offset.x - 10;
-        this.workarea.scrollTop = offset.y - 10;
+        workarea.scrollLeft = offset.x - 10;
+        workarea.scrollTop = offset.y - 10;
       } else {
         // Center
-        wArea.scrollLeft = scrollX;
-        wArea.scrollTop = scrollY;
+        workarea.scrollLeft = scrollX;
+        workarea.scrollTop = scrollY;
       }
     } else {
-      wArea.scrollLeft = newCtr.x - wOrig / 2;
-      wArea.scrollTop = newCtr.y - hOrig / 2;
+      workarea.scrollLeft = newCtr.x - wOrig / 2;
+      workarea.scrollTop = newCtr.y - hOrig / 2;
     }
     if (this.configObj.curConfig.showRulers) {
       this.rulers.updateRulers(cnvs, zoom);
-      this.workarea.scroll();
+      workarea.scroll();
     }
 
     if (this.configObj.urldata.storagePrompt !== true && this.storagePromptState === 'ignore') {
@@ -706,8 +671,7 @@ class Editor extends EditorStartup {
   */
   zoomChanged(win, bbox, autoCenter) {
     const scrbar = 15;
-    const wArea = this.workarea;
-    const zInfo = this.svgCanvas.setBBoxZoom(bbox, parseFloat(getComputedStyle(wArea, null).width.replace("px", "")) - scrbar, parseFloat(getComputedStyle(wArea, null).height.replace("px", "")) - scrbar);
+    const zInfo = this.svgCanvas.setBBoxZoom(bbox, parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")) - scrbar, parseFloat(getComputedStyle(this.workarea, null).height.replace("px", "")) - scrbar);
     if (!zInfo) { return; }
     const zoomlevel = zInfo.zoom;
     const bb = zInfo.bbox;
@@ -857,9 +821,10 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   pasteInCenter() {
+    const { workarea } = this;
     const zoom = this.svgCanvas.getZoom();
-    const x = (this.workarea.scrollLeft + parseFloat(getComputedStyle(this.workarea, null).width.replace("px", "")) / 2) / zoom - this.svgCanvas.contentW;
-    const y = (this.workarea.scrollTop + parseFloat(getComputedStyle(this.workarea, null).height.replace("px", "")) / 2) / zoom - this.svgCanvas.contentH;
+    const x = (workarea.scrollLeft + parseFloat(getComputedStyle(workarea, null).width.replace("px", "")) / 2) / zoom - this.svgCanvas.contentW;
+    const y = (workarea.scrollTop + parseFloat(getComputedStyle(workarea, null).height.replace("px", "")) / 2) / zoom - this.svgCanvas.contentH;
     this.svgCanvas.pasteElements('point', x, y);
   }
 
@@ -925,7 +890,7 @@ class Editor extends EditorStartup {
   */
   // eslint-disable-next-line class-methods-use-this
   hideSourceEditor() {
-    const $editorDialog = document.getElementById('se-svg-editor-dialog');
+    const $editorDialog = $id('se-svg-editor-dialog');
     $editorDialog.setAttribute('dialog', 'closed');
   }
 
@@ -934,7 +899,7 @@ class Editor extends EditorStartup {
   * @returns {void} Resolves to `undefined`
   */
   async saveSourceEditor(e) {
-    const $editorDialog = document.getElementById('se-svg-editor-dialog');
+    const $editorDialog = $id('se-svg-editor-dialog');
     if ($editorDialog.getAttribute('dialog') !== 'open') return;
     const saveChanges = () => {
       this.svgCanvas.clearSelection();
@@ -962,7 +927,7 @@ class Editor extends EditorStartup {
   */
   cancelOverlays(e) {
     if ($id("dialog_box") != null) $id("dialog_box").style.display = 'none';
-    const $editorDialog = document.getElementById('se-svg-editor-dialog');
+    const $editorDialog = $id('se-svg-editor-dialog');
     const editingsource = $editorDialog.getAttribute('dialog') === 'open';
     if (!editingsource && !this.docprops && !this.configObj.preferences) {
       if (this.curContext) {
@@ -1053,7 +1018,7 @@ class Editor extends EditorStartup {
   setLang(lang) {
     this.langChanged = true;
     this.configObj.pref('lang', lang);
-    const $editDialog = document.getElementById('se-edit-prefs');
+    const $editDialog = $id('se-edit-prefs');
     $editDialog.setAttribute('lang', lang);
     const oldLayerName = ($id('#layerlist')) ? $id('#layerlist').querySelector('tr.layersel td.layername').textContent : "";
     const renameLayer = (oldLayerName === this.i18next.t('notification.common.layer') + ' 1');

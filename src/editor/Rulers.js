@@ -19,15 +19,28 @@ class Rulers {
     this.editor = editor;
     // add rulers component to the DOM
     this.editor.$svgEditor.append(rulersTemplate.content.cloneNode(true));
+    const { $id } = this.svgCanvas;
+    this.rulerX = $id('ruler_x');
+    this.rulerY = $id('ruler_y');
+    this.rulerCorner = $id('ruler_corner');
+  }
+  display (on) {
+    if (on) {
+      this.rulerX.style.removeProperty('display');
+      this.rulerY.style.removeProperty('display');
+      this.rulerCorner.style.removeProperty('display');
+    } else {
+      this.rulerX.style.display = 'none';
+      this.rulerY.style.display = 'none';
+      this.rulerCorner.style.display = 'none';
+    }
   }
   /**
    * @type {Module}
   */
   manageScroll () {
-    const rulerX = document.getElementById('ruler_x');
-    const rulerY = document.getElementById('ruler_y');
-    if (rulerX) rulerX.scrollLeft = this.editor.workarea.scrollLeft;
-    if (rulerY) rulerY.scrollTop = this.editor.workarea.scrollTop;
+    if (this.rulerX) this.rulerX.scrollLeft = this.editor.workarea.scrollLeft;
+    if (this.rulerY) this.rulerY.scrollTop = this.editor.workarea.scrollTop;
   }
 
   /**

@@ -31,6 +31,9 @@ export default {
   async init({ decode64, dropXMLInternalSubset }) {
     const svgEditor = this;
     const { $id } = svgEditor.svgCanvas;
+    const { $svgEditor } = svgEditor;
+    const { imgPath } = svgEditor.configObj.curConfig;
+
     await loadExtensionTranslation(svgEditor);
 
     const { svgCanvas } = svgEditor;
@@ -405,7 +408,7 @@ export default {
         const div = document.createElement('div');
         div.id = 'imgbrowse_holder';
         div.innerHTML = '<div id=imgbrowse class=toolbar_button></div>';
-        insertAfter($id('svg_editor'), div);
+        insertAfter($svgEditor, div);
         browser = $id('imgbrowse');
 
         const allLibs = svgEditor.i18next.t(`${name}:select_lib`);
@@ -446,7 +449,7 @@ export default {
         const back = document.createElement('button');
         back.style.visibility = "hidden";
         // eslint-disable-next-line max-len
-        back.innerHTML = '<img class="svg_icon" src="./images/library.svg" alt="icon" width="16" height="16" />' + svgEditor.i18next.t(`${name}:show_list`);
+        back.innerHTML = `<img class="svg_icon" src="${imgPath}/library.svg" alt="icon" width="16" height="16" />` + svgEditor.i18next.t(`${name}:show_list`);
         leftBlock.appendChild(back);
         back.addEventListener('click', function () {
           frame.setAttribute('src', 'about:blank');
@@ -520,7 +523,7 @@ export default {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
         buttonTemplate.innerHTML = `
-        <se-menu-item id="tool_imagelib" label="Image library" src="./images/library.svg"></se-menu-item>
+        <se-menu-item id="tool_imagelib" label="Image library" src="${imgPath}/library.svg"></se-menu-item>
         `;
         insertAfter($id('tool_export'), buttonTemplate.content.cloneNode(true));
         $id('tool_imagelib').addEventListener("click", () => {

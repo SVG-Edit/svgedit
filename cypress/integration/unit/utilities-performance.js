@@ -28,7 +28,7 @@ describe('utilities performance', function () {
       <div id="workarea" style="cursor: auto; overflow: scroll; line-height: 12px; right: 100px;">
 
         <!-- Must include this thumbnail view to see some of the performance issues -->
-        <svg id="overviewMiniView" width="150" height="112.5" x="0" y="0" viewBox="100 100 1000 1000" style="float: right;"
+        <svg id="overviewMiniView" width="132" height="112.5" x="0" y="0" viewBox="100 100 1000 1000" style="float: right;"
              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <use x="0" y="0" xlink:href="#svgroot"></use>
         </svg>

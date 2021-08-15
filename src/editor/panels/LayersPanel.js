@@ -1,9 +1,6 @@
-/* eslint-disable max-len */
 /* eslint-disable no-alert */
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
 
-const SIDEPANEL_MAXWIDTH = 300;
-const SIDEPANEL_OPENWIDTH = 150;
 const { $id } = SvgCanvas;
 
 /**
@@ -15,76 +12,9 @@ class LayersPanel {
    */
   constructor(editor) {
     this.updateContextPanel = editor.topPanel.updateContextPanel;
-    this.sidedrag = -1;
-    this.sidedragging = false;
-    this.allowmove = false;
     this.editor = editor;
   }
 
-  /**
-   * @param {Float} delta
-   * @fires module:svgcanvas.SvgCanvas#event:ext_workareaResized
-   * @returns {void}
-   */
-  changeSidePanelWidth(delta) {
-    const rulerX = document.querySelector("#ruler_x");
-    $id("sidepanels").style.width = (parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", "")) + delta) + "px";
-    $id("layerpanel").style.width = (parseFloat(getComputedStyle($id("layerpanel"), null).width.replace("px", "")) + delta) + "px";
-    rulerX.style.right =
-      parseFloat(getComputedStyle(rulerX, null).right.replace("px", "")) +
-      delta +
-      "px";
-    this.editor.workarea.style.right =
-      parseFloat(
-        getComputedStyle(this.editor.workarea, null).right.replace("px", "")
-      ) +
-      delta +
-      "px";
-    this.editor.svgCanvas.runExtensions("workareaResized");
-  }
-
-  /**
-   * @param {Event} evt
-   * @returns {void}
-   */
-  resizeSidePanel(evt) {
-    if (!this.allowmove) {
-      return;
-    }
-    if (this.sidedrag === -1) {
-      return;
-    }
-    this.sidedragging = true;
-    let deltaX = this.sidedrag - evt.pageX;
-    const sideWidth = parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", ""));
-    if (sideWidth + deltaX > SIDEPANEL_MAXWIDTH) {
-      deltaX = SIDEPANEL_MAXWIDTH - sideWidth;
-      // sideWidth = SIDEPANEL_MAXWIDTH;
-    } else if (sideWidth + deltaX < 2) {
-      deltaX = 2 - sideWidth;
-      // sideWidth = 2;
-    }
-    if (deltaX === 0) {
-      return;
-    }
-    this.sidedrag -= deltaX;
-    this.changeSidePanelWidth(deltaX);
-  }
-
-  /**
-   * If width is non-zero, then fully close it; otherwise fully open it.
-   * @param {boolean} close Forces the side panel closed
-   * @returns {void}
-   */
-  toggleSidePanel(close) {
-    const dpr = window.devicePixelRatio || 1;
-    const w = parseFloat(getComputedStyle($id("sidepanels"), null).width.replace("px", ""));
-    const isOpened = (dpr < 1 ? w : w / dpr) > 2;
-    const zoomAdjustedSidepanelWidth =
-      (dpr < 1 ? 1 : dpr) * SIDEPANEL_OPENWIDTH;
-    const deltaX = (isOpened || close ? 0 : zoomAdjustedSidepanelWidth) - w;
-    this.changeSidePanelWidth(deltaX);
-  }
   /**
    * @param {PlainObject} e event
    * @returns {void}
@@ -114,33 +44,36 @@ class LayersPanel {
   init() {
     const template = document.createElement("template");
     const { i18next } = this.editor;
+    const { imgPath } = this.editor.configObj.curConfig;
+
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <div id="sidepanels">
-    <div id="layerpanel">
-      <h3 id="layersLabel">${i18next.t('layers.layers')}</h3>
-      <fieldset id="layerbuttons">
-        <se-button id="layer_new" title="${i18next.t('layers.new')}" size="small" src="./images/new.svg"></se-button>
-        <se-button id="layer_delete" title="${i18next.t('layers.del')}" size="small" src="./images/delete.svg"></se-button>
-        <se-button id="layer_rename" title="${i18next.t('layers.rename')}" size="small" src="./images/text.svg"></se-button>
-        <se-button id="layer_up" title="${i18next.t('layers.move_up')}" size="small" src="./images/go_up.svg"></se-button>
-        <se-button id="layer_down" title="${i18next.t('layers.move_down')}" size="small" src="./images/go_down.svg"></se-button>
-        <se-button id="layer_moreopts" title="${i18next.t('common.more_opts')}" size="small" src="./images/context_menu.svg">
-        </se-button>
-      </fieldset>
-      <table id="layerlist">
-        <tr class="layer">
-          <td class="layervis"></td>
-          <td class="layername">Layer 1</td>
-        </tr>
-      </table>
-      <span id="selLayerLabel">${i18next.t('layers.move_elems_to')}</span>
-      <select id="selLayerNames" title="${i18next.t('layers.move_selected')}" disabled="disabled">
-        <option selected="selected" value="layer1">Layer 1</option>
-      </select>
-    </div>
-    <div id="sidepanel_handle" title="${i18next.t('ui.panel_drag')}">L a y e r s
-    </div>
+      <div id="sidepanel_handle" title="${i18next.t('ui.panel_action')}">${i18next.t('ui.panel')}</div>
+      <div id="sidepanel_content">
+        <div id="layerpanel">
+          <h3 id="layersLabel">${i18next.t('layers.layers')}</h3>
+          <fieldset id="layerbuttons">
+            <se-button id="layer_new" title="${i18next.t('layers.new')}" size="small" src="${imgPath}/new.svg"></se-button>
+            <se-button id="layer_delete" title="${i18next.t('layers.del')}" size="small" src="${imgPath}/delete.svg"></se-button>
+            <se-button id="layer_rename" title="${i18next.t('layers.rename')}" size="small" src="${imgPath}/text.svg"></se-button>
+            <se-button id="layer_up" title="${i18next.t('layers.move_up')}" size="small" src="${imgPath}/go_up.svg"></se-button>
+            <se-button id="layer_down" title="${i18next.t('layers.move_down')}" size="small" src="${imgPath}/go_down.svg"></se-button>
+            <se-button id="layer_moreopts" title="${i18next.t('common.more_opts')}" size="small" src="${imgPath}/context_menu.svg">
+            </se-button>
+          </fieldset>
+          <table id="layerlist">
+            <tr class="layer">
+              <td class="layervis"></td>
+              <td class="layername">Layer 1</td>
+            </tr>
+          </table>
+          <span id="selLayerLabel">${i18next.t('layers.move_elems_to')}</span>
+          <select id="selLayerNames" title="${i18next.t('layers.move_selected')}" disabled="disabled">
+            <option selected="selected" value="layer1">Layer 1</option>
+          </select>
+        </div>
+     </div>
   </div>
     `;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
@@ -149,13 +82,13 @@ class LayersPanel {
     menuMore.setAttribute("id", "se-cmenu-layers-more");
     menuMore.value = "layer_moreopts";
     menuMore.setAttribute("leftclick", true);
-    this.editor.$svgEditor.append(menuMore);
+    this.editor.$container.append(menuMore);
     menuMore.init(i18next);
     const menuLayerBox = document.createElement("se-cmenu-layers");
     menuLayerBox.setAttribute("id", "se-cmenu-layers-list");
     menuLayerBox.value = "layerlist";
     menuLayerBox.setAttribute("leftclick", false);
-    this.editor.$svgEditor.append(menuLayerBox);
+    this.editor.$container.append(menuLayerBox);
     menuLayerBox.init(i18next);
     document
       .getElementById("layer_new")
@@ -180,36 +113,18 @@ class LayersPanel {
       this.lmenuFunc(e);
     });
     $id("sidepanel_handle").addEventListener(
-      "click",
-      this.toggleSidePanel.bind(this)
+      "click", () => this.toggleSidePanel()
     );
-    if (this.editor.configObj.curConfig.showlayers) {
-      this.toggleSidePanel();
+    this.toggleSidePanel(this.editor.configObj.curConfig.showlayers);
+  }
+  toggleSidePanel(displayFlag) {
+    if (displayFlag === undefined) {
+      this.editor.$svgEditor.classList.toggle('open');
+    } else if (displayFlag) {
+      this.editor.$svgEditor.classList.add('open');
+    } else {
+      this.editor.$svgEditor.classList.remove('open');
     }
-    $id("sidepanel_handle").addEventListener("mousedown", (evt) => {
-      this.sidedrag = evt.pageX;
-      window.addEventListener("mousemove", this.resizeSidePanel.bind(this));
-      this.allowmove = false;
-      // Silly hack for Chrome, which always runs mousemove right after mousedown
-      setTimeout(() => {
-        this.allowmove = true;
-      }, 20);
-    });
-    $id("sidepanel_handle").addEventListener("mouseup", (_evt) => {
-      if (!this.sidedragging) {
-        this.toggleSidePanel();
-      }
-      this.sidedrag = -1;
-      this.sidedragging = false;
-    });
-    window.addEventListener("mouseup", (_evt) => {
-      this.sidedrag = -1;
-      this.sidedragging = false;
-      this.editor.$svgEditor.removeEventListener(
-        "mousemove",
-        this.resizeSidePanel.bind(this)
-      );
-    });
   }
   /**
    * @returns {void}

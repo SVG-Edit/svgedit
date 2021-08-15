@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Show/hide more stroke tools',
     palette_info: 'Κάντε κλικ για να συμπληρώσετε την αλλαγή χρώματος, στροφή κλικ για να αλλάξετε το χρώμα εγκεφαλικό',
     zoom_level: 'Αλλαγή επίπεδο μεγέθυνσης',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

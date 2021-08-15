@@ -224,7 +224,6 @@ class SvgCanvas {
 
     // "document" element associated with the container (same as window.document using default svg-editor.js)
     // NOTE: This is not actually a SVG document, but an HTML document.
-    // JFH const svgdoc = container.ownerDocument;
     const svgdoc = window.document;
 
     // This is a container for the document being edited, not the document itself.
@@ -805,7 +804,7 @@ class SvgCanvas {
     const removedElements = {};
 
     // String with image URL of last loadable image
-    let lastGoodImgUrl = curConfig.imgPath + 'logo.svg';
+    let lastGoodImgUrl = `${curConfig.imgPath}/logo.svg`;
     // Boolean indicating whether or not a draw action has been started
     let started = false;
     // String with an element's initial transform attribute value

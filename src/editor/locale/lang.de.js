@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Zeige/Verberge weitere Linien-Werkzeuge',
     palette_info: 'Klick zum Ändern der Füllfarbe, Shift-Klick zum Ändern der Linienfarbe',
     zoom_level: 'vergrößern',
-    panel_drag: 'Nach links/rechts ziehen, um die Größe vom Seitenpanel zu ändern',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

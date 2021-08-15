@@ -31,6 +31,8 @@ export default {
   name,
   async init() {
     const svgEditor = this;
+    const { imgPath } = svgEditor.configObj.curConfig;
+
     await loadExtensionTranslation(svgEditor);
     const {
       svgCanvas
@@ -42,7 +44,6 @@ export default {
       referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     };
     return {
-      newUI: true,
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
         const btitle = svgEditor.i18next.t(`${name}:buttons.0.title`);
@@ -50,7 +51,7 @@ export default {
         const buttonTemplate = document.createElement("template");
         // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-        <se-button id="ext-panning" title="${btitle}" src="./images/panning.svg"></se-button>
+        <se-button id="ext-panning" title="${btitle}" src="${imgPath}/panning.svg"></se-button>
         `;
         insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true));
         $id('ext-panning').addEventListener("click", () => {

@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Show/hide more stroke tools',
     palette_info: '색상을 클릭, 근무 시간 채우기 스트로크 색상을 변경하려면 변경하려면',
     zoom_level: '변경 수준으로 확대',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

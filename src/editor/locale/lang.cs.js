@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Zobrazit/schovat více možností',
     palette_info: 'Kliknutím změníte barvu výplně, kliknutím současně s klávesou shift změníte barvu čáry',
     zoom_level: 'Změna přiblížení',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',
