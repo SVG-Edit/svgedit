@@ -48,16 +48,15 @@ template.innerHTML = `
   .button-icon {
   }
   .menu {
-    position: absolute;
-    top:0px;
-    left:204px;
+    position: 'fixed';
+    margin-left: 34px;
     background: none !important;
     display:none;
   }
   .image-lib {
-    position: absolute;
-    top: 0px;
-    left:34px;
+    position: fixed;
+    left: 34px;
+    top: 30%;
     background: #E8E8E8;
     display: none;
     flex-wrap: wrap;

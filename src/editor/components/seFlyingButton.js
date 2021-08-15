@@ -46,10 +46,10 @@ template.innerHTML = `
   .button-icon {
   }
   .menu {
-    position: absolute;
-    left:32px;
+    position: fixed;
     background: none !important;
     display:none;
+    margin-left: 34px;
   }
   .open {
     display: flex;

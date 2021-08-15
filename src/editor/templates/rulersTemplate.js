@@ -11,7 +11,6 @@ rulersTemplate.innerHTML = `
   grid-area: corner;
   width: 15px;
   height: 15px;
-  z-index: 1;
   overflow: hidden;
 }
 
@@ -21,7 +20,6 @@ rulersTemplate.innerHTML = `
   height: 15px;
   border-bottom: 1px solid;
   border-left: 1px solid #777;
-  z-index: 1;
   overflow: hidden;
 }
 
@@ -31,7 +29,6 @@ rulersTemplate.innerHTML = `
   width: 15px;
   border-right: 1px solid;
   border-top: 1px solid #777;
-  z-index: 1;
   overflow: hidden;
 }
 
