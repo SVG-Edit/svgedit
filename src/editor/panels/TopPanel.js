@@ -570,7 +570,7 @@ class TopPanel {
    */
   attrChanger(e) {
     const attr = e.target.getAttribute("data-attr");
-    let val = e.target.value;
+    let val = (e.detail || e.target.value);
     const valid = isValidUnit(attr, val, this.selectedElement);
 
     if (!valid) {
