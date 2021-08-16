@@ -338,34 +338,6 @@ class Editor extends EditorStartup {
   }
 
   /**
-  * @param {boolean} editmode
-  * @param {module:svgcanvas.SvgCanvas#event:selected} elems
-  * @returns {void}
-  */
-  togglePathEditMode(editMode, elems) {
-    const { imgPath } = this.configObj.curConfig;
-    if (editMode) {
-      $id('path_node_panel').style.removeProperty('display');
-    } else {
-      $id('path_node_panel').style.display = 'none';
-    }
-    if (editMode) {
-      // Change select icon
-      $id('tool_path').pressed = false;
-      $id('tool_select').pressed = true;
-      $id('tool_select').setAttribute('src', `${imgPath}/select_node.svg`);
-      this.multiselected = false;
-      if (elems.length) {
-        this.selectedElement = elems[0];
-      }
-    } else {
-      setTimeout(() => {
-        $id('tool_select').setAttribute('src', `${imgPath}/select.svg`);
-      }, 1000);
-    }
-  }
-
-  /**
    * @param {external:Window} win
    * @param {module:svgcanvas.SvgCanvas#event:exported} data
    * @listens module:svgcanvas.SvgCanvas#event:exported
@@ -549,7 +521,7 @@ class Editor extends EditorStartup {
     } // if (!isNullish(elem))
 
     // Deal with pathedit mode
-    this.togglePathEditMode(isNode, elems);
+    this.topPanel.togglePathEditMode(isNode, elems);
     this.topPanel.updateContextPanel();
     this.svgCanvas.runExtensions('selectedChanged', /** @type {module:svgcanvas.SvgCanvas#event:ext_selectedChanged} */ {
       elems,

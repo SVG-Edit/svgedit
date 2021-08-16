@@ -359,10 +359,6 @@ hr {
   float: left;
 }
 
-#multiselected_panel .selected_tool {
-  vertical-align: 12px;
-}
-
 #cur_context_panel {
   position: absolute;
   top: 57px;
@@ -384,11 +380,6 @@ hr {
 
 #cur_context_panel a:hover {
   text-decoration: underline;
-}
-
-.toolset {
-  display: flex;
-  flex-direction: row;
 }
 
 input[type=text] {

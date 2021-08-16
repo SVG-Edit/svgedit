@@ -252,12 +252,9 @@ class EditorStartup {
       this.svgCanvas.setSegType(evt.currentTarget.value);
     });
 
-    function addListenerMulti(element, eventNames, listener) {
-      const events = eventNames.split(' ');
-      for (let i=0, iLen=events.length; i<iLen; i++) {
-        element.addEventListener(events[i], listener, false);
-      }
-    }
+    const addListenerMulti = (element, eventNames, listener)=> {
+      eventNames.split(' ').forEach((eventName)=> element.addEventListener(eventName, listener, false));
+    };
 
     addListenerMulti($id('text'), 'keyup input', (evt) => {
       this.svgCanvas.setTextContent(evt.currentTarget.value);

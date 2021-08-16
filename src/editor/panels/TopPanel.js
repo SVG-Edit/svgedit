@@ -3,7 +3,7 @@
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
 import { isValidUnit, getTypeMap, convertUnit } from "../../common/units.js";
 
-const { $id, isNullish } = SvgCanvas;
+const { $qa, $id } = SvgCanvas;
 
 /*
  * register actions for left panel
@@ -21,15 +21,15 @@ class TopPanel {
   /**
    * @type {module}
    */
-  displayTool(id) {
+  displayTool(className) {
     // default display is 'none' so removing the property will make the panel visible
-    $id(id).style.removeProperty('display');
+    $qa(`.${className}`).map( (el) => el.style.removeProperty('display'));
   }
   /**
    * @type {module}
    */
-  hideTool(id) {
-    $id(id).style.display = 'none';
+  hideTool(className) {
+    $qa(`.${className}`).map( (el) => el.style.display = 'none');
   }
   /**
    * @type {module}
@@ -81,7 +81,7 @@ class TopPanel {
    */
   update() {
     let i; let len;
-    if (!isNullish(this.selectedElement)) {
+    if (this.selectedElement) {
       switch (this.selectedElement.tagName) {
       case "use":
       case "image":
@@ -129,7 +129,7 @@ class TopPanel {
     }
 
     // All elements including image and group have opacity
-    if (!isNullish(this.selectedElement)) {
+    if (this.selectedElement) {
       const opacPerc =
         (this.selectedElement.getAttribute("opacity") || 1.0) * 100;
       $id("opacity").value = opacPerc;
@@ -165,7 +165,7 @@ class TopPanel {
   updateContextPanel() {
     let elem = this.editor.selectedElement;
     // If element has just been deleted, consider it null
-    if (!isNullish(elem) && !elem.parentNode) {
+    if (!elem?.parentNode) {
       elem = null;
     }
     const currentLayerName = this.editor.svgCanvas
@@ -616,7 +616,7 @@ class TopPanel {
    * @returns {void}
    */
   convertToPath() {
-    if (!isNullish(this.editor.selectedElement)) {
+    if (this.editor.selectedElement) {
       this.editor.svgCanvas.convertToPath();
     }
   }
@@ -625,7 +625,7 @@ class TopPanel {
    * @returns {void}
    */
   reorientPath() {
-    if (!isNullish(this.editor.selectedElement)) {
+    if (this.editor.selectedElement) {
       this.path.reorient();
     }
   }
@@ -634,7 +634,7 @@ class TopPanel {
    * @returns {void} Resolves to `undefined`
    */
   makeHyperlink() {
-    if (!isNullish(this.editor.selectedElement) || this.multiselected) {
+    if (this.editor.selectedElement || this.multiselected) {
       // eslint-disable-next-line no-alert
       const url = prompt(
         this.editor.i18next.t('notification.enterNewLinkURL'),
@@ -700,7 +700,7 @@ class TopPanel {
    * @returns {void}
    */
   deleteSelected() {
-    if (!isNullish(this.editor.selectedElement) || this.editor.multiselected) {
+    if (this.editor.selectedElement || this.editor.multiselected) {
       this.editor.svgCanvas.deleteSelectedElements();
     }
   }
@@ -709,7 +709,7 @@ class TopPanel {
    * @returns {void}
    */
   moveToTopSelected() {
-    if (!isNullish(this.editor.selectedElement)) {
+    if (this.editor.selectedElement) {
       this.editor.svgCanvas.moveToTopSelectedElement();
     }
   }
@@ -719,7 +719,7 @@ class TopPanel {
    * @returns {void}
    */
   moveToBottomSelected() {
-    if (!isNullish(this.editor.selectedElement)) {
+    if (this.editor.selectedElement) {
       this.editor.svgCanvas.moveToBottomSelectedElement();
     }
   }
@@ -789,6 +789,33 @@ class TopPanel {
       this.displayTool("image_url");
     }
   }
+  /**
+  * @param {boolean} editmode
+  * @param {module:svgcanvas.SvgCanvas#event:selected} elems
+  * @returns {void}
+  */
+  togglePathEditMode(editMode, elems) {
+    const { imgPath } = this.editor.configObj.curConfig;
+    if (editMode) {
+      this.displayTool('path_node_panel');
+    } else {
+      this.hideTool('path_node_panel');
+    }
+    if (editMode) {
+      // Change select icon
+      $id('tool_path').pressed = false;
+      $id('tool_select').pressed = true;
+      $id('tool_select').setAttribute('src', `${imgPath}/select_node.svg`);
+      this.editor.multiselected = false;
+      if (elems.length) {
+        this.editor.selectedElement = elems[0];
+      }
+    } else {
+      setTimeout(() => {
+        $id('tool_select').setAttribute('src', `${imgPath}/select.svg`);
+      }, 1000);
+    }
+  }
 
   /**
    * @type {module}
@@ -822,32 +849,28 @@ class TopPanel {
           <se-button id="tool_redo" title="${i18next.t('tools.redo')}" shortcut="Y" src="${imgPath}/redo.svg" disabled></se-button>
         </div> <!-- history_panel -->
         <!-- Buttons when a single element is selected -->
-        <div id="selected_panel">
-          <div class="toolset">
-            <div class="tool_sep"></div>
-            <se-button id="tool_clone" title="${i18next.t('tools.clone')}" shortcut="D" src="${imgPath}/clone.svg"></se-button>
-            <se-button id="tool_delete" title="${i18next.t('tools.del')}" shortcut="Delete/Backspace" src="${imgPath}/delete.svg">
-            </se-button>
-          </div>
-          <div class="toolset">
-            <div class="tool_sep"></div>
-            <se-button id="tool_move_top" title="${i18next.t('tools.move_top')}" shortcut="Ctrl+Shift+]" src="${imgPath}/move_top.svg">
-            </se-button>
-            <se-button id="tool_move_bottom" title="${i18next.t('tools.move_bottom')}" shortcut="Ctrl+Shift+[" src="${imgPath}/move_bottom.svg">
-            </se-button>
-          </div>
-          <div class="toolset">
-            <se-button id="tool_topath" title="${i18next.t('tools.to_path')}" src="${imgPath}/to_path.svg"></se-button>
-            <se-button id="tool_reorient" title="${i18next.t('tools.reorient_path')}" src="${imgPath}/reorient.svg"></se-button>
-            <se-button id="tool_make_link" title="${i18next.t('tools.make_link')}" src="${imgPath}/globe_link.svg"></se-button>
-          </div>
-          <div class="toolset">
-            <div class="tool_sep"></div>
-            <se-input id="elem_id" data-attr="id" size="10" label="id" title="${i18next.t('properties.id')}"></se-input>
-          </div>
-          <div class="toolset">
-            <se-input id="elem_class" data-attr="class" size="10" label="class" title="${i18next.t('properties.class')}"></se-input>
-            <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="${imgPath}/angle.svg"
+        <div class="selected_panel">
+          <div class="tool_sep"></div>
+          <se-button id="tool_clone" title="${i18next.t('tools.clone')}" shortcut="D" src="${imgPath}/clone.svg"></se-button>
+          <se-button id="tool_delete" title="${i18next.t('tools.del')}" shortcut="Delete/Backspace" src="${imgPath}/delete.svg"></se-button>
+        </div>
+        <div class="selected_panel">
+          <div class="tool_sep"></div>
+          <se-button id="tool_move_top" title="${i18next.t('tools.move_top')}" shortcut="Ctrl+Shift+]" src="${imgPath}/move_top.svg"></se-button>
+          <se-button id="tool_move_bottom" title="${i18next.t('tools.move_bottom')}" shortcut="Ctrl+Shift+[" src="${imgPath}/move_bottom.svg"></se-button>
+        </div>
+        <div class="selected_panel">
+          <se-button id="tool_topath" title="${i18next.t('tools.to_path')}" src="${imgPath}/to_path.svg"></se-button>
+          <se-button id="tool_reorient" title="${i18next.t('tools.reorient_path')}" src="${imgPath}/reorient.svg"></se-button>
+          <se-button id="tool_make_link" title="${i18next.t('tools.make_link')}" src="${imgPath}/globe_link.svg"></se-button>
+        </div>
+        <div class="selected_panel">
+          <div class="tool_sep"></div>
+          <se-input id="elem_id" data-attr="id" size="10" label="id" title="${i18next.t('properties.id')}"></se-input>
+        </div>
+        <div class="selected_panel">
+          <se-input id="elem_class" data-attr="class" size="10" label="class" title="${i18next.t('properties.class')}"></se-input>
+          <se-spin-input size="3" id="angle" min=-180 max=180 step=5 src="${imgPath}/angle.svg"
             title="${i18next.t('properties.angle')}"></se-spin-input>
           <se-spin-input size="2" id="blur" min=0 max=100 step=5 src="${imgPath}/blur.svg"
             title="${i18next.t('properties.blur')}"></se-spin-input>
@@ -871,21 +894,21 @@ class TopPanel {
               <img title="${i18next.t('tools.align_bottom')}" src="${imgPath}/align_bottom.svg" height="22px">
             </se-list-item>
           </se-list>
-   
-          </div>
-        <div id="xy_panel" class="toolset">
-            <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x" title="${i18next.t('properties.pos_x')}">
-            </se-spin-input>
-            <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="y" title="${i18next.t('properties.pos_y')}">
-            </se-spin-input>
-          </div>
-        </div> <!-- selected_panel -->
+        </div>
+        <div id="xy_panel" class="selected_panel">
+          <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x" title="${i18next.t('properties.pos_x')}">
+          </se-spin-input>
+          <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="y" title="${i18next.t('properties.pos_y')}">
+          </se-spin-input>
+        </div>
         <!-- Buttons when multiple elements are selected -->
-        <div id="multiselected_panel">
+        <div class="multiselected_panel">
           <div class="tool_sep"></div>
           <se-button id="tool_clone_multi" title="${i18next.t('tools.clone')}" shortcut="C" src="${imgPath}/clone.svg"></se-button>
           <se-button id="tool_delete_multi" title="${i18next.t('tools.del')}" shortcut="Delete/Backspace"
             src="${imgPath}/delete.svg"></se-button>
+        </div>
+        <div class="multiselected_panel">
           <div class="tool_sep"></div>
           <se-button id="tool_group_elements" title="${i18next.t('tools.group_elements')}" shortcut="G" src="${imgPath}/group_elements.svg">
           </se-button>
@@ -902,54 +925,44 @@ class TopPanel {
             <se-list-item id="smallest_object" value="smallest">${i18next.t('tools.smallest_object')}</se-list-item>
             <se-list-item id="page" value="page">${i18next.t('tools.page')}</se-list-item>
           </se-list>
-          <div class="tool_sep"></div>
         </div> <!-- multiselected_panel -->
-        <div id="rect_panel">
-          <div class="toolset">
+        <div class="rect_panel">
             <se-spin-input id="rect_width" data-attr="width" size="4" label="w" title="${i18next.t('properties.rect_width')}">
             </se-spin-input>
             <se-spin-input id="rect_height" data-attr="height" size="4" label="h" title="${i18next.t('properties.rect_height')}">
             </se-spin-input>
-          </div>
           <se-spin-input id="rect_rx" min=0 max=1000 step=1 size="3" title="${i18next.t('properties.corner_radius')}"
             data-attr="Corner Radius" src="${imgPath}/c_radius.svg"></se-spin-input>
         </div> <!-- rect_panel -->
-        <div id="image_panel">
-          <div class="toolset">
+        <div class="image_panel">
             <se-spin-input id="image_width" data-attr="width" size="4" type="text" label="w" title="${i18next.t('properties.image_width')}">
             </se-spin-input>
             <se-spin-input id="image_height" data-attr="height" size="4" type="text" label="h"
               title="${i18next.t('properties.image_height')}"></se-spin-input>
-          </div>
-          <div class="toolset">
+        </div>
+        <div class="image_panel">
             <se-input id="image_url" data-attr="image_url" size="15" label="${i18next.t('properties.image_url')}"></se-input> 
-          </div>
-        </div> <!-- image_panel -->
-        <div id="circle_panel">
-          <div class="toolset">
+        </div>
+        <div class="circle_panel">
             <se-spin-input id="circle_cx" data-attr="cx" size="4" label="cx"></se-spin-input>
             <se-spin-input id="circle_cy" data-attr="cy" size="4" label="cy"></se-spin-input>
-          </div>
-          <div class="toolset">
+        </div>
+        <div class="circle_panel">
             <se-spin-input id="circle_r" data-attr="r" size="4" label="r"></se-spin-input>
-          </div>
-        </div> <!-- circle_panel -->
-        <div id="ellipse_panel">
-          <div class="toolset">
+        </div>
+        <div class="ellipse_panel">
             <se-spin-input id="ellipse_cx" data-attr="cx" size="4" title="${i18next.t('properties.ellipse_cx')}" label="cx">
             </se-spin-input>
             <se-spin-input id="ellipse_cy" data-attr="cy" size="4" title="${i18next.t('properties.ellipse_cy')}" label="cy">
             </se-spin-input>
-          </div>
-          <div class="toolset">
+        </div>
+        <div class="ellipse_panel">
             <se-spin-input id="ellipse_rx" data-attr="rx" size="4" title="${i18next.t('properties.ellipse_rx')}" label="rx">
             </se-spin-input>
             <se-spin-input id="ellipse_ry" data-attr="ry" size="4" title="${i18next.t('properties.ellipse_ry')}" label="ry">
             </se-spin-input>
-          </div>
-        </div> <!-- ellipse_panel -->
-        <div id="line_panel">
-          <div class="toolset">
+        </div>
+        <div class="line_panel">
             <se-spin-input id="line_x1" data-attr="x1" size="4" title="${i18next.t('properties.line_x1')}" label="x1">
             </se-spin-input>
             <se-spin-input id="line_y1" data-attr="y1" size="4" title="${i18next.t('properties.line_y1')}" label="y1">
@@ -958,53 +971,51 @@ class TopPanel {
             </se-spin-input>
             <se-spin-input id="line_y2" data-attr="y2" size="4" title="${i18next.t('properties.line_y2')}" label="y2">
             </se-spin-input>
-          </div>
-        </div> <!-- line_panel -->
-        <div id="text_panel">
-          <div class="toolset">
-            <se-button id="tool_bold" title="${i18next.t('properties.bold')}" src="${imgPath}/bold.svg" shortcut="B"></se-button>
-            <se-button id="tool_italic" title="${i18next.t('properties.italic')}" src="${imgPath}/italic.svg" shortcut="I"></se-button>
+        </div>
+        <div class="text_panel">
+          <se-button id="tool_bold" title="${i18next.t('properties.bold')}" src="${imgPath}/bold.svg" shortcut="B"></se-button>
+          <se-button id="tool_italic" title="${i18next.t('properties.italic')}" src="${imgPath}/italic.svg" shortcut="I"></se-button>
+          <se-list id="tool_font_family" label="Font:">
+            <se-list-item value="Serif" style="font-family:serif;">${i18next.t('properties.serif')}</se-list-item>
+            <se-list-item value="Sans-serif" style="font-family:sans-serif;">${i18next.t('properties.sans_serif')}</se-list-item>
+            <se-list-item value="Cursive" style="font-family:cursive;">${i18next.t('properties.cursive')}</se-list-item>
+            <se-list-item value="Fantasy" style="font-family:fantasy;">${i18next.t('properties.fantasy')}</se-list-item>
+            <se-list-item value="Monospace" style="font-family:monospace;">${i18next.t('properties.monospace')}</se-list-item>
+            <se-list-item value="Courier" style="font-family:courier;">${i18next.t('properties.courier')} </se-list-item>
+            <se-list-item value="Helvetica" style="font-family:helvetica;">${i18next.t('properties.helvetica')}</se-list-item>
+            <se-list-item value="Times" style="font-family:times;">${i18next.t('properties.times')}</se-list-item>
+          </se-list>
+          <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="${i18next.t('properties.font_size')}"
+            src="${imgPath}/fontsize.svg"></se-spin-input>
+        </div>
+        <div class="text_panel">
             <se-button id="tool_text_anchor_start" title="${i18next.t('properties.text_anchor_start')}" src="${imgPath}/anchor_start.svg"></se-button>
             <se-button id="tool_text_anchor_middle" title="${i18next.t('properties.text_anchor_middle')}" src="${imgPath}/anchor_middle.svg"></se-button>
             <se-button id="tool_text_anchor_end" title="${i18next.t('properties.text_anchor_end')}" src="${imgPath}/anchor_end.svg"></se-button>
-            <se-list id="tool_font_family" label="Font:">
-              <se-list-item value="Serif" style="font-family:serif;">${i18next.t('properties.serif')}</se-list-item>
-              <se-list-item value="Sans-serif" style="font-family:sans-serif;">${i18next.t('properties.sans_serif')}</se-list-item>
-              <se-list-item value="Cursive" style="font-family:cursive;">${i18next.t('properties.cursive')}</se-list-item>
-              <se-list-item value="Fantasy" style="font-family:fantasy;">${i18next.t('properties.fantasy')}</se-list-item>
-              <se-list-item value="Monospace" style="font-family:monospace;">${i18next.t('properties.monospace')}</se-list-item>
-              <se-list-item value="Courier" style="font-family:courier;">${i18next.t('properties.courier')} </se-list-item>
-              <se-list-item value="Helvetica" style="font-family:helvetica;">${i18next.t('properties.helvetica')}</se-list-item>
-              <se-list-item value="Times" style="font-family:times;">${i18next.t('properties.times')}</se-list-item>
-            </se-list>
-            <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="${i18next.t('properties.font_size')}"
-              src="${imgPath}/fontsize.svg"></se-spin-input>
-          </div>
-          <!-- Not visible, but still used -->
-          <input id="text" type="text" size="35" />
-        </div> <!-- text_panel -->
-        <!-- formerly gsvg_panel -->
-        <div id="container_panel">
+        </div>
+        <!-- Not visible, but still used -->
+        <input id="text" type="text" size="35" />
+        <div class="container_panel">
           <div class="tool_sep"></div>
           <se-input id="g_title" data-attr="title" size="8" label="${i18next.t('label')}"></se-input> 
         </div> <!-- container_panel -->
-        <div id="use_panel">
+        <div class="use_panel">
           <se-button id="tool_unlink_use" title="${i18next.t('tools.tool_unlink_use')}"
             src="${imgPath}/unlink_use.svg">
           </se-button>
         </div> <!-- use_panel -->
-        <div id="g_panel">
+        <div class="g_panel">
           <se-button id="tool_ungroup" title="${i18next.t('tools.ungroup')}" src="${imgPath}/ungroup.svg">
           </se-button>
         </div> <!-- g_panel -->
         <!-- For anchor elements -->
-        <div id="a_panel">
+        <div class="a_panel">
           <label id="tool_link_url" title="${i18next.t('tools.set_link_url')}">
             <span id="linkLabel" class="icon_label"></span>
             <input id="link_url" type="text" size="35" />
           </label>
         </div> <!-- a_panel -->
-        <div id="path_node_panel">
+        <div class="path_node_panel">
           <div class="tool_sep"></div>
           <se-button id="tool_node_link" title="${i18next.t('tools.node_link')}" src="${imgPath}/tool_node_link.svg" pressed>
           </se-button>
