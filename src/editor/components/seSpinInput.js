@@ -58,6 +58,7 @@ export class SESpinInput extends HTMLElement {
     this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
+    this.$div = this._shadowRoot.querySelector('div');
     this.$img = this._shadowRoot.querySelector('img');
     this.$label = this.shadowRoot.getElementById('label');
     this.$event = new CustomEvent('change');
@@ -83,6 +84,7 @@ export class SESpinInput extends HTMLElement {
     case 'src':
       this.$img.setAttribute('src', newValue);
       this.$label.remove();
+      this.$div.style.width = '82px';
       break;
     case 'size':
       // access to the underlying input box

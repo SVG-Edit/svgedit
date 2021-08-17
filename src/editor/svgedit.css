@@ -314,7 +314,7 @@ hr {
 
 #tools_bottom {
   grid-area: bottom;
-  overflow: scroll;
+  overflow: auto;
   display: flex;
   align-items: center;
 }
@@ -329,7 +329,7 @@ hr {
 #tools_left {
   grid-area: left;
   border-right: none;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 /*—————————————————————————————*/
@@ -583,4 +583,9 @@ ul li.current {
 
 .dropdown li.tool_button {
   width: 24px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 3px;
 }

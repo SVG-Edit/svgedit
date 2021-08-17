@@ -48,7 +48,7 @@ template.innerHTML = `
   .button-icon {
   }
   .menu {
-    position: 'fixed';
+    position: fixed;
     margin-left: 34px;
     background: none !important;
     display:none;
