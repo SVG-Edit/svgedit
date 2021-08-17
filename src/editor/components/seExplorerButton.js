@@ -52,6 +52,8 @@ template.innerHTML = `
     margin-left: 34px;
     background: none !important;
     display:none;
+    top: 30%;
+    left: 171px;
   }
   .image-lib {
     position: fixed;

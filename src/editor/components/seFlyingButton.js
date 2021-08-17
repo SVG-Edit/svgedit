@@ -262,6 +262,9 @@ export class FlyingButton extends HTMLElement {
           this.removeAttribute('opened');
         } else {
           this.setAttribute('opened', 'opened');
+          // In case menu scroll on top or bottom position based popup position set
+          const rect = this.getBoundingClientRect();
+          this.$menu.style.top = rect.top + "px";
         }
         break;
       default:
