@@ -104,9 +104,7 @@ export class SESpinInput extends HTMLElement {
       this.$img.remove();
       break;
     case 'value':
-      if(this.$input.value !== newValue) {
-        this.$input.value = newValue;
-      }
+      this.$input.value = newValue;
       break;
     default:
       // eslint-disable-next-line no-console
@@ -181,13 +179,6 @@ export class SESpinInput extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    this.$input.addEventListener('onchange', (e) => {
-      e.preventDefault();
-      if(e.detail !== this.value && e.detail !== "" && !isNaN(e.detail) ) {
-        const event = new CustomEvent('change', { detail: e.detail });
-        this.dispatchEvent(event);
-      }
-    });
     this.$input.addEventListener('change', (e) => {
       e.preventDefault();
       this.value = e.target.value;
