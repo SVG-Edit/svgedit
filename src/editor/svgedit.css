@@ -317,6 +317,11 @@ hr {
   overflow: auto;
   display: flex;
   align-items: center;
+  scrollbar-width: thin;
+}
+
+#tools_bottom ::-webkit-scrollbar {
+  width: 3px;
 }
 
 #tools_bottom se-list {
@@ -330,6 +335,11 @@ hr {
   grid-area: left;
   border-right: none;
   overflow-y: auto;
+  scrollbar-width: thin;
+}
+/* width */
+#tools_left ::-webkit-scrollbar {
+  width: 3px;
 }
 
 /*—————————————————————————————*/
@@ -585,7 +595,4 @@ ul li.current {
   width: 24px;
 }
 
-/* width */
-::-webkit-scrollbar {
-  width: 3px;
-}
+
