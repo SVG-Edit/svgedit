@@ -354,11 +354,6 @@ hr {
   fill: #FFF !important;
 }
 
-#editor_panel, #history_panel {
-  height: 34px;
-  float: left;
-}
-
 #cur_context_panel {
   position: absolute;
   top: 57px;
