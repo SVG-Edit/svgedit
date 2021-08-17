@@ -134,14 +134,8 @@ class BottomPanel {
     * @type {module}
     */
   handleOpacity (evt) {
-    let val = evt.currentTarget.value;
-    if(evt.detail !== undefined) {
-      val = evt.detail;
-    }
-    val = Number.parseInt(val.split('%')[0]);
-    if(!isNaN(val)) {
-      this.editor.svgCanvas.setOpacity(val / 100);
-    }
+    const val = Number.parseInt(evt.currentTarget.value.split('%')[0]);
+    this.editor.svgCanvas.setOpacity(val / 100);
   }
   /**
   * @type {module}

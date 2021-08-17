@@ -497,35 +497,23 @@ class TopPanel {
    * @type {module}
    */
   changeRectRadius(e) {
-    let val = e.target.value;
-    if(e.detail !== undefined) {
-      val = e.detail;
-    }
-    this.editor.svgCanvas.setRectRadius(val);
+    this.editor.svgCanvas.setRectRadius(e.target.value);
   }
 
   /**
    * @type {module}
    */
   changeFontSize(e) {
-    let val = e.target.value;
-    if(e.detail !== undefined) {
-      val = e.detail;
-    }
-    this.editor.svgCanvas.setFontSize(val);
+    this.editor.svgCanvas.setFontSize(e.target.value);
   }
 
   /**
    * @type {module}
    */
   changeRotationAngle(e) {
-    let val = e.target.value;
-    if(e.detail !== undefined) {
-      val = e.detail;
-    }
-    this.editor.svgCanvas.setRotationAngle(val);
+    this.editor.svgCanvas.setRotationAngle(e.target.value);
     // eslint-disable-next-line max-len
-    (Number.parseInt(val) === 0) ? $id("tool_reorient").classList.add("disabled") : $id("tool_reorient").classList.remove("disabled");
+    (Number.parseInt(e.target.value) === 0) ? $id("tool_reorient").classList.add("disabled") : $id("tool_reorient").classList.remove("disabled");
   }
 
   /**
@@ -533,11 +521,7 @@ class TopPanel {
    * @returns {void}
    */
   changeBlur(e) {
-    let val = e.target.value;
-    if(e.detail !== undefined) {
-      val = e.detail;
-    }
-    this.editor.svgCanvas.setBlur(val / 10, true);
+    this.editor.svgCanvas.setBlur(e.target.value / 10, true);
   }
   /**
    *
@@ -586,10 +570,7 @@ class TopPanel {
    */
   attrChanger(e) {
     const attr = e.target.getAttribute("data-attr");
-    let val = e?.target?.value;
-    if(e.detail !== undefined) {
-      val = e.detail;
-    }
+    let val = e.target.value;
     const valid = isValidUnit(attr, val, this.selectedElement);
 
     if (!valid) {
