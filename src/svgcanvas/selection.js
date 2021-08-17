@@ -385,8 +385,10 @@ export const setRotationAngle = function (val, preventUndo) {
     } else {
       elem.removeAttribute('transform');
     }
-    svgCanvas.changeSelectedAttribute('transform', newTransform, selectedElements());
-    svgCanvas.call('changed', selectedElements());
+    if (oldTransform !== newTransform) {
+      svgCanvas.changeSelectedAttribute('transform', newTransform, selectedElements());
+      svgCanvas.call('changed', selectedElements());
+    }
   }
   // const pointGripContainer = getElem('pathpointgrip_container');
   // if (elem.nodeName === 'path' && pointGripContainer) {

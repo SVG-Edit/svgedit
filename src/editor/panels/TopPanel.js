@@ -497,23 +497,35 @@ class TopPanel {
    * @type {module}
    */
   changeRectRadius(e) {
-    this.editor.svgCanvas.setRectRadius(e.target.value);
+    let val = e.target.value;
+    if(e.detail !== undefined) {
+      val = e.detail;
+    }
+    this.editor.svgCanvas.setRectRadius(val);
   }
 
   /**
    * @type {module}
    */
   changeFontSize(e) {
-    this.editor.svgCanvas.setFontSize(e.target.value);
+    let val = e.target.value;
+    if(e.detail !== undefined) {
+      val = e.detail;
+    }
+    this.editor.svgCanvas.setFontSize(val);
   }
 
   /**
    * @type {module}
    */
   changeRotationAngle(e) {
-    this.editor.svgCanvas.setRotationAngle(e.target.value);
+    let val = e.target.value;
+    if(e.detail !== undefined) {
+      val = e.detail;
+    }
+    this.editor.svgCanvas.setRotationAngle(val);
     // eslint-disable-next-line max-len
-    (Number.parseInt(e.target.value) === 0) ? $id("tool_reorient").classList.add("disabled") : $id("tool_reorient").classList.remove("disabled");
+    (Number.parseInt(val) === 0) ? $id("tool_reorient").classList.add("disabled") : $id("tool_reorient").classList.remove("disabled");
   }
 
   /**
@@ -521,7 +533,11 @@ class TopPanel {
    * @returns {void}
    */
   changeBlur(e) {
-    this.editor.svgCanvas.setBlur(e.target.value / 10, true);
+    let val = e.target.value;
+    if(e.detail !== undefined) {
+      val = e.detail;
+    }
+    this.editor.svgCanvas.setBlur(val / 10, true);
   }
   /**
    *
@@ -570,7 +586,10 @@ class TopPanel {
    */
   attrChanger(e) {
     const attr = e.target.getAttribute("data-attr");
-    let val = (e.detail || e.target.value);
+    let val = e?.target?.value;
+    if(e.detail !== undefined) {
+      val = e.detail;
+    }
     const valid = isValidUnit(attr, val, this.selectedElement);
 
     if (!valid) {

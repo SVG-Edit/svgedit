@@ -183,7 +183,7 @@ export class SESpinInput extends HTMLElement {
   connectedCallback () {
     this.$input.addEventListener('onchange', (e) => {
       e.preventDefault();
-      if(e.detail !== this.value && e.detail !== "") {
+      if(e.detail !== this.value && e.detail !== "" && !isNaN(e.detail) ) {
         const event = new CustomEvent('change', { detail: e.detail });
         this.dispatchEvent(event);
       }

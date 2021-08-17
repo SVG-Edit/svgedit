@@ -828,7 +828,7 @@ export const setRectRadiusMethod = function (val) {
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'rect') {
     const r = selected.getAttribute('rx');
-    if (r !== String(val)) {
+    if (r !== String(val) && !isNullish(val)) {
       selected.setAttribute('rx', val);
       selected.setAttribute('ry', val);
       elemContext_.addCommandToHistory(new ChangeElementCommand(selected, { rx: r, ry: r }, 'Radius'));
