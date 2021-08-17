@@ -216,7 +216,7 @@ class BottomPanel {
               height="22px"></img></se-list-item>
         </se-list>
         <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="${i18next.t('properties.opacity')}"
-          src="${imgPath}/opacity.svg"></se-spin-input>
+          src="${imgPath}/opacity.svg" width="82"></se-spin-input>
         <se-palette id="palette"></se-palette>
       </div>
     `;
