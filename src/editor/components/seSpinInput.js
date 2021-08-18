@@ -179,6 +179,19 @@ export class SESpinInput extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
+    const shadow = this.$input.shadowRoot;
+    const childNodes = Array.from(shadow.childNodes);
+    childNodes.forEach( (childNode) => {
+      if(childNode?.id === "input") {
+        childNode.addEventListener('keyup', (e) => {
+          e.preventDefault();
+          if (!isNaN(e.target.value)) {
+            this.value = e.target.value;
+            this.dispatchEvent(this.$event);
+          }
+        });
+      }
+    });
     this.$input.addEventListener('change', (e) => {
       e.preventDefault();
       this.value = e.target.value;
