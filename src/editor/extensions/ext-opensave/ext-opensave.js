@@ -36,7 +36,7 @@ export default {
         const byteArray = new Uint8Array(byteNumbers);
         byteArrays.push(byteArray);
       }
-      const blob = new Blob(byteArrays, {type: contentType});
+      const blob = new Blob(byteArrays, { type: contentType });
       return blob;
     };
     svgEditor.setCustomHandlers({
@@ -63,7 +63,6 @@ export default {
             if (err.name !== 'AbortError') {
               return console.error(err);
             }
-            console.log('The user aborted a request.');
           }
         } /* else {
           // legacy save
@@ -126,7 +125,6 @@ export default {
             if (err.name !== 'AbortError') {
               return console.error(err);
             }
-            console.log('The user aborted a request.');
           }
         }
         /*else {
