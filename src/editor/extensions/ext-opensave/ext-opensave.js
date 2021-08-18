@@ -15,6 +15,7 @@
    * @listens module:svgcanvas.SvgCanvas#event:saved
    * @returns {void}
    */
+import { fileOpen, fileSave } from 'browser-fs-access';
 
 export default {
   name: 'opensave',
@@ -23,7 +24,21 @@ export default {
     // check suppport for NativeFileAPI
     const supportsNativeFileApi = !!window.showOpenFilePicker;
     let fileHandle;
-
+    const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+      const byteCharacters = atob(b64Data);
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      const blob = new Blob(byteArrays, {type: contentType});
+      return blob;
+    };
     svgEditor.setCustomHandlers({
       async save (win, svg) {
         this.showSaveWarning = false;
@@ -37,6 +52,20 @@ export default {
           writableStream.write(svg);
           writableStream.close();
         } else {
+          const b64Data = encode64(svg);
+          const blob = b64toBlob(b64Data, 'image/svg+xml');
+          try {
+            await fileSave(blob, {
+              fileName: 'icon.svg',
+              extensions: [ '.svg' ]
+            });
+          } catch (err) {
+            if (err.name !== 'AbortError') {
+              return console.error(err);
+            }
+            console.log('The user aborted a request.');
+          }
+        } /* else {
           // legacy save
           // Since saving SVGs by opening a new window was removed in Chrome use artificial link-click
         // https://stackoverflow.com/questions/45603201/window-is-not-allowed-to-navigate-top-frame-navigations-to-data-urls
@@ -61,8 +90,7 @@ export default {
             }
           }
 
-        }
-
+        } */
       },
       async open () {
         // ask user before clearing an unsaved SVG
@@ -87,6 +115,21 @@ export default {
           await this.loadSvgString(svgContent);
           this.updateCanvas();
         } else {
+          try {
+            const blob = await fileOpen({
+              mimeTypes: [ 'image/*' ]
+            });
+            const svgContent = await blob.text();
+            await this.loadSvgString(svgContent);
+            this.updateCanvas();
+          } catch (err) {
+            if (err.name !== 'AbortError') {
+              return console.error(err);
+            }
+            console.log('The user aborted a request.');
+          }
+        }
+        /*else {
           const input = document.createElement('input');
           input.type = 'file';
           input.addEventListener('change', (e) => {
@@ -103,7 +146,7 @@ export default {
             });
           });
           input.click();
-        }
+        } */
       }
     });
   }
