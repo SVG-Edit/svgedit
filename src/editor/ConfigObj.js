@@ -132,7 +132,7 @@ export default class ConfigObj {
       no_save_warning: false,
       // PATH CONFIGURATION
       // The following path configuration items are disallowed in the URL (as should any future path configurations)
-      imgPath: './images/',
+      imgPath: './images',
       // DOCUMENT PROPERTIES
       // Change the following to a preference (already in the Document Properties dialog)?
       dimensions: [ 640, 480 ],
@@ -183,7 +183,6 @@ export default class ConfigObj {
       'ext-polystar',
       'ext-storage',
       'ext-opensave'
-      // 'ext-helloworld',
     ];
     this.curConfig = {
       // We do not put on defaultConfig to simplify object copying

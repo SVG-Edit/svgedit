@@ -1,7 +1,5 @@
-// import {isMac} from '../../common/browser.js';
-// if (isMac() && !window.opera) 'Ctrl+' 'Cmd+'
-
 const template = document.createElement('template');
+// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   :host(:hover) :not(.disabled)
@@ -38,7 +36,7 @@ template.innerHTML = `
   }
   </style>
   <div title="title">
-    <img src="./images/logo.svg" alt="icon">
+    <img alt="icon">
   </div>
 `;
 /**

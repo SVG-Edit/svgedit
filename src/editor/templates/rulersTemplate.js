@@ -6,80 +6,47 @@ rulersTemplate.innerHTML = `
   /* Rulers
 ——————————————————————————————————————*/
 
-#rulers > div {
-  position: absolute;
+#ruler_corner {
   background: var(--ruler-color);
-  z-index: 1;
+  grid-area: corner;
+  width: 15px;
+  height: 15px;
   overflow: hidden;
 }
 
-#ruler_corner {
-  top: 41px;
-  left: 41px;
-  width: 15px;
-  height: 15px;
-}
-
 #ruler_x {
+  background: var(--ruler-color);
+  grid-area: rulerX;
   height: 15px;
-  top: 41px;
-  left: 56px;
-  right: 30px;
   border-bottom: 1px solid;
   border-left: 1px solid #777;
+  overflow: hidden;
 }
 
 #ruler_y {
+  background: var(--ruler-color);
+  grid-area: rulerY;
   width: 15px;
-  top: 55px;
-  left: 41px;
-  bottom: 41px;
   border-right: 1px solid;
   border-top: 1px solid #777;
-}
-
-#ruler_x canvas:first-child {
-  margin-left: -16px;
+  overflow: hidden;
 }
 
 #ruler_x canvas {
   float: left;
 }
-
-#ruler_y canvas {
-  margin-top: -16px;
-}
-
-#ruler_x > div,
-#ruler_y > div {
-  overflow: hidden;
-}
-/*
-@media screen and (max-width: 1250px) {
-  #rulers #ruler_corner,
-  #rulers #ruler_x {
-    top: 71px;
-  }
-  
-  #rulers #ruler_y {
-    top: 57px;
-  }
-}
-*/
   </style>
-  <div id="rulers">
- <div id="ruler_corner"></div>
- <div id="ruler_x">
-   <div>
-     <canvas height="15"></canvas>
-   </div>
- </div>
- <div id="ruler_y">
-   <div>
-     <canvas width="15"></canvas>
-   </div>
- </div>
-</div>
+    <div id="ruler_corner"></div>
+    <div id="ruler_x">
+      <div>
+        <canvas height="15"></canvas>
+      </div>
+    </div>
+    <div id="ruler_y">
+      <div>
+        <canvas width="15"></canvas>
+      </div>
+    </div>
 `;
 
 export default rulersTemplate;

@@ -4,7 +4,7 @@ const template = document.createElement('template');
 template.innerHTML = `
 <style>
 elix-dropdown-list {
-  margin: 1px;
+  margin-top: 10px;
 }
 
 elix-dropdown-list:hover {
@@ -133,7 +133,7 @@ export class SeList extends HTMLElement {
       }
     });
     this.$dropdown.addEventListener('close', (_e) => {
-      /** @todo: with Chrome, selectedindexchange does not fire consistently
+      /** with Chrome, selectedindexchange does not fire consistently
       * unless you forec change in this close event
       */
       this.$dropdown.selectedIndex = this.$dropdown.currentIndex;

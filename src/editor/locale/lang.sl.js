@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Pokaži/skrij več orodij za oris',
     palette_info: 'Kliknite, če želite spremeniti barvo polnila, kliknite+Shift, če želite spremeniti barvo orisa',
     zoom_level: 'Povečava',
-    panel_drag: 'Povlecite levo/desno za ogled stranske vrstice',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

@@ -50,7 +50,7 @@ describe('Basic Module', function () {
           opacity: 1
         },
         initOpacity: 1,
-        imgPath: '../editor/images/',
+        imgPath: '../editor/images',
         langPath: 'locale/',
         extPath: 'extensions/',
         extensions: [ 'ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js' ],

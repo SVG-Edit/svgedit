@@ -196,55 +196,57 @@ class LeftPanel {
    */
   init() {
     const { i18next } = this.editor;
+    const { imgPath } = this.editor.configObj.curConfig;
+
     // add Left panel
     const leftMenu = [
       {
-        menu: `<se-button id="tool_select" title="${i18next.t('tools.mode_select')}" src="./images/select.svg"></se-button>`,
+        menu: `<se-button id="tool_select" title="${i18next.t('tools.mode_select')}" src="${imgPath}/select.svg"></se-button>`,
         position: 1
       },
       {
-        menu: `<se-button id="tool_zoom" title="${i18next.t('tools.mode_zoom')}" src="./images/zoom.svg" shortcut="Z"></se-button>`,
+        menu: `<se-button id="tool_zoom" title="${i18next.t('tools.mode_zoom')}" src="${imgPath}/zoom.svg" shortcut="Z"></se-button>`,
         position: 2
       },
       {
-        menu: `<se-button id="tool_fhpath" title="${i18next.t('tools.mode_fhpath')}" src="./images/pencil.svg" shortcut="Q"></se-button>`,
+        menu: `<se-button id="tool_fhpath" title="${i18next.t('tools.mode_fhpath')}" src="${imgPath}/pencil.svg" shortcut="Q"></se-button>`,
         position: 3
       },
       {
-        menu: `<se-button id="tool_line" title="${i18next.t('tools.mode_line')}" src="./images/pen.svg" shortcut="L"></se-button>`,
+        menu: `<se-button id="tool_line" title="${i18next.t('tools.mode_line')}" src="${imgPath}/pen.svg" shortcut="L"></se-button>`,
         position: 4
       },
       {
-        menu: `<se-button id="tool_path" title="${i18next.t('tools.mode_path')}" src="./images/path.svg" shortcut="P"></se-button>`,
+        menu: `<se-button id="tool_path" title="${i18next.t('tools.mode_path')}" src="${imgPath}/path.svg" shortcut="P"></se-button>`,
         position: 5
       },
       {
         menu: `<se-flyingbutton id="tools_rect" title="${i18next.t('tools.square_rect_tool')}">
-        <se-button id="tool_rect" title="${i18next.t('tools.mode_rect')}" src="./images/rect.svg" shortcut="R"></se-button>
-        <se-button id="tool_square" title="${i18next.t('tools.mode_square')}" src="./images/square.svg"></se-button>
-        <se-button id="tool_fhrect" title="${i18next.t('tools.mode_fhrect')}" src="./images/fh_rect.svg"></se-button>
+        <se-button id="tool_rect" title="${i18next.t('tools.mode_rect')}" src="${imgPath}/rect.svg" shortcut="R"></se-button>
+        <se-button id="tool_square" title="${i18next.t('tools.mode_square')}" src="${imgPath}/square.svg"></se-button>
+        <se-button id="tool_fhrect" title="${i18next.t('tools.mode_fhrect')}" src="${imgPath}/fh_rect.svg"></se-button>
       </se-flyingbutton>`,
         position: 6
       },
       {
         menu: `<se-flyingbutton id="tools_ellipse" title="${i18next.t('tools.ellipse_circle_tool')}">
-          <se-button id="tool_ellipse" title="${i18next.t('tools.mode_ellipse')}" src="./images/ellipse.svg" shortcut="E"></se-button>
-          <se-button id="tool_circle" title="${i18next.t('tools.mode_circle')}" src="./images/circle.svg"></se-button>
-          <se-button id="tool_fhellipse" title="${i18next.t('tools.mode_fhellipse')}" src="./images/fh_ellipse.svg"></se-button>
+          <se-button id="tool_ellipse" title="${i18next.t('tools.mode_ellipse')}" src="${imgPath}/ellipse.svg" shortcut="E"></se-button>
+          <se-button id="tool_circle" title="${i18next.t('tools.mode_circle')}" src="${imgPath}/circle.svg"></se-button>
+          <se-button id="tool_fhellipse" title="${i18next.t('tools.mode_fhellipse')}" src="${imgPath}/fh_ellipse.svg"></se-button>
         </se-flyingbutton>`,
         position: 7
       },
       {
-        menu: `<se-button id="tool_text" title="${i18next.t('tools.mode_text')}" src="./images/text.svg" shortcut="T"></se-button>`,
+        menu: `<se-button id="tool_text" title="${i18next.t('tools.mode_text')}" src="${imgPath}/text.svg" shortcut="T"></se-button>`,
         position: 8
       },
       {
-        menu: `<se-button id="tool_image" title="${i18next.t('tools.mode_image')}" src="./images/image.svg"></se-button>`,
+        menu: `<se-button id="tool_image" title="${i18next.t('tools.mode_image')}" src="${imgPath}/image.svg"></se-button>`,
         position: 11
       }
     ];
     const template = document.createElement("template");
-    template.innerHTML = `<div id="tools_left"></div> <!-- tools_left -->`;
+    template.innerHTML = `<div id="tools_left"></div>`;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
     const leftMenuSort = leftMenu.sort((a, b) => (a.position > b.position) ? 1 : ((b.position > a.position) ? -1 : 0));
     const parent = $id("tools_left");

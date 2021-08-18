@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Show/hide more stroke tools',
     palette_info: 'Kattints ide a változások töltse szín, shift-click változtatni stroke color',
     zoom_level: 'Change nagyítási',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

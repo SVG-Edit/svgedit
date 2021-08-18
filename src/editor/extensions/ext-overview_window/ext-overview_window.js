@@ -11,29 +11,20 @@ import { dragmove } from './dragmove/dragmove.js';
 
 export default {
   name: 'overview_window',
-  init ({ _$, isChrome }) {
+  init ({ _$ }) {
     const svgEditor = this;
     const { $id } = svgEditor.svgCanvas;
     const overviewWindowGlobals = {};
-    // Disabled in Chrome 48-, see https://github.com/SVG-Edit/svgedit/issues/26 and
-    // https://code.google.com/p/chromium/issues/detail?id=565120.
-    if (isChrome()) {
-      const verIndex = navigator.userAgent.indexOf('Chrome/') + 7;
-      const chromeVersion = Number.parseInt(navigator.userAgent.substring(verIndex));
-      if (chromeVersion < 49) {
-        return undefined;
-      }
-    }
 
     // Define and insert the base html element.
     const propsWindowHtml =
       '<div id="overview_window_content_pane" style="width:100%; ' +
         'word-wrap:break-word;  display:inline-block; margin-top:20px;">' +
         '<div id="overview_window_content" style="position:relative; ' +
-          'left:12px; top:0px;">' +
+          'left:15px; top:0px;">' +
           '<div style="background-color:#A0A0A0; display:inline-block; ' +
             'overflow:visible;">' +
-            '<svg id="overviewMiniView" width="150" height="100" x="0" ' +
+            '<svg id="overviewMiniView" width="132" height="100" x="0" ' +
               'y="0" viewBox="0 0 4800 3600" ' +
                 'xmlns="http://www.w3.org/2000/svg" ' +
                 'xmlns:xlink="http://www.w3.org/1999/xlink">' +
@@ -47,15 +38,15 @@ export default {
         '</div>' +
       '</div>';
     // eslint-disable-next-line no-unsanitized/method
-    $id("sidepanels").insertAdjacentHTML( 'beforeend', propsWindowHtml );
+    $id("sidepanel_content").insertAdjacentHTML( 'beforeend', propsWindowHtml );
 
     // Define dynamic animation of the view box.
     const updateViewBox = function () {
-      const warea = document.getElementById('workarea');
-      const portHeight = parseFloat(getComputedStyle(warea, null).height.replace("px", ""));
-      const portWidth = parseFloat(getComputedStyle(warea, null).width.replace("px", ""));
-      const portX = warea.scrollLeft;
-      const portY = warea.scrollTop;
+      const { workarea } = svgEditor;
+      const portHeight = parseFloat(getComputedStyle(workarea, null).height.replace("px", ""));
+      const portWidth = parseFloat(getComputedStyle(workarea, null).width.replace("px", ""));
+      const portX = workarea.scrollLeft;
+      const portY = workarea.scrollTop;
       const windowWidth = parseFloat(getComputedStyle($id("svgcanvas"), null).width.replace("px", ""));
       const windowHeight = parseFloat(getComputedStyle($id("svgcanvas"), null).height.replace("px", ""));
       const overviewWidth = parseFloat(getComputedStyle($id("overviewMiniView"), null).width.replace("px", ""));
@@ -71,12 +62,12 @@ export default {
       $id("overview_window_view_box").style.top = viewBoxY + 'px';
       $id("overview_window_view_box").style.left = viewBoxX + 'px';
     };
-    document.getElementById('workarea').addEventListener('scroll', () => {
+    $id('workarea').addEventListener('scroll', () => {
       if (!(overviewWindowGlobals.viewBoxDragging)) {
         updateViewBox();
       }
     });
-    document.getElementById('workarea').addEventListener('resize', updateViewBox);
+    $id('workarea').addEventListener('resize', updateViewBox);
     updateViewBox();
 
     // Compensate for changes in zoom and canvas size.

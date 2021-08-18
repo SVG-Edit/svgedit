@@ -29,6 +29,7 @@ export default {
   name,
   async init(_S) {
     const svgEditor = this;
+    const { imgPath } = svgEditor.configObj.curConfig;
     const { ChangeElementCommand } = _S; // , svgcontent,
     const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
     const { svgCanvas } = svgEditor;
@@ -44,7 +45,11 @@ export default {
      * @returns {void}
      */
     const showPanel = (on, tool) => {
-      $id(`${tool}_panel`).style.display = on ? "block" : "none";
+      if (on) {
+        $id(`${tool}_panel`).style.removeProperty('display');
+      } else {
+        $id(`${tool}_panel`).style.display = 'none';
+      }
     };
 
     /**
@@ -82,9 +87,9 @@ export default {
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
             <se-flyingbutton id="tools_polygon" title="${fbtitle}">
-              <se-button id="tool_star" title="${title_star}" src="./images/star.svg">
+              <se-button id="tool_star" title="${title_star}" src="${imgPath}/star.svg">
               </se-button>
-              <se-button id="tool_polygon" title="${title_polygon}" src="./images/polygon.svg">
+              <se-button id="tool_polygon" title="${title_polygon}" src="${imgPath}/polygon.svg">
               </se-button>
             </se-flyingbutton>
           `;
@@ -253,9 +258,9 @@ export default {
               cy: opts.start_y,
               id: svgCanvas.getNextId(),
               shape: "star",
-              point: document.getElementById("starNumPoints").value,
+              point: $id("starNumPoints").value,
               r: 0,
-              radialshift: document.getElementById("radialShift").value,
+              radialshift: $id("radialShift").value,
               r2: 0,
               orient: "point",
               fill: rgb,
@@ -282,7 +287,7 @@ export default {
               cy: opts.start_y,
               id: svgCanvas.getNextId(),
               shape: "regularPoly",
-              sides: document.getElementById("polySides").value,
+              sides: $id("polySides").value,
               orient: "x",
               edge: 0,
               fill: rgb,

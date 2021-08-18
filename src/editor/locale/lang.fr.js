@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: "Montrer/cacher plus d'outils de contour",
     palette_info: 'Cliquer pour changer la couleur de remplissage, Maj+clic pour changer la couleur de contour',
     zoom_level: 'Changer le niveau de zoom',
-    panel_drag: 'Tirer vers la gauche/droite pour redimensionner le panneau',
+    panel_action: 'Cliquer pour ouvrir le panel de côté',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

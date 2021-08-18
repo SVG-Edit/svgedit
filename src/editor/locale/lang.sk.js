@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Skryť/ukázať viac nástrojov pre krivku',
     palette_info: 'Kliknutím zmeníte farbu výplne, so Shiftom zmeníte farbu obrysu',
     zoom_level: 'Zmena priblíženia',
-    panel_drag: 'Potiahnutie vľavo/vpravo na zmenu veľkosti bočného panela',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

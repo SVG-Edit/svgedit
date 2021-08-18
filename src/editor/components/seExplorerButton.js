@@ -48,16 +48,15 @@ template.innerHTML = `
   .button-icon {
   }
   .menu {
-    position: absolute;
-    top:0px;
-    left:204px;
+    position: 'fixed';
+    margin-left: 34px;
     background: none !important;
     display:none;
   }
   .image-lib {
-    position: absolute;
-    top: 0px;
-    left:34px;
+    position: fixed;
+    left: 34px;
+    top: 30%;
     background: #E8E8E8;
     display: none;
     flex-wrap: wrap;
@@ -85,7 +84,7 @@ template.innerHTML = `
 
   <div class="overall">
     <div class="menu-button">
-      <img class="button-icon" src="./images/logo.svg" alt="icon">
+      <img class="button-icon" src="explorer.svg" alt="icon">
       <div class="handle"></div>
     </div>
     <div class="image-lib"">

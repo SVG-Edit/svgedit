@@ -22,13 +22,43 @@
 
   <!-- If you do not wish to add extensions by URL, you can add calls
       within the following file to svgEditor.setConfig -->
-  <script type="module" src="./index.js"></script>
+  <script type="module">
+    /* for available options see the file `docs/tutorials/ConfigOptions.md */
+    import Editor from './Editor.js';
+    const svgEditor = new Editor(document.getElementById('container'));
+    svgEditor.init();
+    svgEditor.setConfig({
+      allowInitialUserOverride: true,
+      extensions: [],
+      noDefaultExtensions: false,
+      userExtensions: [/* '../ext-helloworld/ext-helloworld.js' */]
+    });
+
+    // Variable XDOMAIN below is created by Rollup for the Xdomain build (see rollup.config.js)
+    /* globals XDOMAIN */
+    try { // try clause to avoid js to complain if XDOMAIN undefined
+      if (XDOMAIN) {
+        svgEditor.setConfig({
+          canvasName: 'xdomain', // Namespace this
+          allowedOrigins: [ '*' ]
+        });
+        console.info('xdomain config activated');
+      }
+    } catch (error) {/* empty fn */ }
+  </script>
 
   <title>SVG-edit</title>
 </head>
 
-<body>
-  <div id="svg_editor" role="main"></div>
+<body style="margin:0">
+  <!-- svgedit container can be positionned anywhere in the DOM
+       but it must have a width and a height -->
+  <!-- 
+  <h1>SVGEdit</h1>
+  <div id="container" style="width:100%;height:550px"></div>
+  <h1>End</h1>
+  -->      
+  <div id="container" style="width:100%;height:100vh"></div>
 </body>
 
 </html>

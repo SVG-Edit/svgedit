@@ -37,19 +37,19 @@ rimraf('./dist', () => console.info('recreating dist'));
 
 // config for svgedit core module
 const config = [ {
-  input: [ 'src/editor/index.js' ],
+  input: [ 'src/editor/Editor.js' ],
   output: [
     {
       format: 'es',
       inlineDynamicImports: true,
       sourcemap: true,
-      file: 'dist/editor/index.js'
+      file: 'dist/editor/Editor.js'
     },
     {
       format: 'es',
       inlineDynamicImports: true,
       sourcemap: true,
-      file: 'dist/editor/xdomain-index.js',
+      file: 'dist/editor/xdomain-Editor.js',
       intro: 'const XDOMAIN = true;'
     }
   ],

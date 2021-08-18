@@ -1,3 +1,4 @@
+// eslint-disable-next-line node/no-unpublished-import
 import { fromRollup } from '@web/dev-server-rollup';
 // eslint-disable-next-line node/no-unpublished-import
 import rollupCommonjs from '@rollup/plugin-commonjs';

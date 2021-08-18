@@ -3,18 +3,22 @@ import '../dialogs/se-elix/define/NumberSpinBox.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
+  div {
+    height: 24px;
+    margin: 5px 1px;
+    padding: 3px;
+  }
   img {
     position: relative;
     right: -4px;
   }
   span {
-    bottom: -3px;
+    bottom: -0.5em;
     right: -4px;
     position: relative;
-    margin-left: 4px;
-    margin-right: 4px;
+    margin-left: -4px;
+    margin-right: 1px;
     color: #fff;
-    vertical-align: ;
   }
   elix-number-spin-box {
     background-color: var(--input-color);
@@ -34,9 +38,11 @@ template.innerHTML = `
     height: 24px;
   }
   </style>
-  <img src="./images/logo.svg" alt="icon" width="24" height="24" aria-labelledby="label" />
+  <div>
+  <img alt="icon" width="24" height="24" aria-labelledby="label" />
   <span id="label">label</span>
   <elix-number-spin-box min="1" step="1"></elix-number-spin-box>
+  </div>
 `;
 
 /**

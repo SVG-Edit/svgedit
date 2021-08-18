@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Arătaţi/ascundeţi mai multe unelte de contur',
     palette_info: 'Faceţi clic pentru a schimba culoarea de umplere, Shift-clic pentru a schimba culoarea de contur',
     zoom_level: 'Schimbarea nivelului de zoom',
-    panel_drag: 'Trageţi la stanga/dreapta pentru redimensionare panou lateral',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

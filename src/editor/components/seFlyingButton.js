@@ -46,10 +46,10 @@ template.innerHTML = `
   .button-icon {
   }
   .menu {
-    position: absolute;
-    left:32px;
+    position: fixed;
     background: none !important;
     display:none;
+    margin-left: 34px;
   }
   .open {
     display: flex;
@@ -71,7 +71,7 @@ template.innerHTML = `
   <slot></slot>
 </div>
     <div class="menu-button">
-      <img class="button-icon" src="./images/logo.svg" alt="icon">
+      <img class="button-icon" src="logo.svg" alt="icon">
       <div class="handle"></div>
     </div>
    

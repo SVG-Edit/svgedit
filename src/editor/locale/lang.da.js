@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Show/hide more stroke tools',
     palette_info: 'Klik for at ændre fyldfarve, shift-klik for at ændre stregfarve',
     zoom_level: 'Skift zoomniveau',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

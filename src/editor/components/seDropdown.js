@@ -15,7 +15,7 @@ class Dropdown extends ListComboBox {
   get [defaultState] () {
     return Object.assign(super[defaultState], {
       inputPartType: NumberSpinBox,
-      src: './images/logo.svg',
+      src: "logo.svg",
       inputsize: '100%'
     });
   }
@@ -28,7 +28,7 @@ class Dropdown extends ListComboBox {
     const source = result.content.getElementById('source');
     // add a icon before our dropdown
     source.prepend(fragmentFrom.html`
-      <img src="./images/logo.svg" alt="icon" width="18" height="18"></img>
+      <img src="dropdown.svg" alt="icon" width="18" height="18"></img>
       `.cloneNode(true));
     // change the style so it fits in our toolbar
     result.content.append(

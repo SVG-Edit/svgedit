@@ -20,7 +20,7 @@ export default {
     toggle_stroke_tools: 'Mostra/nascondi strumenti per il tratto',
     palette_info: 'Fare clic per cambiare il colore di riempimento, shift-click per cambiare colore del tratto',
     zoom_level: 'Cambia il livello di zoom',
-    panel_drag: 'Drag left/right to resize side panel',
+    panel_action: 'Click to open side panel',
     quality: 'Quality:',
     pathNodeTooltip: 'Drag node to move it. Double-click node to change segment type',
     pathCtrlPtTooltip: 'Drag control point to adjust curve properties',

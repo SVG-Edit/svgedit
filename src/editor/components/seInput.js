@@ -3,6 +3,11 @@ import 'elix/define/Input.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
+  div {
+    height: 24px;
+    margin: 5px 1px;
+    padding: 3px;
+  }
   img {
     top: 2px;
     left: 4px;
@@ -20,9 +25,11 @@ template.innerHTML = `
     border-radius: 3px;
   }
   </style>
-  <img src="./images/logo.svg" alt="icon" width="12" height="12" />
+  <div>
+  <img alt="icon" width="12" height="12" />
   <span id="label">label</span>
   <elix-input></elix-input>
+  </div>
 `;
 
 /**
