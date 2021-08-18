@@ -1,4 +1,3 @@
-/* globals seAlert */
 /**
  * @file ext-opensave.js
  *
