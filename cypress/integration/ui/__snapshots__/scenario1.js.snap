@@ -1,0 +1,177 @@
+exports[`use all parts of svg-edit > check tool_source_set #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer"><title>Layer 1</title></g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_line #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      style="pointer-events:none"
+      x1="200"
+      y1="200"
+      x2="220"
+      y2="220"
+      id="svg_1"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </line>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_shape #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      x1="200"
+      y1="200"
+      x2="220"
+      y2="220"
+      id="svg_1"
+      fill-opacity="1"
+      stroke-opacity="1"
+      transform="rotate(43.2643 210 210)"
+    ></line>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      style="pointer-events:none"
+      d="m309.60653833763354,262.7975086895094 c37.05917105721012,-106.31729401658639 182.2582183141481,0 0,136.6936637356111 c-182.2582183141481,-136.6936637356111 -37.05917105721012,-243.0109577521975 0,-136.6936637356111 z"
+      id="svg_2"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </path>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check mode_connect #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      x1="200"
+      y1="200"
+      x2="220"
+      y2="220"
+      id="svg_1"
+      fill-opacity="1"
+      stroke-opacity="1"
+      transform="rotate(43.2643 210 210)"
+    ></line>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      d="m309.60653833763354,262.7975086895094 c37.05917105721012,-106.31729401658639 182.2582183141481,0 0,136.6936637356111 c-182.2582183141481,-136.6936637356111 -37.05917105721012,-243.0109577521975 0,-136.6936637356111 z"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></path>
+    <rect
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      x="296"
+      y="136"
+      width="150"
+      height="120"
+      id="svg_3"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></rect>
+    <rect
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      style="pointer-events:inherit"
+      x="446"
+      y="76"
+      width="180"
+      height="180"
+      id="svg_4"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </rect>
+  </g>
+</svg>
+`;
