@@ -9,8 +9,7 @@ template.innerHTML = `
     padding: 3px;
   }
   div.imginside {
-    --se-spin-input-width: var(--global-se-spin-input-width);
-    width: var(--se-spin-input-width);
+    width: var(--global-se-spin-input-width);
   }
   img {
     position: relative;
@@ -73,7 +72,7 @@ export class SESpinInput extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'value', 'label', 'src', 'size', 'min', 'max', 'step', 'width' ];
+    return [ 'value', 'label', 'src', 'size', 'min', 'max', 'step' ];
   }
   /**
    * @function attributeChangedCallback
@@ -89,9 +88,6 @@ export class SESpinInput extends HTMLElement {
       this.$img.setAttribute('src', newValue);
       this.$label.remove();
       this.$div.classList.add('imginside');
-      break;
-    case 'width':
-      this.$div.style.setProperty('--se-spin-input-width', newValue + 'px');
       break;
     case 'size':
       // access to the underlying input box
