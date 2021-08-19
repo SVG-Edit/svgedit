@@ -8,6 +8,7 @@
   --icon-bg-color: #72797A;
   --icon-bg-color-hover: #2B3C45;
   --input-color: #B2B2B2;
+  --global-se-spin-input-width: 82px;
 }
 
 .svg_editor * {
@@ -314,9 +315,14 @@ hr {
 
 #tools_bottom {
   grid-area: bottom;
-  overflow: scroll;
+  overflow: auto;
   display: flex;
   align-items: center;
+  scrollbar-width: thin;
+}
+
+#tools_bottom ::-webkit-scrollbar {
+  width: 3px;
 }
 
 #tools_bottom se-list {
@@ -597,3 +603,5 @@ ul li.current {
 .dropdown li.tool_button {
   width: 24px;
 }
+
+

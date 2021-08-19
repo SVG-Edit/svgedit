@@ -48,10 +48,12 @@ template.innerHTML = `
   .button-icon {
   }
   .menu {
-    position: 'fixed';
+    position: fixed;
     margin-left: 34px;
     background: none !important;
     display:none;
+    top: 30%;
+    left: 171px;
   }
   .image-lib {
     position: fixed;
