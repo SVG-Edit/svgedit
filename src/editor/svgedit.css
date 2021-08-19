@@ -330,7 +330,25 @@ hr {
   grid-area: left;
   border-right: none;
   overflow-y: scroll;
+  /* Works on Firefox */
+  scrollbar-width: 3px;
+  scrollbar-color: rgb(70, 70, 70) auto;
 }
+
+/* Scrollbar styling on Chrome, Edge, and Safari */
+#tools_left::-webkit-scrollbar {
+  width: 3px;
+}
+
+#tools_left::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#tools_left::-webkit-scrollbar-thumb {
+  background-color:rgb(70, 70, 70);
+}
+
+/* End scrollbar styling */
 
 /*—————————————————————————————*/
 
