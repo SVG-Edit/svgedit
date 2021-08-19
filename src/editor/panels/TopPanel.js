@@ -895,7 +895,7 @@ class TopPanel {
             </se-list-item>
           </se-list>
         </div>
-        <div id="xy_panel" class="selected_panel">
+        <div class="xy_panel">
           <se-spin-input id="selected_x" data-attr="x" size="4" type="text" label="x" title="${i18next.t('properties.pos_x')}">
           </se-spin-input>
           <se-spin-input id="selected_y" data-attr="y" size="4" type="text" label="y" title="${i18next.t('properties.pos_y')}">
