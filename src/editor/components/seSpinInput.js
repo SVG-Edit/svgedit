@@ -88,9 +88,9 @@ export class SESpinInput extends HTMLElement {
     case 'src':
       this.$img.setAttribute('src', newValue);
       this.$label.remove();
+      this.$div.classList.add('imginside');
       break;
     case 'width':
-      this.$div.classList.add('imginside');
       this.$div.style.setProperty('--se-spin-input-width', newValue + 'px');
       break;
     case 'size':
