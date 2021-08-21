@@ -10,35 +10,15 @@ import 'pathseg';
 
 import { NS } from './namespaces.js';
 
-const supportsSVG_ = (function () {
-  return Boolean(document.createElementNS && document.createElementNS(NS.SVG, 'svg').createSVGRect);
-}());
-
-/**
- * @function module:browser.supportsSvg
- * @returns {boolean}
-*/
-export const supportsSvg = () => supportsSVG_;
-
 const { userAgent } = navigator;
 const svg = document.createElementNS(NS.SVG, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
-const isOpera_ = Boolean(window.opera);
 const isWebkit_ = userAgent.includes('AppleWebKit');
 const isGecko_ = userAgent.includes('Gecko/');
 const isChrome_ = userAgent.includes('Chrome/');
-const isWindows_ = userAgent.includes('Windows');
 const isMac_ = userAgent.includes('Macintosh');
 const isTouch_ = 'ontouchstart' in window;
-
-const supportsSelectors_ = (function () {
-  return Boolean(svg.querySelector);
-}());
-
-const supportsXpath_ = (function () {
-  return Boolean(document.evaluate);
-}());
 
 // segList functions (for FF1.5 and 2.0)
 const supportsPathReplaceItem_ = (function () {
@@ -113,11 +93,6 @@ const supportsHVLineContainerBBox_ = (function () {
   return (bbox.width === 15);
 }());
 
-const supportsEditableText_ = (function () {
-// TODO: Find better way to check support for this
-  return isOpera_;
-}());
-
 const supportsNonScalingStroke_ = (function () {
   const rect = document.createElementNS(NS.SVG, 'rect');
   rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
@@ -147,11 +122,6 @@ let supportsNativeSVGTransformLists_ = (function () {
 // Public API
 
 /**
- * @function module:browser.isOpera
- * @returns {boolean}
-*/
-export const isOpera = () => isOpera_;
-/**
  * @function module:browser.isWebkit
  * @returns {boolean}
 */
@@ -166,11 +136,7 @@ export const isGecko = () => isGecko_;
  * @returns {boolean}
 */
 export const isChrome = () => isChrome_;
-/**
- * @function module:browser.isWindows
- * @returns {boolean}
-*/
-export const isWindows = () => isWindows_;
+
 /**
  * @function module:browser.isMac
  * @returns {boolean}
@@ -181,18 +147,6 @@ export const isMac = () => isMac_;
  * @returns {boolean}
 */
 export const isTouch = () => isTouch_;
-
-/**
- * @function module:browser.supportsSelectors
- * @returns {boolean}
-*/
-export const supportsSelectors = () => supportsSelectors_;
-
-/**
- * @function module:browser.supportsXpath
- * @returns {boolean}
-*/
-export const supportsXpath = () => supportsXpath_;
 
 /**
  * @function module:browser.supportsPathReplaceItem
@@ -223,12 +177,6 @@ export const supportsHVLineContainerBBox = () => supportsHVLineContainerBBox_;
  * @returns {boolean}
 */
 export const supportsGoodTextCharPos = () => supportsGoodTextCharPos_;
-
-/**
-* @function module:browser.supportsEditableText
- * @returns {boolean}
-*/
-export const supportsEditableText = () => supportsEditableText_;
 
 /**
 * @function module:browser.supportsNonScalingStroke

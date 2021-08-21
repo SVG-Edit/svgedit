@@ -13,8 +13,7 @@ import {
   hasMatrixTransform, transformListToTransform, transformBox
 } from './math.js';
 import {
-  isWebkit, supportsHVLineContainerBBox, supportsPathBBox, supportsXpath,
-  supportsSelectors
+  isWebkit, supportsHVLineContainerBBox, supportsPathBBox
 } from '../common/browser.js';
 import { getClosest, mergeDeep } from '../editor/components/jgraduate/Util.js';
 
@@ -27,8 +26,6 @@ const visElemsArr = visElems.split(',');
 // const hidElems = 'defs,desc,feGaussianBlur,filter,linearGradient,marker,mask,metadata,pattern,radialGradient,stop,switch,symbol,title,textPath';
 
 let editorContext_ = null;
-let domdoc_ = null;
-let domcontainer_ = null;
 let svgroot_ = null;
 
 /**
@@ -92,8 +89,6 @@ let svgroot_ = null;
 */
 export const init = function (editorContext) {
   editorContext_ = editorContext;
-  domdoc_ = editorContext.getDOMDocument();
-  domcontainer_ = editorContext.getDOMContainer();
   svgroot_ = editorContext.getSVGRoot();
 };
 
@@ -1229,26 +1224,10 @@ export const getFeGaussianBlur = function (ele) {
 * @param {string} id - String with the element's new ID
 * @returns {?Element}
 */
-export const getElem = (supportsSelectors())
-  ? function (id) {
-    // querySelector lookup
-    return svgroot_.querySelector('#' + id);
-  }
-  : supportsXpath()
-    ? function (id) {
-      // xpath lookup
-      return domdoc_.evaluate(
-        'svg:svg[@id="svgroot"]//svg:*[@id="' + id + '"]',
-        domcontainer_,
-        function () { return NS.SVG; },
-        9,
-        null
-      ).singleNodeValue;
-    }
-    : function (id) {
-      // jQuery lookup: twice as slow as xpath in FF
-      return svgroot_.querySelector(`[id=${id}]`);
-    };
+export const getElem = (id) => {
+  // querySelector lookup
+  return svgroot_.querySelector('#' + id);
+};
 
 /**
 * Assigns multiple attributes to an element.
