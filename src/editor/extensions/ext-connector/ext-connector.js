@@ -365,7 +365,9 @@ export default {
         `;
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 13);
         $id('mode_connect').addEventListener("click", () => {
-          svgCanvas.setMode('connector');
+          if (this.leftPanel.updateLeftPanel("ext-panning")) {
+            svgCanvas.setMode('connector');
+          }
         });
       },
       /* async */ addLangData({ _lang }) { // , importLocale: importLoc

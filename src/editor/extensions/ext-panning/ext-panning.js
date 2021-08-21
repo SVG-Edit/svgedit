@@ -55,7 +55,9 @@ export default {
         `;
         insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true));
         $id('ext-panning').addEventListener("click", () => {
-          svgCanvas.setMode('ext-panning');
+          if (this.leftPanel.updateLeftPanel("ext-panning")) {
+            svgCanvas.setMode('ext-panning');
+          }
         });
       },
       mouseDown() {

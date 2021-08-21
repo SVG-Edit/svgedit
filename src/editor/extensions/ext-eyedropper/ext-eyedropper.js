@@ -91,7 +91,9 @@ export default {
         `;
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 12);
         $id('tool_eyedropper').addEventListener("click", () => {
-          svgCanvas.setMode('eyedropper');
+          if (this.leftPanel.updateLeftPanel("tool_eyedropper")) {
+            svgCanvas.setMode('eyedropper');
+          }
         });
       },
       // if we have selected an element, grab its paint and enable the eye dropper button

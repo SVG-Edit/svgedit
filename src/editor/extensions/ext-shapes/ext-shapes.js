@@ -51,7 +51,9 @@ export default {
           `;
           canv.insertChildAtIndex($id('tools_left'), buttonTemplate, 9);
           $id('tool_shapelib').addEventListener("click", () => {
-            canv.setMode(modeId);
+            if (this.leftPanel.updateLeftPanel("tool_shapelib")) {
+              canv.setMode(modeId);
+            }
           });
         }
       },
