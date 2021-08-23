@@ -49,7 +49,7 @@ describe('use all parts of svg-edit', function () {
       .trigger('mouseup', { force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
-  it('check mode_connect', function () {
+  /*  it('check mode_connect', function () {
     cy.get('#tool_rect').click({ force: true });
     cy.get('#svgcontent')
       .trigger('mousedown', 100, -60, { force: true })
@@ -69,7 +69,7 @@ describe('use all parts of svg-edit', function () {
       .trigger('mouseup', { force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
-  /* it('check tool_image', function () {
+  it('check tool_image', function () {
 
     cy.get('#tool_image').click({ force: true });
     cy.get('#svgcontent')
