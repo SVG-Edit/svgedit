@@ -129,20 +129,6 @@ class MainMenu {
     this.editor.updateCanvas();
     this.hidePreferences();
   }
-
-  /**
-   *
-   * @returns {void}
-   */
-  clickSave() {
-    // In the future, more options can be provided here
-    const saveOpts = {
-      images: this.editor.configObj.pref("img_save"),
-      round_digits: 6
-    };
-    this.editor.svgCanvas.save(saveOpts);
-  }
-
   /**
    *
    * @param e
@@ -208,16 +194,6 @@ class MainMenu {
         this.editor.exportWindowName
       );
     }
-  }
-
-  /**
-   * By default,  this.editor.svgCanvas.open() is a no-op. It is up to an extension
-   *  mechanism (opera widget, etc.) to call `setCustomHandlers()` which
-   *  will make it do something.
-   * @returns {void}
-   */
-  clickOpen() {
-    this.editor.svgCanvas.open();
   }
 
   /**
