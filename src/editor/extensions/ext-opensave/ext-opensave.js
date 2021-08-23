@@ -18,6 +18,7 @@
 import { fileOpen, fileSave } from 'browser-fs-access';
 
 const name = "opensave";
+let handle = null;
 
 const loadExtensionTranslation = async function (svgEditor) {
   let translationModule;
@@ -108,7 +109,7 @@ export default {
      *
      * @returns {void}
      */
-    const clickSave = async function () {
+    const clickSave = async function (type, _) {
       const $editorDialog = $id("se-svg-editor-dialog");
       const editingsource = $editorDialog.getAttribute("dialog") === "open";
       if (editingsource) {
@@ -135,10 +136,18 @@ export default {
         const b64Data = svgCanvas.encode64(svg);
         const blob = b64toBlob(b64Data, 'image/svg+xml');
         try {
-          await fileSave(blob, {
-            fileName: 'icon.svg',
-            extensions: [ '.svg' ]
-          });
+          if(type === "save" && handle !== null) {
+            const throwIfExistingHandleNotGood = false;
+            handle = await fileSave(blob, {
+              fileName: 'icon.svg',
+              extensions: [ '.svg' ]
+            }, handle, throwIfExistingHandleNotGood);
+          } else {
+            handle = await fileSave(blob, {
+              fileName: 'icon.svg',
+              extensions: [ '.svg' ]
+            });
+          }
         } catch (err) {
           if (err.name !== 'AbortError') {
             return console.error(err);
@@ -159,10 +168,13 @@ export default {
         svgCanvas.insertChildAtIndex($id('main_button'), openButtonTemplate, 1);
         const saveButtonTemplate = `<se-menu-item id="tool_save" label="${svgEditor.i18next.t('tools.save_doc')}" shortcut="S" src="${imgPath}/saveImg.svg"></se-menu-item>`;
         svgCanvas.insertChildAtIndex($id('main_button'), saveButtonTemplate, 2);
+        const saveAsButtonTemplate = `<se-menu-item id="tool_save_as" label="${svgEditor.i18next.t('tools.save_as_doc')}" src="${imgPath}/saveImg.svg"></se-menu-item>`;
+        svgCanvas.insertChildAtIndex($id('main_button'), saveAsButtonTemplate, 3);
         // handler
         $id("tool_clear").addEventListener("click", clickClear.bind(this));
         $id("tool_open").addEventListener("click", clickOpen.bind(this));
-        $id("tool_save").addEventListener("click", clickSave.bind(this));
+        $id("tool_save").addEventListener("click", clickSave.bind(this, "save"));
+        $id("tool_save_as").addEventListener("click", clickSave.bind(this, "saveas"));
       }
     };
   }

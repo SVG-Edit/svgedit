@@ -112,6 +112,7 @@ export default {
     open_doc: 'Open SVG',
     export_img: 'Export',
     save_doc: 'Save Image',
+    save_as_doc: 'Save As Image',
     import_doc: 'Import Image',
     align_to_page: 'Align Element to Page',
     align_bottom: 'Align Bottom',
