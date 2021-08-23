@@ -188,6 +188,8 @@ class SvgCanvas {
     this.$id = $id;
     this.$qq = $qq;
     this.$qa = $qa;
+    this.encode64 = encode64;
+    this.decode64 = decode64;
     this.stringToHTML = stringToHTML;
     this.insertChildAtIndex = insertChildAtIndex;
     this.getClosest = getClosest;
@@ -1365,6 +1367,8 @@ class SvgCanvas {
     /**
 * Group: Serialization.
 */
+    this.getSvgOption = () => { return saveOptions; };
+    this.setSvgOption = (key, value) => { saveOptions[key] = value; };
 
     svgInit(
       /**
@@ -1379,8 +1383,8 @@ class SvgCanvas {
         getCurrentGroup() { return currentGroup; },
         getCurConfig() { return curConfig; },
         getNsMap() { return nsMap; },
-        getSvgOption() { return saveOptions; },
-        setSvgOption(key, value) { saveOptions[key] = value; },
+        getSvgOption: this.getSvgOption,
+        setSvgOption: this.setSvgOption,
         getSvgOptionApply() { return saveOptions.apply; },
         getSvgOptionImages() { return saveOptions.images; },
         getEncodableImages(key) { return encodableImages[key]; },

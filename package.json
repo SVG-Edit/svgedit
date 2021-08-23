@@ -77,6 +77,7 @@
   ],
   "dependencies": {
     "@babel/polyfill": "7.12.1",
+    "browser-fs-access": "^0.20.4",
     "canvg": "3.0.7",
     "core-js": "3.16.2",
     "elix": "15.0.0",

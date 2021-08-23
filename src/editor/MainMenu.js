@@ -307,9 +307,6 @@ class MainMenu {
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <se-menu id="main_button" label="SVG-Edit" src="${imgPath}/logo.svg" alt="logo">
-        <se-menu-item id="tool_clear" label="${i18next.t('tools.new_doc')}" shortcut="N" src="${imgPath}/new.svg"></se-menu-item>
-        <se-menu-item id="tool_open" label="${i18next.t('tools.open_doc')}" src="${imgPath}/open.svg"></se-menu-item>
-        <se-menu-item id="tool_save" label="${i18next.t('tools.save_doc')}" shortcut="S" src="${imgPath}/saveImg.svg"></se-menu-item>
         <se-menu-item id="tool_import" label="${i18next.t('tools.import_doc')}" src="${imgPath}/importImg.svg"></se-menu-item>
         <se-menu-item id="tool_export" label="${i18next.t('tools.export_img')}" src="${imgPath}/export.svg"></se-menu-item>
         <se-menu-item id="tool_docprops" label="${i18next.t('tools.docprops')}" shortcut="D" src="${imgPath}/docprop.svg"></se-menu-item>
@@ -324,29 +321,10 @@ class MainMenu {
      * Associate all button actions as well as non-button keyboard shortcuts.
      */
 
-    $id("tool_clear").addEventListener("click", this.clickClear.bind(this));
-    $id("tool_open").addEventListener("click", (e) => {
-      e.preventDefault();
-      this.clickOpen();
-      window.dispatchEvent(new CustomEvent("openImage"));
-    });
     $id("tool_import").addEventListener("click", () => {
       this.clickImport();
       window.dispatchEvent(new CustomEvent("importImages"));
     });
-    $id("tool_save").addEventListener(
-      "click",
-      function() {
-        const $editorDialog = $id("se-svg-editor-dialog");
-        const editingsource = $editorDialog.getAttribute("dialog") === "open";
-        if (editingsource) {
-          this.saveSourceEditor();
-        } else {
-          this.clickSave();
-        }
-      }.bind(this)
-    );
-    // this.clickExport.bind(this)
     $id("tool_export").addEventListener("click", function() {
       document
         .getElementById("se-export-dialog")
