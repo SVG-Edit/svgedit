@@ -1,7 +1,7 @@
 export default {
-  tools: {
+  opensave: {
     new_doc: 'New Image',
-    open_doc: 'Open SVG',
+    open_image_doc: 'Open SVG',
     save_doc: 'Save SVG',
     save_as_doc: 'Save as SVG'
   }

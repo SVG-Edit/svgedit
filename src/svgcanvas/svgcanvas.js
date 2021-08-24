@@ -80,7 +80,7 @@ import {
   convertToNum, getTypeMap, init as unitsInit
 } from '../common/units.js';
 import {
-  svgCanvasToString, svgToString, setSvgString, save, exportPDF, setUseDataMethod,
+  svgCanvasToString, svgToString, setSvgString, exportPDF, setUseDataMethod,
   init as svgInit, importSvgString, embedImage, rasterExport,
   uniquifyElemsMethod, removeUnusedDefElemsMethod, convertGradientsMethod
 } from './svg-exec.js';
@@ -1451,26 +1451,6 @@ class SvgCanvas {
     this.setGoodImage = function (val) {
       lastGoodImgUrl = val;
     };
-
-    /**
-* Does nothing by default, handled by optional widget/extension.
-* @function module:svgcanvas.SvgCanvas#open
-* @returns {void}
-*/
-    this.open = function () {
-      /* empty fn */
-    };
-
-    /**
-* Serializes the current drawing into SVG XML text and passes it to the 'saved' handler.
-* This function also includes the XML prolog. Clients of the `SvgCanvas` bind their save
-* function to the 'saved' event.
-* @function module:svgcanvas.SvgCanvas#save
-* @param {module:svgcanvas.SaveOptions} opts
-* @fires module:svgcanvas.SvgCanvas#event:saved
-* @returns {void}
-*/
-    this.save = save;
 
     /**
 * @typedef {PlainObject} module:svgcanvas.IssuesAndCodes

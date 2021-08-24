@@ -181,38 +181,6 @@ class Editor extends EditorStartup {
   */
 
   /**
-  * Allows one to override default SVGEdit `open`, `save`, and
-  * `export` editor behaviors.
-  * @function module:SVGthis.setCustomHandlers
-  * @param {module:SVGthis.CustomHandler} opts Extension mechanisms may call `setCustomHandlers` with three functions: `opts.open`, `opts.save`, and `opts.exportImage`
-  * @returns {Promise<void>}
-  */
-
-  /**
-   * @param {PlainObject} opts
-   * @returns {Promise<PlainObject>}
-   */
-  setCustomHandlers(opts) {
-    return this.ready(() => {
-      if (opts.open) {
-        this.svgCanvas.open = opts.open.bind(this);
-      }
-      if (opts.save) {
-        this.showSaveWarning = false;
-        this.svgCanvas.bind('saved', opts.save.bind(this));
-      }
-      if (opts.exportImage) {
-        this.customExportImage = opts.exportImage.bind(this);
-        this.svgCanvas.bind('exported', this.customExportImage); // canvg and our RGBColor will be available to the method
-      }
-      if (opts.exportPDF) {
-        this.customExportPDF = opts.exportPDF.bind(this);
-        this.svgCanvas.bind('exportedPDF', this.customExportPDF); // jsPDF and our RGBColor will be available to the method
-      }
-    });
-  }
-
-  /**
    * @function module:SVGthis.randomizeIds
    * @param {boolean} arg
    * @returns {void}
