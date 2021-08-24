@@ -743,15 +743,17 @@ export const convertToGroup = function (elem) {
     // Not ideal, but works
     ts += ' translate(' + (pos.x || 0) + ',' + (pos.y || 0) + ')';
 
-    const prev = $elem.prev();
+    const prev = $elem.previousElementSibling;
 
     // Remove <use> element
-    batchCmd.addSubCommand(new RemoveElementCommand($elem[0], $elem[0].nextSibling, $elem[0].parentNode));
+    batchCmd.addSubCommand(new RemoveElementCommand($elem, $elem.nextElementSibling, $elem.parentNode));
     $elem.remove();
 
     // See if other elements reference this symbol
     const svgcontent = elementContext_.getSVGContent();
-    const hasMore = svgcontent.querySelectorAll('use:data(symbol)').length;
+    // const hasMore = svgcontent.querySelectorAll('use:data(symbol)').length;
+    // @todo review this logic
+    const hasMore = svgcontent.querySelectorAll('use').length;
 
     const g = elementContext_.getDOMDocument().createElementNS(NS.SVG, 'g');
     const childs = elem.childNodes;
