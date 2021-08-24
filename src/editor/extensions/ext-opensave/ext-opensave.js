@@ -49,7 +49,6 @@ export default {
      * @returns {void}
      */
     const clickClear = async function () {
-      console.log(svgEditor.i18next);
       const [ x, y ] = svgEditor.configObj.curConfig.dimensions;
       const ok = await seConfirm(svgEditor.i18next.t('notification.QwantToClear'));
       if (ok === "Cancel") {
