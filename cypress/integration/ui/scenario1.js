@@ -49,7 +49,7 @@ describe('use all parts of svg-edit', function () {
       .trigger('mouseup', { force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
-  it('check mode_connect', function () {
+  it('check tool_rect_square', function () {
     cy.get('#tool_rect').click({ force: true });
     cy.get('#svgcontent')
       .trigger('mousedown', 100, -60, { force: true })
@@ -60,18 +60,15 @@ describe('use all parts of svg-edit', function () {
       .trigger('mousedown', 250, -60, { force: true })
       .trigger('mousemove', 430, 120, { force: true })
       .trigger('mouseup', { force: true });
-    cy.get('#tool_select')
-      .click({ force: true });
-    cy.get('#mode_connect')
+    cy.get('#tool_fhrect')
       .click({ force: true });
     cy.get('#svgcontent')
-      .trigger('mousemove', 220, 80, { force: true })
-      .trigger('mousedown', 220, 80, { force: true })
-      .trigger('mouseup', 220, 80, { force: true });
-    cy.get('#svgcontent')
-      .trigger('mousemove', 410, 80, { force: true })
-      .trigger('mousedown', 410, 80, { force: true })
-      .trigger('mouseup', 410, 80, { force: true });
+      .trigger('mousedown', 20, 80, { force: true })
+      .trigger('mousemove', 120, 80, { force: true })
+      .trigger('mousemove', 120, 180, { force: true })
+      .trigger('mousemove', 20, 180, { force: true })
+      .trigger('mousemove', 20, 80, { force: true })
+      .trigger('mouseup', 20, 80, { force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
   it('check tool_image', function () {
