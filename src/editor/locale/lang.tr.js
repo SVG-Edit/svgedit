@@ -111,7 +111,7 @@ export default {
     open_doc: 'Aç Resim',
     export_img: 'Export',
     save_doc: 'Görüntüyü Kaydet',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'Align Bottom',
     align_center: 'Ortala',

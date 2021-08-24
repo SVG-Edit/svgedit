@@ -111,7 +111,7 @@ export default {
     open_doc: 'Otvoriť obrázok',
     export_img: 'Export',
     save_doc: 'Uložiť obrázok',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Zarovnať element na stránku',
     align_bottom: 'Zarovnať dole',
     align_center: 'Zarovnať na stred',

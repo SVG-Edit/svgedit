@@ -111,7 +111,7 @@ export default {
     open_doc: 'Open בילד',
     export_img: 'Export',
     save_doc: 'היט בילד',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'יינרייען באָטטאָם',
     align_center: 'יינרייען צענטער',

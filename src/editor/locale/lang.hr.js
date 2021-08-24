@@ -111,7 +111,7 @@ export default {
     open_doc: 'Otvori sliku',
     export_img: 'Export',
     save_doc: 'Spremanje slike',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'Poravnaj dolje',
     align_center: 'Centriraj',

@@ -111,7 +111,7 @@ export default {
     open_doc: '‫باز کردن تصویر ‬',
     export_img: 'Export',
     save_doc: '‫ذخیره تصویر ‬',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: '‫تراز پایین‬',
     align_center: '‫وسط چین‬',

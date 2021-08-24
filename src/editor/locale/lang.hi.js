@@ -111,7 +111,7 @@ export default {
     open_doc: 'छवि खोलें',
     export_img: 'Export',
     save_doc: 'सहेजें छवि',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'तलमेंपंक्तिबद्धकरें',
     align_center: 'मध्य में समंजित करें',

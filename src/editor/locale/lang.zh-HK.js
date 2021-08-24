@@ -111,7 +111,7 @@ export default {
     open_doc: '打开图像',
     export_img: 'Export',
     save_doc: '保存图像',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: '底部对齐',
     align_center: '居中对齐',

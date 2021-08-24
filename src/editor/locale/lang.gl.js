@@ -111,7 +111,7 @@ export default {
     open_doc: 'Abrir Imaxe',
     export_img: 'Export',
     save_doc: 'Gardar Imaxe',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'Align bottom',
     align_center: 'Centrar',

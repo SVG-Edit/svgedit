@@ -32,7 +32,7 @@ const loadExtensionTranslation = async function (svgEditor) {
     // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
-  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
+  svgEditor.i18next.addResourceBundle(lang, 'translation', translationModule.default, true, true);
 };
 
 export default {
@@ -49,6 +49,7 @@ export default {
      * @returns {void}
      */
     const clickClear = async function () {
+      console.log(svgEditor.i18next);
       const [ x, y ] = svgEditor.configObj.curConfig.dimensions;
       const ok = await seConfirm(svgEditor.i18next.t('notification.QwantToClear'));
       if (ok === "Cancel") {

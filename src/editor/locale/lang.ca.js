@@ -111,7 +111,7 @@ export default {
     open_doc: 'Obrir imatge',
     export_img: 'Export',
     save_doc: 'Guardar imatge',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'Alinear baix',
     align_center: 'Alinear al centre',
