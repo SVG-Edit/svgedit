@@ -81,10 +81,13 @@ describe('use all parts of svg-edit', function () {
       .trigger('mousedown', 100, 100, { force: true })
       .trigger('mousemove', 120, 120, { force: true })
       .trigger('mouseup', { force: true });
-    cy.window().then(($win) => {
-      cy.stub($win, 'prompt').returns('./images/logo.svg');
-      cy.contains('OK');
-    });
+    // eslint-disable-next-line promise/catch-or-return
+    cy.window()
+      // eslint-disable-next-line promise/always-return
+      .then(($win) => {
+        cy.stub($win, 'prompt').returns('./images/logo.svg');
+        cy.contains('OK');
+      });
     cy.get('#svgcontent').toMatchSnapshot();
   });
 
