@@ -679,31 +679,6 @@ export const embedImage = function (src) {
 };
 
 /**
-* Serializes the current drawing into SVG XML text and passes it to the 'saved' handler.
-* This function also includes the XML prolog. Clients of the `SvgCanvas` bind their save
-* function to the 'saved' event.
-* @function module:svgcanvas.SvgCanvas#save
-* @param {module:svgcanvas.SaveOptions} opts
-* @fires module:svgcanvas.SvgCanvas#event:saved
-* @returns {void}
-*/
-export const save = function (opts) {
-  // remove the selected outline before serializing
-  svgCanvas.clearSelection();
-  // Update save options if provided
-  if (opts) {
-    const saveOptions = svgCanvas.mergeDeep(svgContext_.getSvgOption(), opts);
-    for (const [ key, value ] of Object.entries(saveOptions)) {
-      svgContext_.setSvgOption(key, value);
-    }
-  }
-  svgContext_.setSvgOption('apply', true);
-
-  // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
-  const str = svgCanvas.svgCanvasToString();
-  svgContext_.call('saved', str);
-};
-/**
 * @typedef {PlainObject} module:svgcanvas.IssuesAndCodes
 * @property {string[]} issueCodes The locale-independent code names
 * @property {string[]} issues The localized descriptions

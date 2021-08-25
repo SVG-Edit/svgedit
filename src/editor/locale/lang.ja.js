@@ -111,7 +111,7 @@ export default {
     open_doc: 'イメージを開く',
     export_img: 'Export',
     save_doc: '画像を保存',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: '下揃え',
     align_center: '中央揃え',

@@ -111,7 +111,7 @@ export default {
     open_doc: 'פתח תמונה',
     export_img: 'Export',
     save_doc: 'שמור תמונה',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'יישור תחתון',
     align_center: 'ישור לאמצע',

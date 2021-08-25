@@ -191,6 +191,7 @@ class TopPanel {
     this.hideTool("container_panel");
     this.hideTool("use_panel");
     this.hideTool("a_panel");
+    this.hideTool("xy_panel");
     if (elem) {
       const elname = elem.nodeName;
 

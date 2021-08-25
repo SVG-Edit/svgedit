@@ -111,7 +111,7 @@ export default {
     open_doc: 'Отвори слике',
     export_img: 'Export',
     save_doc: 'Сачувај слика',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'Поравнај доле',
     align_center: 'Поравнај по центру',

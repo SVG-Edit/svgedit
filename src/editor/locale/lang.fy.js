@@ -111,7 +111,7 @@ export default {
     open_doc: 'Ôfbielding iepenje',
     export_img: 'Export',
     save_doc: 'Ôfbielding bewarje',
-    import_doc: 'Import Image',
+    import_doc: 'Import SVG',
     align_to_page: 'Align Element to Page',
     align_bottom: 'Ûnder útlijne',
     align_center: 'Midden útlijne',
