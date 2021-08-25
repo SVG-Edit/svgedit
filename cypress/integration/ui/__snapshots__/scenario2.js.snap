@@ -1,0 +1,433 @@
+exports[`use all parts of svg-edit > check tool_source_set #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer"><title>Layer 1</title></g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_path #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      style="pointer-events:inherit"
+      d="M 50 50 L 150 100 L 125 200 L 50 50 z"
+      id="svg_1"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </path>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_fhellipse #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      d="M 50 50 L 150 100 L 125 200 L 50 50 z"
+      id="svg_1"
+    ></path>
+    <ellipse
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      style="pointer-events:inherit"
+      cx="310"
+      cy="180"
+      rx="60"
+      ry="50"
+      id="svg_2"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </ellipse>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_circle #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      d="M 50 50 L 150 100 L 125 200 L 50 50 z"
+      id="svg_1"
+    ></path>
+    <ellipse
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      cx="310"
+      cy="180"
+      rx="60"
+      ry="50"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></ellipse>
+    <ellipse
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      style="pointer-events:inherit"
+      cx="125"
+      cy="200"
+      rx="55"
+      ry="25"
+      id="svg_3"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </ellipse>
+    <circle
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      style="pointer-events:inherit"
+      cx="200"
+      cy="100"
+      r="30"
+      id="svg_4"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </circle>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      d="M 50 50 L 150 100 L 125 200 L 50 50 z"
+      id="svg_1"
+    ></path>
+    <ellipse
+      fill="#ffff00"
+      stroke="#000000"
+      stroke-width="5"
+      cx="310"
+      cy="180"
+      rx="60"
+      ry="50"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></ellipse>
+    <ellipse
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      cx="125"
+      cy="200"
+      rx="55"
+      ry="25"
+      id="svg_3"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></ellipse>
+    <circle
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      cx="200"
+      cy="100"
+      r="30"
+      id="svg_4"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></circle>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_circle_change_opacity #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      d="M 50 50 L 150 100 L 125 200 L 50 50 z"
+      id="svg_1"
+    ></path>
+    <ellipse
+      fill="#ffff00"
+      stroke="#000000"
+      stroke-width="5"
+      cx="310"
+      cy="180"
+      rx="60"
+      ry="50"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+      opacity="0.5"
+    ></ellipse>
+    <ellipse
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      cx="125"
+      cy="200"
+      rx="55"
+      ry="25"
+      id="svg_3"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></ellipse>
+    <circle
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      cx="200"
+      cy="100"
+      r="30"
+      id="svg_4"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></circle>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_circle_change_rotation #0`] = `
+<svg
+  id="svgcontent"
+  width="640"
+  height="480"
+  x="640"
+  y="480"
+  overflow="visible"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:se="http://svg-edit.googlecode.com"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 640 480"
+>
+  <!-- Created with SVG-edit - https://github.com/SVG-Edit/svgedit-->
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      d="M 50 50 L 150 100 L 125 200 L 50 50 z"
+      id="svg_1"
+    ></path>
+    <ellipse
+      fill="#ffff00"
+      stroke="#000000"
+      stroke-width="5"
+      cx="310"
+      cy="180"
+      rx="60"
+      ry="50"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+      opacity="0.5"
+      transform="rotate(10 310 180)"
+    ></ellipse>
+    <ellipse
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      cx="125"
+      cy="200"
+      rx="55"
+      ry="25"
+      id="svg_3"
+      fill-opacity="1"
+      stroke-opacity="1"
+      transform="rotate(15 125 200)"
+    ></ellipse>
+    <circle
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      cx="200"
+      cy="100"
+      r="30"
+      id="svg_4"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></circle>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_ellipse_change_rotation #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      d="M 50 50 L 150 100 L 125 200 L 50 50 z"
+      id="svg_1"
+    ></path>
+    <ellipse
+      fill="#ffff00"
+      stroke="#000000"
+      stroke-width="5"
+      cx="310"
+      cy="180"
+      rx="60"
+      ry="50"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+      opacity="0.5"
+    ></ellipse>
+    <ellipse
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      cx="125"
+      cy="200"
+      rx="55"
+      ry="25"
+      id="svg_3"
+      fill-opacity="1"
+      stroke-opacity="1"
+      transform="rotate(25 125 200)"
+    ></ellipse>
+    <circle
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      style="pointer-events:inherit"
+      cx="200"
+      cy="100"
+      r="30"
+      id="svg_4"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></circle>
+  </g>
+</svg>
+`;
