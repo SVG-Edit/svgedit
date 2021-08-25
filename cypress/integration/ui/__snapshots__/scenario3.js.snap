@@ -1,0 +1,158 @@
+exports[`use all parts of svg-edit > check tool_source_set #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer"><title>Layer 1</title></g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_path #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      style="pointer-events:inherit"
+      d="M 50 50 L 150 100 L 125 200 L 50 50 z"
+      id="svg_1"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </path>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_path_change_node_xy #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      d="M75,75L150,100L125,200L75,75z"
+      id="svg_1"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></path>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_path_change_seg_type #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      d="M75,75L150,100L125,200C235.33333,330.33333 91.66667,116.66667 75,75z"
+      id="svg_1"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></path>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_path_change_clone_node #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      d="M201,246L150,100L125,200C180.16666,265.16666 297.83333,415.33333 273.625,373C249.41667,330.66667 209.33334,266.83334 201,246z"
+      id="svg_1"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></path>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_path_openclose #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <path
+      fill="#FF0000"
+      stroke="#000000"
+      stroke-width="5"
+      d="M201,246L150,100L125,200C180.16666,265.16666 297.83333,415.33333 273.625,373C249.41667,330.66667 209.33334,266.83334 201,246z"
+      id="svg_1"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></path>
+  </g>
+</svg>
+`;
