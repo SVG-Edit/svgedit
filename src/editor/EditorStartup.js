@@ -358,17 +358,18 @@ class EditorStartup {
     };
 
     const liElems = this.$svgEditor.querySelectorAll('button, select, input:not(#text)');
+    const self = this;
     Array.prototype.forEach.call(liElems, function(el){
       el.addEventListener("focus", (e) => {
         inp = e.currentTarget;
-        this.uiContext = 'toolbars';
-        this.workarea.addEventListener('mousedown', unfocus);
+        self.uiContext = 'toolbars';
+        self.workarea.addEventListener('mousedown', unfocus);
       });
       el.addEventListener("blur", () => {
-        this.uiContext = 'canvas';
-        this.workarea.removeEventListener('mousedown', unfocus);
+        self.uiContext = 'canvas';
+        self.workarea.removeEventListener('mousedown', unfocus);
         // Go back to selecting text if in textedit mode
-        if (this.svgCanvas.getMode() === 'textedit') {
+        if (self.svgCanvas.getMode() === 'textedit') {
           $id('text').focus();
         }
       });
