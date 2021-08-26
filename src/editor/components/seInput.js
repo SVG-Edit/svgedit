@@ -154,11 +154,16 @@ export class SEInput extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    this.addEventListener('change', (e) => {
+    this.$input.addEventListener('change', (e) => {
       e.preventDefault();
       this.value = e.target.value;
+      this.dispatchEvent(this.$event);
     });
-    this.dispatchEvent(this.$event);
+    this.$input.addEventListener('keyup', (e) => {
+      e.preventDefault();
+      this.value = e.target.value;
+      this.dispatchEvent(this.$event);
+    });
   }
 }
 // Register
