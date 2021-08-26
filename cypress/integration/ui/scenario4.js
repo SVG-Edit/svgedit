@@ -85,11 +85,11 @@ describe('use all parts of svg-edit', function () {
   it('check tool_fhrect_change_x_y_coordinate', function () {
     cy.get('#svg_2').click({ force: true });
     for(let n = 0; n < 25; n ++){
-      cy.get('#ellipse_cx').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
+      cy.get('#selected_x').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true });
     }
     for(let n = 0; n < 25; n ++){
-      cy.get('#ellipse_cy').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
+      cy.get('#selected_y').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true });
     }
     cy.get('#svgcontent').toMatchSnapshot();
@@ -140,5 +140,25 @@ describe('use all parts of svg-edit', function () {
     cy.get('#svg_3').click({ force: true });
     cy.get('#tool_delete').click({ force: true });
     cy.get('#svgcontent').toMatchSnapshot();
+  });
+  it('check tool_rect_change_class', function () {
+    cy.get('#svg_2').click({ force: true });
+    cy.get('#elem_class').shadow().find('elix-input').eq(0).shadow().find('#inner').eq(0)
+      .type('svg_2_class{enter}', { force: true });
+    cy.get('#svg_2')
+      .should('satisfy', ($el) => {
+        const classList = Array.from($el[0].classList);
+        return classList.includes('svg_2_class');
+      });
+  });
+  it('check tool_rect_change_id', function () {
+    cy.get('#svg_2').click({ force: true }).click({ force: true });
+    cy.get('#elem_id').shadow().find('elix-input').eq(0).shadow().find('#inner').eq(0)
+      .type('_id{enter}', { force: true });
+    cy.get('#svg_2_id')
+      .should('satisfy', ($el) => {
+        const classList = Array.from($el[0].classList);
+        return classList.includes('svg_2_class');
+      });
   });
 });
