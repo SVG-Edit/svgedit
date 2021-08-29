@@ -122,20 +122,6 @@ export const toXml = function (str) {
     .replace(/'/g, '&#x27;'); // Note: `&apos;` is XML only
 };
 
-/**
-* Converts XML entities in a string to single characters.
-* @function module:utilities.fromXml
-* @example `&amp;` becomes `&`
-* @param {string} str - The string to be converted
-* @returns {string} The converted string
-*/
-export function fromXml(str) {
-  const p = document.createElement('p');
-  // eslint-disable-next-line no-unsanitized/property
-  p.innerHTML = str;
-  return p.textContent;
-}
-
 // This code was written by Tyler Akins and has been placed in the
 // public domain.  It would be nice if you left this header intact.
 // Base64 code from Tyler Akins -- http://rumkin.com
@@ -1127,7 +1113,7 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
 export const getVisibleElements = function (parentElement) {
   if (!parentElement) {
     const svgcontent = editorContext_.getSVGContent();
-    parentElement = svgcontent.children; // Prevent layers from being included
+    parentElement = svgcontent.children[0]; // Prevent layers from being included
   }
 
   const contentElems = [];
