@@ -6,7 +6,6 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import { getTransformList } from './svgtransformlist.js';
 import { shortFloat } from '../common/units.js';
 import { transformPoint } from './math.js';
 import {
@@ -526,7 +525,7 @@ export const recalcRotatedPath = function () {
 
   // now we must set the new transform to be rotated around the new center
   const Rnc = editorContext_.getSVGRoot().createSVGTransform();
-  const tlist = getTransformList(currentPath);
+  const tlist = currentPath.transform.baseVal;
   Rnc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
   tlist.replaceItem(Rnc, 0);
 };

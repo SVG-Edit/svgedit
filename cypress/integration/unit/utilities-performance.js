@@ -3,7 +3,6 @@ import 'pathseg';
 
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
-import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
 import * as math from '../../../instrumented/svgcanvas/math.js';
 
 describe('utilities performance', function () {
@@ -118,7 +117,7 @@ describe('utilities performance', function () {
   const mockPathActions = {
     resetOrientation (path) {
       if (utilities.isNullish(path) || path.nodeName !== 'path') { return false; }
-      const tlist = transformlist.getTransformList(path);
+      const tlist = path.transform.baseVal;
       const m = math.transformListToTransform(tlist).matrix;
       tlist.clear();
       path.removeAttribute('transform');

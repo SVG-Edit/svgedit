@@ -456,7 +456,7 @@ export default {
             if (elem && dataStorage.has(elem, 'c_start')) {
               // Remove the "translate" transform given to move
               svgCanvas.removeFromSelection([ elem ]);
-              svgCanvas.getTransformList(elem).clear();
+              elem.transform.baseVal.clear();
             }
           }
           if (connections.length) {

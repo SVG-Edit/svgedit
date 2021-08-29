@@ -15,9 +15,6 @@ import {
 import {
   transformPoint, transformListToTransform
 } from './math.js';
-import {
-  getTransformList
-} from './svgtransformlist.js';
 
 const {
   UndoManager, HistoryEventTypes
@@ -251,7 +248,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       // we need to update the rotational transform attribute
       const angle = getRotationAngle(elem);
       if (angle !== 0 && attr !== 'transform') {
-        const tlist = getTransformList(elem);
+        const tlist = elem.transform.baseVal;
         let n = tlist.numberOfItems;
         while (n--) {
           const xform = tlist.getItem(n);

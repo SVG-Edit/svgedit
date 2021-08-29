@@ -7,7 +7,6 @@
  */
 
 import { NS } from '../common/namespaces.js';
-import { getTransformList } from './svgtransformlist.js';
 import { setUnitAttr, getTypeMap } from '../common/units.js';
 import {
   hasMatrixTransform, transformListToTransform, transformBox
@@ -907,7 +906,7 @@ export const convertToPath = function (
 
     // Reorient if it has a matrix
     if (eltrans) {
-      const tlist = getTransformList(path);
+      const tlist = path.transform.baseVal;
       if (hasMatrixTransform(tlist)) {
         pathActions.resetOrientation(path);
       }
@@ -978,7 +977,7 @@ export const getBBoxWithTransform = function (elem, addSVGElementFromJson, pathA
     return null;
   }
 
-  const tlist = getTransformList(elem);
+  const tlist = elem.transform.baseVal;
   const angle = getRotationAngleFromTransformList(tlist);
   const hasMatrixXForm = hasMatrixTransform(tlist);
 
@@ -1170,7 +1169,7 @@ export const getRotationAngleFromTransformList = function (tlist, toRad) {
 export let getRotationAngle = function (elem, toRad) {
   const selected = elem || editorContext_.getSelectedElements()[0];
   // find the rotation transform (if any) and set it
-  const tlist = getTransformList(selected);
+  const tlist = selected.transform.baseVal;
   return getRotationAngleFromTransformList(tlist, toRad);
 };
 

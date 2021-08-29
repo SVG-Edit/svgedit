@@ -8,7 +8,6 @@
 
 import { NS } from '../common/namespaces.js';
 import { shortFloat } from '../common/units.js';
-import { getTransformList } from './svgtransformlist.js';
 import { ChangeElementCommand, BatchCommand } from './history.js';
 import {
   transformPoint, snapToAngle, rectsIntersect,
@@ -879,7 +878,7 @@ export const pathActionsMethod = (function () {
     */
     resetOrientation (pth) {
       if (isNullish(pth) || pth.nodeName !== 'path') { return false; }
-      const tlist = getTransformList(pth);
+      const tlist = pth.transform.baseVal;
       const m = transformListToTransform(tlist).matrix;
       tlist.clear();
       pth.removeAttribute('transform');

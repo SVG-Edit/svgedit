@@ -14,9 +14,6 @@ import {
 import {
   transformPoint, hasMatrixTransform, getMatrix, snapToAngle
 } from './math.js';
-import {
-  getTransformList
-} from './svgtransformlist.js';
 import { supportsNonScalingStroke } from '../common/browser.js';
 import * as draw from './draw.js';
 import * as pathModule from './path.js';
@@ -144,7 +141,7 @@ export const mouseMoveEvent = function (evt) {
           // update the dummy transform in our transform list
           // to be a translate
           const xform = svgRoot.createSVGTransform();
-          tlist = getTransformList(selected);
+          tlist = selected.transform.baseVal;
           // Note that if Webkit and there's no ID for this
           // element, the dummy transform may have gotten lost.
           // This results in unexpected behaviour
@@ -209,7 +206,7 @@ export const mouseMoveEvent = function (evt) {
     // we track the resize bounding box and translate/scale the selected element
     // while the mouse is down, when mouse goes up, we use this to recalculate
     // the shape's coordinates
-    tlist = getTransformList(selected);
+    tlist = selected.transform.baseVal;
     const hasMatrix = hasMatrixTransform(tlist);
     box = hasMatrix ? eventContext_.getInitBbox() : utilsGetBBox(selected);
     let left = box.x;
@@ -1019,7 +1016,7 @@ export const mouseDownEvent = function (evt) {
 
   eventContext_.setStartTransform(mouseTarget.getAttribute('transform'));
 
-  const tlist = getTransformList(mouseTarget);
+  const tlist = mouseTarget.transform.baseVal;
   switch (eventContext_.getCurrentMode()) {
   case 'select':
     eventContext_.setStarted(true);
@@ -1046,7 +1043,7 @@ export const mouseDownEvent = function (evt) {
         // a transform to use for its translate
         for (const selectedElement of selectedElements()) {
           if (isNullish(selectedElement)) { continue; }
-          const slist = getTransformList(selectedElement);
+          const slist = selectedElement.transform.baseVal;
           if (slist.numberOfItems) {
             slist.insertItemBefore(svgRoot.createSVGTransform(), 0);
           } else {

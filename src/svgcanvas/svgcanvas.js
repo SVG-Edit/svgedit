@@ -88,9 +88,6 @@ import {
   isChrome, isWebkit
 } from '../common/browser.js'; // , supportsEditableText
 import {
-  getTransformList, SVGTransformList as SVGEditTransformList
-} from './svgtransformlist.js';
-import {
   remapElement,
   init as coordsInit
 } from './coords.js';
@@ -151,7 +148,6 @@ if (window.opera) {
 * @borrows module:utilities.getRefElem as #getRefElem
 * @borrows module:utilities.assignAttributes as #assignAttributes
 *
-* @borrows module:SVGTransformList.getTransformList as #getTransformList
 * @borrows module:math.matrixMultiply as #matrixMultiply
 * @borrows module:math.hasMatrixTransform as #hasMatrixTransform
 * @borrows module:math.transformListToTransform as #transformListToTransform
@@ -372,7 +368,6 @@ class SvgCanvas {
 */
     const addSVGElementFromJson = this.addSVGElementFromJson = addSVGElementsFromJson;
 
-    canvas.getTransformList = getTransformList;
     canvas.matrixMultiply = matrixMultiply;
     canvas.hasMatrixTransform = hasMatrixTransform;
     canvas.transformListToTransform = transformListToTransform;
@@ -2756,7 +2751,6 @@ class SvgCanvas {
         NS,
         preventClickDefault,
         RemoveElementCommand,
-        SVGEditTransformList,
         text2xml,
         transformBox,
         transformPoint,

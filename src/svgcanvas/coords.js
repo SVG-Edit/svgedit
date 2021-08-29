@@ -10,7 +10,6 @@ import {
 import {
   transformPoint, transformListToTransform, matrixMultiply, transformBox
 } from './math.js';
-import { getTransformList } from './svgtransformlist.js';
 
 // this is how we map paths to our preferred relative segment types
 const pathMap = [
@@ -103,7 +102,7 @@ export const remapElement = function (selected, changes, m) {
       changes.y = Number.parseFloat(changes.y) + tNew.f;
     } else {
       // we just absorb all matrices into the element and don't do any remapping
-      const chlist = getTransformList(selected);
+      const chlist = selected.transform.baseVal;
       const mt = editorContext_.getSVGRoot().createSVGTransform();
       mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m));
       chlist.clear();
@@ -120,7 +119,7 @@ export const remapElement = function (selected, changes, m) {
     // Allow images to be inverted (give them matrix when flipped)
     if (elName === 'image' && (m.a < 0 || m.d < 0)) {
       // Convert to matrix
-      const chlist = getTransformList(selected);
+      const chlist = selected.transform.baseVal;
       const mt = editorContext_.getSVGRoot().createSVGTransform();
       mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m));
       chlist.clear();
