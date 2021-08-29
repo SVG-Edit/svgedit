@@ -113,17 +113,6 @@ describe('utilities', function () {
     assert.equal(toXml('\'<&>"'), '&#x27;&lt;&amp;&gt;&quot;');
   });
 
-  it('Test svgedit.utilities.fromXml() function', function () {
-    const { fromXml } = utilities;
-
-    assert.equal(fromXml('a'), 'a');
-    assert.equal(fromXml('ABC_'), 'ABC_');
-    assert.equal(fromXml('PB&amp;J'), 'PB&J');
-    assert.equal(fromXml('2 &lt; 5'), '2 < 5');
-    assert.equal(fromXml('5 &gt; 2'), '5 > 2');
-    assert.equal(fromXml('&lt;&amp;&gt;'), '<&>');
-  });
-
   it('Test svgedit.utilities.encode64() function', function () {
     const { encode64 } = utilities;
 

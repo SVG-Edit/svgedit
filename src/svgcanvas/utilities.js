@@ -1147,10 +1147,9 @@ export const getStrokedBBoxDefaultVisible = function (elems) {
 * @param {boolean} toRad - When true returns the value in radians rather than degrees
 * @returns {Float} The angle in degrees or radians
 */
-export const getRotationAngleFromTransformList = function (tlist, toRad) {
-  if (!tlist) { return 0; } // <svg> elements have no tlist
-  const N = tlist.numberOfItems;
-  for (let i = 0; i < N; ++i) {
+export const getRotationAngleFromTransformList = (tlist, toRad) => {
+  if (!tlist) { return 0; } // <svg> element have no tlist
+  for (let i = 0; i < tlist.numberOfItems; ++i) {
     const xform = tlist.getItem(i);
     if (xform.type === 4) {
       return toRad ? xform.angle * Math.PI / 180.0 : xform.angle;
@@ -1169,7 +1168,7 @@ export const getRotationAngleFromTransformList = function (tlist, toRad) {
 export let getRotationAngle = function (elem, toRad) {
   const selected = elem || editorContext_.getSelectedElements()[0];
   // find the rotation transform (if any) and set it
-  const tlist = selected.transform.baseVal;
+  const tlist = selected.transform?.baseVal;
   return getRotationAngleFromTransformList(tlist, toRad);
 };
 
