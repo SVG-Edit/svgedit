@@ -84,6 +84,44 @@ exports[`use all parts of svg-edit > check tool_line_change_rotation #0`] = `
 </svg>
 `;
 
+exports[`use all parts of svg-edit > check tool_line_change_blur #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      x1="200"
+      y1="200"
+      x2="450"
+      y2="450"
+      id="svg_1_id"
+      fill-opacity="1"
+      stroke-opacity="1"
+      class="svg_1_class"
+      transform="rotate(25 325 325)"
+      filter="url(#svg_1_id_blur)"
+    ></line>
+  </g>
+  <defs>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
 exports[`use all parts of svg-edit > check tool_line_change_opacity #0`] = `
 <svg
   xmlns="http://www.w3.org/2000/svg"
@@ -116,8 +154,8 @@ exports[`use all parts of svg-edit > check tool_line_change_opacity #0`] = `
     ></line>
   </g>
   <defs>
-    <filter id="svg_1_id_blur">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1"></feGaussianBlur>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
     </filter>
   </defs>
 </svg>
@@ -139,8 +177,8 @@ exports[`use all parts of svg-edit > check tool_line_delete #0`] = `
     <title style="pointer-events:inherit">Layer 1</title>
   </g>
   <defs>
-    <filter id="svg_1_id_blur">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1"></feGaussianBlur>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
     </filter>
   </defs>
 </svg>
@@ -207,8 +245,8 @@ exports[`use all parts of svg-edit > check tool_line_clone #0`] = `
     </line>
   </g>
   <defs>
-    <filter id="svg_1_id_blur">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1"></feGaussianBlur>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
     </filter>
   </defs>
 </svg>
@@ -264,44 +302,6 @@ exports[`use all parts of svg-edit > check tool_fhrect_change_x_y_coordinate #0`
         id="svg_4"
       ></animate>
     </line>
-  </g>
-  <defs>
-    <filter id="svg_1_id_blur">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
-`;
-
-exports[`use all parts of svg-edit > check tool_line_change_blur #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <line
-      fill="none"
-      stroke="#000000"
-      stroke-width="5"
-      x1="200"
-      y1="200"
-      x2="450"
-      y2="450"
-      id="svg_1_id"
-      fill-opacity="1"
-      stroke-opacity="1"
-      class="svg_1_class"
-      transform="rotate(25 325 325)"
-      filter="url(#svg_1_id_blur)"
-    ></line>
   </g>
   <defs>
     <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
