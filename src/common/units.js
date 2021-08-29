@@ -224,14 +224,12 @@ export const convertAttrs = function (element) {
   const attrs = attrsToConvert[elName];
   if (!attrs) { return; }
 
-  const len = attrs.length;
-  for (let i = 0; i < len; i++) {
-    const attr = attrs[i];
+  attrs.forEach( (attr) => {
     const cur = element.getAttribute(attr);
     if (cur && !isNaN(cur)) {
       element.setAttribute(attr, (cur / typeMap_[unit]) + unit);
     }
-  }
+  });
 };
 
 /**

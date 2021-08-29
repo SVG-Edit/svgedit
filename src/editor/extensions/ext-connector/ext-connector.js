@@ -136,11 +136,7 @@ export default {
       } catch (err) {
         // Should only occur in FF which formats points attr as "n,n n,n", so just split
         const ptArr = elem.getAttribute('points').split(' ');
-        for (let i = 0; i < ptArr.length; i++) {
-          if (i === pos) {
-            ptArr[i] = x + ',' + y;
-          }
-        }
+        ptArr[pos] = x + ',' + y;
         elem.setAttribute('points', ptArr.join(' '));
       }
 
@@ -208,7 +204,7 @@ export default {
         let addThis;
         // Grab the ends
         const parts = [];
-        [ 'start', 'end' ].forEach(function (pos, i) {
+        [ 'start', 'end' ].forEach( (pos, i) => {
           const key = 'c_' + pos;
           let part = dataStorage.get(ethis, key);
           if (part === null || part === undefined) { // Does this ever return nullish values?
