@@ -141,7 +141,7 @@ export const mouseMoveEvent = function (evt) {
           // update the dummy transform in our transform list
           // to be a translate
           const xform = svgRoot.createSVGTransform();
-          tlist = selected.transform.baseVal;
+          tlist = selected.transform?.baseVal;
           // Note that if Webkit and there's no ID for this
           // element, the dummy transform may have gotten lost.
           // This results in unexpected behaviour
@@ -1043,7 +1043,7 @@ export const mouseDownEvent = function (evt) {
         // a transform to use for its translate
         for (const selectedElement of selectedElements()) {
           if (isNullish(selectedElement)) { continue; }
-          const slist = selectedElement.transform.baseVal;
+          const slist = selectedElement.transform?.baseVal;
           if (slist.numberOfItems) {
             slist.insertItemBefore(svgRoot.createSVGTransform(), 0);
           } else {

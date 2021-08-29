@@ -242,7 +242,6 @@ export class RemoveElementCommand extends Command {
   */
   apply (handler) {
     super.apply(handler, () => {
-      this.removeElementFromListMap();
       this.parent = this.elem.parentNode;
       this.elem.remove();
     });

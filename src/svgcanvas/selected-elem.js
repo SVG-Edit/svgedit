@@ -168,7 +168,7 @@ export const moveSelectedElements = function (dx, dy, undoable = true) {
     const selected = selectedElements[i];
     if (!isNullish(selected)) {
       const xform = elementContext_.getSVGRoot().createSVGTransform();
-      const tlist = selected.transform.baseVal;
+      const tlist = selected.transform?.baseVal;
 
       // dx and dy could be arrays
       if (Array.isArray(dx)) {

@@ -76,7 +76,7 @@ export const recalculateDimensions = function (selected) {
   if (!selected) return null;
   const svgroot = context_.getSVGRoot();
   const dataStorage = context_.getDataStorage();
-  const tlist = selected.transform.baseVal;
+  const tlist = selected.transform?.baseVal;
   // remove any unnecessary transforms
   if (tlist && tlist.numberOfItems > 0) {
     let k = tlist.numberOfItems;
@@ -477,7 +477,7 @@ export const recalculateDimensions = function (selected) {
         if (child.nodeType === 1) {
           oldStartTransform = context_.getStartTransform();
           context_.setStartTransform(child.getAttribute('transform'));
-          const childTlist = child.transform.baseVal;
+          const childTlist = child.transform?.baseVal;
 
           if (!childTlist) { continue; }
 
@@ -558,7 +558,7 @@ export const recalculateDimensions = function (selected) {
           if (child.nodeType === 1) {
             oldStartTransform = context_.getStartTransform();
             context_.setStartTransform(child.getAttribute('transform'));
-            const childTlist = child.transform.baseVal;
+            const childTlist = child.transform?.baseVal;
             const newxlate = svgroot.createSVGTransform();
             newxlate.setTranslate(tx, ty);
             if (childTlist.numberOfItems) {

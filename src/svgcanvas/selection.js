@@ -161,7 +161,7 @@ export const getMouseTargetMethod = function (evt) {
     return svgCanvas.selectorManager.selectorParentGroup;
   }
 
-  while (!mouseTarget.parentNode?.isSameNode(selectionContext_.getCurrentGroup() || currentLayer)) {
+  while (!mouseTarget?.parentNode?.isSameNode(selectionContext_.getCurrentGroup() || currentLayer)) {
     mouseTarget = mouseTarget.parentNode;
   }
 
