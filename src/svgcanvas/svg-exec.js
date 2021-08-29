@@ -17,7 +17,6 @@ import {
 import {
   transformPoint, transformListToTransform
 } from './math.js';
-import { resetListMap } from './svgtransformlist.js';
 import {
   convertUnit, shortFloat, convertToNum
 } from '../common/units.js';
@@ -491,8 +490,6 @@ export const setSvgString = function (xmlString, preventUndo) {
     // reset zoom
     svgContext_.setCurrentZoom(1);
 
-    // reset transform lists
-    resetListMap();
     svgCanvas.clearSelection();
     pathModule.clearData();
     svgContext_.getSVGRoot().append(svgCanvas.selectorManager.selectorParentGroup);

@@ -17,9 +17,6 @@ import {
   transformPoint, matrixMultiply, transformListToTransform
 } from './math.js';
 import {
-  getTransformList
-} from './svgtransformlist.js';
-import {
   recalculateDimensions
 } from './recalculate.js';
 import {
@@ -171,7 +168,7 @@ export const moveSelectedElements = function (dx, dy, undoable = true) {
     const selected = selectedElements[i];
     if (!isNullish(selected)) {
       const xform = elementContext_.getSVGRoot().createSVGTransform();
-      const tlist = getTransformList(selected);
+      const tlist = selected.transform?.baseVal;
 
       // dx and dy could be arrays
       if (Array.isArray(dx)) {
@@ -503,7 +500,7 @@ export const pushGroupProperty = function (g, undoable) {
   const len = children.length;
   const xform = g.getAttribute('transform');
 
-  const glist = getTransformList(g);
+  const glist = g.transform.baseVal;
   const m = transformListToTransform(glist).matrix;
 
   const batchCmd = new BatchCommand('Push group properties');
@@ -576,7 +573,7 @@ export const pushGroupProperty = function (g, undoable) {
       }
     }
 
-    let chtlist = getTransformList(elem);
+    let chtlist = elem.transform?.baseVal;
 
     // Don't process gradient transforms
     if (elem.tagName.includes('Gradient')) { chtlist = null; }
@@ -717,7 +714,7 @@ export const convertToGroup = function (elem) {
     }
     dataStorage.remove(elem, 'gsvg');
 
-    const tlist = getTransformList(elem);
+    const tlist = elem.transform.baseVal;
     const xform = elementContext_.getSVGRoot().createSVGTransform();
     xform.setTranslate(pt.x, pt.y);
     tlist.appendItem(xform);

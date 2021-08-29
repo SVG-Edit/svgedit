@@ -3,7 +3,6 @@ import 'pathseg';
 
 import { NS } from '../../../instrumented/common/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
-import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
 import * as math from '../../../instrumented/svgcanvas/math.js';
 import * as path from '../../../instrumented/svgcanvas/path.js';
 import setAssertionMethods from '../../support/assert-close.js';
@@ -39,7 +38,7 @@ describe('utilities bbox', function () {
   const mockPathActions = {
     resetOrientation (pth) {
       if (utilities.isNullish(pth) || pth.nodeName !== 'path') { return false; }
-      const tlist = transformlist.getTransformList(pth);
+      const tlist = pth.transform.baseVal;
       const m = math.transformListToTransform(tlist).matrix;
       tlist.clear();
       pth.removeAttribute('transform');
@@ -84,8 +83,6 @@ describe('utilities bbox', function () {
     });
     sandbox.append(svgroot);
 
-    // We're reusing ID's so we need to do this for transforms.
-    transformlist.resetListMap();
     path.init(null);
     mockaddSVGElementFromJsonCallCount = 0;
   });

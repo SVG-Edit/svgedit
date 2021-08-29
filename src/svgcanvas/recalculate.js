@@ -7,7 +7,6 @@
 import { NS } from '../common/namespaces.js';
 import { convertToNum } from '../common/units.js';
 import { isWebkit } from '../common/browser.js';
-import { getTransformList } from './svgtransformlist.js';
 import { getRotationAngle, getHref, getBBox, getRefElem, isNullish } from './utilities.js';
 import { BatchCommand, ChangeElementCommand } from './history.js';
 import { remapElement } from './coords.js';
@@ -57,7 +56,7 @@ export const init = function (editorContext) {
 */
 export const updateClipPath = function (attr, tx, ty) {
   const path = getRefElem(attr).firstChild;
-  const cpXform = getTransformList(path);
+  const cpXform = path.transform.baseVal;
   const newxlate = context_.getSVGRoot().createSVGTransform();
   newxlate.setTranslate(tx, ty);
 
@@ -74,17 +73,10 @@ export const updateClipPath = function (attr, tx, ty) {
 * @returns {Command} Undo command object with the resulting change
 */
 export const recalculateDimensions = function (selected) {
-  if (isNullish(selected)) { return null; }
-
-  // Firefox Issue - 1081
-  if (selected.nodeName === 'svg' && navigator.userAgent.includes('Firefox/20')) {
-    return null;
-  }
-
+  if (!selected) return null;
   const svgroot = context_.getSVGRoot();
   const dataStorage = context_.getDataStorage();
-  const tlist = getTransformList(selected);
-
+  const tlist = selected.transform?.baseVal;
   // remove any unnecessary transforms
   if (tlist && tlist.numberOfItems > 0) {
     let k = tlist.numberOfItems;
@@ -307,7 +299,7 @@ export const recalculateDimensions = function (selected) {
         tx = 0;
         ty = 0;
         if (child.nodeType === 1) {
-          const childTlist = getTransformList(child);
+          const childTlist = child.transform.baseVal;
 
           // some children might not have a transform (<metadata>, <defs>, etc)
           if (!childTlist) { continue; }
@@ -387,7 +379,7 @@ export const recalculateDimensions = function (selected) {
           //   if (href == getHref(useElem)) {
           //     const usexlate = svgroot.createSVGTransform();
           //     usexlate.setTranslate(-tx,-ty);
-          //     getTransformList(useElem).insertItemBefore(usexlate,0);
+          //     useElem.transform.baseVal.insertItemBefore(usexlate,0);
           //     batchCmd.addSubCommand( recalculateDimensions(useElem) );
           //   }
           // }
@@ -441,7 +433,7 @@ export const recalculateDimensions = function (selected) {
             oldStartTransform = context_.getStartTransform();
             context_.setStartTransform(child.getAttribute('transform'));
 
-            const childTlist = getTransformList(child);
+            const childTlist = child.transform?.baseVal;
             // some children might not have a transform (<metadata>, <defs>, etc)
             if (childTlist) {
               const newxlate = svgroot.createSVGTransform();
@@ -463,7 +455,7 @@ export const recalculateDimensions = function (selected) {
                 if (href === getHref(useElem)) {
                   const usexlate = svgroot.createSVGTransform();
                   usexlate.setTranslate(-tx, -ty);
-                  getTransformList(useElem).insertItemBefore(usexlate, 0);
+                  useElem.transform.baseVal.insertItemBefore(usexlate, 0);
                   batchCmd.addSubCommand(recalculateDimensions(useElem));
                 }
               }
@@ -485,7 +477,7 @@ export const recalculateDimensions = function (selected) {
         if (child.nodeType === 1) {
           oldStartTransform = context_.getStartTransform();
           context_.setStartTransform(child.getAttribute('transform'));
-          const childTlist = getTransformList(child);
+          const childTlist = child.transform?.baseVal;
 
           if (!childTlist) { continue; }
 
@@ -566,7 +558,7 @@ export const recalculateDimensions = function (selected) {
           if (child.nodeType === 1) {
             oldStartTransform = context_.getStartTransform();
             context_.setStartTransform(child.getAttribute('transform'));
-            const childTlist = getTransformList(child);
+            const childTlist = child.transform?.baseVal;
             const newxlate = svgroot.createSVGTransform();
             newxlate.setTranslate(tx, ty);
             if (childTlist.numberOfItems) {
@@ -649,7 +641,7 @@ export const recalculateDimensions = function (selected) {
           if (attrVal === 'userSpaceOnUse') {
             // Update the userSpaceOnUse element
             m = transformListToTransform(tlist).matrix;
-            const gtlist = getTransformList(paint);
+            const gtlist = paint.transform.baseVal;
             const gmatrix = transformListToTransform(gtlist).matrix;
             m = matrixMultiply(m, gmatrix);
             const mStr = 'matrix(' + [ m.a, m.b, m.c, m.d, m.e, m.f ].join(',') + ')';

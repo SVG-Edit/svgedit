@@ -11,7 +11,6 @@ import 'pathseg';
 import { NS } from './namespaces.js';
 
 const { userAgent } = navigator;
-const svg = document.createElementNS(NS.SVG, 'svg');
 
 // Note: Browser sniffing should only be used if no other detection method is possible
 const isWebkit_ = userAgent.includes('AppleWebKit');
@@ -99,26 +98,6 @@ const supportsNonScalingStroke_ = (function () {
   return rect.style.vectorEffect === 'non-scaling-stroke';
 }());
 
-let supportsNativeSVGTransformLists_ = (function () {
-  const rect = document.createElementNS(NS.SVG, 'rect');
-  const rxform = rect.transform.baseVal;
-  const t1 = svg.createSVGTransform();
-  rxform.appendItem(t1);
-  const r1 = rxform.getItem(0);
-  const isSVGTransform = (o) => {
-  // https://developer.mozilla.org/en-US/docs/Web/API/SVGTransform
-    return o && typeof o === 'object' && typeof o.setMatrix === 'function' && 'angle' in o;
-  };
-  return isSVGTransform(r1) && isSVGTransform(t1) &&
-  r1.type === t1.type && r1.angle === t1.angle &&
-  r1.matrix.a === t1.matrix.a &&
-  r1.matrix.b === t1.matrix.b &&
-  r1.matrix.c === t1.matrix.c &&
-  r1.matrix.d === t1.matrix.d &&
-  r1.matrix.e === t1.matrix.e &&
-  r1.matrix.f === t1.matrix.f;
-}());
-
 // Public API
 
 /**
@@ -184,17 +163,3 @@ export const supportsGoodTextCharPos = () => supportsGoodTextCharPos_;
 */
 export const supportsNonScalingStroke = () => supportsNonScalingStroke_;
 
-/**
-* @function module:browser.supportsNativeTransformLists
-* @returns {boolean}
-*/
-export const supportsNativeTransformLists = () => supportsNativeSVGTransformLists_;
-
-/**
- * Set `supportsNativeSVGTransformLists_` to `false` (for unit testing).
- * @function module:browser.disableSupportsNativeTransformLists
- * @returns {void}
-*/
-export const disableSupportsNativeTransformLists = () => {
-  supportsNativeSVGTransformLists_ = false;
-};

@@ -7,7 +7,6 @@
  */
 
 import { getHref, setHref, getRotationAngle, isNullish } from './utilities.js';
-import { removeElementFromListMap } from './svgtransformlist.js';
 
 /**
 * Group: Undo/Redo history management.
@@ -215,6 +214,7 @@ export class InsertElementCommand extends Command {
   }
 }
 
+
 /**
 * History command for an element removed from the DOM.
 * @implements {module:history.HistoryCommand}
@@ -232,9 +232,6 @@ export class RemoveElementCommand extends Command {
     this.text = text || ('Delete ' + elem.tagName);
     this.nextSibling = oldNextSibling;
     this.parent = oldParent;
-
-    // special hack for webkit: remove this element's entry in the svgTransformLists map
-    removeElementFromListMap(elem);
   }
 
   /**
@@ -245,7 +242,6 @@ export class RemoveElementCommand extends Command {
   */
   apply (handler) {
     super.apply(handler, () => {
-      removeElementFromListMap(this.elem);
       this.parent = this.elem.parentNode;
       this.elem.remove();
     });
@@ -259,7 +255,6 @@ export class RemoveElementCommand extends Command {
   */
   unapply (handler) {
     super.unapply(handler, () => {
-      removeElementFromListMap(this.elem);
       if (isNullish(this.nextSibling) && window.console) {
         console.error('Reference element was lost');
       }
@@ -385,8 +380,6 @@ export class ChangeElementCommand extends Command {
           }
         }
       }
-      // Remove transformlist to prevent confusion that causes bugs like 575.
-      removeElementFromListMap(this.elem);
     });
   }
 }

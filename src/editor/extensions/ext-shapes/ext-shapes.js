@@ -94,8 +94,6 @@ export default {
 
         canv.recalculateDimensions(curShape);
 
-        canv.getTransformList(curShape);
-
         lastBBox = curShape.getBBox();
 
         return {
@@ -112,7 +110,7 @@ export default {
         const x = opts.mouse_x / zoom;
         const y = opts.mouse_y / zoom;
 
-        const tlist = canv.getTransformList(curShape);
+        const tlist = curShape.transform.baseVal;
         const box = curShape.getBBox();
         const left = box.x; const top = box.y;
 

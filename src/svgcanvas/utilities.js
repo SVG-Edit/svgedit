@@ -7,7 +7,6 @@
  */
 
 import { NS } from '../common/namespaces.js';
-import { getTransformList } from './svgtransformlist.js';
 import { setUnitAttr, getTypeMap } from '../common/units.js';
 import {
   hasMatrixTransform, transformListToTransform, transformBox
@@ -121,20 +120,6 @@ export const toXml = function (str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;'); // Note: `&apos;` is XML only
 };
-
-/**
-* Converts XML entities in a string to single characters.
-* @function module:utilities.fromXml
-* @example `&amp;` becomes `&`
-* @param {string} str - The string to be converted
-* @returns {string} The converted string
-*/
-export function fromXml(str) {
-  const p = document.createElement('p');
-  // eslint-disable-next-line no-unsanitized/property
-  p.innerHTML = str;
-  return p.textContent;
-}
 
 // This code was written by Tyler Akins and has been placed in the
 // public domain.  It would be nice if you left this header intact.
@@ -921,7 +906,7 @@ export const convertToPath = function (
 
     // Reorient if it has a matrix
     if (eltrans) {
-      const tlist = getTransformList(path);
+      const tlist = path.transform.baseVal;
       if (hasMatrixTransform(tlist)) {
         pathActions.resetOrientation(path);
       }
@@ -992,7 +977,7 @@ export const getBBoxWithTransform = function (elem, addSVGElementFromJson, pathA
     return null;
   }
 
-  const tlist = getTransformList(elem);
+  const tlist = elem.transform.baseVal;
   const angle = getRotationAngleFromTransformList(tlist);
   const hasMatrixXForm = hasMatrixTransform(tlist);
 
@@ -1127,7 +1112,7 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
 export const getVisibleElements = function (parentElement) {
   if (!parentElement) {
     const svgcontent = editorContext_.getSVGContent();
-    parentElement = svgcontent.children; // Prevent layers from being included
+    parentElement = svgcontent.children[0]; // Prevent layers from being included
   }
 
   const contentElems = [];
@@ -1162,10 +1147,9 @@ export const getStrokedBBoxDefaultVisible = function (elems) {
 * @param {boolean} toRad - When true returns the value in radians rather than degrees
 * @returns {Float} The angle in degrees or radians
 */
-export const getRotationAngleFromTransformList = function (tlist, toRad) {
-  if (!tlist) { return 0; } // <svg> elements have no tlist
-  const N = tlist.numberOfItems;
-  for (let i = 0; i < N; ++i) {
+export const getRotationAngleFromTransformList = (tlist, toRad) => {
+  if (!tlist) { return 0; } // <svg> element have no tlist
+  for (let i = 0; i < tlist.numberOfItems; ++i) {
     const xform = tlist.getItem(i);
     if (xform.type === 4) {
       return toRad ? xform.angle * Math.PI / 180.0 : xform.angle;
@@ -1184,7 +1168,7 @@ export const getRotationAngleFromTransformList = function (tlist, toRad) {
 export let getRotationAngle = function (elem, toRad) {
   const selected = elem || editorContext_.getSelectedElements()[0];
   // find the rotation transform (if any) and set it
-  const tlist = getTransformList(selected);
+  const tlist = selected.transform?.baseVal;
   return getRotationAngleFromTransformList(tlist, toRad);
 };
 

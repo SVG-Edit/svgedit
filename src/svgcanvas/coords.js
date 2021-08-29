@@ -10,7 +10,6 @@ import {
 import {
   transformPoint, transformListToTransform, matrixMultiply, transformBox
 } from './math.js';
-import { getTransformList } from './svgtransformlist.js';
 
 // this is how we map paths to our preferred relative segment types
 const pathMap = [
@@ -51,11 +50,11 @@ export const init = function (editorContext) {
  * @type {module:path.EditorContext#remapElement}
 */
 export const remapElement = function (selected, changes, m) {
-  const remap = function (x, y) { return transformPoint(x, y, m); };
-  const scalew = function (w) { return m.a * w; };
-  const scaleh = function (h) { return m.d * h; };
+  const remap = (x, y) =>  transformPoint(x, y, m);
+  const scalew = (w) => m.a * w;
+  const scaleh = (h) => m.d * h;
   const doSnapping = editorContext_.getGridSnapping() && selected.parentNode.parentNode.localName === 'svg';
-  const finishUp = function () {
+  const finishUp = () => {
     if (doSnapping) {
       Object.entries(changes).forEach(([ o, value ]) => {
         changes[o] = snapToGrid(value);
@@ -65,8 +64,7 @@ export const remapElement = function (selected, changes, m) {
   };
   const box = getBBox(selected);
 
-  for (let i = 0; i < 2; i++) {
-    const type = i === 0 ? 'fill' : 'stroke';
+  [ 'fill', 'stroke' ].forEach( (type) => {
     const attrVal = selected.getAttribute(type);
     if (attrVal && attrVal.startsWith('url(') && (m.a < 0 || m.d < 0)) {
       const grad = getRefElem(attrVal);
@@ -90,7 +88,7 @@ export const remapElement = function (selected, changes, m) {
       findDefs().append(newgrad);
       selected.setAttribute(type, 'url(#' + newgrad.id + ')');
     }
-  }
+  });
 
   const elName = selected.tagName;
   if (elName === 'g' || elName === 'text' || elName === 'tspan' || elName === 'use') {
@@ -104,7 +102,7 @@ export const remapElement = function (selected, changes, m) {
       changes.y = Number.parseFloat(changes.y) + tNew.f;
     } else {
       // we just absorb all matrices into the element and don't do any remapping
-      const chlist = getTransformList(selected);
+      const chlist = selected.transform.baseVal;
       const mt = editorContext_.getSVGRoot().createSVGTransform();
       mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m));
       chlist.clear();
@@ -121,7 +119,7 @@ export const remapElement = function (selected, changes, m) {
     // Allow images to be inverted (give them matrix when flipped)
     if (elName === 'image' && (m.a < 0 || m.d < 0)) {
       // Convert to matrix
-      const chlist = getTransformList(selected);
+      const chlist = selected.transform.baseVal;
       const mt = editorContext_.getSVGRoot().createSVGTransform();
       mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m));
       chlist.clear();
@@ -181,20 +179,17 @@ export const remapElement = function (selected, changes, m) {
     break;
   } case 'polyline':
   case 'polygon': {
-    const len = changes.points.length;
-    for (let i = 0; i < len; ++i) {
-      const pt = changes.points[i];
+    changes.points.forEach( (pt) => {
       const { x, y } = remap(pt.x, pt.y);
-      changes.points[i].x = x;
-      changes.points[i].y = y;
-    }
+      pt.x = x;
+      pt.y = y;
+    });
 
     // const len = changes.points.length;
     let pstr = '';
-    for (let i = 0; i < len; ++i) {
-      const pt = changes.points[i];
+    changes.points.forEach( (pt) => {
       pstr += pt.x + ',' + pt.y + ' ';
-    }
+    });
     selected.setAttribute('points', pstr);
     break;
   } case 'path': {
@@ -221,9 +216,12 @@ export const remapElement = function (selected, changes, m) {
 
     len = changes.d.length;
     const firstseg = changes.d[0];
-    const currentpt = remap(firstseg.x, firstseg.y);
-    changes.d[0].x = currentpt.x;
-    changes.d[0].y = currentpt.y;
+    let currentpt;
+    if (len > 0) {
+      currentpt = remap(firstseg.x, firstseg.y);
+      changes.d[0].x = currentpt.x;
+      changes.d[0].y = currentpt.y;
+    }
     for (let i = 1; i < len; ++i) {
       const seg = changes.d[i];
       const { type } = seg;
@@ -256,9 +254,7 @@ export const remapElement = function (selected, changes, m) {
     } // for each segment
 
     let dstr = '';
-    len = changes.d.length;
-    for (let i = 0; i < len; ++i) {
-      const seg = changes.d[i];
+    changes.d.forEach( (seg) => {
       const { type } = seg;
       dstr += pathMap[type];
       switch (type) {
@@ -297,7 +293,7 @@ export const remapElement = function (selected, changes, m) {
         dstr += seg.x2 + ',' + seg.y2 + ' ' + seg.x + ',' + seg.y + ' ';
         break;
       }
-    }
+    });
 
     selected.setAttribute('d', dstr);
     break;

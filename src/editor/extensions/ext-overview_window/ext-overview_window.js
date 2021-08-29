@@ -41,7 +41,7 @@ export default {
     $id("sidepanel_content").insertAdjacentHTML( 'beforeend', propsWindowHtml );
 
     // Define dynamic animation of the view box.
-    const updateViewBox = function () {
+    const updateViewBox = () => {
       const { workarea } = svgEditor;
       const portHeight = parseFloat(getComputedStyle(workarea, null).height.replace("px", ""));
       const portWidth = parseFloat(getComputedStyle(workarea, null).width.replace("px", ""));

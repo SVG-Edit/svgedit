@@ -15,9 +15,6 @@ import {
 import {
   transformPoint, transformListToTransform
 } from './math.js';
-import {
-  getTransformList
-} from './svgtransformlist.js';
 
 const {
   UndoManager, HistoryEventTypes
@@ -84,20 +81,6 @@ export const getUndoManager = function () {
           if (values.stdDeviation) {
             undoContext_.getCanvas().setBlurOffsets(cmd.elem.parentNode, values.stdDeviation);
           }
-          // This is resolved in later versions of webkit, perhaps we should
-          // have a featured detection for correct 'use' behavior?
-          // ——————————
-          // Remove & Re-add hack for Webkit (issue 775)
-          // if (cmd.elem.tagName === 'use' && isWebkit()) {
-          //  const {elem} = cmd;
-          //  if (!elem.getAttribute('x') && !elem.getAttribute('y')) {
-          //    const parent = elem.parentNode;
-          //    const sib = elem.nextSibling;
-          //    elem.remove();
-          //    parent.insertBefore(elem, sib);
-          //    // Ok to replace above with this? `sib.before(elem);`
-          //  }
-          // }
           if (cmd.elem.tagName === 'text'){
             const [ dx, dy ] = [ cmd.newValues.x - cmd.oldValues.x,
               cmd.newValues.y - cmd.oldValues.y ];
@@ -251,7 +234,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       // we need to update the rotational transform attribute
       const angle = getRotationAngle(elem);
       if (angle !== 0 && attr !== 'transform') {
-        const tlist = getTransformList(elem);
+        const tlist = elem.transform?.baseVal;
         let n = tlist.numberOfItems;
         while (n--) {
           const xform = tlist.getItem(n);

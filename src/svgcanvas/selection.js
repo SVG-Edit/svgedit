@@ -10,9 +10,6 @@ import {
   isNullish, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
 } from './utilities.js';
 import { transformPoint, transformListToTransform, rectsIntersect } from './math.js';
-import {
-  getTransformList
-} from './svgtransformlist.js';
 import * as hstry from './history.js';
 import { getClosest } from '../editor/components/jgraduate/Util.js';
 
@@ -164,7 +161,7 @@ export const getMouseTargetMethod = function (evt) {
     return svgCanvas.selectorManager.selectorParentGroup;
   }
 
-  while (!mouseTarget.parentNode?.isSameNode(selectionContext_.getCurrentGroup() || currentLayer)) {
+  while (!mouseTarget?.parentNode?.isSameNode(selectionContext_.getCurrentGroup() || currentLayer)) {
     mouseTarget = mouseTarget.parentNode;
   }
 
@@ -353,7 +350,7 @@ export const setRotationAngle = function (val, preventUndo) {
   const oldTransform = elem.getAttribute('transform');
   const bbox = utilsGetBBox(elem);
   const cx = bbox.x + bbox.width / 2; const cy = bbox.y + bbox.height / 2;
-  const tlist = getTransformList(elem);
+  const tlist = elem.transform.baseVal;
 
   // only remove the real rotational transform if present (i.e. at index=0)
   if (tlist.numberOfItems > 0) {
@@ -411,7 +408,6 @@ export const recalculateAllSelectedDimensions = function () {
   let i = selectedElements().length;
   while (i--) {
     const elem = selectedElements()[i];
-    // if (getRotationAngle(elem) && !hasMatrixTransform(getTransformList(elem))) { continue; }
     const cmd = svgCanvas.recalculateDimensions(elem);
     if (cmd) {
       batchCmd.addSubCommand(cmd);

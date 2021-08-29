@@ -20,7 +20,6 @@
 */
 
 import { NS } from '../common/namespaces.js';
-import { getTransformList } from './svgtransformlist.js';
 
 // Constants
 const NEAR_ZERO = 1e-14;
@@ -178,7 +177,7 @@ export const transformListToTransform = function (tlist, min, max) {
  * @returns {SVGMatrix} The matrix object associated with the element's transformlist
 */
 export const getMatrix = function (elem) {
-  const tlist = getTransformList(elem);
+  const tlist = elem.transform.baseVal;
   return transformListToTransform(tlist).matrix;
 };
 

@@ -1,13 +1,9 @@
 import { NS } from '../../../instrumented/common/namespaces.js';
-import * as transformlist from '../../../instrumented/svgcanvas/svgtransformlist.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as hstory from '../../../instrumented/svgcanvas/history.js';
 
 describe('history', function () {
   // TODO(codedread): Write tests for handling history events.
-
-  // Mocked out methods.
-  transformlist.changeRemoveElementFromListMap(() => { /* empty fn */ });
 
   utilities.mock({
     getHref () { return '#foo'; },

@@ -9,7 +9,6 @@
 import { isTouch, isWebkit } from '../common/browser.js'; // , isOpera
 import { getRotationAngle, getBBox, getStrokedBBox, isNullish } from './utilities.js';
 import { transformListToTransform, transformBox, transformPoint } from './math.js';
-import { getTransformList } from './svgtransformlist.js';
 
 let svgFactory_;
 let config_;
@@ -124,7 +123,7 @@ export class Selector {
     }
 
     // loop and transform our bounding box until we reach our first rotation
-    const tlist = getTransformList(selected);
+    const tlist = selected.transform.baseVal;
     const m = transformListToTransform(tlist).matrix;
 
     // This should probably be handled somewhere else, but for now
