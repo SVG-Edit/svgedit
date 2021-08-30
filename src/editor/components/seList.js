@@ -1,4 +1,5 @@
 import 'elix/define/DropdownList.js';
+import { t } from '../locale.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -59,7 +60,7 @@ export class SeList extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'label':
-      this.$label.textContent = newValue;
+      this.$label.textContent = t(newValue);
       break;
     case 'height':
       this.$dropdown.style.height = newValue;

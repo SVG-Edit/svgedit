@@ -1,3 +1,4 @@
+import { t } from '../locale.js';
 const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
@@ -75,7 +76,7 @@ export class ToolButton extends HTMLElement {
     case 'title':
       {
         const shortcut = this.getAttribute('shortcut');
-        this.$div.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
+        this.$div.setAttribute('title', `${t(newValue)} ${shortcut ? `[${t(shortcut)}]` : ''}`);
       }
       break;
     case 'style':

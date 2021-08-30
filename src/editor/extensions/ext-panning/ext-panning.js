@@ -46,7 +46,7 @@ export default {
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
-        const btitle = svgEditor.i18next.t(`${name}:buttons.0.title`);
+        const btitle = `${name}:buttons.0.title`;
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
         // eslint-disable-next-line no-unsanitized/property

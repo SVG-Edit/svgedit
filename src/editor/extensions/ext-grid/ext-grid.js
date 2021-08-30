@@ -164,7 +164,7 @@ export default {
       callback () {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
-        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
+        const title = `${name}:buttons.0.title`;
 
         // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `

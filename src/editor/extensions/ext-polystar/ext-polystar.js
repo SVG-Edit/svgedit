@@ -81,9 +81,9 @@ export default {
       callback() {
         // Add the button and its handler(s)
         // Note: the star extension needs to be loaded before the polygon extension
-        const fbtitle = svgEditor.i18next.t(`${name}:title`);
-        const title_star = svgEditor.i18next.t(`${name}:buttons.0.title`);
-        const title_polygon = svgEditor.i18next.t(`${name}:buttons.1.title`);
+        const fbtitle = `${name}:title`;
+        const title_star = `${name}:buttons.0.title`;
+        const title_polygon = `${name}:buttons.1.title`;
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
             <se-flyingbutton id="tools_polygon" title="${fbtitle}">

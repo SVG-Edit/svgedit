@@ -1,3 +1,4 @@
+import { t } from '../locale.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
@@ -120,7 +121,7 @@ export class FlyingButton extends HTMLElement {
     case 'title':
       {
         const shortcut = this.getAttribute('shortcut');
-        this.$button.setAttribute('title', `${newValue} [${shortcut}]`);
+        this.$button.setAttribute('title', `${t(newValue)} ${shortcut ? `[${t(shortcut)}]` : ''}`);
       }
       break;
     case 'pressed':

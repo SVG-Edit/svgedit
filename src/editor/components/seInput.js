@@ -1,4 +1,5 @@
 import 'elix/define/Input.js';
+import { t } from '../locale.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -45,6 +46,7 @@ export class SEInput extends HTMLElement {
     this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
     // locate the component
+    this.$div = this._shadowRoot.querySelector('div');
     this.$img = this._shadowRoot.querySelector('img');
     this.$label = this.shadowRoot.getElementById('label');
     this.$event = new CustomEvent('change');
@@ -55,7 +57,7 @@ export class SEInput extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'value', 'label', 'src', 'size' ];
+    return [ 'value', 'label', 'src', 'size', 'title' ];
   }
   /**
    * @function attributeChangedCallback
@@ -67,6 +69,9 @@ export class SEInput extends HTMLElement {
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
     switch (name) {
+    case 'title':
+      this.$div.setAttribute('title', `${t(newValue)}`);
+      break;
     case 'src':
       this.$img.setAttribute('src', newValue);
       this.$label.remove();
@@ -75,7 +80,7 @@ export class SEInput extends HTMLElement {
       this.$input.setAttribute('size', newValue);
       break;
     case 'label':
-      this.$label.textContent = newValue;
+      this.$label.textContent = t(newValue);
       this.$img.remove();
       break;
     case 'value':
@@ -86,6 +91,21 @@ export class SEInput extends HTMLElement {
       console.error(`unknown attribute: ${name}`);
       break;
     }
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get title () {
+    return this.getAttribute('title');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set title (value) {
+    this.setAttribute('title', value);
   }
   /**
    * @function get

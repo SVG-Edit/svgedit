@@ -354,7 +354,7 @@ export default {
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       callback() {
-        const btitle = svgEditor.i18next.t(`${name}:langListTitle`);
+        const btitle = `${name}:langListTitle`;
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
         <se-button id="mode_connect" title="${btitle}" src="${imgPath}/conn.svg"></se-button>

@@ -1,4 +1,5 @@
 import '../dialogs/se-elix/define/NumberSpinBox.js';
+import { t } from '../locale.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -72,7 +73,7 @@ export class SESpinInput extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'value', 'label', 'src', 'size', 'min', 'max', 'step' ];
+    return [ 'value', 'label', 'src', 'size', 'min', 'max', 'step', 'title' ];
   }
   /**
    * @function attributeChangedCallback
@@ -84,6 +85,12 @@ export class SESpinInput extends HTMLElement {
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
     switch (name) {
+    case 'title':
+      {
+        const shortcut = this.getAttribute('shortcut');
+        this.$div.setAttribute('title', `${t(newValue)} ${shortcut ? `[${t(shortcut)}]` : ''}`);
+      }
+      break;
     case 'src':
       this.$img.setAttribute('src', newValue);
       this.$label.remove();
@@ -105,7 +112,7 @@ export class SESpinInput extends HTMLElement {
       this.$input.setAttribute('max', newValue);
       break;
     case 'label':
-      this.$label.textContent = newValue;
+      this.$label.textContent = t(newValue);
       this.$img.remove();
       break;
     case 'value':
@@ -116,6 +123,21 @@ export class SESpinInput extends HTMLElement {
       console.error(`unknown attribute: ${name}`);
       break;
     }
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get title () {
+    return this.getAttribute('title');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set title (value) {
+    this.setAttribute('title', value);
   }
   /**
    * @function get
