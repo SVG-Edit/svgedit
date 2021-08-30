@@ -364,8 +364,8 @@ export const mouseMoveEvent = function (evt) {
 
     break;
   } case 'circle': {
-    cx = shape.getAttribute('cx');
-    cy = shape.getAttribute('cy');
+    cx = Number(shape.getAttribute('cx'));
+    cy = Number(shape.getAttribute('cy'));
     let rad = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
     if (eventContext_.getCurConfig().gridSnapping) {
       rad = snapToGrid(rad);
@@ -373,8 +373,8 @@ export const mouseMoveEvent = function (evt) {
     shape.setAttribute('r', rad);
     break;
   } case 'ellipse': {
-    cx = shape.getAttribute('cx');
-    cy = shape.getAttribute('cy');
+    cx = Number(shape.getAttribute('cx'));
+    cy = Number(shape.getAttribute('cy'));
     if (eventContext_.getCurConfig().gridSnapping) {
       x = snapToGrid(x);
       cx = snapToGrid(cx);
@@ -708,8 +708,8 @@ export const mouseUpEvent = function (evt) {
     keep = (element.getAttribute('r') !== '0');
     break;
   case 'ellipse': {
-    const rx = element.getAttribute('rx');
-    const ry = element.getAttribute('ry');
+    const rx = Number(element.getAttribute('rx'));
+    const ry = Number(element.getAttribute('ry'));
     keep = (rx || ry);
   }
     break;

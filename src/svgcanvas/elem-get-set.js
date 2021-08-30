@@ -411,18 +411,18 @@ export const findDuplicateGradient = function (grad) {
       }
     } else {
       const gradAttrs = {
-        r: grad.getAttribute('r'),
-        cx: grad.getAttribute('cx'),
-        cy: grad.getAttribute('cy'),
-        fx: grad.getAttribute('fx'),
-        fy: grad.getAttribute('fy')
+        r: Number(grad.getAttribute('r')),
+        cx: Number(grad.getAttribute('cx')),
+        cy: Number(grad.getAttribute('cy')),
+        fx: Number(grad.getAttribute('fx')),
+        fy: Number(grad.getAttribute('fy'))
       };
       const ogAttrs = {
-        r: og.getAttribute('r'),
-        cx: og.getAttribute('cx'),
-        cy: og.getAttribute('cy'),
-        fx: og.getAttribute('fx'),
-        fy: og.getAttribute('fy')
+        r: Number(og.getAttribute('r')),
+        cx: Number(og.getAttribute('cx')),
+        cy: Number(og.getAttribute('cy')),
+        fx: Number(og.getAttribute('fx')),
+        fy: Number(og.getAttribute('fy'))
       };
 
       let diff = false;
@@ -827,8 +827,8 @@ export const setRectRadiusMethod = function (val) {
   const selectedElements = elemContext_.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'rect') {
-    const r = selected.getAttribute('rx');
-    if (r !== String(val)) {
+    const r = Number(selected.getAttribute('rx'));
+    if (r !== val) {
       selected.setAttribute('rx', val);
       selected.setAttribute('ry', val);
       elemContext_.addCommandToHistory(new ChangeElementCommand(selected, { rx: r, ry: r }, 'Radius'));

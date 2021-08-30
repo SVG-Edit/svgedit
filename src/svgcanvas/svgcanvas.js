@@ -1832,7 +1832,7 @@ class SvgCanvas {
 * position in the editor's canvas.
 */
     this.getOffset = function () {
-      return { x: svgcontent.getAttribute('x'), y: svgcontent.getAttribute('y') };
+      return { x: Number(svgcontent.getAttribute('x')), y: Number(svgcontent.getAttribute('y')) };
     };
 
     /**

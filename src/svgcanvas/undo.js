@@ -88,8 +88,8 @@ export const getUndoManager = function () {
             const tspans = cmd.elem.children;
 
             for (let i = 0; i < tspans.length; i++){
-              let x = +tspans[i].getAttribute('x');
-              let y = +tspans[i].getAttribute('y');
+              let x = Number(tspans[i].getAttribute('x'));
+              let y = Number(tspans[i].getAttribute('y'));
 
               const unapply = (eventType === EventTypes.AFTER_UNAPPLY);
               x = unapply? x - dx: x + dx;
