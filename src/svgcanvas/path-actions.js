@@ -443,7 +443,7 @@ export const pathActionsMethod = (function () {
               const newD = newpath.getAttribute('d');
               const origD = path.elem.getAttribute('d');
               path.elem.setAttribute('d', origD + newD);
-              newpath.parentNode.removeChild();
+              newpath.parentNode.removeChild(newpath);
               if (path.matrix) {
                 pathActionsContext_.recalcRotatedPath();
               }
