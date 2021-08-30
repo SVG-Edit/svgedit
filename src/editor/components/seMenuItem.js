@@ -1,6 +1,6 @@
 import 'elix/define/Menu.js';
 import 'elix/define/MenuItem.js';
-
+import { t } from '../locale.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
@@ -54,7 +54,7 @@ export class SeMenuItem extends HTMLElement {
       break;
     case 'label':
       shortcut = this.getAttribute('shortcut');
-      this.$label.textContent = `${newValue} ${shortcut ? `(${shortcut})` : ''}`;
+      this.$label.textContent = `${t(newValue)} ${shortcut ? `(${shortcut})` : ''}`;
       break;
     default:
       // eslint-disable-next-line no-console
