@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
+import { t } from '../locale.js';
 
 const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
@@ -673,7 +674,7 @@ export class SeColorPicker extends HTMLElement {
    */
   init (i18next) {
     this.i18next = i18next;
-    this.setAttribute('config-change_xxx_color', i18next.t('config.change_xxx_color'));
+    this.setAttribute('config-change_xxx_color', t('config.change_xxx_color'));
   }
   /**
    * @function observedAttributes
@@ -696,7 +697,7 @@ export class SeColorPicker extends HTMLElement {
       this.$logo.setAttribute('src', newValue);
       break;
     case 'label':
-      this.setAttribute('title', newValue);
+      this.setAttribute('title', t(newValue));
       break;
     case 'type':
       this.$label.setAttribute('title', 'config.pick_paint_opavity');

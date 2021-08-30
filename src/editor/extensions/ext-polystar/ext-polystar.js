@@ -110,14 +110,14 @@ export default {
           }
         });
 
-        const label0 = svgEditor.i18next.t(`${name}:contextTools.0.label`);
-        const title0 = svgEditor.i18next.t(`${name}:contextTools.0.title`);
-        const label1 = svgEditor.i18next.t(`${name}:contextTools.1.label`);
-        const title1 = svgEditor.i18next.t(`${name}:contextTools.1.title`);
-        const label2 = svgEditor.i18next.t(`${name}:contextTools.2.label`);
-        const title2 = svgEditor.i18next.t(`${name}:contextTools.2.title`);
-        const label3 = svgEditor.i18next.t(`${name}:contextTools.3.label`);
-        const title3 = svgEditor.i18next.t(`${name}:contextTools.3.title`);
+        const label0 = `${name}:contextTools.0.label`;
+        const title0 = `${name}:contextTools.0.title`;
+        const label1 = `${name}:contextTools.1.label`;
+        const title1 = `${name}:contextTools.1.title`;
+        const label2 = `${name}:contextTools.2.label`;
+        const title2 = `${name}:contextTools.2.title`;
+        const label3 = `${name}:contextTools.3.label`;
+        const title3 = `${name}:contextTools.3.title`;
         // Add the context panel and its handler(s)
         const panelTemplate = document.createElement("template");
         // eslint-disable-next-line no-unsanitized/property

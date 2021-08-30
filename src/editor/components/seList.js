@@ -46,7 +46,7 @@ export class SeList extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'label', 'width', 'height' ];
+    return [ 'label', 'width', 'height', 'title' ];
   }
 
   /**
@@ -59,6 +59,9 @@ export class SeList extends HTMLElement {
   attributeChangedCallback (name, oldValue, newValue) {
     if (oldValue === newValue) return;
     switch (name) {
+    case 'title':
+      this.$dropdown.setAttribute('title', `${t(newValue)}`);
+      break;
     case 'label':
       this.$label.textContent = t(newValue);
       break;
@@ -73,6 +76,21 @@ export class SeList extends HTMLElement {
       console.error(`unknown attribute: ${name}`);
       break;
     }
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get title () {
+    return this.getAttribute('title');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set title (value) {
+    this.setAttribute('title', value);
   }
   /**
    * @function get
