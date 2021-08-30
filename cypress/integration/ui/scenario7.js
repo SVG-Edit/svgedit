@@ -103,38 +103,12 @@ describe('use all parts of svg-edit', function () {
       .click({ force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
-  /* it('check tool_star_change_x_y_coordinate', function () {
-    cy.get('#svg_1').click({ force: true });
-    for(let n = 0; n < 25; n ++){
-      cy.get('#selected_x').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
-        .click({ force: true });
-    }
-    for(let n = 0; n < 25; n ++){
-      cy.get('#selected_y').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
-        .click({ force: true });
-    }
-    cy.get('#svgcontent').toMatchSnapshot();
-  }); */
   it('check tool_star_change_stroke_width', function () {
     cy.get('#svg_1').click({ force: true });
     for(let n = 0; n < 10; n ++){
       cy.get('#stroke_width').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true });
     }
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
-  it('check tool_star_change_stroke_style', function () {
-    cy.get('#svg_1').click({ force: true });
-    cy.get('#stroke_style').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
-    cy.get('#stroke_style').find('se-list-item').eq(3).shadow().find('elix-option').eq(0)
-      .click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
-  it('check tool_star_change_line_cap', function () {
-    cy.get('#svg_1').click({ force: true });
-    cy.get('#stroke_linecap').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
-    cy.get('#stroke_linecap').find('se-list-item').eq(1).shadow().find('elix-option').eq(0)
-      .click({ force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
   it('check tool_star_change_stoke_fill_color', function () {
