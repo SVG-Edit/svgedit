@@ -82,24 +82,9 @@ describe('use various parts of svg-edit', function () {
     }
     cy.get('#svgcontent').toMatchSnapshot();
   });
-  it('check tool_text_change_font_family', function () {
-    cy.get('#svg_1').click({ force: true });
-    cy.get('#tool_font_family').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
-    cy.get('#tool_font_family').find('se-list-item').eq(2).shadow().find('elix-option').eq(0)
-      .click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
   it('check tool_text_change_stroke_width', function () {
     cy.get('#svg_1').click({ force: true });
     cy.get('#stroke_width').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
-      .click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
-  it('check tool_text_change_stroke_style', function () {
-    cy.get('#svg_1').click({ force: true });
-    cy.get('#stroke_style').shadow().find('elix-dropdown-list').eq(0)
-      .invoke('attr', 'opened', 'opened');
-    cy.get('#stroke_style').find('se-list-item').eq(3).shadow().find('elix-option').eq(0)
       .click({ force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
@@ -193,6 +178,13 @@ describe('use various parts of svg-edit', function () {
   it('check tool_text_delete', function () {
     cy.get('#svg_2_id').click({ force: true });
     cy.get('#tool_delete').click({ force: true });
+    cy.get('#svgcontent').toMatchSnapshot();
+  });
+  it('check tool_text_change_font_family', function () {
+    cy.get('#svg_1').click({ force: true });
+    cy.get('#tool_font_family').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
+    cy.get('#tool_font_family').find('se-list-item').eq(6).shadow().find('elix-option').eq(0)
+      .click({ force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
 });

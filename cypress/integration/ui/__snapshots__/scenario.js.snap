@@ -337,60 +337,6 @@ exports[`use various parts of svg-edit > check tool_text_change_font_size #0`] =
 </svg>
 `;
 
-exports[`use various parts of svg-edit > check tool_text_change_font_family #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
-`;
-
 exports[`use various parts of svg-edit > check tool_text_change_stroke_width #0`] = `
 <svg
   xmlns="http://www.w3.org/2000/svg"
@@ -415,61 +361,7 @@ exports[`use various parts of svg-edit > check tool_text_change_stroke_width #0`
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
       font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
-`;
-
-exports[`use various parts of svg-edit > check tool_text_change_stroke_style #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Cursive"
       text-anchor="middle"
       xml:space="preserve"
       fill-opacity="1"
@@ -523,14 +415,13 @@ exports[`use various parts of svg-edit > check tool_text_change_stoke_fill_color
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="middle"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-style="italic"
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
     >
       AB
     </text>
@@ -578,14 +469,13 @@ exports[`use various parts of svg-edit > check tool_text_anchor_start #0`] = `
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="start"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-=""
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
     >
       AB
     </text>
@@ -633,14 +523,13 @@ exports[`use various parts of svg-edit > check tool_text_anchor_middle #0`] = `
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="middle"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-=""
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
     >
       AB
     </text>
@@ -688,14 +577,13 @@ exports[`use various parts of svg-edit > check tool_text_anchor_end #0`] = `
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="end"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-=""
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
     >
       AB
     </text>
@@ -743,14 +631,13 @@ exports[`use various parts of svg-edit > check tool_text_change_rotation #0`] = 
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="end"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-style="italic"
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
     >
       AB
     </text>
@@ -799,14 +686,13 @@ exports[`use various parts of svg-edit > check tool_text_change_blur #0`] = `
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="end"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-style="italic"
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
     >
       AB
     </text>
@@ -861,14 +747,13 @@ exports[`use various parts of svg-edit > check tool_text_change_opacity #0`] = `
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="end"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-style="italic"
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
     >
       AB
     </text>
@@ -924,14 +809,13 @@ exports[`use various parts of svg-edit > check tool_text_align_to_page #0`] = `
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="end"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-style="italic"
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
     >
       AB
     </text>
@@ -987,14 +871,56 @@ exports[`use various parts of svg-edit > check tool_text_delete #0`] = `
       y="35"
       id="svg_1"
       font-size="34"
-      font-family="Cursive"
+      font-family="Serif"
       text-anchor="end"
       xml:space="preserve"
       fill-opacity="1"
       stroke-opacity="1"
       font-style="italic"
       font-weight="bold"
-      stroke-dasharray="5,2,2,2"
+    >
+      AB
+    </text>
+  </g>
+  <defs>
+    <filter id="svg_2_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use various parts of svg-edit > check tool_text_change_font_family #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+  fill-opacity="1"
+  stroke-opacity="1"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <text
+      fill="#bf0000"
+      stroke="#0000bf"
+      stroke-width="1"
+      x="46"
+      y="35"
+      id="svg_1"
+      font-size="34"
+      font-family="Serif"
+      text-anchor="end"
+      xml:space="preserve"
+      fill-opacity="1"
+      stroke-opacity="1"
+      font-style="italic"
+      font-weight="bold"
     >
       AB
     </text>
