@@ -702,8 +702,8 @@ export const convertToGroup = function (elem) {
     // Use the gsvg as the new group
     const svg = elem.firstChild;
     const pt = {
-      x: svg.getAttribute('x'),
-      y: svg.getAttribute('y')
+      x: Number(svg.getAttribute('x')),
+      y: Number(svg.getAttribute('y'))
     };
 
     // $(elem.firstChild.firstChild).unwrap();
@@ -725,8 +725,8 @@ export const convertToGroup = function (elem) {
 
     ts = $elem.getAttribute('transform');
     const pos = {
-      x: $elem.getAttribute('x'),
-      y: $elem.getAttribute('y')
+      x: Number($elem.getAttribute('x')),
+      y: Number($elem.getAttribute('y'))
     };
 
     const vb = elem.getAttribute('viewBox');
@@ -929,8 +929,8 @@ export const updateCanvas = function (w, h) {
   elementContext_.getSVGRoot().setAttribute('height', h);
   const currentZoom = elementContext_.getCurrentZoom();
   const bg = document.getElementById('canvasBackground');
-  const oldX = elementContext_.getSVGContent().getAttribute('x');
-  const oldY = elementContext_.getSVGContent().getAttribute('y');
+  const oldX = Number(elementContext_.getSVGContent().getAttribute('x'));
+  const oldY = Number(elementContext_.getSVGContent().getAttribute('y'));
   const x = ((w - this.contentW * currentZoom) / 2);
   const y = ((h - this.contentH * currentZoom) / 2);
 

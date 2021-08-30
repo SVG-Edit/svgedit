@@ -225,8 +225,8 @@ export const recalculateDimensions = function (selected) {
   } else if (gsvg) {
     // GSVG exception
     changes = {
-      x: gsvg.getAttribute('x') || 0,
-      y: gsvg.getAttribute('y') || 0
+      x: Number(gsvg.getAttribute('x')) || 0,
+      y: Number(gsvg.getAttribute('y')) || 0
     };
   }
 
@@ -775,8 +775,8 @@ export const recalculateDimensions = function (selected) {
           const child = children.item(c);
           if (child.tagName === 'tspan') {
             const tspanChanges = {
-              x: child.getAttribute('x') || 0,
-              y: child.getAttribute('y') || 0
+              x: Number(child.getAttribute('x')) || 0,
+              y: Number(child.getAttribute('y')) || 0
             };
             remapElement(child, tspanChanges, m);
           }

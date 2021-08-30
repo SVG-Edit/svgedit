@@ -635,19 +635,7 @@ export const getBBox = function (elem) {
     }
     if (elname === 'use' || (elname === 'foreignObject' && isWebkit())) {
       if (!ret) { ret = selected.getBBox(); }
-      // This is resolved in later versions of webkit, perhaps we should
-      // have a featured detection for correct 'use' behavior?
-      // ——————————
-      /* if (!isWebkit()) {
-        const { x, y, width, height } = ret;
-        const bb = {
-          width,
-          height,
-          x: x + Number.parseFloat(selected.getAttribute('x') || 0),
-          y: y + Number.parseFloat(selected.getAttribute('y') || 0)
-        };
-        ret = bb;
-      } */
+
     } else if (visElemsArr.includes(elname)) {
       if (selected) {
         try {
@@ -721,12 +709,12 @@ export const getPathDFromElement = function (elem) {
   switch (elem.tagName) {
   case 'ellipse':
   case 'circle': {
-    rx = elem.getAttribute('rx');
-    ry = elem.getAttribute('ry');
-    const cx = elem.getAttribute('cx');
-    const cy = elem.getAttribute('cy');
+    rx = Number(elem.getAttribute('rx'));
+    ry = Number(elem.getAttribute('ry'));
+    const cx = Number(elem.getAttribute('cx'));
+    const cy = Number(elem.getAttribute('cy'));
     if (elem.tagName === 'circle' && elem.hasAttribute('r')) {
-      ry = elem.getAttribute('r');
+      ry = Number(elem.getAttribute('r'));
       rx = ry;
     }
     d = getPathDFromSegments([
@@ -756,8 +744,8 @@ export const getPathDFromElement = function (elem) {
     d = 'M' + elem.getAttribute('points') + ' Z';
     break;
   case 'rect': {
-    rx = elem.getAttribute('rx');
-    ry = elem.getAttribute('ry');
+    rx = Number(elem.getAttribute('rx'));
+    ry = Number(elem.getAttribute('ry'));
     const b = elem.getBBox();
     const { x, y } = b;
     const w = b.width;
@@ -992,8 +980,8 @@ export const getBBoxWithTransform = function (elem, addSVGElementFromJson, pathA
         bb = goodBb;
       } else if (elem.tagName === 'rect') {
         // Look for radius
-        const rx = elem.getAttribute('rx');
-        const ry = elem.getAttribute('ry');
+        const rx = Number(elem.getAttribute('rx'));
+        const ry = Number(elem.getAttribute('ry'));
         if (rx || ry) {
           goodBb = getBBoxOfElementAsPath(elem, addSVGElementFromJson, pathActions);
           bb = goodBb;

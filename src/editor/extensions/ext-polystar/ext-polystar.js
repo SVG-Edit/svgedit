@@ -163,7 +163,7 @@ export default {
                 }
                 const cx = xpos / len;
                 const cy = ypos / len;
-                const circumradius = elem.getAttribute('r');
+                const circumradius = Number(elem.getAttribute('r'));
                 const inradius = circumradius / elem.getAttribute('starRadiusMultiplier');
 
                 let polyPoints = "";
