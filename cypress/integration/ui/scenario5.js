@@ -132,20 +132,6 @@ describe('use all parts of svg-edit', function () {
     }
     cy.get('#svgcontent').toMatchSnapshot();
   });
-  it('check tool_line_change_stroke_style', function () {
-    cy.get('#svg_2').click({ force: true });
-    cy.get('#stroke_style').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
-    cy.get('#stroke_style').find('se-list-item').eq(3).shadow().find('elix-option').eq(0)
-      .click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
-  it('check tool_line_change_line_cap', function () {
-    cy.get('#svg_2').click({ force: true });
-    cy.get('#stroke_linecap').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
-    cy.get('#stroke_linecap').find('se-list-item').eq(1).shadow().find('elix-option').eq(0)
-      .click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
   it('check tool_line_align_to_page', function () {
     cy.get('#svg_3').click({ force: true });
     cy.get('#tool_position').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
