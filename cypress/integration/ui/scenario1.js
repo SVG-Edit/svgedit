@@ -23,18 +23,6 @@ describe('use all parts of svg-edit', function () {
     cy.get('#tool_source_save').click({ force: true });
     testSnapshot();
   });
-  it('check tool_line', function () {
-    cy.get('#tool_line')
-      .click({ force: true });
-    cy.get('#svgcontent')
-      .trigger('mousemove', 200, 200, { force: true })
-      .trigger('mousedown', 200, 200, { force: true })
-      .trigger('mousemove', 20, 20, { force: true })
-      .trigger('mouseup', { force: true });
-    // cy.get('#angle').click({ force: true }).invoke('attr', 'value', '45');
-    //.shadow().get('elix-number-spin-box').shadow().find('plain-repeat-button-0').click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
   it('check tool_shape', function () {
     cy.get('#tool_shapelib').shadow().find('.overall').eq(0).click({ force: true });
     cy.get('[data-shape="heart"]').click({ force: true });
@@ -49,30 +37,7 @@ describe('use all parts of svg-edit', function () {
       .trigger('mouseup', { force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
-  it('check tool_rect_square', function () {
-    cy.get('#tool_rect').click({ force: true });
-    cy.get('#svgcontent')
-      .trigger('mousedown', 100, -60, { force: true })
-      .trigger('mousemove', 250, 60, { force: true })
-      .trigger('mouseup', { force: true });
-    cy.get('#tool_square').click({ force: true });
-    cy.get('#svgcontent')
-      .trigger('mousedown', 250, -60, { force: true })
-      .trigger('mousemove', 430, 120, { force: true })
-      .trigger('mouseup', { force: true });
-    cy.get('#tool_fhrect')
-      .click({ force: true });
-    cy.get('#svgcontent')
-      .trigger('mousedown', 20, 80, { force: true })
-      .trigger('mousemove', 120, 80, { force: true })
-      .trigger('mousemove', 120, 180, { force: true })
-      .trigger('mousemove', 20, 180, { force: true })
-      .trigger('mousemove', 20, 80, { force: true })
-      .trigger('mouseup', 20, 80, { force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
   it('check tool_image', function () {
-
     cy.get('#tool_image').click({ force: true });
     cy.get('#svgcontent')
       .trigger('mousedown', 100, 100, { force: true })
@@ -87,5 +52,4 @@ describe('use all parts of svg-edit', function () {
       });
     cy.get('#svgcontent').toMatchSnapshot();
   });
-
 });
