@@ -194,7 +194,9 @@ export class SeStorageDialog extends HTMLElement {
       this.dispatchEvent(triggerEvent);
     };
     this.$okBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'ok'));
+    this.$okBtn.addEventListener('touchend', (evt) => onSubmitHandler(evt, 'ok'));
     this.$cancelBtn.addEventListener('click', (evt) => onSubmitHandler(evt, 'cancel'));
+    this.$cancelBtn.addEventListener('touchend', (evt) => onSubmitHandler(evt, 'cancel'));
   }
   /**
  * Sets SVG content as a string with "svgedit-" and the current
