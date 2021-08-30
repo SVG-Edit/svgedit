@@ -1,0 +1,605 @@
+exports[`use all parts of svg-edit > check tool_source_set #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer"><title>Layer 1</title></g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer">
+    <title>Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokewidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="1"
+      ></animate>
+    </polygon>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_clone #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+    <polygon
+      cx="325"
+      cy="250"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="398.8745422363281,270 361.6481628417969,321.23773193359375 301.4145812988281,301.6666564941406 301.4145812988281,238.3333282470703 361.6481628417969,218.7622528076172 398.8745422363281,270 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2"
+    ></polygon>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_change_rotation #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+    <polygon
+      cx="325"
+      cy="250"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="398.8745422363281,270 361.6481628417969,321.23773193359375 301.4145812988281,301.6666564941406 301.4145812988281,238.3333282470703 361.6481628417969,218.7622528076172 398.8745422363281,270 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2_id"
+      class="svg_2_class"
+      transform="rotate(25 350.145 270)"
+    ></polygon>
+  </g>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_change_blur #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+    <polygon
+      cx="325"
+      cy="250"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="398.8745422363281,270 361.6481628417969,321.23773193359375 301.4145812988281,301.6666564941406 301.4145812988281,238.3333282470703 361.6481628417969,218.7622528076172 398.8745422363281,270 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2_id"
+      class="svg_2_class"
+      transform="rotate(25 350.145 270)"
+      filter="url(#svg_2_id_blur)"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_change_opacity #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+    <polygon
+      cx="325"
+      cy="250"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="398.8745422363281,270 361.6481628417969,321.23773193359375 301.4145812988281,301.6666564941406 301.4145812988281,238.3333282470703 361.6481628417969,218.7622528076172 398.8745422363281,270 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2_id"
+      class="svg_2_class"
+      filter="url(#svg_2_id_blur)"
+      opacity="0.5"
+      transform="rotate(25 350.145 270)"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_bring_to_back #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="398.8745422363281,270 361.6481628417969,321.23773193359375 301.4145812988281,301.6666564941406 301.4145812988281,238.3333282470703 361.6481628417969,218.7622528076172 398.8745422363281,270 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2_id"
+      class="svg_2_class"
+      filter="url(#svg_2_id_blur)"
+      opacity="0.5"
+      transform="rotate(25 350.145 270)"
+    ></polygon>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_bring_to_front #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+    <polygon
+      cx="325"
+      cy="250"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="398.8745422363281,270 361.6481628417969,321.23773193359375 301.4145812988281,301.6666564941406 301.4145812988281,238.3333282470703 361.6481628417969,218.7622528076172 398.8745422363281,270 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_2_id"
+      class="svg_2_class"
+      filter="url(#svg_2_id_blur)"
+      opacity="0.5"
+      transform="rotate(25 350.145 270)"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_delete #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_align_to_page #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="5"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_change_stroke_width #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#FF0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#000000"
+      stroke-width="15"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_change_stoke_fill_color #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="5"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#bf0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="378.87455119562924,250 341.6481518837726,301.23774297708 281.41457251841285,281.6666666666667 281.4145725184128,218.33333333333334 341.6481518837726,198.76225702291998 378.87455119562924,250 "
+      stroke="#0000bf"
+      stroke-width="15"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_polygon_change_sides #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <polygon
+      cx="325"
+      cy="250"
+      id="svg_1"
+      shape="regularPoly"
+      sides="6"
+      orient="x"
+      edge="63.333333333333336"
+      fill="#bf0000"
+      strokecolor="#000000"
+      strokeWidth="5"
+      points="397.3124287923177,249.99999491373697 365.64576212565106,304.8482704867514 302.31242879231775,304.8482704867514 270.64576212565106,249.99999491373697 302.3124287923177,195.15171934072254 365.64576212565106,195.15171934072254 397.3124287923177,249.99999491373694 "
+      stroke="#0000bf"
+      stroke-width="15"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></polygon>
+  </g>
+  <defs>
+    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;

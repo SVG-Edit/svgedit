@@ -252,7 +252,7 @@ exports[`use all parts of svg-edit > check tool_line_clone #0`] = `
 </svg>
 `;
 
-exports[`use all parts of svg-edit > check tool_fhrect_change_x_y_coordinate #0`] = `
+exports[`use all parts of svg-edit > check tool_line_bring_to_back #0`] = `
 <svg
   xmlns="http://www.w3.org/2000/svg"
   xmlns:svg="http://www.w3.org/2000/svg"
@@ -271,10 +271,10 @@ exports[`use all parts of svg-edit > check tool_fhrect_change_x_y_coordinate #0`
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      x1="225"
+      x1="200"
       y1="200"
-      x2="475"
-      y2="425"
+      x2="450"
+      y2="450"
       id="svg_2"
       fill-opacity="1"
       stroke-opacity="1"
@@ -302,6 +302,299 @@ exports[`use all parts of svg-edit > check tool_fhrect_change_x_y_coordinate #0`
         id="svg_4"
       ></animate>
     </line>
+  </g>
+  <defs>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_bring_to_front #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.25"
+      style="pointer-events:none"
+      x1="220"
+      y1="220"
+      x2="470"
+      y2="470"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_3"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="0.5"
+        id="svg_4"
+      ></animate>
+    </line>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      x1="200"
+      y1="200"
+      x2="450"
+      y2="450"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></line>
+  </g>
+  <defs>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_x_y_coordinate #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.25"
+      style="pointer-events:none"
+      x1="220"
+      y1="220"
+      x2="470"
+      y2="470"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_3"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="0.5"
+        id="svg_4"
+      ></animate>
+    </line>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.5"
+      x1="225"
+      y1="200"
+      x2="475"
+      y2="425"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></line>
+  </g>
+  <defs>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_stroke_width #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="5"
+      opacity="0.25"
+      style="pointer-events:none"
+      x1="220"
+      y1="220"
+      x2="470"
+      y2="470"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_3"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="0.5"
+        id="svg_4"
+      ></animate>
+    </line>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="15"
+      opacity="0.5"
+      x1="225"
+      y1="200"
+      x2="475"
+      y2="425"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></line>
+  </g>
+  <defs>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_change_stoke_color #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#bf5f00"
+      stroke-width="5"
+      opacity="0.25"
+      x1="220"
+      y1="220"
+      x2="470"
+      y2="470"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_3"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="0.5"
+        id="svg_4"
+      ></animate>
+    </line>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="15"
+      opacity="0.5"
+      x1="225"
+      y1="200"
+      x2="475"
+      y2="425"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></line>
+  </g>
+  <defs>
+    <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+    </filter>
+  </defs>
+</svg>
+`;
+
+exports[`use all parts of svg-edit > check tool_line_align_to_page #0`] = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:svg="http://www.w3.org/2000/svg"
+  width="640"
+  height="480"
+  id="svgcontent"
+  overflow="visible"
+  x="640"
+  y="480"
+  viewBox="0 0 640 480"
+>
+  <g class="layer" style="pointer-events:all">
+    <title style="pointer-events:inherit">Layer 1</title>
+    <line
+      fill="none"
+      stroke="#bf5f00"
+      stroke-width="5"
+      opacity="0.25"
+      x1="220"
+      y1="220"
+      x2="470"
+      y2="470"
+      fill-opacity="1"
+      stroke-opacity="1"
+      id="svg_3"
+    >
+      <animate
+        attributeName="opacity"
+        begin="indefinite"
+        dur="0.2"
+        fill="freeze"
+        to="0.5"
+        id="svg_4"
+      ></animate>
+    </line>
+    <line
+      fill="none"
+      stroke="#000000"
+      stroke-width="15"
+      opacity="0.5"
+      x1="225"
+      y1="200"
+      x2="475"
+      y2="425"
+      id="svg_2"
+      fill-opacity="1"
+      stroke-opacity="1"
+    ></line>
   </g>
   <defs>
     <filter id="svg_1_id_blur" x="-50%" y="-50%" width="200%" height="200%">
