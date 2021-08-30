@@ -132,13 +132,6 @@ describe('use all parts of svg-edit', function () {
     }
     cy.get('#svgcontent').toMatchSnapshot();
   });
-  it('check tool_line_align_to_page', function () {
-    cy.get('#svg_3').click({ force: true });
-    cy.get('#tool_position').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
-    cy.get('#tool_position').find('se-list-item').eq(2).shadow().find('elix-option').eq(0)
-      .click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
-  });
   it('check tool_line_change_stoke_color', function () {
     cy.get('#svg_3').click({ force: true });
     cy.get('#stroke_color').shadow().find('#picker').eq(0).click({ force: true });
@@ -148,6 +141,13 @@ describe('use all parts of svg-edit', function () {
     cy.get('#stroke_color').shadow().find('#color_picker').eq(0)
       .find('#jGraduate_colPick').eq(0).find('#jPicker-table').eq(0)
       .find('#Ok').eq(0).click({ force: true });
+    cy.get('#svgcontent').toMatchSnapshot();
+  });
+  it('check tool_line_align_to_page', function () {
+    cy.get('#svg_3').click({ force: true });
+    cy.get('#tool_position').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
+    cy.get('#tool_position').find('se-list-item').eq(2).shadow().find('elix-option').eq(0)
+      .click({ force: true });
     cy.get('#svgcontent').toMatchSnapshot();
   });
 });
