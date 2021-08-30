@@ -572,93 +572,6 @@ exports[`use all parts of svg-edit > check tool_star_change_stroke_width #0`] = 
 </svg>
 `;
 
-exports[`use all parts of svg-edit > check tool_star_change_stroke_style #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <polygon
-      cx="300"
-      cy="150"
-      id="svg_1"
-      shape="star"
-      point="5"
-      r="66.66666666666667"
-      radialshift="0"
-      r2="22.222222222222225"
-      orient="point"
-      fill="#FF0000"
-      strokecolor="#000000"
-      strokeWidth="5"
-      starRadiusMultiplier="3"
-      points="300,83.33333333333333 313.0618944953883,132.02184456944562 363.40376775301024,129.39886704167017 321.13458925100343,156.86704431944327 339.18568348616486,203.93446629166317 300,172.22222222222223 260.81431651383514,203.93446629166317 278.86541074899657,156.86704431944327 236.59623224698976,129.39886704167017 286.9381055046117,132.02184456944562 300,83.33333333333333 313.0618944953883,132.02184456944562 "
-      stroke="#000000"
-      stroke-width="15"
-      fill-opacity="1"
-      stroke-opacity="1"
-    ></polygon>
-  </g>
-  <defs>
-    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
-`;
-
-exports[`use all parts of svg-edit > check tool_star_change_line_cap #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <polygon
-      cx="300"
-      cy="150"
-      id="svg_1"
-      shape="star"
-      point="5"
-      r="66.66666666666667"
-      radialshift="0"
-      r2="22.222222222222225"
-      orient="point"
-      fill="#FF0000"
-      strokecolor="#000000"
-      strokeWidth="5"
-      starRadiusMultiplier="3"
-      points="300,83.33333333333333 313.0618944953883,132.02184456944562 363.40376775301024,129.39886704167017 321.13458925100343,156.86704431944327 339.18568348616486,203.93446629166317 300,172.22222222222223 260.81431651383514,203.93446629166317 278.86541074899657,156.86704431944327 236.59623224698976,129.39886704167017 286.9381055046117,132.02184456944562 300,83.33333333333333 313.0618944953883,132.02184456944562 "
-      stroke="#000000"
-      stroke-width="15"
-      fill-opacity="1"
-      stroke-opacity="1"
-      stroke-dasharray="5,2,2,2"
-    ></polygon>
-  </g>
-  <defs>
-    <filter id="svg_2_id_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
-`;
-
 exports[`use all parts of svg-edit > check tool_star_change_stoke_fill_color #0`] = `
 <svg
   xmlns="http://www.w3.org/2000/svg"
@@ -692,8 +605,6 @@ exports[`use all parts of svg-edit > check tool_star_change_stoke_fill_color #0`
       stroke-width="15"
       fill-opacity="1"
       stroke-opacity="1"
-      stroke-dasharray="5,2,2,2"
-      stroke-linecap="square"
     ></polygon>
   </g>
   <defs>
@@ -737,8 +648,6 @@ exports[`use all parts of svg-edit > check tool_star_change_sides #0`] = `
       stroke-width="15"
       fill-opacity="1"
       stroke-opacity="1"
-      stroke-dasharray="5,2,2,2"
-      stroke-linecap="square"
     ></polygon>
   </g>
   <defs>
