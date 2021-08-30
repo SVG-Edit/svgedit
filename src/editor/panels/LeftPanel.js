@@ -195,7 +195,6 @@ class LeftPanel {
    * @type {module}
    */
   init() {
-    const { i18next } = this.editor;
     const { imgPath } = this.editor.configObj.curConfig;
 
     // add Left panel
