@@ -446,7 +446,6 @@ export const pathActionsMethod = (function () {
               if (path.matrix) {
                 pathActionsContext_.recalcRotatedPath();
               }
-              init();
               pathActionsMethod.toEditMode(path.elem);
               path.selectPt();
               return false;
