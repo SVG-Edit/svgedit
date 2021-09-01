@@ -54,7 +54,7 @@ export const init = function (editorContext) {
 * @param {Float} ty - The translation's y value
 * @returns {void}
 */
-export const updateClipPath = function (attr, tx, ty) {
+export const updateClipPath = (attr, tx, ty) => {
   const path = getRefElem(attr).firstChild;
   const cpXform = path.transform.baseVal;
   const newxlate = context_.getSVGRoot().createSVGTransform();
@@ -72,49 +72,37 @@ export const updateClipPath = function (attr, tx, ty) {
 * @param {Element} selected - The DOM element to recalculate
 * @returns {Command} Undo command object with the resulting change
 */
-export const recalculateDimensions = function (selected) {
+export const recalculateDimensions = (selected) => {
   if (!selected) return null;
   const svgroot = context_.getSVGRoot();
   const dataStorage = context_.getDataStorage();
   const tlist = selected.transform?.baseVal;
   // remove any unnecessary transforms
   if (tlist && tlist.numberOfItems > 0) {
-    let k = tlist.numberOfItems;
-    const noi = k;
-    while (k--) {
-      const xform = tlist.getItem(k);
-      if (xform.type === 0) {
-        tlist.removeItem(k);
+    const numberOfItems = tlist.numberOfItems;
+    let index = numberOfItems;
+    while (index--) {
+      const xform = tlist.getItem(index);
+      if (xform.type === 0) { // SVG_TRANSFORM_UNKNOWN = 0
+        // remove unknown transfromation
+        tlist.removeItem(index);
+      } else if (xform.type === 1 && isIdentity(xform.matrix)) { // SVG_TRANSFORM_MATRIX = 1
         // remove identity matrices
-      } else if (xform.type === 1) {
-        if (isIdentity(xform.matrix)) {
-          if (noi === 1) {
-            // Overcome Chrome bug (though only when noi is 1) with
-            //    `removeItem` preventing `removeAttribute` from
-            //    subsequently working
-            // See https://bugs.chromium.org/p/chromium/issues/detail?id=843901
-            selected.removeAttribute('transform');
-            return null;
-          }
-          tlist.removeItem(k);
-        }
-        // remove zero-degree rotations
+        tlist.removeItem(index);
       } else if (xform.type === 4 && xform.angle === 0) {
-        tlist.removeItem(k);
+        // remove zero-degree rotations
+        tlist.removeItem(index);
       }
     }
-    // End here if all it has is a rotation
-    if (tlist.numberOfItems === 1 &&
-      getRotationAngle(selected)) { return null; }
+  }
+  // End here if all it has is a rotation
+  if (tlist.numberOfItems === 1 && tlist.getItem(0).type === 4) // SVG_TRANSFORM_ROTATE = 4
+  {
+    return null;
   }
 
-  // if this element had no transforms, we are done
+  // if tlist had no transforms, we are done
   if (!tlist || tlist.numberOfItems === 0) {
-    // Chrome apparently had a bug that requires clearing the attribute first.
-    selected.setAttribute('transform', '');
-    // However, this still next line currently doesn't work at all in Chrome
-    selected.removeAttribute('transform');
-    // selected.transform.baseVal.clear(); // Didn't help for Chrome bug
     return null;
   }
 

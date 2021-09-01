@@ -11,9 +11,7 @@ import { setUnitAttr, getTypeMap } from '../common/units.js';
 import {
   hasMatrixTransform, transformListToTransform, transformBox
 } from './math.js';
-import {
-  isWebkit, supportsHVLineContainerBBox, supportsPathBBox
-} from '../common/browser.js';
+import { isWebkit } from '../common/browser.js';
 import { getClosest, mergeDeep } from '../editor/components/jgraduate/Util.js';
 
 // String used to encode base64.
@@ -548,9 +546,7 @@ export const getPathBBox = function (path) {
 * @returns {DOMRect} Bounding box object
 */
 function groupBBFix(selected) {
-  if (supportsHVLineContainerBBox()) {
-    try { return selected.getBBox(); } catch (e) {/* empty */ }
-  }
+  try { return selected.getBBox(); } catch (e) {/* empty */ }
   const ref = editorContext_.getDataStorage().get(selected, 'ref');
   let matched = null;
   let ret; let copy;
@@ -618,9 +614,7 @@ export const getBBox = function (elem) {
     }
     break;
   case 'path':
-    if (!supportsPathBBox()) {
-      ret = getPathBBox(selected);
-    } else if (selected.getBBox) {
+    if (selected.getBBox) {
       ret = selected.getBBox();
     }
     break;

@@ -1025,8 +1025,8 @@ export const pathActionsMethod = (function () {
           list.appendItem(newseg);
           list.appendItem(closer);
         } else {
-          pathActionsContext_.insertItemBefore(elem, closer, openPt);
-          pathActionsContext_.insertItemBefore(elem, newseg, openPt);
+          elem.pathSegList.insertItemBefore(closer, openPt);
+          elem.pathSegList.insertItemBefore(newseg, openPt);
         }
 
         path.init().selectPt(openPt + 1);
@@ -1072,7 +1072,7 @@ export const pathActionsMethod = (function () {
       let num = (index - lastM) - 1;
 
       while (num--) {
-        pathActionsContext_.insertItemBefore(elem, list.getItem(lastM), zSeg);
+        elem.pathSegList.insertItemBefore(list.getItem(lastM), zSeg);
       }
 
       const pt = list.getItem(lastM);
@@ -1220,7 +1220,7 @@ export const pathActionsMethod = (function () {
           if (prev.x !== lastM.x || prev.y !== lastM.y) {
             // Add an L segment here
             const newseg = elem.createSVGPathSegLinetoAbs(lastM.x, lastM.y);
-            pathActionsContext_.insertItemBefore(elem, newseg, i);
+            elem.pathSegList.insertItemBefore( newseg, i);
             // Can this be done better?
             pathActionsMethod.fixEnd(elem);
             break;

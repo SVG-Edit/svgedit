@@ -16,7 +16,7 @@ import {
   getElem
 } from './utilities.js';
 import {
-  supportsPathInsertItemBefore, supportsPathReplaceItem, isWebkit
+  isWebkit
 } from '../common/browser.js';
 
 let pathMethodsContext_ = null;
@@ -31,35 +31,6 @@ export const init = function (pathMethodsContext) {
   pathMethodsContext_ = pathMethodsContext;
 };
 
-/**
-* @function module:path.insertItemBefore
-* @param {Element} elem
-* @param {Segment} newseg
-* @param {Integer} index
-* @returns {void}
-*/
-export const insertItemBeforeMethod = function (elem, newseg, index) {
-  // Support insertItemBefore on paths for FF2
-  const list = elem.pathSegList;
-
-  if (supportsPathInsertItemBefore()) {
-    list.insertItemBefore(newseg, index);
-    return;
-  }
-  const len = list.numberOfItems;
-  const arr = [];
-  for (let i = 0; i < len; i++) {
-    const curSeg = list.getItem(i);
-    arr.push(curSeg);
-  }
-  list.clear();
-  for (let i = 0; i < len; i++) {
-    if (i === index) { // index + 1
-      list.appendItem(newseg);
-    }
-    list.appendItem(arr[i]);
-  }
-};
 /* eslint-disable max-len */
 /**
 * @function module:path.ptObjToArr
@@ -323,26 +294,7 @@ export const replacePathSegMethod = function (type, index, pts, elem) {
   const pathFuncs = pathMethodsContext_.getPathFuncs();
   const func = 'createSVGPathSeg' + pathFuncs[type];
   const seg = pth[func](...pts);
-
-  if (supportsPathReplaceItem()) {
-    pth.pathSegList.replaceItem(seg, index);
-  } else {
-    const segList = pth.pathSegList;
-    const len = segList.numberOfItems;
-    const arr = [];
-    for (let i = 0; i < len; i++) {
-      const curSeg = segList.getItem(i);
-      arr.push(curSeg);
-    }
-    segList.clear();
-    for (let i = 0; i < len; i++) {
-      if (i === index) {
-        segList.appendItem(seg);
-      } else {
-        segList.appendItem(arr[i]);
-      }
-    }
-  }
+  pth.pathSegList.replaceItem(seg, index);
 };
 /**
 * @function module:path.getSegSelector
@@ -772,7 +724,7 @@ export class Path {
     }
     }
 
-    insertItemBeforeMethod(this.elem, newseg, index);
+    this.elem.pathSegList.insertItemBefore(newseg, index);
   }
 
   /**

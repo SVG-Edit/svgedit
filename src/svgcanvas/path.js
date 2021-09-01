@@ -14,7 +14,7 @@ import {
   getBBox as utilsGetBBox
 } from './utilities.js';
 import {
-  init as pathMethodInit, insertItemBeforeMethod, ptObjToArrMethod, getGripPtMethod,
+  init as pathMethodInit, ptObjToArrMethod, getGripPtMethod,
   getPointFromGripMethod, addPointGripMethod, getGripContainerMethod, addCtrlGripMethod,
   getCtrlLineMethod, getPointGripMethod, getControlPointsMethod, replacePathSegMethod,
   getSegSelectorMethod, Path
@@ -263,14 +263,6 @@ pathMethodInit(
   }
 );
 
-/**
-* @function module:path.insertItemBefore
-* @param {Element} elem
-* @param {Segment} newseg
-* @param {Integer} index
-* @returns {void}
-*/
-export const insertItemBefore = insertItemBeforeMethod;
 /* eslint-disable max-len */
 /**
 * @function module:path.ptObjToArr
@@ -801,7 +793,6 @@ pathActionsInit(
     addCtrlGrip,
     getCtrlLine,
     replacePathSeg,
-    insertItemBefore,
     getPointFromGrip,
     getGripPt,
     getPath_,

@@ -226,7 +226,6 @@ describe('utilities', function () {
     });
     svgroot.append(elem);
     const closeEnough = /M0,4 C0,2.3\d* 0.9\d*,1 2,1 L8,1 C9.0\d*,1 10,2.3\d* 10,4 L10,9 C10,10.6\d* 9.0\d*,12 8,12 L2,12 C0.9\d*,12 0,10.6\d* 0,9 L0,4 Z/;
-    console.log(getPathDFromElement(elem), closeEnough);
     assert.equal(closeEnough.test(getPathDFromElement(elem)), true);
     elem.remove();
 

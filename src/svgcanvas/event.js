@@ -14,7 +14,6 @@ import {
 import {
   transformPoint, hasMatrixTransform, getMatrix, snapToAngle
 } from './math.js';
-import { supportsNonScalingStroke } from '../common/browser.js';
 import * as draw from './draw.js';
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
@@ -641,15 +640,12 @@ export const mouseUpEvent = function (evt) {
         }
       } // no change in mouse position
 
-      // Remove non-scaling stroke
-      if (supportsNonScalingStroke()) {
-        const elem = selectedElements[0];
-        if (elem) {
-          elem.removeAttribute('style');
-          walkTree(elem, function (el) {
-            el.removeAttribute('style');
-          });
-        }
+      const elem = selectedElements[0];
+      if (elem) {
+        elem.removeAttribute('style');
+        walkTree(elem, function (el) {
+          el.removeAttribute('style');
+        });
       }
     }
     return;

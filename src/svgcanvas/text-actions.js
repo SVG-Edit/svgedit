@@ -13,9 +13,6 @@ import {
 import {
   assignAttributes, getElem, getBBox as utilsGetBBox
 } from './utilities.js';
-import {
-  supportsGoodTextCharPos
-} from '../common/browser.js';
 
 let textActionsContext_ = null;
 
@@ -497,16 +494,6 @@ export const textActionsMethod = (function () {
       for (i = 0; i < len; i++) {
         const start = curtext.getStartPositionOfChar(i);
         end = curtext.getEndPositionOfChar(i);
-
-        if (!supportsGoodTextCharPos()) {
-          const currentZoom = textActionsContext_.getCurrentZoom();
-          const offset = textActionsContext_.getCanvas().contentW * currentZoom;
-          start.x -= offset;
-          end.x -= offset;
-
-          start.x /= currentZoom;
-          end.x /= currentZoom;
-        }
 
         // Get a "bbox" equivalent for each character. Uses the
         // bbox data of the actual text for y, height purposes
