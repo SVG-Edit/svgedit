@@ -388,11 +388,6 @@ export const textActionsMethod = (function () {
 
       curtext.style.cursor = 'text';
 
-      // if (supportsEditableText()) {
-      //   curtext.setAttribute('editable', 'simple');
-      //   return;
-      // }
-
       if (!arguments.length) {
         setCursor();
       } else {
@@ -433,9 +428,6 @@ export const textActionsMethod = (function () {
 
       curtext = false;
 
-      // if (supportsEditableText()) {
-      //   curtext.removeAttribute('editable');
-      // }
     },
     /**
 * @param {Element} elem
@@ -459,10 +451,6 @@ export const textActionsMethod = (function () {
     init (_inputElem) {
       if (!curtext) { return; }
       let i; let end;
-      // if (supportsEditableText()) {
-      //   curtext.select();
-      //   return;
-      // }
 
       if (!curtext.parentNode) {
         // Result of the ffClone, need to get correct element

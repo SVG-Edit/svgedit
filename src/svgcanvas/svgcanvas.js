@@ -86,7 +86,7 @@ import {
 } from './svg-exec.js';
 import {
   isChrome, isWebkit
-} from '../common/browser.js'; // , supportsEditableText
+} from '../common/browser.js';
 import {
   remapElement,
   init as coordsInit

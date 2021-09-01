@@ -21,7 +21,7 @@ import {
 } from './recalculate.js';
 import {
   isGecko
-} from '../common/browser.js'; // , supportsEditableText
+} from '../common/browser.js';
 import { getParents } from '../editor/components/jgraduate/Util.js';
 
 const {
