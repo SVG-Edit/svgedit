@@ -640,7 +640,7 @@ export class Path {
     const pointGripContainer = getGripContainerMethod();
     const elements = pointGripContainer.querySelectorAll('*');
     Array.prototype.forEach.call(elements, function(el){
-      el.style.display = 'none';
+      el.setAttribute('display', 'none');
     });
 
     const segList = this.elem.pathSegList;
