@@ -861,7 +861,7 @@ export const pathActionsMethod = (function () {
         const pathpointgripContainer = getElem('pathpointgrip_container');
         const elements = pathpointgripContainer.querySelectorAll('*');
         Array.prototype.forEach.call(elements, function(el){
-          el.style.display = 'none';
+          el.setAttribute('display', 'none');
         });
         firstCtrl = null;
         editorContext_.setDrawnPath(null);
