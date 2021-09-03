@@ -629,6 +629,10 @@ export class Path {
     this.init();
   }
 
+  setPathContext() {
+    pathMethodsContext_.setPathObj(this);
+  }
+
   /**
   * Reset path data.
   * @returns {module:path.Path}
