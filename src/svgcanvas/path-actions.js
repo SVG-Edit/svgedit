@@ -757,6 +757,7 @@ export const pathActionsMethod = (function () {
       path = pathActionsContext_.getPath_(element);
       editorContext_.setCurrentMode('pathedit');
       editorContext_.clearSelection();
+      path.setPathContext();
       path.show(true).update();
       path.oldbbox = utilsGetBBox(path.elem);
       subpath = false;
@@ -770,6 +771,7 @@ export const pathActionsMethod = (function () {
       editorContext_ = pathActionsContext_.getEditorContext();
       const selPath = (elem === path.elem);
       editorContext_.setCurrentMode('select');
+      path.setPathContext();
       path.show(false);
       currentPath = false;
       editorContext_.clearSelection();
