@@ -985,7 +985,8 @@ class TopPanel {
                      ${i18next.t('properties.monospace')},
                      ${i18next.t('properties.courier')},
                      ${i18next.t('properties.helvetica')},
-                     ${i18next.t('properties.times')}           "
+                     ${i18next.t('properties.times')}"
+            values="Serif Sans-serif Cursive Fantasy Monospace Courier Helvetica Times"
           >
           </select>
           <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="${i18next.t('properties.font_size')}"
