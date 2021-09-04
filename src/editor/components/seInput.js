@@ -23,6 +23,7 @@ template.innerHTML = `
   elix-input {
     background-color: var(--input-color);
     border-radius: 3px;
+    height: 24px;
   }
   </style>
   <div>

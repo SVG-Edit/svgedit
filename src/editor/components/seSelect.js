@@ -1,22 +1,15 @@
-import 'elix/define/DropdownList.js';
-
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
-elix-dropdown-list {
-  margin-top: 10px;
+select {
+  margin-top: 8px;
+  background-color: var(--input-color);
+  appearance: none;
+  outline: none;
+  padding: 3px;
 }
-
-elix-dropdown-list:hover {
-  background-color: var(--icon-bg-color-hover);
-}
-
-elix-dropdown-list::part(value) {
-  background-color: var(--main-bg-color);
-}
-
-elix-dropdown-list::part(popup-toggle) {
-  display: none;
+label {
+  margin-left: 2px;
 }
 ::slotted(*) {
   padding:0;
@@ -24,15 +17,14 @@ elix-dropdown-list::part(popup-toggle) {
 }
 </style>
   <label>Label</label>
-  <elix-dropdown-list>
-    <slot></slot>
-  </elix-dropdown-list>
+  <select>
+  </select>
 
 `;
 /**
  * @class SeList
  */
-export class SeList extends HTMLElement {
+export class SeSelect extends HTMLElement {
   /**
     * @function constructor
     */
@@ -41,7 +33,7 @@ export class SeList extends HTMLElement {
     // create the shadowDom and insert the template
     this._shadowRoot = this.attachShadow({ mode: 'open' });
     this._shadowRoot.append(template.content.cloneNode(true));
-    this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
+    this.$select = this._shadowRoot.querySelector('select');
     this.$label = this._shadowRoot.querySelector('label');
   }
   /**
@@ -49,7 +41,7 @@ export class SeList extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'label', 'width', 'height' ];
+    return [ 'label', 'width', 'height', 'options', 'values' ];
   }
 
   /**
@@ -60,16 +52,32 @@ export class SeList extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
+    let options;
     if (oldValue === newValue) return;
     switch (name) {
     case 'label':
       this.$label.textContent = newValue;
       break;
     case 'height':
-      this.$dropdown.style.height = newValue;
+      this.$select.style.height = newValue;
       break;
     case 'width':
-      this.$dropdown.style.width = newValue;
+      this.$select.style.width = newValue;
+      break;
+    case 'options':
+      options = newValue.split(',');
+      options.forEach((option) => {
+        const optionNode = document.createElement("OPTION");
+        const text = document.createTextNode(option);
+        optionNode.appendChild(text);
+        this.$select.appendChild(optionNode);
+      });
+      break;
+    case 'values':
+      options = newValue.split(' ');
+      options.forEach((option, index) => {
+        this.$select.children[index].setAttribute('value', option);
+      });
       break;
     default:
       // eslint-disable-next-line no-console
@@ -128,22 +136,14 @@ export class SeList extends HTMLElement {
    */
   connectedCallback () {
     const currentObj = this;
-    this.$dropdown.addEventListener('selectedindexchange', (e) => {
-      if (e?.detail?.selectedIndex !== undefined) {
-        const value = this.$dropdown.selectedItem.getAttribute('value');
-        const closeEvent = new CustomEvent('change', { detail: { value } });
-        currentObj.dispatchEvent(closeEvent);
-        currentObj.value = value;
-      }
-    });
-    this.$dropdown.addEventListener('close', (_e) => {
-      /** with Chrome, selectedindexchange does not fire consistently
-      * unless you forec change in this close event
-      */
-      this.$dropdown.selectedIndex = this.$dropdown.currentIndex;
+    this.$select.addEventListener('change', () => {
+      const value = this.$select.value;
+      const closeEvent = new CustomEvent('change', { detail: { value } });
+      currentObj.dispatchEvent(closeEvent);
+      currentObj.value = value;
     });
   }
 }
 
 // Register
-customElements.define('se-list', SeList);
+customElements.define('se-select', SeSelect);

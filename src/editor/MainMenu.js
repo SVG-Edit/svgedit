@@ -289,7 +289,7 @@ class MainMenu {
         <se-menu-item id="tool_editor_homepage" label="${i18next.t('tools.editor_homepage')}" src="${imgPath}/logo.svg"></se-menu-item>
     </se-menu>
        `;
-    $id('tools_top').prepend(template.content.cloneNode(true));
+    this.editor.$svgEditor.append(template.content.cloneNode(true));
 
     // register action to main menu entries
     /**
