@@ -122,7 +122,7 @@ export default class ConfigObj {
       text: {
         stroke_width: 0,
         font_size: 24,
-        font_family: 'serif'
+        font_family: 'Serif'
       },
       initOpacity: 1,
       initTool: 'select',
