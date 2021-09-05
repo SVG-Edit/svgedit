@@ -1,6 +1,6 @@
 :root {
   --main-bg-color: #72797A;
-  --text-color: #000000;
+  --text-color: #ffffff;
   --border-color: #808080;
   --canvas-bg-color: #B2B2B2;
   --link-color: #19c;
@@ -38,6 +38,11 @@
   .svg_editor {
     grid-template-rows: minmax(80px, auto) 15px 1fr 40px;
   }
+}
+
+/* class to open the right panel */
+.svg_editor.open {
+  grid-template-columns: 34px 15px 50px 1fr 150px;
 }
 
 #svgroot {
