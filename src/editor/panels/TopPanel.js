@@ -920,12 +920,13 @@ class TopPanel {
           <se-button id="tool_align_top" title="${i18next.t('tools.align_top')}" src="${imgPath}/align_top.svg"></se-button>
           <se-button id="tool_align_middle" title="${i18next.t('tools.align_middle')}" src="${imgPath}/align_middle.svg"></se-button>
           <se-button id="tool_align_bottom" title="${i18next.t('tools.align_bottom')}" src="${imgPath}/align_bottom.svg"></se-button>
-          <se-list id="tool_align_relative" label="relative to:">
-            <se-list-item id="selected_objects" value="selected">${i18next.t('tools.selected_objects')}</se-list-item>
-            <se-list-item id="largest_object" value="largest">${i18next.t('tools.largest_object')}</se-list-item>
-            <se-list-item id="smallest_object" value="smallest">${i18next.t('tools.smallest_object')}</se-list-item>
-            <se-list-item id="page" value="page">${i18next.t('tools.page')}</se-list-item>
-          </se-list>
+          <se-select id="tool_align_relative" label="relative to:" 
+            options="${i18next.t('tools.selected_objects')},
+                ${i18next.t('tools.largest_object')},
+                ${i18next.t('tools.smallest_object')},
+                ${i18next.t('tools.page')}"
+            values="selected largest smallest page"></se-list-item>
+          </se-select>
         </div> <!-- multiselected_panel -->
         <div class="rect_panel">
             <se-spin-input id="rect_width" data-attr="width" size="4" label="w" title="${i18next.t('properties.rect_width')}">
@@ -976,16 +977,18 @@ class TopPanel {
         <div class="text_panel">
           <se-button id="tool_bold" title="${i18next.t('properties.bold')}" src="${imgPath}/bold.svg" shortcut="B"></se-button>
           <se-button id="tool_italic" title="${i18next.t('properties.italic')}" src="${imgPath}/italic.svg" shortcut="I"></se-button>
-          <se-list id="tool_font_family" label="Font:">
-            <se-list-item value="Serif" style="font-family:serif;">${i18next.t('properties.serif')}</se-list-item>
-            <se-list-item value="Sans-serif" style="font-family:sans-serif;">${i18next.t('properties.sans_serif')}</se-list-item>
-            <se-list-item value="Cursive" style="font-family:cursive;">${i18next.t('properties.cursive')}</se-list-item>
-            <se-list-item value="Fantasy" style="font-family:fantasy;">${i18next.t('properties.fantasy')}</se-list-item>
-            <se-list-item value="Monospace" style="font-family:monospace;">${i18next.t('properties.monospace')}</se-list-item>
-            <se-list-item value="Courier" style="font-family:courier;">${i18next.t('properties.courier')} </se-list-item>
-            <se-list-item value="Helvetica" style="font-family:helvetica;">${i18next.t('properties.helvetica')}</se-list-item>
-            <se-list-item value="Times" style="font-family:times;">${i18next.t('properties.times')}</se-list-item>
-          </se-list>
+          <se-select id="tool_font_family" label="Font:"
+            options="${i18next.t('properties.serif')},
+                     ${i18next.t('properties.sans_serif')},
+                     ${i18next.t('properties.cursive')},
+                     ${i18next.t('properties.fantasy')},
+                     ${i18next.t('properties.monospace')},
+                     ${i18next.t('properties.courier')},
+                     ${i18next.t('properties.helvetica')},
+                     ${i18next.t('properties.times')}"
+            values="Serif Sans-serif Cursive Fantasy Monospace Courier Helvetica Times"
+          >
+          </select>
           <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="${i18next.t('properties.font_size')}"
             src="${imgPath}/fontsize.svg"></se-spin-input>
         </div>
@@ -1025,10 +1028,11 @@ class TopPanel {
           </se-spin-input>
           <se-spin-input id="path_node_y" data-attr="y" size="4" title="${i18next.t('properties.node_y')}" label="y:">
           </se-spin-input>
-          <select id="seg_type" title="${i18next.t('tools.seg_type')}">
-            <option id="straight_segments" selected="selected" value="4">${i18next.t('properties.straight_segments')}</option>
-            <option id="curve_segments" value="6">${i18next.t('properties.curve_segments')}</option>
-          </select>
+          <se-select id="seg_type" title="${i18next.t('tools.seg_type')}" label="" 
+            options="${i18next.t('properties.straight_segments')}, ${i18next.t('properties.curve_segments')}"
+            values="4 6"
+          >
+          </se-select>
           <se-button id="tool_node_clone" title="${i18next.t('tools.node_clone')}" src="${imgPath}/tool_node_clone.svg"></se-button>
           <se-button id="tool_node_delete" title="${i18next.t('tools.node_delete')}" src="${imgPath}/tool_node_delete.svg"></se-button>
           <se-button id="tool_openclose_path" title="${i18next.t('tools.openclose_path')}" src="${imgPath}/tool_openclose_path.svg">

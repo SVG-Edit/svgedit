@@ -186,13 +186,10 @@ class BottomPanel {
         <se-colorpicker id="stroke_color" src="${imgPath}/stroke.svg" title="${i18next.t('properties.stroke_color')}" type="stroke">
         </se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="${i18next.t('properties.stroke_width')}" label=""></se-spin-input>
-        <se-list id="stroke_style" title="${i18next.t('properties.stroke_style')}" label="" width="22px" height="22px">
-          <se-list-item value="none">&#8212;</se-list-item>
-          <se-list-item value="2,2">...</se-list-item>
-          <se-list-item value="5,5">- -</se-list-item>
-          <se-list-item value="5,2,2,2">- .</se-list-item>
-          <se-list-item value="5,2,2,2,2,2">- ..</se-list-item>
-        </se-list>
+        <se-select id="stroke_style" title="${i18next.t('properties.stroke_style')}" label="" width="22px" height="22px"
+          options="&#8212;,...,- -,- .,- .."
+          values="none 2,2 5,5 5,2,2,2 5,2,2,2,2,2">     
+        </se-select>
         <se-list id="stroke_linejoin" title="${i18next.t('properties.linejoin_miter')}" label="" width="22px" height="22px">
           <se-list-item id="linejoin_miter" value="miter"><img title="${i18next.t('properties.linejoin_miter')}" src="${imgPath}/linejoin_miter.svg"
               height="22px"></img></se-list-item>

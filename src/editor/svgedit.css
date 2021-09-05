@@ -18,12 +18,12 @@
 .svg_editor {
   display: grid;
   grid-template-rows: auto 15px 1fr 40px;
-  grid-template-columns: 34px 15px 1fr 15px;
+  grid-template-columns: 34px 15px 50px 1fr 15px;
   grid-template-areas: 
-    "top   top    top    top"
-    "left  corner rulerX side"
-    "left  rulerY workarea side"
-    "left  bottom bottom bottom";
+    "main main   main top top"
+    "left corner rulerX rulerX side"
+    "left rulerY workarea workarea side"
+    "left bottom bottom bottom bottom";
   font-size: 8pt;
   background: var(--main-bg-color);
   font-family: Verdana, Helvetica, Arial;
@@ -33,12 +33,7 @@
   height: 100%;
 }
 
-.svg_editor.open {
-  grid-template-columns: 34px 15px 1fr 150px;
-}
-
 /* on smaller screen, allow 2 lines for the toolbar */
-
 @media screen and (max-width:1250px) {
   .svg_editor {
     grid-template-rows: minmax(80px, auto) 15px 1fr 40px;
@@ -186,6 +181,7 @@ hr {
 —————————————————————————————*/
 
 #main_button {
+  grid-area: main;
   color: #fff;
   border-radius: 3px;
   padding-block: 2px;
@@ -299,8 +295,7 @@ hr {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  /* leave space for the main menu */
-  position: relative;
+  align-items: flex-start;
   background-color: var(--main-bg-color);
 }
 
@@ -325,9 +320,10 @@ hr {
   width: 3px;
 }
 
-#tools_bottom se-list {
+#tools_bottom se-list, #tools_bottom se-select {
   margin-bottom: 8px;
 }
+
 
 
 /*—————————————————————————————*/

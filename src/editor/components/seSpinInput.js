@@ -14,6 +14,7 @@ template.innerHTML = `
   img {
     position: relative;
     right: -4px;
+    top: 2px;
   }
   span {
     bottom: -0.5em;

@@ -1179,7 +1179,7 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     setSegType (v) {
-      path.setSegType(v);
+      path?.setSegType(v);
     },
     /**
     * @param {string} attr
