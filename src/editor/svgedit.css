@@ -329,7 +329,11 @@ hr {
   margin-bottom: 8px;
 }
 
-
+#zoom {
+  color: var(--text-color);
+  background-color: var(--main-bg-color);
+  border: none;
+}
 
 /*—————————————————————————————*/
 

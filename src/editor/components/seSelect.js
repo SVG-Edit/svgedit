@@ -131,6 +131,21 @@ export class SeSelect extends HTMLElement {
     this.setAttribute('height', value);
   }
   /**
+   * @function get
+   * @returns {any}
+   */
+  get value () {
+    return this.$select.value;
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set value (value) {
+    this.$select.value = value;
+  }
+  /**
    * @function connectedCallback
    * @returns {void}
    */

@@ -1049,7 +1049,7 @@ export const getStrokedBBox = function (elems, addSVGElementFromJson, pathAction
   });
 
   // This shouldn't ever happen...
-  if (fullBb === undefined) { return null; }
+  if (!fullBb) { return null; }
 
   // fullBb doesn't include the stoke, so this does no good!
   // if (elems.length == 1) return fullBb;
