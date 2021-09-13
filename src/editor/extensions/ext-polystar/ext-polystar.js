@@ -141,6 +141,7 @@ export default {
         showPanel(false, "star");
         showPanel(false, "polygon");
         $id("starNumPoints").addEventListener("change", (event) => {
+          if (selElems[0].attributes?.point?.value === event.target.value) return;
           setAttr("point", event.target.value);
           const orient = 'point';
           const point = event.target.value;
