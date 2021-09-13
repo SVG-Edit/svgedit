@@ -12,7 +12,7 @@ function touchHandler (ev) {
   switch (ev.type) {
   case 'touchstart': type = 'mousedown'; break;
   case 'touchmove': type = 'mousemove'; break;
-  case 'touchend': type = 'mouseup'; break;
+  case 'touchend': type = 'click'; break;
   default: return;
   }
 
