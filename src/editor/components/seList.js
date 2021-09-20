@@ -40,13 +40,15 @@ export class SeList extends HTMLElement {
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
     this.$label = this._shadowRoot.querySelector('label');
+    this.$selction = this.$dropdown.shadowRoot.querySelector('#source').querySelector('#value');
+    this.items = this.querySelectorAll("se-list-item");
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'label', 'width', 'height', 'title' ];
+    return [ 'label', 'width', 'height', 'title', 'value' ];
   }
 
   /**
@@ -57,6 +59,7 @@ export class SeList extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
+    const currentObj = this;
     if (oldValue === newValue) return;
     switch (name) {
     case 'title':
@@ -70,6 +73,23 @@ export class SeList extends HTMLElement {
       break;
     case 'width':
       this.$dropdown.style.width = newValue;
+      break;
+    case 'value':
+      Array.from(this.items).forEach(function (element) {
+        if(element.getAttribute("value") === newValue) {
+          if (element.hasAttribute("src")) {
+            while(currentObj.$selction.firstChild)
+              currentObj.$selction.removeChild(currentObj.$selction.firstChild);
+            const img = document.createElement('img');
+            img.src = './images/' + element.getAttribute("src");
+            img.style.height = element.getAttribute("img-height");
+            img.setAttribute('title', t(element.getAttribute("title")));
+            currentObj.$selction.append(img);
+          } else {
+            currentObj.$selction.textContent = t(element.getAttribute('option'));
+          }
+        }
+      });
       break;
     default:
       // eslint-disable-next-line no-console
@@ -149,6 +169,7 @@ export class SeList extends HTMLElement {
         const closeEvent = new CustomEvent('change', { detail: { value } });
         currentObj.dispatchEvent(closeEvent);
         currentObj.value = value;
+        currentObj.setAttribute("value", value);
       }
     });
     this.$dropdown.addEventListener('close', (_e) => {

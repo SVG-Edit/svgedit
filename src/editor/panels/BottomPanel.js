@@ -164,7 +164,6 @@ class BottomPanel {
     // register actions for Bottom panel
     const template = document.createElement('template');
     const { i18next } = this.editor;
-    const { imgPath } = this.editor.configObj.curConfig;
 
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
@@ -187,27 +186,21 @@ class BottomPanel {
         </se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="properties.stroke_width" label=""></se-spin-input>
         <se-list id="stroke_style" title="properties.stroke_style" label="" width="22px" height="22px">
-          <se-list-item value="none">&#8212;</se-list-item>
-          <se-list-item value="2,2">...</se-list-item>
-          <se-list-item value="5,5">- -</se-list-item>
-          <se-list-item value="5,2,2,2">- .</se-list-item>
-          <se-list-item value="5,2,2,2,2,2">- ..</se-list-item>
+          <se-list-item value="none" option="&#8212;">&#8212;</se-list-item>
+          <se-list-item value="2,2" option="...">...</se-list-item>
+          <se-list-item value="5,5" option="- -">- -</se-list-item>
+          <se-list-item value="5,2,2,2" option="- .">- .</se-list-item>
+          <se-list-item value="5,2,2,2,2,2" option="- ..">- ..</se-list-item>
         </se-list>
         <se-list id="stroke_linejoin" title="properties.linejoin_miter" label="" width="22px" height="22px">
-          <se-list-item id="linejoin_miter" value="miter"><img title="${i18next.t('properties.linejoin_miter')}" src="${imgPath}/linejoin_miter.svg"
-              height="22px"></img></se-list-item>
-          <se-list-item id="linejoin_round" value="round"><img title="${i18next.t('properties.linejoin_round')}" src="${imgPath}/linejoin_round.svg"
-              height="22px"></img></se-list-item>
-          <se-list-item id="linejoin_bevel" value="bevel"><img title="${i18next.t('properties.linejoin_bevel')}" src="${imgPath}/linejoin_bevel.svg"
-              height="22px"></img></se-list-item>
+          <se-list-item id="linejoin_miter" value="miter" src="linejoin_miter.svg" title="properties.linejoin_miter" img-height="22px"></se-list-item>
+          <se-list-item id="linejoin_round" value="round" src="linejoin_round.svg" title="properties.linejoin_round" img-height="22px"></se-list-item>
+          <se-list-item id="linejoin_bevel" value="bevel" src="linejoin_bevel.svg" title="properties.linejoin_bevel" img-height="22px"></se-list-item>
         </se-list>
         <se-list id="stroke_linecap" title="properties.linecap_butt" label="" width="22px" height="22px">
-          <se-list-item id="linecap_butt" value="butt"><img title="${i18next.t('properties.linecap_butt')}" src="${imgPath}/linecap_butt.svg"
-              height="22px"></img></se-list-item>
-          <se-list-item id="linecap_square" value="square"><img title="${i18next.t('properties.linecap_square')}" src="${imgPath}/linecap_square.svg"
-              height="22px"></img></se-list-item>
-          <se-list-item id="linecap_round" value="round"><img title="${i18next.t('properties.linecap_round')}" src="${imgPath}/linecap_round.svg"
-              height="22px"></img></se-list-item>
+          <se-list-item id="linecap_butt" value="butt" src="linecap_butt.svg" title="properties.linecap_butt" img-height="22px"></se-list-item>
+          <se-list-item id="linecap_square" value="square" src="linecap_square.svg" title="properties.linecap_square" img-height="22px"></se-list-item>
+          <se-list-item id="linecap_round" value="round" src="linecap_round.svg" title="properties.linecap_round" img-height="22px"></se-list-item>
         </se-list>
         <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="properties.opacity" src="opacity.svg"></se-spin-input>
         <se-palette id="palette"></se-palette>
