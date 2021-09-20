@@ -34,7 +34,6 @@ export default {
   name,
   async init ({ _importLocale }) {
     const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
     await loadExtensionTranslation(svgEditor);
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;

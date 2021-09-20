@@ -29,7 +29,6 @@ export default {
   name,
   async init(_S) {
     const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
     const { ChangeElementCommand } = _S; // , svgcontent,
     const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
     const { svgCanvas } = svgEditor;

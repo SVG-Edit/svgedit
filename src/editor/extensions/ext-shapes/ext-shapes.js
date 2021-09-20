@@ -27,7 +27,6 @@ export default {
   name,
   async init () {
     const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
     const canv = svgEditor.svgCanvas;
     const { $id } = canv;
     const svgroot = canv.getRootElem();

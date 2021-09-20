@@ -44,7 +44,6 @@ class LayersPanel {
   init() {
     const template = document.createElement("template");
     const { i18next } = this.editor;
-    const { imgPath } = this.editor.configObj.curConfig;
 
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `

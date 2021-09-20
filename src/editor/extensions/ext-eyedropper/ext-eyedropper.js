@@ -29,7 +29,6 @@ export default {
   name,
   async init(S) {
     const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
     await loadExtensionTranslation(svgEditor);
     const { ChangeElementCommand } = S; // , svgcontent,
     // svgdoc = S.svgroot.parentNode.ownerDocument,
