@@ -82,14 +82,6 @@ export default {
           }
         });
 
-        /*
-        // Make sure shape uses absolute values
-        if ((/[a-z]/).test(currentD)) {
-          currentD = curLib.data[curShapeId] = canv.pathActions.convertPath(curShape);
-          curShape.setAttribute('d', currentD);
-          canv.pathActions.fixEnd(curShape);
-        }
-        */
         curShape.setAttribute('transform', 'translate(' + x + ',' + y + ') scale(0.005) translate(' + -x + ',' + -y + ')');
 
         canv.recalculateDimensions(curShape);
