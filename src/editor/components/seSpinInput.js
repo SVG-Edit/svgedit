@@ -92,7 +92,7 @@ export class SESpinInput extends HTMLElement {
       }
       break;
     case 'src':
-      this.$img.setAttribute('src', newValue);
+      this.$img.setAttribute('src', './images/' + newValue);
       this.$label.remove();
       this.$div.classList.add('imginside');
       break;

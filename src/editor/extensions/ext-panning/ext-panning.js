@@ -51,7 +51,7 @@ export default {
         const buttonTemplate = document.createElement("template");
         // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-        <se-button id="ext-panning" title="${btitle}" src="${imgPath}/panning.svg"></se-button>
+        <se-button id="ext-panning" title="${btitle}" src="panning.svg"></se-button>
         `;
         insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true));
         $id('ext-panning').addEventListener("click", () => {

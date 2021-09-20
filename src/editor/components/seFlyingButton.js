@@ -235,7 +235,7 @@ export class FlyingButton extends HTMLElement {
   connectedCallback () {
     // initialize currentAction with the first slot of the list
     this.activeSlot = this.shadowRoot.querySelector('slot').assignedElements()[0];
-    this.$img.setAttribute('src', this.activeSlot.getAttribute('src'));
+    this.$img.setAttribute('src', './images/' + this.activeSlot.getAttribute('src'));
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
       ev.stopPropagation();
@@ -251,7 +251,7 @@ export class FlyingButton extends HTMLElement {
         break;
       case 'SE-BUTTON':
         // change to the current action
-        this.$img.setAttribute('src', ev.target.getAttribute('src'));
+        this.$img.setAttribute('src', './images/' + ev.target.getAttribute('src'));
         this.activeSlot = ev.target;
         this.setAttribute('pressed', 'pressed');
         // and close the menu

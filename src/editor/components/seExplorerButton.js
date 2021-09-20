@@ -172,7 +172,7 @@ export class ExplorerButton extends HTMLElement {
       }
       break;
     case 'src':
-      this.$img.setAttribute('src', newValue);
+      this.$img.setAttribute('src', './images/' + newValue);
       break;
     default:
       // eslint-disable-next-line no-console

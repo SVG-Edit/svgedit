@@ -46,7 +46,7 @@ export default {
         const title = `${name}:buttons.0.title`;
         // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-        <se-button id="hello_world" title="${title}" src="${imgPath}/hello_world.svg"></se-button>
+        <se-button id="hello_world" title="${title}" src="hello_world.svg"></se-button>
         `;
         $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('hello_world').addEventListener("click", () => {

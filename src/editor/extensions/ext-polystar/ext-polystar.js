@@ -87,9 +87,9 @@ export default {
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
             <se-flyingbutton id="tools_polygon" title="${fbtitle}">
-              <se-button id="tool_star" title="${title_star}" src="${imgPath}/star.svg">
+              <se-button id="tool_star" title="${title_star}" src="star.svg">
               </se-button>
-              <se-button id="tool_polygon" title="${title_polygon}" src="${imgPath}/polygon.svg">
+              <se-button id="tool_polygon" title="${title_polygon}" src="polygon.svg">
               </se-button>
             </se-flyingbutton>
           `;

@@ -694,7 +694,7 @@ export class SeColorPicker extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      this.$logo.setAttribute('src', newValue);
+      this.$logo.setAttribute('src', './images/' + newValue);
       break;
     case 'label':
       this.setAttribute('title', t(newValue));

@@ -64,7 +64,7 @@ export class SeMenu extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      image.src = newValue;
+      image.src = './images/' + newValue;
       image.width = 24;
       image.height = 24;
       this.$label.prepend(image);

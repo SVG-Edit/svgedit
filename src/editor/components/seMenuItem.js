@@ -49,7 +49,7 @@ export class SeMenuItem extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      this.$img.setAttribute('src', newValue);
+      this.$img.setAttribute('src', './images/'+newValue);
       this.$img.style.display = 'inline-block';
       break;
     case 'label':

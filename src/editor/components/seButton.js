@@ -83,7 +83,7 @@ export class ToolButton extends HTMLElement {
       this.$div.style = newValue;
       break;
     case 'src':
-      this.$img.setAttribute('src', newValue);
+      this.$img.setAttribute('src', (newValue.indexOf("data:") === -1) ? './images/' + newValue : newValue);
       break;
     case 'pressed':
       if (newValue === null) {

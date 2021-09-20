@@ -80,7 +80,7 @@ class Zoom extends ListComboBox {
       // this.$span.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
       break;
     case 'src':
-      this.src = newValue;
+      this.src = './images/' + newValue;
       break;
     case 'inputsize':
       this.inputsize = newValue;

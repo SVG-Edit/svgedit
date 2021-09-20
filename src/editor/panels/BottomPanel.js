@@ -170,7 +170,7 @@ class BottomPanel {
     template.innerHTML = `
       <div id="tools_bottom">
         <!-- Zoom buttons -->
-        <se-zoom id="zoom" src="${imgPath}/zoom.svg" title="Change zoom level" inputsize="40px">
+        <se-zoom id="zoom" src="zoom.svg" title="Change zoom level" inputsize="40px">
           <div value="1000">1000</div>
           <div value="400">400</div>
           <div value="200">200</div>
@@ -182,8 +182,8 @@ class BottomPanel {
           <div value="layer">${i18next.t('tools.fit_to_layer_content')}</div>
           <div value="content">${i18next.t('tools.fit_to_all')}</div>
         </se-zoom>
-        <se-colorpicker id="fill_color" src="${imgPath}/fill.svg" label="properties.fill_color" type="fill"></se-colorpicker>
-        <se-colorpicker id="stroke_color" src="${imgPath}/stroke.svg" label="properties.stroke_color" type="stroke">
+        <se-colorpicker id="fill_color" src="fill.svg" label="properties.fill_color" type="fill"></se-colorpicker>
+        <se-colorpicker id="stroke_color" src="stroke.svg" label="properties.stroke_color" type="stroke">
         </se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="properties.stroke_width" label=""></se-spin-input>
         <se-list id="stroke_style" title="properties.stroke_style" label="" width="22px" height="22px">
@@ -209,8 +209,7 @@ class BottomPanel {
           <se-list-item id="linecap_round" value="round"><img title="${i18next.t('properties.linecap_round')}" src="${imgPath}/linecap_round.svg"
               height="22px"></img></se-list-item>
         </se-list>
-        <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="properties.opacity"
-          src="${imgPath}/opacity.svg"></se-spin-input>
+        <se-spin-input size="3" id="opacity" min=0 max=100 step=5 title="properties.opacity" src="opacity.svg"></se-spin-input>
         <se-palette id="palette"></se-palette>
       </div>
     `;

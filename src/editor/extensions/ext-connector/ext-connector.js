@@ -357,7 +357,7 @@ export default {
         const btitle = `${name}:langListTitle`;
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
-        <se-button id="mode_connect" title="${btitle}" src="${imgPath}/conn.svg"></se-button>
+        <se-button id="mode_connect" title="${btitle}" src="conn.svg"></se-button>
         `;
         svgCanvas.insertChildAtIndex($id('tools_left'), buttonTemplate, 13);
         $id('mode_connect').addEventListener("click", () => {

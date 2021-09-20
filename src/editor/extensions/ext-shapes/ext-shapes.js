@@ -47,7 +47,7 @@ export default {
           // eslint-disable-next-line no-unsanitized/property
           const buttonTemplate = `
           <se-explorerbutton id="tool_shapelib" title="${svgEditor.i18next.t(`${name}:buttons.0.title`)}" lib="./extensions/ext-shapes/shapelib/"
-          src="${imgPath}/shapelib.svg"></se-explorerbutton>
+          src="shapelib.svg"></se-explorerbutton>
           `;
           canv.insertChildAtIndex($id('tools_left'), buttonTemplate, 9);
           $id('tool_shapelib').addEventListener("click", () => {

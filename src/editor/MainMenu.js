@@ -278,15 +278,14 @@ class MainMenu {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    const { imgPath } = this.editor.configObj.curConfig;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
-    <se-menu id="main_button" label="SVG-Edit" src="${imgPath}/logo.svg" alt="logo">
-        <se-menu-item id="tool_import" label="tools.import_doc" src="${imgPath}/importImg.svg"></se-menu-item>
-        <se-menu-item id="tool_export" label="tools.export_img" src="${imgPath}/export.svg"></se-menu-item>
-        <se-menu-item id="tool_docprops" label="tools.docprops" shortcut="D" src="${imgPath}/docprop.svg"></se-menu-item>
-        <se-menu-item id="tool_editor_prefs" label="config.editor_prefs" src="${imgPath}/editPref.svg"></se-menu-item>
-        <se-menu-item id="tool_editor_homepage" label="tools.editor_homepage" src="${imgPath}/logo.svg"></se-menu-item>
+    <se-menu id="main_button" label="SVG-Edit" src="logo.svg" alt="logo">
+        <se-menu-item id="tool_import" label="tools.import_doc" src="importImg.svg"></se-menu-item>
+        <se-menu-item id="tool_export" label="tools.export_img" src="export.svg"></se-menu-item>
+        <se-menu-item id="tool_docprops" label="tools.docprops" shortcut="D" src="docprop.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_prefs" label="config.editor_prefs" src="editPref.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_homepage" label="tools.editor_homepage" src="logo.svg"></se-menu-item>
     </se-menu>
        `;
     $id('tools_top').prepend(template.content.cloneNode(true));
