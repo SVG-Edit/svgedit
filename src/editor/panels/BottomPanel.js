@@ -186,11 +186,11 @@ class BottomPanel {
         </se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="properties.stroke_width" label=""></se-spin-input>
         <se-list id="stroke_style" title="properties.stroke_style" label="" width="22px" height="22px">
-          <se-list-item value="none" option="&#8212;">&#8212;</se-list-item>
-          <se-list-item value="2,2" option="...">...</se-list-item>
-          <se-list-item value="5,5" option="- -">- -</se-list-item>
-          <se-list-item value="5,2,2,2" option="- .">- .</se-list-item>
-          <se-list-item value="5,2,2,2,2,2" option="- ..">- ..</se-list-item>
+          <se-list-item value="none" option="&#8212;"></se-list-item>
+          <se-list-item value="2,2" option="..."></se-list-item>
+          <se-list-item value="5,5" option="- -"></se-list-item>
+          <se-list-item value="5,2,2,2" option="- ."></se-list-item>
+          <se-list-item value="5,2,2,2,2,2" option="- .."></se-list-item>
         </se-list>
         <se-list id="stroke_linejoin" title="properties.linejoin_miter" label="" width="22px" height="22px">
           <se-list-item id="linejoin_miter" value="miter" src="linejoin_miter.svg" title="properties.linejoin_miter" img-height="22px"></se-list-item>
