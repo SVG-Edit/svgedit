@@ -324,12 +324,14 @@ export const groupSvgElem = function (elem) {
 * @returns {void}
 */
 export const prepareSvg = function (newDoc) {
+
   svgCanvas.sanitizeSvg(newDoc.documentElement);
 
   // convert paths into absolute commands
   const paths = [ ...newDoc.getElementsByTagNameNS(NS.SVG, 'path') ];
   paths.forEach((path) => {
-    path.setAttribute('d', svgCanvas.pathActions.convertPath(path));
+    const convertedPath = svgCanvas.pathActions.convertPath(path);
+    path.setAttribute('d', convertedPath);
     svgCanvas.pathActions.fixEnd(path);
   });
 };

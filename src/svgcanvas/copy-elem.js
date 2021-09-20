@@ -1,5 +1,3 @@
-import { isWebkit } from '../common/browser.js';
-import { convertPath } from './path.js';
 import { preventClickDefault } from './utilities.js';
 
 /**
@@ -18,13 +16,6 @@ export const copyElem = function (el, getNextId) {
   // set the copied element's new id
   newEl.removeAttribute('id');
   newEl.id = getNextId();
-
-  // Opera's "d" value needs to be reset for Opera/Win/non-EN
-  // Also needed for webkit (else does not keep curved segments on clone)
-  if (isWebkit() && el.nodeName === 'path') {
-    const fixedD = convertPath(el);
-    newEl.setAttribute('d', fixedD);
-  }
 
   // now create copies of all children
   el.childNodes.forEach(function(child){

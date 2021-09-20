@@ -12,12 +12,9 @@ import {
   hasMatrixTransform, transformListToTransform, transformBox
 } from './math.js';
 import {
-  isWebkit, supportsHVLineContainerBBox, supportsPathBBox
+  isWebkit, supportsHVLineContainerBBox
 } from '../common/browser.js';
 import { getClosest, mergeDeep } from '../editor/components/jgraduate/Util.js';
-
-// String used to encode base64.
-const KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
 // Much faster than running getBBox() every time
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use,clipPath';
@@ -137,41 +134,7 @@ export const toXml = function (str) {
 export function encode64(input) {
   // base64 strings are 4/3 larger than the original string
   input = encodeUTF8(input); // convert non-ASCII characters
-  // input = convertToXMLReferences(input);
-  if (window.btoa) {
-    return window.btoa(input); // Use native if available
-  }
-  const output = new Array(Math.floor((input.length + 2) / 3) * 4);
-
-  let i = 0;
-  let p = 0;
-  do {
-    const chr1 = input.charCodeAt(i++);
-    const chr2 = input.charCodeAt(i++);
-    const chr3 = input.charCodeAt(i++);
-
-    /* eslint-disable no-bitwise */
-    const enc1 = chr1 >> 2;
-    const enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-
-    let enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-    let enc4 = chr3 & 63;
-    /* eslint-enable no-bitwise */
-
-    if (Number.isNaN(chr2)) {
-      enc3 = 64;
-      enc4 = 64;
-    } else if (Number.isNaN(chr3)) {
-      enc4 = 64;
-    }
-
-    output[p++] = KEYSTR.charAt(enc1);
-    output[p++] = KEYSTR.charAt(enc2);
-    output[p++] = KEYSTR.charAt(enc3);
-    output[p++] = KEYSTR.charAt(enc4);
-  } while (i < input.length);
-
-  return output.join('');
+  return window.btoa(input); // Use native if available
 }
 
 /**
@@ -181,38 +144,7 @@ export function encode64(input) {
 * @returns {string} Decoded output
 */
 export function decode64(input) {
-  if (window.atob) {
-    return decodeUTF8(window.atob(input));
-  }
-
-  // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-  input = input.replace(/[^A-Za-z\d+/=]/g, '');
-
-  let output = '';
-  let i = 0;
-
-  do {
-    const enc1 = KEYSTR.indexOf(input.charAt(i++));
-    const enc2 = KEYSTR.indexOf(input.charAt(i++));
-    const enc3 = KEYSTR.indexOf(input.charAt(i++));
-    const enc4 = KEYSTR.indexOf(input.charAt(i++));
-
-    /* eslint-disable no-bitwise */
-    const chr1 = (enc1 << 2) | (enc2 >> 4);
-    const chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-    const chr3 = ((enc3 & 3) << 6) | enc4;
-    /* eslint-enable no-bitwise */
-
-    output += String.fromCharCode(chr1);
-
-    if (enc3 !== 64) {
-      output += String.fromCharCode(chr2);
-    }
-    if (enc4 !== 64) {
-      output += String.fromCharCode(chr3);
-    }
-  } while (i < input.length);
-  return decodeUTF8(output);
+  return decodeUTF8(window.atob(input));
 }
 
 /**
@@ -315,17 +247,13 @@ export const text2xml = function (sXML) {
 
   let out; let dXML;
   try {
-    dXML = (window.DOMParser) ? new DOMParser() : new window.ActiveXObject('Microsoft.XMLDOM');
+    dXML = new DOMParser();
     dXML.async = false;
   } catch (e) {
     throw new Error('XML Parser could not be instantiated');
   }
   try {
-    if (dXML.loadXML) {
-      out = (dXML.loadXML(sXML)) ? dXML : false;
-    } else {
-      out = dXML.parseFromString(sXML, 'text/xml');
-    }
+    out = dXML.parseFromString(sXML, 'text/xml');
   } catch (e2) { throw new Error('Error parsing XML string'); }
   return out;
 };
@@ -618,9 +546,7 @@ export const getBBox = function (elem) {
     }
     break;
   case 'path':
-    if (!supportsPathBBox()) {
-      ret = getPathBBox(selected);
-    } else if (selected.getBBox) {
+    if (selected.getBBox) {
       ret = selected.getBBox();
     }
     break;

@@ -17,9 +17,6 @@ import {
   assignAttributes, getElem, getRotationAngle, snapToGrid, isNullish,
   getBBox as utilsGetBBox
 } from './utilities.js';
-import {
-  isWebkit
-} from '../common/browser.js';
 
 let pathActionsContext_ = null;
 let editorContext_ = null;
@@ -61,22 +58,24 @@ export const convertPath = function (pth, toRel) {
     let x2 = seg.x2 || 0;
     let y2 = seg.y2 || 0;
 
-    const type = seg.pathSegType;
-    const pathMap = pathActionsContext_.getPathMap();
-    let letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();
+    // const type = seg.pathSegType;
+    // const pathMap = pathActionsContext_.getPathMap();
+    // let letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();
+    let letter = seg.pathSegTypeAsLetter;
 
-    switch (type) {
-    case 1: // z,Z closepath (Z/z)
+    switch (letter) {
+    case 'z': // z,Z closepath (Z/z)
+    case 'Z':
       d += 'z';
       if (lastM && !toRel) {
         curx = lastM[0];
         cury = lastM[1];
       }
       break;
-    case 12: // absolute horizontal line (H)
+    case 'H': // absolute horizontal line (H)
       x -= curx;
       // Fallthrough
-    case 13: // relative horizontal line (h)
+    case 'h': // relative horizontal line (h)
       if (toRel) {
         y = 0;
         curx += x;
@@ -90,10 +89,10 @@ export const convertPath = function (pth, toRel) {
       // Convert to "line" for easier editing
       d += pathDSegment(letter, [ [ x, y ] ]);
       break;
-    case 14: // absolute vertical line (V)
+    case 'V': // absolute vertical line (V)
       y -= cury;
       // Fallthrough
-    case 15: // relative vertical line (v)
+    case 'v': // relative vertical line (v)
       if (toRel) {
         x = 0;
         cury += y;
@@ -107,71 +106,81 @@ export const convertPath = function (pth, toRel) {
       // Convert to "line" for easier editing
       d += pathDSegment(letter, [ [ x, y ] ]);
       break;
-    case 2: // absolute move (M)
-    case 4: // absolute line (L)
-    case 18: // absolute smooth quad (T)
-    case 10: // absolute elliptical arc (A)
+    case 'M': // absolute move (M)
+    case 'L': // absolute line (L)
+    case 'T': // absolute smooth quad (T)
       x -= curx;
       y -= cury;
       // Fallthrough
-    case 5: // relative line (l)
-    case 3: // relative move (m)
-    case 19: // relative smooth quad (t)
+    case 'l': // relative line (l)
+    case 'm': // relative move (m)
+    case 't': // relative smooth quad (t)
       if (toRel) {
         curx += x;
         cury += y;
+        letter = letter.toLowerCase();
       } else {
         x += curx;
         y += cury;
         curx = x;
         cury = y;
+        letter = letter.toUpperCase();
       }
-      if (type === 2 || type === 3) { lastM = [ curx, cury ]; }
+      if (letter === 'm' || letter === 'M') { lastM = [ curx, cury ]; }
 
       d += pathDSegment(letter, [ [ x, y ] ]);
       break;
-    case 6: // absolute cubic (C)
+    case 'C': // absolute cubic (C)
       x -= curx; x1 -= curx; x2 -= curx;
       y -= cury; y1 -= cury; y2 -= cury;
       // Fallthrough
-    case 7: // relative cubic (c)
+    case 'c': // relative cubic (c)
       if (toRel) {
         curx += x;
         cury += y;
+        letter = 'c';
       } else {
         x += curx; x1 += curx; x2 += curx;
         y += cury; y1 += cury; y2 += cury;
         curx = x;
         cury = y;
+        letter = 'C';
       }
       d += pathDSegment(letter, [ [ x1, y1 ], [ x2, y2 ], [ x, y ] ]);
       break;
-    case 8: // absolute quad (Q)
+    case 'Q': // absolute quad (Q)
       x -= curx; x1 -= curx;
       y -= cury; y1 -= cury;
       // Fallthrough
-    case 9: // relative quad (q)
+    case 'q': // relative quad (q)
       if (toRel) {
         curx += x;
         cury += y;
+        letter = 'q';
       } else {
         x += curx; x1 += curx;
         y += cury; y1 += cury;
         curx = x;
         cury = y;
+        letter = 'Q';
       }
       d += pathDSegment(letter, [ [ x1, y1 ], [ x, y ] ]);
       break;
-      // Fallthrough
-    case 11: // relative elliptical arc (a)
+    case 'A':
+      x -= curx;
+      y -= cury;
+      // fallthrough
+    case 'a': // relative elliptical arc (a)
       if (toRel) {
         curx += x;
         cury += y;
+        letter = 'a';
       } else {
         x += curx;
         y += cury;
         curx = x;
         cury = y;
+        letter = 'A';
       }
       d += pathDSegment(letter, [ [ seg.r1, seg.r2 ] ], [
         seg.angle,
@@ -179,19 +188,21 @@ export const convertPath = function (pth, toRel) {
         (seg.sweepFlag ? 1 : 0)
       ], [ x, y ]);
       break;
-    case 16: // absolute smooth cubic (S)
+    case 'S': // absolute smooth cubic (S)
       x -= curx; x2 -= curx;
       y -= cury; y2 -= cury;
       // Fallthrough
-    case 17: // relative smooth cubic (s)
+    case 's': // relative smooth cubic (s)
       if (toRel) {
         curx += x;
         cury += y;
+        letter = 's';
       } else {
         x += curx; x2 += curx;
         y += cury; y2 += cury;
         curx = x;
         cury = y;
+        letter = 'S';
       }
       d += pathDSegment(letter, [ [ x2, y2 ], [ x, y ] ]);
       break;
@@ -1027,8 +1038,8 @@ export const pathActionsMethod = (function () {
           list.appendItem(newseg);
           list.appendItem(closer);
         } else {
-          pathActionsContext_.insertItemBefore(elem, closer, openPt);
-          pathActionsContext_.insertItemBefore(elem, newseg, openPt);
+          list.insertItemBefore(closer, openPt);
+          list.insertItemBefore(newseg, openPt);
         }
 
         path.init().selectPt(openPt + 1);
@@ -1074,7 +1085,7 @@ export const pathActionsMethod = (function () {
       let num = (index - lastM) - 1;
 
       while (num--) {
-        pathActionsContext_.insertItemBefore(elem, list.getItem(lastM), zSeg);
+        list.insertItemBefore(list.getItem(lastM), zSeg);
       }
 
       const pt = list.getItem(lastM);
@@ -1213,24 +1224,22 @@ export const pathActionsMethod = (function () {
       let lastM;
       for (let i = 0; i < len; ++i) {
         const item = segList.getItem(i);
-        if (item.pathSegType === 2) {
+        if (item.pathSegType === 2) { // 2 => M segment type (move to)
           lastM = item;
         }
 
-        if (item.pathSegType === 1) {
+        if (item.pathSegType === 1) { // 1 => Z segment type (close path)
           const prev = segList.getItem(i - 1);
           if (prev.x !== lastM.x || prev.y !== lastM.y) {
             // Add an L segment here
             const newseg = elem.createSVGPathSegLinetoAbs(lastM.x, lastM.y);
-            pathActionsContext_.insertItemBefore(elem, newseg, i);
+            segList.insertItemBefore(newseg, i);
             // Can this be done better?
             pathActionsMethod.fixEnd(elem);
             break;
           }
         }
       }
-      editorContext_ = pathActionsContext_.getEditorContext();
-      if (isWebkit()) { editorContext_.resetD(elem); }
     },
     // Can't seem to use `@borrows` here, so using `@see`
     /**

@@ -6,8 +6,6 @@
  * @copyright 2010 Jeff Schiller, 2010 Alexis Deveria
  */
 
-import 'pathseg';
-
 import { NS } from './namespaces.js';
 
 const { userAgent } = navigator;
@@ -18,31 +16,6 @@ const isGecko_ = userAgent.includes('Gecko/');
 const isChrome_ = userAgent.includes('Chrome/');
 const isMac_ = userAgent.includes('Macintosh');
 const isTouch_ = 'ontouchstart' in window;
-
-// segList functions (for FF1.5 and 2.0)
-const supportsPathReplaceItem_ = (function () {
-  const path = document.createElementNS(NS.SVG, 'path');
-  path.setAttribute('d', 'M0,0 10,10');
-  const seglist = path.pathSegList;
-  const seg = path.createSVGPathSegLinetoAbs(5, 5);
-  try {
-    seglist.replaceItem(seg, 1);
-    return true;
-  }catch (err) {/* empty */}
-  return false;
-}());
-
-const supportsPathInsertItemBefore_ = (function () {
-  const path = document.createElementNS(NS.SVG, 'path');
-  path.setAttribute('d', 'M0,0 10,10');
-  const seglist = path.pathSegList;
-  const seg = path.createSVGPathSegLinetoAbs(5, 5);
-  try {
-    seglist.insertItemBefore(seg, 1);
-    return true;
-  }catch (err) {/* empty */}
-  return false;
-}());
 
 // text character positioning (for IE9 and now Chrome)
 const supportsGoodTextCharPos_ = (function () {
@@ -62,17 +35,6 @@ const supportsGoodTextCharPos_ = (function () {
   } finally {
     svgroot.remove();
   }
-}());
-
-const supportsPathBBox_ = (function () {
-  const svgcontent = document.createElementNS(NS.SVG, 'svg');
-  document.documentElement.append(svgcontent);
-  const path = document.createElementNS(NS.SVG, 'path');
-  path.setAttribute('d', 'M0,0 C0,0 10,10 10,0');
-  svgcontent.append(path);
-  const bbox = path.getBBox();
-  svgcontent.remove();
-  return (bbox.height > 4 && bbox.height < 5);
 }());
 
 // Support for correct bbox sizing on groups with horizontal/vertical lines
@@ -126,24 +88,6 @@ export const isMac = () => isMac_;
  * @returns {boolean}
 */
 export const isTouch = () => isTouch_;
-
-/**
- * @function module:browser.supportsPathReplaceItem
- * @returns {boolean}
-*/
-export const supportsPathReplaceItem = () => supportsPathReplaceItem_;
-
-/**
- * @function module:browser.supportsPathInsertItemBefore
- * @returns {boolean}
-*/
-export const supportsPathInsertItemBefore = () => supportsPathInsertItemBefore_;
-
-/**
- * @function module:browser.supportsPathBBox
- * @returns {boolean}
-*/
-export const supportsPathBBox = () => supportsPathBBox_;
 
 /**
  * @function module:browser.supportsHVLineContainerBBox
