@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-import * as browser from '../../../instrumented/common/browser.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import { NS } from '../../../instrumented/common/namespaces.js';
 
@@ -161,19 +160,6 @@ describe('utilities', function () {
     assert.equal(utilities.getUrlFromAttr('url("#foo")'), '#foo');
   });
 
-  it('Test getPathBBox', function () {
-    if (browser.supportsPathBBox()) {
-      return;
-    }
-    const doc = utilities.text2xml('<svg></svg>');
-    const path = doc.createElementNS(NS.SVG, 'path');
-    path.setAttribute('d', 'm0,0l5,0l0,5l-5,0l0,-5z');
-    const bb = utilities.getPathBBox(path);
-    assert.equal(typeof bb, 'object', 'BBox returned object');
-    assert.ok(bb.x && !isNaN(bb.x));
-    assert.ok(bb.y && !isNaN(bb.y));
-  });
-
   it('Test getPathDFromSegments', function () {
     const { getPathDFromSegments } = utilities;
 
@@ -226,7 +212,6 @@ describe('utilities', function () {
     });
     svgroot.append(elem);
     const closeEnough = /M0,4 C0,2.3\d* 0.9\d*,1 2,1 L8,1 C9.0\d*,1 10,2.3\d* 10,4 L10,9 C10,10.6\d* 9.0\d*,12 8,12 L2,12 C0.9\d*,12 0,10.6\d* 0,9 L0,4 Z/;
-    console.log(getPathDFromElement(elem), closeEnough);
     assert.equal(closeEnough.test(getPathDFromElement(elem)), true);
     elem.remove();
 

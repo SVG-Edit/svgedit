@@ -365,7 +365,8 @@ class Editor extends EditorStartup {
     const { workarea } = this;
     const cnvs = $id("svgcanvas");
 
-    let w = parseFloat(getComputedStyle(workarea, null).width.replace("px", "")); let h = parseFloat(getComputedStyle(workarea, null).height.replace("px", ""));
+    let w = parseFloat(getComputedStyle(workarea, null).width.replace("px", ""));
+    let h = parseFloat(getComputedStyle(workarea, null).height.replace("px", ""));
     const wOrig = w; const hOrig = h;
     const oldCtr = {
       x: workarea.scrollLeft + wOrig / 2,

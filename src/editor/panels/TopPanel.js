@@ -782,8 +782,7 @@ class TopPanel {
           editor.svgCanvas.setMode('select');
           editor.svgCanvas.selectOnly(editor.svgCanvas.getSelectedElems(), true);
         }, (error) => {
-          // eslint-disable-next-line no-console
-          console.log("error =", error);
+          console.error("error =", error);
           seAlert(editor.i18next.t('tools.no_embed'));
           editor.svgCanvas.deleteSelectedElements();
         });
