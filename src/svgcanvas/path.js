@@ -14,7 +14,7 @@ import {
   getBBox as utilsGetBBox
 } from './utilities.js';
 import {
-  init as pathMethodInit, insertItemBeforeMethod, ptObjToArrMethod, getGripPtMethod,
+  init as pathMethodInit, ptObjToArrMethod, getGripPtMethod,
   getPointFromGripMethod, addPointGripMethod, getGripContainerMethod, addCtrlGripMethod,
   getCtrlLineMethod, getPointGripMethod, getControlPointsMethod, replacePathSegMethod,
   getSegSelectorMethod, Path
@@ -103,11 +103,6 @@ let editorContext_ = null;
  *  If the event is "changed", an array of `Element`s is passed; if "selected", a single-item array of `Element` is passed.
  * @returns {void}
  */
-/**
- * @function module:path.EditorContext#resetD
- * @param {SVGPathElement} p
- * @returns {void}
-*/
 /**
  * Note: This doesn't round to an integer necessarily.
  * @function module:path.EditorContext#round
@@ -263,14 +258,6 @@ pathMethodInit(
   }
 );
 
-/**
-* @function module:path.insertItemBefore
-* @param {Element} elem
-* @param {Segment} newseg
-* @param {Integer} index
-* @returns {void}
-*/
-export const insertItemBefore = insertItemBeforeMethod;
 /* eslint-disable max-len */
 /**
 * @function module:path.ptObjToArr
@@ -801,7 +788,6 @@ pathActionsInit(
     addCtrlGrip,
     getCtrlLine,
     replacePathSeg,
-    insertItemBefore,
     getPointFromGrip,
     getGripPt,
     getPath_,
