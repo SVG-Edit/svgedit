@@ -60,6 +60,17 @@ class Zoom extends ListComboBox {
     return result;
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+  init (editor) {
+    this.editor = editor;
+    if (this.hasAttribute("src")) {
+      this.setAttribute('src', this.getAttribute("src"));
+    }
+  }
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
@@ -74,13 +85,16 @@ class Zoom extends ListComboBox {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue && name !== "src") return;
     switch (name) {
     case 'title':
       // this.$span.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
       break;
     case 'src':
-      this.src = './images/' + newValue;
+      if (this.editor !== null && this.editor !== undefined) {
+        const { imgPath } = this.editor.configObj.curConfig;
+        this.src = imgPath + '/' + newValue;
+      }
       break;
     case 'inputsize':
       this.inputsize = newValue;
