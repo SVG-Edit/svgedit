@@ -34,6 +34,7 @@ export class SeListItem extends HTMLElement {
     this.$svg.setAttribute('style', 'display: none;');
     this.$img = this._shadowRoot.querySelector('img');
     this.$img.setAttribute('style', 'display: none;');
+    this.editor = null;
   }
   /**
    * @function init
