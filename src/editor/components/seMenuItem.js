@@ -29,6 +29,18 @@ export class SeMenuItem extends HTMLElement {
     this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');
     this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
     this.$svg.setAttribute('style', 'display: none;');
+    this.editor = null;
+  }
+  /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+  init (editor) {
+    this.editor = editor;
+    if (this.hasAttribute("src")) {
+      this.setAttribute('src', this.getAttribute("src"));
+    }
   }
   /**
    * @function observedAttributes
@@ -46,11 +58,14 @@ export class SeMenuItem extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     let shortcut = '';
-    if (oldValue === newValue) return;
+    if (oldValue === newValue && name !== 'src') return;
     switch (name) {
     case 'src':
-      this.$img.setAttribute('src', './images/'+newValue);
-      this.$img.style.display = 'inline-block';
+      if(this.editor !== null) {
+        const { imgPath } = this.editor.configObj.curConfig;
+        this.$img.style.display = 'inline-block';
+        this.$img.setAttribute('src', imgPath + '/' + newValue);
+      }
       break;
     case 'label':
       shortcut = this.getAttribute('shortcut');
