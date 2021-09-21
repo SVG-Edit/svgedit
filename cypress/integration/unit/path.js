@@ -1,6 +1,6 @@
 /* globals SVGPathSeg */
 import 'pathseg';
-import { NS } from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as pathModule from '../../../instrumented/svgcanvas/path.js';
 import { Path, Segment } from '../../../instrumented/svgcanvas/path-method.js';

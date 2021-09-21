@@ -6,7 +6,7 @@
  * @copyright 2010 Jeff Schiller, 2010 Alexis Deveria
  */
 
-import { NS } from './namespaces.js';
+const NSSVG = 'http://www.w3.org/2000/svg';
 
 const { userAgent } = navigator;
 
@@ -19,12 +19,12 @@ const isTouch_ = 'ontouchstart' in window;
 
 // text character positioning (for IE9 and now Chrome)
 const supportsGoodTextCharPos_ = (function () {
-  const svgroot = document.createElementNS(NS.SVG, 'svg');
-  const svgcontent = document.createElementNS(NS.SVG, 'svg');
+  const svgroot = document.createElementNS(NSSVG, 'svg');
+  const svgcontent = document.createElementNS(NSSVG, 'svg');
   document.documentElement.append(svgroot);
   svgcontent.setAttribute('x', 5);
   svgroot.append(svgcontent);
-  const text = document.createElementNS(NS.SVG, 'text');
+  const text = document.createElementNS(NSSVG, 'text');
   text.textContent = 'a';
   svgcontent.append(text);
   try { // Chrome now fails here
@@ -39,13 +39,13 @@ const supportsGoodTextCharPos_ = (function () {
 
 // Support for correct bbox sizing on groups with horizontal/vertical lines
 const supportsHVLineContainerBBox_ = (function () {
-  const svgcontent = document.createElementNS(NS.SVG, 'svg');
+  const svgcontent = document.createElementNS(NSSVG, 'svg');
   document.documentElement.append(svgcontent);
-  const path = document.createElementNS(NS.SVG, 'path');
+  const path = document.createElementNS(NSSVG, 'path');
   path.setAttribute('d', 'M0,0 10,0');
-  const path2 = document.createElementNS(NS.SVG, 'path');
+  const path2 = document.createElementNS(NSSVG, 'path');
   path2.setAttribute('d', 'M5,0 15,0');
-  const g = document.createElementNS(NS.SVG, 'g');
+  const g = document.createElementNS(NSSVG, 'g');
   g.append(path, path2);
   svgcontent.append(g);
   const bbox = g.getBBox();
@@ -55,7 +55,7 @@ const supportsHVLineContainerBBox_ = (function () {
 }());
 
 const supportsNonScalingStroke_ = (function () {
-  const rect = document.createElementNS(NS.SVG, 'rect');
+  const rect = document.createElementNS(NSSVG, 'rect');
   rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
   return rect.style.vectorEffect === 'non-scaling-stroke';
 }());

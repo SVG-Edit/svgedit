@@ -1,4 +1,4 @@
-import { NS } from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as hstory from '../../../instrumented/svgcanvas/history.js';
 

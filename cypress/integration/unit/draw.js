@@ -1,5 +1,5 @@
 import 'pathseg';
-import { NS } from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
 import * as draw from '../../../instrumented/svgcanvas/draw.js';
 import * as units from '../../../instrumented/common/units.js';
 

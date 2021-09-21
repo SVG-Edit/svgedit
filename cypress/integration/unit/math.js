@@ -1,4 +1,4 @@
-import { NS } from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
 import * as math from '../../../instrumented/svgcanvas/math.js';
 
 describe('math', function () {

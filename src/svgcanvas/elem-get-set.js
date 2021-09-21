@@ -6,7 +6,7 @@
 
 import { jGraduate } from '../editor/components/jgraduate/jQuery.jGraduate.js';
 import * as hstry from './history.js';
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
   walkTree, isNullish, getHref, setHref, getElem

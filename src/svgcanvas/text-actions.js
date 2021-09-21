@@ -6,7 +6,7 @@
  */
 
 
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 import {
   transformPoint, getMatrix
 } from './math.js';

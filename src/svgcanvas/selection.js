@@ -5,7 +5,7 @@
  * @copyright 2011 Jeff Schiller
  */
 
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 import {
   isNullish, getBBox as utilsGetBBox, getStrokedBBoxDefaultVisible
 } from './utilities.js';

@@ -6,7 +6,7 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 import { ChangeElementCommand } from './history.js';
 import {
   transformPoint, getMatrix

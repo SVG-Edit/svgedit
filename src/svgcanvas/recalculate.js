@@ -4,7 +4,7 @@
  * @license MIT
  */
 
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 import { convertToNum } from '../common/units.js';
 import { isWebkit } from '../common/browser.js';
 import { getRotationAngle, getHref, getBBox, getRefElem, isNullish } from './utilities.js';

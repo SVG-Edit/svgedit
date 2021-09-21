@@ -6,7 +6,7 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 import { setUnitAttr, getTypeMap } from '../common/units.js';
 import {
   hasMatrixTransform, transformListToTransform, transformBox
