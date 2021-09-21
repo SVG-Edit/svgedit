@@ -185,13 +185,10 @@ class BottomPanel {
         <se-colorpicker id="stroke_color" src="stroke.svg" label="properties.stroke_color" type="stroke">
         </se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="properties.stroke_width" label=""></se-spin-input>
-        <se-list id="stroke_style" title="properties.stroke_style" label="" width="22px" height="22px">
-          <se-list-item value="none" option="&#8212;"></se-list-item>
-          <se-list-item value="2,2" option="..."></se-list-item>
-          <se-list-item value="5,5" option="- -"></se-list-item>
-          <se-list-item value="5,2,2,2" option="- ."></se-list-item>
-          <se-list-item value="5,2,2,2,2,2" option="- .."></se-list-item>
-        </se-list>
+        <se-select id="stroke_style" title="${i18next.t('properties.stroke_style')}" label="" width="22px" height="22px"
+          options="&#8212;,...,- -,- .,- .."
+          values="none 2,2 5,5 5,2,2,2 5,2,2,2,2,2">     
+        </se-select>
         <se-list id="stroke_linejoin" title="properties.linejoin_miter" label="" width="22px" height="22px">
           <se-list-item id="linejoin_miter" value="miter" src="linejoin_miter.svg" title="properties.linejoin_miter" img-height="22px"></se-list-item>
           <se-list-item id="linejoin_round" value="round" src="linejoin_round.svg" title="properties.linejoin_round" img-height="22px"></se-list-item>

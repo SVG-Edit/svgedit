@@ -784,8 +784,7 @@ class TopPanel {
           editor.svgCanvas.setMode('select');
           editor.svgCanvas.selectOnly(editor.svgCanvas.getSelectedElems(), true);
         }, (error) => {
-          // eslint-disable-next-line no-console
-          console.log("error =", error);
+          console.error("error =", error);
           seAlert(editor.i18next.t('tools.no_embed'));
           editor.svgCanvas.deleteSelectedElements();
         });
@@ -895,12 +894,13 @@ class TopPanel {
           <se-button id="tool_align_top" title="tools.align_top" src="align_top.svg"></se-button>
           <se-button id="tool_align_middle" title="tools.align_middle" src="align_middle.svg"></se-button>
           <se-button id="tool_align_bottom" title="tools.align_bottom" src="align_bottom.svg"></se-button>
-          <se-list id="tool_align_relative" label="tools.relativeTo">
-            <se-list-item id="selected_objects" value="selected" option="tools.selected_objects"></se-list-item>
-            <se-list-item id="largest_object" value="largest" option="tools.largest_object"></se-list-item>
-            <se-list-item id="smallest_object" value="smallest" option="tools.smallest_object"></se-list-item>
-            <se-list-item id="page" value="page" option="tools.page"></se-list-item>
-          </se-list>
+          <se-select id="tool_align_relative" label="relative to:" 
+            options="${i18next.t('tools.selected_objects')},
+                ${i18next.t('tools.largest_object')},
+                ${i18next.t('tools.smallest_object')},
+                ${i18next.t('tools.page')}"
+            values="selected largest smallest page"></se-list-item>
+          </se-select>
         </div> <!-- multiselected_panel -->
         <div class="rect_panel">
           <se-spin-input id="rect_width" data-attr="width" size="4" label="properties.w_label" title="properties.rect_width"></se-spin-input>
@@ -938,16 +938,18 @@ class TopPanel {
         <div class="text_panel">
           <se-button id="tool_bold" title="properties.bold" src="bold.svg" shortcut="B"></se-button>
           <se-button id="tool_italic" title="properties.italic" src="italic.svg" shortcut="I"></se-button>
-          <se-list id="tool_font_family" label="properties.font_family_label">
-            <se-list-item value="Serif" style="font-family:serif;" option="properties.serif"></se-list-item>
-            <se-list-item value="Sans-serif" style="font-family:sans-serif;" option="properties.sans_serif"></se-list-item>
-            <se-list-item value="Cursive" style="font-family:cursive;" option="properties.cursive"></se-list-item>
-            <se-list-item value="Fantasy" style="font-family:fantasy;" option="properties.fantasy"></se-list-item>
-            <se-list-item value="Monospace" style="font-family:monospace;" option="properties.monospace"></se-list-item>
-            <se-list-item value="Courier" style="font-family:courier;" option="properties.courier"></se-list-item>
-            <se-list-item value="Helvetica" style="font-family:helvetica;" option="properties.helvetica"></se-list-item>
-            <se-list-item value="Times" style="font-family:times;" option="properties.times"></se-list-item>
-          </se-list>
+          <se-select id="tool_font_family" label="Font:"
+            options="${i18next.t('properties.serif')},
+                     ${i18next.t('properties.sans_serif')},
+                     ${i18next.t('properties.cursive')},
+                     ${i18next.t('properties.fantasy')},
+                     ${i18next.t('properties.monospace')},
+                     ${i18next.t('properties.courier')},
+                     ${i18next.t('properties.helvetica')},
+                     ${i18next.t('properties.times')}"
+            values="Serif Sans-serif Cursive Fantasy Monospace Courier Helvetica Times"
+          >
+          </select>
           <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="properties.font_size" src="fontsize.svg"></se-spin-input>
         </div>
         <div class="text_panel">
@@ -980,10 +982,7 @@ class TopPanel {
           <div class="tool_sep"></div>
           <se-spin-input id="path_node_x" data-attr="x" size="4" title="properties.node_x" label="properties.x_label"></se-spin-input>
           <se-spin-input id="path_node_y" data-attr="y" size="4" title="properties.node_y" label="properties.y_label"></se-spin-input>
-          <select id="seg_type" title="${i18next.t('tools.seg_type')}">
-            <option id="straight_segments" selected="selected" value="4">${i18next.t('properties.straight_segments')}</option>
-            <option id="curve_segments" value="6">${i18next.t('properties.curve_segments')}</option>
-          </select>
+          <se-select id="seg_type" title="${i18next.t('tools.seg_type')}" label="" options="${i18next.t('properties.straight_segments')}, ${i18next.t('properties.curve_segments')}" values="4 6"></se-select>
           <se-button id="tool_node_clone" title="tools.node_clone" src="tool_node_clone.svg"></se-button>
           <se-button id="tool_node_delete" title="tools.node_delete" src="tool_node_delete.svg"></se-button>
           <se-button id="tool_openclose_path" title="tools.openclose_path" src="tool_openclose_path.svg"></se-button>

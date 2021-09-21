@@ -9,7 +9,7 @@
  */
 
 import { Canvg as canvg } from 'canvg';
-import 'pathseg';
+import 'pathseg'; // SVGPathSeg Polyfill (see https://github.com/progers/pathseg)
 
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
@@ -668,16 +668,6 @@ class SvgCanvas {
 * @see module:path.pathActions
 */
     canvas.pathActions = pathActions;
-    /**
-* @type {module:path.EditorContext#resetD}
-*/
-    function resetD(p) {
-      if (typeof pathActions.convertPath === 'function') {
-        p.setAttribute('d', pathActions.convertPath(p));
-      } else if (typeof pathActions.convertPaths === 'function') {
-        p.setAttribute('d', pathActions.convertPaths(p));
-      }
-    }
     pathModule.init(
       /**
   * @implements {module:path.EditorContext}
@@ -686,7 +676,6 @@ class SvgCanvas {
         selectorManager, // Ok since not changing
         canvas, // Ok since not changing
         call,
-        resetD,
         round,
         clearSelection,
         addToSelection,

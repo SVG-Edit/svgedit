@@ -12,7 +12,11 @@ elix-dropdown-list:hover {
   background-color: var(--icon-bg-color-hover);
 }
 
-::part(popup-toggle) {
+elix-dropdown-list::part(value) {
+  background-color: var(--main-bg-color);
+}
+
+elix-dropdown-list::part(popup-toggle) {
   display: none;
 }
 ::slotted(*) {

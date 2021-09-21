@@ -249,7 +249,7 @@ class EditorStartup {
     });
 
     $id('seg_type').addEventListener('change', (evt) => {
-      this.svgCanvas.setSegType(evt.currentTarget.value);
+      this.svgCanvas.setSegType(evt.detail.value);
     });
 
     const addListenerMulti = (element, eventNames, listener)=> {

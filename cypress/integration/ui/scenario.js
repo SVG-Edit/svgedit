@@ -182,9 +182,7 @@ describe('use various parts of svg-edit', function () {
   });
   it('check tool_text_change_font_family', function () {
     cy.get('#svg_1').click({ force: true });
-    cy.get('#tool_font_family').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
-    cy.get('#tool_font_family').find('se-list-item').eq(6).shadow().find('elix-option').eq(0)
-      .click({ force: true });
+    cy.get('#tool_font_family').shadow().find('select').select("Serif");
     cy.get('#svgcontent').toMatchSnapshot();
   });
 });

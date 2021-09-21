@@ -11,7 +11,7 @@ class LayersPanel {
    * @param {PlainObject} editor
    */
   constructor(editor) {
-    this.updateContextPanel = editor.topPanel.updateContextPanel;
+    this.updateContextPanel = editor.topPanel.updateContextPanel.bind(editor.topPanel);
     this.editor = editor;
   }
 

@@ -11,7 +11,7 @@ template.innerHTML = `
   {
     height: 24px;
     width: 24px;
-    margin: 2px 1px 4px;
+    margin: 4px 1px 4px;
     padding: 3px;
     background-color: var(--icon-bg-color);
     cursor: pointer;

@@ -120,7 +120,6 @@ class MainMenu {
     this.editor.configObj.curConfig.snappingStep = gridsnappingstep;
     this.editor.configObj.curConfig.gridColor = gridcolor;
     this.editor.configObj.curConfig.showRulers = showrulers;
-    $id('rulers').style.display = (this.editor.configObj.curConfig.showRulers) ? 'block' : 'none';
     if (this.editor.configObj.curConfig.showRulers) {
       this.editor.rulers.updateRulers();
     }
@@ -288,7 +287,7 @@ class MainMenu {
         <se-menu-item id="tool_editor_homepage" label="tools.editor_homepage" src="logo.svg"></se-menu-item>
     </se-menu>
        `;
-    $id('tools_top').prepend(template.content.cloneNode(true));
+    this.editor.$svgEditor.append(template.content.cloneNode(true));
 
     // register action to main menu entries
     /**
