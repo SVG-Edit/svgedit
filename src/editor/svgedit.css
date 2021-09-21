@@ -1,6 +1,6 @@
 :root {
   --main-bg-color: #72797A;
-  --text-color: #ffffff;
+  --text-color: #000000;
   --border-color: #808080;
   --canvas-bg-color: #B2B2B2;
   --link-color: #19c;
@@ -384,17 +384,13 @@ hr {
 }
 
 #cur_context_panel {
-  position: absolute;
-  top: 57px;
-  left: 56px;
+  grid-area: rulerX;
   line-height: 22px;
   overflow: auto;
   padding-left: 5px;
   font-size: 12px;
   background: rgba(0, 0, 0, 0.8);
   color: #ccc;
-  padding: 0 10px;
-  border-radius: 0 0 3px 0;
 }
 
 #cur_context_panel a {

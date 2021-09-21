@@ -140,20 +140,18 @@ class EditorStartup {
     this.selectedElement = null;
     this.multiselected = false;
 
-    const aLinks = $id('cur_context_panel').querySelectorAll('a');
+    const aLink = $id('cur_context_panel');
 
-    for (const aLink of aLinks) {
-      aLink.addEventListener('click', (evt) => {
-        const link = evt.currentTarget;
-        if (link.hasAttribute('data-root')) {
-          this.svgCanvas.leaveContext();
-        } else {
-          this.svgCanvas.setContext(link.textContent);
-        }
-        this.svgCanvas.clearSelection();
-        return false;
-      });
-    }
+    aLink.addEventListener('click', (evt) => {
+      const link = evt.target;
+      if (link.hasAttribute('data-root')) {
+        this.svgCanvas.leaveContext();
+      } else {
+        this.svgCanvas.setContext(link.textContent);
+      }
+      this.svgCanvas.clearSelection();
+      return false;
+    });
 
     // bind the selected event to our function that handles updates to the UI
     this.svgCanvas.bind('selected', this.selectedChanged.bind(this));
