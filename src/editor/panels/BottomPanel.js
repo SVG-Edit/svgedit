@@ -182,8 +182,7 @@ class BottomPanel {
           <div value="content">${i18next.t('tools.fit_to_all')}</div>
         </se-zoom>
         <se-colorpicker id="fill_color" src="fill.svg" label="properties.fill_color" type="fill"></se-colorpicker>
-        <se-colorpicker id="stroke_color" src="stroke.svg" label="properties.stroke_color" type="stroke">
-        </se-colorpicker>
+        <se-colorpicker id="stroke_color" src="stroke.svg" label="properties.stroke_color" type="stroke"></se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="properties.stroke_width" label=""></se-spin-input>
         <se-select id="stroke_style" title="${i18next.t('properties.stroke_style')}" label="" width="22px" height="22px"
           options="&#8212;,...,- -,- .,- .."
@@ -217,8 +216,8 @@ class BottomPanel {
     $id('stroke_linejoin').addEventListener('change', (evt) => this.handleStrokeAttr.bind(this)('stroke-linejoin', evt));
     $id('stroke_linecap').addEventListener('change', (evt) => this.handleStrokeAttr.bind(this)('stroke-linecap', evt));
     $id('opacity').addEventListener('change', this.handleOpacity.bind(this));
-    $id('fill_color').init(i18next);
-    $id('stroke_color').init(i18next);
+    $id('fill_color').init(i18next, this.editor);
+    $id('stroke_color').init(i18next, this.editor);
     // eslint-disable-next-line max-len
     [ "linejoin_miter", "linejoin_round", "linejoin_bevel", "linecap_butt", "linecap_square", "linecap_round" ].forEach((attrId) =>
       $id(attrId).init(this.editor)

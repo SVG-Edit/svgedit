@@ -666,15 +666,20 @@ export class SeColorPicker extends HTMLElement {
     this.i18next = null;
     this.$picker = this._shadowRoot.getElementById('picker');
     this.$color_picker = this._shadowRoot.getElementById('color_picker');
+    this.editor = null;
   }
   /**
    * @function init
    * @param {any} name
    * @returns {void}
    */
-  init (i18next) {
+  init (i18next, editor) {
     this.i18next = i18next;
     this.setAttribute('config-change_xxx_color', t('config.change_xxx_color'));
+    this.editor = editor;
+    if (this.hasAttribute("src")) {
+      this.setAttribute('src', this.getAttribute("src"));
+    }
   }
   /**
    * @function observedAttributes
@@ -691,10 +696,13 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue && name !== 'src') return;
     switch (name) {
     case 'src':
-      this.$logo.setAttribute('src', './images/' + newValue);
+      if(this.editor !== null) {
+        const { imgPath } = this.editor.configObj.curConfig;
+        this.$logo.setAttribute('src', imgPath + '/' + newValue);
+      }
       break;
     case 'label':
       this.setAttribute('title', t(newValue));
