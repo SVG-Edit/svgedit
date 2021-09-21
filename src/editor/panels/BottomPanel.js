@@ -222,6 +222,10 @@ class BottomPanel {
     $id('opacity').addEventListener('change', this.handleOpacity.bind(this));
     $id('fill_color').init(i18next);
     $id('stroke_color').init(i18next);
+    // eslint-disable-next-line max-len
+    [ "linejoin_miter", "linejoin_round", "linejoin_bevel", "linecap_butt", "linecap_square", "linecap_round" ].forEach((attrId) =>
+      $id(attrId).init(this.editor)
+    );
   }
   /**
   * @type {module}

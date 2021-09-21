@@ -36,6 +36,17 @@ export class SeListItem extends HTMLElement {
     this.$img.setAttribute('style', 'display: none;');
   }
   /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+  init (editor) {
+    this.editor = editor;
+    if (this.hasAttribute("src")) {
+      this.setAttribute('src', this.getAttribute("src"));
+    }
+  }
+  /**
    * @function observedAttributes
    * @returns {any} observed
    */
@@ -51,15 +62,18 @@ export class SeListItem extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue && name !== 'src') return;
     switch (name) {
     case 'option':
       this.$menuitem.setAttribute('option', newValue);
       this.$menuitem.textContent = t(newValue);
       break;
     case 'src':
-      this.$img.setAttribute('style', 'display: block;');
-      this.$img.setAttribute('src', './images/' + newValue);
+      if(this.editor !== null) {
+        const { imgPath } = this.editor.configObj.curConfig;
+        this.$img.setAttribute('style', 'display: block;');
+        this.$img.setAttribute('src', imgPath + '/' + newValue);
+      }
       break;
     case 'title':
       this.$img.setAttribute('title', t(newValue));

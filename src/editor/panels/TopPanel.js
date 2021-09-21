@@ -1042,7 +1042,7 @@ class TopPanel {
     $id('image_url').addEventListener('change', (evt) => { this.setImageURL(evt.currentTarget.value);});
 
     // eslint-disable-next-line max-len
-    [ "tool_add_subpath", "tool_openclose_path", "tool_node_delete", "tool_node_clone", "tool_node_link", "tool_ungroup", "tool_unlink_use", "tool_text_anchor_start", "tool_text_anchor_middle", "tool_text_anchor_end", "tool_bold", "tool_italic", "tool_align_bottom", "tool_align_middle", "tool_align_top", "tool_align_left", "tool_align_center", "tool_align_right", "tool_make_link_multi", "tool_group_elements", "tool_delete_multi", "tool_make_link", "tool_reorient", "tool_topath", "tool_move_bottom", "tool_move_top", "tool_delete", "tool_clone", "tool_redo", "tool_undo", "tool_wireframe", "tool_source", "tool_clone_multi" ].forEach((attrId) =>
+    [ "tool_add_subpath", "tool_openclose_path", "tool_node_delete", "tool_node_clone", "tool_node_link", "tool_ungroup", "tool_unlink_use", "tool_text_anchor_start", "tool_text_anchor_middle", "tool_text_anchor_end", "tool_bold", "tool_italic", "tool_align_bottom", "tool_align_middle", "tool_align_top", "tool_align_left", "tool_align_center", "tool_align_right", "tool_make_link_multi", "tool_group_elements", "tool_delete_multi", "tool_make_link", "tool_reorient", "tool_topath", "tool_move_bottom", "tool_move_top", "tool_delete", "tool_clone", "tool_redo", "tool_undo", "tool_wireframe", "tool_source", "tool_clone_multi", "tool_posleft", "tool_poscenter", "tool_posright", "tool_postop", "tool_posmiddle", "tool_posbottom" ].forEach((attrId) =>
       $id(attrId).init(this.editor)
     );
 
