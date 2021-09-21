@@ -1001,121 +1001,50 @@ class TopPanel {
     this.editor.$container.append(newSeEditorDialog);
     newSeEditorDialog.init(i18next);
     // register action to top panel buttons
-    $id("tool_source").addEventListener(
-      "click",
-      this.showSourceEditor.bind(this)
-    );
-    $id("tool_wireframe").addEventListener(
-      "click",
-      this.clickWireframe.bind(this)
-    );
+    $id("tool_source").addEventListener("click", this.showSourceEditor.bind(this));
+    $id("tool_wireframe").addEventListener("click", this.clickWireframe.bind(this));
     $id("tool_undo").addEventListener("click", this.clickUndo.bind(this));
     $id("tool_redo").addEventListener("click", this.clickRedo.bind(this));
     $id("tool_clone").addEventListener("click", this.clickClone.bind(this));
-    $id("tool_clone_multi").addEventListener(
-      "click",
-      this.clickClone.bind(this)
-    );
-    $id("tool_delete").addEventListener(
-      "click",
-      this.deleteSelected.bind(this)
-    );
-    $id("tool_delete_multi").addEventListener(
-      "click",
-      this.deleteSelected.bind(this)
-    );
-    $id("tool_move_top").addEventListener(
-      "click",
-      this.moveToTopSelected.bind(this)
-    );
-    $id("tool_move_bottom").addEventListener(
-      "click",
-      this.moveToBottomSelected.bind(this)
-    );
+    $id("tool_clone_multi").addEventListener("click", this.clickClone.bind(this));
+    $id("tool_delete").addEventListener("click", this.deleteSelected.bind(this));
+    $id("tool_delete_multi").addEventListener("click", this.deleteSelected.bind(this));
+    $id("tool_move_top").addEventListener("click", this.moveToTopSelected.bind(this));
+    $id("tool_move_bottom").addEventListener("click", this.moveToBottomSelected.bind(this));
     $id("tool_topath").addEventListener("click", this.convertToPath.bind(this));
-    $id("tool_make_link").addEventListener(
-      "click",
-      this.makeHyperlink.bind(this)
-    );
-    $id("tool_make_link_multi").addEventListener(
-      "click",
-      this.makeHyperlink.bind(this)
-    );
-    $id("tool_reorient").addEventListener(
-      "click",
-      this.reorientPath.bind(this)
-    );
-    $id("tool_group_elements").addEventListener(
-      "click",
-      this.clickGroup.bind(this)
-    );
-    $id("tool_position").addEventListener("change", (evt) =>
-      this.clickAlignEle.bind(this)(evt)
-    );
-    $id("tool_align_left").addEventListener("click", () =>
-      this.clickAlign.bind(this)("left")
-    );
-    $id("tool_align_right").addEventListener("click", () =>
-      this.clickAlign.bind(this)("right")
-    );
-    $id("tool_align_center").addEventListener("click", () =>
-      this.clickAlign.bind(this)("center")
-    );
-    $id("tool_align_top").addEventListener("click", () =>
-      this.clickAlign.bind(this)("top")
-    );
-    $id("tool_align_bottom").addEventListener("click", () =>
-      this.clickAlign.bind(this)("bottom")
-    );
-    $id("tool_align_middle").addEventListener("click", () =>
-      this.clickAlign.bind(this)("middle")
-    );
-    $id("tool_node_clone").addEventListener(
-      "click",
-      this.clonePathNode.bind(this)
-    );
-    $id("tool_node_delete").addEventListener(
-      "click",
-      this.deletePathNode.bind(this)
-    );
-    $id("tool_openclose_path").addEventListener(
-      "click",
-      this.opencloseSubPath.bind(this)
-    );
-    $id("tool_add_subpath").addEventListener(
-      "click",
-      this.addSubPath.bind(this)
-    );
-    $id("tool_node_link").addEventListener(
-      "click",
-      this.linkControlPoints.bind(this)
-    );
-    $id("angle").addEventListener(
-      "change",
-      this.changeRotationAngle.bind(this)
-    );
+    $id("tool_make_link").addEventListener("click", this.makeHyperlink.bind(this));
+    $id("tool_make_link_multi").addEventListener("click", this.makeHyperlink.bind(this));
+    $id("tool_reorient").addEventListener("click", this.reorientPath.bind(this));
+    $id("tool_group_elements").addEventListener("click", this.clickGroup.bind(this));
+    $id("tool_position").addEventListener("change", (evt) => this.clickAlignEle.bind(this)(evt));
+    $id("tool_align_left").addEventListener("click", () => this.clickAlign.bind(this)("left"));
+    $id("tool_align_right").addEventListener("click", () => this.clickAlign.bind(this)("right"));
+    $id("tool_align_center").addEventListener("click", () => this.clickAlign.bind(this)("center"));
+    $id("tool_align_top").addEventListener("click", () => this.clickAlign.bind(this)("top"));
+    $id("tool_align_bottom").addEventListener("click", () => this.clickAlign.bind(this)("bottom"));
+    $id("tool_align_middle").addEventListener("click", () => this.clickAlign.bind(this)("middle"));
+    $id("tool_node_clone").addEventListener("click", this.clonePathNode.bind(this));
+    $id("tool_node_delete").addEventListener("click", this.deletePathNode.bind(this));
+    $id("tool_openclose_path").addEventListener("click", this.opencloseSubPath.bind(this));
+    $id("tool_add_subpath").addEventListener("click", this.addSubPath.bind(this));
+    $id("tool_node_link").addEventListener("click", this.linkControlPoints.bind(this));
+    $id("angle").addEventListener("change", this.changeRotationAngle.bind(this));
     $id("blur").addEventListener("change", this.changeBlur.bind(this));
     $id("rect_rx").addEventListener("change", this.changeRectRadius.bind(this));
     $id("font_size").addEventListener("change", this.changeFontSize.bind(this));
     $id("tool_ungroup").addEventListener("click", this.clickGroup.bind(this));
     $id("tool_bold").addEventListener("click", this.clickBold.bind(this));
     $id("tool_italic").addEventListener("click", this.clickItalic.bind(this));
-    $id("tool_text_anchor_start").addEventListener("click", () =>
-      this.clickTextAnchor.bind(this)("start")
+    $id("tool_text_anchor_start").addEventListener("click", () => this.clickTextAnchor.bind(this)("start"));
+    $id("tool_text_anchor_middle").addEventListener("click", () => this.clickTextAnchor.bind(this)("middle"));
+    $id("tool_text_anchor_end").addEventListener("click", () => this.clickTextAnchor.bind(this)("end"));
+    $id("tool_unlink_use").addEventListener("click", this.clickGroup.bind(this));
+    $id('image_url').addEventListener('change', (evt) => { this.setImageURL(evt.currentTarget.value);});
+
+    // eslint-disable-next-line max-len
+    [ "tool_add_subpath", "tool_openclose_path", "tool_node_delete", "tool_node_clone", "tool_node_link", "tool_ungroup", "tool_unlink_use", "tool_text_anchor_start", "tool_text_anchor_middle", "tool_text_anchor_end", "tool_bold", "tool_italic", "tool_align_bottom", "tool_align_middle", "tool_align_top", "tool_align_left", "tool_align_center", "tool_align_right", "tool_make_link_multi", "tool_group_elements", "tool_delete_multi", "tool_make_link", "tool_reorient", "tool_topath", "tool_move_bottom", "tool_move_top", "tool_delete", "tool_clone", "tool_redo", "tool_undo", "tool_wireframe", "tool_source", "tool_clone_multi" ].forEach((attrId) =>
+      $id(attrId).init(this.editor)
     );
-    $id("tool_text_anchor_middle").addEventListener("click", () =>
-      this.clickTextAnchor.bind(this)("middle")
-    );
-    $id("tool_text_anchor_end").addEventListener("click", () =>
-      this.clickTextAnchor.bind(this)("end")
-    );
-    $id("tool_unlink_use").addEventListener(
-      "click",
-      this.clickGroup.bind(this)
-    );
-    $id('image_url').addEventListener('change', (evt) => {
-      this.setImageURL(evt.currentTarget.value);
-    });
 
     // all top panel attributes
     [

@@ -55,6 +55,18 @@ export class ToolButton extends HTMLElement {
     // locate the component
     this.$div = this._shadowRoot.querySelector('div');
     this.$img = this._shadowRoot.querySelector('img');
+    this.editor = null;
+  }
+  /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+  init (editor) {
+    this.editor = editor;
+    if (this.hasAttribute("src")) {
+      this.setAttribute('src', this.getAttribute("src"));
+    }
   }
   /**
    * @function observedAttributes
@@ -71,7 +83,7 @@ export class ToolButton extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue && name !== 'src') return;
     switch (name) {
     case 'title':
       {
@@ -83,7 +95,12 @@ export class ToolButton extends HTMLElement {
       this.$div.style = newValue;
       break;
     case 'src':
-      this.$img.setAttribute('src', (newValue.indexOf("data:") === -1) ? './images/' + newValue : newValue);
+      if (newValue.indexOf("data:") !== -1) {
+        this.$img.setAttribute('src', newValue);
+      } else if(this.editor !== null) {
+        const { imgPath } = this.editor.configObj.curConfig;
+        this.$img.setAttribute('src', imgPath + "/" + newValue);
+      }
       break;
     case 'pressed':
       if (newValue === null) {

@@ -174,6 +174,7 @@ export default {
           svgEditor.configObj.curConfig.showGrid = showGrid = !showGrid;
           gridUpdate();
         });
+        $id('view_grid').init(svgEditor);
         if (showGrid) {
           gridUpdate();
         }

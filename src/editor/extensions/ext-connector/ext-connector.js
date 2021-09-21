@@ -364,6 +364,7 @@ export default {
             svgCanvas.setMode('connector');
           }
         });
+        $id('mode_connect').init(svgEditor);
       },
       /* async */ addLangData({ _lang }) { // , importLocale: importLoc
         return {

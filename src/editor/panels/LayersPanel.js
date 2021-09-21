@@ -89,31 +89,20 @@ class LayersPanel {
     menuLayerBox.setAttribute("leftclick", false);
     this.editor.$container.append(menuLayerBox);
     menuLayerBox.init(i18next);
-    document
-      .getElementById("layer_new")
-      .addEventListener("click", this.newLayer.bind(this));
-    document
-      .getElementById("layer_delete")
-      .addEventListener("click", this.deleteLayer.bind(this));
-    document
-      .getElementById("layer_up")
-      .addEventListener("click", () => this.moveLayer.bind(this)(-1));
-    document
-      .getElementById("layer_down")
-      .addEventListener("click", () => this.moveLayer.bind(this)(1));
-    document
-      .getElementById("layer_rename")
-      .addEventListener("click", this.layerRename.bind(this));
-    $id("se-cmenu-layers-more").addEventListener(
-      "change",
-      this.lmenuFunc.bind(this)
-    );
-    $id("se-cmenu-layers-list").addEventListener("change", (e) => {
-      this.lmenuFunc(e);
-    });
-    $id("sidepanel_handle").addEventListener(
-      "click", () => this.toggleSidePanel()
-    );
+    $id("layer_new").addEventListener("click", this.newLayer.bind(this));
+    $id("layer_delete").addEventListener("click", this.deleteLayer.bind(this));
+    $id("layer_up").addEventListener("click", () => this.moveLayer.bind(this)(-1));
+    $id("layer_down").addEventListener("click", () => this.moveLayer.bind(this)(1));
+    $id("layer_rename").addEventListener("click", this.layerRename.bind(this));
+    $id("se-cmenu-layers-more").addEventListener("change", this.lmenuFunc.bind(this));
+    $id("se-cmenu-layers-list").addEventListener("change", (e) => { this.lmenuFunc(e); });
+    $id("sidepanel_handle").addEventListener("click", () => this.toggleSidePanel());
+    $id("layer_new").init(this.editor);
+    $id("layer_delete").init(this.editor);
+    $id("layer_up").init(this.editor);
+    $id("layer_down").init(this.editor);
+    $id("layer_rename").init(this.editor);
+    $id("layer_moreopts").init(this.editor);
     this.toggleSidePanel(this.editor.configObj.curConfig.showlayers);
   }
   toggleSidePanel(displayFlag) {
