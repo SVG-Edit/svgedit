@@ -285,15 +285,14 @@ class MainMenu {
         <se-menu-item id="tool_docprops" label="tools.docprops" shortcut="D" src="docprop.svg"></se-menu-item>
         <se-menu-item id="tool_editor_prefs" label="config.editor_prefs" src="editPref.svg"></se-menu-item>
         <se-menu-item id="tool_editor_homepage" label="tools.editor_homepage" src="logo.svg"></se-menu-item>
-    </se-menu>
-       `;
+    </se-menu>`;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
 
     // register action to main menu entries
     /**
      * Associate all button actions as well as non-button keyboard shortcuts.
      */
-    [ "tool_import", "tool_export", "tool_docprops", "tool_editor_prefs", "tool_editor_homepage"  ].forEach((attrId) =>
+    [ "main_button", "tool_import", "tool_export", "tool_docprops", "tool_editor_prefs", "tool_editor_homepage"  ].forEach((attrId) =>
       $id(attrId).init(this.editor)
     );
     $id("tool_import").addEventListener("click", () => {

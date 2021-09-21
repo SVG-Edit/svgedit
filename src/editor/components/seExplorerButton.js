@@ -119,6 +119,18 @@ export class ExplorerButton extends HTMLElement {
     this.$lib = this._shadowRoot.querySelector('.image-lib');
     this.files = [];
     this.request = new XMLHttpRequest();
+    this.editor = null;
+  }
+  /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+  init (editor) {
+    this.editor = editor;
+    if (this.hasAttribute("src")) {
+      this.setAttribute('src', this.getAttribute("src"));
+    }
   }
   /**
    * @function observedAttributes
@@ -135,7 +147,7 @@ export class ExplorerButton extends HTMLElement {
    * @returns {void}
    */
   async attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue && name !== 'src') return;
     switch (name) {
     case 'title':
       {
@@ -172,7 +184,10 @@ export class ExplorerButton extends HTMLElement {
       }
       break;
     case 'src':
-      this.$img.setAttribute('src', './images/' + newValue);
+      if(this.editor !== null) {
+        const { imgPath } = this.editor.configObj.curConfig;
+        this.$img.setAttribute('src', imgPath + '/' + newValue);
+      }
       break;
     default:
       // eslint-disable-next-line no-console

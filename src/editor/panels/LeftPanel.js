@@ -270,7 +270,7 @@ class LeftPanel {
     $id("tool_fhellipse").addEventListener("click", this.clickFHEllipse.bind(this));
 
     // eslint-disable-next-line max-len
-    [ "tool_rect", "tool_square", "tool_fhrect", "tool_ellipse", "tool_circle", "tool_fhellipse", "tool_select", "tool_fhpath", "tool_text", "tool_image", "tool_zoom", "tool_path", "tool_line" ].forEach((attrId) =>
+    [ "tool_rect", "tool_square", "tool_fhrect", "tool_ellipse", "tool_circle", "tool_fhellipse", "tool_select", "tool_fhpath", "tool_text", "tool_image", "tool_zoom", "tool_path", "tool_line", "tools_rect", "tools_ellipse" ].forEach((attrId) =>
       $id(attrId).init(this.editor)
     );
   }

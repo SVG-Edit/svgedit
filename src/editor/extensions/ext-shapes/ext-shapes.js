@@ -54,6 +54,7 @@ export default {
               canv.setMode(modeId);
             }
           });
+          $id('tool_shapelib').init(svgEditor);
         }
       },
       mouseDown (opts) {

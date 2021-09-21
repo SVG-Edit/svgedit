@@ -110,6 +110,7 @@ export default {
         });
         $id("tool_star").init(svgEditor);
         $id("tool_polygon").init(svgEditor);
+        $id("tools_polygon").init(svgEditor);
 
         const label0 = `${name}:contextTools.0.label`;
         const title0 = `${name}:contextTools.0.title`;

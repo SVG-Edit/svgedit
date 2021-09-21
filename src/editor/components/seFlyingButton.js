@@ -100,6 +100,18 @@ export class FlyingButton extends HTMLElement {
     // the last element of the div is the slot
     // we retrieve all elements added in the slot (i.e. se-buttons)
     this.$elements = this.$menu.lastElementChild.assignedElements();
+    this.editor = null;
+  }
+  /**
+   * @function init
+   * @param {any} name
+   * @returns {void}
+   */
+  init (editor) {
+    this.editor = editor;
+    // initialize currentAction with the first slot of the list
+    const { imgPath } = this.editor.configObj.curConfig;
+    this.$img.setAttribute('src', imgPath + '/' + this.activeSlot.getAttribute('src'));
   }
   /**
    * @function observedAttributes
@@ -233,12 +245,11 @@ export class FlyingButton extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    // initialize currentAction with the first slot of the list
     this.activeSlot = this.shadowRoot.querySelector('slot').assignedElements()[0];
-    this.$img.setAttribute('src', './images/' + this.activeSlot.getAttribute('src'));
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
       ev.stopPropagation();
+      const { imgPath } = this.editor.configObj.curConfig;
       switch (ev.target.nodeName) {
       case 'SE-FLYINGBUTTON':
         if (this.pressed) {
@@ -251,7 +262,7 @@ export class FlyingButton extends HTMLElement {
         break;
       case 'SE-BUTTON':
         // change to the current action
-        this.$img.setAttribute('src', './images/' + ev.target.getAttribute('src'));
+        this.$img.setAttribute('src', imgPath + '/' + ev.target.getAttribute('src'));
         this.activeSlot = ev.target;
         this.setAttribute('pressed', 'pressed');
         // and close the menu
