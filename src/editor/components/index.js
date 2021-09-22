@@ -10,5 +10,6 @@ import './seMenuItem.js';
 import './seList.js';
 import './seListItem.js';
 import './seColorPicker.js';
-import './seSelect';
+import './seSelect.js';
+import './seText.js';
 

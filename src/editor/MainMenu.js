@@ -277,25 +277,21 @@ class MainMenu {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    const { i18next } = this.editor;
-    const { imgPath } = this.editor.configObj.curConfig;
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
-    <se-menu id="main_button" label="SVG-Edit" src="${imgPath}/logo.svg" alt="logo">
-        <se-menu-item id="tool_import" label="${i18next.t('tools.import_doc')}" src="${imgPath}/importImg.svg"></se-menu-item>
-        <se-menu-item id="tool_export" label="${i18next.t('tools.export_img')}" src="${imgPath}/export.svg"></se-menu-item>
-        <se-menu-item id="tool_docprops" label="${i18next.t('tools.docprops')}" shortcut="D" src="${imgPath}/docprop.svg"></se-menu-item>
-        <se-menu-item id="tool_editor_prefs" label="${i18next.t('config.editor_prefs')}" src="${imgPath}/editPref.svg"></se-menu-item>
-        <se-menu-item id="tool_editor_homepage" label="${i18next.t('tools.editor_homepage')}" src="${imgPath}/logo.svg"></se-menu-item>
-    </se-menu>
-       `;
+    <se-menu id="main_button" label="SVG-Edit" src="logo.svg" alt="logo">
+        <se-menu-item id="tool_import" label="tools.import_doc" src="importImg.svg"></se-menu-item>
+        <se-menu-item id="tool_export" label="tools.export_img" src="export.svg"></se-menu-item>
+        <se-menu-item id="tool_docprops" label="tools.docprops" shortcut="D" src="docprop.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_prefs" label="config.editor_prefs" src="editPref.svg"></se-menu-item>
+        <se-menu-item id="tool_editor_homepage" label="tools.editor_homepage" src="logo.svg"></se-menu-item>
+    </se-menu>`;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
 
     // register action to main menu entries
     /**
      * Associate all button actions as well as non-button keyboard shortcuts.
      */
-
     $id("tool_import").addEventListener("click", () => {
       this.clickImport();
       window.dispatchEvent(new CustomEvent("importImages"));

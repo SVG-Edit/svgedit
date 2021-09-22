@@ -1,4 +1,6 @@
+/* globals svgEditor */
 import 'elix/define/DropdownList.js';
+import { t } from '../locale.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -43,13 +45,16 @@ export class SeList extends HTMLElement {
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
     this.$label = this._shadowRoot.querySelector('label');
+    this.$selction = this.$dropdown.shadowRoot.querySelector('#source').querySelector('#value');
+    this.items = this.querySelectorAll("se-list-item");
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'label', 'width', 'height' ];
+    return [ 'label', 'width', 'height', 'title', 'value' ];
   }
 
   /**
@@ -60,10 +65,14 @@ export class SeList extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
+    const currentObj = this;
     if (oldValue === newValue) return;
     switch (name) {
+    case 'title':
+      this.$dropdown.setAttribute('title', `${t(newValue)}`);
+      break;
     case 'label':
-      this.$label.textContent = newValue;
+      this.$label.textContent = t(newValue);
       break;
     case 'height':
       this.$dropdown.style.height = newValue;
@@ -71,11 +80,43 @@ export class SeList extends HTMLElement {
     case 'width':
       this.$dropdown.style.width = newValue;
       break;
+    case 'value':
+      Array.from(this.items).forEach(function (element) {
+        if(element.getAttribute("value") === newValue) {
+          if (element.hasAttribute("src")) {
+            while(currentObj.$selction.firstChild)
+              currentObj.$selction.removeChild(currentObj.$selction.firstChild);
+            const img = document.createElement('img');
+            img.src = currentObj.imgPath + '/' + element.getAttribute("src");
+            img.style.height = element.getAttribute("img-height");
+            img.setAttribute('title', t(element.getAttribute("title")));
+            currentObj.$selction.append(img);
+          } else {
+            currentObj.$selction.textContent = t(element.getAttribute('option'));
+          }
+        }
+      });
+      break;
     default:
       // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get title () {
+    return this.getAttribute('title');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set title (value) {
+    this.setAttribute('title', value);
   }
   /**
    * @function get
@@ -134,6 +175,7 @@ export class SeList extends HTMLElement {
         const closeEvent = new CustomEvent('change', { detail: { value } });
         currentObj.dispatchEvent(closeEvent);
         currentObj.value = value;
+        currentObj.setAttribute("value", value);
       }
     });
     this.$dropdown.addEventListener('close', (_e) => {

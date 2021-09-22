@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import 'elix/define/MenuItem.js';
 import './sePlainMenuButton.js';
 
@@ -43,6 +44,7 @@ export class SeMenu extends HTMLElement {
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$menu = this._shadowRoot.querySelector('elix-menu-button');
     this.$label = this.$menu.shadowRoot.querySelector('#popupToggle').shadowRoot;
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -64,7 +66,7 @@ export class SeMenu extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      image.src = newValue;
+      image.src = this.imgPath + '/' + newValue;
       image.width = 24;
       image.height = 24;
       this.$label.prepend(image);

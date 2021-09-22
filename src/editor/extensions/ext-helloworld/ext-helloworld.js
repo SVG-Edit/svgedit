@@ -34,7 +34,6 @@ export default {
   name,
   async init ({ _importLocale }) {
     const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
     await loadExtensionTranslation(svgEditor);
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
@@ -43,10 +42,10 @@ export default {
       callback() {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
-        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
+        const title = `${name}:buttons.0.title`;
         // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-        <se-button id="hello_world" title="${title}" src="${imgPath}/hello_world.svg"></se-button>
+        <se-button id="hello_world" title="${title}" src="hello_world.svg"></se-button>
         `;
         $id('tools_left').append(buttonTemplate.content.cloneNode(true));
         $id('hello_world').addEventListener("click", () => {

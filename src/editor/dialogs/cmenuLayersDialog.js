@@ -182,7 +182,7 @@ export class SeCMenuLayerDialog extends HTMLElement {
     const onMenuOpenHandler = (e) => {
       e.preventDefault();
       current.$dialog.style.top = e.pageY + 'px';
-      current.$dialog.style.left = e.pageX + 'px';
+      current.$dialog.style.left = e.pageX - 126 + 'px';
       current.$dialog.style.display = 'block';
     };
     const onMenuCloseHandler = (e) => {

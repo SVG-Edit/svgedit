@@ -86,3 +86,7 @@ export const putLocale = async function (givenParam, goodLangs) {
   console.info(`Lang: ${i18next.t('lang')}`);
   return { langParam, i18next };
 };
+
+export const t = function (key) {
+  return i18next.t(key);
+};

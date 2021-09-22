@@ -29,7 +29,6 @@ export default {
   name,
   async init(_S) {
     const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
     const { ChangeElementCommand } = _S; // , svgcontent,
     const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
     const { svgCanvas } = svgEditor;
@@ -81,15 +80,15 @@ export default {
       callback() {
         // Add the button and its handler(s)
         // Note: the star extension needs to be loaded before the polygon extension
-        const fbtitle = svgEditor.i18next.t(`${name}:title`);
-        const title_star = svgEditor.i18next.t(`${name}:buttons.0.title`);
-        const title_polygon = svgEditor.i18next.t(`${name}:buttons.1.title`);
+        const fbtitle = `${name}:title`;
+        const title_star = `${name}:buttons.0.title`;
+        const title_polygon = `${name}:buttons.1.title`;
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
             <se-flyingbutton id="tools_polygon" title="${fbtitle}">
-              <se-button id="tool_star" title="${title_star}" src="${imgPath}/star.svg">
+              <se-button id="tool_star" title="${title_star}" src="star.svg">
               </se-button>
-              <se-button id="tool_polygon" title="${title_polygon}" src="${imgPath}/polygon.svg">
+              <se-button id="tool_polygon" title="${title_polygon}" src="polygon.svg">
               </se-button>
             </se-flyingbutton>
           `;
@@ -109,15 +108,14 @@ export default {
             showPanel(false, "star");
           }
         });
-
-        const label0 = svgEditor.i18next.t(`${name}:contextTools.0.label`);
-        const title0 = svgEditor.i18next.t(`${name}:contextTools.0.title`);
-        const label1 = svgEditor.i18next.t(`${name}:contextTools.1.label`);
-        const title1 = svgEditor.i18next.t(`${name}:contextTools.1.title`);
-        const label2 = svgEditor.i18next.t(`${name}:contextTools.2.label`);
-        const title2 = svgEditor.i18next.t(`${name}:contextTools.2.title`);
-        const label3 = svgEditor.i18next.t(`${name}:contextTools.3.label`);
-        const title3 = svgEditor.i18next.t(`${name}:contextTools.3.title`);
+        const label0 = `${name}:contextTools.0.label`;
+        const title0 = `${name}:contextTools.0.title`;
+        const label1 = `${name}:contextTools.1.label`;
+        const title1 = `${name}:contextTools.1.title`;
+        const label2 = `${name}:contextTools.2.label`;
+        const title2 = `${name}:contextTools.2.title`;
+        const label3 = `${name}:contextTools.3.label`;
+        const title3 = `${name}:contextTools.3.title`;
         // Add the context panel and its handler(s)
         const panelTemplate = document.createElement("template");
         // eslint-disable-next-line no-unsanitized/property

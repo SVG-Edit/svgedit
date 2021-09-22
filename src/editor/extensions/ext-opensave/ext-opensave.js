@@ -39,7 +39,6 @@ export default {
   name,
   async init(_S) {
     const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
     await loadExtensionTranslation(svgEditor);
@@ -162,13 +161,13 @@ export default {
       callback() {
         // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
-        <se-menu-item id="tool_clear" label="${svgEditor.i18next.t('opensave.new_doc')}" shortcut="N" src="${imgPath}/new.svg"></se-menu-item>`;
+        <se-menu-item id="tool_clear" label="opensave.new_doc" shortcut="N" src="new.svg"></se-menu-item>`;
         svgCanvas.insertChildAtIndex($id('main_button'), buttonTemplate, 0);
-        const openButtonTemplate = `<se-menu-item id="tool_open" label="${svgEditor.i18next.t('opensave.open_image_doc')}" src="${imgPath}/open.svg"></se-menu-item>`;
+        const openButtonTemplate = `<se-menu-item id="tool_open" label="opensave.open_image_doc" src="open.svg"></se-menu-item>`;
         svgCanvas.insertChildAtIndex($id('main_button'), openButtonTemplate, 1);
-        const saveButtonTemplate = `<se-menu-item id="tool_save" label="${svgEditor.i18next.t('opensave.save_doc')}" shortcut="S" src="${imgPath}/saveImg.svg"></se-menu-item>`;
+        const saveButtonTemplate = `<se-menu-item id="tool_save" label="opensave.save_doc" shortcut="S" src="saveImg.svg"></se-menu-item>`;
         svgCanvas.insertChildAtIndex($id('main_button'), saveButtonTemplate, 2);
-        const saveAsButtonTemplate = `<se-menu-item id="tool_save_as" label="${svgEditor.i18next.t('opensave.save_as_doc')}" src="${imgPath}/saveImg.svg"></se-menu-item>`;
+        const saveAsButtonTemplate = `<se-menu-item id="tool_save_as" label="opensave.save_as_doc" src="saveImg.svg"></se-menu-item>`;
         svgCanvas.insertChildAtIndex($id('main_button'), saveAsButtonTemplate, 3);
         // handler
         $id("tool_clear").addEventListener("click", clickClear.bind(this));

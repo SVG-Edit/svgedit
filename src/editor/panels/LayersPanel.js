@@ -44,7 +44,6 @@ class LayersPanel {
   init() {
     const template = document.createElement("template");
     const { i18next } = this.editor;
-    const { imgPath } = this.editor.configObj.curConfig;
 
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
@@ -54,12 +53,12 @@ class LayersPanel {
         <div id="layerpanel">
           <h3 id="layersLabel">${i18next.t('layers.layers')}</h3>
           <fieldset id="layerbuttons">
-            <se-button id="layer_new" title="${i18next.t('layers.new')}" size="small" src="${imgPath}/new.svg"></se-button>
-            <se-button id="layer_delete" title="${i18next.t('layers.del')}" size="small" src="${imgPath}/delete.svg"></se-button>
-            <se-button id="layer_rename" title="${i18next.t('layers.rename')}" size="small" src="${imgPath}/text.svg"></se-button>
-            <se-button id="layer_up" title="${i18next.t('layers.move_up')}" size="small" src="${imgPath}/go_up.svg"></se-button>
-            <se-button id="layer_down" title="${i18next.t('layers.move_down')}" size="small" src="${imgPath}/go_down.svg"></se-button>
-            <se-button id="layer_moreopts" title="${i18next.t('common.more_opts')}" size="small" src="${imgPath}/context_menu.svg">
+            <se-button id="layer_new" title="layers.new" size="small" src="new.svg"></se-button>
+            <se-button id="layer_delete" title="layers.del" size="small" src="delete.svg"></se-button>
+            <se-button id="layer_rename" title="layers.rename" size="small" src="text.svg"></se-button>
+            <se-button id="layer_up" title="layers.move_up" size="small" src="go_up.svg"></se-button>
+            <se-button id="layer_down" title="layers.move_down" size="small" src="go_down.svg"></se-button>
+            <se-button id="layer_moreopts" title="common.more_opts" size="small" src="context_menu.svg">
             </se-button>
           </fieldset>
           <table id="layerlist">
@@ -90,31 +89,14 @@ class LayersPanel {
     menuLayerBox.setAttribute("leftclick", false);
     this.editor.$container.append(menuLayerBox);
     menuLayerBox.init(i18next);
-    document
-      .getElementById("layer_new")
-      .addEventListener("click", this.newLayer.bind(this));
-    document
-      .getElementById("layer_delete")
-      .addEventListener("click", this.deleteLayer.bind(this));
-    document
-      .getElementById("layer_up")
-      .addEventListener("click", () => this.moveLayer.bind(this)(-1));
-    document
-      .getElementById("layer_down")
-      .addEventListener("click", () => this.moveLayer.bind(this)(1));
-    document
-      .getElementById("layer_rename")
-      .addEventListener("click", this.layerRename.bind(this));
-    $id("se-cmenu-layers-more").addEventListener(
-      "change",
-      this.lmenuFunc.bind(this)
-    );
-    $id("se-cmenu-layers-list").addEventListener("change", (e) => {
-      this.lmenuFunc(e);
-    });
-    $id("sidepanel_handle").addEventListener(
-      "click", () => this.toggleSidePanel()
-    );
+    $id("layer_new").addEventListener("click", this.newLayer.bind(this));
+    $id("layer_delete").addEventListener("click", this.deleteLayer.bind(this));
+    $id("layer_up").addEventListener("click", () => this.moveLayer.bind(this)(-1));
+    $id("layer_down").addEventListener("click", () => this.moveLayer.bind(this)(1));
+    $id("layer_rename").addEventListener("click", this.layerRename.bind(this));
+    $id("se-cmenu-layers-more").addEventListener("change", this.lmenuFunc.bind(this));
+    $id("se-cmenu-layers-list").addEventListener("change", (e) => { this.lmenuFunc(e); });
+    $id("sidepanel_handle").addEventListener("click", () => this.toggleSidePanel());
     this.toggleSidePanel(this.editor.configObj.curConfig.showlayers);
   }
   toggleSidePanel(displayFlag) {

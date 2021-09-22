@@ -522,8 +522,9 @@ export default {
       callback() {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
+        const key = name + `:buttons.0.title`;
         buttonTemplate.innerHTML = `
-        <se-menu-item id="tool_imagelib" label="Image library" src="${imgPath}/library.svg"></se-menu-item>
+        <se-menu-item id="tool_imagelib" label="${key}" src="library.svg"></se-menu-item>
         `;
         insertAfter($id('tool_export'), buttonTemplate.content.cloneNode(true));
         $id('tool_imagelib').addEventListener("click", () => {

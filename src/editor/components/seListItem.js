@@ -1,4 +1,6 @@
+/* globals svgEditor */
 import 'elix/define/Option.js';
+import { t } from '../locale.js';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -12,6 +14,7 @@ template.innerHTML = `
   }
   </style>
   <elix-option aria-label="option">
+    <img alt="icon" />
     <slot></slot>
   </elix-option>
 `;
@@ -30,13 +33,16 @@ export class SeListItem extends HTMLElement {
     this.$menuitem = this._shadowRoot.querySelector('elix-option');
     this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
     this.$svg.setAttribute('style', 'display: none;');
+    this.$img = this._shadowRoot.querySelector('img');
+    this.$img.setAttribute('style', 'display: none;');
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'option' ];
+    return [ 'option', 'src', 'title', 'img-height' ];
   }
 
   /**
@@ -51,6 +57,17 @@ export class SeListItem extends HTMLElement {
     switch (name) {
     case 'option':
       this.$menuitem.setAttribute('option', newValue);
+      this.$menuitem.textContent = t(newValue);
+      break;
+    case 'src':
+      this.$img.setAttribute('style', 'display: block;');
+      this.$img.setAttribute('src', this.imgPath + '/' + newValue);
+      break;
+    case 'title':
+      this.$img.setAttribute('title', t(newValue));
+      break;
+    case 'img-height':
+      this.$img.setAttribute('height', newValue);
       break;
     default:
       // eslint-disable-next-line no-console
@@ -72,6 +89,51 @@ export class SeListItem extends HTMLElement {
    */
   set option (value) {
     this.setAttribute('option', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get title () {
+    return this.getAttribute('title');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set title (value) {
+    this.setAttribute('title', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get imgHeight () {
+    return this.getAttribute('img-height');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set imgHeight (value) {
+    this.setAttribute('img-height', value);
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get src () {
+    return this.getAttribute('src');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set src (value) {
+    this.setAttribute('src', value);
   }
 }
 

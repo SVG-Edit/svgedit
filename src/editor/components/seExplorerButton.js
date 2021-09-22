@@ -1,3 +1,4 @@
+/* globals svgEditor */
 /* eslint-disable no-unsanitized/property */
 const template = document.createElement('template');
 template.innerHTML = `
@@ -119,6 +120,7 @@ export class ExplorerButton extends HTMLElement {
     this.$lib = this._shadowRoot.querySelector('.image-lib');
     this.files = [];
     this.request = new XMLHttpRequest();
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -172,7 +174,7 @@ export class ExplorerButton extends HTMLElement {
       }
       break;
     case 'src':
-      this.$img.setAttribute('src', newValue);
+      this.$img.setAttribute('src', this.imgPath + '/' + newValue);
       break;
     default:
       // eslint-disable-next-line no-console

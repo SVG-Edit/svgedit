@@ -195,53 +195,51 @@ class LeftPanel {
    * @type {module}
    */
   init() {
-    const { i18next } = this.editor;
-    const { imgPath } = this.editor.configObj.curConfig;
 
     // add Left panel
     const leftMenu = [
       {
-        menu: `<se-button id="tool_select" title="${i18next.t('tools.mode_select')}" src="${imgPath}/select.svg"></se-button>`,
+        menu: `<se-button id="tool_select" title="tools.mode_select" src="select.svg"></se-button>`,
         position: 1
       },
       {
-        menu: `<se-button id="tool_zoom" title="${i18next.t('tools.mode_zoom')}" src="${imgPath}/zoom.svg" shortcut="Z"></se-button>`,
+        menu: `<se-button id="tool_zoom" title="tools.mode_zoom" src="zoom.svg" shortcut="Z"></se-button>`,
         position: 2
       },
       {
-        menu: `<se-button id="tool_fhpath" title="${i18next.t('tools.mode_fhpath')}" src="${imgPath}/pencil.svg" shortcut="Q"></se-button>`,
+        menu: `<se-button id="tool_fhpath" title="tools.mode_fhpath" src="pencil.svg" shortcut="Q"></se-button>`,
         position: 3
       },
       {
-        menu: `<se-button id="tool_line" title="${i18next.t('tools.mode_line')}" src="${imgPath}/pen.svg" shortcut="L"></se-button>`,
+        menu: `<se-button id="tool_line" title="tools.mode_line" src="pen.svg" shortcut="L"></se-button>`,
         position: 4
       },
       {
-        menu: `<se-button id="tool_path" title="${i18next.t('tools.mode_path')}" src="${imgPath}/path.svg" shortcut="P"></se-button>`,
+        menu: `<se-button id="tool_path" title="tools.mode_path" src="path.svg" shortcut="P"></se-button>`,
         position: 5
       },
       {
-        menu: `<se-flyingbutton id="tools_rect" title="${i18next.t('tools.square_rect_tool')}">
-        <se-button id="tool_rect" title="${i18next.t('tools.mode_rect')}" src="${imgPath}/rect.svg" shortcut="R"></se-button>
-        <se-button id="tool_square" title="${i18next.t('tools.mode_square')}" src="${imgPath}/square.svg"></se-button>
-        <se-button id="tool_fhrect" title="${i18next.t('tools.mode_fhrect')}" src="${imgPath}/fh_rect.svg"></se-button>
+        menu: `<se-flyingbutton id="tools_rect" title="tools.square_rect_tool">
+        <se-button id="tool_rect" title="tools.mode_rect" src="rect.svg" shortcut="R"></se-button>
+        <se-button id="tool_square" title="tools.mode_square" src="square.svg"></se-button>
+        <se-button id="tool_fhrect" title="tools.mode_fhrect" src="fh_rect.svg"></se-button>
       </se-flyingbutton>`,
         position: 6
       },
       {
-        menu: `<se-flyingbutton id="tools_ellipse" title="${i18next.t('tools.ellipse_circle_tool')}">
-          <se-button id="tool_ellipse" title="${i18next.t('tools.mode_ellipse')}" src="${imgPath}/ellipse.svg" shortcut="E"></se-button>
-          <se-button id="tool_circle" title="${i18next.t('tools.mode_circle')}" src="${imgPath}/circle.svg"></se-button>
-          <se-button id="tool_fhellipse" title="${i18next.t('tools.mode_fhellipse')}" src="${imgPath}/fh_ellipse.svg"></se-button>
+        menu: `<se-flyingbutton id="tools_ellipse" title="tools.ellipse_circle_tool">
+          <se-button id="tool_ellipse" title="tools.mode_ellipse" src="ellipse.svg" shortcut="E"></se-button>
+          <se-button id="tool_circle" title="tools.mode_circle" src="circle.svg"></se-button>
+          <se-button id="tool_fhellipse" title="tools.mode_fhellipse" src="fh_ellipse.svg"></se-button>
         </se-flyingbutton>`,
         position: 7
       },
       {
-        menu: `<se-button id="tool_text" title="${i18next.t('tools.mode_text')}" src="${imgPath}/text.svg" shortcut="T"></se-button>`,
+        menu: `<se-button id="tool_text" title="tools.mode_text" src="text.svg" shortcut="T"></se-button>`,
         position: 8
       },
       {
-        menu: `<se-button id="tool_image" title="${i18next.t('tools.mode_image')}" src="${imgPath}/image.svg"></se-button>`,
+        menu: `<se-button id="tool_image" title="tools.mode_image" src="image.svg"></se-button>`,
         position: 11
       }
     ];
@@ -269,10 +267,7 @@ class LeftPanel {
     $id("tool_fhrect").addEventListener("click", this.clickFHRect.bind(this));
     $id("tool_ellipse").addEventListener("click", this.clickEllipse.bind(this));
     $id("tool_circle").addEventListener("click", this.clickCircle.bind(this));
-    $id("tool_fhellipse").addEventListener(
-      "click",
-      this.clickFHEllipse.bind(this)
-    );
+    $id("tool_fhellipse").addEventListener("click", this.clickFHEllipse.bind(this));
   }
 }
 

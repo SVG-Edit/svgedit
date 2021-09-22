@@ -1,6 +1,7 @@
+/* globals svgEditor */
 import 'elix/define/Menu.js';
 import 'elix/define/MenuItem.js';
-
+import { t } from '../locale.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
@@ -29,6 +30,7 @@ export class SeMenuItem extends HTMLElement {
     this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');
     this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
     this.$svg.setAttribute('style', 'display: none;');
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -49,12 +51,12 @@ export class SeMenuItem extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      this.$img.setAttribute('src', newValue);
       this.$img.style.display = 'inline-block';
+      this.$img.setAttribute('src', this.imgPath + '/' + newValue);
       break;
     case 'label':
       shortcut = this.getAttribute('shortcut');
-      this.$label.textContent = `${newValue} ${shortcut ? `(${shortcut})` : ''}`;
+      this.$label.textContent = `${t(newValue)} ${shortcut ? `(${shortcut})` : ''}`;
       break;
     default:
       // eslint-disable-next-line no-console

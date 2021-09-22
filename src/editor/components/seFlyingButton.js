@@ -1,3 +1,5 @@
+/* globals svgEditor */
+import { t } from '../locale.js';
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
@@ -99,6 +101,7 @@ export class FlyingButton extends HTMLElement {
     // the last element of the div is the slot
     // we retrieve all elements added in the slot (i.e. se-buttons)
     this.$elements = this.$menu.lastElementChild.assignedElements();
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -120,7 +123,7 @@ export class FlyingButton extends HTMLElement {
     case 'title':
       {
         const shortcut = this.getAttribute('shortcut');
-        this.$button.setAttribute('title', `${newValue} [${shortcut}]`);
+        this.$button.setAttribute('title', `${t(newValue)} ${shortcut ? `[${t(shortcut)}]` : ''}`);
       }
       break;
     case 'pressed':
@@ -232,9 +235,8 @@ export class FlyingButton extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    // initialize currentAction with the first slot of the list
     this.activeSlot = this.shadowRoot.querySelector('slot').assignedElements()[0];
-    this.$img.setAttribute('src', this.activeSlot.getAttribute('src'));
+    this.$img.setAttribute('src', this.imgPath + '/' + this.activeSlot.getAttribute('src'));
     // capture click event on the button to manage the logic
     const onClickHandler = (ev) => {
       ev.stopPropagation();
@@ -250,7 +252,7 @@ export class FlyingButton extends HTMLElement {
         break;
       case 'SE-BUTTON':
         // change to the current action
-        this.$img.setAttribute('src', ev.target.getAttribute('src'));
+        this.$img.setAttribute('src', this.imgPath + '/' + ev.target.getAttribute('src'));
         this.activeSlot = ev.target;
         this.setAttribute('pressed', 'pressed');
         // and close the menu

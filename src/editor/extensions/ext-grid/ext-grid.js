@@ -28,7 +28,6 @@ export default {
   name,
   async init ({ NS, getTypeMap }) {
     const svgEditor = this;
-    const { imgPath } = svgEditor.configObj.curConfig;
     await loadExtensionTranslation(svgEditor);
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
@@ -164,11 +163,11 @@ export default {
       callback () {
         // Add the button and its handler(s)
         const buttonTemplate = document.createElement("template");
-        const title = svgEditor.i18next.t(`${name}:buttons.0.title`);
+        const title = `${name}:buttons.0.title`;
 
         // eslint-disable-next-line no-unsanitized/property
         buttonTemplate.innerHTML = `
-          <se-button id="view_grid" title="${title}" src="${imgPath}/grid.svg"></se-button>
+          <se-button id="view_grid" title="${title}" src="grid.svg"></se-button>
         `;
         $id('editor_panel').append(buttonTemplate.content.cloneNode(true));
         $id('view_grid').addEventListener("click", () => {
