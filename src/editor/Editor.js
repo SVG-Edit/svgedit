@@ -652,7 +652,7 @@ class Editor extends EditorStartup {
     if (context) {
       let str = '';
       linkStr = '<a href="#" data-root="y">' + this.svgCanvas.getCurrentDrawing().getCurrentLayerName() + '</a>';
-      const parentsUntil = getParentsUntil(context, '#svgcontent > g');
+      const parentsUntil = getParentsUntil(context, '#svgcontent');
       parentsUntil.forEach(function (parent) {
         if (parent.id) {
           str += ' > ' + parent.id;
