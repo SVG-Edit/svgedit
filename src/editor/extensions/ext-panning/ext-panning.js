@@ -57,7 +57,6 @@ export default {
             svgCanvas.setMode('ext-panning');
           }
         });
-        $id('ext-panning').init(svgEditor);
       },
       mouseDown() {
         if (svgCanvas.getMode() === 'ext-panning') {

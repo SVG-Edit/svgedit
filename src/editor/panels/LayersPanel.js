@@ -97,12 +97,6 @@ class LayersPanel {
     $id("se-cmenu-layers-more").addEventListener("change", this.lmenuFunc.bind(this));
     $id("se-cmenu-layers-list").addEventListener("change", (e) => { this.lmenuFunc(e); });
     $id("sidepanel_handle").addEventListener("click", () => this.toggleSidePanel());
-    $id("layer_new").init(this.editor);
-    $id("layer_delete").init(this.editor);
-    $id("layer_up").init(this.editor);
-    $id("layer_down").init(this.editor);
-    $id("layer_rename").init(this.editor);
-    $id("layer_moreopts").init(this.editor);
     this.toggleSidePanel(this.editor.configObj.curConfig.showlayers);
   }
   toggleSidePanel(displayFlag) {

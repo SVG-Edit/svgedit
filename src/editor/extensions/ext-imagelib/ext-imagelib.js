@@ -530,7 +530,6 @@ export default {
         $id('tool_imagelib').addEventListener("click", () => {
           showBrowser();
         });
-        $id('tool_imagelib').init(svgEditor);
 
         const style = document.createElement('style');
         style.textContent = '#imgbrowse_holder {' +

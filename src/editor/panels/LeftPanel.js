@@ -268,11 +268,6 @@ class LeftPanel {
     $id("tool_ellipse").addEventListener("click", this.clickEllipse.bind(this));
     $id("tool_circle").addEventListener("click", this.clickCircle.bind(this));
     $id("tool_fhellipse").addEventListener("click", this.clickFHEllipse.bind(this));
-
-    // eslint-disable-next-line max-len
-    [ "tool_rect", "tool_square", "tool_fhrect", "tool_ellipse", "tool_circle", "tool_fhellipse", "tool_select", "tool_fhpath", "tool_text", "tool_image", "tool_zoom", "tool_path", "tool_line", "tools_rect", "tools_ellipse" ].forEach((attrId) =>
-      $id(attrId).init(this.editor)
-    );
   }
 }
 

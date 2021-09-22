@@ -94,7 +94,6 @@ export default {
             svgCanvas.setMode('eyedropper');
           }
         });
-        $id('tool_eyedropper').init(svgEditor);
       },
       // if we have selected an element, grab its paint and enable the eye dropper button
       selectedChanged: getStyle,

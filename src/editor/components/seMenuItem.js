@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import 'elix/define/Menu.js';
 import 'elix/define/MenuItem.js';
 import { t } from '../locale.js';
@@ -29,18 +30,7 @@ export class SeMenuItem extends HTMLElement {
     this.$menuitem = this._shadowRoot.querySelector('elix-menu-item');
     this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
     this.$svg.setAttribute('style', 'display: none;');
-    this.editor = null;
-  }
-  /**
-   * @function init
-   * @param {any} name
-   * @returns {void}
-   */
-  init (editor) {
-    this.editor = editor;
-    if (this.hasAttribute("src")) {
-      this.setAttribute('src', this.getAttribute("src"));
-    }
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -58,14 +48,11 @@ export class SeMenuItem extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     let shortcut = '';
-    if (oldValue === newValue && name !== 'src') return;
+    if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      if(this.editor !== null) {
-        const { imgPath } = this.editor.configObj.curConfig;
-        this.$img.style.display = 'inline-block';
-        this.$img.setAttribute('src', imgPath + '/' + newValue);
-      }
+      this.$img.style.display = 'inline-block';
+      this.$img.setAttribute('src', this.imgPath + '/' + newValue);
       break;
     case 'label':
       shortcut = this.getAttribute('shortcut');

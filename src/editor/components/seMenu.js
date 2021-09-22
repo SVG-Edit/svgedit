@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import 'elix/define/MenuItem.js';
 import './sePlainMenuButton.js';
 
@@ -43,18 +44,7 @@ export class SeMenu extends HTMLElement {
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$menu = this._shadowRoot.querySelector('elix-menu-button');
     this.$label = this.$menu.shadowRoot.querySelector('#popupToggle').shadowRoot;
-    this.editor = null;
-  }
-  /**
-   * @function init
-   * @param {any} name
-   * @returns {void}
-   */
-  init (editor) {
-    this.editor = editor;
-    if (this.hasAttribute("src")) {
-      this.setAttribute('src', this.getAttribute("src"));
-    }
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -73,16 +63,13 @@ export class SeMenu extends HTMLElement {
    */
   attributeChangedCallback (name, oldValue, newValue) {
     const image = new Image();
-    if (oldValue === newValue && name !== 'src') return;
+    if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      if (this.editor !== null) {
-        const { imgPath } = this.editor.configObj.curConfig;
-        image.src = imgPath + '/' + newValue;
-        image.width = 24;
-        image.height = 24;
-        this.$label.prepend(image);
-      }
+      image.src = this.imgPath + '/' + newValue;
+      image.width = 24;
+      image.height = 24;
+      this.$label.prepend(image);
       break;
     case 'label':
       this.$label.prepend(newValue);

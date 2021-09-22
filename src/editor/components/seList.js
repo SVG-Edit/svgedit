@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import 'elix/define/DropdownList.js';
 import { t } from '../locale.js';
 
@@ -46,6 +47,7 @@ export class SeList extends HTMLElement {
     this.$label = this._shadowRoot.querySelector('label');
     this.$selction = this.$dropdown.shadowRoot.querySelector('#source').querySelector('#value');
     this.items = this.querySelectorAll("se-list-item");
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -85,7 +87,7 @@ export class SeList extends HTMLElement {
             while(currentObj.$selction.firstChild)
               currentObj.$selction.removeChild(currentObj.$selction.firstChild);
             const img = document.createElement('img');
-            img.src = './images/' + element.getAttribute("src");
+            img.src = currentObj.imgPath + '/' + element.getAttribute("src");
             img.style.height = element.getAttribute("img-height");
             img.setAttribute('title', t(element.getAttribute("title")));
             currentObj.$selction.append(img);

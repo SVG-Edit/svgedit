@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import { t } from '../locale.js';
 const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
@@ -55,18 +56,7 @@ export class ToolButton extends HTMLElement {
     // locate the component
     this.$div = this._shadowRoot.querySelector('div');
     this.$img = this._shadowRoot.querySelector('img');
-    this.editor = null;
-  }
-  /**
-   * @function init
-   * @param {any} name
-   * @returns {void}
-   */
-  init (editor) {
-    this.editor = editor;
-    if (this.hasAttribute("src")) {
-      this.setAttribute('src', this.getAttribute("src"));
-    }
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -83,7 +73,7 @@ export class ToolButton extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue && name !== 'src') return;
+    if (oldValue === newValue) return;
     switch (name) {
     case 'title':
       {
@@ -97,9 +87,8 @@ export class ToolButton extends HTMLElement {
     case 'src':
       if (newValue.indexOf("data:") !== -1) {
         this.$img.setAttribute('src', newValue);
-      } else if(this.editor !== null) {
-        const { imgPath } = this.editor.configObj.curConfig;
-        this.$img.setAttribute('src', imgPath + "/" + newValue);
+      } else {
+        this.$img.setAttribute('src', this.imgPath + "/" + newValue);
       }
       break;
     case 'pressed':

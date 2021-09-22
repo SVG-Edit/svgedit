@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import 'elix/define/Option.js';
 import { t } from '../locale.js';
 
@@ -34,18 +35,7 @@ export class SeListItem extends HTMLElement {
     this.$svg.setAttribute('style', 'display: none;');
     this.$img = this._shadowRoot.querySelector('img');
     this.$img.setAttribute('style', 'display: none;');
-    this.editor = null;
-  }
-  /**
-   * @function init
-   * @param {any} name
-   * @returns {void}
-   */
-  init (editor) {
-    this.editor = editor;
-    if (this.hasAttribute("src")) {
-      this.setAttribute('src', this.getAttribute("src"));
-    }
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -63,18 +53,15 @@ export class SeListItem extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue && name !== 'src') return;
+    if (oldValue === newValue) return;
     switch (name) {
     case 'option':
       this.$menuitem.setAttribute('option', newValue);
       this.$menuitem.textContent = t(newValue);
       break;
     case 'src':
-      if(this.editor !== null) {
-        const { imgPath } = this.editor.configObj.curConfig;
-        this.$img.setAttribute('style', 'display: block;');
-        this.$img.setAttribute('src', imgPath + '/' + newValue);
-      }
+      this.$img.setAttribute('style', 'display: block;');
+      this.$img.setAttribute('src', this.imgPath + '/' + newValue);
       break;
     case 'title':
       this.$img.setAttribute('title', t(newValue));

@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import ListComboBox from 'elix/define/ListComboBox.js';
 import * as internal from 'elix/src/base/internal.js';
 import { templateFrom, fragmentFrom } from 'elix/src/core/htmlLiterals.js';
@@ -60,17 +61,6 @@ class Zoom extends ListComboBox {
     return result;
   }
   /**
-   * @function init
-   * @param {any} name
-   * @returns {void}
-   */
-  init (editor) {
-    this.editor = editor;
-    if (this.hasAttribute("src")) {
-      this.setAttribute('src', this.getAttribute("src"));
-    }
-  }
-  /**
    * @function observedAttributes
    * @returns {any} observed
    */
@@ -91,8 +81,8 @@ class Zoom extends ListComboBox {
       // this.$span.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
       break;
     case 'src':
-      if (this.editor !== null && this.editor !== undefined) {
-        const { imgPath } = this.editor.configObj.curConfig;
+      {
+        const { imgPath } = svgEditor.configObj.curConfig;
         this.src = imgPath + '/' + newValue;
       }
       break;

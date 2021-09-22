@@ -1,3 +1,4 @@
+/* globals svgEditor */
 /* eslint-disable max-len */
 import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
@@ -666,20 +667,16 @@ export class SeColorPicker extends HTMLElement {
     this.i18next = null;
     this.$picker = this._shadowRoot.getElementById('picker');
     this.$color_picker = this._shadowRoot.getElementById('color_picker');
-    this.editor = null;
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function init
    * @param {any} name
    * @returns {void}
    */
-  init (i18next, editor) {
+  init (i18next) {
     this.i18next = i18next;
     this.setAttribute('config-change_xxx_color', t('config.change_xxx_color'));
-    this.editor = editor;
-    if (this.hasAttribute("src")) {
-      this.setAttribute('src', this.getAttribute("src"));
-    }
   }
   /**
    * @function observedAttributes
@@ -696,13 +693,10 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue && name !== 'src') return;
+    if (oldValue === newValue) return;
     switch (name) {
     case 'src':
-      if(this.editor !== null) {
-        const { imgPath } = this.editor.configObj.curConfig;
-        this.$logo.setAttribute('src', imgPath + '/' + newValue);
-      }
+      this.$logo.setAttribute('src', this.imgPath + '/' + newValue);
       break;
     case 'label':
       this.setAttribute('title', t(newValue));

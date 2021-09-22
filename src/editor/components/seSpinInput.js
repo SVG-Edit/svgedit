@@ -1,3 +1,4 @@
+/* globals svgEditor */
 import '../dialogs/se-elix/define/NumberSpinBox.js';
 import { t } from '../locale.js';
 
@@ -68,6 +69,7 @@ export class SESpinInput extends HTMLElement {
     this.$label = this.shadowRoot.getElementById('label');
     this.$event = new CustomEvent('change');
     this.$input = this._shadowRoot.querySelector('elix-number-spin-box');
+    this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
   /**
    * @function observedAttributes
@@ -93,7 +95,7 @@ export class SESpinInput extends HTMLElement {
       }
       break;
     case 'src':
-      this.$img.setAttribute('src', './images/' + newValue);
+      this.$img.setAttribute('src', this.imgPath + '/' + newValue);
       this.$label.remove();
       this.$div.classList.add('imginside');
       break;

@@ -216,13 +216,8 @@ class BottomPanel {
     $id('stroke_linejoin').addEventListener('change', (evt) => this.handleStrokeAttr.bind(this)('stroke-linejoin', evt));
     $id('stroke_linecap').addEventListener('change', (evt) => this.handleStrokeAttr.bind(this)('stroke-linecap', evt));
     $id('opacity').addEventListener('change', this.handleOpacity.bind(this));
-    $id('fill_color').init(i18next, this.editor);
-    $id('stroke_color').init(i18next, this.editor);
-    $id('zoom').init(this.editor);
-    // eslint-disable-next-line max-len
-    [ "linejoin_miter", "linejoin_round", "linejoin_bevel", "linecap_butt", "linecap_square", "linecap_round" ].forEach((attrId) => {
-      $id(attrId).init(this.editor);
-    });
+    $id('fill_color').init(i18next);
+    $id('stroke_color').init(i18next);
   }
   /**
   * @type {module}

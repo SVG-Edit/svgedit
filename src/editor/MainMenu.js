@@ -292,9 +292,6 @@ class MainMenu {
     /**
      * Associate all button actions as well as non-button keyboard shortcuts.
      */
-    [ "main_button", "tool_import", "tool_export", "tool_docprops", "tool_editor_prefs", "tool_editor_homepage"  ].forEach((attrId) =>
-      $id(attrId).init(this.editor)
-    );
     $id("tool_import").addEventListener("click", () => {
       this.clickImport();
       window.dispatchEvent(new CustomEvent("importImages"));

@@ -174,9 +174,6 @@ export default {
         $id("tool_open").addEventListener("click", clickOpen.bind(this));
         $id("tool_save").addEventListener("click", clickSave.bind(this, "save"));
         $id("tool_save_as").addEventListener("click", clickSave.bind(this, "saveas"));
-        [ "tool_clear", "tool_open", "tool_save", "tool_save_as" ].forEach((attrId) =>
-          $id(attrId).init(svgEditor)
-        );
       }
     };
   }
