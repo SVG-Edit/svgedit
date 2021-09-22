@@ -18,21 +18,15 @@ export default {
 
     // Define and insert the base html element.
     const propsWindowHtml =
-      '<div id="overview_window_content_pane" style="width:100%; ' +
-        'word-wrap:break-word;  display:inline-block; margin-top:20px;">' +
-        '<div id="overview_window_content" style="position:relative; ' +
-          'left:15px; top:0px;">' +
-          '<div style="background-color:#A0A0A0; display:inline-block; ' +
-            'overflow:visible;">' +
-            '<svg id="overviewMiniView" width="132" height="100" x="0" ' +
-              'y="0" viewBox="0 0 4800 3600" ' +
+      '<div id="overview_window_content_pane" style="width:100%; word-wrap:break-word;  display:inline-block; margin-top:20px;">' +
+        '<div id="overview_window_content" style="position:relative; padding-left:15px; top:0px;">' +
+          '<div style="background-color:#A0A0A0; display:inline-block; overflow:visible;">' +
+            '<svg id="overviewMiniView" width="132" height="100" x="0" y="0" viewBox="0 0 4800 3600" ' +
                 'xmlns="http://www.w3.org/2000/svg" ' +
                 'xmlns:xlink="http://www.w3.org/1999/xlink">' +
               '<use x="0" y="0" xlink:href="#svgroot"> </use>' +
             '</svg>' +
-            '<div id="overview_window_view_box" style="min-width:50px; ' +
-              'min-height:50px; position:absolute; top:30px; left:30px; ' +
-              'z-index:5; background-color:rgba(255,0,102,0.3);">' +
+            '<div id="overview_window_view_box" style="min-width:50px; min-height:50px; position:absolute; top:30px; left:30px; z-index:5; background-color:rgba(255,0,102,0.3);">' +
             '</div>' +
           '</div>' +
         '</div>' +
