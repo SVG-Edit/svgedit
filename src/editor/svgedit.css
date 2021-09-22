@@ -167,7 +167,6 @@ hr {
 
 #layerlist td.layername:hover {
   color: blue;
-  font-style: italic;
 }
 
 #layerlist tr.layersel td.layername {
