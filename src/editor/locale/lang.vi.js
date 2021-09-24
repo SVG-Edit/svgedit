@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Thay đổi nội dung văn bản',
+    font_family_label: 'Font:',
     font_family: 'Thay đổi Font Gia đình',
     font_size: 'Thay đổi cỡ chữ',
     bold: 'Bold Text',

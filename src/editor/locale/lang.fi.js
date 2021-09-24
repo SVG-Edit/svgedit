@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Muuta tekstin sisältö',
+    font_family_label: 'Font:',
     font_family: 'Muuta Font Family',
     font_size: 'Muuta fontin kokoa',
     bold: 'Lihavoitu teksti',

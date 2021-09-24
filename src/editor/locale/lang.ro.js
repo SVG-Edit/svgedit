@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Drept',
     curve_segments: 'Curb',
     text_contents: 'Schimbarea conţinutului textului',
+    font_family_label: 'Font:',
     font_family: 'Modificare familie de fonturi',
     font_size: 'Schimbă dimensiunea fontului',
     bold: 'Text Îngroşat',

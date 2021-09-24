@@ -184,7 +184,7 @@ class BottomPanel {
         <se-colorpicker id="fill_color" src="fill.svg" label="properties.fill_color" type="fill"></se-colorpicker>
         <se-colorpicker id="stroke_color" src="stroke.svg" label="properties.stroke_color" type="stroke"></se-colorpicker>
         <se-spin-input id="stroke_width" min=0 max=99 step=1 title="properties.stroke_width" label=""></se-spin-input>
-        <se-select id="stroke_style" title="${i18next.t('properties.stroke_style')}" label="" width="22px" height="22px"
+        <se-select id="stroke_style" title="properties.stroke_style" label="" width="22px" height="22px"
           options="&#8212;,...,- -,- .,- .."
           values="none 2,2 5,5 5,2,2,2 5,2,2,2,2,2">     
         </se-select>

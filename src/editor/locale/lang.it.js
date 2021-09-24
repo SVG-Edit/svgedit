@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Linea retta',
     curve_segments: 'Curva',
     text_contents: 'Cambia il contenuto del testo',
+    font_family_label: 'Font:',
     font_family: 'Cambia il tipo di Font',
     font_size: 'Modifica dimensione carattere',
     bold: 'Grassetto',

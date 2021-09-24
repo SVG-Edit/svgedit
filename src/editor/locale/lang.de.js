@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Gerade',
     curve_segments: 'Kurve',
     text_contents: 'Textinhalt erstellen und bearbeiten',
+    font_family_label: 'Font:',
     font_family: 'Schriftart wählen',
     font_size: 'Schriftgröße einstellen',
     bold: 'Fetter Text',

@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Change Nakala contents',
+    font_family_label: 'Font:',
     font_family: 'Change font Family',
     font_size: 'Change font Size',
     bold: 'Bold Nakala',

@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Raven odsek',
     curve_segments: 'Ukrivljen odsek',
     text_contents: 'Spremeni besedilo',
+    font_family_label: 'Font:',
     font_family: 'Spremeni tip pisave',
     font_size: 'Spremeni velikost pisave',
     bold: 'Krepko',

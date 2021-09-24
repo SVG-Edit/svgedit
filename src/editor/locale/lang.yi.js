@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'ענדערן טעקסט אינהאַלט',
+    font_family_label: 'Font:',
     font_family: 'ענדערן פאָנט פאַמילי',
     font_size: 'בייטן פאָנט גרייס',
     bold: 'דרייסט טעקסט',

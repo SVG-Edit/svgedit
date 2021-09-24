@@ -39,13 +39,14 @@ export class SeText extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'text':
-      this.$div.setAttribute('title', t(newValue));
+      this.$div.textContent = t(newValue);
       break;
     case 'style':
       this.$div.style = newValue;
       break;
     case 'value':
       this.$div.value = newValue;
+      //this.$div.setAttribute("value", newValue);
       break;
     default:
       // eslint-disable-next-line no-console

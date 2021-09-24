@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: '텍스트 변경 내용',
+    font_family_label: 'Font:',
     font_family: '글꼴 변경 패밀리',
     font_size: '글꼴 크기 변경',
     bold: '굵은 텍스트',

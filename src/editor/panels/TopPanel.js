@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* globals seAlert */
 
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
@@ -894,11 +895,8 @@ class TopPanel {
           <se-button id="tool_align_top" title="tools.align_top" src="align_top.svg"></se-button>
           <se-button id="tool_align_middle" title="tools.align_middle" src="align_middle.svg"></se-button>
           <se-button id="tool_align_bottom" title="tools.align_bottom" src="align_bottom.svg"></se-button>
-          <se-select id="tool_align_relative" label="relative to:" 
-            options="${i18next.t('tools.selected_objects')},
-                ${i18next.t('tools.largest_object')},
-                ${i18next.t('tools.smallest_object')},
-                ${i18next.t('tools.page')}"
+          <se-select id="tool_align_relative" label="tools.relativeTo" 
+            options="tools.selected_objects,tools.largest_object,tools.smallest_object,tools.page"
             values="selected largest smallest page"></se-list-item>
           </se-select>
         </div> <!-- multiselected_panel -->
@@ -938,18 +936,7 @@ class TopPanel {
         <div class="text_panel">
           <se-button id="tool_bold" title="properties.bold" src="bold.svg" shortcut="B"></se-button>
           <se-button id="tool_italic" title="properties.italic" src="italic.svg" shortcut="I"></se-button>
-          <se-select id="tool_font_family" label="Font:"
-            options="${i18next.t('properties.serif')},
-                     ${i18next.t('properties.sans_serif')},
-                     ${i18next.t('properties.cursive')},
-                     ${i18next.t('properties.fantasy')},
-                     ${i18next.t('properties.monospace')},
-                     ${i18next.t('properties.courier')},
-                     ${i18next.t('properties.helvetica')},
-                     ${i18next.t('properties.times')}"
-            values="Serif Sans-serif Cursive Fantasy Monospace Courier Helvetica Times"
-          >
-          </select>
+          <se-select id="tool_font_family" label="properties.font_family_label" options="properties.serif,properties.sans_serif,properties.cursive,properties.fantasy,properties.monospace,properties.courier,properties.helvetica,properties.times" values="Serif Sans-serif Cursive Fantasy Monospace Courier Helvetica Times"></select>
           <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="properties.font_size" src="fontsize.svg"></se-spin-input>
         </div>
         <div class="text_panel">
@@ -982,7 +969,7 @@ class TopPanel {
           <div class="tool_sep"></div>
           <se-spin-input id="path_node_x" data-attr="x" size="4" title="properties.node_x" label="properties.x_label"></se-spin-input>
           <se-spin-input id="path_node_y" data-attr="y" size="4" title="properties.node_y" label="properties.y_label"></se-spin-input>
-          <se-select id="seg_type" title="${i18next.t('tools.seg_type')}" label="" options="${i18next.t('properties.straight_segments')}, ${i18next.t('properties.curve_segments')}" values="4 6"></se-select>
+          <se-select id="seg_type" title="properties.seg_type" label="" options="properties.straight_segments,properties.curve_segments" values="4 6"></se-select>
           <se-button id="tool_node_clone" title="tools.node_clone" src="tool_node_clone.svg"></se-button>
           <se-button id="tool_node_delete" title="tools.node_delete" src="tool_node_delete.svg"></se-button>
           <se-button id="tool_openclose_path" title="tools.openclose_path" src="tool_openclose_path.svg"></se-button>

@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Tukar isi teks',
+    font_family_label: 'Font:',
     font_family: 'Tukar Font Keluarga',
     font_size: 'Ubah Saiz Font',
     bold: 'Bold Teks',

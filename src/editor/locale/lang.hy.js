@@ -70,6 +70,7 @@ export default {
     curve_segments: 'Curve',
     text_contents: 'Change text contents',
     font_family: 'Change Font Family',
+    font_family_label: 'Font:',
     font_size: 'Change Font Size',
     bold: 'Bold Text',
     italic: 'Italic Text',

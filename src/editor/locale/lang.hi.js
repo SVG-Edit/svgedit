@@ -69,6 +69,7 @@ export default {
     straight_segments: 'सीधे वर्ग',
     curve_segments: 'घुमाव',
     text_contents: 'बदलें पाठ सामग्री',
+    font_family_label: 'Font:',
     font_family: 'बदलें फ़ॉन्ट परिवार',
     font_size: 'फ़ॉन्ट का आकार बदलें',
     bold: 'मोटा पाठ',
