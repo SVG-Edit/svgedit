@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Rovný',
     curve_segments: 'Krivka',
     text_contents: 'Zmeniť text',
+    font_family_label: 'Font:',
     font_family: 'Zmeniť font',
     font_size: 'Zmeniť veľkosť písma',
     bold: 'Tučné',

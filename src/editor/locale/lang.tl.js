@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Baguhin ang mga nilalaman ng teksto',
+    font_family_label: 'Font:',
     font_family: 'Baguhin ang Pamilya ng Font',
     font_size: 'Baguhin ang Laki ng Font',
     bold: 'Bold Text',

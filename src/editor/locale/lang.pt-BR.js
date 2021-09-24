@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Reto',
     curve_segments: 'Curvo',
     text_contents: 'Mudar conteúdo do texto',
+    font_family_label: 'Font:',
     font_family: 'Mudar o estilo da fonte',
     font_size: 'Mudar o tamanho da fonte',
     bold: 'Negrito',

@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Keisti teksto turinys',
+    font_family_label: 'Font:',
     font_family: 'Pakeistišriftą Šeima',
     font_size: 'Change font size',
     bold: 'Pusjuodis',

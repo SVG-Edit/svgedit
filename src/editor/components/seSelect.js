@@ -1,3 +1,4 @@
+import { t } from '../locale.js';
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
@@ -16,7 +17,7 @@ label {
   width:100%;
 }
 </style>
-  <label>Label</label>
+  <label></label>
   <select>
   </select>
 
@@ -41,7 +42,7 @@ export class SeSelect extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'label', 'width', 'height', 'options', 'values' ];
+    return [ 'label', 'width', 'height', 'options', 'values', 'title' ];
   }
 
   /**
@@ -56,7 +57,10 @@ export class SeSelect extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'label':
-      this.$label.textContent = newValue;
+      this.$label.textContent = t(newValue);
+      break;
+    case 'title':
+      this.$select.setAttribute("title", t(newValue));
       break;
     case 'height':
       this.$select.style.height = newValue;
@@ -68,7 +72,7 @@ export class SeSelect extends HTMLElement {
       options = newValue.split(',');
       options.forEach((option) => {
         const optionNode = document.createElement("OPTION");
-        const text = document.createTextNode(option);
+        const text = document.createTextNode(t(option));
         optionNode.appendChild(text);
         this.$select.appendChild(optionNode);
       });

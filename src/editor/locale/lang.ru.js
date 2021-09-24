@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Отрезок',
     curve_segments: 'Сплайн',
     text_contents: 'Изменить содержание текста',
+    font_family_label: 'Font:',
     font_family: 'Изменить семейство шрифтов',
     font_size: 'Изменить размер шрифта',
     bold: 'Жирный',

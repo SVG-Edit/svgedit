@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Inneachar Athraigh téacs',
+    font_family_label: 'Font:',
     font_family: 'Athraigh an Cló Teaghlaigh',
     font_size: 'Athraigh Clómhéid',
     bold: 'Trom Téacs',

@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Değiştirmek metin içeriği',
+    font_family_label: 'Font:',
     font_family: 'Font değiştir Aile',
     font_size: 'Change font size',
     bold: 'Kalın Yazı',

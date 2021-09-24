@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'A szöveg tartalma',
+    font_family_label: 'Font:',
     font_family: 'Change Betűcsalád',
     font_size: 'Change font size',
     bold: 'Félkövér szöveg',

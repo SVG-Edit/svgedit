@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Test kontenut Bidla',
+    font_family_label: 'Font:',
     font_family: 'Bidla Font Familja',
     font_size: 'Change font size',
     bold: 'Bold Test',

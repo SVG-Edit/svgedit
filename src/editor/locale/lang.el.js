@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Αλλαγή περιεχόμενο κειμένου',
+    font_family_label: 'Font:',
     font_family: 'Αλλαγή γραμματοσειράς Οικογένεια',
     font_size: 'Αλλαγή μεγέθους γραμματοσειράς',
     bold: 'Bold Text',

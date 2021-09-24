@@ -70,6 +70,7 @@ export default {
     curve_segments: 'Curve',
     text_contents: 'Ubah isi teks',
     font_family: 'Ubah Font Keluarga',
+    font_family_label: 'Font:',
     font_size: 'Ubah Ukuran Font',
     bold: 'Bold Teks',
     italic: 'Italic Teks',

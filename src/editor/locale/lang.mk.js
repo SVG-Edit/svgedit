@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Промена текст содржина',
+    font_family_label: 'Font:',
     font_family: 'Смени фонт Фамилија',
     font_size: 'Изменифонт Големина',
     bold: 'Задебелен текст',

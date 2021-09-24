@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Breyta texta innihald',
+    font_family_label: 'Font:',
     font_family: 'Change Leturfjölskylda',
     font_size: 'Breyta leturstærð',
     bold: 'Bold Text',

@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Mainītu teksta saturs',
+    font_family_label: 'Font:',
     font_family: 'Mainīt fonta Family',
     font_size: 'Mainīt fonta izmēru',
     bold: 'Bold Text',

@@ -69,6 +69,7 @@ export default {
     straight_segments: '‫مستقیم‬',
     curve_segments: '‫منحنی‬',
     text_contents: '‫تغییر محتویات متن‬',
+    font_family_label: 'Font:',
     font_family: '‫تغییر خانواده قلم‬',
     font_size: '‫تغییر اندازه قلم‬',
     bold: '‫متن توپر ‬',

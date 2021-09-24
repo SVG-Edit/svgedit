@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Muuda teksti sisu',
+    font_family_label: 'Font:',
     font_family: 'Muutke Kirjasinperhe',
     font_size: 'Change font size',
     bold: 'Rasvane kiri',

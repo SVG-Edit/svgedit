@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Cynnwys testun Newid',
+    font_family_label: 'Font:',
     font_family: 'Newid Font Teulu',
     font_size: 'Newid Maint Ffont',
     bold: 'Testun Bras',

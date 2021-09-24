@@ -69,6 +69,7 @@ export default {
     straight_segments: '直線',
     curve_segments: 'カーブ',
     text_contents: 'テキストの内容の変更',
+    font_family_label: 'Font:',
     font_family: 'フォントファミリーの変更',
     font_size: '文字サイズの変更',
     bold: '太字',

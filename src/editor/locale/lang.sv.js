@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Ändra textinnehållet',
+    font_family_label: 'Font:',
     font_family: 'Ändra Typsnitt',
     font_size: 'Ändra textstorlek',
     bold: 'Fet text',

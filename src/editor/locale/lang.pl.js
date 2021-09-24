@@ -70,6 +70,7 @@ export default {
     straight_segments: 'Prosty',
     curve_segments: 'Zaokrąglony',
     text_contents: 'Zmień text',
+    font_family_label: 'Font:',
     font_family: 'Zmień krój czcionki',
     font_size: 'Zmień rozmiar czcionki',
     bold: 'Pogrubienie textu',

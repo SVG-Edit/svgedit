@@ -3,6 +3,11 @@ const template = document.createElement('template');
 // eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
+  #layersLabel {
+    font-size: 13px;
+    line-height: normal;
+    font-weight: 700;
+  }
   </style>
   <div></div>
 `;
@@ -26,7 +31,7 @@ export class SeText extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'text', 'value', 'style' ];
+    return [ 'text', 'value', 'style', 'title', 'id' ];
   }
   /**
    * @function attributeChangedCallback
@@ -39,13 +44,20 @@ export class SeText extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'text':
-      this.$div.setAttribute('title', t(newValue));
+      this.$div.textContent = t(newValue);
+      break;
+    case 'title':
+      this.$div.setAttribute("title", t(newValue));
       break;
     case 'style':
       this.$div.style = newValue;
       break;
+    case 'id':
+      this.$div.id = newValue;
+      break;
     case 'value':
       this.$div.value = newValue;
+      //this.$div.setAttribute("value", newValue);
       break;
     default:
       // eslint-disable-next-line no-console
@@ -58,7 +70,7 @@ export class SeText extends HTMLElement {
    * @returns {any}
    */
   get text () {
-    return this.getAttribute('text');
+    return this.$div.textContent;
   }
 
   /**
@@ -66,7 +78,7 @@ export class SeText extends HTMLElement {
    * @returns {void}
    */
   set text (value) {
-    this.setAttribute('text', value);
+    this.$div.setAttribute("title", t(value));
   }
   /**
    * @function get
@@ -83,7 +95,21 @@ export class SeText extends HTMLElement {
   set value (value) {
     this.value = value;
   }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get title () {
+    return this.getAttribute('title');
+  }
 
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set title (value) {
+    this.setAttribute('title', value);
+  }
   /**
    * @function connectedCallback
    * @returns {void}

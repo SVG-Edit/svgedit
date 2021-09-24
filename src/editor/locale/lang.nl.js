@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Recht',
     curve_segments: 'Gebogen',
     text_contents: 'Wijzig tekst',
+    font_family_label: 'Font:',
     font_family: 'Verander lettertype',
     font_size: 'Verander lettertype grootte',
     bold: 'Vet',

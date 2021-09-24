@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Straight',
     curve_segments: 'Curve',
     text_contents: 'Text contents Ndryshimi',
+    font_family_label: 'Font:',
     font_family: 'Ndryshimi Font Family',
     font_size: 'Ndryshimi Font Size',
     bold: 'Bold Text',

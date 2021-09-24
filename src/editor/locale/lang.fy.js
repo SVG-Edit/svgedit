@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Rjocht',
     curve_segments: 'Bûcht',
     text_contents: 'Tekst oanpasse',
+    font_family_label: 'Font:',
     font_family: 'Lettertype oanpasse',
     font_size: 'Lettergrutte oanpasse',
     bold: 'Fet',

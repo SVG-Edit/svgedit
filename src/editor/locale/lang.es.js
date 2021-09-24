@@ -69,6 +69,7 @@ export default {
     straight_segments: 'Recta',
     curve_segments: 'Curva',
     text_contents: 'Modificar el texto',
+    font_family_label: 'Font:',
     font_family: 'Tipo de fuente',
     font_size: 'Tamaño de la fuente',
     bold: 'Texto en negrita',
