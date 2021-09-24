@@ -48,10 +48,10 @@ class LayersPanel {
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <div id="sidepanels">
-      <div id="sidepanel_handle" title="${i18next.t('ui.panel_action')}">${i18next.t('ui.panel')}</div>
+      <se-text id="sidepanel_handle" title="ui.panel_action" text="ui.panel"></se-text>
       <div id="sidepanel_content">
         <div id="layerpanel">
-          <h3 id="layersLabel">${i18next.t('layers.layers')}</h3>
+          <se-text id="layersLabel" text="layers.layers"></se-text>
           <fieldset id="layerbuttons">
             <se-button id="layer_new" title="layers.new" size="small" src="new.svg"></se-button>
             <se-button id="layer_delete" title="layers.del" size="small" src="delete.svg"></se-button>
@@ -67,8 +67,8 @@ class LayersPanel {
               <td class="layername">Layer 1</td>
             </tr>
           </table>
-          <span id="selLayerLabel">${i18next.t('layers.move_elems_to')}</span>
-          <select id="selLayerNames" title="${i18next.t('layers.move_selected')}" disabled="disabled">
+          <se-text id="selLayerLabel" text="layers.move_elems_to"></se-text>
+          <select id="selLayerNames" disabled="disabled">
             <option selected="selected" value="layer1">Layer 1</option>
           </select>
         </div>
@@ -89,6 +89,7 @@ class LayersPanel {
     menuLayerBox.setAttribute("leftclick", false);
     this.editor.$container.append(menuLayerBox);
     menuLayerBox.init(i18next);
+    $id("selLayerNames").setAttribute("title", i18next.t('layers.move_selected'));
     $id("layer_new").addEventListener("click", this.newLayer.bind(this));
     $id("layer_delete").addEventListener("click", this.deleteLayer.bind(this));
     $id("layer_up").addEventListener("click", () => this.moveLayer.bind(this)(-1));

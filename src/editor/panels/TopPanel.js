@@ -958,7 +958,7 @@ class TopPanel {
         </div> <!-- g_panel -->
         <!-- For anchor elements -->
         <div class="a_panel">
-          <label id="tool_link_url" title="${i18next.t('tools.set_link_url')}">
+          <label id="tool_link_url">
             <span id="linkLabel" class="icon_label"></span>
             <input id="link_url" type="text" size="35" />
           </label>
@@ -986,6 +986,7 @@ class TopPanel {
     newSeEditorDialog.setAttribute("id", "se-svg-editor-dialog");
     this.editor.$container.append(newSeEditorDialog);
     newSeEditorDialog.init(i18next);
+    $id("tool_link_url").setAttribute("title", i18next.t('tools.set_link_url'));
     // register action to top panel buttons
     $id("tool_source").addEventListener("click", this.showSourceEditor.bind(this));
     $id("tool_wireframe").addEventListener("click", this.clickWireframe.bind(this));
