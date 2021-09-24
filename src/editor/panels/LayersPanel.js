@@ -67,10 +67,9 @@ class LayersPanel {
               <td class="layername">Layer 1</td>
             </tr>
           </table>
-          <se-text id="selLayerLabel" text="layers.move_elems_to"></se-text>
-          <select id="selLayerNames" disabled="disabled">
-            <option selected="selected" value="layer1">Layer 1</option>
-          </select>
+          <se-select id="selLayerNames" title="layers.move_selected" label="layers.move_elems_to" options="Layer 1"
+            values="layer1" value="layer1" disabled="disabled">     
+          </se-select>
         </div>
      </div>
   </div>
@@ -89,7 +88,6 @@ class LayersPanel {
     menuLayerBox.setAttribute("leftclick", false);
     this.editor.$container.append(menuLayerBox);
     menuLayerBox.init(i18next);
-    $id("selLayerNames").setAttribute("title", i18next.t('layers.move_selected'));
     $id("layer_new").addEventListener("click", this.newLayer.bind(this));
     $id("layer_delete").addEventListener("click", this.deleteLayer.bind(this));
     $id("layer_up").addEventListener("click", () => this.moveLayer.bind(this)(-1));
@@ -279,14 +277,13 @@ class LayersPanel {
     while(layerlist.firstChild)
       layerlist.removeChild(layerlist.firstChild);
 
-    const selLayerNames = $id("selLayerNames");
-    // empty() ref: http://youmightnotneedjquery.com/#empty
-    while(selLayerNames.firstChild)
-      selLayerNames.removeChild(selLayerNames.firstChild);
+    $id("selLayerNames").setAttribute("options", "");
     const drawing = this.editor.svgCanvas.getCurrentDrawing();
     const currentLayerName = drawing.getCurrentLayerName();
     let layer = this.editor.svgCanvas.getCurrentDrawing().getNumLayers();
     // we get the layers in the reverse z-order (the layer rendered on top is listed first)
+    let values = "";
+    let text = "";
     while (layer--) {
       const name = drawing.getLayerName(layer);
       const layerTr = document.createElement("tr");
@@ -299,9 +296,11 @@ class LayersPanel {
       layerTr.appendChild(layerVis);
       layerTr.appendChild(layerName);
       layerlist.appendChild(layerTr);
-      // eslint-disable-next-line no-unsanitized/property
-      selLayerNames.innerHTML += '<option value="' + name + '">' + name + '</option>';
+      values = (values) ? values + "::" + name : name;
+      text = (text) ? text + "," + name : name;
     }
+    $id("selLayerNames").setAttribute("options", text);
+    $id("selLayerNames").setAttribute("values", values);
     // handle selection of layer
     const nelements = $id('layerlist').querySelectorAll("td.layername");
     Array.from(nelements).forEach(function(element) {
