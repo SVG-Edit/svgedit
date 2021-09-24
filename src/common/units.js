@@ -6,7 +6,7 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import { NS } from './namespaces.js';
+const NSSVG = 'http://www.w3.org/2000/svg';
 
 const wAttrs = [ 'x', 'x1', 'cx', 'rx', 'width' ];
 const hAttrs = [ 'y', 'y1', 'cy', 'ry', 'height' ];
@@ -79,9 +79,9 @@ export const init = function (elementContainer) {
   elementContainer_ = elementContainer;
 
   // Get correct em/ex values by creating a temporary SVG.
-  const svg = document.createElementNS(NS.SVG, 'svg');
+  const svg = document.createElementNS(NSSVG, 'svg');
   document.body.append(svg);
-  const rect = document.createElementNS(NS.SVG, 'rect');
+  const rect = document.createElementNS(NSSVG, 'rect');
   rect.setAttribute('width', '1em');
   rect.setAttribute('height', '1ex');
   rect.setAttribute('x', '1in');

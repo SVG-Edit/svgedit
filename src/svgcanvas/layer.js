@@ -6,7 +6,7 @@
  * @copyright 2011 Jeff Schiller, 2016 Flint O'Brien
  */
 
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 import { toXml, walkTree, isNullish } from './utilities.js';
 
 

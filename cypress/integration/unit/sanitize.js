@@ -1,4 +1,4 @@
-import { NS } from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
 import * as sanitize from '../../../instrumented/svgcanvas/sanitize.js';
 
 describe('sanitize', function () {

@@ -63,7 +63,7 @@ import {
   init as blurInit, setBlurNoUndo, setBlurOffsets, setBlur
 } from './blur-event.js';
 import { sanitizeSvg } from './sanitize.js';
-import { getReverseNS, NS } from '../common/namespaces.js';
+import { getReverseNS, NS } from './namespaces.js';
 import {
   text2xml, assignAttributes, cleanupElement, getElem, getUrlFromAttr,
   findDefs, getHref, setHref, getRefElem, getRotationAngle, getPathBBox,

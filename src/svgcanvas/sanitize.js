@@ -6,8 +6,7 @@
  * @copyright 2010 Alexis Deveria, 2010 Jeff Schiller
  */
 
-import { getReverseNS, NS } from '../common/namespaces.js';
-import { isGecko } from '../common/browser.js';
+import { getReverseNS, NS } from './namespaces.js';
 import { getHref, setHref, getUrlFromAttr } from './utilities.js';
 
 const REVERSE_NS = getReverseNS();
@@ -19,16 +18,15 @@ const REVERSE_NS = getReverseNS();
  * @type {PlainObject}
  */
 /* eslint-disable max-len */
-const svgGenericWhiteList = [ 'class', 'id', 'display', 'transform' ];
+const svgGenericWhiteList = [ 'class', 'id', 'display', 'transform', 'style' ];
 const svgWhiteList_ = {
   // SVG Elements
-  a: [ 'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'xlink:href', 'xlink:title' ],
-  circle: [ 'clip-path', 'clip-rule', 'cx', 'cy', 'enable-background', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'r', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage' ],
-  clipPath: [ 'clipPathUnits', 'id' ],
+  a: [ 'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'xlink:href', 'xlink:title' ],
+  circle: [ 'clip-path', 'clip-rule', 'cx', 'cy', 'enable-background', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'r', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage' ],
+  clipPath: [ 'clipPathUnits' ],
   defs: [],
-  style: [ 'type' ],
   desc: [],
-  ellipse: [ 'clip-path', 'clip-rule', 'cx', 'cy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage' ],
+  ellipse: [ 'clip-path', 'clip-rule', 'cx', 'cy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage' ],
   feBlend: [ 'in', 'in2' ],
   feColorMatrix: [ 'in', 'type', 'value', 'result', 'values' ],
   feComposite: [ 'in', 'operator', 'result', 'in2' ],
@@ -38,30 +36,31 @@ const svgWhiteList_ = {
   feMergeNode: [ 'in' ],
   feMorphology: [ 'in', 'operator', 'radius' ],
   feOffset: [ 'dx', 'in', 'dy', 'result' ],
-  filter: [ 'color-interpolation-filters', 'filterRes', 'filterUnits', 'height',  'primitiveUnits', 'requiredFeatures', 'style', 'width', 'x', 'xlink:href', 'y' ],
-  foreignObject: [  'font-size', 'height',  'opacity', 'requiredFeatures', 'style', 'width', 'x', 'y' ],
-  g: [ 'clip-path', 'clip-rule',   'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor' ],
-  image: [  'clip-path', 'clip-rule', 'filter', 'height',  'mask', 'opacity', 'requiredFeatures', 'style', 'systemLanguage', 'width', 'x', 'xlink:href', 'xlink:title', 'y' ],
-  line: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter',  'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'x1', 'x2', 'y1', 'y2' ],
+  filter: [ 'color-interpolation-filters', 'filterRes', 'filterUnits', 'height',  'primitiveUnits', 'requiredFeatures', 'width', 'x', 'xlink:href', 'y' ],
+  foreignObject: [  'font-size', 'height',  'opacity', 'requiredFeatures', 'width', 'x', 'y' ],
+  g: [ 'clip-path', 'clip-rule',   'fill', 'fill-opacity', 'fill-rule', 'filter', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'font-family', 'font-size', 'font-style', 'font-weight', 'text-anchor' ],
+  image: [  'clip-path', 'clip-rule', 'filter', 'height',  'mask', 'opacity', 'requiredFeatures', 'systemLanguage', 'width', 'x', 'xlink:href', 'xlink:title', 'y' ],
+  line: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter',  'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'x1', 'x2', 'y1', 'y2' ],
   linearGradient: [   'gradientTransform', 'gradientUnits', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'x1', 'x2', 'xlink:href', 'y1', 'y2' ],
   marker: [   'markerHeight', 'markerUnits', 'markerWidth', 'orient', 'preserveAspectRatio', 'refX', 'refY', 'systemLanguage', 'viewBox' ],
   mask: [  'height',  'maskContentUnits', 'maskUnits', 'width', 'x', 'y' ],
-  metadata: [  'id' ],
-  path: [  'clip-path', 'clip-rule', 'd', 'enable-background', 'fill', 'fill-opacity', 'fill-rule', 'filter',  'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage' ],
-  pattern: [  'height',  'patternContentUnits', 'patternTransform', 'patternUnits', 'requiredFeatures', 'style', 'systemLanguage', 'viewBox', 'width', 'x', 'xlink:href', 'y' ],
-  polygon: [  'clip-path', 'clip-rule',  'fill', 'fill-opacity', 'fill-rule', 'filter',   'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'points', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'sides', 'shape', 'edge', 'point', 'starRadiusMultiplier', 'r', 'radialshift' ],
-  polyline: [  'clip-path', 'clip-rule',  'fill', 'fill-opacity', 'fill-rule', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'points', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'se:connector' ],
+  metadata: [ ],
+  path: [  'clip-path', 'clip-rule', 'd', 'enable-background', 'fill', 'fill-opacity', 'fill-rule', 'filter',  'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage' ],
+  pattern: [  'height',  'patternContentUnits', 'patternTransform', 'patternUnits', 'requiredFeatures', 'systemLanguage', 'viewBox', 'width', 'x', 'xlink:href', 'y' ],
+  polygon: [  'clip-path', 'clip-rule',  'fill', 'fill-opacity', 'fill-rule', 'filter',   'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'points', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'sides', 'shape', 'edge', 'point', 'starRadiusMultiplier', 'r', 'radialshift' ],
+  polyline: [  'clip-path', 'clip-rule',  'fill', 'fill-opacity', 'fill-rule', 'filter', 'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'points', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'se:connector' ],
   radialGradient: [  'cx', 'cy', 'fx', 'fy', 'gradientTransform', 'gradientUnits',  'r', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'xlink:href' ],
-  rect: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height',  'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'width', 'x', 'y' ],
-  stop: [   'offset', 'requiredFeatures', 'stop-opacity', 'style', 'systemLanguage', 'stop-color', 'gradientUnits', 'gradientTransform' ],
-  svg: [  'clip-path', 'clip-rule', 'enable-background', 'filter',  'height', 'mask', 'preserveAspectRatio', 'requiredFeatures', 'style', 'systemLanguage', 'version', 'viewBox', 'width', 'x', 'xmlns', 'xmlns:se', 'xmlns:xlink', 'xmlns:oi', 'oi:animations', 'y', 'stroke-linejoin', 'fill-rule', 'aria-label', 'stroke-width', 'fill-rule', 'xml:space' ],
+  rect: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height',  'mask', 'opacity', 'requiredFeatures', 'rx', 'ry', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'width', 'x', 'y' ],
+  stop: [   'offset', 'requiredFeatures', 'stop-opacity', 'systemLanguage', 'stop-color', 'gradientUnits', 'gradientTransform' ],
+  style: [ 'type' ],
+  svg: [  'clip-path', 'clip-rule', 'enable-background', 'filter',  'height', 'mask', 'preserveAspectRatio', 'requiredFeatures', 'systemLanguage', 'version', 'viewBox', 'width', 'x', 'xmlns', 'xmlns:se', 'xmlns:xlink', 'xmlns:oi', 'oi:animations', 'y', 'stroke-linejoin', 'fill-rule', 'aria-label', 'stroke-width', 'fill-rule', 'xml:space' ],
   switch: [   'requiredFeatures', 'systemLanguage' ],
-  symbol: [  'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight',  'opacity', 'overflow', 'preserveAspectRatio', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'viewBox', 'width', 'height' ],
-  text: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight',  'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'text-anchor', 'x', 'xml:space', 'y' ],
-  textPath: [   'method', 'requiredFeatures', 'spacing', 'startOffset', 'style', 'systemLanguage', 'xlink:href' ],
+  symbol: [  'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight',  'opacity', 'overflow', 'preserveAspectRatio', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'viewBox', 'width', 'height' ],
+  text: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight',  'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'text-anchor', 'x', 'xml:space', 'y' ],
+  textPath: [   'method', 'requiredFeatures', 'spacing', 'startOffset', 'systemLanguage', 'xlink:href' ],
   title: [],
-  tspan: [  'clip-path', 'clip-rule', 'dx', 'dy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight',  'mask', 'opacity', 'requiredFeatures', 'rotate', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'systemLanguage', 'text-anchor', 'textLength', 'x', 'xml:space', 'y' ],
-  use: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height',  'mask', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'style', 'width', 'x', 'xlink:href', 'y', 'overflow' ],
+  tspan: [  'clip-path', 'clip-rule', 'dx', 'dy', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'font-family', 'font-size', 'font-style', 'font-weight',  'mask', 'opacity', 'requiredFeatures', 'rotate', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'text-anchor', 'textLength', 'x', 'xml:space', 'y' ],
+  use: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'height',  'mask', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'width', 'x', 'xlink:href', 'y', 'overflow' ],
 
   // MathML Elements
   annotation: [ 'encoding' ],
@@ -97,8 +96,10 @@ const svgWhiteList_ = {
   semantics: []
 };
 /* eslint-enable max-len */
+
 // add generic attributes to all elements of the whitelist
 Object.keys(svgWhiteList_).forEach((element) => svgWhiteList_[element] = [ ...svgWhiteList_[element], ...svgGenericWhiteList ]);
+
 // Produce a Namespace-aware version of svgWhitelist
 const svgWhiteListNS_ = {};
 Object.entries(svgWhiteList_).forEach(([ elt, atts ]) => {
@@ -159,30 +160,16 @@ export const sanitizeSvg = function (node) {
       const attrNsURI = attr.namespaceURI;
       // Check that an attribute with the correct localName in the correct namespace is on
       // our whitelist or is a namespace declaration for one of our allowed namespaces
-      if (!({}.hasOwnProperty.call(allowedAttrsNS, attrLocalName) &&
-        attrNsURI === allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS
-      ) &&
-        !(attrNsURI === NS.XMLNS && REVERSE_NS[attr.value])) {
-        // Bypassing the whitelist to allow se: prefixes.
+      if ( attrNsURI !== allowedAttrsNS[attrLocalName] && attrNsURI !== NS.XMLNS
+       && !(attrNsURI === NS.XMLNS && REVERSE_NS[attr.value]) ) {
+        // Bypassing the whitelist to allow se: and oi: prefixes
+        // We can add specific namepaces on demand for now.
         // Is there a more appropriate way to do this?
-        if (attrName.startsWith('se:') || attrName.startsWith('data-')) {
+        if (attrName.startsWith('se:') || attrName.startsWith('oi:')|| attrName.startsWith('data-')) {
           seAttrs.push([ attrName, attr.value ]);
-        }
-        console.warn(`sanitizeSvg: attribute ${attrName} in element ${node.nodeName} not in whitelist is removed`);
-        node.removeAttributeNS(attrNsURI, attrLocalName);
-      }
-
-      // Add spaces before negative signs where necessary
-      if (isGecko()) {
-        switch (attrName) {
-        case 'transform':
-        case 'gradientTransform':
-        case 'patternTransform': {
-          const val = attr.value.replace(/(\d)-/g, '$1 -');
-          // const val = attr.value.replace(/(?<digit>\d)-/g, '$<digit> -');
-          node.setAttribute(attrName, val);
-          break;
-        }
+        } else {
+          console.warn(`sanitizeSvg: attribute ${attrName} in element ${node.nodeName} not in whitelist is removed`);
+          node.removeAttributeNS(attrNsURI, attrLocalName);
         }
       }
 

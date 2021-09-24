@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import 'pathseg';
 
-import { NS } from '../../../instrumented/common/namespaces.js';
+import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import * as math from '../../../instrumented/svgcanvas/math.js';
 import * as path from '../../../instrumented/svgcanvas/path.js';

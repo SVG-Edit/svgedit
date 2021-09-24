@@ -19,7 +19,7 @@
 * @property {Float} y
 */
 
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 
 // Constants
 const NEAR_ZERO = 1e-14;

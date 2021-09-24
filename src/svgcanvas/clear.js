@@ -4,7 +4,7 @@
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import { NS } from '../common/namespaces.js';
+import { NS } from './namespaces.js';
 
 let clearContext_ = null;
 
