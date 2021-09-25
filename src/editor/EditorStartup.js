@@ -217,7 +217,7 @@ class EditorStartup {
     // fired when user wants to move elements to another layer
     let promptMoveLayerOnce = false;
     $id('selLayerNames').addEventListener('change', (evt) => {
-      const destLayer = evt.currentTarget.options[evt.currentTarget.selectedIndex].value;
+      const destLayer = evt.detail.value;
       const confirmStr = this.i18next.t('notification.QmoveElemsToLayer').replace('%s', destLayer);
       /**
     * @param {boolean} ok

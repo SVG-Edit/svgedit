@@ -42,7 +42,7 @@ export class SeSelect extends HTMLElement {
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'label', 'width', 'height', 'options', 'values', 'title' ];
+    return [ 'label', 'width', 'height', 'options', 'values', 'title', 'disabled' ];
   }
 
   /**
@@ -62,6 +62,13 @@ export class SeSelect extends HTMLElement {
     case 'title':
       this.$select.setAttribute("title", t(newValue));
       break;
+    case 'disabled':
+      if(newValue === null) {
+        this.$select.removeAttribute("disabled");
+      } else {
+        this.$select.setAttribute("disabled", newValue);
+      }
+      break;
     case 'height':
       this.$select.style.height = newValue;
       break;
@@ -69,19 +76,29 @@ export class SeSelect extends HTMLElement {
       this.$select.style.width = newValue;
       break;
     case 'options':
-      options = newValue.split(',');
-      options.forEach((option) => {
-        const optionNode = document.createElement("OPTION");
-        const text = document.createTextNode(t(option));
-        optionNode.appendChild(text);
-        this.$select.appendChild(optionNode);
-      });
+      if(newValue === "") {
+        while(this.$select.firstChild)
+          this.$select.removeChild(this.$select.firstChild);
+      } else {
+        options = newValue.split(',');
+        options.forEach((option) => {
+          const optionNode = document.createElement("OPTION");
+          const text = document.createTextNode(t(option));
+          optionNode.appendChild(text);
+          this.$select.appendChild(optionNode);
+        });
+      }
       break;
     case 'values':
-      options = newValue.split(' ');
-      options.forEach((option, index) => {
-        this.$select.children[index].setAttribute('value', option);
-      });
+      if(newValue === "") {
+        while(this.$select.firstChild)
+          this.$select.removeChild(this.$select.firstChild);
+      } else {
+        options = newValue.split('::');
+        options.forEach((option, index) => {
+          this.$select.children[index].setAttribute('value', option);
+        });
+      }
       break;
     default:
       // eslint-disable-next-line no-console
@@ -148,6 +165,21 @@ export class SeSelect extends HTMLElement {
    */
   set value (value) {
     this.$select.value = value;
+  }
+  /**
+   * @function get
+   * @returns {any}
+   */
+  get disabled () {
+    return this.$select.getAttribute('disabled');
+  }
+
+  /**
+   * @function set
+   * @returns {void}
+   */
+  set disabled (value) {
+    this.$select.setAttribute('disabled', value);
   }
   /**
    * @function connectedCallback

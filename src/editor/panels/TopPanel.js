@@ -427,6 +427,7 @@ class TopPanel {
       // update the selected elements' layer
       $id("selLayerNames").removeAttribute("disabled");
       $id("selLayerNames").value = currentLayerName;
+      $id("selLayerNames").setAttribute("value", currentLayerName);
 
       // Enable regular menu options
       const canCMenu = document.getElementById("se-cmenu_canvas");
@@ -435,7 +436,7 @@ class TopPanel {
         "#delete,#cut,#copy,#move_front,#move_up,#move_down,#move_back"
       );
     } else {
-      $id("selLayerNames").disabled = "disabled";
+      $id("selLayerNames").setAttribute("disabled", "disabled");
     }
   }
   /**
@@ -897,7 +898,7 @@ class TopPanel {
           <se-button id="tool_align_bottom" title="tools.align_bottom" src="align_bottom.svg"></se-button>
           <se-select id="tool_align_relative" label="tools.relativeTo" 
             options="tools.selected_objects,tools.largest_object,tools.smallest_object,tools.page"
-            values="selected largest smallest page"></se-list-item>
+            values="selected::largest::smallest::page"></se-list-item>
           </se-select>
         </div> <!-- multiselected_panel -->
         <div class="rect_panel">
@@ -936,7 +937,7 @@ class TopPanel {
         <div class="text_panel">
           <se-button id="tool_bold" title="properties.bold" src="bold.svg" shortcut="B"></se-button>
           <se-button id="tool_italic" title="properties.italic" src="italic.svg" shortcut="I"></se-button>
-          <se-select id="tool_font_family" label="properties.font_family_label" options="properties.serif,properties.sans_serif,properties.cursive,properties.fantasy,properties.monospace,properties.courier,properties.helvetica,properties.times" values="Serif Sans-serif Cursive Fantasy Monospace Courier Helvetica Times"></select>
+          <se-select id="tool_font_family" label="properties.font_family_label" options="properties.serif,properties.sans_serif,properties.cursive,properties.fantasy,properties.monospace,properties.courier,properties.helvetica,properties.times" values="Serif::Sans-serif::Cursive::Fantasy::Monospace::Courier::Helvetica::Times"></select>
           <se-spin-input size="2" id="font_size" min=1 max=1000 step=1 title="properties.font_size" src="fontsize.svg"></se-spin-input>
         </div>
         <div class="text_panel">
@@ -969,7 +970,7 @@ class TopPanel {
           <div class="tool_sep"></div>
           <se-spin-input id="path_node_x" data-attr="x" size="4" title="properties.node_x" label="properties.x_label"></se-spin-input>
           <se-spin-input id="path_node_y" data-attr="y" size="4" title="properties.node_y" label="properties.y_label"></se-spin-input>
-          <se-select id="seg_type" title="properties.seg_type" label="" options="properties.straight_segments,properties.curve_segments" values="4 6"></se-select>
+          <se-select id="seg_type" title="properties.seg_type" label="" options="properties.straight_segments,properties.curve_segments" values="4::6"></se-select>
           <se-button id="tool_node_clone" title="tools.node_clone" src="tool_node_clone.svg"></se-button>
           <se-button id="tool_node_delete" title="tools.node_delete" src="tool_node_delete.svg"></se-button>
           <se-button id="tool_openclose_path" title="tools.openclose_path" src="tool_openclose_path.svg"></se-button>
