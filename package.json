@@ -63,17 +63,9 @@
   },
   "homepage": "https://github.com/SVG-Edit/svgedit#readme",
   "browserslist": [
-    ">0%",
-    "not Opera < 59",
-    "not IE < 12",
-    "not Chrome < 75",
-    "not FireFox < 68",
-    "not Safari < 11",
-    "not ios_saf < 10",
-    "not android < 5",
-    "not op_mini all",
-    "not Edge < 18",
-    "not dead"
+    "defaults",
+    "not IE 11",
+    "not OperaMini all"
   ],
   "dependencies": {
     "@babel/polyfill": "7.12.1",
