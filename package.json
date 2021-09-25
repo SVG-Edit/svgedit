@@ -65,7 +65,7 @@
   "browserslist": [
     "defaults",
     "not IE 11",
-    "maintained node versions"
+    "not OperaMini all"
   ],
   "dependencies": {
     "@babel/polyfill": "7.12.1",
