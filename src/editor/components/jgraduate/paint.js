@@ -56,13 +56,23 @@ export default class Paint {
       this.type = 'linearGradient';
       this.solidColor = null;
       this.radialGradient = null;
-      this.linearGradient = options.linearGradient.cloneNode(true);
+      if(options.linearGradient.hasAttribute('xlink:href')) {
+        const xhref = document.getElementById(options.linearGradient.getAttribute('xlink:href').substr(1));
+        this.linearGradient = xhref.cloneNode(true);
+      } else {
+        this.linearGradient = options.linearGradient.cloneNode(true);
+      }
     // create linear gradient paint
     } else if (options.radialGradient) {
       this.type = 'radialGradient';
       this.solidColor = null;
       this.linearGradient = null;
-      this.radialGradient = options.radialGradient.cloneNode(true);
+      if(options.radialGradient.hasAttribute('xlink:href')) {
+        const xhref = document.getElementById(options.radialGradient.getAttribute('xlink:href').substr(1));
+        this.radialGradient = xhref.cloneNode(true);
+      } else {
+        this.radialGradient = options.radialGradient.cloneNode(true);
+      }
     // create solid color paint
     } else if (options.solidColor) {
       this.type = 'solidColor';

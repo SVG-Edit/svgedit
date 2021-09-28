@@ -1051,21 +1051,29 @@ export const convertGradientsMethod = function (elem) {
       return (curThis.tagName.includes('Gradient'));
     });
   }
-
   Array.prototype.forEach.call(elems, function (grad) {
     if (grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
       const svgcontent = svgContext_.getSVGContent();
       // TODO: Support more than one element with this ref by duplicating parent grad
-      const fillStrokeElems = svgcontent.querySelectorAll('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
-      if (!fillStrokeElems.length) { return; }
-
+      let fillStrokeElems = svgcontent.querySelectorAll('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
+      if (!fillStrokeElems.length) {
+        const tmpFillStrokeElems = svgcontent.querySelectorAll('[*|href="#' + grad.id + '"]');
+        if (!tmpFillStrokeElems.length) {
+          return;
+        } else {
+          if((tmpFillStrokeElems[0].tagName === "linearGradient" || tmpFillStrokeElems[0].tagName === "radialGradient") && tmpFillStrokeElems[0].getAttribute('gradientUnits') === 'userSpaceOnUse') {
+            fillStrokeElems = svgcontent.querySelectorAll('[fill="url(#' + tmpFillStrokeElems[0].id + ')"],[stroke="url(#' + tmpFillStrokeElems[0].id + ')"]');
+          } else {
+            return;
+          }
+        }
+      }
       // get object's bounding box
       const bb = utilsGetBBox(fillStrokeElems[0]);
 
       // This will occur if the element is inside a <defs> or a <symbol>,
       // in which we shouldn't need to convert anyway.
       if (!bb) { return; }
-
       if (grad.tagName === 'linearGradient') {
         const gCoords = {
           x1: grad.getAttribute('x1'),
