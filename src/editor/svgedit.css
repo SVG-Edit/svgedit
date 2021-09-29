@@ -18,7 +18,7 @@
 .svg_editor {
   display: grid;
   grid-template-rows: auto 15px 1fr 40px;
-  grid-template-columns: 34px 15px 50px 1fr 15px;
+  grid-template-columns: 40px 15px 50px 1fr 15px;
   grid-template-areas: 
     "main main   main top top"
     "left corner rulerX rulerX side"
@@ -317,10 +317,10 @@ hr {
   overflow: auto;
   display: flex;
   align-items: center;
-  scrollbar-width: thin;
+  scrollbar-width: thin; /* Firefox */
 }
 
-#tools_bottom ::-webkit-scrollbar {
+#tools_bottom ::-webkit-scrollbar { /* Chrome, Edge, and Safari */
   width: 3px;
 }
 
@@ -339,14 +339,13 @@ hr {
 #tools_left {
   grid-area: left;
   border-right: none;
+  margin-left: auto;
+  margin-right: auto;
   overflow-y: scroll;
-  /* Works on Firefox */
-  scrollbar-width: 3px;
-  scrollbar-color: rgb(70, 70, 70) auto;
+  scrollbar-width: thin; /* Firefox */
 }
 
-/* Scrollbar styling on Chrome, Edge, and Safari */
-#tools_left::-webkit-scrollbar {
+#tools_left::-webkit-scrollbar { /* Chrome, Edge, and Safari */
   width: 3px;
 }
 
