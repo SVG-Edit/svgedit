@@ -342,7 +342,7 @@ hr {
   margin-left: auto;
   margin-right: auto;
   overflow-y: scroll;
-  scrollbar-width: thin; /* Firefox */
+  scrollbar-width: none; /* Firefox */
 }
 
 #tools_left::-webkit-scrollbar { /* Chrome, Edge, and Safari */
