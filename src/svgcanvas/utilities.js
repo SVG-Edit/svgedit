@@ -11,9 +11,6 @@ import { setUnitAttr, getTypeMap } from '../common/units.js';
 import {
   hasMatrixTransform, transformListToTransform, transformBox
 } from './math.js';
-import {
-  isWebkit, supportsHVLineContainerBBox
-} from '../common/browser.js';
 import { getClosest, mergeDeep } from '../editor/components/jgraduate/Util.js';
 
 // Much faster than running getBBox() every time
@@ -468,61 +465,6 @@ export const getPathBBox = function (path) {
 };
 
 /**
-* Get the given/selected element's bounding box object, checking for
-* horizontal/vertical lines (see issue 717)
-* Note that performance is currently terrible, so some way to improve would
-* be great.
-* @param {Element} selected - Container or `<use>` DOM element
-* @returns {DOMRect} Bounding box object
-*/
-function groupBBFix(selected) {
-  if (supportsHVLineContainerBBox()) {
-    try { return selected.getBBox(); } catch (e) {/* empty */ }
-  }
-  const ref = editorContext_.getDataStorage().get(selected, 'ref');
-  let matched = null;
-  let ret; let copy;
-
-  if (ref) {
-    const elements = [];
-    Array.prototype.forEach.call(ref.children, function (el) {
-      const elem = el.cloneNode(true);
-      elem.setAttribute('visibility', 'hidden');
-      svgroot_.appendChild(elem);
-      copy.push(elem);
-      if ([ 'line', 'path' ].indexOf(elem.tagName) !== -1) {
-        elements.push(elem);
-      }
-    });
-    matched = (elements.length) ? elements : null;
-  } else {
-    matched = selected.querySelectorAll('line, path');
-  }
-
-  let issue = false;
-  if (matched.length) {
-    Array.prototype.forEach.call(matched, function (match) {
-      const bb = match.getBBox();
-      if (!bb.width || !bb.height) {
-        issue = true;
-      }
-    });
-    if (issue) {
-      const elems = ref ? copy : selected.children;
-      ret = getStrokedBBox(elems);
-    } else {
-      ret = selected.getBBox();
-    }
-  } else {
-    ret = selected.getBBox();
-  }
-  if (ref) {
-    copy.remove();
-  }
-  return ret;
-}
-
-/**
 * Get the given/selected element's bounding box object, convert it to be more
 * usable when necessary.
 * @function module:utilities.getBBox
@@ -546,22 +488,16 @@ export const getBBox = function (elem) {
     }
     break;
   case 'path':
+  case 'g':
+  case 'a':
     if (selected.getBBox) {
       ret = selected.getBBox();
     }
     break;
-  case 'g':
-  case 'a':
-    ret = groupBBFix(selected);
-    break;
   default:
 
     if (elname === 'use') {
-      ret = groupBBFix(selected); // , true);
-    }
-    if (elname === 'use' || (elname === 'foreignObject' && isWebkit())) {
-      if (!ret) { ret = selected.getBBox(); }
-
+      ret = selected.getBBox(); // , true);
     } else if (visElemsArr.includes(elname)) {
       if (selected) {
         try {
@@ -1030,8 +966,8 @@ export const getVisibleElements = function (parentElement) {
   }
 
   const contentElems = [];
-  const childrens = parentElement.children;
-  Array.prototype.forEach.call(childrens, function (elem) {
+  const children = parentElement.children;
+  Array.from(children, function (elem) {
     if (elem.getBBox) {
       contentElems.push(elem);
     }

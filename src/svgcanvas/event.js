@@ -6,7 +6,7 @@
  */
 import {
   assignAttributes, cleanupElement, getElem, getRotationAngle, snapToGrid, walkTree,
-  getBBox as utilsGetBBox, isNullish, preventClickDefault, setHref
+  isNullish, preventClickDefault, setHref
 } from './utilities.js';
 import {
   convertAttrs
@@ -14,7 +14,6 @@ import {
 import {
   transformPoint, hasMatrixTransform, getMatrix, snapToAngle
 } from './math.js';
-import { supportsNonScalingStroke } from '../common/browser.js';
 import * as draw from './draw.js';
 import * as pathModule from './path.js';
 import * as hstry from './history.js';
@@ -79,7 +78,7 @@ export const getBsplinePoint = function (t) {
  * @returns {void}
  */
 export const mouseMoveEvent = function (evt) {
-  const selectedElements = eventContext_.getSelectedElements;
+  const selectedElements = eventContext_.getSelectedElements();
   const currentZoom = eventContext_.getCurrentZoom();
   const svgRoot = eventContext_.getSVGRoot();
   const svgCanvas = eventContext_.getCanvas();
@@ -96,7 +95,7 @@ export const mouseMoveEvent = function (evt) {
   let len;
   let angle;
   let box;
-  let selected = selectedElements()[0];
+  let selected = selectedElements[0];
   const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
   const mouseX = pt.x * currentZoom;
   const mouseY = pt.y * currentZoom;
@@ -119,7 +118,7 @@ export const mouseMoveEvent = function (evt) {
     // we temporarily use a translate on the element(s) being dragged
     // this transform is removed upon mousing up and the element is
     // relocated to the new location
-    if (selectedElements()[0] !== null) {
+    if (selectedElements[0] !== null) {
       dx = x - eventContext_.getStartX();
       dy = y - eventContext_.getStartY();
       if (eventContext_.getCurConfig().gridSnapping) {
@@ -128,16 +127,10 @@ export const mouseMoveEvent = function (evt) {
       }
 
       if (dx !== 0 || dy !== 0) {
-        len = selectedElements().length;
+        len = selectedElements.length;
         for (i = 0; i < len; ++i) {
-          selected = selectedElements()[i];
+          selected = selectedElements[i];
           if (isNullish(selected)) { break; }
-          // if (i === 0) {
-          //   const box = utilsGetBBox(selected);
-          //     selectedBBoxes[i].x = box.x + dx;
-          //     selectedBBoxes[i].y = box.y + dy;
-          // }
-
           // update the dummy transform in our transform list
           // to be a translate
           const xform = svgRoot.createSVGTransform();
@@ -157,7 +150,7 @@ export const mouseMoveEvent = function (evt) {
           svgCanvas.selectorManager.requestSelector(selected).resize();
         }
 
-        svgCanvas.call('transition', selectedElements());
+        svgCanvas.call('transition', selectedElements);
       }
     }
     break;
@@ -175,7 +168,7 @@ export const mouseMoveEvent = function (evt) {
     // - if newList contains selected, do nothing
     // - if newList doesn't contain selected, remove it from selected
     // - for any newList that was not in selectedElements, add it to selected
-    const elemsToRemove = selectedElements().slice(); const elemsToAdd = [];
+    const elemsToRemove = selectedElements.slice(); const elemsToAdd = [];
     const newList = eventContext_.getIntersectionList();
 
     // For every element in the intersection, add if not present in selectedElements.
@@ -183,7 +176,7 @@ export const mouseMoveEvent = function (evt) {
     for (i = 0; i < len; ++i) {
       const intElem = newList[i];
       // Found an element that was not selected before, so we should add it.
-      if (!selectedElements().includes(intElem)) {
+      if (!selectedElements.includes(intElem)) {
         elemsToAdd.push(intElem);
       }
       // Found an element that was already selected, so we shouldn't remove it.
@@ -208,7 +201,7 @@ export const mouseMoveEvent = function (evt) {
     // the shape's coordinates
     tlist = selected.transform.baseVal;
     const hasMatrix = hasMatrixTransform(tlist);
-    box = hasMatrix ? eventContext_.getInitBbox() : utilsGetBBox(selected);
+    box = hasMatrix ? eventContext_.getInitBbox() : selected.getBBox();
     let left = box.x;
     let top = box.y;
     let { width, height } = box;
@@ -290,7 +283,7 @@ export const mouseMoveEvent = function (evt) {
     }
 
     svgCanvas.selectorManager.requestSelector(selected).resize();
-    svgCanvas.call('transition', selectedElements());
+    svgCanvas.call('transition', selectedElements);
 
     break;
   } case 'zoom': {
@@ -485,7 +478,7 @@ export const mouseMoveEvent = function (evt) {
 
     break;
   } case 'rotate': {
-    box = utilsGetBBox(selected);
+    box = selected.getBBox();
     cx = box.x + box.width / 2;
     cy = box.y + box.height / 2;
     const m = getMatrix(selected);
@@ -502,7 +495,7 @@ export const mouseMoveEvent = function (evt) {
     }
 
     svgCanvas.setRotationAngle(angle < -180 ? (360 + angle) : angle, true);
-    svgCanvas.call('transition', selectedElements());
+    svgCanvas.call('transition', selectedElements);
     break;
   } default:
     break;
@@ -579,16 +572,16 @@ export const mouseUpEvent = function (evt) {
   // intentionally fall-through to select here
   case 'resize':
   case 'multiselect':
-    if (!isNullish(eventContext_.getRubberBox())) {
+    if (eventContext_.getRubberBox()) {
       eventContext_.getRubberBox().setAttribute('display', 'none');
       eventContext_.setCurBBoxes([]);
     }
     eventContext_.setCurrentMode('select');
     // Fallthrough
   case 'select':
-    if (!isNullish(selectedElements[0])) {
+    if (selectedElements[0]) {
       // if we only have one selected element
-      if (isNullish(selectedElements[1])) {
+      if (!selectedElements[1]) {
         // set our current stroke/fill properties to the element's
         const selected = selectedElements[0];
         switch (selected.tagName) {
@@ -613,9 +606,6 @@ export const mouseUpEvent = function (evt) {
           eventContext_.setCurText('font_family', selected.getAttribute('font-family'));
         }
         svgCanvas.selectorManager.requestSelector(selected).showGrips(true);
-
-        // This shouldn't be necessary as it was done on mouseDown...
-        //  svgCanvas.call('selected', [selected]);
       }
       // always recalculate dimensions to strip off stray identity transforms
       svgCanvas.recalculateAllSelectedDimensions();
@@ -624,10 +614,6 @@ export const mouseUpEvent = function (evt) {
         const len = selectedElements.length;
         for (let i = 0; i < len; ++i) {
           if (isNullish(selectedElements[i])) { break; }
-          if (!selectedElements[i].firstChild) {
-            // Not needed for groups (incorrectly resizes elems), possibly not needed at all?
-            svgCanvas.selectorManager.requestSelector(selectedElements[i]).resize();
-          }
         }
         // no change in position/size, so maybe we should move to pathedit
       } else {
@@ -642,15 +628,14 @@ export const mouseUpEvent = function (evt) {
       } // no change in mouse position
 
       // Remove non-scaling stroke
-      if (supportsNonScalingStroke()) {
-        const elem = selectedElements[0];
-        if (elem) {
-          elem.removeAttribute('style');
-          walkTree(elem, function (el) {
-            el.removeAttribute('style');
-          });
-        }
+      const elem = selectedElements[0];
+      if (elem) {
+        elem.removeAttribute('style');
+        walkTree(elem, function (el) {
+          el.removeAttribute('style');
+        });
       }
+
     }
     return;
   case 'zoom': {
@@ -823,7 +808,7 @@ export const mouseUpEvent = function (evt) {
     // if this element is in a group, go up until we reach the top-level group
     // just below the layer groups
     // TODO: once we implement links, we also would have to check for <a> elements
-    while (t && t.parentNode && t.parentNode.parentNode && t.parentNode.parentNode.tagName === 'g') {
+    while (t?.parentNode?.parentNode?.tagName === 'g') {
       t = t.parentNode;
     }
     // if we are not in the middle of creating a path, and we've clicked on some shape,
@@ -1089,7 +1074,7 @@ export const mouseDownEvent = function (evt) {
 
     // Getting the BBox from the selection box, since we know we
     // want to orient around it
-    eventContext_.setInitBbox(utilsGetBBox($id('selectedBox0')));
+    eventContext_.setInitBbox($id('selectedBox0').getBBox());
     const bb = {};
     for (const [ key, val ] of Object.entries(eventContext_.getInitBbox())) {
       bb[key] = val / currentZoom;
