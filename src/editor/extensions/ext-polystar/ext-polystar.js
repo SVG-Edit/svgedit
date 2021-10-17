@@ -449,9 +449,6 @@ export default {
             showPanel(false, "polygon");
           }
         }
-      },
-      elementChanged(_opts) {
-        // const elem = opts.elems[0];
       }
     };
   }
