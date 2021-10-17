@@ -27,27 +27,14 @@
  *
 */
 
-const loadExtensionTranslation = async function (lang) {
-  let translationModule;
-  try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${encodeURIComponent(lang)}.js`);
-  } catch (_error) {
-    // eslint-disable-next-line no-console
-    console.error(`Missing translation (${lang}) - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
-  }
-  return translationModule.default;
-};
-
 export default {
   name: 'markers',
   async init (S) {
     const svgEditor = this;
-    const strings = await loadExtensionTranslation(svgEditor.configObj.pref('lang'));
     const { svgCanvas } = svgEditor;
     const { $id, addSVGElementFromJson: addElem } = svgCanvas;
     const mtypes = [ 'start', 'mid', 'end' ];
+    const markerElems = [ 'line', 'path', 'polyline', 'polygon' ];
 
     // note - to add additional marker types add them below with a unique id
     // and add the associated icon(s) to marker-icons.svg
@@ -80,6 +67,7 @@ export default {
       const str = elem.getAttribute(attr);
       if (!str) { return null; }
       const m = str.match(/\(#(.*)\)/);
+      // "url(#mkr_end_svg_1)" would give m[1] = "mkr_end_svg_1"
       if (!m || m.length !== 2) {
         return null;
       }
@@ -92,8 +80,18 @@ export default {
      * @param {boolean} on
      * @returns {void}
     */
-    const showPanel = (on) => {
+    const showPanel = (on, elem) => {
       $id('marker_panel').style.display = (on) ? 'block' : 'none';
+      if (on && elem) {
+        mtypes.forEach((pos) => {
+          const marker = getLinked(elem, 'marker-' + pos);
+          if (marker?.attributes?.se_type) {
+            $id(`${pos}_marker_list_opts`).setAttribute('value', marker.attributes.se_type.value);
+          } else {
+            $id(`${pos}_marker_list_opts`).setAttribute('value', 'nomarker');
+          }
+        });
+      }
     };
 
     /**
@@ -301,28 +299,19 @@ export default {
         // don't display the panels on start
         showPanel(false);
       },
-      /* async */ addLangData ({ _importLocale, _lang }) {
-        return { data: strings.langList };
-      },
       selectedChanged (opts) {
         // Use this to update the current selected elements
-        selElems = opts.elems;
-
-        const markerElems = [ 'line', 'path', 'polyline', 'polygon' ];
-
-        let i = selElems.length;
-        while (i--) {
-          const elem = selElems[i];
+        opts.elems.forEach( (elem) => {
           if (elem && markerElems.includes(elem.tagName)) {
             if (opts.selectedElement && !opts.multiselected) {
-              showPanel(true);
+              showPanel(true, elem);
             } else {
               showPanel(false);
             }
           } else {
             showPanel(false);
           }
-        }
+        });
       },
       elementChanged (opts) {
         const elem = opts.elems[0];
