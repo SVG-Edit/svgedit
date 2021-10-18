@@ -74,7 +74,6 @@ export default {
       return svgCanvas.getElem(m[1]);
     };
 
-    let selElems;
     /**
      * Toggles context tool panel off/on.
      * @param {boolean} on
@@ -96,14 +95,14 @@ export default {
 
     /**
     * @param {string} id
-    * @param {""|"\\nomarker"|"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} seType
+    * @param {""|"nomarker"|"nomarker"|"leftarrow"|"rightarrow"|"textmarker"|"forwardslash"|"reverseslash"|"verticalslash"|"box"|"star"|"xmark"|"triangle"|"mcircle"} seType
     * @returns {SVGMarkerElement}
     */
     const addMarker = (id, seType) => {
+      const selElems = svgCanvas.getSelectedElems();
       let marker = svgCanvas.getElem(id);
       if (marker) { return undefined; }
-      if (seType === '' || seType === '\\nomarker') { return undefined; }
-
+      if (seType === '' || seType === 'nomarker') { return undefined; }
       const el = selElems[0];
       const color = el.getAttribute('stroke');
       const strokeWidth = 10;
@@ -160,7 +159,6 @@ export default {
       if (elem.tagName !== 'line') { return elem; }
 
       // Convert to polyline to accept mid-arrow
-
       const x1 = Number(elem.getAttribute('x1'));
       const x2 = Number(elem.getAttribute('x2'));
       const y1 = Number(elem.getAttribute('y1'));
@@ -202,15 +200,16 @@ export default {
     * @returns {void}
     */
     const setMarker = (pos, markerType) => {
-      if (!selElems) return;
+      const selElems = svgCanvas.getSelectedElems();
+      if (selElems.length === 0) return;
       const markerName = 'marker-' + pos;
       const el = selElems[0];
       const marker = getLinked(el, markerName);
       if (marker) { marker.remove(); }
       el.removeAttribute(markerName);
       let val = markerType;
-      if (val === '') { val = '\\nomarker'; }
-      if (val === '\\nomarker') {
+      if (val === '') { val = 'nomarker'; }
+      if (val === 'nomarker') {
         svgCanvas.call('changed', selElems);
         return;
       }
@@ -253,6 +252,7 @@ export default {
     * @returns {void}
     */
     const updateReferences = (el) => {
+      const selElems = svgCanvas.getSelectedElems();
       mtypes.forEach((pos) => {
         const id = 'mkr_' + pos + '_' + el.id;
         const markerName = 'marker-' + pos;
@@ -279,6 +279,7 @@ export default {
       callback() {
         // Add the context panel and its handler(s)
         const panelTemplate = document.createElement("template");
+        // create the marker panel
         let innerHTML = '<div id="marker_panel">';
         mtypes.forEach((pos) => {
           innerHTML += `<se-list id="${pos}_marker_list_opts" title="tools.${pos}_marker_list_opts" label="" width="22px" height="22px">`;
@@ -291,16 +292,17 @@ export default {
         // eslint-disable-next-line no-unsanitized/property
         panelTemplate.innerHTML = innerHTML;
         $id("tools_top").appendChild(panelTemplate.content.cloneNode(true));
+        // don't display the panels on start
+        showPanel(false);
         mtypes.forEach((pos) => {
           $id(`${pos}_marker_list_opts`).addEventListener('change', (evt) => {
             setMarker(pos, evt.detail.value);
           });
         });
-        // don't display the panels on start
-        showPanel(false);
       },
       selectedChanged (opts) {
         // Use this to update the current selected elements
+        if (opts.elems.length === 0) showPanel(false);
         opts.elems.forEach( (elem) => {
           if (elem && markerElems.includes(elem.tagName)) {
             if (opts.selectedElement && !opts.multiselected) {
