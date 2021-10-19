@@ -254,7 +254,6 @@ export default {
     const updateReferences = (el) => {
       const selElems = svgCanvas.getSelectedElems();
       mtypes.forEach((pos) => {
-        const id = 'mkr_' + pos + '_' + el.id;
         const markerName = 'marker-' + pos;
         const marker = getLinked(el, markerName);
         if (!marker || !marker.attributes.se_type) { return; } // not created by this extension
@@ -263,10 +262,9 @@ export default {
           const len = el.id.length;
           const linkid = url.substr(-len - 1, len);
           if (el.id !== linkid) {
-            const val = $id(pos + '_marker').getAttribute('value');
-            addMarker(id, val);
-            svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
-            if (el.tagName === 'line' && pos === 'mid') { el = convertline(el); }
+            const newMarkerId = 'mkr_' + pos + '_' + el.id;
+            addMarker(newMarkerId, marker.attributes.se_type.value);
+            svgCanvas.changeSelectedAttribute(markerName, 'url(#' + newMarkerId + ')');
             svgCanvas.call('changed', selElems);
           }
         }
