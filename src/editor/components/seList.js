@@ -45,7 +45,7 @@ export class SeList extends HTMLElement {
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
     this.$label = this._shadowRoot.querySelector('label');
-    this.$selction = this.$dropdown.shadowRoot.querySelector('#source').querySelector('#value');
+    this.$selection = this.$dropdown.shadowRoot.querySelector('#source').querySelector('#value');
     this.items = this.querySelectorAll("se-list-item");
     this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
@@ -69,7 +69,7 @@ export class SeList extends HTMLElement {
     if (oldValue === newValue) return;
     switch (name) {
     case 'title':
-      this.$dropdown.setAttribute('title', `${t(newValue)}`);
+      this.$dropdown.setAttribute('title', t(newValue));
       break;
     case 'label':
       this.$label.textContent = t(newValue);
@@ -84,15 +84,15 @@ export class SeList extends HTMLElement {
       Array.from(this.items).forEach(function (element) {
         if(element.getAttribute("value") === newValue) {
           if (element.hasAttribute("src")) {
-            while(currentObj.$selction.firstChild)
-              currentObj.$selction.removeChild(currentObj.$selction.firstChild);
+            while(currentObj.$selection.firstChild)
+              currentObj.$selection.removeChild(currentObj.$selection.firstChild);
             const img = document.createElement('img');
             img.src = currentObj.imgPath + '/' + element.getAttribute("src");
             img.style.height = element.getAttribute("img-height");
             img.setAttribute('title', t(element.getAttribute("title")));
-            currentObj.$selction.append(img);
+            currentObj.$selection.append(img);
           } else {
-            currentObj.$selction.textContent = t(element.getAttribute('option'));
+            currentObj.$selection.textContent = t(element.getAttribute('option'));
           }
         }
       });
