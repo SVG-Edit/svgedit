@@ -45,7 +45,7 @@ export class SeList extends HTMLElement {
     this._shadowRoot.append(template.content.cloneNode(true));
     this.$dropdown = this._shadowRoot.querySelector('elix-dropdown-list');
     this.$label = this._shadowRoot.querySelector('label');
-    this.$selection = this.$dropdown.shadowRoot.querySelector('#source').querySelector('#value');
+    this.$selection = this.$dropdown.shadowRoot.querySelector('#value');
     this.items = this.querySelectorAll("se-list-item");
     this.imgPath = svgEditor.configObj.curConfig.imgPath;
   }
@@ -84,8 +84,10 @@ export class SeList extends HTMLElement {
       Array.from(this.items).forEach(function (element) {
         if(element.getAttribute("value") === newValue) {
           if (element.hasAttribute("src")) {
+            // empty current selection children
             while(currentObj.$selection.firstChild)
               currentObj.$selection.removeChild(currentObj.$selection.firstChild);
+            // replace selection child with image of new value
             const img = document.createElement('img');
             img.src = currentObj.imgPath + '/' + element.getAttribute("src");
             img.style.height = element.getAttribute("img-height");
