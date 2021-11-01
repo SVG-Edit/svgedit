@@ -1046,6 +1046,7 @@ class TopPanel {
       "rect_height",
       "line_x1",
       "line_x2",
+      "line_y1",
       "line_y2",
       "image_width",
       "image_height",
