@@ -53,7 +53,7 @@ describe('Basic Module', function () {
         imgPath: '../editor/images',
         langPath: 'locale/',
         extPath: 'extensions/',
-        extensions: [ 'ext-arrows.js', 'ext-connector.js', 'ext-eyedropper.js' ],
+        extensions: [ 'ext-arrows.js', 'ext-eyedropper.js' ],
         initTool: 'select',
         wireframe: false
       }

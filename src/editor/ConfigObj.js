@@ -171,12 +171,11 @@ export default class ConfigObj {
       * @type {string[]}
     */
     this.defaultExtensions = [
-      'ext-connector',
+      // 'ext-connector',
       'ext-eyedropper',
       'ext-grid',
       'ext-imagelib',
-      // 'ext-arrows',
-      // 'ext-markers',
+      'ext-markers',
       'ext-overview_window',
       'ext-panning',
       'ext-shapes',

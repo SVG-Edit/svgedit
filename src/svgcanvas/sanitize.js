@@ -42,7 +42,7 @@ const svgWhiteList_ = {
   image: [  'clip-path', 'clip-rule', 'filter', 'height',  'mask', 'opacity', 'requiredFeatures', 'systemLanguage', 'width', 'x', 'xlink:href', 'xlink:title', 'y' ],
   line: [  'clip-path', 'clip-rule', 'fill', 'fill-opacity', 'fill-rule', 'filter',  'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage', 'x1', 'x2', 'y1', 'y2' ],
   linearGradient: [   'gradientTransform', 'gradientUnits', 'requiredFeatures', 'spreadMethod', 'systemLanguage', 'x1', 'x2', 'xlink:href', 'y1', 'y2' ],
-  marker: [   'markerHeight', 'markerUnits', 'markerWidth', 'orient', 'preserveAspectRatio', 'refX', 'refY', 'systemLanguage', 'viewBox' ],
+  marker: [   'markerHeight', 'markerUnits', 'markerWidth', 'orient', 'preserveAspectRatio', 'refX', 'refY', 'se_type', 'systemLanguage', 'viewBox' ],
   mask: [  'height',  'maskContentUnits', 'maskUnits', 'width', 'x', 'y' ],
   metadata: [ ],
   path: [  'clip-path', 'clip-rule', 'd', 'enable-background', 'fill', 'fill-opacity', 'fill-rule', 'filter',  'marker-end', 'marker-mid', 'marker-start', 'mask', 'opacity', 'requiredFeatures', 'stroke', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke-width', 'systemLanguage' ],
