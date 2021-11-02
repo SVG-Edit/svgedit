@@ -26,16 +26,9 @@ describe('Fix issue 660', function () {
     cy.get('#selectorGrip_resize_s')
       .trigger('mousedown', { which: 1, force: true })
 
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
-      .trigger('mousemove', 0, 20, { force: true })
+      .trigger('mousemove', 0, 100, { force: true })
+      .trigger('mousemove', 0, 100, { force: true })
+      .trigger('mousemove', 0, 100, { force: true })
       
       // // .trigger('mousemove', 0, 100, { force: true }) // did not produce it
       // // .trigger('mousemove', 0, 100, { force: true })
@@ -44,6 +37,6 @@ describe('Fix issue 660', function () {
       .trigger('mouseup', { force: true });
     // svgedit use the #text text field to capture the text
     cy.get('#a_text').should('have.attr', 'transform')
-      .and('equal', 'matrix(1 0 0 4.54167 0 -540.104)'); // 10x20
+      .and('equal', 'matrix(1 0 0 7.0625 0 -924.531)'); // Chrome 96 is matrix(1 0 0 4.17431 0 -325.367)
   });
 });
