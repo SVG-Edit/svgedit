@@ -29,11 +29,7 @@ describe('Fix issue 660', function () {
       .trigger('mousemove', 0, 100, { force: true })
       .trigger('mousemove', 0, 100, { force: true })
       .trigger('mousemove', 0, 100, { force: true })
-      
-      // // .trigger('mousemove', 0, 100, { force: true }) // did not produce it
-      // // .trigger('mousemove', 0, 100, { force: true })
 
-      // // .trigger('mousemove', 0, 200, { force: true }) // did not produce it
       .trigger('mouseup', { force: true });
     // svgedit use the #text text field to capture the text
     cy.get('#a_text').should('have.attr', 'transform')
