@@ -1,11 +1,11 @@
 # SVG-Edit CHANGES
 
-## 7.0.0 (preview - work in progress)
+## 7.0.0
 - New UI
 - Rearchitecture the code (more modular)
-- simplify and refresh the build process
+- Simplify and refresh the build process
 - Introduce Web Component to replace jQuery UI
-- update dependencies
+- Update dependencies
 ## 6.0.0 (unreleased)
 
 - Project: Add `FUNDING.yml` to accept contributions
