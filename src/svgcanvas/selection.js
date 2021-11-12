@@ -306,7 +306,6 @@ export const getIntersectionListMethod = function (rect) {
   const resultList = [];
   if (selectionContext_.getCurBBoxes().length === 0) {
     // Cache all bboxes
-    console.log("setbb");
     selectionContext_.setCurBBoxes(getVisibleElementsAndBBoxes(parent));
   }
   let i = selectionContext_.getCurBBoxes().length;
