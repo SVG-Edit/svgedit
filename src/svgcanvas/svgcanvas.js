@@ -401,14 +401,12 @@ class SvgCanvas {
 * @name module:svgcanvas.SvgCanvas#getSelectedElements
 * @type {module:utilities.EditorContext#getSelectedElements|module:draw.DrawCanvasInit#getSelectedElements|module:path.EditorContext#getSelectedElements}
 */
-    const getSelectedElements = this.getSelectedElems = function () {
-      return selectedElements;
-    };
+    const getSelectedElements = this.getSelectedElems = () => ( selectedElements );
 
-    this.setSelectedElements = function (key, value) {
+    this.setSelectedElements = (key, value) => {
       selectedElements[key] = value;
     };
-    this.setEmptySelectedElements = function () {
+    this.setEmptySelectedElements = () => {
       selectedElements = [];
     };
 
