@@ -472,7 +472,7 @@ export const getPathBBox = function (path) {
 * @returns {module:utilities.BBoxObject} Bounding box object
 */
 export const getBBox = function (elem) {
-  const selected = elem || editorContext_.geSelectedElements()[0];
+  const selected = elem || editorContext_.getSelectedElements()[0];
   if (elem.nodeType !== 1) { return null; }
   const elname = selected.nodeName;
 
