@@ -6,7 +6,7 @@
  * @copyright 2010 Jeff Schiller
  */
 
-import { getHref, setHref, getRotationAngle, isNullish } from './utilities.js';
+import { getHref, setHref, getRotationAngle, isNullish, getBBox } from './utilities.js';
 
 /**
 * Group: Undo/Redo history management.
@@ -330,7 +330,7 @@ export class ChangeElementCommand extends Command {
       if (!bChangedTransform) {
         const angle = getRotationAngle(this.elem);
         if (angle) {
-          const bbox = this.elem.getBBox();
+          const bbox = getBBox(this.elem);
           const cx = bbox.x + bbox.width / 2;
           const cy = bbox.y + bbox.height / 2;
           const rotate = [ 'rotate(', angle, ' ', cx, ',', cy, ')' ].join('');
@@ -371,7 +371,7 @@ export class ChangeElementCommand extends Command {
       if (!bChangedTransform) {
         const angle = getRotationAngle(this.elem);
         if (angle) {
-          const bbox = this.elem.getBBox();
+          const bbox = getBBox(this.elem);
           const cx = bbox.x + bbox.width / 2;
           const cy = bbox.y + bbox.height / 2;
           const rotate = [ 'rotate(', angle, ' ', cx, ',', cy, ')' ].join('');

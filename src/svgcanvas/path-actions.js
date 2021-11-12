@@ -15,7 +15,7 @@ import {
 } from './math.js';
 import {
   assignAttributes, getElem, getRotationAngle, snapToGrid, isNullish,
-  getBBox as utilsGetBBox
+  getBBox
 } from './utilities.js';
 
 let pathActionsContext_ = null;
@@ -679,7 +679,7 @@ export const pathActionsMethod = (function () {
 
           // const {item} = seg;
           const rubberBox = editorContext_.getRubberBox();
-          const rbb = rubberBox.getBBox();
+          const rbb = getBBox(rubberBox);
 
           const pt = pathActionsContext_.getGripPt(seg);
           const ptBb = {
@@ -770,7 +770,7 @@ export const pathActionsMethod = (function () {
       editorContext_.clearSelection();
       path.setPathContext();
       path.show(true).update();
-      path.oldbbox = utilsGetBBox(path.elem);
+      path.oldbbox = getBBox(path.elem);
       subpath = false;
     },
     /**

@@ -175,8 +175,9 @@ export default class ConfigObj {
       'ext-eyedropper',
       'ext-grid',
       'ext-imagelib',
+      // 'ext-arrows',
       'ext-markers',
-      'ext-overview_window',
+      // 'ext-overview_window', disabled until we fix performance issue
       'ext-panning',
       'ext-shapes',
       'ext-polystar',

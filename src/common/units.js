@@ -11,20 +11,7 @@ const NSSVG = 'http://www.w3.org/2000/svg';
 const wAttrs = [ 'x', 'x1', 'cx', 'rx', 'width' ];
 const hAttrs = [ 'y', 'y1', 'cy', 'ry', 'height' ];
 const unitAttrs = [ 'r', 'radius', ...wAttrs, ...hAttrs ];
-// unused
-/*
-const unitNumMap = {
-  '%': 2,
-  em: 3,
-  ex: 4,
-  px: 5,
-  cm: 6,
-  mm: 7,
-  in: 8,
-  pt: 9,
-  pc: 10
-};
-*/
+
 // Container of elements.
 let elementContainer_;
 

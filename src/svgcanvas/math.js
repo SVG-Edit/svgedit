@@ -176,7 +176,7 @@ export const transformListToTransform = function (tlist, min, max) {
  * @param {Element} elem - The DOM element to check
  * @returns {SVGMatrix} The matrix object associated with the element's transformlist
 */
-export const getMatrix = function (elem) {
+export const getMatrix = (elem) => {
   const tlist = elem.transform.baseVal;
   return transformListToTransform(tlist).matrix;
 };
@@ -191,7 +191,7 @@ export const getMatrix = function (elem) {
  * @param {Integer} y2 - Second coordinate's y value
  * @returns {module:math.AngleCoord45}
 */
-export const snapToAngle = function (x1, y1, x2, y2) {
+export const snapToAngle = (x1, y1, x2, y2) => {
   const snap = Math.PI / 4; // 45 degrees
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -213,7 +213,7 @@ export const snapToAngle = function (x1, y1, x2, y2) {
  * @param {SVGRect} r2 - The second BBox-like object
  * @returns {boolean} True if rectangles intersect
  */
-export const rectsIntersect = function (r1, r2) {
+export const rectsIntersect = (r1, r2) => {
   return r2.x < (r1.x + r1.width) &&
     (r2.x + r2.width) > r1.x &&
     r2.y < (r1.y + r1.height) &&

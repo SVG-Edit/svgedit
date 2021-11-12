@@ -37,12 +37,6 @@ import '@cypress/fiddle';
  */
 import '@cypress/code-coverage/support.js';
 
-/**
- * ACCESSIBILITY.
- * @see https://www.npmjs.com/package/cypress-axe
- */
-import 'cypress-axe';
-
 /*****
  * SNAPSHOTS
  * @see https://www.npmjs.com/package/cypress-plugin-snapshots

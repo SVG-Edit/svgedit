@@ -110,9 +110,9 @@ export class Selector {
     const mgr = selectorManager_;
     const selectedGrips = mgr.selectorGrips;
     const selected = this.selectedElement;
-    const sw = selected.getAttribute('stroke-width');
     const currentZoom = svgFactory_.getCurrentZoom();
     let offset = 1 / currentZoom;
+    const sw = selected.getAttribute('stroke-width');
     if (selected.getAttribute('stroke') !== 'none' && !isNaN(sw)) {
       offset += (sw / 2);
     }
@@ -200,10 +200,8 @@ export class Selector {
       ' L' + (nbax + nbaw) + ',' + nbay +
       ' ' + (nbax + nbaw) + ',' + (nbay + nbah) +
       ' ' + nbax + ',' + (nbay + nbah) + 'z';
-    selectedBox.setAttribute('d', dstr);
 
     const xform = angle ? 'rotate(' + [ angle, cx, cy ].join(',') + ')' : '';
-    this.selectorGroup.setAttribute('transform', xform);
 
     // TODO(codedread): Is this needed?
     //  if (selected === selectedElements[0]) {
@@ -217,6 +215,8 @@ export class Selector {
       e: [ nbax + nbaw, nbay + (nbah) / 2 ],
       s: [ nbax + (nbaw) / 2, nbay + nbah ]
     };
+    selectedBox.setAttribute('d', dstr);
+    this.selectorGroup.setAttribute('transform', xform);
     Object.entries(this.gripCoords).forEach(([ dir, coords ]) => {
       selectedGrips[dir].setAttribute('cx', coords[0]);
       selectedGrips[dir].setAttribute('cy', coords[1]);
@@ -415,7 +415,7 @@ export class SelectorManager {
   * @returns {Selector} The selector based on the given element
   */
   requestSelector(elem, bbox) {
-    if (isNullish(elem)) { return null; }
+    if (!elem) { return null; }
 
     const N = this.selectors.length;
     // If we've already acquired one for this element, return it.

@@ -37,29 +37,6 @@ const supportsGoodTextCharPos_ = (function () {
   }
 }());
 
-// Support for correct bbox sizing on groups with horizontal/vertical lines
-const supportsHVLineContainerBBox_ = (function () {
-  const svgcontent = document.createElementNS(NSSVG, 'svg');
-  document.documentElement.append(svgcontent);
-  const path = document.createElementNS(NSSVG, 'path');
-  path.setAttribute('d', 'M0,0 10,0');
-  const path2 = document.createElementNS(NSSVG, 'path');
-  path2.setAttribute('d', 'M5,0 15,0');
-  const g = document.createElementNS(NSSVG, 'g');
-  g.append(path, path2);
-  svgcontent.append(g);
-  const bbox = g.getBBox();
-  svgcontent.remove();
-  // Webkit gives 0, FF gives 10, Opera (correctly) gives 15
-  return (bbox.width === 15);
-}());
-
-const supportsNonScalingStroke_ = (function () {
-  const rect = document.createElementNS(NSSVG, 'rect');
-  rect.setAttribute('style', 'vector-effect:non-scaling-stroke');
-  return rect.style.vectorEffect === 'non-scaling-stroke';
-}());
-
 // Public API
 
 /**
@@ -90,20 +67,7 @@ export const isMac = () => isMac_;
 export const isTouch = () => isTouch_;
 
 /**
- * @function module:browser.supportsHVLineContainerBBox
- * @returns {boolean}
-*/
-export const supportsHVLineContainerBBox = () => supportsHVLineContainerBBox_;
-
-/**
  * @function module:browser.supportsGoodTextCharPos
  * @returns {boolean}
 */
 export const supportsGoodTextCharPos = () => supportsGoodTextCharPos_;
-
-/**
-* @function module:browser.supportsNonScalingStroke
-* @returns {boolean}
-*/
-export const supportsNonScalingStroke = () => supportsNonScalingStroke_;
-
