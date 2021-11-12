@@ -63,7 +63,9 @@ module.exports = {
       rules: {
         // with ci, instrumented is not created before linter
         "import/no-unresolved": [ 2, { ignore: [ 'instrumented' ] } ],
-        "node/no-missing-import": 0
+        "node/no-missing-import": 0,
+        "node/no-unpublished-import": 0,
+        "node/no-unpublished-require": 0
       }
     },
     {
