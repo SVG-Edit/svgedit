@@ -6,7 +6,7 @@
  */
 import {
   assignAttributes, cleanupElement, getElem, getRotationAngle, snapToGrid, walkTree,
-  isNullish, preventClickDefault, setHref
+  isNullish, preventClickDefault, setHref, getBBox
 } from './utilities.js';
 import {
   convertAttrs
@@ -201,7 +201,7 @@ export const mouseMoveEvent = function (evt) {
     // the shape's coordinates
     tlist = selected.transform.baseVal;
     const hasMatrix = hasMatrixTransform(tlist);
-    box = hasMatrix ? eventContext_.getInitBbox() : selected.getBBox();
+    box = hasMatrix ? eventContext_.getInitBbox() : getBBox(selected);
     let left = box.x;
     let top = box.y;
     let { width, height } = box;
@@ -478,7 +478,7 @@ export const mouseMoveEvent = function (evt) {
 
     break;
   } case 'rotate': {
-    box = selected.getBBox();
+    box = getBBox(selected);
     cx = box.x + box.width / 2;
     cy = box.y + box.height / 2;
     const m = getMatrix(selected);
@@ -1074,7 +1074,7 @@ export const mouseDownEvent = function (evt) {
 
     // Getting the BBox from the selection box, since we know we
     // want to orient around it
-    eventContext_.setInitBbox($id('selectedBox0').getBBox());
+    eventContext_.setInitBbox(getBBox($id('selectedBox0')));
     const bb = {};
     for (const [ key, val ] of Object.entries(eventContext_.getInitBbox())) {
       bb[key] = val / currentZoom;

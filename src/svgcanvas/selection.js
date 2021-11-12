@@ -7,7 +7,7 @@
 
 import { NS } from "./namespaces.js";
 import {
-  getBBox as utilsGetBBox,
+  getBBox,
   getStrokedBBoxDefaultVisible
 } from "./utilities.js";
 import {
@@ -286,7 +286,7 @@ export const getIntersectionListMethod = function (rect) {
 
   let rubberBBox;
   if (!rect) {
-    rubberBBox = selectionContext_.getRubberBox().getBBox();
+    rubberBBox = getBBox(selectionContext_.getRubberBox());
     const bb = selectionContext_.getSVGContent().createSVGRect();
 
     [ "x", "y", "width", "height", "top", "right", "bottom", "left" ].forEach(
@@ -379,7 +379,7 @@ export const setRotationAngle = function (val, preventUndo) {
   val = Number.parseFloat(val);
   const elem = selectedElements[0];
   const oldTransform = elem.getAttribute("transform");
-  const bbox = utilsGetBBox(elem);
+  const bbox = getBBox(elem);
   const cx = bbox.x + bbox.width / 2;
   const cy = bbox.y + bbox.height / 2;
   const tlist = elem.transform.baseVal;

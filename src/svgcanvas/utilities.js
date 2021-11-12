@@ -854,20 +854,6 @@ export const getBBoxWithTransform = function (elem, addSVGElementFromJson, pathA
     if (!goodBb) {
       const { matrix } = transformListToTransform(tlist);
       bb = transformBox(bb.x, bb.y, bb.width, bb.height, matrix).aabox;
-
-      // Old technique that was exceedingly slow with large documents.
-      //
-      // Accurate way to get BBox of rotated element in Firefox:
-      // Put element in group and get its BBox
-      //
-      // Must use clone else FF freaks out
-      // const clone = elem.cloneNode(true);
-      // const g = document.createElementNS(NS.SVG, 'g');
-      // const parent = elem.parentNode;
-      // parent.append(g);
-      // g.append(clone);
-      // const bb2 = bboxToObj(g.getBBox());
-      // g.remove();
     }
   }
   return bb;
