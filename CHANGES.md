@@ -1,5 +1,9 @@
 # SVG-Edit CHANGES
 
+## 7.0.2
+- create an IIFE build.
+## 7.0.1
+- remove ext-overview in default extensions for performance reasons
 ## 7.0.0
 - New UI
 - Rearchitecture the code (more modular)

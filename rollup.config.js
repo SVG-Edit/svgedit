@@ -22,7 +22,7 @@ const getDirectories = (source) => {
   const isDirectory = (dir) => {
     return lstatSync(dir).isDirectory();
   };
-  return readdirSync(source).map((nme) => path.join(source, nme)).filter((i) => isDirectory(i));
+  return readdirSync(source).map((name) => path.join(source, name)).filter((i) => isDirectory(i));
 };
 
 // capture the list of files to build for extensions and ext-locales
@@ -51,6 +51,13 @@ const config = [ {
       sourcemap: true,
       file: 'dist/editor/xdomain-Editor.js',
       intro: 'const XDOMAIN = true;'
+    },
+    {
+      file: 'dist/editor/iife-Editor.js',
+      format: 'iife',
+      inlineDynamicImports: true,
+      name: 'Editor',
+      sourcemap: true
     }
   ],
   plugins: [
@@ -65,7 +72,16 @@ const config = [ {
           dest: 'dist/editor',
           rename: 'xdomain-index.html',
           transform: (contents) => contents.toString()
-            .replace('<script type="module" src="index.js">', '<script type="module" src="xdomain-index.js">')
+            .replace("import Editor from './Editor.js'", "import Editor from './xdomain-Editor.js")
+        },
+        {
+          src: 'src/editor/index.html',
+          dest: 'dist/editor',
+          rename: 'iife-index.html',
+          transform: (contents) => {
+            const replace1 = contents.toString().replace("import Editor from './Editor.js'", "/* import Editor from './xdomain-Editor.js' */");
+            return replace1.replace('<script type="module">', '<script src="./iife-Editor.js"></script><script>');
+          }
         },
         { src: 'src/editor/images', dest },
         { src: 'src/editor/extensions/ext-shapes/shapelib', dest: dest.map((d) => `${d}/extensions/ext-shapes`) },
@@ -102,18 +118,10 @@ extensionDirs.forEach((extensionDir) => {
           inlineDynamicImports: true,
           sourcemap: true
         }
-        /*
-        ,
-        {
-          format: 'system',
-          dir: `dist/editor/system/extensions/${extensionName}`,
-          inlineDynamicImports: true
-        }
-        */
       ],
       plugins: [
         url({
-          include: [ '**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif', '**/*.xml' ],
+          include: [ '**/*.svg', '**/*.xml' ],
           limit: 0,
           fileName: '[name][extname]'
         }),

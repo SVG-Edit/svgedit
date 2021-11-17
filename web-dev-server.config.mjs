@@ -8,7 +8,16 @@ const commonjs = fromRollup(rollupCommonjs);
 export default {
   plugins: [
     commonjs({
-      exclude: [ 'src', 'dist', 'instrumented' ]
+      // explicitely list packages to increase performance
+      include: [
+        '**/node_modules/rgbcolor/**/*',
+        '**/node_modules/raf/**/*',
+        '**/node_modules/font-family-papandreou/**/*',
+        '**/node_modules/svgpath/**/*',
+        '**/node_modules/cssesc/**/*',
+        '**/node_modules/core-js/**/*',
+        '**/node_modules/performance-now/**/*'
+      ]
     })
   ]
 };
