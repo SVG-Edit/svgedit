@@ -55,7 +55,7 @@ window.fill = function (colour) {
   });
 };
 
-let hiddenTextTag = window.canvas.$id(hiddenTextTagId);
+const hiddenTextTag = window.canvas.$id(hiddenTextTagId);
 window.canvas.textActions.setInputElem(hiddenTextTag);
 
 const addListenerMulti = (element, eventNames, listener)=> {
