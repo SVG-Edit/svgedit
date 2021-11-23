@@ -1295,7 +1295,6 @@ export const DOMMouseScrollEvent = function (e) {
   if (!e.shiftKey) { return; }
 
   e.preventDefault();
-  const evt = e.originalEvent;
 
   eventContext_.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
 
@@ -1304,7 +1303,7 @@ export const DOMMouseScrollEvent = function (e) {
   const rulerwidth = eventContext_.getCurConfig().showRulers ? 16 : 0;
 
   // mouse relative to content area in content pixels
-  const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
+  const pt = transformPoint(e.clientX, e.clientY, eventContext_.getrootSctm());
 
   // full work area width in screen pixels
   const editorFullW = parseFloat(getComputedStyle(workarea, null).width.replace("px", ""));
@@ -1323,7 +1322,7 @@ export const DOMMouseScrollEvent = function (e) {
   const wOffsetLeft = wOffset.left + rulerwidth;
   const wOffsetTop = wOffset.top + rulerwidth;
 
-  const delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
+  const delta = (e.wheelDelta) ? e.wheelDelta : (e.detail) ? - e.detail : 0;
   if (!delta) { return; }
 
   let factor = Math.max(3 / 4, Math.min(4 / 3, (delta)));
