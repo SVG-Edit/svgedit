@@ -18,7 +18,6 @@ import {
   init as pasteInit, pasteElementsMethod
 } from './paste-elem.js';
 
-// eslint-disable-next-line no-duplicate-imports
 import {
   identifyLayers, createLayer, cloneLayer, deleteCurrentLayer,
   setCurrentLayer, renameCurrentLayer, setCurrentLayerPosition,

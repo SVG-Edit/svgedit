@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
 import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
 
@@ -29,7 +28,6 @@ describe('utilities', function () {
   let mockHistorySubCommands = [];
   const mockHistory = {
     BatchCommand: class {
-      // eslint-disable-next-line class-methods-use-this
       addSubCommand (cmd) {
         mockHistorySubCommands.push(cmd);
       }

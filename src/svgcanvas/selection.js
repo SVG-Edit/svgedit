@@ -119,7 +119,7 @@ export const addToSelectionMethod = function (elemsToAdd, showGrips) {
 
   selectedElements.sort(function (a, b) {
     if (a && b && a.compareDocumentPosition) {
-      return 3 - (b.compareDocumentPosition(a) & 6); // eslint-disable-line no-bitwise
+      return 3 - (b.compareDocumentPosition(a) & 6);
     }
     if (!a) {
       return 1;

@@ -18,9 +18,7 @@ const loadExtensionTranslation = async function (svgEditor) {
     // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
-    // eslint-disable-next-line no-console
     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
@@ -380,7 +378,6 @@ export default {
       if (!preview) {
         preview = document.createElement('div');
         preview.setAttribute('id', 'imglib_preview');
-        // eslint-disable-next-line max-len
         preview.setAttribute('style', `position: absolute;top: 45px;right: 10px;width: 180px;bottom: 45px;background: #fff;overflow: auto;`);
         insertAfter($id('lib_framewrap'), preview);
 
@@ -431,7 +428,6 @@ export default {
         header.setAttribute('style', `position: absolute;top: 0px;left: 0px;width: 100%;`);
 
         const button = document.createElement('button');
-        // eslint-disable-next-line max-len
         button.innerHTML = svgEditor.i18next.t('common.cancel');
         browser.appendChild(button);
         button.addEventListener('click', function () {
@@ -448,7 +444,6 @@ export default {
 
         const back = document.createElement('button');
         back.style.visibility = "hidden";
-        // eslint-disable-next-line max-len
         back.innerHTML = `<img class="svg_icon" src="${imgPath}/library.svg" alt="icon" width="16" height="16" />` + svgEditor.i18next.t(`${name}:show_list`);
         leftBlock.appendChild(back);
         back.addEventListener('click', function () {

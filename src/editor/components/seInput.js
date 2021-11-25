@@ -88,7 +88,6 @@ export class SEInput extends HTMLElement {
       this.$input.value = newValue;
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }

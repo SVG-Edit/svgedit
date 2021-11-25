@@ -1,4 +1,3 @@
-// eslint-disable-next-line node/no-unpublished-import
 import { mergeDeep } from './components/jgraduate/Util.js';
 
 /**

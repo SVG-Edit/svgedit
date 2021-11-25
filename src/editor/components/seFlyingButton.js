@@ -148,7 +148,6 @@ export class FlyingButton extends HTMLElement {
       }
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }
@@ -270,7 +269,6 @@ export class FlyingButton extends HTMLElement {
         }
         break;
       default:
-        // eslint-disable-next-line no-console
         console.error('unkonw nodeName for:', ev.target, ev.target.className);
       }
     };

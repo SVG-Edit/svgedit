@@ -32,7 +32,6 @@ const extensionDirs = getDirectories('src/editor/extensions');
 const dest = [ 'dist/editor' ];
 
 // remove existing distribution
-// eslint-disable-next-line no-console
 rimraf('./dist', () => console.info('recreating dist'));
 
 // config for svgedit core module

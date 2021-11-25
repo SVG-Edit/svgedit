@@ -7,7 +7,7 @@ manipulation($, jml);
 
 const baseAPIURL = 'https://openclipart.org/search/json/';
 
-const jsVoid = 'javascript: void(0);'; // eslint-disable-line no-script-url
+const jsVoid = 'javascript: void(0);';
 
 /**
  * Shows results after query submission.

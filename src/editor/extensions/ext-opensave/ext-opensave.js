@@ -27,9 +27,7 @@ const loadExtensionTranslation = async function (svgEditor) {
     // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
-    // eslint-disable-next-line no-console
     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
   svgEditor.i18next.addResourceBundle(lang, 'translation', translationModule.default, true, true);
@@ -159,7 +157,6 @@ export default {
       name: svgEditor.i18next.t(`${name}:name`),
       // The callback should be used to load the DOM with the appropriate UI items
       callback() {
-        // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
         <se-menu-item id="tool_clear" label="opensave.new_doc" shortcut="N" src="new.svg"></se-menu-item>`;
         svgCanvas.insertChildAtIndex($id('main_button'), buttonTemplate, 0);

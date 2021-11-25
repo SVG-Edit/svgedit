@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import 'pathseg';
 
 import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
@@ -174,7 +173,7 @@ describe('utilities bbox', function () {
 
     const rect = { x: 10, y: 10, width: 10, height: 20 };
     const angle = 45;
-    const origin = { x: 15, y: 20 }; // eslint-disable-line no-shadow
+    const origin = { x: 15, y: 20 };
     elem = mockCreateSVGElement({
       element: 'rect',
       attr: { id: 'rect2', x: rect.x, y: rect.y, width: rect.width, height: rect.height, transform: 'rotate(' + angle + ' ' + origin.x + ',' + origin.y + ')' }
@@ -263,7 +262,7 @@ describe('utilities bbox', function () {
 
     const rect = { x: 10, y: 10, width: 10, height: 20 };
     const angle = 45;
-    const origin = { x: 15, y: 20 }; // eslint-disable-line no-shadow
+    const origin = { x: 15, y: 20 };
     tx = 10; // tx right
     ty = 10; // tx down
     txInRotatedSpace = Math.sqrt(tx * tx + ty * ty); // translate in rotated 45 space.
@@ -466,7 +465,7 @@ describe('utilities bbox', function () {
    * @param {module:math.XYObject} origin
    * @returns {module:math.XYObject}
    */
-  function rotatePoint (point, angle, origin) { // eslint-disable-line no-shadow
+  function rotatePoint (point, angle, origin) {
     if (!origin) {
       origin = { x: 0, y: 0 };
     }
@@ -485,7 +484,7 @@ describe('utilities bbox', function () {
    * @param {module:math.XYObject} origin
    * @returns {module:utilities.BBoxObject}
    */
-  function rotateRect (rect, angle, origin) { // eslint-disable-line no-shadow
+  function rotateRect (rect, angle, origin) {
     const tl = rotatePoint({ x: rect.x, y: rect.y }, angle, origin);
     const tr = rotatePoint({ x: rect.x + rect.width, y: rect.y }, angle, origin);
     const br = rotatePoint({ x: rect.x + rect.width, y: rect.y + rect.height }, angle, origin);

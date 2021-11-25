@@ -25,7 +25,7 @@ describe('history', function () {
     unapply (handler) {
       super.unapply(handler, () => { /* empty fn */ });
     }
-    elements () { return []; } // eslint-disable-line class-methods-use-this
+    elements () { return []; }
   }
 
   /*

@@ -165,7 +165,6 @@ class BottomPanel {
     const template = document.createElement('template');
     const { i18next } = this.editor;
 
-    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
       <div id="tools_bottom">
         <!-- Zoom buttons -->

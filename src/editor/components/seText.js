@@ -1,6 +1,5 @@
 import { t } from '../locale.js';
 const template = document.createElement('template');
-// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   #layersLabel {
@@ -60,7 +59,6 @@ export class SeText extends HTMLElement {
       //this.$div.setAttribute("value", newValue);
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }

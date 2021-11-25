@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 const template = document.createElement('template');
 template.innerHTML = `
   <style>

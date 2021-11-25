@@ -1,7 +1,6 @@
 /* globals svgEditor */
 import { t } from '../locale.js';
 const template = document.createElement('template');
-// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   :host(:hover) :not(.disabled)
@@ -113,7 +112,6 @@ export class ToolButton extends HTMLElement {
       }
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }

@@ -59,7 +59,6 @@ export class SeMenuItem extends HTMLElement {
       this.$label.textContent = `${t(newValue)} ${shortcut ? `(${shortcut})` : ''}`;
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }

@@ -1,7 +1,6 @@
 import './se-elix/define/NumberSpinBox.js';
 
 const template = document.createElement('template');
-// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
  

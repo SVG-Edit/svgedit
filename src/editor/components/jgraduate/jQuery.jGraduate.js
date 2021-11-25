@@ -1,5 +1,3 @@
-/* eslint-disable no-loop-func */
-/* eslint-disable prefer-destructuring */
 /* eslint-disable no-unsanitized/property */
 /**
  * @file jGraduate 0.4
@@ -60,7 +58,6 @@ if (!window.console) {
 * @returns {external:jQuery}
 */
 // export default function jQueryPluginJGraduate ($) {
-/* eslint-disable jsdoc/require-property */
 /**
 * @namespace {PlainObject} jGraduate
 * @memberof external:jQuery
@@ -195,7 +192,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
   const idref = '#' + $this.getAttribute('id') + ' ';
 
   if (!idref) {
-    // eslint-disable-next-line no-alert
     alert('Container element must have an id attribute to maintain unique id strings for sub-elements.');
     return;
   }
@@ -234,7 +230,6 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
     $this.paint = new jGraduate.Paint({ solidColor: 'ffffff' });
   }
   $this.classList.add('jGraduate_Picker');
-  // eslint-disable-next-line no-unsanitized/property
   $this.innerHTML = `<ul class="jGraduate_tabs">
       <li class="jGraduate_tab_color jGraduate_tab_current" id="jGraduate_tab_color" data-type="col">${i18next.t('config.jgraduate_solid_color')}</li>
       <li class="jGraduate_tab_lingrad" id="jGraduate_tab_lingrad" data-type="lg">${i18next.t('config.jgraduate_linear_gradient')}</li>
@@ -244,10 +239,8 @@ export function jGraduateMethod (elem, options, okCallback, cancelCallback, i18n
     <div class="jGraduate_gradPick" id="jGraduate_gradPick"></div>
     <div class="jGraduate_LightBox" id="jGraduate_LightBox"></div>
     <div id="${id}_jGraduate_stopPicker" class="jGraduate_stopPicker"></div>`;
-  /* JFH !!!! */
   const colPicker = $this.querySelector('#jGraduate_colPick');
   const gradPicker = $this.querySelector('#jGraduate_gradPick');
-  // eslint-disable-next-line no-unsanitized/property
   const html = `<div id="${id}_jGraduate_Swatch" class="jGraduate_Swatch">
         <h2 class="jGraduate_Title">${$settings.window.pickerTitle}</h2>
         <div id="${id}_jGraduate_GradContainer" class="jGraduate_GradContainer"></div>

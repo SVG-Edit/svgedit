@@ -5,7 +5,6 @@ import * as coords from '../../../instrumented/svgcanvas/coords.js';
 describe('coords', function () {
   let elemId = 1;
 
-  // eslint-disable-next-line no-shadow
   const root = document.createElement('div');
   root.id = 'root';
   root.style.visibility = 'hidden';

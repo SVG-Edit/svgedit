@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /**
  * @file ext-overview_window.js
  *
@@ -31,7 +30,6 @@ export default {
           '</div>' +
         '</div>' +
       '</div>';
-    // eslint-disable-next-line no-unsanitized/method
     $id("sidepanel_content").insertAdjacentHTML( 'beforeend', propsWindowHtml );
 
     // Define dynamic animation of the view box.

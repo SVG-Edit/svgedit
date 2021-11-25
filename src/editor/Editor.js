@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /* globals seConfirm seAlert */
 /**
 * The main module for the visual SVG this.
@@ -69,7 +68,6 @@ class Editor extends EditorStartup {
     this.docprops = false;
     this.configObj.preferences = false;
     this.canvMenu = null;
-    // eslint-disable-next-line max-len
     this.goodLangs = [ 'ar', 'cs', 'de', 'en', 'es', 'fa', 'fr', 'fy', 'hi', 'it', 'ja', 'nl', 'pl', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'zh-CN', 'zh-TW' ];
     const modKey = (isMac() ? 'meta+' : 'ctrl+');
     this.shortcuts = [
@@ -678,7 +676,6 @@ class Editor extends EditorStartup {
   * @returns {void}
   */
   setIcon(elem, iconId) {
-    // eslint-disable-next-line max-len
     const img = document.createElement("img");
     img.src = this.configObj.curConfig.imgPath + iconId;
     const icon = (typeof iconId === 'string') ? img : iconId.cloneNode(true);
@@ -829,7 +826,6 @@ class Editor extends EditorStartup {
   *
   * @returns {void}
   */
-  // eslint-disable-next-line class-methods-use-this
   hideSourceEditor() {
     const $editorDialog = $id('se-svg-editor-dialog');
     $editorDialog.setAttribute('dialog', 'closed');
@@ -918,7 +914,6 @@ class Editor extends EditorStartup {
    * @param {Event} e
    * @returns {void}
    */
-  // eslint-disable-next-line class-methods-use-this
   onDragEnter(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -930,7 +925,6 @@ class Editor extends EditorStartup {
    * @param {Event} e
    * @returns {void}
    */
-  // eslint-disable-next-line class-methods-use-this
   onDragOver(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -941,7 +935,6 @@ class Editor extends EditorStartup {
    * @param {Event} e
    * @returns {void}
    */
-  // eslint-disable-next-line class-methods-use-this
   onDragLeave(e) {
     e.stopPropagation();
     e.preventDefault();

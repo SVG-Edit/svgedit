@@ -199,7 +199,6 @@ class MainMenu {
    *
    * @returns {void}
    */
-  // eslint-disable-next-line class-methods-use-this
   clickImport() {
     /* empty fn */
   }
@@ -266,7 +265,6 @@ class MainMenu {
    *
    * @returns {void}
    */
-  // eslint-disable-next-line class-methods-use-this
   openHomePage() {
     window.open(homePage, "_blank");
   }
@@ -277,7 +275,6 @@ class MainMenu {
   init() {
     // add Top panel
     const template = document.createElement("template");
-    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <se-menu id="main_button" label="SVG-Edit" src="logo.svg" alt="logo">
         <se-menu-item id="tool_import" label="tools.import_doc" src="importImg.svg"></se-menu-item>

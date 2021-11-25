@@ -43,7 +43,6 @@ Array.prototype.forEach.call(atags, function (aEle) {
     } else {
       fetch(href)
         .then( (r) => r.text())
-      // eslint-disable-next-line promise/always-return
         .then( (data) => {
           post({ href, data });
           return data;

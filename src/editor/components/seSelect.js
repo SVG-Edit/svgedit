@@ -101,7 +101,6 @@ export class SeSelect extends HTMLElement {
       }
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }
