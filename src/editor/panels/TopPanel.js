@@ -150,7 +150,6 @@ class TopPanel {
   promptImgURL({ cancelDeletes = false } = {}) {
     let curhref = this.editor.svgCanvas.getHref(this.editor.selectedElement);
     curhref = curhref.startsWith("data:") ? "" : curhref;
-    // eslint-disable-next-line no-alert
     const url = prompt(
       this.editor.i18next.t('notification.enterNewImgURL'),
       curhref
@@ -263,7 +262,6 @@ class TopPanel {
       } else {
         const point = this.path.getNodePoint();
         $id("tool_add_subpath").pressed = false;
-        // eslint-disable-next-line max-len
         (!this.path.canDeleteNodes) ? $id("tool_node_delete").classList.add("disabled") : $id("tool_node_delete").classList.remove("disabled");
 
         // Show open/close button based on selected point
@@ -517,7 +515,6 @@ class TopPanel {
    */
   changeRotationAngle(e) {
     this.editor.svgCanvas.setRotationAngle(e.target.value);
-    // eslint-disable-next-line max-len
     (Number.parseInt(e.target.value) === 0) ? $id("tool_reorient").classList.add("disabled") : $id("tool_reorient").classList.remove("disabled");
   }
 
@@ -580,7 +577,6 @@ class TopPanel {
 
     if (!valid) {
       e.target.value = this.selectedElement.getAttribute(attr);
-      // eslint-disable-next-line no-alert
       alert(this.editor.i18next.t('notification.invalidAttrValGiven'));
       return false;
     }
@@ -640,7 +636,6 @@ class TopPanel {
    */
   makeHyperlink() {
     if (this.editor.selectedElement || this.multiselected) {
-      // eslint-disable-next-line no-alert
       const url = prompt(
         this.editor.i18next.t('notification.enterNewLinkURL'),
         "http://"
@@ -827,7 +822,6 @@ class TopPanel {
     // add Top panel
     const template = document.createElement("template");
     const { i18next } = this.editor;
-    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
       <div id="tools_top">
         <div id="editor_panel">

@@ -169,7 +169,6 @@ export class ExplorerButton extends HTMLElement {
         )).join('');
         await this.updateLib(lib[0]);
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error(error);
       }
       break;
@@ -177,7 +176,6 @@ export class ExplorerButton extends HTMLElement {
       this.$img.setAttribute('src', this.imgPath + '/' + newValue);
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }
@@ -273,7 +271,6 @@ export class ExplorerButton extends HTMLElement {
         }
         break;
       default:
-        // eslint-disable-next-line no-console
         console.error('unknown nodeName for:', ev.target, ev.target.className);
       }
     };
@@ -308,7 +305,6 @@ export class ExplorerButton extends HTMLElement {
         return `<se-button data-shape="${key}"src="data:image/svg+xml;base64,${encoded}"></se-button>`;
       }).join('');
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(`could not read file:${libDir}${lib}.json`, error);
     }
   }

@@ -70,7 +70,6 @@ class Rulers {
 
       // Bit of a hack to fully clear the canvas in Safari & IE9
       const $hcanv = $hcanvOrig.cloneNode(true);
-      // eslint-disable-next-line no-unsanitized/property
       $hcanvOrig.replaceWith($hcanv);
 
       const hcanv = $hcanv;

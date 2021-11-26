@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import assertionWrapper from './assertion-wrapper.js';
 
 /**

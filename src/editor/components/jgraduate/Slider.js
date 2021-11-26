@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise */
 import { findPos } from './Util.js';
 /**
  * Whether a value is `null` or `undefined`.
@@ -282,14 +281,14 @@ export default class Slider {
     * @param {GenericCallback} callback
     * @returns {void}
     */
-    function bind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+    function bind (callback) {
       if (typeof callback === 'function') changeEvents.push(callback);
     }
     /**
     * @param {GenericCallback} callback
     * @returns {void}
     */
-    function unbind (callback) { // eslint-disable-line promise/prefer-await-to-callbacks
+    function unbind (callback) {
       if (typeof callback !== 'function') return;
       let i;
       while ((i = changeEvents.includes(callback))) changeEvents.splice(i, 1);

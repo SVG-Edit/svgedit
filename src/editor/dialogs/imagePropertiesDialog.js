@@ -1,7 +1,6 @@
 import { isValidUnit } from '../../common/units.js';
 
 const template = document.createElement('template');
-// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   :not(:defined) {

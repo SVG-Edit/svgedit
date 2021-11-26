@@ -19,9 +19,7 @@ const loadExtensionTranslation = async function (svgEditor) {
     // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
-    // eslint-disable-next-line no-console
     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);

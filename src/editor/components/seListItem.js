@@ -70,7 +70,6 @@ export class SeListItem extends HTMLElement {
       this.$img.setAttribute('height', newValue);
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }

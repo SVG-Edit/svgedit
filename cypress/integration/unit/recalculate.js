@@ -5,7 +5,6 @@ import * as recalculate from '../../../instrumented/svgcanvas/recalculate.js';
 
 
 describe('recalculate', function () {
-  // eslint-disable-next-line no-shadow
   const root = document.createElement('div');
   root.id = 'root';
   root.style.visibility = 'hidden';

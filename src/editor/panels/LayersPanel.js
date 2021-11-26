@@ -1,4 +1,3 @@
-/* eslint-disable no-alert */
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
 
 const { $id } = SvgCanvas;
@@ -45,7 +44,6 @@ class LayersPanel {
     const template = document.createElement("template");
     const { i18next } = this.editor;
 
-    // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = `
     <div id="sidepanels">
       <se-text id="sidepanel_handle" title="ui.panel_action" text="ui.panel"></se-text>

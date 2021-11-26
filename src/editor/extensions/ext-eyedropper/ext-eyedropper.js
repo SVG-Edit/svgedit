@@ -17,9 +17,7 @@ const loadExtensionTranslation = async function (svgEditor) {
     // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/${lang}.js`);
   } catch (_error) {
-    // eslint-disable-next-line no-console
     console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-    // eslint-disable-next-line no-unsanitized/method
     translationModule = await import(`./locale/en.js`);
   }
   svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
@@ -84,7 +82,6 @@ export default {
         // Add the button and its handler(s)
         const title = `${name}:buttons.0.title`;
         const key = `${name}:buttons.0.key`;
-        // eslint-disable-next-line no-unsanitized/property
         const buttonTemplate = `
         <se-button id="tool_eyedropper" title="${title}" src="eye_dropper.svg" shortcut=${key}></se-button>
         `;

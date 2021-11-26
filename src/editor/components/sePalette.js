@@ -14,7 +14,6 @@ const palette = [
 ];
 
 const template = document.createElement('template');
-// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   .square {

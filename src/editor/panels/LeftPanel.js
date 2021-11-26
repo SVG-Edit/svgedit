@@ -25,7 +25,6 @@ class LeftPanel {
    * @param {string|Element} button The DOM element or string selector representing the toolbar button
    * @returns {boolean} Whether the button was disabled or not
    */
-  // eslint-disable-next-line class-methods-use-this
   updateLeftPanel(button) {
     if (button.disabled) return false;
     // remove the pressed state on other(s) button(s)

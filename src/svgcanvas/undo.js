@@ -222,7 +222,6 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       // that are not in the selectedElements array, we need to only request a
       // selector if the element is in that array
       if (selectedElements.includes(elem)) {
-        // eslint-disable-next-line no-loop-func
         setTimeout(function () {
           // Due to element replacement, this element may no longer
           // be part of the DOM

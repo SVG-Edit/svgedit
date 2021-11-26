@@ -15,7 +15,6 @@
  * John Dyers' website: {@link http://johndyer.name}
  * Color Picker page: {@link http://johndyer.name/photoshop-like-javascript-color-picker/}
  */
-/* eslint-disable no-bitwise */
 /* eslint-disable max-len */
 /* gl#bals svgEditor */
 import ColorValuePicker from './ColorValuePicker.js';
@@ -96,7 +95,7 @@ export const jPicker = /** @lends external:jQuery.jPicker */ {
   * @param {module:jPicker.JPickerInit} init
   * @returns {external:jQuery.jPicker.Color}
   */
-  Color: function (init) { // eslint-disable-line object-shorthand
+  Color: function (init) {
     const that = this;
     /**
      *
@@ -628,7 +627,6 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
   if (settings.window.expandable) {
     const content = document.createElement('span');
     content.classList.add('jPicker');
-    // eslint-disable-next-line no-unsanitized/property
     content.innerHTML = `<span class="Icon" id="jq-ae-Icon">
       <span class="Color" id="jq-ae-Color">&nbsp;</span>
       <span class="Alpha" id="jq-ae-Alpha">&nbsp;</span>
@@ -1324,7 +1322,6 @@ export function jPickerMethod (elem, options, commitCallback, liveCallback, canc
     const all = color.active.val('all');
     if (win.alphaPrecision < 0) win.alphaPrecision = 0;
     else if (win.alphaPrecision > 2) win.alphaPrecision = 2;
-    // eslint-disable-next-line no-unsanitized/property
     const controlHtml = `<table class="jPicker" id="jPicker-table" cellpadding="0" cellspacing="0">
       <tbody>
         ${win.expandable ? '<tr><td class="Move" colspan="5">&nbsp;</td></tr>' : ''}

@@ -1,11 +1,9 @@
 /* globals svgEditor */
-/* eslint-disable max-len */
 import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js';
 import PaintBox from './PaintBox.js';
 import { t } from '../locale.js';
 
 const template = document.createElement('template');
-// eslint-disable-next-line no-unsanitized/property
 template.innerHTML = `
   <style>
   .jPicker .Icon {
@@ -708,7 +706,6 @@ export class SeColorPicker extends HTMLElement {
       this.$label.setAttribute('title', newValue);
       break;
     default:
-      // eslint-disable-next-line no-console
       console.error(`unknown attribute: ${name}`);
       break;
     }
