@@ -199,14 +199,6 @@ class MainMenu {
    *
    * @returns {void}
    */
-  clickImport() {
-    /* empty fn */
-  }
-
-  /**
-   *
-   * @returns {void}
-   */
   showDocProperties() {
     if (this.editor.docprops) {
       return;
@@ -277,7 +269,6 @@ class MainMenu {
     const template = document.createElement("template");
     template.innerHTML = `
     <se-menu id="main_button" label="SVG-Edit" src="logo.svg" alt="logo">
-        <se-menu-item id="tool_import" label="tools.import_doc" src="importImg.svg"></se-menu-item>
         <se-menu-item id="tool_export" label="tools.export_img" src="export.svg"></se-menu-item>
         <se-menu-item id="tool_docprops" label="tools.docprops" shortcut="D" src="docprop.svg"></se-menu-item>
         <se-menu-item id="tool_editor_prefs" label="config.editor_prefs" src="editPref.svg"></se-menu-item>
@@ -289,10 +280,6 @@ class MainMenu {
     /**
      * Associate all button actions as well as non-button keyboard shortcuts.
      */
-    $id("tool_import").addEventListener("click", () => {
-      this.clickImport();
-      window.dispatchEvent(new CustomEvent("importImages"));
-    });
     $id("tool_export").addEventListener("click", function() {
       document
         .getElementById("se-export-dialog")

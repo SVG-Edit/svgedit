@@ -40,7 +40,88 @@ export default {
     const { svgCanvas } = svgEditor;
     const { $id } = svgCanvas;
     await loadExtensionTranslation(svgEditor);
+    /**
+    * @param {Event} e
+    * @returns {void}
+    */
+    const importImage = (e) => {
+      $id('se-prompt-dialog').title = this.i18next.t('notification.loadingImage');
+      $id('se-prompt-dialog').setAttribute('close', false);
+      e.stopPropagation();
+      e.preventDefault();
+      const file = (e.type === 'drop') ? e.dataTransfer.files[0] : e.currentTarget.files[0];
+      if (!file) {
+        $id('se-prompt-dialog').setAttribute('close', true);
+        return;
+      }
 
+      if (!file.type.includes('image')) {
+        return;
+      }
+      // Detected an image
+      // svg handling
+      let reader;
+      if (file.type.includes('svg')) {
+        reader = new FileReader();
+        reader.onloadend =  (ev) => {
+          const newElement = this.svgCanvas.importSvgString(ev.target.result, true);
+          this.svgCanvas.alignSelectedElements('m', 'page');
+          this.svgCanvas.alignSelectedElements('c', 'page');
+          // highlight imported element, otherwise we get strange empty selectbox
+          this.svgCanvas.selectOnly([ newElement ]);
+          $id('se-prompt-dialog').setAttribute('close', true);
+        };
+        reader.readAsText(file);
+      } else {
+        // bitmap handling
+        reader = new FileReader();
+        reader.onloadend = function ({ target: { result } }) {
+          /**
+              * Insert the new image until we know its dimensions.
+              * @param {Float} imageWidth
+              * @param {Float} imageHeight
+              * @returns {void}
+              */
+          const insertNewImage = (imageWidth, imageHeight) => {
+            const newImage = this.svgCanvas.addSVGElementFromJson({
+              element: 'image',
+              attr: {
+                x: 0,
+                y: 0,
+                width: imageWidth,
+                height: imageHeight,
+                id: this.svgCanvas.getNextId(),
+                style: 'pointer-events:inherit'
+              }
+            });
+            this.svgCanvas.setHref(newImage, result);
+            this.svgCanvas.selectOnly([ newImage ]);
+            this.svgCanvas.alignSelectedElements('m', 'page');
+            this.svgCanvas.alignSelectedElements('c', 'page');
+            this.topPanel.updateContextPanel();
+            $id('se-prompt-dialog').setAttribute('close', true);
+          };
+          // create dummy img so we know the default dimensions
+          let imgWidth = 100;
+          let imgHeight = 100;
+          const img = new Image();
+          img.style.opacity = 0;
+          img.addEventListener('load', () => {
+            imgWidth = img.offsetWidth || img.naturalWidth || img.width;
+            imgHeight = img.offsetHeight || img.naturalHeight || img.height;
+            insertNewImage(imgWidth, imgHeight);
+          });
+          img.src = result;
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    // create an input with type file to open the filesystem dialog
+    const imgImport = document.createElement('input');
+    imgImport.type="file";
+    imgImport.addEventListener('change', importImage);
+    // dropping a svg file will import it in the svg as well
+    this.workarea.addEventListener('drop', importImage);
     /**
      * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
      * @returns {void}
@@ -166,11 +247,15 @@ export default {
         svgCanvas.insertChildAtIndex($id('main_button'), saveButtonTemplate, 2);
         const saveAsButtonTemplate = `<se-menu-item id="tool_save_as" label="opensave.save_as_doc" src="saveImg.svg"></se-menu-item>`;
         svgCanvas.insertChildAtIndex($id('main_button'), saveAsButtonTemplate, 3);
+        const importButtonTemplate = `<se-menu-item id="tool_import" label="tools.import_doc" src="importImg.svg"></se-menu-item>`;
+        svgCanvas.insertChildAtIndex($id('main_button'), importButtonTemplate, 4);
+
         // handler
         $id("tool_clear").addEventListener("click", clickClear.bind(this));
         $id("tool_open").addEventListener("click", clickOpen.bind(this));
         $id("tool_save").addEventListener("click", clickSave.bind(this, "save"));
         $id("tool_save_as").addEventListener("click", clickSave.bind(this, "saveas"));
+        $id("tool_import").addEventListener("click", () => imgImport.click());
       }
     };
   }
