@@ -581,96 +581,9 @@ class EditorStartup {
     // and provide a file input to click. When that change event fires, it will
     // get the text contents of the file and send it to the canvas
 
-    /**
-    * @param {Event} e
-    * @returns {void}
-    */
-    const importImage = (e) => {
-      $id('se-prompt-dialog').title = this.i18next.t('notification.loadingImage');
-      $id('se-prompt-dialog').setAttribute('close', false);
-      e.stopPropagation();
-      e.preventDefault();
-      const file = (e.type === 'drop') ? e.dataTransfer.files[0] : e.currentTarget.files[0];
-      if (!file) {
-        $id('se-prompt-dialog').setAttribute('close', true);
-        return;
-      }
-
-      if (!file.type.includes('image')) {
-        return;
-      }
-      // Detected an image
-      // svg handling
-      let reader;
-      if (file.type.includes('svg')) {
-        reader = new FileReader();
-        reader.onloadend =  (ev) => {
-          const newElement = this.svgCanvas.importSvgString(ev.target.result, true);
-          this.svgCanvas.alignSelectedElements('m', 'page');
-          this.svgCanvas.alignSelectedElements('c', 'page');
-          // highlight imported element, otherwise we get strange empty selectbox
-          this.svgCanvas.selectOnly([ newElement ]);
-          $id('se-prompt-dialog').setAttribute('close', true);
-        };
-        reader.readAsText(file);
-      } else {
-        // bitmap handling
-        reader = new FileReader();
-        reader.onloadend = function ({ target: { result } }) {
-          /**
-          * Insert the new image until we know its dimensions.
-          * @param {Float} imageWidth
-          * @param {Float} imageHeight
-          * @returns {void}
-          */
-          const insertNewImage = (imageWidth, imageHeight) => {
-            const newImage = this.svgCanvas.addSVGElementFromJson({
-              element: 'image',
-              attr: {
-                x: 0,
-                y: 0,
-                width: imageWidth,
-                height: imageHeight,
-                id: this.svgCanvas.getNextId(),
-                style: 'pointer-events:inherit'
-              }
-            });
-            this.svgCanvas.setHref(newImage, result);
-            this.svgCanvas.selectOnly([ newImage ]);
-            this.svgCanvas.alignSelectedElements('m', 'page');
-            this.svgCanvas.alignSelectedElements('c', 'page');
-            this.topPanel.updateContextPanel();
-            $id('se-prompt-dialog').setAttribute('close', true);
-          };
-            // create dummy img so we know the default dimensions
-          let imgWidth = 100;
-          let imgHeight = 100;
-          const img = new Image();
-          img.style.opacity = 0;
-          img.addEventListener('load', () => {
-            imgWidth = img.offsetWidth || img.naturalWidth || img.width;
-            imgHeight = img.offsetHeight || img.naturalHeight || img.height;
-            insertNewImage(imgWidth, imgHeight);
-          });
-          img.src = result;
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-
     this.workarea.addEventListener('dragenter', this.onDragEnter);
     this.workarea.addEventListener('dragover', this.onDragOver);
     this.workarea.addEventListener('dragleave', this.onDragLeave);
-
-    // create an input with type file to open the filesystem dialog
-    const imgImport = document.createElement('input');
-    imgImport.type="file";
-    imgImport.addEventListener('change', importImage);
-    // the importImages event will activate the input field
-    window.addEventListener('importImages', () => imgImport.click());
-    // dropping a svg file will import it in the svg as well
-    this.workarea.addEventListener('drop', importImage);
-
 
     this.updateCanvas(true);
     // Load extensions
