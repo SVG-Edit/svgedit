@@ -28,7 +28,6 @@ const getDirectories = (source) => {
 // capture the list of files to build for extensions and ext-locales
 const extensionDirs = getDirectories('src/editor/extensions');
 
-/** @todo should we support systemjs? */
 const dest = [ 'dist/editor' ];
 
 // remove existing distribution
@@ -83,6 +82,7 @@ const config = [ {
           }
         },
         { src: 'src/editor/images', dest },
+        { src: 'src/editor/components/jgraduate/images', dest: dest.map((d) => `${d}/components/jgraduate`) },
         { src: 'src/editor/extensions/ext-shapes/shapelib', dest: dest.map((d) => `${d}/extensions/ext-shapes`) },
         { src: 'src/editor/embedapi.html', dest },
         { src: 'src/editor/embedapi.js', dest },
