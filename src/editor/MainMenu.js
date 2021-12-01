@@ -199,14 +199,6 @@ class MainMenu {
    *
    * @returns {void}
    */
-  clickImport() {
-    /* empty fn */
-  }
-
-  /**
-   *
-   * @returns {void}
-   */
   showDocProperties() {
     if (this.editor.docprops) {
       return;
@@ -290,7 +282,6 @@ class MainMenu {
      * Associate all button actions as well as non-button keyboard shortcuts.
      */
     $id("tool_import").addEventListener("click", () => {
-      this.clickImport();
       window.dispatchEvent(new CustomEvent("importImages"));
     });
     $id("tool_export").addEventListener("click", function() {

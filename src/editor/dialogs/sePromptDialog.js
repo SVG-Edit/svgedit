@@ -39,6 +39,8 @@ export class SePromptDialog extends HTMLElement {
     case 'close':
       if (this.dialog.opened) {
         this.dialog.close();
+      } else {
+        this.dialog.open();
       }
       break;
     default:
@@ -74,7 +76,12 @@ export class SePromptDialog extends HTMLElement {
    * @returns {void}
    */
   set close (value) {
-    this.setAttribute('close', value);
+    // boolean value => existence = true
+    if (value) {
+      this.setAttribute('close', 'true');
+    } else {
+      this.removeAttribute('close');
+    }
   }
 }
 
