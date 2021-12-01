@@ -44,7 +44,7 @@ export default {
     * @param {Event} e
     * @returns {void}
     */
-     const importImage = (e) => {
+    const importImage = (e) => {
       $id('se-prompt-dialog').title = this.i18next.t('notification.loadingImage');
       $id('se-prompt-dialog').setAttribute('close', false);
       e.stopPropagation();
