@@ -1,4 +1,5 @@
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
+import LayersPanelHtml from './LayersPanel.html';
 
 const { $id } = SvgCanvas;
 
@@ -44,34 +45,8 @@ class LayersPanel {
     const template = document.createElement("template");
     const { i18next } = this.editor;
 
-    template.innerHTML = `
-    <div id="sidepanels">
-      <se-text id="sidepanel_handle" title="ui.panel_action" text="ui.panel"></se-text>
-      <div id="sidepanel_content">
-        <div id="layerpanel">
-          <se-text id="layersLabel" text="layers.layers"></se-text>
-          <fieldset id="layerbuttons">
-            <se-button id="layer_new" title="layers.new" size="small" src="new.svg"></se-button>
-            <se-button id="layer_delete" title="layers.del" size="small" src="delete.svg"></se-button>
-            <se-button id="layer_rename" title="layers.rename" size="small" src="text.svg"></se-button>
-            <se-button id="layer_up" title="layers.move_up" size="small" src="go_up.svg"></se-button>
-            <se-button id="layer_down" title="layers.move_down" size="small" src="go_down.svg"></se-button>
-            <se-button id="layer_moreopts" title="common.more_opts" size="small" src="context_menu.svg">
-            </se-button>
-          </fieldset>
-          <table id="layerlist">
-            <tr class="layer">
-              <td class="layervis"></td>
-              <td class="layername">Layer 1</td>
-            </tr>
-          </table>
-          <se-select id="selLayerNames" title="layers.move_selected" label="layers.move_elems_to" options="Layer 1"
-            values="layer1" value="layer1" disabled="disabled">     
-          </se-select>
-        </div>
-     </div>
-  </div>
-    `;
+    // eslint-disable-next-line no-unsanitized/property
+    template.innerHTML = LayersPanelHtml;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
     // layer menu added to DOM
     const menuMore = document.createElement("se-cmenu-layers");

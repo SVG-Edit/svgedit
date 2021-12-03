@@ -1,5 +1,5 @@
 import { getTypeMap } from '../common/units.js';
-import rulersTemplate from './templates/rulersTemplate.js';
+import rulersTemplate from './templates/rulersTemplate.html';
 /**
  *
  */
@@ -18,7 +18,10 @@ class Rulers {
     this.svgCanvas = editor.svgCanvas;
     this.editor = editor;
     // add rulers component to the DOM
-    this.editor.$svgEditor.append(rulersTemplate.content.cloneNode(true));
+    const template = document.createElement('template');
+    // eslint-disable-next-line no-unsanitized/property
+    template.innerHTML = rulersTemplate;
+    this.editor.$svgEditor.append(template.content.cloneNode(true));
     const { $id } = this.svgCanvas;
     this.rulerX = $id('ruler_x');
     this.rulerY = $id('ruler_y');
