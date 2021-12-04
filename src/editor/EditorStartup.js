@@ -7,7 +7,7 @@ import {
 import {
   hasCustomHandler, getCustomHandler, injectExtendedContextMenuItemsIntoDom
 } from './contextmenu.js';
-import editorTemplate from './templates/editorTemplate.js';
+import editorTemplate from './templates/editorTemplate.html';
 import SvgCanvas from '../svgcanvas/svgcanvas.js';
 import Rulers from './Rulers.js';
 
@@ -71,7 +71,10 @@ class EditorStartup {
     await import(`./dialogs/index.js`);
     try {
       // add editor components to the DOM
-      this.$container.append(editorTemplate.content.cloneNode(true));
+      const template = document.createElement('template');
+      // eslint-disable-next-line no-unsanitized/property
+      template.innerHTML = editorTemplate;
+      this.$container.append(template.content.cloneNode(true));
       this.$svgEditor = $qq('.svg_editor');
       // allow to prepare the dom without display
       this.$svgEditor.style.visibility = 'hidden';

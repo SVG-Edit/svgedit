@@ -1,5 +1,5 @@
 import SvgCanvas from "../../svgcanvas/svgcanvas.js";
-import { insertChildAtIndex } from '../../svgcanvas/utilities.js';
+import leftPanelHTML from './LeftPanel.html';
 
 const { $id, $qa } = SvgCanvas;
 
@@ -196,60 +196,10 @@ class LeftPanel {
   init() {
 
     // add Left panel
-    const leftMenu = [
-      {
-        menu: `<se-button id="tool_select" title="tools.mode_select" src="select.svg"></se-button>`,
-        position: 1
-      },
-      {
-        menu: `<se-button id="tool_zoom" title="tools.mode_zoom" src="zoom.svg" shortcut="Z"></se-button>`,
-        position: 2
-      },
-      {
-        menu: `<se-button id="tool_fhpath" title="tools.mode_fhpath" src="pencil.svg" shortcut="Q"></se-button>`,
-        position: 3
-      },
-      {
-        menu: `<se-button id="tool_line" title="tools.mode_line" src="pen.svg" shortcut="L"></se-button>`,
-        position: 4
-      },
-      {
-        menu: `<se-button id="tool_path" title="tools.mode_path" src="path.svg" shortcut="P"></se-button>`,
-        position: 5
-      },
-      {
-        menu: `<se-flyingbutton id="tools_rect" title="tools.square_rect_tool">
-        <se-button id="tool_rect" title="tools.mode_rect" src="rect.svg" shortcut="R"></se-button>
-        <se-button id="tool_square" title="tools.mode_square" src="square.svg"></se-button>
-        <se-button id="tool_fhrect" title="tools.mode_fhrect" src="fh_rect.svg"></se-button>
-      </se-flyingbutton>`,
-        position: 6
-      },
-      {
-        menu: `<se-flyingbutton id="tools_ellipse" title="tools.ellipse_circle_tool">
-          <se-button id="tool_ellipse" title="tools.mode_ellipse" src="ellipse.svg" shortcut="E"></se-button>
-          <se-button id="tool_circle" title="tools.mode_circle" src="circle.svg"></se-button>
-          <se-button id="tool_fhellipse" title="tools.mode_fhellipse" src="fh_ellipse.svg"></se-button>
-        </se-flyingbutton>`,
-        position: 7
-      },
-      {
-        menu: `<se-button id="tool_text" title="tools.mode_text" src="text.svg" shortcut="T"></se-button>`,
-        position: 8
-      },
-      {
-        menu: `<se-button id="tool_image" title="tools.mode_image" src="image.svg"></se-button>`,
-        position: 11
-      }
-    ];
     const template = document.createElement("template");
-    template.innerHTML = `<div id="tools_left"></div>`;
+    // eslint-disable-next-line no-unsanitized/property
+    template.innerHTML = leftPanelHTML;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
-    const leftMenuSort = leftMenu.sort((a, b) => (a.position > b.position) ? 1 : ((b.position > a.position) ? -1 : 0));
-    const parent = $id("tools_left");
-    leftMenuSort.forEach(function (value) {
-      insertChildAtIndex(parent, value.menu, value.position);
-    });
     // register actions for left panel
     $id("tool_select").addEventListener("click", this.clickSelect.bind(this));
     $id("tool_fhpath").addEventListener("click", this.clickFHPath.bind(this));
