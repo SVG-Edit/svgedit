@@ -94,7 +94,11 @@ const config = [ {
         { src: 'src/editor/svgedit.css', dest }
       ]
     }),
-    html({ include: 'src/editor/panels/*.html' }),
+    html({ include: [
+      'src/editor/panels/*.html',
+      'src/editor/templates/*.html',
+      'src/editor/dialogs/*.html'
+    ] }),
     nodeResolve({
       browser: true,
       preferBuiltins: false
@@ -128,6 +132,9 @@ extensionDirs.forEach((extensionDir) => {
           limit: 0,
           fileName: '[name][extname]'
         }),
+        html({ include: [
+          'src/editor/extensions/*/*.html'
+        ] }),
         nodeResolve({
           browser: true,
           preferBuiltins: true
