@@ -703,7 +703,7 @@ export const setFontSizeMethod = function (val) {
   const selectedElements = elemContext_.getSelectedElements();
   elemContext_.setCurText('font_size', val);
   elemContext_.getCanvas().changeSelectedAttribute('font-size', val);
-  if (!selectedElements[0].textContent) {
+  if (selectedElements[0] && !selectedElements[0].textContent) {
     elemContext_.getCanvas().textActions.setCursor();
   }
 };
