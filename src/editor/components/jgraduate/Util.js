@@ -104,10 +104,7 @@ export function getClosest(elem, selector) {
  */
 export function getParents(elem, selector) {
   const parents = [];
-  let firstChar;
-  if ( selector ) {
-    firstChar = selector.charAt(0);
-  }
+  const firstChar = selector?.charAt(0);
   // Get matches
   for ( ; elem && elem !== document; elem = elem.parentNode ) {
     if ( selector ) {
@@ -138,23 +135,13 @@ export function getParents(elem, selector) {
     }
   }
   // Return parents if any exist
-  if ( parents.length === 0 ) {
-    return null;
-  } else {
-    return parents;
-  }
+  return parents.length? parents : null;
 }
 
 export function getParentsUntil(elem, parent, selector) {
   const parents = [];
-  let parentType;
-  let selectorType;
-  if ( parent ) {
-    parentType = parent.charAt(0);
-  }
-  if ( selector ) {
-    selectorType = selector.charAt(0);
-  }
+  const parentType = parent?.charAt(0);
+  const selectorType = selector?.selector.charAt(0);
   // Get matches
   for ( ; elem && elem !== document; elem = elem.parentNode ) {
     // Check if parent has been reached
@@ -210,9 +197,5 @@ export function getParentsUntil(elem, parent, selector) {
     }
   }
   // Return parents if any exist
-  if ( parents.length === 0 ) {
-    return null;
-  } else {
-    return parents;
-  }
+  return parents.length? parents : null;
 }
