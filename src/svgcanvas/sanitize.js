@@ -166,7 +166,9 @@ export const sanitizeSvg = function (node) {
         // We can add specific namepaces on demand for now.
         // Is there a more appropriate way to do this?
         if (attrName.startsWith('se:') || attrName.startsWith('oi:')|| attrName.startsWith('data-')) {
-          seAttrs.push([ attrName, attr.value ]);
+          // We should bypass the namespace aswell
+          const seAttrNS = (attrName.startsWith('se:')) ? NS.SE : ((attrName.startsWith('oi:')) ? NS.OI : null);
+          seAttrs.push([ attrName, attr.value, seAttrNS ]);
         } else {
           console.warn(`sanitizeSvg: attribute ${attrName} in element ${node.nodeName} not in whitelist is removed`);
           node.removeAttributeNS(attrNsURI, attrLocalName);
@@ -190,8 +192,8 @@ export const sanitizeSvg = function (node) {
       }
     }
 
-    Object.values(seAttrs).forEach(([ att, val ]) => {
-      node.setAttributeNS(NS.SE, att, val);
+    Object.values(seAttrs).forEach(([ att, val, ns ]) => {
+      node.setAttributeNS(ns, att, val);
     });
 
     // for some elements that have a xlink:href, ensure the URI refers to a local element
