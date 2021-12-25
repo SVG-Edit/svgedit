@@ -529,7 +529,7 @@ export const importSvgString = function (xmlString) {
     // Look for symbol and make sure symbol exists in image
     if (svgContext_.getImportIds(uid) && svgContext_.getImportIds(uid).symbol) {
       const parents = getParents(svgContext_.getImportIds(uid).symbol, '#svgroot');
-      if (parents.length) {
+      if (parents?.length) {
         useExisting = true;
       }
     }
