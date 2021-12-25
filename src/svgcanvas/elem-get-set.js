@@ -703,7 +703,7 @@ export const setFontSizeMethod = function (val) {
   const selectedElements = svgCanvas.getSelectedElements();
   svgCanvas.setCurText('font_size', val);
   svgCanvas.changeSelectedAttribute('font-size', val);
-  if (!selectedElements[0].textContent) {
+  if (selectedElements[0] && !selectedElements[0].textContent) {
     svgCanvas.textActions.setCursor();
   }
 };
