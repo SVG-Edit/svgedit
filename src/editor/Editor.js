@@ -729,7 +729,7 @@ class Editor extends EditorStartup {
     multiplier = multiplier ? resolution.zoom * multiplier : 1;
     // setResolution(res.w * multiplier, res.h * multiplier, true);
     $id('zoom').value = (multiplier * 100).toFixed(1);
-    this.svgCanvas.setZoom(multiplier);
+    this.svgCanvas.setCurrentZoom(multiplier);
     this.zoomDone();
     this.updateCanvas(true);
   }
@@ -1116,7 +1116,7 @@ class Editor extends EditorStartup {
     if (!this.svgCanvas) {
       throw new Error('Extension added too early');
     }
-    return this.svgCanvas.addExtension.call(this, name, initfn, initArgs);
+    return this.svgCanvas.addExtension( name, initfn, initArgs);
   }
 }
 

@@ -83,7 +83,7 @@ export default {
               * @returns {void}
               */
           const insertNewImage = (imageWidth, imageHeight) => {
-            const newImage = this.svgCanvas.addSVGElementFromJson({
+            const newImage = this.svgCanvas.addSVGElemensFromJson({
               element: 'image',
               attr: {
                 x: 0,

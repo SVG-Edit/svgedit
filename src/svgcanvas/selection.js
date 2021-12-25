@@ -19,7 +19,6 @@ import * as hstry from "./history.js";
 import { getClosest } from "../editor/components/jgraduate/Util.js";
 
 const { BatchCommand } = hstry;
-let selectionContext_ = null;
 let svgCanvas = null;
 
 /**
@@ -27,9 +26,8 @@ let svgCanvas = null;
  * @param {module:selection.selectionContext} selectionContext
  * @returns {void}
  */
-export const init = function (selectionContext) {
-  selectionContext_ = selectionContext;
-  svgCanvas = selectionContext_.getCanvas();
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -40,7 +38,7 @@ export const init = function (selectionContext) {
  * @fires module:selection.SvgCanvas#event:selected
  */
 export const clearSelectionMethod = function (noCall) {
-  const selectedElements = selectionContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   selectedElements.forEach((elem) => {
     if (!elem) {
       return;
@@ -48,7 +46,7 @@ export const clearSelectionMethod = function (noCall) {
 
     svgCanvas.selectorManager.releaseSelector(elem);
   });
-  svgCanvas.setEmptySelectedElements();
+  svgCanvas?.setEmptySelectedElements();
 
   if (!noCall) {
     svgCanvas.call("selected", selectedElements);
@@ -62,7 +60,7 @@ export const clearSelectionMethod = function (noCall) {
  * @fires module:selection.SvgCanvas#event:selected
  */
 export const addToSelectionMethod = function (elemsToAdd, showGrips) {
-  const selectedElements = selectionContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   if (!elemsToAdd.length) {
     return;
   }
@@ -156,7 +154,7 @@ export const getMouseTargetMethod = function (evt) {
     while (mouseTarget.nodeName !== "foreignObject") {
       mouseTarget = mouseTarget.parentNode;
       if (!mouseTarget) {
-        return selectionContext_.getSVGRoot();
+        return svgCanvas.getSvgRoot();
       }
     }
   }
@@ -164,11 +162,11 @@ export const getMouseTargetMethod = function (evt) {
   // Get the desired mouseTarget with jQuery selector-fu
   // If it's root-like, select the root
   const currentLayer = svgCanvas.getCurrentDrawing().getCurrentLayer();
-  const svgRoot = selectionContext_.getSVGRoot();
-  const container = selectionContext_.getDOMContainer();
-  const content = selectionContext_.getSVGContent();
+  const svgRoot = svgCanvas.getSvgRoot();
+  const container = svgCanvas.getDOMContainer();
+  const content = svgCanvas.getSvgContent();
   if ([ svgRoot, container, content, currentLayer ].includes(mouseTarget)) {
-    return selectionContext_.getSVGRoot();
+    return svgCanvas.getSvgRoot();
   }
 
   // If it's a selection grip, return the grip parent
@@ -180,7 +178,7 @@ export const getMouseTargetMethod = function (evt) {
 
   while (
     !mouseTarget?.parentNode?.isSameNode(
-      selectionContext_.getCurrentGroup() || currentLayer
+      svgCanvas.getCurrentGroup() || currentLayer
     )
   ) {
     mouseTarget = mouseTarget.parentNode;
@@ -221,7 +219,7 @@ export const runExtensionsMethod = function (
   nameFilter
 ) {
   let result = returnArray ? [] : false;
-  for (const [ name, ext ] of Object.entries(selectionContext_.getExtensions())) {
+  for (const [ name, ext ] of Object.entries(svgCanvas.getExtensions())) {
     if (nameFilter && !nameFilter(name)) {
       return;
     }
@@ -249,8 +247,8 @@ export const runExtensionsMethod = function (
  */
 export const getVisibleElementsAndBBoxes = function (parent) {
   if (!parent) {
-    const svgcontent = selectionContext_.getSVGContent();
-    parent = svgcontent.children; // Prevent layers from being included
+    const svgContent = svgCanvas.getSvgContent();
+    parent = svgContent.children; // Prevent layers from being included
   }
   const contentElems = [];
   const elements = parent.children;
@@ -275,28 +273,28 @@ export const getVisibleElementsAndBBoxes = function (parent) {
  * @returns {Element[]|NodeList} Bbox elements
  */
 export const getIntersectionListMethod = function (rect) {
-  const currentZoom = selectionContext_.getCurrentZoom();
-  if (!selectionContext_.getRubberBox()) {
+  const zoom = svgCanvas.getZoom();
+  if (!svgCanvas.getRubberBox()) {
     return null;
   }
 
   const parent =
-    selectionContext_.getCurrentGroup() ||
+    svgCanvas.getCurrentGroup() ||
     svgCanvas.getCurrentDrawing().getCurrentLayer();
 
   let rubberBBox;
   if (!rect) {
-    rubberBBox = getBBox(selectionContext_.getRubberBox());
-    const bb = selectionContext_.getSVGContent().createSVGRect();
+    rubberBBox = getBBox(svgCanvas.getRubberBox());
+    const bb = svgCanvas.getSvgContent().createSVGRect();
 
     [ "x", "y", "width", "height", "top", "right", "bottom", "left" ].forEach(
       (o) => {
-        bb[o] = rubberBBox[o] / currentZoom;
+        bb[o] = rubberBBox[o] / zoom;
       }
     );
     rubberBBox = bb;
   } else {
-    rubberBBox = selectionContext_.getSVGContent().createSVGRect();
+    rubberBBox = svgCanvas.getSvgContent().createSVGRect();
     rubberBBox.x = rect.x;
     rubberBBox.y = rect.y;
     rubberBBox.width = rect.width;
@@ -304,13 +302,13 @@ export const getIntersectionListMethod = function (rect) {
   }
 
   const resultList = [];
-  if (selectionContext_.getCurBBoxes().length === 0) {
+  if (svgCanvas.getCurBBoxes().length === 0) {
     // Cache all bboxes
-    selectionContext_.setCurBBoxes(getVisibleElementsAndBBoxes(parent));
+    svgCanvas.setCurBBoxes(getVisibleElementsAndBBoxes(parent));
   }
-  let i = selectionContext_.getCurBBoxes().length;
+  let i = svgCanvas.getCurBBoxes().length;
   while (i--) {
-    const curBBoxes = selectionContext_.getCurBBoxes();
+    const curBBoxes = svgCanvas.getCurBBoxes();
     if (!rubberBBox.width) {
       continue;
     }
@@ -338,7 +336,7 @@ export const getIntersectionListMethod = function (rect) {
  * @returns {void}
  */
 export const groupSvgElem = function (elem) {
-  const dataStorage = selectionContext_.getDataStorage();
+  const dataStorage = svgCanvas.getDataStorage();
   const g = document.createElementNS(NS.SVG, "g");
   elem.replaceWith(g);
   g.appendChild(elem);
@@ -374,7 +372,7 @@ export const prepareSvg = function (newDoc) {
  * @returns {void}
  */
 export const setRotationAngle = function (val, preventUndo) {
-  const selectedElements = selectionContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   // ensure val is the proper type
   val = Number.parseFloat(val);
   const elem = selectedElements[0];
@@ -398,7 +396,7 @@ export const setRotationAngle = function (val, preventUndo) {
       cy,
       transformListToTransform(tlist).matrix
     );
-    const Rnc = selectionContext_.getSVGRoot().createSVGTransform();
+    const Rnc = svgCanvas.getSvgRoot().createSVGTransform();
     Rnc.setRotate(val, center.x, center.y);
     if (tlist.numberOfItems) {
       tlist.insertItemBefore(Rnc, 0);
@@ -433,7 +431,7 @@ export const setRotationAngle = function (val, preventUndo) {
     selectedElements[0]
   );
   selector.resize();
-  selectionContext_.getSelector().updateGripCursors(val);
+  svgCanvas.getSelector().updateGripCursors(val);
 };
 
 /**
@@ -445,9 +443,9 @@ export const setRotationAngle = function (val, preventUndo) {
  */
 export const recalculateAllSelectedDimensions = function () {
   const text =
-    selectionContext_.getCurrentResizeMode() === "none" ? "position" : "size";
+    svgCanvas.getCurrentResizeMode() === "none" ? "position" : "size";
   const batchCmd = new BatchCommand(text);
-  const selectedElements = selectionContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
 
   selectedElements.forEach((elem) => {
     const cmd = svgCanvas.recalculateDimensions(elem);
@@ -457,7 +455,7 @@ export const recalculateAllSelectedDimensions = function () {
   });
 
   if (!batchCmd.isEmpty()) {
-    selectionContext_.addCommandToHistory(batchCmd);
+    svgCanvas.addCommandToHistory(batchCmd);
     svgCanvas.call("changed", selectedElements);
   }
 };

@@ -21,15 +21,15 @@ const {
   ChangeElementCommand, BatchCommand
 } = hstry;
 
-let elemContext_ = null;
+let svgCanvas = null;
 
 /**
 * @function module:elem-get-set.init
 * @param {module:elem-get-set.elemContext} elemContext
 * @returns {void}
 */
-export const init = function (elemContext) {
-  elemContext_ = elemContext;
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -37,14 +37,14 @@ export const init = function (elemContext) {
 * @returns {DimensionsAndZoom} The current dimensions and zoom level in an object
 */
 export const getResolutionMethod = function () {
-  const currentZoom = elemContext_.getCurrentZoom();
-  const w = elemContext_.getSVGContent().getAttribute('width') / currentZoom;
-  const h = elemContext_.getSVGContent().getAttribute('height') / currentZoom;
+  const zoom = svgCanvas.getZoom();
+  const w = svgCanvas.getSvgContent().getAttribute('width') / zoom;
+  const h = svgCanvas.getSvgContent().getAttribute('height') / zoom;
 
   return {
     w,
     h,
-    zoom: currentZoom
+    zoom
   };
 };
 
@@ -55,8 +55,8 @@ export const getResolutionMethod = function () {
 * `undefined` if no element is passed nd there are no selected elements.
 */
 export const getTitleMethod = function (elem) {
-  const selectedElements = elemContext_.getSelectedElements();
-  const dataStorage = elemContext_.getDataStorage();
+  const selectedElements = svgCanvas.getSelectedElements();
+  const dataStorage = svgCanvas.getDataStorage();
   elem = elem || selectedElements[0];
   if (!elem) { return undefined; }
   if (dataStorage.has(elem, 'gsvg')) {
@@ -81,8 +81,8 @@ export const getTitleMethod = function (elem) {
 * @returns {void}
 */
 export const setGroupTitleMethod = function (val) {
-  const selectedElements = elemContext_.getSelectedElements();
-  const dataStorage = elemContext_.getDataStorage();
+  const selectedElements = svgCanvas.getSelectedElements();
+  const dataStorage = svgCanvas.getDataStorage();
   let elem = selectedElements[0];
   if (dataStorage.has(elem, 'gsvg')) {
     elem = dataStorage.get(elem, 'gsvg');
@@ -105,13 +105,13 @@ export const setGroupTitleMethod = function (val) {
     title.textContent = val;
   } else {
     // Add title element
-    title = elemContext_.getDOMDocument().createElementNS(NS.SVG, 'title');
+    title = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'title');
     title.textContent = val;
     elem.insertBefore(title, elem.firstChild);
     batchCmd.addSubCommand(new InsertElementCommand(title));
   }
 
-  elemContext_.addCommandToHistory(batchCmd);
+  svgCanvas.addCommandToHistory(batchCmd);
 };
 
 /**
@@ -122,7 +122,7 @@ export const setGroupTitleMethod = function (val) {
 * @returns {void}
 */
 export const setDocumentTitleMethod = function (newTitle) {
-  const childs = elemContext_.getSVGContent().childNodes;
+  const childs = svgCanvas.getSvgContent().childNodes;
   let docTitle = false; let oldTitle = '';
 
   const batchCmd = new BatchCommand('Change Image Title');
@@ -135,9 +135,9 @@ export const setDocumentTitleMethod = function (newTitle) {
     }
   }
   if (!docTitle) {
-    docTitle = elemContext_.getDOMDocument().createElementNS(NS.SVG, 'title');
-    elemContext_.getSVGContent().insertBefore(docTitle, elemContext_.getSVGContent().firstChild);
-    // svgcontent.firstChild.before(docTitle); // Ok to replace above with this?
+    docTitle = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'title');
+    svgCanvas.getSvgContent().insertBefore(docTitle, svgCanvas.getSvgContent().firstChild);
+    // svgContent.firstChild.before(docTitle); // Ok to replace above with this?
   }
 
   if (newTitle.length) {
@@ -147,7 +147,7 @@ export const setDocumentTitleMethod = function (newTitle) {
     docTitle.remove();
   }
   batchCmd.addSubCommand(new ChangeElementCommand(docTitle, { '#text': oldTitle }));
-  elemContext_.addCommandToHistory(batchCmd);
+  svgCanvas.addCommandToHistory(batchCmd);
 };
 
 /**
@@ -161,8 +161,8 @@ export const setDocumentTitleMethod = function (newTitle) {
 * It will fail on "fit to content" option with no content to fit to.
 */
 export const setResolutionMethod = function (x, y) {
-  const currentZoom = elemContext_.getCurrentZoom();
-  const res = elemContext_.getCanvas().getResolution();
+  const zoom = svgCanvas.getZoom();
+  const res = svgCanvas.getResolution();
   const { w, h } = res;
   let batchCmd;
 
@@ -173,16 +173,16 @@ export const setResolutionMethod = function (x, y) {
     if (bbox) {
       batchCmd = new BatchCommand('Fit Canvas to Content');
       const visEls = getVisibleElements();
-      elemContext_.getCanvas().addToSelection(visEls);
+      svgCanvas.addToSelection(visEls);
       const dx = []; const dy = [];
       visEls.forEach(function(_item, _i){
         dx.push(bbox.x * -1);
         dy.push(bbox.y * -1);
       });
 
-      const cmd = elemContext_.getCanvas().moveSelectedElements(dx, dy, true);
+      const cmd = svgCanvas.moveSelectedElements(dx, dy, true);
       batchCmd.addSubCommand(cmd);
-      elemContext_.getCanvas().clearSelection();
+      svgCanvas.clearSelection();
 
       x = Math.round(bbox.width);
       y = Math.round(bbox.height);
@@ -198,18 +198,18 @@ export const setResolutionMethod = function (x, y) {
     x = convertToNum('width', x);
     y = convertToNum('height', y);
 
-    elemContext_.getSVGContent().setAttribute('width', x);
-    elemContext_.getSVGContent().setAttribute('height', y);
+    svgCanvas.getSvgContent().setAttribute('width', x);
+    svgCanvas.getSvgContent().setAttribute('height', y);
 
     this.contentW = x;
     this.contentH = y;
-    batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), { width: w, height: h }));
+    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.getSvgContent(), { width: w, height: h }));
 
-    elemContext_.getSVGContent().setAttribute('viewBox', [ 0, 0, x / currentZoom, y / currentZoom ].join(' '));
-    batchCmd.addSubCommand(new ChangeElementCommand(elemContext_.getSVGContent(), { viewBox: [ '0 0', w, h ].join(' ') }));
+    svgCanvas.getSvgContent().setAttribute('viewBox', [ 0, 0, x / zoom, y / zoom ].join(' '));
+    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.getSvgContent(), { viewBox: [ '0 0', w, h ].join(' ') }));
 
-    elemContext_.addCommandToHistory(batchCmd);
-    elemContext_.call('changed', [ elemContext_.getSVGContent() ]);
+    svgCanvas.addCommandToHistory(batchCmd);
+    svgCanvas.call('changed', [ svgCanvas.getSvgContent() ]);
   }
   return true;
 };
@@ -222,7 +222,7 @@ export const setResolutionMethod = function (x, y) {
 */
 export const getEditorNSMethod = function (add) {
   if (add) {
-    elemContext_.getSVGContent().setAttribute('xmlns:se', NS.SE);
+    svgCanvas.getSvgContent().setAttribute('xmlns:se', NS.SE);
   }
   return NS.SE;
 };
@@ -241,8 +241,8 @@ export const getEditorNSMethod = function (add) {
 * @returns {module:elem-get-set.ZoomAndBBox|void}
 */
 export const setBBoxZoomMethod = function (val, editorW, editorH) {
-  const currentZoom = elemContext_.getCurrentZoom();
-  const selectedElements = elemContext_.getSelectedElements();
+  const zoom = svgCanvas.getZoom();
+  const selectedElements = svgCanvas.getSelectedElements();
   let spacer = 0.85;
   let bb;
   const calcZoom = function (bb) {
@@ -250,16 +250,16 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
     const wZoom = Math.round((editorW / bb.width) * 100 * spacer) / 100;
     const hZoom = Math.round((editorH / bb.height) * 100 * spacer) / 100;
     const zoom = Math.min(wZoom, hZoom);
-    elemContext_.getCanvas().setZoom(zoom);
+    svgCanvas.setZoom(zoom);
     return { zoom, bbox: bb };
   };
 
   if (typeof val === 'object') {
     bb = val;
     if (bb.width === 0 || bb.height === 0) {
-      const newzoom = bb.zoom ? bb.zoom : currentZoom * bb.factor;
-      elemContext_.getCanvas().setZoom(newzoom);
-      return { zoom: currentZoom, bbox: bb };
+      const newzoom = bb.zoom ? bb.zoom : zoom * bb.factor;
+      svgCanvas.setZoom(newzoom);
+      return { zoom: zoom, bbox: bb };
     }
     return calcZoom(bb);
   }
@@ -276,7 +276,7 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
     bb = getStrokedBBoxDefaultVisible(selectedElems);
     break;
   } case 'canvas': {
-    const res = elemContext_.getCanvas().getResolution();
+    const res = svgCanvas.getResolution();
     spacer = 0.95;
     bb = { width: res.w, height: res.h, x: 0, y: 0 };
     break;
@@ -284,7 +284,7 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
     bb = getStrokedBBoxDefaultVisible();
     break;
   case 'layer':
-    bb = getStrokedBBoxDefaultVisible(getVisibleElements(elemContext_.getCanvas().getCurrentDrawing().getCurrentLayer()));
+    bb = getStrokedBBoxDefaultVisible(getVisibleElements(svgCanvas.getCurrentDrawing().getCurrentLayer()));
     break;
   default:
     return undefined;
@@ -300,16 +300,16 @@ export const setBBoxZoomMethod = function (val, editorW, editorH) {
 * @returns {void}
 */
 export const setZoomMethod = function (zoomLevel) {
-  const selectedElements = elemContext_.getSelectedElements();
-  const res = elemContext_.getCanvas().getResolution();
-  elemContext_.getSVGContent().setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel);
-  elemContext_.setCurrentZoom(zoomLevel);
+  const selectedElements = svgCanvas.getSelectedElements();
+  const res = svgCanvas.getResolution();
+  svgCanvas.getSvgContent().setAttribute('viewBox', '0 0 ' + res.w / zoomLevel + ' ' + res.h / zoomLevel);
+  svgCanvas.setZoom(zoomLevel);
   selectedElements.forEach(function(elem){
     if (!elem) { return; }
-    elemContext_.getCanvas().selectorManager.requestSelector(elem).resize();
+    svgCanvas.selectorManager.requestSelector(elem).resize();
   });
-  elemContext_.getCanvas().pathActions.zoomChange();
-  elemContext_.getCanvas().runExtensions('zoomChanged', zoomLevel);
+  svgCanvas.pathActions.zoomChange();
+  svgCanvas.runExtensions('zoomChanged', zoomLevel);
 };
 
 /**
@@ -322,9 +322,9 @@ export const setZoomMethod = function (zoomLevel) {
 * @returns {void}
 */
 export const setColorMethod = function (type, val, preventUndo) {
-  const selectedElements = elemContext_.getSelectedElements();
-  elemContext_.setCurShape(type, val);
-  elemContext_.setCurProperties(type + '_paint', { type: 'solidColor' });
+  const selectedElements = svgCanvas.getSelectedElements();
+  svgCanvas.setCurShape(type, val);
+  svgCanvas.setCurProperties(type + '_paint', { type: 'solidColor' });
   const elems = [];
   /**
 *
@@ -353,10 +353,10 @@ export const setColorMethod = function (type, val, preventUndo) {
   }
   if (elems.length > 0) {
     if (!preventUndo) {
-      elemContext_.getCanvas().changeSelectedAttribute(type, val, elems);
-      elemContext_.call('changed', elems);
+      svgCanvas.changeSelectedAttribute(type, val, elems);
+      svgCanvas.call('changed', elems);
     } else {
-      elemContext_.changeSelectedAttributeNoUndoMethod(type, val, elems);
+      svgCanvas.changeSelectedAttributeNoUndoMethod(type, val, elems);
     }
   }
 };
@@ -368,9 +368,9 @@ export const setColorMethod = function (type, val, preventUndo) {
 * @returns {void}
 */
 export const setGradientMethod = function (type) {
-  if (!elemContext_.getCurProperties(type + '_paint') ||
-    elemContext_.getCurProperties(type + '_paint').type === 'solidColor') { return; }
-  const canvas = elemContext_.getCanvas();
+  if (!svgCanvas.getCurProperties(type + '_paint') ||
+    svgCanvas.getCurProperties(type + '_paint').type === 'solidColor') { return; }
+  const canvas = svgCanvas;
   let grad = canvas[type + 'Grad'];
   // find out if there is a duplicate gradient already in the defs
   const duplicateGrad = findDuplicateGradient(grad);
@@ -378,14 +378,14 @@ export const setGradientMethod = function (type) {
   // no duplicate found, so import gradient into defs
   if (!duplicateGrad) {
     // const origGrad = grad;
-    grad = elemContext_.getDOMDocument().importNode(grad, true);
+    grad = svgCanvas.getDOMDocument().importNode(grad, true);
     defs.append(grad);
     // get next id and set it on the grad
-    grad.id = elemContext_.getCanvas().getNextId();
+    grad.id = svgCanvas.getNextId();
   } else { // use existing gradient
     grad = duplicateGrad;
   }
-  elemContext_.getCanvas().setColor(type, 'url(#' + grad.id + ')');
+  svgCanvas.setColor(type, 'url(#' + grad.id + ')');
 };
 
 /**
@@ -474,15 +474,15 @@ export const setPaintMethod = function (type, paint) {
   this.setPaintOpacity(type, p.alpha / 100, true);
 
   // now set the current paint object
-  elemContext_.setCurProperties(type + '_paint', p);
+  svgCanvas.setCurProperties(type + '_paint', p);
   switch (p.type) {
   case 'solidColor':
     this.setColor(type, p.solidColor !== 'none' ? '#' + p.solidColor : 'none');
     break;
   case 'linearGradient':
   case 'radialGradient':
-    elemContext_.setCanvas(type + 'Grad', p[p.type]);
-    elemContext_.getCanvas().setGradient(type);
+    svgCanvas.setCanvas(type + 'Grad', p[p.type]);
+    svgCanvas.setGradient(type);
     break;
   }
 };
@@ -495,12 +495,12 @@ export const setPaintMethod = function (type, paint) {
 * @returns {void}
 */
 export const setStrokeWidthMethod = function (val) {
-  const selectedElements = elemContext_.getSelectedElements();
-  if (val === 0 && [ 'line', 'path' ].includes(elemContext_.getCanvas().getMode())) {
-    elemContext_.getCanvas().setStrokeWidth(1);
+  const selectedElements = svgCanvas.getSelectedElements();
+  if (val === 0 && [ 'line', 'path' ].includes(svgCanvas.getMode())) {
+    svgCanvas.setStrokeWidth(1);
     return;
   }
-  elemContext_.setCurProperties('stroke_width', val);
+  svgCanvas.setCurProperties('stroke_width', val);
 
   const elems = [];
   /**
@@ -525,8 +525,8 @@ export const setStrokeWidthMethod = function (val) {
     }
   }
   if (elems.length > 0) {
-    elemContext_.getCanvas().changeSelectedAttribute('stroke-width', val, elems);
-    elemContext_.call('changed', selectedElements);
+    svgCanvas.changeSelectedAttribute('stroke-width', val, elems);
+    svgCanvas.call('changed', selectedElements);
   }
 };
 
@@ -539,8 +539,8 @@ export const setStrokeWidthMethod = function (val) {
 * @returns {void}
 */
 export const setStrokeAttrMethod = function (attr, val) {
-  const selectedElements = elemContext_.getSelectedElements();
-  elemContext_.setCurShape(attr.replace('-', '_'), val);
+  const selectedElements = svgCanvas.getSelectedElements();
+  svgCanvas.setCurShape(attr.replace('-', '_'), val);
   const elems = [];
 
   let i = selectedElements.length;
@@ -555,8 +555,8 @@ export const setStrokeAttrMethod = function (attr, val) {
     }
   }
   if (elems.length > 0) {
-    elemContext_.getCanvas().changeSelectedAttribute(attr, val, elems);
-    elemContext_.call('changed', selectedElements);
+    svgCanvas.changeSelectedAttribute(attr, val, elems);
+    svgCanvas.call('changed', selectedElements);
   }
 };
 /**
@@ -565,7 +565,7 @@ export const setStrokeAttrMethod = function (attr, val) {
 * @returns {boolean} Indicates whether or not element is bold
 */
 export const getBoldMethod = function () {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   // should only have one element selected
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
@@ -582,14 +582,14 @@ export const getBoldMethod = function () {
 * @returns {void}
 */
 export const setBoldMethod = function (b) {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
     isNullish(selectedElements[1])) {
-    elemContext_.getCanvas().changeSelectedAttribute('font-weight', b ? 'bold' : 'normal');
+    svgCanvas.changeSelectedAttribute('font-weight', b ? 'bold' : 'normal');
   }
   if (!selectedElements[0].textContent) {
-    elemContext_.getCanvas().textActions.setCursor();
+    svgCanvas.textActions.setCursor();
   }
 };
 
@@ -599,7 +599,7 @@ export const setBoldMethod = function (b) {
 * @returns {boolean} Indicates whether or not element is italic
 */
 export const getItalicMethod = function () {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
     isNullish(selectedElements[1])) {
@@ -615,14 +615,14 @@ export const getItalicMethod = function () {
 * @returns {void}
 */
 export const setItalicMethod = function (i) {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
     isNullish(selectedElements[1])) {
-    elemContext_.getCanvas().changeSelectedAttribute('font-style', i ? 'italic' : 'normal');
+    svgCanvas.changeSelectedAttribute('font-style', i ? 'italic' : 'normal');
   }
   if (!selectedElements[0].textContent) {
-    elemContext_.getCanvas().textActions.setCursor();
+    svgCanvas.textActions.setCursor();
   }
 };
 
@@ -632,14 +632,14 @@ export const setItalicMethod = function (i) {
  * @returns {void}
  */
 export const setTextAnchorMethod = function (value) {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'text' &&
     isNullish(selectedElements[1])) {
-    elemContext_.getCanvas().changeSelectedAttribute('text-anchor', value);
+    svgCanvas.changeSelectedAttribute('text-anchor', value);
   }
   if (!selectedElements[0].textContent) {
-    elemContext_.getCanvas().textActions.setCursor();
+    svgCanvas.textActions.setCursor();
   }
 };
 
@@ -648,7 +648,7 @@ export const setTextAnchorMethod = function (value) {
 * @returns {string} The current font family
 */
 export const getFontFamilyMethod = function () {
-  return elemContext_.getCurText('font_family');
+  return svgCanvas.getCurText('font_family');
 };
 
 /**
@@ -658,11 +658,11 @@ export const getFontFamilyMethod = function () {
 * @returns {void}
 */
 export const setFontFamilyMethod = function (val) {
-  const selectedElements = elemContext_.getSelectedElements();
-  elemContext_.setCurText('font_family', val);
-  elemContext_.getCanvas().changeSelectedAttribute('font-family', val);
+  const selectedElements = svgCanvas.getSelectedElements();
+  svgCanvas.setCurText('font_family', val);
+  svgCanvas.changeSelectedAttribute('font-family', val);
   if (selectedElements[0] && !selectedElements[0].textContent) {
-    elemContext_.getCanvas().textActions.setCursor();
+    svgCanvas.textActions.setCursor();
   }
 };
 
@@ -673,8 +673,8 @@ export const setFontFamilyMethod = function (val) {
 * @returns {void}
 */
 export const setFontColorMethod = function (val) {
-  elemContext_.setCurText('fill', val);
-  elemContext_.getCanvas().changeSelectedAttribute('fill', val);
+  svgCanvas.setCurText('fill', val);
+  svgCanvas.changeSelectedAttribute('fill', val);
 };
 
 /**
@@ -682,7 +682,7 @@ export const setFontColorMethod = function (val) {
 * @returns {string} The current font color
 */
 export const getFontColorMethod = function () {
-  return elemContext_.getCurText('fill');
+  return svgCanvas.getCurText('fill');
 };
 
 /**
@@ -690,7 +690,7 @@ export const getFontColorMethod = function () {
 * @returns {Float} The current font size
 */
 export const getFontSizeMethod = function () {
-  return elemContext_.getCurText('font_size');
+  return svgCanvas.getCurText('font_size');
 };
 
 /**
@@ -700,11 +700,11 @@ export const getFontSizeMethod = function () {
 * @returns {void}
 */
 export const setFontSizeMethod = function (val) {
-  const selectedElements = elemContext_.getSelectedElements();
-  elemContext_.setCurText('font_size', val);
-  elemContext_.getCanvas().changeSelectedAttribute('font-size', val);
+  const selectedElements = svgCanvas.getSelectedElements();
+  svgCanvas.setCurText('font_size', val);
+  svgCanvas.changeSelectedAttribute('font-size', val);
   if (!selectedElements[0].textContent) {
-    elemContext_.getCanvas().textActions.setCursor();
+    svgCanvas.textActions.setCursor();
   }
 };
 
@@ -713,7 +713,7 @@ export const setFontSizeMethod = function (val) {
 * @returns {string} The current text (`textContent`) of the selected element
 */
 export const getTextMethod = function () {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const selected = selectedElements[0];
   if (isNullish(selected)) { return ''; }
   return (selected) ? selected.textContent : '';
@@ -726,9 +726,9 @@ export const getTextMethod = function () {
 * @returns {void}
 */
 export const setTextContentMethod = function (val) {
-  elemContext_.getCanvas().changeSelectedAttribute('#text', val);
-  elemContext_.getCanvas().textActions.init(val);
-  elemContext_.getCanvas().textActions.setCursor();
+  svgCanvas.changeSelectedAttribute('#text', val);
+  svgCanvas.textActions.init(val);
+  svgCanvas.textActions.setCursor();
 };
 
 /**
@@ -740,7 +740,7 @@ export const setTextContentMethod = function (val) {
 * @returns {void}
 */
 export const setImageURLMethod = function (val) {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const elem = selectedElements[0];
   if (!elem) { return; }
 
@@ -772,11 +772,11 @@ export const setImageURLMethod = function (val) {
     elem.setAttribute('width', this.width);
     elem.setAttribute('height', this.height);
 
-    elemContext_.getCanvas().selectorManager.requestSelector(elem).resize();
+    svgCanvas.selectorManager.requestSelector(elem).resize();
 
     batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-    elemContext_.addCommandToHistory(batchCmd);
-    elemContext_.call('changed', [ elem ]);
+    svgCanvas.addCommandToHistory(batchCmd);
+    svgCanvas.call('changed', [ elem ]);
   };
   img.src = val;
 };
@@ -788,7 +788,7 @@ export const setImageURLMethod = function (val) {
 * @returns {void}
 */
 export const setLinkURLMethod = function (val) {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   let elem = selectedElements[0];
   if (!elem) { return; }
   if (elem.tagName !== 'a') {
@@ -812,7 +812,7 @@ export const setLinkURLMethod = function (val) {
     '#href': curHref
   }));
 
-  elemContext_.addCommandToHistory(batchCmd);
+  svgCanvas.addCommandToHistory(batchCmd);
 };
 
 /**
@@ -824,15 +824,15 @@ export const setLinkURLMethod = function (val) {
 * @returns {void}
 */
 export const setRectRadiusMethod = function (val) {
-  const selectedElements = elemContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'rect') {
     const r = Number(selected.getAttribute('rx'));
     if (r !== val) {
       selected.setAttribute('rx', val);
       selected.setAttribute('ry', val);
-      elemContext_.addCommandToHistory(new ChangeElementCommand(selected, { rx: r, ry: r }, 'Radius'));
-      elemContext_.call('changed', [ selected ]);
+      svgCanvas.addCommandToHistory(new ChangeElementCommand(selected, { rx: r, ry: r }, 'Radius'));
+      svgCanvas.call('changed', [ selected ]);
     }
   }
 };
@@ -844,7 +844,7 @@ export const setRectRadiusMethod = function (val) {
 * @returns {void}
 */
 export const makeHyperlinkMethod = function (url) {
-  elemContext_.getCanvas().groupSelectedElements('a', url);
+  svgCanvas.groupSelectedElements('a', url);
 
   // TODO: If element is a single "g", convert to "a"
   //  if (selectedElements.length > 1 && selectedElements[1]) {
@@ -855,7 +855,7 @@ export const makeHyperlinkMethod = function (url) {
 * @returns {void}
 */
 export const removeHyperlinkMethod = function () {
-  elemContext_.getCanvas().ungroupSelectedElement();
+  svgCanvas.ungroupSelectedElement();
 };
 
 /**
@@ -869,7 +869,7 @@ export const removeHyperlinkMethod = function () {
 * @returns {void}
 */
 export const setSegTypeMethod = function (newType) {
-  elemContext_.getCanvas().pathActions.setSegType(newType);
+  svgCanvas.pathActions.setSegType(newType);
 };
 
 /**
@@ -887,8 +887,8 @@ export const setBackgroundMethod = function (color, url) {
   border.setAttribute('fill', color === 'chessboard' ? '#fff' : color);
   if (color === 'chessboard') {
     if (!bgPattern) {
-      bgPattern = elemContext_.getDOMDocument().createElementNS(NS.SVG, 'foreignObject');
-      elemContext_.getCanvas().assignAttributes(bgPattern, {
+      bgPattern = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'foreignObject');
+      svgCanvas.assignAttributes(bgPattern, {
         id: 'background_pattern',
         width: '100%',
         height: '100%',
@@ -896,7 +896,7 @@ export const setBackgroundMethod = function (color, url) {
         style: 'pointer-events:none'
       });
       const div = document.createElement('div');
-      elemContext_.getCanvas().assignAttributes(div, {
+      svgCanvas.assignAttributes(div, {
         style: 'pointer-events:none;width:100%;height:100%;' +
           'background-image:url(data:image/gif;base64,' +
           'R0lGODlhEAAQAIAAAP///9bW1iH5BAAAAAAALAAAAAAQABAAAAIfjG+' +
@@ -910,8 +910,8 @@ export const setBackgroundMethod = function (color, url) {
   }
   if (url) {
     if (!bgImg) {
-      bgImg = elemContext_.getDOMDocument().createElementNS(NS.SVG, 'image');
-      elemContext_.getCanvas().assignAttributes(bgImg, {
+      bgImg = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'image');
+      svgCanvas.assignAttributes(bgImg, {
         id: 'background_image',
         width: '100%',
         height: '100%',

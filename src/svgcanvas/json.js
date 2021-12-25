@@ -8,7 +8,7 @@
 import { getElem, assignAttributes, cleanupElement } from './utilities.js';
 import { NS } from './namespaces.js';
 
-let jsonContext_ = null;
+let svgCanvas = null;
 let svgdoc_ = null;
 
 /**
@@ -25,9 +25,9 @@ let svgdoc_ = null;
 * @param {module:json.jsonContext} jsonContext
 * @returns {void}
 */
-export const init = function (jsonContext) {
-  jsonContext_ = jsonContext;
-  svgdoc_ = jsonContext.getDOMDocument();
+export const init = function (canvas) {
+  svgCanvas = canvas;
+  svgdoc_ = canvas.getDOMDocument();
 };
 /**
 * @function module:json.getJsonFromSvgElements Iterate element and return json format
@@ -61,7 +61,7 @@ export const getJsonFromSvgElements = (data) => {
 /**
 * This should really be an intersection implementing all rather than a union.
 * @name module:json.addSVGElementsFromJson
-* @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElementFromJson}
+* @type {module:utilities.EditorContext#addSVGElementsFromJson|module:path.EditorContext#addSVGElemensFromJson}
 */
 
 export const addSVGElementsFromJson = function (data) {
@@ -69,7 +69,7 @@ export const addSVGElementsFromJson = function (data) {
 
   let shape = getElem(data.attr.id);
   // if shape is a path but we need to create a rect/ellipse, then remove the path
-  const currentLayer = jsonContext_.getDrawing().getCurrentLayer();
+  const currentLayer = svgCanvas.getDrawing().getCurrentLayer();
   if (shape && data.element !== shape.tagName) {
     shape.remove();
     shape = null;
@@ -78,10 +78,10 @@ export const addSVGElementsFromJson = function (data) {
     const ns = data.namespace || NS.SVG;
     shape = svgdoc_.createElementNS(ns, data.element);
     if (currentLayer) {
-      (jsonContext_.getCurrentGroup() || currentLayer).append(shape);
+      (svgCanvas.getCurrentGroup() || currentLayer).append(shape);
     }
   }
-  const curShape = jsonContext_.getCurShape();
+  const curShape = svgCanvas.getCurShape();
   if (data.curStyles) {
     assignAttributes(shape, {
       fill: curShape.fill,

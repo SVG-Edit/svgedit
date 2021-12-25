@@ -138,8 +138,8 @@ describe('draw.Drawing', function () {
     svgN.setAttributeNS(NS.XMLNS, 'xmlns:se', NS.SE);
     svgN.setAttributeNS(NS.SE, 'se:nonce', NONCE);
 
-    const svgcontent = document.createElementNS(NS.SVG, 'svg');
-    currentDrawing_ = new draw.Drawing(svgcontent, idprefix);
+    const svgContent = document.createElementNS(NS.SVG, 'svg');
+    currentDrawing_ = new draw.Drawing(svgContent, idprefix);
   });
 
   it('Test draw module', function () {

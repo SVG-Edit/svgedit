@@ -246,7 +246,7 @@ export default {
           const sRgb = svgCanvas.getColor("stroke");
           const sWidth = svgCanvas.getStrokeWidth();
           started = true;
-          newFO = svgCanvas.addSVGElementFromJson({
+          newFO = svgCanvas.addSVGElemensFromJson({
             element: "polygon",
             attr: {
               cx: opts.start_x,
@@ -275,7 +275,7 @@ export default {
           // ccSRgbEl = sRgb.substring(1, rgb.length);
           const sWidth = svgCanvas.getStrokeWidth();
           started = true;
-          newFO = svgCanvas.addSVGElementFromJson({
+          newFO = svgCanvas.addSVGElemensFromJson({
             element: "polygon",
             attr: {
               cx: opts.start_x,

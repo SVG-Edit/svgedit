@@ -50,7 +50,7 @@ describe('recalculate', function () {
       * @implements {module:utilities.EditorContext}
       */
       {
-        getSVGRoot() { return svg; },
+        getSvgRoot() { return svg; },
         getDOMDocument() { return null; },
         getDOMContainer() { return null; },
         getDataStorage() { return dataStorage; }
@@ -75,7 +75,7 @@ describe('recalculate', function () {
       * @implements {module:recalculate.EditorContext}
       */
       {
-        getSVGRoot() { return svg; },
+        getSvgRoot() { return svg; },
         getStartTransform() { return ''; },
         setStartTransform() { /* empty fn */ },
         getDataStorage() { return dataStorage; }

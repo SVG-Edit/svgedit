@@ -20,15 +20,15 @@ const {
   UndoManager, HistoryEventTypes
 } = hstry;
 
-let undoContext_ = null;
+let svgCanvas = null;
 
 /**
 * @function module:undo.init
 * @param {module:undo.undoContext} undoContext
 * @returns {void}
 */
-export const init = function (undoContext) {
-  undoContext_ = undoContext;
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 export const getUndoManager = function () {
@@ -43,43 +43,43 @@ export const getUndoManager = function () {
       const EventTypes = HistoryEventTypes;
       // TODO: handle setBlurOffsets.
       if (eventType === EventTypes.BEFORE_UNAPPLY || eventType === EventTypes.BEFORE_APPLY) {
-        undoContext_.getCanvas().clearSelection();
+        svgCanvas.clearSelection();
       } else if (eventType === EventTypes.AFTER_APPLY || eventType === EventTypes.AFTER_UNAPPLY) {
         const elems = cmd.elements();
-        undoContext_.getCanvas().pathActions.clear();
-        undoContext_.call('changed', elems);
+        svgCanvas.pathActions.clear();
+        svgCanvas.call('changed', elems);
         const cmdType = cmd.type();
         const isApply = (eventType === EventTypes.AFTER_APPLY);
         if (cmdType === 'MoveElementCommand') {
           const parent = isApply ? cmd.newParent : cmd.oldParent;
-          if (parent === undoContext_.getSVGContent()) {
+          if (parent === svgCanvas.getSvgContent()) {
             draw.identifyLayers();
           }
         } else if (cmdType === 'InsertElementCommand' || cmdType === 'RemoveElementCommand') {
-          if (cmd.parent === undoContext_.getSVGContent()) {
+          if (cmd.parent === svgCanvas.getSvgContent()) {
             draw.identifyLayers();
           }
           if (cmdType === 'InsertElementCommand') {
             if (isApply) {
-              undoContext_.restoreRefElems(cmd.elem);
+              svgCanvas.restoreRefElements(cmd.elem);
             }
           } else if (!isApply) {
-            undoContext_.restoreRefElems(cmd.elem);
+            svgCanvas.restoreRefElements(cmd.elem);
           }
           if (cmd.elem && cmd.elem.tagName === 'use') {
-            undoContext_.getCanvas().setUseData(cmd.elem);
+            svgCanvas.setUseData(cmd.elem);
           }
         } else if (cmdType === 'ChangeElementCommand') {
           // if we are changing layer names, re-identify all layers
           if (cmd.elem.tagName === 'title' &&
-            cmd.elem.parentNode.parentNode === undoContext_.getSVGContent()
+            cmd.elem.parentNode.parentNode === svgCanvas.getSvgContent()
           ) {
             draw.identifyLayers();
           }
           const values = isApply ? cmd.newValues : cmd.oldValues;
           // If stdDeviation was changed, update the blur.
           if (values.stdDeviation) {
-            undoContext_.getCanvas().setBlurOffsets(cmd.elem.parentNode, values.stdDeviation);
+            svgCanvas.setBlurOffsets(cmd.elem.parentNode, values.stdDeviation);
           }
           if (cmd.elem.tagName === 'text'){
             const [ dx, dy ] = [ cmd.newValues.x - cmd.oldValues.x,
@@ -120,9 +120,9 @@ export const ffClone = function (elem) {
   const clone = elem.cloneNode(true);
   elem.before(clone);
   elem.remove();
-  undoContext_.getCanvas().selectorManager.releaseSelector(elem);
-  undoContext_.getCanvas().setSelectedElements(0, clone);
-  undoContext_.getCanvas().selectorManager.requestSelector(clone).showGrips(true);
+  svgCanvas.selectorManager.releaseSelector(elem);
+  svgCanvas.setSelectedElements(0, clone);
+  svgCanvas.selectorManager.requestSelector(clone).showGrips(true);
   return clone;
 };
 
@@ -135,11 +135,11 @@ export const ffClone = function (elem) {
 * @returns {void}
 */
 export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, elems) {
-  const selectedElements = undoContext_.getSelectedElements();
-  const currentZoom = undoContext_.getCurrentZoom();
-  if (undoContext_.getCurrentMode() === 'pathedit') {
+  const selectedElements = svgCanvas.getSelectedElements();
+  const zoom = svgCanvas.getZoom();
+  if (svgCanvas.getCurrentMode() === 'pathedit') {
     // Editing node
-    undoContext_.getCanvas().pathActions.moveNode(attr, newValue);
+    svgCanvas.pathActions.moveNode(attr, newValue);
   }
   elems = elems || selectedElements;
   let i = elems.length;
@@ -155,7 +155,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       const bbox = getStrokedBBoxDefaultVisible([ elem ]);
       const diffX = attr === 'x' ? newValue - bbox.x : 0;
       const diffY = attr === 'y' ? newValue - bbox.y : 0;
-      undoContext_.getCanvas().moveSelectedElements(diffX * currentZoom, diffY * currentZoom, true);
+      svgCanvas.moveSelectedElements(diffX * zoom, diffY * zoom, true);
       continue;
     }
 
@@ -201,8 +201,8 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
       // NOTE: Important that this happens AFTER elem.setAttribute() or else attributes like
       // font-size can get reset to their old value, ultimately by svgEditor.updateContextPanel(),
       // after calling textActions.toSelectMode() below
-      if (undoContext_.getCurrentMode() === 'textedit' && attr !== '#text' && elem.textContent.length) {
-        undoContext_.getCanvas().textActions.toSelectMode(elem);
+      if (svgCanvas.getCurrentMode() === 'textedit' && attr !== '#text' && elem.textContent.length) {
+        svgCanvas.textActions.toSelectMode(elem);
       }
 
       // if (i === 0) {
@@ -226,7 +226,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
           // Due to element replacement, this element may no longer
           // be part of the DOM
           if (!elem.parentNode) { return; }
-          undoContext_.getCanvas().selectorManager.requestSelector(elem).resize();
+          svgCanvas.selectorManager.requestSelector(elem).resize();
         }, 0);
       }
       // if this element was rotated, and we changed the position of this element
@@ -247,7 +247,7 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
             );
             const cx = center.x;
             const cy = center.y;
-            const newrot = undoContext_.getSVGRoot().createSVGTransform();
+            const newrot = svgCanvas.getSvgRoot().createSVGTransform();
             newrot.setRotate(angle, cx, cy);
             tlist.insertItemBefore(newrot, n);
             break;
@@ -270,16 +270,16 @@ export const changeSelectedAttributeNoUndoMethod = function (attr, newValue, ele
 * @returns {void}
 */
 export const changeSelectedAttributeMethod = function (attr, val, elems) {
-  const selectedElements = undoContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   elems = elems || selectedElements;
-  undoContext_.getCanvas().undoMgr.beginUndoableChange(attr, elems);
+  svgCanvas.undoMgr.beginUndoableChange(attr, elems);
   // const i = elems.length;
 
   changeSelectedAttributeNoUndoMethod(attr, val, elems);
 
-  const batchCmd = undoContext_.getCanvas().undoMgr.finishUndoableChange();
+  const batchCmd = svgCanvas.undoMgr.finishUndoableChange();
   if (!batchCmd.isEmpty()) {
-    // undoContext_.addCommandToHistory(batchCmd);
-    undoContext_.getCanvas().undoMgr.addCommandToHistory(batchCmd);
+    // svgCanvas.addCommandToHistory(batchCmd);
+    svgCanvas.undoMgr.addCommandToHistory(batchCmd);
   }
 };

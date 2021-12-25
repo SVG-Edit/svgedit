@@ -6,7 +6,7 @@ describe('select', function () {
   sandbox.id = 'sandbox';
 
   let svgroot;
-  let svgcontent;
+  let svgContent;
   const mockConfig = {
     dimensions: [ 640, 480 ]
   };
@@ -45,7 +45,7 @@ describe('select', function () {
       return elem;
     },
     svgRoot () { return svgroot; },
-    svgContent () { return svgcontent; },
+    svgContent () { return svgContent; },
     getDataStorage () { return dataStorage; }
   };
 
@@ -58,13 +58,13 @@ describe('select', function () {
       element: 'svg',
       attr: { id: 'svgroot' }
     });
-    svgcontent = mockFactory.createSVGElement({
+    svgContent = mockFactory.createSVGElement({
       element: 'svg',
       attr: { id: 'svgcontent' }
     });
 
-    svgroot.append(svgcontent);
-    /* const rect = */ svgcontent.append(
+    svgroot.append(svgContent);
+    /* const rect = */ svgContent.append(
       mockFactory.createSVGElement({
         element: 'rect',
         attr: {
@@ -114,7 +114,7 @@ describe('select', function () {
 
     // Verify non-existence of Selector DOM nodes
     assert.equal(svgroot.childNodes.length, 1);
-    assert.equal(svgroot.childNodes.item(0), svgcontent);
+    assert.equal(svgroot.childNodes.item(0), svgContent);
     assert.ok(!svgroot.querySelector('#selectorParentGroup'));
 
     select.init(mockConfig, mockFactory);
@@ -127,7 +127,7 @@ describe('select', function () {
     assert.equal(cb.id, 'canvasBackground');
 
     assert.ok(svgroot.childNodes.item(1));
-    assert.equal(svgroot.childNodes.item(1), svgcontent);
+    assert.equal(svgroot.childNodes.item(1), svgContent);
 
     // Verify existence of selectorParentGroup.
     const spg = svgroot.childNodes.item(2);

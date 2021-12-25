@@ -780,7 +780,7 @@ class TopPanel {
         .then(() => {
           // switch into "select" mode if we've clicked on an element
           editor.svgCanvas.setMode('select');
-          editor.svgCanvas.selectOnly(editor.svgCanvas.getSelectedElems(), true);
+          editor.svgCanvas.selectOnly(editor.svgCanvas.getSelectedElements(), true);
         }, (error) => {
           console.error("error =", error);
           seAlert(editor.i18next.t('tools.no_embed'));

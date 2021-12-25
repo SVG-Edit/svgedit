@@ -28,15 +28,15 @@ const {
   MoveElementCommand, BatchCommand, InsertElementCommand, RemoveElementCommand, ChangeElementCommand
 } = hstry;
 
-let elementContext_ = null;
+let svgCanvas = null;
 
 /**
 * @function module:selected-elem.init
 * @param {module:selected-elem.elementContext} elementContext
 * @returns {void}
 */
-export const init = function (elementContext) {
-  elementContext_ = elementContext;
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -47,7 +47,7 @@ export const init = function (elementContext) {
 * @returns {void}
 */
 export const moveToTopSelectedElem = function () {
-  const [ selected ] = elementContext_.getSelectedElements();
+  const [ selected ] = svgCanvas.getSelectedElements();
   if (!isNullish(selected)) {
     const t = selected;
     const oldParent = t.parentNode;
@@ -56,8 +56,8 @@ export const moveToTopSelectedElem = function () {
     // If the element actually moved position, add the command and fire the changed
     // event handler.
     if (oldNextSibling !== t.nextSibling) {
-      elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'top'));
-      elementContext_.call('changed', [ t ]);
+      svgCanvas.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'top'));
+      svgCanvas.call('changed', [ t ]);
     }
   }
 };
@@ -70,7 +70,7 @@ export const moveToTopSelectedElem = function () {
 * @returns {void}
 */
 export const moveToBottomSelectedElem = function () {
-  const [ selected ] = elementContext_.getSelectedElements();
+  const [ selected ] = svgCanvas.getSelectedElements();
   if (!isNullish(selected)) {
     let t = selected;
     const oldParent = t.parentNode;
@@ -88,8 +88,8 @@ export const moveToBottomSelectedElem = function () {
     // If the element actually moved position, add the command and fire the changed
     // event handler.
     if (oldNextSibling !== t.nextSibling) {
-      elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'bottom'));
-      elementContext_.call('changed', [ t ]);
+      svgCanvas.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'bottom'));
+      svgCanvas.call('changed', [ t ]);
     }
   }
 };
@@ -103,14 +103,14 @@ export const moveToBottomSelectedElem = function () {
 * @returns {void}
 */
 export const moveUpDownSelected = function (dir) {
-  const selectedElements = elementContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const selected = selectedElements[0];
   if (!selected) { return; }
 
-  elementContext_.setCurBBoxes([]);
+  svgCanvas.setCurBBoxes([]);
   let closest; let foundCur;
   // jQuery sorts this list
-  const list = elementContext_.getIntersectionList(getStrokedBBoxDefaultVisible([ selected ]));
+  const list = svgCanvas.getIntersectionList(getStrokedBBoxDefaultVisible([ selected ]));
   if (dir === 'Down') { list.reverse(); }
 
   Array.prototype.forEach.call(list, function (el) {
@@ -136,8 +136,8 @@ export const moveUpDownSelected = function (dir) {
   // If the element actually moved position, add the command and fire the changed
   // event handler.
   if (oldNextSibling !== t.nextSibling) {
-    elementContext_.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'Move ' + dir));
-    elementContext_.call('changed', [ t ]);
+    svgCanvas.addCommandToHistory(new MoveElementCommand(t, oldNextSibling, oldParent, 'Move ' + dir));
+    svgCanvas.call('changed', [ t ]);
   }
 };
 
@@ -152,19 +152,19 @@ export const moveUpDownSelected = function (dir) {
 */
 
 export const moveSelectedElements = function (dx, dy, undoable = true) {
-  const selectedElements = elementContext_.getSelectedElements();
-  const currentZoom = elementContext_.getCurrentZoom();
+  const selectedElements = svgCanvas.getSelectedElements();
+  const zoom = svgCanvas.getZoom();
   // if undoable is not sent, default to true
   // if single values, scale them to the zoom
   if (!Array.isArray(dx)) {
-    dx /= currentZoom;
-    dy /= currentZoom;
+    dx /= zoom;
+    dy /= zoom;
   }
 
   const batchCmd = new BatchCommand('position');
   selectedElements.forEach((selected, i) => {
     if (selected) {
-      const xform = elementContext_.getSVGRoot().createSVGTransform();
+      const xform = svgCanvas.getSvgRoot().createSVGTransform();
       const tlist = selected.transform?.baseVal;
 
       // dx and dy could be arrays
@@ -185,14 +185,14 @@ export const moveSelectedElements = function (dx, dy, undoable = true) {
         batchCmd.addSubCommand(cmd);
       }
 
-      elementContext_.gettingSelectorManager().requestSelector(selected).resize();
+      svgCanvas.gettingSelectorManager().requestSelector(selected).resize();
     }
   });
   if (!batchCmd.isEmpty()) {
     if (undoable) {
-      elementContext_.addCommandToHistory(batchCmd);
+      svgCanvas.addCommandToHistory(batchCmd);
     }
-    elementContext_.call('changed', selectedElements);
+    svgCanvas.call('changed', selectedElements);
     return batchCmd;
   }
   return undefined;
@@ -207,8 +207,8 @@ export const moveSelectedElements = function (dx, dy, undoable = true) {
 * @returns {void}
 */
 export const cloneSelectedElements = function (x, y) {
-  const selectedElements = elementContext_.getSelectedElements();
-  const currentGroup = elementContext_.getCurrentGroup();
+  const selectedElements = svgCanvas.getSelectedElements();
+  const currentGroup = svgCanvas.getCurrentGroup();
   let i; let elem;
   const batchCmd = new BatchCommand('Clone Elements');
   // find all the elements selected (stop at first null)
@@ -239,10 +239,10 @@ export const cloneSelectedElements = function (x, y) {
   }
   // use slice to quickly get the subset of elements we need
   const copiedElements = selectedElements.slice(0, i);
-  elementContext_.clearSelection(true);
+  svgCanvas.clearSelection(true);
   // note that we loop in the reverse way because of the way elements are added
   // to the selectedElements array (top-first)
-  const drawing = elementContext_.getDrawing();
+  const drawing = svgCanvas.getDrawing();
   i = copiedElements.length;
   while (i--) {
     // clone each element and replace it within copiedElements
@@ -252,9 +252,9 @@ export const cloneSelectedElements = function (x, y) {
   }
 
   if (!batchCmd.isEmpty()) {
-    elementContext_.addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
+    svgCanvas.addToSelection(copiedElements.reverse()); // Need to reverse for correct selection-adding
     moveSelectedElements(x, y, false);
-    elementContext_.addCommandToHistory(batchCmd);
+    svgCanvas.addCommandToHistory(batchCmd);
   }
 };
 /**
@@ -265,7 +265,7 @@ export const cloneSelectedElements = function (x, y) {
 * @returns {void}
 */
 export const alignSelectedElements = function (type, relativeTo) {
-  const selectedElements = elementContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const bboxes = []; // angles = [];
   const len = selectedElements.length;
   if (!len) { return; }
@@ -319,8 +319,8 @@ export const alignSelectedElements = function (type, relativeTo) {
   if (relativeTo === 'page') {
     minx = 0;
     miny = 0;
-    maxx = elementContext_.getContentW();
-    maxy = elementContext_.getContentH();
+    maxx = svgCanvas.getContentW();
+    maxy = svgCanvas.getContentH();
   }
 
   const dx = new Array(len);
@@ -369,7 +369,7 @@ export const alignSelectedElements = function (type, relativeTo) {
 * @returns {void}
 */
 export const deleteSelectedElements = function () {
-  const selectedElements = elementContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const batchCmd = new BatchCommand('Delete Elements');
   const len = selectedElements.length;
   const selectedCopy = []; // selectedElements is being deleted
@@ -382,7 +382,7 @@ export const deleteSelectedElements = function () {
     let t = selected;
 
     // this will unselect the element and remove the selectedOutline
-    elementContext_.gettingSelectorManager().releaseSelector(t);
+    svgCanvas.gettingSelectorManager().releaseSelector(t);
 
     // Remove the path if present.
     pathModule.removePath_(t.id);
@@ -399,11 +399,11 @@ export const deleteSelectedElements = function () {
     selectedCopy.push(selected); // for the copy
     batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
   }
-  elementContext_.getCanvas().setEmptySelectedElements();
+  svgCanvas.setEmptySelectedElements();
 
-  if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
-  elementContext_.call('changed', selectedCopy);
-  elementContext_.clearSelection();
+  if (!batchCmd.isEmpty()) { svgCanvas.addCommandToHistory(batchCmd); }
+  svgCanvas.call('changed', selectedCopy);
+  svgCanvas.clearSelection();
 };
 
 /**
@@ -412,12 +412,12 @@ export const deleteSelectedElements = function () {
 * @returns {void}
 */
 export const copySelectedElements = function () {
-  const selectedElements = elementContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   const data =
-    JSON.stringify(selectedElements.map((x) => elementContext_.getJsonFromSvgElement(x)));
+    JSON.stringify(selectedElements.map((x) => svgCanvas.getJsonFromSvgElements(x)));
   // Use sessionStorage for the clipboard data.
-  sessionStorage.setItem(elementContext_.getClipboardID(), data);
-  elementContext_.flashStorage();
+  sessionStorage.setItem(svgCanvas.getClipboardID(), data);
+  svgCanvas.flashStorage();
 
   // Context menu might not exist (it is provided by editor.js).
   const canvMenu = document.getElementById('se-cmenu_canvas');
@@ -432,7 +432,7 @@ export const copySelectedElements = function () {
 * @returns {void}
 */
 export const groupSelectedElements = function (type, urlArg) {
-  const selectedElements = elementContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   if (!type) { type = 'g'; }
   let cmdStr = '';
   let url;
@@ -452,10 +452,10 @@ export const groupSelectedElements = function (type, urlArg) {
   const batchCmd = new BatchCommand(cmdStr);
 
   // create and insert the group element
-  const g = elementContext_.addSVGElementFromJson({
+  const g = svgCanvas.addSVGElemensFromJson({
     element: type,
     attr: {
-      id: elementContext_.getNextId()
+      id: svgCanvas.getNextId()
     }
   });
   if (type === 'a') {
@@ -478,10 +478,10 @@ export const groupSelectedElements = function (type, urlArg) {
     g.append(elem);
     batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldParent));
   }
-  if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
+  if (!batchCmd.isEmpty()) { svgCanvas.addCommandToHistory(batchCmd); }
 
   // update selection
-  elementContext_.selectOnly([ g ], true);
+  svgCanvas.selectOnly([ g ], true);
 };
 
 /**
@@ -516,7 +516,7 @@ export const pushGroupProperty = function (g, undoable) {
     opacity: g.getAttribute('opacity')
   };
   let gfilter; let gblur; let changes;
-  const drawing = elementContext_.getDrawing();
+  const drawing = svgCanvas.getDrawing();
 
   for (let i = 0; i < len; i++) {
     const elem = children[i];
@@ -526,13 +526,13 @@ export const pushGroupProperty = function (g, undoable) {
     if (gattrs.opacity !== null && gattrs.opacity !== 1) {
       // const c_opac = elem.getAttribute('opacity') || 1;
       const newOpac = Math.round((elem.getAttribute('opacity') || 1) * gattrs.opacity * 100) / 100;
-      elementContext_.changeSelectedAttribute('opacity', newOpac, [ elem ]);
+      svgCanvas.changeSelectedAttribute('opacity', newOpac, [ elem ]);
     }
 
     if (gattrs.filter) {
-      let cblur = elementContext_.getCanvas().getBlur(elem);
+      let cblur = svgCanvas.getBlur(elem);
       const origCblur = cblur;
-      if (!gblur) { gblur = elementContext_.getCanvas().getBlur(g); }
+      if (!gblur) { gblur = svgCanvas.getBlur(g); }
       if (cblur) {
         // Is this formula correct?
         cblur = Number(gblur) + Number(cblur);
@@ -555,7 +555,7 @@ export const pushGroupProperty = function (g, undoable) {
           // Change this in future for different filters
           const suffix = (blurElem?.tagName === 'feGaussianBlur') ? 'blur' : 'filter';
           gfilter.id = elem.id + '_' + suffix;
-          elementContext_.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [ elem ]);
+          svgCanvas.changeSelectedAttribute('filter', 'url(#' + gfilter.id + ')', [ elem ]);
         }
       } else {
         gfilter = getRefElem(elem.getAttribute('filter'));
@@ -565,8 +565,8 @@ export const pushGroupProperty = function (g, undoable) {
 
       // Update blur value
       if (cblur) {
-        elementContext_.changeSelectedAttribute('stdDeviation', cblur, [ blurElem ]);
-        elementContext_.getCanvas().setBlurOffsets(gfilter, cblur);
+        svgCanvas.changeSelectedAttribute('stdDeviation', cblur, [ blurElem ]);
+        svgCanvas.setBlurOffsets(gfilter, cblur);
       }
     }
 
@@ -599,7 +599,7 @@ export const pushGroupProperty = function (g, undoable) {
         const rgm = glist.getItem(0).matrix;
 
         // get child's rotation matrix (Rc)
-        let rcm = elementContext_.getSVGRoot().createSVGMatrix();
+        let rcm = svgCanvas.getSvgRoot().createSVGMatrix();
         const cangle = getRotationAngle(elem);
         if (cangle) {
           rcm = chtlist.getItem(0).matrix;
@@ -614,7 +614,7 @@ export const pushGroupProperty = function (g, undoable) {
         const sangle = gangle + cangle;
 
         // get child's rotation at the old center (Rc2_inv)
-        const r2 = elementContext_.getSVGRoot().createSVGTransform();
+        const r2 = svgCanvas.getSvgRoot().createSVGTransform();
         r2.setRotate(sangle, coldc.x, coldc.y);
 
         // calculate equivalent translate
@@ -634,7 +634,7 @@ export const pushGroupProperty = function (g, undoable) {
         }
 
         if (trm.e || trm.f) {
-          const tr = elementContext_.getSVGRoot().createSVGTransform();
+          const tr = svgCanvas.getSvgRoot().createSVGTransform();
           tr.setTranslate(trm.e, trm.f);
           if (chtlist.numberOfItems) {
             chtlist.insertItemBefore(tr, 0);
@@ -649,7 +649,7 @@ export const pushGroupProperty = function (g, undoable) {
         changes = {};
         changes.transform = oldxform || '';
 
-        const newxform = elementContext_.getSVGRoot().createSVGTransform();
+        const newxform = svgCanvas.getSvgRoot().createSVGTransform();
 
         // [ gm ] [ chm ] = [ chm ] [ gm' ]
         // [ gm' ] = [ chmInv ] [ gm ] [ chm ]
@@ -687,14 +687,14 @@ export const pushGroupProperty = function (g, undoable) {
 * @returns {void}
 */
 export const convertToGroup = function (elem) {
-  const selectedElements = elementContext_.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements();
   if (!elem) {
     elem = selectedElements[0];
   }
   const $elem = elem;
   const batchCmd = new BatchCommand();
   let ts;
-  const dataStorage = elementContext_.getDataStorage();
+  const dataStorage = svgCanvas.getDataStorage();
   if (dataStorage.has($elem, 'gsvg')) {
     // Use the gsvg as the new group
     const svg = elem.firstChild;
@@ -712,11 +712,11 @@ export const convertToGroup = function (elem) {
     dataStorage.remove(elem, 'gsvg');
 
     const tlist = elem.transform.baseVal;
-    const xform = elementContext_.getSVGRoot().createSVGTransform();
+    const xform = svgCanvas.getSvgRoot().createSVGTransform();
     xform.setTranslate(pt.x, pt.y);
     tlist.appendItem(xform);
     recalculateDimensions(elem);
-    elementContext_.call('selected', [ elem ]);
+    svgCanvas.call('selected', [ elem ]);
   } else if (dataStorage.has($elem, 'symbol')) {
     elem = dataStorage.get($elem, 'symbol');
 
@@ -744,12 +744,12 @@ export const convertToGroup = function (elem) {
     $elem.remove();
 
     // See if other elements reference this symbol
-    const svgcontent = elementContext_.getSVGContent();
-    // const hasMore = svgcontent.querySelectorAll('use:data(symbol)').length;
+    const svgContent = svgCanvas.getSvgContent();
+    // const hasMore = svgContent.querySelectorAll('use:data(symbol)').length;
     // @todo review this logic
-    const hasMore = svgcontent.querySelectorAll('use').length;
+    const hasMore = svgContent.querySelectorAll('use').length;
 
-    const g = elementContext_.getDOMDocument().createElementNS(NS.SVG, 'g');
+    const g = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'g');
     const childs = elem.childNodes;
 
     let i;
@@ -772,7 +772,7 @@ export const convertToGroup = function (elem) {
 
     const parent = elem.parentNode;
 
-    elementContext_.uniquifyElems(g);
+    svgCanvas.uniquifyElems(g);
 
     // Put the dupe gradients back into <defs> (after uniquifying them)
     if (isGecko()) {
@@ -784,7 +784,7 @@ export const convertToGroup = function (elem) {
     }
 
     // now give the g itself a new id
-    g.id = elementContext_.getNextId();
+    g.id = svgCanvas.getNextId();
 
     prev.after(g);
 
@@ -798,12 +798,12 @@ export const convertToGroup = function (elem) {
       batchCmd.addSubCommand(new InsertElementCommand(g));
     }
 
-    elementContext_.setUseData(g);
+    svgCanvas.setUseData(g);
 
     if (isGecko()) {
-      elementContext_.convertGradients(findDefs());
+      svgCanvas.convertGradients(findDefs());
     } else {
-      elementContext_.convertGradients(g);
+      svgCanvas.convertGradients(g);
     }
 
     // recalculate dimensions on the top-level children so that unnecessary transforms
@@ -817,19 +817,19 @@ export const convertToGroup = function (elem) {
     });
 
     // Give ID for any visible element missing one
-    const visElems = g.querySelectorAll(elementContext_.getVisElems());
+    const visElems = g.querySelectorAll(svgCanvas.getVisElems());
     Array.prototype.forEach.call(visElems, function (el) {
-      if (!el.id) { el.id = elementContext_.getNextId(); }
+      if (!el.id) { el.id = svgCanvas.getNextId(); }
     });
 
-    elementContext_.selectOnly([ g ]);
+    svgCanvas.selectOnly([ g ]);
 
     const cm = pushGroupProperty(g, true);
     if (cm) {
       batchCmd.addSubCommand(cm);
     }
 
-    elementContext_.addCommandToHistory(batchCmd);
+    svgCanvas.addCommandToHistory(batchCmd);
   } else {
     console.warn('Unexpected element to ungroup:', elem);
   }
@@ -842,8 +842,8 @@ export const convertToGroup = function (elem) {
 * @returns {void}
 */
 export const ungroupSelectedElement = function () {
-  const selectedElements = elementContext_.getSelectedElements();
-  const dataStorage = elementContext_.getDataStorage();
+  const selectedElements = svgCanvas.getSelectedElements();
+  const dataStorage = svgCanvas.getDataStorage();
   let g = selectedElements[0];
   if (!g) {
     return;
@@ -895,17 +895,17 @@ export const ungroupSelectedElement = function () {
     }
 
     // remove the group from the selection
-    elementContext_.clearSelection();
+    svgCanvas.clearSelection();
 
     // delete the group element (but make undo-able)
     const gNextSibling = g.nextSibling;
     g.remove();
     batchCmd.addSubCommand(new RemoveElementCommand(g, gNextSibling, parent));
 
-    if (!batchCmd.isEmpty()) { elementContext_.addCommandToHistory(batchCmd); }
+    if (!batchCmd.isEmpty()) { svgCanvas.addCommandToHistory(batchCmd); }
 
     // update selection
-    elementContext_.addToSelection(children);
+    svgCanvas.addToSelection(children);
   }
 };
 /**
@@ -917,26 +917,26 @@ export const ungroupSelectedElement = function () {
 * @returns {module:svgcanvas.CanvasInfo}
 */
 export const updateCanvas = function (w, h) {
-  elementContext_.getSVGRoot().setAttribute('width', w);
-  elementContext_.getSVGRoot().setAttribute('height', h);
-  const currentZoom = elementContext_.getCurrentZoom();
+  svgCanvas.getSvgRoot().setAttribute('width', w);
+  svgCanvas.getSvgRoot().setAttribute('height', h);
+  const zoom = svgCanvas.getZoom();
   const bg = document.getElementById('canvasBackground');
-  const oldX = Number(elementContext_.getSVGContent().getAttribute('x'));
-  const oldY = Number(elementContext_.getSVGContent().getAttribute('y'));
-  const x = ((w - this.contentW * currentZoom) / 2);
-  const y = ((h - this.contentH * currentZoom) / 2);
+  const oldX = Number(svgCanvas.getSvgContent().getAttribute('x'));
+  const oldY = Number(svgCanvas.getSvgContent().getAttribute('y'));
+  const x = ((w - this.contentW * zoom) / 2);
+  const y = ((h - this.contentH * zoom) / 2);
 
-  assignAttributes(elementContext_.getSVGContent(), {
-    width: this.contentW * currentZoom,
-    height: this.contentH * currentZoom,
+  assignAttributes(svgCanvas.getSvgContent(), {
+    width: this.contentW * zoom,
+    height: this.contentH * zoom,
     x,
     y,
     viewBox: '0 0 ' + this.contentW + ' ' + this.contentH
   });
 
   assignAttributes(bg, {
-    width: elementContext_.getSVGContent().getAttribute('width'),
-    height: elementContext_.getSVGContent().getAttribute('height'),
+    width: svgCanvas.getSvgContent().getAttribute('width'),
+    height: svgCanvas.getSvgContent().getAttribute('height'),
     x,
     y
   });
@@ -949,7 +949,7 @@ export const updateCanvas = function (w, h) {
     });
   }
 
-  elementContext_.getCanvas().selectorManager.selectorParentGroup.setAttribute('transform', 'translate(' + x + ',' + y + ')');
+  svgCanvas.selectorManager.selectorParentGroup.setAttribute('transform', 'translate(' + x + ',' + y + ')');
 
   /**
 * Invoked upon updates to the canvas.
@@ -962,7 +962,7 @@ export const updateCanvas = function (w, h) {
 * @property {Integer} d_x
 * @property {Integer} d_y
 */
-  elementContext_.getCanvas().runExtensions(
+  svgCanvas.runExtensions(
     'canvasUpdated',
     /**
  * @type {module:svgcanvas.SvgCanvas#event:ext_canvasUpdated}
@@ -979,12 +979,12 @@ export const updateCanvas = function (w, h) {
 * @returns {void}
 */
 export const cycleElement = function (next) {
-  const selectedElements = elementContext_.getSelectedElements();
-  const currentGroup = elementContext_.getCurrentGroup();
+  const selectedElements = svgCanvas.getSelectedElements();
+  const currentGroup = svgCanvas.getCurrentGroup();
   let num;
   const curElem = selectedElements[0];
   let elem = false;
-  const allElems = getVisibleElements(currentGroup || elementContext_.getCanvas().getCurrentDrawing().getCurrentLayer());
+  const allElems = getVisibleElements(currentGroup || svgCanvas.getCurrentDrawing().getCurrentLayer());
   if (!allElems.length) { return; }
   if (isNullish(curElem)) {
     num = next ? allElems.length - 1 : 0;
@@ -1004,6 +1004,6 @@ export const cycleElement = function (next) {
       }
     }
   }
-  elementContext_.getCanvas().selectOnly([ elem ], true);
-  elementContext_.call('selected', selectedElements);
+  svgCanvas.selectOnly([ elem ], true);
+  svgCanvas.call('selected', selectedElements);
 };

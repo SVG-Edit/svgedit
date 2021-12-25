@@ -10,7 +10,7 @@ import { isTouch, isWebkit } from '../common/browser.js'; // , isOpera
 import { getRotationAngle, getBBox, getStrokedBBox, isNullish } from './utilities.js';
 import { transformListToTransform, transformBox, transformPoint } from './math.js';
 
-let svgFactory_;
+let svgCanvas;
 let config_;
 let selectorManager_; // A Singleton
 const gripRadius = isTouch() ? 10 : 4;
@@ -35,13 +35,13 @@ export class Selector {
     this.locked = true;
 
     // this holds a reference to the <g> element that holds all visual elements of the selector
-    this.selectorGroup = svgFactory_.createSVGElement({
+    this.selectorGroup = svgCanvas.createSVGElement({
       element: 'g',
       attr: { id: ('selectorGroup' + this.id) }
     });
 
     // this holds a reference to the path rect
-    this.selectorRect = svgFactory_.createSVGElement({
+    this.selectorRect = svgCanvas.createSVGElement({
       element: 'path',
       attr: {
         id: ('selectedBox' + this.id),
@@ -105,13 +105,13 @@ export class Selector {
   * @returns {void}
   */
   resize(bbox) {
-    const dataStorage = svgFactory_.getDataStorage();
+    const dataStorage = svgCanvas.getDataStorage();
     const selectedBox = this.selectorRect;
     const mgr = selectorManager_;
     const selectedGrips = mgr.selectorGrips;
     const selected = this.selectedElement;
-    const currentZoom = svgFactory_.getCurrentZoom();
-    let offset = 1 / currentZoom;
+    const zoom = svgCanvas.getZoom();
+    let offset = 1 / zoom;
     const sw = selected.getAttribute('stroke-width');
     if (selected.getAttribute('stroke') !== 'none' && !isNaN(sw)) {
       offset += (sw / 2);
@@ -119,7 +119,7 @@ export class Selector {
 
     const { tagName } = selected;
     if (tagName === 'text') {
-      offset += 2 / currentZoom;
+      offset += 2 / zoom;
     }
 
     // loop and transform our bounding box until we reach our first rotation
@@ -128,8 +128,8 @@ export class Selector {
 
     // This should probably be handled somewhere else, but for now
     // it keeps the selection box correctly positioned when zoomed
-    m.e *= currentZoom;
-    m.f *= currentZoom;
+    m.e *= zoom;
+    m.f *= zoom;
 
     if (!bbox) {
       bbox = getBBox(selected);
@@ -153,9 +153,9 @@ export class Selector {
     // if skewed, get its transformed box, then find its axis-aligned bbox
 
     // *
-    offset *= currentZoom;
+    offset *= zoom;
 
-    const nbox = transformBox(l * currentZoom, t * currentZoom, w * currentZoom, h * currentZoom, m);
+    const nbox = transformBox(l * zoom, t * zoom, w * zoom, h * zoom, m);
     const { aabox } = nbox;
     let nbax = aabox.x - offset;
     let nbay = aabox.y - offset;
@@ -168,7 +168,7 @@ export class Selector {
 
     const angle = getRotationAngle(selected);
     if (angle) {
-      const rot = svgFactory_.svgRoot().createSVGTransform();
+      const rot = svgCanvas.getSvgRoot().createSVGTransform();
       rot.setRotate(-angle, cx, cy);
       const rotm = rot.matrix;
       nbox.tl = transformPoint(nbox.tl.x, nbox.tl.y, rotm);
@@ -297,23 +297,23 @@ export class SelectorManager {
   * @returns {void}
   */
   initGroup() {
-    const dataStorage = svgFactory_.getDataStorage();
+    const dataStorage = svgCanvas.getDataStorage();
     // remove old selector parent group if it existed
     if (this.selectorParentGroup && this.selectorParentGroup.parentNode) {
       this.selectorParentGroup.remove();
     }
 
     // create parent selector group and add it to svgroot
-    this.selectorParentGroup = svgFactory_.createSVGElement({
+    this.selectorParentGroup = svgCanvas.createSVGElement({
       element: 'g',
       attr: { id: 'selectorParentGroup' }
     });
-    this.selectorGripsGroup = svgFactory_.createSVGElement({
+    this.selectorGripsGroup = svgCanvas.createSVGElement({
       element: 'g',
       attr: { display: 'none' }
     });
     this.selectorParentGroup.append(this.selectorGripsGroup);
-    svgFactory_.svgRoot().append(this.selectorParentGroup);
+    svgCanvas.getSvgRoot().append(this.selectorParentGroup);
 
     this.selectorMap = {};
     this.selectors = [];
@@ -321,7 +321,7 @@ export class SelectorManager {
 
     // add the corner grips
     Object.keys(this.selectorGrips).forEach((dir) => {
-      const grip = svgFactory_.createSVGElement({
+      const grip = svgCanvas.createSVGElement({
         element: 'circle',
         attr: {
           id: ('selectorGrip_resize_' + dir),
@@ -345,7 +345,7 @@ export class SelectorManager {
 
     // add rotator elems
     this.rotateGripConnector =
-      svgFactory_.createSVGElement({
+      svgCanvas.createSVGElement({
         element: 'line',
         attr: {
           id: ('selectorGrip_rotateconnector'),
@@ -356,7 +356,7 @@ export class SelectorManager {
     this.selectorGripsGroup.append(this.rotateGripConnector);
 
     this.rotateGrip =
-      svgFactory_.createSVGElement({
+      svgCanvas.createSVGElement({
         element: 'circle',
         attr: {
           id: 'selectorGrip_rotate',
@@ -373,7 +373,7 @@ export class SelectorManager {
     if (document.getElementById('canvasBackground')) { return; }
 
     const [ width, height ] = config_.dimensions;
-    const canvasbg = svgFactory_.createSVGElement({
+    const canvasbg = svgCanvas.createSVGElement({
       element: 'svg',
       attr: {
         id: 'canvasBackground',
@@ -386,7 +386,7 @@ export class SelectorManager {
       }
     });
 
-    const rect = svgFactory_.createSVGElement({
+    const rect = svgCanvas.createSVGElement({
       element: 'rect',
       attr: {
         width: '100%',
@@ -399,13 +399,8 @@ export class SelectorManager {
         style: 'pointer-events:none'
       }
     });
-
-    // Both Firefox and WebKit are too slow with this filter region (especially at higher
-    // zoom levels) and Opera has at least one bug
-    // if (!isOpera()) rect.setAttribute('filter', 'url(#canvashadow)');
     canvasbg.append(rect);
-    svgFactory_.svgRoot().insertBefore(canvasbg, svgFactory_.svgContent());
-    // Ok to replace above with `svgFactory_.svgContent().before(canvasbg);`?
+    svgCanvas.getSvgRoot().insertBefore(canvasbg, svgCanvas.getSvgContent());
   }
 
   /**
@@ -476,7 +471,7 @@ export class SelectorManager {
   getRubberBandBox() {
     if (!this.rubberBandBox) {
       this.rubberBandBox =
-        svgFactory_.createSVGElement({
+        svgCanvas.createSVGElement({
           element: 'rect',
           attr: {
             id: 'selectorRubberBand',
@@ -501,7 +496,7 @@ export class SelectorManager {
  */
 /**
  * @function module:select.SVGFactory#createSVGElement
- * @param {module:utilities.EditorContext#addSVGElementFromJson} jsonMap
+ * @param {module:utilities.EditorContext#addSVGElemensFromJson} jsonMap
  * @returns {SVGElement}
  */
 /**
@@ -513,7 +508,7 @@ export class SelectorManager {
  * @returns {SVGSVGElement}
  */
 /**
- * @function module:select.SVGFactory#getCurrentZoom
+ * @function module:select.SVGFactory#getZoom
  * @returns {Float} The current zoom level
  */
 
@@ -536,9 +531,9 @@ export class SelectorManager {
  * @param {module:select.SVGFactory} svgFactory - An object implementing the SVGFactory interface.
  * @returns {void}
  */
-export const init = function (config, svgFactory) {
+export const init = function (config, canvas) {
   config_ = config;
-  svgFactory_ = svgFactory;
+  svgCanvas = canvas;
   selectorManager_ = new SelectorManager();
 };
 

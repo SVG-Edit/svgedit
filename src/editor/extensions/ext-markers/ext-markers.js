@@ -32,7 +32,7 @@ export default {
   async init (S) {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
-    const { $id, addSVGElementFromJson: addElem } = svgCanvas;
+    const { $id, addSVGElemensFromJson: addElem } = svgCanvas;
     const mtypes = [ 'start', 'mid', 'end' ];
     const markerElems = [ 'line', 'path', 'polyline', 'polygon' ];
 
@@ -99,7 +99,7 @@ export default {
     * @returns {SVGMarkerElement}
     */
     const addMarker = (id, seType) => {
-      const selElems = svgCanvas.getSelectedElems();
+      const selElems = svgCanvas.getSelectedElements();
       let marker = svgCanvas.getElem(id);
       if (marker) { return undefined; }
       if (seType === '' || seType === 'nomarker') { return undefined; }
@@ -200,7 +200,7 @@ export default {
     * @returns {void}
     */
     const setMarker = (pos, markerType) => {
-      const selElems = svgCanvas.getSelectedElems();
+      const selElems = svgCanvas.getSelectedElements();
       if (selElems.length === 0) return;
       const markerName = 'marker-' + pos;
       const el = selElems[0];
@@ -252,7 +252,7 @@ export default {
     * @returns {void}
     */
     const updateReferences = (el) => {
-      const selElems = svgCanvas.getSelectedElems();
+      const selElems = svgCanvas.getSelectedElements();
       mtypes.forEach((pos) => {
         const markerName = 'marker-' + pos;
         const marker = getLinked(el, markerName);

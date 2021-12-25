@@ -23,23 +23,23 @@ const {
   InsertElementCommand
 } = hstry;
 
-let eventContext_ = null;
+let svgCanvas = null;
 
 /**
 * @function module:undo.init
 * @param {module:undo.eventContext} eventContext
 * @returns {void}
 */
-export const init = function (eventContext) {
-  eventContext_ = eventContext;
+export const init = (canvas) => {
+  svgCanvas = canvas;
 };
 
-export const getBsplinePoint = function (t) {
+export const getBsplinePoint = (t) => {
   const spline = { x: 0, y: 0 };
-  const p0 = { x: eventContext_.getControllPoint2('x'), y: eventContext_.getControllPoint2('y') };
-  const p1 = { x: eventContext_.getControllPoint1('x'), y: eventContext_.getControllPoint1('y') };
-  const p2 = { x: eventContext_.getStart('x'), y: eventContext_.getStart('y') };
-  const p3 = { x: eventContext_.getEnd('x'), y: eventContext_.getEnd('y') };
+  const p0 = { x: svgCanvas.getControllPoint2('x'), y: svgCanvas.getControllPoint2('y') };
+  const p1 = { x: svgCanvas.getControllPoint1('x'), y: svgCanvas.getControllPoint1('y') };
+  const p2 = { x: svgCanvas.getStart('x'), y: svgCanvas.getStart('y') };
+  const p3 = { x: svgCanvas.getEnd('x'), y: svgCanvas.getEnd('y') };
   const S = 1.0 / 6.0;
   const t2 = t * t;
   const t3 = t2 * t;
@@ -77,13 +77,12 @@ export const getBsplinePoint = function (t) {
  * @fires module:svgcanvas.SvgCanvas#event:ext_mouseMove
  * @returns {void}
  */
-export const mouseMoveEvent = function (evt) {
-  const selectedElements = eventContext_.getSelectedElements();
-  const currentZoom = eventContext_.getCurrentZoom();
-  const svgRoot = eventContext_.getSVGRoot();
-  const svgCanvas = eventContext_.getCanvas();
+export const mouseMoveEvent = (evt) => {
+  const selectedElements = svgCanvas.getSelectedElements();
+  const zoom = svgCanvas.getZoom();
+  const svgRoot = svgCanvas.getSvgRoot();
 
-  if (!eventContext_.getStarted()) { return; }
+  if (!svgCanvas.getStarted()) { return; }
   if (evt.button === 1 || svgCanvas.spaceKey) { return; }
 
   let i;
@@ -96,32 +95,32 @@ export const mouseMoveEvent = function (evt) {
   let angle;
   let box;
   let selected = selectedElements[0];
-  const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
-  const mouseX = pt.x * currentZoom;
-  const mouseY = pt.y * currentZoom;
-  const shape = getElem(eventContext_.getId());
+  const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm());
+  const mouseX = pt.x * zoom;
+  const mouseY = pt.y * zoom;
+  const shape = getElem(svgCanvas.getId());
 
-  let realX = mouseX / currentZoom;
+  let realX = mouseX / zoom;
   let x = realX;
-  let realY = mouseY / currentZoom;
+  let realY = mouseY / zoom;
   let y = realY;
 
-  if (eventContext_.getCurConfig().gridSnapping) {
+  if (svgCanvas.getCurConfig().gridSnapping) {
     x = snapToGrid(x);
     y = snapToGrid(y);
   }
 
   evt.preventDefault();
   let tlist;
-  switch (eventContext_.getCurrentMode()) {
+  switch (svgCanvas.getCurrentMode()) {
   case 'select': {
     // we temporarily use a translate on the element(s) being dragged
     // this transform is removed upon mousing up and the element is
     // relocated to the new location
     if (selectedElements[0] !== null) {
-      dx = x - eventContext_.getStartX();
-      dy = y - eventContext_.getStartY();
-      if (eventContext_.getCurConfig().gridSnapping) {
+      dx = x - svgCanvas.getStartX();
+      dy = y - svgCanvas.getStartY();
+      if (svgCanvas.getCurConfig().gridSnapping) {
         dx = snapToGrid(dx);
         dy = snapToGrid(dy);
       }
@@ -155,13 +154,13 @@ export const mouseMoveEvent = function (evt) {
     }
     break;
   } case 'multiselect': {
-    realX *= currentZoom;
-    realY *= currentZoom;
-    assignAttributes(eventContext_.getRubberBox(), {
-      x: Math.min(eventContext_.getRStartX(), realX),
-      y: Math.min(eventContext_.getRStartY(), realY),
-      width: Math.abs(realX - eventContext_.getRStartX()),
-      height: Math.abs(realY - eventContext_.getRStartY())
+    realX *= zoom;
+    realY *= zoom;
+    assignAttributes(svgCanvas.getRubberBox(), {
+      x: Math.min(svgCanvas.getRStartX(), realX),
+      y: Math.min(svgCanvas.getRStartY(), realY),
+      width: Math.abs(realX - svgCanvas.getRStartX()),
+      height: Math.abs(realY - svgCanvas.getRStartY())
     }, 100);
 
     // for each selected:
@@ -169,7 +168,7 @@ export const mouseMoveEvent = function (evt) {
     // - if newList doesn't contain selected, remove it from selected
     // - for any newList that was not in selectedElements, add it to selected
     const elemsToRemove = selectedElements.slice(); const elemsToAdd = [];
-    const newList = eventContext_.getIntersectionList();
+    const newList = svgCanvas.getIntersectionList();
 
     // For every element in the intersection, add if not present in selectedElements.
     len = newList.length;
@@ -201,14 +200,14 @@ export const mouseMoveEvent = function (evt) {
     // the shape's coordinates
     tlist = selected.transform.baseVal;
     const hasMatrix = hasMatrixTransform(tlist);
-    box = hasMatrix ? eventContext_.getInitBbox() : getBBox(selected);
+    box = hasMatrix ? svgCanvas.getInitBbox() : getBBox(selected);
     let left = box.x;
     let top = box.y;
     let { width, height } = box;
-    dx = (x - eventContext_.getStartX());
-    dy = (y - eventContext_.getStartY());
+    dx = (x - svgCanvas.getStartX());
+    dy = (y - svgCanvas.getStartY());
 
-    if (eventContext_.getCurConfig().gridSnapping) {
+    if (svgCanvas.getCurConfig().gridSnapping) {
       dx = snapToGrid(dx);
       dy = snapToGrid(dy);
       height = snapToGrid(height);
@@ -226,10 +225,10 @@ export const mouseMoveEvent = function (evt) {
 
     // if not stretching in y direction, set dy to 0
     // if not stretching in x direction, set dx to 0
-    if (!eventContext_.getCurrentResizeMode().includes('n') && !eventContext_.getCurrentResizeMode().includes('s')) {
+    if (!svgCanvas.getCurrentResizeMode().includes('n') && !svgCanvas.getCurrentResizeMode().includes('s')) {
       dy = 0;
     }
-    if (!eventContext_.getCurrentResizeMode().includes('e') && !eventContext_.getCurrentResizeMode().includes('w')) {
+    if (!svgCanvas.getCurrentResizeMode().includes('e') && !svgCanvas.getCurrentResizeMode().includes('w')) {
       dx = 0;
     }
 
@@ -238,13 +237,13 @@ export const mouseMoveEvent = function (evt) {
     let sy = height ? (height + dy) / height : 1;
     let sx = width ? (width + dx) / width : 1;
     // if we are dragging on the north side, then adjust the scale factor and ty
-    if (eventContext_.getCurrentResizeMode().includes('n')) {
+    if (svgCanvas.getCurrentResizeMode().includes('n')) {
       sy = height ? (height - dy) / height : 1;
       ty = height;
     }
 
     // if we dragging on the east side, then adjust the scale factor and tx
-    if (eventContext_.getCurrentResizeMode().includes('w')) {
+    if (svgCanvas.getCurrentResizeMode().includes('w')) {
       sx = width ? (width - dx) / width : 1;
       tx = width;
     }
@@ -254,7 +253,7 @@ export const mouseMoveEvent = function (evt) {
     const scale = svgRoot.createSVGTransform();
     const translateBack = svgRoot.createSVGTransform();
 
-    if (eventContext_.getCurConfig().gridSnapping) {
+    if (svgCanvas.getCurConfig().gridSnapping) {
       left = snapToGrid(left);
       tx = snapToGrid(tx);
       top = snapToGrid(top);
@@ -287,13 +286,13 @@ export const mouseMoveEvent = function (evt) {
 
     break;
   } case 'zoom': {
-    realX *= currentZoom;
-    realY *= currentZoom;
-    assignAttributes(eventContext_.getRubberBox(), {
-      x: Math.min(eventContext_.getRStartX() * currentZoom, realX),
-      y: Math.min(eventContext_.getRStartY() * currentZoom, realY),
-      width: Math.abs(realX - eventContext_.getRStartX() * currentZoom),
-      height: Math.abs(realY - eventContext_.getRStartY() * currentZoom)
+    realX *= zoom;
+    realY *= zoom;
+    assignAttributes(svgCanvas.getRubberBox(), {
+      x: Math.min(svgCanvas.getRStartX() * zoom, realX),
+      y: Math.min(svgCanvas.getRStartY() * zoom, realY),
+      width: Math.abs(realX - svgCanvas.getRStartX() * zoom),
+      height: Math.abs(realY - svgCanvas.getRStartY() * zoom)
     }, 100);
     break;
   } case 'text': {
@@ -303,7 +302,7 @@ export const mouseMoveEvent = function (evt) {
     }, 1000);
     break;
   } case 'line': {
-    if (eventContext_.getCurConfig().gridSnapping) {
+    if (svgCanvas.getCurConfig().gridSnapping) {
       x = snapToGrid(x);
       y = snapToGrid(y);
     }
@@ -312,7 +311,7 @@ export const mouseMoveEvent = function (evt) {
     let y2 = y;
 
     if (evt.shiftKey) {
-      xya = snapToAngle(eventContext_.getStartX(), eventContext_.getStartY(), x2, y2);
+      xya = snapToAngle(svgCanvas.getStartX(), svgCanvas.getStartY(), x2, y2);
       x2 = xya.x;
       y2 = xya.y;
     }
@@ -327,21 +326,21 @@ export const mouseMoveEvent = function (evt) {
   case 'rect':
     // fall through
   case 'image': {
-    const square = (eventContext_.getCurrentMode() === 'square') || evt.shiftKey;
+    const square = (svgCanvas.getCurrentMode() === 'square') || evt.shiftKey;
     let
-      w = Math.abs(x - eventContext_.getStartX());
-    let h = Math.abs(y - eventContext_.getStartY());
+      w = Math.abs(x - svgCanvas.getStartX());
+    let h = Math.abs(y - svgCanvas.getStartY());
     let newX; let newY;
     if (square) {
       w = h = Math.max(w, h);
-      newX = eventContext_.getStartX() < x ? eventContext_.getStartX() : eventContext_.getStartX() - w;
-      newY = eventContext_.getStartY() < y ? eventContext_.getStartY() : eventContext_.getStartY() - h;
+      newX = svgCanvas.getStartX() < x ? svgCanvas.getStartX() : svgCanvas.getStartX() - w;
+      newY = svgCanvas.getStartY() < y ? svgCanvas.getStartY() : svgCanvas.getStartY() - h;
     } else {
-      newX = Math.min(eventContext_.getStartX(), x);
-      newY = Math.min(eventContext_.getStartY(), y);
+      newX = Math.min(svgCanvas.getStartX(), x);
+      newY = Math.min(svgCanvas.getStartY(), y);
     }
 
-    if (eventContext_.getCurConfig().gridSnapping) {
+    if (svgCanvas.getCurConfig().gridSnapping) {
       w = snapToGrid(w);
       h = snapToGrid(h);
       newX = snapToGrid(newX);
@@ -360,7 +359,7 @@ export const mouseMoveEvent = function (evt) {
     cx = Number(shape.getAttribute('cx'));
     cy = Number(shape.getAttribute('cy'));
     let rad = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-    if (eventContext_.getCurConfig().gridSnapping) {
+    if (svgCanvas.getCurConfig().gridSnapping) {
       rad = snapToGrid(rad);
     }
     shape.setAttribute('r', rad);
@@ -368,7 +367,7 @@ export const mouseMoveEvent = function (evt) {
   } case 'ellipse': {
     cx = Number(shape.getAttribute('cx'));
     cy = Number(shape.getAttribute('cy'));
-    if (eventContext_.getCurConfig().gridSnapping) {
+    if (svgCanvas.getCurConfig().gridSnapping) {
       x = snapToGrid(x);
       cx = snapToGrid(cx);
       y = snapToGrid(y);
@@ -381,96 +380,96 @@ export const mouseMoveEvent = function (evt) {
   }
   case 'fhellipse':
   case 'fhrect': {
-    eventContext_.setFreehand('minx', Math.min(realX, eventContext_.getFreehand('minx')));
-    eventContext_.setFreehand('maxx', Math.max(realX, eventContext_.getFreehand('maxx')));
-    eventContext_.setFreehand('miny', Math.min(realY, eventContext_.getFreehand('miny')));
-    eventContext_.setFreehand('maxy', Math.max(realY, eventContext_.getFreehand('maxy')));
+    svgCanvas.setFreehand('minx', Math.min(realX, svgCanvas.getFreehand('minx')));
+    svgCanvas.setFreehand('maxx', Math.max(realX, svgCanvas.getFreehand('maxx')));
+    svgCanvas.setFreehand('miny', Math.min(realY, svgCanvas.getFreehand('miny')));
+    svgCanvas.setFreehand('maxy', Math.max(realY, svgCanvas.getFreehand('maxy')));
   }
   // Fallthrough
   case 'fhpath': {
     // dAttr += + realX + ',' + realY + ' ';
     // shape.setAttribute('points', dAttr);
-    eventContext_.setEnd('x', realX);
-    eventContext_.setEnd('y', realY);
-    if (eventContext_.getControllPoint2('x') && eventContext_.getControllPoint2('y')) {
-      for (i = 0; i < eventContext_.getStepCount() - 1; i++) {
-        eventContext_.setParameter(i / eventContext_.getStepCount());
-        eventContext_.setNextParameter((i + 1) / eventContext_.getStepCount());
-        eventContext_.setbSpline(getBsplinePoint(eventContext_.getNextParameter()));
-        eventContext_.setNextPos({ x: eventContext_.getbSpline('x'), y: eventContext_.getbSpline('y') });
-        eventContext_.setbSpline(getBsplinePoint(eventContext_.getParameter()));
-        eventContext_.setSumDistance(
-          eventContext_.getSumDistance() + Math.sqrt((eventContext_.getNextPos('x') -
-              eventContext_.getbSpline('x')) * (eventContext_.getNextPos('x') -
-                eventContext_.getbSpline('x')) + (eventContext_.getNextPos('y') -
-                  eventContext_.getbSpline('y')) * (eventContext_.getNextPos('y') - eventContext_.getbSpline('y')))
+    svgCanvas.setEnd('x', realX);
+    svgCanvas.setEnd('y', realY);
+    if (svgCanvas.getControllPoint2('x') && svgCanvas.getControllPoint2('y')) {
+      for (i = 0; i < svgCanvas.getStepCount() - 1; i++) {
+        svgCanvas.setParameter(i / svgCanvas.getStepCount());
+        svgCanvas.setNextParameter((i + 1) / svgCanvas.getStepCount());
+        svgCanvas.setbSpline(getBsplinePoint(svgCanvas.getNextParameter()));
+        svgCanvas.setNextPos({ x: svgCanvas.getbSpline('x'), y: svgCanvas.getbSpline('y') });
+        svgCanvas.setbSpline(getBsplinePoint(svgCanvas.getParameter()));
+        svgCanvas.setSumDistance(
+          svgCanvas.getSumDistance() + Math.sqrt((svgCanvas.getNextPos('x') -
+              svgCanvas.getbSpline('x')) * (svgCanvas.getNextPos('x') -
+                svgCanvas.getbSpline('x')) + (svgCanvas.getNextPos('y') -
+                  svgCanvas.getbSpline('y')) * (svgCanvas.getNextPos('y') - svgCanvas.getbSpline('y')))
         );
-        if (eventContext_.getSumDistance() > eventContext_.getThreSholdDist()) {
-          eventContext_.setSumDistance(eventContext_.getSumDistance() - eventContext_.getThreSholdDist());
+        if (svgCanvas.getSumDistance() > svgCanvas.getThreSholdDist()) {
+          svgCanvas.setSumDistance(svgCanvas.getSumDistance() - svgCanvas.getThreSholdDist());
 
           // Faster than completely re-writing the points attribute.
-          const point = eventContext_.getSVGContent().createSVGPoint();
-          point.x = eventContext_.getbSpline('x');
-          point.y = eventContext_.getbSpline('y');
+          const point = svgCanvas.getSvgContent().createSVGPoint();
+          point.x = svgCanvas.getbSpline('x');
+          point.y = svgCanvas.getbSpline('y');
           shape.points.appendItem(point);
         }
       }
     }
-    eventContext_.setControllPoint2('x', eventContext_.getControllPoint1('x'));
-    eventContext_.setControllPoint2('y', eventContext_.getControllPoint1('y'));
-    eventContext_.setControllPoint1('x', eventContext_.getStart('x'));
-    eventContext_.setControllPoint1('y', eventContext_.getStart('y'));
-    eventContext_.setStart({ x: eventContext_.getEnd('x'), y: eventContext_.getEnd('y') });
+    svgCanvas.setControllPoint2('x', svgCanvas.getControllPoint1('x'));
+    svgCanvas.setControllPoint2('y', svgCanvas.getControllPoint1('y'));
+    svgCanvas.setControllPoint1('x', svgCanvas.getStart('x'));
+    svgCanvas.setControllPoint1('y', svgCanvas.getStart('y'));
+    svgCanvas.setStart({ x: svgCanvas.getEnd('x'), y: svgCanvas.getEnd('y') });
     break;
     // update path stretch line coordinates
   } case 'path':
     // fall through
   case 'pathedit': {
-    x *= currentZoom;
-    y *= currentZoom;
+    x *= zoom;
+    y *= zoom;
 
-    if (eventContext_.getCurConfig().gridSnapping) {
+    if (svgCanvas.getCurConfig().gridSnapping) {
       x = snapToGrid(x);
       y = snapToGrid(y);
-      eventContext_.setStartX(snapToGrid(eventContext_.getStartX()));
-      eventContext_.setStartY(snapToGrid(eventContext_.getStartY()));
+      svgCanvas.setStartX(snapToGrid(svgCanvas.getStartX()));
+      svgCanvas.setStartY(snapToGrid(svgCanvas.getStartY()));
     }
     if (evt.shiftKey) {
       const { path } = pathModule;
       let x1; let y1;
       if (path) {
-        x1 = path.dragging ? path.dragging[0] : eventContext_.getStartX();
-        y1 = path.dragging ? path.dragging[1] : eventContext_.getStartY();
+        x1 = path.dragging ? path.dragging[0] : svgCanvas.getStartX();
+        y1 = path.dragging ? path.dragging[1] : svgCanvas.getStartY();
       } else {
-        x1 = eventContext_.getStartX();
-        y1 = eventContext_.getStartY();
+        x1 = svgCanvas.getStartX();
+        y1 = svgCanvas.getStartY();
       }
       xya = snapToAngle(x1, y1, x, y);
       ({ x, y } = xya);
     }
 
-    if (eventContext_.getRubberBox() && eventContext_.getRubberBox().getAttribute('display') !== 'none') {
-      realX *= currentZoom;
-      realY *= currentZoom;
-      assignAttributes(eventContext_.getRubberBox(), {
-        x: Math.min(eventContext_.getRStartX() * currentZoom, realX),
-        y: Math.min(eventContext_.getRStartY() * currentZoom, realY),
-        width: Math.abs(realX - eventContext_.getRStartX() * currentZoom),
-        height: Math.abs(realY - eventContext_.getRStartY() * currentZoom)
+    if (svgCanvas.getRubberBox() && svgCanvas.getRubberBox().getAttribute('display') !== 'none') {
+      realX *= zoom;
+      realY *= zoom;
+      assignAttributes(svgCanvas.getRubberBox(), {
+        x: Math.min(svgCanvas.getRStartX() * zoom, realX),
+        y: Math.min(svgCanvas.getRStartY() * zoom, realY),
+        width: Math.abs(realX - svgCanvas.getRStartX() * zoom),
+        height: Math.abs(realY - svgCanvas.getRStartY() * zoom)
       }, 100);
     }
     svgCanvas.pathActions.mouseMove(x, y);
 
     break;
   } case 'textedit': {
-    x *= currentZoom;
-    y *= currentZoom;
-    // if (eventContext_.getRubberBox() && eventContext_.getRubberBox().getAttribute('display') !== 'none') {
-    //   assignAttributes(eventContext_.getRubberBox(), {
-    //     x: Math.min(eventContext_.getStartX(), x),
-    //     y: Math.min(eventContext_.getStartY(), y),
-    //     width: Math.abs(x - eventContext_.getStartX()),
-    //     height: Math.abs(y - eventContext_.getStartY())
+    x *= zoom;
+    y *= zoom;
+    // if (svgCanvas.getRubberBox() && svgCanvas.getRubberBox().getAttribute('display') !== 'none') {
+    //   assignAttributes(svgCanvas.getRubberBox(), {
+    //     x: Math.min(svgCanvas.getStartX(), x),
+    //     y: Math.min(svgCanvas.getStartY(), y),
+    //     width: Math.abs(x - svgCanvas.getStartX()),
+    //     height: Math.abs(y - svgCanvas.getStartY())
     //   }, 100);
     // }
 
@@ -486,7 +485,7 @@ export const mouseMoveEvent = function (evt) {
     cx = center.x;
     cy = center.y;
     angle = ((Math.atan2(cy - y, cx - x) * (180 / Math.PI)) - 90) % 360;
-    if (eventContext_.getCurConfig().gridSnapping) {
+    if (svgCanvas.getCurConfig().gridSnapping) {
       angle = snapToGrid(angle);
     }
     if (evt.shiftKey) { // restrict rotations to nice angles (WRS)
@@ -522,10 +521,9 @@ export const mouseMoveEvent = function (evt) {
 *
 * @returns {void}
 */
-export const mouseOutEvent = function () {
-  const svgCanvas = eventContext_.getCanvas();
+export const mouseOutEvent = () => {
   const { $id } = svgCanvas;
-  if(eventContext_.getCurrentMode() !== 'select' && eventContext_.getStarted()) {
+  if(svgCanvas.getCurrentMode() !== 'select' && svgCanvas.getStarted()) {
     const event = new Event("mouseup");
     $id('svgcanvas').dispatchEvent(event);
   }
@@ -544,39 +542,38 @@ export const mouseOutEvent = function () {
 * @fires module:svgcanvas.SvgCanvas#event:ext_mouseUp
 * @returns {void}
 */
-export const mouseUpEvent = function (evt) {
-  const selectedElements = eventContext_.getSelectedElements();
-  const currentZoom = eventContext_.getCurrentZoom();
-  const svgCanvas = eventContext_.getCanvas();
+export const mouseUpEvent = (evt) => {
+  const selectedElements = svgCanvas.getSelectedElements();
+  const zoom = svgCanvas.getZoom();
   if (evt.button === 2) { return; }
-  const tempJustSelected = eventContext_.getJustSelected();
-  eventContext_.setJustSelected(null);
-  if (!eventContext_.getStarted()) { return; }
-  const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
-  const mouseX = pt.x * currentZoom;
-  const mouseY = pt.y * currentZoom;
-  const x = mouseX / currentZoom;
-  const y = mouseY / currentZoom;
+  const tempJustSelected = svgCanvas.getJustSelected();
+  svgCanvas.setJustSelected(null);
+  if (!svgCanvas.getStarted()) { return; }
+  const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm());
+  const mouseX = pt.x * zoom;
+  const mouseY = pt.y * zoom;
+  const x = mouseX / zoom;
+  const y = mouseY / zoom;
 
-  let element = getElem(eventContext_.getId());
+  let element = getElem(svgCanvas.getId());
   let keep = false;
 
   const realX = x;
   const realY = y;
 
   // TODO: Make true when in multi-unit mode
-  const useUnit = false; // (eventContext_.getCurConfig().baseUnit !== 'px');
-  eventContext_.setStarted(false);
+  const useUnit = false; // (svgCanvas.getCurConfig().baseUnit !== 'px');
+  svgCanvas.setStarted(false);
   let t;
-  switch (eventContext_.getCurrentMode()) {
+  switch (svgCanvas.getCurrentMode()) {
   // intentionally fall-through to select here
   case 'resize':
   case 'multiselect':
-    if (eventContext_.getRubberBox()) {
-      eventContext_.getRubberBox().setAttribute('display', 'none');
-      eventContext_.setCurBBoxes([]);
+    if (svgCanvas.getRubberBox()) {
+      svgCanvas.getRubberBox().setAttribute('display', 'none');
+      svgCanvas.setCurBBoxes([]);
     }
-    eventContext_.setCurrentMode('select');
+    svgCanvas.setCurrentMode('select');
     // Fallthrough
   case 'select':
     if (selectedElements[0]) {
@@ -591,26 +588,26 @@ export const mouseUpEvent = function (evt) {
         case 'foreignObject':
           break;
         default:
-          eventContext_.setCurProperties('fill', selected.getAttribute('fill'));
-          eventContext_.setCurProperties('fill_opacity', selected.getAttribute('fill-opacity'));
-          eventContext_.setCurProperties('stroke', selected.getAttribute('stroke'));
-          eventContext_.setCurProperties('stroke_opacity', selected.getAttribute('stroke-opacity'));
-          eventContext_.setCurProperties('stroke_width', selected.getAttribute('stroke-width'));
-          eventContext_.setCurProperties('stroke_dasharray', selected.getAttribute('stroke-dasharray'));
-          eventContext_.setCurProperties('stroke_linejoin', selected.getAttribute('stroke-linejoin'));
-          eventContext_.setCurProperties('stroke_linecap', selected.getAttribute('stroke-linecap'));
+          svgCanvas.setCurProperties('fill', selected.getAttribute('fill'));
+          svgCanvas.setCurProperties('fill_opacity', selected.getAttribute('fill-opacity'));
+          svgCanvas.setCurProperties('stroke', selected.getAttribute('stroke'));
+          svgCanvas.setCurProperties('stroke_opacity', selected.getAttribute('stroke-opacity'));
+          svgCanvas.setCurProperties('stroke_width', selected.getAttribute('stroke-width'));
+          svgCanvas.setCurProperties('stroke_dasharray', selected.getAttribute('stroke-dasharray'));
+          svgCanvas.setCurProperties('stroke_linejoin', selected.getAttribute('stroke-linejoin'));
+          svgCanvas.setCurProperties('stroke_linecap', selected.getAttribute('stroke-linecap'));
         }
 
         if (selected.tagName === 'text') {
-          eventContext_.setCurText('font_size', selected.getAttribute('font-size'));
-          eventContext_.setCurText('font_family', selected.getAttribute('font-family'));
+          svgCanvas.setCurText('font_size', selected.getAttribute('font-size'));
+          svgCanvas.setCurText('font_family', selected.getAttribute('font-family'));
         }
         svgCanvas.selectorManager.requestSelector(selected).showGrips(true);
       }
       // always recalculate dimensions to strip off stray identity transforms
       svgCanvas.recalculateAllSelectedDimensions();
       // if it was being dragged/resized
-      if (realX !== eventContext_.getRStartX() || realY !== eventContext_.getRStartY()) {
+      if (realX !== svgCanvas.getRStartX() || realY !== svgCanvas.getRStartY()) {
         const len = selectedElements.length;
         for (let i = 0; i < len; ++i) {
           if (isNullish(selectedElements[i])) { break; }
@@ -631,7 +628,7 @@ export const mouseUpEvent = function (evt) {
       const elem = selectedElements[0];
       if (elem) {
         elem.removeAttribute('style');
-        walkTree(elem, function (el) {
+        walkTree(elem, (el) => {
           el.removeAttribute('style');
         });
       }
@@ -639,15 +636,15 @@ export const mouseUpEvent = function (evt) {
     }
     return;
   case 'zoom': {
-    if (!isNullish(eventContext_.getRubberBox())) {
-      eventContext_.getRubberBox().setAttribute('display', 'none');
+    if (!isNullish(svgCanvas.getRubberBox())) {
+      svgCanvas.getRubberBox().setAttribute('display', 'none');
     }
     const factor = evt.shiftKey ? 0.5 : 2;
     svgCanvas.call('zoomed', {
-      x: Math.min(eventContext_.getRStartX(), realX),
-      y: Math.min(eventContext_.getRStartY(), realY),
-      width: Math.abs(realX - eventContext_.getRStartX()),
-      height: Math.abs(realY - eventContext_.getRStartY()),
+      x: Math.min(svgCanvas.getRStartX(), realX),
+      y: Math.min(svgCanvas.getRStartY(), realY),
+      width: Math.abs(realX - svgCanvas.getRStartX()),
+      height: Math.abs(realY - svgCanvas.getRStartY()),
       factor
     });
     return;
@@ -656,14 +653,14 @@ export const mouseUpEvent = function (evt) {
     // causes problems.
     // Webkit ignores how we set the points attribute with commas and uses space
     // to separate all coordinates, see https://bugs.webkit.org/show_bug.cgi?id=29870
-    eventContext_.setSumDistance(0);
-    eventContext_.setControllPoint2('x', 0);
-    eventContext_.setControllPoint2('y', 0);
-    eventContext_.setControllPoint1('x', 0);
-    eventContext_.setControllPoint1('y', 0);
-    eventContext_.setStart({ x: 0, y: 0 });
-    eventContext_.setEnd('x', 0);
-    eventContext_.setEnd('y', 0);
+    svgCanvas.setSumDistance(0);
+    svgCanvas.setControllPoint2('x', 0);
+    svgCanvas.setControllPoint2('y', 0);
+    svgCanvas.setControllPoint1('x', 0);
+    svgCanvas.setControllPoint1('y', 0);
+    svgCanvas.setStart({ x: 0, y: 0 });
+    svgCanvas.setEnd('x', 0);
+    svgCanvas.setEnd('y', 0);
     const coords = element.getAttribute('points');
     const commaIndex = coords.indexOf(',');
     keep = commaIndex >= 0 ? coords.includes(',', commaIndex + 1) : coords.includes(' ', coords.indexOf(' ') + 1);
@@ -686,7 +683,7 @@ export const mouseUpEvent = function (evt) {
     const width = element.getAttribute('width');
     const height = element.getAttribute('height');
     // Image should be kept regardless of size (use inherit dimensions later)
-    keep = (width || height) || eventContext_.getCurrentMode() === 'image';
+    keep = (width || height) || svgCanvas.getCurrentMode() === 'image';
   }
     break;
   case 'circle':
@@ -699,17 +696,17 @@ export const mouseUpEvent = function (evt) {
   }
     break;
   case 'fhellipse':
-    if ((eventContext_.getFreehand('maxx') - eventContext_.getFreehand('minx')) > 0 &&
-        (eventContext_.getFreehand('maxy') - eventContext_.getFreehand('miny')) > 0) {
-      element = svgCanvas.addSVGElementFromJson({
+    if ((svgCanvas.getFreehand('maxx') - svgCanvas.getFreehand('minx')) > 0 &&
+        (svgCanvas.getFreehand('maxy') - svgCanvas.getFreehand('miny')) > 0) {
+      element = svgCanvas.addSVGElemensFromJson({
         element: 'ellipse',
         curStyles: true,
         attr: {
-          cx: (eventContext_.getFreehand('minx') + eventContext_.getFreehand('maxx')) / 2,
-          cy: (eventContext_.getFreehand('miny') + eventContext_.getFreehand('maxy')) / 2,
-          rx: (eventContext_.getFreehand('maxx') - eventContext_.getFreehand('minx')) / 2,
-          ry: (eventContext_.getFreehand('maxy') - eventContext_.getFreehand('miny')) / 2,
-          id: eventContext_.getId()
+          cx: (svgCanvas.getFreehand('minx') + svgCanvas.getFreehand('maxx')) / 2,
+          cy: (svgCanvas.getFreehand('miny') + svgCanvas.getFreehand('maxy')) / 2,
+          rx: (svgCanvas.getFreehand('maxx') - svgCanvas.getFreehand('minx')) / 2,
+          ry: (svgCanvas.getFreehand('maxy') - svgCanvas.getFreehand('miny')) / 2,
+          id: svgCanvas.getId()
         }
       });
       svgCanvas.call('changed', [ element ]);
@@ -717,17 +714,17 @@ export const mouseUpEvent = function (evt) {
     }
     break;
   case 'fhrect':
-    if ((eventContext_.getFreehand('maxx') - eventContext_.getFreehand('minx')) > 0 &&
-        (eventContext_.getFreehand('maxy') - eventContext_.getFreehand('miny')) > 0) {
-      element = svgCanvas.addSVGElementFromJson({
+    if ((svgCanvas.getFreehand('maxx') - svgCanvas.getFreehand('minx')) > 0 &&
+        (svgCanvas.getFreehand('maxy') - svgCanvas.getFreehand('miny')) > 0) {
+      element = svgCanvas.addSVGElemensFromJson({
         element: 'rect',
         curStyles: true,
         attr: {
-          x: eventContext_.getFreehand('minx'),
-          y: eventContext_.getFreehand('miny'),
-          width: (eventContext_.getFreehand('maxx') - eventContext_.getFreehand('minx')),
-          height: (eventContext_.getFreehand('maxy') - eventContext_.getFreehand('miny')),
-          id: eventContext_.getId()
+          x: svgCanvas.getFreehand('minx'),
+          y: svgCanvas.getFreehand('miny'),
+          width: (svgCanvas.getFreehand('maxx') - svgCanvas.getFreehand('minx')),
+          height: (svgCanvas.getFreehand('maxy') - svgCanvas.getFreehand('miny')),
+          id: svgCanvas.getId()
         }
       });
       svgCanvas.call('changed', [ element ]);
@@ -743,7 +740,7 @@ export const mouseUpEvent = function (evt) {
     // set element to null here so that it is not removed nor finalized
     element = null;
     // continue to be set to true so that mouseMove happens
-    eventContext_.setStarted(true);
+    svgCanvas.setStarted(true);
 
     const res = svgCanvas.pathActions.mouseUp(evt, element, mouseX, mouseY);
     ({ element } = res);
@@ -762,10 +759,10 @@ export const mouseUpEvent = function (evt) {
   case 'rotate': {
     keep = true;
     element = null;
-    eventContext_.setCurrentMode('select');
+    svgCanvas.setCurrentMode('select');
     const batchCmd = svgCanvas.undoMgr.finishUndoableChange();
     if (!batchCmd.isEmpty()) {
-      eventContext_.addCommandToHistory(batchCmd);
+      svgCanvas.addCommandToHistory(batchCmd);
     }
     // perform recalculation to weed out any stray identity transforms that might get stuck
     svgCanvas.recalculateAllSelectedDimensions();
@@ -794,12 +791,12 @@ export const mouseUpEvent = function (evt) {
     if (r) {
       keep = r.keep || keep;
       ({ element } = r);
-      eventContext_.setStarted(r.started || eventContext_.getStarted());
+      svgCanvas.setStarted(r.started || svgCanvas.getStarted());
     }
   });
 
   if (!keep && !isNullish(element)) {
-    svgCanvas.getCurrentDrawing().releaseId(eventContext_.getId());
+    svgCanvas.getCurrentDrawing().releaseId(svgCanvas.getId());
     element.remove();
     element = null;
 
@@ -814,7 +811,7 @@ export const mouseUpEvent = function (evt) {
     // if we are not in the middle of creating a path, and we've clicked on some shape,
     // then go to Select mode.
     // WebKit returns <div> when the canvas is clicked, Firefox/Opera return <svg>
-    if ((eventContext_.getCurrentMode() !== 'path' || !eventContext_.getDrawnPath()) &&
+    if ((svgCanvas.getCurrentMode() !== 'path' || !svgCanvas.getDrawnPath()) &&
       t && t.parentNode &&
       t.parentNode.id !== 'selectorParentGroup' &&
       t.id !== 'svgcanvas' && t.id !== 'svgroot'
@@ -835,7 +832,7 @@ export const mouseUpEvent = function (evt) {
     let aniDur = 0.2;
     let cAni;
     const curShape = svgCanvas.getStyle();
-    const opacAni = eventContext_.getOpacAni();
+    const opacAni = svgCanvas.getOpacAni();
     if (opacAni.beginElement && Number.parseFloat(element.getAttribute('opacity')) !== curShape.opacity) {
       cAni = opacAni.cloneNode(true);
       cAni.setAttribute('to', curShape.opacity);
@@ -856,40 +853,39 @@ export const mouseUpEvent = function (evt) {
       element.setAttribute('opacity', curShape.opacity);
       element.setAttribute('style', 'pointer-events:inherit');
       cleanupElement(element);
-      if (eventContext_.getCurrentMode() === 'path') {
+      if (svgCanvas.getCurrentMode() === 'path') {
         svgCanvas.pathActions.toEditMode(element);
-      } else if (eventContext_.getCurConfig().selectNew) {
+      } else if (svgCanvas.getCurConfig().selectNew) {
         const modes = [ 'circle', 'ellipse', 'square', 'rect', 'fhpath', 'line', 'fhellipse', 'fhrect', 'star', 'polygon' ];
-        if ( modes.indexOf(eventContext_.getCurrentMode()) !== -1) {
+        if ( modes.indexOf(svgCanvas.getCurrentMode()) !== -1) {
           svgCanvas.setMode('select');
         }
         svgCanvas.selectOnly([ element ], true);
       }
       // we create the insert command that is stored on the stack
       // undo means to call cmd.unapply(), redo means to call cmd.apply()
-      eventContext_.addCommandToHistory(new InsertElementCommand(element));
+      svgCanvas.addCommandToHistory(new InsertElementCommand(element));
       svgCanvas.call('changed', [ element ]);
     }, aniDur * 1000);
   }
-  eventContext_.setStartTransform(null);
+  svgCanvas.setStartTransform(null);
 };
 
-export const dblClickEvent = function (evt) {
-  const selectedElements = eventContext_.getSelectedElements();
+export const dblClickEvent = (evt) => {
+  const selectedElements = svgCanvas.getSelectedElements();
   const evtTarget = evt.target;
   const parent = evtTarget.parentNode;
-  const svgCanvas = eventContext_.getCanvas();
 
   let mouseTarget = svgCanvas.getMouseTarget(evt);
   const { tagName } = mouseTarget;
 
-  if (tagName === 'text' && eventContext_.getCurrentMode() !== 'textedit') {
-    const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
+  if (tagName === 'text' && svgCanvas.getCurrentMode() !== 'textedit') {
+    const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm());
     svgCanvas.textActions.select(mouseTarget, pt.x, pt.y);
   }
 
   // Do nothing if already in current group
-  if (parent === eventContext_.getCurrentGroup()) { return; }
+  if (parent === svgCanvas.getCurrentGroup()) { return; }
 
   if ((tagName === 'g' || tagName === 'a') && getRotationAngle(mouseTarget)) {
     // TODO: Allow method of in-group editing without having to do
@@ -901,7 +897,7 @@ export const dblClickEvent = function (evt) {
     svgCanvas.clearSelection(true);
   }
   // Reset context
-  if (eventContext_.getCurrentGroup()) {
+  if (svgCanvas.getCurrentGroup()) {
     draw.leaveContext();
   }
 
@@ -925,13 +921,12 @@ export const dblClickEvent = function (evt) {
  * @fires module:svgcanvas.SvgCanvas#event:ext_mouseDown
  * @returns {void}
  */
-export const mouseDownEvent = function (evt) {
-  const dataStorage = eventContext_.getDataStorage();
-  const selectedElements = eventContext_.getSelectedElements;
-  const currentZoom = eventContext_.getCurrentZoom();
-  const svgCanvas = eventContext_.getCanvas();
+export const mouseDownEvent = (evt) => {
+  const dataStorage = svgCanvas.getDataStorage();
+  const selectedElements = svgCanvas.getSelectedElements();
+  const zoom = svgCanvas.getZoom();
   const curShape = svgCanvas.getStyle();
-  const svgRoot = eventContext_.getSVGRoot();
+  const svgRoot = svgCanvas.getSvgRoot();
   const { $id } = svgCanvas;
 
   if (svgCanvas.spaceKey || evt.button === 1) { return; }
@@ -942,24 +937,24 @@ export const mouseDownEvent = function (evt) {
     svgCanvas.cloneSelectedElements(0, 0);
   }
 
-  eventContext_.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
+  svgCanvas.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
 
-  const pt = transformPoint(evt.clientX, evt.clientY, eventContext_.getrootSctm());
-  const mouseX = pt.x * currentZoom;
-  const mouseY = pt.y * currentZoom;
+  const pt = transformPoint(evt.clientX, evt.clientY, svgCanvas.getrootSctm());
+  const mouseX = pt.x * zoom;
+  const mouseY = pt.y * zoom;
 
   evt.preventDefault();
 
   if (rightClick) {
-    if(eventContext_.getCurrentMode() === 'path'){
+    if(svgCanvas.getCurrentMode() === 'path'){
       return;
     }
-    eventContext_.setCurrentMode('select');
-    eventContext_.setLastClickPoint(pt);
+    svgCanvas.setCurrentMode('select');
+    svgCanvas.setLastClickPoint(pt);
   }
 
-  let x = mouseX / currentZoom;
-  let y = mouseY / currentZoom;
+  let x = mouseX / zoom;
+  let y = mouseY / zoom;
   let mouseTarget = svgCanvas.getMouseTarget(evt);
 
   if (mouseTarget.tagName === 'a' && mouseTarget.childNodes.length === 1) {
@@ -968,49 +963,49 @@ export const mouseDownEvent = function (evt) {
 
   // realX/y ignores grid-snap value
   const realX = x;
-  eventContext_.setStartX(x);
-  eventContext_.setRStartX(x);
+  svgCanvas.setStartX(x);
+  svgCanvas.setRStartX(x);
   const realY = y;
-  eventContext_.setStartY(y);
-  eventContext_.setRStartY(y);
+  svgCanvas.setStartY(y);
+  svgCanvas.setRStartY(y);
 
-  if (eventContext_.getCurConfig().gridSnapping) {
+  if (svgCanvas.getCurConfig().gridSnapping) {
     x = snapToGrid(x);
     y = snapToGrid(y);
-    eventContext_.setStartX(snapToGrid(eventContext_.getStartX()));
-    eventContext_.setStartY(snapToGrid(eventContext_.getStartY()));
+    svgCanvas.setStartX(snapToGrid(svgCanvas.getStartX()));
+    svgCanvas.setStartY(snapToGrid(svgCanvas.getStartY()));
   }
 
   // if it is a selector grip, then it must be a single element selected,
   // set the mouseTarget to that and update the mode to rotate/resize
 
-  if (mouseTarget === svgCanvas.selectorManager.selectorParentGroup && !isNullish(selectedElements()[0])) {
+  if (mouseTarget === svgCanvas.selectorManager.selectorParentGroup && !isNullish(selectedElements[0])) {
     const grip = evt.target;
     const griptype = dataStorage.get(grip, 'type');
     // rotating
     if (griptype === 'rotate') {
-      eventContext_.setCurrentMode('rotate');
-      // eventContext_.setCurrentRotateMode(dataStorage.get(grip, 'dir'));
+      svgCanvas.setCurrentMode('rotate');
+      // svgCanvas.setCurrentRotateMode(dataStorage.get(grip, 'dir'));
       // resizing
     } else if (griptype === 'resize') {
-      eventContext_.setCurrentMode('resize');
-      eventContext_.setCurrentResizeMode(dataStorage.get(grip, 'dir'));
+      svgCanvas.setCurrentMode('resize');
+      svgCanvas.setCurrentResizeMode(dataStorage.get(grip, 'dir'));
     }
-    mouseTarget = selectedElements()[0];
+    mouseTarget = selectedElements[0];
   }
 
-  eventContext_.setStartTransform(mouseTarget.getAttribute('transform'));
+  svgCanvas.setStartTransform(mouseTarget.getAttribute('transform'));
 
   const tlist = mouseTarget.transform.baseVal;
-  switch (eventContext_.getCurrentMode()) {
+  switch (svgCanvas.getCurrentMode()) {
   case 'select':
-    eventContext_.setStarted(true);
-    eventContext_.setCurrentResizeMode('none');
-    if (rightClick) { eventContext_.setStarted(false); }
+    svgCanvas.setStarted(true);
+    svgCanvas.setCurrentResizeMode('none');
+    if (rightClick) { svgCanvas.setStarted(false); }
 
     if (mouseTarget !== svgRoot) {
       // if this element is not yet selected, clear selection and select it
-      if (!selectedElements().includes(mouseTarget)) {
+      if (!selectedElements.includes(mouseTarget)) {
         // only clear selection if shift is not pressed (otherwise, add
         // element to selection)
         if (!evt.shiftKey) {
@@ -1018,7 +1013,7 @@ export const mouseDownEvent = function (evt) {
           svgCanvas.clearSelection(true);
         }
         svgCanvas.addToSelection([ mouseTarget ]);
-        eventContext_.setJustSelected(mouseTarget);
+        svgCanvas.setJustSelected(mouseTarget);
         svgCanvas.pathActions.clear();
       }
       // else if it's a path, go into pathedit mode in mouseup
@@ -1026,7 +1021,7 @@ export const mouseDownEvent = function (evt) {
       if (!rightClick) {
         // insert a dummy transform so if the element(s) are moved it will have
         // a transform to use for its translate
-        for (const selectedElement of selectedElements()) {
+        for (const selectedElement of selectedElements) {
           if (isNullish(selectedElement)) { continue; }
           const slist = selectedElement.transform?.baseVal;
           if (slist.numberOfItems) {
@@ -1038,16 +1033,16 @@ export const mouseDownEvent = function (evt) {
       }
     } else if (!rightClick) {
       svgCanvas.clearSelection();
-      eventContext_.setCurrentMode('multiselect');
-      if (isNullish(eventContext_.getRubberBox())) {
-        eventContext_.setRubberBox(svgCanvas.selectorManager.getRubberBandBox());
+      svgCanvas.setCurrentMode('multiselect');
+      if (isNullish(svgCanvas.getRubberBox())) {
+        svgCanvas.setRubberBox(svgCanvas.selectorManager.getRubberBandBox());
       }
-      eventContext_.setRStartX(eventContext_.getRStartX() * currentZoom);
-      eventContext_.setRStartY(eventContext_.getRStartY() * currentZoom);
+      svgCanvas.setRStartX(svgCanvas.getRStartX() * zoom);
+      svgCanvas.setRStartY(svgCanvas.getRStartY() * zoom);
 
-      assignAttributes(eventContext_.getRubberBox(), {
-        x: eventContext_.getRStartX(),
-        y: eventContext_.getRStartY(),
+      assignAttributes(svgCanvas.getRubberBox(), {
+        x: svgCanvas.getRStartX(),
+        y: svgCanvas.getRStartY(),
         width: 0,
         height: 0,
         display: 'inline'
@@ -1055,31 +1050,31 @@ export const mouseDownEvent = function (evt) {
     }
     break;
   case 'zoom':
-    eventContext_.setStarted(true);
-    if (isNullish(eventContext_.getRubberBox())) {
-      eventContext_.setRubberBox(svgCanvas.selectorManager.getRubberBandBox());
+    svgCanvas.setStarted(true);
+    if (isNullish(svgCanvas.getRubberBox())) {
+      svgCanvas.setRubberBox(svgCanvas.selectorManager.getRubberBandBox());
     }
-    assignAttributes(eventContext_.getRubberBox(), {
-      x: realX * currentZoom,
-      y: realX * currentZoom,
+    assignAttributes(svgCanvas.getRubberBox(), {
+      x: realX * zoom,
+      y: realX * zoom,
       width: 0,
       height: 0,
       display: 'inline'
     }, 100);
     break;
   case 'resize': {
-    eventContext_.setStarted(true);
-    eventContext_.setStartX(x);
-    eventContext_.setStartY(y);
+    svgCanvas.setStarted(true);
+    svgCanvas.setStartX(x);
+    svgCanvas.setStartY(y);
 
     // Getting the BBox from the selection box, since we know we
     // want to orient around it
-    eventContext_.setInitBbox(getBBox($id('selectedBox0')));
+    svgCanvas.setInitBbox(getBBox($id('selectedBox0')));
     const bb = {};
-    for (const [ key, val ] of Object.entries(eventContext_.getInitBbox())) {
-      bb[key] = val / currentZoom;
+    for (const [ key, val ] of Object.entries(svgCanvas.getInitBbox())) {
+      bb[key] = val / zoom;
     }
-    eventContext_.setInitBbox(bb);
+    svgCanvas.setInitBbox(bb);
 
     // append three dummy transforms to the tlist so that
     // we can translate,scale,translate in mousemove
@@ -1099,20 +1094,20 @@ export const mouseDownEvent = function (evt) {
   case 'fhellipse':
   case 'fhrect':
   case 'fhpath':
-    eventContext_.setStart({ x: realX, y: realY });
-    eventContext_.setControllPoint1('x', 0);
-    eventContext_.setControllPoint1('y', 0);
-    eventContext_.setControllPoint2('x', 0);
-    eventContext_.setControllPoint2('y', 0);
-    eventContext_.setStarted(true);
-    eventContext_.setDAttr(realX + ',' + realY + ' ');
+    svgCanvas.setStart({ x: realX, y: realY });
+    svgCanvas.setControllPoint1('x', 0);
+    svgCanvas.setControllPoint1('y', 0);
+    svgCanvas.setControllPoint2('x', 0);
+    svgCanvas.setControllPoint2('y', 0);
+    svgCanvas.setStarted(true);
+    svgCanvas.setDAttr(realX + ',' + realY + ' ');
     // Commented out as doing nothing now:
     // strokeW = parseFloat(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
-    svgCanvas.addSVGElementFromJson({
+    svgCanvas.addSVGElemensFromJson({
       element: 'polyline',
       curStyles: true,
       attr: {
-        points: eventContext_.getDAttr(),
+        points: svgCanvas.getDAttr(),
         id: svgCanvas.getNextId(),
         fill: 'none',
         opacity: curShape.opacity / 2,
@@ -1120,14 +1115,14 @@ export const mouseDownEvent = function (evt) {
         style: 'pointer-events:none'
       }
     });
-    eventContext_.setFreehand('minx', realX);
-    eventContext_.setFreehand('maxx', realX);
-    eventContext_.setFreehand('miny', realY);
-    eventContext_.setFreehand('maxy', realY);
+    svgCanvas.setFreehand('minx', realX);
+    svgCanvas.setFreehand('maxx', realX);
+    svgCanvas.setFreehand('miny', realY);
+    svgCanvas.setFreehand('maxy', realY);
     break;
   case 'image': {
-    eventContext_.setStarted(true);
-    const newImage = svgCanvas.addSVGElementFromJson({
+    svgCanvas.setStarted(true);
+    const newImage = svgCanvas.addSVGElemensFromJson({
       element: 'image',
       attr: {
         x,
@@ -1139,7 +1134,7 @@ export const mouseDownEvent = function (evt) {
         style: 'pointer-events:inherit'
       }
     });
-    setHref(newImage, eventContext_.getLastGoodImgUrl());
+    setHref(newImage, svgCanvas.getLastGoodImgUrl());
     preventClickDefault(newImage);
     break;
   } case 'square':
@@ -1147,10 +1142,10 @@ export const mouseDownEvent = function (evt) {
     // (for resizing purposes this could be important)
     // Fallthrough
   case 'rect':
-    eventContext_.setStarted(true);
-    eventContext_.setStartX(x);
-    eventContext_.setStartY(y);
-    svgCanvas.addSVGElementFromJson({
+    svgCanvas.setStarted(true);
+    svgCanvas.setStartX(x);
+    svgCanvas.setStartY(y);
+    svgCanvas.addSVGElemensFromJson({
       element: 'rect',
       curStyles: true,
       attr: {
@@ -1164,9 +1159,9 @@ export const mouseDownEvent = function (evt) {
     });
     break;
   case 'line': {
-    eventContext_.setStarted(true);
+    svgCanvas.setStarted(true);
     const strokeW = Number(curShape.stroke_width) === 0 ? 1 : curShape.stroke_width;
-    svgCanvas.addSVGElementFromJson({
+    svgCanvas.addSVGElemensFromJson({
       element: 'line',
       curStyles: true,
       attr: {
@@ -1188,8 +1183,8 @@ export const mouseDownEvent = function (evt) {
     });
     break;
   } case 'circle':
-    eventContext_.setStarted(true);
-    svgCanvas.addSVGElementFromJson({
+    svgCanvas.setStarted(true);
+    svgCanvas.addSVGElemensFromJson({
       element: 'circle',
       curStyles: true,
       attr: {
@@ -1202,8 +1197,8 @@ export const mouseDownEvent = function (evt) {
     });
     break;
   case 'ellipse':
-    eventContext_.setStarted(true);
-    svgCanvas.addSVGElementFromJson({
+    svgCanvas.setStarted(true);
+    svgCanvas.addSVGElemensFromJson({
       element: 'ellipse',
       curStyles: true,
       attr: {
@@ -1217,18 +1212,18 @@ export const mouseDownEvent = function (evt) {
     });
     break;
   case 'text':
-    eventContext_.setStarted(true);
-    /* const newText = */ svgCanvas.addSVGElementFromJson({
+    svgCanvas.setStarted(true);
+    /* const newText = */ svgCanvas.addSVGElemensFromJson({
       element: 'text',
       curStyles: true,
       attr: {
         x,
         y,
         id: svgCanvas.getNextId(),
-        fill: eventContext_.getCurText('fill'),
-        'stroke-width': eventContext_.getCurText('stroke_width'),
-        'font-size': eventContext_.getCurText('font_size'),
-        'font-family': eventContext_.getCurText('font_family'),
+        fill: svgCanvas.getCurText('fill'),
+        'stroke-width': svgCanvas.getCurText('stroke_width'),
+        'font-size': svgCanvas.getCurText('font_size'),
+        'font-family': svgCanvas.getCurText('font_family'),
         'text-anchor': 'middle',
         'xml:space': 'preserve',
         opacity: curShape.opacity
@@ -1239,21 +1234,21 @@ export const mouseDownEvent = function (evt) {
   case 'path':
     // Fall through
   case 'pathedit':
-    eventContext_.setStartX(eventContext_.getStartX() * currentZoom);
-    eventContext_.setStartY(eventContext_.getStartY() * currentZoom);
-    svgCanvas.pathActions.mouseDown(evt, mouseTarget, eventContext_.getStartX(), eventContext_.getStartY());
-    eventContext_.setStarted(true);
+    svgCanvas.setStartX(svgCanvas.getStartX() * zoom);
+    svgCanvas.setStartY(svgCanvas.getStartY() * zoom);
+    svgCanvas.pathActions.mouseDown(evt, mouseTarget, svgCanvas.getStartX(), svgCanvas.getStartY());
+    svgCanvas.setStarted(true);
     break;
   case 'textedit':
-    eventContext_.setStartX(eventContext_.getStartX() * currentZoom);
-    eventContext_.setStartY(eventContext_.getStartY() * currentZoom);
-    svgCanvas.textActions.mouseDown(evt, mouseTarget, eventContext_.getStartX(), eventContext_.getStartY());
-    eventContext_.setStarted(true);
+    svgCanvas.setStartX(svgCanvas.getStartX() * zoom);
+    svgCanvas.setStartY(svgCanvas.getStartY() * zoom);
+    svgCanvas.textActions.mouseDown(evt, mouseTarget, svgCanvas.getStartX(), svgCanvas.getStartY());
+    svgCanvas.setStarted(true);
     break;
   case 'rotate':
-    eventContext_.setStarted(true);
+    svgCanvas.setStarted(true);
     // we are starting an undoable change (a drag-rotation)
-    svgCanvas.undoMgr.beginUndoableChange('transform', selectedElements());
+    svgCanvas.undoMgr.beginUndoableChange('transform', selectedElements);
     break;
   default:
     // This could occur in an extension
@@ -1271,14 +1266,14 @@ export const mouseDownEvent = function (evt) {
 */
   const extResult = svgCanvas.runExtensions('mouseDown', {
     event: evt,
-    start_x: eventContext_.getStartX(),
-    start_y: eventContext_.getStartY(),
-    selectedElements: selectedElements()
+    start_x: svgCanvas.getStartX(),
+    start_y: svgCanvas.getStartY(),
+    selectedElements
   }, true);
 
-  extResult.forEach(function(r){
+  extResult.forEach((r) => {
     if (r && r.started) {
-      eventContext_.setStarted(true);
+      svgCanvas.setStarted(true);
     }
   });
 };
@@ -1288,22 +1283,22 @@ export const mouseDownEvent = function (evt) {
  * @fires module:event.SvgCanvas#event:zoomDone
  * @returns {void}
  */
-export const DOMMouseScrollEvent = function (e) {
-  const currentZoom = eventContext_.getCurrentZoom();
-  const svgCanvas = eventContext_.getCanvas();
+export const DOMMouseScrollEvent = (e) => {
+  const svgCanvas = this; // svgCanvas was bound to the handler
+  const zoom = svgCanvas.getZoom();
   const { $id } = svgCanvas;
   if (!e.shiftKey) { return; }
 
   e.preventDefault();
 
-  eventContext_.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
+  svgCanvas.setRootSctm($id('svgcontent').querySelector('g').getScreenCTM().inverse());
 
   const workarea = document.getElementById('workarea');
   const scrbar = 15;
-  const rulerwidth = eventContext_.getCurConfig().showRulers ? 16 : 0;
+  const rulerwidth = svgCanvas.getCurConfig().showRulers ? 16 : 0;
 
   // mouse relative to content area in content pixels
-  const pt = transformPoint(e.clientX, e.clientY, eventContext_.getrootSctm());
+  const pt = transformPoint(e.clientX, e.clientY, svgCanvas.getrootSctm());
 
   // full work area width in screen pixels
   const editorFullW = parseFloat(getComputedStyle(workarea, null).width.replace("px", ""));
@@ -1314,8 +1309,8 @@ export const DOMMouseScrollEvent = function (e) {
   const editorH = editorFullH - scrbar - rulerwidth;
 
   // work area width in content pixels
-  const workareaViewW = editorW * eventContext_.getrootSctm().a;
-  const workareaViewH = editorH * eventContext_.getrootSctm().d;
+  const workareaViewW = editorW * svgCanvas.getrootSctm().a;
+  const workareaViewH = editorH * svgCanvas.getrootSctm().d;
 
   // content offset from canvas in screen pixels
   const wOffset = findPos(workarea);
@@ -1337,13 +1332,13 @@ export const DOMMouseScrollEvent = function (e) {
   }
   let zoomlevel = Math.min(wZoom, hZoom);
   zoomlevel = Math.min(10, Math.max(0.01, zoomlevel));
-  if (zoomlevel === currentZoom) {
+  if (zoomlevel === zoom) {
     return;
   }
-  factor = zoomlevel / currentZoom;
+  factor = zoomlevel / zoom;
 
   // top left of workarea in content pixels before zoom
-  const topLeftOld = transformPoint(wOffsetLeft, wOffsetTop, eventContext_.getrootSctm());
+  const topLeftOld = transformPoint(wOffsetLeft, wOffsetTop, svgCanvas.getrootSctm());
 
   // top left of workarea in content pixels after zoom
   const topLeftNew = {

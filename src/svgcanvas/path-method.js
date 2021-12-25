@@ -16,16 +16,15 @@ import {
   getElem
 } from './utilities.js';
 
-let pathMethodsContext_ = null;
-let editorContext_ = null;
+let svgCanvas = null;
 
 /**
 * @function module:path-actions.init
-* @param {module:path-actions.pathMethodsContext_} pathMethodsContext
+* @param {module:path-actions.svgCanvas} pathMethodsContext
 * @returns {void}
 */
-export const init = function (pathMethodsContext) {
-  pathMethodsContext_ = pathMethodsContext;
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /* eslint-disable max-len */
@@ -38,7 +37,7 @@ export const init = function (pathMethodsContext) {
 */
 /* eslint-enable max-len */
 export const ptObjToArrMethod = function (type, segItem) {
-  const segData = pathMethodsContext_.getSegData();
+  const segData = svgCanvas.getSegData();
   const props = segData[type];
   return props.map((prop) => {
     return segItem[prop];
@@ -62,10 +61,10 @@ export const getGripPtMethod = function (seg, altPt) {
     const pt = transformPoint(out.x, out.y, pth.matrix);
     out = pt;
   }
-  editorContext_ = pathMethodsContext_.getEditorContext();
-  const currentZoom = editorContext_.getCurrentZoom();
-  out.x *= currentZoom;
-  out.y *= currentZoom;
+  svgCanvas = svgCanvas.getEditorContext();
+  const zoom = svgCanvas.getZoom();
+  out.x *= zoom;
+  out.y *= zoom;
 
   return out;
 };
@@ -86,10 +85,10 @@ export const getPointFromGripMethod = function (pt, pth) {
     out.x = pt.x;
     out.y = pt.y;
   }
-  editorContext_ = pathMethodsContext_.getEditorContext();
-  const currentZoom = editorContext_.getCurrentZoom();
-  out.x /= currentZoom;
-  out.y /= currentZoom;
+  svgCanvas = svgCanvas.getEditorContext();
+  const zoom = svgCanvas.getZoom();
+  out.x /= zoom;
+  out.y /= zoom;
 
   return out;
 };
@@ -134,7 +133,7 @@ export const addPointGripMethod = function (index, x, y) {
       cursor: 'move',
       style: 'pointer-events:all'
     };
-    const uiStrings = pathMethodsContext_.getUIStrings();
+    const uiStrings = svgCanvas.getUIStrings();
     if ('pathNodeTooltip' in uiStrings) { // May be empty if running path.js without svg-editor
       atts['xlink:title'] = uiStrings.pathNodeTooltip;
     }
@@ -143,7 +142,7 @@ export const addPointGripMethod = function (index, x, y) {
 
     const grip = document.getElementById('pathpointgrip_' + index);
     grip?.addEventListener("dblclick", () => {
-      const path = pathMethodsContext_.getPathObj();
+      const path = svgCanvas.getPathObj();
       if (path) {
         path.setSegType();
       }
@@ -181,7 +180,7 @@ export const addCtrlGripMethod = function (id) {
     cursor: 'move',
     style: 'pointer-events:all'
   };
-  const uiStrings = pathMethodsContext_.getUIStrings();
+  const uiStrings = svgCanvas.getUIStrings();
   if ('pathCtrlPtTooltip' in uiStrings) { // May be empty if running path.js without svg-editor
     atts['xlink:title'] = uiStrings.pathCtrlPtTooltip;
   }
@@ -241,7 +240,7 @@ export const getControlPointsMethod = function (seg) {
   /* const pointGripContainer = */ getGripContainerMethod();
 
   // Note that this is intentionally not seg.prev.item
-  const path = pathMethodsContext_.getPathObj();
+  const path = svgCanvas.getPathObj();
   const prev = path.segs[index - 1].item;
 
   const segItems = [ prev, item ];
@@ -286,9 +285,9 @@ export const getControlPointsMethod = function (seg) {
 * @returns {void}
 */
 export const replacePathSegMethod = function (type, index, pts, elem) {
-  const path = pathMethodsContext_.getPathObj();
+  const path = svgCanvas.getPathObj();
   const pth = elem || path.elem;
-  const pathFuncs = pathMethodsContext_.getPathFuncs();
+  const pathFuncs = svgCanvas.getPathFuncs();
   const func = 'createSVGPathSeg' + pathFuncs[type];
   const seg = pth[func](...pts);
 
@@ -435,7 +434,7 @@ export class Segment {
 
       if (this.ctrlpts) {
         if (full) {
-          const path = pathMethodsContext_.getPathObj();
+          const path = svgCanvas.getPathObj();
           this.item = path.elem.pathSegList.getItem(this.index);
           this.type = this.item.pathSegType;
         }
@@ -549,7 +548,7 @@ export class Segment {
   setType (newType, pts) {
     replacePathSegMethod(newType, this.index, pts);
     this.type = newType;
-    const path = pathMethodsContext_.getPathObj();
+    const path = svgCanvas.getPathObj();
     this.item = path.elem.pathSegList.getItem(this.index);
     this.showCtrlPts(newType === 6);
     this.ctrlpts = getControlPointsMethod(this);
@@ -573,14 +572,14 @@ export class Path {
     this.elem = elem;
     this.segs = [];
     this.selected_pts = [];
-    pathMethodsContext_.setPathObj(this);
+    svgCanvas.setPathObj(this);
     // path = this;
 
     this.init();
   }
 
   setPathContext() {
-    pathMethodsContext_.setPathObj(this);
+    svgCanvas.setPathObj(this);
   }
 
   /**
@@ -828,7 +827,7 @@ export class Path {
   moveCtrl (dx, dy) {
     const seg = this.segs[this.selected_pts[0]];
     seg.moveCtrl(this.dragctrl, dx, dy);
-    if (pathMethodsContext_.getLinkControlPts()) {
+    if (svgCanvas.getLinkControlPts()) {
       seg.setLinked(this.dragctrl);
     }
   }
@@ -899,7 +898,7 @@ export class Path {
 
       cur.setType(newType, points);
     }
-    const path = pathMethodsContext_.getPathObj();
+    const path = svgCanvas.getPathObj();
     path.endChanges(text);
   }
 
@@ -922,7 +921,7 @@ export class Path {
     if (ctrlNum) {
       this.dragctrl = ctrlNum;
 
-      if (pathMethodsContext_.getLinkControlPts()) {
+      if (svgCanvas.getLinkControlPts()) {
         this.segs[pt].setLinked(ctrlNum);
       }
     }
@@ -956,7 +955,7 @@ export class Path {
   */
   endChanges (text) {
     const cmd = new ChangeElementCommand(this.elem, { d: this.last_d }, text);
-    editorContext_.endChanges({ cmd, elem: this.elem });
+    svgCanvas.endChanges({ cmd, elem: this.elem });
   }
 
   /**
@@ -984,7 +983,7 @@ export class Path {
     }
 
     const closedSubpath = Path.subpathIsClosed(this.selected_pts[0]);
-    editorContext_.addPtsToSelection({ grips, closedSubpath });
+    svgCanvas.addPtsToSelection({ grips, closedSubpath });
   }
 
   // STATIC
@@ -995,7 +994,7 @@ export class Path {
   static subpathIsClosed (index) {
     let clsd = false;
     // Check if subpath is already open
-    const path = pathMethodsContext_.getPathObj();
+    const path = svgCanvas.getPathObj();
     path.eachSeg(function (i) {
       if (i <= index) { return true; }
       if (this.type === 2) {

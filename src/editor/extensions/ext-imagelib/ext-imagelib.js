@@ -71,7 +71,7 @@ export default {
     * @returns {void}
     */
     const importImage = (url) => {
-      const newImage = svgCanvas.addSVGElementFromJson({
+      const newImage = svgCanvas.addSVGElemensFromJson({
         element: 'image',
         attr: {
           x: 0,

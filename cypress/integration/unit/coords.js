@@ -27,7 +27,7 @@ describe('coords', function () {
       * @implements {module:utilities.EditorContext}
       */
       {
-        getSVGRoot: () => { return this.svg; },
+        getSvgRoot: () => { return this.svg; },
         getDOMDocument () { return null; },
         getDOMContainer () { return null; }
       }

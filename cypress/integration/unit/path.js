@@ -27,8 +27,8 @@ describe('path', function () {
       * @implements {module:path.EditorContext}
       */
       {
-        getSVGRoot () { return svg; },
-        getCurrentZoom () { return 1; }
+        getSvgRoot () { return svg; },
+        getZoom () { return 1; }
       },
       /**
       * @implements {module:utilities.EditorContext}
@@ -36,7 +36,7 @@ describe('path', function () {
       {
         getDOMDocument () { return svg; },
         getDOMContainer () { return svg; },
-        getSVGRoot () { return svg; }
+        getSvgRoot () { return svg; }
       }
     ];
   }

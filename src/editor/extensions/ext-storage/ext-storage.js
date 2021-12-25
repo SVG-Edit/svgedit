@@ -100,7 +100,7 @@ export default {
         } else {
           removeStoragePrefCookie();
           if (svgEditor.configObj.curConfig.emptyStorageOnDecline && e?.detail?.checkbox) {
-            this.setSVGContentStorage('');
+            this.setSvgContentStorage('');
             Object.keys(svgEditor.curPrefs).forEach((name) => {
               name = 'svg-edit-' + name;
               if (svgEditor.storage) {
@@ -128,7 +128,7 @@ export default {
      * @param {string} val
      * @returns {void}
      */
-    function setSVGContentStorage (val) {
+    function setSvgContentStorage (val) {
       if (storage) {
         const name = 'svgedit-' + svgEditor.configObj.curConfig.canvasName;
         if (!val) {
@@ -155,7 +155,7 @@ export default {
           return;
         }
         if ((/(?:^|;\s*)svgeditstore=prefsAndContent/).test(document.cookie)) {
-          setSVGContentStorage(svgCanvas.getSvgString());
+          setSvgContentStorage(svgCanvas.getSvgString());
         }
 
         svgEditor.setConfig({ no_save_warning: true }); // No need for explicit saving at all once storage is on

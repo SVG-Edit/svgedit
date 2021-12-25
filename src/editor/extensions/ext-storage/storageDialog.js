@@ -139,7 +139,7 @@ export class SeStorageDialog extends HTMLElement {
  * @param {string} val
  * @returns {void}
  */
-  setSVGContentStorage (val) {
+  setSvgContentStorage (val) {
     if (this.storage) {
       const name = 'svgedit-' + this.configObj.curConfig.canvasName;
       if (!val) {

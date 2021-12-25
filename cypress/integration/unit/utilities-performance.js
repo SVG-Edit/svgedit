@@ -87,11 +87,11 @@ describe('utilities performance', function () {
   }
 
   /**
-   * Mock of {@link module:utilities.EditorContext#addSVGElementFromJson}.
+   * Mock of {@link module:utilities.EditorContext#addSVGElemensFromJson}.
    * @param {module:utilities.SVGElementJSON} json
    * @returns {SVGElement}
    */
-  function mockaddSVGElementFromJson (json) {
+  function mockaddSVGElemensFromJson (json) {
     const elem = mockCreateSVGElement(json);
     currentLayer.append(elem);
     return elem;
@@ -198,7 +198,7 @@ describe('utilities performance', function () {
     // Skip the first child which is the title.
     for (let index = 1; index < count; index++) {
       const child = children[index];
-      /* const obj = */ getStrokedBBox([ child ], mockaddSVGElementFromJson, mockPathActions);
+      /* const obj = */ getStrokedBBox([ child ], mockaddSVGElemensFromJson, mockPathActions);
       now = Date.now(); const delta = now - lastTime; lastTime = now;
       total += delta;
       min = Math.min(min, delta);
@@ -218,7 +218,7 @@ describe('utilities performance', function () {
         // Skip the first child which is the title.
         for (let index = 1; index < ct; index++) {
           const child = children[index];
-          /* const obj = */ getStrokedBBox([ child ], mockaddSVGElementFromJson, mockPathActions);
+          /* const obj = */ getStrokedBBox([ child ], mockaddSVGElemensFromJson, mockPathActions);
           now = Date.now(); const delta = now - lastTime; lastTime = now;
           total += delta;
           min = Math.min(min, delta);

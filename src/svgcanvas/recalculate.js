@@ -18,13 +18,13 @@ import {
   mergeDeep
 } from '../editor/components/jgraduate/Util.js';
 
-let context_;
+let svgCanvas;
 
 /**
 * @interface module:recalculate.EditorContext
 */
 /**
- * @function module:recalculate.EditorContext#getSVGRoot
+ * @function module:recalculate.EditorContext#getSvgRoot
  * @returns {SVGSVGElement} The root DOM element
  */
 /**
@@ -42,8 +42,8 @@ let context_;
 * @param {module:recalculate.EditorContext} editorContext
 * @returns {void}
 */
-export const init = function (editorContext) {
-  context_ = editorContext;
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -57,7 +57,7 @@ export const init = function (editorContext) {
 export const updateClipPath = function (attr, tx, ty) {
   const path = getRefElem(attr).firstChild;
   const cpXform = path.transform.baseVal;
-  const newxlate = context_.getSVGRoot().createSVGTransform();
+  const newxlate = svgCanvas.getSvgRoot().createSVGTransform();
   newxlate.setTranslate(tx, ty);
 
   cpXform.appendItem(newxlate);
@@ -74,8 +74,8 @@ export const updateClipPath = function (attr, tx, ty) {
 */
 export const recalculateDimensions = function (selected) {
   if (!selected) return null;
-  const svgroot = context_.getSVGRoot();
-  const dataStorage = context_.getDataStorage();
+  const svgroot = svgCanvas.getSvgRoot();
+  const dataStorage = svgCanvas.getDataStorage();
   const tlist = selected.transform?.baseVal;
   // remove any unnecessary transforms
   if (tlist && tlist.numberOfItems > 0) {
@@ -239,7 +239,7 @@ export const recalculateDimensions = function (selected) {
     }
   }
   // save the start transform value too
-  initial.transform = context_.getStartTransform() || '';
+  initial.transform = svgCanvas.getStartTransform() || '';
 
   let oldcenter; let newcenter;
 
@@ -323,9 +323,9 @@ export const recalculateDimensions = function (selected) {
           // }
 
           const angle = getRotationAngle(child);
-          oldStartTransform = context_.getStartTransform();
+          oldStartTransform = svgCanvas.getStartTransform();
           // const childxforms = [];
-          context_.setStartTransform(child.getAttribute('transform'));
+          svgCanvas.setStartTransform(child.getAttribute('transform'));
           if (angle || hasMatrixTransform(childTlist)) {
             const e2t = svgroot.createSVGTransform();
             e2t.setMatrix(matrixMultiply(tm, sm, tmn, m));
@@ -383,7 +383,7 @@ export const recalculateDimensions = function (selected) {
           //     batchCmd.addSubCommand( recalculateDimensions(useElem) );
           //   }
           // }
-          context_.setStartTransform(oldStartTransform);
+          svgCanvas.setStartTransform(oldStartTransform);
         } // element
       } // for each child
       // Remove these transforms from group
@@ -430,8 +430,8 @@ export const recalculateDimensions = function (selected) {
               }
             }
 
-            oldStartTransform = context_.getStartTransform();
-            context_.setStartTransform(child.getAttribute('transform'));
+            oldStartTransform = svgCanvas.getStartTransform();
+            svgCanvas.setStartTransform(child.getAttribute('transform'));
 
             const childTlist = child.transform?.baseVal;
             // some children might not have a transform (<metadata>, <defs>, etc)
@@ -459,11 +459,11 @@ export const recalculateDimensions = function (selected) {
                   batchCmd.addSubCommand(recalculateDimensions(useElem));
                 }
               }
-              context_.setStartTransform(oldStartTransform);
+              svgCanvas.setStartTransform(oldStartTransform);
             }
           }
         }
-        context_.setStartTransform(oldStartTransform);
+        svgCanvas.setStartTransform(oldStartTransform);
       }
       // else, a matrix imposition from a parent group
       // keep pushing it down to the children
@@ -475,8 +475,8 @@ export const recalculateDimensions = function (selected) {
       while (c--) {
         const child = children.item(c);
         if (child.nodeType === 1) {
-          oldStartTransform = context_.getStartTransform();
-          context_.setStartTransform(child.getAttribute('transform'));
+          oldStartTransform = svgCanvas.getStartTransform();
+          svgCanvas.setStartTransform(child.getAttribute('transform'));
           const childTlist = child.transform?.baseVal;
 
           if (!childTlist) { continue; }
@@ -488,7 +488,7 @@ export const recalculateDimensions = function (selected) {
           childTlist.appendItem(e2m, 0);
 
           batchCmd.addSubCommand(recalculateDimensions(child));
-          context_.setStartTransform(oldStartTransform);
+          svgCanvas.setStartTransform(oldStartTransform);
 
           // Convert stroke
           // TODO: Find out if this should actually happen somewhere else
@@ -556,8 +556,8 @@ export const recalculateDimensions = function (selected) {
         while (c--) {
           const child = children.item(c);
           if (child.nodeType === 1) {
-            oldStartTransform = context_.getStartTransform();
-            context_.setStartTransform(child.getAttribute('transform'));
+            oldStartTransform = svgCanvas.getStartTransform();
+            svgCanvas.setStartTransform(child.getAttribute('transform'));
             const childTlist = child.transform?.baseVal;
             const newxlate = svgroot.createSVGTransform();
             newxlate.setTranslate(tx, ty);
@@ -568,7 +568,7 @@ export const recalculateDimensions = function (selected) {
             }
 
             batchCmd.addSubCommand(recalculateDimensions(child));
-            context_.setStartTransform(oldStartTransform);
+            svgCanvas.setStartTransform(oldStartTransform);
           }
         }
       }

@@ -35,6 +35,7 @@ const segData = {
   18: [ 'x', 'y' ] // PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS
 };
 
+let svgCanvas;
 /**
  * @tutorial LocaleDocs
  * @typedef {module:locale.LocaleStrings|PlainObject} module:path.uiStrings
@@ -75,8 +76,6 @@ export const setLinkControlPoints = function (lcp) {
 */
 export let path = null;
 
-let editorContext_ = null;
-
 /**
 * @external MouseEvent
 */
@@ -86,7 +85,7 @@ let editorContext_ = null;
 * @typedef {PlainObject} module:path.SVGElementJSON
 * @property {string} element - Tag name of the SVG element to create
 * @property {PlainObject<string, string>} attr - Has key-value attributes to assign to the new element.
-*   An `id` should be set so that {@link module:utilities.EditorContext#addSVGElementFromJson} can later re-identify the element for modification or replacement.
+*   An `id` should be set so that {@link module:utilities.EditorContext#addSVGElemensFromJson} can later re-identify the element for modification or replacement.
 * @property {boolean} [curStyles=false] - Indicates whether current style attributes should be applied first
 * @property {module:path.SVGElementJSON[]} [children] - Data objects to be added recursively as children
 * @property {string} [namespace="http://www.w3.org/2000/svg"] - Indicate a (non-SVG) namespace
@@ -107,7 +106,7 @@ let editorContext_ = null;
  * Note: This doesn't round to an integer necessarily.
  * @function module:path.EditorContext#round
  * @param {Float} val
- * @returns {Float} Rounded value to nearest value based on `currentZoom`
+ * @returns {Float} Rounded value to nearest value based on `zoom`
  */
 /**
  * @function module:path.EditorContext#clearSelection
@@ -133,7 +132,7 @@ let editorContext_ = null;
  * @returns {void}
  */
 /**
- * @function module:path.EditorContext#addSVGElementFromJson
+ * @function module:path.EditorContext#addSVGElemensFromJson
  * @param {module:path.SVGElementJSON} data
  * @returns {Element} The new element
 */
@@ -182,7 +181,7 @@ let editorContext_ = null;
  * @returns {void}
 */
 /**
- * @function module:path.EditorContext#getCurrentZoom
+ * @function module:path.EditorContext#getZoom
  * @returns {Float} The current zoom level
  */
 /**
@@ -220,7 +219,7 @@ let editorContext_ = null;
  * @returns {SVGPathElement|null} The same value as passed in
  */
 /**
- * @function module:path.EditorContext#getSVGRoot
+ * @function module:path.EditorContext#getSvgRoot
  * @returns {SVGSVGElement}
 */
 
@@ -229,9 +228,8 @@ let editorContext_ = null;
 * @param {module:path.EditorContext} editorContext
 * @returns {void}
 */
-export const init = function (editorContext) {
-  editorContext_ = editorContext;
-
+export const init = function (canvas) {
+  svgCanvas = canvas;
   pathFuncs = [ 0, 'ClosePath' ];
   const pathFuncsStrs = [
     'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
@@ -241,22 +239,22 @@ export const init = function (editorContext) {
     pathFuncs.push(s + 'Abs');
     pathFuncs.push(s + 'Rel');
   });
-};
+  pathActionsInit(svgCanvas);
 
-pathMethodInit(
+  pathMethodInit(
   /**
 * @implements {module:path-method.pathMethodsContext}
 */
-  {
-    getEditorContext () { return editorContext_; },
-    getSegData () { return segData; },
-    getUIStrings () { return uiStrings; },
-    getPathObj () { return path; },
-    setPathObj (obj) { path = obj; },
-    getPathFuncs () { return pathFuncs; },
-    getLinkControlPts () { return linkControlPts; }
-  }
-);
+    {
+      getSegData () { return segData; },
+      getUIStrings () { return uiStrings; },
+      getPathObj () { return path; },
+      setPathObj (obj) { path = obj; },
+      getPathFuncs () { return pathFuncs; },
+      getLinkControlPts () { return linkControlPts; }
+    }
+  );
+};
 
 /* eslint-disable max-len */
 /**
@@ -377,8 +375,8 @@ export const smoothControlPoints = function (ct1, ct2, pt) {
     const
       r1 = Math.sqrt(x1 * x1 + y1 * y1);
     const r2 = Math.sqrt(x2 * x2 + y2 * y2);
-    const nct1 = editorContext_.getSVGRoot().createSVGPoint();
-    const nct2 = editorContext_.getSVGRoot().createSVGPoint();
+    const nct1 = svgCanvas.getSvgRoot().createSVGPoint();
+    const nct2 = svgCanvas.getSvgRoot().createSVGPoint();
     let anglea = Math.atan2(y1, x1);
     let angleb = Math.atan2(y2, x2);
     if (anglea < 0) { anglea += 2 * Math.PI; }
@@ -511,7 +509,7 @@ export const recalcRotatedPath = function () {
   // selectedBBoxes[0].width = box.width; selectedBBoxes[0].height = box.height;
 
   // now we must set the new transform to be rotated around the new center
-  const Rnc = editorContext_.getSVGRoot().createSVGTransform();
+  const Rnc = svgCanvas.getSvgRoot().createSVGTransform();
   const tlist = currentPath.transform.baseVal;
   Rnc.setRotate((angle * 180.0 / Math.PI), newcx, newcy);
   tlist.replaceItem(Rnc, 0);
@@ -570,7 +568,7 @@ export const reorientGrads = function (elem, m) {
         for (const [ key, value ] of Object.entries(gCoords)) {
           newgrad.setAttribute(key, value);
         }
-        newgrad.id = editorContext_.getNextId();
+        newgrad.id = svgCanvas.getNextId();
         findDefs().append(newgrad);
         elem.setAttribute(type, 'url(#' + newgrad.id + ')');
       }
@@ -773,28 +771,6 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
   }
   return segment;
 }
-
-pathActionsInit(
-  /**
-* @implements {module:path-actions.pathActionsContext}
-*/
-  {
-    getEditorContext () { return editorContext_; },
-    getPathMap () { return pathMap; },
-    smoothControlPoints,
-    addPointGrip,
-    recalcRotatedPath,
-    removePath_,
-    addCtrlGrip,
-    getCtrlLine,
-    replacePathSeg,
-    getPointFromGrip,
-    getGripPt,
-    getPath_,
-    reorientGrads,
-    setLinkControlPoints
-  }
-);
 
 /**
 * Group: Path edit functions.

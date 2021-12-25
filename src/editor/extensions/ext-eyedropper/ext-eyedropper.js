@@ -28,7 +28,7 @@ export default {
   async init(S) {
     const svgEditor = this;
     await loadExtensionTranslation(svgEditor);
-    const { ChangeElementCommand } = S; // , svgcontent,
+    const { ChangeElementCommand } = S;
     // svgdoc = S.svgroot.parentNode.ownerDocument,
     const { svgCanvas } = svgEditor;
     const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };

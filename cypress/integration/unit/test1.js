@@ -208,10 +208,10 @@ describe('Basic Module', function () {
         '</svg>'
       );
 
-      const svgcontent = document.getElementById('svgcontent');
-      const circles = svgcontent.getElementsByTagNameNS(svgns, 'circle');
-      const rects = svgcontent.getElementsByTagNameNS(svgns, 'rect');
-      const ellipses = svgcontent.getElementsByTagNameNS(svgns, 'ellipse');
+      const svgContent = document.getElementById('svgcontent');
+      const circles = svgContent.getElementsByTagNameNS(svgns, 'circle');
+      const rects = svgContent.getElementsByTagNameNS(svgns, 'rect');
+      const ellipses = svgContent.getElementsByTagNameNS(svgns, 'ellipse');
       assert.equal(circles.length, 2, 'Found two circles upon importing');
       assert.equal(rects.length, 1, 'Found one rectangle upon importing');
       assert.equal(ellipses.length, 1, 'Found one ellipse upon importing');
@@ -242,13 +242,13 @@ describe('Basic Module', function () {
         '</svg>'
       );
 
-      const svgcontent = document.getElementById('svgcontent');
-      const circles = svgcontent.getElementsByTagNameNS(svgns, 'circle');
-      const rects = svgcontent.getElementsByTagNameNS(svgns, 'rect');
-      // ellipses = svgcontent.getElementsByTagNameNS(svgns, 'ellipse'),
-      const defs = svgcontent.getElementsByTagNameNS(svgns, 'defs');
-      // grads = svgcontent.getElementsByTagNameNS(svgns, 'linearGradient'),
-      const uses = svgcontent.getElementsByTagNameNS(svgns, 'use');
+      const svgContent = document.getElementById('svgcontent');
+      const circles = svgContent.getElementsByTagNameNS(svgns, 'circle');
+      const rects = svgContent.getElementsByTagNameNS(svgns, 'rect');
+      // ellipses = svgContent.getElementsByTagNameNS(svgns, 'ellipse'),
+      const defs = svgContent.getElementsByTagNameNS(svgns, 'defs');
+      // grads = svgContent.getElementsByTagNameNS(svgns, 'linearGradient'),
+      const uses = svgContent.getElementsByTagNameNS(svgns, 'use');
       assert.notEqual(circles.item(0).id, 'svg_1', 'Circle not re-identified');
       assert.notEqual(rects.item(0).id, 'svg_3', 'Rectangle not re-identified');
       // TODO: determine why this test fails in WebKit browsers

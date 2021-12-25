@@ -18,19 +18,16 @@ import {
   getBBox
 } from './utilities.js';
 
-let pathActionsContext_ = null;
-let editorContext_ = null;
+let svgCanvas = null;
 let path = null;
 
 /**
 * @function module:path-actions.init
-* @param {module:path-actions.pathActionsContext_} pathActionsContext
+* @param {module:path-actions.svgCanvas} pathActionsContext
 * @returns {void}
 */
-export const init = function (pathActionsContext) {
-  pathActionsContext_ = pathActionsContext;
-  // editorContext_ = pathActionsContext_.getEditorContext();
-  // path = pathActionsContext_.getPathObj();
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -59,7 +56,7 @@ export const convertPath = function (pth, toRel) {
     let y2 = seg.y2 || 0;
 
     // const type = seg.pathSegType;
-    // const pathMap = pathActionsContext_.getPathMap();
+    // const pathMap = svgCanvas.getPathMap();
     // let letter = pathMap[type][toRel ? 'toLowerCase' : 'toUpperCase']();
     let letter = seg.pathSegTypeAsLetter;
 
@@ -246,8 +243,8 @@ export const pathActionsMethod = (function () {
 
   let currentPath = null;
   let hasMoved = false;
-  // No `editorContext_` yet but should be ok as is `null` by default
-  // editorContext_.setDrawnPath(null);
+  // No `svgCanvas` yet but should be ok as is `null` by default
+  // svgCanvas.setDrawnPath(null);
 
   /**
   * This function converts a polyline (created by the fh_path tool) into
@@ -286,7 +283,7 @@ export const pathActionsMethod = (function () {
         // if the previous segment had a control point, we want to smooth out
         // the control points on both sides
         if (prevCtlPt) {
-          const newpts = pathActionsContext_.smoothControlPoints(prevCtlPt, ct1, curpos);
+          const newpts = svgCanvas.smoothControlPoints(prevCtlPt, ct1, curpos);
           if (newpts && newpts.length === 2) {
             const prevArr = d[d.length - 1].split(',');
             prevArr[2] = newpts[0].x;
@@ -310,13 +307,11 @@ export const pathActionsMethod = (function () {
       }
       d = d.join(' ');
 
-      // create new path element
-      editorContext_ = pathActionsContext_.getEditorContext();
-      element = editorContext_.addSVGElementFromJson({
+      element = svgCanvas.addSVGElemensFromJson({
         element: 'path',
         curStyles: true,
         attr: {
-          id: editorContext_.getId(),
+          id: svgCanvas.getId(),
           d,
           fill: 'none'
         }
@@ -336,18 +331,17 @@ export const pathActionsMethod = (function () {
     */
     mouseDown (evt, mouseTarget, startX, startY) {
       let id;
-      editorContext_ = pathActionsContext_.getEditorContext();
-      if (editorContext_.getCurrentMode() === 'path') {
+      if (svgCanvas.getCurrentMode() === 'path') {
         let mouseX = startX; // Was this meant to work with the other `mouseX`? (was defined globally so adding `let` to at least avoid a global)
         let mouseY = startY; // Was this meant to work with the other `mouseY`? (was defined globally so adding `let` to at least avoid a global)
 
-        const currentZoom = editorContext_.getCurrentZoom();
-        let x = mouseX / currentZoom;
-        let y = mouseY / currentZoom;
+        const zoom = svgCanvas.getZoom();
+        let x = mouseX / zoom;
+        let y = mouseY / zoom;
         let stretchy = getElem('path_stretch_line');
         newPoint = [ x, y ];
 
-        if (editorContext_.getGridSnapping()) {
+        if (svgCanvas.getGridSnapping()) {
           x = snapToGrid(x);
           y = snapToGrid(y);
           mouseX = snapToGrid(mouseX);
@@ -369,27 +363,27 @@ export const pathActionsMethod = (function () {
         let keep = null;
         let index;
         // if pts array is empty, create path element with M at current point
-        const drawnPath = editorContext_.getDrawnPath();
+        const drawnPath = svgCanvas.getDrawnPath();
         if (!drawnPath) {
           const dAttr = 'M' + x + ',' + y + ' '; // Was this meant to work with the other `dAttr`? (was defined globally so adding `var` to at least avoid a global)
-          /* drawnPath = */ editorContext_.setDrawnPath(editorContext_.addSVGElementFromJson({
+          /* drawnPath = */ svgCanvas.setDrawnPath(svgCanvas.addSVGElemensFromJson({
             element: 'path',
             curStyles: true,
             attr: {
               d: dAttr,
-              id: editorContext_.getNextId(),
-              opacity: editorContext_.getOpacity() / 2
+              id: svgCanvas.getNextId(),
+              opacity: svgCanvas.getOpacity() / 2
             }
           }));
           // set stretchy line to first point
           stretchy.setAttribute('d', [ 'M', mouseX, mouseY, mouseX, mouseY ].join(' '));
           index = subpath ? path.segs.length : 0;
-          pathActionsContext_.addPointGrip(index, mouseX, mouseY);
+          svgCanvas.addPointGrip(index, mouseX, mouseY);
         } else {
           // determine if we clicked on an existing point
           const seglist = drawnPath.pathSegList;
           let i = seglist.numberOfItems;
-          const FUZZ = 6 / currentZoom;
+          const FUZZ = 6 / zoom;
           let clickOnPoint = false;
           while (i) {
             i--;
@@ -405,10 +399,10 @@ export const pathActionsMethod = (function () {
           }
 
           // get path element that we are in the process of creating
-          id = editorContext_.getId();
+          id = svgCanvas.getId();
 
           // Remove previous path object if previously created
-          pathActionsContext_.removePath_(id);
+          svgCanvas.removePath_(id);
 
           const newpath = getElem(id);
           let newseg;
@@ -429,7 +423,7 @@ export const pathActionsMethod = (function () {
               sSeg = stretchy.pathSegList.getItem(1);
               newseg = sSeg.pathSegType === 4
                 ? drawnPath.createSVGPathSegLinetoAbs(absX, absY)
-                : drawnPath.createSVGPathSegCurvetoCubicAbs(absX, absY, sSeg.x1 / currentZoom, sSeg.y1 / currentZoom, absX, absY);
+                : drawnPath.createSVGPathSegCurvetoCubicAbs(absX, absY, sSeg.x1 / zoom, sSeg.y1 / zoom, absX, absY);
 
               const endseg = drawnPath.createSVGPathSegClosePath();
               seglist.appendItem(newseg);
@@ -442,12 +436,12 @@ export const pathActionsMethod = (function () {
 
             // This will signal to commit the path
             // const element = newpath; // Other event handlers define own `element`, so this was probably not meant to interact with them or one which shares state (as there were none); I therefore adding a missing `var` to avoid a global
-            /* drawnPath = */ editorContext_.setDrawnPath(null);
-            editorContext_.setStarted(false);
+            /* drawnPath = */ svgCanvas.setDrawnPath(null);
+            svgCanvas.setStarted(false);
 
             if (subpath) {
               if (path.matrix) {
-                editorContext_.remapElement(newpath, {}, path.matrix.inverse());
+                svgCanvas.remapElement(newpath, {}, path.matrix.inverse());
               }
 
               const newD = newpath.getAttribute('d');
@@ -455,7 +449,7 @@ export const pathActionsMethod = (function () {
               path.elem.setAttribute('d', origD + newD);
               newpath.parentNode.removeChild(newpath);
               if (path.matrix) {
-                pathActionsContext_.recalcRotatedPath();
+                svgCanvas.recalcRotatedPath();
               }
               pathActionsMethod.toEditMode(path.elem);
               path.selectPt();
@@ -464,8 +458,8 @@ export const pathActionsMethod = (function () {
           // else, create a new point, update path element
           } else {
             // Checks if current target or parents are #svgcontent
-            if (!(editorContext_.getContainer() !== editorContext_.getMouseTarget(evt) && editorContext_.getContainer().contains(
-              editorContext_.getMouseTarget(evt)
+            if (!(svgCanvas.getContainer() !== svgCanvas.getMouseTarget(evt) && svgCanvas.getContainer().contains(
+              svgCanvas.getMouseTarget(evt)
             ))) {
               // Clicked outside canvas, so don't make point
               return false;
@@ -483,26 +477,26 @@ export const pathActionsMethod = (function () {
             // Use the segment defined by stretchy
             sSeg = stretchy.pathSegList.getItem(1);
             newseg = sSeg.pathSegType === 4
-              ? drawnPath.createSVGPathSegLinetoAbs(editorContext_.round(x), editorContext_.round(y))
+              ? drawnPath.createSVGPathSegLinetoAbs(svgCanvas.round(x), svgCanvas.round(y))
               : drawnPath.createSVGPathSegCurvetoCubicAbs(
-                editorContext_.round(x),
-                editorContext_.round(y),
-                sSeg.x1 / currentZoom,
-                sSeg.y1 / currentZoom,
-                sSeg.x2 / currentZoom,
-                sSeg.y2 / currentZoom
+                svgCanvas.round(x),
+                svgCanvas.round(y),
+                sSeg.x1 / zoom,
+                sSeg.y1 / zoom,
+                sSeg.x2 / zoom,
+                sSeg.y2 / zoom
               );
 
             drawnPath.pathSegList.appendItem(newseg);
 
-            x *= currentZoom;
-            y *= currentZoom;
+            x *= zoom;
+            y *= zoom;
 
             // set stretchy line to latest point
             stretchy.setAttribute('d', [ 'M', x, y, x, y ].join(' '));
             index = num;
             if (subpath) { index += path.segs.length; }
-            pathActionsContext_.addPointGrip(index, x, y);
+            svgCanvas.addPointGrip(index, x, y);
           }
           // keep = true;
         }
@@ -546,16 +540,16 @@ export const pathActionsMethod = (function () {
 
       // Start selection box
       if (!path.dragging) {
-        let rubberBox = editorContext_.getRubberBox();
+        let rubberBox = svgCanvas.getRubberBox();
         if (isNullish(rubberBox)) {
-          rubberBox = editorContext_.setRubberBox(
-            editorContext_.selectorManager.getRubberBandBox()
+          rubberBox = svgCanvas.setRubberBox(
+            svgCanvas.selectorManager.getRubberBandBox()
           );
         }
-        const currentZoom = editorContext_.getCurrentZoom();
+        const zoom = svgCanvas.getZoom();
         assignAttributes(rubberBox, {
-          x: startX * currentZoom,
-          y: startY * currentZoom,
+          x: startX * zoom,
+          y: startY * zoom,
           width: 0,
           height: 0,
           display: 'inline'
@@ -569,11 +563,10 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     mouseMove (mouseX, mouseY) {
-      editorContext_ = pathActionsContext_.getEditorContext();
-      const currentZoom = editorContext_.getCurrentZoom();
+      const zoom = svgCanvas.getZoom();
       hasMoved = true;
-      const drawnPath = editorContext_.getDrawnPath();
-      if (editorContext_.getCurrentMode() === 'path') {
+      const drawnPath = svgCanvas.getDrawnPath();
+      if (svgCanvas.getCurrentMode() === 'path') {
         if (!drawnPath) { return; }
         const seglist = drawnPath.pathSegList;
         const index = seglist.numberOfItems - 1;
@@ -583,8 +576,8 @@ export const pathActionsMethod = (function () {
           // if (!index) { return; }
 
           // Set control points
-          const pointGrip1 = pathActionsContext_.addCtrlGrip('1c1');
-          const pointGrip2 = pathActionsContext_.addCtrlGrip('0c2');
+          const pointGrip1 = svgCanvas.addCtrlGrip('1c1');
+          const pointGrip2 = svgCanvas.addCtrlGrip('0c2');
 
           // dragging pointGrip1
           pointGrip1.setAttribute('cx', mouseX);
@@ -596,21 +589,21 @@ export const pathActionsMethod = (function () {
 
           // set curve
           // const seg = seglist.getItem(index);
-          const curX = mouseX / currentZoom;
-          const curY = mouseY / currentZoom;
+          const curX = mouseX / zoom;
+          const curY = mouseY / zoom;
           const altX = (ptX + (ptX - curX));
           const altY = (ptY + (ptY - curY));
 
-          pointGrip2.setAttribute('cx', altX * currentZoom);
-          pointGrip2.setAttribute('cy', altY * currentZoom);
+          pointGrip2.setAttribute('cx', altX * zoom);
+          pointGrip2.setAttribute('cy', altY * zoom);
           pointGrip2.setAttribute('display', 'inline');
 
-          const ctrlLine = pathActionsContext_.getCtrlLine(1);
+          const ctrlLine = svgCanvas.getCtrlLine(1);
           assignAttributes(ctrlLine, {
             x1: mouseX,
             y1: mouseY,
-            x2: altX * currentZoom,
-            y2: altY * currentZoom,
+            x2: altX * zoom,
+            y2: altY * zoom,
             display: 'inline'
           });
 
@@ -625,10 +618,10 @@ export const pathActionsMethod = (function () {
               lastX += (lastX - last.x2);
               lastY += (lastY - last.y2);
             } else if (firstCtrl) {
-              lastX = firstCtrl[0] / currentZoom;
-              lastY = firstCtrl[1] / currentZoom;
+              lastX = firstCtrl[0] / zoom;
+              lastY = firstCtrl[1] / zoom;
             }
-            pathActionsContext_.replacePathSeg(6, index, [ ptX, ptY, lastX, lastY, altX, altY ], drawnPath);
+            svgCanvas.replacePathSeg(6, index, [ ptX, ptY, lastX, lastY, altX, altY ], drawnPath);
           }
         } else {
           const stretchy = getElem('path_stretch_line');
@@ -637,16 +630,16 @@ export const pathActionsMethod = (function () {
             if (prev.pathSegType === 6) {
               const prevX = prev.x + (prev.x - prev.x2);
               const prevY = prev.y + (prev.y - prev.y2);
-              pathActionsContext_.replacePathSeg(
+              svgCanvas.replacePathSeg(
                 6,
                 1,
-                [ mouseX, mouseY, prevX * currentZoom, prevY * currentZoom, mouseX, mouseY ],
+                [ mouseX, mouseY, prevX * zoom, prevY * zoom, mouseX, mouseY ],
                 stretchy
               );
             } else if (firstCtrl) {
-              pathActionsContext_.replacePathSeg(6, 1, [ mouseX, mouseY, firstCtrl[0], firstCtrl[1], mouseX, mouseY ], stretchy);
+              svgCanvas.replacePathSeg(6, 1, [ mouseX, mouseY, firstCtrl[0], firstCtrl[1], mouseX, mouseY ], stretchy);
             } else {
-              pathActionsContext_.replacePathSeg(4, 1, [ mouseX, mouseY ], stretchy);
+              svgCanvas.replacePathSeg(4, 1, [ mouseX, mouseY ], stretchy);
             }
           }
         }
@@ -654,11 +647,11 @@ export const pathActionsMethod = (function () {
       }
       // if we are dragging a point, let's move it
       if (path.dragging) {
-        const pt = pathActionsContext_.getPointFromGrip({
+        const pt = svgCanvas.getPointFromGrip({
           x: path.dragging[0],
           y: path.dragging[1]
         }, path);
-        const mpt = pathActionsContext_.getPointFromGrip({
+        const mpt = svgCanvas.getPointFromGrip({
           x: mouseX,
           y: mouseY
         }, path);
@@ -678,10 +671,10 @@ export const pathActionsMethod = (function () {
           if (!seg.next && !seg.prev) { return; }
 
           // const {item} = seg;
-          const rubberBox = editorContext_.getRubberBox();
+          const rubberBox = svgCanvas.getRubberBox();
           const rbb = getBBox(rubberBox);
 
-          const pt = pathActionsContext_.getGripPt(seg);
+          const pt = svgCanvas.getGripPt(seg);
           const ptBb = {
             x: pt.x,
             y: pt.y,
@@ -711,14 +704,13 @@ export const pathActionsMethod = (function () {
     * @returns {module:path.keepElement|void}
     */
     mouseUp (evt, element, _mouseX, _mouseY) {
-      editorContext_ = pathActionsContext_.getEditorContext();
-      const drawnPath = editorContext_.getDrawnPath();
+      const drawnPath = svgCanvas.getDrawnPath();
       // Create mode
-      if (editorContext_.getCurrentMode() === 'path') {
+      if (svgCanvas.getCurrentMode() === 'path') {
         newPoint = null;
         if (!drawnPath) {
-          element = getElem(editorContext_.getId());
-          editorContext_.setStarted(false);
+          element = getElem(svgCanvas.getId());
+          svgCanvas.setStarted(false);
           firstCtrl = null;
         }
 
@@ -729,7 +721,7 @@ export const pathActionsMethod = (function () {
       }
 
       // Edit mode
-      const rubberBox = editorContext_.getRubberBox();
+      const rubberBox = svgCanvas.getRubberBox();
       if (path.dragging) {
         const lastPt = path.cur_pt;
 
@@ -764,10 +756,9 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     toEditMode (element) {
-      editorContext_ = pathActionsContext_.getEditorContext();
-      path = pathActionsContext_.getPath_(element);
-      editorContext_.setCurrentMode('pathedit');
-      editorContext_.clearSelection();
+      path = svgCanvas.getPath_(element);
+      svgCanvas.setCurrentMode('pathedit');
+      svgCanvas.clearSelection();
       path.setPathContext();
       path.show(true).update();
       path.oldbbox = getBBox(path.elem);
@@ -779,22 +770,21 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     toSelectMode (elem) {
-      editorContext_ = pathActionsContext_.getEditorContext();
       const selPath = (elem === path.elem);
-      editorContext_.setCurrentMode('select');
+      svgCanvas.setCurrentMode('select');
       path.setPathContext();
       path.show(false);
       currentPath = false;
-      editorContext_.clearSelection();
+      svgCanvas.clearSelection();
 
       if (path.matrix) {
         // Rotated, so may need to re-calculate the center
-        pathActionsContext_.recalcRotatedPath();
+        svgCanvas.recalcRotatedPath();
       }
 
       if (selPath) {
-        editorContext_.call('selected', [ elem ]);
-        editorContext_.addToSelection([ elem ], true);
+        svgCanvas.call('selected', [ elem ]);
+        svgCanvas.addToSelection([ elem ], true);
       }
     },
     /**
@@ -802,11 +792,10 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     addSubPath (on) {
-      editorContext_ = pathActionsContext_.getEditorContext();
       if (on) {
         // Internally we go into "path" mode, but in the UI it will
         // still appear as if in "pathedit" mode.
-        editorContext_.setCurrentMode('path');
+        svgCanvas.setCurrentMode('path');
         subpath = true;
       } else {
         pathActionsMethod.clear(true);
@@ -818,10 +807,9 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     select (target) {
-      editorContext_ = pathActionsContext_.getEditorContext();
       if (currentPath === target) {
         pathActionsMethod.toEditMode(target);
-        editorContext_.setCurrentMode('pathedit');
+        svgCanvas.setCurrentMode('pathedit');
       // going into pathedit mode
       } else {
         currentPath = target;
@@ -832,8 +820,7 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     reorient () {
-      editorContext_ = pathActionsContext_.getEditorContext();
-      const elem = editorContext_.getSelectedElements()[0];
+      const elem = svgCanvas.getSelectedElements()[0];
       if (!elem) { return; }
       const angl = getRotationAngle(elem);
       if (angl === 0) { return; }
@@ -844,18 +831,18 @@ export const pathActionsMethod = (function () {
         transform: elem.getAttribute('transform')
       };
       batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-      editorContext_.clearSelection();
+      svgCanvas.clearSelection();
       this.resetOrientation(elem);
 
-      editorContext_.addCommandToHistory(batchCmd);
+      svgCanvas.addCommandToHistory(batchCmd);
 
       // Set matrix to null
-      pathActionsContext_.getPath_(elem).show(false).matrix = null;
+      svgCanvas.getPath_(elem).show(false).matrix = null;
 
       this.clear();
 
-      editorContext_.addToSelection([ elem ], true);
-      editorContext_.call('changed', editorContext_.getSelectedElements());
+      svgCanvas.addToSelection([ elem ], true);
+      svgCanvas.call('changed', svgCanvas.getSelectedElements());
     },
 
     /**
@@ -863,11 +850,10 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     clear () {
-      editorContext_ = pathActionsContext_.getEditorContext();
-      const drawnPath = editorContext_.getDrawnPath();
+      const drawnPath = svgCanvas.getDrawnPath();
       currentPath = null;
       if (drawnPath) {
-        const elem = getElem(editorContext_.getId());
+        const elem = getElem(svgCanvas.getId());
         const psl = getElem('path_stretch_line');
         psl.parentNode.removeChild(psl);
         elem.parentNode.removeChild(elem);
@@ -877,9 +863,9 @@ export const pathActionsMethod = (function () {
           el.setAttribute('display', 'none');
         });
         firstCtrl = null;
-        editorContext_.setDrawnPath(null);
-        editorContext_.setStarted(false);
-      } else if (editorContext_.getCurrentMode() === 'pathedit') {
+        svgCanvas.setDrawnPath(null);
+        svgCanvas.setStarted(false);
+      } else if (svgCanvas.getCurrentMode() === 'pathedit') {
         this.toSelectMode();
       }
       if (path) { path.init().show(false); }
@@ -921,18 +907,17 @@ export const pathActionsMethod = (function () {
             pts.splice(pts.length, 0, pt.x, pt.y);
           }
         });
-        pathActionsContext_.replacePathSeg(type, i, pts, pth);
+        svgCanvas.replacePathSeg(type, i, pts, pth);
       }
 
-      pathActionsContext_.reorientGrads(pth, m);
+      svgCanvas.reorientGrads(pth, m);
       return undefined;
     },
     /**
     * @returns {void}
     */
     zoomChange () {
-      editorContext_ = pathActionsContext_.getEditorContext();
-      if (editorContext_.getCurrentMode() === 'pathedit') {
+      if (svgCanvas.getCurrentMode() === 'pathedit') {
         path.update();
       }
     },
@@ -960,7 +945,7 @@ export const pathActionsMethod = (function () {
     * @returns {void}
     */
     linkControlPoints (linkPoints) {
-      pathActionsContext_.setLinkControlPoints(linkPoints);
+      svgCanvas.setLinkControlPoints(linkPoints);
     },
     /**
     * @returns {void}
@@ -1091,7 +1076,7 @@ export const pathActionsMethod = (function () {
       const pt = list.getItem(lastM);
 
       // Make this point the new "M"
-      pathActionsContext_.replacePathSeg(2, lastM, [ pt.x, pt.y ]);
+      svgCanvas.replacePathSeg(2, lastM, [ pt.x, pt.y ]);
 
       // i = index; // i is local here, so has no effect; what was the intent for this?
 
@@ -1162,8 +1147,7 @@ export const pathActionsMethod = (function () {
       // Completely delete a path with 1 or 0 segments
       if (path.elem.pathSegList.numberOfItems <= 1) {
         pathActionsMethod.toSelectMode(path.elem);
-        editorContext_ = pathActionsContext_.getEditorContext();
-        editorContext_.canvas.deleteSelectedElements();
+        svgCanvas.canvas.deleteSelectedElements();
         return;
       }
 

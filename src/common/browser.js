@@ -20,13 +20,13 @@ const isTouch_ = 'ontouchstart' in window;
 // text character positioning (for IE9 and now Chrome)
 const supportsGoodTextCharPos_ = (function () {
   const svgroot = document.createElementNS(NSSVG, 'svg');
-  const svgcontent = document.createElementNS(NSSVG, 'svg');
+  const svgContent = document.createElementNS(NSSVG, 'svg');
   document.documentElement.append(svgroot);
-  svgcontent.setAttribute('x', 5);
-  svgroot.append(svgcontent);
+  svgContent.setAttribute('x', 5);
+  svgroot.append(svgContent);
   const text = document.createElementNS(NSSVG, 'text');
   text.textContent = 'a';
-  svgcontent.append(text);
+  svgContent.append(text);
   try { // Chrome now fails here
     const pos = text.getStartPositionOfChar(0).x;
     return (pos === 0);

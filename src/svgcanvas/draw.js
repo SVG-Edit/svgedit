@@ -37,7 +37,7 @@ let disabledElems = [];
  * @returns {module:history.HistoryRecordingService}
  */
 function historyRecordingService (hrService) {
-  return hrService || new HistoryRecordingService(canvas_.undoMgr);
+  return hrService || new HistoryRecordingService(svgCanvas.undoMgr);
 }
 
 /**
@@ -720,7 +720,7 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
  * @returns {Element[]} the array with selected DOM elements
 */
 /**
- * @function module:draw.DrawCanvasInit#getSVGContent
+ * @function module:draw.DrawCanvasInit#getSvgContent
  * @returns {SVGSVGElement}
  */
 /**
@@ -747,18 +747,18 @@ export const randomizeIds = function (enableRandomization, currentDrawing) {
  * @returns {void}
 */
 /**
- * @function module:draw.DrawCanvasInit#changeSVGContent
+ * @function module:draw.DrawCanvasInit#changeSvgContent
  * @returns {void}
  */
 
-let canvas_;
+let svgCanvas;
 /**
 * @function module:draw.init
 * @param {module:draw.DrawCanvasInit} canvas
 * @returns {void}
 */
 export const init = function (canvas) {
-  canvas_ = canvas;
+  svgCanvas = canvas;
 };
 
 /**
@@ -768,7 +768,7 @@ export const init = function (canvas) {
 */
 export const identifyLayers = function () {
   leaveContext();
-  canvas_.getCurrentDrawing().identifyLayers();
+  svgCanvas.getCurrentDrawing().identifyLayers();
 };
 
 /**
@@ -782,12 +782,12 @@ export const identifyLayers = function () {
 * @returns {void}
 */
 export const createLayer = function (name, hrService) {
-  const newLayer = canvas_.getCurrentDrawing().createLayer(
+  const newLayer = svgCanvas.getCurrentDrawing().createLayer(
     name,
     historyRecordingService(hrService)
   );
-  canvas_.clearSelection();
-  canvas_.call('changed', [ newLayer ]);
+  svgCanvas.clearSelection();
+  svgCanvas.call('changed', [ newLayer ]);
 };
 
 /**
@@ -802,11 +802,11 @@ export const createLayer = function (name, hrService) {
  */
 export const cloneLayer = function (name, hrService) {
   // Clone the current layer and make the cloned layer the new current layer
-  const newLayer = canvas_.getCurrentDrawing().cloneLayer(name, historyRecordingService(hrService));
+  const newLayer = svgCanvas.getCurrentDrawing().cloneLayer(name, historyRecordingService(hrService));
 
-  canvas_.clearSelection();
+  svgCanvas.clearSelection();
   leaveContext();
-  canvas_.call('changed', [ newLayer ]);
+  svgCanvas.call('changed', [ newLayer ]);
 };
 
 /**
@@ -817,17 +817,17 @@ export const cloneLayer = function (name, hrService) {
 * @returns {boolean} `true` if an old layer group was found to delete
 */
 export const deleteCurrentLayer = function () {
-  let currentLayer = canvas_.getCurrentDrawing().getCurrentLayer();
+  let currentLayer = svgCanvas.getCurrentDrawing().getCurrentLayer();
   const { nextSibling } = currentLayer;
   const parent = currentLayer.parentNode;
-  currentLayer = canvas_.getCurrentDrawing().deleteCurrentLayer();
+  currentLayer = svgCanvas.getCurrentDrawing().deleteCurrentLayer();
   if (currentLayer) {
     const batchCmd = new BatchCommand('Delete Layer');
     // store in our Undo History
     batchCmd.addSubCommand(new RemoveElementCommand(currentLayer, nextSibling, parent));
-    canvas_.addCommandToHistory(batchCmd);
-    canvas_.clearSelection();
-    canvas_.call('changed', [ parent ]);
+    svgCanvas.addCommandToHistory(batchCmd);
+    svgCanvas.clearSelection();
+    svgCanvas.call('changed', [ parent ]);
     return true;
   }
   return false;
@@ -841,9 +841,9 @@ export const deleteCurrentLayer = function () {
 * @returns {boolean} true if the current layer was switched, otherwise false
 */
 export const setCurrentLayer = function (name) {
-  const result = canvas_.getCurrentDrawing().setCurrentLayer(toXml(name));
+  const result = svgCanvas.getCurrentDrawing().setCurrentLayer(toXml(name));
   if (result) {
-    canvas_.clearSelection();
+    svgCanvas.clearSelection();
   }
   return result;
 };
@@ -858,12 +858,12 @@ export const setCurrentLayer = function (name) {
 * @returns {boolean} Whether the rename succeeded
 */
 export const renameCurrentLayer = function (newName) {
-  const drawing = canvas_.getCurrentDrawing();
+  const drawing = svgCanvas.getCurrentDrawing();
   const layer = drawing.getCurrentLayer();
   if (layer) {
     const result = drawing.setCurrentLayerName(newName, historyRecordingService());
     if (result) {
-      canvas_.call('changed', [ layer ]);
+      svgCanvas.call('changed', [ layer ]);
       return true;
     }
   }
@@ -880,10 +880,10 @@ export const renameCurrentLayer = function (newName) {
 * @returns {boolean} `true` if the current layer position was changed, `false` otherwise.
 */
 export const setCurrentLayerPosition = function (newPos) {
-  const drawing = canvas_.getCurrentDrawing();
+  const drawing = svgCanvas.getCurrentDrawing();
   const result = drawing.setCurrentLayerPosition(newPos);
   if (result) {
-    canvas_.addCommandToHistory(new MoveElementCommand(result.currentGroup, result.oldNextSibling, canvas_.getSVGContent()));
+    svgCanvas.addCommandToHistory(new MoveElementCommand(result.currentGroup, result.oldNextSibling, svgCanvas.getSvgContent()));
     return true;
   }
   return false;
@@ -898,19 +898,19 @@ export const setCurrentLayerPosition = function (newPos) {
 * @returns {boolean} true if the layer's visibility was set, false otherwise
 */
 export const setLayerVisibility = function (layerName, bVisible) {
-  const drawing = canvas_.getCurrentDrawing();
+  const drawing = svgCanvas.getCurrentDrawing();
   const prevVisibility = drawing.getLayerVisibility(layerName);
   const layer = drawing.setLayerVisibility(layerName, bVisible);
   if (layer) {
     const oldDisplay = prevVisibility ? 'inline' : 'none';
-    canvas_.addCommandToHistory(new ChangeElementCommand(layer, { display: oldDisplay }, 'Layer Visibility'));
+    svgCanvas.addCommandToHistory(new ChangeElementCommand(layer, { display: oldDisplay }, 'Layer Visibility'));
   } else {
     return false;
   }
 
   if (layer === drawing.getCurrentLayer()) {
-    canvas_.clearSelection();
-    canvas_.pathActions.clear();
+    svgCanvas.clearSelection();
+    svgCanvas.pathActions.clear();
   }
   // call('changed', [selected]);
   return true;
@@ -925,14 +925,14 @@ export const setLayerVisibility = function (layerName, bVisible) {
 */
 export const moveSelectedToLayer = function (layerName) {
   // find the layer
-  const drawing = canvas_.getCurrentDrawing();
+  const drawing = svgCanvas.getCurrentDrawing();
   const layer = drawing.getLayerByName(layerName);
   if (!layer) { return false; }
 
   const batchCmd = new BatchCommand('Move Elements to Layer');
 
   // loop for each selected element and move it
-  const selElems = canvas_.getSelectedElements();
+  const selElems = svgCanvas.getSelectedElements();
   let i = selElems.length;
   while (i--) {
     const elem = selElems[i];
@@ -944,7 +944,7 @@ export const moveSelectedToLayer = function (layerName) {
     batchCmd.addSubCommand(new MoveElementCommand(elem, oldNextSibling, oldLayer));
   }
 
-  canvas_.addCommandToHistory(batchCmd);
+  svgCanvas.addCommandToHistory(batchCmd);
 
   return true;
 };
@@ -955,10 +955,10 @@ export const moveSelectedToLayer = function (layerName) {
 * @returns {void}
 */
 export const mergeLayer = function (hrService) {
-  canvas_.getCurrentDrawing().mergeLayer(historyRecordingService(hrService));
-  canvas_.clearSelection();
+  svgCanvas.getCurrentDrawing().mergeLayer(historyRecordingService(hrService));
+  svgCanvas.clearSelection();
   leaveContext();
-  canvas_.changeSVGContent();
+  svgCanvas.changeSvgContent();
 };
 
 /**
@@ -967,10 +967,10 @@ export const mergeLayer = function (hrService) {
 * @returns {void}
 */
 export const mergeAllLayers = function (hrService) {
-  canvas_.getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService));
-  canvas_.clearSelection();
+  svgCanvas.getCurrentDrawing().mergeAllLayers(historyRecordingService(hrService));
+  svgCanvas.clearSelection();
   leaveContext();
-  canvas_.changeSVGContent();
+  svgCanvas.changeSvgContent();
 };
 
 /**
@@ -982,7 +982,7 @@ export const mergeAllLayers = function (hrService) {
 */
 export const leaveContext = function () {
   const len = disabledElems.length;
-  const dataStorage = canvas_.getDataStorage();
+  const dataStorage = svgCanvas.getDataStorage();
   if (len) {
     for (let i = 0; i < len; i++) {
       const elem = disabledElems[i];
@@ -995,10 +995,10 @@ export const leaveContext = function () {
       elem.setAttribute('style', 'pointer-events: inherit');
     }
     disabledElems = [];
-    canvas_.clearSelection(true);
-    canvas_.call('contextset', null);
+    svgCanvas.clearSelection(true);
+    svgCanvas.call('contextset', null);
   }
-  canvas_.setCurrentGroup(null);
+  svgCanvas.setCurrentGroup(null);
 };
 
 /**
@@ -1009,14 +1009,14 @@ export const leaveContext = function () {
 * @returns {void}
 */
 export const setContext = function (elem) {
-  const dataStorage = canvas_.getDataStorage();
+  const dataStorage = svgCanvas.getDataStorage();
   leaveContext();
   if (typeof elem === 'string') {
     elem = getElem(elem);
   }
 
   // Edit inside this group
-  canvas_.setCurrentGroup(elem);
+  svgCanvas.setCurrentGroup(elem);
 
   // Disable other elements
   const parentsUntil = getParentsUntil(elem, '#svgcontent');
@@ -1038,8 +1038,8 @@ export const setContext = function (elem) {
     curthis.setAttribute('style', 'pointer-events: none');
     disabledElems.push(curthis);
   });
-  canvas_.clearSelection();
-  canvas_.call('contextset', canvas_.getCurrentGroup());
+  svgCanvas.clearSelection();
+  svgCanvas.call('contextset', svgCanvas.getCurrentGroup());
 };
 
 /**

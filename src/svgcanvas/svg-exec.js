@@ -34,7 +34,6 @@ const {
   ChangeElementCommand, BatchCommand
 } = hstry;
 
-let svgContext_ = null;
 let svgCanvas = null;
 
 /**
@@ -42,9 +41,8 @@ let svgCanvas = null;
 * @param {module:svg-exec.SvgCanvas#init} svgContext
 * @returns {void}
 */
-export const init = function (svgContext) {
-  svgContext_ = svgContext;
-  svgCanvas = svgContext_.getCanvas();
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -59,23 +57,23 @@ export const svgCanvasToString = function () {
   svgCanvas.pathActions.clear(true);
 
   // Keep SVG-Edit comment on top
-  const childNodesElems = svgContext_.getSVGContent().childNodes;
+  const childNodesElems = svgCanvas.getSvgContent().childNodes;
   childNodesElems.forEach(function (node, i) {
     if (i && node.nodeType === 8 && node.data.includes('Created with')) {
-      svgContext_.getSVGContent().firstChild.before(node);
+      svgCanvas.getSvgContent().firstChild.before(node);
     }
   });
 
   // Move out of in-group editing mode
-  if (svgContext_.getCurrentGroup()) {
+  if (svgCanvas.getCurrentGroup()) {
     draw.leaveContext();
-    svgCanvas.selectOnly([ svgContext_.getCurrentGroup() ]);
+    svgCanvas.selectOnly([ svgCanvas.getCurrentGroup() ]);
   }
 
   const nakedSvgs = [];
 
   // Unwrap gsvg if it has no special attributes (only id and style)
-  const gsvgElems = svgContext_.getSVGContent().querySelectorAll('g[data-gsvg]');
+  const gsvgElems = svgCanvas.getSvgContent().querySelectorAll('g[data-gsvg]');
   Array.prototype.forEach.call(gsvgElems, function (element) {
     const attrs = element.attributes;
     let len = attrs.length;
@@ -91,7 +89,7 @@ export const svgCanvasToString = function () {
       element.replaceWith(svg);
     }
   });
-  const output = svgCanvas.svgToString(svgContext_.getSVGContent(), 0);
+  const output = svgCanvas.svgToString(svgCanvas.getSvgContent(), 0);
 
   // Rewrap gsvg
   if (nakedSvgs.length) {
@@ -111,8 +109,8 @@ export const svgCanvasToString = function () {
 * @returns {string} The given element as an SVG tag
 */
 export const svgToString = function (elem, indent) {
-  const curConfig = svgContext_.getCurConfig();
-  const nsMap = svgContext_.getNsMap();
+  const curConfig = svgCanvas.getCurConfig();
+  const nsMap = svgCanvas.getNsMap();
   const out = [];
   const unit = curConfig.baseUnit;
   const unitRe = new RegExp('^-?[\\d\\.]+' + unit + '$');
@@ -218,13 +216,13 @@ export const svgToString = function (elem, indent) {
           }
 
           // Embed images when saving
-          if (svgContext_.getSvgOptionApply() &&
+          if (svgCanvas.getSvgOptionApply() &&
             elem.nodeName === 'image' &&
             attr.localName === 'href' &&
-            svgContext_.getSvgOptionImages() &&
-            svgContext_.getSvgOptionImages() === 'embed'
+            svgCanvas.getSvgOptionImages() &&
+            svgCanvas.getSvgOptionImages() === 'embed'
           ) {
-            const img = svgContext_.getEncodableImages(attrVal);
+            const img = svgCanvas.getEncodableImages(attrVal);
             if (img) { attrVal = img; }
           }
 
@@ -300,8 +298,8 @@ export const svgToString = function (elem, indent) {
 *     unsuccessful, `true` otherwise.
 */
 export const setSvgString = function (xmlString, preventUndo) {
-  const curConfig = svgContext_.getCurConfig();
-  const dataStorage = svgContext_.getDataStorage();
+  const curConfig = svgCanvas.getCurConfig();
+  const dataStorage = svgCanvas.getDataStorage();
   try {
     // convert string into XML document
     const newDoc = text2xml(xmlString);
@@ -315,31 +313,31 @@ export const setSvgString = function (xmlString, preventUndo) {
     const batchCmd = new BatchCommand('Change Source');
 
     // remove old svg document
-    const { nextSibling } = svgContext_.getSVGContent();
+    const { nextSibling } = svgCanvas.getSvgContent();
 
-    svgContext_.getSVGContent().remove();
-    const oldzoom = svgContext_.getSVGContent();
-    batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgContext_.getSVGRoot()));
+    svgCanvas.getSvgContent().remove();
+    const oldzoom = svgCanvas.getSvgContent();
+    batchCmd.addSubCommand(new RemoveElementCommand(oldzoom, nextSibling, svgCanvas.getSvgRoot()));
 
     // set new svg document
     // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-    if (svgContext_.getDOMDocument().adoptNode) {
-      svgContext_.setSVGContent(svgContext_.getDOMDocument().adoptNode(newDoc.documentElement));
+    if (svgCanvas.getDOMDocument().adoptNode) {
+      svgCanvas.setSvgContent(svgCanvas.getDOMDocument().adoptNode(newDoc.documentElement));
     } else {
-      svgContext_.setSVGContent(svgContext_.getDOMDocument().importNode(newDoc.documentElement, true));
+      svgCanvas.setSvgContent(svgCanvas.getDOMDocument().importNode(newDoc.documentElement, true));
     }
 
-    svgContext_.getSVGRoot().append(svgContext_.getSVGContent());
-    const content = svgContext_.getSVGContent();
+    svgCanvas.getSvgRoot().append(svgCanvas.getSvgContent());
+    const content = svgCanvas.getSvgContent();
 
-    svgCanvas.current_drawing_ = new draw.Drawing(svgContext_.getSVGContent(), svgContext_.getIdPrefix());
+    svgCanvas.current_drawing_ = new draw.Drawing(svgCanvas.getSvgContent(), svgCanvas.getIdPrefix());
 
     // retrieve or set the nonce
     const nonce = svgCanvas.getCurrentDrawing().getNonce();
     if (nonce) {
-      svgContext_.call('setnonce', nonce);
+      svgCanvas.call('setnonce', nonce);
     } else {
-      svgContext_.call('unsetnonce');
+      svgCanvas.call('unsetnonce');
     }
 
     // change image href vals if possible
@@ -456,7 +454,7 @@ export const setSvgString = function (xmlString, preventUndo) {
     // Give ID for any visible layer children missing one
     const chiElems = content.children;
     Array.prototype.forEach.call(chiElems, function (chiElem) {
-      const visElems = chiElem.querySelectorAll(svgContext_.getVisElems());
+      const visElems = chiElem.querySelectorAll(svgCanvas.getVisElems());
       Array.prototype.forEach.call(visElems, function (elem) {
         if (!elem.id) { elem.id = svgCanvas.getNextId(); }
       });
@@ -480,22 +478,22 @@ export const setSvgString = function (xmlString, preventUndo) {
     svgCanvas.contentW = attrs.width;
     svgCanvas.contentH = attrs.height;
 
-    batchCmd.addSubCommand(new InsertElementCommand(svgContext_.getSVGContent()));
+    batchCmd.addSubCommand(new InsertElementCommand(svgCanvas.getSvgContent()));
     // update root to the correct size
     const width = content.getAttribute('width');
     const height = content.getAttribute('height');
     const changes = { width: width, height: height };
-    batchCmd.addSubCommand(new ChangeElementCommand(svgContext_.getSVGRoot(), changes));
+    batchCmd.addSubCommand(new ChangeElementCommand(svgCanvas.getSvgRoot(), changes));
 
     // reset zoom
-    svgContext_.setCurrentZoom(1);
+    svgCanvas.setZoom(1);
 
     svgCanvas.clearSelection();
     pathModule.clearData();
-    svgContext_.getSVGRoot().append(svgCanvas.selectorManager.selectorParentGroup);
+    svgCanvas.getSvgRoot().append(svgCanvas.selectorManager.selectorParentGroup);
 
-    if (!preventUndo) svgContext_.addCommandToHistory(batchCmd);
-    svgContext_.call('changed', [ svgContext_.getSVGContent() ]);
+    if (!preventUndo) svgCanvas.addCommandToHistory(batchCmd);
+    svgCanvas.call('changed', [ svgCanvas.getSvgContent() ]);
   } catch (e) {
     console.error(e);
     return false;
@@ -519,7 +517,7 @@ export const setSvgString = function (xmlString, preventUndo) {
 * was obtained
 */
 export const importSvgString = function (xmlString) {
-  const dataStorage = svgContext_.getDataStorage();
+  const dataStorage = svgCanvas.getDataStorage();
   let j; let ts; let useEl;
   try {
     // Get unique ID
@@ -527,8 +525,8 @@ export const importSvgString = function (xmlString) {
 
     let useExisting = false;
     // Look for symbol and make sure symbol exists in image
-    if (svgContext_.getImportIds(uid) && svgContext_.getImportIds(uid).symbol) {
-      const parents = getParents(svgContext_.getImportIds(uid).symbol, '#svgroot');
+    if (svgCanvas.getImportIds(uid) && svgCanvas.getImportIds(uid).symbol) {
+      const parents = getParents(svgCanvas.getImportIds(uid).symbol, '#svgroot');
       if (parents.length) {
         useExisting = true;
       }
@@ -537,8 +535,8 @@ export const importSvgString = function (xmlString) {
     const batchCmd = new BatchCommand('Import Image');
     let symbol;
     if (useExisting) {
-      symbol = svgContext_.getImportIds(uid).symbol;
-      ts = svgContext_.getImportIds(uid).xform;
+      symbol = svgCanvas.getImportIds(uid).symbol;
+      ts = svgCanvas.getImportIds(uid).xform;
     } else {
       // convert string into XML document
       const newDoc = text2xml(xmlString);
@@ -547,9 +545,9 @@ export const importSvgString = function (xmlString) {
 
       // import new svg document into our document
       // If DOM3 adoptNode() available, use it. Otherwise fall back to DOM2 importNode()
-      const svg = svgContext_.getDOMDocument().adoptNode
-        ? svgContext_.getDOMDocument().adoptNode(newDoc.documentElement)
-        : svgContext_.getDOMDocument().importNode(newDoc.documentElement, true);
+      const svg = svgCanvas.getDOMDocument().adoptNode
+        ? svgCanvas.getDOMDocument().adoptNode(newDoc.documentElement)
+        : svgCanvas.getDOMDocument().importNode(newDoc.documentElement, true);
 
       svgCanvas.uniquifyElems(svg);
 
@@ -563,8 +561,8 @@ export const importSvgString = function (xmlString) {
       }
 
       // TODO: properly handle preserveAspectRatio
-      const // canvasw = +svgcontent.getAttribute('width'),
-        canvash = Number(svgContext_.getSVGContent().getAttribute('height'));
+      const // canvasw = +svgContent.getAttribute('width'),
+        canvash = Number(svgCanvas.getSvgContent().getAttribute('height'));
       // imported content should be 1/3 of the canvas on its largest dimension
 
       ts = innerh > innerw ? 'scale(' + (canvash / 3) / vb[3] + ')' : 'scale(' + (canvash / 3) / vb[2] + ')';
@@ -572,7 +570,7 @@ export const importSvgString = function (xmlString) {
       // Hack to make recalculateDimensions understand how to scale
       ts = 'translate(0) ' + ts + ' translate(0)';
 
-      symbol = svgContext_.getDOMDocument().createElementNS(NS.SVG, 'symbol');
+      symbol = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'symbol');
       const defs = findDefs();
 
       if (isGecko()) {
@@ -596,7 +594,7 @@ export const importSvgString = function (xmlString) {
       symbol.id = svgCanvas.getNextId();
 
       // Store data
-      svgContext_.setImportIds(uid, {
+      svgCanvas.setImportIds(uid, {
         symbol,
         xform: ts
       });
@@ -605,11 +603,11 @@ export const importSvgString = function (xmlString) {
       batchCmd.addSubCommand(new InsertElementCommand(symbol));
     }
 
-    useEl = svgContext_.getDOMDocument().createElementNS(NS.SVG, 'use');
+    useEl = svgCanvas.getDOMDocument().createElementNS(NS.SVG, 'use');
     useEl.id = svgCanvas.getNextId();
     svgCanvas.setHref(useEl, '#' + symbol.id);
 
-    (svgContext_.getCurrentGroup() || svgCanvas.getCurrentDrawing().getCurrentLayer()).append(useEl);
+    (svgCanvas.getCurrentGroup() || svgCanvas.getCurrentDrawing().getCurrentLayer()).append(useEl);
     batchCmd.addSubCommand(new InsertElementCommand(useEl));
     svgCanvas.clearSelection();
 
@@ -623,8 +621,8 @@ export const importSvgString = function (xmlString) {
     // if (vb[0] !== 0 || vb[1] !== 0) {
     //   ts = 'translate(' + (-vb[0]) + ',' + (-vb[1]) + ') ' + ts;
     // }
-    svgContext_.addCommandToHistory(batchCmd);
-    svgContext_.call('changed', [ svgContext_.getSVGContent() ]);
+    svgCanvas.addCommandToHistory(batchCmd);
+    svgCanvas.call('changed', [ svgCanvas.getSvgContent() ]);
   } catch (e) {
     console.error(e);
     return null;
@@ -661,12 +659,12 @@ export const embedImage = function (src) {
       try {
         let urldata = ';svgedit_url=' + encodeURIComponent(src);
         urldata = cvs.toDataURL().replace(';base64', urldata + ';base64');
-        svgContext_.setEncodableImages(src, urldata);
+        svgCanvas.setEncodableImages(src, urldata);
       } catch (e) {
-        svgContext_.setEncodableImages(src, false);
+        svgCanvas.setEncodableImages(src, false);
       }
       svgCanvas.setGoodImage(src);
-      resolve(svgContext_.getEncodableImages(src));
+      resolve(svgCanvas.getEncodableImages(src));
     });
     imgI.addEventListener("error", (e) => {
       reject(`error loading image: ${e.currentTarget.attributes.src.value}`);
@@ -686,7 +684,7 @@ export const embedImage = function (src) {
 * @returns {module:svgcanvas.IssuesAndCodes}
 */
 function getIssues() {
-  const uiStrings = svgContext_.getUIStrings();
+  const uiStrings = svgCanvas.getUIStrings();
   // remove the selected outline before serializing
   svgCanvas.clearSelection();
 
@@ -700,7 +698,7 @@ function getIssues() {
     foreignObject: uiStrings.exportNoforeignObject,
     '[stroke-dasharray]': uiStrings.exportNoDashArray
   };
-  const content = svgContext_.getSVGContent();
+  const content = svgCanvas.getSvgContent();
 
   // Add font/text check if Canvas Text API is not implemented
   if (!('font' in document.querySelector('CANVAS').getContext('2d'))) {
@@ -751,7 +749,7 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
   const iframe = document.createElement('iframe');
   iframe.onload = function() {
     const iframedoc=iframe.contentDocument||iframe.contentWindow.document;
-    const ele = svgContext_.getSVGContent();
+    const ele = svgCanvas.getSvgContent();
     const cln = ele.cloneNode(true);
     iframedoc.body.appendChild(cln);
     setTimeout(function(){
@@ -771,7 +769,7 @@ export const rasterExport = async function (imgType, quality, exportWindowName, 
               mimeType, quality, exportWindowName
             };
             if (!opts.avoidEvent) {
-              svgContext_.call('exported', obj);
+              svgCanvas.call('exported', obj);
             }
             resolve(obj);
           }
@@ -833,7 +831,7 @@ export const exportPDF = async (
   const iframe = document.createElement('iframe');
   iframe.onload = function() {
     const iframedoc=iframe.contentDocument||iframe.contentWindow.document;
-    const ele = svgContext_.getSVGContent();
+    const ele = svgCanvas.getSvgContent();
     const cln = ele.cloneNode(true);
     iframedoc.body.appendChild(cln);
     setTimeout(function(){
@@ -855,7 +853,7 @@ export const exportPDF = async (
         outputType = outputType || 'dataurlstring';
         const obj = { issues, issueCodes, exportWindowName, outputType };
         obj.output = doc.output(outputType, outputType === 'save' ? (exportWindowName || 'svg.pdf') : undefined);
-        svgContext_.call('exportedPDF', obj);
+        svgCanvas.call('exportedPDF', obj);
         return obj;
       });
     }, 1000);
@@ -895,7 +893,7 @@ export const uniquifyElemsMethod = function (g) {
 
       // now search for all attributes on this element that might refer
       // to other elements
-      svgContext_.getrefAttrs().forEach(function(attr){
+      svgCanvas.getrefAttrs().forEach(function(attr){
         const attrnode = n.getAttributeNode(attr);
         if (attrnode) {
           // the incoming file has been sanitized, so we should be able to safely just strip off the leading #
@@ -971,7 +969,7 @@ export const setUseDataMethod = function (parent) {
   }
 
   Array.prototype.forEach.call(elems, function (el, _) {
-    const dataStorage = svgContext_.getDataStorage();
+    const dataStorage = svgCanvas.getDataStorage();
     const id = svgCanvas.getHref(el).substr(1);
     const refElem = svgCanvas.getElem(id);
     if (!refElem) { return; }
@@ -990,7 +988,7 @@ export const setUseDataMethod = function (parent) {
 * @returns {Integer} The number of elements that were removed
 */
 export const removeUnusedDefElemsMethod = function () {
-  const defs = svgContext_.getSVGContent().getElementsByTagNameNS(NS.SVG, 'defs');
+  const defs = svgCanvas.getSvgContent().getElementsByTagNameNS(NS.SVG, 'defs');
   if (!defs || !defs.length) { return 0; }
 
   // if (!defs.firstChild) { return; }
@@ -1000,7 +998,7 @@ export const removeUnusedDefElemsMethod = function () {
   const attrs = [ 'fill', 'stroke', 'filter', 'marker-start', 'marker-mid', 'marker-end' ];
   const alen = attrs.length;
 
-  const allEls = svgContext_.getSVGContent().getElementsByTagNameNS(NS.SVG, '*');
+  const allEls = svgCanvas.getSvgContent().getElementsByTagNameNS(NS.SVG, '*');
   const allLen = allEls.length;
 
   let i; let j;
@@ -1028,7 +1026,7 @@ export const removeUnusedDefElemsMethod = function () {
       const { id } = defelem;
       if (!defelemUses.includes(id)) {
         // Not found, so remove (but remember)
-        svgContext_.setRemovedElements(id, defelem);
+        svgCanvas.setRemovedElements(id, defelem);
         defelem.remove();
         numRemoved++;
       }
@@ -1053,16 +1051,16 @@ export const convertGradientsMethod = function (elem) {
   }
   Array.prototype.forEach.call(elems, function (grad) {
     if (grad.getAttribute('gradientUnits') === 'userSpaceOnUse') {
-      const svgcontent = svgContext_.getSVGContent();
+      const svgContent = svgCanvas.getSvgContent();
       // TODO: Support more than one element with this ref by duplicating parent grad
-      let fillStrokeElems = svgcontent.querySelectorAll('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
+      let fillStrokeElems = svgContent.querySelectorAll('[fill="url(#' + grad.id + ')"],[stroke="url(#' + grad.id + ')"]');
       if (!fillStrokeElems.length) {
-        const tmpFillStrokeElems = svgcontent.querySelectorAll('[*|href="#' + grad.id + '"]');
+        const tmpFillStrokeElems = svgContent.querySelectorAll('[*|href="#' + grad.id + '"]');
         if (!tmpFillStrokeElems.length) {
           return;
         } else {
           if((tmpFillStrokeElems[0].tagName === "linearGradient" || tmpFillStrokeElems[0].tagName === "radialGradient") && tmpFillStrokeElems[0].getAttribute('gradientUnits') === 'userSpaceOnUse') {
-            fillStrokeElems = svgcontent.querySelectorAll('[fill="url(#' + tmpFillStrokeElems[0].id + ')"],[stroke="url(#' + tmpFillStrokeElems[0].id + ')"]');
+            fillStrokeElems = svgContent.querySelectorAll('[fill="url(#' + tmpFillStrokeElems[0].id + ')"],[stroke="url(#' + tmpFillStrokeElems[0].id + ')"]');
           } else {
             return;
           }

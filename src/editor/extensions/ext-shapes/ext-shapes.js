@@ -27,7 +27,7 @@ export default {
     const svgEditor = this;
     const canv = svgEditor.svgCanvas;
     const { $id } = canv;
-    const svgroot = canv.getRootElem();
+    const svgroot = canv.getSvgRoot();
     let lastBBox = {};
     await loadExtensionTranslation(svgEditor);
 
@@ -67,7 +67,7 @@ export default {
         startClientPos.x = opts.event.clientX;
         startClientPos.y = opts.event.clientY;
 
-        curShape = canv.addSVGElementFromJson({
+        curShape = canv.addSVGElemensFromJson({
           element: 'path',
           curStyles: true,
           attr: {

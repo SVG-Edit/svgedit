@@ -17,15 +17,15 @@ import {
   supportsGoodTextCharPos
 } from '../common/browser.js';
 
-let textActionsContext_ = null;
+let svgCanvas = null;
 
 /**
 * @function module:text-actions.init
-* @param {module:text-actions.textActionsContext_} textActionsContext
+* @param {module:text-actions.svgCanvas} textActionsContext
 * @returns {void}
 */
-export const init = function (textActionsContext) {
-  textActionsContext_ = textActionsContext;
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -159,7 +159,7 @@ export const textActionsMethod = (function () {
 */
   function getIndexFromPoint (mouseX, mouseY) {
     // Position cursor here
-    const pt = textActionsContext_.getSVGRoot().createSVGPoint();
+    const pt = svgCanvas.getSvgRoot().createSVGPoint();
     pt.x = mouseX;
     pt.y = mouseY;
 
@@ -221,9 +221,9 @@ export const textActionsMethod = (function () {
       x: xIn,
       y: yIn
     };
-    const currentZoom = textActionsContext_.getCurrentZoom();
-    out.x /= currentZoom;
-    out.y /= currentZoom;
+    const zoom = svgCanvas.getZoom();
+    out.x /= zoom;
+    out.y /= zoom;
 
     if (matrix) {
       const pt = transformPoint(out.x, out.y, matrix.inverse());
@@ -251,9 +251,9 @@ export const textActionsMethod = (function () {
       out.x = pt.x;
       out.y = pt.y;
     }
-    const currentZoom = textActionsContext_.getCurrentZoom();
-    out.x *= currentZoom;
-    out.y *= currentZoom;
+    const zoom = svgCanvas.getZoom();
+    out.x *= zoom;
+    out.y *= zoom;
 
     return out;
   }
@@ -275,10 +275,10 @@ export const textActionsMethod = (function () {
 */
   function selectWord (evt) {
     if (!allowDbl || !curtext) { return; }
-    const currentZoom = textActionsContext_.getCurrentZoom();
-    const ept = transformPoint(evt.pageX, evt.pageY, textActionsContext_.getrootSctm());
-    const mouseX = ept.x * currentZoom;
-    const mouseY = ept.y * currentZoom;
+    const zoom = svgCanvas.getZoom();
+    const ept = transformPoint(evt.pageX, evt.pageY, svgCanvas.getrootSctm());
+    const mouseX = ept.x * zoom;
+    const mouseY = ept.y * zoom;
     const pt = screenToPt(mouseX, mouseY);
 
     const index = getIndexFromPoint(pt.x, pt.y);
@@ -305,7 +305,7 @@ export const textActionsMethod = (function () {
 */
     select (target, x, y) {
       curtext = target;
-      textActionsContext_.getCanvas().textActions.toEditMode(x, y);
+      svgCanvas.textActions.toEditMode(x, y);
     },
     /**
 * @param {Element} elem
@@ -313,7 +313,7 @@ export const textActionsMethod = (function () {
 */
     start (elem) {
       curtext = elem;
-      textActionsContext_.getCanvas().textActions.toEditMode();
+      svgCanvas.textActions.toEditMode();
     },
     /**
 * @param {external:MouseEvent} evt
@@ -355,7 +355,7 @@ export const textActionsMethod = (function () {
       // TODO: Find a way to make this work: Use transformed BBox instead of evt.target
       // if (lastX === mouseX && lastY === mouseY
       //   && !rectsIntersect(transbb, {x: pt.x, y: pt.y, width: 0, height: 0})) {
-      //   textActionsContext_.getCanvas().textActions.toSelectMode(true);
+      //   svgCanvas.textActions.toSelectMode(true);
       // }
 
       if (
@@ -365,7 +365,7 @@ export const textActionsMethod = (function () {
   mouseY < lastY + 2 &&
   mouseY > lastY - 2
       ) {
-        textActionsContext_.getCanvas().textActions.toSelectMode(true);
+        svgCanvas.textActions.toSelectMode(true);
       }
     },
     /**
@@ -381,13 +381,13 @@ export const textActionsMethod = (function () {
 */
     toEditMode (x, y) {
       allowDbl = false;
-      textActionsContext_.setCurrentMode('textedit');
-      textActionsContext_.getCanvas().selectorManager.requestSelector(curtext).showGrips(false);
+      svgCanvas.setCurrentMode('textedit');
+      svgCanvas.selectorManager.requestSelector(curtext).showGrips(false);
       // Make selector group accept clicks
-      /* const selector = */ textActionsContext_.getCanvas().selectorManager.requestSelector(curtext); // Do we need this? Has side effect of setting lock, so keeping for now, but next line wasn't being used
+      /* const selector = */ svgCanvas.selectorManager.requestSelector(curtext); // Do we need this? Has side effect of setting lock, so keeping for now, but next line wasn't being used
       // const sel = selector.selectorRect;
 
-      textActionsContext_.getCanvas().textActions.init();
+      svgCanvas.textActions.init();
 
       curtext.style.cursor = 'text';
 
@@ -413,7 +413,7 @@ export const textActionsMethod = (function () {
 * @returns {void}
 */
     toSelectMode (selectElem) {
-      textActionsContext_.setCurrentMode('select');
+      svgCanvas.setCurrentMode('select');
       clearInterval(blinker);
       blinker = null;
       if (selblock) { selblock.setAttribute('display', 'none'); }
@@ -421,15 +421,15 @@ export const textActionsMethod = (function () {
       curtext.style.cursor = 'move';
 
       if (selectElem) {
-        textActionsContext_.getCanvas().clearSelection();
+        svgCanvas.clearSelection();
         curtext.style.cursor = 'move';
 
-        textActionsContext_.call('selected', [ curtext ]);
-        textActionsContext_.getCanvas().addToSelection([ curtext ], true);
+        svgCanvas.call('selected', [ curtext ]);
+        svgCanvas.addToSelection([ curtext ], true);
       }
       if (curtext && !curtext.textContent.length) {
         // No content, so delete
-        textActionsContext_.getCanvas().deleteSelectedElements();
+        svgCanvas.deleteSelectedElements();
       }
 
       textinput.blur();
@@ -451,8 +451,8 @@ export const textActionsMethod = (function () {
 * @returns {void}
 */
     clear () {
-      if (textActionsContext_.getCurrentMode() === 'textedit') {
-        textActionsContext_.getCanvas().textActions.toSelectMode();
+      if (svgCanvas.getCurrentMode() === 'textedit') {
+        svgCanvas.textActions.toSelectMode();
       }
     },
     /**
@@ -469,9 +469,9 @@ export const textActionsMethod = (function () {
 
       if (!curtext.parentNode) {
         // Result of the ffClone, need to get correct element
-        const selectedElements = textActionsContext_.getSelectedElements();
+        const selectedElements = svgCanvas.getSelectedElements();
         curtext = selectedElements[0];
-        textActionsContext_.getCanvas().selectorManager.requestSelector(curtext).showGrips(false);
+        svgCanvas.selectorManager.requestSelector(curtext).showGrips(false);
       }
 
       const str = curtext.textContent;
@@ -499,13 +499,13 @@ export const textActionsMethod = (function () {
         end = curtext.getEndPositionOfChar(i);
 
         if (!supportsGoodTextCharPos()) {
-          const currentZoom = textActionsContext_.getCurrentZoom();
-          const offset = textActionsContext_.getCanvas().contentW * currentZoom;
+          const zoom = svgCanvas.getZoom();
+          const offset = svgCanvas.contentW * zoom;
           start.x -= offset;
           end.x -= offset;
 
-          start.x /= currentZoom;
-          end.x /= currentZoom;
+          start.x /= zoom;
+          end.x /= zoom;
         }
 
         // Get a "bbox" equivalent for each character. Uses the

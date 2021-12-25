@@ -7,15 +7,15 @@ const {
   InsertElementCommand, BatchCommand
 } = hstry;
 
-let pasteContext_ = null;
+let svgCanvas = null;
 
 /**
 * @function module:paste-elem.init
 * @param {module:paste-elem.pasteContext} pasteContext
 * @returns {void}
 */
-export const init = function (pasteContext) {
-  pasteContext_ = pasteContext;
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -28,7 +28,7 @@ export const init = function (pasteContext) {
 * @returns {void}
 */
 export const pasteElementsMethod = function (type, x, y) {
-  let clipb = JSON.parse(sessionStorage.getItem(pasteContext_.getClipBoardID()));
+  let clipb = JSON.parse(sessionStorage.getItem(svgCanvas.getClipBoardID()));
   if (!clipb) return;
   let len = clipb.length;
   if (!len) return;
@@ -52,7 +52,7 @@ export const pasteElementsMethod = function (type, x, y) {
 */
   function checkIDs (elem) {
     if (elem.attr && elem.attr.id) {
-      changedIDs[elem.attr.id] = pasteContext_.getCanvas().getNextId();
+      changedIDs[elem.attr.id] = svgCanvas.getNextId();
       elem.attr.id = changedIDs[elem.attr.id];
     }
     if (elem.children) elem.children.forEach((child) => checkIDs(child));
@@ -67,7 +67,7 @@ export const pasteElementsMethod = function (type, x, y) {
 * @property {module:svgcanvas.SVGAsJSON[]} elems
 * @property {module:svgcanvas.ChangedIDs} changes Maps past ID (on attribute) to current ID
 */
-  pasteContext_.getCanvas().runExtensions(
+  svgCanvas.runExtensions(
     'IDsUpdated',
     /** @type {module:svgcanvas.SvgCanvas#event:ext_IDsUpdated} */
     { elems: clipb, changes: changedIDs },
@@ -87,21 +87,21 @@ export const pasteElementsMethod = function (type, x, y) {
     const elem = clipb[len];
     if (!elem) { continue; }
 
-    const copy = pasteContext_.getCanvas().addSVGElementFromJson(elem);
+    const copy = svgCanvas.addSVGElemensFromJson(elem);
     pasted.push(copy);
     batchCmd.addSubCommand(new InsertElementCommand(copy));
 
-    pasteContext_.restoreRefElems(copy);
+    svgCanvas.restoreRefElements(copy);
   }
 
-  pasteContext_.getCanvas().selectOnly(pasted);
+  svgCanvas.selectOnly(pasted);
 
   if (type !== 'in_place') {
     let ctrX; let ctrY;
 
     if (!type) {
-      ctrX = pasteContext_.getLastClickPoint('x');
-      ctrY = pasteContext_.getLastClickPoint('y');
+      ctrX = svgCanvas.getLastClickPoint('x');
+      ctrY = svgCanvas.getLastClickPoint('y');
     } else if (type === 'point') {
       ctrX = x;
       ctrY = y;
@@ -118,10 +118,10 @@ export const pasteElementsMethod = function (type, x, y) {
       dy.push(cy);
     });
 
-    const cmd = pasteContext_.getCanvas().moveSelectedElements(dx, dy, false);
+    const cmd = svgCanvas.moveSelectedElements(dx, dy, false);
     if (cmd) batchCmd.addSubCommand(cmd);
   }
 
-  pasteContext_.addCommandToHistory(batchCmd);
-  pasteContext_.getCanvas().call('changed', pasted);
+  svgCanvas.addCommandToHistory(batchCmd);
+  svgCanvas.call('changed', pasted);
 };

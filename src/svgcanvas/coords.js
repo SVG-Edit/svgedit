@@ -29,19 +29,19 @@ const pathMap = [
  * @returns {module:draw.Drawing}
 */
 /**
- * @function module:coords.EditorContext#getSVGRoot
+ * @function module:coords.EditorContext#getSvgRoot
  * @returns {SVGSVGElement}
 */
 
-let editorContext_ = null;
+let svgCanvas = null;
 
 /**
 * @function module:coords.init
 * @param {module:svgcanvas.SvgCanvas#event:pointsAdded} editorContext
 * @returns {void}
 */
-export const init = function (editorContext) {
-  editorContext_ = editorContext;
+export const init = function (canvas) {
+  svgCanvas = canvas;
 };
 
 /**
@@ -53,7 +53,7 @@ export const remapElement = function (selected, changes, m) {
   const remap = (x, y) =>  transformPoint(x, y, m);
   const scalew = (w) => m.a * w;
   const scaleh = (h) => m.d * h;
-  const doSnapping = editorContext_.getGridSnapping() && selected.parentNode.parentNode.localName === 'svg';
+  const doSnapping = svgCanvas.getGridSnapping() && selected.parentNode.parentNode.localName === 'svg';
   const finishUp = () => {
     if (doSnapping) {
       Object.entries(changes).forEach(([ o, value ]) => {
@@ -84,7 +84,7 @@ export const remapElement = function (selected, changes, m) {
         newgrad.setAttribute('y1', -(y1 - 1));
         newgrad.setAttribute('y2', -(y2 - 1));
       }
-      newgrad.id = editorContext_.getDrawing().getNextId();
+      newgrad.id = svgCanvas.getDrawing().getNextId();
       findDefs().append(newgrad);
       selected.setAttribute(type, 'url(#' + newgrad.id + ')');
     }
@@ -103,7 +103,7 @@ export const remapElement = function (selected, changes, m) {
     } else {
       // we just absorb all matrices into the element and don't do any remapping
       const chlist = selected.transform.baseVal;
-      const mt = editorContext_.getSVGRoot().createSVGTransform();
+      const mt = svgCanvas.getSvgRoot().createSVGTransform();
       mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m));
       chlist.clear();
       chlist.appendItem(mt);
@@ -120,7 +120,7 @@ export const remapElement = function (selected, changes, m) {
     if (elName === 'image' && (m.a < 0 || m.d < 0)) {
       // Convert to matrix
       const chlist = selected.transform.baseVal;
-      const mt = editorContext_.getSVGRoot().createSVGTransform();
+      const mt = svgCanvas.getSvgRoot().createSVGTransform();
       mt.setMatrix(matrixMultiply(transformListToTransform(chlist).matrix, m));
       chlist.clear();
       chlist.appendItem(mt);
@@ -171,7 +171,7 @@ export const remapElement = function (selected, changes, m) {
     finishUp();
     break;
   } case 'g': {
-    const dataStorage = editorContext_.getDataStorage();
+    const dataStorage = svgCanvas.getDataStorage();
     const gsvg = dataStorage.get(selected, 'gsvg');
     if (gsvg) {
       assignAttributes(gsvg, changes, 1000, true);

@@ -58,7 +58,7 @@ class Rulers {
 
     let d; let i;
     const limit = 30000;
-    const contentElem = this.svgCanvas.getContentElem();
+    const contentElem = this.svgCanvas.getSvgContent();
     const units = getTypeMap();
     const unit = units[this.editor.configObj.curConfig.baseUnit]; // 1 = 1px
 
