@@ -36,7 +36,8 @@ describe('select', function () {
   /**
   * @implements {module:select.SVGFactory}
   */
-  const mockFactory = {
+  const mockSvgCanvas = {
+    curConfig: mockConfig,
     createSVGElement (jsonMap) {
       const elem = document.createElementNS(NS.SVG, jsonMap.element);
       Object.entries(jsonMap.attr).forEach(([ attr, value ]) => {
@@ -44,8 +45,8 @@ describe('select', function () {
       });
       return elem;
     },
-    svgRoot () { return svgroot; },
-    svgContent () { return svgContent; },
+    getSvgRoot () { return svgroot; },
+    getSvgContent () { return svgContent; },
     getDataStorage () { return dataStorage; }
   };
 
@@ -54,18 +55,18 @@ describe('select', function () {
    * @returns {void}
    */
   beforeEach(() => {
-    svgroot = mockFactory.createSVGElement({
+    svgroot = mockSvgCanvas.createSVGElement({
       element: 'svg',
       attr: { id: 'svgroot' }
     });
-    svgContent = mockFactory.createSVGElement({
+    svgContent = mockSvgCanvas.createSVGElement({
       element: 'svg',
       attr: { id: 'svgcontent' }
     });
 
     svgroot.append(svgContent);
     /* const rect = */ svgContent.append(
-      mockFactory.createSVGElement({
+      mockSvgCanvas.createSVGElement({
         element: 'rect',
         attr: {
           id: 'rect',
@@ -117,7 +118,7 @@ describe('select', function () {
     assert.equal(svgroot.childNodes.item(0), svgContent);
     assert.ok(!svgroot.querySelector('#selectorParentGroup'));
 
-    select.init(mockConfig, mockFactory);
+    select.init(mockSvgCanvas);
 
     assert.equal(svgroot.childNodes.length, 3);
 

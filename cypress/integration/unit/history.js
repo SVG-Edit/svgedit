@@ -1,6 +1,6 @@
 import { NS } from '../../../instrumented/svgcanvas/namespaces.js';
 import * as utilities from '../../../instrumented/svgcanvas/utilities.js';
-import * as hstory from '../../../instrumented/svgcanvas/history.js';
+import * as history from '../../../instrumented/svgcanvas/history.js';
 
 describe('history', function () {
   // TODO(codedread): Write tests for handling history events.
@@ -14,7 +14,7 @@ describe('history', function () {
   // const svg = document.createElementNS(NS.SVG, 'svg');
   let undoMgr = null;
 
-  class MockCommand extends hstory.Command {
+  class MockCommand extends history.Command {
     constructor (optText) {
       super();
       this.text = optText;
@@ -39,7 +39,7 @@ describe('history', function () {
    * @returns {void}
    */
   beforeEach(function () {
-    undoMgr = new hstory.UndoManager();
+    undoMgr = new history.UndoManager();
 
     document.body.textContent = '';
     this.divparent = document.createElement('div');
@@ -69,19 +69,19 @@ describe('history', function () {
   });
 
   it('Test svgedit.history package', function () {
-    assert.ok(hstory);
-    assert.ok(hstory.MoveElementCommand);
-    assert.ok(hstory.InsertElementCommand);
-    assert.ok(hstory.ChangeElementCommand);
-    assert.ok(hstory.RemoveElementCommand);
-    assert.ok(hstory.BatchCommand);
-    assert.ok(hstory.UndoManager);
-    assert.equal(typeof hstory.MoveElementCommand, typeof function () { /* empty fn */ });
-    assert.equal(typeof hstory.InsertElementCommand, typeof function () { /* empty fn */ });
-    assert.equal(typeof hstory.ChangeElementCommand, typeof function () { /* empty fn */ });
-    assert.equal(typeof hstory.RemoveElementCommand, typeof function () { /* empty fn */ });
-    assert.equal(typeof hstory.BatchCommand, typeof function () { /* empty fn */ });
-    assert.equal(typeof hstory.UndoManager, typeof function () { /* empty fn */ });
+    assert.ok(history);
+    assert.ok(history.MoveElementCommand);
+    assert.ok(history.InsertElementCommand);
+    assert.ok(history.ChangeElementCommand);
+    assert.ok(history.RemoveElementCommand);
+    assert.ok(history.BatchCommand);
+    assert.ok(history.UndoManager);
+    assert.equal(typeof history.MoveElementCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof history.InsertElementCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof history.ChangeElementCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof history.RemoveElementCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof history.BatchCommand, typeof function () { /* empty fn */ });
+    assert.equal(typeof history.UndoManager, typeof function () { /* empty fn */ });
   });
 
   it('Test UndoManager methods', function () {
@@ -275,7 +275,7 @@ describe('history', function () {
   });
 
   it('Test MoveElementCommand', function () {
-    let move = new hstory.MoveElementCommand(this.div3, this.div1, this.divparent);
+    let move = new history.MoveElementCommand(this.div3, this.div1, this.divparent);
     assert.ok(move.unapply);
     assert.ok(move.apply);
     assert.equal(typeof move.unapply, typeof function () { /* empty fn */ });
@@ -291,7 +291,7 @@ describe('history', function () {
     assert.equal(this.divparent.firstElementChild.nextElementSibling, this.div2);
     assert.equal(this.divparent.lastElementChild, this.div3);
 
-    move = new hstory.MoveElementCommand(this.div1, null, this.divparent);
+    move = new history.MoveElementCommand(this.div1, null, this.divparent);
 
     move.unapply();
     assert.equal(this.divparent.firstElementChild, this.div2);
@@ -303,7 +303,7 @@ describe('history', function () {
     assert.equal(this.divparent.firstElementChild.nextElementSibling, this.div2);
     assert.equal(this.divparent.lastElementChild, this.div3);
 
-    move = new hstory.MoveElementCommand(this.div2, this.div5, this.div4);
+    move = new history.MoveElementCommand(this.div2, this.div5, this.div4);
 
     move.unapply();
     assert.equal(this.divparent.firstElementChild, this.div1);
@@ -321,7 +321,7 @@ describe('history', function () {
   });
 
   it('Test InsertElementCommand', function () {
-    let insert = new hstory.InsertElementCommand(this.div3);
+    let insert = new history.InsertElementCommand(this.div3);
     assert.ok(insert.unapply);
     assert.ok(insert.apply);
     assert.equal(typeof insert.unapply, typeof function () { /* empty fn */ });
@@ -339,7 +339,7 @@ describe('history', function () {
     assert.equal(this.div1.nextElementSibling, this.div2);
     assert.equal(this.div2.nextElementSibling, this.div3);
 
-    insert = new hstory.InsertElementCommand(this.div2);
+    insert = new history.InsertElementCommand(this.div2);
 
     insert.unapply();
     assert.equal(this.divparent.childElementCount, 2);
@@ -358,7 +358,7 @@ describe('history', function () {
     const div6 = document.createElement('div');
     div6.id = 'div6';
 
-    let remove = new hstory.RemoveElementCommand(div6, null, this.divparent);
+    let remove = new history.RemoveElementCommand(div6, null, this.divparent);
     assert.ok(remove.unapply);
     assert.ok(remove.apply);
     assert.equal(typeof remove.unapply, typeof function () { /* empty fn */ });
@@ -377,7 +377,7 @@ describe('history', function () {
     assert.equal(this.div1.nextElementSibling, this.div2);
     assert.equal(this.div2.nextElementSibling, this.div3);
 
-    remove = new hstory.RemoveElementCommand(div6, this.div2, this.divparent);
+    remove = new history.RemoveElementCommand(div6, this.div2, this.divparent);
 
     remove.unapply();
     assert.equal(this.divparent.childElementCount, 4);
@@ -395,7 +395,7 @@ describe('history', function () {
 
   it('Test ChangeElementCommand', function () {
     this.div1.setAttribute('title', 'new title');
-    let change = new hstory.ChangeElementCommand(this.div1,
+    let change = new history.ChangeElementCommand(this.div1,
       { title: 'old title', class: 'foo' });
     assert.ok(change.unapply);
     assert.ok(change.apply);
@@ -411,7 +411,7 @@ describe('history', function () {
     assert.ok(!this.div1.getAttribute('class'));
 
     this.div1.textContent = 'inner text';
-    change = new hstory.ChangeElementCommand(this.div1,
+    change = new history.ChangeElementCommand(this.div1,
       { '#text': null });
 
     change.unapply();
@@ -421,7 +421,7 @@ describe('history', function () {
     assert.equal(this.div1.textContent, 'inner text');
 
     this.div1.textContent = '';
-    change = new hstory.ChangeElementCommand(this.div1,
+    change = new history.ChangeElementCommand(this.div1,
       { '#text': 'old text' });
 
     change.unapply();
@@ -450,7 +450,7 @@ describe('history', function () {
     });
 
     gethrefvalue = '#newhref';
-    change = new hstory.ChangeElementCommand(rect,
+    change = new history.ChangeElementCommand(rect,
       { '#href': '#oldhref' });
     assert.equal(justCalled, 'getHref');
 
@@ -466,7 +466,7 @@ describe('history', function () {
 
     const line = document.createElementNS(NS.SVG, 'line');
     line.setAttribute('class', 'newClass');
-    change = new hstory.ChangeElementCommand(line, { class: 'oldClass' });
+    change = new history.ChangeElementCommand(line, { class: 'oldClass' });
 
     assert.ok(change.unapply);
     assert.ok(change.apply);
@@ -484,7 +484,7 @@ describe('history', function () {
     let concatResult = '';
     MockCommand.prototype.apply = function () { concatResult += this.text; };
 
-    const batch = new hstory.BatchCommand();
+    const batch = new history.BatchCommand();
     assert.ok(batch.unapply);
     assert.ok(batch.apply);
     assert.ok(batch.addSubCommand);

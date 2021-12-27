@@ -60,7 +60,6 @@ describe('utilities bbox', function () {
         });
         path.replacePathSeg(type, i, pts, pth);
       }
-      // path.reorientGrads(pth, m);
       return undefined;
     }
   };
@@ -82,7 +81,18 @@ describe('utilities bbox', function () {
     });
     sandbox.append(svgroot);
 
-    path.init(null);
+    const mockSvgCanvas = {
+      createSVGElement (jsonMap) {
+        const elem = document.createElementNS(NS.SVG, jsonMap.element);
+        Object.entries(jsonMap.attr).forEach(([ attr, value ]) => {
+          elem.setAttribute(attr, value);
+        });
+        return elem;
+      },
+      getSvgRoot () { return svgroot; }
+    };
+
+    path.init(mockSvgCanvas);
     mockaddSVGElemensFromJsonCallCount = 0;
   });
 

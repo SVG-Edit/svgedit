@@ -25,11 +25,11 @@ const loadExtensionTranslation = async function (svgEditor) {
 
 export default {
   name,
-  async init(_S) {
+  async init() {
     const svgEditor = this;
-    const { ChangeElementCommand } = _S; // , svgcontent,
-    const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
     const { svgCanvas } = svgEditor;
+    const { ChangeElementCommand } = svgCanvas.history;
+    const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
     const { $id } = svgCanvas;
     let selElems;
     let started;

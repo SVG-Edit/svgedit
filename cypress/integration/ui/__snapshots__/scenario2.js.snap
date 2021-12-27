@@ -26,14 +26,13 @@ exports[`use all parts of svg-edit > check tool_circle #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <circle
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      style="pointer-events:inherit"
       cx="150"
       cy="150"
       r="111.80339887498948"
@@ -63,13 +62,12 @@ exports[`use all parts of svg-edit > check tool_fhellipse #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <circle
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
-      style="pointer-events:inherit"
       cx="150"
       cy="150"
       r="111.80339887498948"
@@ -82,7 +80,6 @@ exports[`use all parts of svg-edit > check tool_fhellipse #0`] = `
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      style="pointer-events:inherit"
       cx="299"
       cy="169"
       rx="60"
@@ -113,13 +110,12 @@ exports[`use all parts of svg-edit > check tool_ellipse #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <circle
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
-      style="pointer-events:inherit"
       cx="150"
       cy="150"
       r="111.80339887498948"
@@ -131,7 +127,6 @@ exports[`use all parts of svg-edit > check tool_ellipse #0`] = `
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
-      style="pointer-events:inherit"
       cx="299"
       cy="169"
       rx="60"
@@ -145,7 +140,6 @@ exports[`use all parts of svg-edit > check tool_ellipse #0`] = `
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      style="pointer-events:inherit"
       cx="114"
       cy="189"
       rx="55"
@@ -176,13 +170,12 @@ exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = 
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <circle
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
-      style="pointer-events:inherit"
       cx="150"
       cy="150"
       r="111.80339887498948"
@@ -206,7 +199,6 @@ exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = 
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
-      style="pointer-events:inherit"
       cx="114"
       cy="189"
       rx="55"
@@ -214,6 +206,7 @@ exports[`use all parts of svg-edit > check tool_circle_change_fill_color #0`] = 
       id="svg_3"
       fill-opacity="1"
       stroke-opacity="1"
+      transform="matrix(1 0 0 1 0 0)"
     ></ellipse>
   </g>
 </svg>

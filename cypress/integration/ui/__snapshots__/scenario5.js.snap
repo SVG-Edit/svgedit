@@ -26,14 +26,13 @@ exports[`use all parts of svg-edit > check tool_line #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <line
       fill="none"
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      style="pointer-events:none"
       x1="200"
       y1="200"
       x2="450"

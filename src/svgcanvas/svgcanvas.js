@@ -12,14 +12,14 @@ import { Canvg as canvg } from 'canvg';
 import 'pathseg'; // SVGPathSeg Polyfill (see https://github.com/progers/pathseg)
 
 import * as pathModule from './path.js';
-import * as hstry from './history.js';
+import * as history from './history.js';
 import * as draw from './draw.js';
 import {
   init as pasteInit, pasteElementsMethod
 } from './paste-elem.js';
 import { svgRootElement } from './svgroot.js';
 import {
-  init as undoInit, getUndoManager, changeSelectedAttributeNoUndoMethod,
+  init as undoInit, changeSelectedAttributeNoUndoMethod,
   changeSelectedAttributeMethod
 } from './undo.js';
 import {
@@ -806,7 +806,7 @@ class SvgCanvas {
     };
     return convertToPath(
       elem, attrs, this.addSVGElemensFromJson, this.pathActions,
-      this.clearSelection, this.addToSelection, hstry, this.addCommandToHistory
+      this.clearSelection, this.addToSelection, history, this.addCommandToHistory
     );
   }
   /**
@@ -824,7 +824,6 @@ class SvgCanvas {
     this.addSVGElemensFromJson = addSVGElementsFromJson;
     this.clearSvgContentElement = clearSvgContentElementInit;
     this.textActions = textActionsMethod;
-    this.undoMgr = getUndoManager();
     this.getIntersectionList = getIntersectionListMethod;
     this.getStrokedBBox = getStrokedBBoxDefaultVisible;
     this.getVisibleElements = getVisibleElements;
@@ -936,6 +935,7 @@ class SvgCanvas {
     this.setBlur = setBlur; // Adds/updates the blur filter to the selected element.
     this.smoothControlPoints = pathModule.smoothControlPoints;
     this.getTypeMap = getTypeMap;
+    this.history = history; // object with all histor methods
     this.NS = NS;
     this.$id = $id;
     this.$qq = $qq;

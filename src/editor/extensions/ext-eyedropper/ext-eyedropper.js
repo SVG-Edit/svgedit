@@ -25,12 +25,12 @@ const loadExtensionTranslation = async function (svgEditor) {
 
 export default {
   name,
-  async init(S) {
+  async init() {
     const svgEditor = this;
-    await loadExtensionTranslation(svgEditor);
-    const { ChangeElementCommand } = S;
-    // svgdoc = S.svgroot.parentNode.ownerDocument,
     const { svgCanvas } = svgEditor;
+    await loadExtensionTranslation(svgEditor);
+    const { ChangeElementCommand } = svgCanvas.history;
+    // svgdoc = S.svgroot.parentNode.ownerDocument,
     const addToHistory = function (cmd) { svgCanvas.undoMgr.addCommandToHistory(cmd); };
     const currentStyle = {
       fillPaint: 'red', fillOpacity: 1.0,

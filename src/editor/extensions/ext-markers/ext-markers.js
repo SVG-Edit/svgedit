@@ -29,9 +29,10 @@
 
 export default {
   name: 'markers',
-  async init (S) {
+  async init () {
     const svgEditor = this;
     const { svgCanvas } = svgEditor;
+    const { BatchCommand, RemoveElementCommand, InsertElementCommand } = svgCanvas.history;
     const { $id, addSVGElemensFromJson: addElem } = svgCanvas;
     const mtypes = [ 'start', 'mid', 'end' ];
     const markerElems = [ 'line', 'path', 'polyline', 'polygon' ];
@@ -182,16 +183,16 @@ export default {
         if (m) { pline.setAttribute(nam, elem.getAttribute(nam)); }
       });
 
-      const batchCmd = new S.BatchCommand();
-      batchCmd.addSubCommand(new S.RemoveElementCommand(elem, elem.parentNode));
-      batchCmd.addSubCommand(new S.InsertElementCommand(pline));
+      const batchCmd = new BatchCommand();
+      batchCmd.addSubCommand(new RemoveElementCommand(elem, elem.parentNode));
+      batchCmd.addSubCommand(new InsertElementCommand(pline));
 
       elem.insertAdjacentElement('afterend', pline);
       elem.remove();
       svgCanvas.clearSelection();
       pline.id = id;
       svgCanvas.addToSelection([ pline ]);
-      S.addCommandToHistory(batchCmd);
+      svgCanvas.addCommandToHistory(batchCmd);
       return pline;
     };
 

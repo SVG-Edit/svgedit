@@ -31,7 +31,7 @@ describe('use various parts of svg-edit', function () {
       .trigger('mousedown', 200, 200, { force: true })
       .trigger('mousemove', 20, 20, { force: true })
       .trigger('mouseup', { force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text', function () {
     cy.get('#tool_text')
@@ -54,6 +54,8 @@ describe('use various parts of svg-edit', function () {
     cy.get('#svg_1').click({ force: true });
     cy.get('#tool_italic')
       .click({ force: true });
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     testSnapshot();
   });
   it('check tool_bold', function () {
@@ -72,7 +74,7 @@ describe('use various parts of svg-edit', function () {
       cy.get('#selected_y').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true });
     }
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_change_font_size', function () {
     cy.get('#svg_1').click({ force: true });
@@ -80,13 +82,13 @@ describe('use various parts of svg-edit', function () {
       cy.get('#font_size').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true });
     }
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_change_stroke_width', function () {
     cy.get('#svg_1').click({ force: true });
     cy.get('#stroke_width').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
       .click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_change_stoke_fill_color', function () {
     cy.get('#svg_1').click({ force: true });
@@ -104,7 +106,7 @@ describe('use various parts of svg-edit', function () {
     cy.get('#fill_color').shadow().find('#color_picker').eq(0)
       .find('#jGraduate_colPick').eq(0).find('#jPicker-table').eq(0)
       .find('#Ok').eq(0).click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_anchor_start', function () {
     cy.get('#svg_1').click({ force: true });
@@ -130,7 +132,7 @@ describe('use various parts of svg-edit', function () {
       cy.get('#angle').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true });
     }
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_change_blur', function () {
     cy.get('#svg_2').click({ force: true });
@@ -138,7 +140,7 @@ describe('use various parts of svg-edit', function () {
       cy.get('#blur').shadow().find('elix-number-spin-box').eq(0).shadow().find('#upButton').eq(0)
         .click({ force: true });
     }
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_change_opacity', function () {
     cy.get('#svg_2').click({ force: true });
@@ -146,14 +148,14 @@ describe('use various parts of svg-edit', function () {
       cy.get('#opacity').shadow().find('elix-number-spin-box').eq(0).shadow().find('#downButton').eq(0)
         .click({ force: true });
     }
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_align_to_page', function () {
     cy.get('#svg_2').click({ force: true });
     cy.get('#tool_position').shadow().find('elix-dropdown-list').eq(0).invoke('attr', 'opened', 'opened');
     cy.get('#tool_position').find('se-list-item').eq(2).shadow().find('elix-option').eq(0)
       .click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_change_class', function () {
     cy.get('#svg_2').click({ force: true });
@@ -178,11 +180,11 @@ describe('use various parts of svg-edit', function () {
   it('check tool_text_delete', function () {
     cy.get('#svg_2_id').click({ force: true });
     cy.get('#tool_delete').click({ force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_text_change_font_family', function () {
     cy.get('#svg_1').click({ force: true });
     cy.get('#tool_font_family').shadow().find('select').select("Serif");
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
 });

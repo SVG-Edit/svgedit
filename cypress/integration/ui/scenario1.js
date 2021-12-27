@@ -35,7 +35,7 @@ describe('use all parts of svg-edit', function () {
       .trigger('mousedown')
       .trigger('mousemove', 20, 20, { force: true })
       .trigger('mouseup', { force: true });
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
   it('check tool_image', function () {
     cy.get('#tool_image').click({ force: true });
@@ -50,6 +50,6 @@ describe('use all parts of svg-edit', function () {
         cy.stub($win, 'prompt').returns('./images/logo.svg');
         cy.contains('OK');
       });
-    cy.get('#svgcontent').toMatchSnapshot();
+    testSnapshot();
   });
 });

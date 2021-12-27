@@ -28,9 +28,7 @@ exports[`use various parts of svg-edit > check tool_fhpath #0`] = `
   fill-opacity="1"
   stroke-opacity="1"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-  </g>
+  <g class="layer"><title>Layer 1</title></g>
 </svg>
 `;
 

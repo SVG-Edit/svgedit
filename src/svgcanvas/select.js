@@ -363,7 +363,7 @@ export class SelectorManager {
           r: gripRadius,
           stroke: '#22C',
           'stroke-width': 2,
-          style: `cursor:url(${this.curConfig.imgPath}/rotate.svg) 12 12, auto;`
+          style: `cursor:url(${svgCanvas.curConfig.imgPath}/rotate.svg) 12 12, auto;`
         }
       });
     this.selectorGripsGroup.append(this.rotateGrip);
@@ -371,7 +371,7 @@ export class SelectorManager {
 
     if (document.getElementById('canvasBackground')) { return; }
 
-    const [ width, height ] = this.curConfig.dimensions;
+    const [ width, height ] = svgCanvas.curConfig.dimensions;
     const canvasbg = svgCanvas.createSVGElement({
       element: 'svg',
       attr: {

@@ -15,9 +15,6 @@ import {
 import {
   copyElem as utilCopyElem
 } from './copy-elem.js';
-import {
-  BatchCommand, RemoveElementCommand, MoveElementCommand, ChangeElementCommand
-} from './history.js';
 import { getParentsUntil } from '../editor/components/jgraduate/Util.js';
 
 const visElems = 'a,circle,ellipse,foreignObject,g,image,line,path,polygon,polyline,rect,svg,text,tspan,use'.split(',');
@@ -817,6 +814,7 @@ export const cloneLayer = function (name, hrService) {
 * @returns {boolean} `true` if an old layer group was found to delete
 */
 export const deleteCurrentLayer = function () {
+  const { BatchCommand, RemoveElementCommand } = svgCanvas.history;
   let currentLayer = svgCanvas.getCurrentDrawing().getCurrentLayer();
   const { nextSibling } = currentLayer;
   const parent = currentLayer.parentNode;
@@ -880,6 +878,7 @@ export const renameCurrentLayer = function (newName) {
 * @returns {boolean} `true` if the current layer position was changed, `false` otherwise.
 */
 export const setCurrentLayerPosition = function (newPos) {
+  const { MoveElementCommand } = svgCanvas.history;
   const drawing = svgCanvas.getCurrentDrawing();
   const result = drawing.setCurrentLayerPosition(newPos);
   if (result) {
@@ -898,6 +897,7 @@ export const setCurrentLayerPosition = function (newPos) {
 * @returns {boolean} true if the layer's visibility was set, false otherwise
 */
 export const setLayerVisibility = function (layerName, bVisible) {
+  const { ChangeElementCommand } = svgCanvas.history;
   const drawing = svgCanvas.getCurrentDrawing();
   const prevVisibility = drawing.getLayerVisibility(layerName);
   const layer = drawing.setLayerVisibility(layerName, bVisible);
@@ -924,6 +924,7 @@ export const setLayerVisibility = function (layerName, bVisible) {
 * @returns {boolean} Whether the selected elements were moved to the layer.
 */
 export const moveSelectedToLayer = function (layerName) {
+  const { BatchCommand, MoveElementCommand } = svgCanvas.history;
   // find the layer
   const drawing = svgCanvas.getCurrentDrawing();
   const layer = drawing.getLayerByName(layerName);

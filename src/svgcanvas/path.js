@@ -48,7 +48,7 @@ const uiStrings = {};
 * @param {module:path.uiStrings} strs
 * @returns {void}
 */
-export const setUiStrings = function (strs) {
+export const setUiStrings = (strs) => {
   Object.assign(uiStrings, strs.ui);
 };
 
@@ -65,7 +65,7 @@ let pathData = {};
 * @param {boolean} lcp
 * @returns {void}
 */
-export const setLinkControlPoints = function (lcp) {
+export const setLinkControlPoints = (lcp) => {
   linkControlPts = lcp;
 };
 
@@ -228,7 +228,7 @@ export let path = null;
 * @param {module:path.EditorContext} editorContext
 * @returns {void}
 */
-export const init = function (canvas) {
+export const init = (canvas) => {
   svgCanvas = canvas;
   svgCanvas.replacePathSeg = replacePathSegMethod;
   svgCanvas.addPointGrip = addPointGripMethod;
@@ -236,8 +236,10 @@ export const init = function (canvas) {
   svgCanvas.getPath_ = getPath_;
   svgCanvas.addCtrlGrip = addCtrlGripMethod;
   svgCanvas.getCtrlLine = getCtrlLineMethod;
+  svgCanvas.getGripPt = getGripPt;
   svgCanvas.getPointFromGrip = getPointFromGripMethod;
   svgCanvas.setLinkControlPoints = setLinkControlPoints;
+  svgCanvas.reorientGrads = reorientGrads;
   svgCanvas.getSegData = () => { return segData; };
   svgCanvas.getUIStrings= () => { return uiStrings; };
   svgCanvas.getPathObj = () => { return path; };
@@ -249,7 +251,7 @@ export const init = function (canvas) {
     'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
     'LinetoHorizontal', 'LinetoVertical', 'CurvetoCubicSmooth', 'CurvetoQuadraticSmooth'
   ];
-  pathFuncsStrs.forEach(function(s){
+  pathFuncsStrs.forEach((s) => {
     pathFuncs.push(s + 'Abs');
     pathFuncs.push(s + 'Rel');
   });
@@ -366,7 +368,7 @@ export const getSegSelector = getSegSelectorMethod;
 * @param {Point} pt - Object with x and y values (third point)
 * @returns {Point[]} Array of two "smoothed" point objects
 */
-export const smoothControlPoints = function (ct1, ct2, pt) {
+export const smoothControlPoints = (ct1, ct2, pt) => {
   // each point must not be the origin
   const x1 = ct1.x - pt.x;
   const y1 = ct1.y - pt.y;
@@ -412,7 +414,7 @@ export const smoothControlPoints = function (ct1, ct2, pt) {
 * @param {SVGPathElement} elem
 * @returns {module:path.Path}
 */
-export const getPath_ = function (elem) {
+export const getPath_ = (elem) => {
   let p = pathData[elem.id];
   if (!p) {
     p = pathData[elem.id] = new Path(elem);
@@ -425,13 +427,13 @@ export const getPath_ = function (elem) {
 * @param {string} id
 * @returns {void}
 */
-export const removePath_ = function (id) {
+export const removePath_ = (id) => {
   if (id in pathData) { delete pathData[id]; }
 };
 
 let newcx; let newcy; let oldcx; let oldcy; let angle;
 
-const getRotVals = function (x, y) {
+const getRotVals = (x, y) => {
   let dx = x - oldcx;
   let dy = y - oldcy;
 
@@ -466,7 +468,7 @@ const getRotVals = function (x, y) {
 * be optimized or even taken care of by `recalculateDimensions`
 * @returns {void}
 */
-export const recalcRotatedPath = function () {
+export const recalcRotatedPath = () => {
   const currentPath = path.elem;
   angle = getRotationAngle(currentPath, true);
   if (!angle) { return; }
@@ -524,7 +526,7 @@ export const recalcRotatedPath = function () {
 * @function module:path.clearData
 * @returns {void}
 */
-export const clearData = function () {
+export const clearData = () => {
   pathData = {};
 };
 
@@ -535,7 +537,7 @@ export const clearData = function () {
 * @param {SVGMatrix} m
 * @returns {void}
 */
-export const reorientGrads = function (elem, m) {
+export const reorientGrads = (elem, m) => {
   const bb = utilsGetBBox(elem);
   for (let i = 0; i < 2; i++) {
     const type = i === 0 ? 'fill' : 'stroke';
@@ -596,7 +598,7 @@ const pathMap = [
  * @param {boolean} toRel - true of convert to relative
  * @returns {string}
  */
-export const convertPath = function (pth, toRel) {
+export const convertPath = (pth, toRel) => {
   const { pathSegList } = pth;
   const len = pathSegList.numberOfItems;
   let curx = 0; let cury = 0;
@@ -760,8 +762,8 @@ export const convertPath = function (pth, toRel) {
  * @param {Integer[]} [lastPoint] - x,y point
  * @returns {string}
  */
-function pathDSegment (letter, points, morePoints, lastPoint) {
-  points.forEach(function(pnt, i){
+const pathDSegment = (letter, points, morePoints, lastPoint) => {
+  points.forEach((pnt, i) => {
     points[i] = shortFloat(pnt);
   });
   let segment = letter + points.join(' ');
@@ -772,7 +774,7 @@ function pathDSegment (letter, points, morePoints, lastPoint) {
     segment += ' ' + shortFloat(lastPoint);
   }
   return segment;
-}
+};
 
 /**
 * Group: Path edit functions.

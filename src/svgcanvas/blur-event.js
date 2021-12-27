@@ -4,11 +4,6 @@
  * @license MIT
  * @copyright 2011 Jeff Schiller
  */
-import * as hstry from './history.js';
-
-const {
-  InsertElementCommand, ChangeElementCommand, BatchCommand
-} = hstry;
 
 let svgCanvas = null;
 
@@ -99,6 +94,10 @@ export const setBlurOffsets = function (filterElem, stdDev) {
 * @returns {void}
 */
 export const setBlur = function (val, complete) {
+  const {
+    InsertElementCommand, ChangeElementCommand, BatchCommand
+  } = svgCanvas.history;
+
   const selectedElements = svgCanvas.getSelectedElements();
   if (svgCanvas.getCurCommand()) {
     finishChange();
@@ -147,7 +146,7 @@ export const setBlur = function (val, complete) {
     return;
   }
 
-  svgCanvas.changeSelectedAttributeMethod('filter', 'url(#' + elemId + '_blur)');
+  svgCanvas.changeSelectedAttribute('filter', 'url(#' + elemId + '_blur)');
   batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
   svgCanvas.setBlurOffsets(svgCanvas.getFilter(), val);
   const filter = svgCanvas.getFilter();

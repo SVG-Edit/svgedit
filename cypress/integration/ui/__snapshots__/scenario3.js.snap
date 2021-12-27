@@ -26,14 +26,13 @@ exports[`use all parts of svg-edit > check tool_path #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <path
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      style="pointer-events:inherit"
       d="M 50 50 L 150 100 L 125 200 L 50 50 z"
       id="svg_1"
     >
@@ -61,8 +60,8 @@ exports[`use all parts of svg-edit > check tool_path_change_node_xy #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <path
       fill="#FF0000"
       stroke="#000000"
@@ -88,8 +87,8 @@ exports[`use all parts of svg-edit > check tool_path_change_seg_type #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <path
       fill="#FF0000"
       stroke="#000000"
@@ -115,8 +114,8 @@ exports[`use all parts of svg-edit > check tool_path_change_clone_node #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <path
       fill="#FF0000"
       stroke="#000000"
@@ -142,8 +141,8 @@ exports[`use all parts of svg-edit > check tool_path_openclose #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <path
       fill="#FF0000"
       stroke="#000000"

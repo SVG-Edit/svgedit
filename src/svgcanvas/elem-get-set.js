@@ -5,7 +5,6 @@
  */
 
 import { jGraduate } from '../editor/components/jgraduate/jQuery.jGraduate.js';
-import * as hstry from './history.js';
 import { NS } from './namespaces.js';
 import {
   getVisibleElements, getStrokedBBoxDefaultVisible, findDefs,
@@ -15,11 +14,6 @@ import {
   convertToNum
 } from '../common/units.js';
 import { getParents } from '../editor/components/jgraduate/Util.js';
-
-const {
-  InsertElementCommand, RemoveElementCommand,
-  ChangeElementCommand, BatchCommand
-} = hstry;
 
 let svgCanvas = null;
 
@@ -81,6 +75,10 @@ export const getTitleMethod = function (elem) {
 * @returns {void}
 */
 export const setGroupTitleMethod = function (val) {
+  const {
+    InsertElementCommand, RemoveElementCommand,
+    ChangeElementCommand, BatchCommand
+  } = svgCanvas.history;
   const selectedElements = svgCanvas.getSelectedElements();
   const dataStorage = svgCanvas.getDataStorage();
   let elem = selectedElements[0];
@@ -122,6 +120,7 @@ export const setGroupTitleMethod = function (val) {
 * @returns {void}
 */
 export const setDocumentTitleMethod = function (newTitle) {
+  const { ChangeElementCommand, BatchCommand } = svgCanvas.history;
   const childs = svgCanvas.getSvgContent().childNodes;
   let docTitle = false; let oldTitle = '';
 
@@ -161,6 +160,7 @@ export const setDocumentTitleMethod = function (newTitle) {
 * It will fail on "fit to content" option with no content to fit to.
 */
 export const setResolutionMethod = function (x, y) {
+  const { ChangeElementCommand, BatchCommand } = svgCanvas.history;
   const zoom = svgCanvas.getZoom();
   const res = svgCanvas.getResolution();
   const { w, h } = res;
@@ -740,6 +740,7 @@ export const setTextContentMethod = function (val) {
 * @returns {void}
 */
 export const setImageURLMethod = function (val) {
+  const { ChangeElementCommand, BatchCommand } = svgCanvas.history;
   const selectedElements = svgCanvas.getSelectedElements();
   const elem = selectedElements[0];
   if (!elem) { return; }
@@ -788,6 +789,7 @@ export const setImageURLMethod = function (val) {
 * @returns {void}
 */
 export const setLinkURLMethod = function (val) {
+  const { ChangeElementCommand, BatchCommand } = svgCanvas.history;
   const selectedElements = svgCanvas.getSelectedElements();
   let elem = selectedElements[0];
   if (!elem) { return; }
@@ -824,6 +826,7 @@ export const setLinkURLMethod = function (val) {
 * @returns {void}
 */
 export const setRectRadiusMethod = function (val) {
+  const { ChangeElementCommand } = svgCanvas.history;
   const selectedElements = svgCanvas.getSelectedElements();
   const selected = selectedElements[0];
   if (!isNullish(selected) && selected.tagName === 'rect') {

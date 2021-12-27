@@ -29,9 +29,10 @@ let svgCanvas = null;
 */
 export const init = function (canvas) {
   svgCanvas = canvas;
+  canvas.undoMgr = getUndoManager();
 };
 
-export const getUndoManager = function () {
+export const getUndoManager = () => {
   return new UndoManager({
     /**
      * @param {string} eventType One of the HistoryEvent types

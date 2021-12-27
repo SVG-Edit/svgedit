@@ -26,14 +26,13 @@ exports[`use all parts of svg-edit > check tool_rect #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      style="pointer-events:inherit"
       x="150"
       y="150"
       width="100"
@@ -64,13 +63,12 @@ exports[`use all parts of svg-edit > check tool_fhrect #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
-      style="pointer-events:inherit"
       x="150"
       y="150"
       width="100"
@@ -84,7 +82,6 @@ exports[`use all parts of svg-edit > check tool_fhrect #0`] = `
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      style="pointer-events:inherit"
       x="350"
       y="230"
       width="120"
@@ -115,13 +112,12 @@ exports[`use all parts of svg-edit > check tool_square #0`] = `
   y="480"
   viewBox="0 0 640 480"
 >
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
+  <g class="layer">
+    <title>Layer 1</title>
     <rect
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
-      style="pointer-events:inherit"
       x="150"
       y="150"
       width="100"
@@ -134,7 +130,6 @@ exports[`use all parts of svg-edit > check tool_square #0`] = `
       fill="#FF0000"
       stroke="#000000"
       stroke-width="5"
-      style="pointer-events:inherit"
       x="350"
       y="230"
       width="120"
@@ -148,7 +143,6 @@ exports[`use all parts of svg-edit > check tool_square #0`] = `
       stroke="#000000"
       stroke-width="5"
       opacity="0.5"
-      style="pointer-events:inherit"
       x="225"
       y="300"
       width="50"

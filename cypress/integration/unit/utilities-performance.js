@@ -144,7 +144,6 @@ describe('utilities performance', function () {
         // path.replacePathSeg(type, i, pts, path);
       }
 
-      // utilities.reorientGrads(path, m);
       return undefined;
     }
   };
