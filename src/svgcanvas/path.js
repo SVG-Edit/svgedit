@@ -230,6 +230,20 @@ export let path = null;
 */
 export const init = function (canvas) {
   svgCanvas = canvas;
+  svgCanvas.replacePathSeg = replacePathSegMethod;
+  svgCanvas.addPointGrip = addPointGripMethod;
+  svgCanvas.removePath_ = removePath_;
+  svgCanvas.getPath_ = getPath_;
+  svgCanvas.addCtrlGrip = addCtrlGripMethod;
+  svgCanvas.getCtrlLine = getCtrlLineMethod;
+  svgCanvas.getPointFromGrip = getPointFromGripMethod;
+  svgCanvas.setLinkControlPoints = setLinkControlPoints;
+  svgCanvas.getSegData = () => { return segData; };
+  svgCanvas.getUIStrings= () => { return uiStrings; };
+  svgCanvas.getPathObj = () => { return path; };
+  svgCanvas.setPathObj = (obj) => { path = obj; };
+  svgCanvas.getPathFuncs = () => { return pathFuncs; };
+  svgCanvas.getLinkControlPts = () => { return linkControlPts; };
   pathFuncs = [ 0, 'ClosePath' ];
   const pathFuncsStrs = [
     'Moveto', 'Lineto', 'CurvetoCubic', 'CurvetoQuadratic', 'Arc',
@@ -240,20 +254,8 @@ export const init = function (canvas) {
     pathFuncs.push(s + 'Rel');
   });
   pathActionsInit(svgCanvas);
+  pathMethodInit(svgCanvas);
 
-  pathMethodInit(
-  /**
-* @implements {module:path-method.pathMethodsContext}
-*/
-    {
-      getSegData () { return segData; },
-      getUIStrings () { return uiStrings; },
-      getPathObj () { return path; },
-      setPathObj (obj) { path = obj; },
-      getPathFuncs () { return pathFuncs; },
-      getLinkControlPts () { return linkControlPts; }
-    }
-  );
 };
 
 /* eslint-disable max-len */

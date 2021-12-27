@@ -1,5 +1,6 @@
 import { getTypeMap } from '../common/units.js';
 import rulersTemplate from './templates/rulersTemplate.html';
+import SvgCanvas from '../svgcanvas/svgcanvas.js';
 /**
  *
  */
@@ -22,7 +23,7 @@ class Rulers {
     // eslint-disable-next-line no-unsanitized/property
     template.innerHTML = rulersTemplate;
     this.editor.$svgEditor.append(template.content.cloneNode(true));
-    const { $id } = this.svgCanvas;
+    const { $id } = SvgCanvas;
     this.rulerX = $id('ruler_x');
     this.rulerY = $id('ruler_y');
     this.rulerCorner = $id('ruler_corner');
@@ -68,7 +69,7 @@ class Rulers {
       const dim = isX ? 'x' : 'y';
       const lentype = isX ? 'width' : 'height';
       const contentDim = Number(contentElem.getAttribute(dim));
-      const { $id } = this.svgCanvas;
+      const { $id } = SvgCanvas;
       const $hcanvOrig = $id('ruler_' + dim).querySelector('canvas');
 
       // Bit of a hack to fully clear the canvas in Safari & IE9

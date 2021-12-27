@@ -24,16 +24,16 @@ const loadExtensionTranslation = async function (svgEditor) {
 
 export default {
   name,
-  async init ({ NS, getTypeMap }) {
+  async init () {
     const svgEditor = this;
     await loadExtensionTranslation(svgEditor);
     const { svgCanvas } = svgEditor;
-    const { $id } = svgCanvas;
+    const { $id, NS } = svgCanvas;
     const svgdoc = $id('svgcanvas').ownerDocument;
     const { assignAttributes } = svgCanvas;
     const hcanvas = document.createElement('canvas');
     const canvBG = $id('canvasBackground');
-    const units = getTypeMap(); // Assumes prior `init()` call on `units.js` module
+    const units = svgCanvas.getTypeMap(); // Assumes prior `init()` call on `units.js` module
     const intervals = [ 0.01, 0.1, 1, 10, 100, 1000 ];
     let showGrid = svgEditor.configObj.curConfig.showGrid || false;
 

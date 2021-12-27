@@ -361,28 +361,8 @@ export const recalculateDimensions = function (selected) {
             childTlist.appendItem(translateBack);
             childTlist.appendItem(scale);
             childTlist.appendItem(translateOrigin);
-            // childxforms.push(translateBack);
-            // childxforms.push(scale);
-            // childxforms.push(translateOrigin);
-            // logMatrix(translateBack.matrix);
-            // logMatrix(scale.matrix);
           } // not rotated
           batchCmd.addSubCommand(recalculateDimensions(child));
-          // TODO: If any <use> have this group as a parent and are
-          // referencing this child, then we need to impose a reverse
-          // scale on it so that when it won't get double-translated
-          // const uses = selected.getElementsByTagNameNS(NS.SVG, 'use');
-          // const href = '#' + child.id;
-          // let u = uses.length;
-          // while (u--) {
-          //   const useElem = uses.item(u);
-          //   if (href == getHref(useElem)) {
-          //     const usexlate = svgroot.createSVGTransform();
-          //     usexlate.setTranslate(-tx,-ty);
-          //     useElem.transform.baseVal.insertItemBefore(usexlate,0);
-          //     batchCmd.addSubCommand( recalculateDimensions(useElem) );
-          //   }
-          // }
           svgCanvas.setStartTransform(oldStartTransform);
         } // element
       } // for each child

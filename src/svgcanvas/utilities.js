@@ -721,10 +721,10 @@ export const getBBoxOfElementAsPath = function (elem, addSVGElemensFromJson, pat
 * @param {module:path.EditorContext#addCommandToHistory|module:draw.DrawCanvasInit#addCommandToHistory} addCommandToHistory - see [canvas.addCommandToHistory]{@link module:svgcanvas~addCommandToHistory}
 * @returns {SVGPathElement|null} The converted path element or null if the DOM element was not recognized.
 */
-export const convertToPath = function (
+export const convertToPath = (
   elem, attrs, addSVGElemensFromJson, pathActions,
   clearSelection, addToSelection, hstry, addCommandToHistory
-) {
+) => {
   const batchCmd = new hstry.BatchCommand('Convert element to Path');
 
   // Any attribute on the element not covered by the passed-in attributes

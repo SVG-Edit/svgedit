@@ -49,7 +49,7 @@ export const clearSelectionMethod = function (noCall) {
   svgCanvas?.setEmptySelectedElements();
 
   if (!noCall) {
-    svgCanvas.call("selected", selectionContext_.getSelectedElements());
+    svgCanvas.call("selected", svgCanvas.getSelectedElements());
   }
 };
 

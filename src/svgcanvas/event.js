@@ -1284,7 +1284,6 @@ export const mouseDownEvent = (evt) => {
  * @returns {void}
  */
 export const DOMMouseScrollEvent = (e) => {
-  const svgCanvas = this; // svgCanvas was bound to the handler
   const zoom = svgCanvas.getZoom();
   const { $id } = svgCanvas;
   if (!e.shiftKey) { return; }

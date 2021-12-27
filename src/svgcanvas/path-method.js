@@ -61,7 +61,6 @@ export const getGripPtMethod = function (seg, altPt) {
     const pt = transformPoint(out.x, out.y, pth.matrix);
     out = pt;
   }
-  svgCanvas = svgCanvas.getEditorContext();
   const zoom = svgCanvas.getZoom();
   out.x *= zoom;
   out.y *= zoom;
@@ -85,7 +84,6 @@ export const getPointFromGripMethod = function (pt, pth) {
     out.x = pt.x;
     out.y = pt.y;
   }
-  svgCanvas = svgCanvas.getEditorContext();
   const zoom = svgCanvas.getZoom();
   out.x /= zoom;
   out.y /= zoom;
