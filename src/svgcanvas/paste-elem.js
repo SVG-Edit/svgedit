@@ -28,7 +28,7 @@ export const init = function (canvas) {
 * @returns {void}
 */
 export const pasteElementsMethod = function (type, x, y) {
-  let clipb = JSON.parse(sessionStorage.getItem(svgCanvas.getClipBoardID()));
+  let clipb = JSON.parse(sessionStorage.getItem(svgCanvas.getClipboardID()));
   if (!clipb) return;
   let len = clipb.length;
   if (!len) return;

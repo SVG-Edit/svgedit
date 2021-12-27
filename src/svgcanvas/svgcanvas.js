@@ -218,7 +218,7 @@ class SvgCanvas {
     utilsInit(this);
     coordsInit(this);
     recalculateInit(this);
-    selectInit(this.curConfig, this);
+    selectInit(this);
     undoInit(this);
     selectionInit(this);
 
@@ -267,34 +267,23 @@ class SvgCanvas {
     blurInit(this);
     selectedElemInit(this);
 
-    /**
-* Flash the clipboard data momentarily on localStorage so all tabs can see.
-* @returns {void}
-*/
-    function flashStorage() {
-      const data = sessionStorage.getItem(CLIPBOARD_ID);
-      localStorage.setItem(CLIPBOARD_ID, data);
-      setTimeout(function () {
-        localStorage.removeItem(CLIPBOARD_ID);
-      }, 1);
-    }
 
     /**
 * Transfers sessionStorage from one tab to another.
 * @param {!Event} ev Storage event.
 * @returns {void}
 */
-    function storageChange(ev) {
+    const storageChange = (ev) => {
       if (!ev.newValue) return; // This is a call from removeItem.
       if (ev.key === CLIPBOARD_ID + '_startup') {
         // Another tab asked for our sessionStorage.
         localStorage.removeItem(CLIPBOARD_ID + '_startup');
-        flashStorage();
+        this.flashStorage();
       } else if (ev.key === CLIPBOARD_ID) {
         // Another tab sent data.
         sessionStorage.setItem(CLIPBOARD_ID, ev.newValue);
       }
-    }
+    };
 
     // Listen for changes to localStorage.
     window.addEventListener('storage', storageChange, false);
@@ -418,6 +407,7 @@ class SvgCanvas {
   setInitBbox(value) { this.initBbox = value; }
   setRootSctm(value) { this.rootSctm = value; }
   setCurrentResizeMode(value) { this.currentResizeMode = value; }
+  getLastClickPoint(key) { return this.lastClickPoint[key]; }
   setLastClickPoint(value) { this.lastClickPoint = value; }
   getId() { return this.getCurrentDrawing().getId(); }
   getUIStrings() { return this.uiStrings; }
@@ -555,6 +545,17 @@ class SvgCanvas {
     const old = this.events[ev];
     this.events[ev] = f;
     return old;
+  }
+  /**
+* Flash the clipboard data momentarily on localStorage so all tabs can see.
+* @returns {void}
+*/
+  flashStorage() {
+    const data = sessionStorage.getItem(CLIPBOARD_ID);
+    localStorage.setItem(CLIPBOARD_ID, data);
+    setTimeout(function () {
+      localStorage.removeItem(CLIPBOARD_ID);
+    }, 1);
   }
   /**
   * Selects only the given elements, shortcut for `clearSelection(); addToSelection()`.

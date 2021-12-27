@@ -11,7 +11,6 @@ import { getRotationAngle, getBBox, getStrokedBBox, isNullish } from './utilitie
 import { transformListToTransform, transformBox, transformPoint } from './math.js';
 
 let svgCanvas;
-let config_;
 let selectorManager_; // A Singleton
 const gripRadius = isTouch() ? 10 : 4;
 
@@ -364,7 +363,7 @@ export class SelectorManager {
           r: gripRadius,
           stroke: '#22C',
           'stroke-width': 2,
-          style: `cursor:url(${config_.imgPath}/rotate.svg) 12 12, auto;`
+          style: `cursor:url(${this.curConfig.imgPath}/rotate.svg) 12 12, auto;`
         }
       });
     this.selectorGripsGroup.append(this.rotateGrip);
@@ -372,7 +371,7 @@ export class SelectorManager {
 
     if (document.getElementById('canvasBackground')) { return; }
 
-    const [ width, height ] = config_.dimensions;
+    const [ width, height ] = this.curConfig.dimensions;
     const canvasbg = svgCanvas.createSVGElement({
       element: 'svg',
       attr: {
@@ -531,8 +530,7 @@ export class SelectorManager {
  * @param {module:select.SVGFactory} svgFactory - An object implementing the SVGFactory interface.
  * @returns {void}
  */
-export const init = function (config, canvas) {
-  config_ = config;
+export const init = (canvas) => {
   svgCanvas = canvas;
   selectorManager_ = new SelectorManager();
 };
