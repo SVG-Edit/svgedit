@@ -43,4 +43,4 @@ export default {
       title: 'Select end marker type'
     }
   ]
-};
+}

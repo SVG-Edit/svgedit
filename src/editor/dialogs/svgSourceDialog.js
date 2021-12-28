@@ -1,8 +1,7 @@
-import svgSourceDialogHTML from './svgSourceDialog.html';
+import svgSourceDialogHTML from './svgSourceDialog.html'
 
-const template = document.createElement('template');
-// eslint-disable-next-line no-unsanitized/property
-template.innerHTML = svgSourceDialogHTML;
+const template = document.createElement('template')
+template.innerHTML = svgSourceDialogHTML
 /**
  * @class SeSvgSourceEditorDialog
  */
@@ -11,36 +10,39 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
     * @function constructor
     */
   constructor () {
-    super();
+    super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.append(template.content.cloneNode(true));
-    this.$dialog = this._shadowRoot.querySelector('#svg_source_editor');
-    this.$copyBtn = this._shadowRoot.querySelector('#copy_save_done');
-    this.$saveBtn = this._shadowRoot.querySelector('#tool_source_save');
-    this.$cancelBtn = this._shadowRoot.querySelector('#tool_source_cancel');
-    this.$sourceTxt = this._shadowRoot.querySelector('#svg_source_textarea');
-    this.$copySec = this._shadowRoot.querySelector('#save_output_btns');
-    this.$applySec = this._shadowRoot.querySelector('#tool_source_back');
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    this._shadowRoot.append(template.content.cloneNode(true))
+    this.$dialog = this._shadowRoot.querySelector('#svg_source_editor')
+    this.$copyBtn = this._shadowRoot.querySelector('#copy_save_done')
+    this.$saveBtn = this._shadowRoot.querySelector('#tool_source_save')
+    this.$cancelBtn = this._shadowRoot.querySelector('#tool_source_cancel')
+    this.$sourceTxt = this._shadowRoot.querySelector('#svg_source_textarea')
+    this.$copySec = this._shadowRoot.querySelector('#save_output_btns')
+    this.$applySec = this._shadowRoot.querySelector('#tool_source_back')
   }
+
   /**
    * @function init
    * @param {any} name
    * @returns {void}
    */
   init (i18next) {
-    this.setAttribute('tools-source_save', i18next.t('tools.source_save'));
-    this.setAttribute('common-cancel', i18next.t('common.cancel'));
-    this.setAttribute('notification-source_dialog_note', i18next.t('notification.source_dialog_note'));
-    this.setAttribute('config-done', i18next.t('config.done'));
+    this.setAttribute('tools-source_save', i18next.t('tools.source_save'))
+    this.setAttribute('common-cancel', i18next.t('common.cancel'))
+    this.setAttribute('notification-source_dialog_note', i18next.t('notification.source_dialog_note'))
+    this.setAttribute('config-done', i18next.t('config.done'))
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'dialog', 'value', 'applysec', 'copysec', 'tools-source_save', 'common-cancel', 'notification-source_dialog_note', 'config-done' ];
+    return ['dialog', 'value', 'applysec', 'copysec', 'tools-source_save', 'common-cancel', 'notification-source_dialog_note', 'config-done']
   }
+
   /**
    * @function attributeChangedCallback
    * @param {string} name
@@ -49,51 +51,51 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
-    let node;
+    if (oldValue === newValue) return
+    let node
     switch (name) {
-    case 'dialog':
-      if (newValue === 'open') {
-        this.$sourceTxt.focus();
-        this.$dialog.open();
-      } else {
-        this.$dialog.close();
-        this.$sourceTxt.blur();
-      }
-      break;
-    case 'applysec':
-      if (newValue === 'false') {
-        this.$applySec.style.display = 'none';
-      } else {
-        this.$applySec.style.display = 'block';
-      }
-      break;
-    case 'copysec':
-      if (newValue === 'false') {
-        this.$copySec.style.display = 'none';
-      } else {
-        this.$copySec.style.display = 'block';
-      }
-      break;
-    case 'value':
-      this.$sourceTxt.value = newValue;
-      break;
-    case 'tools-source_save':
-      this.$saveBtn.textContent = newValue;
-      break;
-    case 'common-cancel':
-      this.$cancelBtn.textContent = newValue;
-      break;
-    case 'notification-source_dialog_note':
-      node = this._shadowRoot.querySelector('#copy_save_note');
-      node.textContent = newValue;
-      break;
-    case 'config-done':
-      this.$copyBtn.textContent = newValue;
-      break;
-    default:
-      super.attributeChangedCallback(name, oldValue, newValue);
-      break;
+      case 'dialog':
+        if (newValue === 'open') {
+          this.$sourceTxt.focus()
+          this.$dialog.open()
+        } else {
+          this.$dialog.close()
+          this.$sourceTxt.blur()
+        }
+        break
+      case 'applysec':
+        if (newValue === 'false') {
+          this.$applySec.style.display = 'none'
+        } else {
+          this.$applySec.style.display = 'block'
+        }
+        break
+      case 'copysec':
+        if (newValue === 'false') {
+          this.$copySec.style.display = 'none'
+        } else {
+          this.$copySec.style.display = 'block'
+        }
+        break
+      case 'value':
+        this.$sourceTxt.value = newValue
+        break
+      case 'tools-source_save':
+        this.$saveBtn.textContent = newValue
+        break
+      case 'common-cancel':
+        this.$cancelBtn.textContent = newValue
+        break
+      case 'notification-source_dialog_note':
+        node = this._shadowRoot.querySelector('#copy_save_note')
+        node.textContent = newValue
+        break
+      case 'config-done':
+        this.$copyBtn.textContent = newValue
+        break
+      default:
+        super.attributeChangedCallback(name, oldValue, newValue)
+        break
     }
   }
 
@@ -102,14 +104,15 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @returns {any}
    */
   get dialog () {
-    return this.getAttribute('dialog');
+    return this.getAttribute('dialog')
   }
+
   /**
    * @function set
    * @returns {void}
    */
   set dialog (value) {
-    this.setAttribute('dialog', value);
+    this.setAttribute('dialog', value)
   }
 
   /**
@@ -117,14 +120,15 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @returns {any}
    */
   get value () {
-    return this.getAttribute('value');
+    return this.getAttribute('value')
   }
+
   /**
    * @function set
    * @returns {void}
    */
   set value (value) {
-    this.setAttribute('value', value);
+    this.setAttribute('value', value)
   }
 
   /**
@@ -132,14 +136,15 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @returns {any}
    */
   get applysec () {
-    return this.getAttribute('applysec');
+    return this.getAttribute('applysec')
   }
+
   /**
    * @function set
    * @returns {void}
    */
   set applysec (value) {
-    this.setAttribute('applysec', value);
+    this.setAttribute('applysec', value)
   }
 
   /**
@@ -147,48 +152,54 @@ export class SeSvgSourceEditorDialog extends HTMLElement {
    * @returns {any}
    */
   get copysec () {
-    return this.getAttribute('copysec');
+    return this.getAttribute('copysec')
   }
+
   /**
    * @function set
    * @returns {void}
    */
   set copysec (value) {
-    this.setAttribute('copysec', value);
+    this.setAttribute('copysec', value)
   }
+
   /**
    * @function connectedCallback
    * @returns {void}
    */
   connectedCallback () {
     const onCancelHandler = () => {
-      const closeEvent = new CustomEvent('change', { detail: {
-        dialog: 'closed'
-      } });
-      this.dispatchEvent(closeEvent);
-    };
+      const closeEvent = new CustomEvent('change', {
+        detail: {
+          dialog: 'closed'
+        }
+      })
+      this.dispatchEvent(closeEvent)
+    }
     const onCopyHandler = () => {
       const closeEvent = new CustomEvent('change', {
         detail: {
           copy: 'click',
           value: this.$sourceTxt.value
         }
-      });
-      this.dispatchEvent(closeEvent);
-    };
+      })
+      this.dispatchEvent(closeEvent)
+    }
     const onSaveHandler = () => {
-      const closeEvent = new CustomEvent('change', { detail: {
-        value: this.$sourceTxt.value,
-        dialog: 'close'
-      } });
-      this.dispatchEvent(closeEvent);
-    };
-    this.$copyBtn.addEventListener('click', onCopyHandler);
-    this.$saveBtn.addEventListener('click', onSaveHandler);
-    this.$cancelBtn.addEventListener('click', onCancelHandler);
-    this.$dialog.addEventListener('close', onCancelHandler);
+      const closeEvent = new CustomEvent('change', {
+        detail: {
+          value: this.$sourceTxt.value,
+          dialog: 'close'
+        }
+      })
+      this.dispatchEvent(closeEvent)
+    }
+    this.$copyBtn.addEventListener('click', onCopyHandler)
+    this.$saveBtn.addEventListener('click', onSaveHandler)
+    this.$cancelBtn.addEventListener('click', onCancelHandler)
+    this.$dialog.addEventListener('close', onCancelHandler)
   }
 }
 
 // Register
-customElements.define('se-svg-source-editor-dialog', SeSvgSourceEditorDialog);
+customElements.define('se-svg-source-editor-dialog', SeSvgSourceEditorDialog)

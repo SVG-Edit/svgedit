@@ -1,4 +1,4 @@
-import assertionWrapper from './assertion-wrapper.js';
+import assertionWrapper from './assertion-wrapper.js'
 
 /**
  * Expects an out of bounds `INDEX_SIZE_ERR` exception.
@@ -8,18 +8,18 @@ import assertionWrapper from './assertion-wrapper.js';
  * @returns {void}
  */
 function expectOutOfBoundsException (obj, fn, arg1) {
-  const expected = true;
-  const message = 'Caught an INDEX_SIZE_ERR exception';
-  let result = false;
+  const expected = true
+  const message = 'Caught an INDEX_SIZE_ERR exception'
+  let result = false
   try {
-    obj[fn](arg1);
+    obj[fn](arg1)
   } catch (e) {
     if (e.code === 1) {
-      result = true;
+      result = true
     }
   }
-  const actual = result;
-  return { result, message, actual, expected };
+  const actual = result
+  return { result, message, actual, expected }
 }
 
 /**
@@ -28,9 +28,9 @@ function expectOutOfBoundsException (obj, fn, arg1) {
  * @returns {void}
  */
 function setAssertionMethods (_chai, utils) {
-  const wrap = assertionWrapper(_chai, utils);
+  const wrap = assertionWrapper(_chai, utils)
 
-  assert.expectOutOfBoundsException = wrap(expectOutOfBoundsException);
+  assert.expectOutOfBoundsException = wrap(expectOutOfBoundsException)
 }
 
-export default setAssertionMethods;
+export default setAssertionMethods

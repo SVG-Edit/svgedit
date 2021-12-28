@@ -6,23 +6,23 @@ const dataStorage = {
   _storage: new WeakMap(),
   put: function (element, key, obj) {
     if (!this._storage.has(element)) {
-      this._storage.set(element, new Map());
+      this._storage.set(element, new Map())
     }
-    this._storage.get(element).set(key, obj);
+    this._storage.get(element).set(key, obj)
   },
   get: function (element, key) {
-    return this._storage.get(element)?.get(key);
+    return this._storage.get(element)?.get(key)
   },
   has: function (element, key) {
-    return this._storage.has(element) && this._storage.get(element).has(key);
+    return this._storage.has(element) && this._storage.get(element).has(key)
   },
   remove: function (element, key) {
-    const ret = this._storage.get(element).delete(key);
+    const ret = this._storage.get(element).delete(key)
     if (!this._storage.get(element).size === 0) {
-      this._storage.delete(element);
+      this._storage.delete(element)
     }
-    return ret;
+    return ret
   }
-};
+}
 
-export default dataStorage;
+export default dataStorage

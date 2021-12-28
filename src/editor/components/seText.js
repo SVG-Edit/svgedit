@@ -1,5 +1,5 @@
-import { t } from '../locale.js';
-const template = document.createElement('template');
+import { t } from '../locale.js'
+const template = document.createElement('template')
 template.innerHTML = `
   <style>
   #layersLabel {
@@ -9,7 +9,7 @@ template.innerHTML = `
   }
   </style>
   <div></div>
-`;
+`
 /**
  * @class SeText
  */
@@ -18,20 +18,22 @@ export class SeText extends HTMLElement {
     * @function constructor
     */
   constructor () {
-    super();
+    super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.append(template.content.cloneNode(true));
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    this._shadowRoot.append(template.content.cloneNode(true))
     // locate the component
-    this.$div = this._shadowRoot.querySelector('div');
+    this.$div = this._shadowRoot.querySelector('div')
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'text', 'value', 'style', 'title', 'id' ];
+    return ['text', 'value', 'style', 'title', 'id']
   }
+
   /**
    * @function attributeChangedCallback
    * @param {string} name
@@ -40,35 +42,36 @@ export class SeText extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue) return
     switch (name) {
-    case 'text':
-      this.$div.textContent = t(newValue);
-      break;
-    case 'title':
-      this.$div.setAttribute("title", t(newValue));
-      break;
-    case 'style':
-      this.$div.style = newValue;
-      break;
-    case 'id':
-      this.$div.id = newValue;
-      break;
-    case 'value':
-      this.$div.value = newValue;
-      //this.$div.setAttribute("value", newValue);
-      break;
-    default:
-      console.error(`unknown attribute: ${name}`);
-      break;
+      case 'text':
+        this.$div.textContent = t(newValue)
+        break
+      case 'title':
+        this.$div.setAttribute('title', t(newValue))
+        break
+      case 'style':
+        this.$div.style = newValue
+        break
+      case 'id':
+        this.$div.id = newValue
+        break
+      case 'value':
+        this.$div.value = newValue
+        // this.$div.setAttribute("value", newValue);
+        break
+      default:
+        console.error(`unknown attribute: ${name}`)
+        break
     }
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get text () {
-    return this.$div.textContent;
+    return this.$div.textContent
   }
 
   /**
@@ -76,14 +79,15 @@ export class SeText extends HTMLElement {
    * @returns {void}
    */
   set text (value) {
-    this.$div.setAttribute("title", t(value));
+    this.$div.setAttribute('title', t(value))
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get value () {
-    return this.value;
+    return this.value
   }
 
   /**
@@ -91,14 +95,15 @@ export class SeText extends HTMLElement {
    * @returns {void}
    */
   set value (value) {
-    this.value = value;
+    this.value = value
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get title () {
-    return this.getAttribute('title');
+    return this.getAttribute('title')
   }
 
   /**
@@ -106,8 +111,9 @@ export class SeText extends HTMLElement {
    * @returns {void}
    */
   set title (value) {
-    this.setAttribute('title', value);
+    this.setAttribute('title', value)
   }
+
   /**
    * @function connectedCallback
    * @returns {void}
@@ -118,4 +124,4 @@ export class SeText extends HTMLElement {
 }
 
 // Register
-customElements.define('se-text', SeText);
+customElements.define('se-text', SeText)

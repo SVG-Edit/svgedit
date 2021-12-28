@@ -25,16 +25,16 @@ export const NS = {
   // OSB: 'http://www.openswatchbook.org/uri/2009/osb',
   // CC: 'http://creativecommons.org/ns#',
   // DC: 'http://purl.org/dc/elements/1.1/'
-};
+}
 
 /**
 * @function module:namespaces.getReverseNS
 * @returns {string} The NS with key values switched and lowercase
 */
 export const getReverseNS = function () {
-  const reverseNS = {};
-  Object.entries(NS).forEach(([ name, URI ]) => {
-    reverseNS[URI] = name.toLowerCase();
-  });
-  return reverseNS;
-};
+  const reverseNS = {}
+  Object.entries(NS).forEach(([name, URI]) => {
+    reverseNS[URI] = name.toLowerCase()
+  })
+  return reverseNS
+}

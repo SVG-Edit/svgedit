@@ -5,4 +5,4 @@ export default {
     save_doc: 'Save SVG',
     save_as_doc: 'Save as SVG'
   }
-};
+}

@@ -6,17 +6,17 @@
  * @copyright 2011 Alexis Deveria, 2011 Jeff Schiller
  */
 
-import { NS } from './namespaces.js';
-import { ChangeElementCommand } from './history.js';
+import { NS } from './namespaces.js'
+import { ChangeElementCommand } from './history.js'
 import {
   transformPoint, getMatrix
-} from './math.js';
+} from './math.js'
 import {
   assignAttributes, getRotationAngle, isNullish,
   getElem
-} from './utilities.js';
+} from './utilities.js'
 
-let svgCanvas = null;
+let svgCanvas = null
 
 /**
 * @function module:path-actions.init
@@ -24,8 +24,8 @@ let svgCanvas = null;
 * @returns {void}
 */
 export const init = function (canvas) {
-  svgCanvas = canvas;
-};
+  svgCanvas = canvas
+}
 
 /* eslint-disable max-len */
 /**
@@ -37,12 +37,12 @@ export const init = function (canvas) {
 */
 /* eslint-enable max-len */
 export const ptObjToArrMethod = function (type, segItem) {
-  const segData = svgCanvas.getSegData();
-  const props = segData[type];
+  const segData = svgCanvas.getSegData()
+  const props = segData[type]
   return props.map((prop) => {
-    return segItem[prop];
-  });
-};
+    return segItem[prop]
+  })
+}
 
 /**
 * @function module:path.getGripPt
@@ -51,22 +51,22 @@ export const ptObjToArrMethod = function (type, segItem) {
 * @returns {module:math.XYObject}
 */
 export const getGripPtMethod = function (seg, altPt) {
-  const { path: pth } = seg;
+  const { path: pth } = seg
   let out = {
     x: altPt ? altPt.x : seg.item.x,
     y: altPt ? altPt.y : seg.item.y
-  };
+  }
 
   if (pth.matrix) {
-    const pt = transformPoint(out.x, out.y, pth.matrix);
-    out = pt;
+    const pt = transformPoint(out.x, out.y, pth.matrix)
+    out = pt
   }
-  const zoom = svgCanvas.getZoom();
-  out.x *= zoom;
-  out.y *= zoom;
+  const zoom = svgCanvas.getZoom()
+  out.x *= zoom
+  out.y *= zoom
 
-  return out;
-};
+  return out
+}
 /**
 * @function module:path.getPointFromGrip
 * @param {module:math.XYObject} pt
@@ -77,33 +77,33 @@ export const getPointFromGripMethod = function (pt, pth) {
   const out = {
     x: pt.x,
     y: pt.y
-  };
+  }
 
   if (pth.matrix) {
-    pt = transformPoint(out.x, out.y, pth.imatrix);
-    out.x = pt.x;
-    out.y = pt.y;
+    pt = transformPoint(out.x, out.y, pth.imatrix)
+    out.x = pt.x
+    out.y = pt.y
   }
-  const zoom = svgCanvas.getZoom();
-  out.x /= zoom;
-  out.y /= zoom;
+  const zoom = svgCanvas.getZoom()
+  out.x /= zoom
+  out.y /= zoom
 
-  return out;
-};
+  return out
+}
 /**
 * @function module:path.getGripContainer
 * @returns {Element}
 */
 export const getGripContainerMethod = function () {
-  let c = getElem('pathpointgrip_container');
+  let c = getElem('pathpointgrip_container')
   if (!c) {
-    const parentElement = getElem('selectorParentGroup');
-    c = document.createElementNS(NS.SVG, 'g');
-    parentElement.append(c);
-    c.id = 'pathpointgrip_container';
+    const parentElement = getElem('selectorParentGroup')
+    c = document.createElementNS(NS.SVG, 'g')
+    parentElement.append(c)
+    c.id = 'pathpointgrip_container'
   }
-  return c;
-};
+  return c
+}
 /**
 * Requires prior call to `setUiStrings` if `xlink:title`
 *    to be set on the grip.
@@ -115,12 +115,12 @@ export const getGripContainerMethod = function () {
 */
 export const addPointGripMethod = function (index, x, y) {
   // create the container of all the point grips
-  const pointGripContainer = getGripContainerMethod();
+  const pointGripContainer = getGripContainerMethod()
 
-  let pointGrip = getElem('pathpointgrip_' + index);
+  let pointGrip = getElem('pathpointgrip_' + index)
   // create it
   if (!pointGrip) {
-    pointGrip = document.createElementNS(NS.SVG, 'circle');
+    pointGrip = document.createElementNS(NS.SVG, 'circle')
     const atts = {
       id: 'pathpointgrip_' + index,
       display: 'none',
@@ -130,21 +130,21 @@ export const addPointGripMethod = function (index, x, y) {
       'stroke-width': 2,
       cursor: 'move',
       style: 'pointer-events:all'
-    };
-    const uiStrings = svgCanvas.getUIStrings();
-    if ('pathNodeTooltip' in uiStrings) { // May be empty if running path.js without svg-editor
-      atts['xlink:title'] = uiStrings.pathNodeTooltip;
     }
-    assignAttributes(pointGrip, atts);
-    pointGripContainer.append(pointGrip);
+    const uiStrings = svgCanvas.getUIStrings()
+    if ('pathNodeTooltip' in uiStrings) { // May be empty if running path.js without svg-editor
+      atts['xlink:title'] = uiStrings.pathNodeTooltip
+    }
+    assignAttributes(pointGrip, atts)
+    pointGripContainer.append(pointGrip)
 
-    const grip = document.getElementById('pathpointgrip_' + index);
-    grip?.addEventListener("dblclick", () => {
-      const path = svgCanvas.getPathObj();
+    const grip = document.getElementById('pathpointgrip_' + index)
+    grip?.addEventListener('dblclick', () => {
+      const path = svgCanvas.getPathObj()
       if (path) {
-        path.setSegType();
+        path.setSegType()
       }
-    });
+    })
   }
   if (x && y) {
     // set up the point grip element and display it
@@ -152,10 +152,10 @@ export const addPointGripMethod = function (index, x, y) {
       cx: x,
       cy: y,
       display: 'inline'
-    });
+    })
   }
-  return pointGrip;
-};
+  return pointGrip
+}
 /**
 * Requires prior call to `setUiStrings` if `xlink:title`
 *    to be set on the grip.
@@ -164,10 +164,10 @@ export const addPointGripMethod = function (index, x, y) {
 * @returns {SVGCircleElement}
 */
 export const addCtrlGripMethod = function (id) {
-  let pointGrip = getElem('ctrlpointgrip_' + id);
-  if (pointGrip) { return pointGrip; }
+  let pointGrip = getElem('ctrlpointgrip_' + id)
+  if (pointGrip) { return pointGrip }
 
-  pointGrip = document.createElementNS(NS.SVG, 'circle');
+  pointGrip = document.createElementNS(NS.SVG, 'circle')
   const atts = {
     id: 'ctrlpointgrip_' + id,
     display: 'none',
@@ -177,34 +177,34 @@ export const addCtrlGripMethod = function (id) {
     'stroke-width': 1,
     cursor: 'move',
     style: 'pointer-events:all'
-  };
-  const uiStrings = svgCanvas.getUIStrings();
-  if ('pathCtrlPtTooltip' in uiStrings) { // May be empty if running path.js without svg-editor
-    atts['xlink:title'] = uiStrings.pathCtrlPtTooltip;
   }
-  assignAttributes(pointGrip, atts);
-  getGripContainerMethod().append(pointGrip);
-  return pointGrip;
-};
+  const uiStrings = svgCanvas.getUIStrings()
+  if ('pathCtrlPtTooltip' in uiStrings) { // May be empty if running path.js without svg-editor
+    atts['xlink:title'] = uiStrings.pathCtrlPtTooltip
+  }
+  assignAttributes(pointGrip, atts)
+  getGripContainerMethod().append(pointGrip)
+  return pointGrip
+}
 /**
 * @function module:path.getCtrlLine
 * @param {string} id
 * @returns {SVGLineElement}
 */
 export const getCtrlLineMethod = function (id) {
-  let ctrlLine = getElem('ctrlLine_' + id);
-  if (ctrlLine) { return ctrlLine; }
+  let ctrlLine = getElem('ctrlLine_' + id)
+  if (ctrlLine) { return ctrlLine }
 
-  ctrlLine = document.createElementNS(NS.SVG, 'line');
+  ctrlLine = document.createElementNS(NS.SVG, 'line')
   assignAttributes(ctrlLine, {
     id: 'ctrlLine_' + id,
     stroke: '#555',
     'stroke-width': 1,
     style: 'pointer-events:none'
-  });
-  getGripContainerMethod().append(ctrlLine);
-  return ctrlLine;
-};
+  })
+  getGripContainerMethod().append(ctrlLine)
+  return ctrlLine
+}
 /**
 * @function module:path.getPointGrip
 * @param {Segment} seg
@@ -212,44 +212,44 @@ export const getCtrlLineMethod = function (id) {
 * @returns {SVGCircleElement}
 */
 export const getPointGripMethod = function (seg, update) {
-  const { index } = seg;
-  const pointGrip = addPointGripMethod(index);
+  const { index } = seg
+  const pointGrip = addPointGripMethod(index)
 
   if (update) {
-    const pt = getGripPtMethod(seg);
+    const pt = getGripPtMethod(seg)
     assignAttributes(pointGrip, {
       cx: pt.x,
       cy: pt.y,
       display: 'inline'
-    });
+    })
   }
 
-  return pointGrip;
-};
+  return pointGrip
+}
 /**
 * @function module:path.getControlPoints
 * @param {Segment} seg
 * @returns {PlainObject<string, SVGLineElement|SVGCircleElement>}
 */
 export const getControlPointsMethod = function (seg) {
-  const { item, index } = seg;
-  if (!('x1' in item) || !('x2' in item)) { return null; }
-  const cpt = {};
-  /* const pointGripContainer = */ getGripContainerMethod();
+  const { item, index } = seg
+  if (!('x1' in item) || !('x2' in item)) { return null }
+  const cpt = {}
+  /* const pointGripContainer = */ getGripContainerMethod()
 
   // Note that this is intentionally not seg.prev.item
-  const path = svgCanvas.getPathObj();
-  const prev = path.segs[index - 1].item;
+  const path = svgCanvas.getPathObj()
+  const prev = path.segs[index - 1].item
 
-  const segItems = [ prev, item ];
+  const segItems = [prev, item]
 
   for (let i = 1; i < 3; i++) {
-    const id = index + 'c' + i;
+    const id = index + 'c' + i
 
-    const ctrlLine = cpt['c' + i + '_line'] = getCtrlLineMethod(id);
+    const ctrlLine = cpt['c' + i + '_line'] = getCtrlLineMethod(id)
 
-    const pt = getGripPtMethod(seg, { x: item['x' + i], y: item['y' + i] });
-    const gpt = getGripPtMethod(seg, { x: segItems[i - 1].x, y: segItems[i - 1].y });
+    const pt = getGripPtMethod(seg, { x: item['x' + i], y: item['y' + i] })
+    const gpt = getGripPtMethod(seg, { x: segItems[i - 1].x, y: segItems[i - 1].y })
 
     assignAttributes(ctrlLine, {
       x1: pt.x,
@@ -257,22 +257,22 @@ export const getControlPointsMethod = function (seg) {
       x2: gpt.x,
       y2: gpt.y,
       display: 'inline'
-    });
+    })
 
-    cpt['c' + i + '_line'] = ctrlLine;
+    cpt['c' + i + '_line'] = ctrlLine
 
     // create it
-    const pointGrip = cpt['c' + i] = addCtrlGripMethod(id);
+    const pointGrip = cpt['c' + i] = addCtrlGripMethod(id)
 
     assignAttributes(pointGrip, {
       cx: pt.x,
       cy: pt.y,
       display: 'inline'
-    });
-    cpt['c' + i] = pointGrip;
+    })
+    cpt['c' + i] = pointGrip
   }
-  return cpt;
-};
+  return cpt
+}
 /**
 * This replaces the segment at the given index. Type is given as number.
 * @function module:path.replacePathSeg
@@ -283,14 +283,14 @@ export const getControlPointsMethod = function (seg) {
 * @returns {void}
 */
 export const replacePathSegMethod = function (type, index, pts, elem) {
-  const path = svgCanvas.getPathObj();
-  const pth = elem || path.elem;
-  const pathFuncs = svgCanvas.getPathFuncs();
-  const func = 'createSVGPathSeg' + pathFuncs[type];
-  const seg = pth[func](...pts);
+  const path = svgCanvas.getPathObj()
+  const pth = elem || path.elem
+  const pathFuncs = svgCanvas.getPathFuncs()
+  const func = 'createSVGPathSeg' + pathFuncs[type]
+  const seg = pth[func](...pts)
 
-  pth.pathSegList.replaceItem(seg, index);
-};
+  pth.pathSegList.replaceItem(seg, index)
+}
 /**
 * @function module:path.getSegSelector
 * @param {Segment} seg
@@ -298,12 +298,12 @@ export const replacePathSegMethod = function (type, index, pts, elem) {
 * @returns {SVGPathElement}
 */
 export const getSegSelectorMethod = function (seg, update) {
-  const { index } = seg;
-  let segLine = getElem('segline_' + index);
+  const { index } = seg
+  let segLine = getElem('segline_' + index)
   if (!segLine) {
-    const pointGripContainer = getGripContainerMethod();
+    const pointGripContainer = getGripContainerMethod()
     // create segline
-    segLine = document.createElementNS(NS.SVG, 'path');
+    segLine = document.createElementNS(NS.SVG, 'path')
     assignAttributes(segLine, {
       id: 'segline_' + index,
       display: 'none',
@@ -312,32 +312,32 @@ export const getSegSelectorMethod = function (seg, update) {
       'stroke-width': 2,
       style: 'pointer-events:none',
       d: 'M0,0 0,0'
-    });
-    pointGripContainer.append(segLine);
+    })
+    pointGripContainer.append(segLine)
   }
 
   if (update) {
-    const { prev } = seg;
+    const { prev } = seg
     if (!prev) {
-      segLine.setAttribute('display', 'none');
-      return segLine;
+      segLine.setAttribute('display', 'none')
+      return segLine
     }
 
-    const pt = getGripPtMethod(prev);
+    const pt = getGripPtMethod(prev)
     // Set start point
-    replacePathSegMethod(2, 0, [ pt.x, pt.y ], segLine);
+    replacePathSegMethod(2, 0, [pt.x, pt.y], segLine)
 
-    const pts = ptObjToArrMethod(seg.type, seg.item); // , true);
+    const pts = ptObjToArrMethod(seg.type, seg.item) // , true);
     for (let i = 0; i < pts.length; i += 2) {
-      const point = getGripPtMethod(seg, { x: pts[i], y: pts[i + 1] });
-      pts[i] = point.x;
-      pts[i + 1] = point.y;
+      const point = getGripPtMethod(seg, { x: pts[i], y: pts[i + 1] })
+      pts[i] = point.x
+      pts[i + 1] = point.y
     }
 
-    replacePathSegMethod(seg.type, 1, pts, segLine);
+    replacePathSegMethod(seg.type, 1, pts, segLine)
   }
-  return segLine;
-};
+  return segLine
+}
 /**
 *
 */
@@ -348,14 +348,14 @@ export class Segment {
   * @todo Is `item` be more constrained here?
   */
   constructor (index, item) {
-    this.selected = false;
-    this.index = index;
-    this.item = item;
-    this.type = item.pathSegType;
+    this.selected = false
+    this.index = index
+    this.item = item
+    this.type = item.pathSegType
 
-    this.ctrlpts = [];
-    this.ptgrip = null;
-    this.segsel = null;
+    this.ctrlpts = []
+    this.ptgrip = null
+    this.segsel = null
   }
 
   /**
@@ -365,7 +365,7 @@ export class Segment {
   showCtrlPts (y) {
     for (const i in this.ctrlpts) {
       if ({}.hasOwnProperty.call(this.ctrlpts, i)) {
-        this.ctrlpts[i].setAttribute('display', y ? 'inline' : 'none');
+        this.ctrlpts[i].setAttribute('display', y ? 'inline' : 'none')
       }
     }
   }
@@ -375,8 +375,8 @@ export class Segment {
    * @returns {void}
    */
   selectCtrls (y) {
-    document.getElementById('ctrlpointgrip_' + this.index + 'c1').setAttribute('fill', y ? '#0FF' : '#EEE');
-    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE');
+    document.getElementById('ctrlpointgrip_' + this.index + 'c1').setAttribute('fill', y ? '#0FF' : '#EEE')
+    document.getElementById('ctrlpointgrip_' + this.index + 'c2').setAttribute('fill', y ? '#0FF' : '#EEE')
   }
 
   /**
@@ -385,10 +385,10 @@ export class Segment {
    */
   show (y) {
     if (this.ptgrip) {
-      this.ptgrip.setAttribute('display', y ? 'inline' : 'none');
-      this.segsel.setAttribute('display', y ? 'inline' : 'none');
+      this.ptgrip.setAttribute('display', y ? 'inline' : 'none')
+      this.segsel.setAttribute('display', y ? 'inline' : 'none')
       // Show/hide all control points if available
-      this.showCtrlPts(y);
+      this.showCtrlPts(y)
     }
   }
 
@@ -398,12 +398,12 @@ export class Segment {
    */
   select (y) {
     if (this.ptgrip) {
-      this.ptgrip.setAttribute('stroke', y ? '#0FF' : '#00F');
-      this.segsel.setAttribute('display', y ? 'inline' : 'none');
+      this.ptgrip.setAttribute('stroke', y ? '#0FF' : '#00F')
+      this.segsel.setAttribute('display', y ? 'inline' : 'none')
       if (this.ctrlpts) {
-        this.selectCtrls(y);
+        this.selectCtrls(y)
       }
-      this.selected = y;
+      this.selected = y
     }
   }
 
@@ -411,9 +411,9 @@ export class Segment {
    * @returns {void}
    */
   addGrip () {
-    this.ptgrip = getPointGripMethod(this, true);
-    this.ctrlpts = getControlPointsMethod(this); // , true);
-    this.segsel = getSegSelectorMethod(this, true);
+    this.ptgrip = getPointGripMethod(this, true)
+    this.ctrlpts = getControlPointsMethod(this) // , true);
+    this.segsel = getSegSelectorMethod(this, true)
   }
 
   /**
@@ -422,21 +422,21 @@ export class Segment {
    */
   update (full) {
     if (this.ptgrip) {
-      const pt = getGripPtMethod(this);
+      const pt = getGripPtMethod(this)
       assignAttributes(this.ptgrip, {
         cx: pt.x,
         cy: pt.y
-      });
+      })
 
-      getSegSelectorMethod(this, true);
+      getSegSelectorMethod(this, true)
 
       if (this.ctrlpts) {
         if (full) {
-          const path = svgCanvas.getPathObj();
-          this.item = path.elem.pathSegList.getItem(this.index);
-          this.type = this.item.pathSegType;
+          const path = svgCanvas.getPathObj()
+          this.item = path.elem.pathSegList.getItem(this.index)
+          this.type = this.item.pathSegType
         }
-        getControlPointsMethod(this);
+        getControlPointsMethod(this)
       }
       // this.segsel.setAttribute('display', y ? 'inline' : 'none');
     }
@@ -448,42 +448,42 @@ export class Segment {
    * @returns {void}
    */
   move (dx, dy) {
-    const { item } = this;
+    const { item } = this
 
     const curPts = this.ctrlpts
       ? [
-        item.x += dx, item.y += dy,
-        item.x1, item.y1, item.x2 += dx, item.y2 += dy
-      ]
-      : [ item.x += dx, item.y += dy ];
+          item.x += dx, item.y += dy,
+          item.x1, item.y1, item.x2 += dx, item.y2 += dy
+        ]
+      : [item.x += dx, item.y += dy]
 
     replacePathSegMethod(
       this.type,
       this.index,
       // type 10 means ARC
       this.type === 10 ? ptObjToArrMethod(this.type, item) : curPts
-    );
+    )
 
     if (this.next && this.next.ctrlpts) {
-      const next = this.next.item;
+      const next = this.next.item
       const nextPts = [
         next.x, next.y,
         next.x1 += dx, next.y1 += dy, next.x2, next.y2
-      ];
-      replacePathSegMethod(this.next.type, this.next.index, nextPts);
+      ]
+      replacePathSegMethod(this.next.type, this.next.index, nextPts)
     }
 
     if (this.mate) {
       // The last point of a closed subpath has a 'mate',
       // which is the 'M' segment of the subpath
-      const { item: itm } = this.mate;
-      const pts = [ itm.x += dx, itm.y += dy ];
-      replacePathSegMethod(this.mate.type, this.mate.index, pts);
+      const { item: itm } = this.mate
+      const pts = [itm.x += dx, itm.y += dy]
+      replacePathSegMethod(this.mate.type, this.mate.index, pts)
       // Has no grip, so does not need 'updating'?
     }
 
-    this.update(true);
-    if (this.next) { this.next.update(true); }
+    this.update(true)
+    if (this.next) { this.next.update(true) }
   }
 
   /**
@@ -491,31 +491,31 @@ export class Segment {
    * @returns {void}
    */
   setLinked (num) {
-    let seg; let anum; let pt;
+    let seg; let anum; let pt
     if (num === 2) {
-      anum = 1;
-      seg = this.next;
-      if (!seg) { return; }
-      pt = this.item;
+      anum = 1
+      seg = this.next
+      if (!seg) { return }
+      pt = this.item
     } else {
-      anum = 2;
-      seg = this.prev;
-      if (!seg) { return; }
-      pt = seg.item;
+      anum = 2
+      seg = this.prev
+      if (!seg) { return }
+      pt = seg.item
     }
 
-    const { item } = seg;
-    item['x' + anum] = pt.x + (pt.x - this.item['x' + num]);
-    item['y' + anum] = pt.y + (pt.y - this.item['y' + num]);
+    const { item } = seg
+    item['x' + anum] = pt.x + (pt.x - this.item['x' + num])
+    item['y' + anum] = pt.y + (pt.y - this.item['y' + num])
 
     const pts = [
       item.x, item.y,
       item.x1, item.y1,
       item.x2, item.y2
-    ];
+    ]
 
-    replacePathSegMethod(seg.type, seg.index, pts);
-    seg.update(true);
+    replacePathSegMethod(seg.type, seg.index, pts)
+    seg.update(true)
   }
 
   /**
@@ -525,17 +525,17 @@ export class Segment {
    * @returns {void}
    */
   moveCtrl (num, dx, dy) {
-    const { item } = this;
-    item['x' + num] += dx;
-    item['y' + num] += dy;
+    const { item } = this
+    item['x' + num] += dx
+    item['y' + num] += dy
 
     const pts = [
       item.x, item.y,
       item.x1, item.y1, item.x2, item.y2
-    ];
+    ]
 
-    replacePathSegMethod(this.type, this.index, pts);
-    this.update(true);
+    replacePathSegMethod(this.type, this.index, pts)
+    this.update(true)
   }
 
   /**
@@ -544,13 +544,13 @@ export class Segment {
    * @returns {void}
    */
   setType (newType, pts) {
-    replacePathSegMethod(newType, this.index, pts);
-    this.type = newType;
-    const path = svgCanvas.getPathObj();
-    this.item = path.elem.pathSegList.getItem(this.index);
-    this.showCtrlPts(newType === 6);
-    this.ctrlpts = getControlPointsMethod(this);
-    this.update(true);
+    replacePathSegMethod(newType, this.index, pts)
+    this.type = newType
+    const path = svgCanvas.getPathObj()
+    this.item = path.elem.pathSegList.getItem(this.index)
+    this.showCtrlPts(newType === 6)
+    this.ctrlpts = getControlPointsMethod(this)
+    this.update(true)
   }
 }
 
@@ -564,20 +564,20 @@ export class Path {
   */
   constructor (elem) {
     if (!elem || elem.tagName !== 'path') {
-      throw new Error('svgedit.path.Path constructed without a <path> element');
+      throw new Error('svgedit.path.Path constructed without a <path> element')
     }
 
-    this.elem = elem;
-    this.segs = [];
-    this.selected_pts = [];
-    svgCanvas.setPathObj(this);
+    this.elem = elem
+    this.segs = []
+    this.selected_pts = []
+    svgCanvas.setPathObj(this)
     // path = this;
 
-    this.init();
+    this.init()
   }
 
-  setPathContext() {
-    svgCanvas.setPathObj(this);
+  setPathContext () {
+    svgCanvas.setPathObj(this)
   }
 
   /**
@@ -588,83 +588,83 @@ export class Path {
     // Hide all grips, etc
 
     // fixed, needed to work on all found elements, not just first
-    const pointGripContainer = getGripContainerMethod();
-    const elements = pointGripContainer.querySelectorAll('*');
-    Array.prototype.forEach.call(elements, function(el){
-      el.setAttribute('display', 'none');
-    });
+    const pointGripContainer = getGripContainerMethod()
+    const elements = pointGripContainer.querySelectorAll('*')
+    Array.prototype.forEach.call(elements, function (el) {
+      el.setAttribute('display', 'none')
+    })
 
-    const segList = this.elem.pathSegList;
-    const len = segList.numberOfItems;
-    this.segs = [];
-    this.selected_pts = [];
-    this.first_seg = null;
+    const segList = this.elem.pathSegList
+    const len = segList.numberOfItems
+    this.segs = []
+    this.selected_pts = []
+    this.first_seg = null
 
     // Set up segs array
     for (let i = 0; i < len; i++) {
-      const item = segList.getItem(i);
-      const segment = new Segment(i, item);
-      segment.path = this;
-      this.segs.push(segment);
+      const item = segList.getItem(i)
+      const segment = new Segment(i, item)
+      segment.path = this
+      this.segs.push(segment)
     }
 
-    const { segs } = this;
+    const { segs } = this
 
-    let startI = null;
+    let startI = null
     for (let i = 0; i < len; i++) {
-      const seg = segs[i];
-      const nextSeg = (i + 1) >= len ? null : segs[i + 1];
-      const prevSeg = (i - 1) < 0 ? null : segs[i - 1];
+      const seg = segs[i]
+      const nextSeg = (i + 1) >= len ? null : segs[i + 1]
+      const prevSeg = (i - 1) < 0 ? null : segs[i - 1]
       if (seg.type === 2) {
         if (prevSeg && prevSeg.type !== 1) {
           // New sub-path, last one is open,
           // so add a grip to last sub-path's first point
-          const startSeg = segs[startI];
-          startSeg.next = segs[startI + 1];
-          startSeg.next.prev = startSeg;
-          startSeg.addGrip();
+          const startSeg = segs[startI]
+          startSeg.next = segs[startI + 1]
+          startSeg.next.prev = startSeg
+          startSeg.addGrip()
         }
         // Remember that this is a starter seg
-        startI = i;
+        startI = i
       } else if (nextSeg && nextSeg.type === 1) {
         // This is the last real segment of a closed sub-path
         // Next is first seg after "M"
-        seg.next = segs[startI + 1];
+        seg.next = segs[startI + 1]
 
         // First seg after "M"'s prev is this
-        seg.next.prev = seg;
-        seg.mate = segs[startI];
-        seg.addGrip();
+        seg.next.prev = seg
+        seg.mate = segs[startI]
+        seg.addGrip()
         if (isNullish(this.first_seg)) {
-          this.first_seg = seg;
+          this.first_seg = seg
         }
       } else if (!nextSeg) {
         if (seg.type !== 1) {
           // Last seg, doesn't close so add a grip
           // to last sub-path's first point
-          const startSeg = segs[startI];
-          startSeg.next = segs[startI + 1];
-          startSeg.next.prev = startSeg;
-          startSeg.addGrip();
-          seg.addGrip();
+          const startSeg = segs[startI]
+          startSeg.next = segs[startI + 1]
+          startSeg.next.prev = startSeg
+          startSeg.addGrip()
+          seg.addGrip()
 
           if (!this.first_seg) {
             // Open path, so set first as real first and add grip
-            this.first_seg = segs[startI];
+            this.first_seg = segs[startI]
           }
         }
       } else if (seg.type !== 1) {
         // Regular segment, so add grip and its "next"
-        seg.addGrip();
+        seg.addGrip()
 
         // Don't set its "next" if it's an "M"
         if (nextSeg && nextSeg.type !== 2) {
-          seg.next = nextSeg;
-          seg.next.prev = seg;
+          seg.next = nextSeg
+          seg.next.prev = seg
         }
       }
     }
-    return this;
+    return this
   }
 
   /**
@@ -678,10 +678,10 @@ export class Path {
   * @returns {void}
   */
   eachSeg (fn) {
-    const len = this.segs.length;
+    const len = this.segs.length
     for (let i = 0; i < len; i++) {
-      const ret = fn.call(this.segs[i], i);
-      if (ret === false) { break; }
+      const ret = fn.call(this.segs[i], i)
+      if (ret === false) { break }
     }
   }
 
@@ -691,39 +691,39 @@ export class Path {
   */
   addSeg (index) {
     // Adds a new segment
-    const seg = this.segs[index];
-    if (!seg.prev) { return; }
+    const seg = this.segs[index]
+    if (!seg.prev) { return }
 
-    const { prev } = seg;
-    let newseg; let newX; let newY;
+    const { prev } = seg
+    let newseg; let newX; let newY
     switch (seg.item.pathSegType) {
-    case 4: {
-      newX = (seg.item.x + prev.item.x) / 2;
-      newY = (seg.item.y + prev.item.y) / 2;
-      newseg = this.elem.createSVGPathSegLinetoAbs(newX, newY);
-      break;
-    } case 6: { // make it a curved segment to preserve the shape (WRS)
+      case 4: {
+        newX = (seg.item.x + prev.item.x) / 2
+        newY = (seg.item.y + prev.item.y) / 2
+        newseg = this.elem.createSVGPathSegLinetoAbs(newX, newY)
+        break
+      } case 6: { // make it a curved segment to preserve the shape (WRS)
       // https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm#Geometric_interpretation
-      const p0x = (prev.item.x + seg.item.x1) / 2;
-      const p1x = (seg.item.x1 + seg.item.x2) / 2;
-      const p2x = (seg.item.x2 + seg.item.x) / 2;
-      const p01x = (p0x + p1x) / 2;
-      const p12x = (p1x + p2x) / 2;
-      newX = (p01x + p12x) / 2;
-      const p0y = (prev.item.y + seg.item.y1) / 2;
-      const p1y = (seg.item.y1 + seg.item.y2) / 2;
-      const p2y = (seg.item.y2 + seg.item.y) / 2;
-      const p01y = (p0y + p1y) / 2;
-      const p12y = (p1y + p2y) / 2;
-      newY = (p01y + p12y) / 2;
-      newseg = this.elem.createSVGPathSegCurvetoCubicAbs(newX, newY, p0x, p0y, p01x, p01y);
-      const pts = [ seg.item.x, seg.item.y, p12x, p12y, p2x, p2y ];
-      replacePathSegMethod(seg.type, index, pts);
-      break;
+        const p0x = (prev.item.x + seg.item.x1) / 2
+        const p1x = (seg.item.x1 + seg.item.x2) / 2
+        const p2x = (seg.item.x2 + seg.item.x) / 2
+        const p01x = (p0x + p1x) / 2
+        const p12x = (p1x + p2x) / 2
+        newX = (p01x + p12x) / 2
+        const p0y = (prev.item.y + seg.item.y1) / 2
+        const p1y = (seg.item.y1 + seg.item.y2) / 2
+        const p2y = (seg.item.y2 + seg.item.y) / 2
+        const p01y = (p0y + p1y) / 2
+        const p12y = (p1y + p2y) / 2
+        newY = (p01y + p12y) / 2
+        newseg = this.elem.createSVGPathSegCurvetoCubicAbs(newX, newY, p0x, p0y, p01x, p01y)
+        const pts = [seg.item.x, seg.item.y, p12x, p12y, p2x, p2y]
+        replacePathSegMethod(seg.type, index, pts)
+        break
+      }
     }
-    }
-    const list = this.elem.pathSegList;
-    list.insertItemBefore(newseg, index);
+    const list = this.elem.pathSegList
+    list.insertItemBefore(newseg, index)
   }
 
   /**
@@ -731,28 +731,28 @@ export class Path {
   * @returns {void}
   */
   deleteSeg (index) {
-    const seg = this.segs[index];
-    const list = this.elem.pathSegList;
+    const seg = this.segs[index]
+    const list = this.elem.pathSegList
 
-    seg.show(false);
-    const { next } = seg;
+    seg.show(false)
+    const { next } = seg
     if (seg.mate) {
       // Make the next point be the "M" point
-      const pt = [ next.item.x, next.item.y ];
-      replacePathSegMethod(2, next.index, pt);
+      const pt = [next.item.x, next.item.y]
+      replacePathSegMethod(2, next.index, pt)
 
       // Reposition last node
-      replacePathSegMethod(4, seg.index, pt);
+      replacePathSegMethod(4, seg.index, pt)
 
-      list.removeItem(seg.mate.index);
+      list.removeItem(seg.mate.index)
     } else if (!seg.prev) {
       // First node of open path, make next point the M
       // const {item} = seg;
-      const pt = [ next.item.x, next.item.y ];
-      replacePathSegMethod(2, seg.next.index, pt);
-      list.removeItem(index);
+      const pt = [next.item.x, next.item.y]
+      replacePathSegMethod(2, seg.next.index, pt)
+      list.removeItem(index)
     } else {
-      list.removeItem(index);
+      list.removeItem(index)
     }
   }
 
@@ -761,12 +761,12 @@ export class Path {
   * @returns {void}
   */
   removePtFromSelection (index) {
-    const pos = this.selected_pts.indexOf(index);
+    const pos = this.selected_pts.indexOf(index)
     if (pos === -1) {
-      return;
+      return
     }
-    this.segs[index].select(false);
-    this.selected_pts.splice(pos, 1);
+    this.segs[index].select(false)
+    this.selected_pts.splice(pos, 1)
   }
 
   /**
@@ -775,16 +775,16 @@ export class Path {
   clearSelection () {
     this.eachSeg(function () {
       // 'this' is the segment here
-      this.select(false);
-    });
-    this.selected_pts = [];
+      this.select(false)
+    })
+    this.selected_pts = []
   }
 
   /**
   * @returns {void}
   */
   storeD () {
-    this.last_d = this.elem.getAttribute('d');
+    this.last_d = this.elem.getAttribute('d')
   }
 
   /**
@@ -795,12 +795,12 @@ export class Path {
     // Shows this path's segment grips
     this.eachSeg(function () {
       // 'this' is the segment here
-      this.show(y);
-    });
+      this.show(y)
+    })
     if (y) {
-      this.selectPt(this.first_seg.index);
+      this.selectPt(this.first_seg.index)
     }
-    return this;
+    return this
   }
 
   /**
@@ -810,10 +810,10 @@ export class Path {
   * @returns {void}
   */
   movePts (dx, dy) {
-    let i = this.selected_pts.length;
+    let i = this.selected_pts.length
     while (i--) {
-      const seg = this.segs[this.selected_pts[i]];
-      seg.move(dx, dy);
+      const seg = this.segs[this.selected_pts[i]]
+      seg.move(dx, dy)
     }
   }
 
@@ -823,10 +823,10 @@ export class Path {
   * @returns {void}
   */
   moveCtrl (dx, dy) {
-    const seg = this.segs[this.selected_pts[0]];
-    seg.moveCtrl(this.dragctrl, dx, dy);
+    const seg = this.segs[this.selected_pts[0]]
+    seg.moveCtrl(this.dragctrl, dx, dy)
     if (svgCanvas.getLinkControlPts()) {
-      seg.setLinked(this.dragctrl);
+      seg.setLinked(this.dragctrl)
     }
   }
 
@@ -835,69 +835,69 @@ export class Path {
   * @returns {void}
   */
   setSegType (newType) {
-    this.storeD();
-    let i = this.selected_pts.length;
-    let text;
+    this.storeD()
+    let i = this.selected_pts.length
+    let text
     while (i--) {
-      const selPt = this.selected_pts[i];
+      const selPt = this.selected_pts[i]
 
       // Selected seg
-      const cur = this.segs[selPt];
-      const { prev } = cur;
-      if (!prev) { continue; }
+      const cur = this.segs[selPt]
+      const { prev } = cur
+      if (!prev) { continue }
 
       if (!newType) { // double-click, so just toggle
-        text = 'Toggle Path Segment Type';
+        text = 'Toggle Path Segment Type'
 
         // Toggle segment to curve/straight line
-        const oldType = cur.type;
+        const oldType = cur.type
 
-        newType = (oldType === 6) ? 4 : 6;
+        newType = (oldType === 6) ? 4 : 6
       }
 
-      newType = Number(newType);
+      newType = Number(newType)
 
-      const curX = cur.item.x;
-      const curY = cur.item.y;
-      const prevX = prev.item.x;
-      const prevY = prev.item.y;
-      let points;
+      const curX = cur.item.x
+      const curY = cur.item.y
+      const prevX = prev.item.x
+      const prevY = prev.item.y
+      let points
       switch (newType) {
-      case 6: {
-        if (cur.olditem) {
-          const old = cur.olditem;
-          points = [ curX, curY, old.x1, old.y1, old.x2, old.y2 ];
-        } else {
-          const diffX = curX - prevX;
-          const diffY = curY - prevY;
-          // get control points from straight line segment
-          /*
+        case 6: {
+          if (cur.olditem) {
+            const old = cur.olditem
+            points = [curX, curY, old.x1, old.y1, old.x2, old.y2]
+          } else {
+            const diffX = curX - prevX
+            const diffY = curY - prevY
+            // get control points from straight line segment
+            /*
           const ct1x = (prevX + (diffY/2));
           const ct1y = (prevY - (diffX/2));
           const ct2x = (curX + (diffY/2));
           const ct2y = (curY - (diffX/2));
           */
-          // create control points on the line to preserve the shape (WRS)
-          const ct1x = (prevX + (diffX / 3));
-          const ct1y = (prevY + (diffY / 3));
-          const ct2x = (curX - (diffX / 3));
-          const ct2y = (curY - (diffY / 3));
-          points = [ curX, curY, ct1x, ct1y, ct2x, ct2y ];
+            // create control points on the line to preserve the shape (WRS)
+            const ct1x = (prevX + (diffX / 3))
+            const ct1y = (prevY + (diffY / 3))
+            const ct2x = (curX - (diffX / 3))
+            const ct2y = (curY - (diffY / 3))
+            points = [curX, curY, ct1x, ct1y, ct2x, ct2y]
+          }
+          break
+        } case 4: {
+          points = [curX, curY]
+
+          // Store original prevve segment nums
+          cur.olditem = cur.item
+          break
         }
-        break;
-      } case 4: {
-        points = [ curX, curY ];
-
-        // Store original prevve segment nums
-        cur.olditem = cur.item;
-        break;
-      }
       }
 
-      cur.setType(newType, points);
+      cur.setType(newType, points)
     }
-    const path = svgCanvas.getPathObj();
-    path.endChanges(text);
+    const path = svgCanvas.getPathObj()
+    path.endChanges(text)
   }
 
   /**
@@ -906,21 +906,21 @@ export class Path {
   * @returns {void}
   */
   selectPt (pt, ctrlNum) {
-    this.clearSelection();
+    this.clearSelection()
     if (isNullish(pt)) {
       this.eachSeg(function (i) {
         // 'this' is the segment here.
         if (this.prev) {
-          pt = i;
+          pt = i
         }
-      });
+      })
     }
-    this.addPtsToSelection(pt);
+    this.addPtsToSelection(pt)
     if (ctrlNum) {
-      this.dragctrl = ctrlNum;
+      this.dragctrl = ctrlNum
 
       if (svgCanvas.getLinkControlPts()) {
-        this.segs[pt].setLinked(ctrlNum);
+        this.segs[pt].setLinked(ctrlNum)
       }
     }
   }
@@ -930,21 +930,21 @@ export class Path {
   * @returns {Path}
   */
   update () {
-    const { elem } = this;
+    const { elem } = this
     if (getRotationAngle(elem)) {
-      this.matrix = getMatrix(elem);
-      this.imatrix = this.matrix.inverse();
+      this.matrix = getMatrix(elem)
+      this.imatrix = this.matrix.inverse()
     } else {
-      this.matrix = null;
-      this.imatrix = null;
+      this.matrix = null
+      this.imatrix = null
     }
 
     this.eachSeg(function (i) {
-      this.item = elem.pathSegList.getItem(i);
-      this.update();
-    });
+      this.item = elem.pathSegList.getItem(i)
+      this.update()
+    })
 
-    return this;
+    return this
   }
 
   /**
@@ -952,8 +952,8 @@ export class Path {
   * @returns {void}
   */
   endChanges (text) {
-    const cmd = new ChangeElementCommand(this.elem, { d: this.last_d }, text);
-    svgCanvas.endChanges({ cmd, elem: this.elem });
+    const cmd = new ChangeElementCommand(this.elem, { d: this.last_d }, text)
+    svgCanvas.endChanges({ cmd, elem: this.elem })
   }
 
   /**
@@ -961,27 +961,27 @@ export class Path {
   * @returns {void}
   */
   addPtsToSelection (indexes) {
-    if (!Array.isArray(indexes)) { indexes = [ indexes ]; }
+    if (!Array.isArray(indexes)) { indexes = [indexes] }
     indexes.forEach((index) => {
-      const seg = this.segs[index];
+      const seg = this.segs[index]
       if (seg.ptgrip && !this.selected_pts.includes(index) && index >= 0) {
-        this.selected_pts.push(index);
+        this.selected_pts.push(index)
       }
-    });
-    this.selected_pts.sort();
-    let i = this.selected_pts.length;
-    const grips = [];
-    grips.length = i;
+    })
+    this.selected_pts.sort()
+    let i = this.selected_pts.length
+    const grips = []
+    grips.length = i
     // Loop through points to be selected and highlight each
     while (i--) {
-      const pt = this.selected_pts[i];
-      const seg = this.segs[pt];
-      seg.select(true);
-      grips[i] = seg.ptgrip;
+      const pt = this.selected_pts[i]
+      const seg = this.segs[pt]
+      seg.select(true)
+      grips[i] = seg.ptgrip
     }
 
-    const closedSubpath = Path.subpathIsClosed(this.selected_pts[0]);
-    svgCanvas.addPtsToSelection({ grips, closedSubpath });
+    const closedSubpath = Path.subpathIsClosed(this.selected_pts[0])
+    svgCanvas.addPtsToSelection({ grips, closedSubpath })
   }
 
   // STATIC
@@ -990,23 +990,23 @@ export class Path {
   * @returns {boolean}
   */
   static subpathIsClosed (index) {
-    let clsd = false;
+    let clsd = false
     // Check if subpath is already open
-    const path = svgCanvas.getPathObj();
+    const path = svgCanvas.getPathObj()
     path.eachSeg(function (i) {
-      if (i <= index) { return true; }
+      if (i <= index) { return true }
       if (this.type === 2) {
         // Found M first, so open
-        return false;
+        return false
       }
       if (this.type === 1) {
         // Found Z first, so closed
-        clsd = true;
-        return false;
+        clsd = true
+        return false
       }
-      return true;
-    });
+      return true
+    })
 
-    return clsd;
+    return clsd
   }
 }

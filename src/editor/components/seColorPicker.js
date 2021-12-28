@@ -1,9 +1,9 @@
 /* globals svgEditor */
-import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js';
-import PaintBox from './PaintBox.js';
-import { t } from '../locale.js';
+import { jGraduate, jGraduateMethod } from './jgraduate/jQuery.jGraduate.js'
+import PaintBox from './PaintBox.js'
+import { t } from '../locale.js'
 
-const template = document.createElement('template');
+const template = document.createElement('template')
 template.innerHTML = `
   <style>
   .jPicker .Icon {
@@ -645,7 +645,7 @@ div.jGraduate_Slider img {
   </div>
   <!-- hidden div -->
   <div id="color_picker"></div>
-`;
+`
 /**
  * @class SeColorPicker
  */
@@ -654,35 +654,38 @@ export class SeColorPicker extends HTMLElement {
     * @function constructor
     */
   constructor () {
-    super();
+    super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.append(template.content.cloneNode(true));
-    this.$logo = this._shadowRoot.getElementById('logo');
-    this.$label = this._shadowRoot.getElementById('label');
-    this.$block = this._shadowRoot.getElementById('block');
-    this.paintBox = null;
-    this.i18next = null;
-    this.$picker = this._shadowRoot.getElementById('picker');
-    this.$color_picker = this._shadowRoot.getElementById('color_picker');
-    this.imgPath = svgEditor.configObj.curConfig.imgPath;
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    this._shadowRoot.append(template.content.cloneNode(true))
+    this.$logo = this._shadowRoot.getElementById('logo')
+    this.$label = this._shadowRoot.getElementById('label')
+    this.$block = this._shadowRoot.getElementById('block')
+    this.paintBox = null
+    this.i18next = null
+    this.$picker = this._shadowRoot.getElementById('picker')
+    this.$color_picker = this._shadowRoot.getElementById('color_picker')
+    this.imgPath = svgEditor.configObj.curConfig.imgPath
   }
+
   /**
    * @function init
    * @param {any} name
    * @returns {void}
    */
   init (i18next) {
-    this.i18next = i18next;
-    this.setAttribute('config-change_xxx_color', t('config.change_xxx_color'));
+    this.i18next = i18next
+    this.setAttribute('config-change_xxx_color', t('config.change_xxx_color'))
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'label', 'src', 'type', 'config-change_xxx_color' ];
+    return ['label', 'src', 'type', 'config-change_xxx_color']
   }
+
   /**
    * @function attributeChangedCallback
    * @param {string} name
@@ -691,31 +694,32 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue) return
     switch (name) {
-    case 'src':
-      this.$logo.setAttribute('src', this.imgPath + '/' + newValue);
-      break;
-    case 'label':
-      this.setAttribute('title', t(newValue));
-      break;
-    case 'type':
-      this.$label.setAttribute('title', 'config.pick_paint_opavity');
-      break;
-    case 'config-change_xxx_color':
-      this.$label.setAttribute('title', newValue);
-      break;
-    default:
-      console.error(`unknown attribute: ${name}`);
-      break;
+      case 'src':
+        this.$logo.setAttribute('src', this.imgPath + '/' + newValue)
+        break
+      case 'label':
+        this.setAttribute('title', t(newValue))
+        break
+      case 'type':
+        this.$label.setAttribute('title', 'config.pick_paint_opavity')
+        break
+      case 'config-change_xxx_color':
+        this.$label.setAttribute('title', newValue)
+        break
+      default:
+        console.error(`unknown attribute: ${name}`)
+        break
     }
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get label () {
-    return this.$label.getAttribute('title');
+    return this.$label.getAttribute('title')
   }
 
   /**
@@ -723,14 +727,15 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   set label (value) {
-    this.setAttribute('label', value);
+    this.setAttribute('label', value)
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get type () {
-    return this.getAttribute('type');
+    return this.getAttribute('type')
   }
 
   /**
@@ -738,14 +743,15 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   set type (value) {
-    this.setAttribute('type', value);
+    this.setAttribute('type', value)
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get src () {
-    return this.getAttribute('src');
+    return this.getAttribute('src')
   }
 
   /**
@@ -753,7 +759,7 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   set src (value) {
-    this.setAttribute('src', value);
+    this.setAttribute('src', value)
   }
 
   /**
@@ -763,20 +769,23 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   update (svgCanvas, selectedElement, apply) {
-    const paint = this.paintBox.update(svgCanvas, selectedElement);
+    const paint = this.paintBox.update(svgCanvas, selectedElement)
     if (paint && apply) {
-      const changeEvent = new CustomEvent('change', { detail: {
-        paint
-      } });
-      this.dispatchEvent(changeEvent);
+      const changeEvent = new CustomEvent('change', {
+        detail: {
+          paint
+        }
+      })
+      this.dispatchEvent(changeEvent)
     }
   }
+
   /**
    * @param {PlainObject} paint
    * @returns {void}
    */
   setPaint (paint) {
-    this.paintBox.setPaint(paint);
+    this.paintBox.setPaint(paint)
   }
 
   /**
@@ -784,9 +793,9 @@ export class SeColorPicker extends HTMLElement {
    * @returns {void}
    */
   connectedCallback () {
-    this.paintBox = new PaintBox(this.$block, this.type);
+    this.paintBox = new PaintBox(this.$block, this.type)
     this.$picker.addEventListener('click', () => {
-      let { paint } = this.paintBox;
+      let { paint } = this.paintBox
       jGraduateMethod(
         this.$color_picker,
         {
@@ -796,22 +805,24 @@ export class SeColorPicker extends HTMLElement {
           newstop: 'inverse'
         },
         (p) => {
-          paint = new jGraduate.Paint(p);
-          this.setPaint(paint);
-          const changeEvent = new CustomEvent('change', { detail: {
-            paint
-          } });
-          this.dispatchEvent(changeEvent);
-          this.$color_picker.style.display = 'none';
+          paint = new jGraduate.Paint(p)
+          this.setPaint(paint)
+          const changeEvent = new CustomEvent('change', {
+            detail: {
+              paint
+            }
+          })
+          this.dispatchEvent(changeEvent)
+          this.$color_picker.style.display = 'none'
         },
         () => {
-          this.$color_picker.style.display = 'none';
+          this.$color_picker.style.display = 'none'
         },
         this.i18next
-      );
-    });
+      )
+    })
   }
 }
 
 // Register
-customElements.define('se-colorpicker', SeColorPicker);
+customElements.define('se-colorpicker', SeColorPicker)

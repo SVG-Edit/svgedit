@@ -6,4 +6,4 @@ export default {
       title: "Dire 'Bonjour le Monde'"
     }
   ]
-};
+}

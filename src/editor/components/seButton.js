@@ -1,6 +1,6 @@
 /* globals svgEditor */
-import { t } from '../locale.js';
-const template = document.createElement('template');
+import { t } from '../locale.js'
+const template = document.createElement('template')
 template.innerHTML = `
   <style>
   :host(:hover) :not(.disabled)
@@ -39,7 +39,7 @@ template.innerHTML = `
   <div title="title">
     <img alt="icon">
   </div>
-`;
+`
 /**
  * @class ToolButton
  */
@@ -48,22 +48,24 @@ export class ToolButton extends HTMLElement {
     * @function constructor
     */
   constructor () {
-    super();
+    super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.append(template.content.cloneNode(true));
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    this._shadowRoot.append(template.content.cloneNode(true))
     // locate the component
-    this.$div = this._shadowRoot.querySelector('div');
-    this.$img = this._shadowRoot.querySelector('img');
-    this.imgPath = svgEditor.configObj.curConfig.imgPath;
+    this.$div = this._shadowRoot.querySelector('div')
+    this.$img = this._shadowRoot.querySelector('img')
+    this.imgPath = svgEditor.configObj.curConfig.imgPath
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'title', 'src', 'pressed', 'disabled', 'size', 'style' ];
+    return ['title', 'src', 'pressed', 'disabled', 'size', 'style']
   }
+
   /**
    * @function attributeChangedCallback
    * @param {string} name
@@ -72,56 +74,57 @@ export class ToolButton extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue) return
     switch (name) {
-    case 'title':
-      {
-        const shortcut = this.getAttribute('shortcut');
-        this.$div.setAttribute('title', `${t(newValue)} ${shortcut ? `[${t(shortcut)}]` : ''}`);
-      }
-      break;
-    case 'style':
-      this.$div.style = newValue;
-      break;
-    case 'src':
-      if (newValue.indexOf("data:") !== -1) {
-        this.$img.setAttribute('src', newValue);
-      } else {
-        this.$img.setAttribute('src', this.imgPath + "/" + newValue);
-      }
-      break;
-    case 'pressed':
-      if (newValue === null) {
-        this.$div.classList.remove('pressed');
-      } else {
-        this.$div.classList.add('pressed');
-      }
-      break;
-    case 'size':
-      if (newValue === 'small') {
-        this.$div.classList.add('small');
-      } else {
-        this.$div.classList.remove('small');
-      }
-      break;
-    case 'disabled':
-      if (newValue) {
-        this.$div.classList.add('disabled');
-      } else {
-        this.$div.classList.remove('disabled');
-      }
-      break;
-    default:
-      console.error(`unknown attribute: ${name}`);
-      break;
+      case 'title':
+        {
+          const shortcut = this.getAttribute('shortcut')
+          this.$div.setAttribute('title', `${t(newValue)} ${shortcut ? `[${t(shortcut)}]` : ''}`)
+        }
+        break
+      case 'style':
+        this.$div.style = newValue
+        break
+      case 'src':
+        if (newValue.indexOf('data:') !== -1) {
+          this.$img.setAttribute('src', newValue)
+        } else {
+          this.$img.setAttribute('src', this.imgPath + '/' + newValue)
+        }
+        break
+      case 'pressed':
+        if (newValue === null) {
+          this.$div.classList.remove('pressed')
+        } else {
+          this.$div.classList.add('pressed')
+        }
+        break
+      case 'size':
+        if (newValue === 'small') {
+          this.$div.classList.add('small')
+        } else {
+          this.$div.classList.remove('small')
+        }
+        break
+      case 'disabled':
+        if (newValue) {
+          this.$div.classList.add('disabled')
+        } else {
+          this.$div.classList.remove('disabled')
+        }
+        break
+      default:
+        console.error(`unknown attribute: ${name}`)
+        break
     }
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get title () {
-    return this.getAttribute('title');
+    return this.getAttribute('title')
   }
 
   /**
@@ -129,14 +132,15 @@ export class ToolButton extends HTMLElement {
    * @returns {void}
    */
   set title (value) {
-    this.setAttribute('title', value);
+    this.setAttribute('title', value)
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get pressed () {
-    return this.hasAttribute('pressed');
+    return this.hasAttribute('pressed')
   }
 
   /**
@@ -146,17 +150,18 @@ export class ToolButton extends HTMLElement {
   set pressed (value) {
     // boolean value => existence = true
     if (value) {
-      this.setAttribute('pressed', 'true');
+      this.setAttribute('pressed', 'true')
     } else {
-      this.removeAttribute('pressed');
+      this.removeAttribute('pressed')
     }
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get disabled () {
-    return this.hasAttribute('disabled');
+    return this.hasAttribute('disabled')
   }
 
   /**
@@ -166,17 +171,18 @@ export class ToolButton extends HTMLElement {
   set disabled (value) {
     // boolean value => existence = true
     if (value) {
-      this.setAttribute('disabled', 'true');
+      this.setAttribute('disabled', 'true')
     } else {
-      this.removeAttribute('disabled');
+      this.removeAttribute('disabled')
     }
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get src () {
-    return this.getAttribute('src');
+    return this.getAttribute('src')
   }
 
   /**
@@ -184,7 +190,7 @@ export class ToolButton extends HTMLElement {
    * @returns {void}
    */
   set src (value) {
-    this.setAttribute('src', value);
+    this.setAttribute('src', value)
   }
 
   /**
@@ -192,7 +198,7 @@ export class ToolButton extends HTMLElement {
    * @returns {any}
    */
   get size () {
-    return this.getAttribute('size');
+    return this.getAttribute('size')
   }
 
   /**
@@ -200,7 +206,7 @@ export class ToolButton extends HTMLElement {
    * @returns {void}
    */
   set size (value) {
-    this.setAttribute('size', value);
+    this.setAttribute('size', value)
   }
 
   /**
@@ -209,22 +215,22 @@ export class ToolButton extends HTMLElement {
    */
   connectedCallback () {
     // capture shortcuts
-    const shortcut = this.getAttribute('shortcut');
+    const shortcut = this.getAttribute('shortcut')
     if (shortcut) {
       // register the keydown event
       document.addEventListener('keydown', (e) => {
         // only track keyboard shortcuts for the body containing the SVG-Editor
-        if (e.target.nodeName !== 'BODY') return;
+        if (e.target.nodeName !== 'BODY') return
         // normalize key
-        const key = `${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toUpperCase()}`;
-        if (shortcut !== key) return;
+        const key = `${(e.metaKey) ? 'meta+' : ''}${(e.ctrlKey) ? 'ctrl+' : ''}${e.key.toUpperCase()}`
+        if (shortcut !== key) return
         // launch the click event
-        this.click();
-        e.preventDefault();
-      });
+        this.click()
+        e.preventDefault()
+      })
     }
   }
 }
 
 // Register
-customElements.define('se-button', ToolButton);
+customElements.define('se-button', ToolButton)

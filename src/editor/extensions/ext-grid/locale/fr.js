@@ -5,4 +5,4 @@ export default {
       title: 'Afficher/Cacher Grille'
     }
   ]
-};
+}

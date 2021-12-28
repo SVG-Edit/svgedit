@@ -28,9 +28,9 @@ This is the general format for an extension:
 export default {
   name: 'extensionname',
   init (_methods) {
-    return extensionData;
+    return extensionData
   }
-};
+}
 ```
 
 Extensions must export an object. (For the API docs of this object, see
@@ -86,9 +86,9 @@ export default {
       mouseUp (_opts) {
         // ...
       }
-    };
+    }
   }
-};
+}
 ```
 
 Note how the returned properties may include information on the buttons,
@@ -145,15 +145,15 @@ import { importSetGlobalDefault } from '../external/dynamic-import-polyfill/impo
 
 (async () => {
 
-  const url = `${svgEditor.curConfig.extPath}ext-locale/<extNameWithoutExtPrefix>/<lang>.js`;
+  const url = `${svgEditor.curConfig.extPath}ext-locale/<extNameWithoutExtPrefix>/<lang>.js`
   const localeStrings = await importSetGlobalDefault(url, {
     global: 'svgEditorExtensionLocale_imagelib_' + lang
-  });
+  })
 
   // Use `localeStrings`
-  console.info(localeStrings);
+  console.info(localeStrings)
 
-})();
+})()
 ```
 
 In addition to your own extension's locale strings,

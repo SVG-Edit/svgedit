@@ -1,13 +1,13 @@
 import {
   getStrokedBBoxDefaultVisible
-} from './utilities.js';
-import * as hstry from './history.js';
+} from './utilities.js'
+import * as hstry from './history.js'
 
 const {
   InsertElementCommand, BatchCommand
-} = hstry;
+} = hstry
 
-let svgCanvas = null;
+let svgCanvas = null
 
 /**
 * @function module:paste-elem.init
@@ -15,8 +15,8 @@ let svgCanvas = null;
 * @returns {void}
 */
 export const init = function (canvas) {
-  svgCanvas = canvas;
-};
+  svgCanvas = canvas
+}
 
 /**
 * @function module:svgcanvas.SvgCanvas#pasteElements
@@ -28,13 +28,13 @@ export const init = function (canvas) {
 * @returns {void}
 */
 export const pasteElementsMethod = function (type, x, y) {
-  let clipb = JSON.parse(sessionStorage.getItem(svgCanvas.getClipboardID()));
-  if (!clipb) return;
-  let len = clipb.length;
-  if (!len) return;
+  let clipb = JSON.parse(sessionStorage.getItem(svgCanvas.getClipboardID()))
+  if (!clipb) return
+  let len = clipb.length
+  if (!len) return
 
-  const pasted = [];
-  const batchCmd = new BatchCommand('Paste elements');
+  const pasted = []
+  const batchCmd = new BatchCommand('Paste elements')
   // const drawing = getCurrentDrawing();
   /**
 * @typedef {PlainObject<string, string>} module:svgcanvas.ChangedIDs
@@ -42,7 +42,7 @@ export const pasteElementsMethod = function (type, x, y) {
   /**
 * @type {module:svgcanvas.ChangedIDs}
 */
-  const changedIDs = {};
+  const changedIDs = {}
 
   // Recursively replace IDs and record the changes
   /**
@@ -52,12 +52,12 @@ export const pasteElementsMethod = function (type, x, y) {
 */
   function checkIDs (elem) {
     if (elem.attr && elem.attr.id) {
-      changedIDs[elem.attr.id] = svgCanvas.getNextId();
-      elem.attr.id = changedIDs[elem.attr.id];
+      changedIDs[elem.attr.id] = svgCanvas.getNextId()
+      elem.attr.id = changedIDs[elem.attr.id]
     }
-    if (elem.children) elem.children.forEach((child) => checkIDs(child));
+    if (elem.children) elem.children.forEach((child) => checkIDs(child))
   }
-  clipb.forEach((elem) => checkIDs(elem));
+  clipb.forEach((elem) => checkIDs(elem))
 
   // Give extensions like the connector extension a chance to reflect new IDs and remove invalid elements
   /**
@@ -73,55 +73,55 @@ export const pasteElementsMethod = function (type, x, y) {
     { elems: clipb, changes: changedIDs },
     true
   ).forEach(function (extChanges) {
-    if (!extChanges || !('remove' in extChanges)) return;
+    if (!extChanges || !('remove' in extChanges)) return
 
     extChanges.remove.forEach(function (removeID) {
       clipb = clipb.filter(function (clipBoardItem) {
-        return clipBoardItem.attr.id !== removeID;
-      });
-    });
-  });
+        return clipBoardItem.attr.id !== removeID
+      })
+    })
+  })
 
   // Move elements to lastClickPoint
   while (len--) {
-    const elem = clipb[len];
-    if (!elem) { continue; }
+    const elem = clipb[len]
+    if (!elem) { continue }
 
-    const copy = svgCanvas.addSVGElemensFromJson(elem);
-    pasted.push(copy);
-    batchCmd.addSubCommand(new InsertElementCommand(copy));
+    const copy = svgCanvas.addSVGElemensFromJson(elem)
+    pasted.push(copy)
+    batchCmd.addSubCommand(new InsertElementCommand(copy))
 
-    svgCanvas.restoreRefElements(copy);
+    svgCanvas.restoreRefElements(copy)
   }
 
-  svgCanvas.selectOnly(pasted);
+  svgCanvas.selectOnly(pasted)
 
   if (type !== 'in_place') {
-    let ctrX; let ctrY;
+    let ctrX; let ctrY
 
     if (!type) {
-      ctrX = svgCanvas.getLastClickPoint('x');
-      ctrY = svgCanvas.getLastClickPoint('y');
+      ctrX = svgCanvas.getLastClickPoint('x')
+      ctrY = svgCanvas.getLastClickPoint('y')
     } else if (type === 'point') {
-      ctrX = x;
-      ctrY = y;
+      ctrX = x
+      ctrY = y
     }
 
-    const bbox = getStrokedBBoxDefaultVisible(pasted);
-    const cx = ctrX - (bbox.x + bbox.width / 2);
-    const cy = ctrY - (bbox.y + bbox.height / 2);
-    const dx = [];
-    const dy = [];
+    const bbox = getStrokedBBoxDefaultVisible(pasted)
+    const cx = ctrX - (bbox.x + bbox.width / 2)
+    const cy = ctrY - (bbox.y + bbox.height / 2)
+    const dx = []
+    const dy = []
 
-    pasted.forEach(function(_item){
-      dx.push(cx);
-      dy.push(cy);
-    });
+    pasted.forEach(function (_item) {
+      dx.push(cx)
+      dy.push(cy)
+    })
 
-    const cmd = svgCanvas.moveSelectedElements(dx, dy, false);
-    if (cmd) batchCmd.addSubCommand(cmd);
+    const cmd = svgCanvas.moveSelectedElements(dx, dy, false)
+    if (cmd) batchCmd.addSubCommand(cmd)
   }
 
-  svgCanvas.addCommandToHistory(batchCmd);
-  svgCanvas.call('changed', pasted);
-};
+  svgCanvas.addCommandToHistory(batchCmd)
+  svgCanvas.call('changed', pasted)
+}

@@ -11,7 +11,7 @@ svgEditor.setCustomHandlers({
   save (_win, _data) {
     // Save svg
   }
-});
+})
 ```
 
 Other methods corresponding to UI events that may be supplied are `open`
@@ -40,9 +40,9 @@ $(document).bind('svgEditorReady', function () {
       "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
     <svg xmlns="http://www.w3.org/2000/svg" width="100" height="50">
       <ellipse cx="50" cy="25" rx="50" ry="25" style="fill:blue;"/>
-    </svg>`;
-  $('iframe.svgedit')[0].contentWindow.svgCanvas.setSvgString(svg);
-});
+    </svg>`
+  $('iframe.svgedit')[0].contentWindow.svgCanvas.setSvgString(svg)
+})
 ```
 
 If you are acting within the frame, you may use `svgEditor.ready`
@@ -86,7 +86,7 @@ Canvas events are listened to with the bind method
 ([JSDocs API]{@link module:svgcanvas.SvgCanvas#bind}):
 
 ```js
-canvas.bind(eventName, callback);
+canvas.bind(eventName, callback)
 ```
 
 Canvas events are passed between the editor and canvas and should mostly

@@ -1,15 +1,15 @@
 import {
   visitAndApproveStorage
-} from '../../../support/ui-test-helper.js';
+} from '../../../support/ui-test-helper.js'
 
 // See https://github.com/SVG-Edit/svgedit/issues/359
 describe('Fix issue 359', function () {
   beforeEach(() => {
-    visitAndApproveStorage();
-  });
+    visitAndApproveStorage()
+  })
 
   it('can undo without throwing', function () {
-    cy.get('#tool_source').click();
+    cy.get('#tool_source').click()
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">
@@ -17,10 +17,10 @@ describe('Fix issue 359', function () {
        <title>Layer 1</title>
         <rect fill="#ffff00" height="70" width="165" x="179.5" y="146.5"/>
       </g>
-     </svg>`, { parseSpecialCharSequences: false, force: true });
-    cy.get('#tool_source_save').click();
-    cy.get('#tool_undo').click();
-    cy.get('#tool_redo').click(); // test also redo to make the test more comprehensive
+     </svg>`, { parseSpecialCharSequences: false, force: true })
+    cy.get('#tool_source_save').click()
+    cy.get('#tool_undo').click()
+    cy.get('#tool_redo').click() // test also redo to make the test more comprehensive
     // if the undo throws an error to the console, the test will fail
-  });
-});
+  })
+})

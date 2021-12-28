@@ -10,71 +10,69 @@
   This is a very basic SVG-Edit extension to let tablet/mobile devices pan without problem
 */
 
-const name = "panning";
+const name = 'panning'
 
 const loadExtensionTranslation = async function (svgEditor) {
-  let translationModule;
-  const lang = svgEditor.configObj.pref('lang');
+  let translationModule
+  const lang = svgEditor.configObj.pref('lang')
   try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${lang}.js`);
+    translationModule = await import(`./locale/${lang}.js`)
   } catch (_error) {
-    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`)
+    translationModule = await import('./locale/en.js')
   }
-  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default);
-};
+  svgEditor.i18next.addResourceBundle(lang, name, translationModule.default)
+}
 
 export default {
   name,
-  async init() {
-    const svgEditor = this;
-    await loadExtensionTranslation(svgEditor);
+  async init () {
+    const svgEditor = this
+    await loadExtensionTranslation(svgEditor)
     const {
       svgCanvas
-    } = svgEditor;
+    } = svgEditor
     const {
       $id
-    } = svgCanvas;
+    } = svgCanvas
     const insertAfter = (referenceNode, newNode) => {
-      referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    };
+      referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling)
+    }
     return {
       name: svgEditor.i18next.t(`${name}:name`),
-      callback() {
-        const btitle = `${name}:buttons.0.title`;
+      callback () {
+        const btitle = `${name}:buttons.0.title`
         // Add the button and its handler(s)
-        const buttonTemplate = document.createElement("template");
-        // eslint-disable-next-line no-unsanitized/property
+        const buttonTemplate = document.createElement('template')
         buttonTemplate.innerHTML = `
         <se-button id="ext-panning" title="${btitle}" src="panning.svg"></se-button>
-        `;
-        insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true));
-        $id('ext-panning').addEventListener("click", () => {
-          if (this.leftPanel.updateLeftPanel("ext-panning")) {
-            svgCanvas.setMode('ext-panning');
+        `
+        insertAfter($id('tool_zoom'), buttonTemplate.content.cloneNode(true))
+        $id('ext-panning').addEventListener('click', () => {
+          if (this.leftPanel.updateLeftPanel('ext-panning')) {
+            svgCanvas.setMode('ext-panning')
           }
-        });
+        })
       },
-      mouseDown() {
+      mouseDown () {
         if (svgCanvas.getMode() === 'ext-panning') {
-          svgEditor.setPanning(true);
+          svgEditor.setPanning(true)
           return {
             started: true
-          };
+          }
         }
-        return undefined;
+        return undefined
       },
-      mouseUp() {
+      mouseUp () {
         if (svgCanvas.getMode() === 'ext-panning') {
-          svgEditor.setPanning(false);
+          svgEditor.setPanning(false)
           return {
             keep: false,
             element: null
-          };
+          }
         }
-        return undefined;
+        return undefined
       }
-    };
+    }
   }
-};
+}

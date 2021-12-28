@@ -5,7 +5,7 @@
  * @copyright 2011 Jeff Schiller
  */
 
-let svgCanvas = null;
+let svgCanvas = null
 
 /**
 * @function module:blur.init
@@ -13,8 +13,8 @@ let svgCanvas = null;
 * @returns {void}
 */
 export const init = function (canvas) {
-  svgCanvas = canvas;
-};
+  svgCanvas = canvas
+}
 
 /**
 * Sets the `stdDeviation` blur value on the selected element without being undoable.
@@ -23,41 +23,41 @@ export const init = function (canvas) {
 * @returns {void}
 */
 export const setBlurNoUndo = function (val) {
-  const selectedElements = svgCanvas.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements()
   if (!svgCanvas.getFilter()) {
-    svgCanvas.setBlur(val);
-    return;
+    svgCanvas.setBlur(val)
+    return
   }
   if (val === 0) {
     // Don't change the StdDev, as that will hide the element.
     // Instead, just remove the value for "filter"
-    svgCanvas.changeSelectedAttributeNoUndoMethod('filter', '');
-    svgCanvas.setFilterHidden(true);
+    svgCanvas.changeSelectedAttributeNoUndoMethod('filter', '')
+    svgCanvas.setFilterHidden(true)
   } else {
-    const elem = selectedElements[0];
+    const elem = selectedElements[0]
     if (svgCanvas.getFilterHidden()) {
-      svgCanvas.changeSelectedAttributeNoUndoMethod('filter', 'url(#' + elem.id + '_blur)');
+      svgCanvas.changeSelectedAttributeNoUndoMethod('filter', 'url(#' + elem.id + '_blur)')
     }
     if (svgCanvas.isWebkit()) {
-      elem.removeAttribute('filter');
-      elem.setAttribute('filter', 'url(#' + elem.id + '_blur)');
+      elem.removeAttribute('filter')
+      elem.setAttribute('filter', 'url(#' + elem.id + '_blur)')
     }
-    const filter = svgCanvas.getFilter();
-    svgCanvas.changeSelectedAttributeNoUndoMethod('stdDeviation', val, [ filter.firstChild ]);
-    svgCanvas.setBlurOffsets(filter, val);
+    const filter = svgCanvas.getFilter()
+    svgCanvas.changeSelectedAttributeNoUndoMethod('stdDeviation', val, [filter.firstChild])
+    svgCanvas.setBlurOffsets(filter, val)
   }
-};
+}
 
 /**
 *
 * @returns {void}
 */
 function finishChange () {
-  const bCmd = svgCanvas.undoMgr.finishUndoableChange();
-  svgCanvas.getCurCommand().addSubCommand(bCmd);
-  svgCanvas.addCommandToHistory(svgCanvas.getCurCommand());
-  svgCanvas.setCurCommand(null);
-  svgCanvas.setFilter(null);
+  const bCmd = svgCanvas.undoMgr.finishUndoableChange()
+  svgCanvas.getCurCommand().addSubCommand(bCmd)
+  svgCanvas.addCommandToHistory(svgCanvas.getCurCommand())
+  svgCanvas.setCurCommand(null)
+  svgCanvas.setFilter(null)
 }
 
 /**
@@ -76,15 +76,15 @@ export const setBlurOffsets = function (filterElem, stdDev) {
       y: '-50%',
       width: '200%',
       height: '200%'
-    }, 100);
+    }, 100)
     // Removing these attributes hides text in Chrome (see Issue 579)
   } else if (!svgCanvas.isWebkit()) {
-    filterElem.removeAttribute('x');
-    filterElem.removeAttribute('y');
-    filterElem.removeAttribute('width');
-    filterElem.removeAttribute('height');
+    filterElem.removeAttribute('x')
+    filterElem.removeAttribute('y')
+    filterElem.removeAttribute('width')
+    filterElem.removeAttribute('height')
   }
-};
+}
 
 /**
 * Adds/updates the blur filter to the selected element.
@@ -96,64 +96,66 @@ export const setBlurOffsets = function (filterElem, stdDev) {
 export const setBlur = function (val, complete) {
   const {
     InsertElementCommand, ChangeElementCommand, BatchCommand
-  } = svgCanvas.history;
+  } = svgCanvas.history
 
-  const selectedElements = svgCanvas.getSelectedElements();
+  const selectedElements = svgCanvas.getSelectedElements()
   if (svgCanvas.getCurCommand()) {
-    finishChange();
-    return;
+    finishChange()
+    return
   }
 
   // Looks for associated blur, creates one if not found
-  const elem = selectedElements[0];
-  const elemId = elem.id;
-  svgCanvas.setFilter(svgCanvas.getElem(elemId + '_blur'));
+  const elem = selectedElements[0]
+  const elemId = elem.id
+  svgCanvas.setFilter(svgCanvas.getElem(elemId + '_blur'))
 
-  val -= 0;
+  val -= 0
 
-  const batchCmd = new BatchCommand();
+  const batchCmd = new BatchCommand()
 
   // Blur found!
   if (svgCanvas.getFilter()) {
     if (val === 0) {
-      svgCanvas.setFilter(null);
+      svgCanvas.setFilter(null)
     }
   } else {
     // Not found, so create
-    const newblur = svgCanvas.addSVGElemensFromJson({ element: 'feGaussianBlur',
+    const newblur = svgCanvas.addSVGElemensFromJson({
+      element: 'feGaussianBlur',
       attr: {
         in: 'SourceGraphic',
         stdDeviation: val
       }
-    });
+    })
 
-    svgCanvas.setFilter(svgCanvas.addSVGElemensFromJson({ element: 'filter',
+    svgCanvas.setFilter(svgCanvas.addSVGElemensFromJson({
+      element: 'filter',
       attr: {
         id: elemId + '_blur'
       }
-    }));
-    svgCanvas.getFilter().append(newblur);
-    svgCanvas.findDefs().append(svgCanvas.getFilter());
+    }))
+    svgCanvas.getFilter().append(newblur)
+    svgCanvas.findDefs().append(svgCanvas.getFilter())
 
-    batchCmd.addSubCommand(new InsertElementCommand(svgCanvas.getFilter()));
+    batchCmd.addSubCommand(new InsertElementCommand(svgCanvas.getFilter()))
   }
 
-  const changes = { filter: elem.getAttribute('filter') };
+  const changes = { filter: elem.getAttribute('filter') }
 
   if (val === 0) {
-    elem.removeAttribute('filter');
-    batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-    return;
+    elem.removeAttribute('filter')
+    batchCmd.addSubCommand(new ChangeElementCommand(elem, changes))
+    return
   }
 
-  svgCanvas.changeSelectedAttribute('filter', 'url(#' + elemId + '_blur)');
-  batchCmd.addSubCommand(new ChangeElementCommand(elem, changes));
-  svgCanvas.setBlurOffsets(svgCanvas.getFilter(), val);
-  const filter = svgCanvas.getFilter();
-  svgCanvas.setCurCommand(batchCmd);
-  svgCanvas.undoMgr.beginUndoableChange('stdDeviation', [ filter ? filter.firstChild : null ]);
+  svgCanvas.changeSelectedAttribute('filter', 'url(#' + elemId + '_blur)')
+  batchCmd.addSubCommand(new ChangeElementCommand(elem, changes))
+  svgCanvas.setBlurOffsets(svgCanvas.getFilter(), val)
+  const filter = svgCanvas.getFilter()
+  svgCanvas.setCurCommand(batchCmd)
+  svgCanvas.undoMgr.beginUndoableChange('stdDeviation', [filter ? filter.firstChild : null])
   if (complete) {
-    svgCanvas.setBlurNoUndo(val);
-    finishChange();
+    svgCanvas.setBlurNoUndo(val)
+    finishChange()
   }
-};
+}

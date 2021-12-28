@@ -2,5 +2,4 @@ lgtm.yml
 coverage/**
 .nyc_output
 instrumented/**
-.eslintcache
 node_modules/**

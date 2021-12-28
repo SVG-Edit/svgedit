@@ -1,5 +1,5 @@
 /* eslint-disable max-len, no-console */
-import SvgCanvas from '../../../instrumented/svgcanvas/svgcanvas.js';
+import SvgCanvas from '../../../instrumented/svgcanvas/svgcanvas.js'
 
 describe('Basic Module', function () {
   // helper functions
@@ -12,34 +12,34 @@ describe('Basic Module', function () {
   };
   */
 
-  let svgCanvas;
+  let svgCanvas
 
   const
     // svgroot = document.getElementById('svgroot'),
     // svgdoc = svgroot.documentElement,
-    svgns = 'http://www.w3.org/2000/svg';
-  const xlinkns = 'http://www.w3.org/1999/xlink';
+    svgns = 'http://www.w3.org/2000/svg'
+  const xlinkns = 'http://www.w3.org/1999/xlink'
 
   beforeEach(() => {
-    document.body.textContent = '';
-    const svgEditor = document.createElement('div');
-    svgEditor.id = 'svg_editor';
-    const svgcanvas = document.createElement('div');
-    svgcanvas.style.visibility = 'hidden';
-    svgcanvas.id = 'svgcanvas';
-    const workarea = document.createElement('div');
-    workarea.id = 'workarea';
-    workarea.append(svgcanvas);
-    const toolsLeft = document.createElement('div');
-    toolsLeft.id = 'tools_left';
+    document.body.textContent = ''
+    const svgEditor = document.createElement('div')
+    svgEditor.id = 'svg_editor'
+    const svgcanvas = document.createElement('div')
+    svgcanvas.style.visibility = 'hidden'
+    svgcanvas.id = 'svgcanvas'
+    const workarea = document.createElement('div')
+    workarea.id = 'workarea'
+    workarea.append(svgcanvas)
+    const toolsLeft = document.createElement('div')
+    toolsLeft.id = 'tools_left'
 
-    svgEditor.append(workarea, toolsLeft);
-    document.body.append(svgEditor);
+    svgEditor.append(workarea, toolsLeft)
+    document.body.append(svgEditor)
 
     svgCanvas = new SvgCanvas(
       document.getElementById('svgcanvas'), {
         canvas_expansion: 3,
-        dimensions: [ 640, 480 ],
+        dimensions: [640, 480],
         initFill: {
           color: 'FF0000', // solid red
           opacity: 1
@@ -53,20 +53,20 @@ describe('Basic Module', function () {
         imgPath: '../editor/images',
         langPath: 'locale/',
         extPath: 'extensions/',
-        extensions: [ 'ext-arrows.js', 'ext-eyedropper.js' ],
+        extensions: ['ext-arrows.js', 'ext-eyedropper.js'],
         initTool: 'select',
         wireframe: false
       }
-    );
-  });
+    )
+  })
 
   it('Test existence of SvgCanvas object', function () {
-    assert.equal(typeof {}, typeof svgCanvas);
-  });
+    assert.equal(typeof {}, typeof svgCanvas)
+  })
 
   describe('Path Module', function () {
     it('Test path conversion from absolute to relative', function () {
-      const convert = svgCanvas.pathActions.convertPath;
+      const convert = svgCanvas.pathActions.convertPath
 
       // TODO: Test these paths:
       // "m400.00491,625.01379a1.78688,1.78688 0 1 1-3.57373,0a1.78688,1.78688 0 1 13.57373,0z"
@@ -78,36 +78,36 @@ describe('Basic Module', function () {
           "<path id='p1' d='M100,100 L200,100 L100,100Z'/>" +
           "<path id='p2' d='m 0,0 l 200,0 l 0,100 L 0,100'/>" +
         '</svg>'
-      );
+      )
 
-      const p1 = document.getElementById('p1');
-      const p2 = document.getElementById('p2');
-      const dAbs = p1.getAttribute('d');
-      const seglist = p1.pathSegList;
+      const p1 = document.getElementById('p1')
+      const p2 = document.getElementById('p2')
+      const dAbs = p1.getAttribute('d')
+      const seglist = p1.pathSegList
 
-      assert.equal(p1.nodeName, 'path', "Expected 'path', got");
+      assert.equal(p1.nodeName, 'path', "Expected 'path', got")
 
-      assert.equal(seglist.numberOfItems, 4, 'Number of segments before conversion');
+      assert.equal(seglist.numberOfItems, 4, 'Number of segments before conversion')
 
       // verify segments before conversion
-      let curseg = seglist.getItem(0);
-      assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'M', 'Before conversion, segment #1 type');
-      curseg = seglist.getItem(1);
-      assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'L', 'Before conversion, segment #2 type');
-      curseg = seglist.getItem(3);
-      assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'Z', 'Before conversion, segment #3 type' + dAbs);
+      let curseg = seglist.getItem(0)
+      assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'M', 'Before conversion, segment #1 type')
+      curseg = seglist.getItem(1)
+      assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'L', 'Before conversion, segment #2 type')
+      curseg = seglist.getItem(3)
+      assert.equal(curseg.pathSegTypeAsLetter.toUpperCase(), 'Z', 'Before conversion, segment #3 type' + dAbs)
 
       // convert and verify segments
-      let d = convert(p1, true);
-      assert.equal(d, 'm100,100l100,0l-100,0z', 'Converted path to relative string');
+      let d = convert(p1, true)
+      assert.equal(d, 'm100,100l100,0l-100,0z', 'Converted path to relative string')
 
       // TODO: see why this isn't working in SVG-edit
-      d = convert(p2, true);
-      console.log('Convert true', d);
-      d = convert(p2, false);
-      console.log('Convert false', d);
-    });
-  });
+      d = convert(p2, true)
+      console.log('Convert true', d)
+      d = convert(p2, false)
+      console.log('Convert false', d)
+    })
+  })
 
   describe('Import Module', function () {
     it('Test import use', function () {
@@ -118,16 +118,16 @@ describe('Basic Module', function () {
           "<use id='foreign-use' xlink:href='somefile.svg#the-rect'/>" +
           "<use id='no-use'/>" +
         '</svg>'
-      );
+      )
 
-      const u = document.getElementById('the-use');
-      const fu = document.getElementById('foreign-use');
-      const nfu = document.getElementById('no-use');
+      const u = document.getElementById('the-use')
+      const fu = document.getElementById('foreign-use')
+      const nfu = document.getElementById('no-use')
 
-      assert.equal((u && u.nodeName), 'use', 'Did not import <use> element');
-      assert.equal(fu, null, 'Removed <use> element that had a foreign href');
-      assert.equal(nfu, null, 'Removed <use> element that had no href');
-    });
+      assert.equal((u && u.nodeName), 'use', 'Did not import <use> element')
+      assert.equal(fu, null, 'Removed <use> element that had a foreign href')
+      assert.equal(nfu, null, 'Removed <use> element that had no href')
+    })
 
     // This test shows that an element with an invalid attribute is still parsed in properly
     // and only the attribute is not imported
@@ -136,13 +136,13 @@ describe('Basic Module', function () {
         '<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">' +
           '<text x="182.75" y="173.5" id="the-text" fill="#008000" font-size="150" font-family="serif" text-anchor="middle" d="M116,222 L110,108">words</text>' +
         '</svg>'
-      );
+      )
 
-      const t = document.getElementById('the-text');
+      const t = document.getElementById('the-text')
 
-      assert.equal((t && t.nodeName), 'text', 'Did not import <text> element');
-      assert.equal(t.getAttribute('d'), null, 'Imported a <text> with a d attribute');
-    });
+      assert.equal((t && t.nodeName), 'text', 'Did not import <text> element')
+      assert.equal(t.getAttribute('d'), null, 'Imported a <text> with a d attribute')
+    })
 
     // This test makes sure import/export properly handles namespaced attributes
     it('Test importing/exporting namespaced attributes', function () {
@@ -151,22 +151,22 @@ describe('Basic Module', function () {
           '<image xlink:href="../editor/images/logo.png"/>' +
           '<polyline id="se_test_elem" se:foo="bar" foo:bar="baz"/>' +
         '</svg>'
-      );
-      const attrVal = document.getElementById('se_test_elem').getAttributeNS('http://svg-edit.googlecode.com', 'foo');
+      )
+      const attrVal = document.getElementById('se_test_elem').getAttributeNS('http://svg-edit.googlecode.com', 'foo')
 
-      assert.strictEqual(attrVal, 'bar', true, 'Preserved namespaced attribute on import');
+      assert.strictEqual(attrVal, 'bar', true, 'Preserved namespaced attribute on import')
 
-      const output = svgCanvas.getSvgString();
-      const hasXlink = output.includes('xmlns:xlink="http://www.w3.org/1999/xlink"');
-      const hasSe = output.includes('xmlns:se=');
-      const hasFoo = output.includes('xmlns:foo=');
-      const hasAttr = output.includes('se:foo="bar"');
+      const output = svgCanvas.getSvgString()
+      const hasXlink = output.includes('xmlns:xlink="http://www.w3.org/1999/xlink"')
+      const hasSe = output.includes('xmlns:se=')
+      const hasFoo = output.includes('xmlns:foo=')
+      const hasAttr = output.includes('se:foo="bar"')
 
-      assert.equal(hasAttr, true, 'Preserved namespaced attribute on export');
-      assert.equal(hasXlink, true, 'Included xlink: xmlns');
-      assert.equal(hasSe, true, 'Included se: xmlns');
-      assert.equal(hasFoo, false, 'Did not include foo: xmlns');
-    });
+      assert.equal(hasAttr, true, 'Preserved namespaced attribute on export')
+      assert.equal(hasXlink, true, 'Included xlink: xmlns')
+      assert.equal(hasSe, true, 'Included se: xmlns')
+      assert.equal(hasFoo, false, 'Did not include foo: xmlns')
+    })
 
     it('Test import math elements inside a foreignObject', function () {
       /* const set = */ svgCanvas.setSvgString(
@@ -179,17 +179,17 @@ describe('Basic Module', function () {
             '</math>' +
           '</foreignObject>' +
         '</svg>'
-      );
-      const fo = document.getElementById('fo');
+      )
+      const fo = document.getElementById('fo')
       // we cannot use getElementById('math') because not all browsers understand MathML and do not know to use the @id attribute
       // see Bug https://bugs.webkit.org/show_bug.cgi?id=35042
-      const math = fo.firstChild;
+      const math = fo.firstChild
 
-      assert.equal(Boolean(math), true, 'Math element exists');
-      assert.equal(math.nodeName, 'math', 'Math element has the proper nodeName');
-      assert.equal(math.getAttribute('id'), 'm', 'Math element has an id');
-      assert.equal(math.namespaceURI, 'http://www.w3.org/1998/Math/MathML', 'Preserved MathML namespace');
-    });
+      assert.equal(Boolean(math), true, 'Math element exists')
+      assert.equal(math.nodeName, 'math', 'Math element has the proper nodeName')
+      assert.equal(math.getAttribute('id'), 'm', 'Math element has an id')
+      assert.equal(math.namespaceURI, 'http://www.w3.org/1998/Math/MathML', 'Preserved MathML namespace')
+    })
 
     it('Test importing SVG into existing drawing', function () {
       /* const doc = */ svgCanvas.setSvgString(
@@ -199,23 +199,23 @@ describe('Basic Module', function () {
             '<ellipse cx="300" cy="100" rx="40" ry="30" fill="green"/>' +
           '</g>' +
         '</svg>'
-      );
+      )
 
       svgCanvas.importSvgString(
         '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">' +
           '<circle cx="50" cy="50" r="40" fill="yellow"/>' +
           '<rect width="20" height="20" fill="blue"/>' +
         '</svg>'
-      );
+      )
 
-      const svgContent = document.getElementById('svgcontent');
-      const circles = svgContent.getElementsByTagNameNS(svgns, 'circle');
-      const rects = svgContent.getElementsByTagNameNS(svgns, 'rect');
-      const ellipses = svgContent.getElementsByTagNameNS(svgns, 'ellipse');
-      assert.equal(circles.length, 2, 'Found two circles upon importing');
-      assert.equal(rects.length, 1, 'Found one rectangle upon importing');
-      assert.equal(ellipses.length, 1, 'Found one ellipse upon importing');
-    });
+      const svgContent = document.getElementById('svgcontent')
+      const circles = svgContent.getElementsByTagNameNS(svgns, 'circle')
+      const rects = svgContent.getElementsByTagNameNS(svgns, 'rect')
+      const ellipses = svgContent.getElementsByTagNameNS(svgns, 'ellipse')
+      assert.equal(circles.length, 2, 'Found two circles upon importing')
+      assert.equal(rects.length, 1, 'Found one rectangle upon importing')
+      assert.equal(ellipses.length, 1, 'Found one ellipse upon importing')
+    })
 
     it('Test importing SVG remaps IDs', function () {
       /* const doc = */ svgCanvas.setSvgString(
@@ -226,7 +226,7 @@ describe('Basic Module', function () {
             '<ellipse id="svg_3" cx="300" cy="100" rx="40" ry="30" fill="green"/>' +
           '</g>' +
         '</svg>'
-      );
+      )
 
       svgCanvas.importSvgString(
         '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink">' +
@@ -240,24 +240,24 @@ describe('Basic Module', function () {
           '<circle id="svg_1" cx="50" cy="50" r="40" fill="url(#svg_2)"/>' +
           '<use id="svg_4" width="30" height="30" xl:href="#svg_3"/>' +
         '</svg>'
-      );
+      )
 
-      const svgContent = document.getElementById('svgcontent');
-      const circles = svgContent.getElementsByTagNameNS(svgns, 'circle');
-      const rects = svgContent.getElementsByTagNameNS(svgns, 'rect');
+      const svgContent = document.getElementById('svgcontent')
+      const circles = svgContent.getElementsByTagNameNS(svgns, 'circle')
+      const rects = svgContent.getElementsByTagNameNS(svgns, 'rect')
       // ellipses = svgContent.getElementsByTagNameNS(svgns, 'ellipse'),
-      const defs = svgContent.getElementsByTagNameNS(svgns, 'defs');
+      const defs = svgContent.getElementsByTagNameNS(svgns, 'defs')
       // grads = svgContent.getElementsByTagNameNS(svgns, 'linearGradient'),
-      const uses = svgContent.getElementsByTagNameNS(svgns, 'use');
-      assert.notEqual(circles.item(0).id, 'svg_1', 'Circle not re-identified');
-      assert.notEqual(rects.item(0).id, 'svg_3', 'Rectangle not re-identified');
+      const uses = svgContent.getElementsByTagNameNS(svgns, 'use')
+      assert.notEqual(circles.item(0).id, 'svg_1', 'Circle not re-identified')
+      assert.notEqual(rects.item(0).id, 'svg_3', 'Rectangle not re-identified')
       // TODO: determine why this test fails in WebKit browsers
       // assert.equal(grads.length, 1, 'Linear gradient imported');
-      const grad = defs.item(0).firstChild;
-      assert.notEqual(grad.id, 'svg_2', 'Linear gradient not re-identified');
-      assert.notEqual(circles.item(0).getAttribute('fill'), 'url(#svg_2)', 'Circle fill value not remapped');
-      assert.notEqual(rects.item(0).getAttribute('stroke'), 'url(#svg_2)', 'Rectangle stroke value not remapped');
-      assert.notEqual(uses.item(0).getAttributeNS(xlinkns, 'href'), '#svg_3');
-    });
-  });
-});
+      const grad = defs.item(0).firstChild
+      assert.notEqual(grad.id, 'svg_2', 'Linear gradient not re-identified')
+      assert.notEqual(circles.item(0).getAttribute('fill'), 'url(#svg_2)', 'Circle fill value not remapped')
+      assert.notEqual(rects.item(0).getAttribute('stroke'), 'url(#svg_2)', 'Rectangle stroke value not remapped')
+      assert.notEqual(uses.item(0).getAttributeNS(xlinkns, 'href'), '#svg_3')
+    })
+  })
+})

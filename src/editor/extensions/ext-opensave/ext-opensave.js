@@ -15,66 +15,65 @@
    * @listens module:svgcanvas.SvgCanvas#event:saved
    * @returns {void}
    */
-import { fileOpen, fileSave } from 'browser-fs-access';
+import { fileOpen, fileSave } from 'browser-fs-access'
 
-const name = "opensave";
-let handle = null;
+const name = 'opensave'
+let handle = null
 
 const loadExtensionTranslation = async function (svgEditor) {
-  let translationModule;
-  const lang = svgEditor.configObj.pref('lang');
+  let translationModule
+  const lang = svgEditor.configObj.pref('lang')
   try {
-    // eslint-disable-next-line no-unsanitized/method
-    translationModule = await import(`./locale/${lang}.js`);
+    translationModule = await import(`./locale/${lang}.js`)
   } catch (_error) {
-    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`);
-    translationModule = await import(`./locale/en.js`);
+    console.warn(`Missing translation (${lang}) for ${name} - using 'en'`)
+    translationModule = await import('./locale/en.js')
   }
-  svgEditor.i18next.addResourceBundle(lang, 'translation', translationModule.default, true, true);
-};
+  svgEditor.i18next.addResourceBundle(lang, 'translation', translationModule.default, true, true)
+}
 
 export default {
   name,
-  async init(_S) {
-    const svgEditor = this;
-    const { svgCanvas } = svgEditor;
-    const { $id } = svgCanvas;
-    await loadExtensionTranslation(svgEditor);
+  async init (_S) {
+    const svgEditor = this
+    const { svgCanvas } = svgEditor
+    const { $id } = svgCanvas
+    await loadExtensionTranslation(svgEditor)
     /**
     * @param {Event} e
     * @returns {void}
     */
     const importImage = (e) => {
-      $id('se-prompt-dialog').title = this.i18next.t('notification.loadingImage');
-      $id('se-prompt-dialog').setAttribute('close', false);
-      e.stopPropagation();
-      e.preventDefault();
-      const file = (e.type === 'drop') ? e.dataTransfer.files[0] : e.currentTarget.files[0];
+      $id('se-prompt-dialog').title = this.i18next.t('notification.loadingImage')
+      $id('se-prompt-dialog').setAttribute('close', false)
+      e.stopPropagation()
+      e.preventDefault()
+      const file = (e.type === 'drop') ? e.dataTransfer.files[0] : e.currentTarget.files[0]
       if (!file) {
-        $id('se-prompt-dialog').setAttribute('close', true);
-        return;
+        $id('se-prompt-dialog').setAttribute('close', true)
+        return
       }
 
       if (!file.type.includes('image')) {
-        return;
+        return
       }
       // Detected an image
       // svg handling
-      let reader;
+      let reader
       if (file.type.includes('svg')) {
-        reader = new FileReader();
-        reader.onloadend =  (ev) => {
-          const newElement = this.svgCanvas.importSvgString(ev.target.result, true);
-          this.svgCanvas.alignSelectedElements('m', 'page');
-          this.svgCanvas.alignSelectedElements('c', 'page');
+        reader = new FileReader()
+        reader.onloadend = (ev) => {
+          const newElement = this.svgCanvas.importSvgString(ev.target.result, true)
+          this.svgCanvas.alignSelectedElements('m', 'page')
+          this.svgCanvas.alignSelectedElements('c', 'page')
           // highlight imported element, otherwise we get strange empty selectbox
-          this.svgCanvas.selectOnly([ newElement ]);
-          $id('se-prompt-dialog').setAttribute('close', true);
-        };
-        reader.readAsText(file);
+          this.svgCanvas.selectOnly([newElement])
+          $id('se-prompt-dialog').setAttribute('close', true)
+        }
+        reader.readAsText(file)
       } else {
         // bitmap handling
-        reader = new FileReader();
+        reader = new FileReader()
         reader.onloadend = function ({ target: { result } }) {
           /**
               * Insert the new image until we know its dimensions.
@@ -93,54 +92,54 @@ export default {
                 id: this.svgCanvas.getNextId(),
                 style: 'pointer-events:inherit'
               }
-            });
-            this.svgCanvas.setHref(newImage, result);
-            this.svgCanvas.selectOnly([ newImage ]);
-            this.svgCanvas.alignSelectedElements('m', 'page');
-            this.svgCanvas.alignSelectedElements('c', 'page');
-            this.topPanel.updateContextPanel();
-            $id('se-prompt-dialog').setAttribute('close', true);
-          };
+            })
+            this.svgCanvas.setHref(newImage, result)
+            this.svgCanvas.selectOnly([newImage])
+            this.svgCanvas.alignSelectedElements('m', 'page')
+            this.svgCanvas.alignSelectedElements('c', 'page')
+            this.topPanel.updateContextPanel()
+            $id('se-prompt-dialog').setAttribute('close', true)
+          }
           // create dummy img so we know the default dimensions
-          let imgWidth = 100;
-          let imgHeight = 100;
-          const img = new Image();
-          img.style.opacity = 0;
+          let imgWidth = 100
+          let imgHeight = 100
+          const img = new Image()
+          img.style.opacity = 0
           img.addEventListener('load', () => {
-            imgWidth = img.offsetWidth || img.naturalWidth || img.width;
-            imgHeight = img.offsetHeight || img.naturalHeight || img.height;
-            insertNewImage(imgWidth, imgHeight);
-          });
-          img.src = result;
-        };
-        reader.readAsDataURL(file);
+            imgWidth = img.offsetWidth || img.naturalWidth || img.width
+            imgHeight = img.offsetHeight || img.naturalHeight || img.height
+            insertNewImage(imgWidth, imgHeight)
+          })
+          img.src = result
+        }
+        reader.readAsDataURL(file)
       }
-    };
+    }
     // create an input with type file to open the filesystem dialog
-    const imgImport = document.createElement('input');
-    imgImport.type="file";
-    imgImport.addEventListener('change', importImage);
+    const imgImport = document.createElement('input')
+    imgImport.type = 'file'
+    imgImport.addEventListener('change', importImage)
     // dropping a svg file will import it in the svg as well
-    this.workarea.addEventListener('drop', importImage);
+    this.workarea.addEventListener('drop', importImage)
     /**
      * @fires module:svgcanvas.SvgCanvas#event:ext_onNewDocument
      * @returns {void}
      */
     const clickClear = async function () {
-      const [ x, y ] = svgEditor.configObj.curConfig.dimensions;
-      const ok = await seConfirm(svgEditor.i18next.t('notification.QwantToClear'));
-      if (ok === "Cancel") {
-        return;
+      const [x, y] = svgEditor.configObj.curConfig.dimensions
+      const ok = await seConfirm(svgEditor.i18next.t('notification.QwantToClear'))
+      if (ok === 'Cancel') {
+        return
       }
-      svgEditor.leftPanel.clickSelect();
-      svgEditor.svgCanvas.clear();
-      svgEditor.svgCanvas.setResolution(x, y);
-      svgEditor.updateCanvas(true);
-      svgEditor.zoomImage();
-      svgEditor.layersPanel.populateLayers();
-      svgEditor.topPanel.updateContextPanel();
-      svgEditor.svgCanvas.runExtensions("onNewDocument");
-    };
+      svgEditor.leftPanel.clickSelect()
+      svgEditor.svgCanvas.clear()
+      svgEditor.svgCanvas.setResolution(x, y)
+      svgEditor.updateCanvas(true)
+      svgEditor.zoomImage()
+      svgEditor.layersPanel.populateLayers()
+      svgEditor.topPanel.updateContextPanel()
+      svgEditor.svgCanvas.runExtensions('onNewDocument')
+    }
 
     /**
      * By default,  this.editor.svgCanvas.open() is a no-op. It is up to an extension
@@ -150,113 +149,113 @@ export default {
      */
     const clickOpen = async function () {
       // ask user before clearing an unsaved SVG
-      const response = await svgEditor.openPrep();
-      if (response === 'Cancel') { return; }
-      svgCanvas.clear();
+      const response = await svgEditor.openPrep()
+      if (response === 'Cancel') { return }
+      svgCanvas.clear()
       try {
         const blob = await fileOpen({
-          mimeTypes: [ 'image/*' ]
-        });
-        const svgContent = await blob.text();
-        await svgEditor.loadSvgString(svgContent);
-        svgEditor.updateCanvas();
+          mimeTypes: ['image/*']
+        })
+        const svgContent = await blob.text()
+        await svgEditor.loadSvgString(svgContent)
+        svgEditor.updateCanvas()
       } catch (err) {
         if (err.name !== 'AbortError') {
-          return console.error(err);
+          return console.error(err)
         }
       }
-    };
+    }
 
-    const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
-      const byteCharacters = atob(b64Data);
-      const byteArrays = [];
+    const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+      const byteCharacters = atob(b64Data)
+      const byteArrays = []
       for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-        const slice = byteCharacters.slice(offset, offset + sliceSize);
-        const byteNumbers = new Array(slice.length);
+        const slice = byteCharacters.slice(offset, offset + sliceSize)
+        const byteNumbers = new Array(slice.length)
         for (let i = 0; i < slice.length; i++) {
-          byteNumbers[i] = slice.charCodeAt(i);
+          byteNumbers[i] = slice.charCodeAt(i)
         }
-        const byteArray = new Uint8Array(byteNumbers);
-        byteArrays.push(byteArray);
+        const byteArray = new Uint8Array(byteNumbers)
+        byteArrays.push(byteArray)
       }
-      const blob = new Blob(byteArrays, { type: contentType });
-      return blob;
-    };
+      const blob = new Blob(byteArrays, { type: contentType })
+      return blob
+    }
 
     /**
      *
      * @returns {void}
      */
     const clickSave = async function (type, _) {
-      const $editorDialog = $id("se-svg-editor-dialog");
-      const editingsource = $editorDialog.getAttribute("dialog") === "open";
+      const $editorDialog = $id('se-svg-editor-dialog')
+      const editingsource = $editorDialog.getAttribute('dialog') === 'open'
       if (editingsource) {
-        svgEditor.saveSourceEditor();
+        svgEditor.saveSourceEditor()
       } else {
         // In the future, more options can be provided here
         const saveOpts = {
-          images: svgEditor.configObj.pref("img_save"),
+          images: svgEditor.configObj.pref('img_save'),
           round_digits: 6
-        };
+        }
         // remove the selected outline before serializing
-        svgCanvas.clearSelection();
+        svgCanvas.clearSelection()
         // Update save options if provided
         if (saveOpts) {
-          const saveOptions = svgCanvas.mergeDeep(svgCanvas.getSvgOption(), saveOpts);
-          for (const [ key, value ] of Object.entries(saveOptions)) {
-            svgCanvas.setSvgOption(key, value);
+          const saveOptions = svgCanvas.mergeDeep(svgCanvas.getSvgOption(), saveOpts)
+          for (const [key, value] of Object.entries(saveOptions)) {
+            svgCanvas.setSvgOption(key, value)
           }
         }
-        svgCanvas.setSvgOption('apply', true);
+        svgCanvas.setSvgOption('apply', true)
 
         // no need for doctype, see https://jwatt.org/svg/authoring/#doctype-declaration
-        const svg = '<?xml version="1.0"?>\n' + svgCanvas.svgCanvasToString();
-        const b64Data = svgCanvas.encode64(svg);
-        const blob = b64toBlob(b64Data, 'image/svg+xml');
+        const svg = '<?xml version="1.0"?>\n' + svgCanvas.svgCanvasToString()
+        const b64Data = svgCanvas.encode64(svg)
+        const blob = b64toBlob(b64Data, 'image/svg+xml')
         try {
-          if(type === "save" && handle !== null) {
-            const throwIfExistingHandleNotGood = false;
+          if (type === 'save' && handle !== null) {
+            const throwIfExistingHandleNotGood = false
             handle = await fileSave(blob, {
               fileName: 'icon.svg',
-              extensions: [ '.svg' ]
-            }, handle, throwIfExistingHandleNotGood);
+              extensions: ['.svg']
+            }, handle, throwIfExistingHandleNotGood)
           } else {
             handle = await fileSave(blob, {
               fileName: 'icon.svg',
-              extensions: [ '.svg' ]
-            });
+              extensions: ['.svg']
+            })
           }
         } catch (err) {
           if (err.name !== 'AbortError') {
-            return console.error(err);
+            return console.error(err)
           }
         }
       }
-    };
+    }
 
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       // The callback should be used to load the DOM with the appropriate UI items
-      callback() {
+      callback () {
         const buttonTemplate = `
-        <se-menu-item id="tool_clear" label="opensave.new_doc" shortcut="N" src="new.svg"></se-menu-item>`;
-        svgCanvas.insertChildAtIndex($id('main_button'), buttonTemplate, 0);
-        const openButtonTemplate = `<se-menu-item id="tool_open" label="opensave.open_image_doc" src="open.svg"></se-menu-item>`;
-        svgCanvas.insertChildAtIndex($id('main_button'), openButtonTemplate, 1);
-        const saveButtonTemplate = `<se-menu-item id="tool_save" label="opensave.save_doc" shortcut="S" src="saveImg.svg"></se-menu-item>`;
-        svgCanvas.insertChildAtIndex($id('main_button'), saveButtonTemplate, 2);
-        const saveAsButtonTemplate = `<se-menu-item id="tool_save_as" label="opensave.save_as_doc" src="saveImg.svg"></se-menu-item>`;
-        svgCanvas.insertChildAtIndex($id('main_button'), saveAsButtonTemplate, 3);
-        const importButtonTemplate = `<se-menu-item id="tool_import" label="tools.import_doc" src="importImg.svg"></se-menu-item>`;
-        svgCanvas.insertChildAtIndex($id('main_button'), importButtonTemplate, 4);
+        <se-menu-item id="tool_clear" label="opensave.new_doc" shortcut="N" src="new.svg"></se-menu-item>`
+        svgCanvas.insertChildAtIndex($id('main_button'), buttonTemplate, 0)
+        const openButtonTemplate = '<se-menu-item id="tool_open" label="opensave.open_image_doc" src="open.svg"></se-menu-item>'
+        svgCanvas.insertChildAtIndex($id('main_button'), openButtonTemplate, 1)
+        const saveButtonTemplate = '<se-menu-item id="tool_save" label="opensave.save_doc" shortcut="S" src="saveImg.svg"></se-menu-item>'
+        svgCanvas.insertChildAtIndex($id('main_button'), saveButtonTemplate, 2)
+        const saveAsButtonTemplate = '<se-menu-item id="tool_save_as" label="opensave.save_as_doc" src="saveImg.svg"></se-menu-item>'
+        svgCanvas.insertChildAtIndex($id('main_button'), saveAsButtonTemplate, 3)
+        const importButtonTemplate = '<se-menu-item id="tool_import" label="tools.import_doc" src="importImg.svg"></se-menu-item>'
+        svgCanvas.insertChildAtIndex($id('main_button'), importButtonTemplate, 4)
 
         // handler
-        $id("tool_clear").addEventListener("click", clickClear.bind(this));
-        $id("tool_open").addEventListener("click", clickOpen.bind(this));
-        $id("tool_save").addEventListener("click", clickSave.bind(this, "save"));
-        $id("tool_save_as").addEventListener("click", clickSave.bind(this, "saveas"));
-        $id("tool_import").addEventListener("click", () => imgImport.click());
+        $id('tool_clear').addEventListener('click', clickClear.bind(this))
+        $id('tool_open').addEventListener('click', clickOpen.bind(this))
+        $id('tool_save').addEventListener('click', clickSave.bind(this, 'save'))
+        $id('tool_save_as').addEventListener('click', clickSave.bind(this, 'saveas'))
+        $id('tool_import').addEventListener('click', () => imgImport.click())
       }
-    };
+    }
   }
-};
+}

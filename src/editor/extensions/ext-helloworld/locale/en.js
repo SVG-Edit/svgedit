@@ -6,4 +6,4 @@ export default {
       title: "Say 'Hello World'"
     }
   ]
-};
+}

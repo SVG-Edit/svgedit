@@ -21,4 +21,4 @@ export default {
       title: '图元库'
     }
   ]
-};
+}

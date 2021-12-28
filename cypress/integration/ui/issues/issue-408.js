@@ -1,15 +1,15 @@
 import {
   visitAndApproveStorage
-} from '../../../support/ui-test-helper.js';
+} from '../../../support/ui-test-helper.js'
 
 // See https://github.com/SVG-Edit/svgedit/issues/408
 describe('Fix issue 408', function () {
   beforeEach(() => {
-    visitAndApproveStorage();
-  });
+    visitAndApproveStorage()
+  })
 
   it('should not throw when showing/saving svg content', function () {
-    cy.get('#tool_source').click();
+    cy.get('#tool_source').click()
     cy.get('#svg_source_textarea')
       .type('{selectall}', { force: true })
       .type(`<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
@@ -20,10 +20,10 @@ describe('Fix issue 408', function () {
         <circle cx="117.5" cy="87.5" fill="#ffff00" r="19.84943" stroke="#000000" />
        </g>
       </g>
-     </svg>`, { force: true, parseSpecialCharSequences: false });
-    cy.get('#tool_source_save').click();
-    cy.get('#svg_6').click().dblclick(); // change context
-    cy.get('#tool_source').click(); // reopen tool_source
-    cy.get('#tool_source_save').should('exist'); // The save button should be here if it does not throw
-  });
-});
+     </svg>`, { force: true, parseSpecialCharSequences: false })
+    cy.get('#tool_source_save').click()
+    cy.get('#svg_6').click().dblclick() // change context
+    cy.get('#tool_source').click() // reopen tool_source
+    cy.get('#tool_source_save').should('exist') // The save button should be here if it does not throw
+  })
+})
