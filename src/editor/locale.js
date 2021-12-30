@@ -8,7 +8,7 @@
  *
  */
 
-import i18next from 'i18next';
+import i18next from 'i18next'
 
 /**
  * Used, for example, in the ImageLibs extension, to present libraries
@@ -25,7 +25,7 @@ import i18next from 'i18next';
  * @typedef {PlainObject<string, string>} module:locale.LocaleSelectorValue
  */
 
-let langParam;
+let langParam
 
 /**
 * The "data" property is generally set to an an array of objects with
@@ -61,19 +61,18 @@ let langParam;
 
 export const putLocale = async function (givenParam, goodLangs) {
   if (givenParam) {
-    langParam = givenParam;
+    langParam = givenParam
   } else if (navigator.userLanguage) { // Explorer
-    langParam = navigator.userLanguage;
+    langParam = navigator.userLanguage
   } else if (navigator.language) { // FF, Opera, ...
-    langParam = navigator.language;
+    langParam = navigator.language
   }
 
   // Set to English if language is not in list of good langs
   if (!goodLangs.includes(langParam) && langParam !== 'test') {
-    langParam = 'en';
+    langParam = 'en'
   }
-  // eslint-disable-next-line no-unsanitized/method
-  const module = await import(`./locale/lang.${encodeURIComponent(langParam)}.js`);
+  const module = await import(`./locale/lang.${encodeURIComponent(langParam)}.js`)
   i18next.init({
     lng: langParam,
     debug: false,
@@ -82,10 +81,10 @@ export const putLocale = async function (givenParam, goodLangs) {
         translation: module.default
       }
     }
-  });
-  return { langParam, i18next };
-};
+  })
+  return { langParam, i18next }
+}
 
 export const t = function (key) {
-  return i18next.t(key);
-};
+  return i18next.t(key)
+}

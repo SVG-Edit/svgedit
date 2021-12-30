@@ -11,4 +11,4 @@ export default {
   storageNoPrefs: 'Do not store my preferences locally',
   rememberLabel: 'Remember this choice?',
   rememberTooltip: 'If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again.'
-};
+}

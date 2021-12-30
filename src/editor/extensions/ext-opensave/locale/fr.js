@@ -5,4 +5,4 @@ export default {
     save_doc: 'Enregistrer l\'image',
     save_as_doc: 'Enregistrer en tant qu\'image'
   }
-};
+}

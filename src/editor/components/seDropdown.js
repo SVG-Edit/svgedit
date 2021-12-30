@@ -1,8 +1,8 @@
-import ListComboBox from 'elix/define/ListComboBox.js';
-import { defaultState } from 'elix/src/base/internal.js';
-import { templateFrom, fragmentFrom } from 'elix/src/core/htmlLiterals.js';
-import { internal } from 'elix';
-import NumberSpinBox from '../dialogs/se-elix/define/NumberSpinBox.js';
+import ListComboBox from 'elix/define/ListComboBox.js'
+import { defaultState } from 'elix/src/base/internal.js'
+import { templateFrom, fragmentFrom } from 'elix/src/core/htmlLiterals.js'
+import { internal } from 'elix'
+import NumberSpinBox from '../dialogs/se-elix/define/NumberSpinBox.js'
 
 /**
  * @class Dropdown
@@ -15,21 +15,22 @@ class Dropdown extends ListComboBox {
   get [defaultState] () {
     return Object.assign(super[defaultState], {
       inputPartType: NumberSpinBox,
-      src: "logo.svg",
+      src: 'logo.svg',
       inputsize: '100%'
-    });
+    })
   }
+
   /**
     * @function get
     * @returns {PlainObject}
   */
   get [internal.template] () {
-    const result = super[internal.template];
-    const source = result.content.getElementById('source');
+    const result = super[internal.template]
+    const source = result.content.getElementById('source')
     // add a icon before our dropdown
     source.prepend(fragmentFrom.html`
       <img src="dropdown.svg" alt="icon" width="18" height="18"></img>
-      `.cloneNode(true));
+      `.cloneNode(true))
     // change the style so it fits in our toolbar
     result.content.append(
       templateFrom.html`
@@ -48,16 +49,18 @@ class Dropdown extends ListComboBox {
         }
         </style>
       `.content
-    );
-    return result;
+    )
+    return result
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'title', 'src', 'inputsize', 'value' ];
+    return ['title', 'src', 'inputsize', 'value']
   }
+
   /**
    * @function attributeChangedCallback
    * @param {string} name
@@ -66,97 +69,104 @@ class Dropdown extends ListComboBox {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue) return
     switch (name) {
-    case 'title':
+      case 'title':
       // this.$span.setAttribute('title', `${newValue} ${shortcut ? `[${shortcut}]` : ''}`);
-      break;
-    case 'src':
-      this.src = newValue;
-      break;
-    case 'inputsize':
-      this.inputsize = newValue;
-      break;
-    default:
-      super.attributeChangedCallback(name, oldValue, newValue);
-      break;
+        break
+      case 'src':
+        this.src = newValue
+        break
+      case 'inputsize':
+        this.inputsize = newValue
+        break
+      default:
+        super.attributeChangedCallback(name, oldValue, newValue)
+        break
     }
   }
+
   /**
     * @function [internal.render]
     * @param {PlainObject} changed
     * @returns {void}
     */
   [internal.render] (changed) {
-    super[internal.render](changed);
+    super[internal.render](changed)
     if (this[internal.firstRender]) {
-      this.$img = this.shadowRoot.querySelector('img');
-      this.$input = this.shadowRoot.getElementById('input');
+      this.$img = this.shadowRoot.querySelector('img')
+      this.$input = this.shadowRoot.getElementById('input')
     }
     if (changed.src) {
-      this.$img.setAttribute('src', this[internal.state].src);
+      this.$img.setAttribute('src', this[internal.state].src)
     }
     if (changed.inputsize) {
-      this.$input.shadowRoot.querySelector('[part~="input"]').style.width = this[internal.state].inputsize;
+      this.$input.shadowRoot.querySelector('[part~="input"]').style.width = this[internal.state].inputsize
     }
     if (changed.inputPartType) {
       // Wire up handler on new input.
       this.addEventListener('close', (e) => {
-        e.preventDefault();
-        const value = e.detail?.closeResult?.getAttribute('value');
+        e.preventDefault()
+        const value = e.detail?.closeResult?.getAttribute('value')
         if (value) {
-          const closeEvent = new CustomEvent('change', { detail: { value } });
-          this.dispatchEvent(closeEvent);
+          const closeEvent = new CustomEvent('change', { detail: { value } })
+          this.dispatchEvent(closeEvent)
         }
-      });
+      })
     }
   }
+
   /**
    * @function src
    * @returns {string} src
    */
   get src () {
-    return this[internal.state].src;
+    return this[internal.state].src
   }
+
   /**
    * @function src
    * @returns {void}
    */
   set src (src) {
-    this[internal.setState]({ src });
+    this[internal.setState]({ src })
   }
+
   /**
    * @function inputsize
    * @returns {string} src
    */
   get inputsize () {
-    return this[internal.state].inputsize;
+    return this[internal.state].inputsize
   }
+
   /**
    * @function src
    * @returns {void}
    */
   set inputsize (inputsize) {
-    this[internal.setState]({ inputsize });
+    this[internal.setState]({ inputsize })
   }
+
   /**
    * @function value
    * @returns {string} src
    */
   get value () {
-    return this[internal.state].value;
+    return this[internal.state].value
   }
+
   /**
    * @function value
    * @returns {void}
    */
   set value (value) {
-    this[internal.setState]({ value });
+    this[internal.setState]({ value })
   }
 }
 
 // Register
-customElements.define('se-dropdown', Dropdown);
+customElements.define('se-dropdown', Dropdown)
 
 /*
 {TODO

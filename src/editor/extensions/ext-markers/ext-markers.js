@@ -29,12 +29,13 @@
 
 export default {
   name: 'markers',
-  async init (S) {
-    const svgEditor = this;
-    const { svgCanvas } = svgEditor;
-    const { $id, addSVGElementFromJson: addElem } = svgCanvas;
-    const mtypes = [ 'start', 'mid', 'end' ];
-    const markerElems = [ 'line', 'path', 'polyline', 'polygon' ];
+  async init () {
+    const svgEditor = this
+    const { svgCanvas } = svgEditor
+    const { BatchCommand, RemoveElementCommand, InsertElementCommand } = svgCanvas.history
+    const { $id, addSVGElementsFromJson: addElem } = svgCanvas
+    const mtypes = ['start', 'mid', 'end']
+    const markerElems = ['line', 'path', 'polyline', 'polygon']
 
     // note - to add additional marker types add them below with a unique id
     // and add the associated icon(s) to marker-icons.svg
@@ -54,25 +55,25 @@ export default {
     };
 
     // duplicate shapes to support unfilled (open) marker types with an _o suffix
-    [ 'leftarrow', 'rightarrow', 'box', 'mcircle' ].forEach((v) => {
-      markerTypes[v + '_o'] = markerTypes[v];
-    });
+    ['leftarrow', 'rightarrow', 'box', 'mcircle'].forEach((v) => {
+      markerTypes[v + '_o'] = markerTypes[v]
+    })
 
     /**
     * @param {Element} elem - A graphic element will have an attribute like marker-start
     * @param {"marker-start"|"marker-mid"|"marker-end"} attr
     * @returns {Element} The marker element that is linked to the graphic element
     */
-    const getLinked  = (elem, attr) => {
-      const str = elem.getAttribute(attr);
-      if (!str) { return null; }
-      const m = str.match(/\(#(.*)\)/);
+    const getLinked = (elem, attr) => {
+      const str = elem.getAttribute(attr)
+      if (!str) { return null }
+      const m = str.match(/\(#(.*)\)/)
       // "url(#mkr_end_svg_1)" would give m[1] = "mkr_end_svg_1"
       if (!m || m.length !== 2) {
-        return null;
+        return null
       }
-      return svgCanvas.getElem(m[1]);
-    };
+      return svgCanvas.getElement(m[1])
+    }
 
     /**
      * Toggles context tool panel off/on.
@@ -80,18 +81,18 @@ export default {
      * @returns {void}
     */
     const showPanel = (on, elem) => {
-      $id('marker_panel').style.display = (on) ? 'block' : 'none';
+      $id('marker_panel').style.display = (on) ? 'block' : 'none'
       if (on && elem) {
         mtypes.forEach((pos) => {
-          const marker = getLinked(elem, 'marker-' + pos);
+          const marker = getLinked(elem, 'marker-' + pos)
           if (marker?.attributes?.se_type) {
-            $id(`${pos}_marker_list_opts`).setAttribute('value', marker.attributes.se_type.value);
+            $id(`${pos}_marker_list_opts`).setAttribute('value', marker.attributes.se_type.value)
           } else {
-            $id(`${pos}_marker_list_opts`).setAttribute('value', 'nomarker');
+            $id(`${pos}_marker_list_opts`).setAttribute('value', 'nomarker')
           }
-        });
+        })
       }
-    };
+    }
 
     /**
     * @param {string} id
@@ -99,22 +100,22 @@ export default {
     * @returns {SVGMarkerElement}
     */
     const addMarker = (id, seType) => {
-      const selElems = svgCanvas.getSelectedElems();
-      let marker = svgCanvas.getElem(id);
-      if (marker) { return undefined; }
-      if (seType === '' || seType === 'nomarker') { return undefined; }
-      const el = selElems[0];
-      const color = el.getAttribute('stroke');
-      const strokeWidth = 10;
-      const refX = 50;
-      const refY = 50;
-      const viewBox = '0 0 100 100';
-      const markerWidth = 5;
-      const markerHeight = 5;
+      const selElems = svgCanvas.getSelectedElements()
+      let marker = svgCanvas.getElement(id)
+      if (marker) { return undefined }
+      if (seType === '' || seType === 'nomarker') { return undefined }
+      const el = selElems[0]
+      const color = el.getAttribute('stroke')
+      const strokeWidth = 10
+      const refX = 50
+      const refY = 50
+      const viewBox = '0 0 100 100'
+      const markerWidth = 5
+      const markerHeight = 5
 
       if (!markerTypes[seType]) {
-        console.error(`unknown marker type: ${seType}`);
-        return undefined;
+        console.error(`unknown marker type: ${seType}`)
+        return undefined
       }
 
       // create a generic marker
@@ -127,27 +128,27 @@ export default {
           style: 'pointer-events:none',
           se_type: seType
         }
-      });
+      })
 
-      const mel = addElem(markerTypes[seType]);
+      const mel = addElem(markerTypes[seType])
       const fillcolor = (seType.substr(-2) === '_o')
         ? 'none'
-        : color;
+        : color
 
-      mel.setAttribute('fill', fillcolor);
-      mel.setAttribute('stroke', color);
-      mel.setAttribute('stroke-width', strokeWidth);
-      marker.append(mel);
+      mel.setAttribute('fill', fillcolor)
+      mel.setAttribute('stroke', color)
+      mel.setAttribute('stroke-width', strokeWidth)
+      marker.append(mel)
 
-      marker.setAttribute('viewBox', viewBox);
-      marker.setAttribute('markerWidth', markerWidth);
-      marker.setAttribute('markerHeight', markerHeight);
-      marker.setAttribute('refX', refX);
-      marker.setAttribute('refY', refY);
-      svgCanvas.findDefs().append(marker);
+      marker.setAttribute('viewBox', viewBox)
+      marker.setAttribute('markerWidth', markerWidth)
+      marker.setAttribute('markerHeight', markerHeight)
+      marker.setAttribute('refX', refX)
+      marker.setAttribute('refY', refY)
+      svgCanvas.findDefs().append(marker)
 
-      return marker;
-    };
+      return marker
+    }
 
     /**
     * @param {Element} elem
@@ -156,16 +157,16 @@ export default {
     const convertline = (elem) => {
       // this routine came from the connectors extension
       // it is needed because midpoint markers don't work with line elements
-      if (elem.tagName !== 'line') { return elem; }
+      if (elem.tagName !== 'line') { return elem }
 
       // Convert to polyline to accept mid-arrow
-      const x1 = Number(elem.getAttribute('x1'));
-      const x2 = Number(elem.getAttribute('x2'));
-      const y1 = Number(elem.getAttribute('y1'));
-      const y2 = Number(elem.getAttribute('y2'));
-      const { id } = elem;
+      const x1 = Number(elem.getAttribute('x1'))
+      const x2 = Number(elem.getAttribute('x2'))
+      const y1 = Number(elem.getAttribute('y1'))
+      const y2 = Number(elem.getAttribute('y2'))
+      const { id } = elem
 
-      const midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ');
+      const midPt = (' ' + ((x1 + x2) / 2) + ',' + ((y1 + y2) / 2) + ' ')
       const pline = addElem({
         element: 'polyline',
         attr: {
@@ -175,53 +176,53 @@ export default {
           fill: 'none',
           opacity: elem.getAttribute('opacity') || 1
         }
-      });
+      })
       mtypes.forEach((pos) => { // get any existing marker definitions
-        const nam = 'marker-' + pos;
-        const m = elem.getAttribute(nam);
-        if (m) { pline.setAttribute(nam, elem.getAttribute(nam)); }
-      });
+        const nam = 'marker-' + pos
+        const m = elem.getAttribute(nam)
+        if (m) { pline.setAttribute(nam, elem.getAttribute(nam)) }
+      })
 
-      const batchCmd = new S.BatchCommand();
-      batchCmd.addSubCommand(new S.RemoveElementCommand(elem, elem.parentNode));
-      batchCmd.addSubCommand(new S.InsertElementCommand(pline));
+      const batchCmd = new BatchCommand()
+      batchCmd.addSubCommand(new RemoveElementCommand(elem, elem.parentNode))
+      batchCmd.addSubCommand(new InsertElementCommand(pline))
 
-      elem.insertAdjacentElement('afterend', pline);
-      elem.remove();
-      svgCanvas.clearSelection();
-      pline.id = id;
-      svgCanvas.addToSelection([ pline ]);
-      S.addCommandToHistory(batchCmd);
-      return pline;
-    };
+      elem.insertAdjacentElement('afterend', pline)
+      elem.remove()
+      svgCanvas.clearSelection()
+      pline.id = id
+      svgCanvas.addToSelection([pline])
+      svgCanvas.addCommandToHistory(batchCmd)
+      return pline
+    }
 
     /**
     *
     * @returns {void}
     */
     const setMarker = (pos, markerType) => {
-      const selElems = svgCanvas.getSelectedElems();
-      if (selElems.length === 0) return;
-      const markerName = 'marker-' + pos;
-      const el = selElems[0];
-      const marker = getLinked(el, markerName);
-      if (marker) { marker.remove(); }
-      el.removeAttribute(markerName);
-      let val = markerType;
-      if (val === '') { val = 'nomarker'; }
+      const selElems = svgCanvas.getSelectedElements()
+      if (selElems.length === 0) return
+      const markerName = 'marker-' + pos
+      const el = selElems[0]
+      const marker = getLinked(el, markerName)
+      if (marker) { marker.remove() }
+      el.removeAttribute(markerName)
+      let val = markerType
+      if (val === '') { val = 'nomarker' }
       if (val === 'nomarker') {
-        svgCanvas.call('changed', selElems);
-        return;
+        svgCanvas.call('changed', selElems)
+        return
       }
       // Set marker on element
-      const id = 'mkr_' + pos + '_' + el.id;
-      addMarker(id, val);
-      svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')');
+      const id = 'mkr_' + pos + '_' + el.id
+      addMarker(id, val)
+      svgCanvas.changeSelectedAttribute(markerName, 'url(#' + id + ')')
       if (el.tagName === 'line' && pos === 'mid') {
-        convertline(el);
+        convertline(el)
       }
-      svgCanvas.call('changed', selElems);
-    };
+      svgCanvas.call('changed', selElems)
+    }
 
     /**
      * Called when the main system modifies an object. This routine changes
@@ -230,20 +231,20 @@ export default {
      * @returns {void}
     */
     const colorChanged = (elem) => {
-      const color = elem.getAttribute('stroke');
+      const color = elem.getAttribute('stroke')
 
       mtypes.forEach((pos) => {
-        const marker = getLinked(elem, 'marker-' + pos);
-        if (!marker) { return; }
-        if (!marker.attributes.se_type) { return; } // not created by this extension
-        const ch = marker.lastElementChild;
-        if (!ch) { return; }
-        const curfill = ch.getAttribute('fill');
-        const curstroke = ch.getAttribute('stroke');
-        if (curfill && curfill !== 'none') { ch.setAttribute('fill', color); }
-        if (curstroke && curstroke !== 'none') { ch.setAttribute('stroke', color); }
-      });
-    };
+        const marker = getLinked(elem, 'marker-' + pos)
+        if (!marker) { return }
+        if (!marker.attributes.se_type) { return } // not created by this extension
+        const ch = marker.lastElementChild
+        if (!ch) { return }
+        const curfill = ch.getAttribute('fill')
+        const curstroke = ch.getAttribute('stroke')
+        if (curfill && curfill !== 'none') { ch.setAttribute('fill', color) }
+        if (curstroke && curstroke !== 'none') { ch.setAttribute('stroke', color) }
+      })
+    }
 
     /**
     * Called when the main system creates or modifies an object.
@@ -252,78 +253,77 @@ export default {
     * @returns {void}
     */
     const updateReferences = (el) => {
-      const selElems = svgCanvas.getSelectedElems();
+      const selElems = svgCanvas.getSelectedElements()
       mtypes.forEach((pos) => {
-        const markerName = 'marker-' + pos;
-        const marker = getLinked(el, markerName);
-        if (!marker || !marker.attributes.se_type) { return; } // not created by this extension
-        const url = el.getAttribute(markerName);
+        const markerName = 'marker-' + pos
+        const marker = getLinked(el, markerName)
+        if (!marker || !marker.attributes.se_type) { return } // not created by this extension
+        const url = el.getAttribute(markerName)
         if (url) {
-          const len = el.id.length;
-          const linkid = url.substr(-len - 1, len);
+          const len = el.id.length
+          const linkid = url.substr(-len - 1, len)
           if (el.id !== linkid) {
-            const newMarkerId = 'mkr_' + pos + '_' + el.id;
-            addMarker(newMarkerId, marker.attributes.se_type.value);
-            svgCanvas.changeSelectedAttribute(markerName, 'url(#' + newMarkerId + ')');
-            svgCanvas.call('changed', selElems);
+            const newMarkerId = 'mkr_' + pos + '_' + el.id
+            addMarker(newMarkerId, marker.attributes.se_type.value)
+            svgCanvas.changeSelectedAttribute(markerName, 'url(#' + newMarkerId + ')')
+            svgCanvas.call('changed', selElems)
           }
         }
-      });
-    };
+      })
+    }
 
     return {
       name: svgEditor.i18next.t(`${name}:name`),
       // The callback should be used to load the DOM with the appropriate UI items
-      callback() {
+      callback () {
         // Add the context panel and its handler(s)
-        const panelTemplate = document.createElement("template");
+        const panelTemplate = document.createElement('template')
         // create the marker panel
-        let innerHTML = '<div id="marker_panel">';
+        let innerHTML = '<div id="marker_panel">'
         mtypes.forEach((pos) => {
-          innerHTML += `<se-list id="${pos}_marker_list_opts" title="tools.${pos}_marker_list_opts" label="" width="22px" height="22px">`;
-          Object.entries(markerTypes).forEach(([ marker, _mkr ]) => {
-            innerHTML += `<se-list-item id="mkr_${pos}_${marker}" value="${marker}" title="tools.mkr_${marker}" src="${marker}.svg" img-height="22px"></se-list-item>`;
-          });
-          innerHTML += '</se-list>';
-        });
-        innerHTML += '</div>';
-        // eslint-disable-next-line no-unsanitized/property
-        panelTemplate.innerHTML = innerHTML;
-        $id("tools_top").appendChild(panelTemplate.content.cloneNode(true));
+          innerHTML += `<se-list id="${pos}_marker_list_opts" title="tools.${pos}_marker_list_opts" label="" width="22px" height="22px">`
+          Object.entries(markerTypes).forEach(([marker, _mkr]) => {
+            innerHTML += `<se-list-item id="mkr_${pos}_${marker}" value="${marker}" title="tools.mkr_${marker}" src="${marker}.svg" img-height="22px"></se-list-item>`
+          })
+          innerHTML += '</se-list>'
+        })
+        innerHTML += '</div>'
+        panelTemplate.innerHTML = innerHTML
+        $id('tools_top').appendChild(panelTemplate.content.cloneNode(true))
         // don't display the panels on start
-        showPanel(false);
+        showPanel(false)
         mtypes.forEach((pos) => {
           $id(`${pos}_marker_list_opts`).addEventListener('change', (evt) => {
-            setMarker(pos, evt.detail.value);
-          });
-        });
+            setMarker(pos, evt.detail.value)
+          })
+        })
       },
       selectedChanged (opts) {
         // Use this to update the current selected elements
-        if (opts.elems.length === 0) showPanel(false);
-        opts.elems.forEach( (elem) => {
+        if (opts.elems.length === 0) showPanel(false)
+        opts.elems.forEach((elem) => {
           if (elem && markerElems.includes(elem.tagName)) {
             if (opts.selectedElement && !opts.multiselected) {
-              showPanel(true, elem);
+              showPanel(true, elem)
             } else {
-              showPanel(false);
+              showPanel(false)
             }
           } else {
-            showPanel(false);
+            showPanel(false)
           }
-        });
+        })
       },
       elementChanged (opts) {
-        const elem = opts.elems[0];
+        const elem = opts.elems[0]
         if (elem && (
           elem.getAttribute('marker-start') ||
           elem.getAttribute('marker-mid') ||
           elem.getAttribute('marker-end')
         )) {
-          colorChanged(elem);
-          updateReferences(elem);
+          colorChanged(elem)
+          updateReferences(elem)
         }
       }
-    };
+    }
   }
-};
+}

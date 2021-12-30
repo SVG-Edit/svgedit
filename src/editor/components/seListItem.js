@@ -1,8 +1,8 @@
 /* globals svgEditor */
-import 'elix/define/Option.js';
-import { t } from '../locale.js';
+import 'elix/define/Option.js'
+import { t } from '../locale.js'
 
-const template = document.createElement('template');
+const template = document.createElement('template')
 template.innerHTML = `
   <style>
   elix-option{
@@ -17,7 +17,7 @@ template.innerHTML = `
     <img alt="icon" />
     <slot></slot>
   </elix-option>
-`;
+`
 /**
  * @class SeMenu
  */
@@ -26,23 +26,24 @@ export class SeListItem extends HTMLElement {
     * @function constructor
     */
   constructor () {
-    super();
+    super()
     // create the shadowDom and insert the template
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.append(template.content.cloneNode(true));
-    this.$menuitem = this._shadowRoot.querySelector('elix-option');
-    this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark');
-    this.$svg.setAttribute('style', 'display: none;');
-    this.$img = this._shadowRoot.querySelector('img');
-    this.$img.setAttribute('style', 'display: none;');
-    this.imgPath = svgEditor.configObj.curConfig.imgPath;
+    this._shadowRoot = this.attachShadow({ mode: 'open' })
+    this._shadowRoot.append(template.content.cloneNode(true))
+    this.$menuitem = this._shadowRoot.querySelector('elix-option')
+    this.$svg = this.$menuitem.shadowRoot.querySelector('#checkmark')
+    this.$svg.setAttribute('style', 'display: none;')
+    this.$img = this._shadowRoot.querySelector('img')
+    this.$img.setAttribute('style', 'display: none;')
+    this.imgPath = svgEditor.configObj.curConfig.imgPath
   }
+
   /**
    * @function observedAttributes
    * @returns {any} observed
    */
   static get observedAttributes () {
-    return [ 'option', 'src', 'title', 'img-height' ];
+    return ['option', 'src', 'title', 'img-height']
   }
 
   /**
@@ -53,33 +54,34 @@ export class SeListItem extends HTMLElement {
    * @returns {void}
    */
   attributeChangedCallback (name, oldValue, newValue) {
-    if (oldValue === newValue) return;
+    if (oldValue === newValue) return
     switch (name) {
-    case 'option':
-      this.$menuitem.setAttribute('option', newValue);
-      this.$menuitem.textContent = t(newValue);
-      break;
-    case 'src':
-      this.$img.setAttribute('style', 'display: block;');
-      this.$img.setAttribute('src', this.imgPath + '/' + newValue);
-      break;
-    case 'title':
-      this.$img.setAttribute('title', t(newValue));
-      break;
-    case 'img-height':
-      this.$img.setAttribute('height', newValue);
-      break;
-    default:
-      console.error(`unknown attribute: ${name}`);
-      break;
+      case 'option':
+        this.$menuitem.setAttribute('option', newValue)
+        this.$menuitem.textContent = t(newValue)
+        break
+      case 'src':
+        this.$img.setAttribute('style', 'display: block;')
+        this.$img.setAttribute('src', this.imgPath + '/' + newValue)
+        break
+      case 'title':
+        this.$img.setAttribute('title', t(newValue))
+        break
+      case 'img-height':
+        this.$img.setAttribute('height', newValue)
+        break
+      default:
+        console.error(`unknown attribute: ${name}`)
+        break
     }
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get option () {
-    return this.getAttribute('option');
+    return this.getAttribute('option')
   }
 
   /**
@@ -87,14 +89,15 @@ export class SeListItem extends HTMLElement {
    * @returns {void}
    */
   set option (value) {
-    this.setAttribute('option', value);
+    this.setAttribute('option', value)
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get title () {
-    return this.getAttribute('title');
+    return this.getAttribute('title')
   }
 
   /**
@@ -102,14 +105,15 @@ export class SeListItem extends HTMLElement {
    * @returns {void}
    */
   set title (value) {
-    this.setAttribute('title', value);
+    this.setAttribute('title', value)
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get imgHeight () {
-    return this.getAttribute('img-height');
+    return this.getAttribute('img-height')
   }
 
   /**
@@ -117,14 +121,15 @@ export class SeListItem extends HTMLElement {
    * @returns {void}
    */
   set imgHeight (value) {
-    this.setAttribute('img-height', value);
+    this.setAttribute('img-height', value)
   }
+
   /**
    * @function get
    * @returns {any}
    */
   get src () {
-    return this.getAttribute('src');
+    return this.getAttribute('src')
   }
 
   /**
@@ -132,9 +137,9 @@ export class SeListItem extends HTMLElement {
    * @returns {void}
    */
   set src (value) {
-    this.setAttribute('src', value);
+    this.setAttribute('src', value)
   }
 }
 
 // Register
-customElements.define('se-list-item', SeListItem);
+customElements.define('se-list-item', SeListItem)

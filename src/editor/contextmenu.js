@@ -5,7 +5,7 @@
  * @author Adam Bender
  */
 
-let contextMenuExtensions = {};
+let contextMenuExtensions = {}
 
 /**
  * Signature depends on what the user adds; in the case of our uses with
@@ -27,8 +27,8 @@ let contextMenuExtensions = {};
 * @returns {boolean}
 */
 const menuItemIsValid = function (menuItem) {
-  return menuItem && menuItem.id && menuItem.label && menuItem.action && typeof menuItem.action === 'function';
-};
+  return menuItem && menuItem.id && menuItem.label && menuItem.action && typeof menuItem.action === 'function'
+}
 
 /**
 * @function module:contextmenu.add
@@ -42,15 +42,15 @@ export const add = function (menuItem) {
     throw new TypeError(
       'Menu items must be defined and have at least properties: ' +
       'id, label, action, where action must be a function'
-    );
+    )
   }
   if (menuItem.id in contextMenuExtensions) {
-    throw new Error('Cannot add extension "' + menuItem.id + '", an extension by that name already exists"');
+    throw new Error('Cannot add extension "' + menuItem.id + '", an extension by that name already exists"')
   }
   // Register menuItem action, see below for deferred menu dom injection
-  contextMenuExtensions[menuItem.id] = menuItem;
+  contextMenuExtensions[menuItem.id] = menuItem
   // TODO: Need to consider how to handle custom enable/disable behavior
-};
+}
 
 /**
 * @function module:contextmenu.hasCustomHandler
@@ -58,8 +58,8 @@ export const add = function (menuItem) {
 * @returns {boolean}
 */
 export const hasCustomHandler = function (handlerKey) {
-  return Boolean(contextMenuExtensions[handlerKey]);
-};
+  return Boolean(contextMenuExtensions[handlerKey])
+}
 
 /**
 * @function module:contextmenu.getCustomHandler
@@ -67,8 +67,8 @@ export const hasCustomHandler = function (handlerKey) {
 * @returns {module:contextmenu.MenuItemAction}
 */
 export const getCustomHandler = function (handlerKey) {
-  return contextMenuExtensions[handlerKey].action;
-};
+  return contextMenuExtensions[handlerKey].action
+}
 
 /**
 * @param {module:contextmenu.MenuItem} menuItem
@@ -78,12 +78,12 @@ const injectExtendedContextMenuItemIntoDom = function (menuItem) {
   if (!Object.keys(contextMenuExtensions).length) {
     // all menuItems appear at the bottom of the menu in their own container.
     // if this is the first extension menu we need to add the separator.
-    document.getElementById('cmenu_canvas').appendChild(`<li class='separator'>`);
+    document.getElementById('cmenu_canvas').appendChild('<li class=\'separator\'>')
   }
-  const shortcut = menuItem.shortcut || '';
+  const shortcut = menuItem.shortcut || ''
   document.getElementById('cmenu_canvas').appendChild(`
-    <li class='disabled'><a href='#${menuItem.id}'>${menuItem.label}<span class='shortcut'>${shortcut}</span></a></li>`);
-};
+    <li class='disabled'><a href='#${menuItem.id}'>${menuItem.label}<span class='shortcut'>${shortcut}</span></a></li>`)
+}
 
 /**
 * @function module:contextmenu.injectExtendedContextMenuItemsIntoDom
@@ -91,11 +91,11 @@ const injectExtendedContextMenuItemIntoDom = function (menuItem) {
 */
 export const injectExtendedContextMenuItemsIntoDom = function () {
   Object.values(contextMenuExtensions).forEach((menuItem) => {
-    injectExtendedContextMenuItemIntoDom(menuItem);
-  });
-};
+    injectExtendedContextMenuItemIntoDom(menuItem)
+  })
+}
 /**
 * @function module:contextmenu.resetCustomMenus
 * @returns {void}
 */
-export const resetCustomMenus = function () { contextMenuExtensions = {}; };
+export const resetCustomMenus = function () { contextMenuExtensions = {} }

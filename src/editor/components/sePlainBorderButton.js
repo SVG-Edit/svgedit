@@ -1,6 +1,6 @@
-import { template } from 'elix/src/base/internal.js';
-import { fragmentFrom } from 'elix/src/core/htmlLiterals.js';
-import PlainButton from 'elix/src/plain/PlainButton.js';
+import { template } from 'elix/src/base/internal.js'
+import { fragmentFrom } from 'elix/src/core/htmlLiterals.js'
+import PlainButton from 'elix/src/plain/PlainButton.js'
 
 /**
  * @class SePlainBorderButton
@@ -13,7 +13,7 @@ class SePlainBorderButton extends PlainButton {
     * @returns {PlainObject}
   */
   get [template] () {
-    const result = super[template];
+    const result = super[template]
     result.content.append(
       fragmentFrom.html`
         <style>
@@ -23,9 +23,9 @@ class SePlainBorderButton extends PlainButton {
           }
         </style>
       `
-    );
-    return result;
+    )
+    return result
   }
 }
 
-export default SePlainBorderButton;
+export default SePlainBorderButton

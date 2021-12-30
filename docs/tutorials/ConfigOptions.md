@@ -48,7 +48,7 @@ svgEditor.setConfig({
   initFill: {
     color: '0000FF'
   }
-});
+})
 ```
 
 This will set the default width/height of the image, the size of the outside
@@ -121,13 +121,13 @@ set if storage is found.
 
 ```js
 // Serialized string:
-svgEditor.loadFromString('<svg xmlns="...">...</svg>');
+svgEditor.loadFromString('<svg xmlns="...">...</svg>')
 
 // Data URI:
-svgEditor.loadFromDataURI('data:image/svg+xml;base64,...');
+svgEditor.loadFromDataURI('data:image/svg+xml;base64,...')
 
 // Local URL:
-svgEditor.loadFromURL('images/logo.svg');
+svgEditor.loadFromURL('images/logo.svg')
 ```
 
 ### Preload a file (by URL)
@@ -136,13 +136,13 @@ As a URL parameter, one can pre-load an SVG file in the following manner:
 
 ```js
 // Data URI
-location.href += '?source=' + encodeURIComponent('data:image/svg+xml;utf8,' + svgText);
+location.href += '?source=' + encodeURIComponent('data:image/svg+xml;utf8,' + svgText)
 
 // Data URI (base 64):
-location.href += '?source=' + encodeURIComponent('data:image/svg+xml;base64,' + svgTextAsBase64); // data%3Aimage%2Fsvg%2Bxml%3Bbase64%2C ...
+location.href += '?source=' + encodeURIComponent('data:image/svg+xml;base64,' + svgTextAsBase64) // data%3Aimage%2Fsvg%2Bxml%3Bbase64%2C ...
 
 // Local URL:
-location.href += '?url=' + encodeURIComponent('images/logo.svg'); // images%2Flogo.svg
+location.href += '?url=' + encodeURIComponent('images/logo.svg') // images%2Flogo.svg
 ```
 
 **Note:** There is currently a bug that prevents data URIs ending with
@@ -160,7 +160,7 @@ To add your own stylesheets along with the default stylesheets, ensure
 `"@default"` is present in the array along with your own. For example:
 
 ```js
-svgEditor.setConfig({ stylesheets: [ '@default', 'myStylesheet.css' ] });
+svgEditor.setConfig({ stylesheets: [ '@default', 'myStylesheet.css' ] })
 ```
 
 (In version 2.8, the CSS file `editor/custom.css` was included by default,

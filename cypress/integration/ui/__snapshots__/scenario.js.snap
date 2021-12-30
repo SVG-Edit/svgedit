@@ -1,934 +1,774 @@
 exports[`use various parts of svg-edit > check tool_source #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
->
-  <g class="layer"><title>Layer 1</title></g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_fhpath #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_1"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_clone #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="66"
-      y="55"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_1"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        x="66"
+        xml:space="preserve"
+        y="55"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_italic #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-=""
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="66"
-      y="55"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        font-style="italic"
+        id="svg_1"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="66"
+        xml:space="preserve"
+        y="55"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_bold #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-=""
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="66"
-      y="55"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="66"
+        xml:space="preserve"
+        y="55"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_change_x_y_coordinate #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_change_font_size #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_change_stroke_width #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#000000"
+        text-anchor="middle"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_change_stoke_fill_color #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="middle"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_anchor_start #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="start"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-=""
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="start"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_anchor_middle #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-=""
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="middle"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_anchor_end #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer">
-    <title>Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="end"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-=""
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="end"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="matrix(1 0 0 1 0 0)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_change_rotation #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="end"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-      transform="rotate(25 91 72)"
-    >
-      AB
-    </text>
-  </g>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="end"
+        transform="matrix(1 0 0 1 0 0)"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="rotate(25 91 72)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_change_blur #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="end"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-      transform="rotate(25 91 72)"
-      filter="url(#svg_2_blur)"
-    >
-      AB
-    </text>
-  </g>
-  <defs>
-    <filter id="svg_2_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="end"
+        transform="matrix(1 0 0 1 0 0)"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        filter="url(#svg_2_blur)"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="rotate(25 91 72)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_2_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_change_opacity #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="end"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-      filter="url(#svg_2_blur)"
-      opacity="0.5"
-      transform="rotate(25 91 72)"
-    >
-      AB
-    </text>
-  </g>
-  <defs>
-    <filter id="svg_2_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="end"
+        transform="matrix(1 0 0 1 0 0)"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        filter="url(#svg_2_blur)"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="rotate(25 91 72)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_2_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_align_to_page #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="end"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-    <text
-      fill="#000000"
-      stroke="#000000"
-      stroke-width="0"
-      x="91"
-      y="80"
-      font-size="24"
-      font-family="Serif"
-      text-anchor="middle"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      id="svg_2"
-      filter="url(#svg_2_blur)"
-      opacity="0.5"
-      transform="rotate(25 91 72)"
-    >
-      AB
-    </text>
-  </g>
-  <defs>
-    <filter id="svg_2_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="end"
+        transform="matrix(1 0 0 1 0 0)"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+      <text
+        fill="#000000"
+        filter="url(#svg_2_blur)"
+        font-family="Serif"
+        font-size="24"
+        id="svg_2"
+        opacity="0.5"
+        stroke="#000000"
+        stroke-width="0"
+        text-anchor="middle"
+        transform="rotate(25 91 72)"
+        x="91"
+        xml:space="preserve"
+        y="80"
+      >
+        AB
+      </text>
+    </g>
+    <defs>
+      <filter height="200%" id="svg_2_blur" width="200%" x="-50%" y="-50%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
+      </filter>
+    </defs>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_delete #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="end"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-  </g>
-  <defs>
-    <filter id="svg_2_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="end"
+        transform="matrix(1 0 0 1 0 0)"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;
 
 exports[`use various parts of svg-edit > check tool_text_change_font_family #0`] = `
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  width="640"
-  height="480"
-  id="svgcontent"
-  overflow="visible"
-  x="640"
-  y="480"
-  viewBox="0 0 640 480"
-  fill-opacity="1"
-  stroke-opacity="1"
->
-  <g class="layer" style="pointer-events:all">
-    <title style="pointer-events:inherit">Layer 1</title>
-    <text
-      fill="#bf0000"
-      stroke="#0000bf"
-      stroke-width="1"
-      x="46"
-      y="35"
-      id="svg_1"
-      font-size="34"
-      font-family="Serif"
-      text-anchor="end"
-      xml:space="preserve"
-      fill-opacity="1"
-      stroke-opacity="1"
-      font-style="italic"
-      font-weight="bold"
-    >
-      AB
-    </text>
-  </g>
-  <defs>
-    <filter id="svg_2_blur" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5"></feGaussianBlur>
-    </filter>
-  </defs>
-</svg>
+<body>
+  <svg
+    width="640"
+    height="480"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"
+  >
+    <g class="layer">
+      <title>Layer 1</title>
+      <text
+        fill="#bf0000"
+        font-family="Serif"
+        font-size="34"
+        font-style="italic"
+        font-weight="bold"
+        id="svg_1"
+        stroke="#0000bf"
+        text-anchor="end"
+        x="46"
+        xml:space="preserve"
+        y="35"
+      >
+        AB
+      </text>
+    </g>
+  </svg>
+</body>
 `;

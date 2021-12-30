@@ -5,18 +5,18 @@
  * @returns {void}
  */
 function touchHandler (ev) {
-  const { changedTouches } = ev;
-  const first = changedTouches[0];
+  const { changedTouches } = ev
+  const first = changedTouches[0]
 
-  let type = '';
+  let type = ''
   switch (ev.type) {
-  case 'touchstart': type = 'mousedown'; break;
-  case 'touchmove': type = 'mousemove'; break;
-  case 'touchend': type = 'mouseup'; break;
-  default: return;
+    case 'touchstart': type = 'mousedown'; break
+    case 'touchmove': type = 'mousemove'; break
+    case 'touchend': type = 'mouseup'; break
+    default: return
   }
 
-  const { screenX, screenY, clientX, clientY } = first;
+  const { screenX, screenY, clientX, clientY } = first
   const simulatedEvent = new MouseEvent(type, {
     // Event interface
     bubbles: true,
@@ -25,7 +25,10 @@ function touchHandler (ev) {
     view: window,
     detail: 1, // click count
     // MouseEvent interface (customized)
-    screenX, screenY, clientX, clientY,
+    screenX,
+    screenY,
+    clientX,
+    clientY,
     // MouseEvent interface (defaults) - these could be removed
     ctrlKey: false,
     altKey: false,
@@ -33,14 +36,14 @@ function touchHandler (ev) {
     metaKey: false,
     button: 0, // main button (usually left)
     relatedTarget: null
-  });
+  })
   if (changedTouches.length < 2) {
-    first.target.dispatchEvent(simulatedEvent);
-    ev.preventDefault();
+    first.target.dispatchEvent(simulatedEvent)
+    ev.preventDefault()
   }
 }
 
-document.addEventListener('touchstart', touchHandler, true);
-document.addEventListener('touchmove', touchHandler, true);
-document.addEventListener('touchend', touchHandler, true);
-document.addEventListener('touchcancel', touchHandler, true);
+document.addEventListener('touchstart', touchHandler, true)
+document.addEventListener('touchmove', touchHandler, true)
+document.addEventListener('touchend', touchHandler, true)
+document.addEventListener('touchcancel', touchHandler, true)

@@ -6,4 +6,4 @@ export default {
       title: "输出 'Hello World'"
     }
   ]
-};
+}

@@ -43,4 +43,4 @@ export default {
       title: '选择末端标记类型'
     }
   ]
-};
+}

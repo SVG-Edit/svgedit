@@ -1,12 +1,12 @@
 // eslint-disable-next-line node/no-unpublished-import
-import { fromRollup } from '@web/dev-server-rollup';
+import { fromRollup } from '@web/dev-server-rollup'
 // eslint-disable-next-line node/no-unpublished-import
-import rollupCommonjs from '@rollup/plugin-commonjs';
+import rollupCommonjs from '@rollup/plugin-commonjs'
 // eslint-disable-next-line node/no-unpublished-import
-import rollupHtml from 'rollup-plugin-html';
+import rollupHtml from 'rollup-plugin-html'
 
-const commonjs = fromRollup(rollupCommonjs);
-const html = fromRollup(rollupHtml);
+const commonjs = fromRollup(rollupCommonjs)
+const html = fromRollup(rollupHtml)
 
 export default {
   mimeTypes: {
@@ -21,16 +21,18 @@ export default {
     'instrumented/editor/extensions/*/*.html': 'js'
   },
   plugins: [
-    html({ include: [
-      'src/editor/panels/*.html',
-      'src/editor/templates/*.html',
-      'src/editor/dialogs/*.html',
-      'src/editor/extensions/*/*.html',
-      'instrumented/editor/panels/*.html',
-      'instrumented/editor/templates/*.html',
-      'instrumented/editor/dialogs/*.html',
-      'instrumented/editor/extensions/*/*.html'
-    ] }),
+    html({
+      include: [
+        'src/editor/panels/*.html',
+        'src/editor/templates/*.html',
+        'src/editor/dialogs/*.html',
+        'src/editor/extensions/*/*.html',
+        'instrumented/editor/panels/*.html',
+        'instrumented/editor/templates/*.html',
+        'instrumented/editor/dialogs/*.html',
+        'instrumented/editor/extensions/*/*.html'
+      ]
+    }),
     commonjs({
       // explicitely list packages to increase performance
       include: [
@@ -44,4 +46,4 @@ export default {
       ]
     })
   ]
-};
+}

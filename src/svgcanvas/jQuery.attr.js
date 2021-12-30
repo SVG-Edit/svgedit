@@ -19,8 +19,8 @@
 * @returns {external:jQuery}
 */
 export default function jQueryPluginSVG ($) {
-  const proxied = $.fn.attr;
-  const svgns = 'http://www.w3.org/2000/svg';
+  const proxied = $.fn.attr
+  const svgns = 'http://www.w3.org/2000/svg'
   /**
   * @typedef {PlainObject<string, string|Float>} module:jQueryAttr.Attributes
   */
@@ -31,49 +31,49 @@ export default function jQueryPluginSVG ($) {
   * @returns {external:jQuery|module:jQueryAttr.Attributes}
   */
   $.fn.attr = function (key, value) {
-    const len = this.length;
-    if (!len) { return proxied.call(this, key, value); }
+    const len = this.length
+    if (!len) { return proxied.call(this, key, value) }
     for (let i = 0; i < len; ++i) {
-      const elem = this[i];
+      const elem = this[i]
       // set/get SVG attribute
       if (elem.namespaceURI === svgns) {
         // Setting attribute
         if (value !== undefined) {
-          elem.setAttribute(key, value);
+          elem.setAttribute(key, value)
         } else if (Array.isArray(key)) {
           // Getting attributes from array
-          const obj = {};
-          let j = key.length;
+          const obj = {}
+          let j = key.length
 
           while (j--) {
-            const aname = key[j];
-            let attr = elem.getAttribute(aname);
+            const aname = key[j]
+            let attr = elem.getAttribute(aname)
             // This returns a number when appropriate
             if (attr || attr === '0') {
-              attr = isNaN(attr) ? attr : (attr - 0);
+              attr = isNaN(attr) ? attr : (attr - 0)
             }
-            obj[aname] = attr;
+            obj[aname] = attr
           }
-          return obj;
+          return obj
         }
         if (typeof key === 'object') {
           // Setting attributes from object
-          for (const [ name, val ] of Object.entries(key)) {
-            elem.setAttribute(name, val);
+          for (const [name, val] of Object.entries(key)) {
+            elem.setAttribute(name, val)
           }
         // Getting attribute
         } else {
-          let attr = elem.getAttribute(key);
+          let attr = elem.getAttribute(key)
           if (attr || attr === '0') {
-            attr = isNaN(attr) ? attr : (attr - 0);
+            attr = isNaN(attr) ? attr : (attr - 0)
           }
-          return attr;
+          return attr
         }
       } else {
-        return proxied.call(this, key, value);
+        return proxied.call(this, key, value)
       }
     }
-    return this;
-  };
-  return $;
+    return this
+  }
+  return $
 }

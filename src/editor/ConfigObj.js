@@ -1,4 +1,4 @@
-import { mergeDeep } from './components/jgraduate/Util.js';
+import { mergeDeep } from './components/jgraduate/Util.js'
 
 /**
 * Escapes special characters in a regular expression.
@@ -8,8 +8,8 @@ import { mergeDeep } from './components/jgraduate/Util.js';
 */
 export const regexEscape = function (str) {
   // Originally from: http://phpjs.org/functions
-  return String(str).replace(/[.\\+*?[^\]$(){}=!<>|:-]/g, '\\$&');
-};
+  return String(str).replace(/[.\\+*?[^\]$(){}=!<>|:-]/g, '\\$&')
+}
 /**
  * @class configObj
  */
@@ -47,7 +47,7 @@ export default class ConfigObj {
       // Only shows in UI as far as alert notices, but useful to remember, so keeping as pref
       save_notice_done: false,
       export_notice_done: false
-    };
+    }
     /**
       * @tutorial ConfigOptions
       * @interface module:SVGEditor.Config
@@ -134,7 +134,7 @@ export default class ConfigObj {
       imgPath: './images',
       // DOCUMENT PROPERTIES
       // Change the following to a preference (already in the Document Properties dialog)?
-      dimensions: [ 640, 480 ],
+      dimensions: [640, 480],
       // EDITOR OPTIONS
       // Change the following to preferences (already in the Editor Options dialog)?
       gridSnapping: false,
@@ -158,13 +158,13 @@ export default class ConfigObj {
       avoidClientSide: false, // Deprecated in favor of `avoidClientSideDownload`
       avoidClientSideDownload: false,
       avoidClientSideOpen: false
-    };
+    }
 
-    this.curPrefs = {};
+    this.curPrefs = {}
     // Note: The difference between Prefs and Config is that Prefs
     //   can be changed in the UI and are stored in the browser,
     //   while config cannot
-    this.urldata = {};
+    this.urldata = {}
     /**
       * @name module:SVGEditor~defaultExtensions
       * @type {string[]}
@@ -182,7 +182,7 @@ export default class ConfigObj {
       'ext-polystar',
       'ext-storage',
       'ext-opensave'
-    ];
+    ]
     this.curConfig = {
       // We do not put on defaultConfig to simplify object copying
       //   procedures (we obtain instead from defaultExtensions)
@@ -203,61 +203,64 @@ export default class ConfigObj {
       * @todo We might instead make as a user-facing preference.
       */
       allowedOrigins: []
-    };
-    this.editor = editor;
+    }
+    this.editor = editor
   }
+
   /**
    * @function setupCurPrefs
    * @returns {void}
    */
   setupCurPrefs () {
-    const curPrefs = { ...this.defaultPrefs, ...this.curPrefs }; // Now safe to merge with priority for curPrefs in the event any are already set
+    const curPrefs = { ...this.defaultPrefs, ...this.curPrefs } // Now safe to merge with priority for curPrefs in the event any are already set
     // Export updated prefs
-    this.curPrefs = curPrefs;
+    this.curPrefs = curPrefs
   }
+
   /**
    * Sets up current config based on defaults.
    * @returns {void}
    */
   setupCurConfig () {
-    const curConfig = { ...this.defaultConfig, ...this.curConfig }; // Now safe to merge with priority for curConfig in the event any are already set
+    const curConfig = { ...this.defaultConfig, ...this.curConfig } // Now safe to merge with priority for curConfig in the event any are already set
 
     // Now deal with extensions and other array config
     if (!curConfig.noDefaultExtensions) {
-      curConfig.extensions = [ ...this.defaultExtensions ];
+      curConfig.extensions = [...this.defaultExtensions]
     }
     // Export updated config
-    this.curConfig = curConfig;
+    this.curConfig = curConfig
   }
+
   /**
    * @function loadFromURL Load config/data from URL if given
    * @returns {void}
    */
   loadFromURL () {
-    const self = this;
-    const { search, searchParams } = new URL(location);
+    const self = this
+    const { search, searchParams } = new URL(location)
     if (search) {
-      this.urldata = {};
-      const entries = searchParams.entries();
-      for(const entry of entries) {
-        this.urldata[entry[0]] = entry[1];
+      this.urldata = {}
+      const entries = searchParams.entries()
+      for (const entry of entries) {
+        this.urldata[entry[0]] = entry[1]
       }
 
-      [ 'initStroke', 'initFill' ].forEach((prop) => {
+      ['initStroke', 'initFill'].forEach((prop) => {
         if (searchParams.has(`${prop}[color]`)) {
           // Restore back to original non-deparamed value to avoid color
           //  strings being converted to numbers
-          if(this.urldata[prop] === undefined) { this.urldata[prop] = {}; }
-          this.urldata[prop].color = searchParams.get(`${prop}[color]`);
+          if (this.urldata[prop] === undefined) { this.urldata[prop] = {} }
+          this.urldata[prop].color = searchParams.get(`${prop}[color]`)
         }
-      });
+      })
 
       if (searchParams.has('bkgd_color')) {
-        this.urldata.bkgd_color = '#' + searchParams.get('bkgd_color');
+        this.urldata.bkgd_color = '#' + searchParams.get('bkgd_color')
       }
 
       if (this.urldata.dimensions) {
-        this.urldata.dimensions = this.urldata.dimensions.split(',');
+        this.urldata.dimensions = this.urldata.dimensions.split(',')
       }
 
       if (this.urldata.extensions) {
@@ -265,54 +268,55 @@ export default class ConfigObj {
         //  extensions via URL
         this.urldata.extensions = (/[:/\\]/).test(this.urldata.extensions)
           ? ''
-          : this.urldata.extensions.split(',');
+          : this.urldata.extensions.split(',')
       }
 
       // Disallowing extension paths via URL for
       // security reasons, even for same-domain
       // ones given potential to interact in undesirable
       // ways with other script resources
-      [ 'userExtensions', 'imgPath' ]
+      ['userExtensions', 'imgPath']
         .forEach(function (pathConfig) {
           if (self.urldata[pathConfig]) {
-            delete self.urldata[pathConfig];
+            delete self.urldata[pathConfig]
           }
-        });
+        })
 
       // Note: `source` and `url` (as with `storagePrompt` later) are not
       //  set on config but are used below
-      this.setConfig(this.urldata, { overwrite: false });
-      this.setupCurConfig();
+      this.setConfig(this.urldata, { overwrite: false })
+      this.setupCurConfig()
 
       if (!this.curConfig.preventURLContentLoading) {
-        let { source } = this.urldata;
+        let { source } = this.urldata
         if (!source) { // urldata.source may have been null if it ended with '='
-          const src = searchParams.get('source');
+          const src = searchParams.get('source')
           if (src && src.startsWith('data:')) {
-            source = src;
+            source = src
           }
         }
         if (source) {
           if (source.startsWith('data:')) {
-            this.editor.loadFromDataURI(source);
+            this.editor.loadFromDataURI(source)
           } else {
-            this.editor.loadFromString(source);
+            this.editor.loadFromString(source)
           }
-          return;
+          return
         }
         if (this.urldata.url) {
-          this.editor.loadFromURL(this.urldata.url);
-          return;
+          this.editor.loadFromURL(this.urldata.url)
+          return
         }
       }
       if (!this.urldata.noStorageOnLoad || this.curConfig.forceStorage) {
-        this.loadContentAndPrefs();
+        this.loadContentAndPrefs()
       }
     } else {
-      this.setupCurConfig();
-      this.loadContentAndPrefs();
+      this.setupCurConfig()
+      this.loadContentAndPrefs()
     }
   }
+
   /**
     * Where permitted, sets canvas and/or `configObj.defaultPrefs` based on previous
     *  storage. This will override URL settings (for security reasons) but
@@ -333,7 +337,7 @@ export default class ConfigObj {
           !(/(?:^|;\s*)svgeditstore=(?:prefsAndContent|prefsOnly)/).test(document.cookie)
       )
     ) {
-      return;
+      return
     }
 
     // LOAD CONTENT
@@ -343,32 +347,32 @@ export default class ConfigObj {
           (/(?:^|;\s*)svgeditstore=prefsAndContent/).test(document.cookie))
       )
     ) {
-      const name = 'svgedit-' + this.curConfig.canvasName;
-      const cached = this.editor.storage.getItem(name);
+      const name = 'svgedit-' + this.curConfig.canvasName
+      const cached = this.editor.storage.getItem(name)
       if (cached) {
-        this.editor.loadFromString(cached);
+        this.editor.loadFromString(cached)
       }
     }
 
     // LOAD PREFS
     Object.keys(this.defaultPrefs).forEach((key) => {
-      const storeKey = 'svg-edit-' + key;
+      const storeKey = 'svg-edit-' + key
       if (this.editor.storage) {
-        const val = this.editor.storage.getItem(storeKey);
+        const val = this.editor.storage.getItem(storeKey)
         if (val) {
-          this.defaultPrefs[key] = String(val); // Convert to string for FF (.value fails in Webkit)
+          this.defaultPrefs[key] = String(val) // Convert to string for FF (.value fails in Webkit)
         }
       } else if (window.widget) {
-        this.defaultPrefs[key] = window.widget.preferenceForKey(storeKey);
+        this.defaultPrefs[key] = window.widget.preferenceForKey(storeKey)
       } else {
         const result = document.cookie.match(
           new RegExp('(?:^|;\\s*)' + regexEscape(
             encodeURIComponent(storeKey)
           ) + '=([^;]+)')
-        );
-        this.defaultPrefs[key] = result ? decodeURIComponent(result[1]) : '';
+        )
+        this.defaultPrefs[key] = result ? decodeURIComponent(result[1]) : ''
       }
-    });
+    })
   }
 
   /**
@@ -402,61 +406,62 @@ export default class ConfigObj {
      */
     const extendOrAdd = (cfgObj, key, val) => {
       if (cfgObj[key] && typeof cfgObj[key] === 'object') {
-        cfgObj[key] = mergeDeep(cfgObj[key], val);
+        cfgObj[key] = mergeDeep(cfgObj[key], val)
       } else {
-        cfgObj[key] = val;
+        cfgObj[key] = val
       }
-    };
-    Object.entries(opts).forEach(([ key, val ]) => {
+    }
+    Object.entries(opts).forEach(([key, val]) => {
       // Only allow prefs defined in configObj.defaultPrefs or...
       if (this.defaultPrefs[key]) {
         if (cfgCfg.overwrite === false && (
           this.curConfig.preventAllURLConfig ||
           this.curPrefs[key])
         ) {
-          return;
+          return
         }
         if (cfgCfg.allowInitialUserOverride === true) {
-          this.defaultPrefs[key] = val;
+          this.defaultPrefs[key] = val
         } else {
-          this.pref(key, val);
+          this.pref(key, val)
         }
-      } else if ([ 'extensions', 'userExtensions', 'allowedOrigins' ].includes(key)) {
+      } else if (['extensions', 'userExtensions', 'allowedOrigins'].includes(key)) {
         if (cfgCfg.overwrite === false &&
           (
             this.curConfig.preventAllURLConfig ||
-            [ 'allowedOrigins' ].includes(key) ||
+            ['allowedOrigins'].includes(key) ||
             (key === 'extensions' && this.curConfig.lockExtensions)
           )
         ) {
-          return;
+          return
         }
-        this.curConfig[key] = this.curConfig[key].concat(val); // We will handle any dupes later
+        this.curConfig[key] = this.curConfig[key].concat(val) // We will handle any dupes later
       // Only allow other configObj.curConfig if defined in configObj.defaultConfig
       } else if ({}.hasOwnProperty.call(this.defaultConfig, key)) {
         if (cfgCfg.overwrite === false && (
           this.curConfig.preventAllURLConfig ||
           {}.hasOwnProperty.call(this.curConfig, key)
         )) {
-          return;
+          return
         }
         // Potentially overwriting of previously set config
         if ({}.hasOwnProperty.call(this.curConfig, key)) {
           if (cfgCfg.overwrite === false) {
-            return;
+            return
           }
-          extendOrAdd(this.curConfig, key, val);
+          extendOrAdd(this.curConfig, key, val)
         } else if (cfgCfg.allowInitialUserOverride === true) {
-          extendOrAdd(this.defaultConfig, key, val);
+          extendOrAdd(this.defaultConfig, key, val)
         } else if (this.defaultConfig[key] && typeof this.defaultConfig[key] === 'object') {
-          this.curConfig[key] = Array.isArray(this.defaultConfig[key]) ? [] : {};
-          this.curConfig[key] = mergeDeep(this.curConfig[key], val);
+          this.curConfig[key] = Array.isArray(this.defaultConfig[key]) ? [] : {}
+          this.curConfig[key] = mergeDeep(this.curConfig[key], val)
         } else {
-          this.curConfig[key] = val;
+          this.curConfig[key] = val
         }
       }
-    });
+    })
   }
+
   /**
   * Store and retrieve preferences.
   * @function pref
@@ -475,17 +480,18 @@ export default class ConfigObj {
   */
   pref (key, val, mayBeEmpty) {
     if (mayBeEmpty || val) {
-      this.curPrefs[key] = val;
-      return undefined;
+      this.curPrefs[key] = val
+      return undefined
     }
-    return (key in this.curPrefs) ? this.curPrefs[key] : this.defaultPrefs[key];
+    return (key in this.curPrefs) ? this.curPrefs[key] : this.defaultPrefs[key]
   }
+
   /**
    * @function load load Config
    * @returns {void}
    */
   load () {
-    this.loadFromURL(this.editor);
-    this.setupCurPrefs(this.editor);
+    this.loadFromURL(this.editor)
+    this.setupCurPrefs(this.editor)
   }
 }

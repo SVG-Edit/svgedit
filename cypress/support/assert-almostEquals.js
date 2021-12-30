@@ -1,6 +1,6 @@
-import assertionWrapper from './assertion-wrapper.js';
+import assertionWrapper from './assertion-wrapper.js'
 
-const NEAR_ZERO = 5e-6; // 0.000005, Firefox fails at higher levels of precision.
+const NEAR_ZERO = 5e-6 // 0.000005, Firefox fails at higher levels of precision.
 
 /**
  * Checks that the supplied values are equal with a high though not absolute degree of precision.
@@ -10,9 +10,9 @@ const NEAR_ZERO = 5e-6; // 0.000005, Firefox fails at higher levels of precision
  * @returns {void}
  */
 function almostEquals (actual, expected, message) {
-  message = message || (actual + ' did not equal ' + expected);
-  const result = Math.abs(actual - expected) < NEAR_ZERO;
-  return { result, message, actual, expected };
+  message = message || (actual + ' did not equal ' + expected)
+  const result = Math.abs(actual - expected) < NEAR_ZERO
+  return { result, message, actual, expected }
 }
 
 /**
@@ -21,9 +21,9 @@ function almostEquals (actual, expected, message) {
  * @returns {void}
  */
 function setAssertionMethods (_chai, utils) {
-  const wrap = assertionWrapper(_chai, utils);
+  const wrap = assertionWrapper(_chai, utils)
 
-  assert.almostEquals = wrap(almostEquals);
+  assert.almostEquals = wrap(almostEquals)
 }
 
-export default setAssertionMethods;
+export default setAssertionMethods
